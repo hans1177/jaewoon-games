@@ -6,68 +6,91 @@
 <meta name="theme-color" content="#102517">
 <title>곤충 생존기</title>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1b10;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
-button{font:inherit}
-#game{position:relative;width:100%;height:100%;touch-action:none;background:#1d3a21}
-canvas{display:block;width:100%;height:100%;touch-action:none}
-.hud{position:absolute;left:0;right:0;top:0;padding:calc(7px + env(safe-area-inset-top)) 9px 8px;pointer-events:none;z-index:5}
-.hudRow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
-.pill{padding:6px 8px;border:1px solid #ffffff2b;border-radius:11px;background:#0b1711d9;backdrop-filter:blur(8px);font-size:11px;font-weight:750}
-.pill b{font-size:13px}
-.hpPill{min-width:132px}.track{height:6px;margin-top:4px;border-radius:6px;overflow:hidden;background:#452c2c}.track i{display:block;height:100%;background:#68d06f}
-.notice{margin-top:6px;max-width:min(94vw,560px);padding:7px 9px;border-radius:11px;border:1px solid #ffffff24;background:#0b1711df;font-size:12px;line-height:1.3;opacity:0;transition:opacity .15s}.notice.show{opacity:1}
-.side{position:absolute;right:8px;top:96px;z-index:6;display:flex;flex-direction:column;gap:7px}
-.uiBtn{border:1px solid #ffffff2b;background:#14311eea;color:#fff;border-radius:12px;padding:10px 11px;font-size:12px;font-weight:850;box-shadow:0 4px 14px #0005}
-.bottom{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:flex-end;justify-content:space-between;padding:8px 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
-.joy{position:relative;width:122px;height:122px;border:2px solid #ffffff3c;border-radius:50%;background:#06100977;pointer-events:auto;touch-action:none}
-.stick{position:absolute;left:34px;top:34px;width:50px;height:50px;border-radius:50%;background:#e7f3e7aa;border:2px solid #fff8;transform:translate(0,0)}
-.actions{display:grid;grid-template-columns:74px 74px;gap:9px;pointer-events:auto}
-.act{width:74px;height:74px;border:2px solid #ffffff55;border-radius:50%;color:#fff;font-size:12px;font-weight:900;background:#6b3030dd}
-.act.alt{background:#315e76dd}
-.modalWrap{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:14px;background:#030805bf}.modalWrap.show{display:flex}
-.modal{width:min(94vw,470px);max-height:84vh;overflow:auto;padding:15px;border:1px solid #ffffff2c;border-radius:20px;background:#11251a;box-shadow:0 20px 50px #000a}
-.modal h2{margin:0 0 8px}.sub{font-size:11px;color:#bad0bf;line-height:1.45;margin-bottom:10px}
-.list{display:grid;gap:7px}.item{padding:10px;border-radius:12px;background:#09160f;border:1px solid #ffffff17}
-.itemTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.item b{font-size:13px}.item small{display:block;margin-top:4px;color:#b7c9bb;font-size:10px;line-height:1.4}
-.item button{margin-top:8px;width:100%;border:0;border-radius:9px;padding:9px;background:#dcebdc;color:#102016;font-weight:900;font-size:11px}.item button:disabled{opacity:.38}
-.eq{color:#8de58e;font-weight:900;font-size:10px}.locked{opacity:.62}
-.close{width:100%;margin-top:11px;border:0;border-radius:11px;padding:11px;background:#e5f1e7;color:#102016;font-weight:900}
-.death{text-align:center}.death h1{margin:0 0 8px;font-size:30px}
-@media(min-width:760px){.joy{width:132px;height:132px}.stick{left:39px;top:39px}.actions{grid-template-columns:82px 82px}.act{width:82px;height:82px}}
 
-/* Grounded-inspired micro-world + Diablo-style expedition HUD */
-:root{--leaf:#a7d8a4;--gold:#d6ad68;--bark:#271c15}
-body,#game{background:#152019}
-.pill{border-radius:5px;border-color:#bba57676;background:linear-gradient(150deg,#16221dec,#182b23d8);color:#f0e7d4;box-shadow:0 4px 17px #0007}
-.pill b{color:#fff1d0}.track i{background:linear-gradient(90deg,#9d3031,#e15d54)}.track.energy i{background:linear-gradient(90deg,#478c78,#a5d9b7)}
-.notice{border-radius:5px;border-color:#c4ac796a;background:#192920ed;color:#fae5bb}
-.side{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));right:11px}
-.uiBtn{background:linear-gradient(130deg,#243e33ef,#182720f2);border-radius:5px;border-color:#bca4708b;color:#f0dcb6}
-.joy{background:radial-gradient(circle,#152a22b3,#0e1c18db);border-color:#9da78c77;box-shadow:inset 0 0 32px #08120eaa}
-.stick{background:radial-gradient(circle,#b7cfb7c9,#4f8975c4)}
-.actions{grid-template-columns:repeat(3,64px);gap:8px;align-items:end}
-.act{width:64px;height:64px;border:2px solid #e6c38b77;border-radius:9px;background:linear-gradient(140deg,#4c2724f5,#7b372de8);box-shadow:0 6px 19px #040708b8}
-.act.alt{background:linear-gradient(140deg,#1e443c,#376858)}
-.act.skill{background:linear-gradient(145deg,#34405e,#576583);font-size:12px}
-.act.skill strong{display:block;font-size:17px;margin-bottom:2px;color:#d9d4ff}
-.act.skill small{display:block;font-size:9px;color:#ded7d2}
-.act.cooling{opacity:.58;filter:saturate(.35)}
-.act.dodge{background:linear-gradient(130deg,#55532e,#948147)}
-.modalWrap{background:#07110ecb;backdrop-filter:blur(6px)}
-.modal{border:2px solid #a98e6099;border-radius:8px;background:linear-gradient(135deg,#1e2d25,#111d19);color:#f2e6cc;max-width:530px}
-.modal h2{color:#f0d6a1}
-.item{border:1px solid #92805e7a;border-radius:5px;background:linear-gradient(155deg,#16251d,#202920);color:#f5ead5}
-.item small,.sub{color:#c5bd9f}.item button,.close{border-radius:4px;background:#dfbe81;color:#2d2418}.eq{color:#e6ce87}
-.fieldHeading{font-size:10px;font-weight:900;letter-spacing:1px;color:#e1bb7c;margin-bottom:6px}
-#objective{font-size:11px;font-weight:750;line-height:1.5;color:#f1e5ce}
-#zoneLabel{font-size:12px;color:#dbbb84}
-#chapterPanel{position:absolute;left:13px;top:calc(114px + env(safe-area-inset-top));z-index:4;max-width:340px;background:linear-gradient(140deg,#17251edc,#263629b0);border-left:3px solid #c6aa75;padding:9px 12px;pointer-events:none;box-shadow:0 5px 20px #0005}
-#combatBar{position:absolute;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);width:min(44vw,350px);text-align:center;pointer-events:none;z-index:5;display:none}
-#combatBar b{color:#ecd5ab;font-size:12px;text-shadow:0 2px 3px #000}#combatBar .track{margin-top:5px;height:7px;border:1px solid #ab8b6a;background:#170f0e}#combatBar .track i{display:block;background:linear-gradient(90deg,#ae413d,#ed866e);height:100%;width:100%}
+/* 곤충생존기 · 풀숲 아래 장비/생존 HUD / 이전 원형 액션 대시보드 스타일 제거 */
+:root{--moss:#213f31;--moss-dark:#0b1c17;--bronze:#cdb07b;--amber:#f6d99a;--line:#afa47b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1a17;color:#f7eed2;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible{outline:2px solid #ffe0a7;outline-offset:2px}
+#game{position:relative;width:100%;height:100%;overflow:hidden;touch-action:none;background:#1e3327}
+#cv{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:absolute;top:0;left:0;right:0;z-index:5;padding:calc(9px + env(safe-area-inset-top)) 10px 6px;pointer-events:none}
+.hudRow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;max-width:min(88vw,680px)}
+.pill{border:1px solid #c3b88d99;border-radius:6px;background:linear-gradient(148deg,#18392bdc,#0d251ed8);box-shadow:inset 0 0 0 1px #071a14aa,0 4px 17px #020a0a73;padding:5px 8px;font-size:11px;font-weight:780;color:#f2e8ca;backdrop-filter:blur(5px)}
+.pill b{font-size:12px;color:#fff2cf}
+.hpPill{min-width:110px}
+.track{height:7px;margin-top:4px;border-radius:4px;background:#190e11;overflow:hidden}
+.track i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#a83d38,#ed8574);transition:width .1s}
+.track.energy i{background:linear-gradient(90deg,#518e76,#c2dda0)}
+.notice{margin-top:6px;max-width:min(94vw,610px);padding:7px 9px;border:1px solid #dbbc807d;border-radius:5px;background:#102b1fdc;color:#ffe5bb;box-shadow:0 4px 16px #0a110f8c;font-size:12px;opacity:0;transition:opacity .18s}
+.notice.show{opacity:1}
+#chapterPanel{position:absolute;z-index:4;left:11px;top:calc(118px + env(safe-area-inset-top));width:min(300px,50vw);padding:11px 12px;background:linear-gradient(145deg,#193f2ccc,#2c4a35b7);border:2px solid #afa476bc;border-left:5px solid #e0b66c;border-radius:5px;box-shadow:0 7px 20px #0006;pointer-events:none}
+.fieldHeading{margin-bottom:7px;color:#f1c97a;font-size:11px;letter-spacing:.7px;font-weight:900}
+#zoneLabel{color:#fff2cc}
+#objective{font-size:12px;line-height:1.5;color:#f6eed6;font-weight:750}
+#combatBar{position:absolute;z-index:6;left:50%;top:calc(18px + env(safe-area-inset-top));width:min(34vw,350px);transform:translateX(-50%);text-align:center;pointer-events:none;display:none}
 body.combat #combatBar{display:block}
-#topRightHint{position:absolute;right:13px;top:calc(13px + env(safe-area-inset-top));font-size:10px;color:#e8dcb7cf;z-index:5;pointer-events:none}
-@media(max-width:650px){.hudRow{max-width:calc(100vw - 65px)}#chapterPanel{left:8px;top:calc(117px + env(safe-area-inset-top));max-width:185px;padding:7px 9px}#objective{font-size:10px}.side{bottom:calc(150px + env(safe-area-inset-bottom));right:8px;gap:5px}.uiBtn{padding:8px 5px;font-size:10px}.joy{width:106px;height:106px}.stick{left:29px;top:29px;width:44px;height:44px}.bottom{padding-left:8px;padding-right:8px}.actions{grid-template-columns:repeat(3,49px);gap:5px}.act{width:49px;height:49px;font-size:10px}.act.skill strong{font-size:13px}.act.skill small{font-size:8px}#combatBar{top:calc(68px + env(safe-area-inset-top));width:38vw}#topRightHint{display:none}}
+#combatBar b{font-size:13px;color:#ffe3a5;text-shadow:0 2px 3px #000}
+#combatBar .track{height:8px;border:1px solid #dbba80}
+#targetHp{background:linear-gradient(90deg,#ad322e,#fb9f78)}
+#topRightHint{position:absolute;right:12px;top:calc(15px + env(safe-area-inset-top));z-index:5;pointer-events:none;color:#f2debdb0;font-size:10px}
+.side{position:absolute;top:auto;right:11px;bottom:calc(186px + env(safe-area-inset-bottom));z-index:7;display:flex;flex-direction:column;gap:6px}
+.uiBtn{min-width:72px;padding:9px 8px;border:2px solid #b7a5759a;border-radius:6px;background:linear-gradient(145deg,#31513fef,#162b22ec);box-shadow:0 5px 16px #0008;color:#f9e4ad;font-size:11px;font-weight:900}
+.uiBtn:active,.act:active,.pouchSlot:active{filter:brightness(1.4)}
+.bottom{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:flex-end;justify-content:space-between;padding:8px 12px calc(9px + env(safe-area-inset-bottom));pointer-events:none}
+.joy{position:relative;width:118px;height:118px;border-radius:50%;border:3px solid #a4b79a87;background:radial-gradient(circle,#395e48a2,#0b2019d8);box-shadow:inset 0 0 28px #081910,0 5px 15px #0005;pointer-events:auto;touch-action:none}
+.stick{position:absolute;left:32px;top:32px;width:48px;height:48px;border-radius:50%;border:2px solid #e4edbaca;background:radial-gradient(circle,#bfdaa9c4,#54876cc7);transform:translate(0,0)}
+.actions{display:grid;grid-template-columns:repeat(3,60px);grid-auto-rows:60px;gap:6px;pointer-events:auto}
+.act{width:60px;height:60px;padding:4px;border:2px solid #d0af72b3;border-radius:10px;background:linear-gradient(145deg,#714b33ee,#a65434ee);box-shadow:0 4px 13px #000b;color:#fff1d2;font-size:12px;font-weight:900;text-shadow:0 1px 2px #000}
+.act.alt{background:linear-gradient(145deg,#274b38,#508264)}
+.act.skill{background:linear-gradient(145deg,#38465c,#6a6485)}
+.act.skill strong{display:block;font-size:17px;color:#ece3ff}
+.act.skill small{display:block;margin-top:2px;font-size:9px}
+.act.dodge{background:linear-gradient(145deg,#5c572f,#9a8040)}
+.act.cooling{opacity:.5;filter:grayscale(.7)}
+#survivalDisk{position:absolute;left:15px;bottom:calc(142px + env(safe-area-inset-bottom));z-index:6;width:88px;height:88px;pointer-events:none;filter:drop-shadow(0 4px 10px #0009)}
+.survivalOuter{width:100%;height:100%;padding:5px;border-radius:50%;border:3px solid #c8b584;background:conic-gradient(#dabb73 0 32%,#48795f 32% 66%,#a74338 66% 100%)}
+.survivalInner{display:flex;width:100%;height:100%;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;border:5px solid #233e30;background:#122c22ef;color:#f9e0a5}
+.survivalInner strong{font-size:13px}.survivalInner small{font-size:9px}
+#quickPouch{position:absolute;z-index:7;left:50%;bottom:calc(19px + env(safe-area-inset-bottom));display:flex;gap:6px;transform:translateX(-50%);pointer-events:auto}
+.pouchSlot{min-width:58px;min-height:51px;border:2px solid #cab384ab;border-radius:7px;background:linear-gradient(140deg,#3a503eea,#1a3024ee);box-shadow:inset 0 0 0 1px #163324,0 4px 16px #020a0ad1;color:#ffedc0;font-size:12px;font-weight:900}
+.pouchSlot small{display:block;margin-top:2px;font-size:9px;color:#e1d2ad;white-space:nowrap}
+.pouchSlot.chosen{border-color:#ffe1a3;background:linear-gradient(145deg,#645536,#3b523e);box-shadow:0 0 0 1px #f7d69379,0 4px 16px #0009}
+.modalWrap{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:14px;background:#08160fdb;backdrop-filter:blur(8px)}
+.modalWrap.show{display:flex}
+.modal{width:min(96vw,820px);max-height:calc(100dvh - 38px);overflow:auto;padding:clamp(12px,2.5vw,24px);border:4px solid #b7a071;border-radius:9px;background:linear-gradient(145deg,#314632,#183326 45%,#13231c);box-shadow:inset 0 0 0 2px #182d21,0 24px 70px #000b;color:#fff0d0}
+.modal h2{margin:0 0 12px;padding-bottom:10px;border-bottom:2px solid #b9a67e;color:#f1ce87;font-size:24px}
+.sub{font-size:12px;color:#e1d3b6;line-height:1.5;margin-bottom:12px}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.item{padding:12px;border:2px solid #927d57b3;border-radius:5px;background:linear-gradient(145deg,#2f4532,#16291f);color:#f8eed6}
+.itemTop{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.item b{font-size:14px}.item small{display:block;margin-top:6px;color:#d0c7ae;font-size:11px;line-height:1.4}
+.item button,.close{width:100%;margin-top:9px;padding:10px;border:1px solid #d5ac6a;border-radius:4px;background:#d8b679;color:#2e281e;font-size:12px;font-weight:900}
+.item button:disabled{opacity:.45}.eq{color:#f3d186;font-size:11px;font-weight:900}
+.locked{opacity:.64}.close{margin-top:14px}.death{text-align:center}.death h1{font-size:30px;margin:5px 0 9px}
+#inventoryList>.item:first-child,#skillsList>.item:first-child{grid-column:span 2;border-color:#e4c183}
+@media(max-width:760px){
+ .hudRow{max-width:calc(100vw - 70px)}.pill{padding:4px 6px;font-size:9px}.pill b{font-size:11px}
+ #chapterPanel{left:7px;top:calc(114px + env(safe-area-inset-top));max-width:160px;padding:7px 8px}
+ .fieldHeading{font-size:10px}#objective{font-size:10px}
+ #combatBar{width:39vw;top:calc(72px + env(safe-area-inset-top))}
+ #topRightHint{display:none}
+ .side{right:7px;bottom:calc(158px + env(safe-area-inset-bottom));gap:4px}
+ .uiBtn{min-width:57px;padding:7px 5px;font-size:10px}
+ .bottom{padding-left:6px;padding-right:7px}
+ .joy{width:98px;height:98px}.stick{left:27px;top:27px;width:40px;height:40px}
+ .actions{grid-template-columns:repeat(3,50px);grid-auto-rows:50px;gap:4px}
+ .act{width:50px;height:50px;font-size:10px}.act.skill strong{font-size:13px}.act.skill small{font-size:8px}
+ #survivalDisk{left:7px;bottom:calc(116px + env(safe-area-inset-bottom));width:70px;height:70px}
+ .survivalInner strong{font-size:10px}.survivalInner small{font-size:8px}
+ #quickPouch{bottom:calc(118px + env(safe-area-inset-bottom));gap:3px}
+ .pouchSlot{min-width:46px;min-height:37px;font-size:10px}.pouchSlot small{font-size:8px}
+ .list{grid-template-columns:1fr}.item{padding:10px}#inventoryList>.item:first-child,#skillsList>.item:first-child{grid-column:auto}
+ .modal{padding:13px;border-width:3px}
+}
+@media(max-width:370px){.actions{grid-template-columns:repeat(3,43px);grid-auto-rows:43px}.act{width:43px;height:43px}.joy{width:89px;height:89px}.stick{left:25px;top:25px;width:33px;height:33px}.pouchSlot{min-width:42px}.side{bottom:calc(142px + env(safe-area-inset-bottom))}}
+@media(prefers-reduced-motion:reduce){.track i,.notice{transition:none}}
 
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -91,7 +114,13 @@ body.combat #combatBar{display:block}
   <div id="notice" class="notice"></div>
 </div>
 
-<div id="chapterPanel"><div class="fieldHeading">탐험 일지 <span id="zoneLabel">이끼 언덕</span></div><div id="objective">작은 자의 생존 · 자원을 모으자.</div></div><div id="combatBar"><b id="targetName">곤충</b><div class="track"><i id="targetHp"></i></div></div><div id="topRightHint">WASD 이동 · Q 찌르기 · E 회전 · Shift 회피</div><div class="side">
+<div id="chapterPanel"><div class="fieldHeading">탐험 일지 <span id="zoneLabel">이끼 언덕</span></div><div id="objective">작은 자의 생존 · 자원을 모으자.</div></div><div id="combatBar"><b id="targetName">곤충</b><div class="track"><i id="targetHp"></i></div></div><div id="topRightHint">WASD 이동 · Q 찌르기 · E 회전 · Shift 회피</div><div id="survivalDisk" aria-hidden="true"><div class="survivalOuter"><div class="survivalInner"><strong id="survivalHp">100 HP</strong><small id="survivalDay">낮 · 1일</small></div></div></div>
+<div id="quickPouch" aria-label="빠른 장비">
+<button id="slotWeapon" class="pouchSlot chosen" type="button">⚔<small id="quickWeapon">맨손</small></button>
+<button id="slotArmor" class="pouchSlot" type="button">⬡<small id="quickArmor">방어구</small></button>
+<button id="slotCraft" class="pouchSlot" type="button">✤<small>제작</small></button>
+</div>
+<div class="side">
   <button id="inventoryBtn" class="uiBtn">가방</button>
   <button id="craftBtn" class="uiBtn">제작</button><button id="skillsBtn" class="uiBtn">스킬</button>
   <button id="saveBtn" class="uiBtn">저장</button>
@@ -313,6 +342,11 @@ function updateHud(){
   $('staminaText').textContent=Math.ceil(state.stamina);$('staminaBar').style.width=state.stamina+'%';
   for(const id of ['heavy','whirl','dodge'])$(id+'Btn').classList.toggle('cooling',cooldown[id]>0);
   $('objective').textContent=objectiveText();
+  $('survivalHp').textContent=Math.ceil(state.hp)+' HP';
+  $('survivalDay').textContent=(state.time/DAY_SEC>.68?'밤':'낮')+' · '+state.day+'일';
+  $('quickWeapon').textContent=WEAPONS[state.weapon].name;
+  $('quickArmor').textContent=state.armor==='none'?'방어구':ARMORS[state.armor].name;
+  $('zoneLabel').textContent=Math.hypot(player.x-ANT_HILL.x,player.y-ANT_HILL.y)<260?'개미왕국':Math.hypot(player.x-GRAVEL_ZONE.x,player.y-GRAVEL_ZONE.y)<GRAVEL_ZONE.rx?'자갈 협곡':Math.hypot(player.x-CAMP.x,player.y-CAMP.y)<160?'시작 야영지':'이끼 초원';
 }
 function openInventory(){
   const rows=[];
@@ -758,6 +792,9 @@ $('heavyBtn').addEventListener('pointerdown',()=>skillAttack('heavy'));
 $('whirlBtn').addEventListener('pointerdown',()=>skillAttack('whirl'));
 $('dodgeBtn').addEventListener('pointerdown',dodge);
 $('skillsBtn').addEventListener('click',openSkills);
+$('slotWeapon').addEventListener('click',openInventory);
+$('slotArmor').addEventListener('click',openInventory);
+$('slotCraft').addEventListener('click',openCraft);
 $('inventoryBtn').addEventListener('click',openInventory);
 $('craftBtn').addEventListener('click',openCraft);
 $('saveBtn').addEventListener('click',()=>save(true));
