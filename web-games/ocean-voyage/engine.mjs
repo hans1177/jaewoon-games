@@ -52,7 +52,7 @@ const copy=s=>structuredClone(s);
 export function newGame(){
  return {
   version:1,day:1,elapsed:0,coins:3400,discovered:['dawn'],visits:{dawn:1},homePort:'dawn',captain:'엘리너 그레이',crewRoster:['eleanor','thomas'],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
-  ship:{x:0,z:10,heading:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0},
+  ship:{x:0,z:10,heading:0,velocity:0,rudder:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0},
   fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
   route:[],destination:null,pirates:[
    {id:1,x:63,z:4,heading:1.7,hull:62,maxHull:62,cooldown:4},
