@@ -30,8 +30,23 @@ export function repairStaleAutonomousQueue(queueInput={},currentMainSha=''){
   const cancelled=[];
   const activeFingerprints=new Set();
   const tasks=old.map(task=>{
-    // Also collapse exact legacy auto duplicates already in the persisted queue.
-    // No owner, dependency-bearing, or active running work is deleted.
+    // [최신 main 우선] 정확히 SHA가 다른 자율 queued 작업을 먼저 취소한다.
+    // 취소된 이전 작업은 중복 fingerprint 자리를 점유할 수 없으므로 정상 신규 작업을 보호한다.
+    const mark=(task.evidence||[]).map(clean)
+      .find(value=>value.startsWith('autonomous-pinned-main-sha:'));
+    const base=mark?.slice('autonomous-pinned-main-sha:'.length);
+    const stalePinned=automatic(task)&&lower(task.status)==='queued'&&sha40(currentMainSha)
+      &&sha40(base)&&base.toLowerCase()!==currentMainSha.toLowerCase();
+    if(stalePinned){
+      cancelled.push(clean(task.id));
+      return {...task,status:'cancelled',blocker:'SUPERSEDED_BY_MAIN_REVISION',
+        lastOutcome:'STALE_AUTONOMOUS_REVISION_CANCELLED',reservationId:null,
+        reservationRunId:null,reservedAt:null,
+        evidence:unique([...(task.evidence||[]),'auto-cleanup:exact-pinned-revision-superseded',
+          'superseded-main-sha:'+clean(currentMainSha)])};
+    }
+    // 취소되지 않은 기존 queued/running 작업의 동일 파일·목표 중복만 제거한다.
+    // owner, dependency-bearing, running work is not deleted.
     const files=[...new Set((task.responsibleFiles||[]).map(clean).filter(Boolean))].sort();
     const fingerprint=files.length&&automatic(task)&&active(task)
       ?JSON.stringify([clean(task.gameId),clean(task.target),clean(task.sourceRoot),
@@ -44,19 +59,7 @@ export function repairStaleAutonomousQueue(queueInput={},currentMainSha=''){
         evidence:unique([...(task.evidence||[]),'auto-cleanup:duplicate-existing-file-goal'])};
     }
     if(fingerprint)activeFingerprints.add(fingerprint);
-    // A task must explicitly opt into revision-pinned work to be auto-superseded.
-    // Running jobs, owner tasks and tasks without exact revision proof are preserved.
-    const mark=(task.evidence||[]).map(clean)
-      .find(value=>value.startsWith('autonomous-pinned-main-sha:'));
-    const base=mark?.slice('autonomous-pinned-main-sha:'.length);
-    if(!automatic(task)||lower(task.status)!=='queued'||!sha40(currentMainSha)
-      ||!sha40(base)||base.toLowerCase()===currentMainSha.toLowerCase())return task;
-    cancelled.push(clean(task.id));
-    return {...task,status:'cancelled',blocker:'SUPERSEDED_BY_MAIN_REVISION',
-      lastOutcome:'STALE_AUTONOMOUS_REVISION_CANCELLED',reservationId:null,
-      reservationRunId:null,reservedAt:null,
-      evidence:unique([...(task.evidence||[]),'auto-cleanup:exact-pinned-revision-superseded',
-        'superseded-main-sha:'+clean(currentMainSha)])};
+    return task;
   });
   return {queue:{...queueInput,tasks},cancelled};
 }
