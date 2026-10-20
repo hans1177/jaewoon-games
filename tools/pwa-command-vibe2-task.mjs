@@ -46,7 +46,7 @@ export function validateLocalWebOwnerEvent(event,{actor='',repository=''}={}){
      clean(p.kind)!=='directive'||
      p.autoDeployAfterVerifiedQa!==true||
      !clean(p.body)||clean(p.body).length>2000)throw new Error('LOCAL_OWNER_EVENT_INVALID');
-  return {id:clean(p.id),game_id:clean(p.game_id),platform:'web',kind:'directive',priority:'urgent',body:clean(p.body)};
+  return {id:clean(p.id),game_id:clean(p.game_id),platform:'web',kind:'directive',priority:'urgent',body:clean(p.body),source:'LOCAL_VIBE_WEB_CHAT'};
 }
 function ownerContext(task){const rows=Array.isArray(task?.ownerMessages)?task.ownerMessages:[],messages=rows.map(row=>clean(row?.body)).filter(Boolean);return messages.length?`\n\n추가 지시:\n${messages.map(text=>`- ${text}`).join('\n')}`:'';}
 export function buildPwaVibeTask(task,context={}){
@@ -54,7 +54,7 @@ export function buildPwaVibeTask(task,context={}){
   const body=clean(task?.body);if(!body)throw new Error('PWA 작업 내용 비어 있음');
   const resolved=resolveProject(task,context),kind=clean(task.kind)==='feedback'?'feedback':'directive',originalPriority=['normal','priority','urgent'].includes(clean(task.priority))?clean(task.priority):'normal';
   const goal=['[OWNER_IMMEDIATE_PWA]',`게임: ${resolved.game.name||resolved.game.id}`,`사용자 ${kind==='feedback'?'플레이 피드백':'직접 지시'}: ${body}${ownerContext(task)}`,'최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.','기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.','모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.'].join('\n');
-  return {id:`pwa-${taskId}`,gameId:resolved.game.id,target:resolved.target,department:'development',type:'implementation',goal,responsibleFiles:[],dependencies:[],priority:'owner-immediate',releaseState:executionReleaseState(resolved.game),status:'queued',retries:0,maxRetries:2,ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,evidence:[`pwa-task:${taskId}`,`pwa-kind:${kind}`,`pwa-priority:${originalPriority}`,`actual-release-state:${resolved.actualReleaseState}`,`source-root:${resolved.sourceRoot}`,'owner-auto-deploy-authorization','verified-qa-required'],companyContext:{stageId:'owner-immediate',role:'director',assignmentAuthority:'owner-directive',sourceRef:`pwa-task:${taskId}`,reviewRequired:true}};
+  return {id:`pwa-${taskId}`,gameId:resolved.game.id,target:resolved.target,department:'development',type:'implementation',goal,responsibleFiles:[],dependencies:[],priority:'owner-immediate',releaseState:executionReleaseState(resolved.game),status:'queued',retries:0,maxRetries:2,ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,evidence:[`pwa-task:${taskId}`,`pwa-kind:${kind}`,`pwa-priority:${originalPriority}`,`actual-release-state:${resolved.actualReleaseState}`,`source-root:${resolved.sourceRoot}`,'owner-auto-deploy-authorization','verified-qa-required',...(task.source==='LOCAL_VIBE_WEB_CHAT'?['vibe-local-web-owner-directive']:[])],companyContext:{stageId:'owner-immediate',role:'director',assignmentAuthority:'owner-directive',sourceRef:`pwa-task:${taskId}`,reviewRequired:true}};
 }
 export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
   const next=buildPwaVibeTask(task,{catalog,status,repoRoot,filesystem}),tasks=Array.isArray(queue.tasks)?queue.tasks:[];
@@ -63,7 +63,7 @@ export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=proce
 }
 function pwaTaskId(row={}){const match=clean(row.id).match(/^pwa-([0-9a-f-]{36})$/i);return match?match[1]:null;}
 function mapStatus(row={}){const status=clean(row.status).toLowerCase(),blocker=clean(row.blocker).toLowerCase();if(status==='queued')return'working';if(status==='running')return blocker.includes('candidate-awaiting-qa-and-deployment')?'testing':'working';if(status==='blocked')return'needs_input';if(status==='done')return'done';if(status==='failed')return'failed';if(status==='cancelled')return'cancelled';return null;}
-export function buildSyncPayload(queue={}){const updates=[];for(const row of(Array.isArray(queue.tasks)?queue.tasks:[])){const taskId=pwaTaskId(row),status=mapStatus(row);if(taskId&&status)updates.push({taskId,status,blocker:clean(row.blocker)||null});}return {action:'sync',updates};}
+export function buildSyncPayload(queue={}){const updates=[];for(const row of(Array.isArray(queue.tasks)?queue.tasks:[])){if((row.evidence||[]).includes('vibe-local-web-owner-directive'))continue;const taskId=pwaTaskId(row),status=mapStatus(row);if(taskId&&status)updates.push({taskId,status,blocker:clean(row.blocker)||null});}return {action:'sync',updates};}
 
 function main(){
   const [mode='']=process.argv.slice(2).filter(arg=>!arg.startsWith('--')),args=parseArgs();
