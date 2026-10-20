@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g39-9ce09575e625",
-  "directiveFingerprint": "9ce09575e625314784219d021260b5b09786930f6ae5470af7160bb2029ef086",
-  "previousDirectiveFingerprint": "217013768f59261618241b21d77e9dd24569a64f54d62ba5f2ce95c46ebf92bb",
-  "forbiddenRepeatFingerprint": "217013768f59261618241b21d77e9dd24569a64f54d62ba5f2ce95c46ebf92bb",
+  "directiveId": "amusement-tycoon-build-up-g40-49c59d6490ef",
+  "directiveFingerprint": "49c59d6490ef395aac8e3a9986b38c085f2cf9402751edda71592bc6f4db5b80",
+  "previousDirectiveFingerprint": "9ce09575e625314784219d021260b5b09786930f6ae5470af7160bb2029ef086",
+  "forbiddenRepeatFingerprint": "9ce09575e625314784219d021260b5b09786930f6ae5470af7160bb2029ef086",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 39,
+  "generation": 40,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+  "sourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
   "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -294,7 +294,7 @@
           "손님과 직원 운영의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+        "sourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -342,7 +342,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
-    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+    "sourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -829,7 +829,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+    "sourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4347,14 +4347,14 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 99,
-      "progression": 460,
+      "combat": 124,
+      "progression": 439,
       "ai": 47,
       "save": 88,
       "multiplayer": 24,
       "animation": 45,
-      "motionStates": 645,
-      "gameFeel": 35,
+      "motionStates": 660,
+      "gameFeel": 46,
       "vfx": 43,
       "camera": 33,
       "audio": 4,
@@ -4363,8 +4363,8 @@
       "uiFlow": 1119,
       "entryFlow": 32,
       "loadingFlow": 0,
-      "input": 120,
-      "map": 220,
+      "input": 118,
+      "map": 218,
       "landmark": 56,
       "interaction": 271,
       "inventory": 241,
@@ -4372,8 +4372,8 @@
       "settings": 25,
       "feedback": 99,
       "session": 47,
-      "content": 455,
-      "choice": 1666,
+      "content": 453,
+      "choice": 1664,
       "connection": 8,
       "performance": 27,
       "lighting": 63,
@@ -4388,7 +4388,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/shared/GameConfig.luau",
-        "score": 281
+        "score": 305
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
@@ -4396,7 +4396,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "score": 140
+        "score": 141
       },
       {
         "file": "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
@@ -4801,9 +4801,9 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 38,
-    "previousSourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
-    "currentSourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+    "previousGeneration": 39,
+    "previousSourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+    "currentSourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5960,7 +5960,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 394271,
+        "sourceBytes": 394102,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5993,8 +5993,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 5,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=2.",
+    "themeDepth": 6,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6002,7 +6002,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 5,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 6,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
       },
@@ -6015,7 +6015,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6047,7 +6047,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 110,
+        "score": 92,
         "gapDomains": []
       },
       {
@@ -6161,11 +6161,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 39,
-    "previousGeneration": 38,
+    "generation": 40,
+    "previousGeneration": 39,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
-    "priorSourceFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
+    "sourceFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
+    "priorSourceFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6184,7 +6184,7 @@
     "version": 1,
     "gameId": "amusement-tycoon",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+    "sourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6347,8 +6347,7 @@
         "id": "SHOP",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
-          "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+          "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6669,8 +6668,7 @@
         "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
-        "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau",
-        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+        "roblox-games/amusement-tycoon/shared/RobloxCommonUI.luau"
       ]
     },
     "uiModeSelection": {
@@ -7074,7 +7072,7 @@
     "gameId": "amusement-tycoon",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+    "sourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7903,12 +7901,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+      "sourceTreeFingerprint": "18049c3d4f429c2c67752afd4f1ab604081c7bb6f3d38b34d58c2e4b4b6fbd92",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -7923,8 +7921,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7967,7 +7965,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 40,
+    "nextGeneration": 41,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8029,5 +8027,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-20T03:28:18.809Z"
+  "generatedAt": "2026-10-20T21:00:47.545Z"
 }
