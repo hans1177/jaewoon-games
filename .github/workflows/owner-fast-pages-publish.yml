@@ -1,0 +1,101 @@
+# Owner requested direct restoration of a game already committed to gh-pages.
+# Isolated from the heavy main QA/development queue, but still checks every route.
+name: Owner Fast Pages Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-fast-pages-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: owner-fast-pages-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout complete existing published branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify owner game and protect all existing published routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s web-games/ocean-voyage/index.html
+          test -s web-games/ocean-voyage/main.mjs
+          test -s web-games/ocean-voyage/engine.mjs
+          test -s web-games/ocean-voyage/ocean3d.mjs
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const manifest=JSON.parse(fs.readFileSync('web-games/publish-manifest.json','utf8'));
+          if(!/^[0-9a-f]{40}$/.test(manifest.sourceSha||''))throw Error('PAGES_SOURCE_REVISION_UNVERIFIED');
+          if(!manifest.routes.includes('web-games/ocean-voyage/'))throw Error('OCEAN_VOYAGE_ROUTE_NOT_REGISTERED');
+          for(const route of manifest.routes){
+            if(!/^web-games\/[a-z0-9-]+\/$/.test(route))throw Error('INVALID_GAME_ROUTE:'+route);
+            if(!fs.existsSync(path.join(route,'index.html')))throw Error('PREVIOUS_GAME_ROUTE_MISSING:'+route);
+          }
+          for(const name of ['ship-medium','ship-small','ship-large','ship-pirate-medium',
+            'ship-pirate-small','structure-platform-dock','structure','palm-detailed-straight',
+            'patch-sand','cannon','chest']){
+            const file=path.join('web-games/ocean-voyage/assets',name+'.glb');
+            if(!fs.existsSync(file)||fs.statSync(file).size<10000)throw Error('OCEAN_MODEL_MISSING:'+file);
+          }
+          console.log('OWNER_PAGES_PRESERVE_ALL_ROUTES='+manifest.routes.length);
+          console.log('OWNER_OCEAN_VOYAGE_ASSETS=PASS');
+          console.log('OWNER_PAGES_SOURCE_SHA='+manifest.sourceSha);
+          NODE
+
+      - name: Prepare full existing site without rewriting game sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/owner-pages-site"
+          rsync -a --exclude='.git' --exclude='.github' ./ "$RUNNER_TEMP/owner-pages-site/"
+          test -s "$RUNNER_TEMP/owner-pages-site/web-games/ocean-voyage/index.html"
+          test -s "$RUNNER_TEMP/owner-pages-site/index.html"
+
+      - uses: actions/configure-pages@v5
+
+      - name: Upload all retained games as Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/owner-pages-site
+
+      - name: Deploy owner site to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verify public owner game after deployment
+        shell: bash
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          root="${PAGES_URL%/}/"
+          game="${root}web-games/ocean-voyage/"
+          # Static and module/GLB proof is a prerequisite, not a substitute for full browser QA.
+          curl -fsSL --retry 5 --retry-delay 5 --max-time 30 "$game" -o /tmp/ocean-voyage-live.html
+          grep -q '푸른 항로' /tmp/ocean-voyage-live.html
+          grep -q 'main.mjs' /tmp/ocean-voyage-live.html
+          curl -fsSL --retry 5 --retry-delay 5 --max-time 30 "${game}main.mjs" -o /tmp/ocean-voyage-main-live.mjs
+          grep -q 'createOcean3D' /tmp/ocean-voyage-main-live.mjs
+          curl -fsSL --retry 5 --retry-delay 5 --max-time 30 "${game}assets/ship-medium.glb" -o /tmp/ocean-voyage-ship-live.glb
+          test "$(wc -c < /tmp/ocean-voyage-ship-live.glb)" -gt 10000
+          echo "OWNER_OCEAN_VOYAGE_PUBLISHED=PASS"
+          echo "OWNER_OCEAN_VOYAGE_URL=$game"
