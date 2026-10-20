@@ -195,7 +195,7 @@ joystick.addEventListener('pointermove',e=>{if(pointer===e.pointerId){e.preventD
 for(const k of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(k,()=>{pointer=null;resetStick();});
 const music=$('sea-music'),musicToggle=$('music-toggle');
 music.volume=.27;
-const cc0Tracks={sea:'https://opengameart.org/sites/default/files/pirate_ship_in_game.ogg',harbor:'https://opengameart.org/sites/default/files/crowded_pub_2025.ogg'};
+const cc0Tracks={sea:'./assets/cc0/music/pirate_ship_in_game.ogg',harbor:'https://opengameart.org/sites/default/files/crowded_pub_2025.ogg'};
 let currentMusicScene='sea';
 function switchMusicScene(scene){
  if(!cc0Tracks[scene]||currentMusicScene===scene)return;
