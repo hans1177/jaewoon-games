@@ -8103,7 +8103,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T09:06:54.251Z",
+      "updatedAt": "2026-10-20T09:15:47.460Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8119,16 +8119,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
       "robloxBuildArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-      "robloxBuildPassedAt": "2026-10-20T09:00:50.622Z",
+      "robloxBuildPassedAt": "2026-10-20T09:15:47.460Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T09:00:50.622Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T09:15:47.460Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "survival2",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T08:31:52.586Z",
+        "checkedAt": "2026-10-20T08:37:02.766Z",
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "secondaryOwnerFocus": false,
@@ -8167,15 +8167,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in the build evidence."
+            "note": "Package build evidence shows failures in web and music validations, which contradicts the requirements for starting runtime testing."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -36626,7 +36624,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T09:15:25.300Z",
+  "updatedAt": "2026-10-20T09:15:47.460Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
