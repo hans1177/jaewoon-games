@@ -2075,8 +2075,8 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-// 메인 · 같은 리비전의 아직 시작하지 않은 게임 호출만 기존 큐에 유지한다.
-test('24H preplan deduplicates queued same-main production wakes without cross-lane cancellation',()=>{
+// 동일 main·레인 예약 중 대기 상태와 실행 중인 예약 단계만 재사용한다. 예약이 끝나면 다음 생산 웨이브를 막지 않는다.
+test('24H preplan coalesces pending exact-main wakes and only running active reserves without starving independent refill',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   for(const lane of ['game-primary','asset-development']){
   const variable=lane==='game-primary'?'queued_exact_wake':'queued_asset_wake';
@@ -2107,16 +2107,23 @@ test('24H preplan deduplicates queued same-main production wakes without cross-l
   assert.equal(evaluate([wake],main),'751');
   assert.equal(evaluate([{...wake,status:'pending'}],main),'751');
   assert.equal(evaluate([{...wake,status:'requested'}],main),'751');
-  assert.equal(evaluate([{...wake,status:'in_progress'}],main),'');
+  assert.equal(evaluate([{...wake,status:'in_progress'}],main),'751:reserve-check');
   assert.equal(evaluate([{...wake,status:'completed'}],main),'');
   assert.equal(evaluate([{...wake,head_sha:previous}],main),'');
   assert.equal(evaluate([{...wake,event:'push'}],main),'');
   assert.equal(evaluate([{...wake,path:'.github/workflows/vibe2-recovery-fast.yml'}],main),'');
   assert.equal(evaluate([{...wake,display_title:'Vibe2 Continuous Core · workflow_dispatch · '+(lane==='game-primary'?'asset-development':'game-primary')}],main),'');
   assert.equal(evaluate([{...wake,head_sha:previous},wake],main),'751');
+  assert.equal(evaluate([{...wake,status:'in_progress'},wake],main),'751','queued reservation must beat a running candidate');
+  assert.equal(evaluate([{...wake,head_sha:previous,status:'in_progress'}],main),'');
+  assert.equal(evaluate([{...wake,status:'in_progress',display_title:'Vibe2 Continuous Core · workflow_dispatch · '+(lane==='game-primary'?'asset-development':'game-primary')}],main),'');
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
+  assert.match(workflow,/actions\/runs\/\$\{wake_id\}\/jobs\?per_page=100/);
+  assert.match(workflow,/reserve_status.*'queued'.*reserve_status.*'in_progress'/);
+  assert.match(workflow,/queued_asset_wake=''/);
+  assert.match(workflow,/queued_exact_wake=''/);
   }
   assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
   const assetStart=workflow.indexOf('          queued_asset_wake=');
