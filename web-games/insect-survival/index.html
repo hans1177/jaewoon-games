@@ -35,7 +35,42 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .close{width:100%;margin-top:11px;border:0;border-radius:11px;padding:11px;background:#e5f1e7;color:#102016;font-weight:900}
 .death{text-align:center}.death h1{margin:0 0 8px;font-size:30px}
 @media(min-width:760px){.joy{width:132px;height:132px}.stick{left:39px;top:39px}.actions{grid-template-columns:82px 82px}.act{width:82px;height:82px}}
+
+/* Grounded-inspired micro-world + Diablo-style expedition HUD */
+:root{--leaf:#a7d8a4;--gold:#d6ad68;--bark:#271c15}
+body,#game{background:#152019}
+.pill{border-radius:5px;border-color:#bba57676;background:linear-gradient(150deg,#16221dec,#182b23d8);color:#f0e7d4;box-shadow:0 4px 17px #0007}
+.pill b{color:#fff1d0}.track i{background:linear-gradient(90deg,#9d3031,#e15d54)}.track.energy i{background:linear-gradient(90deg,#478c78,#a5d9b7)}
+.notice{border-radius:5px;border-color:#c4ac796a;background:#192920ed;color:#fae5bb}
+.side{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));right:11px}
+.uiBtn{background:linear-gradient(130deg,#243e33ef,#182720f2);border-radius:5px;border-color:#bca4708b;color:#f0dcb6}
+.joy{background:radial-gradient(circle,#152a22b3,#0e1c18db);border-color:#9da78c77;box-shadow:inset 0 0 32px #08120eaa}
+.stick{background:radial-gradient(circle,#b7cfb7c9,#4f8975c4)}
+.actions{grid-template-columns:repeat(3,64px);gap:8px;align-items:end}
+.act{width:64px;height:64px;border:2px solid #e6c38b77;border-radius:9px;background:linear-gradient(140deg,#4c2724f5,#7b372de8);box-shadow:0 6px 19px #040708b8}
+.act.alt{background:linear-gradient(140deg,#1e443c,#376858)}
+.act.skill{background:linear-gradient(145deg,#34405e,#576583);font-size:12px}
+.act.skill strong{display:block;font-size:17px;margin-bottom:2px;color:#d9d4ff}
+.act.skill small{display:block;font-size:9px;color:#ded7d2}
+.act.cooling{opacity:.58;filter:saturate(.35)}
+.act.dodge{background:linear-gradient(130deg,#55532e,#948147)}
+.modalWrap{background:#07110ecb;backdrop-filter:blur(6px)}
+.modal{border:2px solid #a98e6099;border-radius:8px;background:linear-gradient(135deg,#1e2d25,#111d19);color:#f2e6cc;max-width:530px}
+.modal h2{color:#f0d6a1}
+.item{border:1px solid #92805e7a;border-radius:5px;background:linear-gradient(155deg,#16251d,#202920);color:#f5ead5}
+.item small,.sub{color:#c5bd9f}.item button,.close{border-radius:4px;background:#dfbe81;color:#2d2418}.eq{color:#e6ce87}
+.fieldHeading{font-size:10px;font-weight:900;letter-spacing:1px;color:#e1bb7c;margin-bottom:6px}
+#objective{font-size:11px;font-weight:750;line-height:1.5;color:#f1e5ce}
+#zoneLabel{font-size:12px;color:#dbbb84}
+#chapterPanel{position:absolute;left:13px;top:calc(114px + env(safe-area-inset-top));z-index:4;max-width:340px;background:linear-gradient(140deg,#17251edc,#263629b0);border-left:3px solid #c6aa75;padding:9px 12px;pointer-events:none;box-shadow:0 5px 20px #0005}
+#combatBar{position:absolute;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);width:min(44vw,350px);text-align:center;pointer-events:none;z-index:5;display:none}
+#combatBar b{color:#ecd5ab;font-size:12px;text-shadow:0 2px 3px #000}#combatBar .track{margin-top:5px;height:7px;border:1px solid #ab8b6a;background:#170f0e}#combatBar .track i{display:block;background:linear-gradient(90deg,#ae413d,#ed866e);height:100%;width:100%}
+body.combat #combatBar{display:block}
+#topRightHint{position:absolute;right:13px;top:calc(13px + env(safe-area-inset-top));font-size:10px;color:#e8dcb7cf;z-index:5;pointer-events:none}
+@media(max-width:650px){.hudRow{max-width:calc(100vw - 65px)}#chapterPanel{left:8px;top:calc(117px + env(safe-area-inset-top));max-width:185px;padding:7px 9px}#objective{font-size:10px}.side{bottom:calc(150px + env(safe-area-inset-bottom));right:8px;gap:5px}.uiBtn{padding:8px 5px;font-size:10px}.joy{width:106px;height:106px}.stick{left:29px;top:29px;width:44px;height:44px}.bottom{padding-left:8px;padding-right:8px}.actions{grid-template-columns:repeat(3,49px);gap:5px}.act{width:49px;height:49px;font-size:10px}.act.skill strong{font-size:13px}.act.skill small{font-size:8px}#combatBar{top:calc(68px + env(safe-area-inset-top));width:38vw}#topRightHint{display:none}}
+
 </style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
 <div id="game">
@@ -46,7 +81,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
     <div class="pill"><b id="day">1일</b> <span id="phase">낮</span></div>
     <div class="pill hpPill">HP <b id="hpText">100/100</b><div class="track"><i id="hpBar" style="width:100%"></i></div></div>
     <div class="pill">방어 <b id="defText">0</b></div>
-    <div class="pill">공격 <b id="atkText">10</b></div>
+    <div class="pill">공격 <b id="atkText">10</b></div><div class="pill">Lv.<b id="levelText">1</b> · XP <b id="xpText">0</b></div><div class="pill">기력 <b id="staminaText">100</b><div class="track energy"><i id="staminaBar" style="width:100%"></i></div></div>
   </div>
   <div class="hudRow" style="margin-top:5px">
     <div class="pill">나뭇가지 <b id="branch">0</b></div>
@@ -56,9 +91,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   <div id="notice" class="notice"></div>
 </div>
 
-<div class="side">
+<div id="chapterPanel"><div class="fieldHeading">탐험 일지 <span id="zoneLabel">이끼 언덕</span></div><div id="objective">작은 자의 생존 · 자원을 모으자.</div></div><div id="combatBar"><b id="targetName">곤충</b><div class="track"><i id="targetHp"></i></div></div><div id="topRightHint">WASD 이동 · Q 찌르기 · E 회전 · Shift 회피</div><div class="side">
   <button id="inventoryBtn" class="uiBtn">가방</button>
-  <button id="craftBtn" class="uiBtn">제작</button>
+  <button id="craftBtn" class="uiBtn">제작</button><button id="skillsBtn" class="uiBtn">스킬</button>
   <button id="saveBtn" class="uiBtn">저장</button>
 </div>
 
@@ -66,10 +101,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   <div id="joy" class="joy"><div id="stick" class="stick"></div></div>
   <div class="actions">
     <button id="attackBtn" class="act">공격</button>
-    <button id="interactBtn" class="act alt">채집</button>
+    <button id="interactBtn" class="act alt">채집</button><button id="heavyBtn" class="act skill" title="Q"><strong>Q</strong><small>찌르기</small></button><button id="whirlBtn" class="act skill" title="E"><strong>E</strong><small>회전</small></button><button id="dodgeBtn" class="act dodge" title="Shift">회피</button>
   </div>
 </div>
 
+<div id="skillsModal" class="modalWrap"><div class="modal"><h2>탐험가 특성</h2><div class="sub">곤충을 처치해 경험치를 모으면 새로운 특성 포인트가 열려.</div><div id="skillsList" class="list"></div><button class="close" data-close>닫기</button></div></div>
 <div id="inventoryModal" class="modalWrap">
   <div class="modal">
     <h2>가방</h2>
