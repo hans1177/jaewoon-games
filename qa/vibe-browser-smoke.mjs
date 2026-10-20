@@ -68,8 +68,19 @@ try{
      viewport.name+': actual WebGL game surface is missing');
     await game.locator('#startPlay').click();
     await game.locator('#startNormal').click();
-    await game.waitForFunction(()=>document.body.dataset.spatialDimension==='3d',
-     null,{timeout:60000});
+    try{
+      await game.waitForFunction(()=>document.body.dataset.spatialDimension==='3d',
+       null,{timeout:60000});
+    }catch(error){
+      const diagnostic=await game.evaluate(()=>({
+        dimension:document.body.dataset.spatialDimension,
+        coverage:document.body.dataset.nativeMonsterCoverage,
+        avatarSource:document.body.dataset.nativePlayerSource,
+        display:document.getElementById('world3d')?.hidden
+      })).catch(e=>({evaluationError:String(e)}));
+      console.error('MAGIC_FOREST_NATIVE_3D_START_FAIL '+viewport.name+' '+JSON.stringify({diagnostic,errors:gameErrors}));
+      throw error;
+    }
     const metrics=await game.evaluate(()=>{
      const canvas=document.getElementById('world3d');
      const gl=canvas?.getContext('webgl2');
@@ -90,6 +101,24 @@ try{
     assert.equal(metrics.coverage,'currently-mapped',
      viewport.name+': an invisible original enemy may be present');
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught browser errors before movement');
+    // Real published GLB swap, not a dropdown-only or source-marker check.
+    if(!viewport.mobile){
+      await game.locator('#avatarOpen').click();
+      await game.locator('#avatarModel').selectOption('mage');
+      await game.locator('#avatarSize').selectOption('110');
+      await game.locator('#avatarApply').click();
+      await game.waitForFunction(()=>{
+        const canvas=document.getElementById('world3d');
+        const src=document.body.dataset.nativePlayerSource||'';
+        const save=JSON.parse(localStorage.getItem('jaewoon_fantasy_survival_avatar_v1')||'null');
+        return canvas&&!canvas.hidden&&document.body.dataset.spatialDimension==='3d'
+          &&src.endsWith('/assets/roblox/actors/native/mage.glb')
+          &&save?.model==='mage'&&save?.size===110;
+      },null,{timeout:40000});
+      assert.equal(await game.locator('#avatarPanel').isHidden(),true,'CC0 avatar panel must close after applying');
+      assert.ok(Number(await game.locator('body').getAttribute('data-native-triangles'))>400,
+        'CC0 avatar replacement did not preserve real WebGL geometry');
+    }
     // Test the existing gameplay state authority, not a replacement 3D demo.
     const firstX=metrics.playerX;
     await game.keyboard.down('d');
@@ -110,6 +139,12 @@ try{
     assert.ok(Math.abs(restoredX-Number(lastX))<100,
      viewport.name+': saved player position was not restored');
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught errors in save/reload cycle');
+    if(!viewport.mobile){
+      await game.waitForFunction(()=>document.body.dataset.nativePlayerSource?.endsWith('/assets/roblox/actors/native/mage.glb'),
+        null,{timeout:40000});
+      assert.equal(JSON.parse(await game.evaluate(()=>localStorage.getItem('jaewoon_fantasy_survival_avatar_v1'))).size,110,
+        'CC0 visual size does not persist after reload');
+    }
     console.log('MAGIC_FOREST_NATIVE_3D_LIVE_PASS '+viewport.name+' '+
      JSON.stringify({sourceSha:requiredRevision,metrics,savedPlayerX:restoredX}));
    }finally{await game.close()}
