@@ -65,7 +65,7 @@ test('port discoverability, provisions and periodic economy remain stable',()=>{
  assert.ok(s.day>day);assert.ok(s.ship.provisions<80);
 });
 test('broadside fire needs lateral alignment and reload; pirates damage only near',()=>{
- const s=newGame();s.ship.x=63;s.ship.z=0;s.ship.heading=0;
+ const s=newGame();s.ship.x=51;s.ship.z=4;s.ship.heading=0;
  const shot=fireCannons(s);
  assert.equal(shot.ok,true);
  assert.ok(shot.state.pirates[0].hull<s.pirates[0].hull);
