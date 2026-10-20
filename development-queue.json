@@ -6361,7 +6361,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T14:01:02.816Z",
+      "updatedAt": "2026-10-20T14:06:11.544Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6379,17 +6379,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
       "robloxBuildArtifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
-      "robloxBuildPassedAt": "2026-10-20T14:01:02.816Z",
+      "robloxBuildPassedAt": "2026-10-20T14:06:11.544Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T14:01:02.816Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T14:06:11.544Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "chess-battle",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T13:32:00.460Z",
+        "checkedAt": "2026-10-20T13:42:28.436Z",
         "sourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
         "artifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
         "secondaryOwnerFocus": false,
@@ -6428,13 +6428,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web validation and music validation have not passed according to BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because several required validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -33524,7 +33526,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T14:05:48.618Z",
+  "updatedAt": "2026-10-20T14:06:11.544Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
