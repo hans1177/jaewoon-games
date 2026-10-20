@@ -19,6 +19,22 @@ test('unchanged HTML and Pages project prefix normalization preserve original ow
   assert.deepEqual(q.unexpectedScripts,[]);
 });
 
+test('autonomous Vibe can author unlimited legitimate gameplay UI in canonical game source',()=>{
+  const generated=ownerGame.replace('</body>',
+    '<button id="trade">교역</button><button id="shipyard">조선소</button>'+
+    '<button id="inventory">인벤토리</button>'+
+    '<script src="./gameplay-features.mjs"></script></body>');
+  const q=inspectPublicGameUi({
+    sourceHtml:generated,publishedHtml:generated,gameId:'ocean-voyage'
+  });
+  assert.equal(q.passed,true,'intentional autonomous development must not be blocked');
+  assert.equal(q.published.buttonCount,4);
+  const illegal=inspectPublicGameUi({sourceHtml:generated,
+    publishedHtml:generated.replace('</body>',
+      '<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script></body>')});
+  assert.equal(illegal.passed,false,'only deployment-time extra development UI is blocked');
+});
+
 test('detect asset launcher introduced by Vibe publishing instead of blaming original ship GLB',()=>{
   const published=ownerGame.replace('</body>',
     '<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script></body>');
