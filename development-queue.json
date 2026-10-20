@@ -13580,7 +13580,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T12:03:35.369Z",
+      "updatedAt": "2026-10-20T12:05:43.529Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -14107,13 +14107,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:05:43.529Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "core-clash-4v4",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:35:39.657Z",
+        "checkedAt": "2026-10-20T11:40:09.110Z",
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "secondaryOwnerFocus": false,
@@ -14156,7 +14156,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package build evidence contains failed validation flags for web, music, nativeWeb, and nativeMusic."
+            "note": "Package cannot start runtime testing because required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) have failed in the build evidence."
           }
         ],
         "blockers": [
@@ -14199,7 +14199,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
-      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
+      "robloxBuildPassedAt": "2026-10-20T12:05:43.529Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -33470,7 +33470,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T12:04:54.261Z",
+  "updatedAt": "2026-10-20T12:05:43.529Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
