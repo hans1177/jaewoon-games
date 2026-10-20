@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';import fs from 'node:fs';import {Jaewoon
 assert.deepEqual(findProtectedVibeChanges('var hp = 100','var hp = 120'),['체력']);assert.equal(isProtectedVibeChangeAuthorized('체력','그래픽 개선'),false);assert.equal(isProtectedVibeChangeAuthorized('체력','체력을 120으로 변경'),true);assert.equal(diffVibeText('a','a').length,0);pass('protected rules');
 // 기존 에셋 선택기는 실제 적용이 아닌 검증 대상 계획만 생성한다.
 const candidatePlan=planAssetApplication({prompt:'검 장비 에셋 연결',manifest:{assets:[
-  {id:'trusted-sword',types:['item'],path:'assets/weapon.glb',license:'CC0',downloaded:true,sourceUrl:'https://example.org/cc0-original-weapon'},
+  {id:'trusted-sword',types:['item'],path:'assets/weapon.glb',license:'CC0',downloaded:true,sourceUrl:'https://example.org/cc0-original-weapon',modified:false,sourceHash:'b'.repeat(64)},
   {id:'trusted-sword',types:['item'],path:'assets/duplicate.glb',license:'CC0',downloaded:true},
   {id:'missing-license',types:['item'],path:'assets/missing.glb',downloaded:true},
   {id:'noncommercial',types:['item'],path:'assets/noncommercial.glb',license:'CC-BY-NC'},
