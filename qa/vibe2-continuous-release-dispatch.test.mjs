@@ -943,12 +943,15 @@ test('every Web F0 candidate validates actual BUILD_UP asset lineage before publ
 
 test('24H asset QA reuse requires successful full Core test job at the identical main SHA',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
-  const match=runner.match(/core_qa_run_id="\\$\\(MAIN_SHA="\\$main_sha" node <<'NODE'\\n([\\s\\S]*?)\\n\\s+NODE/);
-  assert.ok(match,'24H must select an exact-SHA Core QA run before attempting reuse');
+  const marker="core_qa_run_id=\"$(MAIN_SHA=\"$main_sha\" node <<'NODE'\n";
+  const start=runner.indexOf(marker);
+  const end=start<0?-1:runner.indexOf('\n          NODE',start+marker.length);
+  assert.ok(start>=0&&end>start,'24H must select an exact-SHA Core QA run before attempting reuse');
+  const script=runner.slice(start+marker.length,end);
   const candidateSha='b'.repeat(40);
   const selectedRun=workflowRuns=>{
     let observed='';
-    vm.runInNewContext(match[1],{
+    vm.runInNewContext(script,{
       require(name){
         assert.equal(name,'fs');
         return {readFileSync(){return JSON.stringify({workflow_runs:workflowRuns})}};
