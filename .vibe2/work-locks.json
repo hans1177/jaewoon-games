@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-14bj3lj",
+      "worker": "vibe2",
+      "taskId": "star-frontier-studio-evolution-roblox-usability-v3",
+      "gameId": "star-frontier",
+      "files": [
+        "roblox-games/star-frontier/client/Game.client.luau",
+        "roblox-games/star-frontier/shared/GameConfig.luau",
+        "roblox-games/star-frontier/server/Game.server.luau",
+        "roblox-games/star-frontier/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "446b4de08d65ee6d4412766cf5e023763834b79d",
+      "runId": "39362059860",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-20T03:30:06.076Z",
+      "expiresAt": "2026-10-20T04:15:06.076Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:star-frontier-studio-evolution-roblox-usability-v3"
+      ]
+    }
+  ]
 }
