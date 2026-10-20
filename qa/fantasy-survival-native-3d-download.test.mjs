@@ -128,7 +128,8 @@ test('no public game receives automatically injected developer asset inspector b
  const panel=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
  const ocean=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
  assert.doesNotMatch(workflow,/const tag='<script defer src="\/jaewoon-games\/assets\/vibe-runtime-panel\.js"/);
- assert.match(workflow,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
+ assert.doesNotMatch(workflow,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
+ assert.match(workflow,/VIBE_OPTIONAL_DEV_INSPECTOR_CLEANED/);
  assert.match(workflow,/html\.replace\(/);
  assert.match(panel,/script\?\.dataset\?\.vibeOwnerInspector!=='enabled'/);
  assert.doesNotMatch(ocean,/vibe-runtime-panel\.js/);
