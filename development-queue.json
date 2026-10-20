@@ -33285,7 +33285,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:40:04.134Z",
-      "updatedAt": "2026-10-20T08:57:16.089Z",
+      "updatedAt": "2026-10-20T09:00:13.177Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -33303,17 +33303,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
       "robloxBuildArtifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
-      "robloxBuildPassedAt": "2026-10-20T08:35:09.903Z",
+      "robloxBuildPassedAt": "2026-10-20T09:00:13.177Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:35:09.903Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T09:00:13.177Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "crystal-defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:52:31.998Z",
+        "checkedAt": "2026-10-20T08:14:07.165Z",
         "sourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
         "artifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
         "secondaryOwnerFocus": false,
@@ -33352,13 +33352,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "The build evidence contains contradictions where web and music validations have not passed, preventing the package from starting runtime testing."
+            "note": "The build evidence indicates that web and music validation checks (both standard and native) failed, which contradicts the requirements for starting runtime testing."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -36684,7 +36686,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T08:58:34.946Z",
+  "updatedAt": "2026-10-20T09:00:13.177Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
