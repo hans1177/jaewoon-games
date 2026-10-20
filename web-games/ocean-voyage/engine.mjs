@@ -2,14 +2,14 @@
 // 메인: 항해·교역·해전·발견·저장. 렌더러와 DOM에 의존하지 않는다.
 export const SAVE_KEY='jg-ocean-voyage-v1';
 export const PORTS=Object.freeze([
-  {id:'dawn',name:'런던',x:0,z:0,region:'잉글랜드',faction:'영국 왕실166,rates:{grain:.78,wood:.9,spice:1.55,silk:1.35,ore:1.12,tea:1.3}},
-  {id:'coral',name:'플리머스',x:74,z:-45,region:'잉글랜드 남서부',faction:'영국 왕실295,rates:{grain:1.3,wood:1.15,spice:.75,silk:1.42,ore:1.2,tea:1.15}},
-  {id:'north',name:'에든버러',x:-80,z:-76,region:'북해',faction:'영국 왕실435,rates:{grain:1.5,wood:.7,spice:1.7,silk:1.8,ore:.85,tea:1.5}},
-  {id:'gold',name:'리스본',x:138,z:50,region:'이베리아',faction:'포르투갈 상단566,rates:{grain:.95,wood:1.5,spice:1.1,silk:1.12,ore:.78,tea:1.2}},
-  {id:'jade',name:'암스테르담',x:-136,z:52,region:'저지대',faction:'북해 상인연맹700,rates:{grain:1.2,wood:1.24,spice:1.35,silk:.69,ore:1.3,tea:.75}},
-  {id:'storm',name:'브레스트',x:32,z:142,region:'브르타뉴',faction:'프랑스 항구동맹837,rates:{grain:1.65,wood:1.2,spice:.82,silk:1.35,ore:1.65,tea:.8}},
-  {id:'amber',name:'함부르크',x:-118,z:147,region:'북독일',faction:'북해 상인연맹975,rates:{grain:.92,wood:1.32,spice:1.72,silk:1.08,ore:1.2,tea:.76}},
-  {id:'sun',name:'세비야',x:162,z:-137,region:'안달루시아',faction:'이베리아 왕실1114,rates:{grain:1.35,wood:1.3,spice:.65,silk:.9,ore:1.45,tea:1.5}}
+  {id:'dawn',name:'런던',x:0,z:0,region:'잉글랜드',faction:'영국 왕실',rates:{grain:.78,wood:.9,spice:1.55,silk:1.35,ore:1.12,tea:1.3}},
+  {id:'coral',name:'플리머스',x:74,z:-45,region:'잉글랜드 남서부',faction:'영국 왕실',rates:{grain:1.3,wood:1.15,spice:.75,silk:1.42,ore:1.2,tea:1.15}},
+  {id:'north',name:'에든버러',x:-80,z:-76,region:'북해',faction:'영국 왕실',rates:{grain:1.5,wood:.7,spice:1.7,silk:1.8,ore:.85,tea:1.5}},
+  {id:'gold',name:'리스본',x:138,z:50,region:'이베리아',faction:'포르투갈 상단',rates:{grain:.95,wood:1.5,spice:1.1,silk:1.12,ore:.78,tea:1.2}},
+  {id:'jade',name:'암스테르담',x:-136,z:52,region:'저지대',faction:'북해 상인연맹',rates:{grain:1.2,wood:1.24,spice:1.35,silk:.69,ore:1.3,tea:.75}},
+  {id:'storm',name:'브레스트',x:32,z:142,region:'브르타뉴',faction:'프랑스 항구동맹',rates:{grain:1.65,wood:1.2,spice:.82,silk:1.35,ore:1.65,tea:.8}},
+  {id:'amber',name:'함부르크',x:-118,z:147,region:'북독일',faction:'북해 상인연맹',rates:{grain:.92,wood:1.32,spice:1.72,silk:1.08,ore:1.2,tea:.76}},
+  {id:'sun',name:'세비야',x:162,z:-137,region:'안달루시아',faction:'이베리아 왕실',rates:{grain:1.35,wood:1.3,spice:.65,silk:.9,ore:1.45,tea:1.5}}
 ]);
 export const GOODS=Object.freeze([
   {id:'grain',name:'곡물',base:75,weight:1},
