@@ -12181,7 +12181,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T13:39:01.695Z",
+      "updatedAt": "2026-10-20T13:49:30.710Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12708,13 +12708,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T13:39:01.695Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T13:49:30.710Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "zombie-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T13:05:12.021Z",
+        "checkedAt": "2026-10-20T13:17:02.746Z",
         "sourceRevision": "2b68d61ba8ddcaa7632ec8a78c92ca73f8972c31",
         "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
         "secondaryOwnerFocus": false,
@@ -12757,7 +12757,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have not passed in BUILD_EVIDENCE."
+            "note": "Required validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -12800,7 +12800,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-      "robloxBuildPassedAt": "2026-10-20T13:39:01.695Z",
+      "robloxBuildPassedAt": "2026-10-20T13:49:30.710Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -33532,7 +33532,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T13:49:09.748Z",
+  "updatedAt": "2026-10-20T13:49:30.710Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
