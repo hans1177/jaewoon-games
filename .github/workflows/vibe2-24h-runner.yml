@@ -242,16 +242,28 @@ jobs:
             queued_asset_wake="$(CURRENT_MAIN_SHA="$current_main_sha" node <<'NODE'
           const fs=require('fs');
           const snapshot=JSON.parse(fs.readFileSync('/tmp/vibe2-preplan-actions-runs.json','utf8'));
-          const queued=new Set(['queued','pending','requested','in_progress']);
-          const wake=(snapshot.workflow_runs||[]).find(run=>
+          const queued=new Set(['queued','pending','requested']);
+          const matches=(snapshot.workflow_runs||[]).filter(run=>
             run.path==='.github/workflows/vibe2-continuous-core.yml'
             &&run.event==='workflow_dispatch'
             &&run.head_sha===process.env.CURRENT_MAIN_SHA
-            &&queued.has(String(run.status||'').toLowerCase())
             &&run.display_title==='Vibe2 Continuous Core · workflow_dispatch · asset-development');
-          process.stdout.write(wake?String(wake.id):'');
+          const wake=matches.find(run=>queued.has(String(run.status||'').toLowerCase()))
+            ||matches.find(run=>String(run.status||'').toLowerCase()==='in_progress');
+          process.stdout.write(wake?String(wake.id)+(wake.status==='in_progress'?':reserve-check':''):'');
           NODE
             )"
+          fi
+          # Reuse a running workflow only while its reserve job still owns the pending reservation.
+          # Once reserve finishes, free slots must be refillable by independent waves.
+          if [[ "$queued_asset_wake" =~ ^([0-9]+):reserve-check$ ]]; then
+            wake_id="${BASH_REMATCH[1]}"
+            reserve_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${wake_id}/jobs?per_page=100" --jq '.jobs[] | select(.name=="reserve") | .status' 2>/dev/null || true)"
+            if [[ "$reserve_status" == 'queued' || "$reserve_status" == 'in_progress' ]]; then
+              queued_asset_wake="$wake_id"
+            else
+              queued_asset_wake=''
+            fi
           fi
           if [[ "$queued_asset_wake" =~ ^[0-9]+$ ]]; then
             echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=COALESCED_QUEUED_EXACT_MAIN:$queued_asset_wake:$current_main_sha"
@@ -280,24 +292,35 @@ jobs:
             exit 0
           fi
 
-          # 메인 · 대기 또는 실행 중인 정확히 같은 main의 GAME_PRIMARY 예약은 재사용한다.
+          # 메인 · 대기 중이거나 예약 단계가 실행 중인 정확히 같은 main의 GAME_PRIMARY 호출만 재사용한다.
           # main push 예약도 기존 동일 SHA 게임 제작 wake이므로 별도 dispatch를 만들지 않는다.
           # 다른 SHA·다른 레인은 독립 처리하고, 조회 실패 때는 기존 호출을 진행한다.
           if [[ "$preplan_pressure" =~ ^[0-9]+$ && "$current_main_sha" =~ ^[a-f0-9]{40}$ ]]; then
             queued_exact_wake="$(CURRENT_MAIN_SHA="$current_main_sha" node <<'NODE'
           const fs=require('fs');
           const snapshot=JSON.parse(fs.readFileSync('/tmp/vibe2-preplan-actions-runs.json','utf8'));
-          const queued=new Set(['queued','pending','requested','in_progress']);
-          const wake=(snapshot.workflow_runs||[]).find(run=>
+          const queued=new Set(['queued','pending','requested']);
+          const matches=(snapshot.workflow_runs||[]).filter(run=>
             run.path==='.github/workflows/vibe2-continuous-core.yml'
             &&(run.event==='workflow_dispatch'||(run.event==='push'&&run.head_branch==='main'))
             &&run.head_sha===process.env.CURRENT_MAIN_SHA
-            &&queued.has(String(run.status||'').toLowerCase())
             &&(run.display_title==='Vibe2 Continuous Core · workflow_dispatch · game-primary'
               ||run.display_title==='Vibe2 Continuous Core · push · game-primary'));
-          process.stdout.write(wake?String(wake.id):'');
+          const wake=matches.find(run=>queued.has(String(run.status||'').toLowerCase()))
+            ||matches.find(run=>String(run.status||'').toLowerCase()==='in_progress');
+          process.stdout.write(wake?String(wake.id)+(wake.status==='in_progress'?':reserve-check':''):'');
           NODE
             )"
+            # A running worker/fan-in is not an active reservation: allow fresh free-slot refills.
+            if [[ "$queued_exact_wake" =~ ^([0-9]+):reserve-check$ ]]; then
+              wake_id="${BASH_REMATCH[1]}"
+              reserve_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${wake_id}/jobs?per_page=100" --jq '.jobs[] | select(.name=="reserve") | .status' 2>/dev/null || true)"
+              if [[ "$reserve_status" == 'queued' || "$reserve_status" == 'in_progress' ]]; then
+                queued_exact_wake="$wake_id"
+              else
+                queued_exact_wake=''
+              fi
+            fi
             if [[ "$queued_exact_wake" =~ ^[0-9]+$ ]]; then
               echo "VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN:$queued_exact_wake:$current_main_sha"
               exit 0
