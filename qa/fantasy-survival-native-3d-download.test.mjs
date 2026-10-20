@@ -97,7 +97,7 @@ test('3D preview reads existing biome classifier and saved construction state, n
  assert.match(index,/world3d\.frame\(state,regionAt\)/);
  assert.match(moduleSource,/function frame\(state,regionAt\)/);
  assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
- assert.match(moduleSource,/const tileBiome=String\(classify\(gx\/SCALE,gz\/SCALE\)/);
+ assert.match(moduleSource,/tile\.position\.set\(gx,\.015,gz\)/);
  assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
@@ -136,18 +136,18 @@ test('native preview consumes existing environment, character identity and motio
   'heroMixer.clipAction(desired)'
  ]) assert.ok(moduleSource.includes(label),'missing actual native Vibe binding: '+label);
 });
-test('downloaded KayKit mage is ledgered as preview only and source-bound to existing game player',()=>{
+test('downloaded KayKit knight is ledgered as preview only and source-bound to existing game player',()=>{
  const legal=ledger.entries.find(x=>x.id==='kaykit-adventurers-cc0-v1');
  assert.ok(legal,'KayKit license proof required');
  assert.equal(legal.commercialUse,true);
  assert.equal(legal.modificationUse,true);
  assert.equal(legal.evidence.nativeRuntimeVerification,'PENDING');
- const actor=registry.assets.find(x=>x.id==='external-actor-mage');
+ const actor=registry.assets.find(x=>x.id==='external-actor-knight');
  assert.ok(actor);
  assert.equal(actor.license,'CC0-1.0');
- assert.match(actor.path,/mage\.glb$/);
+ assert.match(actor.path,/knight\.glb$/);
  assert.equal(actor.productionVerified,false);
- assert.match(moduleSource,/HERO_URL.*mage\.glb/);
+ assert.match(moduleSource,/HERO_URL.*knight\.glb/);
  assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
  assert.match(moduleSource,/state\.keys\?\.size/);
  assert.match(moduleSource,/state\.weather\?\.kind/);
@@ -160,10 +160,17 @@ test('downloaded KayKit mage is ledgered as preview only and source-bound to exi
 
 test('native 3D binds exact existing monster types and adapts GPU load without changing their combat',()=>{
  assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
- for(const kind of ['wolf','golem','spider','serpent']){
-  assert.match(moduleSource,new RegExp("^  "+kind+":\\[",'m'));
-  assert.ok(fs.existsSync('assets/shared/creature-'+kind+'-actions.glb'));
+ const original=ledger.entries.find(e=>e.id==='forest-cc0-originals-20261020');
+ assert.ok(original);
+ for(const item of original.evidence.files){
+  const bytes=fs.readFileSync(item.path);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256,item.path);
+  const archive=fs.readFileSync(item.archive);
+  assert.ok(archive.length>1000,item.archive);
  }
+ assert.doesNotMatch(moduleSource,/shared\/creature-/);
+ assert.match(moduleSource,/new FBXLoader/);
+ assert.match(moduleSource,/new OBJLoader/);
  for(const id of ['shadowwolf','golem','giantspider','worldtreesnake']){
   assert.match(moduleSource,new RegExp("'"+id+"'"));
   assert.match(index,new RegExp(id+":\\{id:'"+id+"'"));
@@ -201,8 +208,8 @@ test('Vibe asset-selector recognizes downloaded similar assets but cannot fake u
   manifest:{assets:[
    {id:'external-tinytreats-tree-v1',types:['prop','background'],
     path:'assets/shared/homely-house/tree.obj',license:'CC0',downloaded:true},
-   {id:'external-actor-mage',types:['character'],
-    path:'assets/roblox/actors/native/mage.glb',license:'CC0-1.0',
+   {id:'external-actor-knight',types:['character'],
+    path:'assets/roblox/actors/native/knight.glb',license:'CC0-1.0',
     downloaded:true,verifiedAnimation:false}
   ]}
  });
@@ -246,4 +253,15 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
  assert.match(moduleSource,/undeadProxySourceLoaded:!!undeadSource/);
  assert.match(moduleSource,/productionReady:false/);
  assert.match(index,/wastelandMummy:\{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30/);
+});
+
+test('Vibe graphics selection excludes generated and commercially licensed non-CC0 content',()=>{
+ const plan=planAssetApplication({prompt:'숲 나무 소품',manifest:{assets:[
+  {id:'cc0-tree',types:['prop'],path:'tree.obj',license:'CC0-1.0',downloaded:true},
+  {id:'generated-tree',types:['prop'],path:'generated.obj',license:'project-original'},
+  {id:'commercial-tree',types:['prop'],path:'paid.obj',license:'CC-BY-4.0'},
+  {id:'fake-download',types:['prop'],path:'fake.obj',license:'CC0',downloaded:false}
+ ]}});
+ assert.ok(plan.matched.some(x=>x.id==='cc0-tree'));
+ assert.ok(plan.matched.every(x=>!['generated-tree','commercial-tree','fake-download'].includes(x.id)));
 });

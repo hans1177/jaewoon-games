@@ -36,6 +36,14 @@ function scriptBlockers(text,{allowScriptSrc=false}={}){
   const out=[];let i=0;
   for(const m of scripts(text)){
     if(/\bsrc\s*=/i.test(m[1]||'')){if(!allowScriptSrc)out.push('SCRIPT_SRC_FORBIDDEN');continue;}
+    const type=String(m[1]||'').match(/\btype\s*=\s*["']([^"']+)["']/i)?.[1]?.trim().toLowerCase();
+    if(type==='importmap'){
+      try{
+        const map=JSON.parse(m[2]||'');
+        if(!map||typeof map!=='object'||Array.isArray(map))throw new Error('IMPORT_MAP_OBJECT_REQUIRED');
+      }catch{out.push('IMPORT_MAP_JSON_INVALID');}
+      continue;
+    }
     try{new Script(String(m[2]||''),{filename:`bootstrap-inline-${++i}.js`});
     }catch{out.push('INLINE_SCRIPT_SYNTAX_INVALID');}
   }

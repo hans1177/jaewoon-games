@@ -499,7 +499,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     const hasSource = sources.some((value) => Boolean(text(value)))
       || Boolean(asset?.platformVariants && Object.keys(asset.platformVariants).length);
     return Boolean(text(asset?.id)) && asset?.downloaded !== false
-      && hasSource && !blockedLicense(license);
+      && hasSource && /^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(license);
   });
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
   const production = buildProductionPlan(request, prototypePreset);
