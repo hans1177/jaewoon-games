@@ -3,6 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
@@ -148,10 +149,47 @@ test('CC0-only external asset references and functional UK-era voyage UI',()=>{
  assert.match(html,/data-panel="inventory"/);
  assert.match(html,/data-panel="crew"/);
  assert.match(html,/data-panel="port"/);
- assert.match(html,/opengameart\.org\/sites\/default\/files\/pirate_ship_in_game\.ogg/);
+ assert.match(html,/\.\/assets\/cc0\/music\/pirate_ship_in_game\.ogg/);
  assert.match(main,/recruitCompanion/);
  assert.match(main,/music\.play\(\)/);
  assert.match(main,/crowded_pub_2025\.ogg/);
  assert.match(main,/joystick\.setPointerCapture/);
- assert.match(html,/opengameart\.org\/sites\/default\/files\/rpgportraits\.png/);
+ assert.match(html,/\.\/assets\/cc0\/portraits\/rpgportraits\.png/);
+});
+
+test('all 15 imported CC0 media files are original SHA1-verified real binaries, not placeholders',()=>{
+ const manifest=JSON.parse(fs.readFileSync('web-games/ocean-voyage/assets/cc0/manifest.json','utf8'));
+ assert.equal(manifest.license,'CC0-1.0');
+ assert.equal(manifest.assets.length,15);
+ const paths=new Set();
+ for(const item of manifest.assets){
+  assert.ok(!paths.has(item.path),'duplicate '+item.path);paths.add(item.path);
+  const file='web-games/ocean-voyage/assets/cc0/'+item.path;
+  assert.ok(fs.existsSync(file),file);
+  const bytes=fs.readFileSync(file);
+  assert.equal(bytes.length,item.bytes,file);
+  const gitHash=createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+  assert.equal(gitHash,item.gitBlobSha1,file);
+  if(file.endsWith('.png'))assert.equal(bytes.subarray(1,4).toString(),'PNG',file);
+  if(file.endsWith('.ogg'))assert.equal(bytes.subarray(0,4).toString(),'OggS',file);
+  assert.equal(item.license,'CC0-1.0');
+  assert.ok(item.sourceUrl.startsWith('https://'));
+ }
+ const portraits=fs.readFileSync('web-games/ocean-voyage/assets/cc0/portraits/rpgportraits.png');
+ assert.equal(portraits.readUInt32BE(16),328);
+ assert.equal(portraits.readUInt32BE(20),112);
+});
+test('locally hosted Kenney CC0 navigation controls, vintage windows and sea BGM load via relative paths',()=>{
+ const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ assert.match(html,/assets\/cc0\/controls\/joystick_circle_pad_a\.png/);
+ assert.match(html,/assets\/cc0\/controls\/joystick_circle_nub_a\.png/);
+ assert.match(html,/assets\/cc0\/ui\/panel_border_brown_detail\.png/);
+ assert.match(html,/assets\/cc0\/map\/textureWater\.png/);
+ assert.match(html,/assets\/cc0\/portraits\/rpgportraits\.png/);
+ assert.match(html,/assets\/cc0\/music\/pirate_ship_in_game\.ogg/);
+ assert.match(main,/const kennyMap='\.\/assets\/cc0\/map\/'/);
+ assert.match(main,/sea:'\.\/assets\/cc0\/music\/pirate_ship_in_game\.ogg'/);
+ assert.match(main,/background-size:656px 224px/);
+ assert.doesNotMatch(html,/raw\.githubusercontent\.com\/shorepine\/kenney/);
 });
