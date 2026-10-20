@@ -1062,8 +1062,15 @@ export function applyVibeFanInResults(queueInput, results = []) {
   for (const raw of results || []) {
     const id = clean(raw?.taskId);
     if (!id) continue;
+    const current=queue.tasks.find(item=>item.id===id);
+    const verdict=checkAutonomousCandidate(current,raw);
+    const checked=verdict.accepted?raw:{
+      ...raw,outcome:'FAIL',blocker:verdict.reason,
+      evidence:[...(raw?.evidence||[]),'autonomous-safeguard:'+verdict.category,
+        'autonomous-safeguard-requires-causal-repair']
+    };
     if (!grouped.has(id)) grouped.set(id, []);
-    grouped.get(id).push(raw);
+    grouped.get(id).push(checked);
   }
   // [메인] 정규화 전후에 보존되는 작업 순서로 한 번만 위치를 색인한다.
   // 그룹마다 전체 대기열을 재검색하지 않으면서 예약·중복 결과 검사는 기존 흐름을 유지한다.
@@ -1390,7 +1397,8 @@ export function runQueueCommand(args = {}) {
       ?ownerFirstRunnerAllocation(queue,{
         lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
         totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
-        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8)
+        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8),
+        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS
       }):null;
     const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
@@ -1406,7 +1414,8 @@ export function runQueueCommand(args = {}) {
       ?ownerFirstRunnerAllocation(queue,{
         lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
         totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
-        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8)
+        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8),
+        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS
       }):null;
     const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
     const speculativeExpansion=executionLane==='game-primary'
@@ -1560,7 +1569,7 @@ export function runQueueCommand(args = {}) {
       result = { command, queue, summary: summarizeVibeContinuousQueue(queue), selection: selectVibeQueueBatch(queue) };
     }
   } else throw new Error(`unknown queue command: ${command}`);
-  return {...result,queueStateRecovered};
+  return {...result,queueStateRecovered,automaticMaintenance};
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
