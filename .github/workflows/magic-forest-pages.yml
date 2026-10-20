@@ -135,7 +135,7 @@ jobs:
             if(!['ACTIVE','REBUILD'].includes(lifecycle))continue;
             const web=game?.canonical?.sources?.web||{};
             const state=String(web.state||game.ownerWebSourceState||'').toUpperCase();
-            if(['NON_GAME_SURFACE','WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID'].includes(state))continue;
+            if(['NON_GAME_SURFACE','WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state))continue;
             const root=String(web.path||game.webPath||'').replace(/^\/+|\/+$/g,'');
             if(root!=='web-games/'+id)continue;
             const entry=root+'/index.html';
@@ -358,8 +358,12 @@ jobs:
           git -C "$site" config user.email "pages@users.noreply.github.com"
           test -s "$site/index.html"
           test -f "$site/tier.html"
-          # Copy only; keep every previously published game without rewriting the originals.
+          # Preserve remaining games; the same canonical publisher removes owner-deleted paths only.
           rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
+          PAGES_RETAINED_SITE="$site" node --input-type=module - <<'NODE'
+          import {writePagesLanding} from './tools/github-pages-landing.mjs';
+          writePagesLanding({site:process.env.PAGES_RETAINED_SITE});
+          NODE
           test -s "$site/index.html"
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$site/index.html"
           git -C "$site" add --all
@@ -377,7 +381,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # The gh-pages repository is still the historical copy: never prune an old game.
+          # Retain earlier active games after applying the exact owner permanent-removal list.
           # The official Pages artifact includes the same exact published files, not .git.
           retained="$RUNNER_TEMP/jaewoon-pages-publish"
           artifact="$RUNNER_TEMP/jaewoon-pages-artifact"

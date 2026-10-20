@@ -49,6 +49,25 @@ export function writePagesLanding({site='_site',catalogPath='game-catalog.json',
   const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
   const exposure=JSON.parse(fs.readFileSync(exposurePath,'utf8'));
   const result=buildPagesLanding({catalog,manifest,exposure});
+  // 오너가 영구 제거한 게임/탈락 웹 테스트만 게시 사본에서도 제거한다.
+  // 공용 파일과 남은 게임은 이전 배포본을 그대로 보존한다.
+  const removal=catalog.permanentRemovalPolicy||{};
+  const removedIds=[...new Set([...(removal.ids||[]),...(removal.rejectedWebTestEntries||[])])];
+  const removedFiles=Array.isArray(removal.removedAssetFiles)?removal.removedAssetFiles:[];
+  const deletedPaths=[];
+  for(const id of removedIds){
+    if(!validId(id))throw Error('PAGES_REMOVAL_GAME_ID_INVALID');
+    const relative='web-games/'+id;
+    if(result.webRoutes.includes(relative+'/'))throw Error('PAGES_REMOVED_ROUTE_IN_MANIFEST:'+id);
+    if(fs.existsSync(path.join(site,relative)))deletedPaths.push(relative);
+    fs.rmSync(path.join(site,relative),{recursive:true,force:true});
+  }
+  for(const relative of removedFiles){
+    if(!/^assets\/(?:homepage-covers\/)?[a-z0-9_-]+\.(?:webp|png|svg)$/.test(relative))throw Error('PAGES_REMOVAL_ASSET_PATH_INVALID');
+    if(fs.existsSync(path.join(site,relative)))deletedPaths.push(relative);
+    fs.rmSync(path.join(site,relative),{force:true});
+  }
+  console.log('PAGES_EXPLICIT_REMOVALS='+deletedPaths.join(','));
   for(const route of result.webRoutes){
     if(!fs.existsSync(path.join(site,route,'index.html')))throw Error('PAGES_HOME_SOURCE_ENTRY_MISSING:'+route);
   }

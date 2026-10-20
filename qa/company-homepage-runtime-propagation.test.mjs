@@ -8,6 +8,7 @@ import path from 'node:path';
 import {validatedHomepageMedia,webTreeFingerprint} from '../tools/game-catalog-normalization.mjs';
 import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames,syncPublishedWebRoutes} from '../tools/company-status-sync.mjs';
+import {writePagesLanding} from '../tools/github-pages-landing.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
 test('paused Unity Web never generates build probes or launch links',()=>{
@@ -663,4 +664,29 @@ test('edge catalog removes stale stopped games while showing new active developm
   const stale={games:[{id:'ant-simulator',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]};
   const canonical={games:[{id:'simple-rpg',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}],permanentRemovalPolicy:{ids:['ant-simulator']}};
   assert.deepEqual(Array.from(merge(stale,{}, {},{},canonical).games,game=>game.id),['simple-rpg']);
+});
+
+// 실제 보존형 게시 디렉터리에서 지정된 삭제만 적용하고 나머지 바이트를 보존한다.
+test('canonical Pages publisher removes stopped and rejected routes from retained output only',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'pages-removal-'));
+  try{
+    const site=path.join(root,'site');
+    for(const id of ['keep-game','stopped-game','rejected-test']){
+      fs.mkdirSync(path.join(site,'web-games',id),{recursive:true});
+      fs.writeFileSync(path.join(site,'web-games',id,'index.html'),id+' original');
+    }
+    fs.mkdirSync(path.join(site,'assets','homepage-covers'),{recursive:true});
+    fs.writeFileSync(path.join(site,'assets','homepage-covers','stopped-game.webp'),'removed');
+    fs.writeFileSync(path.join(site,'assets','shared.txt'),'shared original');
+    const catalog=path.join(root,'catalog.json'),manifest=path.join(root,'manifest.json'),exposure=path.join(root,'exposure.json');
+    fs.writeFileSync(catalog,JSON.stringify({games:[{id:'keep-game',webPath:'web-games/keep-game'}],permanentRemovalPolicy:{ids:['stopped-game'],rejectedWebTestEntries:['rejected-test'],removedAssetFiles:['assets/homepage-covers/stopped-game.webp']}}));
+    fs.writeFileSync(manifest,JSON.stringify({routes:['web-games/keep-game/'],gameCount:1}));
+    fs.writeFileSync(exposure,JSON.stringify({games:[]}));
+    for(let i=0;i<2;i++)writePagesLanding({site,catalogPath:catalog,manifestPath:manifest,exposurePath:exposure});
+    assert.equal(fs.existsSync(path.join(site,'web-games','stopped-game')),false);
+    assert.equal(fs.existsSync(path.join(site,'web-games','rejected-test')),false);
+    assert.equal(fs.existsSync(path.join(site,'assets','homepage-covers','stopped-game.webp')),false);
+    assert.equal(fs.readFileSync(path.join(site,'web-games','keep-game','index.html'),'utf8'),'keep-game original');
+    assert.equal(fs.readFileSync(path.join(site,'assets','shared.txt'),'utf8'),'shared original');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
