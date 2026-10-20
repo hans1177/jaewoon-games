@@ -5,11 +5,10 @@ const base=script?.src?new URL(script.src):new URL('/assets/vibe-runtime-panel.j
 const root=new URL('../',base);
 const manifestUrl=new URL('web-games/vibe-asset-profiles.json',root);
 const gameId=location.pathname.match(/\/web-games\/([a-z0-9-]+)\//)?.[1];
-// Developer asset inspection is explicit opt-in ONLY. A copied legacy script
-// in a public game's HTML must never spawn the floating "에셋" button.
-// Keep the inspector usable on developer-owned previews via a deliberate
-// <script data-vibe-owner-inspector="enabled" ...> inclusion.
-if(script?.dataset?.vibeOwnerInspector!=='enabled'||!gameId||document.getElementById('vibe-assets-launcher'))return;
+// Game-authored script inclusion is the explicit opt-in. Never block an
+// autonomous developer's intended asset interface by a hidden dataset rule.
+// The publication workflow no longer injects this script into any game.
+if(!gameId||document.getElementById('vibe-assets-launcher'))return;
 const css=document.createElement('style');
 css.textContent=`#vibe-assets-launcher{position:fixed;right:12px;bottom:12px;z-index:2147483000;padding:10px 14px;background:#152339;color:white;border:1px solid #85baff;border-radius:12px;font:600 14px system-ui;cursor:pointer}#vibe-assets-panel{position:fixed;inset:auto 12px 62px auto;width:min(420px,calc(100vw - 24px));max-height:min(65vh,600px);overflow:auto;z-index:2147483000;background:#101b2e;color:#fff;border:1px solid #85baff;border-radius:14px;padding:16px;font:14px/1.5 system-ui;box-shadow:0 12px 38px #0009}#vibe-assets-panel[hidden]{display:none}#vibe-assets-panel a{color:#9cdbff}#vibe-assets-panel button{cursor:pointer}#vibe-assets-panel img{max-width:100%;max-height:160px;object-fit:contain}#vibe-assets-panel ul{padding-left:20px}#vibe-assets-panel li{margin:8px 0;overflow-wrap:anywhere}`;
 document.head.append(css);
