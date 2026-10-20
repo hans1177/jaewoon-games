@@ -634,3 +634,11 @@ test('fantasy survival preserved source passes bootstrap without removing multip
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+// Import maps contain JSON, while executable inline scripts retain syntax validation.
+test('bootstrap validates import map JSON separately from executable JavaScript',()=>{
+  const valid=basePlayable.replace('</head>','<script type="importmap">{"imports":{"three":"./three.js"}}</script></head>');
+  assert.equal(validateBootstrapHtml(valid).pass,true);
+  assert.ok(validateBootstrapHtml(valid.replace('{"imports":{"three":"./three.js"}}','{"imports":')).blockers.includes('IMPORT_MAP_JSON_INVALID'));
+  assert.ok(validateBootstrapHtml(valid.replace('let score=0','let =')).blockers.includes('INLINE_SCRIPT_SYNTAX_INVALID'));
+});
