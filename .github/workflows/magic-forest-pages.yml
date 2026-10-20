@@ -587,7 +587,8 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts playwright@1.56.1
-          npx playwright install --with-deps chromium
+          # The existing smoke launches headless Chromium without a browser channel.
+          npx playwright install --with-deps --only-shell chromium
           node qa/vibe-browser-smoke.mjs
 
       # Report post-publication defects using the existing public-release workflow.
