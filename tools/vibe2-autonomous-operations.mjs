@@ -137,3 +137,28 @@ export function verifiedMaintenanceMode(task={},proof={}){
     priorities:['SECURITY_HOTFIX','SAVED_GAME_INTEGRITY','LIVE_BUG','PERFORMANCE_REGRESSION','SMALL_SAFE_UPDATES'],
     preserveLiveBuildUntilExactVerifiedReplacement:true};
 }
+
+
+// Admission applies exclusively to NEW scheduled autonomous waves. It must
+// never cancel existing workers, owner-direct dispatch, independent QA or
+// previously verified release recovery.
+export function assessAutonomousExpansionAdmission({
+  queuedWorkflowRuns=null,pendingWorkflowRuns=null,ownerPublishRuns=null,
+  maxQueuedWorkflowRuns=48
+}={}){
+  const queued=Number(queuedWorkflowRuns),pending=Number(pendingWorkflowRuns);
+  const countsKnown=queuedWorkflowRuns!==null&&pendingWorkflowRuns!==null
+    &&Number.isSafeInteger(queued)&&Number.isSafeInteger(pending)&&queued>=0&&pending>=0;
+  const ownerKnown=Array.isArray(ownerPublishRuns);
+  const ownerWait=ownerKnown&&ownerPublishRuns.some(run=>
+    ['queued','pending','requested','waiting','in_progress'].includes(lower(run.status)));
+  const backlog=countsKnown?queued+pending:null;
+  const threshold=Math.max(10,Math.floor(Number(maxQueuedWorkflowRuns)||48));
+  const allowed=!ownerWait&&!(countsKnown&&backlog>=threshold);
+  const reason=ownerWait?'OWNER_PUBLICATION_PRIORITY'
+    :countsKnown&&backlog>=threshold?'AUTONOMOUS_WORKFLOW_BACKLOG'
+    :'AUTONOMOUS_ADMITTED';
+  return Object.freeze({allowed,reason,backlog,threshold,countsKnown,ownerKnown,
+    ownerPublishPending:!!ownerWait,scope:'NEW_AUTONOMOUS_WAVES_ONLY',
+    existingWorkCancelled:false,ownerDirectWorkAllowed:true,finalQaPreserved:true});
+}
