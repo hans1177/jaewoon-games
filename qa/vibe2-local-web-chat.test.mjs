@@ -4,9 +4,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { EventEmitter } from 'node:events';
 import {
   validateLocalWebChatPolicy, readLocalChatPolicy, readApprovedWebGame,
-  buildWebChatSystemPrompt, askLocalWebModel
+  buildWebChatSystemPrompt, askLocalWebModel,
+  buildExistingOwnerWebDispatch, submitExistingOwnerWebDispatch
 } from '../tools/vibe2-local-web-chat.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -19,7 +21,10 @@ test('central policy explicitly permits web-only advisory chat without changing 
   assert.equal(contract.localhostOnly, true);
   assert.equal(contract.runtimeEndpoint, 'http://127.0.0.1:11434/api/chat');
   assert.equal(contract.machineStateMutationAllowed, false);
-  assert.equal(contract.externalNetworkCallsAllowed, false);
+  assert.equal(contract.otherExternalNetworkCallsAllowed, false);
+  assert.equal(contract.existingPwaOwnerBridgeDispatchAllowed, true);
+  assert.equal(contract.existingVibeVerifiedAutoDeploymentAllowed, true);
+  assert.equal(contract.qaMustPassBeforeAutomaticPublish, true);
   assert.equal(contract.existingSecurityRuntimeAndF0F9GatesUnchanged, true);
   assert.equal(readLocalChatPolicy(ROOT).sourceWriteAllowed, false);
   assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.newPipelineWrapperOrShadowStructureForThisOperatingModel, false);
@@ -99,9 +104,73 @@ test('model receives bounded local-only advisory messages, never tool privileges
   );
 });
 
-test('local chat introduces no new workflow, queue writer, or repository command runner', () => {
+test('local chat adds no queue writer, shell, or direct publication method', () => {
   const source = fs.readFileSync(path.join(ROOT, 'tools/vibe2-local-web-chat.mjs'), 'utf8');
-  assert.doesNotMatch(source, /writeFileSync|appendFileSync|execFileSync|spawnSync|child_process|github\.com\/api|api\.github\.com|workflow_dispatch/);
+  assert.doesNotMatch(source, /writeFileSync|appendFileSync|execFileSync|spawnSync|shell:\s*true|api\.github\.com|workflow_dispatch/);
+  assert.match(source, /spawnImpl\('gh'/);
+  assert.match(source, /repos\/hans1177\/jaewoon-games\/dispatches/);
   assert.match(source, /generateVibe2Handoff/);
   assert.match(source, /127\.0\.0\.1:11434\/api\/chat/);
+});
+
+test('only explicitly selected catalog web game can enter existing owner workflow', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe-owner-web-'));
+  try {
+    fs.mkdirSync(path.join(root, 'web-games', 'tiny-game'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'web-games', 'tiny-game', 'index.html'), '<html>web</html>');
+    fs.writeFileSync(path.join(root, 'game-catalog.json'), JSON.stringify({
+      games: [{ id: 'tiny-game', webPath: '/web-games/tiny-game/' }]
+    }));
+    const id = '11111111-2222-4333-8444-555555555555';
+    const payload = buildExistingOwnerWebDispatch({
+      gameId: 'tiny-game', goal: '모바일 UI 수정 후 검증 배포', root, uuid: id
+    });
+    assert.deepEqual(payload, {
+      event_type: 'vibe-local-web-owner-directive',
+      client_payload: {
+        id, game_id: 'tiny-game', platform: 'web', kind: 'directive',
+        body: '모바일 UI 수정 후 검증 배포', autoDeployAfterVerifiedQa: true
+      }
+    });
+    assert.throws(() => buildExistingOwnerWebDispatch({ gameId: '../secret', goal: 'test', root }), /INVALID_WEB_GAME_ID/);
+    assert.throws(() => buildExistingOwnerWebDispatch({ gameId: 'tiny-game', goal: '', root }), /LOCAL_WEB_DIRECTIVE_INVALID/);
+    assert.throws(() => buildExistingOwnerWebDispatch({ gameId: 'tiny-game', goal: 'x', root, uuid: 'invalid' }), /LOCAL_WEB_OWNER_UUID_INVALID/);
+    assert.throws(() => buildExistingOwnerWebDispatch({ gameId: 'tiny-game', goal: 'x'.repeat(2001), root }), /LOCAL_WEB_DIRECTIVE_INVALID/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('owner directive only performs the one fixed GitHub repository dispatch, with shell disabled', async () => {
+  const data = {
+    event_type: 'vibe-local-web-owner-directive',
+    client_payload: {
+      id: '11111111-2222-4333-8444-555555555555',
+      game_id: 'tiny-game', platform: 'web', kind: 'directive',
+      body: '기존 메뉴 기능 고쳐', autoDeployAfterVerifiedQa: true
+    }
+  };
+  let count = 0;
+  const fakeSpawn = (binary, argv, options) => {
+    count++;
+    assert.equal(binary, 'gh');
+    assert.deepEqual(argv, ['api', '-X', 'POST', 'repos/hans1177/jaewoon-games/dispatches', '--input', '-']);
+    assert.equal(options.shell, false);
+    const child = new EventEmitter();
+    child.stderr = new EventEmitter();
+    child.stdin = { end: input => {
+      assert.deepEqual(JSON.parse(input), data);
+      queueMicrotask(() => child.emit('close', 0, null));
+    } };
+    return child;
+  };
+  const r = await submitExistingOwnerWebDispatch(data, { spawnImpl: fakeSpawn });
+  assert.equal(count, 1);
+  assert.equal(r.acceptedByGithub, true);
+  assert.equal(r.deploymentVerified, false);
+  await assert.rejects(
+    submitExistingOwnerWebDispatch({ ...data, event_type: 'other' }, { spawnImpl: fakeSpawn }),
+    /LOCAL_OWNER_DISPATCH_CONTRACT_INVALID/
+  );
+  assert.equal(count, 1);
 });
