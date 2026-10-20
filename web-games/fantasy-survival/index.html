@@ -6590,6 +6590,7 @@ function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.mi
     const nativeDraw=world3d.getRenderStats();
     document.body.dataset.nativeDrawCalls=String(nativeDraw.drawCalls);
     document.body.dataset.nativeTriangles=String(nativeDraw.triangles);
+    document.body.dataset.nativePlayerSource=world3d.isActive()?world3d.playerSource:'';
    }catch(error){
     console.error('MAGIC_FOREST_NATIVE_3D_FRAME_FAILED',error);
     world3d.dispose();world3d=null;world3dPending=false;
