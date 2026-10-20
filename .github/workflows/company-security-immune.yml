@@ -565,7 +565,7 @@ jobs:
           // OWNER_APPROVED_WEB_DEPLOY_FIRST_END
           // Exact owner-authored local WEB chat: advisory only, no source/QA/deploy authority.
           // Authorize only this single immutable addition; never make arbitrary policy edits exempt.
-          const localWebChatAdded=changes.includes('localVibeWebChat');
+          const localWebChatAdded=changes.some(key=>key==='localVibeWebChat'||key==='localVibeWebChat.existingPwaOwnerCommentReceiver');
           if(localWebChatAdded){
             const exactOwnerLocalWebChat=
           {
@@ -601,9 +601,14 @@ jobs:
             "qaMustPassBeforeAutomaticPublish": true,
             "otherExternalNetworkCallsAllowed": false
           };
-            if(base.localVibeWebChat!==undefined
-              ||changes.length!==1
-              ||!same(head.localVibeWebChat,exactOwnerLocalWebChat))
+            // 2026-10-20 owner request: reuse the existing bridge and Windows runner for advisory receipt.
+            const exactReceiver={event:'issue_comment.created',command:'/vibe-local-web',actor:'hans1177',
+              runnerLabels:['self-hosted','Windows','X64','jaewoon-unity'],localExecution:'ADVISORY_OLLAMA_ONLY',
+              forwardOriginalDirectiveToExistingQueue:true,modelOutputCanAuthorizeWork:false};
+            const initialAddition=base.localVibeWebChat===undefined&&same(head.localVibeWebChat,exactOwnerLocalWebChat);
+            const exactReceiverAddition=same(base.localVibeWebChat,exactOwnerLocalWebChat)&&
+              same(head.localVibeWebChat,{...exactOwnerLocalWebChat,existingPwaOwnerCommentReceiver:exactReceiver});
+            if(changes.length!==1||(!initialAddition&&!exactReceiverAddition))
               throw new Error('SECURITY_OWNER_LOCAL_WEB_CHAT_EXACT_CONTRACT_REQUIRED');
             if(head.ownerCanonicalRules?.constitutionalBinding?.enforcerRequiredBeforeWorkerSourceWrite!==true
               ||head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.publishBeforeF9Forbidden!==true
@@ -673,7 +678,7 @@ jobs:
               throw new Error('SECURITY_OWNER_LOCAL_WEB_DEVELOPMENT_SOURCE_PROOF_MISSING');
             console.log('SECURITY_OWNER_LOCAL_WEB_DEVELOPMENT_EXACT_SCOPE=PASS');
           }
-          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key))&&!(localWebChatAdded&&key==='localVibeWebChat')&&!(localWebDevelopmentAdded&&key==='localVibeWebDevelopment'));
+          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key))&&!(localWebChatAdded&&(key==='localVibeWebChat'||key==='localVibeWebChat.existingPwaOwnerCommentReceiver'))&&!(localWebDevelopmentAdded&&key==='localVibeWebDevelopment'));
           if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
           const scope=head.ownerActiveDevelopmentScope20261009;
           const webFlowRows=[];

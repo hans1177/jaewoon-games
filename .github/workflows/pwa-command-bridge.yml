@@ -14,6 +14,8 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+  issue_comment:
+    types: [created]
   repository_dispatch:
     types: [vibe-local-web-owner-directive]
 
@@ -26,7 +28,7 @@ concurrency:
   # Every explicitly submitted owner task must retain its own queued run.
   # Periodic PWA polling keeps its original single-run coalescing boundary.
   # Queue writes use the existing exact-task dedupe and optimistic branch-push retries.
-  group: ${{ github.event_name == 'repository_dispatch' && format('pwa-command-bridge-owner-{0}', github.run_id) || 'pwa-command-bridge' }}
+  group: ${{ (github.event_name == 'repository_dispatch' || github.event_name == 'issue_comment') && format('pwa-command-bridge-owner-{0}', github.run_id) || 'pwa-command-bridge' }}
   cancel-in-progress: false
 
 env:
@@ -34,8 +36,59 @@ env:
   VIBE2_BRANCH: vibe2-unreal-core
 
 jobs:
+  authorize-local:
+    if: >-
+      github.event_name == 'issue_comment' && github.event.action == 'created' &&
+      github.actor == 'hans1177' && github.event.comment.user.login == 'hans1177' &&
+      startsWith(github.event.comment.body, '/vibe-local-web ')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Authorize owner event before contacting the PC
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {validateLocalWebOwnerEvent} from './tools/pwa-command-vibe2-task.mjs';
+          validateLocalWebOwnerEvent(JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')),
+            {actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY});
+          console.log('LOCAL_OWNER_COMMENT=AUTHORIZED');
+          NODE
+
+  local-advisory:
+    needs: authorize-local
+    if: needs.authorize-local.result == 'success'
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    permissions:
+      contents: read
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Receive owner instruction in the existing local Vibe
+        shell: powershell
+        run: |
+          node tools/vibe2-local-web-chat.mjs --receive-owner-comment
+          if ($LASTEXITCODE -ne 0) { throw 'Local Vibe did not return a verified transport response.' }
+
   bridge:
-    if: github.event_name != 'pull_request'
+    needs: [authorize-local, local-advisory]
+    if: >-
+      always() && !cancelled() &&
+      (github.event_name != 'issue_comment' || needs.local-advisory.result == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -57,7 +110,7 @@ jobs:
           node --test qa/pwa-command-vibe2-task.test.mjs
 
       - name: Get short-lived GitHub OIDC token
-        if: github.event_name != 'repository_dispatch'
+        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
         shell: bash
         run: |
           set -euo pipefail
@@ -69,7 +122,7 @@ jobs:
           echo "COMPANY_OIDC_TOKEN=$token" >> "$GITHUB_ENV"
 
       - name: Sync existing Vibe2 task states to PWA chat
-        if: github.event_name != 'repository_dispatch'
+        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
         shell: bash
         run: |
           set -euo pipefail
@@ -83,7 +136,7 @@ jobs:
           cat /tmp/pwa-sync-result.json
 
       - name: Claim next PWA owner instruction
-        if: github.event_name != 'repository_dispatch'
+        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
         id: next
         shell: bash
         run: |
@@ -104,7 +157,7 @@ jobs:
           NODE
 
       - name: Receive GitHub-authenticated local web owner directive
-        if: github.event_name == 'repository_dispatch'
+        if: github.event_name == 'repository_dispatch' || github.event_name == 'issue_comment'
         id: local
         shell: bash
         run: |
@@ -166,7 +219,7 @@ jobs:
             sleep $((attempt * 2))
           done
           if [ "$success" != 1 ]; then
-            if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ]; then
+            if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ] || [ "$GITHUB_EVENT_NAME" = 'issue_comment' ]; then
               echo 'LOCAL_WEB_OWNER_DIRECTIVE_QUEUE_INGEST=FAIL' >&2
               exit 1
             fi
