@@ -37,6 +37,37 @@ test('mobile ARPG HUD preserves existing survival mechanics and only uses CSS ar
  assert.match(ui,/@media\(orientation:landscape\)/);
  assert.doesNotMatch(ui,/(?:https?:\/\/|url\(|\.png\b|\.svg\b|\.jpe?g\b|\.webp\b)/i,
    'new UI artwork must be CSS only unless a license-verified CC0 source is registered');
+ // 세 개 일반 버튼은 별도 메뉴에만 배치. 원래 핸들러와 ID를 그대로 유지한다.
+ const quick=index.match(/<nav class="quickMenu" aria-label="빠른 메뉴">([\s\S]*?)<\/nav>/)?.[1]||'';
+ const combat=index.match(/<div class="actions" aria-label="전투 조작">([\s\S]*?)<\/div>/)?.[1]||'';
+ assert.ok(quick&&combat,'quick-menu and combat zones must both exist');
+ for(const id of ['inventory','craft','map']){
+  assert.ok(quick.includes('id="'+id+'"'),'utility control missing from quick-menu: '+id);
+  assert.ok(!combat.includes('id="'+id+'"'),'utility button overlaps combat thumb area: '+id);
+ }
+ for(const id of ['gather','attack','buildBlueprint','petSpecial','dismount']){
+  assert.ok(combat.includes('id="'+id+'"'),'existing combat action missing: '+id);
+ }
+ // 왼손 모드, 접근성 버튼 크기, 임무 접기는 별도 저장 설정이다.
+ for(const id of ['hudHandedness','hudSize','hudQuestMode','questToggle','hudGuideOpen','hudGuideClose','hudGuide']){
+  assert.equal((index.match(new RegExp('id="'+id+'"','g'))||[]).length,1,
+    'mobile convenience control missing or duplicated: '+id);
+ }
+ assert.match(index,/HUD_UI_SAVE_KEY='magic-forest-ui-v1'/);
+ assert.match(index,/function changeHudUi\(kind,value\)/);
+ assert.match(index,/document\.body\.dataset\.hudHand=hudUi\.hand/);
+ assert.match(index,/document\.body\.dataset\.hudSize=String\(hudUi\.size\)/);
+ assert.match(index,/document\.body\.dataset\.questMode=hudUi\.quest/);
+ assert.match(index,/id="miniMapWrap"[\s\S]*?aria-label="지도를 열기"/);
+ assert.match(index,/document\.getElementById\('miniMapWrap'\)\.addEventListener\('click',\(\)=>ui\.mapBtn\.click\(\)\)/);
+ assert.match(ui,/body\[data-hud-hand="left"\]/);
+ assert.match(ui,/body\[data-hud-size="108"\]/);
+ assert.match(ui,/\.quickMenu/);
+ assert.match(ui,/\.hudGuide\[hidden\]/);
+ assert.match(ui,/\.questToggle/);
+ const inline=index.match(/<script>\s*\(\(\)=>\{'use strict';[\s\S]*?<\/script>/)?.[0]||'';
+ assert.ok(inline,'authoritative game script must remain present');
+ assert.doesNotThrow(()=>new Function(inline.slice(8,-9)),'existing game script must remain valid JavaScript');
  assert.match(index,/AVATAR_SAVE_KEY='jaewoon_fantasy_survival_avatar_v1'/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
  assert.match(moduleSource,/productionReady:false/);
