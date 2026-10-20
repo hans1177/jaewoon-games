@@ -1401,7 +1401,9 @@ export function runQueueCommand(args = {}) {
         observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS
       }):null;
     const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
-    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
+    const reserved = ownerFirst?.admissionClosed
+      ? {reserved:false,recovered:0,task:null,queue,selection:{stopReason:'OBSERVED_HOSTED_RUNNERS_FULL',selected:[],lane:executionLane}}
+      : reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget }) };
   } else if (command === 'reserve-batch') {
@@ -1421,13 +1423,18 @@ export function runQueueCommand(args = {}) {
     const speculativeExpansion=executionLane==='game-primary'
       ?speculativeExpansionPolicy(adaptiveControl)
       :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true});
-    const reserved = reserveVibeTaskBatch(queue, {
-      maxConcurrentTasks: reservationMaxConcurrentTasks,
-      reservation: reservationFromArgs(args),
-      lane:executionLane,
-      speculativeExpansionAllowed:speculativeExpansion.allowed,
-      speculativeExpansionReason:speculativeExpansion.reason
-    });
+    const reserved = ownerFirst?.admissionClosed
+      ? {reserved:false,recovered:0,queue,tasks:[],matrix:[],workerCount:0,primaryTaskCount:0,
+         speculativeExpansionAllowed:false,speculativeExpansionReason:'OBSERVED_HOSTED_RUNNERS_FULL',
+         selection:{stopReason:'OBSERVED_HOSTED_RUNNERS_FULL',selected:[],lane:executionLane,freeSlots:0,
+           capacityRunning:[],effectiveMaxConcurrentTasks:reservationMaxConcurrentTasks}}
+      : reserveVibeTaskBatch(queue, {
+        maxConcurrentTasks: reservationMaxConcurrentTasks,
+        reservation: reservationFromArgs(args),
+        lane:executionLane,
+        speculativeExpansionAllowed:speculativeExpansion.allowed,
+        speculativeExpansionReason:speculativeExpansion.reason
+      });
     if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
