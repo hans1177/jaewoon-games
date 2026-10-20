@@ -178,7 +178,7 @@ test('legacy Roblox roots cannot reserve overlapping source files in one wave',(
   const selected=selectVibeQueueBatch(queue,{lane:'game-primary',maxConcurrentTasks:20});
   assert.equal(selected.selected.length,1);
   assert.equal(selected.selected[0].id,'release-focus');
-  const reserved=reserveVibeTaskBatch(queue,{lane:'game-primary',maxConcurrentTasks:20});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},lane:'game-primary',maxConcurrentTasks:20});
   assert.equal(reserved.matrix.length,1);
   assert.equal(reserved.matrix[0].taskId,'release-focus');
 });
@@ -526,8 +526,8 @@ test('game-primary keeps adaptive telemetry but canonical reservation is fixed a
     reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
   const queued=Array.from({length:90},(_,i)=>({
-    id:`queued-${i}`,gameId:`queued-${i}`,target:'roblox',department:'development',type:'implementation',
-    goal:'queued',status:'queued',sourceRoot:`roblox-games/queued-${i}`,responsibleFiles:['index.html'],evidence:[]
+    id:`queued-${i}`,gameId:'simple-rpg',target:'roblox',department:'development',type:'implementation',
+    goal:'queued',status:'queued',sourceRoot:'roblox-games/simple-rpg',responsibleFiles:[`server/Part-${i}.luau`],evidence:[]
   }));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'},null,2));
@@ -970,7 +970,7 @@ test('high-risk opt-in task creates three speculative worker variants', () => {
 test('high-risk Roblox task stays single-candidate so native repair reaches QA without speculative fan-in delay', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'roblox-risk','roblox-risk','roblox',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4});
   assert.equal(reserved.matrix[0].speculativeVariants,1);
 });
 
@@ -1037,9 +1037,9 @@ test('reserve-batch reads adaptive pressure while preserving native primary cove
     const controlFile=path.join(dir,'control.json');
     const batchFile=path.join(dir,'batch.json');
     fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:4,tasks:[{
-      id:'risky-roblox',gameId:'gem-survivor',target:'roblox',department:'development',type:'implementation',
+      id:'risky-roblox',gameId:'simple-rpg',target:'roblox',department:'development',type:'implementation',
       goal:'targeted runtime repair',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
-      sourceRoot:'roblox-games/gem-survivor',responsibleFiles:['server/Game.server.luau']
+      sourceRoot:'roblox-games/simple-rpg',responsibleFiles:['server/Game.server.luau']
     }]},null,2));
     fs.writeFileSync(controlFile,JSON.stringify(control,null,2));
     return{queueFile,controlFile,batchFile};
@@ -2347,14 +2347,14 @@ test('asset production tasks use the dedicated asset-development lane and never 
   assert.equal(asset.executionLane,'ASSET_DEVELOPMENT');
   assert.equal(game.executionLane,'GAME_PRIMARY');
 
-  const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',policy:{},reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
+  const assetBatch=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
   assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual']);
   assert.ok(assetBatch.tasks.every(task=>task.executionLane==='ASSET_DEVELOPMENT'));
   assert.ok(assetBatch.tasks.every(task=>task.neuronExpectedVariants===1));
   assert.equal(assetBatch.workerCount,1);
   assert.equal(assetBatch.matrix[0].speculativeVariants,1);
 
-  const gameBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'game:1',runId:'game-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
+  const gameBatch=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'game:1',runId:'game-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
   assert.deepEqual(gameBatch.tasks.map(task=>task.id),['game-logic']);
   assert.ok(gameBatch.tasks.every(task=>task.executionLane==='GAME_PRIMARY'));
 });
@@ -2409,7 +2409,7 @@ test('owner and release-confirmed game-primary keep precedence over queued asset
         sourceRoot:'roblox-games/same-game',responsibleFiles:['client/Game.client.luau']
       }
     ]});
-    const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2,lane:'game-primary'});
+    const batch=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:2,lane:'game-primary'});
     assert.deepEqual(batch.tasks.map(task=>task.id),[elevated.id]);
     assert.equal(batch.selection.deferredConflicts.some(row=>row.task.id===elevated.id&&row.reason==='queued-asset-reservation-priority'),false);
   }
@@ -2605,10 +2605,10 @@ test('reservation policy follows the main executable checkout rather than stale 
   const previous=process.cwd();
   try{
     fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
-    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['stale-only']}}}));
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['simple-rpg']}}}));
     const canonical=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
     const held=canonical.ownerCanonicalRules?.ownerExclusiveDevelopment?.gameIds||[];
-    const queue={tasks:[...held.map(gameId=>({id:gameId,gameId,target:'roblox',department:'development',type:'implementation',goal:'owner work',status:'queued'})),{id:'fresh',gameId:'stale-only',target:'roblox',department:'development',type:'implementation',goal:'continue',status:'queued'}]};
+    const queue={tasks:[...held.map(gameId=>({id:gameId,gameId,target:'roblox',department:'development',type:'implementation',goal:'owner work',status:'queued'})),{id:'fresh',gameId:'simple-rpg',target:'roblox',department:'development',type:'implementation',goal:'continue',status:'queued'}]};
     process.chdir(root);
     assert.equal(reserveNextVibeTask(queue,{maxConcurrentTasks:1}).task.id,'fresh');
     assert.deepEqual(reserveVibeTaskBatch(queue,{maxConcurrentTasks:1}).tasks.map(t=>t.id),['fresh']);
@@ -2869,9 +2869,9 @@ test('restored verified dependencies unlock the same work and exact reservation 
   const tasks=[{id:'done',status:'verified'},{id:'next',status:'queued',dependencies:['done'],department:'development',target:'roblox',gameId:'g',goal:'build',responsibleFiles:['server/Main.luau'],retries:8}];
   const {file,queue}=queueStorageFixture(t,tasks);
   const reservation={id:'resume:1',runId:'1234',runAttempt:2,reservedAt:'2026-10-12T02:00:00Z'};
-  const before=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation});
+  const before=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4,reservation});
   packVibeQueueStorage(file);
-  const after=reserveVibeTaskBatch(readVibeQueueStorage(file),{maxConcurrentTasks:4,reservation});
+  const after=reserveVibeTaskBatch(readVibeQueueStorage(file),{policy:{},maxConcurrentTasks:4,reservation});
   assert.deepEqual(after,before);assert.equal(after.tasks[0].id,'next');
   fs.writeFileSync(file,JSON.stringify(after.queue));packVibeQueueStorage(file);
   const sync=verifyVibeWorkerSynchronization(readVibeQueueStorage(file),{taskId:'next',reservationId:reservation.id,reservationRunId:reservation.runId,reservationRunAttempt:reservation.runAttempt,reservedAt:reservation.reservedAt});
