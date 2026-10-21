@@ -102,7 +102,7 @@ function actorsFromFrame(frame){
  // Idle/Running/Attack/Stab/Spin/Dodge/Hit의 원본 애니메이션 클립을 교차 페이드한다.
  heroMixer=new THREE.AnimationMixer(model);
  const sourceNames={idle:'Idle',run:'Running_A',stab:'1H_Melee_Attack_Stab',
-  spin:'2H_Melee_Attack_Spin',dodge:'Dodge_Forward',hit:'Hit_A'};
+  spin:'2H_Melee_Attack_Spin',dodge:'Dodge_Forward',hit:'Hit_A',death:'Death_A'};
  for(const [key,name] of Object.entries(sourceNames)){
   const clip=originalClips.find(row=>row.name===name);
   if(clip)heroActions[key]=heroMixer.clipAction(clip);
@@ -117,11 +117,17 @@ function actorsFromFrame(frame){
  const nodeOrigin={branch:'foliage',fiber:'foliage',pebble:'stone'};
  for(const n of frame.nodes){const group=new THREE.Group();group.add(derived(nodeOrigin[n.type]||'stone',n.type==='pebble'?.33:.5,n.type==='fiber'?'#c2dca0':'#bda782'));actors.add(group);resources.push(group)}
 }
-function setHeroMotion(motion){
- const next=heroActions[motion]||heroActions.idle;
- if(!next||playingAction===motion)return;
+// 액션 모션: CC0 원본 단발 클립과 반복 이동을 구분한다. 판정·재사용 시간은 게임이 소유한다.
+function setHeroMotion(motion,restart=false,duration=0){
+ const next=heroActions[motion];
+ if(!next||(playingAction===motion&&!restart))return;
  const prev=heroActions[playingAction];if(prev&&prev!==next)prev.fadeOut(.13);
- next.reset().fadeIn(.13).play();playingAction=motion;
+ const once=motion!=='idle'&&motion!=='run';
+ next.reset().setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity);
+ next.clampWhenFinished=once;
+ next.setEffectiveTimeScale(1);
+ if(duration>0)next.setDuration(duration);
+ next.fadeIn(.13).play();playingAction=motion;
 }
 function follow(frame,dt){
  const p=frame.player,pos=to3(p);
@@ -130,7 +136,12 @@ function follow(frame,dt){
  avatar.position.copy(pos);
  avatar.rotation.y=Math.atan2(p.dirX,p.dirY);
  const swing=(p.swingTimer||0)>0,roll=(p.rollTimer||0)>0;
- setHeroMotion(roll?'dodge':swing?'stab':p.hit>0?'hit':travel>.004?'run':'idle');
+ const motion=frame.state.dead?'death':p.hit>0?'hit':roll?'dodge':swing?(p.motionAction==='spin'?'spin':'stab'):travel>.004?'run':'idle';
+ const serial=Number(p.motionSerial)||0;
+ const replay=serial!==(avatar.userData.motionSerial??serial)&&['stab','spin','dodge'].includes(motion);
+ const duration=motion==='dodge'?(Number(p.rollTimer)||0):['stab','spin'].includes(motion)?(Number(p.swingTimer)||0):0;
+ setHeroMotion(motion,replay,duration);
+ avatar.userData.motionSerial=serial;
  if(heroMixer)heroMixer.update(dt);
  const night=frame.state.time/95>.68;
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;

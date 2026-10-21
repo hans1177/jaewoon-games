@@ -477,6 +477,7 @@ function openSkills(){
 function dodge(){
  if(state.dead||cooldown.dodge>0||state.stamina<28)return;
  state.stamina-=28;cooldown.dodge=3.1;player.rollTimer=.38;
+ player.motionAction='dodge';player.motionSerial=(player.motionSerial||0)+1;
  player.x=clamp(player.x+player.dirX*65,50,WORLD_W-50);
  player.y=clamp(player.y+player.dirY*65,60,WORLD_H-60);
  toast('회피!',.45);
@@ -485,6 +486,7 @@ function skillAttack(type){
  const heavy=type==='heavy';
  if(state.dead||cooldown[type]>0||state.stamina<(heavy?25:36))return;
  state.stamina-=heavy?25:36;cooldown[type]=heavy?5.8:9;player.swingTimer=.36;
+ player.motionAction=heavy?'stab':'spin';player.motionSerial=(player.motionSerial||0)+1;
  const radius=heavy?146:118;
  const enemies=bugs.filter(b=>!b.dead&&dist(player,b)<radius).filter(b=>{
   if(!heavy)return true;
@@ -526,6 +528,7 @@ function attack(){
   const now=performance.now()/1000;
   if(state.dead||now-player.lastAttack<.38)return;
   player.lastAttack=now;
+  player.motionAction='stab';player.motionSerial=(player.motionSerial||0)+1;
   let target=null,bd=attackRange();
   for(const b of bugs){
     if(b.dead)continue;
@@ -844,7 +847,7 @@ document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',
 // 3D 렌더러는 기존 게임의 상태만 읽는다. 전투/제작/저장은 이 파일이 계속 담당한다.
 window.insectWorldSnapshot=()=>({
  player:{...player},bugs:bugs.map(b=>({...b})),nodes:nodes.filter(n=>n.alive).map(n=>({...n})),
- state:{day:state.day,time:state.time,hp:state.hp,weapon:state.weapon,armor:state.armor,workbench:state.workbench,stamina:state.stamina,dead:state.dead},
+ state:{day:state.day,time:state.time,hp:state.hp,kills:state.kills,weapon:state.weapon,armor:state.armor,workbench:state.workbench,stamina:state.stamina,dead:state.dead},
  camp:{...CAMP},hill:{...ANT_HILL},gravel:{...GRAVEL_ZONE},world:{w:WORLD_W,h:WORLD_H},species:SPECIES
 });
 // ===== 시작 =====
