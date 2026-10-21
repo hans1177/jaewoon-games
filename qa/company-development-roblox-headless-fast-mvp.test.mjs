@@ -167,11 +167,18 @@ test('Roblox F0 persist ignores stale source or artifact results',()=>{
  assert.match(workflow,/currentSourceRevision!==targetSourceRevision\|\|currentArtifactIdentity!==targetArtifactIdentity/);
 });
 
-test('Roblox F0 workflow uses shallow checkout and exact source revision fetch instead of full history',()=>{
+test('Roblox F0 workflow fetches only exact source and latest runtime snapshot without full history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+ const plan=workflow.slice(workflow.indexOf('\n  plan:\n'),workflow.indexOf('\n  validate:\n'));
+ const worker=workflow.slice(workflow.indexOf('      - name: Fetch exact source and runtime'),workflow.indexOf('      - name: Install pinned Rojo'));
  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
  assert.ok((workflow.match(/fetch-depth:\s*1/g)||[]).length>=2);
- assert.match(workflow,/git fetch --no-tags origin "\$\{\{ matrix\.sourceRevision \}\}"/);
+ assert.match(plan,/git fetch --no-tags --depth=1 origin "\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH"/);
+ assert.match(plan,/git show "origin\/\$COMPANY_RUNTIME_BRANCH:development-queue\.json"/);
+ assert.doesNotMatch(plan,/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH"/);
+ assert.match(worker,/git fetch --no-tags --depth=1 origin "\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH"/);
+ assert.match(worker,/git fetch --no-tags --depth=1 origin "\$\{\{ matrix\.sourceRevision \}\}"/);
+ assert.doesNotMatch(worker,/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH" main/);
 });
 
 test('cozy-island creates safe spawn before player binding and core loop evidence requires an accepted action',()=>{

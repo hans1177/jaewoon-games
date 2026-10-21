@@ -83,7 +83,8 @@ jobs:
       - name: Fetch runtime queue
         if: steps.freshness.outputs.run == 'true'
         run: |
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          # F0 only needs the latest canonical queue tree, not the entire runtime history.
+          git fetch --no-tags --depth=1 origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - id: targets
         if: steps.freshness.outputs.run == 'true'
@@ -153,8 +154,9 @@ jobs:
           node-version: '22'
       - name: Fetch exact source and runtime
         run: |
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
-          git fetch --no-tags origin "${{ matrix.sourceRevision }}"
+          # Rebuild the immutable source commit, without fetching years of unrelated history.
+          git fetch --no-tags --depth=1 origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "${{ matrix.sourceRevision }}"
       - name: Install pinned Rojo
         run: |
           mkdir -p /tmp/rojo-bin
