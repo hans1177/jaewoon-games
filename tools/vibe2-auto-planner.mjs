@@ -398,6 +398,23 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
   return{...(queueInput||{}),tasks};
 }
 
+// Keep previously approved focused work resumable even when a reserve ingress
+// skips the full global planner. This never creates new tasks or bypasses QA.
+export function restoreApprovedOwnerFocusedCancelledTasks({queue={},catalog={},repoRoot=process.cwd()}={}){
+  if(queue?.queueStorage)throw new Error('FOCUSED_LIFECYCLE_RECOVERY_REQUIRES_UNPACKED_QUEUE');
+  const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];
+  const candidates=tasks.filter(item=>isProductionImplementationTask(item)
+    &&clean(item.status).toLowerCase()==='cancelled'
+    &&/^lifecycle-inactive:(?:REMOVED_PERMANENTLY|REMOVED|RETIRED|PAUSED|MISSING_FROM_CATALOG)$/.test(clean(item.blocker)));
+  if(!candidates.length)return{queue,restored:0,taskIds:[]};
+  const synchronized=synchronizeQueueLifecycle({tasks:candidates},catalog,{},repoRoot);
+  const restoredById=new Map(synchronized.tasks
+    .filter(item=>item.status==='queued'&&item.lastOutcome==='RESTORED_BY_CURRENT_OWNER_FOCUS')
+    .map(item=>[item.id,item]));
+  const updated=restoredById.size?{...queue,tasks:tasks.map(item=>restoredById.get(item.id)||item)}:queue;
+  return{queue:updated,restored:restoredById.size,taskIds:[...restoredById.keys()]};
+}
+
 export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={ready:false,reason:'DEVELOPMENT_BASELINE_REQUIRED',source:null,gate:null,policySource:CANONICAL_POLICY_PATH};if(!id||!fs.existsSync(root))return missing;const policy=readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),null);if(policy&&(clean(policy.authority)!=='MACHINE_EXECUTION_CONTRACT'||clean(policy.machineSourceOfTruth)!==CANONICAL_POLICY_PATH||policy.humanDocumentRequired!==false))return{...missing,reason:'CENTRAL_MACHINE_POLICY_INVALID'};let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){const file=path.join(root,date,'cycle-status.json'),status=readJson(file,null),gate=status?.baselineGate;if(!gate||gate.state!=='DEVELOPMENT_BASELINE_READY'||gate.ready!==true)continue;const e=gate.evidence||{};if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true)continue;return{ready:true,reason:'DEVELOPMENT_BASELINE_READY',source:posix(path.relative(repoRoot,file)),gate,policySource:CANONICAL_POLICY_PATH,historicalPolicyDocument:clean(gate.policyDocument)||null};}return missing;}
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
 function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='roblox'&&project.queueRobloxPostF9ContinuousEvolution===true)return 0;if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
@@ -4289,7 +4306,20 @@ export function runVibe2AutoPlanner({
   return{...result,queueSynchronized,directiveWrites,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length},robloxDistillationContext:{file:posix(resolvedRobloxDistillationFile),records:Array.isArray(robloxDistillationLedger?.records)?robloxDistillationLedger.records.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).includes('roblox-distilled-context:advisory')).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',developmentQueueFile:clean(args['development-queue']),queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),historicalRegistryFile:clean(args['historical-registry']),robloxDistillationFile:clean(args['roblox-distillation']),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
+  const args=parseArgs();
+  if(args['restore-owner-focus']===true){
+    const file=clean(args.queue),catalogFile=clean(args.catalog),root=clean(args.root)||process.cwd();
+    if(!file||!catalogFile||!fs.existsSync(file)||!fs.existsSync(catalogFile))
+      throw new Error('FOCUSED_LIFECYCLE_RECOVERY_CANONICAL_INPUT_REQUIRED');
+    const input=readJson(file,null),catalog=readJson(catalogFile,null);
+    if(!input||!catalog||!Array.isArray(input.tasks)||!Array.isArray(catalog.games))
+      throw new Error('FOCUSED_LIFECYCLE_RECOVERY_INVALID_INPUT');
+    const recovered=restoreApprovedOwnerFocusedCancelledTasks({queue:input,catalog,repoRoot:root});
+    if(recovered.restored)writeJson(file,recovered.queue);
+    console.log('VIBE2_OWNER_FOCUS_LIFECYCLE_RESTORED='+recovered.restored);
+    console.log('VIBE2_OWNER_FOCUS_RESTORED_IDS='+recovered.taskIds.join(','));
+  }else{
+  const result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',developmentQueueFile:clean(args['development-queue']),queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),historicalRegistryFile:clean(args['historical-registry']),robloxDistillationFile:clean(args['roblox-distillation']),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
@@ -4361,4 +4391,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE3_RECOMBINATION_TASKS_APPLIED=${result.recombinationContext?.applied||0}`);
   console.log(`VIBE3_ROBLOX_DISTILLATION_RECORDS_AVAILABLE=${result.robloxDistillationContext?.records||0}`);
   console.log(`VIBE3_ROBLOX_DISTILLATION_TASKS_APPLIED=${result.robloxDistillationContext?.applied||0}`);
+}
 }
