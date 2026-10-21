@@ -347,7 +347,7 @@ test('party-rpg native 3D loads only existing CC0 originals and never claims mis
   const end=html.indexOf(' const canvas=document.getElementById',start);
   assert.ok(start>0&&end>start,'party-rpg 3D source map must remain in the existing game');
   const modelTable=html.slice(start,end);
-  const entries=[...modelTable.matchAll(/(traveler|guardian|mage|rogue):'([^']+\\.glb)'/g)];
+  const entries=[...modelTable.matchAll(/(traveler|guardian|mage|rogue):'([^']+\.glb)'/g)];
   assert.deepEqual(entries.map(row=>row[1]),['traveler','guardian','mage','rogue']);
   const ledger=JSON.parse(fs.readFileSync(path.join(root,'assets','asset-license-ledger.json'),'utf8'));
   assert.ok(ledger.entries.some(row=>row.id==='kaykit-adventurers-cc0-v1'&&row.license==='CC0-1.0'
@@ -359,11 +359,11 @@ test('party-rpg native 3D loads only existing CC0 originals and never claims mis
     assert.ok(fs.statSync(absolute).size>10000,role+': missing/empty original GLB');
     assert.equal(fs.readFileSync(absolute).subarray(0,4).toString('ascii'),'glTF',role+': real GLB magic required');
   }
-  assert.doesNotMatch(modelTable,/assets\\/shared\\/(?:humanoid|creature)-[^'"]+\\.glb/,'do not request phantom GLB paths');
-  assert.match(html,/native3dComplete:requiredRoles\\.every\\(id=>!!models\\[id\\]\\)/);
-  assert.match(html,/missing:requiredRoles\\.filter\\(id=>!models\\[id\\]\\)/);
+  assert.doesNotMatch(modelTable,/assets\/shared\/(?:humanoid|creature)-[^'"]+\.glb/,'do not request phantom GLB paths');
+  assert.match(html,/native3dComplete:requiredRoles\.every\(id=>!!models\[id\]\)/);
+  assert.match(html,/missing:requiredRoles\.filter\(id=>!models\[id\]\)/);
   assert.match(html,/if\(!models\[id\]\)continue;/,'unmapped roles must retain source-bound gameplay canvas');
-  assert.match(html,/window\\.partyRpgVibeState/,'existing game state and saves must be preserved');
+  assert.match(html,/window\.partyRpgVibeState/,'existing game state and saves must be preserved');
 });
 
 
