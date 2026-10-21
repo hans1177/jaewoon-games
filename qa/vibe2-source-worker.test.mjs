@@ -832,6 +832,48 @@ test('large non-full source request is compacted before local model generation w
   assert.equal(result.candidate.edits[0].path,relative);
 });
 
+test('oversized atomic Roblox source and causal-test pair gets bounded initial request without losing either owner',async t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'roblox-games/demo');
+  const gamePath='server/Game.server.luau',testPath='qa/game-causal.test.mjs';
+  const gameSource='local combatState = 1\n',testSource='assert.equal(combatState, 1);\n';
+  write(path.join(sourceRoot,gamePath),gameSource);
+  write(path.join(sourceRoot,testPath),testSource);
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: roblox',
+    'Goal: change combat state only with a regression test, preserving existing saves and authority.',
+    'UNRELATED_CONTEXT='+('duplicate planning detail '.repeat(52000)),
+    'Allowed edit paths: '+gamePath+', '+testPath,
+    '=== FILE '+gamePath+' [EDITABLE] ===',
+    gameSource.repeat(60),
+    '=== FILE '+testPath+' [EDITABLE] ===',
+    testSource.repeat(60)
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>500000);
+  const response=path.join(cwd,'answer.json');
+  write(response,JSON.stringify({edits:[
+    {path:gamePath,find:'local combatState = 1',replace:'local combatState = 2'},
+    {path:testPath,find:'assert.equal(combatState, 1);',replace:'assert.equal(combatState, 2);'}
+  ]}));
+  const result=await generateCandidateWithRecovery({
+    prompt,target:'roblox',sourceRoot,sourceRootRelative:'roblox-games/demo',
+    responsibleFiles:[gamePath,testPath],allowFullRewrite:false,
+    systemAtomicPairRequired:true,responseFiles:[response]
+  });
+  assert.ok(result.generation.requestPromptBytes<36000);
+  assert.ok(result.generation.requestPromptBytes<result.generation.initialPromptBytes);
+  assert.equal(result.candidate.edits.length,2);
+  assert.deepEqual(new Set(result.candidate.edits.map(edit=>edit.path)),new Set([gamePath,testPath]));
+  const compact=buildGenerationRetryPrompt(prompt,{
+    responsibleFiles:[gamePath,testPath],attempt:1,oversizedInitial:true,
+    systemAtomicPairRequired:true,sourceRoot
+  });
+  assert.match(compact,/INITIAL BOUNDED SOURCE REQUEST/);
+  assert.match(compact,/=== FILE server\\/Game\\.server\\.luau \\[EDITABLE\\]/);
+  assert.match(compact,/=== FILE qa\\/game-causal\\.test\\.mjs \\[EDITABLE\\]/);
+});
+
 test('source candidate prompt compaction never applies to asset-development lane',async t=>{
   const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
   const sourceRoot=path.join(cwd,'unity-games/demo');
