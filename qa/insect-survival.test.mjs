@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
 
 const html=fs.readFileSync('web-games/insect-survival/index.html','utf8');
 const world=fs.readFileSync('web-games/insect-survival/world3d.mjs','utf8');
@@ -139,4 +140,54 @@ test('CC0 original spin, dodge and death actions use one-shot playback and accep
  a.node('whirlBtn').events.pointerdown({});assert.equal(a.snapshot().player.motionSerial,1);
  a.node('dodgeBtn').events.pointerdown({});assert.equal(a.snapshot().player.motionAction,'dodge');assert.equal(a.snapshot().player.motionSerial,2);
  a.node('saveBtn').events.click({});
+});
+
+test('shared CC0 derivatives reuse materials by original and tint without changing the master',()=>{
+ const body=world.slice(world.indexOf('const derivedMaterials='),world.indexOf('const originals='));
+ assert.ok(body.startsWith('const derivedMaterials=new Map()'),'reuse stays inside the existing renderer');
+ let copied=0;
+ const master={color:{tint:null},clone(){copied++;return {color:{tint:null,multiply(tint){this.tint=tint.hex}}};}};
+ const createModel=()=>({scale:{multiplyScalar(){}},position:{y:0},traverse(fn){
+  this.mesh={isMesh:true,material:master};fn(this.mesh);
+ }});
+ const ctx={
+  originals:{tree:{clone:createModel}},
+  cloneSkinned:createModel,BASE:{tree:{color:'#aabbcc'}},
+  THREE:{
+   Box3:class{constructor(){this.min={y:0}}setFromObject(){return this}getSize(value){value.y=2;return value}},
+   Vector3:class{constructor(){this.y=0}},
+   Color:class{constructor(hex){this.hex=hex}getHexString(){return this.hex.replace('#','')}},
+   MeshStandardMaterial:class{},DoubleSide:'both'
+  }
+ };
+ vm.runInNewContext(body+';globalThis.make=derived',ctx);
+ const first=ctx.make('tree',9,'#96c486');
+ const second=ctx.make('tree',13,'#96c486');
+ const alternate=ctx.make('tree',9,'#d6b77d');
+ assert.equal(first.mesh.material,second.mesh.material,'same CC0 parent/tint shares GPU material');
+ assert.notEqual(first.mesh.material,alternate.mesh.material,'different game tint stays isolated');
+ assert.equal(copied,2,'one material copy per distinct presentation variant');
+ assert.equal(master.color.tint,null,'the immutable original material remains untouched');
+});
+
+test('common CC0 source inventory does not authorize deletion and checks existing immutable sources',()=>{
+ const result=spawnSync(process.execPath,['tools/asset-health-check.mjs','--inventory'],{
+  encoding:'utf8',maxBuffer:8*1024*1024
+ });
+ assert.equal(result.status,0,result.stderr.slice(-1000));
+ const audit=JSON.parse(result.stdout);
+ assert.equal(audit.deletionAuthorized,false);
+ assert.equal(audit.quarantineMeansBlockNewUseNotMoveOrErase,true);
+ assert.ok(audit.summary.registryAssets>=100);
+ assert.equal(audit.summary.registryAssets,audit.assets.length);
+ assert.equal(audit.summary.registeredCc0,audit.summary.registryAssets);
+ assert.equal(audit.summary.externalNonCc0,2);
+ assert.equal(audit.summary.legacyNonCc0,1);
+ assert.ok(audit.summary.immutableHashPass>=32,'pinned original bytes must be independently hashed');
+ assert.equal(audit.summary.immutableHashMismatch,0);
+ const tree=audit.assets.find(row=>row.id==='external-tinytreats-tree-large-v1');
+ assert.ok(tree&&tree.immutableHash==='PASS'&&tree.verifiedLocal);
+ assert.ok(tree.consumers.includes('web-games/insect-survival/world3d.mjs'),'actual source consumer evidence');
+ assert.ok(audit.externalSources.filter(row=>row.excludedFromGameUse).every(row=>row.action==='EXCLUDE_NON_CC0_KEEP_METADATA'));
+ assert.ok(audit.legacy.some(row=>row.license==='MIT'&&row.action==='QUARANTINE_NEW_USE_KEEP_CATALOG'));
 });
