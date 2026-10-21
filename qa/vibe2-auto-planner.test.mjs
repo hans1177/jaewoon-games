@@ -5632,3 +5632,15 @@ test('F0 source gameplay gaps request causal source repair without claiming runt
   assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
   assert.match(task.buildUpDirective.nextActionDecision.reason,/F0 design-bound gameplay gaps/);
 });
+
+test('Web existing-game assessment always couples approved design to exact graphics source implementation',()=>{
+  const source=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  const block=source.split('function findUnityWebFirstStageTask')[0].split('const id=`\${project.gameId}-existing-web-assessment-v1`')[1];
+  assert.ok(block,'existing Web assessment must remain inside canonical planner');
+  assert.match(block,/attachGameSpecificBuildUpDirective\(out,project,repoRoot,queue\)/);
+  assert.match(block,/applyAdaptiveGraphicsReplacementContract\(out,project,'ASSET_ADAPTATION',repoRoot\)/);
+  assert.match(block,/web-design-graphics-coimplementation:v1/);
+  assert.match(block,/web-creative-library:CC0_ONLY/);
+  assert.match(block,/web-graphics-source-binding:REQUIRED/);
+  assert.doesNotMatch(block,/productionQaPassed:true|runtimeVerified:true/);
+});
