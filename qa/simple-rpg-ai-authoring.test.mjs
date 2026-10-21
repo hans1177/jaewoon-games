@@ -463,7 +463,8 @@ test('bounded A-star path reuse avoids repeat computation without changing comba
   assert.match(server, /AdvancedAIEcosystem\.RefreshPlayerIndex\(now\)/);
   assert.match(server, /AdvancedAIEcosystem\.ChaseTarget\(enemy, root\.Position, now\)/);
   assert.equal((server.match(/AdvancedAIEcosystem\.ForgetEnemy\(enemy\)/g)||[]).length, 2);
-  assert.match(server, /if enemy\.Humanoid\.Health <= 0 or now < enemy\.StunnedUntil then\s+AdvancedAIEcosystem\.ForgetEnemy\(enemy\)/);
+  // Stale movement must stop before the same authoritative AI path is discarded.
+  assert.match(server, /if enemy\.Humanoid\.Health <= 0 or now < enemy\.StunnedUntil then\s+civStopWalkModel\(enemy\.Model\)\s+AdvancedAIEcosystem\.ForgetEnemy\(enemy\)/);
   assert.match(server, /if not target then\s+AdvancedAIEcosystem\.ForgetEnemy\(enemy\)/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /civGuard\(target\)/);
