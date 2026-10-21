@@ -3,7 +3,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createHash} from 'node:crypto';
+import vm from 'node:vm';
+import {createHash,webcrypto} from 'node:crypto';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../assets/vibe-motion-director.js';
@@ -93,6 +94,41 @@ test('native preview binds actual downloaded CC0 OBJ sources with matching SHA25
   assert.match(moduleSource,new RegExp("'"+name+"'"));
  }
 });
+test('browser hashes all 12 CC0 OBJ bytes before rendering and rejects tampered or unregistered assets',async()=>{
+ const start=moduleSource.indexOf('const PINNED_CC0_OBJ_SHA256=');
+ const end=moduleSource.indexOf('function parseDownloadedObj(',start);
+ assert.ok(start>0&&end>start,'runtime integrity gate missing from native renderer');
+ const realm={crypto:webcrypto,TextDecoder,Uint8Array};
+ vm.runInNewContext(moduleSource.slice(start,end)+
+  '\\nglobalThis.verifyObj=verifyPinnedCc0Obj;globalThis.pins=PINNED_CC0_OBJ_SHA256;',realm,{timeout:3000});
+ const expected=['floor_base','tree','tree_large','foliage_A','foliage_B','cobblestones',
+  'bench_A','bench_B','fence_straight','house','gate_single','package'];
+ assert.deepEqual(Object.keys(realm.pins).sort(),[...expected].sort());
+ const response=data=>({ok:true,arrayBuffer:async()=>Uint8Array.from(data).buffer});
+ for(const name of expected){
+  const entry=registry.assets.find(asset=>asset.path==='/'+home+name+'.obj');
+  assert.ok(entry&&entry.license==='CC0'&&entry.downloaded===true&&entry.licenseEvidenceUrl,name);
+  const bytes=fs.readFileSync(home+name+'.obj');
+  const digest=createHash('sha256').update(bytes).digest('hex');
+  assert.equal(digest,entry.sourceHash,'source bytes differ from registered CC0 original: '+name);
+  assert.equal(realm.pins[name],digest,'browser pin differs from canonical SHA-256: '+name);
+  const decoded=await realm.verifyObj(name,response(bytes));
+  assert.match(decoded,/^v -?\\d/m,'runtime must decode original OBJ: '+name);
+ }
+ const good=fs.readFileSync(home+'tree.obj');
+ const altered=Buffer.from(good);altered[0]^=1;
+ await assert.rejects(realm.verifyObj('tree',response(altered)),/CC0 OBJ SOURCE HASH MISMATCH/);
+ await assert.rejects(realm.verifyObj('unregistered',response(good)),/Unregistered CC0 OBJ/);
+ await assert.rejects(realm.verifyObj('tree',{ok:false,status:404}),/Original CC0 OBJ missing/);
+ const insecure={TextDecoder,Uint8Array};
+ vm.runInNewContext(moduleSource.slice(start,end)+
+  '\\nglobalThis.verifyObj=verifyPinnedCc0Obj;',insecure,{timeout:3000});
+ await assert.rejects(insecure.verifyObj('tree',response(good)),/CC0 SHA-256 unavailable/);
+ assert.match(moduleSource,/verifyPinnedCc0Obj\\(name,response\\)/);
+ assert.match(moduleSource,/Promise\\.all\\(\\[verifyPinnedCc0Obj\\(name,response\\),mtlResponse\\.text\\(\\)\\]\\)/);
+ assert.match(moduleSource,/productionReady:false/);
+});
+
 test('original source materials and Diablo-II-style native camera are bound to game state',()=>{
  const source=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
  for(const name of ['floor_base','tree','tree_large','foliage_A','foliage_B','bench_A','bench_B','fence_straight','house','gate_single','package']){
