@@ -2516,10 +2516,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:35:08.290Z",
-      "updatedAt": "2026-10-21T05:42:29.176Z",
+      "updatedAt": "2026-10-21T05:45:46.832Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2537,17 +2537,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
       "robloxBuildArtifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
-      "robloxBuildPassedAt": "2026-10-21T05:42:01.596Z",
+      "robloxBuildPassedAt": "2026-10-21T05:45:46.832Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-21T05:42:01.596Z",
+      "robloxBuildPreflightFailedAt": "2026-10-21T05:45:46.832Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "insect-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-21T05:29:19.154Z",
+        "checkedAt": "2026-10-21T05:30:35.461Z",
         "sourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
         "artifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
         "secondaryOwnerFocus": false,
@@ -28328,7 +28328,7 @@
       "robloxPublicRelease": false
     }
   ],
-  "updatedAt": "2026-10-21T05:44:33.469Z",
+  "updatedAt": "2026-10-21T05:45:46.832Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
