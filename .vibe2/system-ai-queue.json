@@ -116731,7 +116731,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116774,12 +116774,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39606065643:1",
+      "reservedAt": "2026-10-21T13:18:33.981Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -116838,14 +116838,17 @@
         "system-ai-impact-score:502",
         "system-ai-blocked-task-count:4",
         "system-ai-handoff-to-reservation:system-ai:39593213311:1",
-        "actions-run:39593213311"
+        "actions-run:39593213311",
+        "system-ai-impact-score:602",
+        "system-ai-blocked-task-count:6",
+        "system-ai-handoff-to-reservation:system-ai:39606065643:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 502,
+      "impactScore": 602,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 4,
-        "recurrenceCount": 4,
+        "blockedTaskCount": 6,
+        "recurrenceCount": 6,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -116853,7 +116856,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-21T12:10:34.431Z"
+      "updatedAt": "2026-10-21T13:18:33.981Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -144777,7 +144780,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -144819,12 +144822,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39606065643:1",
+      "reservedAt": "2026-10-21T13:18:33.981Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": "stale-system-ai-reservation-reclaimed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -144858,14 +144861,17 @@
         "system-ai-impact-score:1442",
         "system-ai-blocked-task-count:25",
         "system-ai-handoff-to-reservation:system-ai:39590689404:1",
-        "system-ai-handoff-from-reservation:system-ai:39590689404:1"
+        "system-ai-handoff-from-reservation:system-ai:39590689404:1",
+        "system-ai-impact-score:1386",
+        "system-ai-blocked-task-count:23",
+        "system-ai-handoff-to-reservation:system-ai:39606065643:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1442,
+      "impactScore": 1386,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 25,
-        "recurrenceCount": 25,
+        "blockedTaskCount": 23,
+        "recurrenceCount": 23,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -144873,7 +144879,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-21T12:09:47.934Z"
+      "updatedAt": "2026-10-21T13:18:33.981Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -146086,7 +146092,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -146193,12 +146199,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39606065643:1",
+      "reservedAt": "2026-10-21T13:18:33.981Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146532,7 +146538,8 @@
         "system-ai-handoff-state:STALE_RECLAIM",
         "system-ai-handoff-from-reservation:system-ai:39590689404:1",
         "system-ai-handoff-to-reservation:system-ai:39601765554:1",
-        "actions-run:39601765554"
+        "actions-run:39601765554",
+        "system-ai-handoff-to-reservation:system-ai:39606065643:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -146547,7 +146554,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T13:12:53.621Z"
+      "updatedAt": "2026-10-21T13:18:33.981Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
