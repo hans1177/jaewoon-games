@@ -77069,10 +77069,10 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T03:05:15.145Z",
-      "updatedAt": "2026-10-21T20:26:19.991Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-21T19:29:54.730Z",
+      "updatedAt": "2026-10-21T20:33:14.976Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-21T20:33:14.976Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -77130,7 +77130,7 @@
         "capturedAt": "2026-10-12T03:25:06.835Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "8d66ef63e0ea9bf4358aa01675f35233da950275",
+      "robloxSourceCommit": "5615dea015decd28223e0319b61fa61e678b961a",
       "robloxSourceBootstrapPassedAt": "2026-10-21T14:19:29.785Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -77636,12 +77636,12 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "8d66ef63e0ea9bf4358aa01675f35233da950275",
+      "robloxQualityBuildUpSourceRevision": "5615dea015decd28223e0319b61fa61e678b961a",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "star-frontier",
-        "sourceRevision": "8d66ef63e0ea9bf4358aa01675f35233da950275",
+        "sourceRevision": "5615dea015decd28223e0319b61fa61e678b961a",
         "sourceTreeSha": "9b39818517ffab55d58265008dbaf5c4fa4ff8b2",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -77658,7 +77658,7 @@
         },
         "assetRepairContext": {
           "libraryFingerprint": "b51e5b3cf874672384764b442aa22dd602af6c2c465afba4f4a396e8b8935405",
-          "baselineFingerprint": "1c6c9446f496ed1125a5ad4157e22eaf161ecde035dfda575f6d967af5a6a567",
+          "baselineFingerprint": "bbebd361987f23bc351a2a1eec26bd9f8478ec2f0e207588637ce81acb45775a",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
         "qualityFailureKinds": [
@@ -77710,8 +77710,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39656700574,
-        "testedAt": "2026-10-21T19:29:54.730Z"
+        "workflowRunId": 39664842459,
+        "testedAt": "2026-10-21T20:33:14.976Z"
       },
       "ownerWebEditPropagation": {
         "version": 1,
@@ -92898,7 +92898,7 @@
       "updatedAt": "2026-10-21T20:26:19.991Z"
     }
   ],
-  "updatedAt": "2026-10-21T20:32:35.751Z",
+  "updatedAt": "2026-10-21T20:33:14.976Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
