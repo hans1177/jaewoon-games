@@ -1,7 +1,11 @@
 {
   "version": 4,
   "policy": {
-    "licensePriority": ["CC0", "CC0-1.0", "CC0 1.0 Universal"],
+    "licensePriority": [
+      "CC0",
+      "CC0-1.0",
+      "CC0 1.0 Universal"
+    ],
     "cc0Only": true,
     "licenseScope": "GAME_CONTENT_ASSETS_NOT_ENGINE_OR_SOFTWARE_CODE",
     "blocked": [
@@ -62,7 +66,29 @@
     "repositoryInventoryBeforeExternal": true,
     "externalGapFillBeforeNewAuthoring": true,
     "externalCandidateRequiresLicenseAndSourceEvidence": true,
-    "studioMotionRetargetCleanupRequired": true
+    "studioMotionRetargetCleanupRequired": true,
+    "creativeCommonsFamilyIntake": {
+      "scope": "REGISTER_CC_FAMILY_FOR_REVIEW_NOT_UNCONDITIONAL_GAME_USE",
+      "allowedFamilies": [
+        "CC0",
+        "CC-BY",
+        "CC-BY-SA",
+        "CC-BY-ND",
+        "CC-BY-NC",
+        "CC-BY-NC-SA",
+        "CC-BY-NC-ND"
+      ],
+      "versionRule": "USE_EXACT_DECLARED_SUPPORTED_CC_VERSION_AND_SOURCE_LICENSE_LINK",
+      "catalogNonCommercialForNoncommercialResearchOnly": true,
+      "noDerivativesMayNotEnterModifiedGameAssetFlow": true,
+      "attributionAndModificationNoticeRequiredForBY": true,
+      "shareAlikeComplianceReviewRequiredForSA": true,
+      "gameReleaseEligibility": "LICENSE_SPECIFIC_RIGHTS_AND_GENUINE_ORIGINAL_SOURCE_HASH_REQUIRED",
+      "unverifiedOrIncompleteSourceState": "CATALOG_ONLY",
+      "sourceEvidenceRequired": true,
+      "rightsReviewRequired": true,
+      "existingGameHoldAndSaveRulesUnchanged": true
+    }
   },
   "approvedSources": [
     {
