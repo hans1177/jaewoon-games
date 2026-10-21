@@ -113,7 +113,10 @@ test('focused Web game assessment returns to gameplay after old graphics-only ro
     assert.equal(byId.get(id).assetProductionLane,true,id);
     assert.equal(byId.get(id).ownerDevelopmentHold,true,id);
   }
-  const selected=reserveVibeTaskBatch(synced,{policy,lane:'game-primary',maxConcurrentTasks:1});
+  // 별도로 실제 실행 중인 작업은 그대로 보존하되, 슬롯 수리 자체는 독립적으로 검사한다.
+  const reservable=createVibeContinuousQueue({maxConcurrentTasks:4,
+    tasks:synced.tasks.filter(task=>task.id!=='running-assessment')});
+  const selected=reserveVibeTaskBatch(reservable,{policy,lane:'game-primary',maxConcurrentTasks:1});
   assert.deepEqual(selected.tasks.map(task=>task.id),[base.id]);
   const same=synchronizeOwnerDevelopmentHolds(synced,policy,{catalog});
   assert.deepEqual(same.tasks.find(task=>task.id===base.id),recovered,'repeated synchronization must be stable');
