@@ -1870,7 +1870,7 @@ test('Master GLB static QA alone never grants production verification',()=>{
     fs.copyFileSync(path.join(process.cwd(),master),model);
     const staticAsset={
       id:'static-spider',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
-      types:['enemy'],tags:['enemy','spider'],license:'project-original',platforms:['roblox'],
+      types:['enemy'],tags:['enemy','spider'],license:'CC0',platforms:['roblox'],
       path:master,masterGlb:master,downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',
       verifiedAnimation:true,animations:['idle','walk'],
       productionVerified:false,verifiedCompanyReusable:false
@@ -1918,9 +1918,9 @@ test('motion planning reuses company clips per state and does not invent coverag
   try{
     const assets=[
       {id:'owned-motion',category:'MOTION',types:['animation'],status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-        path:'roblox-games/demo/owned.json',license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'},
+        path:'roblox-games/demo/owned.json',license:'CC0',platforms:['roblox'],states:['idle','attack'],rigType:'R15'},
       {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],path:'assets/motion.json',sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
-      {id:'unknown-clips',types:['animation'],license:'project-original',platforms:['roblox'],path:'roblox-games/demo/clips.json'},
+      {id:'unknown-clips',types:['animation'],license:'CC0',platforms:['roblox'],path:'roblox-games/demo/clips.json'},
       {id:'reference-motion',referenceOnly:true,types:['animation'],license:'project-original',platforms:['roblox'],path:'assets/reference.json',states:['death']},
       {id:'wrong-platform',types:['animation'],license:'CC0',platforms:['unity'],path:'unity-games/demo/motion.json',states:['death']},
       {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],path:'assets/blocked.json',states:['skill']}
@@ -2565,7 +2565,7 @@ test('task-declared Blender recipe stays mandatory even when a reusable animatio
   const root=tempRoot();
   try{
     const readyMotion={id:'ready-motion',family:'MOTION',category:'MOTION',types:['animation'],tags:['animation','motion'],
-      path:'assets/roblox/demo/ready-motion.glb',platforms:['roblox'],license:'project-original',
+      path:'assets/roblox/demo/ready-motion.glb',platforms:['roblox'],license:'CC0',
       downloaded:true,productionVerified:true,verifiedAnimation:true,sourceHash:'ready-motion-source'};
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[readyMotion]},null,2));
     const plan=buildVibeAssetProductionPlan({
@@ -2574,7 +2574,7 @@ test('task-declared Blender recipe stays mandatory even when a reusable animatio
         gameId:'declared-dcc-demo',
         goal:'기존 모션 자산을 유지하면서 선언된 Blender 파생 모션을 실제 제작',
         assetAuthoring:{recipes:[{
-          id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'project-original',
+          id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'CC0',
           executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX'],
           script:'assets/roblox/demo/refine-motion.py',
           args:['--output','assets/roblox/demo/native/motion-v1'],
@@ -2595,7 +2595,7 @@ test('task-declared Blender recipe stays mandatory even when a reusable animatio
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'declared-motion-v1');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].assetId,'declared-motion-source');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'MOTION');
-    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'CC0');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -2629,7 +2629,7 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
   try{
     const authoringAsset={
       id:'boss-authoring-base',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
-      types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
+      types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'CC0',
       platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
       nativeArtifacts:['assets/roblox/demo/native/boss/boss.glb'],
       sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md'],
@@ -2655,7 +2655,7 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
-    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'CC0');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
     assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
     assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
@@ -2752,7 +2752,7 @@ test('Roblox planner keeps unregistered source IDs out of internal library candi
 
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
-      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'assets/shared/nature.glb',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
+      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'assets/shared/nature.glb',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'CC0'}]
     },null,2));
     const withCompany=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'Nature background improvement'},target:'roblox',repoRoot:root,
