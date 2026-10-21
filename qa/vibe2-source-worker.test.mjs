@@ -870,8 +870,8 @@ test('oversized atomic Roblox source and causal-test pair gets bounded initial r
     systemAtomicPairRequired:true,sourceRoot
   });
   assert.match(compact,/INITIAL BOUNDED SOURCE REQUEST/);
-  assert.match(compact,/=== FILE server\\/Game\\.server\\.luau \\[EDITABLE\\]/);
-  assert.match(compact,/=== FILE qa\\/game-causal\\.test\\.mjs \\[EDITABLE\\]/);
+  assert.ok(compact.includes('=== FILE server/Game.server.luau [EDITABLE]'))
+  assert.ok(compact.includes('=== FILE qa/game-causal.test.mjs [EDITABLE]'))
 });
 
 test('source candidate prompt compaction never applies to asset-development lane',async t=>{
