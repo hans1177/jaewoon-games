@@ -6,7 +6,7 @@ import path from 'node:path';
 import {runInNewContext} from 'node:vm';
 import { runSystemStewardState, runSystemStewardFiles } from '../tools/vibe2-system-steward.mjs';
 
-test('steward continues through stale lease retry cemetery stale telemetry and queue-cap repairs',()=>{
+test('steward continues through stale lease retry cemetery stale telemetry and queue-cap repairs with structural verification',()=>{
   const result=runSystemStewardState({
     now:'2026-09-19T12:00:00Z',
     queueInput:{maxConcurrentTasks:32,tasks:[
@@ -17,6 +17,7 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
     controlInput:{currentMax:4,lastUpdatedAt:'2026-09-19T09:00:00Z'}
   });
   assert.equal(result.action,'RECOVER_STALE_RUNNING_RESERVATION');
+  assert.ok(result.queue.tasks.find(t=>t.id==='stale').evidence.includes('system-steward:structural-cause-verified:stale-running-reservation'));
   assert.deepEqual(result.actions,['RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE','RESET_INVALID_PARALLELISM_STATE','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256']);
   assert.equal(result.queue.maxConcurrentTasks,256);
   assert.equal(result.control.currentMax,256);

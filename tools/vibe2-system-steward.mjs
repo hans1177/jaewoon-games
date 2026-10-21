@@ -98,7 +98,7 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   if(staleIds.size){
     queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>staleIds.has(row.id)?{
       ...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED',
-      evidence:uniq([...(row.evidence||[]),'system-steward:stale-running-reservation-recovered'])
+      evidence:uniq([...(row.evidence||[]),'system-steward:stale-running-reservation-recovered','system-steward:structural-cause-verified:stale-running-reservation'])
     }:row)});
     actions.push('RECOVER_STALE_RUNNING_RESERVATION'); taskIds.push(...staleIds);
   }

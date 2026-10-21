@@ -126,12 +126,12 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const saturationFloor = Math.max(1, Math.ceil(current * 0.75));
   const loaded = workerCount >= saturationFloor;
   const localBackpressureActive = effectiveMax < current;
-  const observedExternalCapacityBound = workerCount >= 8
-    && actualPeakConcurrency >= 4
-    && workerCount >= actualPeakConcurrency + 4
+  const observedExternalCapacityBound = workerCount >= 6
+    && actualPeakConcurrency >= 3
+    && workerCount >= actualPeakConcurrency + 3
     && effectiveMax > actualPeakConcurrency
     && peakUtilizationPct > 0
-    && peakUtilizationPct < 50;
+    && peakUtilizationPct < 55;
   const level = pressureLevel(telemetry);
   const reasons = pressureReasons(telemetry);
   const firstPass=num(telemetry?.throughput?.firstCandidatePassRatePct);
