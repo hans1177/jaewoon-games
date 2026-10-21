@@ -34,7 +34,7 @@ const CLASSIFIERS=[
   ['ITEM_VISUAL_PREVIEW',/3d.?item.?preview|item.?turntable|장비.?미리보기|아이템.?회전/i],
   ['BOSS_PHASE_PRESENTATION',/boss.?phase.?strip|보스.?체력바|페이즈.?표시/i],
   ['VISUAL_EFFECT_BUDGET',/effect.?budget|popup.?pool|ui.?performance|이펙트.?제한/i],
-  ['INPUT_ACTION_CAUSAL_CHAIN',/(?:input|touch|pointer|버튼|조이스틱).{0,100}(?:state|gameplay|hit|damage|attack|피해|판정|체력)|(?:state|gameplay|hit|damage|attack|피해|판정|체력).{0,100}(?:input|touch|pointer|버튼|조이스틱)/i],
+  ['INPUT_ACTION_CAUSAL_CHAIN',/(?:input|touch|pointer|터치|버튼|조이스틱).{0,100}(?:state|gameplay|hit|damage|attack|피해|판정|체력)|(?:state|gameplay|hit|damage|attack|피해|판정|체력).{0,100}(?:input|touch|pointer|터치|버튼|조이스틱)/i],
   ['MOTION_CONTACT_SYNC',/foot.?contact|foot.?slid|root.?motion|motion.?sync|발.?접지|문워크|발.?미끄러|공격.?동작.?판정/i],
   ['SCENE_CAUSALITY_CHAIN',/scene.?causal|cinematic.?sequence|camera.?refocus|장면.?인과|장면.?전환.?판정|카메라.?연출.?판정/i]
 ];
