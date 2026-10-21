@@ -147,7 +147,7 @@ async function loadSourceModels(){
 export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100}){
   const models=await loadSourceModels(); // Fail closed: leave the old game active.
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
-  let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroFrame=0;
+  let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroAttackAt=0,lastHeroFrame=0;
   let scene=null,disposed=false,heroLoadVersion=0;
   let selectedAppearance=null;
   async function setAvatarAppearance(requested){
@@ -518,14 +518,23 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const now=performance.now();
       const moving=(state.keys?.size||0)>0||Math.hypot(Number(state.stick?.x)||0,Number(state.stick?.y)||0)>.16;
       const pose=now-(Number(p.attackAt)||0)<330?'attack':moving?'move':'idle';
-      const motionWords=pose==='attack'?['attack','swing','cast',playerMotionProfile.primaryToolMotion.toLowerCase()]:
-        pose==='move'?['walk','run','move','locomotion']:['idle','stand','breath'];
-      const desired=heroClips.find(clip=>motionWords.some(word=>clip.name.toLowerCase().includes(word)));
+      // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
+      const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
+      const desired=heroClips.find(clip=>clip.name===clipName);
       const nextName=desired?.name||'';
-      if(heroMixer&&nextName!==heroActionName){
+      const attackAt=Number(p.attackAt)||0;
+      if(heroMixer&&(nextName!==heroActionName||(pose==='attack'&&attackAt!==lastHeroAttackAt))){
         if(heroAction)heroAction.fadeOut(.15);
-        heroAction=desired?heroMixer.clipAction(desired).reset().fadeIn(.15).play():null;
+        heroAction=desired?heroMixer.clipAction(desired):null;
+        if(heroAction){
+          heroAction.reset().setLoop(pose==='attack'?THREE.LoopOnce:THREE.LoopRepeat,pose==='attack'?1:Infinity);
+          heroAction.clampWhenFinished=pose==='attack';
+          heroAction.setEffectiveTimeScale(1);
+          if(pose==='attack')heroAction.setDuration(.33);
+          heroAction.fadeIn(.15).play();
+        }
         heroActionName=nextName;
+        if(pose==='attack')lastHeroAttackAt=attackAt;
       }
       if(heroMixer){heroMixer.update(Math.min(.05,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
     }
