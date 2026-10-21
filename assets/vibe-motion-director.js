@@ -57,7 +57,7 @@ export const ROBLOX_MOTION_SOURCE_PRIORITY=Object.freeze([
   'LICENSE_VERIFIED_REPOSITORY_MOTION',
   'LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE',
   'SAFE_RETARGET_AND_CLEANUP',
-  'NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP'
+  'VERIFIED_CC0_SOURCE_NATIVE_ADAPTATION_REQUIRED'
 ]);
 
 export const DUEL_COMBAT_MOTION_TARGET='RESPONSIVE_DUEL_ARENA_COMBAT';
@@ -3203,31 +3203,37 @@ export function selectRobloxCharacterMotionSource({
   const targetArchetype=upper(archetype||context.speciesOrArchetype||context.archetype);
   const rows=(candidates||[]).map(candidate=>{
     const dna=candidate.dna||candidate;
+    // 모션 원본: 소유·품질 점수·리타게팅 표시는 CC0 출처를 대신하지 못한다.
+    const sourceLicense=text(candidate.license||dna.SOURCE_LICENSE);
+    const sourceHash=text(candidate.sourceHash||candidate.sourceSha256||dna.SOURCE_HASH);
+    const sourcePath=text(candidate.sourceUrl||candidate.sourcePath||candidate.path||dna.SOURCE_PATH);
+    if(candidate.practiceOnly===true||candidate.securityBlocked===true||candidate.quarantined===true||!/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(sourceLicense)||!/^[0-9a-f]{64}$/i.test(sourceHash)||!sourcePath)
+      return Object.freeze({candidate,id:text(candidate.id||dna.MOTION_ID),valid:false,score:-Infinity,sourceClass:'CC0_SOURCE_REQUIRED',rejectedBy:'CC0_SOURCE_EVIDENCE_REQUIRED'});
     const base=scoreMotionCandidate(candidate,{...context,platform:'ROBLOX'},recentMotionIds);
     if(!base.valid||candidate.qualityReview?.verdict==='FAIL')return Object.freeze({candidate,id:base.id,valid:false,score:-Infinity,sourceClass:'INCOMPATIBLE',rejectedBy:base.rejectedBy||'QUALITY_REVIEW_FAILED'});
     const verified=upper(dna.RUNTIME_VERIFICATION_STATE||candidate.runtimeVerificationState)==='VERIFIED_RUNTIME'||candidate.companyVerified===true;
     const sameGame=targetGame&&text(candidate.gameId||candidate.GAME_ID)===targetGame;
     const sameArchetype=targetArchetype&&upper(dna.SPECIES_OR_ARCHETYPE||candidate.archetype)===targetArchetype;
     const provenance=upper(dna.SOURCE_PROVENANCE||candidate.sourceProvenance||candidate.sourceType);
-    const licensed=candidate.licenseVerified===true||/LICENSE_VERIFIED|CC0|PROJECT_ORIGINAL|ROBLOX_PLATFORM/.test(provenance);
-    let sourceClass='NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP',bonus=0;
+    let sourceClass='VERIFIED_CC0_SOURCE_NATIVE_ADAPTATION_REQUIRED',bonus=0;
     if(verified&&sameGame&&sameArchetype){sourceClass='VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION';bonus=500;}
     else if(verified&&candidate.companyVerified===true){sourceClass='VERIFIED_COMPATIBLE_COMPANY_MOTION_LIBRARY';bonus=400;}
-    else if(licensed&&/REPOSITORY|PROJECT_ORIGINAL|CC0/.test(provenance)){sourceClass='LICENSE_VERIFIED_REPOSITORY_MOTION';bonus=300;}
-    else if(licensed&&/EXTERNAL|ROBLOX_PLATFORM/.test(provenance)){sourceClass='LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE';bonus=200;}
+    else if(/REPOSITORY|CC0/.test(provenance)){sourceClass='LICENSE_VERIFIED_REPOSITORY_MOTION';bonus=300;}
+    else if(/EXTERNAL/.test(provenance)){sourceClass='LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE';bonus=200;}
     else if(candidate.retargeted===true||/RETARGET/.test(provenance)){sourceClass='SAFE_RETARGET_AND_CLEANUP';bonus=100;}
     return Object.freeze({candidate,id:base.id,valid:true,score:base.score,sourcePreference:bonus,sourceClass,rejectedBy:null});
   }).filter(row=>row.valid).sort((a,b)=>b.score-a.score||b.sourcePreference-a.sourcePreference||a.id.localeCompare(b.id));
   return Object.freeze({
     selected:rows[0]?.candidate||null,
     selectedId:rows[0]?.id||null,
-    sourceClass:rows[0]?.sourceClass||'NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP',
+    sourceClass:rows[0]?.sourceClass||'VERIFIED_CC0_MOTION_REQUIRED',
     ranked:Object.freeze(rows.map(row=>Object.freeze({id:row.id,score:row.score,sourceClass:row.sourceClass}))),
     priority:ROBLOX_MOTION_SOURCE_PRIORITY,
     libraryFirst:true,
     sourcePreferenceOnlyBreaksCompatibilityScoreTies:true,
     selectionRequiresTargetGameVisualReview:true,
-    newKeyframeAuthoringLast:true,
+    newKeyframeAuthoringLast:false,
+    cc0SourceRequired:true,
     gameplayAuthority:false
   });
 }
