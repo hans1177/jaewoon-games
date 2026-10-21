@@ -1072,6 +1072,55 @@ test('verified internal-release focused Roblox caretaker survives stale DESIGN_O
   assert.ok(restored.evidence.includes('production-authority-restored:VERIFIED_INTERNAL_OR_PUBLIC_RELEASE'));
 });
 
+test('stale lifecycle cancellation resumes only current exact owner-focused development',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    policy.developmentLifecycleMachine={focusedDevelopmentCaretakers:{
+      enabled:true,targetFocusedGames:3,maxFocusedGames:3,
+      focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
+      ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+      ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+      completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
+    }};
+    policy.permanentProjectRemoval={ids:['permanently-removed']};
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    const task=(id,gameId,target='roblox',blocker='lifecycle-inactive:REMOVED_PERMANENTLY')=>({
+      id,gameId,target,department:'development',type:'implementation',
+      sourceRoot:`${target}-games/${gameId}`,responsibleFiles:[`${target}-games/${gameId}/server/Game.server.luau`],
+      goal:'resume existing gameplay safely',status:'cancelled',blocker,
+      lastOutcome:'CANCELLED_BY_OWNER_PERMANENT_REMOVAL',releaseState:'development-confirmed',
+      reservationId:'old',reservationRunId:'old',reservationRunAttempt:1,reservedAt:'2026-10-01T00:00:00Z',
+      evidence:['lifecycle-sync:REMOVED_PERMANENTLY','owner-permanent-removal:yes']
+    });
+    const queue={maxConcurrentTasks:20,tasks:[
+      task('focused','simple-rpg'),
+      task('wrong-platform','cozy-island'),
+      task('removed','permanently-removed'),
+      task('ordinary','ordinary'),
+      task('manual-stop','simple-rpg','roblox','owner-stop-requested')
+    ]};
+    const catalog={permanentRemovalPolicy:{ids:['permanently-removed'],reentryAllowed:false},
+      games:['simple-rpg','cozy-island','permanently-removed','ordinary'].map(id=>({
+        id,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'
+      }))};
+    const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,queue,repoRoot:root,
+      maxConcurrentTasks:4,queueMaxConcurrentTasks:20,planningBacklogTarget:4});
+    const byId=new Map(result.queue.tasks.map(row=>[row.id,row]));
+    const resumed=byId.get('focused');
+    assert.equal(resumed.status,'queued');
+    assert.equal(resumed.blocker,null);
+    assert.equal(resumed.reservationId,null);
+    assert.equal(resumed.lastOutcome,'RESTORED_BY_CURRENT_OWNER_FOCUS');
+    assert.ok(resumed.evidence.includes('restored-from:lifecycle-inactive:REMOVED_PERMANENTLY'));
+    for(const id of ['wrong-platform','removed','ordinary','manual-stop'])
+      assert.equal(byId.get(id).status,'cancelled',id+' must not be revived');
+    assert.equal(byId.get('removed').blocker,'lifecycle-inactive:REMOVED_PERMANENTLY');
+    assert.equal(byId.get('manual-stop').blocker,'owner-stop-requested');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('registered historical Roblox maintenance survives catalog absence and revives stale lifecycle cancellation',()=>{
   const root=tempRepo();
   const task={
