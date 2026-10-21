@@ -125,6 +125,9 @@ function findCandidates(type, candidates) {
     retargetable:asset?.retargetable===true,
     compatibleMotionSourceIds:frozenList(asset.compatibleMotionSourceIds),
     studioMotionCandidate:asset?.studioMotionCandidate===true,
+    styleFamily:text(asset.styleFamily||asset.styleProfile),
+    sourceHash:text(asset.sourceHash),
+    verifiedCompanyReusable:asset?.verifiedCompanyReusable===true,
     creatureFamily:text(asset.creatureFamily),
   }));
 }
@@ -513,10 +516,20 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
   const production = buildProductionPlan(request, prototypePreset);
   const preferredIds = presetPreferredIds(prototypePreset);
+  const requestedStyle=text(manifest?.styleFamily||manifest?.styleProfile||prototypePreset?.styleFamily).toLowerCase();
+  // 메인: 검증 회사 에셋·모션·스타일을 우선하되 후보 자격과 실제 바인딩 증거를 혼동하지 않는다.
   const matched = types.flatMap((type) => findCandidates(type, candidates))
     .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
-      || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true));
+      || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true)
+      || Number(b.verifiedCompanyReusable) - Number(a.verifiedCompanyReusable)
+      || Number(Boolean(requestedStyle)&&b.styleFamily.toLowerCase()===requestedStyle)
+        - Number(Boolean(requestedStyle)&&a.styleFamily.toLowerCase()===requestedStyle));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
+  const styleConflicts=matched.filter(item=>requestedStyle&&item.styleFamily&&item.styleFamily.toLowerCase()!==requestedStyle)
+    .map(item=>item.id);
+  const actorMotionEvidence=matched.filter(item=>ACTOR_TYPES.includes(item.type)).map(item=>Object.freeze({
+    assetId:item.id,motionMode:item.motionMode,requiresRuntimeRetargetAndFootContactProof:true
+  }));
   const binding = types.map((type) => Object.freeze({
     type,
     required:true,
@@ -536,6 +549,15 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     requestedTypes:Object.freeze(types),
     explicitRequestedTypes:Object.freeze(explicitRequestedTypes),
     matched:Object.freeze(matched),
+    selectionQuality:Object.freeze({
+      requestedStyle:requestedStyle||null,
+      styleConflicts:Object.freeze(unique(styleConflicts)),
+      actorMotionEvidence:Object.freeze(actorMotionEvidence),
+      verifiedCompanyCandidates:matched.filter(item=>item.verifiedCompanyReusable).length,
+      assetCompatibilityEvidence:'CANDIDATE_ONLY_RUNTIME_BINDING_PENDING',
+      replacementAllowedOnlyWithVerifiedImprovement:true,
+      preserveOriginalAssets:true
+    }),
     missingTypes:Object.freeze(missingTypes),
     binding:Object.freeze(binding),
     ready:missingTypes.length===0,
