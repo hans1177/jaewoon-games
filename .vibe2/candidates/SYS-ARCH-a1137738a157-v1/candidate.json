@@ -1,0 +1,20 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "tools/vibe2-source-worker.mjs",
+      "find": "const clean=value=>String(value??'').trim();",
+      "replace": ""
+    },
+    {
+      "path": "qa/vibe2-source-worker.test.mjs",
+      "find": "  assert.equal(select('<main>new game</main>').engine,'PLAYCANVAS');",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
