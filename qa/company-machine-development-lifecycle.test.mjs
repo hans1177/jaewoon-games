@@ -39,3 +39,41 @@ test('canonical game execution stays in the existing Vibe pipeline without histo
   assert.equal(fs.existsSync('tools/company-design-artbook.mjs'),false);
   assert.equal(fs.existsSync('tools/artbook-department-runner.mjs'),false);
 });
+
+test('rule5 permanently binds mandatory verified CC0 replacement and shared consumer-safe cleanup to all game workers',()=>{
+  const rule=roadmap.ownerCanonicalRules?.rule5;
+  assert.equal(rule?.enabled,true);
+  assert.equal(rule?.automaticContractBinding,true);
+  assert.equal(rule?.cc0OriginalRequired,true);
+  assert.equal(rule?.sourceAndLicenseEvidenceRequired,true);
+  assert.equal(rule?.sourceHashAndModificationLineageRequired,true);
+  assert.equal(rule?.gameSpecificModificationRequired,true);
+  assert.deepEqual(rule?.allowedAssetLicenses,['CC0','CC0-1.0','CC0 1.0 Universal']);
+  assert.equal(rule?.replacementScope,'ALL_SELF_AUTHORED_ASSET_LIBRARIES_AND_THEIR_EXISTING_CONSUMERS');
+  assert.equal(rule?.selfAuthoredLowQualityAssetsMustBePermanentlyDeleted,true);
+  assert.equal(rule?.regenerationOrReintroductionForbidden,true);
+  assert.equal(rule?.sharedSelfAuthoredAssetsMustBePermanentlyDeleted,true);
+  assert.equal(rule?.inactiveGamesMustRemainUnchanged,true);
+  assert.equal(rule?.inactiveGameAssetsMustNotBeDeleted,true);
+  assert.equal(rule?.existingPipelineOnly,true);
+  assert.equal(rule?.existingGameRulesSaveBalanceAndLockedF0F9SequencePreserved,true);
+  assert.ok(rule?.deletionOrder?.includes('CHECK_ALL_REMAINING_CONSUMERS'));
+  assert.ok(rule?.deletionOrder?.includes('DELETE_REPLACED_LOW_QUALITY_SOURCE_AND_LIBRARY_ENTRY_ONLY_WHEN_NO_INACTIVE_CONSUMER'));
+
+  const agents=['graphics','audio','director','development','qa','release','planning','homepage'];
+  for(const agent of agents){
+    const contents=read(`.github/agents/${agent}.agent.md`);
+    assert.match(contents,/## 상시 공지 — 기존 제작물 전부 검증된 CC0 원본 기반으로 교체/,agent);
+    assert.match(contents,/ownerCanonicalRules\.rule5/,agent);
+    assert.match(contents,/issues\/8871/,agent);
+    assert.match(contents,/기존 자체 제작물도 최종적으로 모두 교체/,agent);
+    assert.match(contents,/비활성 게임과 공유 소비자는 원상 보존/,agent);
+    assert.match(contents,/공지 등록은 교체 완료나 테스트 PASS 증거가 아니다/,agent);
+  }
+  const graphics=read('.github/agents/graphics.agent.md');
+  const audio=read('.github/agents/audio.agent.md');
+  const director=read('.github/agents/director.agent.md');
+  assert.doesNotMatch(graphics,/직접 제작으로 전환한다|Blender\/Python 기반 원본 제작/);
+  assert.doesNotMatch(audio,/외부 에셋은 CC0 또는 상업 이용/);
+  assert.doesNotMatch(director,/외부 시각\/음원 에셋은 상업 이용과 수정 허용/);
+});
