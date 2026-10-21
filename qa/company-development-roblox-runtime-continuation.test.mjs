@@ -267,6 +267,52 @@ test('already preflight-ready games wake F0 without requiring a new preflight pa
   assert.match(workflow,/needs\.preflight-persist\.outputs\.pass_count != '0'/);
 });
 
+test('already verified F0 work skips empty persistence without bypassing exact package gates',()=>{
+  const slice=(from,to)=>{
+    const begin=preflight.indexOf('\n  '+from+':\n');
+    const end=preflight.indexOf('\n  '+to+':\n',begin);
+    assert.ok(begin>=0&&end>begin,from);
+    return preflight.slice(begin,end);
+  };
+  const persist=slice('preflight-persist','dispatch-headless');
+  const dispatch=preflight.slice(preflight.indexOf('\n  dispatch-headless:\n'));
+  const persistExpr=persist.match(/^\s+if: (.+)$/m)?.[1];
+  const dispatchExpr=dispatch.match(/^\s+if: (.+)$/m)?.[1];
+  assert.ok(persistExpr&&dispatchExpr);
+  assert.match(persist,/needs: \[preflight-plan, preflight-worker\]/);
+  assert.match(dispatch,/needs: \[preflight-plan, preflight-persist\]/);
+  assert.match(persistExpr,/needs\.preflight-plan\.outputs\.count != '0'/);
+  assert.match(dispatchExpr,/needs\.preflight-plan\.result == 'success'/);
+  assert.match(dispatchExpr,/needs\.preflight-persist\.result == 'skipped'/);
+  assert.match(dispatchExpr,/needs\.preflight-persist\.outputs\.pass_count != '0'/);
+  const check=(expression,{plan='success',count='0',ready='0',persistState='skipped',passed=''}={})=>{
+    // GitHub job names include hyphens; normalize identifiers for evaluating
+    // exactly the existing workflow condition rather than a copy of its logic.
+    const normalized=expression
+      .replaceAll('needs.preflight-plan','needs.plan')
+      .replaceAll('needs.preflight-persist','needs.persist');
+    return runInNewContext(normalized,{
+      always:()=>true,
+      needs:{
+        plan:{result:plan,outputs:{count,f0_ready_count:ready}},
+        persist:{result:persistState,outputs:{pass_count:passed}},
+      },
+    });
+  };
+  // An already-verified package has nothing to write and can go directly to F0.
+  assert.equal(check(persistExpr,{count:'0'}),false);
+  assert.equal(check(dispatchExpr,{ready:'1'}),true);
+  // Neither a missing preflight pass nor a failed writer can open F0.
+  assert.equal(check(dispatchExpr,{ready:'0'}),false);
+  assert.equal(check(dispatchExpr,{ready:'1',persistState:'failure'}),false);
+  assert.equal(check(dispatchExpr,{ready:'1',plan:'failure'}),false);
+  // A fresh exact PASS still requires real successful persistence.
+  assert.equal(check(persistExpr,{count:'1'}),true);
+  assert.equal(check(dispatchExpr,{count:'1',persistState:'success',passed:'1'}),true);
+  assert.equal(check(dispatchExpr,{count:'1',persistState:'success',passed:'0'}),false);
+  assert.equal(check(dispatchExpr,{count:'1',persistState:'failure',passed:'1'}),false);
+});
+
 test('shared Roblox preflight checkout fans out without an internal six-game cap',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   assert.doesNotMatch(workflow,/rows\.length>=6/);
