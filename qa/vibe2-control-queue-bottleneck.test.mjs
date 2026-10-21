@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 
 test('central v499 preserves every result artifact while coalescing callback workflows under pressure',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -22,7 +23,6 @@ test('central v499 preserves every result artifact while coalescing callback wor
 
 test('continuous core suppresses non-asset callback storms under pressure and preserves cohort fan-in',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
-  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}'/);
   assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'/);
   assert.match(workflow,/vibe2-neuron-complete'[\s\S]*'ubuntu-latest'/);
   assert.match(workflow,/fan_in:[\s\S]*runs-on: ubuntu-latest/);
@@ -47,4 +47,37 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.run_id,/);
   assert.doesNotMatch(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha,/);
   assert.match(workflow,/cancel-in-progress: false/);
+});
+
+// 실제 워크플로의 중복 판별 코드를 실행하여 오래 실행되는 워커가 새 리필을 막지 않는지 확인한다.
+test('refill admission and completion callbacks merge waiting wakes only',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const title='Vibe2 Continuous Core · vibe2-fanin-refill · game-primary';
+  const blocks=[...workflow.matchAll(/^ +const fs=require\('fs'\);\n(?:(?!^ +NODE$)[\s\S])*?process\.stdout\.write\((older|found)\?'yes':'no'\);/gm)]
+    .map(match=>match[0]).filter(code=>/refill-(?:admission-)?runs\.json/.test(code));
+  assert.equal(blocks.length,4);
+  for(const code of blocks){
+    for(const [status,sha,lane,id,expected] of [
+      ['queued','head',title,1,'yes'],['pending','head',title,1,'yes'],
+      ['in_progress','head',title,1,'yes'],['completed','head',title,1,'no'],
+      ['queued','old',title,1,'no'],['queued','head',title+'-other',1,'no'],
+      ['queued','head',title,2,'no']
+    ]){
+      let output='';
+      const run={id,event:'repository_dispatch',head_branch:'main',head_sha:sha,display_title:lane,status};
+      vm.runInNewContext(code,{
+        require:name=>name==='fs'?{readFileSync:()=>JSON.stringify({workflow_runs:[run]})}:{execFileSync:()=>JSON.stringify({jobs:[{name:'reserve',status:'in_progress'}]})},
+        process:{env:{CURRENT_RUN:'2',CURRENT_MAIN:'head',REFILL_LANE:'game-primary',REFILL_TITLE:title},stdout:{write:value=>{output+=value;}}}
+      });
+      assert.equal(output,expected,status+':'+sha+':'+lane+':'+id);
+      if(expected==='yes')for(const jobs of [[{name:'reserve',status:'completed'},{name:'worker',status:'queued'}],null]){
+        output='';
+        vm.runInNewContext(code,{
+          require:name=>name==='fs'?{readFileSync:()=>JSON.stringify({workflow_runs:[run]})}:{execFileSync:()=>{if(jobs===null)throw Error('probe unavailable');return JSON.stringify({jobs});}},
+          process:{env:{CURRENT_RUN:'2',CURRENT_MAIN:'head',REFILL_LANE:'game-primary',REFILL_TITLE:title},stdout:{write:value=>{output+=value;}}}
+        });
+        assert.equal(output,'no','completed reserve or unavailable telemetry must not suppress refill');
+      }
+    }
+  }
 });

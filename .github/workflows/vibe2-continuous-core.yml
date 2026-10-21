@@ -71,11 +71,11 @@ permissions:
   actions: write
 
 # 파일명: .github/workflows/vibe2-continuous-core.yml - 동시 실행
-# 동일 main SHA + 실행 레인의 stateless fan-in wake는 GitHub 입구에서 pending 1개로 합친다.
+# 리필 실행은 실행 ID로 분리하고, 같은 SHA·레인의 아직 대기 중인 신호만 아래 접수 단계에서 합친다.
 # 이미 실행 중인 예약과 결과 콜백(neuron-complete)은 취소하지 않는다.
 # 공유 큐는 영구 저장되므로 중복 wake 취소는 결과를 삭제하지 않으며 기존 optimistic retry는 유지한다.
 concurrency:
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}-{1}', github.sha, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
@@ -170,15 +170,25 @@ jobs:
           const runs=JSON.parse(fs.readFileSync('/tmp/vibe2-refill-admission-runs.json','utf8')).workflow_runs||[];
           const current=Number(process.env.CURRENT_RUN||0);
           const title='Vibe2 Continuous Core · vibe2-fanin-refill · '+String(process.env.REFILL_LANE||'game-primary');
+          // 워크플로가 대기 상태여도 예약은 끝났을 수 있으므로 실제 예약 작업만 판별한다.
           const states=new Set(['queued','pending','in_progress','requested','waiting']);
-          const older=runs.some(run=>
-            Number(run.id||0)>0 && Number(run.id)<current
+          let reserveProbes=0;
+          const older=runs.some(run=>{
+            if(!(Number(run.id||0)>0 && Number(run.id)<current
             &&String(run.event||'')==='repository_dispatch'
             &&String(run.head_branch||'')==='main'
             &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
             &&String(run.display_title||'')===title
-            &&states.has(String(run.status||'').toLowerCase())
-          );
+            &&states.has(String(run.status||'').toLowerCase())))return false;
+            if(++reserveProbes>3)return false;
+            try{
+              const payload=JSON.parse(require('node:child_process').execFileSync('gh',[
+                'api',`repos/${process.env.GITHUB_REPOSITORY}/actions/runs/${run.id}/jobs?per_page=100`
+              ],{encoding:'utf8',timeout:10000,stdio:['ignore','pipe','ignore']}));
+              if(!Array.isArray(payload.jobs))return false;
+              return payload.jobs.length===0||payload.jobs.some(job=>job.name==='reserve'&&states.has(String(job.status||'').toLowerCase()));
+            }catch{return false;}
+          });
           process.stdout.write(older?'yes':'no');
           NODE
               )"
@@ -1120,13 +1130,23 @@ jobs:
                 REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE' > /tmp/vibe2-neuron-refill-active.txt
               const fs=require('fs');
               const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-neuron-refill-runs.json','utf8'));
+              // 워크플로가 대기 상태여도 예약은 끝났을 수 있으므로 실제 예약 작업만 판별한다.
               const states=new Set(['queued','pending','in_progress','requested','waiting']);
-              const found=(payload.workflow_runs||[]).some(run=>
-                String(run.id||'')!==String(process.env.CURRENT_RUN||'')
+              let reserveProbes=0;
+              const found=(payload.workflow_runs||[]).some(run=>{
+                if(!(String(run.id||'')!==String(process.env.CURRENT_RUN||'')
                 &&states.has(String(run.status||'').toLowerCase())
                 &&String(run.display_title||'')===String(process.env.REFILL_TITLE||'')
-                &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
-              );
+                &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')))return false;
+                if(++reserveProbes>3)return false;
+                try{
+                  const payload=JSON.parse(require('node:child_process').execFileSync('gh',[
+                    'api',`repos/${process.env.GITHUB_REPOSITORY}/actions/runs/${run.id}/jobs?per_page=100`
+                  ],{encoding:'utf8',timeout:10000,stdio:['ignore','pipe','ignore']}));
+                  if(!Array.isArray(payload.jobs))return false;
+                  return payload.jobs.length===0||payload.jobs.some(job=>job.name==='reserve'&&states.has(String(job.status||'').toLowerCase()));
+                }catch{return false;}
+              });
               process.stdout.write(found?'yes':'no');
           NODE
                 refill_active="$(cat /tmp/vibe2-neuron-refill-active.txt)"
@@ -3055,13 +3075,23 @@ jobs:
                 REFILL_TITLE="$refill_title" CURRENT_MAIN="$latest_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE' > /tmp/vibe2-regression-refill-active.txt
               const fs=require('fs');
               const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-regression-refill-runs.json','utf8'));
+              // 워크플로가 대기 상태여도 예약은 끝났을 수 있으므로 실제 예약 작업만 판별한다.
               const states=new Set(['queued','pending','in_progress','requested','waiting']);
-              const found=(payload.workflow_runs||[]).some(run=>
-                String(run.id||'')!==String(process.env.CURRENT_RUN||'')
+              let reserveProbes=0;
+              const found=(payload.workflow_runs||[]).some(run=>{
+                if(!(String(run.id||'')!==String(process.env.CURRENT_RUN||'')
                 &&states.has(String(run.status||'').toLowerCase())
                 &&String(run.display_title||'')===String(process.env.REFILL_TITLE||'')
-                &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
-              );
+                &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')))return false;
+                if(++reserveProbes>3)return false;
+                try{
+                  const payload=JSON.parse(require('node:child_process').execFileSync('gh',[
+                    'api',`repos/${process.env.GITHUB_REPOSITORY}/actions/runs/${run.id}/jobs?per_page=100`
+                  ],{encoding:'utf8',timeout:10000,stdio:['ignore','pipe','ignore']}));
+                  if(!Array.isArray(payload.jobs))return false;
+                  return payload.jobs.length===0||payload.jobs.some(job=>job.name==='reserve'&&states.has(String(job.status||'').toLowerCase()));
+                }catch{return false;}
+              });
               process.stdout.write(found?'yes':'no');
           NODE
                 refill_active="$(cat /tmp/vibe2-regression-refill-active.txt)"
@@ -3411,13 +3441,23 @@ jobs:
             REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE' > /tmp/vibe2-fanin-refill-active.txt
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-fanin-refill-runs.json','utf8'));
+          // 워크플로가 대기 상태여도 예약은 끝났을 수 있으므로 실제 예약 작업만 판별한다.
           const states=new Set(['queued','pending','in_progress','requested','waiting']);
-          const found=(payload.workflow_runs||[]).some(run=>
-            String(run.id||'')!==String(process.env.CURRENT_RUN||'')
+          let reserveProbes=0;
+          const found=(payload.workflow_runs||[]).some(run=>{
+            if(!(String(run.id||'')!==String(process.env.CURRENT_RUN||'')
             &&states.has(String(run.status||'').toLowerCase())
             &&String(run.display_title||'')===String(process.env.REFILL_TITLE||'')
-            &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
-          );
+            &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')))return false;
+            if(++reserveProbes>3)return false;
+            try{
+              const payload=JSON.parse(require('node:child_process').execFileSync('gh',[
+                'api',`repos/${process.env.GITHUB_REPOSITORY}/actions/runs/${run.id}/jobs?per_page=100`
+              ],{encoding:'utf8',timeout:10000,stdio:['ignore','pipe','ignore']}));
+              if(!Array.isArray(payload.jobs))return false;
+              return payload.jobs.length===0||payload.jobs.some(job=>job.name==='reserve'&&states.has(String(job.status||'').toLowerCase()));
+            }catch{return false;}
+          });
           process.stdout.write(found?'yes':'no');
           NODE
             refill_active="$(cat /tmp/vibe2-fanin-refill-active.txt)"
