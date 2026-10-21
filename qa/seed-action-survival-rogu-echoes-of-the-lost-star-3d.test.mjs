@@ -36,7 +36,7 @@ test('Star Echoes shooting, upgrades and original world simulation stay authorit
  assert.match(script,/star3d=createStar3d\(\{canvas\}\)/);
 });
 test('Star Echoes original mobile handler remains executable in the new module',()=>{
- const code=script.replace(/^import[^\n]*\n/,'');
+ const code=script.replace(/^\s*import\s*\{createStar3d\}\s*from\s*'\.\/star3d\.mjs';\s*/,'');
  const events=new Map(),nodes=new Map();
  const node=id=>{
   if(nodes.has(id))return nodes.get(id);
