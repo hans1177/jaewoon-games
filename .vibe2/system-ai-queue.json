@@ -1957,7 +1957,7 @@
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -1995,7 +1995,7 @@
       "failureSignature": "FAIL",
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:39626682043:1",
+      "previousReservationId": "system-ai:39673450102:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -2003,12 +2003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39673450102:1",
-      "reservedAt": "2026-10-21T20:54:26.323Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -2846,7 +2846,8 @@
         "actions-run:39626682043",
         "system-ai-impact-score:1346",
         "system-ai-blocked-task-count:17",
-        "system-ai-handoff-to-reservation:system-ai:39673450102:1"
+        "system-ai-handoff-to-reservation:system-ai:39673450102:1",
+        "actions-run:39673450102"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1346,
@@ -2861,7 +2862,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-10-21T20:54:26.323Z"
+      "updatedAt": "2026-10-21T21:20:06.093Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
