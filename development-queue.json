@@ -11171,7 +11171,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T23:58:26.922Z",
+      "updatedAt": "2026-10-21T00:02:16.371Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11189,68 +11189,12 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
       "robloxBuildArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-      "robloxBuildPassedAt": "2026-10-20T23:38:06.839Z",
+      "robloxBuildPassedAt": "2026-10-21T00:02:16.371Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T23:38:06.839Z",
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "gem-survivor",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-10-20T23:26:48.003Z",
-        "sourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
-        "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "gemini-3.8-flash",
-            "graphics": "gemini-3.8-flash",
-            "development": "gemini-3.8-flash",
-            "qa": "gemini-3.8-flash",
-            "balance": "gemini-3.8-flash"
-          },
-          "sharedModel": "gemini-3.8-flash",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "robloxLaneEligible": true,
-          "directRoblox": true,
-          "concurrentRoblox": false,
-          "build": {
-            "sourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
-            "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
-            "decision": "BLOCK",
-            "blockers": [
-              "webValidationPassed",
-              "musicValidationPassed",
-              "nativeWebValidationPassed",
-              "nativeMusicValidationPassed"
-            ],
-            "note": "Runtime testing requires all validation checks to pass. The BUILD_EVIDENCE indicates that web, music, native web, and native music validations have all failed, which contradicts the requirement for starting runtime testing."
-          }
-        ],
-        "blockers": [
-          "lead-block:shared-review:webValidationPassed|musicValidationPassed|nativeWebValidationPassed|nativeMusicValidationPassed"
-        ],
-        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
-        "authority": "roblox-exact-package-build-preflight"
-      },
+      "robloxBuildPreflightFailedAt": "2026-10-21T00:02:16.371Z",
+      "robloxBuildPreflightEvidence": null,
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -28932,7 +28876,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-21T00:00:10.602Z",
+  "updatedAt": "2026-10-21T00:02:16.371Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -28999,5 +28943,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
