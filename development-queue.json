@@ -30052,7 +30052,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:32:36.568Z",
-      "updatedAt": "2026-10-21T10:48:56.056Z",
+      "updatedAt": "2026-10-21T10:53:49.517Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -30070,17 +30070,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-      "robloxBuildPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPassedAt": "2026-10-21T10:53:49.517Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T10:53:49.517Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fifty-days",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:21:14.195Z",
+        "checkedAt": "2026-10-21T10:23:50.703Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "secondaryOwnerFocus": false,
@@ -30118,7 +30118,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence and exact deterministic package identity checks have successfully passed."
+            "note": "All required build evidence parameters for the immutable Roblox package are present and valid. Source validation and build/package steps have passed successfully."
           }
         ],
         "blockers": [],
@@ -30132,12 +30132,12 @@
         "gameId": "fifty-days",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:21:15.139Z",
+        "checkedAt": "2026-10-21T10:23:51.283Z",
         "sourcePath": "roblox-games/fifty-days",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "rebuiltArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39575656954,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
         "observedAssetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
@@ -30439,12 +30439,12 @@
         "gameId": "fifty-days",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:21:15.139Z",
+        "checkedAt": "2026-10-21T10:23:51.283Z",
         "sourcePath": "roblox-games/fifty-days",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "rebuiltArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39575656954,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
         "observedAssetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
@@ -30786,8 +30786,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39574100826,
-        "testedAt": "2026-10-21T10:48:56.056Z",
+        "workflowRunId": 39575656954,
+        "testedAt": "2026-10-21T10:53:49.517Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -82466,7 +82466,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-21T10:49:17.311Z",
+  "updatedAt": "2026-10-21T10:53:49.517Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -82532,5 +82532,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
