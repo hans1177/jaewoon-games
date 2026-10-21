@@ -6,7 +6,8 @@ import {
   VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES,
   VIBE_UNIVERSAL_CONTENT_CAPABILITIES,
   planVibeUniversalComposition,
-  planVibeExternalCustomization
+  planVibeExternalCustomization,
+  assessCreativeCommonsAssetLicense
 } from '../assets/asset-selector.js';
 
 const scope={
@@ -34,6 +35,38 @@ const input={
   ],
   sourceRevision:'c'.repeat(40),ownerScope:scope,approvedDesignFingerprint:approved
 };
+
+test('Creative Commons family intake recognizes all seven families but blocks incompatible game use',()=>{
+ const base={downloaded:true,sourceHash:'f'.repeat(64),
+   sourceUrl:'https://example.org/source',licenseEvidenceUrl:'https://creativecommons.org/licenses/by/4.0/',
+   attribution:{creator:'Example Author',sourceUrl:'https://example.org/source',
+     licenseUrl:'https://creativecommons.org/licenses/by/4.0/',modificationNotice:'Adjusted palette'},
+   shareAlikeComplianceEvidenceUrl:'https://example.org/rights-review',
+   derivativeLicense:'CC-BY-SA-4.0'};
+ const tests=[
+   ['CC0-1.0',true,true],
+   ['CC-BY-4.0',true,true],
+   ['CC-BY-SA-4.0',true,true],
+   ['CC-BY-ND-4.0',true,false],
+   ['CC-BY-NC-4.0',true,false],
+   ['CC-BY-NC-SA-4.0',true,false],
+   ['CC-BY-NC-ND-4.0',true,false]
+ ];
+ for(const [license,catalog,commercialGame] of tests){
+   const row=assessCreativeCommonsAssetLicense({...base,license});
+   assert.equal(row.catalogEligible,catalog,license);
+   assert.equal(row.gameCandidateEligible,commercialGame,license);
+   assert.equal(row.nativeRuntimeVerified,false,license);
+ }
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'MIT'}).catalogEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',attribution:{}}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-SA-4.0',shareAlikeComplianceEvidenceUrl:''}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',downloaded:false}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',sourceHash:'invalid'}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',securityBlocked:true}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-NC-4.0'},{commercial:false,derivative:true}).gameCandidateEligible,true);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-ND-4.0'},{commercial:true,derivative:false}).gameCandidateEligible,true);
+});
 
 test('catalog describes all approved external references without executable download commands',()=>{
   assert.deepEqual(VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(row=>row.id),[
