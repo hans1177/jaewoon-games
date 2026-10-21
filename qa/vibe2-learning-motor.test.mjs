@@ -1,3 +1,4 @@
+// 파일명: qa/vibe2-learning-motor.test.mjs
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
@@ -2170,4 +2171,26 @@ test('internal graphics preparation works without an external development policy
   assert.deepEqual(idle.companyGraphicsLibrary24h.platformProfiles,[...new Set(library.map(row=>row.platformProfile))]);
   const refreshed=refreshLearningMotor({});
   assert.ok(refreshed.idlePractice.drills.some(row=>row.companyGraphicsLibrary));
+});
+
+
+test('verified source-bound causal recipes reach the worker only for their proven engine',()=>{
+  const recipe={source:'existing game input and gameplay owners',proof:['REAL_TOUCH_INPUT','AUTHORITATIVE_STATE_CHANGED','VISIBLE_ACTION_FEEDBACK']};
+  const base={verified:true,system:'INPUT_ACTION_CAUSAL_CHAIN',problem:'touch input gameplay state attack',pattern:'VERIFY_INPUT_ACTION_CAUSAL_CHAIN',tags:['input','attack','state']};
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'forest',target:'web',goal:'touch input gameplay state attack'},
+    codePatternsInput:{patterns:[
+      {...base,id:'same-web',gameId:'forest',engine:'web',implementationRecipe:recipe},
+      {...base,id:'wrong-roblox',gameId:'forest',engine:'roblox',implementationRecipe:recipe},
+      {...base,id:'transferable-principle',gameId:'other',engine:'roblox',pattern:'Check input state feedback without native code'}
+    ]}
+  });
+  assert.ok(ctx.codePatterns.some(row=>row.id==='same-web'));
+  assert.ok(!ctx.codePatterns.some(row=>row.id==='wrong-roblox'));
+  assert.ok(ctx.codePatterns.some(row=>row.id==='transferable-principle'));
+  const guidance=learningGuidance(ctx);
+  assert.match(guidance,/verified-source-bound-recipe=same-web/);
+  assert.match(guidance,/required-fresh-runtime-checks=REAL_TOUCH_INPUT\|AUTHORITATIVE_STATE_CHANGED\|VISIBLE_ACTION_FEEDBACK/);
+  assert.match(guidance,/source-guidance-not-a-pass/);
+  assert.doesNotMatch(guidance,/verified-source-bound-recipe=wrong-roblox/);
 });
