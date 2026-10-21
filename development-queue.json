@@ -48754,7 +48754,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T10:23:16.113Z",
+      "updatedAt": "2026-10-21T10:24:51.423Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -48770,16 +48770,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-      "robloxBuildPassedAt": "2026-10-21T10:17:45.795Z",
+      "robloxBuildPassedAt": "2026-10-21T10:24:51.423Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:17:45.795Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T10:24:51.423Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T09:37:10.125Z",
+        "checkedAt": "2026-10-21T09:56:41.840Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "secondaryOwnerFocus": false,
@@ -48817,7 +48817,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "Exact immutable Roblox package identity checks passed, source validation is true, and build/package passed successfully."
+            "note": "All required build evidence parameters for the immutable Roblox package indicate successful validation and build status. Ready to start runtime testing."
           }
         ],
         "blockers": [],
@@ -48831,12 +48831,12 @@
         "gameId": "seed-casual-realm-weaver",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T09:37:10.793Z",
+        "checkedAt": "2026-10-21T09:56:42.468Z",
         "sourcePath": "roblox-games/seed-casual-realm-weaver",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "rebuiltArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-        "artifactRunId": 39570786303,
+        "artifactRunId": 39573053055,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
         "observedAssetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
@@ -49125,12 +49125,12 @@
         "gameId": "seed-casual-realm-weaver",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T09:37:10.793Z",
+        "checkedAt": "2026-10-21T09:56:42.468Z",
         "sourcePath": "roblox-games/seed-casual-realm-weaver",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "rebuiltArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-        "artifactRunId": 39570786303,
+        "artifactRunId": 39573053055,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
         "observedAssetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
@@ -49960,8 +49960,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39570786303,
-        "testedAt": "2026-10-21T10:17:45.795Z",
+        "workflowRunId": 39573053055,
+        "testedAt": "2026-10-21T10:24:51.423Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -82466,7 +82466,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-21T10:23:40.731Z",
+  "updatedAt": "2026-10-21T10:24:51.423Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -82533,5 +82533,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
