@@ -146265,20 +146265,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T09:17:44.490Z",
-      "repairMode": "ROOT_CAUSE_MODE",
-      "userAssistanceRequired": false,
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "ROOT_CAUSE_MODE",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "multiplayerUserAssistanceRequired": false
-      }
+      "updatedAt": "2026-10-21T09:17:44.490Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
@@ -148929,7 +148916,7 @@
     },
     {
       "id": "recovery-recovery-8fd4a266c158771684b2",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -148986,12 +148973,12 @@
       "sourceMutationBaseline": "9de69898f3dd48d413d3554bd57bc0021f904672",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39575440201:1",
+      "reservedAt": "2026-10-21T09:19:07.082Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39025580239:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -149045,7 +149032,8 @@
         "retry-budget-consumed:YES",
         "learning-penalty:YES",
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
-        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR"
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
+        "system-ai-handoff-to-reservation:system-ai:39575440201:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 891,
@@ -149056,11 +149044,11 @@
         "dependencyCentrality": 1,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 94.01,
+        "ageHours": 94.65,
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T10:40:18.110Z",
-      "updatedAt": "2026-10-21T09:14:29.111Z"
+      "updatedAt": "2026-10-21T09:19:07.082Z"
     },
     {
       "id": "recovery-recovery-f94e69f2e502b77f903e",
