@@ -112,3 +112,29 @@ test('complete source diagnostic match boosts ranking without storing full sourc
   const ranked=rankAdaptiveContextCandidates({files,diagnostic:{needle:'DEEP_FAULT'},role:'development'});
   assert.equal(ranked[0].path,'z.js');
 });
+
+test('coding memory rejects unverified, failed and pending checkpoint records',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-memory-gate-'));
+  try{
+    const fp=failureFingerprint({type:'SAVE_FAILURE',message:'restore failed',platform:'web'});
+    const good=buildExecutionCheckpoint({gameId:'G1',role:'integration',candidateId:'good',status:'VERIFIED'});
+    const make=(id,overrides={})=>({gameId:'G1',candidateId:id,generatedAt:'2099-01-01',
+      verified:true,outcome:'SUCCESS',independentQa:'PASS',
+      vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:good},...overrides});
+    const records=[
+      make('good',{generatedAt:'2026-01-01'}),
+      make('pending',{verified:false}),
+      make('unproven',{independentQa:undefined}),
+      make('qa-failed',{independentQa:'FAIL'}),
+      make('wrong-outcome',{outcome:'FAILURE'}),
+      make('pending-checkpoint',{generatedAt:'2025-01-01',
+        vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:{...good,status:'IMPLEMENTED_PENDING_QA'}}})
+    ];
+    for(const row of records)fs.writeFileSync(path.join(root,row.candidateId+'.json'),JSON.stringify(row));
+    assert.equal(findVerifiedFailureResolution({root,gameId:'G1',fingerprint:fp})?.candidateId,'good');
+    assert.equal(loadLatestVerifiedCheckpoint({root,gameId:'G1',role:'integration'})?.candidateId,'good');
+    assert.equal(findVerifiedFailureResolution({root,gameId:'G1',fingerprint:''}),null);
+    assert.equal(findVerifiedFailureResolution({root,gameId:'',fingerprint:fp}),null);
+    assert.equal(loadLatestVerifiedCheckpoint({root,gameId:''}),null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
