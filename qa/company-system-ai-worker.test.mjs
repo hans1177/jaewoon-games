@@ -562,3 +562,20 @@ test('Vibe production outcomes count actual verified tasks and never infer deplo
  assert.ok(sensor.actions.includes('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH'));
  assert.ok(sensor.actions.includes('FINISH_OWNER_FOCUSED_GAME_WITH_VERIFIED_RUNTIME_EVIDENCE'));
 });
+
+// 우선순위 계산은 다른 작업의 생성 본문에 의존하지 않으며 입력 정규화 의미를 보존한다.
+test('repair impact scoring reads peer dependencies without copying unrelated task payloads',()=>{
+  const at=Date.parse('2026-10-21T04:20:00Z');
+  const root={id:' root ',status:'queued',priority:'high',failureSignature:' SHARED ',createdAt:'2026-10-20T00:00:00Z'};
+  const peer={id:' child ',dependencies:[' root ',' root '],evidence:['shared-signature:SHARED']};
+  Object.defineProperty(peer,'goal',{get(){throw Error('unrelated peer payload must not be read');}});
+  const queue={tasks:[root,peer,{id:'finished',status:'done',dependencies:['root']}]};
+  const result=systemAiImpactProfile(root,queue,{at});
+  assert.equal(result.transitiveBlockedTaskCount,1);
+  assert.equal(result.criticalPathDepth,1);
+  assert.equal(result.cohortSize,2);
+  assert.deepEqual(result,systemAiImpactProfile(root,normalizeSystemAiQueue({tasks:[root,
+    {id:' child ',dependencies:[' root ',' root '],evidence:['shared-signature:SHARED']},
+    {id:'finished',status:'done',dependencies:['root']}
+  ]}),{at}));
+});

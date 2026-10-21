@@ -236,9 +236,13 @@ export function coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at=Date.now()
   return{queue:{...queue,tasks},coalesced,groups:canonicalMeta.size,rewired,scopeReconciled,completedReused};
 }
 export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Date.now()}={}){
-  const queue=normalizeSystemAiQueue(queueInput),task=normalizeTask(taskInput);
+  const task=normalizeTask(taskInput);
   const signature=failureSignatureOf(task);
-  const live=queue.tasks.filter(x=>!['done','completed','cancelled','verified'].includes(clean(x.status).toLowerCase()));
+  // 우선순위: 다른 작업의 본문·검증 명령·전체 근거를 반복 복사하지 않고 의존성과 실패 식별만 읽는다.
+  const live=(queueInput.tasks||[])
+    .filter(x=>!['done','completed','cancelled','verified'].includes(clean(x.status).toLowerCase()))
+    .map(x=>({id:clean(x.id),dependencies:unique(x.dependencies),failureSignature:clean(x.failureSignature),
+      evidence:x.evidence,blocker:clean(x.blocker),lastOutcome:clean(x.lastOutcome)}));
   // HEFT-inspired critical-path priority with unit task costs (no invented runtime estimates).
   // Topcuoglu et al., IEEE TPDS 2002, doi:10.1109/71.993206.
   // Reach only recorded dependencies; preserve cycle safety and existing task authority.
