@@ -59,11 +59,38 @@ function inventory(){
   excludedFromGameUse:!cc0(row.license)}));
  const legacy=(catalog.assets||[]).map(row=>({id:row.id,license:row.license,downloaded:row.downloaded===true,
   action:!cc0(row.license)?'QUARANTINE_NEW_USE_KEEP_CATALOG':row.downloaded===true?'REVERIFY_LOCAL_PROOF':'RESEARCH_ONLY_NOT_ACQUIRED'}));
+ // 소스 전용 보관 묶음도 원본 보존을 전제로 점검한다. 압축 내부 라이선스·해시 검증 PASS로 오인하지 않는다.
+ const archiveManifests=[
+  'assets/external/simple-rpg/manifest.json',
+  'assets/external/simple-rpg/priority-v1/manifest.json',
+  'assets/external/simple-rpg/wildlife/manifest.json',
+  'assets/external/simple-rpg/icons-vfx-npc/manifest.json'
+ ];
+ const archives=archiveManifests.flatMap(manifestPath=>{
+  const meta=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+  const folder=path.dirname(manifestPath);
+  return (meta.packs||[]).map(pack=>{
+   const filename=pack.file||pack.filename;
+   const file=path.join(folder,filename).split(path.sep).join('/');
+   const exists=fs.existsSync(file)&&fs.statSync(file).isFile();
+   const bytes=exists?fs.statSync(file).size:null;
+   const expectedBytes=pack.bytes||pack.archiveBytes||null;
+   const sameSize=expectedBytes===null?null:bytes===expectedBytes;
+   const isCc0=cc0(pack.licenseDeclared||pack.license||meta.license);
+   const suspiciousPointer=exists&&/\.blend$/i.test(file)&&bytes<200;
+   const action=!isCc0?'EXCLUDE_NON_CC0_KEEP_SOURCE':
+    !exists||sameSize===false||suspiciousPointer?'QUARANTINE_NEW_USE_REACQUIRE_OR_VERIFY':
+    'KEEP_SOURCE_ONLY_REQUIRE_GAME_RUNTIME_QA';
+   return {file,license:pack.licenseDeclared||pack.license||meta.license,
+    sourceOnly:true,exists,bytes,expectedBytes,sameSize,suspiciousPointer,
+    declaredSha256:pack.sha256||null,hashReverified:false,action};
+  });
+ });
  const evidence=(ledger.entries||[]).length;
  const counts=action=>assets.filter(row=>row.action===action).length;
  const output={version:1,mode:'NON_DESTRUCTIVE_CC0_INVENTORY',
   limitations:['STATIC_REFERENCES_ARE_INCOMPLETE','DYNAMIC_LOADERS_AND_BINARY_CONSUMERS_NOT_EXHAUSTIVELY_INSPECTED',
-   'RIGHTS_URLS_ARE_RECORDED_NOT_LIVE_REVERIFIED','NO_RUNTIME_OR_MOBILE_PASS_ATTESTED'],
+   'RIGHTS_URLS_ARE_RECORDED_NOT_LIVE_REVERIFIED','NO_RUNTIME_OR_MOBILE_PASS_ATTESTED','ARCHIVE_HASHES_NOT_REVERIFIED'],
   deletionAuthorized:false,quarantineMeansBlockNewUseNotMoveOrErase:true,
   summary:{registryAssets:assets.length,registeredCc0:assets.filter(row=>cc0(row.license)).length,
    downloaded:assets.filter(row=>row.downloaded).length,immutableHashPass:assets.filter(row=>row.immutableHash==='PASS').length,
@@ -72,7 +99,9 @@ function inventory(){
    quarantinedNewUse:counts('QUARANTINE_NEW_USE_KEEP_EXISTING'),
    legacyCandidates:legacy.length,legacyNonCc0:legacy.filter(row=>!cc0(row.license)).length,
    externalSources:externalSources.length,externalNonCc0:externalSources.filter(row=>row.excludedFromGameUse).length,
-   licenseLedgerEntries:evidence},assets,externalSources,legacy};
+   licenseLedgerEntries:evidence,sourceOnlyArchives:archives.length,
+   suspiciousSourcePointers:archives.filter(row=>row.suspiciousPointer).length,
+   archiveBytesMismatch:archives.filter(row=>row.sameSize===false).length},assets,externalSources,legacy,archives};
  console.log(JSON.stringify(output));
 }
 if(process.argv.includes('--inventory')){inventory();process.exit(0);}
