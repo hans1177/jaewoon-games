@@ -579,3 +579,11 @@ test('repair impact scoring reads peer dependencies without copying unrelated ta
     {id:'finished',status:'done',dependencies:['root']}
   ]}),{at}));
 });
+
+test('existing evolution QA covers repair scoring source and worker regression on PR and main',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-evolution-qa.yml','utf8');
+  for(const file of ['tools/company-system-ai-queue.mjs','qa/company-system-ai-worker.test.mjs']){
+    assert.equal(workflow.split("- '"+file+"'").length-1,2,file);
+  }
+  assert.match(workflow,/node --test qa\/company-system-ai-worker\.test\.mjs qa\/company-system-ai-evolution\.test\.mjs qa\/company-system-ai-supervision-loop\.test\.mjs/);
+});
