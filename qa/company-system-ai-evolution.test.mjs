@@ -3,7 +3,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {spawnSync} from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync,execFileSync} from 'node:child_process';
 
 import {classifySystemAiFailure} from '../tools/company-system-ai-failure-classifier.mjs';
 import {analyzeSystemAiBottlenecks} from '../tools/company-system-ai-bottleneck-sensor.mjs';
@@ -782,4 +784,48 @@ test('System AI target reservations reject duplicate shared failure even if call
   const selected=reserveSystemAiTargets(queue,{ids:['a','b','c'],reservationId:'test-direct'});
   assert.deepEqual(selected.reserved.map(task=>task.id),['a','c']);
   assert.ok(selected.reserved.find(task=>task.id==='a').evidence.includes('system-ai-representative-canary:SAME'));
+});
+
+// 실제 Git 저장소에서 과거 대형 객체 제외·분할 큐 노출·공유 파일 보존을 함께 검증한다.
+test('System AI state fetch stays shallow and sparse while preserving unrelated branch files on push',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  const fetches=workflow.match(/git fetch --no-tags --depth=1 origin "\+refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core" --quiet/g)||[];
+  assert.equal(fetches.length,3,'reserve, worker assignment and fan-in all read only latest state');
+  const blocks=[...workflow.matchAll(/git fetch --no-tags --depth=1 origin "\+refs\/heads\/vibe2-unreal-core:[^\n]+\n(?: +#[^\n]*\n)* +git worktree add[^\n]+\n +git -C \/tmp\/system-ai-control sparse-checkout set --cone \.vibe2\n +git -C \/tmp\/system-ai-control checkout --detach --quiet HEAD/g)]
+    .map(match=>match[0]).filter(code=>code.split('git fetch --no-tags --depth=1').length===2);
+  assert.equal(blocks.length,2);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'system-ai-state-'));
+  const env={...process.env,GIT_AUTHOR_NAME:'test',GIT_AUTHOR_EMAIL:'test@example.invalid',GIT_COMMITTER_NAME:'test',GIT_COMMITTER_EMAIL:'test@example.invalid',GIT_CONFIG_NOSYSTEM:'1'};
+  const git=(cwd,args)=>execFileSync('git',args,{cwd,env,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    const remote=path.join(root,'remote.git'),source=path.join(root,'source');
+    fs.mkdirSync(source);git(source,['init','--bare',remote]);git(source,['init','-b','main']);
+    fs.writeFileSync(path.join(source,'main-tool.txt'),'main source preserved');git(source,['add','.']);git(source,['commit','-m','main']);
+    git(source,['remote','add','origin',remote]);git(source,['push','origin','main']);
+    git(source,['checkout','-b','vibe2-unreal-core']);
+    fs.writeFileSync(path.join(source,'obsolete.bin'),Buffer.alloc(1024*1024,17));git(source,['add','.']);git(source,['commit','-m','old state']);
+    const oldBlob=git(source,['rev-parse','HEAD:obsolete.bin']);
+    fs.rmSync(path.join(source,'obsolete.bin'));fs.mkdirSync(path.join(source,'.vibe2','queue'),{recursive:true});
+    fs.mkdirSync(path.join(source,'assets'));fs.writeFileSync(path.join(source,'assets','model.bin'),'original asset');
+    fs.mkdirSync(path.join(source,'web-games'));fs.writeFileSync(path.join(source,'web-games','game.html'),'existing game');
+    fs.writeFileSync(path.join(source,'.vibe2','system-ai-queue.json'),'{}');
+    fs.writeFileSync(path.join(source,'.vibe2','queue','part.json'),'split queue content');
+    git(source,['add','-A']);git(source,['commit','-m','current state']);git(source,['push','origin','vibe2-unreal-core']);
+    for(let index=0;index<blocks.length;index++){
+      const client=path.join(root,'client-'+index),control=path.join(root,'control-'+index);
+      git(root,['clone','--depth=1','--branch','main','file://'+remote,client]);
+      const result=spawnSync('bash',['-euo','pipefail','-c',blocks[index].replaceAll('/tmp/system-ai-control',control)],{cwd:client,env,encoding:'utf8',timeout:15000});
+      assert.equal(result.status,0,result.stdout+result.stderr);
+      assert.equal(git(client,['rev-list','--count','origin/vibe2-unreal-core']),'1');
+      assert.notEqual(spawnSync('git',['cat-file','-e',oldBlob],{cwd:client,env}).status,0,'old state blob must not be downloaded');
+      assert.equal(fs.existsSync(path.join(control,'assets','model.bin')),false);
+      assert.equal(fs.existsSync(path.join(control,'web-games','game.html')),false);
+      assert.equal(fs.readFileSync(path.join(control,'.vibe2','queue','part.json'),'utf8'),'split queue content');
+      assert.equal(fs.readFileSync(path.join(client,'main-tool.txt'),'utf8'),'main source preserved');
+      fs.writeFileSync(path.join(control,'.vibe2','system-ai-queue.json'),JSON.stringify({saved:index}));
+      git(control,['add','.vibe2/system-ai-queue.json']);git(control,['commit','-m','queue update']);git(control,['push','origin','HEAD:vibe2-unreal-core']);
+      assert.equal(git(source,['--git-dir='+remote,'show','vibe2-unreal-core:assets/model.bin']),'original asset');
+      assert.equal(git(source,['--git-dir='+remote,'show','vibe2-unreal-core:web-games/game.html']),'existing game');
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
