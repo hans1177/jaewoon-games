@@ -146,7 +146,7 @@ export async function createTower3d({canvas,WORLD}){
     hero.position.set(x,0,z);
     const mx=x-prevHero[0],mz=z-prevHero[1];prevHero=[x,z];
     const moving=Math.hypot(mx,mz)>.0005;
-    hero.rotation.y=Math.atan2(player.dirX||1,player.dirY||0);
+    hero.rotation.y=Math.atan2(Number(player.dirX)||0,Number(player.dirY)||0);
     // Cosmetic rig bob is proportional to actual resolved displacement, not a fake gait.
     hero.children[0].position.y=hero.children[0].userData.restY+(moving&&!mixer?Math.sin(time*.016)*.035:0);
     useRigMotion(active.some(effect=>effect.type==='slash')?'attack':moving?'walk':'idle');
@@ -157,7 +157,7 @@ export async function createTower3d({canvas,WORLD}){
       const [ex,ez]=P(actor.x,actor.y);
       slot.group.visible=true;
       slot.group.position.set(ex,actor.hit>0?.12:0,ez);
-      slot.group.rotation.y=Math.atan2(actor.dirX||0,actor.dirY||-1);
+      slot.group.rotation.y=Math.atan2(Number(actor.dirX)||0,Number(actor.dirY)||0);
       if(actor.hit>0)slot.group.scale.setScalar(1+Math.min(.13,actor.hit));
       else slot.group.scale.setScalar(1);
       if(slot.mixer){
