@@ -14,15 +14,14 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": true,
+  "serverSourceChanged": false,
   "foundationRepairApplied": false,
-  "studioMaterialRepairApplied": true,
+  "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau",
-    "server/Game.server.luau"
+    "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -62,10 +61,10 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 139,
-    "selectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
-    "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-    "buildUpAssetSourceUsageLibraryVersion": 139,
+    "libraryVersion": 140,
+    "selectionFingerprint": "da149a4ba2c597340ed83560191f4a16a249409a2d0fd409ec681f88b938868a",
+    "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
+    "buildUpAssetSourceUsageLibraryVersion": 140,
     "selectedSourceContentHashes": [
       {
         "source": "company-asset-library.json#baseMaterialLibrary",
@@ -579,12 +578,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "defense-build-up-g2-87baa37ff3ae",
-  "buildUpGeneration": 2,
+  "buildUpDirectiveId": "defense-build-up-g3-4972b55a846f",
+  "buildUpGeneration": 3,
   "buildUpGoal": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "buildUpDirectiveFingerprint": "87baa37ff3aea8c46e753a1dfe98866d8b1e10836bbb4fcc8df5045d68b43851",
+  "buildUpDirectiveFingerprint": "4972b55a846f9821ef18ca6d0572658135acc886ba25eafbdac3eb1a6aacdfee",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-  "createdAt": "2026-10-17T12:59:05.763Z"
+  "createdAt": "2026-10-21T14:05:33.890Z"
 }
