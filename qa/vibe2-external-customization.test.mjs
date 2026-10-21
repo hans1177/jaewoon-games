@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import {
   VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES,
   VIBE_UNIVERSAL_CONTENT_CAPABILITIES,
@@ -66,6 +67,34 @@ test('Creative Commons family intake recognizes all seven families but blocks in
  assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',securityBlocked:true}).gameCandidateEligible,false);
  assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-NC-4.0'},{commercial:false,derivative:true}).gameCandidateEligible,true);
  assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-ND-4.0'},{commercial:true,derivative:false}).gameCandidateEligible,true);
+});
+
+test('four acquired CC0 UI/mobile PNGs match library SHA-256 and licensed pack ledger',()=>{
+ const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
+ const manifest=JSON.parse(fs.readFileSync('assets/asset-manifest.json','utf8'));
+ const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const policy=manifest.policy.creativeCommonsFamilyIntake;
+ assert.deepEqual(policy.allowedFamilies,central.ownerCanonicalRules.rule5.ccFamilyLibraryIntake.allowedFamilies);
+ assert.equal(policy.allowedFamilies.length,7);
+ const assets=library.assets.filter(row=>row.id.startsWith('kenney-cc0-'));
+ assert.equal(assets.length,4);
+ for(const asset of assets){
+   const repoPath=asset.path.replace(/^\\/+/, '');
+   assert.ok(repoPath.startsWith('assets/shared/kenney-ui/'));
+   const bytes=fs.readFileSync(repoPath);
+   assert.deepEqual([...bytes.subarray(0,4)],[137,80,78,71]);
+   assert.equal(createHash('sha256').update(bytes).digest('hex'),asset.sourceHash,asset.id);
+   assert.equal(asset.downloaded,true);
+   assert.equal(asset.productionVerified,false);
+   assert.equal(asset.runtimeVerificationState,'UNVERIFIED');
+   assert.equal(asset.verifiedCompanyReusable,false);
+   const rights=ledger.entries.find(row=>row.id===asset.sourceLicenseLedgerId);
+   assert.ok(rights,asset.id);
+   assert.ok(Object.values(rights.evidence.sourceFileHashes).includes(asset.sourceHash));
+   assert.equal(assessCreativeCommonsAssetLicense(asset).catalogEligible,true);
+   assert.equal(assessCreativeCommonsAssetLicense(asset).nativeRuntimeVerified,false);
+ }
 });
 
 test('catalog describes all approved external references without executable download commands',()=>{
