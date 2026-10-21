@@ -197,3 +197,22 @@ test('common CC0 source inventory does not authorize deletion and checks existin
  assert.ok(audit.externalSources.filter(row=>row.excludedFromGameUse).every(row=>row.action==='EXCLUDE_NON_CC0_KEEP_METADATA'));
  assert.ok(audit.legacy.some(row=>row.license==='MIT'&&row.action==='QUARANTINE_NEW_USE_KEEP_CATALOG'));
 });
+
+test('external CC0 source gallery blocks non-CC0 and quarantined entries without deleting records',()=>{
+ const library=fs.readFileSync('assets/asset-library.js','utf8');
+ const start=library.indexOf('  const robloxSources='),end=library.indexOf('  robloxSources.sort(',start);
+ assert.ok(start>0&&end>start);
+ const expr=library.slice(start,end);
+ const common={status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',platformTargets:['ROBLOX'],sourceUrl:'https://example.com/pack'};
+ const registry={externalSources:[
+  {...common,id:'cc0',license:'CC0'},
+  {...common,id:'cc0-1',license:'CC0-1.0'},
+  {...common,id:'not-cc0',license:'QUATERNIUS_ASSET_LICENSE_V1',gameUseForbidden:true},
+  {...common,id:'mit',license:'MIT'},
+  {...common,id:'quarantined',license:'CC0',quarantined:true}
+ ]};
+ const context={registry};
+ vm.runInNewContext(expr+';globalThis.matches=robloxSources.map(row=>row.id)',context);
+ assert.deepEqual(Array.from(context.matches),['cc0','cc0-1']);
+ assert.equal(registry.externalSources.length,5,'blocked source metadata is retained for audit');
+});
