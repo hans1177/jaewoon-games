@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
@@ -1118,6 +1118,59 @@ test('stale lifecycle cancellation resumes only current exact owner-focused deve
       assert.equal(byId.get(id).status,'cancelled',id+' must not be revived');
     assert.equal(byId.get('removed').blocker,'lifecycle-inactive:REMOVED_PERMANENTLY');
     assert.equal(byId.get('manual-stop').blocker,'owner-stop-requested');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('lane-local reserve restores only owner-approved archived focus tasks without new queue work',()=>{
+  const root=tempRepo();
+  try{
+    const policyFile=path.join(root,'company-learning/platform-release-roadmap.json');
+    const current=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+    current.developmentLifecycleMachine={focusedDevelopmentCaretakers:{
+      enabled:true,targetFocusedGames:3,maxFocusedGames:3,
+      focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
+      ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+      ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+      completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
+    }};
+    fs.writeFileSync(policyFile,JSON.stringify(current));
+    const make=(id,gameId,target='roblox')=>({
+      id,gameId,target,department:'development',type:'implementation',
+      sourceRoot:`${target}-games/${gameId}`,
+      status:'cancelled',blocker:'lifecycle-inactive:REMOVED_PERMANENTLY',
+      releaseState:'development-confirmed',lastOutcome:'CANCELLED_BY_OWNER_PERMANENT_REMOVAL',
+      retries:19,ownerDevelopmentHold:false,evidence:['owner-permanent-removal:yes'],
+      reservationId:'old',reservationRunId:'old',reservationRunAttempt:2,reservedAt:'2026-10-01'
+    });
+    const queue={version:1,maxConcurrentTasks:200,tasks:[
+      make('simple-1','simple-rpg'),make('simple-2','simple-rpg'),
+      make('web-focused','fantasy-survival','web'),
+      make('wrong-platform','cozy-island','roblox'),
+      make('truly-removed','removed-game'),
+      make('unfocused','ordinary'),
+      {...make('queued','ordinary'),status:'queued',blocker:null}
+    ]};
+    const catalog={permanentRemovalPolicy:{ids:['removed-game']},
+      games:['simple-rpg','fantasy-survival','cozy-island','removed-game','ordinary']
+        .map(id=>({id,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}))};
+    const r=restoreApprovedOwnerFocusedCancelledTasks({queue,catalog,repoRoot:root});
+    assert.equal(r.restored,3);
+    assert.deepEqual(r.taskIds,['simple-1','simple-2','web-focused']);
+    const byId=new Map(r.queue.tasks.map(x=>[x.id,x]));
+    assert.equal(byId.get('simple-1').status,'queued');
+    assert.equal(byId.get('simple-1').priority,undefined);
+    assert.equal(byId.get('simple-1').retries,19);
+    assert.equal(byId.get('simple-1').reservationId,null);
+    assert.equal(byId.get('simple-1').lastOutcome,'RESTORED_BY_CURRENT_OWNER_FOCUS');
+    for(const id of ['wrong-platform','truly-removed','unfocused'])
+      assert.equal(byId.get(id).status,'cancelled',id+' must stay cancelled');
+    assert.equal(byId.get('queued').status,'queued');
+    const again=restoreApprovedOwnerFocusedCancelledTasks({queue:r.queue,catalog,repoRoot:root});
+    assert.equal(again.restored,0);
+    assert.deepEqual(again.queue,r.queue);
+    assert.throws(()=>restoreApprovedOwnerFocusedCancelledTasks({
+      queue:{...r.queue,queueStorage:{version:1}},catalog,repoRoot:root
+    }),/UNPACKED_QUEUE/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
