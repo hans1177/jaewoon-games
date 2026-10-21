@@ -146232,7 +146232,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -146339,12 +146339,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39672413633:1",
+      "reservedAt": "2026-10-21T20:45:46.578Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146702,7 +146702,8 @@
         "system-ai-handoff-to-reservation:system-ai:39663957336:1",
         "actions-run:39663957336",
         "system-ai-handoff-to-reservation:system-ai:39668378811:1",
-        "actions-run:39668378811"
+        "actions-run:39668378811",
+        "system-ai-handoff-to-reservation:system-ai:39672413633:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -146717,7 +146718,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T20:41:14.858Z"
+      "updatedAt": "2026-10-21T20:45:46.578Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
