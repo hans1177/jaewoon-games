@@ -111,6 +111,9 @@ test('design and source BUILD_UP stay coupled without inventing reference or run
   assert.equal(stale.designSourceBuildUp.sameApprovedDesign,true);
   assert.equal(stale.designSourceBuildUp.revisionRequiredForNewGameplay,true);
   assert.equal(stale.designSourceBuildUp.nextDesignAction,'REQUEST_EXISTING_DESIGN_CYCLE_REVISION');
+  assert.equal(stale.autonomousContentExpansion.designRevisionRequiredForNewGameplay,true);
+  assert.equal(stale.autonomousContentExpansion.derivedRuleEvolution.allowed,false);
+  assert.match(stale.autonomousContentExpansion.derivedRuleEvolution.rule,/REVIEWED_CURRENT_DESIGN_REVISION/);
   const revised=structuredClone(design());
   revised.content.coreFun+=' - design revision based on checked gameplay outcomes';
   const current=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
