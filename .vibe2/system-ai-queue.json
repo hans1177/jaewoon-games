@@ -116742,7 +116742,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116777,7 +116777,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:39593213311:1",
+      "previousReservationId": "system-ai:39606065643:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -116785,12 +116785,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39606065643:1",
-      "reservedAt": "2026-10-21T13:18:33.981Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -116852,7 +116852,8 @@
         "actions-run:39593213311",
         "system-ai-impact-score:602",
         "system-ai-blocked-task-count:6",
-        "system-ai-handoff-to-reservation:system-ai:39606065643:1"
+        "system-ai-handoff-to-reservation:system-ai:39606065643:1",
+        "actions-run:39606065643"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 602,
@@ -116867,7 +116868,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-21T13:18:33.981Z"
+      "updatedAt": "2026-10-21T13:49:55.003Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -144791,7 +144792,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -144823,9 +144824,9 @@
       "recurrenceCount": 0,
       "failureStage": null,
       "failureSignature": null,
-      "failureClass": null,
+      "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 4,
-      "previousReservationId": "system-ai:39590689404:1",
+      "previousReservationId": "system-ai:39606065643:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -144833,12 +144834,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39606065643:1",
-      "reservedAt": "2026-10-21T13:18:33.981Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -144875,7 +144876,19 @@
         "system-ai-handoff-from-reservation:system-ai:39590689404:1",
         "system-ai-impact-score:1386",
         "system-ai-blocked-task-count:23",
-        "system-ai-handoff-to-reservation:system-ai:39606065643:1"
+        "system-ai-handoff-to-reservation:system-ai:39606065643:1",
+        "actions-run:39606065643",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
+        "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1386,
@@ -144890,7 +144903,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-21T13:18:33.981Z"
+      "updatedAt": "2026-10-21T13:49:55.003Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -146104,7 +146117,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -146197,7 +146210,7 @@
         "internal-motion-shui-gui-walk-v1",
         "internal-motion-huapi-walk-v1"
       ],
-      "retries": 4,
+      "retries": 5,
       "recurrenceCount": 25,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
@@ -146211,12 +146224,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39606065643:1",
-      "reservedAt": "2026-10-21T13:18:33.981Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146551,7 +146564,8 @@
         "system-ai-handoff-from-reservation:system-ai:39590689404:1",
         "system-ai-handoff-to-reservation:system-ai:39601765554:1",
         "actions-run:39601765554",
-        "system-ai-handoff-to-reservation:system-ai:39606065643:1"
+        "system-ai-handoff-to-reservation:system-ai:39606065643:1",
+        "actions-run:39606065643"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -146566,7 +146580,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T13:18:33.981Z"
+      "updatedAt": "2026-10-21T13:49:55.003Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
