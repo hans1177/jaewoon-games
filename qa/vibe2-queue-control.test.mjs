@@ -66,6 +66,25 @@ test('focused existing queues get exact game-platform priority and spare workers
   assert.ok(spare.tasks.every(item=>item.ownerDevelopmentHold===false));
 });
 
+test('focused Web queue beats ordinary Roblox without starving remaining capacity',()=>{
+  const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+    enabled:true,ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+    completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
+  }},developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}};
+  const tasks=[
+    {id:'ordinary-roblox',gameId:'ordinary',target:'roblox',department:'development',type:'implementation',
+      status:'queued',goal:'develop',sourceRoot:'roblox-games/ordinary',responsibleFiles:['server/a.luau'],priority:'normal'},
+    {id:'focused-web',gameId:'fantasy-survival',target:'web',department:'development',type:'implementation',
+      status:'queued',goal:'develop',sourceRoot:'web-games/fantasy-survival',responsibleFiles:['index.html'],priority:'normal'}
+  ];
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks});
+  const one=reserveVibeTaskBatch(queue,{policy,maxConcurrentTasks:1,lane:'game-primary'});
+  assert.deepEqual(one.tasks.map(task=>task.id),['focused-web']);
+  const two=reserveVibeTaskBatch(queue,{policy,maxConcurrentTasks:2,lane:'game-primary'});
+  assert.deepEqual(new Set(two.tasks.map(task=>task.id)),new Set(['ordinary-roblox','focused-web']));
+});
+
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
  
