@@ -61,7 +61,6 @@ export function createStar3d({canvas}){
   renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();
   const w=width/SCALE,h=height/SCALE;
   platform.position.set(w/2,-.04,h/2);platform.scale.set(w,h,1);
-  floor.remove(grid);grid.geometry.dispose();
   grid.scale.set(Math.max(w,h)/20,1,Math.max(w,h)/20);
   grid.position.set(w/2,.01,h/2);floor.add(grid);
   boundary.position.set(w/2,.07,h/2);boundary.scale.set(w,.04,h);
