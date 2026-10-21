@@ -49,6 +49,8 @@ on:
       - 'qa/company-release-production-cycle.test.mjs'
       - 'qa/company-status-sync-direct-native.test.mjs'
       - 'qa/company-strict-learning-delta-contract.test.mjs'
+      - 'tools/company-system-ai-queue.mjs'
+      - 'qa/company-system-ai-worker.test.mjs'
       - 'qa/company-system-ai-evolution.test.mjs'
       - 'qa/company-system-ai-supervision-loop.test.mjs'
       - 'qa/design-pipeline-no-artbook-regression.test.mjs'
@@ -119,6 +121,8 @@ on:
       - 'qa/company-release-production-cycle.test.mjs'
       - 'qa/company-status-sync-direct-native.test.mjs'
       - 'qa/company-strict-learning-delta-contract.test.mjs'
+      - 'tools/company-system-ai-queue.mjs'
+      - 'qa/company-system-ai-worker.test.mjs'
       - 'qa/company-system-ai-evolution.test.mjs'
       - 'qa/company-system-ai-supervision-loop.test.mjs'
       - 'qa/design-pipeline-no-artbook-regression.test.mjs'
@@ -310,7 +314,7 @@ jobs:
           set -euo pipefail
           node --test qa/company-recovery-learning.test.mjs qa/vibe2-experience-control.test.mjs
           node --test qa/company-design-checkpoint-recovery.test.mjs qa/vibe2-release-dispatch-recovery.test.mjs
-          node --test qa/company-system-ai-evolution.test.mjs qa/company-system-ai-supervision-loop.test.mjs
+          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-evolution.test.mjs qa/company-system-ai-supervision-loop.test.mjs
 
       - name: Validate Vibe presentation pipeline and runtime contract
         run: |
