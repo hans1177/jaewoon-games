@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "chess-battle-build-up-g2-58eb6097f1d9",
-  "directiveFingerprint": "58eb6097f1d938824ca701bdb4abb3d3b50c9555e1a46d3e53c29a2e16df240a",
+  "directiveId": "chess-battle-build-up-g2-cbbe8dac92cd",
+  "directiveFingerprint": "cbbe8dac92cd6ba818f4d72f9a14608a9c077e60bd77c22b9ffa2c81c609798d",
   "previousDirectiveFingerprint": "e88f9c18933e1fc7517b7856b837f2d95747c8ff79abdd5b5a8ec14b797ccafe",
   "forbiddenRepeatFingerprint": "e88f9c18933e1fc7517b7856b837f2d95747c8ff79abdd5b5a8ec14b797ccafe",
   "gameId": "chess-battle",
@@ -4945,10 +4945,10 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+    "failureStage": "F0_SOURCE_INTEGRITY",
+    "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
     "blockers": [
-      "roblox-build-preflight-blocked"
+      "roblox-f0-source-preflight-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -8057,8 +8057,8 @@
       "sourceTreeFingerprint": "d5c9836a281857e112467d22bd21d1beabf7196b9f2915ed5224a7b4bb3a76f0",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
+      "failureStage": "F0_SOURCE_INTEGRITY",
+      "failureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8175,5 +8175,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T03:12:29.213Z"
+  "generatedAt": "2026-10-21T06:39:56.105Z"
 }
