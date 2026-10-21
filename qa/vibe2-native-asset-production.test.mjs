@@ -7,12 +7,98 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeSourceBoundAssetConsumers,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildWebDesignGraphicsImplementationContract,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeSourceBoundAssetConsumers,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings,buildInternalAssetApiIndex,attachSelectedInternalAssetApiContext} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('all Web library families accept CC0 only, never CC-BY, MIT or unknown',()=>{
+  const licenses=['CC0','CC0-1.0','CC0 1.0 Universal','CC-BY-4.0','MIT','PUBLIC-DOMAIN','UNKNOWN'];
+  const assets=licenses.map((license,index)=>({
+    id:'asset-'+index,family:'UI',title:'menu UI',license,
+    platform:'WEB',path:'assets/ui/menu-'+index+'.png'
+  }));
+  const web=buildAllGameDynamicLibraryBindingPlan({
+    companyRegistry:{assets},target:'web',gameId:'web-game'
+  });
+  assert.deepEqual(web.familyCandidates.UI.map(x=>x.assetId),['asset-0','asset-1','asset-2']);
+  for(let i=3;i<licenses.length;i++){
+    const row=web.evaluatedAssets.find(x=>x.assetId==='asset-'+i);
+    assert.equal(row.eligibleForRoleEvaluation,false,licenses[i]);
+  }
+  assert.ok(web.evaluatedAssets.find(x=>x.assetId==='asset-4').hardBlockReason);
+  const roblox=buildAllGameDynamicLibraryBindingPlan({
+    companyRegistry:{assets},target:'roblox',gameId:'other-game'
+  });
+  assert.equal(roblox.evaluatedAssets.find(x=>x.assetId==='asset-4').eligibleForRoleEvaluation,true,
+    'Web CC0 policy must not alter the unrelated Roblox library scope');
+});
+
+test('all Web external 3D source gaps select verifiable CC0 instead of permissive/public-domain candidates',()=>{
+  const licenses=['MIT','PUBLIC-DOMAIN','CC-BY-4.0','UNKNOWN','CC0'];
+  const externalSources=licenses.map((license,i)=>({
+    id:'source-'+i,name:'village building kit',category:'BUILDING',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license,
+    sourceUrl:'https://example.org/assets/'+i,
+    licenseEvidenceUrl:'https://example.org/rights/'+i,
+    verifiedAt:'2026-10-01',platformTargets:['WEB','ROBLOX'],
+    automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true,
+    capabilities:['GLB'],downloadUrl:'https://example.org/models/'+i+'.glb'
+  }));
+  const params={gameId:'web-forest',target:'web',request:'village building',
+    requirements:[{family:'BUILDING',role:'house'}],
+    registry:{assets:[],externalSources}};
+  const web=buildAssetSupplyDecisionSummary(params);
+  const available=web.nextActions.filter(row=>row.action==='ACQUIRE_ADAPT');
+  assert.equal(available.length,1);
+  assert.equal(available[0].externalAcquisition.sourceId,'source-4');
+  assert.equal(web.productionVerificationGranted,false);
+  assert.equal(web.runtimeVerificationGranted,false);
+  const withoutCc0=buildAssetSupplyDecisionSummary({...params,
+    registry:{assets:[],externalSources:externalSources.slice(0,4)}});
+  assert.equal(withoutCc0.selectedOnDemandExternalGapCount,0,
+    'non-CC0 sources must remain missing, not be silently installed');
+});
+
+test('approved Web design flows to CC0 graphics source handoff and worker, without fake visual/runtime PASS',()=>{
+  const task={target:'web',gameId:'forest-web',sourceRoot:'web-games/forest-web',
+    responsibleFiles:['web-games/forest-web/index.html','web-games/other/index.html'],
+    buildUpDirective:{designFingerprint:'sha256:approved'}};
+  const design={source:'LATEST_VERIFIED_GAME_DESIGN',
+    designFingerprint:'sha256:approved',visualDirection:'3D forest with animated wolves',
+    styleFamily:'FOREST_NIGHT'};
+  const summary={requiredFamilies:['CREATURE','UI','MOTION'],
+    nextActions:[
+      {family:'CREATURE',action:'ACQUIRE_ADAPT',externalAcquisition:{
+        sourceId:'cc0-wolf',license:'CC0-1.0',sourceHash:'a'.repeat(64),
+        localSourcePath:'assets/cc0/wolf.glb'}},
+      {family:'UI',action:'ACQUIRE_ADAPT',externalAcquisition:{
+        sourceId:'mit-ui',license:'MIT'}}
+    ]};
+  const contract=buildWebDesignGraphicsImplementationContract({task,gameConceptStyle:design,
+    assetSupplySummary:summary,automaticAssetBindingWork:{pendingSourceBindingCount:2}});
+  assert.equal(contract.designFingerprint,'sha256:approved');
+  assert.equal(contract.designStatus,'DESIGN_SOURCE_IMPLEMENTATION_PENDING');
+  assert.deepEqual([...contract.responsibleFiles],['web-games/forest-web/index.html']);
+  assert.deepEqual(contract.candidateCC0Sources.map(x=>x.sourceId),['cc0-wolf']);
+  assert.equal(contract.externalLibrariesLicense,'VERIFIED_CC0_ONLY');
+  assert.equal(contract.implementationVerified,false);
+  assert.equal(contract.runtimeVerified,false);
+  assert.equal(contract.completionGranted,false);
+  assert.equal(buildWebDesignGraphicsImplementationContract({task}).designStatus,'APPROVED_DESIGN_REQUIRED');
+  assert.equal(buildWebDesignGraphicsImplementationContract({task:{...task,target:'roblox'}}),null);
+  const prompt=buildPrompt({target:'web',gameId:'forest-web',goal:'apply approved forest graphics',
+    assetProduction:{webDesignGraphicsImplementationContract:contract}},{
+    files:[{path:'web-games/forest-web/index.html',content:'<canvas id="world"></canvas>',editable:true}]
+  },['web-games/forest-web/index.html']);
+  assert.match(prompt,/WEB DESIGN = ACTUAL GRAPHICS SOURCE \/ CC0 ONLY/);
+  assert.match(prompt,/sha256:approved/);
+  assert.match(prompt,/cc0-wolf/);
+  assert.match(prompt,/same-build captures/);
+  assert.match(prompt,/NEVER equal graphics applied or final QA PASS/);
+});
 
 // 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
 test('current-game asset gap selects licensed external source for on-demand PBR derivative, not a verified asset',()=>{
