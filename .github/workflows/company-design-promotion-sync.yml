@@ -123,9 +123,14 @@ jobs:
           git config user.name 'jaewoon-design-promotion'
           git config user.email 'design-promotion@users.noreply.github.com'
           persisted=0
-          for attempt in 1 2 3; do
-            echo "DESIGN_PROMOTION_RUNTIME_PERSIST_ATTEMPT=${attempt}/3"
+          attempt=0
+          # 메인: 실제 상태 충돌만 최신 상태로 다시 계산한다. 실행 시간은 기존 12분 제한을 따른다.
+          while true; do
+            attempt=$((attempt+1))
+            echo "DESIGN_PROMOTION_RUNTIME_PERSIST_ATTEMPT=$attempt"
             git fetch origin "+refs/heads/main:refs/remotes/origin/main" "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH" --depth=2 --no-tags --quiet
+
+            runtime_base="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
 
             # The earlier evidence overlay and promotion calculation intentionally dirty the main worktree.
             # Discard only this ephemeral checkout state before switching to the canonical runtime branch;
@@ -161,10 +166,19 @@ jobs:
               persisted=1
               break
             fi
-            echo 'DESIGN_PROMOTION_RUNTIME_PERSIST_CONFLICT=RETRY_LATEST_RUNTIME'
+            git fetch origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH" --depth=2 --no-tags --quiet
+            runtime_latest="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
+            if [ "$runtime_latest" = "$runtime_base" ]; then
+              echo 'DESIGN_PROMOTION_RUNTIME_PERSIST=FAILED_WITHOUT_STATE_CONFLICT' >&2
+              exit 1
+            fi
+            retry_delay=$((1 + (attempt < 6 ? attempt : 6) + RANDOM % 5))
+            echo "DESIGN_PROMOTION_RUNTIME_PERSIST_CONFLICT=RETRY_LATEST_RUNTIME:$runtime_base:$runtime_latest"
+            echo "DESIGN_PROMOTION_RUNTIME_RETRY_DELAY_SECONDS=$retry_delay"
+            sleep "$retry_delay"
           done
           if [ "$persisted" -ne 1 ]; then
-            echo 'DESIGN_PROMOTION_RUNTIME_PERSIST=FAILED_AFTER_3_ATTEMPTS' >&2
+            echo 'DESIGN_PROMOTION_RUNTIME_PERSIST=UNVERIFIED' >&2
             exit 1
           fi
           echo 'PUBLIC_MAIN_WRITE=NO'
