@@ -651,3 +651,15 @@ test('homepage manager validates canonical web-first internal play links without
   assert.ok(manager.includes("class=\"gameShelfHead\""),'existing shelf stays active');
   assert.ok(manager.includes("class=\"gameShelfCount\""),'existing game count stays visible');
 });
+
+test('backup homepage uses GitHub Pages as primary while preserving Cloudflare as secondary',()=>{
+  const backup=fs.readFileSync('backup.html','utf8');
+  assert.match(backup,/<h2>주 홈페이지 · GitHub Pages<\/h2>/);
+  assert.match(backup,/<a class="action" href="https:\/\/hans1177\.github\.io\/jaewoon-games\/"[^>]*>주 홈페이지 열기<\/a>/);
+  assert.match(backup,/request\('https:\/\/hans1177\.github\.io\/jaewoon-games\/game-catalog\.json'\)/);
+  assert.match(backup,/connect-src https:\/\/hans1177\.github\.io https:\/\/api\.github\.com/);
+  assert.match(backup,/<a href="https:\/\/jaewoon-games\.pages\.dev\/"[^>]*>Cloudflare 보조 주소<\/a>/);
+  assert.match(backup,/마력숲 생존기/);
+  assert.match(backup,/checkSource/);
+  assert.doesNotMatch(backup,/Cloudflare가 주 홈페이지|주 홈페이지 · Cloudflare/);
+});

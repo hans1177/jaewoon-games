@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#13233c">
 <meta name="description" content="재운게임즈 보조 홈페이지. 주 홈페이지 바로가기, 마력숲 실행, 최신 소스 변경 확인.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://jaewoon-games.pages.dev https://api.github.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://hans1177.github.io https://api.github.com; base-uri 'none'; form-action 'none'">
 <title>재운게임즈 | 보조 홈페이지</title>
 <style>
 :root{color-scheme:dark;--bg:#091321;--card:#13243a;--line:#2b4058;--ink:#eff6ff;--muted:#a7bacf;--accent:#8cddce}
@@ -40,13 +40,13 @@ footer a{color:#c1f4e9}
 <header>
 <p class="kicker">JAEWOON GAMES · 보조 홈페이지</p>
 <h1>게임은 원래 주소에서 계속 즐겨.</h1>
-<p class="lead">이곳은 가벼운 안내·바로가기 페이지야. Cloudflare가 주 홈페이지이고 Vercel은 보조야. 게임 저장 데이터를 복사하거나 검증되지 않은 게임을 출시 완료로 표시하지 않아.</p>
+<p class="lead">이곳은 가벼운 안내·바로가기 페이지야. GitHub Pages가 주 홈페이지이고 Cloudflare와 Vercel은 보조 주소야. 보조 사이트 배포가 멈춰도 GitHub의 최신 게임을 확인할 수 있어. 게임 저장 데이터를 복사하거나 검증되지 않은 게임을 출시 완료로 표시하지 않아.</p>
 </header>
 <section class="grid" aria-label="확인된 게임과 홈페이지 주소">
 <div class="card">
-<h2>주 홈페이지 · Cloudflare</h2>
+<h2>주 홈페이지 · GitHub Pages</h2>
 <p>게임 목록과 공식 개발 현황은 주 홈페이지가 기준이야.</p>
-<a class="action" href="https://jaewoon-games.pages.dev/" target="_blank" rel="noopener noreferrer">주 홈페이지 열기</a>
+<a class="action" href="https://hans1177.github.io/jaewoon-games/" target="_blank" rel="noopener noreferrer">주 홈페이지 열기</a>
 </div>
 <div class="card">
 <h2>마력숲 생존기</h2>
@@ -75,7 +75,7 @@ footer a{color:#c1f4e9}
 <button class="action secondary" type="button" id="checkSource">커밋 확인</button>
 </div>
 </section>
-<footer>보조 홈페이지 · 로그인/결제/게임 저장 기능 없음 · <a href="https://jaewoon-games.vercel.app/" target="_blank" rel="noopener noreferrer">Vercel 보조 도메인</a></footer>
+<footer>보조 홈페이지 · 로그인/결제/게임 저장 기능 없음 · <a href="https://jaewoon-games.pages.dev/" target="_blank" rel="noopener noreferrer">Cloudflare 보조 주소</a> · <a href="https://jaewoon-games.vercel.app/" target="_blank" rel="noopener noreferrer">Vercel 보조 도메인</a></footer>
 </main>
 <script>
 (() => {
@@ -95,7 +95,7 @@ footer a{color:#c1f4e9}
     const out=document.getElementById('primaryResult');
     primary.disabled=true;out.textContent='확인 중…';
     try {
-      const data=await request('https://jaewoon-games.pages.dev/game-catalog.json');
+      const data=await request('https://hans1177.github.io/jaewoon-games/game-catalog.json');
       out.textContent=Array.isArray(data.games)?'주 홈페이지의 공개 게임 목록 응답 확인 · 실제 게임 플레이 검증과는 별개야.':'응답은 왔지만 게임 목록 형식을 확인하지 못했어.';
     }catch{
       out.textContent='자동 확인 불가 · 네트워크 또는 브라우저 접근 제한일 수 있어. 주 홈페이지 링크로 직접 확인해.';
