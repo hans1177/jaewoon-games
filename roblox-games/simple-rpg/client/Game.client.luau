@@ -271,7 +271,6 @@ local function attachDownloadedArtwork(): ()
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
-local verifiedLearningLighting = game:GetService("Lighting")
 local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
 local verifiedLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
@@ -293,49 +292,8 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticDomain", verifiedLear
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
--- Game-specific color and atmosphere response, authored locally in Roblox.
-local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
-if not verifiedLearningColorGrade then
-  verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
-  verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
-  verifiedLearningColorGrade.Parent = verifiedLearningLighting
-end
-verifiedLearningColorGrade.Saturation = 0
-verifiedLearningColorGrade.Contrast = 0
-verifiedLearningColorGrade.Brightness = 0
-verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
--- Survival alone receives atmospheric depth and threat haze.
-local verifiedLearningBloom = verifiedLearningLighting:FindFirstChild("VerifiedLearningBloom")
-if not verifiedLearningBloom then
-  verifiedLearningBloom = Instance.new("BloomEffect")
-  verifiedLearningBloom.Name = "VerifiedLearningBloom"
-  verifiedLearningBloom.Parent = verifiedLearningLighting
-end
-verifiedLearningBloom.Intensity = 0.22
-verifiedLearningBloom.Size = 18
-verifiedLearningBloom.Threshold = 1.1
-local verifiedLearningAtmosphere = verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
-if not verifiedLearningAtmosphere then
-  verifiedLearningAtmosphere = Instance.new("Atmosphere")
-  verifiedLearningAtmosphere.Name = "VerifiedLearningAtmosphere"
-  verifiedLearningAtmosphere.Parent = verifiedLearningLighting
-end
-verifiedLearningAtmosphere.Density = 0.22
-verifiedLearningAtmosphere.Haze = 1.1
-verifiedLearningAtmosphere.Glare = 0.08
-local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
-if not verifiedLearningDepth then
-  verifiedLearningDepth = Instance.new("DepthOfFieldEffect")
-  verifiedLearningDepth.Name = "VerifiedLearningDepthOfField"
-  verifiedLearningDepth.Parent = verifiedLearningLighting
-end
-verifiedLearningDepth.FarIntensity = 0.08
-verifiedLearningDepth.NearIntensity = 0.02
-verifiedLearningDepth.FocusDistance = 28
-verifiedLearningDepth.InFocusRadius = 24
-
-end
+-- Preserve the game's imported/cloud-published artwork and lighting. No self-authored
+-- ColorCorrection/Bloom/DepthOfField/Atmosphere overlays on top of the asset pipeline.
 
 if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Roblox character animation / motion adaptation.
