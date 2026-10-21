@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { qaEvidencePasses } from './vibe2-training-sample.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -68,15 +69,26 @@ function engineOf(sample={}){
   return ['web','roblox','unity'].includes(declared)?declared:'web';
 }
 
+// 검증된 실제 재현 결과만 인과형 구현 패턴의 근거가 된다.
+const CAUSAL_REPLAY_SCENARIOS=Object.freeze({
+  INPUT_ACTION_CAUSAL_CHAIN:'combat-input-to-resolution',
+  MOTION_CONTACT_SYNC:'direction-and-contact',
+  SCENE_CAUSALITY_CHAIN:'scene-threat-escape'
+});
+
 function sampleVerified(sample={}){
-  if(!['coding','bugfix','unity','roblox'].includes(clean(sample.taskType)))return false;
-  // 엔진에서 검증된 구현만 같은 엔진의 재사용 패턴이 될 수 있다. Web PASS는 네이티브 PASS가 아니다.
-  if(['roblox','unity'].includes(engineOf(sample))&&upper(sample.runtime||sample.verification?.runtime||sample.qa?.runtime)!=='PASS')return false;
-  if(upper(sample.independentQa)!=='PASS')return false;
-  const browser=upper(sample.browserQa);
-  if(browser&& !['PASS','NOT_APPLICABLE'].includes(browser))return false;
-  if(sample.verification?.fullRegression&&upper(sample.verification.fullRegression)!=='PASS')return false;
-  return Boolean(clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision));
+  if(!['coding','bugfix','unity','roblox'].includes(clean(sample.taskType).toLowerCase()))return false;
+  const sourceRevision=clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision);
+  if(!sourceRevision||sample.provenance?.sourceRevision&&clean(sample.provenance.sourceRevision)!==sourceRevision)return false;
+  const runtime=upper(sample.runtime||sample.verification?.runtime||sample.verification?.trace?.runtime||sample.provenance?.verificationTrace?.runtime||sample.qa?.runtime);
+  // 신규 패턴은 정식 학습 샘플과 동일한 플랫폼 QA·실행·회귀 근거가 필수다.
+  if(!qaEvidencePasses({taskType:engineOf(sample),independentQa:sample.independentQa,browserQa:sample.browserQa,runtime}))return false;
+  if(upper(sample.verification?.fullRegression)!=='PASS')return false;
+  const trace=sample.verification?.trace||sample.provenance?.verificationTrace;
+  if(trace&&(upper(trace.state)!=='PASS'||upper(trace.ci)!=='PASS'||upper(trace.independentQa)!=='PASS'||upper(trace.runtime)!=='PASS'||
+    clean(trace.sourceRevision||trace.sha)!==sourceRevision||trace.stale===true||trace.flaky===true))return false;
+  if(sample.verification?.stale===true||sample.verification?.flaky===true)return false;
+  return true;
 }
 
 export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
@@ -86,8 +98,14 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     ...(sample.verification?.proposedTests||[]),
     clean(sample.output).split('검증된 패치:')[0]
   ].filter(Boolean).join(' ');
-  const systems=CLASSIFIERS.filter(([,re])=>re.test(text)).map(([name])=>name);
   const sourceRevision=clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision);
+  const replay=(Array.isArray(sample.verification?.replayEvidence)?sample.verification.replayEvidence:[])
+    .filter(row=>row&&clean(row.sourceRevision)===sourceRevision&&
+      row.actualPlatformRuntime===true&&row.independentQaPass===true&&
+      row.expectedObservationMet===true&&row.gameplaySemanticsPreserved===true);
+  const systems=CLASSIFIERS.filter(([name,re])=>re.test(text)&&
+    (!CAUSAL_REPLAY_SCENARIOS[name]||replay.some(row=>clean(row.scenarioId)===CAUSAL_REPLAY_SCENARIOS[name]&&
+      ['NEXT_STATE_TRANSITION','NEXT_STAGE'].includes(clean(row.horizon))))).map(([name])=>name);
   const gameId=clean(sample.gameId||sample.project)||null;
   const engine=engineOf(sample);
   const taskType=clean(sample.taskType);
@@ -97,6 +115,11 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     problem:clean(sample.instruction).slice(0,220),
     pattern:`VERIFIED_${system}_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION`,
     ...(VISUAL_CODING_RECIPES[system]?{implementationRecipe:VISUAL_CODING_RECIPES[system]}:{}),
+    ...(CAUSAL_REPLAY_SCENARIOS[system]?{observedReplay:Object.freeze({
+      scenarioId:CAUSAL_REPLAY_SCENARIOS[system],sourceRevision,
+      horizon:clean(replay.find(row=>clean(row.scenarioId)===CAUSAL_REPLAY_SCENARIOS[system])?.horizon),
+      actualPlatformRuntime:true,independentQaPass:true,gameplaySemanticsPreserved:true
+    })}:{}),
     tags:uniq([system,taskType,engine,'verified','smallest-responsible-change','regression-bound']),
     verified:true,
     sourceRevision,
