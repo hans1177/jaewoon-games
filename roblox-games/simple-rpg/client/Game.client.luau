@@ -394,46 +394,9 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   end
 
   if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  local character = verifiedLearningPlayer.Character
-  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-  if character and rootPart then
-    local highlight = Instance.new("Highlight")
-    highlight.Name = "VerifiedLearningSkillImpact"
-    highlight.FillTransparency = 0.35
-    highlight.OutlineTransparency = 0.12
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    highlight.Parent = character
-    verifiedLearningTweenService:Create(highlight, TweenInfo.new(0.20), {FillTransparency = 1, OutlineTransparency = 1}):Play()
-    local sparkles = Instance.new("Sparkles")
-    sparkles.Name = "VerifiedLearningSkillSparkles"
-    sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
-    sparkles.Parent = rootPart
-    local impactAttachment = Instance.new("Attachment")
-    impactAttachment.Name = "VerifiedLearningSkillAttachment"
-    impactAttachment.Parent = rootPart
-    local particles = Instance.new("ParticleEmitter")
-    particles.Name = "VerifiedLearningSkillParticles"
-    particles.Rate = 0
-    particles.Lifetime = NumberRange.new(0.18, 0.32)
-    particles.Speed = NumberRange.new(5, 9)
-    particles.SpreadAngle = Vector2.new(45, 45)
-    particles.LightEmission = 0.7
-    particles.Parent = impactAttachment
-    particles:Emit(18)
-    local impactLight = Instance.new("PointLight")
-    impactLight.Name = "VerifiedLearningSkillLight"
-    impactLight.Color = Color3.fromRGB(160, 215, 255)
-    impactLight.Brightness = 2.2
-    impactLight.Range = 10
-    impactLight.Parent = rootPart
-    verifiedLearningTweenService:Create(impactLight, TweenInfo.new(0.18), {Brightness = 0, Range = 4}):Play()
-    task.delay(0.24, function()
-      if impactAttachment then impactAttachment:Destroy() end
-      if impactLight then impactLight:Destroy() end
-      if sparkles then sparkles:Destroy() end
-      if highlight then highlight:Destroy() end
-    end)
-  end
+    -- Combat authority is server-confirmed. Display belongs to already-verified
+    -- cloud/bundled images and the existing UI, never generated placeholder VFX.
+    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningCombatImpactAt", os.clock())
   end
 
 end
