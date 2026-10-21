@@ -525,7 +525,7 @@ test('stale asynchronous writers cannot demote newer exact Roblox preflight PASS
     robloxBuildPreflightPassedAt:'2026-10-21T05:48:10Z',robloxBuildPreflightEvidence:priorEvidence,
     robloxFailureStage:'F0_SOURCE_INTEGRITY',robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_PENDING',
     routingBlockers:['roblox-f0-source-preflight-pending']};
-  const oldReview={pass:false,state:'BLOCKED',facts:{pass:true,blockers:[]},
+  const oldReview={gameId:'verified-game',pass:false,state:'BLOCKED',facts:{pass:true,blockers:[]},
     sourceRevision:revision,artifactIdentity:artifact,blockers:['lead-block:shared-review:musicValidationPassed is false']};
 
   const techHeader="          const fs=require('fs');\n          const path=require('path');\n          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));";
