@@ -8560,9 +8560,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T14:15:00.661Z",
+      "updatedAt": "2026-10-21T14:20:31.907Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8574,9 +8574,9 @@
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "d6b12a4e3addc161316176cd0bf7ba3b8d7de432",
       "robloxSourceBootstrapPassedAt": "2026-10-21T10:29:18.848Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-21T13:08:14.995Z",
-      "robloxSourceCandidateBranch": null,
-      "robloxSourceCandidateReadyAt": null,
+      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceCandidateBranch": "development/roblox-chess-battle-39609093061-1",
+      "robloxSourceCandidateReadyAt": "2026-10-21T14:20:31.907Z",
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
@@ -8624,9 +8624,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-source-promotion-pending"
       ],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "d6b12a4e3addc161316176cd0bf7ba3b8d7de432",
@@ -85256,7 +85256,7 @@
       "updatedAt": "2026-10-21T14:15:00.661Z"
     }
   ],
-  "updatedAt": "2026-10-21T14:19:29.785Z",
+  "updatedAt": "2026-10-21T14:20:31.907Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
