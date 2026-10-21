@@ -3341,6 +3341,8 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     checked+=1;
     const history=tasks.filter((row,rowIndex)=>rowIndex!==index&&clean(row?.gameId)===gameId&&studioQualityTaskLane(row)===lane&&clean(row?.buildUpDirective?.directiveId));
     const byGeneration=(a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0);
+    const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
+    const approvedFingerprint=approvedDesignFingerprintByGame.get(gameId)||'';
     const mappedCanonical=canonicalByScope.get(scope)||null;
     const activeCanonical=mappedCanonical
       ?{buildUpDirective:mappedCanonical,status:'queued'}
@@ -3352,8 +3354,6 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     const latestHistorical=history.slice().sort(byGeneration)[0]||null;
     const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
     const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
-    const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
-    const approvedFingerprint=approvedDesignFingerprintByGame.get(gameId)||'';
     const currentDirectiveDesignStale=Boolean(currentId&&approvedFingerprint
       &&clean(item?.buildUpDirective?.designFingerprint)!==approvedFingerprint);
     const currentDirectiveSourceStale=Boolean(
