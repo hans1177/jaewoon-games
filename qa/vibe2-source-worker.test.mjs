@@ -49,7 +49,7 @@ test('asset synchronization detects same-size byte changes even when file metada
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-sync-metadata-'));
   fs.mkdirSync(path.join(cwd,'assets/shared'),{recursive:true});
   const file=path.join(cwd,'assets/shared/model.glb');fs.writeFileSync(file,Buffer.from([1,2,3,4]));
-  const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',nativeArtifacts:['assets/shared/model.glb'],fileRoles:{models:['assets/shared/model.glb']}};
+  const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'CC0',nativeArtifacts:['assets/shared/model.glb'],fileRoles:{models:['assets/shared/model.glb']}};
   const dynamic=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[asset]},target:'web',gameId:'demo'});
   const order={target:'web',gameId:'demo',assetProduction:{allGameDynamicLibraryBinding:dynamic}};
   const originalStat=fs.statSync,oldStat=originalStat(file,{bigint:true});

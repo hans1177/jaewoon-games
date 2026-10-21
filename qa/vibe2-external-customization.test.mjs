@@ -339,3 +339,35 @@ test('approved optional WFC room graph enforces socket adjacency and reachable s
   assert.equal('roomComposition' in createVibeProceduralWorldLayout(opts),false,
     'genres without explicit room design are unchanged');
 });
+
+test('Web visual/motion libraries only accept verified CC0 original candidates, not permissive non-CC0',()=>{
+  const candidates=[
+    {...validSource,id:'web-cc0'},
+    {...validSource,id:'web-cc-by',license:'CC-BY'},
+    {...validSource,id:'web-mit',license:'MIT'},
+    {...validSource,id:'web-unknown',license:'unknown'},
+    {...validSource,id:'web-not-downloaded',downloaded:false},
+    {...validSource,id:'web-review-only',verifiedCompanyReusable:false}
+  ];
+  const plan=planVibeExternalCustomization({...input,target:'WEB',assets:candidates});
+  assert.equal(plan.authorized,true);
+  assert.equal(plan.webAssetLibraryLicensePolicy,'VERIFIED_CC0_ONLY');
+  assert.equal(plan.webExternalLibraryCandidatesAreReferencesOnly,true);
+  assert.equal(plan.existingVerifiedSourceCount,1);
+  const terrain=plan.references.find(row=>row.id==='FASTNOISELITE');
+  assert.deepEqual(terrain.sourceCandidates.map(row=>row.assetId),['web-cc0']);
+  assert.equal(terrain.status,'WEB_CC0_LIBRARY_SOURCE_AND_LICENSE_PROOF_REQUIRED');
+  assert.equal(terrain.nextAction,'VERIFY_CC0_ORIGINAL_SOURCE_AND_LICENSE_BEFORE_INTEGRATION');
+  assert.equal(terrain.externalExecutionPerformed,false);
+  assert.equal(plan.appliedToGame,false);
+  assert.equal(plan.qaPassed,false);
+});
+
+test('Web worker requires paired design/graphics source edits and CC0 originals even for already queued tasks',()=>{
+  const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(source,/WEB APPROVED DESIGN = GRAPHICS \+ SOURCE IMPLEMENTATION/);
+  assert.match(source,/rights-verified CC0 \/ CC0-1\.0 ORIGINAL/);
+  assert.match(source,/CC-BY, MIT, commercial-use-only, unknown/);
+  assert.match(source,/existing unrelated runtime dependencies must remain unchanged/);
+  assert.match(source,/state-bound motion edits in the exact responsible Web source files/);
+});

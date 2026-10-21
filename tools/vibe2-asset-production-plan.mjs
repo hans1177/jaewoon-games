@@ -1274,10 +1274,12 @@ function requiredAssetFamilies({request='',requirements=[]}={}){
   for(const rule of ASSET_REQUIREMENT_FAMILY_RULES)if(rule.re.test(clean(request)))for(const family of rule.families)families.add(family);
   return [...families].sort();
 }
+// All Web visual, motion, audio and UI library candidates must declare CC0.
+const verifiedCC0License=value=>/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(value));
 function assetSupplyCandidateAllowed(asset={},target=''){
   // [연습 제작물] 게임 후보·공용 자산 승격에 연습 결과를 사용하지 않는다.
   if(asset?.practiceOnly===true||asset?.practiceArtifact===true||asset?.authority==='PRACTICE_ONLY')return false;
-  if(!/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(asset?.license)))return false;
+  if(!verifiedCC0License(asset?.license))return false;
   if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
   if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
   if(internalAssetHardBlockReason(asset))return false;
@@ -1390,6 +1392,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const explicitRights=row.commercialUseAllowed===true&&row.derivativesAllowed===true&&Boolean(license)
         &&!/NON.?COMMERCIAL|NO.?DERIVATIVES|UNKNOWN|UNVERIFIED|(?:^|-)NC(?:-|$)|(?:^|-)ND(?:-|$)/.test(license);
       if(!freeRights&&!explicitRights)continue;
+      // "Free", permissive, and generic public-domain metadata are not CC0.
+      if(platform==='WEB'&&!verifiedCC0License(row.license))continue;
       const targets=unique(row.platformTargets||[]).map(value=>value.toUpperCase());
       const categories=unique([row.category,...(row.categories||[])]).map(value=>value.toUpperCase());
       if(!targets.includes(platform)||!categories.includes(family))continue;
@@ -3713,7 +3717,8 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
   let hardBlockedCount=0,classifiableCount=0,compatibleCandidateCount=0;
   for(const asset of [...assets].sort(compareStandardLibraryAssets)){
     const family=clean(asset?.family||asset?.category).toUpperCase();
-    const hardBlockReason=internalAssetHardBlockReason(asset);
+    const hardBlockReason=internalAssetHardBlockReason(asset)
+      ||(resolved==='web'&&!verifiedCC0License(asset.license)?'WEB_CC0_ONLY_LICENSE_REQUIRED':'');
     const applicationMode=internalAssetPlatformApplicationMode(asset,resolved);
     const familyClassified=familySet.has(family);
     if(familyClassified)classifiableCount+=1;
@@ -4569,6 +4574,64 @@ function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterC
   }
   return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index)
     .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit));
+}
+
+// Source-work handoff only: never imply real Web-game implementation or QA PASS.
+export function buildWebDesignGraphicsImplementationContract({
+  task={},gameConceptStyle=null,assetSupplySummary={},automaticAssetBindingWork={}
+}={}){
+  if(clean(task.target||task.engine).toLowerCase()!=='web')return null;
+  const gameId=clean(task.gameId);
+  const sourceRoot=clean(task.sourceRoot||task.projectPath||('web-games/'+gameId))
+    .replaceAll('\\','/').replace(/\/+$/,'');
+  const responsibleFiles=unique(task.responsibleFiles||[])
+    .map(value=>value.replaceAll('\\','/'))
+    .filter(file=>sourceRoot.startsWith('web-games/')&&file.startsWith(sourceRoot+'/')
+      &&!file.split('/').includes('..'));
+  const designFingerprint=clean(gameConceptStyle?.designFingerprint||task.buildUpDirective?.designFingerprint)||null;
+  const approvedDesign=gameConceptStyle?.source==='LATEST_VERIFIED_GAME_DESIGN';
+  const actions=(assetSupplySummary?.nextActions||[]).filter(row=>
+    ['ACQUIRE_ADAPT','ADAPT','REUSE','AUTHOR'].includes(clean(row?.action).toUpperCase()));
+  const potentialCC0Candidates=actions.flatMap(row=>{
+    const external=row?.externalAcquisition;
+    const reuse=row?.libraryReuse;
+    if(!external&&!reuse)return[];
+    const license=clean(external?.license||reuse?.sourceLicense||reuse?.license);
+    if(!verifiedCC0License(license))return[];
+    return[freeze({
+      family:clean(row?.family)||null,assetId:clean(row?.assetId)||null,
+      sourceId:clean(external?.sourceId||reuse?.assetId)||null,
+      license,sourceHash:clean(external?.sourceHash||reuse?.expectedSourceSha256)||null,
+      sourcePath:clean(external?.localSourcePath||reuse?.sourceModel)||null,
+      actualGameConsumerVerified:false,runtimeVerified:false
+    })];
+  });
+  return freeze({
+    version:1,kind:'WEB_DESIGN_TO_GRAPHICS_SOURCE_HANDOFF',
+    gameId:gameId||null,target:'WEB',
+    designFingerprint,approvedDesignEvidencePresent:approvedDesign,
+    designStatus:approvedDesign?'DESIGN_SOURCE_IMPLEMENTATION_PENDING':'APPROVED_DESIGN_REQUIRED',
+    approvedVisualDirection:clean(gameConceptStyle?.visualDirection)||null,
+    approvedStyleFamily:clean(gameConceptStyle?.styleFamily)||null,
+    requiredFamilies:freezeList(assetSupplySummary?.requiredFamilies||[]),
+    candidateCC0Sources:freezeList(potentialCC0Candidates.slice(0,24)),
+    candidatesAreUnverifiedUntilOriginalHashAndRightsChecked:true,
+    sourceRoot,responsibleFiles:freezeList(responsibleFiles),
+    sourceChangeRequired:true,gameSpecificStyleAdaptationRequired:true,
+    sourceConsumerBindingRequired:true,realWeb3dCameraMeshAndInputRequired:true,
+    motionAndVfxMustBeTriggeredByActualGameplayEvents:true,
+    sameBuildMobileBrowserScreenshotAndInteractionEvidenceRequired:true,
+    buildUpAndRuntimeProofMustMatchDesignFingerprint:true,
+    existingLogicSaveAndBalanceMustRemain:true,
+    graphicsProductionOwner:'EXISTING_GRAPHICS_PRODUCTION_AND_BUILD_UP',
+    externalLibrariesLicense:'VERIFIED_CC0_ONLY',
+    blockedWithoutVerifiedCC0Original:true,
+    blockedWithoutCurrentGameSourceConsumer:true,
+    blockedWithoutActual3dBrowserQa:true,
+    automaticAssetBindingWorkPending:Number(automaticAssetBindingWork?.pendingSourceBindingCount||0),
+    implementationVerified:false,runtimeVerified:false,completionGranted:false,
+    noNewPipeline:true,noUnverifiedPass:true
+  });
 }
 
 export function buildVibeAssetProductionPlan({
@@ -5900,6 +5963,9 @@ export function buildVibeAssetProductionPlan({
     version:1,
     kind:'vibe2-asset-production-plan',
     gameConceptStyle,
+    webDesignGraphicsImplementationContract:buildWebDesignGraphicsImplementationContract({
+      task:{...task,target:resolvedTarget},gameConceptStyle,assetSupplySummary,automaticAssetBindingWork
+    }),
     webActionMotionReplacement:resolvedTarget==='web'&&clean(task.releaseState).toLowerCase()==='development-confirmed'
       ?currentRoadmap?.assetProductionParallelContract?.assetAcquisitionAndReuse?.webActionMotionReplacement||null:null,
     graphicsProductionRoot:'GRAPHICS_PRODUCTION',
@@ -6482,6 +6548,10 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.webDesignGraphicsImplementationContract
+      ?'[WEB DESIGN TO REAL GRAPHICS IMPLEMENTATION / CC0 ONLY] '+
+        JSON.stringify(plan.webDesignGraphicsImplementationContract)+
+        '. 승인 설계를 실제 3D 메시·모션·VFX·UI를 소비하는 웹게임 책임 소스로 구현한다. CC0 권리·원본 해시 확인 전에는 적용하지 않는다. 게임 입력→상태 변화→화면 표시와 동일 빌드의 실제 모바일 브라우저 검증 없이는 미완료로 남긴다. 규칙·저장·밸런스 보존, 새 파이프라인과 가짜 PASS 금지.':'',
     plan.webActionMotionReplacement?.enabled===true?'[WEB CC0 ACTION MOTION OWNER DIRECTIVE] '+JSON.stringify(plan.webActionMotionReplacement)+'. 현재 개발 중 웹 게임의 기존 액션 모션은 출처·CC0 라이선스·SHA256이 검증된 모션 라이브러리 클립으로 교체한다. 현재 책임 파일과 승인된 행동 범위 안에서 기존 리그·정체성·게임 판정 시점을 보존하며 실제 클립과 상태를 연결한다. 호환 불가 종·리그는 정확한 GAP로 남기고 인간 모션을 강제 적용하지 않는다. 클립 LoopOnce/LoopRepeat, 연속 공격 재시작, 전환·피격·사망·모바일 입력을 같은 빌드에서 확인한다. 자체 제작 대체 모션이나 소스 마커만으로 교체 완료를 주장하지 않는다. 현재 책임 범위를 넘는 교체는 기존 BUILD_UP 다음 작업으로 연결한다.':'',
     '[PRACTICE ONLY / DELETE AFTER EXERCISE] 바이브 자체 제작물은 연습만 허용한다. 게임 사용·라이브러리 승격·재사용 금지. 연습 종료 후 기존 책임 작업에서 연습 파일·미리보기·원장 등록을 영구 삭제하고 삭제 경로 증거만 남긴다. 기존 게임 소비처가 있는 공유 파일은 안전한 CC0 교체 검증 전 삭제하지 않는다.',
     '[CC0 ORIGINAL / ACTIVE GAME ONLY] 게임 에셋은 출처·라이선스·원본 해시가 확인된 CC0 원본을 이 게임에 맞게 수정해서 사용한다. 자체 제작 저품질 에셋은 단순 제외하지 말고 CC0 파생으로 실제 교체·실행 검증한 뒤 영구 삭제한다. 현재 승인된 개발 게임과 책임 파일만 처리하고 개발하지 않는 게임·보류 게임은 교체하지 않는다. 모든 라이브러리와 공유 파일의 바이브 자체 제작물은 품질과 관계없이 영구 제거 대상이다. 소비처를 확인해 실제 사용 연결을 검증된 CC0 파생 자산으로 교체한 뒤 원본 파일과 원장 등록을 삭제한다. 외부 CC0 원본과 게임 실행 로직은 보존한다. CC0 원본·수정 이력·삭제 경로·게임 연결 변경과 실제 런타임 증거 없이 완료를 주장하지 않는다. 자체 제작 fallback·옛 에셋 재생성·새 우회 파이프라인 금지. 게임 판정·저장·밸런스·기존 F0~F9 순서를 보존한다.',

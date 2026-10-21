@@ -5633,6 +5633,18 @@ test('F0 source gameplay gaps request causal source repair without claiming runt
   assert.match(task.buildUpDirective.nextActionDecision.reason,/F0 design-bound gameplay gaps/);
 });
 
+test('Web existing-game assessment always couples approved design to exact graphics source implementation',()=>{
+  const source=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  const block=source.split('function findUnityWebFirstStageTask')[0].split('const id=`${project.gameId}-existing-web-assessment-v1`')[1];
+  assert.ok(block,'existing Web assessment must remain inside canonical planner');
+  assert.match(block,/attachGameSpecificBuildUpDirective\(out,project,repoRoot,queue\)/);
+  assert.match(block,/applyAdaptiveGraphicsReplacementContract\(out,project,'ASSET_ADAPTATION',repoRoot\)/);
+  assert.match(block,/web-design-graphics-coimplementation:v1/);
+  assert.match(block,/web-creative-library:CC0_ONLY/);
+  assert.match(block,/web-graphics-source-binding:REQUIRED/);
+  assert.doesNotMatch(block,/productionQaPassed:true|runtimeVerified:true/);
+});
+
 // CC0 액션 교체: 개발 중 웹 전체가 기존 작업으로 생성되고 보류·폐기·중복은 제외된다.
 test('owner CC0 action replacement covers active Web games through the existing planner without fabricated completion',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-cc0-motion-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));

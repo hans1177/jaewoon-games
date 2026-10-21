@@ -3812,6 +3812,21 @@ function internalAssetSourceUsageGuidance(order={}){
   ].join('\n');
 }
 
+// Existing BUILD_UP source worker: Web graphics must follow the same approved
+// design and CC0 source, never a disconnected catalog-only visual proposal.
+function webDesignGraphicsWorkerGuidance(order={}){
+  if(clean(order?.target).toLowerCase()!=='web')return'';
+  const contract=order?.assetProduction?.webDesignGraphicsImplementationContract;
+  return [
+    '[WEB DESIGN = ACTUAL GRAPHICS SOURCE / CC0 ONLY]',
+    contract?'[CURRENT DESIGN/GRAPHICS HANDOFF] '+JSON.stringify(contract)
+      :'[HANDOFF GAP] Approved design-to-graphics contract missing; do not claim graphics finished.',
+    'Work in the original responsible Web game files only. Preserve approved game identity, gameplay, save, balance and server rules. Translate approved visual design into camera-visible real 3D meshes, materials, animations, VFX and UI consumed by actual gameplay events and input/state transitions, using compatible game-specific CC0 adaptations rather than generic placeholders.',
+    'Every external art, model, motion, material, UI, VFX and audio library or asset must have verified CC0 rights plus original provenance and exact file hash before use. Public-domain-only claims, CC-BY, MIT, unknown and proprietary licensing are NOT CC0 evidence. Leave a GAP and do not apply them.',
+    'Prove actual editable game consumer paths and real browser/mobile input -> state -> visible 3D animation/VFX/UI with same-build captures. Design notes, reference images, asset IDs, patches, downloads and syntax alone NEVER equal graphics applied or final QA PASS. Follow existing BUILD_UP/F0-F9 causal-repair gates; no new pipeline or fake verification.'
+  ].join('\n');
+}
+
 function universalAssetWorkerGuidance(order={}) {
   if(order?.source?.internalAssetMotion===true)return '';
   const target=clean(order?.target).toLowerCase();
@@ -4761,6 +4776,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 visualCraftWorkerGuidance(order,context),
 universalAssetWorkerGuidance(order),
+webDesignGraphicsWorkerGuidance(order),
 internalAssetSourceUsageGuidance(order),
 internalAssetApiIndexGuidance(context),
 gameContextCapsuleGuidance(order,exploration,responsibleFiles),
@@ -4793,6 +4809,14 @@ allowFullRewrite?'Required output format:\nVIBE2_FULL_FILE\nPATH:index.html\nSUM
 'Do not output binary assets. Do not use wrapper/monkey patches.',
 clean(order.target).toLowerCase()==='system'?'For system target, edit only exact allowed paths. Company policy files may be edited only when they are explicitly listed. Never alter authority or weaken gates. When Allowed edit paths contain both a non-QA system source file and a qa/*.test.js|mjs|cjs regression file, the candidate MUST change both in one atomic candidate: repair the responsible source and add or strengthen the exact causal regression test that fails on the base and passes after the repair.':'Do not change homepage/company files.',
 clean(order.target).toLowerCase()==='web'?'For web target, stay inside the existing web-games/<game> root.':'',
+clean(order.target).toLowerCase()==='web'?[
+  '[WEB APPROVED DESIGN = GRAPHICS + SOURCE IMPLEMENTATION]',
+  'Translate the currently approved game design and same-game asset roles into real rendered character, creature, environment, equipment, UI, effects and state-bound motion edits in the exact responsible Web source files; do not stop at a design note, plan, asset list or visual mock-up. If design approval is missing, preserve current gameplay and report DESIGN_APPROVAL_PENDING; never invent approval.',
+  'Every NEW OR REPLACEMENT Web game asset, motion, UI art, audio or external content library must come from an actually downloaded, source-hash-bound, rights-verified CC0 / CC0-1.0 ORIGINAL asset. CC-BY, MIT, commercial-use-only, unknown, generated-unproven and merely linked candidates do NOT satisfy CC0. Do not download, import or embed unverified libraries, CDN assets or software as a shortcut; existing unrelated runtime dependencies must remain unchanged until independently replaceable and regression-tested.',
+  'Bind each CC0 source to a real matching game object and the relevant actor animation states (idle, movement, attack, hit, death where the gameplay has those states). Preserve exact game identity, collision, input, AI, balance, save keys and current validated functionality.',
+  'Use the existing visual / graphics / source pipeline and QA. Mark incomplete CC0 acquisition or gameplay binding as BLOCKED / UNVERIFIED, not PASS. Require browser 3D, animation, mobile input and save-restore evidence before completion.',
+  '[END WEB APPROVED DESIGN = GRAPHICS + SOURCE IMPLEMENTATION]'
+].join('\n'):'',
 sourceRootBootstrap&&clean(order.target).toLowerCase()==='unity'?'UNITY WEB BOOTSTRAP: the project configuration and WebBuild.cs scaffold are supplied by the system. You MUST edit BOTH Assets/Scripts/GameCore.cs and Assets/Scripts/RuntimeBootstrap.cs from the exact provided stub text. Implement real approved gameplay, state, save meaning, mobile input, and QA markers in those existing files. Do not create HTML/Canvas source and do not return newFiles or replaceFiles.':'',
 'Read-only impact context may explain dependencies but MUST NOT be edited unless it is also listed in Allowed edit paths.',
 allowFullRewrite?'':'This is an implementation candidate. You MUST produce at least one real source change. Never return empty edits/newFiles/replaceFiles. When responsible files are listed, use an edits[] entry on an exact allowed path; copy find text exactly from the FILE block and make replace materially different.',
