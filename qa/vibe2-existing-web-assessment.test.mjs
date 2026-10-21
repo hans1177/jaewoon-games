@@ -366,11 +366,16 @@ test('party-rpg native 3D loads only existing CC0 originals and never claims mis
   assert.match(html,/window\\.partyRpgVibeState/,'existing game state and saves must be preserved');
 });
 
-test('party RPG existing mobile smoke shell starts HTTP server on a separate real command',()=>{
+
+test('party RPG mobile smoke serves the repository root for both assets and real GLB files',()=>{
  const workflow=fs.readFileSync(path.join(process.cwd(),'.github','workflows','party-rpg-mobile-test.yml'),'utf8');
- assert.match(workflow,/ln -s "\$PWD" \/tmp\/jaewoon-games\n\s+\(cd \/tmp && python3 -m http\.server 8765\) &/);
- assert.ok(!workflow.includes('jaewoon-games\\n          (cd'),'literal backslash-n breaks bash parsing before the browser runs');
+ assert.match(workflow,/python3 -m http\.server 8765 --bind 127\.0\.0\.1 &/);
+ assert.match(workflow,/await page\.goto\('\/web-games\/party-rpg\/',\{waitUntil:'domcontentloaded'\}\)/);
+ assert.doesNotMatch(workflow,/ln -s "\$PWD" \/tmp\/jaewoon-games|\(cd \/tmp && python3 -m http\.server/);
  assert.match(workflow,/page\.on\('response',r=>\{if\(r\.status\(\)>=400\)errors\.push/);
  assert.match(workflow,/if\(errors\.length\)throw new Error/);
  assert.match(workflow,/if\(await page\.locator\('#vibe3d'\)\.count\(\)===0\)throw/);
+ const index=fs.readFileSync(path.join(process.cwd(),'web-games','party-rpg','index.html'),'utf8');
+ assert.match(index,/\/assets\/fantasy-rpg-v2\.webp/);
+ assert.ok(fs.statSync(path.join(process.cwd(),'assets','fantasy-rpg-v2.webp')).size>10000);
 });
