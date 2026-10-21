@@ -10,7 +10,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090c12;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
 canvas{display:block;width:100vw;height:100vh;background:#10151f}
-#renderStatus{position:fixed;left:50%;bottom:max(160px,calc(144px + env(safe-area-inset-bottom)));transform:translateX(-50%);z-index:29;max-width:94vw;padding:8px 12px;background:#101923ed;border:1px solid #f2b65d;border-radius:12px;color:#fff;font-size:12px;font-weight:850;text-align:center;pointer-events:none}
+#renderStatus{position:fixed;left:50%;bottom:max(160px,calc(144px + env(safe-area-inset-bottom)));transform:translateX(-50%);z-index:40;max-width:94vw;padding:8px 12px;background:#101923ed;border:1px solid #f2b65d;border-radius:12px;color:#fff;font-size:12px;font-weight:850;text-align:center;pointer-events:none}
 button{font:inherit;touch-action:manipulation}
 #hud{position:fixed;left:10px;top:max(10px,env(safe-area-inset-top));z-index:5;pointer-events:none;text-shadow:0 2px 5px #000}
 .hudRow{display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100vw - 90px)}
@@ -489,7 +489,15 @@ function update(dt){
 // The original game alone resolves authoritative combat and movement.
  // The renderer is visual-only, consuming current authoritative state every frame.
 function draw(){
- if(tower3d&&state)tower3d.render({player:state.player,enemies,effects},performance.now());
+ if(!tower3d||!state)return;
+ try{tower3d.render({player:state.player,enemies,effects},performance.now())}
+ catch(error){
+  console.error('[Tower RPG WebGL 3D frame]',error);
+  tower3d=null;running=false;releaseInputs();hideControls(true);
+  document.body.dataset.spatialDimension='3d-error';
+  $('renderStatus').style.display='block';
+  $('renderStatus').textContent='3D 화면 표시 실패: '+String(error?.message||error)+' · WebGL2 지원 브라우저에서 다시 열어 줘.';
+ }
 }
 function loop(t){
  requestAnimationFrame(loop);
