@@ -4976,7 +4976,7 @@
     "blockers": [
       "roblox-build-package-pending"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -8075,9 +8075,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
@@ -8095,8 +8095,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
