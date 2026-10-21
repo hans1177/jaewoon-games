@@ -58,6 +58,20 @@ export function verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt,verifyDes
   return Object.freeze({pass:failures.length===0,runtimeSha,verified:Object.freeze(verified),failures:Object.freeze(failures)});
 }
 
+// The strict design-promotion bridge remains all-or-nothing. Only a Vibe2
+// planning consumer may explicitly admit a verified per-game subset while
+// unfinished designs remain blocked. Any binding/policy/source failure stays fatal.
+export function classifyVerifiedDesignPlannerAdmission(result,{allowPendingDesigns=false}={}){
+  if(result?.pass===true)return 'PASS';
+  const failures=Array.isArray(result?.failures)?result.failures:[];
+  const verified=Array.isArray(result?.verified)?result.verified:[];
+  if(allowPendingDesigns&&verified.length>0&&failures.length>0
+    &&failures.every(reason=>/^[a-z0-9][a-z0-9-]*:DESIGN_CONTRACT_NOT_PASSED$/.test(clean(reason)))){
+    return 'PARTIAL';
+  }
+  return 'BLOCKED';
+}
+
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const runtimeSha=clean(process.argv.find(s=>s.startsWith('--runtime-sha='))?.slice('--runtime-sha='.length));
   const policyPath=clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
@@ -68,10 +82,18 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     return JSON.parse(execFileSync('git',['show',runtimeSha+':'+relative],{encoding:'utf8',maxBuffer:48*1024*1024}));
   };
   const result=verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt});
+  const allowPendingDesigns=process.argv.includes('--allow-pending-designs');
+  const admission=classifyVerifiedDesignPlannerAdmission(result,{allowPendingDesigns});
+  const output=clean(process.argv.find(s=>s.startsWith('--admission-output='))?.slice('--admission-output='.length));
+  if(output){
+    if(!/^\\/tmp\\/[a-z0-9][a-z0-9._-]*\\.json$/.test(output))throw new Error('VIBE_DESIGN_ADMISSION_OUTPUT_PATH_INVALID');
+    fs.writeFileSync(output,JSON.stringify({version:1,kind:'VIBE2_EXACT_VERIFIED_DESIGN_SUBSET',runtimeSha,
+      admission,verifiedDesigns:result.verified,blockedDesignReasons:result.failures},null,2)+'\\n');
+  }
   console.log('VIBE2_VERIFIED_DESIGN_RUNTIME_SHA='+runtimeSha);
   console.log('VIBE2_VERIFIED_DESIGN_COUNT='+result.verified.length);
   console.log('VIBE2_VERIFIED_DESIGN_GAME_IDS='+(result.verified.map(x=>x.gameId).join(',')||'NONE'));
-  console.log('VIBE2_VERIFIED_DESIGN_INTAKE='+(result.pass?'PASS':'BLOCKED'));
+  console.log('VIBE2_VERIFIED_DESIGN_INTAKE='+admission);
   for(const issue of result.failures)console.error('VIBE2_VERIFIED_DESIGN_BLOCKER='+issue);
-  if(!result.pass)process.exitCode=1;
+  if(admission==='BLOCKED')process.exitCode=1;
 }
