@@ -16269,7 +16269,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -16285,16 +16285,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-21T11:00:24.988Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T11:00:24.988Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:26:49.428Z",
+        "checkedAt": "2026-10-21T10:40:46.004Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "secondaryOwnerFocus": false,
@@ -16329,10 +16329,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "gemini-3.5-flash-lite",
+            "model": "openai/gpt-oss-20b",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence and exact deterministic package identity checks have successfully passed."
+            "note": "All provided build evidence indicates that the source revision, artifact identity, and validation checks have passed. No contradictions are present, so the immutable package is cleared to begin runtime testing."
           }
         ],
         "blockers": [],
@@ -16346,12 +16346,12 @@
         "gameId": "dice-battle-board",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:26:50.211Z",
+        "checkedAt": "2026-10-21T10:40:46.846Z",
         "sourcePath": "roblox-games/dice-battle-board",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "rebuiltArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-        "artifactRunId": 39576860843,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "b195fe85fdbf18940b9804bf8b3a7a8e710bbb0a6e5f7e4af4ff440a024d1761",
         "observedAssetSelectionFingerprint": "b195fe85fdbf18940b9804bf8b3a7a8e710bbb0a6e5f7e4af4ff440a024d1761",
@@ -16639,12 +16639,12 @@
         "gameId": "dice-battle-board",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:26:50.211Z",
+        "checkedAt": "2026-10-21T10:40:46.846Z",
         "sourcePath": "roblox-games/dice-battle-board",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "rebuiltArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-        "artifactRunId": 39576860843,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "b195fe85fdbf18940b9804bf8b3a7a8e710bbb0a6e5f7e4af4ff440a024d1761",
         "observedAssetSelectionFingerprint": "b195fe85fdbf18940b9804bf8b3a7a8e710bbb0a6e5f7e4af4ff440a024d1761",
@@ -17476,8 +17476,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39576860843,
-        "testedAt": "2026-10-21T11:00:24.988Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -30052,7 +30052,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:32:36.568Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -30070,17 +30070,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-      "robloxBuildPassedAt": "2026-10-21T10:53:49.517Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:53:49.517Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fifty-days",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:23:50.703Z",
+        "checkedAt": "2026-10-21T10:33:18.767Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "secondaryOwnerFocus": false,
@@ -30118,7 +30118,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence parameters for the immutable Roblox package are present and valid. Source validation and build/package steps have passed successfully."
+            "note": "Build evidence shows source validation and build/package steps have passed successfully for the immutable Roblox package."
           }
         ],
         "blockers": [],
@@ -30132,12 +30132,12 @@
         "gameId": "fifty-days",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:23:51.283Z",
+        "checkedAt": "2026-10-21T10:33:19.640Z",
         "sourcePath": "roblox-games/fifty-days",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "rebuiltArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-        "artifactRunId": 39575656954,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
         "observedAssetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
@@ -30439,12 +30439,12 @@
         "gameId": "fifty-days",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:23:51.283Z",
+        "checkedAt": "2026-10-21T10:33:19.640Z",
         "sourcePath": "roblox-games/fifty-days",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "rebuiltArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-        "artifactRunId": 39575656954,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
         "observedAssetSelectionFingerprint": "8c6f21ec2a2dd559b9129e93615ba56f7d3cc117060cea77aa55eef326bd3037",
@@ -30786,8 +30786,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39575656954,
-        "testedAt": "2026-10-21T10:53:49.517Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -34711,10 +34711,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -34732,17 +34732,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
       "robloxBuildArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-      "robloxBuildPassedAt": "2026-10-21T07:54:38.585Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T07:54:38.585Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "gem-survivor",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T06:58:05.680Z",
+        "checkedAt": "2026-10-21T10:34:16.859Z",
         "sourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
         "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
         "secondaryOwnerFocus": false,
@@ -34777,10 +34777,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
+            "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence passed; immutable package eligible to begin runtime testing."
+            "note": "All build evidence indicates exact immutable Roblox package validation and build steps have successfully passed. No contradictions found."
           }
         ],
         "blockers": [],
@@ -34794,12 +34794,12 @@
         "gameId": "gem-survivor",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:58:06.323Z",
+        "checkedAt": "2026-10-21T10:34:17.850Z",
         "sourcePath": "roblox-games/gem-survivor",
         "sourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
         "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
         "rebuiltArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-        "artifactRunId": 39554371710,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
         "observedAssetSelectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
@@ -35101,12 +35101,12 @@
         "gameId": "gem-survivor",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:58:06.323Z",
+        "checkedAt": "2026-10-21T10:34:17.850Z",
         "sourcePath": "roblox-games/gem-survivor",
         "sourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
         "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
         "rebuiltArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-        "artifactRunId": 39554371710,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
         "observedAssetSelectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
@@ -35448,8 +35448,8 @@
         "sourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
         "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39554371710,
-        "testedAt": "2026-10-21T07:54:38.585Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -40708,7 +40708,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -40724,16 +40724,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildArtifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
-      "robloxBuildPassedAt": "2026-10-21T10:57:39.471Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:57:39.471Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "island-village",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:24:18.043Z",
+        "checkedAt": "2026-10-21T10:38:16.427Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
         "secondaryOwnerFocus": false,
@@ -40771,7 +40771,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence and deterministic package identity checks have successfully passed."
+            "note": "All required build evidence parameters for the immutable Roblox package have successfully passed exact deterministic checks."
           }
         ],
         "blockers": [],
@@ -40785,12 +40785,12 @@
         "gameId": "island-village",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:24:18.881Z",
+        "checkedAt": "2026-10-21T10:38:17.122Z",
         "sourcePath": "roblox-games/island-village",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
         "rebuiltArtifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
-        "artifactRunId": 39575660475,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "21624dfa4822f74e44126a361b2f1bd9d949db35ec3f88ad91b8768be5bfd1bf",
         "observedAssetSelectionFingerprint": "21624dfa4822f74e44126a361b2f1bd9d949db35ec3f88ad91b8768be5bfd1bf",
@@ -41092,12 +41092,12 @@
         "gameId": "island-village",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:24:18.881Z",
+        "checkedAt": "2026-10-21T10:38:17.122Z",
         "sourcePath": "roblox-games/island-village",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
         "rebuiltArtifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
-        "artifactRunId": 39575660475,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "21624dfa4822f74e44126a361b2f1bd9d949db35ec3f88ad91b8768be5bfd1bf",
         "observedAssetSelectionFingerprint": "21624dfa4822f74e44126a361b2f1bd9d949db35ec3f88ad91b8768be5bfd1bf",
@@ -41940,8 +41940,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39575660475,
-        "testedAt": "2026-10-21T10:57:39.471Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -46045,10 +46045,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -46061,19 +46061,642 @@
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
+      "robloxBuildArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "monster-adventure",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-21T10:29:01.030Z",
+        "sourceRevision": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
+        "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
+            "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "gemini-3.5-flash-lite",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All build evidence checks for the immutable Roblox package have passed successfully."
+          }
+        ],
+        "blockers": [],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
+      "robloxFoundationF0Evidence": {
+        "version": 5,
+        "gameId": "monster-adventure",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-21T10:29:01.737Z",
+        "sourcePath": "roblox-games/monster-adventure",
+        "sourceRevision": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
+        "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+        "rebuiltArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+        "artifactRunId": 39576367100,
+        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
+        "assetSelectionFingerprint": "b8cc627a102f141b4928286771e02107ff3031597b98b60f9c14b19467c203fc",
+        "observedAssetSelectionFingerprint": "b8cc627a102f141b4928286771e02107ff3031597b98b60f9c14b19467c203fc",
+        "assetLibraryVersion": 139,
+        "observedAssetLibraryVersion": 139,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "monster-adventure",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "몬스터 어드벤처",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+              "capabilities": [
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "생활 공간 탐색 × 순교와 집단 결속",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 0,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 3,
+              "pass": false
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+          "antiSkeletonPassed": false,
+          "designGenre": "Simulation",
+          "sourceGenre": "Simulation",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 5,
+        "gameId": "monster-adventure",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-21T10:29:01.737Z",
+        "sourcePath": "roblox-games/monster-adventure",
+        "sourceRevision": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
+        "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+        "rebuiltArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+        "artifactRunId": 39576367100,
+        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
+        "assetSelectionFingerprint": "b8cc627a102f141b4928286771e02107ff3031597b98b60f9c14b19467c203fc",
+        "observedAssetSelectionFingerprint": "b8cc627a102f141b4928286771e02107ff3031597b98b60f9c14b19467c203fc",
+        "assetLibraryVersion": 139,
+        "observedAssetLibraryVersion": 139,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "monster-adventure",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "몬스터 어드벤처",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+              "capabilities": [
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "생활 공간 탐색 × 순교와 집단 결속",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 0,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 3,
+              "pass": false
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+          "antiSkeletonPassed": false,
+          "designGenre": "Simulation",
+          "sourceGenre": "Simulation",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -46102,10 +46725,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "robloxSourceCommit": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
       "robloxSourceBootstrapPassedAt": "2026-10-21T10:01:56.798Z",
@@ -46612,10 +47235,3103 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxQualityBuildUpRequired": false,
-      "robloxQualityBuildUpSourceRevision": null,
-      "robloxQualityFailureClass": null,
-      "robloxQualityBuildUpEvidence": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
+      "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "monster-adventure",
+        "sourceRevision": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
+        "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+        "authority": "roblox-f0-gameplay-product-readiness-failure",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
+        "qualityFailureKinds": [
+          "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+          "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+          "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+          "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+          "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+          "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+          "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+          "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+          "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+          "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+          "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+          "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+          "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+          "GENERIC_SCOPE_HANDLER_SKELETON"
+        ],
+        "repairSurfaces": [
+          "CORE_GAMEPLAY",
+          "WORLD_MAP",
+          "COMBAT_FEEL",
+          "PROGRESSION_CONTENT"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "GENERIC_SCOPE_HANDLER_SKELETON",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "monster-adventure",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER",
+                "SESSION_FLOW"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true,
+                "SESSION_FLOW": false
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "몬스터 어드벤처",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "사회관계 선택 × 신화 속 트릭스터의 질서 역전",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "생활 공간 탐색 × 순교와 집단 결속",
+                  "capabilities": [
+                    "CORE_GAMEPLAY_STATE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "MISSING",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 0,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "firstTenMinutes": {
+                  "signalCount": 3,
+                  "pass": false
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "WORLD_TOPOLOGY_AND_LANDMARKS",
+                  "FIRST_10_MINUTES_FLOW",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "98ed07a28b3408721bc6323e07d7673b0002c12c9f165030af24a4561aa046d7",
+              "antiSkeletonPassed": false,
+              "designGenre": "Simulation",
+              "sourceGenre": "Simulation",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          }
+        ]
+      },
       "robloxBuildFailedAt": null,
       "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
@@ -46623,7 +50339,7 @@
       "robloxPublicRelease": false,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
         "newSourceRevision": "845dbeec58345be7a38fcf7c549aaec70ee9e350",
@@ -48754,7 +52470,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -48770,16 +52486,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-      "robloxBuildPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:22:34.476Z",
+        "checkedAt": "2026-10-21T10:31:40.299Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "secondaryOwnerFocus": false,
@@ -48817,7 +52533,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence parameters for the immutable Roblox package are present and valid. Source validation and build/package checks have successfully passed."
+            "note": "Exact immutable Roblox package identity checks passed, source validation is true, and build/package passed successfully. Ready to start runtime testing."
           }
         ],
         "blockers": [],
@@ -48831,12 +52547,12 @@
         "gameId": "seed-casual-realm-weaver",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:22:35.316Z",
+        "checkedAt": "2026-10-21T10:31:40.956Z",
         "sourcePath": "roblox-games/seed-casual-realm-weaver",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "rebuiltArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
         "observedAssetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
@@ -49125,12 +52841,12 @@
         "gameId": "seed-casual-realm-weaver",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:22:35.316Z",
+        "checkedAt": "2026-10-21T10:31:40.956Z",
         "sourcePath": "roblox-games/seed-casual-realm-weaver",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "rebuiltArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
         "observedAssetSelectionFingerprint": "b8e5f8656b39975754279a0db1bfc7892d290e78783953b7b9b426bbcaf1bd53",
@@ -49960,8 +53676,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39574100826,
-        "testedAt": "2026-10-21T10:48:56.056Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -53911,7 +57627,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -54437,14 +58153,14 @@
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-puzzle-chromatic-cascade",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:23:35.445Z",
+        "checkedAt": "2026-10-21T10:29:11.098Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "secondaryOwnerFocus": false,
@@ -54482,7 +58198,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence and exact deterministic package identity checks have successfully passed. The package is eligible to start runtime testing."
+            "note": "All required build evidence and exact deterministic package identity checks have successfully passed."
           }
         ],
         "blockers": [],
@@ -54496,12 +58212,12 @@
         "gameId": "seed-puzzle-chromatic-cascade",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:23:36.138Z",
+        "checkedAt": "2026-10-21T10:29:11.915Z",
         "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "rebuiltArtifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "a7e8d3d6fd362a281a2154e83436d4c7345863ce3722bb785638c6aca0513f6d",
         "observedAssetSelectionFingerprint": "a7e8d3d6fd362a281a2154e83436d4c7345863ce3722bb785638c6aca0513f6d",
@@ -54781,12 +58497,12 @@
         "gameId": "seed-puzzle-chromatic-cascade",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:23:36.138Z",
+        "checkedAt": "2026-10-21T10:29:11.915Z",
         "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "rebuiltArtifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "a7e8d3d6fd362a281a2154e83436d4c7345863ce3722bb785638c6aca0513f6d",
         "observedAssetSelectionFingerprint": "a7e8d3d6fd362a281a2154e83436d4c7345863ce3722bb785638c6aca0513f6d",
@@ -55085,7 +58801,7 @@
       "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
       "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "robloxBuildArtifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
-      "robloxBuildPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -55101,8 +58817,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39574100826,
-        "testedAt": "2026-10-21T10:48:56.056Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -60891,7 +64607,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -61415,7 +65131,7 @@
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
-      "robloxBuildFailedAt": "2026-10-21T10:58:57.456Z",
+      "robloxBuildFailedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -61466,8 +65182,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39575669937,
-        "testedAt": "2026-10-21T10:58:57.456Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING"
         ],
@@ -62138,7 +65854,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -62154,16 +65870,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
-      "robloxBuildPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:02:06.270Z",
+        "checkedAt": "2026-10-21T10:40:43.763Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "secondaryOwnerFocus": false,
@@ -62201,7 +65917,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence parameters for the immutable Roblox package have successfully passed, including source eligibility, source validation, and build/package verification."
+            "note": "All required build evidence and deterministic package identity checks have successfully passed without contradiction."
           }
         ],
         "blockers": [],
@@ -62215,12 +65931,12 @@
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:02:07.054Z",
+        "checkedAt": "2026-10-21T10:40:44.437Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "rebuiltArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "71d8c17d85605e9ac199abeefbc0e82d991ff148a5454ace147301cc51402130",
         "observedAssetSelectionFingerprint": "71d8c17d85605e9ac199abeefbc0e82d991ff148a5454ace147301cc51402130",
@@ -62517,12 +66233,12 @@
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:02:07.054Z",
+        "checkedAt": "2026-10-21T10:40:44.437Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "rebuiltArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "71d8c17d85605e9ac199abeefbc0e82d991ff148a5454ace147301cc51402130",
         "observedAssetSelectionFingerprint": "71d8c17d85605e9ac199abeefbc0e82d991ff148a5454ace147301cc51402130",
@@ -63360,8 +67076,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39574100826,
-        "testedAt": "2026-10-21T10:48:56.056Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -73433,7 +77149,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -73959,14 +77675,14 @@
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "tower-choice-rpg",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:05:42.042Z",
+        "checkedAt": "2026-10-21T10:36:53.007Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
         "secondaryOwnerFocus": false,
@@ -74018,12 +77734,12 @@
         "gameId": "tower-choice-rpg",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:05:42.780Z",
+        "checkedAt": "2026-10-21T10:36:53.839Z",
         "sourcePath": "roblox-games/tower-choice-rpg",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
         "rebuiltArtifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "5222d7cc92595820b27fa58af5f90838cb2377a39cc9787da7d1f27b0a06c5fa",
         "observedAssetSelectionFingerprint": "5222d7cc92595820b27fa58af5f90838cb2377a39cc9787da7d1f27b0a06c5fa",
@@ -74320,12 +78036,12 @@
         "gameId": "tower-choice-rpg",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:05:42.780Z",
+        "checkedAt": "2026-10-21T10:36:53.839Z",
         "sourcePath": "roblox-games/tower-choice-rpg",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
         "rebuiltArtifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "5222d7cc92595820b27fa58af5f90838cb2377a39cc9787da7d1f27b0a06c5fa",
         "observedAssetSelectionFingerprint": "5222d7cc92595820b27fa58af5f90838cb2377a39cc9787da7d1f27b0a06c5fa",
@@ -74649,8 +78365,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39574100826,
-        "testedAt": "2026-10-21T10:48:56.056Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -77715,7 +81431,7 @@
         ]
       },
       "robloxBuildArtifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
-      "robloxBuildPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -77792,7 +81508,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T11:10:23.960Z",
+      "updatedAt": "2026-10-21T11:18:00.441Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -78318,14 +82034,14 @@
       "robloxBuildSourceRevision": "38834965c65e22511cbded47498341dce465825b",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "zombie-survival",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T10:22:04.714Z",
+        "checkedAt": "2026-10-21T10:37:46.098Z",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
         "secondaryOwnerFocus": false,
@@ -78363,7 +82079,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "The build evidence indicates that exact deterministic package identity checks, source eligibility, source validation, and the build/package process have all successfully passed without any contradictions."
+            "note": "All required build evidence and exact deterministic package identity checks have successfully passed."
           }
         ],
         "blockers": [],
@@ -78377,12 +82093,12 @@
         "gameId": "zombie-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:22:05.504Z",
+        "checkedAt": "2026-10-21T10:37:46.901Z",
         "sourcePath": "roblox-games/zombie-survival",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
         "rebuiltArtifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "ebfbd09a9e757cc327ed185b783ddc6af29da5c2de25be0f7b53b1af8df49e28",
         "observedAssetSelectionFingerprint": "ebfbd09a9e757cc327ed185b783ddc6af29da5c2de25be0f7b53b1af8df49e28",
@@ -78684,12 +82400,12 @@
         "gameId": "zombie-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T10:22:05.504Z",
+        "checkedAt": "2026-10-21T10:37:46.901Z",
         "sourcePath": "roblox-games/zombie-survival",
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
         "rebuiltArtifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-        "artifactRunId": 39574100826,
+        "artifactRunId": 39576367100,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "ebfbd09a9e757cc327ed185b783ddc6af29da5c2de25be0f7b53b1af8df49e28",
         "observedAssetSelectionFingerprint": "ebfbd09a9e757cc327ed185b783ddc6af29da5c2de25be0f7b53b1af8df49e28",
@@ -79018,8 +82734,8 @@
         "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
         "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39574100826,
-        "testedAt": "2026-10-21T10:48:56.056Z",
+        "workflowRunId": 39576367100,
+        "testedAt": "2026-10-21T11:18:00.441Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -82377,7 +86093,7 @@
         ]
       },
       "robloxBuildArtifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-      "robloxBuildPassedAt": "2026-10-21T10:48:56.056Z",
+      "robloxBuildPassedAt": "2026-10-21T11:18:00.441Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -82466,7 +86182,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-21T11:10:23.960Z",
+  "updatedAt": "2026-10-21T11:18:00.441Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -82532,5 +86248,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
