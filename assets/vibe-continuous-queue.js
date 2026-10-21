@@ -683,7 +683,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const platformRows=Object.fromEntries(Object.keys(weights).map((name)=>[
     name,candidates.filter((row)=>platform(row.task)===name)
   ]));
-  const strictOwnerRank=(task)=>task.ownerDirective===true?1:0;
+  // 오너 직접 작업(2) > 정확한 집중 게임 작업(1) > 일반 개발(0) 순서.
+  // 집중 대상을 우대하되 더 높은 오너 직접 지시는 침범하지 않는다.
+  const strictOwnerRank=(task)=>task.ownerDirective===true?2:task.ownerFocusedCaretaker===true?1:0;
   const strictReleaseRank=(task)=>RELEASE_STATE_SCORE[task.releaseState]||0;
   const strictlyHigherPlatformPriority=(left,right)=>{
     const demandDelta=assetDemandRank(left)-assetDemandRank(right);
