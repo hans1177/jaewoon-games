@@ -1821,9 +1821,11 @@ test('pinned reserve snapshot retains exact Git source identity after control br
     fs.writeFileSync(path.join(repo,'roblox-games','demo','server.luau'),'original game source');
     git(repo,['add','.']);git(repo,['commit','-m','pinned main']);
     const pinned=git(repo,['rev-parse','HEAD']),tree=git(repo,['rev-parse','HEAD:roblox-games/demo']);
-    const start=workflow.indexOf('          rm -rf /tmp/vibe2-main');
+    // 새 reserve 보조 단계가 같은 worktree 문구를 사용해도 정식 계약 단계만 검사한다.
+    const contractStep=workflow.indexOf('      - name: Prepare latest main machine contract');
+    const start=workflow.indexOf('          rm -rf /tmp/vibe2-main',contractStep);
     const end=workflow.indexOf('          # An old callback contract',start);
-    assert.ok(start>=0&&end>start);
+    assert.ok(contractStep>=0&&start>contractStep&&end>start);
     const script=workflow.slice(start,end).replace(/^ {10}/gm,'').replaceAll('/tmp/vibe2-main',snapshot);
     const result=spawnSync('bash',['-euo','pipefail','-c',script],{cwd:repo,env:{...env,contract_sha:pinned},encoding:'utf8',timeout:15000});
     assert.equal(result.status,0,result.stdout+result.stderr);
