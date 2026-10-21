@@ -79712,11 +79712,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6765c823f4bff657a60b1ebe",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9028",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b6ffd5715802a7f958a9439fe03cde42cf74e134",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9028,
+        "baseBranch": "main",
+        "headBranch": "game-specific-roblox-web-bottleneck-20261022",
+        "baseSha": "b6ffd5715802a7f958a9439fe03cde42cf74e134",
+        "headSha": "13d159baa92d17c7a5762d220f745ecc59d7f722",
+        "mergeCommitSha": "be319944b0a20f3522eba6dcc81da79269bedf1d",
+        "mergedAt": "2026-10-21T22:21:42Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c949e38854ffc49bba604bde629e7a415a311eecb3c44d10644c175c8bf7dd71",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "game-specific-roblox-web-bottleneck-20261022",
+        "candidateSha": "13d159baa92d17c7a5762d220f745ecc59d7f722"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 271,
+        "deletedLineCount": 228,
+        "changedFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/seed-action-survival-rogu-echoes-of-the-lost-star-touch-bottleneck.test.mjs",
+          "qa/simple-rpg-age-chain.test.mjs",
+          "qa/simple-rpg-ai-authoring.test.mjs",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/seed-action-survival-rogu-echoes-of-the-lost-star-touch-bottleneck.test.mjs",
+          "qa/simple-rpg-age-chain.test.mjs",
+          "qa/simple-rpg-ai-authoring.test.mjs",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9028",
+        "merge-commit:be319944b0a20f3522eba6dcc81da79269bedf1d",
+        "base-main:b6ffd5715802a7f958a9439fe03cde42cf74e134"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 630
+    "total": 631
   }
 }
