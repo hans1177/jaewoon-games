@@ -339,3 +339,43 @@ test('survival2 historical playable source recovery keeps saved progress and ori
   for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))
     if(match[1].trim())assert.doesNotThrow(()=>new vm.Script(match[1]));
 });
+
+test('party-rpg native 3D loads only existing CC0 originals and never claims missing roles complete',()=>{
+  const root=process.cwd();
+  const html=fs.readFileSync(path.join(root,'web-games','party-rpg','index.html'),'utf8');
+  const start=html.indexOf(' const files={');
+  const end=html.indexOf(' const canvas=document.getElementById',start);
+  assert.ok(start>0&&end>start,'party-rpg 3D source map must remain in the existing game');
+  const modelTable=html.slice(start,end);
+  const entries=[...modelTable.matchAll(/(traveler|guardian|mage|rogue):'([^']+\.glb)'/g)];
+  assert.deepEqual(entries.map(row=>row[1]),['traveler','guardian','mage','rogue']);
+  const ledger=JSON.parse(fs.readFileSync(path.join(root,'assets','asset-license-ledger.json'),'utf8'));
+  assert.ok(ledger.entries.some(row=>row.id==='kaykit-adventurers-cc0-v1'&&row.license==='CC0-1.0'
+    &&row.evidence?.licenseUrl),'exact downloaded character models require registered CC0 proof');
+  for(const [,role,url] of entries){
+    assert.ok(url.startsWith('../../assets/roblox/actors/sources/kaykit-adventurers/'),role+': do not substitute generated or fake assets');
+    const absolute=path.resolve(root,'web-games','party-rpg',url);
+    assert.ok(absolute.startsWith(root+path.sep),'assets must resolve inside repository');
+    assert.ok(fs.statSync(absolute).size>10000,role+': missing/empty original GLB');
+    assert.equal(fs.readFileSync(absolute).subarray(0,4).toString('ascii'),'glTF',role+': real GLB magic required');
+  }
+  assert.doesNotMatch(modelTable,/assets\/shared\/(?:humanoid|creature)-[^'"]+\.glb/,'do not request phantom GLB paths');
+  assert.match(html,/native3dComplete:requiredRoles\.every\(id=>!!models\[id\]\)/);
+  assert.match(html,/missing:requiredRoles\.filter\(id=>!models\[id\]\)/);
+  assert.match(html,/if\(!models\[id\]\)continue;/,'unmapped roles must retain source-bound gameplay canvas');
+  assert.match(html,/window\.partyRpgVibeState/,'existing game state and saves must be preserved');
+});
+
+
+test('party RPG mobile smoke serves the repository root for both assets and real GLB files',()=>{
+ const workflow=fs.readFileSync(path.join(process.cwd(),'.github','workflows','party-rpg-mobile-test.yml'),'utf8');
+ assert.match(workflow,/python3 -m http\.server 8765 --bind 127\.0\.0\.1 &/);
+ assert.match(workflow,/await page\.goto\('\/web-games\/party-rpg\/',\{waitUntil:'domcontentloaded'\}\)/);
+ assert.doesNotMatch(workflow,/ln -s "\$PWD" \/tmp\/jaewoon-games|\(cd \/tmp && python3 -m http\.server/);
+ assert.match(workflow,/page\.on\('response',r=>\{if\(r\.status\(\)>=400\)errors\.push/);
+ assert.match(workflow,/if\(errors\.length\)throw new Error/);
+ assert.match(workflow,/if\(await page\.locator\('#vibe3d'\)\.count\(\)===0\)throw/);
+ const index=fs.readFileSync(path.join(process.cwd(),'web-games','party-rpg','index.html'),'utf8');
+ assert.match(index,/\/assets\/fantasy-rpg-v2\.webp/);
+ assert.ok(fs.statSync(path.join(process.cwd(),'assets','fantasy-rpg-v2.webp')).size>10000);
+});
