@@ -586,9 +586,13 @@ jobs:
               cd /tmp/vibe2-main
               COMPANY_VERIFIED_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
               COMPANY_VERIFIED_DESIGN_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
-                node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"
+                node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha" \
+                  --allow-pending-designs --admission-output=/tmp/vibe2-approved-design-admission.json
             ) | tee /tmp/vibe2-verified-design-handoff.log
-            grep -q '^VIBE2_VERIFIED_DESIGN_INTAKE=PASS$' /tmp/vibe2-verified-design-handoff.log
+            # Partial is *not* PASS: only verified games may be planned below.
+            # Identity/policy/source failures still fail closed; the designer promotion path remains strict.
+            grep -Eq '^VIBE2_VERIFIED_DESIGN_INTAKE=(PASS|PARTIAL)$' /tmp/vibe2-verified-design-handoff.log
+            test -s /tmp/vibe2-approved-design-admission.json
             for runtime_design_path in design game-seed-state.json; do
               if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
                 git -C /tmp/vibe2-main checkout origin/company-runtime -- "$runtime_design_path"
@@ -869,6 +873,8 @@ jobs:
               --roblox-distillation=/tmp/vibe3-roblox-distillation-ledger.json \
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
+              --verified-design-admission=/tmp/vibe2-approved-design-admission.json \
+              --runtime-design-sha="$runtime_design_sha" \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
             else
               echo 'VIBE2_AUTOPLAN_ADMISSION=DEFERRED_OWNER_OR_WORKFLOW_BACKLOG'
