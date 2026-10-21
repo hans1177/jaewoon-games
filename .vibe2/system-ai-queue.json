@@ -149362,20 +149362,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T10:43:27.048Z",
-      "updatedAt": "2026-10-21T11:15:42.428Z",
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "multiplayerUserAssistanceRequired": false
-      }
+      "updatedAt": "2026-10-21T11:15:42.428Z"
     },
     {
       "id": "recovery-recovery-5ada659bfc740addea85",
@@ -151603,7 +151590,7 @@
     },
     {
       "id": "recovery-recovery-0bdf0f4ac49f21a536b2",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -151661,12 +151648,12 @@
       "sourceMutationBaseline": "5c8661b869da1ded73405d12c19f2e564a538861",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39590512762:1",
+      "reservedAt": "2026-10-21T11:18:26.543Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": "system-ai-worker-missing-result-handoff",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39126098577:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -151700,7 +151687,8 @@
         "system-ai-handoff-to-reservation:PENDING",
         "system-ai-exact-checkpoint-resume:YES",
         "retry-budget-consumed:NO",
-        "learning-penalty:NO"
+        "learning-penalty:NO",
+        "system-ai-handoff-to-reservation:system-ai:39590512762:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1423,
@@ -151711,11 +151699,11 @@
         "dependencyCentrality": 1,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 70.35,
+        "ageHours": 70.96,
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T12:20:52.902Z",
-      "updatedAt": "2026-10-21T11:14:33.324Z"
+      "updatedAt": "2026-10-21T11:18:26.543Z"
     },
     {
       "id": "recovery-recovery-56727498741201875791",
