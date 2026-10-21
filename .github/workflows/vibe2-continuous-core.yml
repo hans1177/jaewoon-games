@@ -286,7 +286,63 @@ jobs:
               echo 'VIBE2_FOCUSED_BACKLOG_RECONCILE=INVALID_RESTORE_OUTPUT' >&2
               exit 1
             fi
-            if [ "$restored" -eq 0 ]; then
+            # The normal fan-in artifact probe is skipped by the backlog gate.
+            # Keep this inside the SAME canonical reserve job, and only restore
+            # tasks from runs proven completed AND without live worker artifacts.
+            mapfile -t orphan_fanin_runs < <(node - "$GITHUB_WORKSPACE/.vibe2/queue.json" <<'NODE'
+          const fs=require('fs');
+          const tasks=JSON.parse(fs.readFileSync(process.argv[2],'utf8')).tasks||[];
+          const seen=new Set();
+          for(const task of tasks){
+            if(task.status!=='running'||task.blocker!=='slot-released-awaiting-fan-in')continue;
+            if(task.type!=='implementation'
+              ||!(task.department==='development'||task.assetProductionLane===true
+                ||task.executionLane==='ASSET_DEVELOPMENT'))continue;
+            if((task.evidence||[]).some(v=>/^web-f0-f9-verified$/i.test(String(v))))continue;
+            if(Array.isArray(task.neuronResults)&&task.neuronResults.length)continue;
+            const id=String(task.reservationRunId||'');
+            if(!/^\d+$/.test(id)||seen.has(id))continue;
+            seen.add(id);process.stdout.write(id+'\n');
+            if(seen.size>=16)break;
+          }
+          NODE
+            )
+            no_result_fanin_runs=''
+            for orphan_run_id in "${orphan_fanin_runs[@]}"; do
+              status_file="/tmp/vibe2-focus-orphan-${orphan_run_id}.status"
+              artifact_file="/tmp/vibe2-focus-orphan-${orphan_run_id}.artifacts"
+              if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$orphan_run_id" --jq '.status' > "$status_file" 2>/dev/null; then
+                echo "VIBE2_FOCUSED_BACKLOG_FANIN=UNKNOWN_RUN:$orphan_run_id"
+                continue
+              fi
+              [ "$(cat "$status_file")" = completed ] || continue
+              if ! gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$orphan_run_id/artifacts?per_page=100" \
+                --jq '.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-"))) | .name' \
+                > "$artifact_file" 2>/dev/null; then
+                echo "VIBE2_FOCUSED_BACKLOG_FANIN=UNKNOWN_ARTIFACTS:$orphan_run_id"
+                continue
+              fi
+              if [ -s "$artifact_file" ]; then
+                echo "VIBE2_FOCUSED_BACKLOG_FANIN=PRESERVE_RESULT:$orphan_run_id"
+                continue
+              fi
+              no_result_fanin_runs="${no_result_fanin_runs:+$no_result_fanin_runs,}$orphan_run_id"
+              echo "VIBE2_FOCUSED_BACKLOG_FANIN=VERIFIED_EMPTY:$orphan_run_id"
+            done
+            recovered=0
+            if [ -n "$no_result_fanin_runs" ]; then
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
+                --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
+                --completed-runs="$no_result_fanin_runs" \
+                --no-result-runs="$no_result_fanin_runs" | tee /tmp/vibe2-focus-orphan-recovery.log
+              recovered="$(sed -n 's/^VIBE2_COMPLETED_RESERVATION_RECOVERED=//p' /tmp/vibe2-focus-orphan-recovery.log | tail -n1)"
+              if ! [[ "$recovered" =~ ^[0-9]+$ ]]; then
+                echo 'VIBE2_FOCUSED_BACKLOG_FANIN=INVALID_RECOVERY_OUTPUT' >&2
+                exit 1
+              fi
+            fi
+            echo "VIBE2_FOCUSED_BACKLOG_FANIN_RECOVERED=$recovered"
+            if [ "$restored" -eq 0 ] && [ "$recovered" -eq 0 ]; then
               echo 'VIBE2_FOCUSED_BACKLOG_RECONCILE=ALREADY_CURRENT'
               resolved=1
               break
@@ -299,7 +355,7 @@ jobs:
               resolved=1
               break
             fi
-            git commit -m "vibe2: checkpoint approved owner-focus lifecycle recovery [skip ci]" >/dev/null
+            git commit -m "vibe2: checkpoint approved owner-focus and verified orphan fan-in recovery [skip ci]" >/dev/null
             if git push origin HEAD:vibe2-unreal-core --quiet; then
               echo "VIBE2_FOCUSED_BACKLOG_RECONCILE=PUSHED:$restored"
               resolved=1
