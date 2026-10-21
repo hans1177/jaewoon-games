@@ -2348,6 +2348,24 @@ export function findPresentationQualityTask(project,repoRoot,queue){
   const relatives=presentationSourcesForProject(project,repoRoot);
   const relative=relatives[0]||null;
   if(!relative)return null;
+  // 전 플랫폼 CC0 교체: 기존 등록 게임·기존 그래픽 책임 파일만 사용한다.
+  const central=centralPresentationPolicy(repoRoot);
+  const replacement=central?.ownerCanonicalRules?.rule5;
+  const catalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
+  const registered=(catalog.games||[]).find(row=>clean(row.id)===clean(project.gameId));
+  const replacementId=clean(project.gameId)+'-'+engine+'-library-cc0-replacement-v1';
+  if(replacement?.enabled===true&&registered&&isAutonomousProductionTarget(project,repoRoot)
+    &&!ownerDevelopmentHeld(central,project.gameId,engine)
+    &&!(engine==='web'&&(webSourceRetiredInCatalog(registered)||clean(project.queueCanonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'))&&!hasTask(queue,replacementId)){
+    const goal='[ALL_PLATFORM_LIBRARY_CC0_REPLACEMENT] 현재 게임의 승인 설계와 실제 책임 소스를 먼저 읽고 모델·크리처·모션·장비·건물·환경·재질·VFX·UI·오디오의 실제 사용 바인딩을 조사한다. 등록 라이브러리와 assets/asset-license-ledger.json의 출처·CC0 라이선스·원본 SHA256을 검증한 원본 및 추적 가능한 게임별 파생만 사용하도록 교체한다. 같은 자산도 이 게임의 실루엣·역할·비율·재질·모션·조명·UI에 맞게 변형하고 공용 원본은 덮어쓰지 않는다. 다른 플랫폼 원본은 승인된 리그·접점·클립·텍스처 호환성을 검증한 네이티브 파생으로 기존 렌더·모션 책임 함수에 연결한다. 상업 이용 가능·회사 소유·플랫폼 기본 제공은 CC0 증거가 아니다. 부족한 자산은 기존 공급 요구에 연결하고 자체 제작 fallback이나 무관한 종으로 채우지 않는다. 비액션 게임에 전투를 추가하지 않는다. 현재 책임 범위의 교체만 구현하고 나머지 소비처·미호환·미확인 자산은 구체 GAP로 다음 기존 BUILD_UP에 연결한다. 게임 판정·밸런스·진행·저장·네트워크 권한을 보존한다. 교체한 같은 빌드의 전후 화면·모션 연속 프레임·모바일 조작·성능·저장 회귀와 기존 F0~F9 증거를 확보한 뒤에만 완료로 판정한다. 구형 자산은 모든 소비처가 검증된 대체로 연결된 뒤에만 제거한다. 보류 플랫폼이나 삭제 게임을 임의 재개하지 않는다.';
+    const out=task(replacementId,project,goal,relatives,'owner-immediate','medium',[
+      'owner-directive:'+replacement.authority,'owner-library-cc0-replacement:v1',
+      'presentation-pass:ASSET_ADAPTATION','presentation-preserve-gameplay-semantics',
+      'presentation-runtime-qa-required','cc0-original-hash-and-license-required'
+    ]);
+    out.ownerDirective=true;out.speculativeEligible=false;
+    return out;
+  }
   const stages=presentationStagesForProject(project);
   let previousId=null;
   for(const stage of stages){
@@ -2394,6 +2412,8 @@ export function findPresentationQualityTask(project,repoRoot,queue){
 }
 export function findWebPresentationQualityTask(project,repoRoot,queue){
   if(clean(project?.engine).toLowerCase()!=='web')return null;
+  if(centralPresentationPolicy(repoRoot)?.ownerCanonicalRules?.rule5?.enabled===true)
+    return findPresentationQualityTask(project,repoRoot,queue);
   // 소유자 CC0 모션 교체: 모든 개발 중 웹 게임을 기존 그래픽 작업·검증 경로로 인계한다.
   const replacement=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.assetAcquisitionAndReuse?.webActionMotionReplacement;
   const id=clean(project.gameId)+'-web-cc0-action-motion-v1';
@@ -3867,7 +3887,7 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
   }
   if(project.engine==='web'){
     const cc0Replacement=findWebPresentationQualityTask(project,repoRoot,queue);
-    if(cc0Replacement?.evidence?.includes('web-cc0-action-motion-replacement:v1'))return[cc0Replacement];
+    if(cc0Replacement?.evidence?.some(value=>['web-cc0-action-motion-replacement:v1','owner-library-cc0-replacement:v1'].includes(value)))return[cc0Replacement];
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
       return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);

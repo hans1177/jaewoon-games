@@ -14,6 +14,35 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
+// Rule 5: even a compatible library entry is never promoted by a permissive
+// game-content license, company ownership or practice output on any platform.
+test('all-platform game library binding rejects non-CC0 and practice assets before role selection',()=>{
+  const base={family:'UI',platform:'SHARED',targetPlatforms:['WEB','ROBLOX','UNITY','FORTNITE_UEFN'],
+    path:'assets/shared/ui/menu.svg',sourceHash:'a'.repeat(64)};
+  const assets=[
+    {...base,id:'cc0',license:'CC0'},
+    {...base,id:'cc0-1',license:'CC0-1.0'},
+    {...base,id:'mit',license:'MIT'},
+    {...base,id:'cc-by',license:'CC-BY-4.0'},
+    {...base,id:'commercial',license:'commercial-no-attribution'},
+    {...base,id:'original',license:'project-original'},
+    {...base,id:'public-domain',license:'public-domain'},
+    {...base,id:'practice',license:'CC0',practiceOnly:true},
+    {...base,id:'quarantined',license:'CC0',quarantined:true}
+  ];
+  for(const target of ['web','roblox','unity','fortnite_uefn']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{assets},target,gameId:'demo'});
+    assert.deepEqual(plan.familyCandidates.UI.map(row=>row.assetId),['cc0','cc0-1'],target);
+    for(const id of ['mit','cc-by','commercial','original','public-domain']){
+      const row=plan.evaluatedAssets.find(candidate=>candidate.assetId===id);
+      assert.equal(row.eligibleForRoleEvaluation,false,target+' '+id);
+      assert.equal(row.hardBlockReason,'CC0_ORIGINAL_LICENSE_REQUIRED',target+' '+id);
+    }
+    assert.equal(plan.evaluatedAssets.find(row=>row.assetId==='practice').hardBlockReason,'PRACTICE_ASSET_FORBIDDEN');
+    assert.equal(plan.evaluatedAssets.find(row=>row.assetId==='quarantined').hardBlockReason,'SECURITY_BLOCKED');
+  }
+});
+
 // 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
 test('current-game asset gap selects licensed external source for on-demand PBR derivative, not a verified asset',()=>{
   const external={
@@ -941,11 +970,11 @@ test('full library scan preserves low quality assets but rejects unsafe corrupt 
 test('all game spatial families reject flat 2D assets but allow unlimited cross-game 3D donor reuse',()=>{
   const assets=[
     {id:'flat-creature',family:'CREATURE',license:'project-original',platform:'WEB_REFERENCE',path:'/assets/flat.png'},
-    {id:'shared-creature',family:'CREATURE',license:'project-original',platform:'ROBLOX',
+    {id:'shared-creature',family:'CREATURE',license:'CC0',platform:'ROBLOX',
       companyCommonBase:true,path:'/assets/shared/spider.png',nativeArtifacts:['assets/shared/spider.glb']},
     {id:'another-creature',family:'CREATURE',license:'CC0',platform:'SHARED_NATIVE_SOURCE',
       companyCommonBase:true,path:'/assets/shared/wolf.obj'},
-    {id:'building-part',family:'BUILDING',license:'project-original',platform:'ROBLOX',
+    {id:'building-part',family:'BUILDING',license:'CC0',platform:'ROBLOX',
       companyCommonBase:true,path:'/assets/shared/wall.obj'},
     {id:'ui-icon',family:'UI',license:'CC0',path:'/assets/shared/icon.png'}
   ];
@@ -1841,7 +1870,7 @@ test('Master GLB static QA alone never grants production verification',()=>{
     fs.copyFileSync(path.join(process.cwd(),master),model);
     const staticAsset={
       id:'static-spider',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
-      types:['enemy'],tags:['enemy','spider'],license:'project-original',platforms:['roblox'],
+      types:['enemy'],tags:['enemy','spider'],license:'CC0',platforms:['roblox'],
       path:master,masterGlb:master,downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',
       verifiedAnimation:true,animations:['idle','walk'],
       productionVerified:false,verifiedCompanyReusable:false
@@ -1889,9 +1918,9 @@ test('motion planning reuses company clips per state and does not invent coverag
   try{
     const assets=[
       {id:'owned-motion',category:'MOTION',types:['animation'],status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-        path:'roblox-games/demo/owned.json',license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'},
+        path:'roblox-games/demo/owned.json',license:'CC0',platforms:['roblox'],states:['idle','attack'],rigType:'R15'},
       {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],path:'assets/motion.json',sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
-      {id:'unknown-clips',types:['animation'],license:'project-original',platforms:['roblox'],path:'roblox-games/demo/clips.json'},
+      {id:'unknown-clips',types:['animation'],license:'CC0',platforms:['roblox'],path:'roblox-games/demo/clips.json'},
       {id:'reference-motion',referenceOnly:true,types:['animation'],license:'project-original',platforms:['roblox'],path:'assets/reference.json',states:['death']},
       {id:'wrong-platform',types:['animation'],license:'CC0',platforms:['unity'],path:'unity-games/demo/motion.json',states:['death']},
       {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],path:'assets/blocked.json',states:['skill']}
@@ -2536,7 +2565,7 @@ test('task-declared Blender recipe stays mandatory even when a reusable animatio
   const root=tempRoot();
   try{
     const readyMotion={id:'ready-motion',family:'MOTION',category:'MOTION',types:['animation'],tags:['animation','motion'],
-      path:'assets/roblox/demo/ready-motion.glb',platforms:['roblox'],license:'project-original',
+      path:'assets/roblox/demo/ready-motion.glb',platforms:['roblox'],license:'CC0',
       downloaded:true,productionVerified:true,verifiedAnimation:true,sourceHash:'ready-motion-source'};
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[readyMotion]},null,2));
     const plan=buildVibeAssetProductionPlan({
@@ -2545,7 +2574,7 @@ test('task-declared Blender recipe stays mandatory even when a reusable animatio
         gameId:'declared-dcc-demo',
         goal:'기존 모션 자산을 유지하면서 선언된 Blender 파생 모션을 실제 제작',
         assetAuthoring:{recipes:[{
-          id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'project-original',
+          id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'CC0',
           executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX'],
           script:'assets/roblox/demo/refine-motion.py',
           args:['--output','assets/roblox/demo/native/motion-v1'],
@@ -2566,7 +2595,7 @@ test('task-declared Blender recipe stays mandatory even when a reusable animatio
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'declared-motion-v1');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].assetId,'declared-motion-source');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'MOTION');
-    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'CC0');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -2600,7 +2629,7 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
   try{
     const authoringAsset={
       id:'boss-authoring-base',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
-      types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
+      types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'CC0',
       platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
       nativeArtifacts:['assets/roblox/demo/native/boss/boss.glb'],
       sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md'],
@@ -2626,7 +2655,7 @@ test('native planner preserves an existing Blender recipe as the DCC execution p
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
-    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'CC0');
     assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
     assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
     assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
@@ -2723,7 +2752,7 @@ test('Roblox planner keeps unregistered source IDs out of internal library candi
 
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
-      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'assets/shared/nature.glb',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
+      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'assets/shared/nature.glb',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'CC0'}]
     },null,2));
     const withCompany=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'Nature background improvement'},target:'roblox',repoRoot:root,
@@ -3011,7 +3040,7 @@ test('game asset selection uses only the registered internal company library',()
       version:1,
       assets:[{
         id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-        path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity']
+        path:'unity-games/shared/ui/company.png',license:'CC0',platforms:['unity']
       }],
       externalSources:[{id:'external-source'}]
     },null,2));
@@ -3044,7 +3073,7 @@ test('an externally acquired asset can be evaluated only after registration in t
       version:1,
       assets:[{
         id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-        path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity'],sourceHash:'company-ui-v1'
+        path:'unity-games/shared/ui/company.png',license:'CC0',platforms:['unity'],sourceHash:'company-ui-v1'
       },{
         id:'downloaded-external-ui',category:'UI',license:'CC0',status:'REPO_ASSET',
         path:'unity-games/demo/Assets/UI/external.png',platforms:['unity'],sourceHash:'external-ui-v1',
@@ -3966,13 +3995,13 @@ test('usable same-game asset is applied before new authoring and weak regions de
     const sameGame={
       id:'existing-wolf',family:'CREATURE',category:'CREATURE',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
       path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
-      tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+      tags:['wolf','enemy'],license:'CC0',platforms:['roblox'],
       sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',masterGlb:master
     };
     const company={
       id:'company-wolf',family:'CREATURE',category:'CREATURE',status:'VERIFIED_COMPANY_ASSET',
       path:'assets/roblox/wolf.glb',types:['enemy'],
-      tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+      tags:['wolf','enemy'],license:'CC0',platforms:['roblox'],
       companyVerified:true,verifiedCompanyReusable:true,sourceHash:'company-wolf-v1',masterGlb:master
     };
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[sameGame,company]},null,2));
@@ -4078,11 +4107,11 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
     const manifest={assets:[
       {id:'base-hero',family:'CHARACTER',category:'CHARACTER',status:'REPO_ASSET',
         path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],
-        license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',
+        license:'CC0',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',
         robloxAssetId:'111',rigType:'R15',retargetable:true,masterGlb:master},
       {id:'donor-hero',family:'CHARACTER',category:'CHARACTER',status:'VERIFIED_COMPANY_ASSET',
         path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],
-        license:'project-original',platforms:['roblox'],companyVerified:true,
+        license:'CC0',platforms:['roblox'],companyVerified:true,
         verifiedCompanyReusable:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
         masterGlb:master,platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
     ]};
@@ -4259,7 +4288,7 @@ test('native artifact and role-only model changes invalidate existing source syn
     fs.mkdirSync(path.join(cwd,'assets/shared'),{recursive:true});
     fs.writeFileSync(path.join(cwd,'assets/shared/model.glb'),Buffer.from([1,2,3,4]));
     fs.writeFileSync(path.join(cwd,'assets/shared/preview.png'),Buffer.from([8,9]));
-    const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',
+    const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'CC0',
       path:'/assets/shared/preview.png',sourceFiles:[],nativeArtifacts:['assets/shared/model.glb'],
       fileRoles:{models:['assets/shared/model.glb'],previews:['assets/shared/preview.png']}};
     const dynamic=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[asset]},target:'web',gameId:'demo'});
@@ -5185,4 +5214,32 @@ test('common library synchronization removes self authored and practice records 
   assert.deepEqual(result.registry.assets.map(asset=>asset.id),['external']);
   assert.deepEqual(result.sourceConsumerRegistry.assets.map(asset=>asset.id),['external']);
  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('commercial rights and public-domain labels cannot bypass CC0-only external acquisition on any native target',()=>{
+ const base={id:'candidate',name:'Building Kit',category:'BUILDING',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+  sourceUrl:'https://example.invalid/buildings',licenseEvidenceUrl:'https://example.invalid/license',verifiedAt:'2026-10-21',
+  platformTargets:['WEB','ROBLOX','UNITY'],automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true,capabilities:['house','GLB']};
+ for(const target of ['web','roblox','unity'])for(const license of ['CC0','CC0-1.0','MIT','CC-BY','PUBLIC-DOMAIN','project-original']){
+  const plan=buildAssetSupplyDecisionSummary({gameId:'demo',target,request:'building house',requirements:[{family:'BUILDING',role:'house'}],registry:{assets:[],externalSources:[{...base,license}]}});
+  const acquired=plan.nextActions.find(row=>row.family==='BUILDING')?.externalAcquisition?.sourceId==='candidate';
+  assert.equal(acquired,['CC0','CC0-1.0'].includes(license),target+':'+license);
+ }
+});
+
+test('expanded official CC0 supply is available as Web candidates without claiming download or native runtime verification',()=>{
+ const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ids=['kenney-survival-kit','kenney-pirate-kit','kenney-animated-characters-survivors','quaternius-fantasy-props-megakit','ambientcg-cc0-materials'];
+ for(const id of ids){
+  const row=registry.externalSources.find(row=>row.id===id);assert.ok(row,id);
+  assert.match(row.license,/^CC0/);assert.ok(row.platformTargets.includes('WEB'));
+  assert.ok(row.licenseEvidenceUrl.startsWith('https://'));assert.equal(row.runtimeVerified,false);
+  assert.equal(row.acquisitionState,'CANDIDATE_METADATA_ONLY_UNTIL_SELECTED');
+ }
+ const motion=registry.externalSources.find(row=>row.id==='quaternius-universal-animation-library');
+ assert.ok(motion.platformTargets.includes('WEB'),'existing motion supply must no longer exclude Web');
+ const plan=buildAssetSupplyDecisionSummary({gameId:'demo',target:'web',request:'food kitchen',requirements:[{family:'PROP',role:'food'}],registry:{assets:[],externalSources:registry.externalSources.filter(row=>row.id==='kenney-food-kit')}});
+ const supply=plan.nextActions.find(row=>row.family==='PROP').externalAcquisition;
+ assert.equal(supply.sourceId,'kenney-food-kit');assert.equal(plan.runtimeVerificationGranted,false);assert.equal(supply.downloaded,false);
+ for(const row of registry.externalSources.filter(row=>row.gameUseForbidden))assert.equal(row.automaticAcquisitionWhenSelected,false);
 });

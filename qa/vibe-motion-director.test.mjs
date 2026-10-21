@@ -94,6 +94,8 @@ const studioReviewFixture=()=>({
   stages:Object.fromEntries(createMotionDirectorPlan().studioProduction.stages.map(stage=>[stage,{pass:true,evidence:'fixture/'+stage}]))
 });
 
+const CC0_MOTION_SOURCE={license:'CC0-1.0',sourceHash:'a'.repeat(64),sourceUrl:'https://example.invalid/cc0-motion.glb'};
+
 test('walk teacher stays scoped to an internal Roblox walk and never grants verified authority',()=>{
   const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-bai-wuchang',clipId:'walk',sourcePath:'init.luau'};
   const recipe=createRobloxWalkTeachingRecipe(unit);
@@ -323,7 +325,7 @@ test('studio pipeline shares production stages across platforms without inventin
 });
 test('explicit failed quality cannot win through company ownership',()=>{
   const dna=createMotionDNA({id:'test',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX'});
-  const selection=selectRobloxCharacterMotionSource({candidates:[{id:'bad-owned',companyVerified:true,dna,qualityReview:{verdict:'FAIL'}},{id:'external',licenseVerified:true,sourceType:'EXTERNAL',dna}],context:{bodyPlan:'HUMANOID',rigProfile:'R15'}});
+  const selection=selectRobloxCharacterMotionSource({candidates:[{...CC0_MOTION_SOURCE,id:'bad-owned',companyVerified:true,dna,qualityReview:{verdict:'FAIL'}},{...CC0_MOTION_SOURCE,id:'external',licenseVerified:true,sourceType:'EXTERNAL',dna}],context:{bodyPlan:'HUMANOID',rigProfile:'R15'}});
   assert.equal(selection.selected.id,'external');
 });
 
@@ -1466,8 +1468,8 @@ test('full motion director plan exposes advanced quality and learning systems',(
 test('Roblox motion source selection prefers verified compatible library motion before new authoring',()=>{
   const candidates=[
     {id:'new-handmade',sourceType:'NEW_NATIVE_AUTHORING',dna:createMotionDNA({id:'new-handmade',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT'})},
-    {id:'company-run',companyVerified:true,gameId:'other',dna:createMotionDNA({id:'company-run',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT',runtimeVerificationState:'VERIFIED_RUNTIME',sourceProvenance:'COMPANY_VERIFIED'})},
-    {id:'same-game-run',companyVerified:true,gameId:'demo',dna:createMotionDNA({id:'same-game-run',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT',runtimeVerificationState:'VERIFIED_RUNTIME',sourceProvenance:'COMPANY_VERIFIED'})}
+    {...CC0_MOTION_SOURCE,id:'company-run',companyVerified:true,gameId:'other',dna:createMotionDNA({id:'company-run',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT',runtimeVerificationState:'VERIFIED_RUNTIME',sourceProvenance:'COMPANY_VERIFIED'})},
+    {...CC0_MOTION_SOURCE,id:'same-game-run',companyVerified:true,gameId:'demo',dna:createMotionDNA({id:'same-game-run',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT',runtimeVerificationState:'VERIFIED_RUNTIME',sourceProvenance:'COMPANY_VERIFIED'})}
   ];
   const selected=selectRobloxCharacterMotionSource({
     candidates,gameId:'demo',archetype:'KNIGHT',
@@ -1476,7 +1478,8 @@ test('Roblox motion source selection prefers verified compatible library motion 
   assert.equal(selected.selectedId,'same-game-run');
   assert.equal(selected.sourceClass,'VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION');
   assert.equal(selected.libraryFirst,true);
-  assert.equal(selected.newKeyframeAuthoringLast,true);
+  assert.equal(selected.newKeyframeAuthoringLast,false);
+  assert.equal(selected.cc0SourceRequired,true);
   assert.equal(ROBLOX_MOTION_SOURCE_PRIORITY[0],'VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION');
 });
 
@@ -1539,7 +1542,7 @@ test('Roblox motion director plan binds articulated smooth-motion system without
     gameId:'demo',
     archetype:'OGRE',
     motionCandidates:[{
-      id:'ogre-run',
+      ...CC0_MOTION_SOURCE,id:'ogre-run',
       companyVerified:true,
       gameId:'demo',
       dna:createMotionDNA({
@@ -1806,4 +1809,16 @@ test('three-frame jerk is calculated from real motion samples, not markers',()=>
   assert.ok(qa.metrics.maxJointJerk>0);
   assert.ok(qa.violations.some(row=>row.kind==='maxJointJerk'||row.kind==='maxJointAcceleration'));
   assert.equal(qa.runtimeVerified,false);
+});
+
+test('motion selection rejects ownership, platform defaults and commercial rights without exact CC0 source evidence',()=>{
+ const dna=createMotionDNA({id:'motion',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX'});
+ const rows=['project-original','ROBLOX_PLATFORM','CC-BY','MIT','unknown'].map((license,i)=>({...CC0_MOTION_SOURCE,id:'bad-'+i,license,companyVerified:true,licenseVerified:true,dna}));
+ const good={...CC0_MOTION_SOURCE,id:'cc0',dna};
+ const selected=selectRobloxCharacterMotionSource({candidates:[...rows,good],context:{bodyPlan:'HUMANOID',rigProfile:'R15'}});
+ assert.equal(selected.selected.id,'cc0');assert.equal(selected.ranked.length,1);
+ for(const candidate of [...rows,{...good,sourceHash:'not-a-hash'},{...good,practiceOnly:true}]){
+  const missing=selectRobloxCharacterMotionSource({candidates:[candidate],context:{bodyPlan:'HUMANOID',rigProfile:'R15'}});
+  assert.equal(missing.selectedId,null);assert.equal(missing.sourceClass,'VERIFIED_CC0_MOTION_REQUIRED');
+ }
 });

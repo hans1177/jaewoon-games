@@ -1382,14 +1382,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }));
     }
     for(const row of externalSources){
-      if(clean(row?.status).toUpperCase()!=='LICENSE_VERIFIED_EXTERNAL_CANDIDATE')continue;
+      if(clean(row?.status).toUpperCase()!=='LICENSE_VERIFIED_EXTERNAL_CANDIDATE'||row?.gameUseForbidden===true
+        ||row?.securityBlocked===true||row?.quarantined===true||row?.practiceOnly===true)continue;
       if(row?.automaticAcquisitionWhenSelected!==true||row?.commercialUseAllowed===false||row?.derivativesAllowed===false)continue;
       if(!clean(row.id)||!publicHttps(row.sourceUrl)||!publicHttps(row.licenseEvidenceUrl)||!clean(row.verifiedAt))continue;
       const license=clean(row.license).toUpperCase().replaceAll('_','-');
-      const freeRights=/^(CC0(?:-1\.0)?|PUBLIC-DOMAIN)$/.test(license);
-      const explicitRights=row.commercialUseAllowed===true&&row.derivativesAllowed===true&&Boolean(license)
-        &&!/NON.?COMMERCIAL|NO.?DERIVATIVES|UNKNOWN|UNVERIFIED|(?:^|-)NC(?:-|$)|(?:^|-)ND(?:-|$)/.test(license);
-      if(!freeRights&&!explicitRights)continue;
+      // 실제 공급 후보: 상업 이용 허가나 public-domain 문구만으로 CC0 원본을 대체하지 않는다.
+      if(!/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license))continue;
       const targets=unique(row.platformTargets||[]).map(value=>value.toUpperCase());
       const categories=unique([row.category,...(row.categories||[])]).map(value=>value.toUpperCase());
       if(!targets.includes(platform)||!categories.includes(family))continue;
@@ -2250,9 +2249,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     };
     const allowedSource=asset=>{
       const license=clean(asset?.license).toLowerCase();
+      // Do not reintroduce old self-authored/CC-BY models into shared
+      // derived-asset discovery while retaining existing game consumers.
       return !asset?.parentSourceId&&!asset?.derivedFromAssetId
-        &&['project-original','cc0','cc0-1.0','cc-by'].includes(license)
-        &&(license!=='cc-by'||Boolean(clean(asset?.sourceCredit||asset?.credit||asset?.attribution)))
+        &&/^(?:cc0(?:-1\.0)?|cc0 1\.0 universal)$/.test(license)
         &&!internalAssetHardBlockReason(asset);
     };
     for(const asset of next.assets){
@@ -3684,6 +3684,10 @@ function internalAssetHardBlockReason(asset={}){
   if(/EXPLICIT_INTERNAL_USE_FORBIDDEN|USE_FORBIDDEN/.test(status))return'EXPLICIT_INTERNAL_USE_FORBIDDEN';
   if(/NON.?COMMERCIAL|\bNC\b|FORBIDDEN|NO_DERIVATIVES/.test(license))return'LICENSE_FORBIDDEN';
   if(!license||/UNKNOWN|UNVERIFIED|출처 불명/.test(license))return'LICENSE_METADATA_MISSING';
+  // Rule 5: selection/retarget/material/source-reuse must never revive authored,
+  // permissively licensed or practice-only game content on any platform.
+  if(asset?.practiceOnly===true||asset?.practiceArtifact===true||asset?.authority==='PRACTICE_ONLY')return'PRACTICE_ASSET_FORBIDDEN';
+  if(!/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license))return'CC0_ORIGINAL_LICENSE_REQUIRED';
   const family=clean(asset?.family||asset?.category).toUpperCase();
   if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
     const models=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
@@ -5169,7 +5173,8 @@ export function buildVibeAssetProductionPlan({
   const universeSignals={};
   const externalReadyFamilies=new Set();
   for(const row of selectionRegistry?.externalSources||[]){
-    if(!/LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase()))continue;
+    if(!/LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())||row?.gameUseForbidden===true||row?.automaticAcquisitionWhenSelected===false
+      ||!/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(row?.license)))continue;
     const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
     for(const category of categories)externalReadyFamilies.add(category);
     if(categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))externalReadyFamilies.add('BUILDING');
@@ -5438,7 +5443,8 @@ export function buildVibeAssetProductionPlan({
       gameConsumerCount:Boolean(profile.archetype&&requestUpper.includes(profile.archetype))?1:0,
       playerVisibleFrequencyHigh:Boolean(profile.archetype&&requestUpper.includes(profile.archetype)),
       combatCritical:true,
-      externalSourceReady:(selectionRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase()))
+      externalSourceReady:(selectionRegistry?.externalSources||[]).some(row=>clean(row.category).toUpperCase()==='MOTION'&&/LICENSE_VERIFIED/.test(clean(row.status).toUpperCase())
+        &&row.gameUseForbidden!==true&&row.automaticAcquisitionWhenSelected!==false&&/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(row.license)))
     };
     const gapPlan=buildAutomaticMotionGapFillPlan({
       profile,
@@ -5900,6 +5906,14 @@ export function buildVibeAssetProductionPlan({
     version:1,
     kind:'vibe2-asset-production-plan',
     gameConceptStyle,
+    libraryCc0Replacement:currentRoadmap?.ownerCanonicalRules?.rule5?.enabled===true?freeze({
+      enabled:true,requestId:currentRoadmap.ownerCanonicalRules.rule5.authority,
+      scope:currentRoadmap.ownerCanonicalRules.rule5.replacementScope,
+      platforms:freezeList(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+      sourceHashAndModificationLineageRequired:currentRoadmap.ownerCanonicalRules.rule5.sourceHashAndModificationLineageRequired,
+      missingCC0Action:currentRoadmap.ownerCanonicalRules.rule5.missingCC0Action,
+      existingPipelineOnly:true,sourceMasterImmutable:true,runtimeVerified:false
+    }):null,
     webActionMotionReplacement:resolvedTarget==='web'&&clean(task.releaseState).toLowerCase()==='development-confirmed'
       ?currentRoadmap?.assetProductionParallelContract?.assetAcquisitionAndReuse?.webActionMotionReplacement||null:null,
     graphicsProductionRoot:'GRAPHICS_PRODUCTION',
@@ -6482,6 +6496,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.libraryCc0Replacement?.enabled===true?'[ALL PLATFORM LIBRARY CC0 REPLACEMENT] '+JSON.stringify(plan.libraryCc0Replacement)+'. 모든 플랫폼·게임의 모델·크리처·모션·장비·건물·환경·재질·VFX·UI·오디오는 등록 라이브러리의 검증된 CC0 원본과 계보가 연결된 게임별 파생으로 교체한다. 기존 실제 사용 바인딩부터 조사하고 실루엣·역할·리그·접점·스타일·성능에 맞는 원본을 선택한다. 공용 원본은 보존하고 엔진별 네이티브 파생을 기존 책임 함수에 직접 연결한다. 상업 이용 가능·회사 소유·플랫폼 기본 제공·CC0 이름표만으로 출처 검증을 대신하지 않는다. 부족한 자산은 기존 공급 요구로 연결하고 자체 제작 fallback으로 채우지 않는다. 실행 증거가 없는 교체는 GAP로 유지하고 같은 빌드의 모바일·전후 화면·모션·저장·판정 회귀를 통과한 뒤 기존 소비처 없는 구형 자산만 제거한다. 기존 플랫폼 보류·권한·F0~F9는 유지하며 보류 플랫폼 교체는 미완료로 추적한다. 엔진·소프트웨어 코드의 원래 라이선스를 CC0로 재표기하지 않는다.':'',
     plan.webActionMotionReplacement?.enabled===true?'[WEB CC0 ACTION MOTION OWNER DIRECTIVE] '+JSON.stringify(plan.webActionMotionReplacement)+'. 현재 개발 중 웹 게임의 기존 액션 모션은 출처·CC0 라이선스·SHA256이 검증된 모션 라이브러리 클립으로 교체한다. 현재 책임 파일과 승인된 행동 범위 안에서 기존 리그·정체성·게임 판정 시점을 보존하며 실제 클립과 상태를 연결한다. 호환 불가 종·리그는 정확한 GAP로 남기고 인간 모션을 강제 적용하지 않는다. 클립 LoopOnce/LoopRepeat, 연속 공격 재시작, 전환·피격·사망·모바일 입력을 같은 빌드에서 확인한다. 자체 제작 대체 모션이나 소스 마커만으로 교체 완료를 주장하지 않는다. 현재 책임 범위를 넘는 교체는 기존 BUILD_UP 다음 작업으로 연결한다.':'',
     '[PRACTICE ONLY / DELETE AFTER EXERCISE] 바이브 자체 제작물은 연습만 허용한다. 게임 사용·라이브러리 승격·재사용 금지. 연습 종료 후 기존 책임 작업에서 연습 파일·미리보기·원장 등록을 영구 삭제하고 삭제 경로 증거만 남긴다. 기존 게임 소비처가 있는 공유 파일은 안전한 CC0 교체 검증 전 삭제하지 않는다.',
     '[CC0 ORIGINAL / ACTIVE GAME ONLY] 게임 에셋은 출처·라이선스·원본 해시가 확인된 CC0 원본을 이 게임에 맞게 수정해서 사용한다. 자체 제작 저품질 에셋은 단순 제외하지 말고 CC0 파생으로 실제 교체·실행 검증한 뒤 영구 삭제한다. 현재 승인된 개발 게임과 책임 파일만 처리하고 개발하지 않는 게임·보류 게임은 교체하지 않는다. 모든 라이브러리와 공유 파일의 바이브 자체 제작물은 품질과 관계없이 영구 제거 대상이다. 소비처를 확인해 실제 사용 연결을 검증된 CC0 파생 자산으로 교체한 뒤 원본 파일과 원장 등록을 삭제한다. 외부 CC0 원본과 게임 실행 로직은 보존한다. CC0 원본·수정 이력·삭제 경로·게임 연결 변경과 실제 런타임 증거 없이 완료를 주장하지 않는다. 자체 제작 fallback·옛 에셋 재생성·새 우회 파이프라인 금지. 게임 판정·저장·밸런스·기존 F0~F9 순서를 보존한다.',

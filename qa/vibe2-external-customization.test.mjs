@@ -17,7 +17,9 @@ const scope={
 const approved='sha256:'+'a'.repeat(64);
 const validSource={
   id:'verified-stone',family:'TERRAIN',path:'assets/terrain.glb',
-  sourceHash:'b'.repeat(64),license:'CC0-1.0',verifiedCompanyReusable:true
+  sourceHash:'b'.repeat(64),license:'CC0-1.0',verifiedCompanyReusable:true,
+  downloaded:true,sourceUrl:'https://kenney.nl/assets/nature-kit',
+  licenseEvidenceUrl:'https://kenney.nl/assets/nature-kit'
 };
 const input={
   gameId:'canyon-survival',request:'바위협곡 지형 동굴 몬스터와 마을 건물, 금속 재질',
@@ -42,6 +44,24 @@ test('catalog describes all approved external references without executable down
     assert.match(row.sourceUrl,/^https:\/\//);
     assert.ok(row.owner&&row.integration&&row.licenseReviewRequired);
   }
+});
+
+test('CC0 customization refuses unacquired or untraceable source metadata before native authoring',()=>{
+  const candidates=[validSource,
+    {...validSource,id:'missing-origin',sourceUrl:''},
+    {...validSource,id:'missing-license',licenseEvidenceUrl:''},
+    {...validSource,id:'unsafe-origin',sourceUrl:'http://example.org/archive'},
+    {...validSource,id:'unsafe-rights',licenseEvidenceUrl:'https://localhost/cc0'},
+    {...validSource,id:'not-acquired',downloaded:false},
+    {...validSource,id:'unconfirmed-acquisition',downloaded:undefined},
+    {...validSource,id:'malformed-hash',sourceHash:'a'.repeat(63)},
+    {...validSource,id:'only-commercial',license:'MIT'},
+    {...validSource,id:'practice',practiceArtifact:true}];
+  const plan=planVibeExternalCustomization({...input,target:'roblox',assets:candidates});
+  assert.equal(plan.existingVerifiedSourceCount,1);
+  assert.ok(plan.references.flatMap(row=>row.sourceCandidates).every(row=>row.assetId==='verified-stone'));
+  assert.equal(plan.appliedToGame,false);
+  assert.equal(plan.nativeRuntimeVerified,false);
 });
 
 test('native Roblox uses approved design and verified library assets before any external authoring',()=>{

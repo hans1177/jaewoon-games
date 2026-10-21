@@ -18,7 +18,8 @@ test('central policy requires articulated smooth Roblox character motion',()=>{
   assert.equal(contract.rigContract.weldConstraintOnlyArticulatedActorForbiddenForVerifiedMotion,true);
   assert.equal(contract.rigContract.cframeMayMoveAuthoritativeRootButCannotBeTheOnlyVisibleMotionForArticulatedActor,true);
   assert.equal(contract.motionSourcePriority[0],'VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION');
-  assert.equal(contract.motionSourcePriority.at(-1),'NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP');
+  assert.equal(policy.ownerCanonicalRules.rule5.cc0OriginalRequired,true);
+  assert.equal(policy.ownerCanonicalRules.rule5.regenerationOrReintroductionForbidden,true);
   assert.equal(contract.blendAndContinuity.animationTrackCrossFadeRequired,true);
   assert.equal(contract.blendAndContinuity.playbackSpeedMustTrackActualLocomotionSpeedWithinStyleEnvelope,true);
   assert.equal(contract.proceduralCorrection.ikControlPreferredWhenSupported,true);
