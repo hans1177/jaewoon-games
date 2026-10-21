@@ -202710,7 +202710,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T19:46:02.426Z"
+      "updatedAt": "2026-10-21T19:57:37.831Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202931,7 +202931,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T19:46:02.455Z"
+      "updatedAt": "2026-10-21T19:57:37.876Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237328,7 +237328,7 @@
     {
       "id": "recovery-6750d371f227c6d811a8",
       "status": "dispatched",
-      "priority": "high",
+      "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "recovery-recovery-cd3cf615cf3faf138144",
       "gameId": null,
@@ -237346,7 +237346,7 @@
       ],
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "source-mutation-required-before-revalidation",
-      "blastRadius": "single-task",
+      "blastRadius": "shared-worker-contract:2",
       "checkpoint": "2026-10-21T14:55:41.231Z",
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-10-21T14:55:41.231Z",
@@ -237436,7 +237436,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-21T19:46:02.570Z"
+      "updatedAt": "2026-10-21T19:57:37.770Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -237717,9 +237717,9 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-21T19:05:31.425Z",
+      "checkpoint": "2026-10-21T19:46:22.486Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-21T19:05:31.425Z",
+      "sourceMutationBaseline": "2026-10-21T19:46:22.486Z",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -238075,7 +238075,8 @@
         "system-ai-handoff-to-reservation:system-ai:39653882518:1",
         "actions-run:39653882518",
         "system-ai-handoff-to-reservation:system-ai:39657385190:1",
-        "system-ai-handoff-from-reservation:system-ai:39657385190:1"
+        "system-ai-handoff-from-reservation:system-ai:39657385190:1",
+        "system-ai-handoff-to-reservation:system-ai:39663957336:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238093,7 +238094,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T19:46:02.540Z"
+      "updatedAt": "2026-10-21T19:57:38.080Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238596,7 +238597,8 @@
         "system-ai-handoff-from-reservation:system-ai:39651492496:1",
         "system-ai-handoff-to-reservation:system-ai:39656523804:1",
         "actions-run:39656523804",
-        "system-ai-handoff-to-reservation:system-ai:39661220843:1"
+        "system-ai-handoff-to-reservation:system-ai:39661220843:1",
+        "actions-run:39661220843"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238614,7 +238616,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-21T19:46:02.489Z"
+      "updatedAt": "2026-10-21T19:57:37.942Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -239664,7 +239666,7 @@
     {
       "id": "recovery-292d5f85e2c25d1aa9e9",
       "status": "dispatched",
-      "priority": "critical",
+      "priority": "high",
       "sourceQueue": "system-ai",
       "sourceTaskId": "recovery-recovery-f84bbc96c4af1596274e",
       "gameId": null,
@@ -239681,7 +239683,7 @@
       ],
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
-      "blastRadius": "shared-worker-contract:2",
+      "blastRadius": "single-task",
       "checkpoint": "2026-10-21T17:45:04.849Z",
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
@@ -239808,7 +239810,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-21T19:46:02.389Z"
+      "updatedAt": "2026-10-21T19:57:38.148Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
