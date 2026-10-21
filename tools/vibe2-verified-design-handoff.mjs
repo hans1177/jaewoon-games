@@ -86,9 +86,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const admission=classifyVerifiedDesignPlannerAdmission(result,{allowPendingDesigns});
   const output=clean(process.argv.find(s=>s.startsWith('--admission-output='))?.slice('--admission-output='.length));
   if(output){
-    if(!/^\\/tmp\\/[a-z0-9][a-z0-9._-]*\\.json$/.test(output))throw new Error('VIBE_DESIGN_ADMISSION_OUTPUT_PATH_INVALID');
+    if(!/^\/tmp\/[a-z0-9][a-z0-9._-]*\.json$/.test(output))throw new Error('VIBE_DESIGN_ADMISSION_OUTPUT_PATH_INVALID');
     fs.writeFileSync(output,JSON.stringify({version:1,kind:'VIBE2_EXACT_VERIFIED_DESIGN_SUBSET',runtimeSha,
-      admission,verifiedDesigns:result.verified,blockedDesignReasons:result.failures},null,2)+'\\n');
+      admission,verifiedDesigns:result.verified,blockedDesignReasons:result.failures},null,2)+'\n');
   }
   console.log('VIBE2_VERIFIED_DESIGN_RUNTIME_SHA='+runtimeSha);
   console.log('VIBE2_VERIFIED_DESIGN_COUNT='+result.verified.length);
