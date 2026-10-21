@@ -404,6 +404,7 @@ export function assessCreativeCommonsAssetLicense(asset={},{
   const shareAlikeReady=!sa||Boolean(derivative&&https(asset.shareAlikeComplianceEvidenceUrl)
     &&text(asset.derivativeLicense).toUpperCase()===license);
   const blocked=asset.securityBlocked===true||asset.quarantined===true||asset.internalUseForbidden===true
+    ||asset.catalogOnly===true||asset.releaseBlocked===true
     ||asset.practiceOnly===true||asset.practiceArtifact===true||asset.authority==='PRACTICE_ONLY';
   const gameCandidateEligible=rightsCompatibleWithUse&&sourceVerified&&attributionReady&&shareAlikeReady&&!blocked;
   return Object.freeze({
