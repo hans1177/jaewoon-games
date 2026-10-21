@@ -506,6 +506,8 @@ jobs:
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
           node --test qa/vibe2-existing-web-assessment.test.mjs
+          # Acquired CC0 UI original bytes must pass provenance QA.
+          node --test qa/cc0-kenney-ui-icon-source.test.mjs
           # Actual game consumer proof: canonical CC0 bytes, lineage and original mobile save/input contract.
           node --test qa/insect-survival.test.mjs
           # 기존 중단된 로컬 모델·유니티 작업 시험은 제외하고 유효한 소스/저장/권한 검증은 유지.
