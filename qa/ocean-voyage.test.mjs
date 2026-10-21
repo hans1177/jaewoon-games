@@ -220,3 +220,32 @@ test('CC0 sea music checkout retains the actual Git binary without LFS pointer c
  assert.ok(rules.includes('*.ogg filter=lfs diff=lfs merge=lfs -text'),'generic audio LFS policy remains');
  assert.ok(rules.includes('web-games/ocean-voyage/assets/cc0/music/pirate_ship_in_game.ogg -filter -diff -merge -text'),'original Git OGG remains exempt from LFS');
 });
+
+
+test('classic voyage uses distinct full-screen port, market, palace and discoveries without changing save schema',()=>{
+ const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ assert.match(html,/data-panel="palace"/);
+ assert.match(html,/data-panel="discoveries"/);
+ assert.match(html,/id="back"/);
+ assert.match(html,/#details\{position:fixed;top:/);
+ assert.match(html,/\.building-grid\{display:grid/);
+ assert.match(html,/body\.screen-open #controls/);
+ assert.match(html,/\.scene-art\.palace/);
+ assert.match(html,/\.scene-art\.discoveries/);
+ assert.match(main,/function openScreen\(name\)/);
+ assert.match(main,/function backScreen\(\)/);
+ assert.match(main,/function palace\(\)/);
+ assert.match(main,/function discoveries\(\)/);
+ assert.match(main,/data-panel-open="market"/);
+ assert.match(main,/data-panel-open="palace"/);
+ assert.match(main,/data-panel-open="discoveries"/);
+ assert.match(main,/case 'depart':openScreen\(''\)/);
+ assert.match(main,/switchMusicScene\(opened&&canDock\(state\)\?'harbor':'sea'\)/);
+ const before=newGame();
+ const after=restoreGame(serializeGame(before));
+ assert.deepEqual(after,before);
+ assert.equal(canDock(after).name,'런던');
+ assert.equal(trade(after,'dawn','grain',1,'buy').ok,true);
+ assert.deepEqual(after.discovered,['dawn']);
+});
