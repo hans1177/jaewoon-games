@@ -180,6 +180,8 @@ function resolveReplayTargets(root,data={},plan={}){
   const sourceRoot=posix(data.sourceRoot);
   const rootResolved=path.resolve(root);
   const sourceResolved=sourceRoot?assertInside(root,sourceRoot):rootResolved;
+  const rootPhysical=fs.realpathSync(rootResolved),sourcePhysical=fs.realpathSync(sourceResolved);
+  if(sourcePhysical!==rootPhysical&&!sourcePhysical.startsWith(rootPhysical+path.sep))throw new Error('CAUSAL_REPLAY_SOURCE_ROOT_ESCAPED_REPOSITORY');
   const base=sourceResolved+path.sep;
   const targets=[];
   for(const raw of plan.nodeTestTargets||[]){
@@ -188,7 +190,10 @@ function resolveReplayTargets(root,data={},plan={}){
     const candidate=path.resolve(sourceResolved,rel);
     if(!((candidate+path.sep).startsWith(base)&&candidate!==sourceResolved))throw new Error(`CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT:${rel}`);
     if(!fs.existsSync(candidate)||!fs.statSync(candidate).isFile())throw new Error(`CAUSAL_REPLAY_TARGET_MISSING:${rel}`);
-    targets.push({relative:posix(path.relative(rootResolved,candidate)),absolute:candidate});
+    // A lexical path may still escape through a symlink: bind replay to the real source tree.
+    const actual=fs.realpathSync(candidate);
+    if(actual===sourcePhysical||!actual.startsWith(sourcePhysical+path.sep))throw new Error(`CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT:${rel}`);
+    targets.push({relative:posix(path.relative(rootResolved,candidate)),absolute:actual});
   }
   return targets;
 }
@@ -233,7 +238,12 @@ function runCausalReplay({root,data={}}={}){
   if(!targets.length)throw new Error('CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET');
   const results=[];
   for(const target of targets){
-    execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8'});
+    try{
+      execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8',timeout:20_000,maxBuffer:2*1024*1024});
+    }catch(error){
+      if(error?.code==='ETIMEDOUT'||error?.signal==='SIGTERM')throw new Error(`CAUSAL_REPLAY_TARGET_TIMEOUT:${target.relative}`);
+      throw error;
+    }
     results.push({target:target.relative,outcome:'PASS'});
   }
   return{status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,targets:results,verifiedResponsibleSystem:null,identicalOrEquivalentInputStateRequired:plan.identicalOrEquivalentInputStateRequired!==false,canonicalQaStillRequired:true};
