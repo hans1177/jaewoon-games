@@ -146602,7 +146602,7 @@
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -146635,9 +146635,9 @@
       "recurrenceCount": 0,
       "failureStage": null,
       "failureSignature": null,
-      "failureClass": null,
+      "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:39593531518:1",
+      "previousReservationId": "system-ai:39621922387:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -146645,12 +146645,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39621922387:1",
-      "reservedAt": "2026-10-21T15:04:19.734Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -146677,7 +146677,19 @@
         "system-ai-handoff-from-reservation:system-ai:39593531518:1",
         "system-ai-impact-score:1330",
         "system-ai-blocked-task-count:21",
-        "system-ai-handoff-to-reservation:system-ai:39621922387:1"
+        "system-ai-handoff-to-reservation:system-ai:39621922387:1",
+        "actions-run:39621922387",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
+        "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1330,
@@ -146692,7 +146704,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-10T15:42:04.174Z",
-      "updatedAt": "2026-10-21T15:04:19.734Z"
+      "updatedAt": "2026-10-21T15:32:38.856Z"
     },
     {
       "id": "marketing-insect-survival-pre-release-v1",
