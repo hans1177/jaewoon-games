@@ -1,5 +1,8 @@
 local Config = {
-  PolicySource = "COMPANY_FLOW.md",
+  PolicySource = "company-learning/platform-release-roadmap.json",
+  Genre = "RPG",
+  PlayMode = "COOP",
+  MultiplayerRequired = true,
   Platform = "ROBLOX",
   MobileFirst = true,
   SaveEnabled = true,
