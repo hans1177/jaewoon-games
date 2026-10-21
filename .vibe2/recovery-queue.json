@@ -202696,7 +202696,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T16:12:03.796Z"
+      "updatedAt": "2026-10-21T16:26:08.011Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202917,7 +202917,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T16:12:03.817Z"
+      "updatedAt": "2026-10-21T16:26:08.039Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237389,7 +237389,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-21T16:12:03.871Z"
+      "updatedAt": "2026-10-21T16:26:08.141Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238017,7 +238017,8 @@
         "system-ai-handoff-from-reservation:system-ai:39615028719:1",
         "system-ai-handoff-to-reservation:system-ai:39622733063:1",
         "actions-run:39622733063",
-        "system-ai-handoff-to-reservation:system-ai:39626682043:1"
+        "system-ai-handoff-to-reservation:system-ai:39626682043:1",
+        "actions-run:39626682043"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238035,7 +238036,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T16:12:03.852Z"
+      "updatedAt": "2026-10-21T16:26:08.102Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238526,7 +238527,8 @@
         "system-ai-handoff-to-reservation:system-ai:39619104842:1",
         "actions-run:39619104842",
         "implementation:cancelled",
-        "system-ai-handoff-to-reservation:system-ai:39626682043:1"
+        "system-ai-handoff-to-reservation:system-ai:39626682043:1",
+        "actions-run:39626682043"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238544,7 +238546,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-21T16:12:03.835Z"
+      "updatedAt": "2026-10-21T16:26:08.061Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
