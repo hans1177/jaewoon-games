@@ -5632,3 +5632,33 @@ test('F0 source gameplay gaps request causal source repair without claiming runt
   assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
   assert.match(task.buildUpDirective.nextActionDecision.reason,/F0 design-bound gameplay gaps/);
 });
+
+// CC0 액션 교체: 개발 중 웹 전체가 기존 작업으로 생성되고 보류·폐기·중복은 제외된다.
+test('owner CC0 action replacement covers active Web games through the existing planner without fabricated completion',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-cc0-motion-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+ fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
+ const games=['first','second','retired'].map(id=>({id,lifecycleState:'ACTIVE',canonical:{sources:{web:{state:id==='retired'?'PERMANENTLY_REMOVED_REJECTED_TEST':'ACTIVE'}}}}));
+ fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games}));
+ for(const game of games){
+  const dir=path.join(root,'web-games',game.id);fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),'<canvas id="world"></canvas><script type="module" src="world3d.mjs"></script>');
+  fs.writeFileSync(path.join(dir,'world3d.mjs'),'export function render(state){ return state; }');
+ }
+ for(const id of ['first','second']){
+  const project={gameId:id,engine:'web',projectPath:'web-games/'+id,releaseState:'development-confirmed'};
+  const motion=findWebPresentationQualityTask(project,root,{tasks:[]});
+  assert.equal(motion.id,id+'-web-cc0-action-motion-v1');
+  assert.equal(motion.ownerDirective,true);assert.equal(motion.speculativeEligible,false);
+  assert.ok(motion.responsibleFiles.includes('web-games/'+id+'/world3d.mjs'));
+  assert.match(motion.goal,/CC0 라이선스·원본 SHA256/);assert.match(motion.goal,/모바일/);
+  assert.ok(!motion.evidence.includes('runtime-pass'));
+  const duplicate=findWebPresentationQualityTask(project,root,{tasks:[{...motion,status:'queued'}]});
+  assert.notEqual(duplicate?.id,motion.id);
+  const first=findSafeTasks(project,root,{tasks:[]})[0];assert.equal(first.id,motion.id);
+ }
+ const retired=findWebPresentationQualityTask({gameId:'retired',engine:'web',projectPath:'web-games/retired',releaseState:'development-confirmed'},root,{tasks:[]});
+ assert.notEqual(retired?.id,'retired-web-cc0-action-motion-v1');
+ assert.equal(findWebPresentationQualityTask({gameId:'first',engine:'roblox',projectPath:'roblox-games/first',releaseState:'development-confirmed'},root,{tasks:[]}),null);
+});

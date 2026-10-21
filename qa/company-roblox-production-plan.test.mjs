@@ -596,3 +596,14 @@ test('approved socket WFC and canyon remain Roblox/Web spatial-owner inputs unti
   assert.equal(held.macroSketch.proceduralWorldStudy.roomComposition,undefined);
   assert.equal(held.macroSketch.proceduralWorldStudy.terrainMorphology,undefined);
 });
+
+test('existing queued Web work receives current CC0 action motion directive at worker handoff only for active development',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-cc0-handoff-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+ fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(central));
+ for(const [target,releaseState,required] of [['web','development-confirmed',true],['web','release-confirmed',false],['roblox','development-confirmed',false]]){
+  const plan=buildVibeAssetProductionPlan({repoRoot:root,target,manifest:{assets:[]},task:{gameId:'demo',releaseState,goal:'기존 상태 연출'}});
+  assert.equal(plan.webActionMotionReplacement?.enabled===true,required);
+  assert.equal(assetProductionGuidance(plan).includes('[WEB CC0 ACTION MOTION OWNER DIRECTIVE]'),required);
+ }
+});

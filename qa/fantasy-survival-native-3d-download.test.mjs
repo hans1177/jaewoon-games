@@ -194,7 +194,7 @@ test('native preview consumes existing environment, character identity and motio
   'scene.fog.far=weatherVisualEffects',
   'createVibeCharacterCustomizationRecipe(',
   'avatarRecipe.body.heightCm',
-  'new GLTFLoader().loadAsync(HERO_URL.href)',
+  'new GLTFLoader().loadAsync(source.href)',
   'createSurvivalPlayerMotionProfile({platform:\'WEB\'',
   'heroMixer.clipAction(desired)'
  ]) assert.ok(moduleSource.includes(label),'missing actual native Vibe binding: '+label);
@@ -356,4 +356,14 @@ test('Vibe graphics selection excludes generated and commercially licensed non-C
  ]}});
  assert.ok(plan.matched.some(x=>x.id==='cc0-tree'));
  assert.ok(plan.matched.every(x=>!['generated-tree','commercial-tree','fake-download'].includes(x.id)));
+});
+
+test('CC0 action profile selects exact source clips and leaves combat authority in the original game',()=>{
+ const motion=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'SPEAR'});
+ assert.equal(motion.cc0Clips.attack,'1H_Melee_Attack_Stab');
+ assert.equal(motion.cc0Clips.run,'Running_A');
+ assert.equal(motion.cc0Clips.idle,'Idle');
+ assert.match(moduleSource,/clip\.name===clipName/);
+ assert.match(moduleSource,/THREE\.LoopOnce/);
+ assert.match(moduleSource,/attackAt!==lastHeroAttackAt/);
 });

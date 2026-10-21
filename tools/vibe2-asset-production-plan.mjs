@@ -5900,6 +5900,8 @@ export function buildVibeAssetProductionPlan({
     version:1,
     kind:'vibe2-asset-production-plan',
     gameConceptStyle,
+    webActionMotionReplacement:resolvedTarget==='web'&&clean(task.releaseState).toLowerCase()==='development-confirmed'
+      ?currentRoadmap?.assetProductionParallelContract?.assetAcquisitionAndReuse?.webActionMotionReplacement||null:null,
     graphicsProductionRoot:'GRAPHICS_PRODUCTION',
     externalTopLevelGraphicsWorkUnit:false,
     plannerRole:'GRAPHICS_PRODUCTION_INPUT_ONLY',
@@ -6480,6 +6482,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.webActionMotionReplacement?.enabled===true?'[WEB CC0 ACTION MOTION OWNER DIRECTIVE] '+JSON.stringify(plan.webActionMotionReplacement)+'. 현재 개발 중 웹 게임의 기존 액션 모션은 출처·CC0 라이선스·SHA256이 검증된 모션 라이브러리 클립으로 교체한다. 현재 책임 파일과 승인된 행동 범위 안에서 기존 리그·정체성·게임 판정 시점을 보존하며 실제 클립과 상태를 연결한다. 호환 불가 종·리그는 정확한 GAP로 남기고 인간 모션을 강제 적용하지 않는다. 클립 LoopOnce/LoopRepeat, 연속 공격 재시작, 전환·피격·사망·모바일 입력을 같은 빌드에서 확인한다. 자체 제작 대체 모션이나 소스 마커만으로 교체 완료를 주장하지 않는다. 현재 책임 범위를 넘는 교체는 기존 BUILD_UP 다음 작업으로 연결한다.':'',
     '[PRACTICE ONLY / DELETE AFTER EXERCISE] 바이브 자체 제작물은 연습만 허용한다. 게임 사용·라이브러리 승격·재사용 금지. 연습 종료 후 기존 책임 작업에서 연습 파일·미리보기·원장 등록을 영구 삭제하고 삭제 경로 증거만 남긴다. 기존 게임 소비처가 있는 공유 파일은 안전한 CC0 교체 검증 전 삭제하지 않는다.',
     '[CC0 ORIGINAL / ACTIVE GAME ONLY] 게임 에셋은 출처·라이선스·원본 해시가 확인된 CC0 원본을 이 게임에 맞게 수정해서 사용한다. 자체 제작 저품질 에셋은 단순 제외하지 말고 CC0 파생으로 실제 교체·실행 검증한 뒤 영구 삭제한다. 현재 승인된 개발 게임과 책임 파일만 처리하고 개발하지 않는 게임·보류 게임은 교체하지 않는다. 모든 라이브러리와 공유 파일의 바이브 자체 제작물은 품질과 관계없이 영구 제거 대상이다. 소비처를 확인해 실제 사용 연결을 검증된 CC0 파생 자산으로 교체한 뒤 원본 파일과 원장 등록을 삭제한다. 외부 CC0 원본과 게임 실행 로직은 보존한다. CC0 원본·수정 이력·삭제 경로·게임 연결 변경과 실제 런타임 증거 없이 완료를 주장하지 않는다. 자체 제작 fallback·옛 에셋 재생성·새 우회 파이프라인 금지. 게임 판정·저장·밸런스·기존 F0~F9 순서를 보존한다.',
     plan.gameConceptStyle?'[GAME CONCEPT STYLE] '+JSON.stringify(plan.gameConceptStyle)+'. 공용 나무·몬스터·건물·재질은 원본을 보존하고 이 게임의 컨셉·세계·스타일에 맞는 네이티브 파생으로 선택·변형·조합한다. 재질 분류 수와 색·표면 변형 수는 유행 스타일 종류 수가 아니다. 색만 바꾸지 말고 승인된 실루엣·비율·재질 반응·표면 디테일·조명·모션·UI 표현을 적용한다. 다른 게임이나 오래된 공유 스타일로 덮지 않는다. 스타일 명세가 없으면 누락으로 남기고 일반 프리셋으로 최종 스타일 일치를 주장하지 않는다. 원본 해시·게임별 파생·설계 식별·같은 빌드의 중립 비교와 실게임 카메라 증거를 연결하며 판정·충돌·저장·서버 권한은 보존한다.': '',
