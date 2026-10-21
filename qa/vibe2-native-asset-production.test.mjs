@@ -1037,10 +1037,15 @@ test('all game spatial families reject flat 2D assets but allow unlimited cross-
   ];
   for(const target of ['roblox','unity','web']){
     const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:9,assets},target,gameId:'any-genre'});
-    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),['another-creature','shared-creature']);
-    assert.deepEqual(plan.familyCandidates.BUILDING.map(asset=>asset.assetId),['building-part']);
+    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),
+      target==='web'?['another-creature']:['another-creature','shared-creature']);
+    assert.deepEqual(plan.familyCandidates.BUILDING.map(asset=>asset.assetId),
+      target==='web'?[]:['building-part']);
     assert.deepEqual(plan.familyCandidates.UI.map(asset=>asset.assetId),['ui-icon']);
-    assert.equal(plan.hardBlockedAssetCount,1);
+    assert.equal(plan.hardBlockedAssetCount,target==='web'?3:1);
+    if(target==='web')assert.equal(
+      plan.evaluatedAssets.find(row=>row.assetId==='shared-creature').hardBlockReason,
+      'WEB_CC0_ONLY_LICENSE_REQUIRED','non-CC0 3D donor cannot become a Web library');
     assert.equal(plan.crossGameAndGenreReuseUnrestricted,true);
     assert.equal(plan.noArtificialAssetCountCap,true);
     assert.equal(plan.spatialFamiliesRequire3dGeometrySource,true);
@@ -4345,7 +4350,7 @@ test('native artifact and role-only model changes invalidate existing source syn
     fs.mkdirSync(path.join(cwd,'assets/shared'),{recursive:true});
     fs.writeFileSync(path.join(cwd,'assets/shared/model.glb'),Buffer.from([1,2,3,4]));
     fs.writeFileSync(path.join(cwd,'assets/shared/preview.png'),Buffer.from([8,9]));
-    const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',
+    const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'CC0',
       path:'/assets/shared/preview.png',sourceFiles:[],nativeArtifacts:['assets/shared/model.glb'],
       fileRoles:{models:['assets/shared/model.glb'],previews:['assets/shared/preview.png']}};
     const dynamic=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[asset]},target:'web',gameId:'demo'});
