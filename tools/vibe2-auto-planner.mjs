@@ -1025,7 +1025,7 @@ function applyTransformativeRecombination(taskInput={},memory={},project={},repo
     'Genre constrains play rules; style constrains visual and motion expression; concept constrains world and mood. Unobserved or undeclared values remain unknown.',
     'Use these as abstract design/implementation references only.',
     taskInput?.graphicsReplacementContract
-      ?'For this graphics/presentation BUILD_UP, selectively blend compatible visual, motion, VFX, UI, material, environment, or interaction-presentation ideas into one concept-matched project-specific expression. Direct reuse is allowed only when already correct; otherwise adapt/re-style/re-target or recombine.'
+      ?'For this graphics/presentation BUILD_UP, selectively blend compatible visual, motion, VFX, UI, material, environment, or interaction-presentation ideas into one concept-matched project-specific expression. Direct reuse is allowed only when already correct; otherwise adapt/re-style/re-target or recombine. Create a game-specific new code/asset expression from verified CC0 original asset sources only, without claiming runtime success before source binding and browser QA.'
       :'Create project-specific new code/asset expression within the current approved rules, balance, progression, save meaning and multiplayer authority.',
     'Do not emit raw source files, raw asset bytes, logos, source-specific identifiers, or verbatim implementation.',
     'Preserve the current game identity, approved design, gameplay authority, save meaning, and all existing QA/runtime/regression gates.'
