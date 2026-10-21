@@ -202661,7 +202661,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T14:29:58.036Z"
+      "updatedAt": "2026-10-21T14:37:24.346Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202882,7 +202882,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T14:29:58.059Z"
+      "updatedAt": "2026-10-21T14:37:24.372Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237516,9 +237516,9 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-21T13:53:05.570Z",
+      "checkpoint": "2026-10-21T14:30:17.292Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-21T13:53:05.570Z",
+      "sourceMutationBaseline": "2026-10-21T14:30:17.292Z",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -237858,7 +237858,8 @@
         "system-ai-handoff-to-reservation:system-ai:39606065643:1",
         "actions-run:39606065643",
         "system-ai-handoff-to-reservation:system-ai:39611487868:1",
-        "actions-run:39611487868"
+        "actions-run:39611487868",
+        "system-ai-handoff-to-reservation:system-ai:39615028719:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -237876,7 +237877,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T14:29:58.114Z"
+      "updatedAt": "2026-10-21T14:37:24.437Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238381,7 +238382,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-21T14:29:58.083Z"
+      "updatedAt": "2026-10-21T14:37:24.397Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
