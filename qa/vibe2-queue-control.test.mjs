@@ -3260,5 +3260,6 @@ test('focused causal repair outranks unrelated polish without treating source-on
  ],maxConcurrentTasks:1});
  const selection=selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
  assert.deepEqual(selection.selected.map(x=>x.id),['final-repair']);
- assert.equal(queue.tasks.find(x=>x.id==='final-repair').status,'queued');
+   assert.equal(queue.tasks.find(x=>x.id==='final-repair').status,'queued');
+  assert.equal(typeof releaseVibeTaskExecutionSlot, 'function');
 });
