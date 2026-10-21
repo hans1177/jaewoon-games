@@ -1,27 +1,27 @@
 {
   "version": 2,
-  "directiveId": "tower-choice-rpg-build-up-g1-b33926e917cf",
-  "directiveFingerprint": "b33926e917cf51dab206057ecb8f789a8e2b768bfe80a13916e69ea0fb487741",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "tower-choice-rpg-build-up-g2-4c5965c115ae",
+  "directiveFingerprint": "4c5965c115ae45ecceb0bf3183cf3dbe3be2f795d1ad2e361fcbb742bdbf13fa",
+  "previousDirectiveFingerprint": "b33926e917cf51dab206057ecb8f789a8e2b768bfe80a13916e69ea0fb487741",
+  "forbiddenRepeatFingerprint": "b33926e917cf51dab206057ecb8f789a8e2b768bfe80a13916e69ea0fb487741",
   "gameId": "tower-choice-rpg",
   "gameName": "10층 탑 RPG",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/tower-choice-rpg",
-  "sourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+  "sourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
   "designFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
-    "previousDesignFingerprint": null,
-    "sameApprovedDesign": false,
+    "previousDesignFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
+    "sameApprovedDesign": true,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+        "sourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "f828a1cafe44dd4d0af938b25dd484e7c1e80d00a1385079bfb6cb17863b110f",
-    "sourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+    "sourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+    "sourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4350,59 +4350,62 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=1",
+      "CURRENT_SOURCE_FILES=2",
       "GAME_FEEL_SPARSE",
       "AUDIO_IMPLEMENTATION_SPARSE",
       "AI_BEHAVIOR_DEPTH_SPARSE",
       "UI_MENU_FLOW_SPARSE",
-      "SETTINGS_ACCESSIBILITY_SPARSE",
-      "PERFORMANCE_BUDGET_SPARSE"
+      "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 121,
-      "progression": 42,
-      "ai": 0,
-      "save": 28,
+      "combat": 135,
+      "progression": 47,
+      "ai": 1,
+      "save": 39,
       "multiplayer": 0,
-      "animation": 3,
-      "motionStates": 86,
+      "animation": 12,
+      "motionStates": 115,
       "gameFeel": 0,
-      "vfx": 14,
-      "camera": 5,
+      "vfx": 21,
+      "camera": 10,
       "audio": 0,
-      "audioDynamics": 0,
-      "ui": 64,
+      "audioDynamics": 9,
+      "ui": 68,
       "uiFlow": 12,
       "entryFlow": 0,
       "loadingFlow": 0,
       "input": 17,
-      "map": 98,
-      "landmark": 23,
+      "map": 125,
+      "landmark": 38,
       "interaction": 9,
-      "inventory": 9,
+      "inventory": 30,
       "equipment": 26,
       "settings": 0,
-      "feedback": 10,
+      "feedback": 15,
       "session": 2,
-      "content": 104,
-      "choice": 39,
+      "content": 123,
+      "choice": 40,
       "connection": 0,
-      "performance": 0,
-      "lighting": 5,
-      "primitive": 0,
+      "performance": 8,
+      "lighting": 10,
+      "primitive": 2,
       "todo": 0,
-      "errorRecovery": 2
+      "errorRecovery": 18
     },
     "topFiles": [
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "score": 131
+        "score": 123
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "score": 43
       }
     ],
     "sourceAnchors": [
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 196,
+        "line": 201,
         "kind": "FUNCTION",
         "symbol": "maxHp",
         "context": "function maxHp(){return state.player.baseHp+ARMORS[state.player.armor].hp}",
@@ -4410,7 +4413,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 197,
+        "line": 202,
         "kind": "FUNCTION",
         "symbol": "attackPower",
         "context": "function attackPower(){return state.player.baseAtk+state.player.bonusAtk+WEAPONS[state.player.weapon].atk}",
@@ -4418,7 +4421,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 198,
+        "line": 203,
         "kind": "FUNCTION",
         "symbol": "healRatio",
         "context": "function healRatio(r){const p=state.player;p.hp=Math.min(maxHp(),p.hp+Math.ceil(maxHp()*r))}",
@@ -4426,7 +4429,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 248,
+        "line": 253,
         "kind": "FUNCTION",
         "symbol": "bossFloor",
         "context": "function bossFloor(f){return !!BOSSES[f]}",
@@ -4434,7 +4437,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 249,
+        "line": 254,
         "kind": "FUNCTION",
         "symbol": "prepareFloor",
         "context": "function prepareFloor(){",
@@ -4442,7 +4445,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 199,
+        "line": 204,
         "kind": "FUNCTION",
         "symbol": "resize",
         "context": "function resize(){",
@@ -4450,7 +4453,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 336,
+        "line": 341,
         "kind": "FUNCTION",
         "symbol": "nextFloor",
         "context": "function nextFloor(){",
@@ -4458,7 +4461,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 210,
+        "line": 214,
         "kind": "FUNCTION",
         "symbol": "loadSave",
         "context": "function loadSave(){",
@@ -4466,7 +4469,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 218,
+        "line": 222,
         "kind": "FUNCTION",
         "symbol": "clearSave",
         "context": "function clearSave(){localStorage.removeItem(SAVE_KEY)}",
@@ -4474,7 +4477,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 219,
+        "line": 223,
         "kind": "FUNCTION",
         "symbol": "startNew",
         "context": "function startNew(){",
@@ -4482,7 +4485,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 484,
+        "line": 491,
         "kind": "FUNCTION",
         "symbol": "draw",
         "context": "function draw(){",
@@ -4490,7 +4493,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 206,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "save",
         "context": "function save(){",
@@ -4498,7 +4501,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 381,
+        "line": 386,
         "kind": "FUNCTION",
         "symbol": "equipArmor",
         "context": "function equipArmor(i){",
@@ -4506,7 +4509,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 386,
+        "line": 391,
         "kind": "FUNCTION",
         "symbol": "openBag",
         "context": "function openBag(){",
@@ -4514,7 +4517,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 410,
+        "line": 415,
         "kind": "FUNCTION",
         "symbol": "attackNow",
         "context": "function attackNow(){",
@@ -4522,7 +4525,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 457,
+        "line": 462,
         "kind": "FUNCTION",
         "symbol": "update",
         "context": "function update(dt){",
@@ -4530,7 +4533,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 222,
+        "line": 226,
         "kind": "FUNCTION",
         "symbol": "continueGame",
         "context": "function continueGame(){",
@@ -4538,7 +4541,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 226,
+        "line": 230,
         "kind": "FUNCTION",
         "symbol": "hud",
         "context": "function hud(){",
@@ -4546,7 +4549,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 307,
+        "line": 312,
         "kind": "FUNCTION",
         "symbol": "startBattle",
         "context": "function startBattle(kind){",
@@ -4554,7 +4557,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 376,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "buyArmor",
         "context": "function buyArmor(i){",
@@ -4562,7 +4565,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 403,
+        "line": 408,
         "kind": "FUNCTION",
         "symbol": "damagePlayer",
         "context": "function damagePlayer(amount,source){",
@@ -4570,7 +4573,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 432,
+        "line": 437,
         "kind": "FUNCTION",
         "symbol": "beginSpecial",
         "context": "function beginSpecial(e){",
@@ -4578,24 +4581,134 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 503,
+        "line": 520,
         "kind": "FUNCTION",
-        "symbol": "drawPlayer",
-        "context": "function drawPlayer(){",
+        "symbol": "releaseInputs",
+        "context": "function releaseInputs(){stopJoy();for(const k of Object.keys(keys))delete keys[k]}",
         "score": 58
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 571,
+        "line": 540,
         "kind": "FUNCTION",
         "symbol": "winGame",
         "context": "function winGame(){",
         "score": 58
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 142,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "function render({player,enemies:actors=[],effects:active=[]},time=0){",
+        "score": 58
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 96,
+        "kind": "FUNCTION",
+        "symbol": "useRigMotion",
+        "context": "function useRigMotion(kind){",
+        "score": 50
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 108,
+        "kind": "FUNCTION",
+        "symbol": "fallback",
+        "context": "function fallback(actor){",
+        "score": 50
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 15,
+        "kind": "FUNCTION",
+        "symbol": "color",
+        "context": "function color(hex){return new THREE.MeshStandardMaterial({color:hex,roughness:.86})}",
+        "score": 42
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 16,
+        "kind": "FUNCTION",
+        "symbol": "fitSource",
+        "context": "function fitSource(source,height=1.65){",
+        "score": 42
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 117,
+        "kind": "FUNCTION",
+        "symbol": "createEnemy",
+        "context": "function createEnemy(actor){",
+        "score": 42
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 133,
+        "kind": "FUNCTION",
+        "symbol": "resize",
+        "context": "function resize(){",
+        "score": 42
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 9,
+        "kind": "FUNCTION",
+        "symbol": "P",
+        "context": "const P=(x,y)=>[x*SCALE,y*SCALE];",
+        "score": 34
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 10,
+        "kind": "FUNCTION",
+        "symbol": "enemyAsset",
+        "context": "const enemyAsset=name=>{",
+        "score": 34
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 201,
+        "kind": "FUNCTION",
+        "symbol": "dispose",
+        "context": "function dispose(){",
+        "score": 34
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "createTower3d",
+        "context": "export async function createTower3d({canvas,WORLD}){",
+        "score": 26
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 43,
+        "kind": "FUNCTION",
+        "symbol": "block",
+        "context": "function block(parent,x,y,z,w,h,d,mat){",
+        "score": 26
+      },
+      {
+        "file": "web-games/tower-choice-rpg/tower3d.mjs",
+        "line": 138,
+        "kind": "FUNCTION",
+        "symbol": "onLoss",
+        "context": "const onLoss=event=>{event.preventDefault();document.body.dataset.spatialDimension='3d-error'};",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "10층 탑 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 10층 탑 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 10층 탑 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
+    "previousFocus": "CORE_FUN",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+    "currentSourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -4970,13 +5083,13 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RUNTIME_STABILITY",
@@ -5622,8 +5735,8 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5631,8 +5744,8 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5707,16 +5820,6 @@
       "domain": "AUDIO_VISUAL_TIMING",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
   "primaryFocus": "CORE_FUN",
@@ -5778,8 +5881,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 29105,
-        "largestFileBytes": 29105,
+        "sourceBytes": 38922,
+        "largestFileBytes": 27933,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5811,13 +5914,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 1,
-    "selectedThemeReason": "2 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "2 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -5825,6 +5928,7 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
@@ -5860,7 +5964,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 52,
+        "score": 194,
         "gapDomains": [
           "ENEMY_AI",
           "GAME_FEEL"
@@ -5977,12 +6081,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
+    "priorSourceFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6000,7 +6104,7 @@
     "version": 1,
     "gameId": "tower-choice-rpg",
     "platform": "WEB",
-    "sourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+    "sourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6016,8 +6120,10 @@
       },
       {
         "id": "CUSTOMIZATION",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/tower-choice-rpg/tower3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6026,8 +6132,10 @@
       },
       {
         "id": "MATERIAL",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/tower-choice-rpg/tower3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6058,7 +6166,8 @@
         "id": "UI",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/tower-choice-rpg/index.html"
+          "web-games/tower-choice-rpg/index.html",
+          "web-games/tower-choice-rpg/tower3d.mjs"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6098,8 +6207,10 @@
       },
       {
         "id": "MOTION",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/tower-choice-rpg/tower3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6110,7 +6221,8 @@
         "id": "ACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/tower-choice-rpg/index.html"
+          "web-games/tower-choice-rpg/index.html",
+          "web-games/tower-choice-rpg/tower3d.mjs"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6152,8 +6264,11 @@
       },
       {
         "id": "COMBAT",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/tower-choice-rpg/index.html",
+          "web-games/tower-choice-rpg/tower3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6256,7 +6371,8 @@
         "id": "CAMERA",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/tower-choice-rpg/index.html"
+          "web-games/tower-choice-rpg/index.html",
+          "web-games/tower-choice-rpg/tower3d.mjs"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6297,19 +6413,27 @@
     ],
     "sourceFilesByRole": {
       "LOBBY": [],
-      "CUSTOMIZATION": [],
-      "MATERIAL": [],
+      "CUSTOMIZATION": [
+        "web-games/tower-choice-rpg/tower3d.mjs"
+      ],
+      "MATERIAL": [
+        "web-games/tower-choice-rpg/tower3d.mjs"
+      ],
       "INVENTORY": [],
       "EQUIPMENT": [],
       "UI": [
-        "web-games/tower-choice-rpg/index.html"
+        "web-games/tower-choice-rpg/index.html",
+        "web-games/tower-choice-rpg/tower3d.mjs"
       ],
       "WORLD": [],
       "BIOME": [],
       "HOUSING": [],
-      "MOTION": [],
+      "MOTION": [
+        "web-games/tower-choice-rpg/tower3d.mjs"
+      ],
       "ACTION": [
-        "web-games/tower-choice-rpg/index.html"
+        "web-games/tower-choice-rpg/index.html",
+        "web-games/tower-choice-rpg/tower3d.mjs"
       ],
       "NPC_AI": [],
       "QUEST_DIALOGUE": [],
@@ -6322,7 +6446,8 @@
       "WEATHER": [],
       "PHYSICS": [],
       "CAMERA": [
-        "web-games/tower-choice-rpg/index.html"
+        "web-games/tower-choice-rpg/index.html",
+        "web-games/tower-choice-rpg/tower3d.mjs"
       ],
       "AUDIO": [],
       "SKILL_VFX": [],
@@ -6330,13 +6455,20 @@
       "INTERACTION": [],
       "REWARD": [],
       "SAVE": [],
-      "COMBAT": [],
+      "COMBAT": [
+        "web-games/tower-choice-rpg/index.html",
+        "web-games/tower-choice-rpg/tower3d.mjs"
+      ],
       "SHOP": [
         "web-games/tower-choice-rpg/index.html"
       ]
     },
     "uiModeSelection": {
-      "combat": [],
+      "combat": [
+        "HEALTH_STATUS",
+        "SKILL_AND_DODGE_FROM_EXISTING_BINDINGS",
+        "DANGER_FEEDBACK"
+      ],
       "lobby": [],
       "inventory": [],
       "mobile": [
@@ -6395,7 +6527,9 @@
         {
           "id": "STAT_AND_APPEARANCE",
           "state": "MISSING_SOURCE_EVIDENCE",
-          "responsibleFiles": [],
+          "responsibleFiles": [
+            "web-games/tower-choice-rpg/tower3d.mjs"
+          ],
           "passed": false
         },
         {
@@ -6419,6 +6553,30 @@
     },
     "moduleConnections": [
       {
+        "id": "CUSTOMIZATION_EQUIPMENT_SAVE",
+        "roles": [
+          "CUSTOMIZATION",
+          "EQUIPMENT",
+          "SAVE"
+        ],
+        "state": "MISSING_REQUIRED_SOURCE_REVIEW",
+        "missingRoles": [
+          "EQUIPMENT",
+          "SAVE"
+        ],
+        "responsibleFiles": [
+          "web-games/tower-choice-rpg/tower3d.mjs"
+        ],
+        "checks": [
+          "REAL_RIG_AND_OUTFIT_BINDING",
+          "SAVED_AVATAR_AND_EQUIPMENT",
+          "RECONNECT_RESTORE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
         "id": "NPC_AI_QUEST",
         "roles": [
           "NPC_AI",
@@ -6433,6 +6591,28 @@
         "checks": [
           "NPC_DECISION_TO_DIALOGUE_EVENT",
           "QUEST_STATE_AND_SERVER_AUTHORITY"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION_MOTION_COMBAT",
+        "roles": [
+          "ACTION",
+          "MOTION",
+          "COMBAT"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/tower-choice-rpg/index.html",
+          "web-games/tower-choice-rpg/tower3d.mjs"
+        ],
+        "checks": [
+          "INPUT_TO_AUTHORITATIVE_HIT",
+          "EXACT_EXISTING_HIT_TIMING",
+          "RIG_PLAYBACK_AND_REACTION"
         ],
         "gameSourceMutationPerformed": false,
         "passed": false,
@@ -6482,7 +6662,8 @@
       "REAL_EVENT_HANDLER",
       "SERVER_AUTHORITY_WHERE_APPLICABLE",
       "NATIVE_PLATFORM_AND_MOBILE_QA",
-      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT"
+      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT",
+      "ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE"
     ],
     "implementationProven": false,
     "runtimeVerified": false,
@@ -6543,7 +6724,7 @@
     "gameId": "tower-choice-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+    "sourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6732,7 +6913,8 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "web-games/tower-choice-rpg/index.html"
+      "web-games/tower-choice-rpg/index.html",
+      "web-games/tower-choice-rpg/tower3d.mjs"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -6800,7 +6982,7 @@
       },
       {
         "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       }
     ],
     "priorityOrder": [
@@ -6887,7 +7069,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 196,
+        "line": 201,
         "kind": "FUNCTION",
         "symbol": "maxHp",
         "currentBehavior": "function maxHp(){return state.player.baseHp+ARMORS[state.player.armor].hp}",
@@ -6896,7 +7078,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 197,
+        "line": 202,
         "kind": "FUNCTION",
         "symbol": "attackPower",
         "currentBehavior": "function attackPower(){return state.player.baseAtk+state.player.bonusAtk+WEAPONS[state.player.weapon].atk}",
@@ -6905,7 +7087,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 198,
+        "line": 203,
         "kind": "FUNCTION",
         "symbol": "healRatio",
         "currentBehavior": "function healRatio(r){const p=state.player;p.hp=Math.min(maxHp(),p.hp+Math.ceil(maxHp()*r))}",
@@ -6914,7 +7096,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 248,
+        "line": 253,
         "kind": "FUNCTION",
         "symbol": "bossFloor",
         "currentBehavior": "function bossFloor(f){return !!BOSSES[f]}",
@@ -6923,7 +7105,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 249,
+        "line": 254,
         "kind": "FUNCTION",
         "symbol": "prepareFloor",
         "currentBehavior": "function prepareFloor(){",
@@ -6932,7 +7114,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 199,
+        "line": 204,
         "kind": "FUNCTION",
         "symbol": "resize",
         "currentBehavior": "function resize(){",
@@ -6941,7 +7123,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 336,
+        "line": 341,
         "kind": "FUNCTION",
         "symbol": "nextFloor",
         "currentBehavior": "function nextFloor(){",
@@ -6950,7 +7132,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 210,
+        "line": 214,
         "kind": "FUNCTION",
         "symbol": "loadSave",
         "currentBehavior": "function loadSave(){",
@@ -7079,12 +7261,13 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "web-games/tower-choice-rpg/index.html"
+      "web-games/tower-choice-rpg/index.html",
+      "web-games/tower-choice-rpg/tower3d.mjs"
     ],
     "sourceAnchors": [
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 196,
+        "line": 201,
         "kind": "FUNCTION",
         "symbol": "maxHp",
         "context": "function maxHp(){return state.player.baseHp+ARMORS[state.player.armor].hp}",
@@ -7096,7 +7279,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 197,
+        "line": 202,
         "kind": "FUNCTION",
         "symbol": "attackPower",
         "context": "function attackPower(){return state.player.baseAtk+state.player.bonusAtk+WEAPONS[state.player.weapon].atk}",
@@ -7108,7 +7291,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 198,
+        "line": 203,
         "kind": "FUNCTION",
         "symbol": "healRatio",
         "context": "function healRatio(r){const p=state.player;p.hp=Math.min(maxHp(),p.hp+Math.ceil(maxHp()*r))}",
@@ -7120,7 +7303,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 248,
+        "line": 253,
         "kind": "FUNCTION",
         "symbol": "bossFloor",
         "context": "function bossFloor(f){return !!BOSSES[f]}",
@@ -7132,7 +7315,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 249,
+        "line": 254,
         "kind": "FUNCTION",
         "symbol": "prepareFloor",
         "context": "function prepareFloor(){",
@@ -7144,7 +7327,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 199,
+        "line": 204,
         "kind": "FUNCTION",
         "symbol": "resize",
         "context": "function resize(){",
@@ -7156,7 +7339,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 336,
+        "line": 341,
         "kind": "FUNCTION",
         "symbol": "nextFloor",
         "context": "function nextFloor(){",
@@ -7168,7 +7351,7 @@
       },
       {
         "file": "web-games/tower-choice-rpg/index.html",
-        "line": 210,
+        "line": 214,
         "kind": "FUNCTION",
         "symbol": "loadSave",
         "context": "function loadSave(){",
@@ -7213,7 +7396,8 @@
     "gameId": "tower-choice-rpg",
     "platform": "WEB",
     "plannedFiles": [
-      "web-games/tower-choice-rpg/index.html"
+      "web-games/tower-choice-rpg/index.html",
+      "web-games/tower-choice-rpg/tower3d.mjs"
     ],
     "impact": {
       "version": 1,
@@ -7267,12 +7451,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "10층 탑 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 10층 탑 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 10층 탑 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "8eddaffc682ada33385fec8da4081ddefb90409374f47967e13a0d7c0a8ffb91",
+      "sourceTreeFingerprint": "90d529649cb4d62870a08ea3ea71af37cb1e4545c188b3e104c5364f8c170f86",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7287,8 +7471,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7331,12 +7515,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7392,11 +7576,10 @@
       "SESSION_FLOW",
       "FIRST_10_MINUTES",
       "SETTINGS_ACCESSIBILITY",
-      "MENU_FLOW",
-      "PERFORMANCE_BUDGET"
+      "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T10:21:22.248Z"
+  "generatedAt": "2026-10-21T23:32:51.305Z"
 }
