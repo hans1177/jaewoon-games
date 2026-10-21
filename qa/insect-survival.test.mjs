@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
+import {planAssetApplication} from '../assets/asset-selector.js';
 
 const html=fs.readFileSync('web-games/insect-survival/index.html','utf8');
 const world=fs.readFileSync('web-games/insect-survival/world3d.mjs','utf8');
@@ -215,4 +216,17 @@ test('external CC0 source gallery blocks non-CC0 and quarantined entries without
  vm.runInNewContext(expr+';globalThis.matches=robloxSources.map(row=>row.id)',context);
  assert.deepEqual(Array.from(context.matches),['cc0','cc0-1']);
  assert.equal(registry.externalSources.length,5,'blocked source metadata is retained for audit');
+});
+
+test('shared selection requires explicit local acquisition and blocks forbidden CC0 candidates',()=>{
+ const manifest={assets:[
+  {id:'usable-tree',types:['prop'],path:'assets/shared/homely-house/tree_large.obj',license:'CC0',downloaded:true},
+  {id:'unknown-download',types:['prop'],path:'assets/missing.obj',license:'CC0'},
+  {id:'forbidden',types:['prop'],path:'assets/other.obj',license:'CC0',downloaded:true,gameUseForbidden:true},
+  {id:'commercial',types:['prop'],path:'assets/third.obj',license:'MIT',downloaded:true}
+ ]};
+ const plan=planAssetApplication({prompt:'숲 나무',manifest});
+ assert.deepEqual(plan.matched.filter(row=>row.type==='prop').map(row=>row.id),['usable-tree']);
+ assert.equal(plan.sourceBindingVerified,false,'candidate choice is not a runtime pass');
+ assert.equal(plan.nativeRuntimeVerified,false);
 });
