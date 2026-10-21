@@ -134,6 +134,7 @@ jobs:
         run: |
           set -euo pipefail
           proceed=true
+          focus_reconcile=false
           freshness_required=false
           if [[ "${GITHUB_EVENT_NAME:-}" == 'push' && "${GITHUB_REF_NAME:-}" == 'main' ]]; then
             freshness_required=true
@@ -218,24 +219,99 @@ jobs:
             elif [[ "$queued_count" =~ ^[0-9]+$ && "$pending_count" =~ ^[0-9]+$ ]] && \
                  [ "$((queued_count+pending_count))" -ge 48 ]; then
               proceed=false
+              # A lightweight owner-focused lifecycle repair may checkpoint
+              # already-authorized cancelled tasks without dispatching game workers.
+              # Retain the global backlog gate for the expensive reserve path.
+              if [[ "${GITHUB_EVENT_NAME:-}" == 'push' && "${GITHUB_REF_NAME:-}" == 'main' && "$GITHUB_SHA" == "$latest_main" ]]; then
+                focus_reconcile=true
+              fi
               echo 'VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG'
             else
               echo 'VIBE2_AUTO_MAIN_WAKE_ADMITTED=YES'
             fi
           fi
           echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
+          echo "focus_reconcile=$focus_reconcile" >> "$GITHUB_OUTPUT"
 
       - name: Checkout Vibe2 control line
-        if: steps.main_wake.outputs.proceed == 'true'
+        if: steps.main_wake.outputs.proceed == 'true' || steps.main_wake.outputs.focus_reconcile == 'true'
         uses: actions/checkout@v4
         with:
           ref: vibe2-unreal-core
           fetch-depth: 1
 
       - uses: actions/setup-node@v4
-        if: steps.main_wake.outputs.proceed == 'true'
+        if: steps.main_wake.outputs.proceed == 'true' || steps.main_wake.outputs.focus_reconcile == 'true'
         with:
           node-version: '22'
+
+      - name: Checkpoint approved focused cancellations under backlog
+        if: steps.main_wake.outputs.focus_reconcile == 'true' && steps.main_wake.outputs.proceed != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Only the current main push may correct stale focused lifecycle states.
+          # This is a control-only checkpoint: no worker dispatch, new queue,
+          # self-promotion, QA bypass, or broad production authority change.
+          current_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha')"
+          if [ "$current_main" != "$GITHUB_SHA" ]; then
+            echo "VIBE2_FOCUSED_BACKLOG_RECONCILE=STALE_MAIN_NOOP:$GITHUB_SHA:$current_main"
+            exit 0
+          fi
+          git config user.name 'jaewoon-vibe2-focus-recovery'
+          git config user.email 'vibe2-focus-recovery@users.noreply.github.com'
+          git fetch --depth=1 --no-tags origin "$current_main" --quiet
+          rm -rf /tmp/vibe2-main
+          git worktree prune
+          GIT_LFS_SKIP_SMUDGE=1 git worktree add --detach /tmp/vibe2-main "$current_main" >/dev/null
+          test -s /tmp/vibe2-main/company-learning/platform-release-roadmap.json
+          test -s /tmp/vibe2-main/game-catalog.json
+          node --check /tmp/vibe2-main/tools/vibe2-auto-planner.mjs
+          node --check /tmp/vibe2-main/tools/vibe2-queue-control.mjs
+          resolved=0
+          for attempt in 1 2 3; do
+            git fetch --no-tags origin vibe2-unreal-core --quiet
+            git reset --hard FETCH_HEAD >/dev/null
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack \
+              --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
+            COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+              node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs --restore-owner-focus \
+                --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
+                --catalog=/tmp/vibe2-main/game-catalog.json \
+                --root=/tmp/vibe2-main | tee /tmp/vibe2-backlog-focus-restore.log
+            restored="$(sed -n 's/^VIBE2_OWNER_FOCUS_LIFECYCLE_RESTORED=//p' /tmp/vibe2-backlog-focus-restore.log | tail -n1)"
+            if ! [[ "$restored" =~ ^[0-9]+$ ]]; then
+              echo 'VIBE2_FOCUSED_BACKLOG_RECONCILE=INVALID_RESTORE_OUTPUT' >&2
+              exit 1
+            fi
+            if [ "$restored" -eq 0 ]; then
+              echo 'VIBE2_FOCUSED_BACKLOG_RECONCILE=ALREADY_CURRENT'
+              resolved=1
+              break
+            fi
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack \
+              --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
+            git add -A -- .vibe2/queue.json .vibe2/queue
+            if git diff --cached --quiet; then
+              echo 'VIBE2_FOCUSED_BACKLOG_RECONCILE=NO_STATE_DELTA'
+              resolved=1
+              break
+            fi
+            git commit -m "vibe2: checkpoint approved owner-focus lifecycle recovery [skip ci]" >/dev/null
+            if git push origin HEAD:vibe2-unreal-core --quiet; then
+              echo "VIBE2_FOCUSED_BACKLOG_RECONCILE=PUSHED:$restored"
+              resolved=1
+              break
+            fi
+            echo "VIBE2_FOCUSED_BACKLOG_RECONCILE=RETRY_CONCURRENT_CONTROL_WRITE:$attempt"
+            sleep "$attempt"
+          done
+          if [ "$resolved" != 1 ]; then
+            echo 'VIBE2_FOCUSED_BACKLOG_RECONCILE=FAILED_NO_FALSE_SUCCESS' >&2
+            exit 1
+          fi
 
       - name: Download atomic neuron completion result
         if: github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete'
