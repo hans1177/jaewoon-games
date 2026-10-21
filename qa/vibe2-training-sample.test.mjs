@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildVerifiedTrainingSample, MAX_PATCH_BYTES, TRAINING_SAMPLE_VERSION, validatePositiveTrace, qaEvidencePasses, qaRequirementsForTask } from '../tools/vibe2-training-sample.mjs';
 import { validateVerifiedWebFinalBinding, buildExternalBlackBoxLearningPrinciples } from '../tools/vibe2-distillation-ingest.mjs';
+import { deriveVerifiedCodePatterns } from '../tools/vibe2-code-pattern-ingest.mjs';
 
 function trace(sourceRevision = 'abc123', overrides = {}) {
   return { state: 'PASS', sourceRevision, commitSha: sourceRevision, pullRequest: 123, ci: 'PASS', independentQa: 'PASS', runtime: 'PASS', stale: false, flaky: false, ...overrides };
@@ -131,5 +132,35 @@ test('verified final Web training binding requires runtime hash PR CI and patch 
     const input={item:validFinalWebItem(),report:validFinalWebReport(),sourceRoot:'web-games/web-g1',sourceRevision:'b'.repeat(40),pullRequest:1055,ciPass:true,patch:'diff',sourceHashMatched:true};
     mutate(input);
     assert.equal(validateVerifiedWebFinalBinding(input).pass,false);
+  }
+});
+
+
+test('actual replay of gameplay states passes through canonical training into reusable causal code pattern',()=>{
+  const revision='b'.repeat(40);
+  const replay={scenarioId:'combat-input-to-resolution',horizon:'NEXT_STATE_TRANSITION',sourceRevision:revision,
+    actualPlatformRuntime:true,independentQaPass:true,expectedObservationMet:true,gameplaySemanticsPreserved:true};
+  const sample=buildVerifiedTrainingSample({
+    evidence:evidence({goal:'터치 공격 판정 수정',verificationTrace:trace(revision),replayEvidence:[replay]}),
+    patch:'diff --git a/index.html b/index.html\n-old\n+new',sourceRevision:revision,
+    independentQa:'PASS',browserQa:'PASS'
+  });
+  assert.deepEqual(sample.verification.replayEvidence,[replay]);
+  const patterns=deriveVerifiedCodePatterns(sample,'canonical-sample.json');
+  const causal=patterns.find(row=>row.system==='INPUT_ACTION_CAUSAL_CHAIN');
+  assert.ok(causal?.observedReplay?.actualPlatformRuntime);
+  assert.equal(causal.observedReplay.sourceRevision,revision);
+  assert.equal(causal.rawCodeStored,false);
+});
+
+test('invalid or stale gameplay replay cannot be promoted by canonical training',()=>{
+  const revision='c'.repeat(40),patch='diff --git a/index.html b/index.html\n-old\n+new';
+  const base={scenarioId:'combat-input-to-resolution',horizon:'NEXT_STATE_TRANSITION',sourceRevision:revision,
+    actualPlatformRuntime:true,independentQaPass:true,expectedObservationMet:true,gameplaySemanticsPreserved:true};
+  for(const replay of [{...base,sourceRevision:'stale'}, {...base,actualPlatformRuntime:false},
+    {...base,independentQaPass:false}, {...base,expectedObservationMet:false},
+    {...base,gameplaySemanticsPreserved:false}, {...base,horizon:'UNKNOWN'}]){
+    assert.throws(()=>buildVerifiedTrainingSample({evidence:evidence({verificationTrace:trace(revision),replayEvidence:[replay]}),
+      patch,sourceRevision:revision,independentQa:'PASS',browserQa:'PASS'}),/actual replay evidence/);
   }
 });

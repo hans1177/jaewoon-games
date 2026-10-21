@@ -135,6 +135,21 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
   }
   const normalizedBrowserQa = isPlatformTask(resolvedTaskType) ? 'NOT_APPLICABLE' : 'PASS';
   const playerImpactScore = clamp01(Number(performance?.playerImpactScore ?? 0) / 5);
+  // 메인: 게임 QA가 실제로 관찰한 재현 결과만 정확한 소스 리비전에 결속한다.
+  // 성공 판정·진행도·전투 수치는 여기서 만들어내거나 수정하지 않는다.
+  if (evidence.replayEvidence != null && !Array.isArray(evidence.replayEvidence)) throw new Error('replayEvidence must be an array');
+  const replayEvidence = (evidence.replayEvidence || []).map(row => {
+    const horizons = ['IMMEDIATE','NEXT_STATE_TRANSITION','SAVE_LOAD_CYCLE','LONG_SESSION','NEXT_STAGE'];
+    if (!row || !clean(row.scenarioId) || !horizons.includes(clean(row.horizon)) ||
+      clean(row.sourceRevision) !== revision || row.actualPlatformRuntime !== true ||
+      row.independentQaPass !== true || row.expectedObservationMet !== true ||
+      row.gameplaySemanticsPreserved !== true) throw new Error('actual replay evidence must match verified source revision and runtime QA');
+    return {
+      scenarioId: clean(row.scenarioId), horizon: clean(row.horizon), sourceRevision: revision,
+      actualPlatformRuntime: true, independentQaPass: true,
+      expectedObservationMet: true, gameplaySemanticsPreserved: true
+    };
+  });
   return {
     version: TRAINING_SAMPLE_VERSION, instruction, input: buildInput(evidence), output: buildOutput(evidence, verifiedPatch),
     taskType: resolvedTaskType, difficulty: inferDifficulty(evidence, resolvedTaskType), lifecycle: 'active', sourceKind: 'vibe2',
@@ -143,7 +158,8 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
     quality: { codeQuality: 1, noRegression: true, playImprovement: playerImpactScore, ruleCompliance: 1 },
     provenance: { sourceKind: 'vibe2', sourceRevision: revision, gameId: clean(evidence.gameId) || null, candidateId: clean(evidence.candidateId) || null, verificationTrace },
     verification: { independentQa: 'PASS', browserQa: normalizedBrowserQa, runtime: 'PASS', androidRuntimeRequired: requirements.androidRuntimeRequired, robloxRuntimeRequired: requirements.robloxRuntimeRequired, uefnRuntimeRequired: requirements.uefnRuntimeRequired, fullRegression: 'PASS', saveKeyValidation: clean(evidence.saveKeyValidation) || null,
-      syntaxChecks: Array.isArray(evidence.syntaxChecks) ? evidence.syntaxChecks : [], proposedTests: Array.isArray(evidence.proposedTests) ? evidence.proposedTests : [], trace: verificationTrace },
+      syntaxChecks: Array.isArray(evidence.syntaxChecks) ? evidence.syntaxChecks : [], proposedTests: Array.isArray(evidence.proposedTests) ? evidence.proposedTests : [], trace: verificationTrace,
+      ...(replayEvidence.length ? { replayEvidence } : {}) },
   };
 }
 
