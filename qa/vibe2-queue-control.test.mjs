@@ -67,6 +67,62 @@ test('폐기된 웹 소스 예약을 보류하고 정상 웹과 네이티브 작
   assert.equal(reopened.tasks.find(task=>task.id==='old-web').ownerDevelopmentHold,false);
 });
 
+test('focused Web game assessment returns to gameplay after old graphics-only routing, without bypassing true asset holds',()=>{
+  const policy={
+    assetProductionParallelContract:{activeProductionTargets:['ROBLOX']},
+    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'},
+    developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+      enabled:true,ownerFocusedGameIds:['cozy-island'],
+      ownerFocusedGamePlatforms:{'cozy-island':'WEB'},
+      ownerFocusedWebSourcePaths:{'cozy-island':'web-games/cozy-island'},
+      completionPursuit:{enabled:true}
+    }}
+  };
+  const base={
+    id:'cozy-island-existing-web-assessment-v1',gameId:'cozy-island',
+    target:'web',department:'development',type:'implementation',status:'queued',
+    sourceRoot:'web-games/cozy-island',responsibleFiles:['web-games/cozy-island/index.html'],
+    assetProductionLane:true,priority:'critical',ownerDevelopmentHold:true,
+    motionRepairWorkUnit:null,buildUpDirective:{primaryFocus:'CORE_FUN',generation:2},
+    graphicsReplacementContract:{existing:true},retries:7,
+    evidence:['existing-web-assessment-required','asset-production-parallel:v1','build-up-focus:PRESENTATION']
+  };
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    base,
+    {...base,id:'other-web-asset',gameId:'other',sourceRoot:'web-games/other',
+      responsibleFiles:['web-games/other/index.html'],evidence:['asset-production-parallel:v1']},
+    {...base,id:'active-presentation',buildUpDirective:{primaryFocus:'PRESENTATION'}},
+    {...base,id:'running-assessment',status:'running'},
+    {...base,id:'cozy-asset-motion',motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY'}}
+  ]});
+  const catalog={games:[{id:'cozy-island',canonical:{sources:{web:{state:'ACTIVE'}}}}]};
+  const synced=synchronizeOwnerDevelopmentHolds(queue,policy,{catalog});
+  const byId=new Map(synced.tasks.map(task=>[task.id,task]));
+  const recovered=byId.get(base.id);
+  assert.equal(recovered.status,'queued');
+  assert.equal(recovered.retries,7);
+  assert.equal(recovered.assetProductionLane,false);
+  assert.equal(recovered.executionLane,'GAME_PRIMARY');
+  assert.equal(recovered.ownerDevelopmentHold,false);
+  assert.equal(recovered.buildUpDirective.primaryFocus,'CORE_FUN');
+  assert.deepEqual(recovered.graphicsReplacementContract,{existing:true});
+  assert.ok(recovered.evidence.includes('build-up-focus:PRESENTATION'));
+  assert.ok(recovered.evidence.includes('asset-production-parallel:legacy-web-assessment-reclassified-v1'));
+  assert.ok(!recovered.evidence.includes('asset-production-parallel:v1'));
+  for(const id of ['other-web-asset','active-presentation','running-assessment','cozy-asset-motion']){
+    assert.equal(byId.get(id).assetProductionLane,true,id);
+    assert.equal(byId.get(id).ownerDevelopmentHold,true,id);
+  }
+  const selected=reserveVibeTaskBatch(synced,{policy,lane:'game-primary',maxConcurrentTasks:1});
+  assert.deepEqual(selected.tasks.map(task=>task.id),[base.id]);
+  const same=synchronizeOwnerDevelopmentHolds(synced,policy,{catalog});
+  assert.deepEqual(same.tasks.find(task=>task.id===base.id),recovered,'repeated synchronization must be stable');
+  const retired=synchronizeOwnerDevelopmentHolds(queue,policy,{catalog:{games:[{
+    id:'cozy-island',canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}
+  ]}});
+  assert.equal(retired.tasks.find(task=>task.id===base.id).ownerDevelopmentHold,true,'retired Web is never revived');
+});
+
 test('focused existing queues get exact game-platform priority and spare workers still develop other games',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
     enabled:true,ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
