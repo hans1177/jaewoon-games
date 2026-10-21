@@ -202649,7 +202649,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T13:11:56.446Z"
+      "updatedAt": "2026-10-21T13:13:22.979Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202870,7 +202870,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T13:11:56.466Z"
+      "updatedAt": "2026-10-21T13:13:23.002Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237725,7 +237725,8 @@
         "stale-reservation-cause:LEASE_EXPIRED",
         "system-ai-handoff-state:STALE_RECLAIM",
         "system-ai-handoff-from-reservation:system-ai:39590689404:1",
-        "system-ai-handoff-to-reservation:system-ai:39601765554:1"
+        "system-ai-handoff-to-reservation:system-ai:39601765554:1",
+        "actions-run:39601765554"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -237743,7 +237744,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T13:11:56.483Z"
+      "updatedAt": "2026-10-21T13:13:23.030Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
