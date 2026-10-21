@@ -38940,10 +38940,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T14:15:00.661Z",
+      "updatedAt": "2026-10-21T14:22:15.846Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -38953,9 +38953,9 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "e60694189d2c72d65d0334e197dcccf4eb33586c",
-      "robloxSourceBootstrapPassedAt": "2026-10-21T12:44:06.701Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-21T13:08:14.995Z",
+      "robloxSourceCommit": "2230f20a8d25049798008d40a727f8ee8e6e7203",
+      "robloxSourceBootstrapPassedAt": "2026-10-21T14:22:15.846Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -39007,7 +39007,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-verified-external-learning-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
@@ -42382,10 +42382,10 @@
         "bindingVersion": 2,
         "applied": true,
         "source": "company-asset-library.json#baseMaterialLibrary",
-        "libraryVersion": 139,
-        "selectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
-        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-        "buildUpAssetSourceUsageLibraryVersion": 139,
+        "libraryVersion": 140,
+        "selectionFingerprint": "a7872d4bff6b590c672c5c761a7c2f765050a97f112584d230d461d65aec0cb9",
+        "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
+        "buildUpAssetSourceUsageLibraryVersion": 140,
         "selectedSourceContentHashes": [
           {
             "source": "company-asset-library.json#baseMaterialLibrary",
@@ -85256,7 +85256,7 @@
       "updatedAt": "2026-10-21T14:15:00.661Z"
     }
   ],
-  "updatedAt": "2026-10-21T14:21:43.932Z",
+  "updatedAt": "2026-10-21T14:22:15.846Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
