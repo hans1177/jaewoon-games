@@ -67,6 +67,8 @@ test('Creative Commons family intake recognizes all seven families but blocks in
  assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',securityBlocked:true}).gameCandidateEligible,false);
  assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-NC-4.0'},{commercial:false,derivative:true}).gameCandidateEligible,true);
  assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-ND-4.0'},{commercial:true,derivative:false}).gameCandidateEligible,true);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-SA-4.0',shareAlikeComplianceEvidenceUrl:''},{commercial:true,derivative:false}).gameCandidateEligible,true);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-NC-SA-4.0',derivativeLicense:'CC-BY-NC-SA-4.0'},{commercial:false,derivative:true}).gameCandidateEligible,true);
 });
 
 test('four acquired CC0 UI/mobile PNGs match library SHA-256 and licensed pack ledger',()=>{
