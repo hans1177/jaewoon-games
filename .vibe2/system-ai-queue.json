@@ -150691,7 +150691,7 @@
     },
     {
       "id": "recovery-recovery-b38fd11e10c8ed3fe525",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -150735,7 +150735,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:d9a2cadbf41abca6c163f816342d170ba5093571:fantasy-survival"
       ],
-      "retries": 1,
+      "retries": 2,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE",
       "failureSignature": "WORKFLOW_FAILED_VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE",
@@ -150749,12 +150749,12 @@
       "sourceMutationBaseline": "d9a2cadbf41abca6c163f816342d170ba5093571",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39649957924:1",
-      "reservedAt": "2026-10-21T18:09:43.908Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39102683423:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -150798,7 +150798,8 @@
         "retry-budget-consumed:YES",
         "learning-penalty:YES",
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
-        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR"
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
+        "actions-run:39649957924"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1233,
@@ -150813,7 +150814,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T06:06:46.196Z",
-      "updatedAt": "2026-10-21T18:09:43.908Z"
+      "updatedAt": "2026-10-21T18:28:10.102Z"
     },
     {
       "id": "recovery-recovery-c14e8744923566621b55",
