@@ -188,7 +188,16 @@ test('common CC0 source inventory does not authorize deletion and checks existin
  assert.equal(audit.summary.legacyNonCc0,1);
  assert.equal(audit.summary.sourceOnlyArchives,113,'existing source-only archive manifests remain preserved');
  assert.ok(audit.summary.suspiciousSourcePointers>=10,'truncated Blender source pointers require reacquisition');
- assert.ok(audit.archives.every(row=>row.sourceOnly&&row.hashReverified===false));
+ assert.ok(audit.archives.every(row=>row.sourceOnly&&row.hashReverified===['PASS','MISMATCH'].includes(row.hashStatus)));
+ assert.equal(audit.summary.archiveHashPass,audit.archives.filter(row=>row.hashStatus==='PASS').length);
+ assert.equal(audit.summary.archiveHashMismatch,audit.archives.filter(row=>row.hashStatus==='MISMATCH').length);
+ assert.equal(audit.summary.archiveHashSkippedLarge,audit.archives.filter(row=>row.hashStatus==='SKIPPED_LARGE_FILE').length);
+ assert.equal(audit.summary.archiveUnsafePaths,audit.archives.filter(row=>row.hashStatus==='UNSAFE_PATH').length);
+ assert.ok(audit.summary.archiveHashPass>0,'real bounded source archive SHA-256 checks must run');
+ for(const archived of audit.archives.filter(row=>row.hashStatus==='PASS').slice(0,4)){
+  assert.equal(createHash('sha256').update(fs.readFileSync(archived.file)).digest('hex'),archived.declaredSha256.toLowerCase());
+ }
+ assert.ok(audit.archives.filter(row=>row.hashStatus==='MISMATCH').every(row=>row.action==='QUARANTINE_NEW_USE_REACQUIRE_OR_VERIFY'));
  assert.ok(audit.archives.filter(row=>row.suspiciousPointer).every(row=>row.action==='QUARANTINE_NEW_USE_REACQUIRE_OR_VERIFY'));
  assert.ok(audit.summary.immutableHashPass>=32,'pinned original bytes must be independently hashed');
  assert.equal(audit.summary.immutableHashMismatch,0);

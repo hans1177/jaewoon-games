@@ -71,26 +71,41 @@ function inventory(){
   const folder=path.dirname(manifestPath);
   return (meta.packs||[]).map(pack=>{
    const filename=pack.file||pack.filename;
-   const file=path.join(folder,filename).split(path.sep).join('/');
-   const exists=fs.existsSync(file)&&fs.statSync(file).isFile();
+   // A source manifest cannot authorize reading paths outside its own folder.
+   const safeFilename=typeof filename==='string'&&filename.length>0&&filename!=='.'&&filename!=='..'
+    &&filename===path.basename(filename)&&!filename.includes('\\')&&!filename.includes('\0');
+   const file=safeFilename?path.join(folder,filename).split(path.sep).join('/'):null;
+   const exists=Boolean(file)&&fs.existsSync(file)&&fs.statSync(file).isFile();
    const bytes=exists?fs.statSync(file).size:null;
-   const expectedBytes=pack.bytes||pack.archiveBytes||null;
+   const expectedBytes=pack.bytes??pack.archiveBytes??null;
    const sameSize=expectedBytes===null?null:bytes===expectedBytes;
    const isCc0=cc0(pack.licenseDeclared||pack.license||meta.license);
    const suspiciousPointer=exists&&/\.blend$/i.test(file)&&bytes<200;
-   const action=!isCc0?'EXCLUDE_NON_CC0_KEEP_SOURCE':
-    !exists||sameSize===false||suspiciousPointer?'QUARANTINE_NEW_USE_REACQUIRE_OR_VERIFY':
-    'KEEP_SOURCE_ONLY_REQUIRE_GAME_RUNTIME_QA';
-   return {file,license:pack.licenseDeclared||pack.license||meta.license,
+   const declaredSha256=pack.sha256||null;
+   const shaRecorded=/^[a-f0-9]{64}$/i.test(String(declaredSha256||''));
+   // Only small source archives are SHA-verified in CI; large files stay unverified.
+   const maxHashBytes=4*1024*1024;
+   const computedSha256=safeFilename&&exists&&!suspiciousPointer&&sameSize!==false&&shaRecorded&&bytes<=maxHashBytes
+    ?createHash('sha256').update(fs.readFileSync(file)).digest('hex'):null;
+   const hashStatus=!safeFilename?'UNSAFE_PATH':!exists?'MISSING_FILE':suspiciousPointer?'SUSPICIOUS_POINTER':
+    sameSize===false?'SIZE_MISMATCH':!shaRecorded?'MISSING_DECLARED_SHA256':
+    bytes>maxHashBytes?'SKIPPED_LARGE_FILE':
+    computedSha256===declaredSha256.toLowerCase()?'PASS':'MISMATCH';
+   const action=!safeFilename?'QUARANTINE_NEW_USE_INVALID_PATH':
+    !isCc0?'EXCLUDE_NON_CC0_KEEP_SOURCE':
+    ['MISMATCH','MISSING_FILE','SIZE_MISMATCH','SUSPICIOUS_POINTER'].includes(hashStatus)
+     ?'QUARANTINE_NEW_USE_REACQUIRE_OR_VERIFY':'KEEP_SOURCE_ONLY_REQUIRE_GAME_RUNTIME_QA';
+   return {file:file||String(filename||''),license:pack.licenseDeclared||pack.license||meta.license,
     sourceOnly:true,exists,bytes,expectedBytes,sameSize,suspiciousPointer,
-    declaredSha256:pack.sha256||null,hashReverified:false,action};
+    declaredSha256,computedSha256,hashReverified:hashStatus==='PASS'||hashStatus==='MISMATCH',
+    hashStatus,action};
   });
  });
  const evidence=(ledger.entries||[]).length;
  const counts=action=>assets.filter(row=>row.action===action).length;
  const output={version:1,mode:'NON_DESTRUCTIVE_CC0_INVENTORY',
   limitations:['STATIC_REFERENCES_ARE_INCOMPLETE','DYNAMIC_LOADERS_AND_BINARY_CONSUMERS_NOT_EXHAUSTIVELY_INSPECTED',
-   'RIGHTS_URLS_ARE_RECORDED_NOT_LIVE_REVERIFIED','NO_RUNTIME_OR_MOBILE_PASS_ATTESTED','ARCHIVE_HASHES_NOT_REVERIFIED'],
+   'RIGHTS_URLS_ARE_RECORDED_NOT_LIVE_REVERIFIED','NO_RUNTIME_OR_MOBILE_PASS_ATTESTED','SOURCE_ARCHIVES_HASHED_UP_TO_4_MIB_ONLY_LARGE_FILES_UNVERIFIED'],
   deletionAuthorized:false,quarantineMeansBlockNewUseNotMoveOrErase:true,
   summary:{registryAssets:assets.length,registeredCc0:assets.filter(row=>cc0(row.license)).length,
    downloaded:assets.filter(row=>row.downloaded).length,immutableHashPass:assets.filter(row=>row.immutableHash==='PASS').length,
@@ -101,7 +116,11 @@ function inventory(){
    externalSources:externalSources.length,externalNonCc0:externalSources.filter(row=>row.excludedFromGameUse).length,
    licenseLedgerEntries:evidence,sourceOnlyArchives:archives.length,
    suspiciousSourcePointers:archives.filter(row=>row.suspiciousPointer).length,
-   archiveBytesMismatch:archives.filter(row=>row.sameSize===false).length},assets,externalSources,legacy,archives};
+   archiveBytesMismatch:archives.filter(row=>row.sameSize===false).length,
+   archiveHashPass:archives.filter(row=>row.hashStatus==='PASS').length,
+   archiveHashMismatch:archives.filter(row=>row.hashStatus==='MISMATCH').length,
+   archiveHashSkippedLarge:archives.filter(row=>row.hashStatus==='SKIPPED_LARGE_FILE').length,
+   archiveUnsafePaths:archives.filter(row=>row.hashStatus==='UNSAFE_PATH').length},assets,externalSources,legacy,archives};
  console.log(JSON.stringify(output));
 }
 if(process.argv.includes('--inventory')){inventory();process.exit(0);}
