@@ -34,6 +34,31 @@ test('common material variants follow each game concept and stale shared style c
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8')),registry);
 });
 
+test('partial presentation plan preserves detailed style and motion in both production handoffs',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-style-merge-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(central));
+  const design=extractDesignContext({identity:'원본 게임',genre:'SURVIVAL',
+    detailedDesign:{presentation:{styleFamily:'CARTOON',styleBible:{profileKey:'CARTOON',silhouette:'둥근 형태',palette:'따뜻한 색'},anticipation:'공격 전 준비',camera:'기존 시점'}},
+    presentationPlan:{camera:'승인된 근접 시점',styleBible:{palette:'승인된 차가운 색'}}});
+  const before=JSON.stringify(design);
+  const production=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,design,
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau'],focus:'PRESENTATION'});
+  const presentation=production.detailedDesignContract.sections.find(row=>row.id==='MOTION_AND_PRESENTATION').authored;
+  assert.equal(presentation.anticipation,'공격 전 준비');
+  assert.equal(presentation.camera,'승인된 근접 시점');
+  assert.deepEqual(presentation.styleBible,{profileKey:'CARTOON',silhouette:'둥근 형태',palette:'승인된 차가운 색'});
+  for(const target of ['roblox','web']){
+    const plan=buildVibeAssetProductionPlan({target,repoRoot:root,manifest:{assets:[]},task:{gameId:'demo',goal:'원본 그래픽 연출',
+      buildUpDirective:{designContextMode:'APPROVED_OR_MINIMUM_DESIGN',designFingerprint:'current-design',designImplementationContext:design}}});
+    assert.equal(plan.gameConceptStyle.styleFamily,'CARTOON');
+    assert.deepEqual(plan.gameConceptStyle.presentation,presentation);
+    assert.equal(plan.gameConceptStyle.runtimeVerified,false);
+    assert.equal(plan.styleBible.profileKey,'CARTOON');
+  }
+  assert.equal(JSON.stringify(design),before);
+});
+
 test('game-authored detailed design survives handoff without a genre prefab or invented completion',()=>{
   const raw={genre:'SURVIVAL STRATEGY',identity:'서로 다른 게임의 고유 규칙',
     creativeGrammar:{a:{system:'빛 경로 탐색'},b:{system:'증언 순서',existingGameReference:'B 보조 참고'}},
