@@ -33,7 +33,10 @@ const CLASSIFIERS=[
   ['STATUS_DURATION_TRACK',/status.?duration|buff.?timer|상태.?지속.?시간|버프.?타이머/i],
   ['ITEM_VISUAL_PREVIEW',/3d.?item.?preview|item.?turntable|장비.?미리보기|아이템.?회전/i],
   ['BOSS_PHASE_PRESENTATION',/boss.?phase.?strip|보스.?체력바|페이즈.?표시/i],
-  ['VISUAL_EFFECT_BUDGET',/effect.?budget|popup.?pool|ui.?performance|이펙트.?제한/i]
+  ['VISUAL_EFFECT_BUDGET',/effect.?budget|popup.?pool|ui.?performance|이펙트.?제한/i],
+  ['INPUT_ACTION_CAUSAL_CHAIN',/(?:input|touch|pointer|버튼|조이스틱).{0,100}(?:state|gameplay|hit|damage|attack|피해|판정|체력)|(?:state|gameplay|hit|damage|attack|피해|판정|체력).{0,100}(?:input|touch|pointer|버튼|조이스틱)/i],
+  ['MOTION_CONTACT_SYNC',/foot.?contact|foot.?slid|root.?motion|motion.?sync|발.?접지|문워크|발.?미끄러|공격.?동작.?판정/i],
+  ['SCENE_CAUSALITY_CHAIN',/scene.?causal|cinematic.?sequence|camera.?refocus|장면.?인과|장면.?전환.?판정|카메라.?연출.?판정/i]
 ];
 
 
@@ -49,21 +52,26 @@ const VISUAL_CODING_RECIPES=Object.freeze({
   STATUS_DURATION_TRACK:{source:'updateStatusIcon / UpdateStatusIcon',proof:['AUTHORITATIVE_REMAINING_DURATION','ZERO_STATE','STACKS_DISPLAY']},
   ITEM_VISUAL_PREVIEW:{source:'existing game native model camera and render target',proof:['REAL_BOUND_MODEL','VALID_CAMERA','MOBILE_BUDGET']},
   BOSS_PHASE_PRESENTATION:{source:'existing boss phase system plus client-only progress rendering',proof:['ACTUAL_BOSS_PHASE_STATE','NO_CLIENT_DAMAGE_AUTHORITY']},
-  VISUAL_EFFECT_BUDGET:{source:'existing game renderer presentation pool/caps',proof:['MAX_ACTIVE_EFFECTS','NO_INPUT_OCCLUSION','PERFORMANCE_CAPTURE']}
+  VISUAL_EFFECT_BUDGET:{source:'existing game renderer presentation pool/caps',proof:['MAX_ACTIVE_EFFECTS','NO_INPUT_OCCLUSION','PERFORMANCE_CAPTURE']},
+  INPUT_ACTION_CAUSAL_CHAIN:{source:'planVibeCodingTask / buildVibeQaScenario / existing game input and gameplay owners',proof:['REAL_TOUCH_INPUT','AUTHORITATIVE_STATE_CHANGED','VISIBLE_ACTION_FEEDBACK','GAMEPLAY_SAVE_UNCHANGED']},
+  MOTION_CONTACT_SYNC:{source:'createVibeMotionContract / validateVibeMotionTransition / createVibeCombatMotionSync',proof:['ACTUAL_ENGINE_MOTION','FACING_AND_FOOT_CONTACT','NO_IDLE_SLIDE','ENGINE_OWNED_HIT_SYNC']},
+  SCENE_CAUSALITY_CHAIN:{source:'createVibeSemanticEvent / createVibeCinematicBeat / routeVibePresentationEvent',proof:['ENGINE_CAUSAL_EVENT','TARGET_CONTACT_AND_POSE','CAMERA_NOT_HIDING_INPUT','CONTROL_RETURN','NO_GAMEPLAY_MUTATION']}
 });
 
 function engineOf(sample={}){
-  if(clean(sample?.taskType)==='roblox')return'roblox';
-  const source=clean(sample?.input||'')+' '+clean(sample?.instruction||'');
+  const type=clean(sample?.taskType).toLowerCase();
+  if(type==='roblox'||type==='unity')return type;
+  const source=[sample?.sourcePath,...(Array.isArray(sample?.sourcePaths)?sample.sourcePaths:[]),sample?.input,sample?.instruction].map(clean).join(' ');
   if(/roblox-games\//i.test(source)||/roblox|luau|studio/i.test(source))return'roblox';
   if(/unity-games\//i.test(source)||/unity|c#/i.test(source))return'unity';
-  return'web';
+  const declared=clean(sample?.engine||sample?.target||sample?.platform).toLowerCase();
+  return ['web','roblox','unity'].includes(declared)?declared:'web';
 }
 
 function sampleVerified(sample={}){
   if(!['coding','bugfix','unity','roblox'].includes(clean(sample.taskType)))return false;
-  // Roblox 고유 작업은 Web QA로 대체하지 않고 실제 네이티브 런타임 근거를 요구한다.
-  if(clean(sample.taskType)==='roblox'&&upper(sample.runtime||sample.verification?.runtime||sample.qa?.runtime)!=='PASS')return false;
+  // 엔진에서 검증된 구현만 같은 엔진의 재사용 패턴이 될 수 있다. Web PASS는 네이티브 PASS가 아니다.
+  if(['roblox','unity'].includes(engineOf(sample))&&upper(sample.runtime||sample.verification?.runtime||sample.qa?.runtime)!=='PASS')return false;
   if(upper(sample.independentQa)!=='PASS')return false;
   const browser=upper(sample.browserQa);
   if(browser&& !['PASS','NOT_APPLICABLE'].includes(browser))return false;
