@@ -2610,8 +2610,15 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);
   const priorProduction=activeDirectiveTask?.buildUpDirective?.productionPlan||activeDirectiveTask?.buildUpDirective?.robloxProductionPlan;
   const activeProductionCompatible=!productionRequired||(Number(priorProduction?.version)>=2&&priorProduction?.platform===productionTarget);
+  const currentApprovedDesignFingerprint=designContext?.record
+    ?crypto.createHash('sha256').update(JSON.stringify(extractDesignContext(designContext.record))).digest('hex')
+    :null;
   const activeDirectiveMatchesCurrentSource=Boolean(
     activeDirectiveTask?.buildUpDirective
+    // A running source task can be reused only when its approved design is still current.
+    // An updated design must reach queued native implementation even if source is unchanged.
+    &&(!currentApprovedDesignFingerprint
+      ||clean(activeDirectiveTask.buildUpDirective.designFingerprint)===currentApprovedDesignFingerprint)
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)===clean(sourceObservation.sourceTreeFingerprint)
     &&activeDirectivePlatformCompatible
