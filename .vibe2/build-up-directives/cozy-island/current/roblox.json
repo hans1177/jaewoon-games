@@ -4712,7 +4712,27 @@
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "38834965c65e22511cbded47498341dce465825b",
+      "artifactIdentity": null,
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 39565285186,
+      "testedAt": "2026-10-21T08:51:35.170Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
     "blockers": [
@@ -12736,8 +12756,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "REGRESSION",
+      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
       "runtimeObserved": false
     },
     "baseline": {
@@ -12756,8 +12776,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
