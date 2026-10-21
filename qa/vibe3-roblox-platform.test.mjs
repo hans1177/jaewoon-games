@@ -13,6 +13,7 @@ import {
   createRobloxPlacePublishPlan,createRobloxRuntimeCandidatePublishPlan,
   publishRobloxPlace,
 } from '../tools/vibe3-roblox-platform.mjs';
+import {validateRobloxBootstrap} from '../tools/company-development-roblox-bootstrap.mjs';
 
 const contract=createRobloxPlatformContract();
 test('Roblox release fan-in accepts exact static multiplayer proof without two-client runtime and rejects stale or incomplete proof',()=>{
@@ -371,6 +372,24 @@ for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
     assert.match(server,/GetAsync/,`${gameId} persistent design requires datastore read`);
     assert.match(server,/(?:SetAsync|UpdateAsync)/,`${gameId} persistent design requires datastore write`);
   }
+}
+
+const approvedSeedGenres = {
+  'seed-roblox-roleplay-life-avat-brookhaven-rp': 'Survival',
+  'seed-roblox-simulator-tycoon-i-adopt-me': 'Strategy',
+  'seed-roblox-story-rpg-adventur-blox-fruits': 'Puzzle',
+  'seed-roblox-survival-horror-es-doors': 'Puzzle',
+};
+for (const [gameId, genre] of Object.entries(approvedSeedGenres)) {
+  const root = path.join('roblox-games', gameId);
+  const staticResult = validateRobloxBootstrap({
+    sharedConfig: fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8'),
+    serverCode: fs.readFileSync(path.join(root,'server','Game.server.luau'),'utf8'),
+    clientCode: fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8'),
+    baseline: {content:{continuity:'persistent save'}},
+    profile: {genre,playMode:'COOP',multiplayerRequired:true,coopImplementationRequired:true,competitiveImplementationRequired:false}
+  });
+  assert.equal(staticResult.pass,true,gameId+': '+staticResult.blockers.join(','));
 }
 
 console.log(`PASS active Roblox source regression: ${ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS.length}/${ROBLOX_PORTFOLIO_ALL_GAME_IDS.length-ROBLOX_PERMANENTLY_REMOVED.size}`);
