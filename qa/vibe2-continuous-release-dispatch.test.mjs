@@ -323,6 +323,10 @@ test('candidate release selects the manifest bound to the submitted branch',()=>
   assert.match(releaseWorkflow,/VIBE2_CANDIDATE_MANIFEST_MATCH=/);
   assert.match(releaseWorkflow,/candidate-manifest-not-unique-for-branch/);
   assert.match(releaseWorkflow,/VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=/);
+  assert.match(releaseWorkflow,/candidate-legacy-manifest-branch-mismatch/);
+  assert.match(releaseWorkflow,/VIBE2_CANDIDATE_LEGACY_BRANCH_MISMATCH=/);
+  assert.match(releaseWorkflow,/if \\[ -n "\\$legacy_branch" \\] && \\[ "\\$legacy_branch" != "\\$SUBMITTED_CANDIDATE_BRANCH" \\]; then/);
+  assert.match(releaseWorkflow,/echo 'decision=reject' >> "\\$GITHUB_OUTPUT"/);
   assert.doesNotMatch(releaseWorkflow,/reason=manifest-count-invalid/);
 });
 
