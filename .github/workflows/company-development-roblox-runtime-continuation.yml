@@ -227,7 +227,9 @@ jobs:
   preflight-persist:
     name: persist Roblox shared-model preflight checkpoints
     needs: [preflight-plan, preflight-worker]
-    if: always() && needs.preflight-plan.result == 'success'
+    # When no new packages need checking, this writer must not consume a runner slot.
+    # Existing exact-package PASS is read by the F0 dispatcher from company-runtime.
+    if: always() && needs.preflight-plan.result == 'success' && needs.preflight-plan.outputs.count != '0'
     runs-on: ubuntu-slim
     timeout-minutes: 12
     outputs:
@@ -357,7 +359,10 @@ jobs:
   dispatch-headless:
     name: dispatch Roblox F0 source preflight
     needs: [preflight-plan, preflight-persist]
-    if: always() && needs.preflight-persist.result == 'success' && (needs.preflight-plan.outputs.f0_ready_count != '0' || needs.preflight-persist.outputs.pass_count != '0')
+    # With no new preflight targets the persist job is safely skipped. Only exact,
+    # already-verified F0-ready games may use that short path; new PASS still
+    # requires a successful checkpoint persist before any F0 dispatch.
+    if: always() && needs.preflight-plan.result == 'success' && ((needs.preflight-plan.outputs.f0_ready_count != '0' && (needs.preflight-persist.result == 'skipped' || needs.preflight-persist.result == 'success')) || (needs.preflight-persist.result == 'success' && needs.preflight-persist.outputs.pass_count != '0'))
     runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
