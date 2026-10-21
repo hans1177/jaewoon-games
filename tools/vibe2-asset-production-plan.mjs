@@ -4715,7 +4715,11 @@ export function buildVibeAssetProductionPlan({
     ?task.buildUpDirective?.designImplementationContext||null:null;
   // 상세 설계 후보는 현재 원장과 다시 대조하며 자동 적용·QA 통과로 간주하지 않는다.
   const detailedAssetHandoff=verifiedDesign?.detailedAssetLibraryHandoff||null;
-  const authoredPresentation=Object.keys(verifiedDesign?.presentationPlan||{}).length?verifiedDesign.presentationPlan:verifiedDesign?.detailedDesign?.presentation||{};
+  // 연출 설계: 상위 계획의 일부 필드 때문에 상세 스타일·모션 입력을 잃지 않는다.
+  const detailedPresentation=verifiedDesign?.detailedDesign?.presentation||{};
+  const presentationPlan=verifiedDesign?.presentationPlan||{};
+  const authoredPresentation={...detailedPresentation,...presentationPlan,
+    styleBible:{...(detailedPresentation.styleBible||{}),...(presentationPlan.styleBible||{})}};
   const approvedStyleBible=authoredPresentation.styleBible||verifiedDesign?.artAudioDirection?.styleBible||{};
   const approvedStyleFamily=clean(approvedStyleBible.profileKey||authoredPresentation.styleFamily||verifiedDesign?.artAudioDirection?.styleFamily);
   const approvedStyleDescription=clean(verifiedDesign?.visualDirection);
