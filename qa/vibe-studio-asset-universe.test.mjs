@@ -4199,7 +4199,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
   assert.equal(plan.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(plan.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
-  assert.equal(plan.eligibleFreeSourceCount,22);
+  assert.equal(plan.eligibleFreeSourceCount,40);
   assert.equal(plan.freeSourceCatalogSufficiencyCount,12);
   assert.equal(plan.freeSourceCatalogReady,true);
   assert.equal(plan.freeSourceCatalogExpansionMode,'PAUSED_UNTIL_REAL_COVERAGE_GAP');
@@ -4418,7 +4418,7 @@ test('canonical company asset registry becomes dry-run idempotent after current 
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.roleTargetMin,180);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
-  assert.equal(result.registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,22);
+  assert.equal(result.registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,40);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogSufficiencyCount,12);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogReady,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogExpansionMode,'PAUSED_UNTIL_REAL_COVERAGE_GAP');
