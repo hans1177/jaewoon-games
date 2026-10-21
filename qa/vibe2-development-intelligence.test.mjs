@@ -128,7 +128,7 @@ test('coding memory rejects unverified, failed and pending checkpoint records',(
       make('qa-failed',{independentQa:'FAIL'}),
       make('wrong-outcome',{outcome:'FAILURE'}),
       make('pending-checkpoint',{generatedAt:'2025-01-01',
-        vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:{...good,status:'IMPLEMENTED_PENDING_QA'}}})
+        vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:{...good,status:'IMPLEMENTED_PENDING_QA',updatedAt:'2999-01-01T00:00:00.000Z'}}})
     ];
     for(const row of records)fs.writeFileSync(path.join(root,row.candidateId+'.json'),JSON.stringify(row));
     assert.equal(findVerifiedFailureResolution({root,gameId:'G1',fingerprint:fp})?.candidateId,'good');
