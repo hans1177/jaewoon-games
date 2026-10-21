@@ -1342,9 +1342,13 @@ function findWebAssessmentTask(project,repoRoot,queue){
   out.ownerDirective=true;
   out.speculativeEligible=false;
   out=attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
-  if(clean(out?.buildUpDirective?.primaryFocus).toUpperCase()==='PRESENTATION'){
-    out=applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION',repoRoot);
-  }
+  // Web design is not finished until its graphics and real gameplay source are
+  // edited together. Preserve the current BUILD_UP focus and the existing
+  // exploration/QA gates; attaching this contract is not visual verification.
+  out=applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION',repoRoot);
+  out={...out,evidence:[...new Set([...(out.evidence||[]),
+    'web-design-graphics-coimplementation:v1','web-creative-library:CC0_ONLY',
+    'web-graphics-source-binding:REQUIRED'])]};
   return out;
 }
 function findUnityWebFirstStageTask(project,repoRoot,queue){
