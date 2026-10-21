@@ -747,14 +747,39 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
     const retiredWeb=clean(task.target).toLowerCase()==='web'
       &&webSourceRetiredInCatalog(games.get(clean(task.gameId)));
-    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,task.gameId,task.target,task)||retiredWeb;
-    const exactFocus=!ownerDevelopmentHold&&task.status==='queued'
+    // 기존 Web 평가 작업이 이전 그래픽 회차의 자산 전용 표식을 물려받아
+    // 현재 CORE_FUN 등 실제 게임 구현에서도 차단되는 경우만 복구한다.
+    // 원본 작업/진행/근거/그래픽 계약은 보존하며 역사적 표식만 비실행 표식으로 바꾼다.
+    const currentFocus=clean(task?.buildUpDirective?.primaryFocus).toUpperCase();
+    const webRoot=clean(task.sourceRoot).replaceAll('\\','/').replace(/[/]+$/,'');
+    const approvedWebRoot=clean(focus.ownerFocusedWebSourcePaths?.[task.gameId]).replaceAll('\\','/').replace(/[/]+$/,'');
+    const assetTargets=policy?.assetProductionParallelContract?.activeProductionTargets;
+    const restoreGameplayLane=task.status==='queued'
+      &&!retiredWeb
+      &&clean(task.target).toLowerCase()==='web'
+      &&clean(task.department).toLowerCase()==='development'
+      &&clean(task.type).toLowerCase()==='implementation'
+      &&task.assetProductionLane===true
+      &&!task.motionRepairWorkUnit
+      &&Array.isArray(assetTargets)&&!assetTargets.includes('WEB')
+      &&focusedIds.has(clean(task.gameId))
+      &&clean(platforms[task.gameId]).toUpperCase()==='WEB'
+      &&approvedWebRoot===webRoot&&webRoot==='web-games/'+clean(task.gameId)
+      &&(task.evidence||[]).includes('existing-web-assessment-required')
+      &&['CORE_FUN','PROGRESSION','USABILITY','STABILITY'].includes(currentFocus);
+    const corrected=restoreGameplayLane?{
+      ...task,assetProductionLane:false,
+      evidence:(task.evidence||[]).map(value=>value==='asset-production-parallel:v1'
+        ?'asset-production-parallel:legacy-web-assessment-reclassified-v1':value)
+    }:task;
+    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,corrected.gameId,corrected.target,corrected)||retiredWeb;
+    const exactFocus=!ownerDevelopmentHold&&corrected.status==='queued'
       &&clean(task.department).toLowerCase()==='development'
       &&clean(task.type).toLowerCase()==='implementation'
       &&focusedIds.has(clean(task.gameId))
       &&clean(platforms[task.gameId]).toLowerCase()===clean(task.target).toLowerCase();
     return {
-      ...task,ownerDevelopmentHold,
+      ...corrected,ownerDevelopmentHold,
       ...(exactFocus?{ownerFocusedCaretaker:true,focusedCaretaker:true,
         priority:task.priority==='owner-immediate'?'owner-immediate':'critical'}:{})
     };
