@@ -1,3 +1,4 @@
+// 파일명: tools/design-only-promotion-sync.mjs
 // Canonical DESIGN_ONLY -> DEVELOPMENT_CONFIRMED reconciliation.
 // DESIGN_ONLY is transient. Minimum common design + distinct Roblox/Unity profiles are the only design admission gate.
 // Strict design review continues in parallel and never acts as the native development admission score gate.
@@ -201,8 +202,7 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
     externalReleasePolicy:'PLATFORM_INDEPENDENT_AFTER_OWN_QA',
     currentStep:previousStep||'TARGET_PLATFORM_SOURCE_BIND',
     canonicalState:previousState||'PENDING_ROBLOX_SOURCE_BIND',
-    enqueuedAt:item.enqueuedAt||stamp,
-    updatedAt:stamp
+    enqueuedAt:item.enqueuedAt||stamp
   });
   removeLegacyWebAdmissionFields(item);
   return item;
@@ -250,6 +250,10 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry
   const selectedPlatform=selectedPlatformOf(seed);
   const paths=directNativeSourcePaths(gameId);
   const wasConfirmed=clean(seed.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED';
+  let project=(portfolio.projects||[]).find(row=>clean(row?.slug)===gameId);
+  let game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
+  let item=(queue.items||[]).find(row=>clean(row?.gameId)===gameId);
+  const before=[seed,project,game,item].map(row=>JSON.stringify(row));
 
   Object.assign(seed,{
     productionClass:'DEVELOPMENT_CONFIRMED',
@@ -275,11 +279,9 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry
       strictDesignReviewRequiredForAdmission:false,
       strictDesignReviewContinuesInParallel:true,
       promotedAt:seed?.promotion?.promotedAt||stamp
-    },
-    updatedAt:stamp
+    }
   });
 
-  let project=(portfolio.projects||[]).find(row=>clean(row?.slug)===gameId);
   if(!project){
     project={id:`SEED-${seed.seedId||gameId}`,slug:gameId,name:seed.gameName||gameId,protectedValues:['core-loop','design-baseline','save-meaning']};
     portfolio.projects.push(project);
@@ -296,12 +298,10 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry
     targetSourcePaths:paths,
     sourcePath:paths[selectedPlatform]||paths.ROBLOX,
     designBaselineSource:design.file,
-    platformDesignProfiles:seed.platformDesignProfiles,
-    updatedAt:stamp
+    platformDesignProfiles:seed.platformDesignProfiles
   });
   removeLegacyWebAdmissionFields(project);
 
-  let game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
   if(!game){
     game={id:gameId,name:seed.gameName||gameId,description:'개발확정 · Roblox 개발',genre:[clean(seed.GAME_CATEGORY).replaceAll('_',' ')],image:'',featured:false};
     catalog.games.push(game);
@@ -319,15 +319,17 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry
     homepageTestCandidate:false,
     homepageStage:'개발확정 · Roblox 개발',
     homepageRecentWork:'최소 설계 계약 완료 · Roblox 개발 진행',
-    homepageWebPlayable:Boolean(game.homepageWebPlayable),
-    updatedAt:stamp
+    homepageWebPlayable:Boolean(game.homepageWebPlayable)
   });
   removeLegacyWebAdmissionFields(game);
 
-  let item=(queue.items||[]).find(row=>clean(row?.gameId)===gameId);
   if(!item){item={};queue.items.push(item);}
   bindDirectNativeQueueItem(item,{seed,design,stamp});
   restoreDedicatedTargetIdentity(item,{registry:dedicatedRegistry,gameId,stamp});
+  // 메인: 실제 승격·복구가 있을 때만 해당 항목의 갱신 시각을 바꾼다.
+  for(const [index,row] of [seed,project,game,item].entries()){
+    if(JSON.stringify(row)!==before[index])row.updatedAt=stamp;
+  }
   return wasConfirmed?'reconciled':'promoted';
 }
 
@@ -340,12 +342,14 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const queuePath=p('development-queue.json');
 
   const state=readJson(seedPath,{version:1,seeds:[]});
+  const stateBefore=JSON.stringify(state);
   delete state.policyDocument;
   state.policyAuthority='company-learning/platform-release-roadmap.json';
   materializeOwnerDesignResetSeeds(state,{file:p('owner-design-reset-queue.json')});
   const portfolio=readJson(portfolioPath,{version:1,projects:[]});
   const catalog=readJson(catalogPath,{version:1,games:[]});
   const queue=readJson(queuePath,{version:1,items:[]});
+  const documentsBefore=[stateBefore,JSON.stringify(portfolio),JSON.stringify(catalog),JSON.stringify(queue)];
   const dedicatedRegistry=readJson(p(DEDICATED_TARGET_REGISTRY),{version:1,targets:[]});
   state.seeds ||= []; portfolio.projects ||= []; catalog.games ||= []; queue.items ||= [];
 
@@ -406,10 +410,6 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     if(outcome==='promoted')promoted.push(gameId); else reconciled.push(gameId);
   }
 
-  state.updatedAt=stamp;
-  portfolio.updatedAt=stamp;
-  catalog.updatedAt=stamp;
-  queue.updatedAt=stamp;
   queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY';
   queue.developmentGameWipMax=null;
   for(const game of catalog.games||[])removeLegacyWebAdmissionFields(game);
@@ -417,10 +417,11 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   clearLegacyQueueCaps(queue);
   if(catalog.normalization&&typeof catalog.normalization==='object')catalog.normalization.automaticFeatureExpansionFreezeForbidden=true;
 
-  writeJson(seedPath,state);
-  writeJson(portfolioPath,portfolio);
-  writeJson(catalogPath,catalog);
-  writeJson(queuePath,queue);
+  for(const [index,[file,value]] of [[seedPath,state],[portfolioPath,portfolio],[catalogPath,catalog],[queuePath,queue]].entries()){
+    if(JSON.stringify(value)===documentsBefore[index])continue;
+    value.updatedAt=stamp;
+    writeJson(file,value);
+  }
 
   return {
     promoted,

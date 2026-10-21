@@ -1,3 +1,5 @@
+// 파일명: tools/company-direct-native-design-migration.mjs
+// 역할: 기존 설계를 현재 네이티브 개발 계약으로 옮기며 이미 반영된 계약과 진행도는 보존한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {evaluateMinimumDesignContract} from './company-minimum-design-contract.mjs';
@@ -74,6 +76,7 @@ export function migrateDirectNativeRuntime(root='.'){
   const queue=read(queuePath),seedState=read(seedPath),portfolio=read(portfolioPath),catalog=read(catalogPath);
   queue.items ||= [];seedState.seeds ||= [];portfolio.projects ||= [];catalog.games ||= [];
   const stamp=now(),migrated=[],alreadyReady=[],blocked=[];
+  let updatedItems=0;
   for(const item of queue.items){
     if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
     if(clean(item.status||'ACTIVE').toUpperCase()!=='ACTIVE')continue;
@@ -91,6 +94,25 @@ export function migrateDirectNativeRuntime(root='.'){
       write(file,design);
       migrated.push(gameId);
     }else alreadyReady.push(gameId);
+
+    const seed=seedState.seeds.find(x=>clean(x.gameId)===gameId);
+    const project=portfolio.projects.find(x=>clean(x.slug)===gameId);
+    const game=catalog.games.find(x=>clean(x.id)===gameId);
+    // 메인: 검증된 현재 승격 계약은 레거시 변환으로 다시 덮어쓰지 않는다.
+    const alreadyPromoted=designAlreadyReady
+      &&item.minimumDesignContract?.pass===true&&item.minimumDesignContract.source===source
+      &&JSON.stringify(item.minimumDesignContract.releaseChecklist)===JSON.stringify(gate.releaseChecklist)
+      &&item.platformExecutionMode==='ROBLOX_ONLY_OWNER_ACTIVE'&&item.selectedPlatform==='ROBLOX'
+      &&JSON.stringify(item.concurrentTargetPlatforms)==='["ROBLOX"]'
+      &&item.platformDesignProfiles?.ROBLOX?.source===source
+      &&item.platformDesignProfiles?.ROBLOX?.jsonPointer==='/content/platformProfiles/ROBLOX'
+      &&clean(item.currentStep)&&!/^WEB_|^WAITING_WEB/.test(clean(item.currentStep).toUpperCase())
+      &&!Object.hasOwn(item,'webValidationRequired')&&!Object.hasOwn(item,'musicValidationRequired')
+      &&seed?.productionClass==='DEVELOPMENT_CONFIRMED'&&seed.minimumDesignContract?.source===source
+      &&project?.mode==='ROBLOX_ONLY_OWNER_ACTIVE'&&project.designBaselineSource===source
+      &&game?.productionClass==='DEVELOPMENT_CONFIRMED';
+    if(alreadyPromoted)continue;
+    updatedItems++;
 
     const paths={ROBLOX:`roblox-games/${gameId}`};
     // Repeated design migration must not rewind a source-bound native lane.
@@ -145,7 +167,6 @@ export function migrateDirectNativeRuntime(root='.'){
       strictDesignReviewRefreshRequired:true,
       updatedAt:stamp
     });
-    const seed=seedState.seeds.find(x=>clean(x.gameId)===gameId);
     if(seed)Object.assign(seed,{
       productionClass:'DEVELOPMENT_CONFIRMED',
       productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
@@ -158,11 +179,10 @@ export function migrateDirectNativeRuntime(root='.'){
       updatedAt:stamp,
       promotion:{...(seed.promotion||{}),to:'DEVELOPMENT_CONFIRMED',reason:'MINIMUM_ROBLOX_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX'],designBaselineSource:source,strictDesignReviewRequiredForAdmission:false,strictDesignReviewContinuesInParallel:true,migratedAt:stamp}
     });
-    const project=portfolio.projects.find(x=>clean(x.slug)===gameId);
     if(project)Object.assign(project,{mode:'ROBLOX_ONLY_OWNER_ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX'],targetSourcePaths:paths,designBaselineSource:source,platformDesignProfiles:item.platformDesignProfiles,webValidationRequired:false,updatedAt:stamp});
-    const game=catalog.games.find(x=>clean(x.id)===gameId);
     if(game)Object.assign(game,{productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX'],productionTarget:'ROBLOX',targetSourcePaths:paths,homepageWebPlayable:false,webPath:null,homepageStage:'개발확정 · Roblox 개발',homepageRecentWork:'기존 공통 설계 보존 · Roblox 설계 보강 완료',updatedAt:stamp});
   }
+  if(updatedItems===0)return {migrated,alreadyReady,blocked};
   queue.webValidationPolicy='DISABLED_DIRECT_NATIVE_DUAL_PLATFORM';
   queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY';
   queue.developmentGameWipMax=null;
