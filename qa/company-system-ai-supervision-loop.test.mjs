@@ -88,7 +88,7 @@ test('system AI control conflict retry reloads latest control branch and recompu
   const reserve=workflow.slice(workflow.indexOf('- name: Reserve disjoint supervised assignments'),workflow.indexOf('\n  worker:'));
   assert.match(reserve,/for attempt in 1 2 3 4 5 6 7 8; do/);
   assert.match(reserve,/sleep \$\(\( attempt < 4 \? attempt \* 2 : 8 \)\)/);
-  assert.match(reserve,/git worktree add --detach \/tmp\/system-ai-control origin\/vibe2-unreal-core/);
+  assert.match(reserve,/git worktree add --detach --no-checkout \/tmp\/system-ai-control origin\/vibe2-unreal-core/);
   assert.match(reserve,/company-recovery-escalation\.mjs[\s\S]*company-recovery-dispatch\.mjs[\s\S]*company-system-ai-queue\.mjs/);
   assert.match(reserve,/COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY/);
   assert.doesNotMatch(reserve,/git pull --rebase origin vibe2-unreal-core/);
@@ -121,7 +121,7 @@ test('normal push stays QA-only but explicit external AI request may reserve onl
   assert.match(reserve,/count=0/);
   assert.match(reserve,/if \[ "\$\{GITHUB_EVENT_NAME\}" = 'push' \] && \[ "\$explicit_external_dispatch" != 'YES' \]; then/);
   assert.match(reserve,/\.event!="push"/);
-  assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch origin vibe2-unreal-core'));
+  assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch --no-tags --depth=1 origin'));
 });
 
 test('System AI stale Director bootstrap bypasses slim pressure without cancelling active Director work',()=>{

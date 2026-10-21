@@ -210,8 +210,11 @@ jobs:
             git worktree remove --force /tmp/system-ai-control 2>/dev/null || true
             rm -rf /tmp/system-ai-control
             git worktree prune
-            git fetch origin vibe2-unreal-core --quiet
-            git worktree add --detach /tmp/system-ai-control origin/vibe2-unreal-core >/dev/null
+            git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core" --quiet
+            # 큐 저장: 최신 상태의 큐 파일만 펼치고 게임·에셋과 과거 이력은 보존한다.
+            git worktree add --detach --no-checkout /tmp/system-ai-control origin/vibe2-unreal-core >/dev/null
+            git -C /tmp/system-ai-control sparse-checkout set --cone .vibe2
+            git -C /tmp/system-ai-control checkout --detach --quiet HEAD
             node tools/vibe2-queue-control.mjs storage-unpack --queue=/tmp/system-ai-control/.vibe2/queue.json
             test -f /tmp/system-ai-control/.vibe2/system-ai-queue.json
             test -f /tmp/system-ai-control/.vibe2/recovery-queue.json
@@ -408,7 +411,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin vibe2-unreal-core --quiet
+          git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core" --quiet
           git show origin/vibe2-unreal-core:.vibe2/system-ai-queue.json > /tmp/system-ai-queue.json
           node - "$TASK_ID" <<'NODE' > /tmp/system-ai-task.json
           const fs=require('fs');
@@ -707,7 +710,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
 
       - uses: actions/setup-node@v4
         with:
@@ -756,8 +759,11 @@ jobs:
             git worktree remove --force /tmp/system-ai-control 2>/dev/null || true
             rm -rf /tmp/system-ai-control
             git worktree prune
-            git fetch origin vibe2-unreal-core --quiet
-            git worktree add --detach /tmp/system-ai-control origin/vibe2-unreal-core >/dev/null
+            git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core" --quiet
+            # 큐 저장: 최신 상태의 큐 파일만 펼치고 게임·에셋과 과거 이력은 보존한다.
+            git worktree add --detach --no-checkout /tmp/system-ai-control origin/vibe2-unreal-core >/dev/null
+            git -C /tmp/system-ai-control sparse-checkout set --cone .vibe2
+            git -C /tmp/system-ai-control checkout --detach --quiet HEAD
             node tools/vibe2-queue-control.mjs storage-unpack --queue=/tmp/system-ai-control/.vibe2/queue.json
 
             node tools/company-system-ai-queue.mjs --command=fan-in --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
