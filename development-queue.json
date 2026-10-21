@@ -52061,7 +52061,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:37:22.817Z",
-      "updatedAt": "2026-10-21T15:21:24.074Z",
+      "updatedAt": "2026-10-21T15:26:25.637Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -52071,7 +52071,7 @@
         "capturedAt": "2026-10-12T02:39:01.675Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-21T15:21:24.074Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-21T15:26:25.637Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -52120,7 +52120,7 @@
       "routingBlockers": [
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "a19ead4410d9740fdf0e0a1f1be19718950fde50",
+      "robloxSourceCommit": "66d5101c3e13a04a0b566bc9acd13b07fdcc6544",
       "robloxSourceBootstrapPassedAt": "2026-10-21T14:30:17.163Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -52626,12 +52626,12 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "a19ead4410d9740fdf0e0a1f1be19718950fde50",
+      "robloxQualityBuildUpSourceRevision": "66d5101c3e13a04a0b566bc9acd13b07fdcc6544",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-        "sourceRevision": "a19ead4410d9740fdf0e0a1f1be19718950fde50",
+        "sourceRevision": "66d5101c3e13a04a0b566bc9acd13b07fdcc6544",
         "sourceTreeSha": "a8e6d6546971c3bb63e1dc54b2ae33628146f426",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -52692,8 +52692,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39617375841,
-        "testedAt": "2026-10-21T15:21:24.074Z"
+        "workflowRunId": 39619235108,
+        "testedAt": "2026-10-21T15:26:25.637Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -82607,7 +82607,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-21T15:24:49.566Z",
+  "updatedAt": "2026-10-21T15:26:25.637Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -82673,5 +82673,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
