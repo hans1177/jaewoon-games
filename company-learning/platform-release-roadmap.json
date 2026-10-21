@@ -542,7 +542,7 @@
         "LICENSE_VERIFIED_REPOSITORY_MOTION",
         "LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE",
         "SAFE_RETARGET_AND_CLEANUP",
-        "VERIFIED_CC0_SOURCE_NATIVE_ADAPTATION_REQUIRED"
+        "NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP"
       ],
       "authoringPolicy": {
         "vibeShouldSelectAdaptBlendAndDirectBeforeGeneratingNewKeyframes": true,
@@ -15890,31 +15890,6 @@
       "externalCandidateStatusBeforeRuntimeVerification": "RESEARCH_OR_PREPARED_ONLY",
       "rawThirdPartyAssetMayNotBePromotedAsVerifiedCompanyAssetWithoutRuntimeConsumer": true,
       "cc0Only": true,
-      "allPlatformLibraryReplacement": {
-        "enabled": true,
-        "requestId": "OWNER_ALL_PLATFORM_LIBRARY_CC0_20261021",
-        "scope": "ALL_EXISTING_GAMES_ALL_PLATFORMS",
-        "platforms": ["WEB", "ROBLOX", "UNITY", "FORTNITE_UEFN"],
-        "families": ["CHARACTER", "CREATURE", "MOTION", "WEAPON", "BUILDING", "ENVIRONMENT", "TERRAIN", "PROP", "MATERIAL", "TEXTURE", "VFX", "UI", "AUDIO"],
-        "source": "REGISTERED_LIBRARY_VERIFIED_CC0_ORIGINAL_AND_TRACEABLE_GAME_DERIVATIVE",
-        "sourceLicenseHashAndLineageRequired": true,
-        "commercialPermissionAloneIsNotCC0": true,
-        "companyOwnershipOrPlatformDefaultIsNotCC0Proof": true,
-        "sourceMasterImmutable": true,
-        "gameSpecificStyleAndSemanticRoleMatchRequired": true,
-        "crossPlatformNativeVariantAndRigCompatibilityRequired": true,
-        "missingAssetCreatesExistingSupplyDemand": true,
-        "selfAuthoredFallbackForbidden": true,
-        "preserveWorkingGameUntilReplacementRuntimeVerified": true,
-        "removeUnusedOldAssetOnlyAfterConsumerAndRuntimeVerification": true,
-        "sameBuildBeforeAfterAndMobileEvidenceRequired": true,
-        "existingGameplaySaveBalanceAndNetworkAuthorityPreserved": true,
-        "existingPlatformHoldsAndF0F9Preserved": true,
-        "heldPlatformReplacementRemainsPendingUntilAuthorizedExecution": true,
-        "appliesToGameContentAssetsNotEngineOrSoftwareLicense": true,
-        "newPipeline": false,
-        "runtimeVerified": false
-      },
       "webActionMotionReplacement": {
         "enabled": true,
         "requestId": "OWNER_WEB_CC0_ACTION_MOTION_20261021",
@@ -18593,7 +18568,7 @@
         "robloxSmoothCharacterMotion": {
           "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
           "libraryFirst": true,
-          "newKeyframeAuthoringLast": false,
+          "newKeyframeAuthoringLast": true,
           "articulatedJointMotionRequired": true,
           "rootTransformOnlyVisualLocomotionForbiddenForArticulatedActors": true,
           "speedSynchronizedBlendRequired": true,

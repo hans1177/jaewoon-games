@@ -5906,7 +5906,14 @@ export function buildVibeAssetProductionPlan({
     version:1,
     kind:'vibe2-asset-production-plan',
     gameConceptStyle,
-    libraryCc0Replacement:currentRoadmap?.assetProductionParallelContract?.assetAcquisitionAndReuse?.allPlatformLibraryReplacement||null,
+    libraryCc0Replacement:currentRoadmap?.ownerCanonicalRules?.rule5?.enabled===true?freeze({
+      enabled:true,requestId:currentRoadmap.ownerCanonicalRules.rule5.authority,
+      scope:currentRoadmap.ownerCanonicalRules.rule5.replacementScope,
+      platforms:freezeList(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+      sourceHashAndModificationLineageRequired:currentRoadmap.ownerCanonicalRules.rule5.sourceHashAndModificationLineageRequired,
+      missingCC0Action:currentRoadmap.ownerCanonicalRules.rule5.missingCC0Action,
+      existingPipelineOnly:true,sourceMasterImmutable:true,runtimeVerified:false
+    }):null,
     webActionMotionReplacement:resolvedTarget==='web'&&clean(task.releaseState).toLowerCase()==='development-confirmed'
       ?currentRoadmap?.assetProductionParallelContract?.assetAcquisitionAndReuse?.webActionMotionReplacement||null:null,
     graphicsProductionRoot:'GRAPHICS_PRODUCTION',

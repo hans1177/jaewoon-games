@@ -5637,7 +5637,7 @@ test('F0 source gameplay gaps request causal source repair without claiming runt
 test('owner CC0 action replacement covers active Web games through the existing planner without fabricated completion',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-cc0-motion-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
- policy.assetProductionParallelContract.assetAcquisitionAndReuse.allPlatformLibraryReplacement.enabled=false; // 이전 웹 전용 지시의 호환 경로도 유지한다.
+ policy.ownerCanonicalRules.rule5.enabled=false; // 이전 웹 전용 지시의 호환 경로도 유지한다.
  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
  const games=['first','second','retired'].map(id=>({id,lifecycleState:'ACTIVE',canonical:{sources:{web:{state:id==='retired'?'PERMANENTLY_REMOVED_REJECTED_TEST':'ACTIVE'}}}}));
