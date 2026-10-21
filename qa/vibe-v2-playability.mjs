@@ -20,4 +20,25 @@ const playable=createVibePlayabilityEvidence({gameStarted:true,worldRendered:tru
 const ok=requireVibePlayability(playable);
 assert.equal(playable.playable,true);
 assert.equal(ok.repairRequired,false);
+// 미래 상태 재현을 요구하면 누락·가짜 증거는 기존 통과 결과를 대신할 수 없다.
+const missingReplay=createVibePlayabilityEvidence({
+  gameStarted:true,worldRendered:true,playerRendered:true,playerControllable:true,
+  gameplayFrameAdvanced:true,visibleGameplayObjects:3,replayRequired:true,replayEvidence:[]
+});
+assert.equal(missingReplay.playable,false);
+assert.ok(missingReplay.failures.includes('temporalReplayVerified'));
+const inventedReplay=createVibePlayabilityEvidence({
+  gameStarted:true,worldRendered:true,playerRendered:true,playerControllable:true,
+  gameplayFrameAdvanced:true,visibleGameplayObjects:3,replayRequired:true,
+  replayEvidence:[{horizon:'SAVE_LOAD_CYCLE',scenarioId:'restart',sourceRevision:'abc',
+    actualPlatformRuntime:false,independentQaPass:true,expectedObservationMet:true,gameplaySemanticsPreserved:true}]
+});
+assert.equal(inventedReplay.playable,false);
+const verifiedReplay=createVibePlayabilityEvidence({
+  gameStarted:true,worldRendered:true,playerRendered:true,playerControllable:true,
+  gameplayFrameAdvanced:true,visibleGameplayObjects:3,replayRequired:true,
+  replayEvidence:[{horizon:'SAVE_LOAD_CYCLE',scenarioId:'restart',sourceRevision:'abc',
+    actualPlatformRuntime:true,independentQaPass:true,expectedObservationMet:true,gameplaySemanticsPreserved:true}]
+});
+assert.equal(requireVibePlayability(verifiedReplay).playable,true);
 console.log('vibe-v2-playability: shell-only game cannot pass');
