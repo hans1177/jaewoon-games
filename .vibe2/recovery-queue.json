@@ -202707,7 +202707,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T19:11:08.761Z"
+      "updatedAt": "2026-10-21T19:24:48.250Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202928,7 +202928,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T19:11:08.797Z"
+      "updatedAt": "2026-10-21T19:24:48.273Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237319,7 +237319,7 @@
     {
       "id": "recovery-6750d371f227c6d811a8",
       "status": "dispatched",
-      "priority": "high",
+      "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "recovery-recovery-cd3cf615cf3faf138144",
       "gameId": null,
@@ -237332,11 +237332,12 @@
       "goal": "Analyze the exact failed WEB deployment stage RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO for an unresolved game using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
       "relatedTaskIds": [
         "recovery-recovery-cd3cf615cf3faf138144",
-        "recovery-recovery-f84bbc96c4af1596274e"
+        "recovery-recovery-f84bbc96c4af1596274e",
+        "recovery-recovery-0b623e521c00a2fbed55"
       ],
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "source-mutation-required-before-revalidation",
-      "blastRadius": "single-task",
+      "blastRadius": "shared-worker-contract:2",
       "checkpoint": "2026-10-21T14:55:41.231Z",
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-10-21T14:55:41.231Z",
@@ -237426,7 +237427,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-21T19:11:08.973Z"
+      "updatedAt": "2026-10-21T19:24:48.222Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238082,7 +238083,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T19:11:08.909Z"
+      "updatedAt": "2026-10-21T19:24:48.358Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238583,7 +238584,8 @@
         "actions-run:39647526532",
         "system-ai-handoff-to-reservation:system-ai:39651492496:1",
         "system-ai-handoff-from-reservation:system-ai:39651492496:1",
-        "system-ai-handoff-to-reservation:system-ai:39656523804:1"
+        "system-ai-handoff-to-reservation:system-ai:39656523804:1",
+        "actions-run:39656523804"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238601,7 +238603,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-21T19:11:08.877Z"
+      "updatedAt": "2026-10-21T19:24:48.317Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -239788,7 +239790,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-21T19:11:09.015Z"
+      "updatedAt": "2026-10-21T19:24:48.385Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
