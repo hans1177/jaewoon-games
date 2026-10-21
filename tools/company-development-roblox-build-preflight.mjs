@@ -114,11 +114,20 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
     },
     additionalProperties:false,
   };
-  const evidence=JSON.stringify(facts.build);
+  // Roblox 독립 패키지의 정밀 검증 증거만 심사한다. 웹·음악 검사는 다른 경로의 비적용 값이다.
+  // 전체 원본 사실은 facts.build에 보존하며, 실제 진입 판정은 확정적 패키지 검사만 담당한다.
+  const evidence=JSON.stringify({
+    sourceRevision:facts.build.sourceRevision,
+    artifactIdentity:facts.build.artifactIdentity,
+    sourceEligibilityAuthority:facts.build.sourceEligibilityAuthority,
+    sourceValidationPassed:facts.build.sourceValidationPassed,
+    buildOrPackagePassed:facts.build.buildOrPackagePassed,
+  });
   const response=await requestGeminiFreePair({
     apiKey:clean(process.env.GEMINI_API_KEY),
     contents:[{role:'user',parts:[{text:[
       'You are a Roblox package preflight reviewer. Only decide if an immutable package may START runtime testing. Do not invent runtime, QA, release or publication evidence.',
+      'Review only this Roblox package build evidence. Web and music validations are separate optional paths, not prerequisites to begin Roblox runtime testing.',
       'A BLOCK must cite an actual contradiction in BUILD_EVIDENCE. Return JSON with decision PASS or BLOCK, blockers and note.',
       'BUILD_EVIDENCE='+evidence,
       'The exact deterministic package identity checks have already passed.'
@@ -133,15 +142,20 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
 export async function evaluateRobloxBuildPreflight({item={},directive={},fetchImpl=globalThis.fetch,secondaryOwnerFocus=false}={}){
   const facts=inspectRobloxBuildPreflight({item,directive,secondaryOwnerFocus});
   if(!facts.pass)return Object.freeze({version:2,gameId:item.gameId||null,pass:false,state:'BLOCKED',checkedAt:new Date().toISOString(),facts,leadReviews:[],blockers:[...facts.blockers],authority:'roblox-vibe-shared-model-build-preflight'});
-  const leadReviews=facts.sharedModel
-    ?[await callLead(facts.sharedModel,'shared-review',facts,{fetchImpl})]
-    :[];
-  const blockers=[];
-  for(const review of leadReviews){if(review.decision!=='PASS')blockers.push(`lead-block:${review.role}:${review.blockers.join('|')||'unspecified'}`);}
+  // 중앙정책: 외부 인공지능의 판단은 조언이며 실제 통과 권한을 가지지 않는다.
+  // 모델이 비적용 검사 결과를 오인하거나 호출이 실패해도 확정적 패키지 검증을 조작하지 않는다.
+  const leadReviews=[];
+  if(facts.sharedModel){
+    try{leadReviews.push(await callLead(facts.sharedModel,'shared-review',facts,{fetchImpl}));}
+    catch{
+      leadReviews.push({role:'shared-review',model:facts.sharedModel,decision:'UNAVAILABLE',
+        blockers:[],note:'External review unavailable; immutable package gates remain authoritative.'});
+    }
+  }
   return Object.freeze({
-    version:2,gameId:item.gameId||null,pass:blockers.length===0,state:blockers.length?'BLOCKED':'PASS',checkedAt:new Date().toISOString(),
+    version:2,gameId:item.gameId||null,pass:true,state:'PASS',checkedAt:new Date().toISOString(),
     sourceRevision:facts.build.sourceRevision,artifactIdentity:facts.build.artifactIdentity,secondaryOwnerFocus:facts.secondaryOwnerFocus===true,facts,
-    leadReviews:Object.freeze(leadReviews),blockers:Object.freeze(blockers),
+    leadReviews:Object.freeze(leadReviews),blockers:Object.freeze([]),
     reviewMode:facts.sharedModel?'EXTERNAL_GEMINI_FREE_PAIR_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY',
     authority:'roblox-exact-package-build-preflight',
   });

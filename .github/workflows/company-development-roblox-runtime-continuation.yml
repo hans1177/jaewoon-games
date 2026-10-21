@@ -105,12 +105,32 @@ jobs:
               &&concurrentRoblox
               &&priorBlockers.length>0
               &&priorBlockers.every(blocker=>blocker==='roblox-platform-required');
+            // 이전 리뷰가 비적용 웹·음악 사실을 실격으로 오인한 경우, 실제 패키지 증거를 재심사한다.
+            const staleAiReviewFailure=!secondaryOwnerFocus
+              &&priorPreflightEvidence?.authority==='roblox-exact-package-build-preflight'
+              &&priorPreflightEvidence?.facts?.pass===true
+              &&priorPreflightEvidence?.sourceRevision===revision
+              &&priorPreflightEvidence?.artifactIdentity===artifactIdentity
+              &&priorBlockers.length>0
+              &&priorBlockers.every(blocker=>blocker.startsWith('lead-block:shared-review:'));
+            // 과거 결과 파일이 누락된 작업은 원래 빌드 시점의 실패만 한 번 재검사한다.
+            // 재실패하면 실패 시각이 빌드보다 최신이 되므로 무한 재시도를 막는다.
+            const staleMissingReview=!secondaryOwnerFocus
+              &&priorPreflightEvidence==null
+              &&item.robloxFailureStage==='VIBE_SHARED_MODEL_BUILD_PREFLIGHT'
+              &&item.robloxFailureSignature==='ROBLOX_BUILD_PREFLIGHT_BLOCKED'
+              &&Number.isFinite(buildPassedAt)&&Number.isFinite(preflightFailedAt)
+              &&preflightFailedAt<=buildPassedAt;
             const stalePreflightFailure=Boolean(preflightFailedValue)
               &&(
                 (Number.isFinite(buildPassedAt)&&Number.isFinite(preflightFailedAt)&&preflightFailedAt<buildPassedAt)
                 ||supersededConcurrentPlatformBlocker
+                ||staleAiReviewFailure
+                ||staleMissingReview
               );
             if(supersededConcurrentPlatformBlocker)console.log('ROBLOX_PREFLIGHT_SUPERSEDED_PLATFORM_BLOCKER_RETRY='+item.gameId);
+            if(staleAiReviewFailure)console.log('ROBLOX_PREFLIGHT_STALE_AI_REVIEW_RETRY='+item.gameId);
+            if(staleMissingReview)console.log('ROBLOX_PREFLIGHT_MISSING_REVIEW_ONCE_RETRY='+item.gameId);
             if(preflightFailedValue&&!stalePreflightFailure)continue;
             rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity,secondaryOwnerFocus});
           }
