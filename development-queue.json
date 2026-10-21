@@ -1444,10 +1444,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T12:50:43.138Z",
+      "updatedAt": "2026-10-21T12:53:38.320Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -1481,9 +1481,9 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "2902aba8071aa5e4da0e6dd5c5c8ad937cac0e4c",
-      "robloxSourceBootstrapPassedAt": "2026-10-21T10:01:56.798Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-21T12:45:27.456Z",
+      "robloxSourceCommit": "50f807976be4c27bd68f9d7614323d59328b783c",
+      "robloxSourceBootstrapPassedAt": "2026-10-21T12:53:38.320Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1532,10 +1532,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-build-package-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxValidationTarget": {
@@ -85270,7 +85270,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-21T12:52:59.719Z",
+  "updatedAt": "2026-10-21T12:53:38.320Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
