@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -165931,39 +165929,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_7cc7672eaa8446129db188af",
-          "taskId": "ant-simulator-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
-          ],
-          "evidence": [
-            "base-main:f6341236f31bab4c91cc575e33719146e644c9c2",
-            "actions-run:39428903331",
-            "reservation-id:39428903331:1",
-            "capability-application-sample:b6cd7107572f3da021fb"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_33a202e36860f0e7879432ad",
           "taskId": "bug-defense-existing-web-assessment-v1",
           "workKey": null,
@@ -168034,6 +167999,39 @@
             "actions-run:39555710738",
             "reservation-id:39555710738:1",
             "capability-application-sample:f41223697f1b010c7f79"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_81f3e47da797e8c00ce3c8ee",
+          "taskId": "ocean-voyage-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ocean-voyage",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:242d714d5533445d8e2bc656d773b490f9d80531",
+            "actions-run:39586746489",
+            "reservation-id:39586746489:1",
+            "capability-application-sample:e137018a4a9d58a7013e"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172962,39 +172960,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_77aaf5f2c967aac8531c9f83",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:a5f6255cdbb17d39601499ece6667c168fe17743",
-            "actions-run:39362759416",
-            "reservation-id:39362759416:1",
-            "capability-application-sample:9380eefcc68618e3926f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_4348d789860febab071c36fc",
           "taskId": "seed-casual-realm-weaver-existing-web-assessment-v1",
           "workKey": null,
@@ -175061,6 +175026,39 @@
             "actions-run:39555710738",
             "reservation-id:39555710738:1",
             "capability-application-sample:1bc90f77151195545d54"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d8c6f0c62c6ebe4865c411f8",
+          "taskId": "ocean-voyage-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ocean-voyage",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:242d714d5533445d8e2bc656d773b490f9d80531",
+            "actions-run:39586746489",
+            "reservation-id:39586746489:1",
+            "capability-application-sample:e137018a4a9d58a7013e"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -189459,39 +189457,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_3838d528d8747496cb43e345",
-          "taskId": "wild-survival-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "wild-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:8401f72dc763ed1a103850eb57d57bdbe3cae958",
-            "actions-run:39303736352",
-            "reservation-id:39303736352:1",
-            "capability-application-sample:5839f18f3a977c2e6f19"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_ad86b1146cf899343f5c88e7",
           "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
           "workKey": null,
@@ -191559,6 +191524,39 @@
             "actions-run:39532723656",
             "reservation-id:39532723656:1",
             "capability-application-sample:aa1b05048cfc702ffd4a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b711c863abd344f1b3390d27",
+          "taskId": "ocean-voyage-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ocean-voyage",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:242d714d5533445d8e2bc656d773b490f9d80531",
+            "actions-run:39586746489",
+            "reservation-id:39586746489:1",
+            "capability-application-sample:e137018a4a9d58a7013e"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196503,39 +196501,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_1149e49004c1f8d09397a707",
-          "taskId": "wild-survival-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "wild-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:8401f72dc763ed1a103850eb57d57bdbe3cae958",
-            "actions-run:39303736352",
-            "reservation-id:39303736352:1",
-            "capability-application-sample:5839f18f3a977c2e6f19"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_b0be36a4d272276fbe14f0f6",
           "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
           "workKey": null,
@@ -198603,6 +198568,39 @@
             "actions-run:39532723656",
             "reservation-id:39532723656:1",
             "capability-application-sample:aa1b05048cfc702ffd4a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c597a847d5f0c3c19e5b4fa0",
+          "taskId": "ocean-voyage-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ocean-voyage",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:242d714d5533445d8e2bc656d773b490f9d80531",
+            "actions-run:39586746489",
+            "reservation-id:39586746489:1",
+            "capability-application-sample:e137018a4a9d58a7013e"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201445,39 +201443,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_555243d4578e37c937f38c34",
-          "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_4e906f223c2a12a7007033ab",
-            "capability_ctrace_d97829ecdc84733c1ef7cfee",
-            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
-          ],
-          "evidence": [
-            "base-main:ec729b9318375c75af8f2cd61d557d0a8350c21e",
-            "actions-run:39335607918",
-            "reservation-id:39335607918:1",
-            "capability-application-sample:6ce3342390de49a6283e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_6f10f7e1c1db79cec615fb88",
           "taskId": "wild-survival-existing-web-assessment-v1",
           "workKey": null,
@@ -203545,6 +203510,39 @@
             "actions-run:39532723656",
             "reservation-id:39532723656:1",
             "capability-application-sample:aa1b05048cfc702ffd4a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e030d78b37538005a02ddf6c",
+          "taskId": "ocean-voyage-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ocean-voyage",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:242d714d5533445d8e2bc656d773b490f9d80531",
+            "actions-run:39586746489",
+            "reservation-id:39586746489:1",
+            "capability-application-sample:e137018a4a9d58a7013e"
           ],
           "observedAt": null,
           "rawCodeStored": false,
