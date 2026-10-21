@@ -5994,9 +5994,11 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   const sourceCandidatePressureInitial=!allowFullRewrite
     &&(!assetDevelopmentLane||target==='web')
     &&!singleMotionWorkUnit
-    &&!systemAtomicPairRequired
-    // Large Roblox rebuilds must also use the canonical bounded source prompt.
-    // The full task remains in the work order; only the model input is compacted.
+    // Atomic source+causal-test pairs must also be bounded. The existing
+    // buildGenerationRetryPrompt keeps every exact responsible path and the
+    // paired edits contract; candidate validation still rejects incomplete pairs.
+    // Large Roblox rebuilds retain the complete work order; only the model
+    // input is bounded to avoid oversized free-tier requests.
     &&Buffer.byteLength(specializedInitialPrompt,'utf8')>SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES;
   const initialStudioPrompt=sourceCandidatePressureInitial
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true,initialPromptLimitBytes:SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES})

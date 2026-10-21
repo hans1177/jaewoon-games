@@ -4,7 +4,7 @@
 export const GEMINI_FREE_MODELS=Object.freeze(['gemini-3.8-flash','gemini-3.5-flash-lite']);
 export const VERIFIED_FREE_FALLBACK_MODELS=Object.freeze({
   GROQ:'openai/gpt-oss-20b',
-  OPENROUTER:'qwen/qwen3.8-27b:free'
+  OPENROUTER:'google/gemma-4-31b-it:free'
 });
 const cooldownUntil=new Map();
 let nextSlot=0;
@@ -105,7 +105,8 @@ export async function requestGeminiFreePair({
 
   // [메인] Gemini 2개 무료 슬롯이 막힐 때 기존 요청 안에서만 승인된 무료 API 사용.
   // Groq는 키 보유만으로 무료 요금제를 증명하지 못하므로 명시적 요금제 확인이 필수.
-  // OpenRouter는 고정 :free 모델만 허용하며 유료 자동 라우터를 사용하지 않는다.
+  // OpenRouter는 공식 무료 요금·현재 모델 ID가 확인된 고정 :free 모델만 사용한다.
+  // 사용량이 소진되면 실패/쿨다운으로 복귀하며 유료 자동 라우터를 사용하지 않는다.
   const externalRotation=clean(process.env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES';
   const extraRoutes=externalRotation?[
     ...(clean(process.env.GROQ_API_KEY)&&clean(process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'
