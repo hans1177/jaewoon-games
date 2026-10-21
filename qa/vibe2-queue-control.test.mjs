@@ -3262,3 +3262,20 @@ test('focused causal repair outranks unrelated polish without treating source-on
  assert.deepEqual(selection.selected.map(x=>x.id),['final-repair']);
  assert.equal(queue.tasks.find(x=>x.id==='final-repair').status,'queued');
 });
+
+test('stale release reject callback checks canonical queue before fail without granting QA PASS',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  const reject=workflow.slice(workflow.lastIndexOf('\n  reject:\n'));
+  assert.ok(reject.includes("jq -e '.tasks | type == \"array\"' .vibe2/queue.json >/dev/null"));
+  assert.ok(reject.includes("jq -e --arg id \"$TASK_ID\" '.tasks | any(.id == $id)' .vibe2/queue.json >/dev/null"));
+  assert.ok(reject.includes('VIBE2_STALE_REJECT_CALLBACK_NO_QUEUE_TASK='));
+  assert.ok(reject.includes('VIBE2_CANDIDATE_REJECT_GAMEPLAY_QA_OR_RELEASE_PASS=NO'));
+  assert.ok(reject.includes('tools/vibe2-queue-control.mjs fail --id='));
+  assert.ok(reject.includes('tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json'));
+  assert.ok(reject.includes('VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL='));
+  // 외부 실험은 여기서 상태가 아닌 큐 항목 부재만 확인하며, 실패 결과를 PASS로 승격하지 않는다.
+  const taskId='OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2';
+  const contains=(tasks)=>tasks.some(row=>row.id===taskId);
+  assert.equal(contains([{id:'other'}]),false);
+  assert.equal(contains([{id:taskId}]),true);
+});
