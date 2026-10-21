@@ -10,7 +10,7 @@ const BASE=Object.freeze({
  hero:{src:'roblox/actors/native/rogue.glb',format:'glb',height:1.32,color:'#9fc89c'},
  crawler:{src:'shared/forest/caterpillar.glb',format:'glb',height:.62,color:'#c8df94'},
  spider:{src:'shared/forest/monster-53.obj',format:'obj',height:.86,color:'#d5a1a5'},
- tree:{src:'shared/forest/tree.fbx',format:'fbx',height:9,color:'#76bb72'},
+ tree:{src:'shared/homely-house/tree_large.obj',format:'obj',height:9,color:'#76bb72'},
  mushroom:{src:'shared/forest/mushroom.fbx',format:'fbx',height:2.2,color:'#f9c896'},
  floor:{src:'shared/homely-house/floor_base.obj',format:'obj',height:.28,color:'#71935c'},
  stone:{src:'shared/homely-house/cobblestones.obj',format:'obj',height:.3,color:'#b4a88e'},
