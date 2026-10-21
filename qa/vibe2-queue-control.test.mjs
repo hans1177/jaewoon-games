@@ -1946,6 +1946,7 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
     // 유틸: main SHA 조회와 리필 실행 목록을 구분하는 기존 테스트용 GitHub 응답.
     fs.writeFileSync(gh,`#!/bin/sh
 case "$*" in
+  *"/actions/runs/"*"/jobs?per_page=100"*) printf '%s\\n' '{"jobs":[{"name":"reserve","status":"in_progress"}]}' ;;
   *"/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100"*) printf '%s\\n' "$TEST_RUNS_JSON" ;;
   *) printf '%s\\n' "$TEST_LATEST_MAIN" ;;
 esac
