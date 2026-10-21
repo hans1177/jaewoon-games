@@ -150242,7 +150242,7 @@
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -150299,12 +150299,12 @@
       "sourceMutationBaseline": "764dfc19939ceb8b7e0e60c70c833ab21de5eece",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39670892497:1",
+      "reservedAt": "2026-10-21T20:32:40.766Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39070113531:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -150400,11 +150400,11 @@
         "dependencyCentrality": 1,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 94.5,
+        "ageHours": 95.07,
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:28:30.472Z",
-      "updatedAt": "2026-10-21T20:30:11.014Z"
+      "updatedAt": "2026-10-21T20:32:40.766Z"
     },
     {
       "id": "recovery-recovery-907315c8bf74eb20724e",
