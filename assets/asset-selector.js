@@ -374,6 +374,52 @@ function vibeSourceProvenance(asset={}){
     &&asset.securityBlocked!==true&&asset.internalUseForbidden!==true&&asset.quarantined!==true
     &&asset.practiceOnly!==true&&asset.practiceArtifact!==true&&asset.authority!=='PRACTICE_ONLY');
 }
+/**
+ * Creative Commons collection gate. A catalog listing is not permission to ship:
+ * source integrity, attribution and ShareAlike evidence must be established first.
+ * Existing native CC0 production gates remain unchanged until a reviewed release.
+ */
+export function assessCreativeCommonsAssetLicense(asset={},{
+  commercial=true,derivative=true
+}={}){
+  const raw=text(asset.license||asset.licenseDeclared).toUpperCase().replace(/[_ ]+/g,'-');
+  const license=raw==='CC0-1.0-UNIVERSAL'?'CC0':raw;
+  const isCC0=license==='CC0'||license==='CC0-1.0';
+  const match=/^CC-BY(?:-(NC-SA|NC-ND|NC|ND|SA))?-(1\.0|2\.0|2\.5|3\.0|4\.0)$/.exec(license);
+  const variant=isCC0?'CC0':match?'CC-BY'+(match[1]?'-'+match[1]:''):null;
+  const catalogEligible=Boolean(variant);
+  const nc=Boolean(variant?.includes('-NC'));
+  const nd=Boolean(variant?.includes('-ND'));
+  const sa=Boolean(variant?.includes('-SA'));
+  const attributionRequired=Boolean(variant&&variant!=='CC0');
+  const rightsCompatibleWithUse=catalogEligible&&(!commercial||!nc)&&(!derivative||!nd);
+  const sourceHash=text(asset.sourceHash||asset.sha256||asset.contentHash);
+  const https=value=>{try{const url=new URL(text(value));return url.protocol==='https:'&&!url.username&&!url.password&&!/(^localhost$|\.localhost$|\.local$|\.internal$)/i.test(url.hostname);}catch{return false;}};
+  const originOk=https(asset.sourceUrl||asset.originalSourceUrl);
+  const rightsUrlOk=https(asset.licenseEvidenceUrl||asset.licenseSourceUrl);
+  const sourceVerified=asset.downloaded===true&&originOk&&rightsUrlOk&&/^[a-f0-9]{64}$/i.test(sourceHash);
+  const author=asset.attribution||{};
+  const attributionReady=!attributionRequired||Boolean(text(author.creator)&&https(author.sourceUrl||asset.sourceUrl)
+    &&https(author.licenseUrl||asset.licenseEvidenceUrl)&&text(author.modificationNotice));
+  const shareAlikeReady=!sa||Boolean(derivative&&https(asset.shareAlikeComplianceEvidenceUrl)
+    &&text(asset.derivativeLicense).toUpperCase()===license);
+  const blocked=asset.securityBlocked===true||asset.quarantined===true||asset.internalUseForbidden===true
+    ||asset.practiceOnly===true||asset.practiceArtifact===true||asset.authority==='PRACTICE_ONLY';
+  const gameCandidateEligible=rightsCompatibleWithUse&&sourceVerified&&attributionReady&&shareAlikeReady&&!blocked;
+  return Object.freeze({
+    license:license||null,variant,catalogEligible,rightsCompatibleWithUse,
+    sourceVerified,attributionRequired,attributionReady,shareAlikeRequired:sa,shareAlikeReady,
+    nonCommercialRestricted:nc,noDerivativesRestricted:nd,gameCandidateEligible,
+    status:!catalogEligible?'UNRECOGNIZED_CC_LICENSE':blocked?'BLOCKED_ASSET'
+      :!rightsCompatibleWithUse?'LICENSE_USE_RESTRICTED'
+      :!sourceVerified?'SOURCE_AND_LICENSE_EVIDENCE_REQUIRED'
+      :!attributionReady?'ATTRIBUTION_AND_MODIFICATION_NOTICE_REQUIRED'
+      :!shareAlikeReady?'SHARE_ALIKE_COMPATIBILITY_REVIEW_REQUIRED'
+      :'RIGHTS_METADATA_READY_RUNTIME_NOT_VERIFIED',
+    nativeRuntimeVerified:false,gameApplied:false
+  });
+}
+
 function vibeMatchingFamilies(asset={},families=[]){
   const family=text(asset.family||asset.category).toUpperCase();
   return families.includes(family);
