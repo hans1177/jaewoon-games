@@ -247,10 +247,12 @@ const debugPort=await allocateLocalPort();
 // Existing browser QA now verifies a real GPU/software-WebGL2 frame for the modified Wild Forest.
 // Keep the established Chrome options unchanged for unrelated games.
 const wild3dOnly=gameIds.length===1&&gameIds[0]==='wild-survival';
+const tower3dOnly=gameIds.length===1&&gameIds[0]==='tower-choice-rpg';
+const native3dOnly=wild3dOnly||tower3dOnly;
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
-  ...(wild3dOnly?['--enable-webgl','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']:['--disable-gpu']),
+  ...(native3dOnly?['--enable-webgl','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']:['--disable-gpu']),
   '--disable-dev-shm-usage',
   '--disable-background-networking',
   '--no-first-run',
@@ -285,6 +287,23 @@ try{
     await loaded;
     await delay(500);
 
+    if(tower3dOnly){
+      // The owner game cannot start until the exact approved GLB is decoded.
+      // Do not treat a click on a disabled Start button as native game evidence.
+      currentPhase='TRUE_3D_ASSET_READY';
+      let ready=false;
+      for(let i=0;i<70;i++){
+        const state=await cdp.evaluate(`(()=>({
+          startEnabled:document.querySelector('#startBtn')?.disabled===false,
+          error:document.body.dataset.spatialDimension==='3d-error',
+          status:document.querySelector('#renderStatus')?.textContent||''
+        }))()`);
+        if(state?.error)throw Error('TOWER_3D_ASSET_INIT_FAILED:'+state.status);
+        if(state?.startEnabled){ready=true;break}
+        await delay(250);
+      }
+      assert.equal(ready,true,'tower-choice-rpg: licensed native GLB or renderer failed to initialize');
+    }
     currentPhase='START_INPUT';
     const start=await cdp.evaluate(`(()=>{
       const visible=element=>{
@@ -342,7 +361,7 @@ try{
 
     // Static HTML metadata or an asset list cannot prove the game actually rendered 3D.
     // Only accept a completed Three.js frame AND a live WebGL2 drawing buffer.
-    if(wild3dOnly){
+    if(native3dOnly){
       currentPhase='TRUE_WEBGL_3D_FRAME';
       assert.equal(start?.clicked,true,'wild-survival: survival start action was not triggered');
       let proof=null;
@@ -355,19 +374,22 @@ try{
             renderer:document.body.dataset.renderer||'',
             rendered:canvas?.dataset.renderedFrame==='true',
             webgl2:gl instanceof WebGL2RenderingContext && gl.drawingBufferWidth>0 && gl.drawingBufferHeight>0,
-            loadingVisible:!document.querySelector('#renderStatus')?.hidden,
+            loadingVisible:(()=>{
+              const status=document.querySelector('#renderStatus');
+              return Boolean(status&&!status.hidden&&getComputedStyle(status).display!=='none');
+            })(),
             errorText:(document.querySelector('#renderStatus')?.textContent||'').slice(0,260)
           };
         })()`);
         if(proof?.rendered&&proof?.webgl2&&proof?.dimension==='3d')break;
         await delay(250);
       }
-      console.log('WILD_SURVIVAL_TRUE_3D_BROWSER_EVIDENCE='+JSON.stringify(proof));
-      assert.equal(proof?.dimension,'3d','wild-survival: 3D scene did not initialize');
-      assert.equal(proof?.renderer,'three-webgl','wild-survival: 3D renderer is not authoritative');
-      assert.equal(proof?.rendered,true,'wild-survival: no actual Three.js frame was produced');
-      assert.equal(proof?.webgl2,true,'wild-survival: no live WebGL2 drawing buffer');
-      assert.equal(proof?.loadingVisible,false,'wild-survival: 3D loading/error status remains visible');
+      console.log('DEVELOPMENT_WEB_TRUE_3D_BROWSER_EVIDENCE_'+gameId+'='+JSON.stringify(proof));
+      assert.equal(proof?.dimension,'3d',gameId+': 3D scene did not initialize');
+      assert.equal(proof?.renderer,'three-webgl',gameId+': 3D renderer is not authoritative');
+      assert.equal(proof?.rendered,true,gameId+': no actual Three.js frame was produced');
+      assert.equal(proof?.webgl2,true,gameId+': no live WebGL2 drawing buffer');
+      assert.equal(proof?.loadingVisible,false,gameId+': 3D loading/error status remains visible');
     }
 
     results.push({
