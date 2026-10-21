@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { discoverExistingRobloxGames } from './company-development-queue-reconcile.mjs';
-import { ownerDevelopmentHeld, synchronizeOwnerDevelopmentHolds } from './vibe2-queue-control.mjs';
+import { ownerDevelopmentHeld, synchronizeOwnerDevelopmentHolds, webSourceRetiredInCatalog } from './vibe2-queue-control.mjs';
 import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -419,7 +419,7 @@ export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd())
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
 function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='roblox'&&project.queueRobloxPostF9ContinuousEvolution===true)return 0;if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
 
-export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
+export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game)||(engine==='web'&&webSourceRetiredInCatalog(game)))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
 for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:[]){
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
@@ -638,6 +638,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     });
     continue;
   }
+  // [웹게임] 폐기된 구형 웹 경로는 다시 생성하지 않고, 동일 게임의 네이티브 경로는 보존한다.
+  if(webSourceRetiredInCatalog(game))continue;
   const existingWeb=rows.find(r=>r.gameId===id&&r.engine==='web');
   if(existingWeb){
     existingWeb.queueCurrentStep=clean(item?.currentStep);
@@ -720,6 +722,7 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
     rows.push({gameId:id,name:clean(game.name),engine:'unreal',target:'fortnite-uefn',projectPath:unrealRoot,lifecycleState:gameLifecycleState(game),existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
   }
 
+  if(webSourceRetiredInCatalog(game))continue;
   const explicitWebRoot=webRootFromCatalog(game);
   const recentOwnerWebRoot=id&&game.ownerDirectWebUpload===true&&fs.existsSync(path.join(repoRoot,`web-games/${id}`))?`web-games/${id}`:null;
   const root=explicitWebRoot||recentOwnerWebRoot;
