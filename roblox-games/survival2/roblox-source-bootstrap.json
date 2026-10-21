@@ -14,15 +14,14 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": true,
+  "serverSourceChanged": false,
   "foundationRepairApplied": false,
-  "studioMaterialRepairApplied": true,
+  "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau",
-    "server/Game.server.luau"
+    "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -62,10 +61,10 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 139,
-    "selectionFingerprint": "3bed635aca13bc3fd00d7baa5759998290101167fbe9b8e36859c59ebf15464f",
-    "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-    "buildUpAssetSourceUsageLibraryVersion": 139,
+    "libraryVersion": 140,
+    "selectionFingerprint": "ef094da200f246eb97c05fd7de212c84546fbb831330138a197b2300c11c2a50",
+    "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
+    "buildUpAssetSourceUsageLibraryVersion": 140,
     "selectedSourceContentHashes": [
       {
         "source": "company-asset-library.json#baseMaterialLibrary",
@@ -579,12 +578,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "survival2-build-up-g1-2968d6b49a59",
-  "buildUpGeneration": 1,
+  "buildUpDirectiveId": "survival2-build-up-g2-62fc3198bd33",
+  "buildUpGeneration": 2,
   "buildUpGoal": "숲의 생존자들. 서사시의 추방과 귀환·민속 금기와 전염 생존. 숲의 생존자들에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "buildUpDirectiveFingerprint": "2968d6b49a59c7f9178a990f95699d8577f9d5de6ee715c04a6ae7054f41c36f",
+  "buildUpDirectiveFingerprint": "62fc3198bd3321427bd9388d48086d07e47d518e05947a7b4609bebae9cbea11",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-  "createdAt": "2026-10-17T13:01:12.565Z"
+  "createdAt": "2026-10-21T13:58:59.714Z"
 }
