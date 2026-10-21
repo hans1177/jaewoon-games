@@ -9,7 +9,7 @@
 | 작은 탐험가 | `assets/roblox/actors/native/rogue.glb` | KayKit Adventures CC0-1.0, 원본 SHA-256 `e825437cd4d2ee9c1960b517a74a69101e33eb409ae7fa8cedc7134a998fbb7d`, 저장소 파생본 SHA-256 `9b41cc7c6300299d46477fea5175d222bdec0aed5f215d16c1de4d8711761683`; `assets/roblox/actors/manifest.json` |
 | 작은 곤충 모델 후보 | `assets/shared/forest/caterpillar.glb` | Kenney Cube Pets CC0-1.0, SHA-256 `7a8f6d5e4fb6bd6f073334a2425b559eaaa2d5de3749ccc373a53621006a2c4f` |
 | 거미 모델 | `assets/shared/forest/monster-53.obj` | isaiah658 50+ Monsters Pack 3D CC0-1.0, SHA-256 `73a08230391b74ee9293619e63ca7ab9f183282d7bf64d56a6668d12b8ad1d53` |
-| 거대한 풀숲 소품 | `assets/shared/forest/tree.fbx` | Quaternius Cute Animated Monsters CC0-1.0, SHA-256 `03330f2622b48c465447e8314aabdd2c7533a4af9f41d2bd765c52a23f237cc6` |
+| 거대한 나무 소품 | `assets/shared/homely-house/tree_large.obj` | Tiny Treats Homely House CC0, 공용 라이브러리 `external-tinytreats-tree-large-v1`, 원본 SHA-256 `33b7a5a40b579a6790bea2662ff51ae2fcb2e5736c153337c6e760e46d351e3d`; [고정 원본 CC0 증거](https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt). 기존 Quaternius tree.fbx를 이 게임의 나무 표현에서만 교체. 원본 파일은 다른 소비자 확인 전 삭제하지 않음. |
 | 버섯 소품 | `assets/shared/forest/mushroom.fbx` | Quaternius Cute Animated Monsters CC0-1.0, SHA-256 `d329b5cdc503c500aa9d915969e228fed103597f3885a7b0b9ee1aa0f1406158` |
 | 바닥·자갈·잎사귀 | `assets/shared/homely-house/floor_base.obj`, `assets/shared/homely-house/cobblestones.obj`, `assets/shared/homely-house/foliage_A.obj` | Tiny Treats Homely House CC0, 저장소 출처: `assets/asset-license-ledger.json#tinytreats-homely-house-cc0-v1`, 원본 commit `75ad29a12b4e26dd1c7abda1e1486d6d731d8e16`; 개별 원본 blob/해시는 `company-asset-library.json`에서 재확인 필요 |
 
