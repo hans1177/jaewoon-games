@@ -661,6 +661,16 @@ jobs:
               --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-steward.log
             echo 'VIBE2_RESERVE_STEWARD=PASS'
 
+            # Every non-neuron reserve, including asset/recovery lanes and fast-retry skips,
+            # must restore ONLY owner-approved stale focused lifecycle cancellations.
+            # The canonical planner still owns new work; this stays in the same
+            # unpack/pack and optimistic control-state commit path.
+            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs --restore-owner-focus \
+              --queue="$control_root/.vibe2/queue.json" \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
+              --root=/tmp/vibe2-main | tee /tmp/vibe2-focus-lifecycle-resume.log
+            echo 'VIBE2_FOCUS_LIFECYCLE_RECONCILE=PASS'
+
             # Pin company-runtime once per reserve ingress. A push conflict retries against the latest
             # control queue, but it must not refetch/re-extract the same external runtime snapshot.
             # Planner/steward/learning still rerun on every attempt against the freshly reset control state.
