@@ -87,10 +87,32 @@ test('combat controls, RPG status, dodge and save/restore boot without changing 
  a.node('saveBtn').events.click({});
  const saved=JSON.parse(storage.get('jaewoon_insect_survival_v3'));
  assert.equal(saved.state.level,1);
+ assert.deepEqual(Object.keys(saved.player).sort(),['x','y']);
  assert.equal(saved.state.crafted instanceof Object,true);
  const b=boot(storage);
  assert.equal(b.snapshot().state.day,1);
  assert.equal(b.snapshot().state.weapon,'none');
  assert.equal(b.snapshot().state.stamina,a.snapshot().state.stamina);
  assert.equal(b.snapshot().state.kills,0);
+});
+
+test('CC0 original spin, dodge and death actions use one-shot playback and accepted action replay',()=>{
+ const body=world.slice(world.indexOf('function setHeroMotion('),world.indexOf('function follow('));
+ const action=()=>({reset(){this.resets=(this.resets||0)+1;return this},setLoop(mode,reps){this.mode=mode;this.reps=reps;return this},
+  setEffectiveTimeScale(value){this.rate=value;return this},setDuration(value){this.duration=value;return this},fadeIn(){return this},fadeOut(){return this},play(){return this}});
+ const context={THREE:{LoopOnce:'once',LoopRepeat:'repeat'},heroActions:{idle:action(),run:action(),spin:action(),death:action()},playingAction:''};
+ vm.runInNewContext(body+';globalThis.apply=setHeroMotion',context);
+ context.apply('spin',false,.36);assert.equal(context.heroActions.spin.mode,'once');assert.equal(context.heroActions.spin.duration,.36);
+ context.apply('spin');assert.equal(context.heroActions.spin.resets,1);
+ context.apply('spin',true,.36);assert.equal(context.heroActions.spin.resets,2);
+ context.apply('death');assert.equal(context.heroActions.death.mode,'once');assert.equal(context.heroActions.death.clampWhenFinished,true);
+ context.apply('run');assert.equal(context.heroActions.run.mode,'repeat');
+ assert.match(world,/frame\.state\.dead\?'death'/);
+ assert.match(world,/p\.motionAction==='spin'\?'spin':'stab'/);
+ const a=boot();a.node('whirlBtn').events.pointerdown({});
+ assert.equal(a.snapshot().player.motionAction,'spin');assert.equal(a.snapshot().player.motionSerial,1);
+ assert.equal(a.snapshot().state.stamina,64);
+ a.node('whirlBtn').events.pointerdown({});assert.equal(a.snapshot().player.motionSerial,1);
+ a.node('dodgeBtn').events.pointerdown({});assert.equal(a.snapshot().player.motionAction,'dodge');assert.equal(a.snapshot().player.motionSerial,2);
+ a.node('saveBtn').events.click({});
 });
