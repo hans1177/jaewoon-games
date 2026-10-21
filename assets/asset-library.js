@@ -330,8 +330,7 @@ async function refresh(force=false){
    source.status==='LICENSE_VERIFIED_EXTERNAL_CANDIDATE'
    &&Array.isArray(source.platformTargets)&&source.platformTargets.includes('ROBLOX')
    &&typeof source.sourceUrl==='string'&&/^https:\/\/[A-Za-z0-9.-]+(?:\/|$)/.test(source.sourceUrl)
-   &&/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(String(source.license||'').trim())
-   &&source.gameUseForbidden!==true&&source.quarantined!==true&&source.securityBlocked!==true
+   &&Boolean(source.license)&&!/UNKNOWN|NON.?COMMERCIAL|(?:^|-)NC(?:-|$)/i.test(source.license)
   ):[];
   robloxSources.sort((a,b)=>Number(b.acquisitionState==='ACQUIRED_ORIGINAL_FILES')-Number(a.acquisitionState==='ACQUIRED_ORIGINAL_FILES')
    ||String(a.name||a.id).localeCompare(String(b.name||b.id),'ko'));
