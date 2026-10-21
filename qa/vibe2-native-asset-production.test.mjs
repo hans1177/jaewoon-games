@@ -970,11 +970,11 @@ test('full library scan preserves low quality assets but rejects unsafe corrupt 
 test('all game spatial families reject flat 2D assets but allow unlimited cross-game 3D donor reuse',()=>{
   const assets=[
     {id:'flat-creature',family:'CREATURE',license:'project-original',platform:'WEB_REFERENCE',path:'/assets/flat.png'},
-    {id:'shared-creature',family:'CREATURE',license:'project-original',platform:'ROBLOX',
+    {id:'shared-creature',family:'CREATURE',license:'CC0',platform:'ROBLOX',
       companyCommonBase:true,path:'/assets/shared/spider.png',nativeArtifacts:['assets/shared/spider.glb']},
     {id:'another-creature',family:'CREATURE',license:'CC0',platform:'SHARED_NATIVE_SOURCE',
       companyCommonBase:true,path:'/assets/shared/wolf.obj'},
-    {id:'building-part',family:'BUILDING',license:'project-original',platform:'ROBLOX',
+    {id:'building-part',family:'BUILDING',license:'CC0',platform:'ROBLOX',
       companyCommonBase:true,path:'/assets/shared/wall.obj'},
     {id:'ui-icon',family:'UI',license:'CC0',path:'/assets/shared/icon.png'}
   ];
