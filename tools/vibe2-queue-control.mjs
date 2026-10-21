@@ -35,6 +35,18 @@ const configuredPolicyPath = String(process.env.COMPANY_VERIFIED_POLICY_PATH||''
 const CANONICAL_RESERVATION_POLICY = configuredPolicyPath
   ? path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..',configuredPolicyPath)
   : '';
+// [웹게임 원본] 최신 main 정책 작업 트리의 카탈로그를 우선한다. 별도 큐나 상태 파일은 만들지 않는다.
+const CANONICAL_CATALOG_PATH = configuredPolicyPath
+  ? path.resolve(path.dirname(CANONICAL_RESERVATION_POLICY),'..','..','game-catalog.json')
+  : path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','game-catalog.json');
+const RETIRED_WEB_SOURCE_STATES = new Set([
+  'PERMANENTLY_REMOVED_REJECTED_TEST','WITHDRAWN_SIMPLE_PROTOTYPE',
+  'ENTRY_MISSING_OR_INVALID','NON_GAME_SURFACE'
+]);
+// 웹 소스가 폐기된 경우만 보류한다. 최초 생성이 필요한 정상 게임은 계속 접수한다.
+export function webSourceRetiredInCatalog(game={}) {
+  return RETIRED_WEB_SOURCE_STATES.has(clean(game?.canonical?.sources?.web?.state||game?.ownerWebSourceState).toUpperCase());
+}
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
@@ -720,15 +732,19 @@ export function completeOwnerExclusiveGameScope({
   });
 }
 
-export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
+export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY),
+  {catalog = readJson(CANONICAL_CATALOG_PATH,{games:[]})} = {}) {
   const queue=createVibeContinuousQueue(queueInput);
   // 예약 전 실제 오너 집중 게임·플랫폼을 다시 동기화한다. 오래된 일반 큐도 집중 혜택을 받는다.
   const focus=policy?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
   const focusedIds=new Set(focus.enabled===true&&focus.completionPursuit?.enabled===true
     ?(focus.ownerFocusedGameIds||[]).map(clean):[]);
   const platforms=focus.ownerFocusedGamePlatforms||{};
+  const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
-    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,task.gameId,task.target,task);
+    const retiredWeb=clean(task.target).toLowerCase()==='web'
+      &&webSourceRetiredInCatalog(games.get(clean(task.gameId)));
+    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,task.gameId,task.target,task)||retiredWeb;
     const exactFocus=!ownerDevelopmentHold&&task.status==='queued'
       &&clean(task.department).toLowerCase()==='development'
       &&clean(task.type).toLowerCase()==='implementation'
