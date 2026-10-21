@@ -1301,7 +1301,13 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
 
   const patterns=(codePatternsInput?.patterns||[])
-    .filter(row=>row?.retrievalEligible!==false&&knowledgeStateFor(mastery,'CODE_PATTERN',row?.id)!=='RETIRED')
+    .filter(row=>{
+      if(row?.retrievalEligible===false||knowledgeStateFor(mastery,'CODE_PATTERN',row?.id)==='RETIRED')return false;
+      // 실제 엔진 소스에 묶인 레시피는 다른 엔진 PASS를 근거로 재사용하지 않는다.
+      // 엔진 중립 원칙과 비권위 외부 자문은 기존 검색/적합성 절차를 유지한다.
+      if(row?.implementationRecipe&&engine&&lower(row.engine)!==engine)return false;
+      return true;
+    })
     .map(row=>{
       const pWords=words([row.id,row.system,row.problem,row.pattern,row.tags].flat().filter(Boolean).join(' '));
       const overlap=overlapScore(qWords,pWords);
@@ -1452,7 +1458,15 @@ export function learningGuidance(context={}){
       :'';
     lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}${externalTrace}`);
   }
-  for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
+  for(const row of context.codePatterns||[]){
+    lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
+    const recipe=row?.implementationRecipe;
+    if(recipe&&clean(recipe.source)&&Array.isArray(recipe.proof)&&recipe.proof.length){
+      // 검증된 레시피의 실제 소스 책임과 필수 증거를 후보 작성 지시로 전달한다.
+      // proof는 완료 판정이 아니라 새 프로젝트에서 다시 확인할 검증 조건이다.
+      lines.push(`  - verified-source-bound-recipe=${row.id}; engine=${row.engine}; source=${clean(recipe.source).slice(0,280)}; required-fresh-runtime-checks=${recipe.proof.slice(0,12).map(clean).filter(Boolean).join('|')}; edit-existing-responsible-code-only; source-guidance-not-a-pass; no-gameplay-or-save-authority`);
+    }
+  }
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; reuse=${(row.reusablePatterns||[]).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).join('|')||'none'}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
   if(context.officialGameCodingReferences?.length){
