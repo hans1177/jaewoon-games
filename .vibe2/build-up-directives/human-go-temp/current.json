@@ -1,27 +1,27 @@
 {
   "version": 2,
-  "directiveId": "human-go-temp-build-up-g1-62fa089c0f7b",
-  "directiveFingerprint": "62fa089c0f7b6f73b868fcd1738e92b95318b12872a2c017edf818ed8ddcc212",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "human-go-temp-build-up-g2-afeaf5e68ac5",
+  "directiveFingerprint": "afeaf5e68ac53d4b30330898f1a3ad1ee3d289426633b9682387f5ba231c1b6e",
+  "previousDirectiveFingerprint": "68e36ea4c0ab29e2105d84026ee4bbc9041ac059a4efb7a1844d4db60f172913",
+  "forbiddenRepeatFingerprint": "68e36ea4c0ab29e2105d84026ee4bbc9041ac059a4efb7a1844d4db60f172913",
   "gameId": "human-go-temp",
   "gameName": "휴먼 GO!",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
-  "platform": "WEB",
-  "sourceRoot": "web-games/human-go-temp",
-  "sourceTreeFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
+  "platform": "ROBLOX",
+  "sourceRoot": "roblox-games/human-go-temp",
+  "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
   "designFingerprint": "d24cec31593846aa22bbe11354578ee23ba05fa1dd325ae35625206d974ad049",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "d24cec31593846aa22bbe11354578ee23ba05fa1dd325ae35625206d974ad049",
-    "previousDesignFingerprint": null,
-    "sameApprovedDesign": false,
+    "previousDesignFingerprint": "d24cec31593846aa22bbe11354578ee23ba05fa1dd325ae35625206d974ad049",
+    "sameApprovedDesign": true,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
+        "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -352,13 +352,40 @@
     "version": 1,
     "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
     "gameId": "human-go-temp",
-    "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
+    "requestedPlatform": "ROBLOX",
+    "activePlatform": "ROBLOX",
     "originalSourcePlatform": "ROBLOX",
     "originalSourceLanguage": "LUAU",
-    "unityWebSourceSync": null,
+    "unityWebSourceSync": {
+      "version": 1,
+      "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
+      "canonicalGameId": "human-go-temp",
+      "canonicalDesignFingerprint": "d24cec31593846aa22bbe11354578ee23ba05fa1dd325ae35625206d974ad049",
+      "unityWebProjectRoot": "unity-games/human-go-temp",
+      "unityWebBuildOutputRoot": "web-games/human-go-temp",
+      "unityWebSourceAvailable": false,
+      "unityWebScriptsFingerprint": null,
+      "unityWebScriptCount": 0,
+      "sourceFiles": [],
+      "sourceMethods": [],
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
+      "verificationTransferred": false,
+      "sourceImplementationPassed": false,
+      "robloxRuntimeVerified": false,
+      "ruleOwner": "COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT",
+      "codeConversion": "IMPLEMENT_APPROVED_DESIGN_IN_ORIGINAL_ROBLOX_LUAU_OWNER_FUNCTIONS",
+      "originalSourcePlatform": "ROBLOX",
+      "originalSourceLanguage": "LUAU",
+      "unitySourceIsOriginal": false,
+      "optimizationTarget": "ROBLOX_NATIVE_SERVER_CLIENT_MOBILE_STREAMING_ANIMATION_UI_PERFORMANCE",
+      "protectedState": "SAVE_KEYS_BALANCE_REWARDS_HIT_TIMING_MULTIPLAYER_SERVER_AUTHORITY",
+      "sourceReferenceOnly": true,
+      "directCsCopyForbidden": true,
+      "shadowPipelineForbidden": true,
+      "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
+    },
     "designFingerprint": "d24cec31593846aa22bbe11354578ee23ba05fa1dd325ae35625206d974ad049",
-    "sourceTreeFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
+    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -371,7 +398,7 @@
         "requiresSameServerTwoClientPlay": false,
         "requiresNativeRuntimeResult": true,
         "minimumRenderedDimension": "3D",
-        "inspectedInThisDirective": false
+        "inspectedInThisDirective": true
       },
       {
         "platform": "UNITY_WEB",
@@ -433,7 +460,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -444,14 +471,47 @@
             "RouteState",
             "WorldAccessState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "roblox-games/human-go-temp/server/Game.server.luau",
+            "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler1",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler2",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler3",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler5",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -508,7 +568,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -519,14 +579,47 @@
             "RiskState",
             "ResourceState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "roblox-games/human-go-temp/server/Game.server.luau",
+            "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler1",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler2",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler3",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler5",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -577,7 +670,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -588,14 +681,47 @@
             "RouteState",
             "RiskState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "roblox-games/human-go-temp/server/Game.server.luau",
+            "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler1",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler2",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler3",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler5",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -645,7 +771,7 @@
           }
         ],
         "nativeStateMapping": {
-          "state": "EXECUTABLE_SOURCE_REQUIRED",
+          "state": "SOURCE_STATE_KEYS_NOT_MAPPED",
           "matchedInputKeys": [],
           "matchedWrittenOutputKeys": [],
           "missingInputKeys": [
@@ -656,14 +782,47 @@
             "WorldAccessState",
             "IntentState"
           ],
-          "inspectedExecutableFiles": [],
+          "inspectedExecutableFiles": [
+            "roblox-games/human-go-temp/server/Game.server.luau",
+            "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+          ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler1",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler2",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler3",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/human-go-temp/server/Game.server.luau",
+            "symbol": "scopeHandler5",
+            "kind": "FUNCTION"
+          }
+        ],
         "designStatus": "AUTHORED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
         "executableBehaviorVerified": false,
         "actualRuntimeVerified": false,
         "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
@@ -673,7 +832,12 @@
     "nativeStateMappingSummary": {
       "authoredRoles": 4,
       "mappedStaticCandidates": 0,
-      "unmappedRoles": [],
+      "unmappedRoles": [
+        "MAIN",
+        "A",
+        "B",
+        "@"
+      ],
       "edgeMismatches": 0,
       "staticSourceMappingIsNotRuntimeParity": true
     },
@@ -733,10 +897,26 @@
       "designAuthored": true,
       "runtimeVerified": false
     },
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
+    "observedGameCodeFiles": [
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/shared/GameConfig.luau",
+      "roblox-games/human-go-temp/server/Game.server.luau",
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
+    ],
+    "executableCodeCandidateFiles": [
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/server/Game.server.luau",
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
+    ],
     "gapReasons": [
-      "PLATFORM_SOURCE_NOT_SELECTED"
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:B",
+      "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:@"
     ],
     "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
     "sourceImplementationPassed": false,
@@ -752,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
+    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4357,264 +4537,500 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=3",
-      "GAME_FEEL_SPARSE",
-      "AUDIO_STATE_TRANSITION_SPARSE",
+      "CURRENT_SOURCE_FILES=7",
+      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 600,
-      "progression": 1224,
-      "ai": 106,
-      "save": 6,
-      "multiplayer": 0,
-      "animation": 33,
-      "motionStates": 400,
-      "gameFeel": 0,
-      "vfx": 34,
-      "camera": 29,
-      "audio": 202,
-      "audioDynamics": 0,
-      "ui": 189,
-      "uiFlow": 110,
-      "entryFlow": 0,
+      "combat": 178,
+      "progression": 525,
+      "ai": 62,
+      "save": 117,
+      "multiplayer": 43,
+      "animation": 45,
+      "motionStates": 692,
+      "gameFeel": 36,
+      "vfx": 44,
+      "camera": 46,
+      "audio": 4,
+      "audioDynamics": 38,
+      "ui": 898,
+      "uiFlow": 1145,
+      "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 41,
-      "map": 100,
-      "landmark": 2,
-      "interaction": 18,
-      "inventory": 126,
-      "equipment": 218,
-      "settings": 8,
-      "feedback": 32,
-      "session": 54,
-      "content": 683,
-      "choice": 68,
-      "connection": 3,
-      "performance": 84,
-      "lighting": 75,
-      "primitive": 0,
+      "input": 153,
+      "map": 290,
+      "landmark": 36,
+      "interaction": 287,
+      "inventory": 245,
+      "equipment": 65,
+      "settings": 25,
+      "feedback": 170,
+      "session": 30,
+      "content": 518,
+      "choice": 1658,
+      "connection": 8,
+      "performance": 34,
+      "lighting": 64,
+      "primitive": 12,
       "todo": 0,
-      "errorRecovery": 89
+      "errorRecovery": 27
     },
     "topFiles": [
       {
-        "file": "web-games/human-go-temp/index.html",
-        "score": 1971
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "score": 1517
       },
       {
-        "file": "web-games/human-go-temp/graphics-upgrade.css",
-        "score": 15
+        "file": "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "score": 490
       },
       {
-        "file": "web-games/human-go-temp/preview.html",
-        "score": 3
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "score": 269
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "score": 163
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+        "score": 6
+      },
+      {
+        "file": "roblox-games/human-go-temp/default.project.json",
+        "score": 4
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
+        "score": 1
       }
     ],
     "sourceAnchors": [
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 1655,
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3921,
         "kind": "FUNCTION",
-        "symbol": "show",
-        "context": "function show(id){",
-        "score": 538
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2963,
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3960,
         "kind": "FUNCTION",
-        "symbol": "ensureItemUpgradeFields",
-        "context": "function ensureItemUpgradeFields(item){",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3976,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3937,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 130
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3993,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 4011,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 114
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 65,
+        "kind": "FUNCTION",
+        "symbol": "reportNativeFoundationReady",
+        "context": "local function reportNativeFoundationReady()",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 198,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "local function render()",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 2761,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 153,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler1",
+        "context": "local function scopeHandler1(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 176,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler2",
+        "context": "local function scopeHandler2(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 206,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 236,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 266,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "context": "local function scopeHandler5(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 290,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "context": "local function scopeHandler6(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 2872,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3466,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3957,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3973,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3990,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 4027,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 4101,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 145,
+        "kind": "FUNCTION",
+        "symbol": "initializePlayer",
+        "context": "local function initializePlayer(player)",
         "score": 82
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2541,
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 1050,
         "kind": "FUNCTION",
-        "symbol": "renderPetInventory",
-        "context": "function renderPetInventory(){",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 2581,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateItemStateBadges",
+        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3914,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionProgress",
+        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 3933,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 4164,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 4319,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 4373,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 4885,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.AdaptActionMenu",
+        "context": "function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "line": 1010,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 74
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 4208,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 126,
         "kind": "FUNCTION",
-        "symbol": "fight",
-        "context": "async function fight(mode){",
-        "score": 74
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2972,
-        "kind": "FUNCTION",
-        "symbol": "recalcEquipmentValue",
-        "context": "function recalcEquipmentValue(item){",
+        "symbol": "bindFoundationPlayer",
+        "context": "local function bindFoundationPlayer(player)",
         "score": 66
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2984,
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 298,
         "kind": "FUNCTION",
-        "symbol": "mergeDuplicateEquipment",
-        "context": "function mergeDuplicateEquipment(newItem){",
-        "score": 66
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3547,
-        "kind": "FUNCTION",
-        "symbol": "tickShrinkAfterEnemyTurn",
-        "context": "function tickShrinkAfterEnemyTurn(e,target,shrinkState){",
-        "score": 66
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2959,
-        "kind": "FUNCTION",
-        "symbol": "itemBaseValue",
-        "context": "function itemBaseValue(item){",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
         "score": 58
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3020,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 44,
         "kind": "FUNCTION",
-        "symbol": "enhancementCost",
-        "context": "function enhancementCost(item){",
+        "symbol": "bindFoundationCharacter",
+        "context": "local function bindFoundationCharacter(character)",
         "score": 58
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3746,
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 375,
         "kind": "FUNCTION",
-        "symbol": "resetBaseStatsForJob",
-        "context": "function resetBaseStatsForJob(job){",
-        "score": 58
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2357,
-        "kind": "FUNCTION",
-        "symbol": "getEquippedPetKeys",
-        "context": "function getEquippedPetKeys(){",
+        "symbol": "bindVerifiedLearningControl",
+        "context": "local function bindVerifiedLearningControl(control)",
         "score": 50
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2609,
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 275,
         "kind": "FUNCTION",
-        "symbol": "openPetInventory",
-        "context": "function openPetInventory(){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3025,
-        "kind": "FUNCTION",
-        "symbol": "enhanceEquipment",
-        "context": "function enhanceEquipment(item){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3314,
-        "kind": "FUNCTION",
-        "symbol": "renderInventory",
-        "context": "function renderInventory(){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3364,
-        "kind": "FUNCTION",
-        "symbol": "equipItem",
-        "context": "function equipItem(item){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3430,
-        "kind": "FUNCTION",
-        "symbol": "openInventory",
-        "context": "function openInventory(){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3474,
-        "kind": "FUNCTION",
-        "symbol": "setEnemyVisual",
-        "context": "function setEnemyVisual(type){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3529,
-        "kind": "FUNCTION",
-        "symbol": "tryShrinkOnAttack",
-        "context": "function tryShrinkOnAttack(e,target,shrinkState){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3586,
-        "kind": "FUNCTION",
-        "symbol": "triggerIceSpike",
-        "context": "async function triggerIceSpike(e,target,iceState){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3600,
-        "kind": "FUNCTION",
-        "symbol": "breakIceSpike",
-        "context": "async function breakIceSpike(e,target,iceState){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 4369,
-        "kind": "FUNCTION",
-        "symbol": "rewardChoice",
-        "context": "function rewardChoice(allowPetSummon=false){",
-        "score": 50
-      },
-      {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2361,
-        "kind": "FUNCTION",
-        "symbol": "hasEquippedPet",
-        "context": "function hasEquippedPet(key){",
+        "symbol": "syncVerifiedLearningCharacterMotion",
+        "context": "local function syncVerifiedLearningCharacterMotion(character)",
         "score": 42
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2365,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 48,
         "kind": "FUNCTION",
-        "symbol": "getPetAttackMultiplier",
-        "context": "function getPetAttackMultiplier(){",
+        "symbol": "current",
+        "context": "local function current()",
         "score": 42
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2376,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 136,
         "kind": "FUNCTION",
-        "symbol": "getPetFlatAttackBonus",
-        "context": "function getPetFlatAttackBonus(){",
+        "symbol": "readNumber",
+        "context": "local function readNumber(player, name, fallback)",
         "score": 42
+      },
+      {
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 141,
+        "kind": "FUNCTION",
+        "symbol": "setNumber",
+        "context": "local function setNumber(player, name, value)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 113,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAtom",
+        "context": "local function hasStudioAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+        "line": 299,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonMaterials.Apply",
+        "context": "function RobloxCommonMaterials.Apply(part, atomId, options)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 109,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
+        "line": 7,
+        "kind": "FUNCTION",
+        "symbol": "flush",
+        "context": "local function flush()",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/human-go-temp/client/MaterialPresentation.client.luau",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "enqueue",
+        "context": "local function enqueue(instance)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+    "previousFocus": "STABILITY",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "616ba25a9d92be2512678006acf2d30e634e08c183b5cc209661ba002696e0b4",
+    "currentSourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
-    "platform": "WEB",
-    "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "platform": "ROBLOX",
+    "studioQualityFailure": {
+      "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
+      "artifactIdentity": null,
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 39622226715,
+      "testedAt": "2026-10-21T16:07:22.555Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-static-revalidation-failed",
+    "blockers": [
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+      "CONFIG_GENRE_PROFILE_REQUIRED"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -4812,8 +5228,8 @@
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "GAP",
-      "reason": "required multiplayer implementation or reconnect recovery is incomplete; continue existing BUILD_UP"
+      "state": "PASS",
+      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
     },
     {
       "domain": "INPUT",
@@ -4872,8 +5288,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SPAWN_ENCOUNTER_DIRECTOR",
@@ -4892,8 +5308,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -4902,13 +5318,13 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
@@ -4922,18 +5338,18 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "TERRAIN",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "MATERIALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "PALETTE",
@@ -5005,7 +5421,7 @@
     {
       "domain": "CORE_FUN",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "휴먼 GO!가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5014,7 +5430,7 @@
     {
       "domain": "COMBAT_OR_PRIMARY_INTERACTION",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "휴먼 GO!의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5023,7 +5439,7 @@
     {
       "domain": "PLAYER_ACTIONS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "플레이어의 주요 행동마다 사용 조건, 취소/실패 조건, 상태 변화, 쿨다운 또는 후딜, 화면/음향 피드백을 일관되게 연결하고 무의미한 중복 행동은 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5032,7 +5448,7 @@
     {
       "domain": "PLAYER_AGENCY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 루프에서 최소 두 개 이상의 의미 있는 선택축을 유지하고 하나의 정답 버튼 반복보다 상황·자원·위험에 따라 선택이 달라지게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5041,7 +5457,7 @@
     {
       "domain": "ANTI_GRIND",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "같은 행동을 반복해서 숫자만 채우는 구간을 줄이고 반복이 필요하면 새로운 위험·조합·선택·단축 해금 중 하나가 주기적으로 생기게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5050,7 +5466,7 @@
     {
       "domain": "ENEMY_AI",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 휴먼 GO!에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5059,7 +5475,7 @@
     {
       "domain": "BOSS_AND_SIGNATURE_MOMENTS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 환경 탐색과 자원 확보 × 서사시의 추방과 귀환와 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5113,7 +5529,7 @@
     {
       "domain": "CONTENT_VARIETY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "콘텐츠 변형은 이름/색/수치 복제 대신 행동 규칙·공간·자원·적 조합·진행 조건 중 최소 한 축을 바꾸어 새로운 판단을 만들게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5122,7 +5538,7 @@
     {
       "domain": "CONTENT_DENSITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "플레이 시간과 이동 거리에 비해 실제 상호작용·조우·보상·발견이 비는 구간을 줄이고 새 콘텐츠가 서로 다른 플레이 결정을 만들게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5275,7 +5691,7 @@
     {
       "domain": "SESSION_FLOW",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5284,7 +5700,7 @@
     {
       "domain": "FIRST_10_MINUTES",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5293,7 +5709,7 @@
     {
       "domain": "FAILURE_RESPAWN_CHECKPOINTS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "사망/실패/런 종료 시 기존 손실·보존·체크포인트·리스폰 규칙을 유지하고 빠르게 재시작하게 한다. 실제 기록에 있는 원인만 시각화한다: 퍼즐의 잘못된 연결, 방어의 뚫린 경로, 생존의 사망 원인 등 해당 장르에 맞게 표시하며 근거가 없으면 추측하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5302,7 +5718,7 @@
     {
       "domain": "SAVE_AND_RECOVERY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5311,7 +5727,7 @@
     {
       "domain": "SAVE_COMPLETENESS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5320,7 +5736,7 @@
     {
       "domain": "RECONNECT_RECOVERY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5328,8 +5744,8 @@
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5436,8 +5852,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 휴먼 GO!에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5472,8 +5888,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5490,8 +5906,8 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5499,8 +5915,8 @@
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5526,8 +5942,8 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5535,8 +5951,8 @@
     },
     {
       "domain": "TERRAIN",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5544,8 +5960,8 @@
     },
     {
       "domain": "MATERIALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5635,7 +6051,7 @@
     {
       "domain": "PERFORMANCE",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5644,7 +6060,7 @@
     {
       "domain": "PERFORMANCE_BUDGET",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5653,7 +6069,7 @@
     {
       "domain": "RUNTIME_STABILITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5662,7 +6078,7 @@
     {
       "domain": "ERROR_RECOVERY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5671,31 +6087,41 @@
   ],
   "detectedGaps": [
     {
-      "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "GAP",
-      "reason": "required multiplayer implementation or reconnect recovery is incomplete; continue existing BUILD_UP"
-    },
-    {
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "GAME_FEEL",
+      "domain": "CHARACTER_VISUALS",
       "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
-      "domain": "AUDIO_MUSIC_SFX",
+      "domain": "ENEMY_VISUALS",
       "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     }
   ],
-  "primaryFocus": "CORE_FUN",
-  "thisLoopPrimaryGoal": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"휴먼 GO!\", 현재 책임 소스는 web-games/human-go-temp/index.html::show, web-games/human-go-temp/index.html::ensureItemUpgradeFields, web-games/human-go-temp/index.html::renderPetInventory, web-games/human-go-temp/index.html::fight, web-games/human-go-temp/index.html::recalcEquipmentValue, web-games/human-go-temp/index.html::mergeDuplicateEquipment, web-games/human-go-temp/index.html::tickShrinkAfterEnemyTurn, web-games/human-go-temp/index.html::itemBaseValue이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryFocus": "STABILITY",
+  "thisLoopPrimaryGoal": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"휴먼 GO!\", 현재 책임 소스는 roblox-games/human-go-temp/client/Game.client.luau::reportNativeFoundationReady, roblox-games/human-go-temp/client/Game.client.luau::render, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler1, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler2, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler3, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler4, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler5, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler6이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/human-go-temp/index.html::show, web-games/human-go-temp/index.html::ensureItemUpgradeFields, web-games/human-go-temp/index.html::renderPetInventory, web-games/human-go-temp/index.html::fight, web-games/human-go-temp/index.html::recalcEquipmentValue, web-games/human-go-temp/index.html::mergeDuplicateEquipment, web-games/human-go-temp/index.html::tickShrinkAfterEnemyTurn, web-games/human-go-temp/index.html::itemBaseValue에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/human-go-temp/client/Game.client.luau::reportNativeFoundationReady, roblox-games/human-go-temp/client/Game.client.luau::render, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler1, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler2, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler3, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler4, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler5, roblox-games/human-go-temp/server/Game.server.luau::scopeHandler6에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "휴먼 GO!를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "환경 탐색과 자원 확보 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5706,7 +6132,7 @@
     "고유 시스템 \"제작과 방어 거점 관리 × 민속 금기와 전염\": 플레이어 선택 \"남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다. 민속 금기와 전염의 반작용을 선택한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 \"금기와 기회의 교차\": 플레이어 선택 \"서사시의 추방과 귀환의 제약과 민속 금기와 전염의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다.\"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.",
     "고유 시스템 휴먼 GO!, 환경 탐색과 자원 확보 × 서사시의 추방과 귀환, 제작과 방어 거점 관리 × 민속 금기와 전염, 금기와 기회의 교차 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
-    "주요 적/대상/상호작용이 행동·타이밍·카운터플레이 중 최소 두 축에서 구별되게 한다."
+    "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
   ],
   "progressionContentWorldDirectives": [
     "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 환경 탐색과 자원 확보의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
@@ -5735,7 +6161,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "requestedPlatform": "WEB",
+    "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "contentExpansionDeferredUntilRuntimeRepairPass": false,
     "themeCoverageAdvanced": true,
@@ -5750,8 +6176,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 1059097,
-        "largestFileBytes": 1052281,
+        "sourceBytes": 400768,
+        "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5782,22 +6208,23 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 0
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY"
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -5813,71 +6240,74 @@
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
       {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 34,
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 210,
         "gapDomains": [
-          "GAME_FEEL"
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 26,
+        "gapDomains": [
+          "ENEMY_VISUALS"
         ]
       },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 34,
-        "gapDomains": [
-          "MULTIPLAYER_AND_SYNC"
-        ]
+        "score": 22,
+        "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 24,
+        "score": 16,
         "gapDomains": []
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 24,
+        "score": 16,
         "gapDomains": []
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 24,
+        "score": 16,
         "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 24,
-        "gapDomains": []
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 20,
+        "score": 16,
         "gapDomains": []
       }
     ],
     "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -5943,12 +6373,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "priorSourceFingerprint": "616ba25a9d92be2512678006acf2d30e634e08c183b5cc209661ba002696e0b4",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -5965,15 +6395,17 @@
   "gameInternalAutoComposition": {
     "version": 1,
     "gameId": "human-go-temp",
-    "platform": "WEB",
-    "sourceTreeFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
+    "platform": "ROBLOX",
+    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
       {
         "id": "LOBBY",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -5982,8 +6414,11 @@
       },
       {
         "id": "CUSTOMIZATION",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -5994,7 +6429,9 @@
         "id": "MATERIAL",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+          "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6006,7 +6443,9 @@
         "id": "INVENTORY",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6018,7 +6457,7 @@
         "id": "EQUIPMENT",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6030,7 +6469,10 @@
         "id": "UI",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6042,7 +6484,9 @@
         "id": "WORLD",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6062,8 +6506,10 @@
       },
       {
         "id": "HOUSING",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6072,8 +6518,10 @@
       },
       {
         "id": "MOTION",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/client/Game.client.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6084,7 +6532,10 @@
         "id": "ACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6094,8 +6545,12 @@
       },
       {
         "id": "INTERACTION",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6104,8 +6559,10 @@
       },
       {
         "id": "SHOP",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6114,8 +6571,12 @@
       },
       {
         "id": "SAVE",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6126,7 +6587,11 @@
         "id": "COMBAT",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6138,7 +6603,8 @@
         "id": "REWARD",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6150,7 +6616,8 @@
         "id": "NPC_AI",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6162,7 +6629,8 @@
         "id": "QUEST_DIALOGUE",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6172,8 +6640,11 @@
       },
       {
         "id": "CRAFTING",
-        "state": "REVIEW_REQUIRED_NO_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau"
+        ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6184,7 +6655,8 @@
         "id": "ECONOMY",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6194,8 +6666,12 @@
       },
       {
         "id": "PROGRESSION",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6204,8 +6680,10 @@
       },
       {
         "id": "FARMING",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6214,8 +6692,10 @@
       },
       {
         "id": "WEATHER",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6224,8 +6704,12 @@
       },
       {
         "id": "PHYSICS",
-        "state": "REVIEW_REQUIRED_NO_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+        ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6234,8 +6718,13 @@
       },
       {
         "id": "CAMERA",
-        "state": "REVIEW_REQUIRED_NO_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau"
+        ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6246,7 +6735,9 @@
         "id": "AUDIO",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6256,8 +6747,11 @@
       },
       {
         "id": "SKILL_VFX",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6266,8 +6760,12 @@
       },
       {
         "id": "NETWORK",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6276,58 +6774,126 @@
       }
     ],
     "sourceFilesByRole": {
-      "LOBBY": [],
-      "CUSTOMIZATION": [],
+      "LOBBY": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+      ],
+      "CUSTOMIZATION": [
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+      ],
       "MATERIAL": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/server/Game.server.luau",
+        "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+        "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
       ],
       "INVENTORY": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau"
       ],
       "EQUIPMENT": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
       ],
       "UI": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau",
+        "roblox-games/human-go-temp/client/Game.client.luau"
       ],
       "WORLD": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau"
       ],
       "BIOME": [],
-      "HOUSING": [],
-      "MOTION": [],
+      "HOUSING": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+      ],
+      "MOTION": [
+        "roblox-games/human-go-temp/client/Game.client.luau"
+      ],
       "ACTION": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau",
+        "roblox-games/human-go-temp/client/Game.client.luau"
       ],
       "NPC_AI": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
       "QUEST_DIALOGUE": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
-      "CRAFTING": [],
+      "CRAFTING": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
+      ],
       "ECONOMY": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
-      "PROGRESSION": [],
-      "FARMING": [],
-      "WEATHER": [],
-      "PHYSICS": [],
-      "CAMERA": [],
+      "PROGRESSION": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau"
+      ],
+      "FARMING": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+      ],
+      "WEATHER": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+      ],
+      "PHYSICS": [
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau",
+        "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+      ],
+      "CAMERA": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau",
+        "roblox-games/human-go-temp/client/Game.client.luau"
+      ],
       "AUDIO": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/client/Game.client.luau"
       ],
-      "SKILL_VFX": [],
-      "NETWORK": [],
-      "INTERACTION": [],
+      "SKILL_VFX": [
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/client/Game.client.luau"
+      ],
+      "NETWORK": [
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau",
+        "roblox-games/human-go-temp/client/Game.client.luau"
+      ],
+      "INTERACTION": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau"
+      ],
       "REWARD": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
-      "SAVE": [],
+      "SAVE": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau"
+      ],
       "COMBAT": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau",
+        "roblox-games/human-go-temp/client/Game.client.luau",
+        "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
       ],
-      "SHOP": []
+      "SHOP": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+      ]
     },
     "uiModeSelection": {
       "combat": [
@@ -6335,7 +6901,10 @@
         "SKILL_AND_DODGE_FROM_EXISTING_BINDINGS",
         "DANGER_FEEDBACK"
       ],
-      "lobby": [],
+      "lobby": [
+        "EXISTING_GAME_ENTRY",
+        "PARTY_SHOP_PORTAL_ONLY_WHEN_IMPLEMENTED"
+      ],
       "inventory": [
         "OWNED_ITEM_LIST",
         "COMPARE_EQUIP_ONLY_WHEN_IMPLEMENTED",
@@ -6356,21 +6925,41 @@
       "enabled": true,
       "nodesDiscoveredFromExactRuntime": false,
       "sourceFiles": [
-        "web-games/human-go-temp/index.html"
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau"
       ],
       "biomeSourceFiles": [],
-      "housingSourceFiles": [],
+      "housingSourceFiles": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+      ],
       "biomeNativeSceneBindingVerified": false,
       "housingPlacementPersistenceVerified": false,
-      "entryFiles": [],
-      "interactionFiles": [],
-      "edges": [],
+      "entryFiles": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
+      ],
+      "interactionFiles": [
+        "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+        "roblox-games/human-go-temp/shared/GameConfig.luau",
+        "roblox-games/human-go-temp/server/Game.server.luau"
+      ],
+      "edges": [
+        {
+          "from": "EXISTING_ENTRY",
+          "to": "EXISTING_WORLD_DESTINATION",
+          "sourceEvidence": "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "state": "SOURCE_ROUTE_CANDIDATE_NOT_WALKABILITY_PROOF"
+        }
+      ],
       "requiredChecks": [
         "SPAWN_TO_EXISTING_DESTINATIONS",
         "PORTAL_OR_DOOR_SERVER_AUTHORITY",
         "RETURN_PATH",
         "BLOCKED_PATH",
-        "RESPAWN_ROUTE"
+        "RESPAWN_ROUTE",
+        "BUILD_PLACEMENT_COLLISION",
+        "OWNER_COST_INVENTORY_AUTHORITY",
+        "HOUSING_SAVE_REJOIN"
       ],
       "inaccessibleAreasNotInvented": true,
       "runtimeTraversalVerified": false
@@ -6382,7 +6971,9 @@
           "id": "ACQUIRE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/human-go-temp/index.html"
+            "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+            "roblox-games/human-go-temp/shared/GameConfig.luau",
+            "roblox-games/human-go-temp/server/Game.server.luau"
           ],
           "passed": false
         },
@@ -6390,7 +6981,9 @@
           "id": "STORE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/human-go-temp/index.html"
+            "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+            "roblox-games/human-go-temp/shared/GameConfig.luau",
+            "roblox-games/human-go-temp/server/Game.server.luau"
           ],
           "passed": false
         },
@@ -6398,29 +6991,37 @@
           "id": "EQUIP",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/human-go-temp/index.html"
+            "roblox-games/human-go-temp/shared/RobloxCommonUI.luau"
           ],
           "passed": false
         },
         {
           "id": "STAT_AND_APPEARANCE",
-          "state": "MISSING_SOURCE_EVIDENCE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/human-go-temp/index.html"
+            "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+            "roblox-games/human-go-temp/shared/GameConfig.luau",
+            "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
           ],
           "passed": false
         },
         {
           "id": "SAVE",
-          "state": "MISSING_SOURCE_EVIDENCE",
-          "responsibleFiles": [],
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+            "roblox-games/human-go-temp/shared/GameConfig.luau",
+            "roblox-games/human-go-temp/server/Game.server.luau"
+          ],
           "passed": false
         },
         {
           "id": "RECONNECT_RESTORE",
-          "state": "MISSING_SOURCE_EVIDENCE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/human-go-temp/index.html"
+            "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+            "roblox-games/human-go-temp/shared/GameConfig.luau",
+            "roblox-games/human-go-temp/server/Game.server.luau"
           ],
           "passed": false
         }
@@ -6433,6 +7034,78 @@
     },
     "moduleConnections": [
       {
+        "id": "WORLD_BIOME_WEATHER",
+        "roles": [
+          "WORLD",
+          "BIOME",
+          "WEATHER"
+        ],
+        "state": "MISSING_REQUIRED_SOURCE_REVIEW",
+        "missingRoles": [
+          "BIOME"
+        ],
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
+        "checks": [
+          "NATIVE_TERRAIN_AND_REGION_GRAPH",
+          "APPROVED_WEATHER_STATE",
+          "MOBILE_STREAMING"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING_INVENTORY_SAVE",
+        "roles": [
+          "HOUSING",
+          "INVENTORY",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
+        "checks": [
+          "ACTUAL_PLACEMENT_COLLISION",
+          "AUTHORITATIVE_COST_AND_OWNERSHIP",
+          "PERSIST_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CUSTOMIZATION_EQUIPMENT_SAVE",
+        "roles": [
+          "CUSTOMIZATION",
+          "EQUIPMENT",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
+        "checks": [
+          "REAL_RIG_AND_OUTFIT_BINDING",
+          "SAVED_AVATAR_AND_EQUIPMENT",
+          "RECONNECT_RESTORE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
         "id": "NPC_AI_QUEST",
         "roles": [
           "NPC_AI",
@@ -6441,11 +7114,37 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "missingRoles": [],
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau"
         ],
         "checks": [
           "NPC_DECISION_TO_DIALOGUE_EVENT",
           "QUEST_STATE_AND_SERVER_AUTHORITY"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION_MOTION_COMBAT",
+        "roles": [
+          "ACTION",
+          "MOTION",
+          "COMBAT"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau"
+        ],
+        "checks": [
+          "INPUT_TO_AUTHORITATIVE_HIT",
+          "EXACT_EXISTING_HIT_TIMING",
+          "RIG_PLAYBACK_AND_REACTION"
         ],
         "gameSourceMutationPerformed": false,
         "passed": false,
@@ -6458,17 +7157,63 @@
           "ECONOMY",
           "INVENTORY"
         ],
-        "state": "MISSING_REQUIRED_SOURCE_REVIEW",
-        "missingRoles": [
-          "CRAFTING"
-        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
         "responsibleFiles": [
-          "web-games/human-go-temp/index.html"
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
         ],
         "checks": [
           "RECIPE_RESOURCE_CONSUMPTION",
           "AUTHORITATIVE_CURRENCY_AND_ITEM_STATE",
           "SAVE_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING_WORLD_WEATHER",
+        "roles": [
+          "FARMING",
+          "WORLD",
+          "WEATHER"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
+        "checks": [
+          "APPROVED_CROP_REGION_AND_SEASON",
+          "HARVEST_STATE_AND_STORAGE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/human-go-temp/shared/GameConfig.luau",
+          "roblox-games/human-go-temp/client/Game.client.luau",
+          "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+          "roblox-games/human-go-temp/server/Game.server.luau"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
         ],
         "gameSourceMutationPerformed": false,
         "passed": false,
@@ -6494,7 +7239,8 @@
       "REAL_EVENT_HANDLER",
       "SERVER_AUTHORITY_WHERE_APPLICABLE",
       "NATIVE_PLATFORM_AND_MOBILE_QA",
-      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT"
+      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT",
+      "ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE"
     ],
     "implementationProven": false,
     "runtimeVerified": false,
@@ -6505,7 +7251,7 @@
       "identity": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.",
       "visualPurpose": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 플레이 판단과 휴먼 GO!가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
       "distinctnessRule": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
-      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE",
+      "placeholderDebt": "HIGH",
       "libraryRenewal": "기존 게임의 자산 적용 여부를 품질 합격으로 간주하지 않는다. 현재 화면의 캐릭터·몬스터·건물·가구·식생·음원·UI와 로비를 게임 설계 기준으로 다시 검토하고 낮은 품질 축은 교체한다. 품질 좋은 내부 범용 원본을 우선 선택해 원본을 보존하고 별도 플랫폼 파생본을 만든다. 공간 모델은 실제 메시·리그·재질·모션과 업로드 ID를 연결하고, 음원은 기존 오디오 처리 경로를 사용한다. 단순 부품 재조합만으로 최종 품질을 주장하지 않는다.",
       "lobbyRenewal": "로비가 있는 게임은 기존 진입·파티·상점·포탈 기능과 저장·서버 권한을 보존하면서 현재 게임 컨셉에 맞게 시야·동선·상호작용 구역·배경을 재구성한다. 로비가 없는 게임에 새 로비를 강제하지 않는다. 실제 전후 화면·모바일 조작·접지·실행 확인 후에만 품질 통과로 기록한다."
     },
@@ -6548,14 +7294,14 @@
       "BEFORE_AFTER_COMPARISON_REQUIRED",
       "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
     ],
-    "focus": "CORE_FUN"
+    "focus": "STABILITY"
   },
   "playerFacingInspectionContract": {
     "version": 1,
     "gameId": "human-go-temp",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
+    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6744,9 +7490,13 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "web-games/human-go-temp/index.html",
-      "web-games/human-go-temp/graphics-upgrade.css",
-      "web-games/human-go-temp/preview.html"
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/server/Game.server.luau",
+      "roblox-games/human-go-temp/shared/GameConfig.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/default.project.json",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -6776,9 +7526,9 @@
   "experienceBuildUpContract": {
     "version": 1,
     "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
-    "platform": "WEB",
-    "focus": "CORE_FUN",
-    "attention": "STANDARD",
+    "platform": "ROBLOX",
+    "focus": "STABILITY",
+    "attention": "EXTRA",
     "tracks": [
       {
         "track": "MOTION_AND_ACTING",
@@ -6786,7 +7536,7 @@
       },
       {
         "track": "COMBAT_AND_PRIMARY_ACTION_FEEL",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "UI_HUD_AND_MENU",
@@ -6798,7 +7548,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -6819,19 +7569,16 @@
     ],
     "priorityOrder": [
       "MOTION_AND_ACTING",
+      "AUDIO_MUSIC_AND_FEEDBACK",
       "COMBAT_AND_PRIMARY_ACTION_FEEL",
       "UI_HUD_AND_MENU",
       "INVENTORY_AND_EQUIPMENT",
-      "AUDIO_MUSIC_AND_FEEDBACK",
       "VFX_CAMERA_AND_IMPACT_SYNC",
       "WORLD_VISUAL_COHESION",
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "COMBAT_AND_PRIMARY_ACTION_FEEL",
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -6852,23 +7599,84 @@
       "REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS"
     ],
     "platformProfile": {
-      "attention": "STANDARD",
-      "runtimeSurface": "BROWSER_TOUCH_RUNTIME",
+      "attention": "EXTRA",
+      "runtimeSurface": "OFFICIAL_ROBLOX_STUDIO_MCP",
       "requirements": [
-        "REAL_POINTER_OR_TOUCH_INPUT",
-        "DOM_OR_CANVAS_RENDERED_DELTA",
-        "MOBILE_SAFE_AREA_AND_SCROLL_FLOW",
-        "WEB_AUDIO_STATE_TRANSITION_WHEN_AUDIO_APPLICABLE",
-        "FRAME_AND_MEMORY_BUDGET"
-      ]
+        "ARTICULATED_ACTOR_MOTION_WITH_ANIMATOR_MOTOR6D_OR_BONES",
+        "ROOT_ONLY_MOTION_CANNOT_PASS",
+        "IDLE_WALK_JOG_RUN_START_STOP_TURN_JUMP_LAND_HIT_DEATH_COVERAGE_WHEN_APPLICABLE",
+        "ANTICIPATION_IMPACT_RECOVERY_FOR_PRIMARY_ACTIONS",
+        "TOUCH_FIRST_UI_WITH_MINIMUM_44PX_EQUIVALENT_TARGETS",
+        "INVENTORY_COMPARE_EQUIP_UNEQUIP_REPLACE_FEEDBACK_WHEN_APPLICABLE",
+        "SOUNDSERVICE_SOUNDGROUP_MIXING_AND_SPATIAL_ROLLOFF_WHEN_AUDIO_APPLICABLE",
+        "REGION_OR_STATE_BGM_TRANSITION_WHEN_MULTIPLE_CONTEXTS_EXIST",
+        "VFX_CAMERA_AUDIO_SHARE_AUTHORITATIVE_IMPACT_EVENT",
+        "OFFICIAL_STUDIO_MCP_BEFORE_AFTER_RUNTIME_CAPTURE"
+      ],
+      "ownerDisabledAudioCategoriesMustRemainDisabled": true,
+      "nativeRuntimeEvidenceRequired": true,
+      "mobileRuntimeEvidenceRequired": true
     },
-    "robloxExtra": null,
-    "webExtra": {
-      "runtimeEvidence": "REAL_BROWSER_TOUCH_AND_RENDER_DELTA",
-      "audio": "WEBAUDIO_OR_NATIVE_MEDIA_STATE_TRANSITION_WHEN_APPLICABLE",
-      "ui": "SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW",
-      "motion": "VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE"
+    "robloxExtra": {
+      "priority": "EXTRA_ATTENTION",
+      "motion": {
+        "articulatedActorsRequireJointMotion": true,
+        "animatorMotor6dOrBonesRequiredWhenApplicable": true,
+        "rootOnlyLocomotionCannotPass": true,
+        "requiredStateIntent": [
+          "IDLE",
+          "WALK",
+          "JOG",
+          "RUN",
+          "START",
+          "STOP",
+          "TURN",
+          "JUMP",
+          "LAND",
+          "ATTACK_ANTICIPATION",
+          "IMPACT",
+          "RECOVERY",
+          "HIT_REACTION",
+          "DEATH"
+        ],
+        "blendAndSpeedSyncRequired": true,
+        "weightShiftAndSecondaryMotionRequired": true,
+        "ikOrProceduralGroundingPreferred": true
+      },
+      "uiAndInventory": {
+        "touchFirst": true,
+        "minimumTouchTargetPxEquivalent": 44,
+        "safeAreaRequired": true,
+        "modalStackBackCloseScrollSelectionPersistenceRequired": true,
+        "inventoryFlowWhenApplicable": [
+          "ACQUIRE",
+          "COMPARE",
+          "SELECT",
+          "EQUIP",
+          "UNEQUIP_OR_REPLACE",
+          "CURRENT_EQUIPPED_INDICATOR",
+          "WORLD_OR_CHARACTER_FEEDBACK"
+        ]
+      },
+      "audio": {
+        "ownerDisabledCategoriesPreserved": true,
+        "soundServiceLifecycleRequired": true,
+        "soundGroupMixingPreferred": true,
+        "spatialWorldAudioUsesRolloffWhenApplicable": true,
+        "bgmRegionStateCombatTransitionsRequiredWhenMultipleContextsExist": true,
+        "duplicatePlaybackOnRespawnOrResumeForbidden": true,
+        "singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp": true
+      },
+      "runtimeEvidence": {
+        "officialStudioMcpRequired": true,
+        "actualInputRequired": true,
+        "beforeAfterCaptureRequired": true,
+        "mobileViewportRequired": true,
+        "runtimeStateObservationRequired": true,
+        "sourceMarkersAloneCannotPass": true
+      }
     },
+    "webExtra": null,
     "unityExtra": null,
     "ownerLocks": {
       "gameplayBalanceSaveEconomyNetworkMeaningPreserved": true,
@@ -6884,144 +7692,152 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
-    "ROBLOX": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "FORTNITE_UEFN": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
-    "UNITY_APP": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "UNREAL": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "ROBLOX": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "FORTNITE_UEFN": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "UNITY_APP": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNREAL": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
     "required": true,
-    "responsibleFiles": [],
+    "responsibleFiles": [
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/server/Game.server.luau",
+      "roblox-games/human-go-temp/shared/GameConfig.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/default.project.json",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
+    ],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 1655,
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 65,
         "kind": "FUNCTION",
-        "symbol": "show",
-        "currentBehavior": "function show(id){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 show의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "reportNativeFoundationReady",
+        "currentBehavior": "local function reportNativeFoundationReady()",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2963,
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 198,
         "kind": "FUNCTION",
-        "symbol": "ensureItemUpgradeFields",
-        "currentBehavior": "function ensureItemUpgradeFields(item){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 ensureItemUpgradeFields의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "render",
+        "currentBehavior": "local function render()",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2541,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 153,
         "kind": "FUNCTION",
-        "symbol": "renderPetInventory",
-        "currentBehavior": "function renderPetInventory(){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderPetInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler1",
+        "currentBehavior": "local function scopeHandler1(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 4208,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 176,
         "kind": "FUNCTION",
-        "symbol": "fight",
-        "currentBehavior": "async function fight(mode){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 fight의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler2",
+        "currentBehavior": "local function scopeHandler2(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2972,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 206,
         "kind": "FUNCTION",
-        "symbol": "recalcEquipmentValue",
-        "currentBehavior": "function recalcEquipmentValue(item){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 recalcEquipmentValue의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler3",
+        "currentBehavior": "local function scopeHandler3(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2984,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 236,
         "kind": "FUNCTION",
-        "symbol": "mergeDuplicateEquipment",
-        "currentBehavior": "function mergeDuplicateEquipment(newItem){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 mergeDuplicateEquipment의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler4",
+        "currentBehavior": "local function scopeHandler4(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3547,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 266,
         "kind": "FUNCTION",
-        "symbol": "tickShrinkAfterEnemyTurn",
-        "currentBehavior": "function tickShrinkAfterEnemyTurn(e,target,shrinkState){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 tickShrinkAfterEnemyTurn의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler5",
+        "currentBehavior": "local function scopeHandler5(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2959,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 290,
         "kind": "FUNCTION",
-        "symbol": "itemBaseValue",
-        "currentBehavior": "function itemBaseValue(item){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 itemBaseValue의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler6",
+        "currentBehavior": "local function scopeHandler6(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "show",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "symbol": "reportNativeFoundationReady",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "ensureItemUpgradeFields",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "symbol": "render",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "renderPetInventory",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "symbol": "scopeHandler1",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "fight",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "symbol": "scopeHandler2",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "recalcEquipmentValue",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "symbol": "scopeHandler3",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "mergeDuplicateEquipment",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "symbol": "scopeHandler4",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "tickShrinkAfterEnemyTurn",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "symbol": "scopeHandler5",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "symbol": "itemBaseValue",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "symbol": "scopeHandler6",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
+    "expectedPlayerEffect": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -7092,106 +7908,110 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "web-games/human-go-temp/index.html",
-      "web-games/human-go-temp/graphics-upgrade.css",
-      "web-games/human-go-temp/preview.html"
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/server/Game.server.luau",
+      "roblox-games/human-go-temp/shared/GameConfig.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/default.project.json",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
     ],
     "sourceAnchors": [
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 1655,
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 65,
         "kind": "FUNCTION",
-        "symbol": "show",
-        "context": "function show(id){",
-        "score": 538,
-        "currentBehavior": "function show(id){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 show의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::show이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "reportNativeFoundationReady",
+        "context": "local function reportNativeFoundationReady()",
+        "score": 106,
+        "currentBehavior": "local function reportNativeFoundationReady()",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/client/Game.client.luau::reportNativeFoundationReady이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2963,
+        "file": "roblox-games/human-go-temp/client/Game.client.luau",
+        "line": 198,
         "kind": "FUNCTION",
-        "symbol": "ensureItemUpgradeFields",
-        "context": "function ensureItemUpgradeFields(item){",
-        "score": 82,
-        "currentBehavior": "function ensureItemUpgradeFields(item){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 ensureItemUpgradeFields의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::ensureItemUpgradeFields이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "render",
+        "context": "local function render()",
+        "score": 106,
+        "currentBehavior": "local function render()",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2541,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 153,
         "kind": "FUNCTION",
-        "symbol": "renderPetInventory",
-        "context": "function renderPetInventory(){",
-        "score": 74,
-        "currentBehavior": "function renderPetInventory(){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderPetInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::renderPetInventory이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler1",
+        "context": "local function scopeHandler1(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler1(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 4208,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 176,
         "kind": "FUNCTION",
-        "symbol": "fight",
-        "context": "async function fight(mode){",
-        "score": 74,
-        "currentBehavior": "async function fight(mode){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 fight의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::fight이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler2",
+        "context": "local function scopeHandler2(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler2(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2972,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 206,
         "kind": "FUNCTION",
-        "symbol": "recalcEquipmentValue",
-        "context": "function recalcEquipmentValue(item){",
-        "score": 66,
-        "currentBehavior": "function recalcEquipmentValue(item){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 recalcEquipmentValue의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::recalcEquipmentValue이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler3(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2984,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 236,
         "kind": "FUNCTION",
-        "symbol": "mergeDuplicateEquipment",
-        "context": "function mergeDuplicateEquipment(newItem){",
-        "score": 66,
-        "currentBehavior": "function mergeDuplicateEquipment(newItem){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 mergeDuplicateEquipment의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::mergeDuplicateEquipment이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler4(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 3547,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 266,
         "kind": "FUNCTION",
-        "symbol": "tickShrinkAfterEnemyTurn",
-        "context": "function tickShrinkAfterEnemyTurn(e,target,shrinkState){",
-        "score": 66,
-        "currentBehavior": "function tickShrinkAfterEnemyTurn(e,target,shrinkState){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 tickShrinkAfterEnemyTurn의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::tickShrinkAfterEnemyTurn이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler5",
+        "context": "local function scopeHandler5(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler5(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/human-go-temp/index.html",
-        "line": 2959,
+        "file": "roblox-games/human-go-temp/server/Game.server.luau",
+        "line": 290,
         "kind": "FUNCTION",
-        "symbol": "itemBaseValue",
-        "context": "function itemBaseValue(item){",
-        "score": 58,
-        "currentBehavior": "function itemBaseValue(item){",
-        "intendedBehavior": "CORE_FUN primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 휴먼 GO!를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 itemBaseValue의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/human-go-temp/index.html::itemBaseValue이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/human-go-temp/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "scopeHandler6",
+        "context": "local function scopeHandler6(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler6(player)",
+        "intendedBehavior": "STABILITY primary goal \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/human-go-temp/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/human-go-temp/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -7200,57 +8020,79 @@
   },
   "developmentImpact": {
     "version": 1,
-    "platform": "WEB",
+    "platform": "ROBLOX",
     "categories": [
-      "UI",
-      "GAMEPLAY",
-      "MULTIPLAYER_SERVER"
+      "GRAPHICS",
+      "MAP",
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "SECURITY_AUTHORITY_QA"
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
-      "STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED"
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
-    "openCloudWorldChecks": []
+    "securityRelevant": false,
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ]
   },
   "preMutationDryRun": {
     "version": 1,
     "mode": "DRY_RUN_NO_SOURCE_MUTATION",
     "gameId": "human-go-temp",
-    "platform": "WEB",
+    "platform": "ROBLOX",
     "plannedFiles": [
-      "web-games/human-go-temp/index.html",
-      "web-games/human-go-temp/graphics-upgrade.css",
-      "web-games/human-go-temp/preview.html"
+      "roblox-games/human-go-temp/client/Game.client.luau",
+      "roblox-games/human-go-temp/server/Game.server.luau",
+      "roblox-games/human-go-temp/shared/GameConfig.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonUI.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/default.project.json",
+      "roblox-games/human-go-temp/client/MaterialPresentation.client.luau"
     ],
     "impact": {
       "version": 1,
-      "platform": "WEB",
+      "platform": "ROBLOX",
       "categories": [
-        "UI",
-        "GAMEPLAY",
-        "MULTIPLAYER_SERVER"
+        "GRAPHICS",
+        "MAP",
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "ROBLOX_LUAU_COMPILE",
+        "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
-        "REMOTE_AUTHORITY_AND_SYNC_QA",
-        "SECURITY_AUTHORITY_QA"
+        "VISUAL_BINDING_QA",
+        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
-        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
-        "STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED"
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
-      "openCloudWorldChecks": []
+      "securityRelevant": false,
+      "openCloudWorldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "LANDMARK_AND_OBJECTIVE_COUNTS",
+        "WORLD_GEOMETRY",
+        "TERRAIN_BINDING",
+        "LIGHTING_ATMOSPHERE",
+        "STREAMING_CONFIGURATION"
+      ]
     },
     "protectedSemantics": [
       "CORE_RULES",
@@ -7262,33 +8104,42 @@
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "SECURITY_AUTHORITY_QA"
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
-      "STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED"
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "openCloudWorldChecks": [],
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ],
     "sourceMutationPerformed": false,
     "newWorkflowOrQueueRequired": false,
     "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 휴먼 GO!의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
+    "expectedPlayerEffect": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "REGRESSION",
+      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f7ca01536d379a6edbe2adc043d0877a8992a16305c3bc3332c3711359e13a75",
+      "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-static-revalidation-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7299,8 +8150,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7336,19 +8187,19 @@
     "MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED"
   ],
   "nextEscalationCandidates": [
-    "CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY",
+    "DEEPEN_CORE_FUN_DECISION_DENSITY",
     "RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE",
     "CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST",
     "OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED"
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7358,8 +8209,8 @@
     "domainCount": 74,
     "visualDomainCount": 19,
     "experienceTrackCount": 9,
-    "experienceBuildUpPlatform": "WEB",
-    "robloxExtraExperienceAttention": false,
+    "experienceBuildUpPlatform": "ROBLOX",
+    "robloxExtraExperienceAttention": true,
     "allowedStates": [
       "PASS",
       "GAP",
@@ -7405,5 +8256,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T10:21:15.098Z"
+  "generatedAt": "2026-10-21T16:15:40.298Z"
 }

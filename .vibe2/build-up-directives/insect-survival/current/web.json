@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "insect-survival-build-up-g2-1ec9f9bec972",
-  "directiveFingerprint": "1ec9f9bec97288e5cf6845dee03e20ca62b601d6c8ef458b2a7b492555669488",
-  "previousDirectiveFingerprint": "c1d01f6ca059bd3be4ce43533bcf3abb84eaf3c5b3bf99e107619bec23a2c4d5",
-  "forbiddenRepeatFingerprint": "c1d01f6ca059bd3be4ce43533bcf3abb84eaf3c5b3bf99e107619bec23a2c4d5",
+  "directiveId": "insect-survival-build-up-g3-26ea0eb0a4b4",
+  "directiveFingerprint": "26ea0eb0a4b4a7449655714eedd846efd07cb6d12b0b865d06dc8e96cc38c14f",
+  "previousDirectiveFingerprint": "1ec9f9bec97288e5cf6845dee03e20ca62b601d6c8ef458b2a7b492555669488",
+  "forbiddenRepeatFingerprint": "1ec9f9bec97288e5cf6845dee03e20ca62b601d6c8ef458b2a7b492555669488",
   "gameId": "insect-survival",
   "gameName": "곤충 생존기",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/insect-survival",
-  "sourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+  "sourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
   "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+        "sourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
-    "sourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+    "sourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+    "sourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4376,7 +4376,7 @@
       "entryFlow": 0,
       "loadingFlow": 0,
       "input": 3,
-      "map": 104,
+      "map": 103,
       "landmark": 0,
       "interaction": 16,
       "inventory": 45,
@@ -4697,9 +4697,9 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 곤충 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 곤충 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "3c152e644b54629700b67fd463455ee89fddeaee6e770c13050f1176c1b5d80c",
-    "currentSourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+    "currentSourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5889,7 +5889,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 65042,
+        "sourceBytes": 65420,
         "largestFileBytes": 49042,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5922,12 +5922,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 2,
+        "WORLD_ECOLOGY_STORY_CHAIN": 3,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -5936,6 +5936,7 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
       ],
@@ -5972,7 +5973,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 202,
+        "score": 184,
         "gapDomains": [
           "MAP_EXPANSION",
           "WORLD_DENSITY",
@@ -6093,11 +6094,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
-    "priorSourceFingerprint": "3c152e644b54629700b67fd463455ee89fddeaee6e770c13050f1176c1b5d80c",
+    "sourceFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
+    "priorSourceFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6116,7 +6117,7 @@
     "version": 1,
     "gameId": "insect-survival",
     "platform": "WEB",
-    "sourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+    "sourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6711,7 +6712,7 @@
     "gameId": "insect-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+    "sourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7448,7 +7449,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "8c0c20488e3e698642d2243d96dbe38ef02e4586f21153144c8b5b111b10fd76",
+      "sourceTreeFingerprint": "a352c478145a18d46d000bb196d8189868e5bfe06fcf24482427b54434cbcc62",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7507,7 +7508,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7574,5 +7575,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T12:33:39.578Z"
+  "generatedAt": "2026-10-21T16:15:42.939Z"
 }
