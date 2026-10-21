@@ -191,6 +191,7 @@ export async function createTower3d({canvas,WORLD}){
     renderer.render(scene,camera);
     canvas.dataset.renderedFrame='true';
     document.body.dataset.spatialDimension='3d';
+    document.body.dataset.renderer='three-webgl';
     const count=actors.filter(a=>!a.dead).length;
     nativeEnemies=actors.filter(a=>!a.dead&&enemyNodes.get(a.id)?.native).length;
     unmatchedEnemies=count-nativeEnemies;
