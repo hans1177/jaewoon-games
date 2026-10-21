@@ -94,7 +94,7 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
     actions.push('RECOVER_STALE_MACHINE_STATE_BLOCKER'); taskIds.push(...staleMachineIds);
   }
 
-  const staleIds=staleRunningIds(queue,{nowMs,staleMs:staleRunningMs});
+  const staleIds=staleRunningIds(queue,{nowMs,staleMs:45*60*1000});
   if(staleIds.size){
     queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>staleIds.has(row.id)?{
       ...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED',
