@@ -379,8 +379,12 @@ export function recoverCompletedRunningReservations(queueInput, {
   const tasks=queue.tasks.map(task=>{
     const runId=clean(task.reservationRunId);
     if(task.status!=='running')return task;
-    // [자산 예약 회수] 그래픽 부서의 기존 자산 개발 작업도 실제 종료된 실행에 한해 재배정한다.
-    if((clean(task.department).toLowerCase()!=='development'&&clean(task.executionLane).toUpperCase()!=='ASSET_DEVELOPMENT')
+    // [자산 예약 회수] 완료 후 RELEASE_WAIT로 이동한 그래픽 작업은 원래
+    // ASSET_DEVELOPMENT 레인 이름을 잃는다. 저장된 실제 자산 작업 표시를
+    // 사용하고, API가 증명한 종료·무결과 실행에만 기존 재대기 경로를 적용한다.
+    if((clean(task.department).toLowerCase()!=='development'
+        &&task.assetProductionLane!==true
+        &&clean(task.executionLane).toUpperCase()!=='ASSET_DEVELOPMENT')
       ||clean(task.type).toLowerCase()!=='implementation')return task;
     // A completed run with no downloadable worker result cannot satisfy fan-in.
     // Requeue only when the separate API probe proved the run and artifact absence;
