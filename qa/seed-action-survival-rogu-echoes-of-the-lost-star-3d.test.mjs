@@ -50,15 +50,16 @@ test('Star Echoes original mobile handler remains executable in the new module',
  };
  const dom={hidden:false,getElementById:node,createElement:()=>node('child'),
   addEventListener:(type,fn)=>events.set(type,fn)};
- let frameCalls=0,rendererCalls=0;
+ let frameCalls=0,rendererCalls=0,scheduledFrame=null;
  const context=vm.createContext({document:dom,window:{},innerWidth:390,innerHeight:760,devicePixelRatio:1,
-  performance:{now:()=>0},requestAnimationFrame(){frameCalls++},addEventListener(){},
+  performance:{now:()=>0},requestAnimationFrame(fn){frameCalls++;scheduledFrame=fn},addEventListener(){},
   createStar3d:()=>({resize(){},render(){rendererCalls++}})});
  vm.runInContext(code,context,{timeout:1000});
  assert.equal(node('startBtn').disabled,false);
  node('startBtn').onclick();
  assert.ok(frameCalls>0);
- vm.runInContext("spawnEnemy('normal');update(.033);draw()",context);
+ assert.equal(typeof scheduledFrame,'function');
+ scheduledFrame(33); // Invoke the real exported browser frame callback, not private IIFE functions.
  assert.ok(rendererCalls>0,'actual existing update must render via native 3D consumer');
  const joy=node('joystick'),stick=node('stick'),ptr=(id,x,y)=>({pointerId:id,clientX:x,clientY:y,preventDefault(){}});
  joy.dispatch('pointerdown',ptr(1,94,58));const first=stick.style.transform;
