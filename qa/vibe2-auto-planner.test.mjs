@@ -5645,7 +5645,30 @@ test('F0 gameplay failure rebinds queued usability to approved design and real R
     });
     const waiting=planned.queue.tasks.find(row=>row.id===gameId+'-queued-design-carrier');
     assert.ok(waiting,'existing queued work must remain in the canonical queue');
-    assert.match(waiting.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/);
+    const observedProjects=collectProjects({projects:[]},{
+      games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',
+        lifecycleState:'ACTIVE',robloxProjectPath:rel}]},
+      root,{items:[{
+        gameId,gameName:project.name,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+        selectedPlatform:'ROBLOX',robloxProjectPath:rel,
+        robloxSourceCommit:revision,robloxBuildOrPackagePassed:true,
+        robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,
+        robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:gap
+      }]});
+    const observedProject=observedProjects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+    assert.ok(observedProject,'project must be present in current runtime queue');
+    const probe=bindApprovedF0GameplayRepairToTask(waiting,observedProject,root);
+    assert.ok(waiting.goal.includes('APPROVED_F0_GAMEPLAY_SOURCE_REPAIR'),JSON.stringify({
+      qualityRequired:observedProject.queueRobloxQualityBuildUpRequired,
+      authority:observedProject.queueRobloxQualityBuildUpEvidence?.authority,
+      source:observedProject.queueRobloxSourceCommit,
+      artifact:observedProject.queueRobloxArtifactIdentity,
+      action:waiting.buildUpNextAction,
+      taskDesign:waiting.buildUpDirective?.designFingerprint,
+      rebindProbe:probe.goal.includes('APPROVED_F0_GAMEPLAY_SOURCE_REPAIR'),
+      taskStatus:waiting.status,projectPath:observedProject.projectPath,
+      directFiles:waiting.responsibleFiles
+    }));
     assert.equal(waiting.buildUpNextAction,'CAUSAL_REPAIR');
     assert.ok(waiting.responsibleFiles.includes(rel+'/server/Game.server.luau'));
     assert.ok(waiting.responsibleFiles.includes(rel+'/shared/GameConfig.luau'));
