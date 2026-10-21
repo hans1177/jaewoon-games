@@ -88,6 +88,34 @@ const assetAppearanceFactor=key=>{
 };
 // Original, unchanged Tiny Treats mesh filenames; never fabricate an absent asset.
 const MODEL_NAMES = Object.freeze(['floor_base','tree','tree_large','foliage_A','foliage_B','cobblestones','bench_A','bench_B','fence_straight','house','gate_single','package']);
+const PINNED_CC0_OBJ_SHA256=Object.freeze({
+  'floor_base':'5cb3f33b9999ab14808d2b9ee803332ed253784ef2a96457f58f3476785025e1',
+  'tree':'2857ae18918afa6ed96fcaa5b1bf6c95c24d38361b46b8a88d0e5298e0f7c797',
+  'tree_large':'33b7a5a40b579a6790bea2662ff51ae2fcb2e5736c153337c6e760e46d351e3d',
+  'foliage_A':'6b8620a47dd815ca5ed3b02567ad78b3ed395758a47b81eb89a5b1b5ce2460d4',
+  'foliage_B':'392aa2cb2d2b26eb654225e45c95e99a35c7fa552333828d0202b674fd825fac',
+  'cobblestones':'7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9',
+  'bench_A':'4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b',
+  'bench_B':'d7a373ea5018733d6e254f12457caa46840a91fe760d17f8cb04377eda94b8de',
+  'fence_straight':'d0423955b5584af172044493b29ac1db2b02bf34fb84a6ba5c6b5b2280e4bb5c',
+  'house':'85e0f7edc9ce27d54372458ad632dd07536aab383a7e0ae65f7965b900c37f27',
+  'gate_single':'f8be65e712f4837498a4fa6c6ebce16ffb330c7491ee707d020c8912bdb585e4',
+  'package':'6ec78c12641965b7567d341301509e2d0f81ddc662199667bab8f0f3f984fe30'
+});
+// Runtime bytes, not catalog metadata, are the asset identity. Block altered sources
+// before OBJ parsing; the original Canvas game remains available on preview failure.
+async function verifyPinnedCc0Obj(name,response){
+  if(!response.ok)throw new Error('Original CC0 OBJ missing: '+name+' '+response.status);
+  const expected=PINNED_CC0_OBJ_SHA256[name];
+  if(!Object.hasOwn(PINNED_CC0_OBJ_SHA256,name)||!expected)throw new Error('Unregistered CC0 OBJ: '+name);
+  if(!globalThis.crypto?.subtle)throw new Error('CC0 SHA-256 unavailable in insecure context: '+name);
+  const bytes=await response.arrayBuffer();
+  const hash=Array.from(new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256',bytes)),
+    byte=>byte.toString(16).padStart(2,'0')).join('');
+  if(hash!==expected)throw new Error('CC0 OBJ SOURCE HASH MISMATCH: '+name);
+  return new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+}
+
 
 function parseDownloadedObj(text, modelName, materialText=''){
   // The tracked Tiny Treats CC0 OBJ vertices/faces remain the geometry authority.
@@ -134,9 +162,8 @@ async function loadSourceModels(){
       fetch(geometryUrl,{cache:'force-cache'}),
       fetch(materialUrl,{cache:'force-cache'})
     ]);
-    if(!response.ok)throw new Error('Original CC0 OBJ missing: '+name+' '+response.status);
     if(!mtlResponse.ok)throw new Error('Original CC0 material missing: '+name+' '+mtlResponse.status);
-    const [text,materialText]=await Promise.all([response.text(),mtlResponse.text()]);
+    const [text,materialText]=await Promise.all([verifyPinnedCc0Obj(name,response),mtlResponse.text()]);
     if(!text.includes('v ')||!text.includes('f '))throw new Error('Invalid original 3D OBJ model: '+name);
     if(!materialText.includes('Kd '))throw new Error('Original 3D material diffuse missing: '+name);
     return [name,parseDownloadedObj(text,name,materialText)];
