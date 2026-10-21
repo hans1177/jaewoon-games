@@ -752,14 +752,42 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
     const retiredWeb=clean(task.target).toLowerCase()==='web'
       &&webSourceRetiredInCatalog(games.get(clean(task.gameId)));
-    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,task.gameId,task.target,task)||retiredWeb;
-    const exactFocus=!ownerDevelopmentHold&&task.status==='queued'
+    // Earlier Web gameplay assessment work sometimes inherited the old
+    // Roblox-only asset-production route. Only exact approved focused Web
+    // game-source assessments may resume as gameplay; actual graphics work,
+    // retired sources and running reservations remain untouched.
+    const gameId=clean(task.gameId);
+    const focusType=clean(task?.buildUpDirective?.primaryFocus).toUpperCase();
+    const webRoot=clean(task.sourceRoot).replaceAll('\\','/').replace(/\/+$/,'');
+    const approvedWebRoot=clean(focus.ownerFocusedWebSourcePaths?.[gameId])
+      .replaceAll('\\','/').replace(/\/+$/,'');
+    const assetTargets=policy?.assetProductionParallelContract?.activeProductionTargets;
+    const gameplayFocus=['CORE_FUN','PROGRESSION','USABILITY','STABILITY','WORLD_LOBBY_FIRST'].includes(focusType)
+      ||(!focusType&&clean(task.id)===gameId+'-existing-web-assessment-v1');
+    const oldAssessment=task.status==='queued'&&!retiredWeb
+      &&clean(task.target).toLowerCase()==='web'
       &&clean(task.department).toLowerCase()==='development'
       &&clean(task.type).toLowerCase()==='implementation'
-      &&focusedIds.has(clean(task.gameId))
-      &&clean(platforms[task.gameId]).toLowerCase()===clean(task.target).toLowerCase();
+      &&task.assetProductionLane===true
+      &&!task.motionRepairWorkUnit&&!task.selectedTask?.motionRepairWorkUnit
+      &&Array.isArray(assetTargets)&&!assetTargets.includes('WEB')
+      &&focusedIds.has(gameId)&&clean(platforms[gameId]).toUpperCase()==='WEB'
+      &&webRoot===approvedWebRoot&&webRoot==='web-games/'+gameId
+      &&(task.evidence||[]).includes('existing-web-assessment-required')
+      &&gameplayFocus;
+    const corrected=oldAssessment?{
+      ...task,assetProductionLane:false,
+      evidence:(task.evidence||[]).map(value=>value==='asset-production-parallel:v1'
+        ?'asset-production-parallel:legacy-web-gameplay-assessment-reclassified-v1':value)
+    }:task;
+    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,corrected.gameId,corrected.target,corrected)||retiredWeb;
+    const exactFocus=!ownerDevelopmentHold&&corrected.status==='queued'
+      &&clean(corrected.department).toLowerCase()==='development'
+      &&clean(corrected.type).toLowerCase()==='implementation'
+      &&focusedIds.has(gameId)
+      &&clean(platforms[gameId]).toLowerCase()===clean(corrected.target).toLowerCase();
     return {
-      ...task,ownerDevelopmentHold,
+      ...corrected,ownerDevelopmentHold,
       ...(exactFocus?{ownerFocusedCaretaker:true,focusedCaretaker:true,
         priority:task.priority==='owner-immediate'?'owner-immediate':'critical'}:{})
     };
