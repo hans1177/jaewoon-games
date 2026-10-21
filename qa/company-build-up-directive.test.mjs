@@ -93,6 +93,42 @@ test('every game worker receives concrete player-facing inspections without fabr
   }
 });
 
+test('design and source BUILD_UP stay coupled without inventing reference or runtime PASS',()=>{
+  const first=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
+    designRecord:design(),sourceObservation:{sourceTreeFingerprint:'initial-tree',topFiles:[],sourceAnchors:[],observations:[],signals:{}},
+    responsibleFiles:['roblox-games/design-source-growth/server/Game.server.luau']});
+  assert.equal(first.designSourceBuildUp.revisionRequiredForNewGameplay,false);
+  assert.equal(first.designSourceBuildUp.confirmedRuntimePass,false);
+  assert.match(directivePrompt(first),/DESIGN_SOURCE_BUILD_UP_RULE/);
+  assert.match(directivePrompt(first),/A_REFERENCE_SYSTEM_DEPTH/);
+  assert.match(directivePrompt(first),/A는 이름 있는 대표 유사 장르 게임의 실제 시스템/);
+  assert.match(directivePrompt(first),/B는 우리 기존 게임의 실제 시스템/);
+  assert.doesNotMatch(directivePrompt(first),/기존 게임 시스템은 B 보조 참조로만 사용한다/);
+  const stale=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
+    designRecord:design(),sourceObservation:{sourceTreeFingerprint:'new-source-tree',topFiles:[],sourceAnchors:[],observations:[],signals:{}},
+    previousDirective:first,previousDirectiveOutcome:'verified',
+    responsibleFiles:['roblox-games/design-source-growth/server/Game.server.luau']});
+  assert.equal(stale.designSourceBuildUp.sameApprovedDesign,true);
+  assert.equal(stale.designSourceBuildUp.revisionRequiredForNewGameplay,true);
+  assert.equal(stale.designSourceBuildUp.nextDesignAction,'REQUEST_EXISTING_DESIGN_CYCLE_REVISION');
+  assert.equal(stale.autonomousContentExpansion.designRevisionRequiredForNewGameplay,true);
+  assert.equal(stale.autonomousContentExpansion.derivedRuleEvolution.allowed,false);
+  assert.match(stale.autonomousContentExpansion.derivedRuleEvolution.rule,/REVIEWED_CURRENT_DESIGN_REVISION/);
+  const revised=structuredClone(design());
+  revised.content.coreFun+=' - design revision based on checked gameplay outcomes';
+  const current=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
+    designRecord:revised,sourceObservation:{sourceTreeFingerprint:'new-source-tree',topFiles:[],sourceAnchors:[],observations:[],signals:{}},
+    previousDirective:first,previousDirectiveOutcome:'verified'});
+  assert.equal(current.designSourceBuildUp.sameApprovedDesign,false);
+  assert.equal(current.designSourceBuildUp.revisionRequiredForNewGameplay,false);
+  const safe=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
+    designRecord:design(),sourceObservation:{sourceTreeFingerprint:'new-source-tree',topFiles:[],sourceAnchors:[],observations:[],signals:{}},
+    previousDirective:first,previousDirectiveOutcome:'verified',
+    safeDesignlessMode:true,requestedFocus:'STABILITY'});
+  assert.equal(safe.designSourceBuildUp.revisionRequiredForNewGameplay,false);
+  assert.equal(safe.designSourceBuildUp.nextDesignAction,'REPAIR_SOURCE_WITHOUT_NEW_UNAPPROVED_GAMEPLAY');
+});
+
 test('technical or thumbnail PASS cannot make generated inspection evidence verified',()=>{
   const d=buildGameSpecificBuildUpDirective({gameId:'daechung-rpg',platform:'ROBLOX',designRecord:design(),runtimeEvidence:{runtimeObserved:true,runtimePassed:true,imageContentPassed:true,repeatCount:100}});
   assert.equal(d.playerFacingInspectionContract.evidenceState,'UNVERIFIED');

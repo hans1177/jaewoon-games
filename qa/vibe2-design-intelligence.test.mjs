@@ -5,6 +5,24 @@ import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, buildDesignEvo
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-control.mjs';
 
+test('A benchmark reviews full genre experience and enforces design before new source systems',()=>{
+  const b=buildDesignEvolutionBrief();
+  assert.equal(b.representativeSystemBenchmark.role,
+    'A_NAMED_SIMILAR_GAME_SYSTEM_REFERENCE_B_EXISTING_GAME_SYSTEM_PRESERVED');
+  for(const domain of ['PRIMARY_ACTION_AND_INPUT','HUD_INFORMATION_HIERARCHY','MENU_NAVIGATION_AND_RETURN',
+    'WORLD_AND_STAGE_PROGRESSION','EQUIPMENT_PROGRESS_AND_REWARDS','FAILURE_RETRY_SAVE_RECOVERY',
+    'MID_LATE_GAME_DEPTH_AND_REPLAY']){
+    assert.ok(b.representativeSystemBenchmark.dimensions.includes(domain),domain);
+  }
+  assert.equal(b.representativeSystemBenchmark.directScreenAssetCodeOrDistinctiveExpressionCopyForbidden,true);
+  assert.equal(b.designSourceBuildUp.bothDesignAndSourceMustEvolveOnApprovedGameplayExpansion,true);
+  assert.equal(b.designSourceBuildUp.visualAndDefectRepairMayContinueWithinExistingApprovedDesign,true);
+  assert.ok(b.designSourceBuildUp.orderedLoop.indexOf('REVIEW_AND_APPROVE_DESIGN_REVISION')
+    <b.designSourceBuildUp.orderedLoop.indexOf('IMPLEMENT_CHANGED_DESIGN_IN_EXISTING_GAME_SOURCE'));
+  assert.equal(b.referenceHomage.directProtectedExpressionCopyForbidden,true);
+  assert.equal(b.authorityExpanded,false);
+});
+
 test('evolution brief separates easy entry, systemic depth, small joys and reliable rewards from academic subject matter',()=>{
   const brief=buildDesignEvolutionBrief();
   assert.equal(brief.depthAndRewardEvolution.academicSubjectMatterRequired,false);

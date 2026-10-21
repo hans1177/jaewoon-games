@@ -2366,6 +2366,9 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(promptDesignContext)}`,
+    `DESIGN_SOURCE_BUILD_UP: ${JSON.stringify(d.designSourceBuildUp||{})}`,
+    'DESIGN_SOURCE_BUILD_UP_RULE: 설계도 매 BUILD_UP에서 진화해야 한다. 첫 단계는 최신 승인된 MAIN/A/B/C/D/@ 설계와 직전 실제 소스·플레이 증거의 차이를 분석하고 기존 설계기에서 개정을 심사받는 것이다. 승인된 설계 규칙·상태·화면 전개·책임 함수에 추적되는 기능만 기존 소스에서 빌드업한다. 이전 설계가 그대로면 승인되지 않은 새 전투·경제·진행·저장 규칙을 코드에서 먼저 발명하지 말고 기존 설계 사이클의 설계 개정을 요청한다. 버그 수리와 승인된 설계 범위의 표현/편의 수정은 계속 진행한다. 검증된 플레이 결과는 다음 설계 개정의 입력이지 설계/런타임 PASS 자체가 아니다.',
+    'A_REFERENCE_SYSTEM_DEPTH: 비슷한 유명 게임의 조작, HUD, 메뉴/화면 동선, 카메라, 전투·핵심 플레이, 장비/성장/보상, 월드·스테이지 전개, 실패/재시도, 첫 세션/후반 깊이까지 참고한다. 이름·출처·관찰된 작동 원리·우리 게임 B와의 차이·적용/기각·검증 장면을 연결하되 타 게임 고유 UI 표현·그림·캐릭터·문구·코드·에셋 복제 금지.',
     `DESIGNED_GAME_VOLUME: mode=${volume.mode||'UNKNOWN'}; authored=${volume.authoredItemCount||0}; sourceNamedCandidates=${volume.namedSourceCandidateCount||0}; sourceReview=${volume.sourceReviewRequiredCount||0}; runtimeVerified=${volume.runtimeVerifiedCount||0}; countsAreNotPass=true`,
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
@@ -2385,7 +2388,7 @@ export function directivePrompt(d={}){
     `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
     `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
-    'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A 중심 장르·시스템, B 보조 세부장르·시스템, C 작품 주/보조 장르, D 구체 존재·장소·사건·규칙, @ D 연관 연구·실험·새 선택을 직접 연결한다. 검증된 설계는 기존 Roblox Luau 서버/클라이언트 책임 함수에 구현하고 실제 입력→서버상태→결과→저장/재접속을 검수한다. 기존 게임 시스템은 B 보조 참조로만 사용한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
+    'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A는 이름 있는 대표 유사 장르 게임의 실제 시스템·플레이 경험을 출처와 함께 추상화하며 B는 우리 기존 게임의 실제 시스템·원본 출처·기존 상태/규칙을 보존한다. A→B와 B→A의 새로운 플레이어 선택·상태 전이를 설계한다. C는 작품 주/보조 장르, D는 고유 장소·존재·사건·규칙, @는 D 연관 연구·실험·새 선택이다. 조작·HUD·메뉴·카메라·월드 진행·성장·실패/재도전까지 원리를 참고하되 고유 화면/그래픽/캐릭터/문구/코드를 복제하지 않는다. 먼저 최신 설계를 빌드업하고 엄격 심사를 통과한 규칙 ID만 기존 책임 소스에 구현한다. 실제 입력→서버/웹 상태→피드백→저장/재접속과 동일 빌드 검증을 수행한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -2444,6 +2447,31 @@ export function buildGameSpecificBuildUpDirective({
 }={}){
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
+  const currentDesignFingerprint=sha(JSON.stringify(design));
+  const previousDesignFingerprint=clean(previousDirective?.designFingerprint);
+  const sameApprovedDesign=Boolean(previousDirective&&previousDesignFingerprint&&previousDesignFingerprint===currentDesignFingerprint);
+  const previousVerifiedOutcome=['verified','done','completed','pass','passed'].includes(clean(previousDirectiveOutcome).toLowerCase());
+  const designSourceBuildUp=Object.freeze({
+    version:1,scope:'EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY',
+    currentDesignFingerprint,previousDesignFingerprint:previousDesignFingerprint||null,
+    sameApprovedDesign,previousVerifiedOutcome,
+    revisionRequiredForNewGameplay:sameApprovedDesign&&previousVerifiedOutcome&&!safeDesignlessMode,
+    nextDesignAction:safeDesignlessMode?'REPAIR_SOURCE_WITHOUT_NEW_UNAPPROVED_GAMEPLAY':
+      sameApprovedDesign&&previousVerifiedOutcome?'REQUEST_EXISTING_DESIGN_CYCLE_REVISION':
+      'TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE',
+    sourceAuthority:'LATEST_APPROVED_SAME_GAME_DESIGN_ONLY',
+    referenceA:design?.creativeGrammar?.a?.referenceGame||null,
+    baselineB:design?.creativeGrammar?.b?.existingSystemReference||null,
+    benchmarkDimensions:Object.freeze(['INPUT_AND_PRIMARY_ACTION','HUD_AND_MENU_FLOW','CAMERA_AND_FEEDBACK',
+      'COMBAT_OR_CORE_LOOP','WORLD_AND_LEVEL_PROGRESSION','EQUIPMENT_REWARDS_AND_GROWTH',
+      'ONBOARDING_AND_FIRST_SESSION','FAILURE_RETRY_SAVE_RECOVERY','MID_LATE_DEPTH']),
+    loop:Object.freeze(['REVIEW_GAME_AND_NAMED_REFERENCE_EVIDENCE','REVISE_MAIN_A_B_C_D_AT_DESIGN',
+      'STRICT_DESIGN_REVIEW','BIND_RULE_IDS_TO_EXISTING_RESPONSIBLE_SOURCE',
+      'BUILD_SOURCE','EXACT_BUILD_RUNTIME_QA','NEXT_DESIGN_REVISION_FROM_VERIFIED_GAPS']),
+    provenanceRule:'NAMED_SOURCE_OBSERVED_MECHANICS_OR_UNVERIFIED; NEVER_COPY_DISTINCTIVE_UI_ART_CHAR_TEXT_CODE',
+    confirmedRuntimePass:false,
+    preserves:Object.freeze(['OWNER_GAME_IDENTITY','CORE_RULES','BALANCE','ECONOMY','SAVE_KEYS_AND_MEANING','NETWORK_AUTHORITY'])
+  });
   const multiplayerPolicy=readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
   const multiplayerRequired=multiplayerPolicy.required===true;
   sourceRoot=posix(sourceRoot)||posix(sourceObservation?.sourceRoot);
@@ -2557,7 +2585,7 @@ export function buildGameSpecificBuildUpDirective({
     standardGrammarVersion:ownerStandardGrammar?Number(design.creativeGrammar.standardVersion):null,
     delveAtEvidence:Object.freeze(delveEvidence),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    rule:ownerStandardGrammar?'MAIN_A_PRIMARY_B_SUPPORTING; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL':'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
+    rule:ownerStandardGrammar?'MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL':'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
     identityRewriteRequired:false,
     existingBalanceSaveEconomyAndAuthorityPreserved:true
   });
@@ -2725,6 +2753,22 @@ export function buildGameSpecificBuildUpDirective({
       'NO_NEW_GAMEPLAY_OR_PROGRESSION_SEMANTIC_WITHOUT_DESIGN','EXISTING_RELEVANT_INCREMENTAL_QA_PASSES',
       'DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP'
     ])
+  }):designSourceBuildUp.revisionRequiredForNewGameplay?Object.freeze({
+    ...autonomousContentExpansionBase,
+    // 검증된 소스가 전진했지만 동일 승인 설계가 유지됐으면,
+    // 기존 승인 규칙의 실제 구현·결함 복구는 계속하고 새로운 규칙 발명만 금지한다.
+    executionMode:'APPROVED_DESIGN_SOURCE_BUILD_UP_WHILE_DESIGN_REVISION_PENDING',
+    designRevisionRequiredForNewGameplay:true,
+    derivedRuleEvolution:Object.freeze({
+      ...(autonomousContentExpansionBase.derivedRuleEvolution||{}),
+      allowed:false,
+      rule:'NEW_GAMEPLAY_RULES_REQUIRE_REVIEWED_CURRENT_DESIGN_REVISION; CONTINUE_APPROVED_SYSTEM_SOURCE_AND_SAFE_REPAIRS'
+    }),
+    completionAcceptance:Object.freeze([
+      ...(autonomousContentExpansionBase.completionAcceptance||[]),
+      'NO_UNAPPROVED_NEW_GAMEPLAY_WHILE_DESIGN_REVISION_PENDING',
+      'EXACT_SOURCE_RUNTIME_QA_AND_FEEDBACK_REQUIRED'
+    ])
   }):autonomousContentExpansionBase;
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
@@ -2864,7 +2908,8 @@ export function buildGameSpecificBuildUpDirective({
     platform:clean(platform).toUpperCase()||'COMMON',
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    designFingerprint:sha(JSON.stringify(design)),
+    designFingerprint:currentDesignFingerprint,
+    designSourceBuildUp,
     identityReinforcement,
     designToPlatformCodingTrace,
     designedGameVolume,

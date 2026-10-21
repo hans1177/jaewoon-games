@@ -712,6 +712,35 @@ export function buildDesignEvolutionBrief({ game = {}, seed = {}, factPack = {},
       directProtectedExpressionCopyForbidden:true,
       multiReferenceGeneralizationPreferred:true
     }),
+    // 이름 있는 A 참고 게임을 기능 한두 개가 아니라 실제 플레이 전체 흐름으로 분석한다.
+    // 관찰하지 않은 기능·버전·화면을 사실로 꾸미지 않으며 보호된 표현은 복제하지 않는다.
+    representativeSystemBenchmark:freeze({
+      role:'A_NAMED_SIMILAR_GAME_SYSTEM_REFERENCE_B_EXISTING_GAME_SYSTEM_PRESERVED',
+      dimensions:freezeList(['PRIMARY_ACTION_AND_INPUT','HUD_INFORMATION_HIERARCHY','MENU_NAVIGATION_AND_RETURN',
+        'CAMERA_AND_FEEDBACK','COMBAT_OR_PRIMARY_INTERACTION_LOOP','WORLD_AND_STAGE_PROGRESSION',
+        'EQUIPMENT_PROGRESS_AND_REWARDS','ONBOARDING_AND_FIRST_SESSION','FAILURE_RETRY_SAVE_RECOVERY',
+        'MID_LATE_GAME_DEPTH_AND_REPLAY']),
+      perDimensionEvidence:freezeList(['NAMED_GAME_AND_SOURCE','OBSERVED_OR_UNVERIFIED_STATUS',
+        'PLAYER_INPUT','WORLD_OR_UI_STATE_TRANSITION','VISIBLE_FEEDBACK','NEXT_CHOICE',
+        'B_BASELINE_PRESERVATION','ADAPT_OR_REJECT_REASON','EXACT_TEST_SCENARIO']),
+      noGenreFeaturesWithoutGameFit:true,
+      originalCharacterVisualUiTextAndWorldRequired:true,
+      directScreenAssetCodeOrDistinctiveExpressionCopyForbidden:true,
+      referenceOnlyNotSourceOrRuntimeProof:true
+    }),
+    designSourceBuildUp:freeze({
+      orderedLoop:freezeList(['READ_CURRENT_APPROVED_DESIGN_AND_SOURCE','COMPARE_A_REFERENCE_TO_B_BASELINE',
+        'EVOLVE_MAIN_A_B_C_D_AT_DESIGN','REVIEW_AND_APPROVE_DESIGN_REVISION',
+        'MAP_DESIGN_RULE_TO_RESPONSIBLE_SOURCE_FUNCTION','IMPLEMENT_CHANGED_DESIGN_IN_EXISTING_GAME_SOURCE',
+        'VERIFY_EXACT_BUILD_AND_ACTUAL_PLAY','FEED_VERIFIED_GAPS_TO_NEXT_DESIGN_REVISION']),
+      bothDesignAndSourceMustEvolveOnApprovedGameplayExpansion:true,
+      visualAndDefectRepairMayContinueWithinExistingApprovedDesign:true,
+      designRevisionIsNotRuntimePass:true,
+      sourceChangeIsNotDesignPass:true,
+      preserve:['PLAYER_IDENTITY','EXISTING_RULES','SAVE_KEYS_AND_MEANING','BALANCE','MULTIPLAYER_AUTHORITY'],
+      evidenceRequired:freezeList(['DESIGN_REVISION_FINGERPRINT','RULE_AND_SYSTEM_IDS',
+        'SOURCE_REVISION_AND_RESPONSIBLE_FILES','BEFORE_AFTER_PLAYER_CHOICES','EXACT_BUILD_QA_AND_RUNTIME_SCENARIO'])
+    }),
     convenienceEvolution:freeze({
       study:['PLAYER_FRICTION','INFORMATION_HIERARCHY','CONTEXTUAL_ACTIONS','REUSABLE_SETUP','BATCH_PREVIEW_AND_COMMIT','INTERRUPTION_AND_RETURN'],
       referenceRequires:['SOURCE_URL','OBSERVED_DATE','OBSERVED_FEATURE','ABSTRACT_PRINCIPLE','GENRE_AND_SYSTEM_FIT','ADAPT_OR_REJECT_REASON'],
