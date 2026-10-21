@@ -357,7 +357,12 @@ function vibeNormalizedTarget(value=''){
   if(['WEB','GENERAL_WEB','MOBILE_WEB','BROWSER'].includes(raw))return'WEB';
   return raw;
 }
-function vibeSourceProvenance(asset={}){
+function vibeSourceProvenance(asset={},target=''){
+  // Web gameplay visual/motion/audio libraries are CC0-only. A generic
+  // "commercially usable" or CC-BY grant is not the owner's CC0 permission.
+  if(vibeNormalizedTarget(target)==='WEB'
+    &&!/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(text(asset.license||asset.licenseDeclared||asset.policy)))return false;
+  if(vibeNormalizedTarget(target)==='WEB'&&asset.downloaded===false)return false;
   const id=text(asset.id),sourceHash=text(asset.sourceHash||asset.sha256||asset.contentHash);
   const license=text(asset.license||asset.licenseDeclared||asset.policy).toUpperCase();
   const source=Boolean(asset.path||asset.masterGlb||asset.sourceFiles?.length||asset.nativeArtifacts?.length);
@@ -407,7 +412,7 @@ export function planVibeExternalCustomization({
       for(const role of capability.assetRoles)selectedRoles.add(role);
     }
   }
-  const validAssets=(Array.isArray(assets)?assets:[]).filter(vibeSourceProvenance)
+  const validAssets=(Array.isArray(assets)?assets:[]).filter(asset=>vibeSourceProvenance(asset,platform))
     .sort((a,b)=>text(a.id).localeCompare(text(b.id)));
   const approvedVisualAxes=Object.freeze(['SILHOUETTE','PROPORTION','MATERIAL_RESPONSE','SURFACE_DETAIL','PALETTE','LIGHTING','MOTION_LANGUAGE','UI_LANGUAGE']);
   const actions=VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(reference=>{
@@ -429,6 +434,7 @@ export function planVibeExternalCustomization({
     const status=!eligible?'OWNER_POLICY_HELD'
       :!relevant?'NOT_REQUIRED_BY_CURRENT_GAME'
       :!styleFingerprint?'APPROVED_GAME_DESIGN_REQUIRED'
+      :platform==='WEB'?'WEB_CC0_LIBRARY_SOURCE_AND_LICENSE_PROOF_REQUIRED'
       :reference.kind==='ALGORITHM'?'EXISTING_OWNER_ALGORITHM_REVIEW_REQUIRED'
       :reference.kind==='AUTHORING_TOOL'?'EXTERNAL_TOOL_AUTHORIZATION_AND_LOCAL_AVAILABILITY_REQUIRED'
       :'EXTERNAL_LICENSE_AND_SOURCE_REVIEW_REQUIRED';
@@ -452,7 +458,8 @@ export function planVibeExternalCustomization({
         })
       }))),
       nextAction:relevant&&eligible&&styleFingerprint
-        ?reference.kind==='ALGORITHM'?'MAP_PARAMETERS_TO_EXISTING_NATIVE_ALGORITHM_OWNER'
+        ?platform==='WEB'?'VERIFY_CC0_ORIGINAL_SOURCE_AND_LICENSE_BEFORE_INTEGRATION'
+          :reference.kind==='ALGORITHM'?'MAP_PARAMETERS_TO_EXISTING_NATIVE_ALGORITHM_OWNER'
           :'VERIFY_TOOL_LICENSE_BINARY_AND_SOURCE_IN_EXISTING_ASSET_DEVELOPMENT'
         :'NONE',
       parameters:Object.freeze({
@@ -477,6 +484,8 @@ export function planVibeExternalCustomization({
     sourceRevision:sourceId||null,designFingerprint:styleFingerprint||null,
     applicationOrder:Object.freeze(['REUSE_VERIFIED_LIBRARY','DERIVE_APPROVED_NATIVE_VARIANT',
       'RECOMBINE_SOURCE_COMPATIBLE_PARTS','REVIEW_LICENSED_EXTERNAL_ALGORITHM_OR_TOOL','NATIVE_BINDING','EXACT_RUNTIME_QA']),
+    webAssetLibraryLicensePolicy:platform==='WEB'?'VERIFIED_CC0_ONLY':'PLATFORM_EXISTING_POLICY',
+    webExternalLibraryCandidatesAreReferencesOnly:platform==='WEB',
     sourceHashesRequired:true,externalInstallRequiresExplicitAuthorization:true,
     requireExactRuntimeVisualAndInputEvidence:true,sourceMutationPerformed:false,
     nativeRuntimeVerified:false,appliedToGame:false,qaPassed:false,
