@@ -75160,11 +75160,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5d75f34a6215b59a6518016c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8790",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ec72f36b40cb3b4bc3b0d25eda327155adadc28d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8790,
+        "baseBranch": "main",
+        "headBranch": "fix/removed-crystal-defense-source",
+        "baseSha": "ec72f36b40cb3b4bc3b0d25eda327155adadc28d",
+        "headSha": "c0f51ee5b04313044cee8b3fa9731e5e8c74b746",
+        "mergeCommitSha": "6d102e84eb4b4f191628d6ef35b0193590c2d963",
+        "mergedAt": "2026-10-21T05:25:25Z",
+        "authorLogin": "hans1177",
+        "titleHash": "734f7f64b76f6cbc5bc6b56b6241a0d4aad668622857b0590c249106832df793",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/removed-crystal-defense-source",
+        "candidateSha": "c0f51ee5b04313044cee8b3fa9731e5e8c74b746"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 0,
+        "deletedLineCount": 7691,
+        "changedFiles": [
+          "roblox-games/crystal-defense/client/Game.client.luau",
+          "roblox-games/crystal-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/crystal-defense/default.project.json",
+          "roblox-games/crystal-defense/roblox-source-bootstrap.json",
+          "roblox-games/crystal-defense/server/Game.server.luau",
+          "roblox-games/crystal-defense/shared/GameConfig.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonMaterials.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonUI.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/crystal-defense/client/Game.client.luau",
+          "roblox-games/crystal-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/crystal-defense/default.project.json",
+          "roblox-games/crystal-defense/roblox-source-bootstrap.json",
+          "roblox-games/crystal-defense/server/Game.server.luau",
+          "roblox-games/crystal-defense/shared/GameConfig.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonMaterials.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonUI.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8790",
+        "merge-commit:6d102e84eb4b4f191628d6ef35b0193590c2d963",
+        "base-main:ec72f36b40cb3b4bc3b0d25eda327155adadc28d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 596
+    "total": 597
   }
 }
