@@ -116602,7 +116602,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116635,8 +116635,8 @@
       "failureStage": null,
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
-      "handoffCount": 4,
-      "previousReservationId": "system-ai:39665840244:1",
+      "handoffCount": 5,
+      "previousReservationId": "system-ai:39675683573:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -116644,12 +116644,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39675683573:1",
-      "reservedAt": "2026-10-21T21:10:45.705Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -116768,7 +116768,12 @@
         "actions-run:39665840244",
         "system-ai-impact-score:1052",
         "system-ai-blocked-task-count:15",
-        "system-ai-handoff-to-reservation:system-ai:39675683573:1"
+        "system-ai-handoff-to-reservation:system-ai:39675683573:1",
+        "system-ai-handoff-state:MISSING_RESULT_REQUEUED",
+        "system-ai-handoff-from-reservation:system-ai:39675683573:1",
+        "primary-ai-collaboration:REQUESTED",
+        "primary-ai-collaboration-reason:REPEATED_WORKER_HANDOFF",
+        "primary-ai-collaboration-task:marketing-horror-escape-room-pre-release-v1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1052,
@@ -116783,7 +116788,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-21T21:10:45.705Z"
+      "updatedAt": "2026-10-21T21:41:38.548Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -147378,7 +147383,7 @@
     },
     {
       "id": "marketing-human-go-temp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -147412,8 +147417,8 @@
       "failureStage": null,
       "failureSignature": null,
       "failureClass": null,
-      "handoffCount": 3,
-      "previousReservationId": "system-ai:39666037358:1",
+      "handoffCount": 4,
+      "previousReservationId": "system-ai:39675683573:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -147421,12 +147426,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39675683573:1",
-      "reservedAt": "2026-10-21T21:10:45.705Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -147462,7 +147467,8 @@
         "system-ai-impact-score:352",
         "system-ai-blocked-task-count:1",
         "system-ai-representative-canary:system-ai-worker-missing-result-handoff",
-        "system-ai-handoff-to-reservation:system-ai:39675683573:1"
+        "system-ai-handoff-to-reservation:system-ai:39675683573:1",
+        "system-ai-handoff-from-reservation:system-ai:39675683573:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 352,
@@ -147477,7 +147483,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-10T15:42:04.174Z",
-      "updatedAt": "2026-10-21T21:10:45.705Z"
+      "updatedAt": "2026-10-21T21:41:38.548Z"
     },
     {
       "id": "marketing-island-village-pre-release-v1",
@@ -147781,7 +147787,7 @@
     },
     {
       "id": "marketing-defense-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -147814,9 +147820,9 @@
       "recurrenceCount": 0,
       "failureStage": null,
       "failureSignature": null,
-      "failureClass": null,
+      "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 1,
-      "previousReservationId": "system-ai:39559580530:1",
+      "previousReservationId": "system-ai:39675683573:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -147824,12 +147830,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39675683573:1",
-      "reservedAt": "2026-10-21T21:10:45.705Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -147852,7 +147858,19 @@
         "system-ai-blocked-task-count:12",
         "system-ai-common-bottleneck:YES",
         "system-ai-representative-canary:stale-system-ai-reservation-reclaimed",
-        "system-ai-handoff-to-reservation:system-ai:39675683573:1"
+        "system-ai-handoff-to-reservation:system-ai:39675683573:1",
+        "actions-run:39675683573",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
+        "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 902,
@@ -147867,7 +147885,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-10T15:42:04.174Z",
-      "updatedAt": "2026-10-21T21:10:45.705Z"
+      "updatedAt": "2026-10-21T21:41:35.499Z"
     },
     {
       "id": "marketing-dice-battle-board-pre-release-v1",
