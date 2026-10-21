@@ -145717,7 +145717,7 @@
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -145816,12 +145816,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39671028632:1",
+      "reservedAt": "2026-10-21T20:35:59.191Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146206,7 +146206,8 @@
         "system-ai-handoff-to-reservation:system-ai:39661220843:1",
         "actions-run:39661220843",
         "system-ai-handoff-to-reservation:system-ai:39665840244:1",
-        "actions-run:39665840244"
+        "actions-run:39665840244",
+        "system-ai-handoff-to-reservation:system-ai:39671028632:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
@@ -146221,7 +146222,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T20:30:11.014Z"
+      "updatedAt": "2026-10-21T20:35:59.191Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
