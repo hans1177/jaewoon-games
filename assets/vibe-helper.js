@@ -16,6 +16,11 @@ const SYSTEM_RULES = Object.freeze([
   ['성장', ['레벨', '경험치', '성장', '스탯', '스킬 포인트'], 'assets/character-progression.js'],
   ['세이브', ['저장', '불러오기', '세이브', '진행도'], 'assets/save-versioning.js'],
   ['씬', ['맵', '화면', '씬', '스테이지', '로비'], 'assets/scene-flow.js'],
+  ['모션', ['애니메이션', '모션', '걷기', '달리기', '발 접지', '쓰러', '가만히', '방향 전환'], 'assets/vibe-motion-core.js'],
+  ['연출', ['카메라', '장면', '시선', '추격', '연출', '공포', '거미', '시네마틱'], 'assets/vibe-presentation-director.js'],
+  ['환경', ['지형', '장애물', '도망', '퇴로', '꽃밭', '동굴', '시야', '랜드마크'], 'assets/vibe-environment-director.js'],
+  ['에셋', ['에셋', '라이브러리', '재질', '텍스처', '캐릭터 외형'], 'assets/asset-selector.js'],
+  ['성능', ['프레임', '버벅', '렌더링', '최적화', '파티클', '발열'], 'assets/vibe-presentation-director.js'],
 ]);
 
 const PROTECTED_RULES = Object.freeze(['체력', '공격력', '웨이브', '보상', '드랍률', '저장 키', '진행도', '플레이 규칙']);
@@ -76,6 +81,21 @@ export function planVibeCodingTask({ prompt = '', currentGame = null, currentFil
     affectedSystems.push('모바일 기본 화면');
   }
 
+  // 메인: 요청을 실제 조작→상태→관찰의 인과 흐름으로 해석한다.
+  const behaviorChain = unique([
+    ...(hasAny(request, ['공격', '타격', '피격', '발사', '총']) ? ['INPUT_OR_AI_INTENT', 'FACE_TARGET', 'ATTACK_WINDUP', 'AUTHORITATIVE_HIT', 'CONTACT_FEEDBACK', 'RECOVER_IDLE'] : []),
+    ...(hasAny(request, ['이동', '걷기', '달리기', '방향', '문워크', '가만히']) ? ['MOVEMENT_INTENT', 'HEADING_AND_POSE', 'FOOT_CONTACT', 'STOP_TO_IDLE'] : []),
+    ...(hasAny(request, ['추격', '도망', '퇴로', '거미', '장면', '카메라']) ? ['SCENE_INTENT', 'THREAT_LINE_OF_SIGHT', 'NAVIGABLE_ESCAPE', 'CAMERA_REFOCUS', 'CONTROL_RETURN'] : []),
+    ...(hasAny(request, ['저장', '불러오기', '세이브', '진행도']) ? ['STATE_CHANGE', 'SAVE_CHECKPOINT', 'RESTART_OR_REJOIN', 'RESTORED_STATE_EQUALS_EXPECTED'] : []),
+    ...(hasAny(request, ['버튼', '터치', '조이스틱', '회피']) ? ['TOUCH_DOWN', 'INPUT_BINDING', 'GAMEPLAY_STATE_CHANGED', 'VISIBLE_FEEDBACK'] : []),
+  ]);
+  const observations = unique([
+    ...(behaviorChain.includes('AUTHORITATIVE_HIT') ? ['타격 판정이 실제 게임 상태에 적용되며 피격 연출은 결과를 설명한다'] : []),
+    ...(behaviorChain.includes('STOP_TO_IDLE') ? ['정지 중 이동 변위와 발 미끄러짐이 없어야 한다'] : []),
+    ...(behaviorChain.includes('NAVIGABLE_ESCAPE') ? ['장면의 퇴로가 실제 길찾기 및 충돌 조건과 모순되지 않아야 한다'] : []),
+    ...(behaviorChain.includes('RESTORED_STATE_EQUALS_EXPECTED') ? ['재시작 이후 기존 저장 키와 진행 상태가 유지되어야 한다'] : []),
+    ...(behaviorChain.includes('GAMEPLAY_STATE_CHANGED') ? ['입력 이벤트가 실제 상태 변화로 연결되는지 관찰해야 한다'] : []),
+  ]);
   const mode = detectMode(request);
   const priority = detectPriority(request);
   const protectedTargets = protectFlags(request);
@@ -87,6 +107,7 @@ export function planVibeCodingTask({ prompt = '', currentGame = null, currentFil
     '저장/불러오기',
     '일시정지/재시작',
     '콘솔 오류',
+    ...observations,
     '모바일 화면',
     '안전 여백/노치/홈바',
     '세로/가로 자동 대응',
@@ -120,6 +141,13 @@ export function planVibeCodingTask({ prompt = '', currentGame = null, currentFil
     currentFile: currentFile ? text(currentFile) : null,
     affectedSystems: unique(affectedSystems),
     candidateFiles: unique(files),
+    behaviorContract: Object.freeze({
+      sequence: Object.freeze(behaviorChain),
+      expectedObservations: Object.freeze(observations),
+      evidence: 'RUNTIME_REPLAY_REQUIRED',
+      automaticGameplayOrBalanceMutation: false,
+      planOnly: true,
+    }),
     protectedTargets,
     mobileDefaults: Object.freeze({
       touchFirst: true,
