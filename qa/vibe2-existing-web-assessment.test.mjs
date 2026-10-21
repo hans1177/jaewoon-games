@@ -365,3 +365,12 @@ test('party-rpg native 3D loads only existing CC0 originals and never claims mis
   assert.match(html,/if\(!models\[id\]\)continue;/,'unmapped roles must retain source-bound gameplay canvas');
   assert.match(html,/window\\.partyRpgVibeState/,'existing game state and saves must be preserved');
 });
+
+test('party RPG existing mobile smoke shell starts HTTP server on a separate real command',()=>{
+ const workflow=fs.readFileSync(path.join(process.cwd(),'.github','workflows','party-rpg-mobile-test.yml'),'utf8');
+ assert.match(workflow,/ln -s "\$PWD" \/tmp\/jaewoon-games\n\s+\(cd \/tmp && python3 -m http\.server 8765\) &/);
+ assert.ok(!workflow.includes('jaewoon-games\\n          (cd'),'literal backslash-n breaks bash parsing before the browser runs');
+ assert.match(workflow,/page\.on\('response',r=>\{if\(r\.status\(\)>=400\)errors\.push/);
+ assert.match(workflow,/if\(errors\.length\)throw new Error/);
+ assert.match(workflow,/if\(await page\.locator\('#vibe3d'\)\.count\(\)===0\)throw/);
+});
