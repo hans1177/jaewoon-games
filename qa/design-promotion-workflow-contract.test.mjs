@@ -3,6 +3,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 
 const promotion=fs.readFileSync('.github/workflows/company-design-promotion-sync.yml','utf8');
 const designRuntime=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
@@ -69,7 +72,9 @@ test('promotion persists only runtime state while machine policy comes from main
   assert.match(promotion,/git reset -- company-directive\.json company-learning\/platform-release-roadmap\.json/);
   assert.match(promotion,/refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH/);
   assert.match(promotion,/refs\/heads\/main:refs\/remotes\/origin\/main/);
-  assert.match(promotion,/for attempt in 1 2 3; do/);
+  assert.match(promotion,/while true; do/);
+  assert.match(promotion,/runtime_latest.*runtime_base/);
+  assert.doesNotMatch(promotion,/FAILED_AFTER_3_ATTEMPTS/);
   assert.match(promotion,/git fetch origin ['"]\+refs\/heads\/main:refs\/remotes\/origin\/main['"] ['"]\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH['"] --depth=2 --no-tags --quiet/);
   assert.match(promotion,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(promotion,/Object\.hasOwn\(item,'webValidationRequired'\)\|\|Object\.hasOwn\(item,'musicValidationRequired'\)/);
@@ -219,3 +224,59 @@ test('promotion loads latest four central policies into the isolated runtime wor
   }
 });
 
+
+// 실제 저장 단계의 셸을 실행하여 연속 충돌과 권한·통신 실패를 구분한다.
+test('promotion recalculates beyond three concurrent writes and stops on non-conflict push failure',()=>{
+  const start=promotion.indexOf('- name: Persist promoted state to company runtime branch');
+  const end=promotion.indexOf('\n      - name:',start+1);
+  const block=promotion.slice(start,end);
+  const script=block.slice(block.indexOf('run: |')+6).replace(/^ {10}/gm,'');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'promotion-save-'));
+  try{
+    fs.writeFileSync(path.join(root,'policy.json'),'{}');
+    fs.writeFileSync(path.join(root,'git'),`#!/bin/sh
+case "$1" in
+  rev-parse) cat "$TEST_ROOT/revision" ;;
+  diff) case "$*" in *--quiet*) exit 1 ;; esac ;;
+  push)
+    count=$(cat "$TEST_ROOT/pushes"); count=$((count+1)); echo "$count" > "$TEST_ROOT/pushes"
+    if [ "$TEST_MODE" = permanent ]; then exit 1; fi
+    if [ "$count" -le 4 ]; then echo "revision-$count" > "$TEST_ROOT/revision"; exit 1; fi
+    ;;
+esac
+exit 0
+`,{mode:0o755});
+    fs.writeFileSync(path.join(root,'node'),`#!/bin/sh
+cat "$TEST_ROOT/revision" >> "$TEST_ROOT/calculations"
+`,{mode:0o755});
+    fs.writeFileSync(path.join(root,'sleep'),`#!/bin/sh
+[ "$1" -ge 2 ] && [ "$1" -le 11 ] || exit 1
+echo "$1" >> "$TEST_ROOT/delays"
+`,{mode:0o755});
+    for(const mode of ['conflict','permanent']){
+      fs.writeFileSync(path.join(root,'pushes'),'0');
+      fs.writeFileSync(path.join(root,'revision'),'revision-0\n');
+      fs.writeFileSync(path.join(root,'calculations'),'');
+      fs.writeFileSync(path.join(root,'delays'),'');
+      const result=spawnSync('bash',['-euo','pipefail','-c',script],{
+        cwd:root,encoding:'utf8',timeout:10000,
+        env:{...process.env,PATH:root+path.delimiter+process.env.PATH,TEST_ROOT:root,TEST_MODE:mode,
+          COMPANY_RUNTIME_BRANCH:'company-runtime',COMPANY_VERIFIED_POLICY_PATH:path.join(root,'policy.json')}
+      });
+      assert.ifError(result.error);
+      if(mode==='conflict'){
+        assert.equal(result.status,0,result.stdout+result.stderr);
+        assert.equal(fs.readFileSync(path.join(root,'pushes'),'utf8').trim(),'5');
+        const calculations=fs.readFileSync(path.join(root,'calculations'),'utf8').trim().split('\n');
+        assert.deepEqual(calculations,Array.from({length:5},(_,i)=>Array(3).fill('revision-'+i)).flat());
+        assert.equal(fs.readFileSync(path.join(root,'delays'),'utf8').trim().split('\n').length,4);
+        assert.match(result.stdout,/DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED/);
+      }else{
+        assert.equal(result.status,1);
+        assert.equal(fs.readFileSync(path.join(root,'pushes'),'utf8').trim(),'1');
+        assert.equal(fs.readFileSync(path.join(root,'delays'),'utf8'),'');
+        assert.match(result.stderr,/FAILED_WITHOUT_STATE_CONFLICT/);
+      }
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
