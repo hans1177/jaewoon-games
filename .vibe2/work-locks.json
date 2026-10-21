@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-eud6rp",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-existing-web-assessment-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "web-games/horror-escape-room/index.html"
+      ],
+      "baseSha": "4c651c2d018cafe4c80a0ee21bc3b955a397e174",
+      "runId": "39530166912",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-21T02:05:34.075Z",
+      "expiresAt": "2026-10-21T02:50:34.075Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
