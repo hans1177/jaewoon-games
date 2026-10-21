@@ -237,13 +237,15 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
 }
 
 // User-confirmed 20 hosted runners: production keeps eight potential slots outside
-// autonomous GAME_PRIMARY. This is a logical reservation ceiling, not a claim
-// that GitHub has actually allocated those hosted runners.
+// auxiliary work. GAME_PRIMARY keeps its central fixed logical target; GitHub
+// owns physical queueing. Queue reservations are not observed hosted runners.
 export function ownerFirstRunnerAllocation(queue={},{
   lane='game-primary',requestedMax=128,totalSlots=20,ownerReservedSlots=8,
   observedActiveHostedJobs=null
 }={}){
+  lane=clean(lane).toLowerCase().replaceAll('_','-')||'game-primary';
   const requested=Math.max(1,Math.floor(num(requestedMax)||1));
+  const fixedDevelopment=lane==='game-primary';
   const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];
   const ownerReady=tasks.some(t=>t?.ownerDirective===true&&clean(t.status).toLowerCase()==='queued'
     &&(clean(t.executionLane).toLowerCase().replaceAll('_','-')==='game-primary'
@@ -267,14 +269,14 @@ export function ownerFirstRunnerAllocation(queue={},{
     &&clean(t.executionLane).toLowerCase().replaceAll('_','-')===lane
     &&!/candidate-awaiting|awaiting.*qa|slot-released|quota|external.*wait/i.test(clean(t.blocker))).length;
   const liveFree=observed===null?null:Math.max(0,(automatic?total-reserved:total)-observed);
-  const ceiling=Math.max(1,Math.min(laneCeiling,
-    liveFree===null?laneCeiling:currentLaneActive+liveFree));
+  // 실제 실행 관측이 있으면 논리 예약 수를 물리 점유로 중복 계산하지 않는다.
+  const ceiling=Math.max(0,liveFree===null?laneCeiling:currentLaneActive+liveFree);
   return Object.freeze({
     ownerReady,automatic,totalSlots:total,ownerReservedSlots:reserved,
     otherLanesActive,currentLaneActive,observedHostedJobs:observed,
     observedScope:'CURRENT_REPOSITORY_ONLY',
-    admissionClosed:automatic&&liveFree===0,
-    concurrentCeiling:Math.min(requested,ceiling),
-    reason:automatic?'AUTOMATIC_KEEP_OWNER_RUNNER_HEADROOM':'OWNER_DIRECT_OR_NON_PRIMARY_PRIORITY'
+    admissionClosed:!fixedDevelopment&&(ceiling===0||liveFree===0),
+    concurrentCeiling:fixedDevelopment?requested:Math.min(requested,ceiling),
+    reason:fixedDevelopment?'FIXED_GAME_PRIMARY_TARGET_EXTERNAL_QUEUEING':automatic?'AUTOMATIC_KEEP_OWNER_RUNNER_HEADROOM':'OWNER_DIRECT_OR_NON_PRIMARY_PRIORITY'
   });
 }

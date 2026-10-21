@@ -26,13 +26,13 @@ test('actual GitHub hosted jobs count, not workflow run count, and unknown probe
   assert.equal(unknown.known,false);assert.equal(unknown.observedJobs,null);
   const auto=ownerFirstRunnerAllocation({tasks:[task('auto')]},{
     lane:'game-primary',requestedMax:128,observedActiveHostedJobs:'12'});
-  assert.equal(auto.admissionClosed,true);
-  assert.equal(auto.concurrentCeiling,1);
+  assert.equal(auto.admissionClosed,false);
+  assert.equal(auto.concurrentCeiling,128);
   assert.equal(ownerFirstRunnerAllocation({tasks:[task('auto')]},{
-    lane:'game-primary',requestedMax:128,observedActiveHostedJobs:'9'}).concurrentCeiling,3);
+    lane:'game-primary',requestedMax:128,observedActiveHostedJobs:'9'}).concurrentCeiling,128);
   const owner=ownerFirstRunnerAllocation({tasks:[task('owner',{ownerDirective:true})]},{
     lane:'game-primary',requestedMax:128,observedActiveHostedJobs:'12'});
-  assert.equal(owner.admissionClosed,false);assert.equal(owner.concurrentCeiling,8);
+  assert.equal(owner.admissionClosed,false);assert.equal(owner.concurrentCeiling,128);
 });
 
 test('stale autonomous tasks require exact opted-in main revision and are never applied to running or owner work',()=>{
