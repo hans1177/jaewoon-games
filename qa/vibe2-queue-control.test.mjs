@@ -125,7 +125,7 @@ test('focused Web gameplay assessment does not inherit obsolete Roblox-only grap
   assert.equal(missingFocus.tasks[0].ownerDevelopmentHold,false,'exact web assessment without focus metadata may recover');
   const retired=synchronizeOwnerDevelopmentHolds(queue,policy,{catalog:{games:[{
     id:'cozy-island',canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}
-  ]}});
+  }]}});
   assert.equal(retired.tasks.find(t=>t.id===base.id).ownerDevelopmentHold,true,'retired web must remain held');
   const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[core]}),
     {policy,lane:'game-primary',maxConcurrentTasks:1});
