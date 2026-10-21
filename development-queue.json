@@ -69160,9 +69160,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-21T20:26:19.991Z",
+      "updatedAt": "2026-10-21T20:32:35.751Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -69172,9 +69172,9 @@
         "capturedAt": "2026-10-12T02:23:12.492Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "8d66ef63e0ea9bf4358aa01675f35233da950275",
+      "robloxSourceCommit": "5615dea015decd28223e0319b61fa61e678b961a",
       "robloxSourceBootstrapPassedAt": "2026-10-21T14:06:17.549Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-21T19:29:45.813Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-21T20:32:35.751Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -69729,12 +69729,12 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "8d66ef63e0ea9bf4358aa01675f35233da950275",
+      "robloxQualityBuildUpSourceRevision": "5615dea015decd28223e0319b61fa61e678b961a",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
-        "sourceRevision": "8d66ef63e0ea9bf4358aa01675f35233da950275",
+        "sourceRevision": "5615dea015decd28223e0319b61fa61e678b961a",
         "sourceTreeSha": "0c6222dc43dd5b04588b48763c679062d8521548",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -69752,7 +69752,7 @@
         },
         "assetRepairContext": {
           "libraryFingerprint": "b51e5b3cf874672384764b442aa22dd602af6c2c465afba4f4a396e8b8935405",
-          "baselineFingerprint": "d2044eee2e5f8fa92d26c1ec82fe9761d323e873a00fdb64a0d54cefd24d333e",
+          "baselineFingerprint": "958d96f78e0b7947caf56fb1c8de8872ff4038e39bd44a272823725499ee5cd5",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
         "qualityFailureKinds": [
@@ -69811,8 +69811,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39656696643,
-        "testedAt": "2026-10-21T19:29:45.813Z"
+        "workflowRunId": 39664839816,
+        "testedAt": "2026-10-21T20:32:35.751Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -92898,7 +92898,7 @@
       "updatedAt": "2026-10-21T20:26:19.991Z"
     }
   ],
-  "updatedAt": "2026-10-21T20:32:01.693Z",
+  "updatedAt": "2026-10-21T20:32:35.751Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -92964,5 +92964,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
