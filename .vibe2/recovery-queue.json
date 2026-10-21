@@ -202643,7 +202643,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T11:08:58.478Z"
+      "updatedAt": "2026-10-21T11:15:39.990Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202864,7 +202864,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T11:08:58.505Z"
+      "updatedAt": "2026-10-21T11:15:40.022Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237618,7 +237618,8 @@
         "primary-ai-collaboration-reason:REPEATED_WORKER_HANDOFF",
         "system-ai-handoff-to-reservation:system-ai:39581754273:1",
         "actions-run:39581754273",
-        "system-ai-handoff-to-reservation:system-ai:39585642880:1"
+        "system-ai-handoff-to-reservation:system-ai:39585642880:1",
+        "actions-run:39585642880"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -237636,7 +237637,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T11:08:58.529Z"
+      "updatedAt": "2026-10-21T11:15:40.055Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238228,6 +238229,108 @@
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.133Z",
       "updatedAt": "2026-10-21T10:41:48.475Z"
+    },
+    {
+      "id": "recovery-542a0d3d89ec23d190e1",
+      "status": "dispatched",
+      "priority": "high",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "recovery-recovery-f94e69f2e502b77f903e",
+      "gameId": "fantasy-survival",
+      "responsibleFiles": [
+        ".github/workflows/vibe2-candidate-release.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/vibe2-candidate-release.yml",
+        "web-games/fantasy-survival"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureSignature": "source-mutation-required-before-revalidation",
+      "blastRadius": "single-task",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "deployment-failure-run:39025589140:1",
+        "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:6fb3779786127c2fec063c543a6953735bfae4dc",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:REJECT",
+        "deployment-failed-step:RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/39025589140",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED",
+        "recovery-queue:recovery-f94e69f2e502b77f903e",
+        "recovery-exact-stage:DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "system-ai-scoped-game-repair:NO",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "learning-route:existing-vibe-learning-motor",
+        "primary-ai-collaboration-task:recovery-recovery-f94e69f2e502b77f903e",
+        "system-ai-impact-score:841",
+        "system-ai-blocked-task-count:8",
+        "system-ai-common-bottleneck:YES",
+        "system-ai-representative-canary:WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "system-ai-handoff-state:MISSING_RESULT_REQUEUED",
+        "system-ai-handoff-from-reservation:system-ai:39579503508:1",
+        "system-ai-handoff-to-reservation:PENDING",
+        "system-ai-exact-checkpoint-resume:YES",
+        "retry-budget-consumed:NO",
+        "learning-penalty:NO",
+        "system-ai-impact-score:842",
+        "system-ai-handoff-to-reservation:system-ai:39581754273:1",
+        "actions-run:39581754273",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:skipped",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION",
+        "system-ai-failure-class:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-failure-route:SECURITY_IMMUNE_SYSTEM",
+        "retry-budget-consumed:YES",
+        "learning-penalty:YES",
+        "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
+        "system-ai-handoff-to-reservation:system-ai:39585642880:1",
+        "actions-run:39585642880",
+        "recovery-escalated-from:system-ai",
+        "recovery-route:SYSTEM_AI",
+        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE"
+      ],
+      "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 0,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-10-21T11:15:40.084Z",
+      "updatedAt": "2026-10-21T11:15:42.428Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-10-21T11:15:42.428Z"
+      ]
     }
   ]
 }
