@@ -2,11 +2,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import {
   VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES,
   VIBE_UNIVERSAL_CONTENT_CAPABILITIES,
   planVibeUniversalComposition,
-  planVibeExternalCustomization
+  planVibeExternalCustomization,
+  assessCreativeCommonsAssetLicense
 } from '../assets/asset-selector.js';
 
 const scope={
@@ -34,6 +36,94 @@ const input={
   ],
   sourceRevision:'c'.repeat(40),ownerScope:scope,approvedDesignFingerprint:approved
 };
+
+test('Creative Commons family intake recognizes all seven families but blocks incompatible game use',()=>{
+ const base={downloaded:true,sourceHash:'f'.repeat(64),
+   sourceUrl:'https://example.org/source',licenseEvidenceUrl:'https://creativecommons.org/licenses/by/4.0/',
+   attribution:{creator:'Example Author',sourceUrl:'https://example.org/source',
+     licenseUrl:'https://creativecommons.org/licenses/by/4.0/',modificationNotice:'Adjusted palette'},
+   shareAlikeComplianceEvidenceUrl:'https://example.org/rights-review',
+   derivativeLicense:'CC-BY-SA-4.0'};
+ const tests=[
+   ['CC0-1.0',true,true],
+   ['CC-BY-4.0',true,true],
+   ['CC-BY-SA-4.0',true,true],
+   ['CC-BY-ND-4.0',true,false],
+   ['CC-BY-NC-4.0',true,false],
+   ['CC-BY-NC-SA-4.0',true,false],
+   ['CC-BY-NC-ND-4.0',true,false]
+ ];
+ for(const [license,catalog,commercialGame] of tests){
+   const row=assessCreativeCommonsAssetLicense({...base,license});
+   assert.equal(row.catalogEligible,catalog,license);
+   assert.equal(row.gameCandidateEligible,commercialGame,license);
+   assert.equal(row.nativeRuntimeVerified,false,license);
+ }
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'MIT'}).catalogEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',attribution:{}}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-SA-4.0',shareAlikeComplianceEvidenceUrl:''}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',downloaded:false}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',sourceHash:'invalid'}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-4.0',securityBlocked:true}).gameCandidateEligible,false);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-NC-4.0'},{commercial:false,derivative:true}).gameCandidateEligible,true);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-ND-4.0'},{commercial:true,derivative:false}).gameCandidateEligible,true);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-SA-4.0',shareAlikeComplianceEvidenceUrl:''},{commercial:true,derivative:false}).gameCandidateEligible,true);
+ assert.equal(assessCreativeCommonsAssetLicense({...base,license:'CC-BY-NC-SA-4.0',derivativeLicense:'CC-BY-NC-SA-4.0'},{commercial:false,derivative:true}).gameCandidateEligible,true);
+});
+
+test('four acquired CC0 UI/mobile PNGs match library SHA-256 and licensed pack ledger',()=>{
+ const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
+ const manifest=JSON.parse(fs.readFileSync('assets/asset-manifest.json','utf8'));
+ const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const policy=manifest.policy.creativeCommonsFamilyIntake;
+ assert.deepEqual(policy.allowedFamilies,central.ownerCanonicalRules.rule5.ccFamilyLibraryIntake.allowedFamilies);
+ assert.equal(policy.allowedFamilies.length,7);
+ const assets=library.assets.filter(row=>row.id.startsWith('kenney-cc0-'));
+ assert.equal(assets.length,4);
+ for(const asset of assets){
+   const repoPath=asset.path.replace(/^\/+/, '');
+   assert.ok(repoPath.startsWith('assets/shared/kenney-ui/'));
+   const bytes=fs.readFileSync(repoPath);
+   assert.deepEqual([...bytes.subarray(0,4)],[137,80,78,71]);
+   assert.equal(createHash('sha256').update(bytes).digest('hex'),asset.sourceHash,asset.id);
+   assert.equal(asset.downloaded,true);
+   assert.equal(asset.productionVerified,false);
+   assert.equal(asset.runtimeVerificationState,'UNVERIFIED');
+   assert.equal(asset.verifiedCompanyReusable,false);
+   const rights=ledger.entries.find(row=>row.id===asset.sourceLicenseLedgerId);
+   assert.ok(rights,asset.id);
+   assert.ok(Object.values(rights.evidence.sourceFileHashes).includes(asset.sourceHash));
+   assert.equal(assessCreativeCommonsAssetLicense(asset).catalogEligible,true);
+   assert.equal(assessCreativeCommonsAssetLicense(asset).nativeRuntimeVerified,false);
+ }
+});
+
+test('two pinned CC BY SVG originals remain catalog-only with attribution and byte evidence',()=>{
+ const lib=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
+ const entries=lib.ccFamilyIntakeCatalog.filter(row=>row.id.startsWith('fontawesome-cc-by-'));
+ assert.equal(entries.length,2);
+ assert.ok(entries.every(row=>!lib.assets.some(item=>item.id===row.id)),'BY sources must not silently enter CC0 production pool');
+ for(const row of entries){
+   const filePath=row.path.slice(1);
+   const svg=fs.readFileSync(filePath,'utf8');
+   assert.match(svg,/Font Awesome Free/);
+   assert.equal(createHash('sha256').update(svg).digest('hex'),row.sourceHash);
+   assert.equal(row.license,'CC-BY-4.0');
+   assert.equal(row.catalogOnly,true);
+   assert.equal(row.releaseBlocked,true);
+   assert.equal(row.downloaded,true);
+   assert.equal(row.attribution.creator,'Fonticons, Inc.');
+   const record=ledger.entries.find(item=>item.id===row.sourceLicenseLedgerId);
+   assert.ok(record);
+   assert.equal(record.evidence.sourceHashes[filePath],row.sourceHash);
+   const result=assessCreativeCommonsAssetLicense(row);
+   assert.equal(result.catalogEligible,true);
+   assert.equal(result.gameCandidateEligible,false);
+   assert.equal(result.nativeRuntimeVerified,false);
+ }
+});
 
 test('catalog describes all approved external references without executable download commands',()=>{
   assert.deepEqual(VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(row=>row.id),[
