@@ -5625,6 +5625,32 @@ test('F0 gameplay failure rebinds queued usability to approved design and real R
     assert.match(fixed.goal,/실제 서버\/공유\/클라이언트 책임 함수/);
     assert.ok(fixed.evidence.includes('approved-f0-gameplay-source-repair:EXACT_DESIGN_AND_PACKAGE'));
     assert.deepEqual(bindApprovedF0GameplayRepairToTask(fixed,failing,root),fixed,'repeat planning must not amplify the goal');
+
+    const planned=planVibe2AutonomousTasks({
+      status:{projects:[]},
+      catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',
+        lifecycleState:'ACTIVE',robloxProjectPath:rel}]},
+      developmentQueue:{items:[{
+        gameId,gameName:project.name,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+        selectedPlatform:'ROBLOX',robloxProjectPath:rel,
+        robloxSourceCommit:revision,robloxBuildOrPackagePassed:true,
+        robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,
+        robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:gap,
+        robloxFailureStage:'F0_SOURCE_INTEGRITY',
+        robloxFailureSignature:'ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED'
+      }]},
+      queue:{maxConcurrentTasks:20,tasks:[{...initial,id:gameId+'-queued-design-carrier',status:'queued'}]},
+      repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
+      planningBacklogTarget:1,planningBacklogMinimum:0
+    });
+    const waiting=planned.queue.tasks.find(row=>row.id===gameId+'-queued-design-carrier');
+    assert.ok(waiting,'existing queued work must remain in the canonical queue');
+    assert.match(waiting.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/);
+    assert.equal(waiting.buildUpNextAction,'CAUSAL_REPAIR');
+    assert.ok(waiting.responsibleFiles.includes(rel+'/server/Game.server.luau'));
+    assert.ok(waiting.responsibleFiles.includes(rel+'/shared/GameConfig.luau'));
+    assert.ok(waiting.responsibleFiles.includes(rel+'/client/Game.client.luau'));
+
     assert.equal(bindApprovedF0GameplayRepairToTask(initial,{...failing,queueRobloxArtifactIdentity:'sha256:'+'c'.repeat(64)},root),initial,
       'a newly built artifact cannot consume an older F0 failure');
     assert.equal(bindApprovedF0GameplayRepairToTask({...initial,status:'running'},failing,root).goal,initial.goal,
