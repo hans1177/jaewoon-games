@@ -2250,9 +2250,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     };
     const allowedSource=asset=>{
       const license=clean(asset?.license).toLowerCase();
+      // Prevent forbidden old source formats from re-entering common model discovery.
       return !asset?.parentSourceId&&!asset?.derivedFromAssetId
-        &&['project-original','cc0','cc0-1.0','cc-by'].includes(license)
-        &&(license!=='cc-by'||Boolean(clean(asset?.sourceCredit||asset?.credit||asset?.attribution)))
+        &&/^(?:cc0(?:-1\.0)?|cc0 1\.0 universal)$/.test(license)
         &&!internalAssetHardBlockReason(asset);
     };
     for(const asset of next.assets){
@@ -3684,6 +3684,10 @@ function internalAssetHardBlockReason(asset={}){
   if(/EXPLICIT_INTERNAL_USE_FORBIDDEN|USE_FORBIDDEN/.test(status))return'EXPLICIT_INTERNAL_USE_FORBIDDEN';
   if(/NON.?COMMERCIAL|\bNC\b|FORBIDDEN|NO_DERIVATIVES/.test(license))return'LICENSE_FORBIDDEN';
   if(!license||/UNKNOWN|UNVERIFIED|출처 불명/.test(license))return'LICENSE_METADATA_MISSING';
+  // Rule 5: disallow authored, permissively licensed and practice game assets
+  // across all platform selectors; keep existing gameplay consumers untouched.
+  if(asset?.practiceOnly===true||asset?.practiceArtifact===true||asset?.authority==='PRACTICE_ONLY')return'PRACTICE_ASSET_FORBIDDEN';
+  if(!/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license))return'CC0_ORIGINAL_LICENSE_REQUIRED';
   const family=clean(asset?.family||asset?.category).toUpperCase();
   if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
     const models=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
