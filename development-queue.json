@@ -5896,10 +5896,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T08:42:02.454Z",
+      "updatedAt": "2026-10-21T09:21:32.796Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6425,14 +6425,14 @@
       "robloxBuildSourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T06:55:12.340Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "core-clash-4v4",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T06:28:02.604Z",
+        "checkedAt": "2026-10-21T08:42:56.051Z",
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "secondaryOwnerFocus": false,
@@ -6467,10 +6467,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
+            "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All provided build evidence indicates that the immutable Roblox package has passed source validation and build/package checks. No contradictions or missing prerequisites are present, so runtime testing may commence."
+            "note": "All deterministic source identity, validation, and build checks have passed successfully for the immutable Roblox package. Ready to start runtime testing."
           }
         ],
         "blockers": [],
@@ -6484,12 +6484,12 @@
         "gameId": "core-clash-4v4",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:28:03.420Z",
+        "checkedAt": "2026-10-21T08:42:56.785Z",
         "sourcePath": "roblox-games/core-clash-4v4",
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "rebuiltArtifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
-        "artifactRunId": 39550849481,
+        "artifactRunId": 39565285186,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "a8cdf6e9a79bf916b3431420339108e3e98c3bf9590311291e66b4642cd3919c",
         "observedAssetSelectionFingerprint": "a8cdf6e9a79bf916b3431420339108e3e98c3bf9590311291e66b4642cd3919c",
@@ -6791,12 +6791,12 @@
         "gameId": "core-clash-4v4",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:28:03.420Z",
+        "checkedAt": "2026-10-21T08:42:56.785Z",
         "sourcePath": "roblox-games/core-clash-4v4",
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "rebuiltArtifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
-        "artifactRunId": 39550849481,
+        "artifactRunId": 39565285186,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "a8cdf6e9a79bf916b3431420339108e3e98c3bf9590311291e66b4642cd3919c",
         "observedAssetSelectionFingerprint": "a8cdf6e9a79bf916b3431420339108e3e98c3bf9590311291e66b4642cd3919c",
@@ -7125,8 +7125,8 @@
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39550849481,
-        "testedAt": "2026-10-21T06:55:12.340Z",
+        "workflowRunId": 39565285186,
+        "testedAt": "2026-10-21T09:21:32.796Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -10484,7 +10484,7 @@
         ]
       },
       "robloxBuildArtifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
-      "robloxBuildPassedAt": "2026-10-21T06:55:12.340Z",
+      "robloxBuildPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -11273,10 +11273,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-21T08:42:02.454Z",
+      "updatedAt": "2026-10-21T09:21:32.796Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11292,16 +11292,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxBuildArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-      "robloxBuildPassedAt": "2026-10-21T06:55:12.340Z",
+      "robloxBuildPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T06:55:12.340Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T06:30:16.180Z",
+        "checkedAt": "2026-10-21T08:42:55.319Z",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "secondaryOwnerFocus": false,
@@ -11336,10 +11336,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
-            "decision": "PASS",
+            "model": "gemini-3.8-flash",
+            "decision": "UNAVAILABLE",
             "blockers": [],
-            "note": "All provided build evidence indicates that the source revision, artifact identity, and validation checks have passed. No contradictions exist in the BUILD_EVIDENCE, so the immutable package is cleared to begin runtime testing."
+            "note": "External review unavailable; immutable package gates remain authoritative."
           }
         ],
         "blockers": [],
@@ -11353,12 +11353,12 @@
         "gameId": "defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:30:16.928Z",
+        "checkedAt": "2026-10-21T08:42:55.995Z",
         "sourcePath": "roblox-games/defense",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "rebuiltArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-        "artifactRunId": 39550849481,
+        "artifactRunId": 39565285186,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
         "observedAssetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
@@ -11666,12 +11666,12 @@
         "gameId": "defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:30:16.928Z",
+        "checkedAt": "2026-10-21T08:42:55.995Z",
         "sourcePath": "roblox-games/defense",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "rebuiltArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-        "artifactRunId": 39550849481,
+        "artifactRunId": 39565285186,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
         "observedAssetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
@@ -12523,8 +12523,8 @@
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39550849481,
-        "testedAt": "2026-10-21T06:55:12.340Z",
+        "workflowRunId": 39565285186,
+        "testedAt": "2026-10-21T09:21:32.796Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -20059,10 +20059,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T08:42:02.454Z",
+      "updatedAt": "2026-10-21T09:21:32.796Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -20077,20 +20077,621 @@
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "45f9c5d7fb20caa3f7566d99fb7e8b9a2eba3e61",
+      "robloxBuildArtifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
+      "robloxBuildPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "egg-heist",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-21T08:44:25.665Z",
+        "sourceRevision": "45f9c5d7fb20caa3f7566d99fb7e8b9a2eba3e61",
+        "artifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "45f9c5d7fb20caa3f7566d99fb7e8b9a2eba3e61",
+            "artifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "gemini-3.5-flash-lite",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All required build evidence and exact deterministic package identity checks have successfully passed for the immutable Roblox package."
+          }
+        ],
+        "blockers": [],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
+      "robloxFoundationF0Evidence": {
+        "version": 5,
+        "gameId": "egg-heist",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-21T08:44:26.396Z",
+        "sourcePath": "roblox-games/egg-heist",
+        "sourceRevision": "45f9c5d7fb20caa3f7566d99fb7e8b9a2eba3e61",
+        "artifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
+        "rebuiltArtifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
+        "artifactRunId": 39565285186,
+        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
+        "assetSelectionFingerprint": "e6903aa5d2877bcd1936f881c6e44dc7e9a775430c1b7f35ca0e257449307fbf",
+        "observedAssetSelectionFingerprint": "e6903aa5d2877bcd1936f881c6e44dc7e9a775430c1b7f35ca0e257449307fbf",
+        "assetLibraryVersion": 139,
+        "observedAssetLibraryVersion": 139,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "egg-heist",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 회피 선택도 세계 상태를 바꾸며 특정 조건을 충족시키는 역설적 진행을 만든다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "알 도둑 대작전",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "사회관계 선택 × 그리스 비극의 자기실현 예언",
+              "capabilities": [
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "생활 공간 탐색 × 순교와 집단 결속",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 5,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": false,
+              "signalCount": 1,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": false,
+              "signalCount": 2,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 4,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 5,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "4788c706178f867fc09ed7524b25b1352194c58415b9c112fa03b8b6d8d7086c",
+          "antiSkeletonPassed": false,
+          "designGenre": "Simulation",
+          "sourceGenre": "Simulation",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 5,
+        "gameId": "egg-heist",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-21T08:44:26.396Z",
+        "sourcePath": "roblox-games/egg-heist",
+        "sourceRevision": "45f9c5d7fb20caa3f7566d99fb7e8b9a2eba3e61",
+        "artifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
+        "rebuiltArtifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
+        "artifactRunId": 39565285186,
+        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
+        "assetSelectionFingerprint": "e6903aa5d2877bcd1936f881c6e44dc7e9a775430c1b7f35ca0e257449307fbf",
+        "observedAssetSelectionFingerprint": "e6903aa5d2877bcd1936f881c6e44dc7e9a775430c1b7f35ca0e257449307fbf",
+        "assetLibraryVersion": 139,
+        "observedAssetLibraryVersion": 139,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "egg-heist",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 회피 선택도 세계 상태를 바꾸며 특정 조건을 충족시키는 역설적 진행을 만든다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "생활 공간 탐색: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "사회관계 선택로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "알 도둑 대작전",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "사회관계 선택 × 그리스 비극의 자기실현 예언",
+              "capabilities": [
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "생활 공간 탐색 × 순교와 집단 결속",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 5,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": false,
+              "signalCount": 1,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": false,
+              "signalCount": 2,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 4,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 5,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "4788c706178f867fc09ed7524b25b1352194c58415b9c112fa03b8b6d8d7086c",
+          "antiSkeletonPassed": false,
+          "designGenre": "Simulation",
+          "sourceGenre": "Simulation",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -20122,23 +20723,23 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "25abdbf4270cd5bc64de32daa518abe1143ecfb1",
+      "robloxQualityBuildUpSourceRevision": "45f9c5d7fb20caa3f7566d99fb7e8b9a2eba3e61",
       "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "egg-heist",
-        "sourceRevision": "25abdbf4270cd5bc64de32daa518abe1143ecfb1",
+        "sourceRevision": "45f9c5d7fb20caa3f7566d99fb7e8b9a2eba3e61",
         "artifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39555575085,
-        "testedAt": "2026-10-21T08:10:53.721Z",
+        "workflowRunId": 39565285186,
+        "testedAt": "2026-10-21T09:21:32.796Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -60481,10 +61082,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T08:42:02.454Z",
+      "updatedAt": "2026-10-21T09:21:32.796Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -60500,16 +61101,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
       "robloxBuildArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-      "robloxBuildPassedAt": "2026-10-21T06:55:12.340Z",
+      "robloxBuildPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T06:55:12.340Z",
+      "robloxBuildPreflightPassedAt": "2026-10-21T09:21:32.796Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "survival2",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T06:33:05.208Z",
+        "checkedAt": "2026-10-21T08:43:07.982Z",
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "secondaryOwnerFocus": false,
@@ -60544,10 +61145,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
+            "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence passed; no contradictions found in BUILD_EVIDENCE."
+            "note": "All required build evidence and deterministic package identity checks have successfully passed."
           }
         ],
         "blockers": [],
@@ -60561,12 +61162,12 @@
         "gameId": "survival2",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:33:05.951Z",
+        "checkedAt": "2026-10-21T08:43:08.717Z",
         "sourcePath": "roblox-games/survival2",
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "rebuiltArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-        "artifactRunId": 39550849481,
+        "artifactRunId": 39565285186,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "3bed635aca13bc3fd00d7baa5759998290101167fbe9b8e36859c59ebf15464f",
         "observedAssetSelectionFingerprint": "3bed635aca13bc3fd00d7baa5759998290101167fbe9b8e36859c59ebf15464f",
@@ -60868,12 +61469,12 @@
         "gameId": "survival2",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T06:33:05.951Z",
+        "checkedAt": "2026-10-21T08:43:08.717Z",
         "sourcePath": "roblox-games/survival2",
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "rebuiltArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-        "artifactRunId": 39550849481,
+        "artifactRunId": 39565285186,
         "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
         "assetSelectionFingerprint": "3bed635aca13bc3fd00d7baa5759998290101167fbe9b8e36859c59ebf15464f",
         "observedAssetSelectionFingerprint": "3bed635aca13bc3fd00d7baa5759998290101167fbe9b8e36859c59ebf15464f",
@@ -61719,8 +62320,8 @@
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39550849481,
-        "testedAt": "2026-10-21T06:55:12.340Z",
+        "workflowRunId": 39565285186,
+        "testedAt": "2026-10-21T09:21:32.796Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -73577,7 +74178,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-21T09:10:04.618Z",
+  "updatedAt": "2026-10-21T09:21:32.796Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -73643,5 +74244,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
