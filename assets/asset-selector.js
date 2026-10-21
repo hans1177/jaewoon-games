@@ -401,7 +401,7 @@ export function assessCreativeCommonsAssetLicense(asset={},{
   const author=asset.attribution||{};
   const attributionReady=!attributionRequired||Boolean(text(author.creator)&&https(author.sourceUrl||asset.sourceUrl)
     &&https(author.licenseUrl||asset.licenseEvidenceUrl)&&text(author.modificationNotice));
-  const shareAlikeReady=!sa||Boolean(derivative&&https(asset.shareAlikeComplianceEvidenceUrl)
+  const shareAlikeReady=!sa||!derivative||Boolean(https(asset.shareAlikeComplianceEvidenceUrl)
     &&text(asset.derivativeLicense).toUpperCase()===license);
   const blocked=asset.securityBlocked===true||asset.quarantined===true||asset.internalUseForbidden===true
     ||asset.catalogOnly===true||asset.releaseBlocked===true
