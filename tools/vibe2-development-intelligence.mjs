@@ -169,12 +169,16 @@ export function buildExecutionCheckpoint({
 function verifiedEvidenceRows(root){
   if(!root||!fs.existsSync(root)||!fs.statSync(root).isDirectory())return [];
   return fs.readdirSync(root,{withFileTypes:true}).filter(entry=>entry.isFile()&&entry.name.endsWith('.json')).map(entry=>{
-    const file=path.join(root,entry.name),value=readJson(file);return value?{file,value}:null;
+    const file=path.join(root,entry.name),value=readJson(file);
+    // Only independently verified successful repairs are reusable as coding memory.
+    return value?.verified===true&&clean(value.outcome).toUpperCase()==='SUCCESS'
+      &&clean(value.independentQa).toUpperCase()==='PASS'?{file,value}:null;
   }).filter(Boolean);
 }
 
 export function findVerifiedFailureResolution({root='company-learning/evidence',gameId='',fingerprint=''}={}){
-  const id=typeof fingerprint==='object'?fingerprint?.id:clean(fingerprint);
+  const id=clean(typeof fingerprint==='object'?fingerprint?.id:fingerprint);
+  if(!clean(gameId)||!id)return null;
   const rows=verifiedEvidenceRows(root).filter(({value})=>clean(value.gameId)===clean(gameId)&&clean(value?.vibe2DevelopmentIntelligence?.failureFingerprint?.id)===id);
   rows.sort((a,b)=>String(b.value.generatedAt||b.value.recordedAt||'').localeCompare(String(a.value.generatedAt||a.value.recordedAt||'')));
   const row=rows[0];if(!row)return null;
@@ -182,7 +186,8 @@ export function findVerifiedFailureResolution({root='company-learning/evidence',
 }
 
 export function loadLatestVerifiedCheckpoint({root='company-learning/evidence',gameId='',role=''}={}){
-  const rows=verifiedEvidenceRows(root).map(({file,value})=>({file,value,checkpoint:value?.vibe2DevelopmentIntelligence?.checkpoint})).filter(row=>row.checkpoint&&clean(row.checkpoint.gameId)===clean(gameId)&&(!role||clean(row.checkpoint.role)===clean(role)));
+  if(!clean(gameId))return null;
+  const rows=verifiedEvidenceRows(root).map(({file,value})=>({file,value,checkpoint:value?.vibe2DevelopmentIntelligence?.checkpoint})).filter(row=>row.checkpoint&&clean(row.checkpoint.status).toUpperCase()==='VERIFIED'&&clean(row.checkpoint.gameId)===clean(gameId)&&(!role||clean(row.checkpoint.role)===clean(role)));
   rows.sort((a,b)=>String(b.checkpoint.updatedAt||b.value.generatedAt||'').localeCompare(String(a.checkpoint.updatedAt||a.value.generatedAt||'')));
   const row=rows[0];return row?Object.freeze({source:posix(row.file),candidateId:row.value.candidateId||null,checkpoint:row.checkpoint}):null;
 }
