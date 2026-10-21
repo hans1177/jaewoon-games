@@ -152872,7 +152872,7 @@
     },
     {
       "id": "recovery-recovery-d69bd4408fd58ad51b4e",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -152921,8 +152921,8 @@
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "WORKFLOW_FAILED_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 2,
-      "previousReservationId": "system-ai:39657385190:1",
+      "handoffCount": 3,
+      "previousReservationId": "system-ai:39667882454:1",
       "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -152930,12 +152930,12 @@
       "sourceMutationBaseline": "cc9eff080510e530b8f5c3f14181d93b458dc198",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39667882454:1",
-      "reservedAt": "2026-10-21T20:16:51.840Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "deployment-failure-run:39128393292:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -152994,7 +152994,9 @@
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
         "system-ai-impact-score:1230",
-        "system-ai-handoff-to-reservation:system-ai:39667882454:1"
+        "system-ai-handoff-to-reservation:system-ai:39667882454:1",
+        "system-ai-handoff-from-reservation:system-ai:39667882454:1",
+        "primary-ai-collaboration-reason:REPEATED_WORKER_HANDOFF"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1230,
@@ -153009,7 +153011,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T12:51:09.038Z",
-      "updatedAt": "2026-10-21T20:16:51.840Z"
+      "updatedAt": "2026-10-21T20:48:01.282Z"
     },
     {
       "id": "recovery-recovery-89b1e4d27fdbbbd8a954",
