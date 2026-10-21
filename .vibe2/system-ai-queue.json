@@ -153027,7 +153027,7 @@
     },
     {
       "id": "recovery-recovery-d69bd4408fd58ad51b4e",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153071,7 +153071,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:cc9eff080510e530b8f5c3f14181d93b458dc198:fantasy-survival"
       ],
-      "retries": 1,
+      "retries": 2,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "WORKFLOW_FAILED_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
@@ -153085,12 +153085,12 @@
       "sourceMutationBaseline": "cc9eff080510e530b8f5c3f14181d93b458dc198",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39684292445:1",
-      "reservedAt": "2026-10-21T22:11:50.923Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39128393292:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -153157,7 +153157,8 @@
         "system-ai-impact-score:1231",
         "system-ai-handoff-to-reservation:system-ai:39677958853:1",
         "system-ai-handoff-from-reservation:system-ai:39677958853:1",
-        "system-ai-handoff-to-reservation:system-ai:39684292445:1"
+        "system-ai-handoff-to-reservation:system-ai:39684292445:1",
+        "actions-run:39684292445"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1231,
@@ -153172,7 +153173,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T12:51:09.038Z",
-      "updatedAt": "2026-10-21T22:11:50.923Z"
+      "updatedAt": "2026-10-21T22:39:44.826Z"
     },
     {
       "id": "recovery-recovery-89b1e4d27fdbbbd8a954",
