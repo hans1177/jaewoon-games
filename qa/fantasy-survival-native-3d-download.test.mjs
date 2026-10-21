@@ -100,7 +100,7 @@ test('browser hashes all 12 CC0 OBJ bytes before rendering and rejects tampered 
  assert.ok(start>0&&end>start,'runtime integrity gate missing from native renderer');
  const realm={crypto:webcrypto,TextDecoder,Uint8Array};
  vm.runInNewContext(moduleSource.slice(start,end)+
-  '\\nglobalThis.verifyObj=verifyPinnedCc0Obj;globalThis.pins=PINNED_CC0_OBJ_SHA256;',realm,{timeout:3000});
+  '\nglobalThis.verifyObj=verifyPinnedCc0Obj;globalThis.pins=PINNED_CC0_OBJ_SHA256;',realm,{timeout:3000});
  const expected=['floor_base','tree','tree_large','foliage_A','foliage_B','cobblestones',
   'bench_A','bench_B','fence_straight','house','gate_single','package'];
  assert.deepEqual(Object.keys(realm.pins).sort(),[...expected].sort());
@@ -113,7 +113,7 @@ test('browser hashes all 12 CC0 OBJ bytes before rendering and rejects tampered 
   assert.equal(digest,entry.sourceHash,'source bytes differ from registered CC0 original: '+name);
   assert.equal(realm.pins[name],digest,'browser pin differs from canonical SHA-256: '+name);
   const decoded=await realm.verifyObj(name,response(bytes));
-  assert.match(decoded,/^v -?\\d/m,'runtime must decode original OBJ: '+name);
+  assert.match(decoded,/^v -?\d/m,'runtime must decode original OBJ: '+name);
  }
  const good=fs.readFileSync(home+'tree.obj');
  const altered=Buffer.from(good);altered[0]^=1;
@@ -122,10 +122,10 @@ test('browser hashes all 12 CC0 OBJ bytes before rendering and rejects tampered 
  await assert.rejects(realm.verifyObj('tree',{ok:false,status:404}),/Original CC0 OBJ missing/);
  const insecure={TextDecoder,Uint8Array};
  vm.runInNewContext(moduleSource.slice(start,end)+
-  '\\nglobalThis.verifyObj=verifyPinnedCc0Obj;',insecure,{timeout:3000});
+  '\nglobalThis.verifyObj=verifyPinnedCc0Obj;',insecure,{timeout:3000});
  await assert.rejects(insecure.verifyObj('tree',response(good)),/CC0 SHA-256 unavailable/);
- assert.match(moduleSource,/verifyPinnedCc0Obj\\(name,response\\)/);
- assert.match(moduleSource,/Promise\\.all\\(\\[verifyPinnedCc0Obj\\(name,response\\),mtlResponse\\.text\\(\\)\\]\\)/);
+ assert.match(moduleSource,/verifyPinnedCc0Obj\(name,response\)/);
+ assert.match(moduleSource,/Promise\.all\(\[verifyPinnedCc0Obj\(name,response\),mtlResponse\.text\(\)\]\)/);
  assert.match(moduleSource,/productionReady:false/);
 });
 
