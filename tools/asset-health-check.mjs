@@ -151,7 +151,7 @@ for(const asset of manifest.assets||[]){
   const localPath=String(asset.path||'').trim();
   const localExists=localPath?fs.existsSync(localPath):null;
   const license=String(asset.license||'unknown');
-  const licenseOk=!blocked.has(license)&&license!=='unknown';
+  const licenseOk=/^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(license.trim())&&!blocked.has(license);
   const animationOk=!actor||(
     asset.verifiedAnimation===true&&
     Array.isArray(asset.animationEvidence)&&asset.animationEvidence.length>0&&
