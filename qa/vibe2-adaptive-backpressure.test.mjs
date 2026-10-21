@@ -161,7 +161,11 @@ test('stale pressure evidence resets to maximum before fresh evaluation',()=>{
 });
 
 
-test('game-primary keeps adaptive telemetry while reserving to fixed repeat-development boundary',()=>{
+test('game-primary keeps adaptive telemetry while reserving to fixed repeat-development boundary',t=>{
+  const previous={priority:process.env.VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY,observed:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS};
+  process.env.VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY='1';
+  process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS='20';
+  t.after(()=>{for(const [key,value] of [['VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY',previous.priority],['VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS',previous.observed]]){if(value===undefined)delete process.env[key];else process.env[key]=value;}});
   const files=tempFiles();
   try{
     const tasks=Array.from({length:40},(_,i)=>({
@@ -209,16 +213,16 @@ test('auxiliary reserve-batch is not capped by game-primary adaptive control',()
 });
 
 
-test('20-hosted-runner owner-first budget preserves eight slots for direct development, QA and release',()=>{
+test('fixed game development target survives physical runner pressure while auxiliary work preserves owner headroom',()=>{
   const automatic=ownerFirstRunnerAllocation({tasks:[{
     id:'auto',status:'queued',executionLane:'GAME_PRIMARY',ownerDirective:false
   }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8});
-  assert.equal(automatic.concurrentCeiling,12);
-  assert.equal(automatic.reason,'AUTOMATIC_KEEP_OWNER_RUNNER_HEADROOM');
+  assert.equal(automatic.concurrentCeiling,128);
+  assert.equal(automatic.reason,'FIXED_GAME_PRIMARY_TARGET_EXTERNAL_QUEUEING');
   const owner=ownerFirstRunnerAllocation({tasks:[{
     id:'direct',status:'queued',executionLane:'GAME_PRIMARY',ownerDirective:true
   }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8});
-  assert.equal(owner.concurrentCeiling,20);
+  assert.equal(owner.concurrentCeiling,128);
   assert.equal(owner.ownerReady,true);
   assert.equal(ownerFirstRunnerAllocation({tasks:[]},
     {lane:'game-primary',requestedMax:3,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,3);
@@ -226,13 +230,13 @@ test('20-hosted-runner owner-first budget preserves eight slots for direct devel
     {lane:'asset-development',requestedMax:9,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,9);
   assert.equal(ownerFirstRunnerAllocation({tasks:[{
     id:'running-asset',status:'running',executionLane:'ASSET_DEVELOPMENT'
-  }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,11,
-    'running assets consume the shared autonomous logical budget');
+  }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,128,
+    'running assets may not reduce the fixed development target');
   const withOwner=ownerFirstRunnerAllocation({tasks:[
     {id:'running-asset',status:'running',executionLane:'ASSET_DEVELOPMENT'},
     {id:'owner',status:'queued',executionLane:'GAME_PRIMARY',ownerDirective:true}
   ]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8});
-  assert.equal(withOwner.concurrentCeiling,19);
+  assert.equal(withOwner.concurrentCeiling,128);
   assert.equal(ownerFirstRunnerAllocation({tasks:[
     {id:'running-game',status:'running',executionLane:'GAME_PRIMARY'}
   ]},{lane:'asset-development',requestedMax:128,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,11);
@@ -247,4 +251,21 @@ test('canonical Vibe reserve activates owner-first budget but does not weaken QA
   assert.match(controller,/ownerFirstRunnerAllocation\(queue/);
   assert.match(workflow,/node --test --test-concurrency=4/);
   assert.match(workflow,/candidate-awaiting-qa-and-deployment|verified_learning_memory_sha/);
+});
+
+// 보조 작업: 자리가 없으면 가짜 한 슬롯을 만들지 않고 실제 여유가 관측되면 재개한다.
+test('auxiliary admission uses actual runner availability rather than logical development reservations',()=>{
+  const tasks=Array.from({length:128},(_,i)=>({id:'game-'+i,status:'running',executionLane:'GAME_PRIMARY'}));
+  const unknown=ownerFirstRunnerAllocation({tasks},{lane:'asset-development',requestedMax:63});
+  assert.equal(unknown.admissionClosed,true);
+  assert.equal(unknown.concurrentCeiling,0);
+  const free=ownerFirstRunnerAllocation({tasks},{lane:'asset-development',requestedMax:63,observedActiveHostedJobs:'2'});
+  assert.equal(free.admissionClosed,false);
+  assert.equal(free.concurrentCeiling,10);
+  const full=ownerFirstRunnerAllocation({tasks},{lane:'asset-development',requestedMax:63,observedActiveHostedJobs:'12'});
+  assert.equal(full.admissionClosed,true);
+  assert.equal(full.concurrentCeiling,0);
+  const primary=ownerFirstRunnerAllocation({tasks},{lane:'GAME_PRIMARY',requestedMax:128,observedActiveHostedJobs:'20'});
+  assert.equal(primary.admissionClosed,false);
+  assert.equal(primary.concurrentCeiling,128);
 });
