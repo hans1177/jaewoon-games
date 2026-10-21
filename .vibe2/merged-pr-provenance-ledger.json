@@ -75554,11 +75554,159 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6f1e47bcc2eb2945fa723d45",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8806",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ea414c0f34b55fe3d91612cd0d615f069fc2b6a9",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8806,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-focus-priority-spare-capacity-20261021",
+        "baseSha": "ea414c0f34b55fe3d91612cd0d615f069fc2b6a9",
+        "headSha": "2b9285ca0f0fc4c016ce2f136dc329d4b165e0c9",
+        "mergeCommitSha": "e9572e4da3146fcf92896e21890fc7eb64d3ccf3",
+        "mergedAt": "2026-10-21T06:15:08Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0b754e027d09e412aca6175b165dcb0e16a159e34d8f5444231bb03553402b94",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-focus-priority-spare-capacity-20261021",
+        "candidateSha": "2b9285ca0f0fc4c016ce2f136dc329d4b165e0c9"
+      },
+      "changeStats": {
+        "changedFileCount": 17,
+        "codingRelevantFileCount": 17,
+        "addedLineCount": 522,
+        "deletedLineCount": 299,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "assets/vibe-continuous-queue.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "roblox-games/egg-heist/client/Game.client.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "tools/company-selected-platform-router.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "assets/vibe-continuous-queue.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "roblox-games/egg-heist/client/Game.client.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "tools/company-selected-platform-router.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8806",
+        "merge-commit:e9572e4da3146fcf92896e21890fc7eb64d3ccf3",
+        "base-main:ea414c0f34b55fe3d91612cd0d615f069fc2b6a9"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 599
+    "total": 600
   }
 }
