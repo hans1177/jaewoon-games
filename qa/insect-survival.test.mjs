@@ -183,6 +183,10 @@ test('common CC0 source inventory does not authorize deletion and checks existin
  assert.equal(audit.summary.registeredCc0,audit.summary.registryAssets);
  assert.equal(audit.summary.externalNonCc0,2);
  assert.equal(audit.summary.legacyNonCc0,1);
+ assert.equal(audit.summary.sourceOnlyArchives,113,'existing source-only archive manifests remain preserved');
+ assert.ok(audit.summary.suspiciousSourcePointers>=10,'truncated Blender source pointers require reacquisition');
+ assert.ok(audit.archives.every(row=>row.sourceOnly&&row.hashReverified===false));
+ assert.ok(audit.archives.filter(row=>row.suspiciousPointer).every(row=>row.action==='QUARANTINE_NEW_USE_REACQUIRE_OR_VERIFY'));
  assert.ok(audit.summary.immutableHashPass>=32,'pinned original bytes must be independently hashed');
  assert.equal(audit.summary.immutableHashMismatch,0);
  const tree=audit.assets.find(row=>row.id==='external-tinytreats-tree-large-v1');
