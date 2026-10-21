@@ -722,9 +722,24 @@ export function completeOwnerExclusiveGameScope({
 
 export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
   const queue=createVibeContinuousQueue(queueInput);
-  return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>({
-    ...task,ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target,task)
-  }))});
+  // 예약 전 실제 오너 집중 게임·플랫폼을 다시 동기화한다. 오래된 일반 큐도 집중 혜택을 받는다.
+  const focus=policy?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+  const focusedIds=new Set(focus.enabled===true&&focus.completionPursuit?.enabled===true
+    ?(focus.ownerFocusedGameIds||[]).map(clean):[]);
+  const platforms=focus.ownerFocusedGamePlatforms||{};
+  return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
+    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,task.gameId,task.target,task);
+    const exactFocus=!ownerDevelopmentHold&&task.status==='queued'
+      &&clean(task.department).toLowerCase()==='development'
+      &&clean(task.type).toLowerCase()==='implementation'
+      &&focusedIds.has(clean(task.gameId))
+      &&clean(platforms[task.gameId]).toLowerCase()===clean(task.target).toLowerCase();
+    return {
+      ...task,ownerDevelopmentHold,
+      ...(exactFocus?{ownerFocusedCaretaker:true,focusedCaretaker:true,
+        priority:task.priority==='owner-immediate'?'owner-immediate':'critical'}:{})
+    };
+  })});
 }
 
 export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {

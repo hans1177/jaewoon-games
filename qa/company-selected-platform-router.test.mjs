@@ -1,5 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+
+test('three-game owner focus puts Roblox completion first and reuses spare native capacity',()=>{
+  const roadmap={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+    enabled:true,ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+    completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
+  }}};
+  const rows=[
+    {...nativeItem('older','ROBLOX'),enqueuedAt:'2026-09-01T00:00:00Z'},
+    {...nativeItem('cozy-island','ROBLOX'),enqueuedAt:'2026-09-02T00:00:00Z'},
+    {...nativeItem('simple-rpg','ROBLOX'),enqueuedAt:'2026-10-20T00:00:00Z'}
+  ];
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow(rows,1,roadmap).map(x=>x.gameId),['simple-rpg']);
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow(rows,2,roadmap).map(x=>x.gameId),['simple-rpg','older']);
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow(rows,3,roadmap).map(x=>x.gameId),['simple-rpg','older','cozy-island']);
+  assert.equal(selectTargetPlatformDevelopmentWindow(rows,1)[0].gameId,'older');
+  const workflow=readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.equal(workflow.split('selectTargetPlatformDevelopmentWindow(q.items||[],DEVELOPMENT_GAME_WIP_MAX,roadmap)').length-1,2);
+  assert.equal(workflow.split('focusedRobloxGameIds.has(b.gameId)').length-1,2);
+});
+
+
 import {
   SELECTED_PLATFORMS,
   DEFAULT_CONCURRENT_PLATFORMS,

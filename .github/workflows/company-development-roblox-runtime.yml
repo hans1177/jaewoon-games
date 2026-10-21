@@ -344,11 +344,16 @@ jobs:
           const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
           const reconciliationById=new Map((reconciliation||[]).map(row=>[row.gameId,row]));
           const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
-          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[],DEVELOPMENT_GAME_WIP_MAX,roadmap);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const EXECUTION_BATCH_MAX=256;
           const rows=[];
-          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
+          const focused=roadmap?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+          const focusedRobloxGameIds=new Set(focused.enabled===true&&focused.completionPursuit?.enabled===true
+            ?(focused.ownerFocusedGameIds||[]).filter(id=>focused.ownerFocusedGamePlatforms?.[id]==='ROBLOX'):[]);
+          const candidates=[...globalWindow].sort((a,b)=>
+            Number(focusedRobloxGameIds.has(b.gameId))-Number(focusedRobloxGameIds.has(a.gameId))
+            ||Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
             if(rows.length>=EXECUTION_BATCH_MAX)break;
             if(permanentlyRemovedGameIds.has(item.gameId)){
@@ -1131,11 +1136,16 @@ jobs:
               return hasCurrentRobloxPackageAssetRepair({item,assetLibrary,baseline});
             }catch{return false;}
           };
-          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[],DEVELOPMENT_GAME_WIP_MAX,roadmap);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
           const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
-          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
+          const focused=roadmap?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+          const focusedRobloxGameIds=new Set(focused.enabled===true&&focused.completionPursuit?.enabled===true
+            ?(focused.ownerFocusedGameIds||[]).filter(id=>focused.ownerFocusedGamePlatforms?.[id]==='ROBLOX'):[]);
+          const candidates=[...globalWindow].sort((a,b)=>
+            Number(focusedRobloxGameIds.has(b.gameId))-Number(focusedRobloxGameIds.has(a.gameId))
+            ||Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
             if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
