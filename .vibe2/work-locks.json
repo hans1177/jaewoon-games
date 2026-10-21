@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1bkgk2c",
+      "worker": "vibe2",
+      "taskId": "moon-ruins-studio-evolution-roblox-stability-v2",
+      "gameId": "moon-ruins",
+      "files": [
+        "roblox-games/moon-ruins/client/Game.client.luau",
+        "roblox-games/moon-ruins/shared/GameConfig.luau",
+        "roblox-games/moon-ruins/server/Game.server.luau"
+      ],
+      "baseSha": "a2ad35bd579ab1e4d9f0ef75618d1ab4c3306851",
+      "runId": "39638562270",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-21T17:14:19.477Z",
+      "expiresAt": "2026-10-21T17:59:19.477Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:moon-ruins-studio-evolution-roblox-stability-v2"
+      ]
+    }
+  ]
 }
