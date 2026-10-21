@@ -22,7 +22,7 @@ import { latestVerifiedDesign } from './company-all-games-design-reset.mjs';
 import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxDesignProfileFromBaseline } from './company-development-roblox-gameplay-product-readiness.mjs';
 import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
-import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
+import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources, extractDesignContext } from './company-build-up-directive.mjs';
 import { buildInterfaceBlueprintContract, INTERFACE_EXTERNAL_ALGORITHMS } from './company-roblox-production-plan.mjs';
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
@@ -2579,6 +2579,28 @@ function applyRobloxQualityRepairDirective(directive,project,platformLane){
   };
 }
 
+function buildUpDesignRecordForProject(rawDesignRecord,project,platformLane=studioQualityLane(project)){
+  const effectiveDesignRecord=JSON.parse(JSON.stringify(rawDesignRecord||{}));
+  effectiveDesignRecord.content=effectiveDesignRecord.content&&typeof effectiveDesignRecord.content==='object'?effectiveDesignRecord.content:{};
+  if(platformLane==='roblox'){
+    const mode=clean(project?.playMode).toUpperCase();
+    const genre=clean(project?.genre),subgenre=clean(project?.subgenre);
+    if(mode)effectiveDesignRecord.content.multiplayerMode=mode;
+    effectiveDesignRecord.content.robloxBuildProfile={
+      ...(effectiveDesignRecord.content.robloxBuildProfile||{}),
+      ...(genre?{genre}:{}),
+      ...(subgenre?{subgenre}:{}),
+      ...(mode?{playMode:mode,multiplayerRequired:mode!=='SINGLE',networkingRequired:mode!=='SINGLE',multiplayerQaRequired:mode!=='SINGLE'}:{})
+    };
+  }
+  return effectiveDesignRecord;
+}
+function approvedDesignFingerprintForProject(designRecord,project,platformLane=studioQualityLane(project)){
+  return crypto.createHash('sha256')
+    .update(JSON.stringify(extractDesignContext(buildUpDesignRecordForProject(designRecord,project,platformLane))))
+    .digest('hex');
+}
+
 function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
   if(!taskInput||!project?.gameId)return taskInput;
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
@@ -2641,8 +2663,14 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);
   const priorProduction=activeDirectiveTask?.buildUpDirective?.productionPlan||activeDirectiveTask?.buildUpDirective?.robloxProductionPlan;
   const activeProductionCompatible=!productionRequired||(Number(priorProduction?.version)>=2&&priorProduction?.platform===productionTarget);
+  const currentApprovedDesignFingerprint=designContext?.record
+    ?approvedDesignFingerprintForProject(designContext.record,project,platformLane):null;
   const activeDirectiveMatchesCurrentSource=Boolean(
     activeDirectiveTask?.buildUpDirective
+    // A running source task can be reused only when its approved design is still current.
+    // An updated design must reach queued native implementation even if source is unchanged.
+    &&(!currentApprovedDesignFingerprint
+      ||clean(activeDirectiveTask.buildUpDirective.designFingerprint)===currentApprovedDesignFingerprint)
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)===clean(sourceObservation.sourceTreeFingerprint)
     &&activeDirectivePlatformCompatible
@@ -2765,21 +2793,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     regressionPassed:(samePlatform&&project?.queueRuntimeRegressionPassed===true)
       ||(roblox&&project?.queueRobloxRegressionPassed===true)
   };
-  const rawDesignRecord=designContext?.record||{content:{identity:project.name||project.gameId}};
-  const effectiveDesignRecord=JSON.parse(JSON.stringify(rawDesignRecord));
-  effectiveDesignRecord.content=effectiveDesignRecord.content&&typeof effectiveDesignRecord.content==='object'?effectiveDesignRecord.content:{};
-  if(platformLane==='roblox'){
-    const mode=clean(project?.playMode).toUpperCase();
-    const genre=clean(project?.genre);
-    const subgenre=clean(project?.subgenre);
-    if(mode)effectiveDesignRecord.content.multiplayerMode=mode;
-    effectiveDesignRecord.content.robloxBuildProfile={
-      ...(effectiveDesignRecord.content.robloxBuildProfile||{}),
-      ...(genre?{genre}:{}),
-      ...(subgenre?{subgenre}:{}),
-      ...(mode?{playMode:mode,multiplayerRequired:mode!=='SINGLE',networkingRequired:mode!=='SINGLE',multiplayerQaRequired:mode!=='SINGLE'}:{})
-    };
-  }
+  const effectiveDesignRecord=buildUpDesignRecordForProject(
+    designContext?.record||{content:{identity:project.name||project.gameId}},project,platformLane);
   const directive=applyRobloxQualityRepairDirective(buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
@@ -3325,6 +3340,20 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     if(!gameId)continue;
     projectByScope.set(gameId+'|'+studioQualityLane(project),project);
   }
+  // Approved designs may evolve independently of the source tree. Cache each
+  // currently verified same-game design once per planning cycle, so queued
+  // implementation cannot keep an obsolete design directive indefinitely.
+  const verifiedDesignByGame=new Map(),approvedDesignFingerprintByScope=new Map();
+  for(const project of projects||[]){
+    const gameId=clean(project?.gameId);
+    if(!gameId)continue;
+    if(!verifiedDesignByGame.has(gameId))verifiedDesignByGame.set(gameId,latestVerifiedDesign(repoRoot,gameId)||null);
+    const approved=verifiedDesignByGame.get(gameId);
+    if(approved?.record){
+      approvedDesignFingerprintByScope.set(gameId+'|'+studioQualityLane(project),
+        approvedDesignFingerprintForProject(approved.record,project));
+    }
+  }
   const supportedTarget=item=>{
     const target=clean(item?.target).toLowerCase();
     return target==='web'||target==='roblox'||target==='unity'||target.startsWith('unity-')||target==='fortnite-uefn'||target==='uefn'||target==='unreal'||target.startsWith('fortnite');
@@ -3341,6 +3370,8 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   for(const row of tasks){
     const gameId=clean(row?.gameId),directive=row?.buildUpDirective,lane=studioQualityTaskLane(row),scope=gameId+'|'+lane;
     if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running'||!hasCurrentAutonomousContentExpansionDirective(directive,productionPolicy))continue;
+    const approvedFingerprint=approvedDesignFingerprintByScope.get(scope)||'';
+    if(approvedFingerprint&&clean(directive.designFingerprint)!==approvedFingerprint)continue;
     const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
     if(currentSourceFingerprint&&clean(directive.sourceTreeFingerprint)!==currentSourceFingerprint)continue;
     const current=canonicalByScope.get(scope);
@@ -3356,14 +3387,21 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     checked+=1;
     const history=tasks.filter((row,rowIndex)=>rowIndex!==index&&clean(row?.gameId)===gameId&&studioQualityTaskLane(row)===lane&&clean(row?.buildUpDirective?.directiveId));
     const byGeneration=(a,b)=>Number(b?.buildUpDirective?.generation||0)-Number(a?.buildUpDirective?.generation||0);
+    const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
+    const approvedFingerprint=approvedDesignFingerprintByScope.get(scope)||'';
     const mappedCanonical=canonicalByScope.get(scope)||null;
     const activeCanonical=mappedCanonical
       ?{buildUpDirective:mappedCanonical,status:'queued'}
-      :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())&&hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective,productionPolicy)).sort(byGeneration)[0]||null;
+      :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())
+        &&hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective,productionPolicy)
+        &&(!approvedFingerprint||clean(row?.buildUpDirective?.designFingerprint)===approvedFingerprint)
+        &&(!currentSourceFingerprint||clean(row?.buildUpDirective?.sourceTreeFingerprint)===currentSourceFingerprint)
+      ).sort(byGeneration)[0]||null;
     const latestHistorical=history.slice().sort(byGeneration)[0]||null;
     const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
     const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
-    const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
+    const currentDirectiveDesignStale=Boolean(currentId&&approvedFingerprint
+      &&clean(item?.buildUpDirective?.designFingerprint)!==approvedFingerprint);
     const currentDirectiveSourceStale=Boolean(
       currentId&&currentSourceFingerprint
       &&clean(item?.buildUpDirective?.sourceTreeFingerprint)!==currentSourceFingerprint
@@ -3379,12 +3417,16 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       }
       rebound+=1;changed+=1;
       freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_AUTONOMOUS_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
-    }else if(currentDirectiveSourceStale){
-      const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
+    }else if(currentDirectiveSourceStale||currentDirectiveDesignStale){
+      const verifiedDesign=verifiedDesignByGame.get(gameId)||null;
       if(!verifiedDesign){
         designPending+=1;
         freshness='STALE_SOURCE_DESIGN_PENDING';
-        candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:STALE_SOURCE_TREE'])]};
+        candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([
+          ...(item.evidence||[]),'build-up-directive:DESIGN_PENDING',
+          ...(currentDirectiveSourceStale?['build-up-directive:STALE_SOURCE_TREE']:[]),
+          ...(currentDirectiveDesignStale?['build-up-directive:STALE_APPROVED_DESIGN']:[])
+        ])]};
       }else{
         const queueWithoutCurrent={...queue,tasks:tasks.filter((_,rowIndex)=>rowIndex!==index)};
         const refreshed=attachGameSpecificBuildUpDirective(item,project,repoRoot,queueWithoutCurrent,verifiedDesign);
@@ -3394,11 +3436,13 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           canonicalByScope.set(scope,refreshed.buildUpDirective);
           candidate={...candidate,evidence:[...new Set([
             ...(candidate.evidence||[]),...(refreshed.evidence||[]),
-            'build-up-directive-source-refresh:CURRENT_SOURCE_TREE',
+            ...(currentDirectiveSourceStale?['build-up-directive-source-refresh:CURRENT_SOURCE_TREE']:[]),
+            ...(currentDirectiveDesignStale?['build-up-directive-design-refresh:CURRENT_APPROVED_REVISION']:[]),
             ...(newerTerminalGeneration?['build-up-directive-stale-refresh:queued-existing-work']:[])
           ])]};
           rebound+=1;changed+=1;
-          freshness=newerTerminalGeneration?'REGENERATED_AFTER_NEWER_TERMINAL_GENERATION':'REGENERATED_AFTER_SOURCE_TREE_CHANGE';
+          freshness=currentDirectiveDesignStale?'REGENERATED_AFTER_APPROVED_DESIGN_REVISION'
+            :newerTerminalGeneration?'REGENERATED_AFTER_NEWER_TERMINAL_GENERATION':'REGENERATED_AFTER_SOURCE_TREE_CHANGE';
         }else{
           designPending+=1;
           freshness='STALE_SOURCE_REGENERATION_FAILED';
