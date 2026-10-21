@@ -2036,7 +2036,7 @@ esac
     ]){
       fs.writeFileSync(output,'');
       const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:event,GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:action,GITHUB_SHA:eventSha,TEST_LATEST_MAIN:latestSha,GITHUB_REPOSITORY:'test/repo',GITHUB_RUN_ID:'5000',VIBE2_EXECUTION_LANE:'game-primary',TEST_RUNS_JSON:JSON.stringify({workflow_runs:[]}),GITHUB_OUTPUT:output}});
-      assert.equal(fs.readFileSync(output,'utf8').trim(),'proceed='+expected);
+      assert.deepEqual(fs.readFileSync(output,'utf8').trim().split('\n'),['proceed='+expected,'focus_reconcile=false']);
       assert.ok(log.includes(marker));
     }
     // 메인: 먼저 도착한 같은 SHA·레인은 중복 예약을 생략하지만, 완료·다른 레인·새 요청은 보존한다.
@@ -2057,7 +2057,7 @@ esac
         TEST_LATEST_MAIN:'same-main',GITHUB_REPOSITORY:'test/repo',GITHUB_RUN_ID:'5000',
         VIBE2_EXECUTION_LANE:'game-primary',TEST_RUNS_JSON:JSON.stringify({workflow_runs:[{...base,...overrides}]}),GITHUB_OUTPUT:output
       }});
-      assert.equal(fs.readFileSync(output,'utf8').trim(),'proceed='+expected);
+      assert.deepEqual(fs.readFileSync(output,'utf8').trim().split('\n'),['proceed='+expected,'focus_reconcile=false']);
       assert.ok(log.includes(marker));
     }
     const contract=workflow.slice(workflow.indexOf('- name: Prepare latest main machine contract'),workflow.indexOf('- name: Fast scheduler preflight'));
