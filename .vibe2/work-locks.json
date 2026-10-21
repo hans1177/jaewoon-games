@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-r5qtqc",
+      "worker": "vibe2",
+      "taskId": "island-village-studio-evolution-roblox-stability-v1",
+      "gameId": "island-village",
+      "files": [
+        "roblox-games/island-village/client/Game.client.luau",
+        "roblox-games/island-village/shared/GameConfig.luau",
+        "roblox-games/island-village/server/Game.server.luau"
+      ],
+      "baseSha": "f23ce853c082b78ff355497fa3d3e5e1918b6a4e",
+      "runId": "39671598749",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-21T20:50:48.734Z",
+      "expiresAt": "2026-10-21T21:35:48.734Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:island-village-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
