@@ -5657,6 +5657,13 @@ test('F0 gameplay failure rebinds queued usability to approved design and real R
       }]});
     const observedProject=observedProjects.find(row=>row.gameId===gameId&&row.engine==='roblox');
     assert.ok(observedProject,'project must be present in current runtime queue');
+    assert.ok(observedProject.queueRobloxQualityFailureKinds.includes('MISSING_GAMEPLAY_CAPABILITY:COMBAT'),
+      'collectProjects must project exact current F0 gameplay failure kinds into the normalized project');
+    assert.equal(observedProject.queueRobloxQualityBuildUpEvidence?.qualityFailureKinds,undefined,
+      'the condensed evidence deliberately does not copy raw qualityFailureKinds');
+    const actualProjectedRepair=bindApprovedF0GameplayRepairToTask(initial,observedProject,root);
+    assert.match(actualProjectedRepair.goal,/MISSING_GAMEPLAY_CAPABILITY:COMBAT/,
+      'the real queue projection, not an in-memory fixture, must bind gameplay source repair');
     const probe=bindApprovedF0GameplayRepairToTask(waiting,observedProject,root);
     assert.ok(waiting.goal.includes('APPROVED_F0_GAMEPLAY_SOURCE_REPAIR'),JSON.stringify({
       qualityRequired:observedProject.queueRobloxQualityBuildUpRequired,
