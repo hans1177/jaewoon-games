@@ -7882,7 +7882,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T03:55:05.750Z",
+      "updatedAt": "2026-10-21T03:57:26.957Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7898,11 +7898,65 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-21T03:35:48.004Z",
+      "robloxBuildPassedAt": "2026-10-21T03:57:26.957Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-21T03:35:48.004Z",
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-21T03:57:26.957Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "dice-battle-board",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-21T03:54:41.341Z",
+        "sourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
+        "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
+            "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "openai/gpt-oss-20b",
+            "decision": "BLOCK",
+            "blockers": [
+              "webValidationFailed",
+              "musicValidationFailed"
+            ],
+            "note": "The package failed both web and music validation checks (webValidationPassed: false, musicValidationPassed: false), which contradicts the requirement for starting runtime testing."
+          }
+        ],
+        "blockers": [
+          "lead-block:shared-review:webValidationFailed|musicValidationFailed"
+        ],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -28991,7 +29045,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-21T03:57:05.559Z",
+  "updatedAt": "2026-10-21T03:57:26.957Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
