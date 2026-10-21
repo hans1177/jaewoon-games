@@ -45,6 +45,18 @@ test('backlog defer performs only owner-authorized lifecycle checkpoint before e
   assert.match(ownerRepair,/node .*vibe2-auto-planner\.mjs --restore-owner-focus/);
   assert.match(ownerRepair,/node .*vibe2-queue-control\.mjs storage-unpack/);
   assert.match(ownerRepair,/node .*vibe2-queue-control\.mjs storage-pack/);
+  assert.match(ownerRepair,/VIBE2_FOCUSED_BACKLOG_FANIN=VERIFIED_EMPTY:/);
+  assert.match(ownerRepair,/gh api "repos\/\$GITHUB_REPOSITORY\/actions\/runs\/\$orphan_run_id" --jq '\.status'/);
+  assert.match(ownerRepair,/gh api --paginate "repos\/\$GITHUB_REPOSITORY\/actions\/runs\/\$orphan_run_id\/artifacts\?per_page=100"/);
+  assert.match(ownerRepair,/\.expired == false and \(\.name \| startswith\("vibe2-result-"\)\)/);
+  assert.match(ownerRepair,/task\.assetProductionLane===true/);
+  assert.match(ownerRepair,/node .*vibe2-queue-control\.mjs recover-completed-reservations/);
+  assert.match(ownerRepair,/--completed-runs="\$no_result_fanin_runs"/);
+  assert.match(ownerRepair,/--no-result-runs="\$no_result_fanin_runs"/);
+  assert.match(ownerRepair,/\[ "\$restored" -eq 0 \] && \[ "\$recovered" -eq 0 \]/);
+  assert.match(ownerRepair,/VIBE2_FOCUSED_BACKLOG_FANIN=UNKNOWN_RUN/);
+  assert.match(ownerRepair,/VIBE2_FOCUSED_BACKLOG_FANIN=UNKNOWN_ARTIFACTS/);
+  assert.doesNotMatch(ownerRepair,/gh api [^\n]*[Pp][Oo][Ss][Tt]/);
   assert.match(ownerRepair,/git push origin HEAD:vibe2-unreal-core --quiet/);
   assert.doesNotMatch(ownerRepair,/workflow_dispatch|repository_dispatch|--mode=promote|--deploy/);
   assert.match(workflow,/name: Reserve conflict-free DAG batch[\s\S]*?if: steps\.main_wake\.outputs\.proceed == 'true'/);
