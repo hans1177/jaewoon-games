@@ -61,9 +61,9 @@ test('verified evidence memory reuses matching failure and latest checkpoint onl
     const fp=failureFingerprint({type:'ASSET_LOAD',message:'missing sprite',platform:'android'});
     const oldCheckpoint=buildExecutionCheckpoint({gameId:'P1',role:'graphics',candidateId:'old',status:'VERIFIED',nextAction:'old',sourceCommit:'a'});
     const newCheckpoint={...buildExecutionCheckpoint({gameId:'P1',role:'graphics',candidateId:'new',status:'VERIFIED',nextAction:'continue',sourceCommit:'b'}),updatedAt:'2099-01-01T00:00:00.000Z'};
-    fs.writeFileSync(path.join(root,'a.json'),JSON.stringify({gameId:'P1',candidateId:'old',generatedAt:'2026-01-01',changedFiles:['a.css'],summary:'old',vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:oldCheckpoint}}));
-    fs.writeFileSync(path.join(root,'b.json'),JSON.stringify({gameId:'P1',candidateId:'new',generatedAt:'2099-01-01',changedFiles:['b.css'],summary:'fixed',expectedEffect:'visible',vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:newCheckpoint}}));
-    fs.writeFileSync(path.join(root,'other.json'),JSON.stringify({gameId:'P2',candidateId:'other',generatedAt:'2100-01-01',changedFiles:['wrong.css'],vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:{...newCheckpoint,gameId:'P2'}}}));
+    fs.writeFileSync(path.join(root,'a.json'),JSON.stringify({gameId:'P1',candidateId:'old',verified:true,outcome:'SUCCESS',independentQa:'PASS',generatedAt:'2026-01-01',changedFiles:['a.css'],summary:'old',vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:oldCheckpoint}}));
+    fs.writeFileSync(path.join(root,'b.json'),JSON.stringify({gameId:'P1',candidateId:'new',verified:true,outcome:'SUCCESS',independentQa:'PASS',generatedAt:'2099-01-01',changedFiles:['b.css'],summary:'fixed',expectedEffect:'visible',vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:newCheckpoint}}));
+    fs.writeFileSync(path.join(root,'other.json'),JSON.stringify({gameId:'P2',candidateId:'other',verified:true,outcome:'SUCCESS',independentQa:'PASS',generatedAt:'2100-01-01',changedFiles:['wrong.css'],vibe2DevelopmentIntelligence:{failureFingerprint:fp,checkpoint:{...newCheckpoint,gameId:'P2'}}}));
     assert.equal(findVerifiedFailureResolution({root,gameId:'P1',fingerprint:fp}).candidateId,'new');
     assert.equal(loadLatestVerifiedCheckpoint({root,gameId:'P1',role:'graphics'}).candidateId,'new');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
