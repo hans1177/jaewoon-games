@@ -508,9 +508,9 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       ...(Array.isArray(asset?.nativeArtifacts) ? asset.nativeArtifacts : [])];
     const hasSource = sources.some((value) => Boolean(text(value)))
       || Boolean(asset?.platformVariants && Object.keys(asset.platformVariants).length);
-    return Boolean(text(asset?.id)) && asset?.downloaded !== false
+    return Boolean(text(asset?.id)) && asset?.downloaded === true
       && asset?.practiceOnly!==true && asset?.practiceArtifact!==true && asset?.authority!=='PRACTICE_ONLY'
-      && asset?.securityBlocked!==true && asset?.quarantined!==true
+      && asset?.securityBlocked!==true && asset?.quarantined!==true && asset?.gameUseForbidden!==true
       && hasSource && /^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(license);
   });
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
