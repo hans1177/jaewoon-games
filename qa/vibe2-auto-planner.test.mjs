@@ -5583,3 +5583,23 @@ test('F0 source gameplay gaps request causal source repair without claiming runt
   assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
   assert.match(task.buildUpDirective.nextActionDecision.reason,/F0 design-bound gameplay gaps/);
 });
+
+// Production 24H entry must persist stale owner-focused task restoration before
+// expensive full QA or any auxiliary planner step, preserving the canonical queue.
+test('24H ingress checkpoints owner-approved stale focus before slow planner QA',()=>{
+  const src=fs.readFileSync(path.join(process.cwd(),'.github/workflows/vibe2-24h-runner.yml'),'utf8');
+  const start=src.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack');
+  const resume=src.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs --restore-owner-focus',start);
+  const checkpoint=src.indexOf("git commit -m 'vibe2: early owner-approved focused lifecycle recovery [skip ci]'",resume);
+  const fullQa=src.indexOf('core_qa_reuse=0',start);
+  assert.ok(start>=0&&resume>start&&checkpoint>resume&&fullQa>checkpoint,
+    'approved stale owner-focus jobs must durably resume before expensive full QA');
+  const block=src.slice(resume,fullQa);
+  assert.match(block,/--catalog=\/tmp\/vibe2-main\/game-catalog\.json/);
+  assert.match(block,/--root=\/tmp\/vibe2-main/);
+  assert.match(block,/storage-pack --queue=\.vibe2\/queue\.json/);
+  assert.match(block,/git add -A -- \.vibe2\/queue \.vibe2\/queue\.json/);
+  assert.match(block,/git push origin HEAD:vibe2-unreal-core/);
+  assert.match(block,/CONTROL_REF_CONFLICT_RETRY/);
+  assert.match(block,/\bcontinue\b/);
+});
