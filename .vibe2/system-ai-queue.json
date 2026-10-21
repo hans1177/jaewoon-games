@@ -148957,23 +148957,24 @@
       ],
       "dependencies": [],
       "relatedTaskIds": [
-        "deployment:.github/workflows/vibe2-candidate-release.yml:9de69898f3dd48d413d3554bd57bc0021f904672:unresolved-run-39025580239"
+        "deployment:.github/workflows/vibe2-candidate-release.yml:9de69898f3dd48d413d3554bd57bc0021f904672:unresolved-run-39025580239",
+        "recovery-recovery-8fd4a266c158771684b2"
       ],
       "blockedTaskIds": [
         "deployment:.github/workflows/vibe2-candidate-release.yml:9de69898f3dd48d413d3554bd57bc0021f904672:unresolved-run-39025580239"
       ],
-      "retries": 2,
+      "retries": 0,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
-      "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureSignature": "source-mutation-required-before-revalidation",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 1,
       "previousReservationId": "system-ai:39563911272:1",
-      "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+      "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "9de69898f3dd48d413d3554bd57bc0021f904672",
+      "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -148981,7 +148982,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39025580239:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -149037,7 +149038,10 @@
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
         "system-ai-handoff-to-reservation:system-ai:39575440201:1",
-        "actions-run:39575440201"
+        "actions-run:39575440201",
+        "recovery-queue:recovery-51642fb27b4ee133c75b",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+        "failure-cause:source-mutation-required-before-revalidation"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 891,
@@ -149052,7 +149056,20 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T10:40:18.110Z",
-      "updatedAt": "2026-10-21T09:45:50.464Z"
+      "updatedAt": "2026-10-21T09:48:43.067Z",
+      "repairMode": "FOCUSED_REPAIR",
+      "userAssistanceRequired": false,
+      "gameRepairContract": {
+        "version": 1,
+        "mode": "FOCUSED_REPAIR",
+        "prePatchReproductionRequired": true,
+        "causalResponsibleSystemRequired": true,
+        "originalScenarioReplayRequired": true,
+        "invariantValidationRequired": true,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "multiplayerUserAssistanceRequired": false
+      }
     },
     {
       "id": "recovery-recovery-f94e69f2e502b77f903e",
