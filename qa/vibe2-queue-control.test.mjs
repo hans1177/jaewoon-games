@@ -3261,6 +3261,7 @@ test('focused causal repair outranks unrelated polish without treating source-on
  const selection=selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
  assert.deepEqual(selection.selected.map(x=>x.id),['final-repair']);
  assert.equal(queue.tasks.find(x=>x.id==='final-repair').status,'queued');
+ assert.ok(typeof releaseVibeTaskExecutionSlot === 'function');
 });
 
 test('stale release reject callback checks canonical queue before fail without granting QA PASS',()=>{

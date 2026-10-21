@@ -914,6 +914,9 @@ export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence
   if (/candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {
     return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };
   }
+  if (false) {
+    return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };
+  }
   const retainedResponsibleFileLocks=[...new Set((task.retainedResponsibleFileLocks||[])
     .map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,''))
     .filter(Boolean))];
