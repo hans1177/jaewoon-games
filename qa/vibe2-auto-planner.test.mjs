@@ -14,6 +14,24 @@ import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-archit
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
 
+test('backlog defer performs only owner-authorized lifecycle checkpoint before expensive workers',()=>{
+  const workflow=fs.readFileSync(path.join(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  assert.match(workflow,/VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG/);
+  assert.match(workflow,/focus_reconcile=true/);
+  assert.match(workflow,/focus_reconcile=\$focus_reconcile/);
+  assert.match(workflow,/name: Checkout Vibe2 control line\n\s+if: steps\.main_wake\.outputs\.proceed == 'true' \|\| steps\.main_wake\.outputs\.focus_reconcile == 'true'/);
+  const ownerRepair=workflow.split('      - name: Checkpoint approved focused cancellations under backlog')[1]?.split('      - name: Download atomic neuron completion result')[0];
+  assert.ok(ownerRepair,'backlog repair must remain inside the canonical existing reserve job');
+  assert.match(ownerRepair,/steps\.main_wake\.outputs\.focus_reconcile == 'true' && steps\.main_wake\.outputs\.proceed != 'true'/);
+  assert.match(ownerRepair,/current_main.*GITHUB_SHA/);
+  assert.match(ownerRepair,/node .*vibe2-auto-planner\.mjs --restore-owner-focus/);
+  assert.match(ownerRepair,/node .*vibe2-queue-control\.mjs storage-unpack/);
+  assert.match(ownerRepair,/node .*vibe2-queue-control\.mjs storage-pack/);
+  assert.match(ownerRepair,/git push origin HEAD:vibe2-unreal-core --quiet/);
+  assert.doesNotMatch(ownerRepair,/workflow_dispatch|repository_dispatch|--mode=promote|--deploy/);
+  assert.match(workflow,/name: Reserve conflict-free DAG batch[\s\S]*?if: steps\.main_wake\.outputs\.proceed == 'true'/);
+});
+
 test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
