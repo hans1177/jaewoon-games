@@ -147345,7 +147345,7 @@
     },
     {
       "id": "marketing-human-go-temp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -147379,8 +147379,8 @@
       "failureStage": null,
       "failureSignature": null,
       "failureClass": null,
-      "handoffCount": 2,
-      "previousReservationId": "system-ai:39657385190:1",
+      "handoffCount": 3,
+      "previousReservationId": "system-ai:39666037358:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -147388,12 +147388,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39666037358:1",
-      "reservedAt": "2026-10-21T20:01:23.666Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -147420,7 +147420,12 @@
         "system-ai-handoff-from-reservation:system-ai:39657385190:1",
         "system-ai-impact-score:1052",
         "system-ai-blocked-task-count:15",
-        "system-ai-handoff-to-reservation:system-ai:39666037358:1"
+        "system-ai-handoff-to-reservation:system-ai:39666037358:1",
+        "system-ai-handoff-state:MISSING_RESULT_REQUEUED",
+        "system-ai-handoff-from-reservation:system-ai:39666037358:1",
+        "primary-ai-collaboration:REQUESTED",
+        "primary-ai-collaboration-reason:REPEATED_WORKER_HANDOFF",
+        "primary-ai-collaboration-task:marketing-human-go-temp-pre-release-v1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1052,
@@ -147435,7 +147440,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-10T15:42:04.174Z",
-      "updatedAt": "2026-10-21T20:01:23.666Z"
+      "updatedAt": "2026-10-21T20:31:08.021Z"
     },
     {
       "id": "marketing-island-village-pre-release-v1",
