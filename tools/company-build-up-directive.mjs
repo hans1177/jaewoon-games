@@ -2388,7 +2388,7 @@ export function directivePrompt(d={}){
     `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
     `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
-    'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A 중심 장르·시스템, B 보조 세부장르·시스템, C 작품 주/보조 장르, D 구체 존재·장소·사건·규칙, @ D 연관 연구·실험·새 선택을 직접 연결한다. 검증된 설계는 기존 Roblox Luau 서버/클라이언트 책임 함수에 구현하고 실제 입력→서버상태→결과→저장/재접속을 검수한다. 기존 게임 시스템은 B 보조 참조로만 사용한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
+    'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A는 이름 있는 대표 유사 장르 게임의 실제 시스템·플레이 경험을 출처와 함께 추상화하며 B는 우리 기존 게임의 실제 시스템·원본 출처·기존 상태/규칙을 보존한다. A→B와 B→A의 새로운 플레이어 선택·상태 전이를 설계한다. C는 작품 주/보조 장르, D는 고유 장소·존재·사건·규칙, @는 D 연관 연구·실험·새 선택이다. 조작·HUD·메뉴·카메라·월드 진행·성장·실패/재도전까지 원리를 참고하되 고유 화면/그래픽/캐릭터/문구/코드를 복제하지 않는다. 먼저 최신 설계를 빌드업하고 엄격 심사를 통과한 규칙 ID만 기존 책임 소스에 구현한다. 실제 입력→서버/웹 상태→피드백→저장/재접속과 동일 빌드 검증을 수행한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -2585,7 +2585,7 @@ export function buildGameSpecificBuildUpDirective({
     standardGrammarVersion:ownerStandardGrammar?Number(design.creativeGrammar.standardVersion):null,
     delveAtEvidence:Object.freeze(delveEvidence),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    rule:ownerStandardGrammar?'MAIN_A_PRIMARY_B_SUPPORTING; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL':'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
+    rule:ownerStandardGrammar?'MAIN_A_NAMED_GAME_SYSTEM_B_EXISTING_GAME_SYSTEMS; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL':'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
     identityRewriteRequired:false,
     existingBalanceSaveEconomyAndAuthorityPreserved:true
   });
