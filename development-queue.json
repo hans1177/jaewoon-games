@@ -64243,10 +64243,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T14:31:58.525Z",
+      "updatedAt": "2026-10-21T14:32:46.027Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -64256,21 +64256,21 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "29667b3a6f054d6ee7862dfcddb622191b66295e",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
+      "robloxSourceCommit": "5abc910bd996f7670a2d075e86e89018b69dad3b",
+      "robloxSourceBootstrapPassedAt": "2026-10-21T14:32:46.027Z",
       "robloxSourceBootstrapFailedAt": null,
-      "robloxSourceCandidateBranch": "development/roblox-seed-roblox-survival-horror-es-doors-39608529769-1",
-      "robloxSourceCandidateReadyAt": "2026-10-21T14:30:17.163Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
         "bindingVersion": 2,
         "applied": true,
         "source": "company-asset-library.json#baseMaterialLibrary",
-        "libraryVersion": 139,
-        "selectionFingerprint": "8145c7e4293cea31de443f4f818fa587e18f3fcf91776a42f3141494b8c59b5f",
-        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-        "buildUpAssetSourceUsageLibraryVersion": 139,
+        "libraryVersion": 140,
+        "selectionFingerprint": "5360f371116fe5912f23a3b0ae85bb616c034fd0ddf57409add1f6a96c304582",
+        "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
+        "buildUpAssetSourceUsageLibraryVersion": 140,
         "selectedSourceContentHashes": [
           {
             "source": "company-asset-library.json#baseMaterialLibrary",
@@ -64701,7 +64701,7 @@
         },
         "recipeId": "NORMAL_VARIANT",
         "motionQuality": {
-          "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "contract": "tools/company-development-roblox-bootstrap.mjs#motionQuality",
           "motionAtoms": [
             "IDLE_RELAXED",
             "WALK",
@@ -64766,7 +64766,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
@@ -84595,7 +84595,7 @@
       "updatedAt": "2026-10-21T14:31:58.525Z"
     }
   ],
-  "updatedAt": "2026-10-21T14:32:28.167Z",
+  "updatedAt": "2026-10-21T14:32:46.027Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
