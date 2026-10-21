@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {createHash} from 'node:crypto';
 
 const html=fs.readFileSync('web-games/insect-survival/index.html','utf8');
 const world=fs.readFileSync('web-games/insect-survival/world3d.mjs','utf8');
@@ -53,7 +54,7 @@ test('former rounded UI is removed; original game loops and storage key remain',
 });
 test('3D renderer uses only existing documented CC0 original sources and old 2D is hidden on success',()=>{
  for(const path of ['assets/roblox/actors/native/rogue.glb','assets/shared/forest/caterpillar.glb',
-   'assets/shared/forest/monster-53.obj','assets/shared/forest/tree.fbx',
+   'assets/shared/forest/monster-53.obj','assets/shared/homely-house/tree_large.obj',
    'assets/shared/forest/mushroom.fbx','assets/shared/homely-house/floor_base.obj']){
   assert.ok(fs.existsSync(path),'licensed CC0 original missing: '+path);
   assert.ok(lineage.includes(path),'lineage record missing: '+path);
@@ -67,6 +68,29 @@ test('3D renderer uses only existing documented CC0 original sources and old 2D 
  assert.match(source,/if\(window\.insectScene3DReady\)return/);
  assert.match(lineage,/종별 완성 아트 PASS를 주장하지 않는다/);
 });
+test('insect forest tree uses the exact acquired CC0 original and pinned rights lineage',()=>{
+ const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const id='external-tinytreats-tree-large-v1';
+ const asset=registry.assets.find(row=>row.id===id);
+ assert.ok(asset,'tree master must remain in the canonical company library');
+ assert.equal(asset.license,'CC0');
+ assert.equal(asset.downloaded,true);
+ assert.notEqual(asset.quarantined,true);
+ assert.equal(asset.path,'/assets/shared/homely-house/tree_large.obj');
+ assert.match(asset.licenseEvidenceUrl||'',/^https:\/\/github\.com\/TinyTreats-Game-Assets\/Tiny-Treats-Homely-House-1\.0\/blob\/[0-9a-f]{40}\/LICENSE\.txt$/);
+ assert.match(asset.sourceHash||'',/^[0-9a-f]{64}$/);
+ const sourceBytes=fs.readFileSync('assets/shared/homely-house/tree_large.obj');
+ assert.equal(createHash('sha256').update(sourceBytes).digest('hex'),asset.sourceHash);
+ assert.match(world,/tree:\{src:'shared\/homely-house\/tree_large\.obj',format:'obj'/);
+ assert.doesNotMatch(world,/tree:\{src:'shared\/forest\/tree\.fbx'/);
+ assert.ok(lineage.includes(id));
+ assert.ok(lineage.includes(asset.sourceHash));
+ assert.ok(lineage.includes(asset.licenseEvidenceUrl));
+ // Game rules and save state stay in the original 2D authoritative script.
+ assert.match(source,/jaewoon_insect_survival_v3/);
+ assert.match(world,/const game=document\.getElementById\('game'\),snapshot=\(\)=>window\.insectWorldSnapshot\?\.\(\)/);
+});
+
 test('combat controls, RPG status, dodge and save/restore boot without changing existing game key',()=>{
  const storage=new Map();
  const a=boot(storage);
