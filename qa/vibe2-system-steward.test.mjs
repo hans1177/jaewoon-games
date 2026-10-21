@@ -21,6 +21,7 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
   assert.equal(result.queue.maxConcurrentTasks,256);
   assert.equal(result.control.currentMax,256);
   assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');
+  assert.equal(result.queue.tasks.find(t=>t.id==='stale').lastOutcome,'SYSTEM_STEWARD_STALE_LEASE_RECOVERED');
   for(const id of ['dead-a','dead-b']){
     const task=result.queue.tasks.find(t=>t.id===id);
     assert.equal(task.status,'queued'); assert.equal(task.retries,id==='dead-a'?3:4);

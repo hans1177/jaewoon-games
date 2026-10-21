@@ -32,7 +32,9 @@ const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   adaptiveControlStepHealthy(controlInput);
 const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null});
 
-function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
+function staleRunningIds(queue,{nowMs=Date.now(),staleMs=30*60*1000}={}){const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];const stale=new Set();for(const task of tasks){if(clean(task.status).toLowerCase()!=='running')continue;if(/candidate-awaiting|awaiting.*qa|slot-released|quota|external.*wait/i.test(clean(task.blocker)))continue;const reservedAt=Date.parse(task.reservedAt||0);if(Number.isFinite(reservedAt)&&reservedAt>0&&(nowMs-reservedAt)>staleMs){stale.add(task.id);}}return stale;}
+// Structural Vibe Causal Helper
+function staleRunningIdsInternal(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
   return new Set(queue.tasks.filter(task=>{
     if(clean(task.status).toLowerCase()!=='running'||waitBlocker(task.blocker))return false;
     // GitHub 작업 실행 대기는 실제 작업 종료 증거가 아니므로 숫자형 실행 예약은 보존한다.
