@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks, bindApprovedF0GameplayRepairToTask } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
@@ -5582,4 +5582,137 @@ test('F0 source gameplay gaps request causal source repair without claiming runt
   assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
   assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
   assert.match(task.buildUpDirective.nextActionDecision.reason,/F0 design-bound gameplay gaps/);
+});
+
+
+test('F0 gameplay failure rebinds queued usability to approved design and real Roblox gameplay source',()=>{
+  const root=tempRepo(),gameId='f0-approved-gameplay-rebind';
+  try{
+    const rel='roblox-games/'+gameId,base=path.join(root,rel);
+    for(const section of ['server','shared','client'])fs.mkdirSync(path.join(base,section),{recursive:true});
+    fs.writeFileSync(path.join(base,'server','Game.server.luau'),'local state={}\nfunction resolvePrimaryAction(player) state.last=player end\n');
+    fs.writeFileSync(path.join(base,'shared','GameConfig.luau'),'return {RoundSeconds=90}\n');
+    fs.writeFileSync(path.join(base,'client','Game.client.luau'),'function dispatchPrimaryAction() return true end\n');
+    writeStudioDesign(root,gameId,{coreFun:'전투에서 선택한 장비가 다음 탑 층의 위험과 탐험 경로에 영향을 주는 놀이'});
+    const project={gameId,name:'Approved F0 Repair',engine:'roblox',releaseState:'development-confirmed',projectPath:rel};
+    const initial=findStudioContinuousImprovementTask(project,root,{tasks:[]},'USABILITY');
+    assert.ok(initial?.buildUpDirective?.designFingerprint,'a current verified design must be bound before source repair');
+    const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+    const gap={authority:'roblox-f0-gameplay-product-readiness-failure',
+      sourceRevision:revision,artifactIdentity:artifact,
+      qualityFailureKinds:[
+        'MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE',
+        'MISSING_GAMEPLAY_CAPABILITY:WORLD',
+        'MISSING_GAMEPLAY_CAPABILITY:COMBAT',
+        'MISSING_GAMEPLAY_CAPABILITY:PROGRESSION',
+        'CORE_LOOP_STEP_UNIMPLEMENTED:0',
+        'GENERIC_SCOPE_HANDLER_SKELETON'
+      ],repairSurfaces:['CORE_GAMEPLAY','WORLD_MAP','COMBAT_FEEL','PROGRESSION_CONTENT']};
+    const failing={...project,queueRobloxQualityBuildUpRequired:true,
+      queueRobloxSourceCommit:revision,queueRobloxArtifactIdentity:artifact,
+      queueRobloxQualityBuildUpSourceRevision:revision,queueRobloxQualityBuildUpEvidence:gap};
+    const initialFiles=initial.responsibleFiles;
+    const fixed=bindApprovedF0GameplayRepairToTask(initial,failing,root);
+    assert.equal(fixed.priority,'critical');
+    assert.equal(fixed.buildUpDirective.designFingerprint,initial.buildUpDirective.designFingerprint);
+    for(const file of ['server/Game.server.luau','shared/GameConfig.luau','client/Game.client.luau'])
+      assert.ok(fixed.responsibleFiles.includes(rel+'/'+file),file);
+    assert.ok(fixed.responsibleFiles.length>=initialFiles.length,'existing responsible files must remain owned');
+    assert.match(fixed.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/);
+    assert.match(fixed.goal,/APPROVED_DESIGN_FINGERPRINT=/);
+    assert.match(fixed.goal,/MISSING_GAMEPLAY_CAPABILITY:COMBAT/);
+    assert.match(fixed.goal,/GENERIC_SCOPE_HANDLER_SKELETON/);
+    assert.match(fixed.goal,/실제 서버\/공유\/클라이언트 책임 함수/);
+    assert.ok(fixed.evidence.includes('approved-f0-gameplay-source-repair:EXACT_DESIGN_AND_PACKAGE'));
+    assert.deepEqual(bindApprovedF0GameplayRepairToTask(fixed,failing,root),fixed,'repeat planning must not amplify the goal');
+
+    const observedProjects=collectProjects({projects:[]},{
+      games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',
+        lifecycleState:'ACTIVE',robloxProjectPath:rel}]},
+      root,{items:[{
+        gameId,gameName:project.name,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+        selectedPlatform:'ROBLOX',robloxProjectPath:rel,
+        robloxSourceCommit:revision,robloxBuildOrPackagePassed:true,
+        robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,
+        robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:gap
+      }]});
+    const observedProject=observedProjects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+    assert.ok(observedProject,'project must be present in current runtime queue');
+    // The canonical planner injects platform play-mode/genre into the approved
+    // fingerprint. Seed the queue from that same collected project, not a
+    // hand-written fixture with a different platform projection.
+    // The queued task existed before the F0 result: its design projection is
+    // canonical, but it must not already carry a repair instruction.
+    const canonicalInitial=findStudioContinuousImprovementTask({...observedProject,
+      queueRobloxQualityBuildUpRequired:false,queueRobloxQualityBuildUpEvidence:null},root,{tasks:[]},'USABILITY');
+    assert.doesNotMatch(canonicalInitial.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/);
+    assert.ok(canonicalInitial?.buildUpDirective?.directiveId);
+    assert.equal(
+      canonicalInitial.buildUpDirective.designFingerprint,
+      bindApprovedF0GameplayRepairToTask(canonicalInitial,observedProject,root).buildUpDirective.designFingerprint
+    );
+    const planned=planVibe2AutonomousTasks({
+      status:{projects:[]},
+      catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',
+        lifecycleState:'ACTIVE',robloxProjectPath:rel}]},
+      developmentQueue:{items:[{
+        gameId,gameName:project.name,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+        selectedPlatform:'ROBLOX',robloxProjectPath:rel,
+        robloxSourceCommit:revision,robloxBuildOrPackagePassed:true,
+        robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,
+        robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:gap,
+        robloxFailureStage:'F0_SOURCE_INTEGRITY',
+        robloxFailureSignature:'ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED'
+      }]},
+      queue:{maxConcurrentTasks:20,tasks:[{...canonicalInitial,id:gameId+'-queued-design-carrier',status:'queued'}]},
+      repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
+      planningBacklogTarget:1,planningBacklogMinimum:0
+    });
+    const waiting=planned.queue.tasks.find(row=>row.id===gameId+'-queued-design-carrier');
+    assert.ok(waiting,'existing queued work must remain in the canonical queue');
+    assert.ok(observedProject.queueRobloxQualityFailureKinds.includes('MISSING_GAMEPLAY_CAPABILITY:COMBAT'),
+      'collectProjects must project exact current F0 gameplay failure kinds into the normalized project');
+    assert.equal(observedProject.queueRobloxQualityBuildUpEvidence?.qualityFailureKinds,undefined,
+      'the condensed evidence deliberately does not copy raw qualityFailureKinds');
+    const actualProjectedRepair=bindApprovedF0GameplayRepairToTask(canonicalInitial,observedProject,root);
+    assert.match(actualProjectedRepair.goal,/MISSING_GAMEPLAY_CAPABILITY:COMBAT/,
+      'the real queue projection, not an in-memory fixture, must bind gameplay source repair');
+    const probe=bindApprovedF0GameplayRepairToTask(waiting,observedProject,root);
+    assert.ok(waiting.goal.includes('APPROVED_F0_GAMEPLAY_SOURCE_REPAIR'),JSON.stringify({
+      qualityRequired:observedProject.queueRobloxQualityBuildUpRequired,
+      authority:observedProject.queueRobloxQualityBuildUpEvidence?.authority,
+      source:observedProject.queueRobloxSourceCommit,
+      artifact:observedProject.queueRobloxArtifactIdentity,
+      action:waiting.buildUpNextAction,
+      taskDesign:waiting.buildUpDirective?.designFingerprint,
+      rebindProbe:probe.goal.includes('APPROVED_F0_GAMEPLAY_SOURCE_REPAIR'),
+      taskStatus:waiting.status,projectPath:observedProject.projectPath,
+      directFiles:waiting.responsibleFiles
+    }));
+    assert.equal(waiting.buildUpNextAction,'CAUSAL_REPAIR');
+    assert.ok(waiting.responsibleFiles.includes(rel+'/server/Game.server.luau'));
+    assert.ok(waiting.responsibleFiles.includes(rel+'/shared/GameConfig.luau'));
+    assert.ok(waiting.responsibleFiles.includes(rel+'/client/Game.client.luau'));
+
+    const newerArtifact={...failing,queueRobloxArtifactIdentity:'sha256:'+'c'.repeat(64)};
+    assert.equal(bindApprovedF0GameplayRepairToTask(initial,newerArtifact,root),initial,
+      'a newly built artifact cannot consume an older F0 failure');
+    const retiredPackage=bindApprovedF0GameplayRepairToTask(fixed,newerArtifact,root);
+    assert.doesNotMatch(retiredPackage.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/,
+      'queued outdated F0 repair must be retired once the package changes');
+    assert.ok(!retiredPackage.evidence.some(value=>value.startsWith('approved-f0-gameplay-source-repair:')));
+    assert.equal(bindApprovedF0GameplayRepairToTask({...fixed,status:'running'},newerArtifact,root).goal,fixed.goal,
+      'running source implementation must retain the exact reserved instruction');
+    assert.equal(bindApprovedF0GameplayRepairToTask(initial,{...failing,engine:'unity'},root),initial,
+      'Unity owner-held lane must not inherit a Roblox F0 repair');
+    writeStudioDesign(root,gameId,{coreFun:'개정된 세계 선택이 보상·퀘스트 흐름을 새로 바꾸는 놀이'});
+    assert.equal(bindApprovedF0GameplayRepairToTask(initial,failing,root),initial,
+      'old design fingerprint must not apply new unapproved gameplay edits; queued rebind precedes repair');
+    const retiredDesign=bindApprovedF0GameplayRepairToTask(fixed,failing,root);
+    assert.doesNotMatch(retiredDesign.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/,
+      'a revised approved design must invalidate old queued implementation instructions');
+    assert.ok(!retiredDesign.evidence.includes('approved-f0-gameplay-source-repair:v1'));
+    assert.deepEqual(bindApprovedF0GameplayRepairToTask(retiredDesign,failing,root),retiredDesign,
+      'retiring stale F0 repair must be idempotent until a fresh design directive is bound');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
