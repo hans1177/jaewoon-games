@@ -5641,7 +5641,11 @@ test('F0 gameplay failure rebinds queued usability to approved design and real R
     // The canonical planner injects platform play-mode/genre into the approved
     // fingerprint. Seed the queue from that same collected project, not a
     // hand-written fixture with a different platform projection.
-    const canonicalInitial=findStudioContinuousImprovementTask(observedProject,root,{tasks:[]},'USABILITY');
+    // The queued task existed before the F0 result: its design projection is
+    // canonical, but it must not already carry a repair instruction.
+    const canonicalInitial=findStudioContinuousImprovementTask({...observedProject,
+      queueRobloxQualityBuildUpRequired:false,queueRobloxQualityBuildUpEvidence:null},root,{tasks:[]},'USABILITY');
+    assert.doesNotMatch(canonicalInitial.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/);
     assert.ok(canonicalInitial?.buildUpDirective?.directiveId);
     assert.equal(
       canonicalInitial.buildUpDirective.designFingerprint,
