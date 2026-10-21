@@ -27669,7 +27669,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T00:43:55.182Z",
+      "updatedAt": "2026-10-21T00:46:00.878Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -28196,64 +28196,8 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-21T00:18:46.229Z",
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "zombie-survival",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-10-21T00:15:58.826Z",
-        "sourceRevision": "d8f2e53aadbc5a699676334f72533cb27d2a4d87",
-        "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "gemini-3.8-flash",
-            "graphics": "gemini-3.8-flash",
-            "development": "gemini-3.8-flash",
-            "qa": "gemini-3.8-flash",
-            "balance": "gemini-3.8-flash"
-          },
-          "sharedModel": "gemini-3.8-flash",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "robloxLaneEligible": true,
-          "directRoblox": true,
-          "concurrentRoblox": false,
-          "build": {
-            "sourceRevision": "d8f2e53aadbc5a699676334f72533cb27d2a4d87",
-            "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
-            "decision": "BLOCK",
-            "blockers": [
-              "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
-            ],
-            "note": "Runtime testing requires all validation checks (web, music, native web, native music) to pass. The BUILD_EVIDENCE indicates these validations failed, preventing the package from starting runtime testing."
-          }
-        ],
-        "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
-        ],
-        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
-        "authority": "roblox-exact-package-build-preflight"
-      },
+      "robloxBuildPreflightFailedAt": "2026-10-21T00:46:00.878Z",
+      "robloxBuildPreflightEvidence": null,
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -28288,7 +28232,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-      "robloxBuildPassedAt": "2026-10-21T00:18:46.229Z",
+      "robloxBuildPassedAt": "2026-10-21T00:46:00.878Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -29047,7 +28991,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-21T00:45:39.490Z",
+  "updatedAt": "2026-10-21T00:46:00.878Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
