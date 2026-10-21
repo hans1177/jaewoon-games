@@ -295,7 +295,7 @@ function verifiedFocusedReleaseTask(item={}){
     &&evidence.has('post-release-focused:yes')
     &&['INTERNAL_PLATFORM_RELEASE','PUBLIC_RELEASE','LEGACY_PUBLIC_RELEASE'].includes(releaseKind);
 }
-function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={}){
+function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={},repoRoot=process.cwd()){
   const byId=catalogById(catalog),historicalById=historicalMaintenanceById(historicalRegistry),removed=permanentRemovalIds(catalog);
   const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{
     if(!isProductionImplementationTask(item))return item;
@@ -346,6 +346,37 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
           `release-state:${currentReleaseState}`,
           `restored-from:${currentBlocker}`,
           'event-driven-resume:central-production-authority-restored'
+        ])]
+      };
+    }
+    // [집중개발 복구] 이전 카탈로그에서 영구 삭제로 취소됐지만 현재 정식 카탈로그와
+    // 최신 오너 집중 플랫폼에서 재승인된 작업만 기존 체크포인트로 되돌린다.
+    // 현재 영구 삭제 대상/보류 플랫폼/다른 플랫폼/일반 취소 작업은 복구하지 않는다.
+    const focusedPolicy=centralPresentationPolicy(repoRoot);
+    const canonicalSourceRoot=`${clean(item.target).toLowerCase()}-games/${gameId}`;
+    const staleFocusedLifecycleCancellation=currentStatus==='cancelled'
+      &&/^lifecycle-inactive:(?:REMOVED_PERMANENTLY|REMOVED|RETIRED|PAUSED|MISSING_FROM_CATALOG)$/.test(currentBlocker)
+      &&['release-confirmed','development-confirmed'].includes(currentReleaseState)
+      &&posix(item.sourceRoot)===canonicalSourceRoot
+      &&!(focusedPolicy?.permanentProjectRemoval?.ids||[]).includes(gameId)
+      &&focusedCaretakerProject({gameId,engine:clean(item.target).toLowerCase()},repoRoot)
+      &&!ownerDevelopmentHeld(focusedPolicy,gameId,item.target,item);
+    if(staleFocusedLifecycleCancellation){
+      return{
+        ...item,
+        releaseState:currentReleaseState,
+        status:'queued',
+        blocker:null,
+        reservationId:null,
+        reservationRunId:null,
+        reservationRunAttempt:0,
+        reservedAt:null,
+        lastOutcome:'RESTORED_BY_CURRENT_OWNER_FOCUS',
+        evidence:[...new Set([
+          ...(item.evidence||[]),
+          'owner-focused-lifecycle-restored:current-catalog-and-platform',
+          `restored-from:${currentBlocker}`,
+          `release-state:${currentReleaseState}`
         ])]
       };
     }
@@ -3872,7 +3903,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const persistentQueueMax=parallelLimit(queueMaxConcurrentTasks);
   const backlogTarget=Math.max(1,Math.min(persistentQueueMax,Number(planningBacklogTarget)||executionWaveMax));
   const backlogMinimum=Math.max(0,Math.min(backlogTarget,Number(planningBacklogMinimum)||0));
-  let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog,historicalRegistry),maxConcurrentTasks:persistentQueueMax});
+  let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog,historicalRegistry,repoRoot),maxConcurrentTasks:persistentQueueMax});
   queue=synchronizeOwnerDevelopmentHolds(queue,centralPresentationPolicy(repoRoot)||{});
   const catalogGames=catalogById(catalog);
   const exactWebRepairItems=(Array.isArray(developmentQueue?.items)?developmentQueue.items:[])
