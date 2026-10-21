@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {verifyVibeDesignHandoff} from '../tools/vibe2-verified-design-handoff.mjs';
+import {verifyVibeDesignHandoff,classifyVerifiedDesignPlannerAdmission} from '../tools/vibe2-verified-design-handoff.mjs';
 
 const SHA='a'.repeat(40);
 const SOURCE='design/accepted-game/2026-10-17/design-revised.json';
@@ -46,4 +46,33 @@ test('no active development-confirmed seed creates no fabricated promotion or re
   const result=verify({seedState:{seeds:[{...seed,productionClass:'DESIGN_ONLY'}]},queue:{items:[]}});
   assert.equal(result.pass,true);
   assert.deepEqual(result.verified,[]);
+});
+
+
+test('approved game design stays usable for planning when a separate game design is pending',()=>{
+  const pendingId='pending-game',pendingSource='design/pending-game/2026-10-21/design-revised.json';
+  const pendingSeed={...seed,gameId:pendingId};
+  const pendingItem={...item,gameId:pendingId,designBaselineSource:pendingSource,
+    minimumDesignContract:{pass:true,source:pendingSource},
+    platformDesignProfiles:{ROBLOX:{source:pendingSource,jsonPointer:'/content/platformProfiles/ROBLOX'}}};
+  const docs={'game-seed-state.json':{seeds:[seed,pendingSeed]},
+    'development-queue.json':{items:[item,pendingItem]},
+    [SOURCE]:design,[pendingSource]:{gameId:pendingId,content:{identity:'Pending original gameplay'}}};
+  const result=verifyVibeDesignHandoff({runtimeSha:SHA,roadmap:ROADMAP,
+    readJsonAt:source=>docs[source],verifyDesign:record=>({pass:record.gameId==='accepted-game'})});
+  assert.equal(result.pass,false,'strict design promotion must not pass with pending game');
+  assert.deepEqual(result.verified.map(x=>x.gameId),['accepted-game']);
+  assert.deepEqual(result.failures,['pending-game:DESIGN_CONTRACT_NOT_PASSED']);
+  assert.equal(classifyVerifiedDesignPlannerAdmission(result),'BLOCKED');
+  assert.equal(classifyVerifiedDesignPlannerAdmission(result,{allowPendingDesigns:true}),'PARTIAL');
+  assert.equal(classifyVerifiedDesignPlannerAdmission({pass:false,verified:[],failures:result.failures},
+    {allowPendingDesigns:true}),'BLOCKED','empty verified subset cannot start development');
+  assert.equal(classifyVerifiedDesignPlannerAdmission({pass:false,verified:result.verified,
+    failures:['pending-game:AUTHORED_DESIGN_MISSING_AT_RUNTIME_SHA']},{allowPendingDesigns:true}),'BLOCKED',
+    'missing design file is not a safe pending design status');
+  assert.equal(classifyVerifiedDesignPlannerAdmission({pass:false,verified:result.verified,
+    failures:['pending-game:RUNTIME_PROMOTION_QUEUE_BINDING_MISSING_OR_DUPLICATED']},
+    {allowPendingDesigns:true}),'BLOCKED');
+  assert.equal(classifyVerifiedDesignPlannerAdmission({pass:false,verified:result.verified,
+    failures:['CANONICAL_ABCD_PLUS_AT_DESIGN_POLICY_REQUIRED']},{allowPendingDesigns:true}),'BLOCKED');
 });
