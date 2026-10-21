@@ -104,6 +104,7 @@ test('focused Web gameplay assessment does not inherit obsolete Roblox-only grap
   assert.equal(core.status,'queued');
   assert.equal(core.ownerDevelopmentHold,false);
   assert.equal(core.assetProductionLane,false);
+  assert.equal(core.executionLane,'GAME_PRIMARY','normalized gameplay reservation lane must replace obsolete graphics route');
   assert.equal(core.retries,7);
   assert.deepEqual(core.buildUpDirective,{primaryFocus:'CORE_FUN',generation:2});
   assert.deepEqual(core.graphicsReplacementContract,{existing:true});
