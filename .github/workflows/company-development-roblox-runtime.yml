@@ -1872,6 +1872,25 @@ jobs:
               console.log('ROBLOX_PACKAGE_SOURCE_REPAIR_PRESERVED='+result.gameId);
               continue;
             }
+            // An older package worker can finish after a verified exact-package preflight.
+            // Preserve the immutable source/artifact PASS when only a stale advisory review
+            // or missing old review claims failure. Genuine deterministic failures stay blocking.
+            const currentPreflightEvidence=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightEvidence:item.robloxBuildPreflightEvidence;
+            const currentPreflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed:item.robloxBuildPreflightPassed;
+            const currentBuildPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildOrPackagePassed:item.robloxBuildOrPackagePassed;
+            const currentBuildSource=secondaryOwnerFocus?item.ownerFocusRobloxBuildSourceRevision:item.robloxBuildSourceRevision;
+            const currentBuildArtifact=secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity;
+            const verifiedExactPreflight=currentBuildPassed===true&&currentPreflightPassed===true
+              &&currentBuildSource===result.sourceRevision&&currentBuildArtifact===result.artifactIdentity
+              &&/^sha256:[0-9a-f]{64}$/i.test(String(currentBuildArtifact||''))
+              &&currentPreflightEvidence?.pass===true&&currentPreflightEvidence?.facts?.pass===true
+              &&currentPreflightEvidence?.sourceRevision===result.sourceRevision
+              &&currentPreflightEvidence?.artifactIdentity===result.artifactIdentity;
+            if(result.pass===true&&result.preflightPass!==true
+              &&result.preflightEvidence?.facts?.pass!==false&&verifiedExactPreflight){
+              console.log('ROBLOX_PACKAGE_VERIFIED_PREFLIGHT_PRESERVED='+result.gameId);
+              continue;
+            }
             const alreadyPersistedF0=!secondaryOwnerFocus
               &&result.pass===true
               &&result.f0Pass===true

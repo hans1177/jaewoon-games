@@ -277,6 +277,25 @@ jobs:
             const sourceRevision=secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit;
             const artifactIdentity=secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity;
             const exact=result?.sourceRevision===sourceRevision&&result?.artifactIdentity===artifactIdentity;
+            // A prior workflow attempt may report an obsolete advisory BLOCK or have no
+            // result after a newer, exact immutable package was already verified.
+            // Keep that evidence. Do not protect a genuine deterministic gate failure.
+            const existingEvidence=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightEvidence:item.robloxBuildPreflightEvidence;
+            const existingPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed:item.robloxBuildPreflightPassed;
+            const existingBuildPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildOrPackagePassed:item.robloxBuildOrPackagePassed;
+            const existingBuildSource=secondaryOwnerFocus?item.ownerFocusRobloxBuildSourceRevision:item.robloxBuildSourceRevision;
+            const existingBuildArtifact=secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity;
+            const verifiedSamePackage=existingPassed===true&&existingBuildPassed===true
+              &&existingBuildSource===sourceRevision&&existingBuildArtifact===artifactIdentity
+              &&/^sha256:[0-9a-f]{64}$/i.test(String(artifactIdentity||''))
+              &&existingEvidence?.pass===true&&existingEvidence?.facts?.pass===true
+              &&existingEvidence?.sourceRevision===sourceRevision
+              &&existingEvidence?.artifactIdentity===artifactIdentity;
+            const obsoleteAdvisoryOrMissing=!result||!exact||(result.pass!==true&&result.facts?.pass!==false);
+            if(verifiedSamePackage&&obsoleteAdvisoryOrMissing){
+              console.log('ROBLOX_PREFLIGHT_VERIFIED_PASS_PRESERVED='+target.gameId);
+              continue;
+            }
             if(secondaryOwnerFocus){
               if(result?.pass===true&&exact){
                 Object.assign(item,{ownerFocusRobloxBuildPreflightPassed:true,ownerFocusRobloxBuildPreflightPassedAt:stamp,ownerFocusRobloxBuildPreflightFailedAt:null,ownerFocusRobloxBuildPreflightEvidence:result,

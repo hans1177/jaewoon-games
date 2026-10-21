@@ -513,3 +513,84 @@ test('Roblox continuation retries only exact legacy AI or missing-review failure
   assert.deepEqual(matrix.include.map(x=>x.gameId),['missing-once','review-misread']);
   assert.ok(matrix.include.every(x=>x.sourceRevision===revision&&x.artifactIdentity===identity));
 });
+
+
+test('stale asynchronous writers cannot demote newer exact Roblox preflight PASS',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const priorEvidence={pass:true,state:'PASS',facts:{pass:true,blockers:[]},
+    sourceRevision:revision,artifactIdentity:artifact,authority:'roblox-exact-package-build-preflight'};
+  const prior={gameId:'verified-game',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+    robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,
+    robloxBuildPreflightPassedAt:'2026-10-21T05:48:10Z',robloxBuildPreflightEvidence:priorEvidence,
+    robloxFailureStage:'F0_SOURCE_INTEGRITY',robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_PENDING',
+    routingBlockers:['roblox-f0-source-preflight-pending']};
+  const oldReview={gameId:'verified-game',pass:false,state:'BLOCKED',facts:{pass:true,blockers:[]},
+    sourceRevision:revision,artifactIdentity:artifact,blockers:['lead-block:shared-review:musicValidationPassed is false']};
+
+  const techHeader="          const fs=require('fs');\n          const path=require('path');\n          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));";
+  const techStart=runtime.indexOf(techHeader,runtime.indexOf('      - name: Persist exact Roblox build package evidence'));
+  const techEnd=runtime.indexOf('\n          NODE',techStart);
+  assert.ok(techStart>=0&&techEnd>techStart);
+  const techScript=runtime.slice(techStart,techEnd);
+  const packagePersist=(item,result)=>{
+    let persisted;
+    const queue={items:[{...item}]};
+    const fsMock={
+      readFileSync:p=>p==='development-queue.json'?JSON.stringify(queue):JSON.stringify(result),
+      existsSync:()=>true,
+      readdirSync:()=>['verified-game.result.json'],
+      writeFileSync:(p,value)=>{if(p==='development-queue.json')persisted=JSON.parse(value);},
+    };
+    runInNewContext(techScript,{
+      require:name=>name==='fs'?fsMock:{join:(...parts)=>parts.join('/')},
+      process:{env:{EXPECTED_TARGETS_JSON:JSON.stringify([{gameId:'verified-game'}]),GITHUB_RUN_ID:'1'}},
+      console:{log:()=>{}},
+    });
+    return persisted.items[0];
+  };
+  const oldPackage={gameId:'verified-game',pass:true,sourceRevision:revision,artifactIdentity:artifact,
+    preflightPass:false,preflightEvidence:oldReview,f0Pass:false};
+  const kept=packagePersist(prior,oldPackage);
+  assert.equal(kept.robloxBuildPreflightPassed,true);
+  assert.equal(kept.robloxBuildPreflightEvidence.pass,true);
+  assert.equal(kept.robloxFailureSignature,'ROBLOX_F0_SOURCE_PREFLIGHT_PENDING');
+  const invalidated=packagePersist(prior,{...oldPackage,artifactIdentity:'sha256:'+'c'.repeat(64)});
+  assert.equal(invalidated.robloxBuildPreflightPassed,false);
+  const deterministicFailure=packagePersist(prior,{...oldPackage,preflightEvidence:{...oldReview,facts:{pass:false}}});
+  assert.equal(deterministicFailure.robloxBuildPreflightPassed,false);
+
+  const preflightHeader="          const fs=require('fs'),path=require('path');";
+  const preflightStart=preflight.indexOf(preflightHeader,preflight.indexOf('      - name: Persist per-game preflight state'));
+  const preflightEnd=preflight.indexOf('\n          NODE',preflightStart);
+  assert.ok(preflightStart>=0&&preflightEnd>preflightStart);
+  const preflightScript=preflight.slice(preflightStart,preflightEnd);
+  const checkpointPersist=(item,result)=>{
+    let persisted;
+    const fsMock={
+      readFileSync:p=>p==='development-queue.json'?JSON.stringify({items:[{...item}]}):JSON.stringify(result),
+      existsSync:()=>result!=null,
+      readdirSync:()=>['verified-game.preflight.json'],
+      writeFileSync:(p,value)=>{if(p==='development-queue.json')persisted=JSON.parse(value);},
+    };
+    runInNewContext(preflightScript,{
+      require:name=>name==='fs'?fsMock:{join:(...parts)=>parts.join('/')},
+      process:{env:{EXPECTED_TARGETS_JSON:JSON.stringify([{gameId:'verified-game',sourceRevision:revision,
+        artifactIdentity:artifact,secondaryOwnerFocus:false}])}},
+      console:{log:()=>{}},
+    });
+    return persisted.items[0];
+  };
+  for(const stale of [null,oldReview]){
+    const held=checkpointPersist(prior,stale);
+    assert.equal(held.robloxBuildPreflightPassed,true);
+    assert.equal(held.robloxBuildPreflightEvidence.pass,true);
+    assert.equal(held.robloxFailureSignature,'ROBLOX_F0_SOURCE_PREFLIGHT_PENDING');
+  }
+  const trulyInvalid=checkpointPersist(prior,{...oldReview,facts:{pass:false}});
+  assert.equal(trulyInvalid.robloxBuildPreflightPassed,false);
+  const changedSource=checkpointPersist({...prior,robloxSourceCommit:'c'.repeat(40),
+    robloxBuildSourceRevision:'c'.repeat(40),
+    robloxBuildPreflightEvidence:{...priorEvidence,sourceRevision:'c'.repeat(40)}},oldReview);
+  assert.equal(changedSource.robloxBuildPreflightPassed,true);
+});
