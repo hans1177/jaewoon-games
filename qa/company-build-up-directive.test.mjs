@@ -101,6 +101,9 @@ test('design and source BUILD_UP stay coupled without inventing reference or run
   assert.equal(first.designSourceBuildUp.confirmedRuntimePass,false);
   assert.match(directivePrompt(first),/DESIGN_SOURCE_BUILD_UP_RULE/);
   assert.match(directivePrompt(first),/A_REFERENCE_SYSTEM_DEPTH/);
+  assert.match(directivePrompt(first),/A는 이름 있는 대표 유사 장르 게임의 실제 시스템/);
+  assert.match(directivePrompt(first),/B는 우리 기존 게임의 실제 시스템/);
+  assert.doesNotMatch(directivePrompt(first),/기존 게임 시스템은 B 보조 참조로만 사용한다/);
   const stale=buildGameSpecificBuildUpDirective({gameId:'design-source-growth',platform:'ROBLOX',
     designRecord:design(),sourceObservation:{sourceTreeFingerprint:'new-source-tree',topFiles:[],sourceAnchors:[],observations:[],signals:{}},
     previousDirective:first,previousDirectiveOutcome:'verified',
