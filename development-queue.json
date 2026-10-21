@@ -8022,7 +8022,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T06:22:07.615Z",
+      "updatedAt": "2026-10-21T06:23:21.671Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8039,10 +8039,59 @@
       "robloxBuildSourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
       "robloxBuildPassedAt": "2026-10-21T05:57:44.796Z",
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-21T05:57:44.796Z",
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-21T06:23:21.671Z",
+      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "dice-battle-board",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-21T06:13:10.331Z",
+        "sourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
+        "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
+            "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "gemini-3.8-flash",
+            "decision": "UNAVAILABLE",
+            "blockers": [],
+            "note": "External review unavailable; immutable package gates remain authoritative."
+          }
+        ],
+        "blockers": [],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -8076,10 +8125,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-source-preflight-pending"
       ],
       "robloxSourceCommit": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
       "robloxSourceBootstrapPassedAt": "2026-10-21T05:58:16.709Z",
@@ -8588,7 +8637,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxBuildFailedAt": null,
       "robloxRuntimeRetryCount": 0,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxQualityBuildUpRequired": false,
       "robloxQualityBuildUpSourceRevision": null,
       "robloxQualityFailureClass": null,
@@ -28662,7 +28711,7 @@
       "robloxPublicRelease": false
     }
   ],
-  "updatedAt": "2026-10-21T06:23:04.670Z",
+  "updatedAt": "2026-10-21T06:23:21.671Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
