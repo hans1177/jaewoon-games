@@ -156,3 +156,17 @@ test('explicit functional department handoffs still receive runnable code scope'
     assert.equal(balance.run,true);
   }finally{fs.rmSync(source,{recursive:true,force:true});}
 });
+test('deep diagnostic signal selects the correct source file without expanding writable scope',()=>{
+  const source='web-games/__scope-deep-diagnostic-test__';
+  fs.rmSync(source,{recursive:true,force:true});
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'a.js'),'function update(){requestAnimationFrame(update)} update();');
+  fs.writeFileSync(path.join(source,'z.js'),' '.repeat(9000)+'function update(){requestAnimationFrame(update)} const DEEP_RUNTIME_FAULT=true; update();');
+  try{
+    const result=resolveDepartmentScope({role:'development',sourcePath:source,diagnostic:{needle:'DEEP_RUNTIME_FAULT'},goal:'runtime 오류 수정',repairMode:'MODEL'});
+    assert.equal(result.run,true);
+    assert.equal(result.adaptiveContextOrder[0],'z.js');
+    assert.equal(result.scope[0],'z.js');
+    assert.equal(result.scope.every(file=>['a.js','z.js'].includes(file)),true);
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+});

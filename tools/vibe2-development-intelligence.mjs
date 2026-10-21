@@ -13,12 +13,22 @@ const uniq=values=>[...new Set((values||[]).map(posix).filter(Boolean))];
 const readJson=file=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}};
 const safeArray=value=>Array.isArray(value)?value:[];
 
-function truncateUtf8(text,maxBytes){
+function truncateUtf8(text,maxBytes,anchor=''){
   const source=Buffer.from(String(text??''),'utf8');
   if(source.length<=maxBytes)return source.toString('utf8');
-  let end=Math.max(0,Math.min(source.length,maxBytes));
-  while(end>0&&(source[end]&0b11000000)===0b10000000)end--;
-  return source.subarray(0,end).toString('utf8');
+  let start=0;
+  const anchorBytes=Buffer.from(String(anchor??''),'utf8');
+  if(anchorBytes.length&&anchorBytes.length<=maxBytes){
+    const match=source.indexOf(anchorBytes);
+    if(match>=0&&match+anchorBytes.length>maxBytes){
+      start=Math.max(0,match-Math.floor((maxBytes-anchorBytes.length)/2));
+      start=Math.min(start,source.length-maxBytes);
+      while(start<source.length&&(source[start]&0b11000000)===0b10000000)start++;
+    }
+  }
+  let end=Math.min(source.length,start+maxBytes);
+  while(end>start&&(source[end]&0b11000000)===0b10000000)end--;
+  return source.subarray(start,end).toString('utf8');
 }
 
 export function failureFingerprint(input={}){
@@ -57,7 +67,7 @@ export function rankAdaptiveContextCandidates({files=[],diagnostic=null,responsi
     if(responsibilities.has(rel))score+=90;
     if(related.has(rel))score+=55;
     if(recent.has(rel))score+=35;
-    if(needle&&content.includes(needle))score+=45;
+    if(needle&&(content.includes(needle)||file?.diagnosticMatch===true))score+=45;
     score+=rolePathBoost(role,rel);
     if(/(?:^|\/)(?:qa|test|tests|spec)(?:\/|\.|-|_)/i.test(rel)&&role!=='qa')score+=4;
     return {...(typeof file==='object'?file:{}),path:rel,contextScore:score,_index:index};
@@ -72,7 +82,7 @@ export function packAdaptiveContext(options={}){
     if(packed.length>=limits.maxFiles||bytes>=limits.maxBytes)break;
     const available=Math.min(limits.maxFileBytes,limits.maxBytes-bytes);
     if(available<=0)break;
-    const content=truncateUtf8(row.content??'',available),used=Buffer.byteLength(content);
+    const content=truncateUtf8(row.content??'',available,options.diagnostic?.needle),used=Buffer.byteLength(content);
     if(used<1)continue;
     packed.push({...row,content,packedBytes:used,truncated:used<Buffer.byteLength(String(row.content??''))});
     bytes+=used;

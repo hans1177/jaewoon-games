@@ -109,7 +109,10 @@ export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],d
     }
   }
   let ranked=files.map(row=>({...row,score:scoreFile(role,row,{refs,focus})})).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.path.localeCompare(b.path));
-  const adaptive=rankAdaptiveContextCandidates({files:ranked.map(row=>({path:row.path,baseScore:row.score,content:fs.readFileSync(row.full,'utf8').slice(0,8000)})),diagnostic,responsibilityFiles:refs,role});
+  const adaptive=rankAdaptiveContextCandidates({files:ranked.map(row=>{
+    const content=fs.readFileSync(row.full,'utf8');
+    return {path:row.path,baseScore:row.score,content:content.slice(0,8000),diagnosticMatch:Boolean(diagnostic?.needle&&content.includes(clean(diagnostic.needle)))};
+  }),diagnostic,responsibilityFiles:refs,role});
   const adaptiveOrder=new Map(adaptive.map((row,index)=>[row.path,index]));
   ranked.sort((a,b)=>(adaptiveOrder.get(a.path)??999)-(adaptiveOrder.get(b.path)??999)||b.score-a.score||a.path.localeCompare(b.path));
   const threshold=role==='development'?5:7;

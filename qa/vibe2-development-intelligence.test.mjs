@@ -86,3 +86,29 @@ test('Android install evidence requires metadata, compatible SDK/ABI, fresh inst
   assert.ok(bad.failed.includes('sdkCompatible'));
   assert.ok(bad.failed.includes('abiCompatible'));
 });
+
+test('deep diagnostic anchors remain visible within strict UTF-8 context budgets',()=>{
+  const needle='SAVE_FAILURE_ROOT';
+  const source='한글 문맥 '.repeat(4000)+'\\nfunction loadGame(){ const SAVE_FAILURE_ROOT=true; }\\n'+'후속 로직 '.repeat(2000);
+  const packed=packAdaptiveContext({
+    files:[{path:'game.js',content:source}],
+    diagnostic:{file:'game.js',needle},
+    limits:{maxFiles:1,maxBytes:240,maxFileBytes:240}
+  });
+  assert.equal(packed.files.length,1);
+  assert.equal(packed.files[0].content.includes(needle),true);
+  assert.equal(packed.files[0].content.includes('�'),false);
+  assert.equal(packed.files[0].truncated,true);
+  assert.ok(packed.bytes<=240);
+  const fallback=packAdaptiveContext({files:[{path:'game.js',content:source}],diagnostic:{needle:'NONEXISTENT'},limits:{maxFiles:1,maxBytes:240,maxFileBytes:240}});
+  assert.equal(fallback.files[0].content.startsWith('한글 문맥'),true);
+});
+
+test('complete source diagnostic match boosts ranking without storing full source as context',()=>{
+  const files=[
+    {path:'a.js',baseScore:13,content:'function update(){}'},
+    {path:'z.js',baseScore:13,content:'function update(){}',diagnosticMatch:true}
+  ];
+  const ranked=rankAdaptiveContextCandidates({files,diagnostic:{needle:'DEEP_FAULT'},role:'development'});
+  assert.equal(ranked[0].path,'z.js');
+});
