@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -146507,7 +146507,7 @@
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -146550,12 +146550,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39593531518:1",
+      "reservedAt": "2026-10-21T11:45:49.376Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": "stale-system-ai-reservation-reclaimed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -146573,14 +146573,19 @@
         "system-ai-handoff-to-reservation:PENDING",
         "system-ai-exact-checkpoint-resume:YES",
         "retry-budget-consumed:NO",
-        "learning-penalty:NO"
+        "learning-penalty:NO",
+        "system-ai-impact-score:1358",
+        "system-ai-blocked-task-count:22",
+        "system-ai-common-bottleneck:YES",
+        "system-ai-representative-canary:stale-system-ai-reservation-reclaimed",
+        "system-ai-handoff-to-reservation:system-ai:39593531518:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 302,
+      "impactScore": 1358,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 0,
-        "recurrenceCount": 0,
+        "blockedTaskCount": 22,
+        "recurrenceCount": 22,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -146588,7 +146593,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-10T15:42:04.174Z",
-      "updatedAt": "2026-10-21T08:06:43.024Z"
+      "updatedAt": "2026-10-21T11:45:49.376Z"
     },
     {
       "id": "marketing-insect-survival-pre-release-v1",
@@ -155842,6 +155847,5 @@
       "createdAt": "2026-10-20T20:27:58.593Z",
       "updatedAt": "2026-10-20T20:27:58.593Z"
     }
-  ],
-  "updatedAt": "2026-10-21T11:44:53.039Z"
+  ]
 }
