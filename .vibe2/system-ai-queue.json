@@ -145648,7 +145648,7 @@
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -145733,7 +145733,7 @@
         "internal-motion-la-llorona-walk-v1",
         "internal-motion-la-sayona-walk-v1"
       ],
-      "retries": 4,
+      "retries": 5,
       "recurrenceCount": 21,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "source-candidate-generation-failed",
@@ -145747,12 +145747,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39642760039:1",
-      "reservedAt": "2026-10-21T17:25:31.890Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146126,7 +146126,8 @@
         "actions-run:39626682043",
         "system-ai-handoff-to-reservation:system-ai:39636102218:1",
         "system-ai-handoff-from-reservation:system-ai:39636102218:1",
-        "system-ai-handoff-to-reservation:system-ai:39642760039:1"
+        "system-ai-handoff-to-reservation:system-ai:39642760039:1",
+        "actions-run:39642760039"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
@@ -146141,7 +146142,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T17:25:31.890Z"
+      "updatedAt": "2026-10-21T17:51:25.804Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
