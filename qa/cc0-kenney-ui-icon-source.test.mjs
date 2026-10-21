@@ -1,6 +1,6 @@
 // Real acquired Kenney CC0 icon bytes must be SHA-256 identical to pinned origin.
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {createHash} from 'node:crypto';
-const names=["heart","coin","save","pause","check","cog","dpad","joystick"],sourceRevision='50794239cffd480791210d84c8f572d80c8dc2f8',licenseRevision='501df19e6bc94f66801b96660385f6a4820db5d0';
+const names=["heart","coin","save","pause","check","cog","dpad","joystick","home","sound-on","sound-off","music-on","music-off","flag","star","exclamation-triangle"],sourceRevision='50794239cffd480791210d84c8f572d80c8dc2f8',licenseRevision='501df19e6bc94f66801b96660385f6a4820db5d0';
 const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
 test('CC0 UI originals are physically acquired, hash matched, and not runtime promoted',()=>{
  assert.match(fs.readFileSync('assets/shared/kenney-icon-font/LICENSE-CC0.txt','utf8'),/^CC0 1[.]0 Universal/);
