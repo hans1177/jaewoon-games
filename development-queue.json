@@ -25512,10 +25512,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T04:28:54.628Z",
+      "updatedAt": "2026-10-21T04:30:39.474Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -25531,16 +25531,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
       "robloxBuildArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-      "robloxBuildPassedAt": "2026-10-21T04:01:06.388Z",
+      "robloxBuildPassedAt": "2026-10-21T04:30:39.474Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-21T04:01:06.388Z",
+      "robloxBuildPreflightFailedAt": "2026-10-21T04:30:39.474Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "survival2",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-21T03:56:33.205Z",
+        "checkedAt": "2026-10-21T04:24:39.018Z",
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "secondaryOwnerFocus": false,
@@ -25583,7 +25583,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "The package failed all web and music validations, which contradicts the requirement for starting runtime testing."
+            "note": "Runtime testing requires all validation checks to pass. The BUILD_EVIDENCE indicates that web, music, native web, and native music validations have failed, which contradicts the prerequisites for starting runtime testing."
           }
         ],
         "blockers": [
@@ -28996,7 +28996,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-21T04:30:14.853Z",
+  "updatedAt": "2026-10-21T04:30:39.474Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
