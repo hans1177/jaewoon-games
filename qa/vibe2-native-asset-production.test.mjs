@@ -14,6 +14,35 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
+// Rule 5: even a compatible library entry is never promoted by a permissive
+// game-content license, company ownership or practice output on any platform.
+test('all-platform game library binding rejects non-CC0 and practice assets before role selection',()=>{
+  const base={family:'UI',platform:'SHARED',targetPlatforms:['WEB','ROBLOX','UNITY','FORTNITE_UEFN'],
+    path:'assets/shared/ui/menu.svg',sourceHash:'a'.repeat(64)};
+  const assets=[
+    {...base,id:'cc0',license:'CC0'},
+    {...base,id:'cc0-1',license:'CC0-1.0'},
+    {...base,id:'mit',license:'MIT'},
+    {...base,id:'cc-by',license:'CC-BY-4.0'},
+    {...base,id:'commercial',license:'commercial-no-attribution'},
+    {...base,id:'original',license:'project-original'},
+    {...base,id:'public-domain',license:'public-domain'},
+    {...base,id:'practice',license:'CC0',practiceOnly:true},
+    {...base,id:'quarantined',license:'CC0',quarantined:true}
+  ];
+  for(const target of ['web','roblox','unity','fortnite_uefn']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{assets},target,gameId:'demo'});
+    assert.deepEqual(plan.familyCandidates.UI.map(row=>row.assetId),['cc0','cc0-1'],target);
+    for(const id of ['mit','cc-by','commercial','original','public-domain']){
+      const row=plan.evaluatedAssets.find(candidate=>candidate.assetId===id);
+      assert.equal(row.eligibleForRoleEvaluation,false,target+' '+id);
+      assert.equal(row.hardBlockReason,'CC0_ORIGINAL_LICENSE_REQUIRED',target+' '+id);
+    }
+    assert.equal(plan.evaluatedAssets.find(row=>row.assetId==='practice').hardBlockReason,'PRACTICE_ASSET_FORBIDDEN');
+    assert.equal(plan.evaluatedAssets.find(row=>row.assetId==='quarantined').hardBlockReason,'SECURITY_BLOCKED');
+  }
+});
+
 // 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
 test('current-game asset gap selects licensed external source for on-demand PBR derivative, not a verified asset',()=>{
   const external={
