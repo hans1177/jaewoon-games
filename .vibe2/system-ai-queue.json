@@ -145886,7 +145886,8 @@
         "internal-motion-baigujing-walk-v1",
         "internal-motion-hei-wuchang-walk-v1",
         "internal-motion-shui-gui-walk-v1",
-        "internal-motion-huapi-walk-v1"
+        "internal-motion-huapi-walk-v1",
+        "recovery-recovery-13016eae2090171271f7"
       ],
       "blockedTaskIds": [
         "internal-motion-mongdal-walk-v1",
@@ -145915,14 +145916,14 @@
         "internal-motion-shui-gui-walk-v1",
         "internal-motion-huapi-walk-v1"
       ],
-      "retries": 2,
+      "retries": 0,
       "recurrenceCount": 25,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 1,
       "previousReservationId": "system-ai:39558924296:1",
-      "blastRadius": "portfolio:25",
+      "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
       "sourceMutationRequired": true,
@@ -145934,7 +145935,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146247,7 +146248,9 @@
         "retry-budget-consumed:NO",
         "learning-penalty:NO",
         "system-ai-handoff-to-reservation:system-ai:39570824789:1",
-        "actions-run:39570824789"
+        "actions-run:39570824789",
+        "recovery-queue:recovery-f9f51b7f66eb42e3d75b",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2042,
@@ -146262,7 +146265,20 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T09:14:29.111Z"
+      "updatedAt": "2026-10-21T09:17:44.490Z",
+      "repairMode": "ROOT_CAUSE_MODE",
+      "userAssistanceRequired": false,
+      "gameRepairContract": {
+        "version": 1,
+        "mode": "ROOT_CAUSE_MODE",
+        "prePatchReproductionRequired": true,
+        "causalResponsibleSystemRequired": true,
+        "originalScenarioReplayRequired": true,
+        "invariantValidationRequired": true,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "multiplayerUserAssistanceRequired": false
+      }
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
