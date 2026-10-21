@@ -2519,7 +2519,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:35:08.290Z",
-      "updatedAt": "2026-10-20T23:58:26.922Z",
+      "updatedAt": "2026-10-21T00:11:44.429Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2537,12 +2537,68 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
       "robloxBuildArtifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
-      "robloxBuildPassedAt": "2026-10-20T23:44:29.447Z",
+      "robloxBuildPassedAt": "2026-10-21T00:11:44.429Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T23:44:29.447Z",
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-21T00:11:44.429Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "insect-survival",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-21T00:05:27.333Z",
+        "sourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
+        "artifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "81dcd5793476c64037c5d21b4ffcb6a3a6d97cdb",
+            "artifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "openai/gpt-oss-20b",
+            "decision": "BLOCK",
+            "blockers": [
+              "webValidationPassed is false",
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
+            ],
+            "note": "Runtime testing cannot begin until all validation checks (web, music, native web, native music) pass for an immutable package."
+          }
+        ],
+        "blockers": [
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+        ],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -28988,7 +29044,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-21T00:11:36.507Z",
+  "updatedAt": "2026-10-21T00:11:44.429Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
