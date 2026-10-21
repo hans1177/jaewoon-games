@@ -78425,11 +78425,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_2cca488e7bcddf55f861af1a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8914",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "67969395d0437fe0e6aa4b30800c7c88fc060def",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8914,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe2-causal-replay-scope-timeout",
+        "baseSha": "67969395d0437fe0e6aa4b30800c7c88fc060def",
+        "headSha": "892d4888724971d75847e5b2dce2b9001d948322",
+        "mergeCommitSha": "a3d0ffa862f8049e3205829f7d663af232a1b8ef",
+        "mergedAt": "2026-10-21T14:02:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "96fcf511d4b9818288d1b539f8956a631711441fc740257b3482b5be655ba40f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe2-causal-replay-scope-timeout",
+        "candidateSha": "892d4888724971d75847e5b2dce2b9001d948322"
+      },
+      "changeStats": {
+        "changedFileCount": 22,
+        "codingRelevantFileCount": 22,
+        "addedLineCount": 249,
+        "deletedLineCount": 5226,
+        "changedFiles": [
+          "qa/vibe2-incremental-qa.test.mjs",
+          "roblox-games/bug-defense/roblox-source-bootstrap.json",
+          "roblox-games/bug-defense/shared/GameConfig.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "roblox-games/exorcist-office/roblox-source-bootstrap.json",
+          "roblox-games/exorcist-office/shared/GameConfig.luau",
+          "roblox-games/gem-survivor/roblox-source-bootstrap.json",
+          "roblox-games/gem-survivor/shared/GameConfig.luau",
+          "roblox-games/party-rpg/roblox-source-bootstrap.json",
+          "roblox-games/party-rpg/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "roblox-games/star-frontier/roblox-source-bootstrap.json",
+          "roblox-games/star-frontier/shared/GameConfig.luau",
+          "roblox-games/survival/roblox-source-bootstrap.json",
+          "roblox-games/survival/shared/GameConfig.luau",
+          "roblox-games/survival2/roblox-source-bootstrap.json",
+          "roblox-games/survival2/shared/GameConfig.luau",
+          "tools/vibe2-incremental-qa.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe2-incremental-qa.test.mjs",
+          "roblox-games/bug-defense/roblox-source-bootstrap.json",
+          "roblox-games/bug-defense/shared/GameConfig.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "roblox-games/exorcist-office/roblox-source-bootstrap.json",
+          "roblox-games/exorcist-office/shared/GameConfig.luau",
+          "roblox-games/gem-survivor/roblox-source-bootstrap.json",
+          "roblox-games/gem-survivor/shared/GameConfig.luau",
+          "roblox-games/party-rpg/roblox-source-bootstrap.json",
+          "roblox-games/party-rpg/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "roblox-games/star-frontier/roblox-source-bootstrap.json",
+          "roblox-games/star-frontier/shared/GameConfig.luau",
+          "roblox-games/survival/roblox-source-bootstrap.json",
+          "roblox-games/survival/shared/GameConfig.luau",
+          "roblox-games/survival2/roblox-source-bootstrap.json",
+          "roblox-games/survival2/shared/GameConfig.luau",
+          "tools/vibe2-incremental-qa.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8914",
+        "merge-commit:a3d0ffa862f8049e3205829f7d663af232a1b8ef",
+        "base-main:67969395d0437fe0e6aa4b30800c7c88fc060def"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 621
+    "total": 622
   }
 }
