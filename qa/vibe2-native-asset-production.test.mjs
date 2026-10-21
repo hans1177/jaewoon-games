@@ -3040,7 +3040,7 @@ test('game asset selection uses only the registered internal company library',()
       version:1,
       assets:[{
         id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-        path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity']
+        path:'unity-games/shared/ui/company.png',license:'CC0',platforms:['unity']
       }],
       externalSources:[{id:'external-source'}]
     },null,2));
@@ -3073,7 +3073,7 @@ test('an externally acquired asset can be evaluated only after registration in t
       version:1,
       assets:[{
         id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-        path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity'],sourceHash:'company-ui-v1'
+        path:'unity-games/shared/ui/company.png',license:'CC0',platforms:['unity'],sourceHash:'company-ui-v1'
       },{
         id:'downloaded-external-ui',category:'UI',license:'CC0',status:'REPO_ASSET',
         path:'unity-games/demo/Assets/UI/external.png',platforms:['unity'],sourceHash:'external-ui-v1',
@@ -3995,13 +3995,13 @@ test('usable same-game asset is applied before new authoring and weak regions de
     const sameGame={
       id:'existing-wolf',family:'CREATURE',category:'CREATURE',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
       path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
-      tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+      tags:['wolf','enemy'],license:'CC0',platforms:['roblox'],
       sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',masterGlb:master
     };
     const company={
       id:'company-wolf',family:'CREATURE',category:'CREATURE',status:'VERIFIED_COMPANY_ASSET',
       path:'assets/roblox/wolf.glb',types:['enemy'],
-      tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+      tags:['wolf','enemy'],license:'CC0',platforms:['roblox'],
       companyVerified:true,verifiedCompanyReusable:true,sourceHash:'company-wolf-v1',masterGlb:master
     };
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[sameGame,company]},null,2));
@@ -4107,11 +4107,11 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
     const manifest={assets:[
       {id:'base-hero',family:'CHARACTER',category:'CHARACTER',status:'REPO_ASSET',
         path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],
-        license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',
+        license:'CC0',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',
         robloxAssetId:'111',rigType:'R15',retargetable:true,masterGlb:master},
       {id:'donor-hero',family:'CHARACTER',category:'CHARACTER',status:'VERIFIED_COMPANY_ASSET',
         path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],
-        license:'project-original',platforms:['roblox'],companyVerified:true,
+        license:'CC0',platforms:['roblox'],companyVerified:true,
         verifiedCompanyReusable:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
         masterGlb:master,platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
     ]};
@@ -4288,7 +4288,7 @@ test('native artifact and role-only model changes invalidate existing source syn
     fs.mkdirSync(path.join(cwd,'assets/shared'),{recursive:true});
     fs.writeFileSync(path.join(cwd,'assets/shared/model.glb'),Buffer.from([1,2,3,4]));
     fs.writeFileSync(path.join(cwd,'assets/shared/preview.png'),Buffer.from([8,9]));
-    const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',
+    const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'CC0',
       path:'/assets/shared/preview.png',sourceFiles:[],nativeArtifacts:['assets/shared/model.glb'],
       fileRoles:{models:['assets/shared/model.glb'],previews:['assets/shared/preview.png']}};
     const dynamic=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[asset]},target:'web',gameId:'demo'});
