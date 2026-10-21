@@ -4061,6 +4061,47 @@ test('current source change regenerates queued BUILD_UP while the stale prior ge
   assert.ok(queuedAfter.evidence.includes('build-up-directive-freshness:REGENERATED_AFTER_SOURCE_TREE_CHANGE'));
 });
 
+test('approved design revision rebinds queued Roblox BUILD_UP even when source tree is unchanged',()=>{
+  const root=tempRepo(),gameId='design-revised-queued-build-up';
+  try{
+    const server=path.join(root,'roblox-games',gameId,'server');
+    fs.mkdirSync(server,{recursive:true});
+    fs.writeFileSync(path.join(server,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+    writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미'});
+    const project={gameId,name:'Design Rebind Game',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+    const first=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+    assert.ok(first?.buildUpDirective?.designFingerprint);
+    const original=first.buildUpDirective;
+    const running={...first,id:gameId+'-old-running',status:'running',reservationRunId:'active-run'};
+    const waiting={...first,id:gameId+'-queued',status:'queued',goal:'old approved gameplay build up'};
+    // Only the approved same-game design changes. There is no new code or source SHA.
+    writeStudioDesign(root,gameId,{
+      coreFun:'적의 전투 동작 결과가 장비 선택과 다음 지역 경로까지 실제로 연결되어 플레이어가 새로운 결정을 하도록 확장하는 전투 중심 재미'
+    });
+    const args={
+      status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+      catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+      queue:{maxConcurrentTasks:20,tasks:[running,waiting]},
+      repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+    };
+    const revised=planVibe2AutonomousTasks(args);
+    const live=revised.queue.tasks.find(row=>row.id===running.id);
+    const queued=revised.queue.tasks.find(row=>row.id===waiting.id);
+    assert.equal(live.buildUpDirective.designFingerprint,original.designFingerprint,'in-progress work must not be mutated');
+    assert.equal(live.status,'running');
+    assert.equal(queued.status,'queued');
+    assert.equal(queued.buildUpDirective.sourceTreeFingerprint,original.sourceTreeFingerprint);
+    assert.notEqual(queued.buildUpDirective.designFingerprint,original.designFingerprint);
+    assert.notEqual(queued.buildUpDirectiveId,original.directiveId);
+    assert.ok(queued.evidence.includes('build-up-directive-design-refresh:CURRENT_APPROVED_REVISION'));
+    assert.ok(queued.evidence.includes('build-up-directive-freshness:REGENERATED_AFTER_APPROVED_DESIGN_REVISION'));
+    assert.match(queued.goal,/장비 선택과 다음 지역 경로/);
+    const repeated=planVibe2AutonomousTasks({...args,queue:revised.queue});
+    const stable=repeated.queue.tasks.find(row=>row.id===waiting.id);
+    assert.equal(stable.buildUpDirectiveId,queued.buildUpDirectiveId,'unchanged approved design must not create a third generation');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('failed and blocked resume candidates share one reconciled directive without changing task status',()=>{
   const root=tempRepo();
   const gameId='resume-build-up-siblings';
