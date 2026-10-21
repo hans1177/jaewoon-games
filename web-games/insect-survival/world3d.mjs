@@ -39,17 +39,24 @@ async function original(key){
  if(!model||new THREE.Box3().setFromObject(model).isEmpty())throw Error('CC0 원본 비어 있음 '+src);
  return model;
 }
+// 동일 CC0 원본+색상의 파생 인스턴스는 재질만 공유한다. 지오메트리/리그/게임 상태는 기존 경로를 유지한다.
+const derivedMaterials=new Map();
 function derived(key,height,tint){
  const model=(key==='hero'?cloneSkinned(originals[key]):originals[key].clone(true)),bounds=new THREE.Box3().setFromObject(model),dim=bounds.getSize(new THREE.Vector3());
  const ratio=height/Math.max(.0001,dim.y);
  model.scale.multiplyScalar(ratio);model.position.y=-bounds.min.y*ratio;
  const color=new THREE.Color(tint||BASE[key].color);
+ const variant=key+':'+color.getHexString();
+ let materials=derivedMaterials.get(variant);
+ if(!materials){materials=new Map();derivedMaterials.set(variant,materials);}
  model.traverse(part=>{
   if(!part.isMesh)return;
   const transform=mat=>{
+   if(materials.has(mat))return materials.get(mat);
    const result=mat?.clone?.()||new THREE.MeshStandardMaterial();
    if(result.color)result.color.multiply(color);
    result.side=THREE.DoubleSide;result.roughness=1;result.metalness=0;
+   materials.set(mat,result);
    return result;
   };
   part.material=Array.isArray(part.material)?part.material.map(transform):transform(part.material);
