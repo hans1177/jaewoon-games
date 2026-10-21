@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-21T07:49:05.625Z",
+  "generatedAt": "2026-10-21T08:05:12.653Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -1125,10 +1125,10 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 0,
+          "activeTasks": 3,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 162
+          "repeatedFailureSignal": 22
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -1372,36 +1372,6 @@
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": false
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "card-grid-duel",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 1,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 53
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
         },
         "balance": {
           "structuralCoreFailure": false
