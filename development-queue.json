@@ -52039,9 +52039,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:29:17.015Z",
-      "updatedAt": "2026-10-21T14:55:23.611Z",
+      "updatedAt": "2026-10-21T15:04:48.290Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -52051,7 +52051,7 @@
         "capturedAt": "2026-10-12T02:32:35.953Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-21T15:04:48.290Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -52096,11 +52096,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
-      "robloxSourceCommit": "68e1d1f293df4d566973a6905781bf6e14594834",
+      "robloxSourceCommit": "eba23e34aa1cdca185729de5f0abbd51443f5af7",
       "robloxSourceBootstrapPassedAt": "2026-10-21T14:21:21.406Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -52606,13 +52606,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "f920a0d9b6828cf90faeebde2b5696d58590894d",
+      "robloxQualityBuildUpSourceRevision": "eba23e34aa1cdca185729de5f0abbd51443f5af7",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "party-rpg",
-        "sourceRevision": "f920a0d9b6828cf90faeebde2b5696d58590894d",
-        "sourceTreeSha": "360fad14f8c57e3c749776fac6fc823a51150d70",
+        "sourceRevision": "eba23e34aa1cdca185729de5f0abbd51443f5af7",
+        "sourceTreeSha": "6a22189888cbded48a3c6f7ffbbb7a5c8984bb04",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -52622,7 +52622,7 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "cf08f122f734bf8f9d20ae761f19eeb2820ee6c93dd43210a567b4e4c8473416",
+          "libraryFingerprint": "b51e5b3cf874672384764b442aa22dd602af6c2c465afba4f4a396e8b8935405",
           "baselineFingerprint": "16e2f0dacb41050f72681aa3ddc8af108762b72e52724793523e991e247f2dee",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
@@ -52640,8 +52640,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39578235099,
-        "testedAt": "2026-10-21T10:29:26.942Z"
+        "workflowRunId": 39616157603,
+        "testedAt": "2026-10-21T15:04:48.290Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -84604,7 +84604,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-21T15:04:13.673Z",
+  "updatedAt": "2026-10-21T15:04:48.290Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
