@@ -5681,14 +5681,25 @@ test('F0 gameplay failure rebinds queued usability to approved design and real R
     assert.ok(waiting.responsibleFiles.includes(rel+'/shared/GameConfig.luau'));
     assert.ok(waiting.responsibleFiles.includes(rel+'/client/Game.client.luau'));
 
-    assert.equal(bindApprovedF0GameplayRepairToTask(initial,{...failing,queueRobloxArtifactIdentity:'sha256:'+'c'.repeat(64)},root),initial,
+    const newerArtifact={...failing,queueRobloxArtifactIdentity:'sha256:'+'c'.repeat(64)};
+    assert.equal(bindApprovedF0GameplayRepairToTask(initial,newerArtifact,root),initial,
       'a newly built artifact cannot consume an older F0 failure');
-    assert.equal(bindApprovedF0GameplayRepairToTask({...initial,status:'running'},failing,root).goal,initial.goal,
-      'already running source implementation must never be rewritten');
+    const retiredPackage=bindApprovedF0GameplayRepairToTask(fixed,newerArtifact,root);
+    assert.doesNotMatch(retiredPackage.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/,
+      'queued outdated F0 repair must be retired once the package changes');
+    assert.ok(!retiredPackage.evidence.some(value=>value.startsWith('approved-f0-gameplay-source-repair:')));
+    assert.equal(bindApprovedF0GameplayRepairToTask({...fixed,status:'running'},newerArtifact,root).goal,fixed.goal,
+      'running source implementation must retain the exact reserved instruction');
     assert.equal(bindApprovedF0GameplayRepairToTask(initial,{...failing,engine:'unity'},root),initial,
       'Unity owner-held lane must not inherit a Roblox F0 repair');
     writeStudioDesign(root,gameId,{coreFun:'개정된 세계 선택이 보상·퀘스트 흐름을 새로 바꾸는 놀이'});
     assert.equal(bindApprovedF0GameplayRepairToTask(initial,failing,root),initial,
       'old design fingerprint must not apply new unapproved gameplay edits; queued rebind precedes repair');
+    const retiredDesign=bindApprovedF0GameplayRepairToTask(fixed,failing,root);
+    assert.doesNotMatch(retiredDesign.goal,/APPROVED_F0_GAMEPLAY_SOURCE_REPAIR/,
+      'a revised approved design must invalidate old queued implementation instructions');
+    assert.ok(!retiredDesign.evidence.includes('approved-f0-gameplay-source-repair:v1'));
+    assert.deepEqual(bindApprovedF0GameplayRepairToTask(retiredDesign,failing,root),retiredDesign,
+      'retiring stale F0 repair must be idempotent until a fresh design directive is bound');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
