@@ -265,15 +265,18 @@ jobs:
             git fetch --depth=1 --no-tags origin main --quiet
           fi
           contract_sha="$(git rev-parse FETCH_HEAD)"
+          git worktree remove --force /tmp/vibe2-main 2>/dev/null || true
           rm -rf /tmp/vibe2-main
-          mkdir -p /tmp/vibe2-main
-          git archive "$contract_sha" | tar -x -C /tmp/vibe2-main
+          git worktree prune
+          # 소스 식별: 고정된 main의 Git 트리 정보를 보존하고 LFS 자동 다운로드는 하지 않는다.
+          GIT_LFS_SKIP_SMUDGE=1 git worktree add --detach /tmp/vibe2-main "$contract_sha" >/dev/null
+          test "$(git -C /tmp/vibe2-main rev-parse HEAD)" = "$contract_sha"
           # An old callback contract must not silently execute index summaries.
           grep -q '^export function unpackVibeQueueStorage' /tmp/vibe2-main/tools/vibe2-queue-control.mjs
           test -f /tmp/vibe2-main/vibe2-runtime.json
           echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
-          echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
+          echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=PINNED_WORKTREE'
 
       - name: Compile central shared context once for worker cohort
         id: shared_context

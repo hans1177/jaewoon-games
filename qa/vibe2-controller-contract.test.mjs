@@ -7,7 +7,8 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawnSync,execFileSync } from 'node:child_process';
+import {currentSourceTreeSha} from '../tools/company-development-roblox-source-reconcile.mjs';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles, candidateStrategyRole } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
@@ -641,9 +642,9 @@ test('reserve preflight uses the pinned main contract and blocks broken GAME_PRI
   const preflight=workflow.slice(start,end);
   assert(preflight.includes('git fetch --depth=1 --no-tags origin main --quiet'));
   assert(preflight.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
-  assert(preflight.includes('git archive "$contract_sha" | tar -x -C /tmp/vibe2-main'));
-  assert(preflight.includes('VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'));
-  assert.equal(preflight.includes('git worktree add --detach /tmp/vibe2-main'),false);
+  assert(preflight.includes('GIT_LFS_SKIP_SMUDGE=1 git worktree add --detach /tmp/vibe2-main "$contract_sha"'));
+  assert(preflight.includes('VIBE2_MAIN_CONTRACT_SNAPSHOT=PINNED_WORKTREE'));
+  assert(preflight.includes('git -C /tmp/vibe2-main rev-parse HEAD'));
   assert(preflight.includes('echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"'));
   assert(preflight.includes('node --check "/tmp/vibe2-main/$file"'));
   assert(preflight.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
@@ -1807,4 +1808,34 @@ test('refill admission and completion callbacks merge waiting wakes only',()=>{
       }
     }
   }
+});
+
+// 실제 저장소에서 상태 브랜치가 움직여도 고정 main 소스의 Git 식별과 내용은 바뀌면 안 된다.
+test('pinned reserve snapshot retains exact Git source identity after control branch advances',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'reserve-source-id-'));
+  const repo=path.join(root,'repo'),snapshot=path.join(root,'snapshot');fs.mkdirSync(repo);
+  const env={...process.env,GIT_AUTHOR_NAME:'test',GIT_AUTHOR_EMAIL:'test@example.invalid',GIT_COMMITTER_NAME:'test',GIT_COMMITTER_EMAIL:'test@example.invalid'};
+  const git=(cwd,args)=>execFileSync('git',args,{cwd,env,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    git(repo,['init','-b','main']);fs.mkdirSync(path.join(repo,'roblox-games','demo'),{recursive:true});
+    fs.writeFileSync(path.join(repo,'roblox-games','demo','server.luau'),'original game source');
+    git(repo,['add','.']);git(repo,['commit','-m','pinned main']);
+    const pinned=git(repo,['rev-parse','HEAD']),tree=git(repo,['rev-parse','HEAD:roblox-games/demo']);
+    const start=workflow.indexOf('          rm -rf /tmp/vibe2-main');
+    const end=workflow.indexOf('          # An old callback contract',start);
+    assert.ok(start>=0&&end>start);
+    const script=workflow.slice(start,end).replace(/^ {10}/gm,'').replaceAll('/tmp/vibe2-main',snapshot);
+    const result=spawnSync('bash',['-euo','pipefail','-c',script],{cwd:repo,env:{...env,contract_sha:pinned},encoding:'utf8',timeout:15000});
+    assert.equal(result.status,0,result.stdout+result.stderr);
+    assert.equal(currentSourceTreeSha({repoRoot:snapshot,sourcePath:'roblox-games/demo'}),tree);
+    git(repo,['checkout','-b','runtime-state']);
+    fs.writeFileSync(path.join(repo,'roblox-games','demo','server.luau'),'different control source');
+    git(repo,['commit','-am','advance control']);
+    assert.notEqual(git(repo,['rev-parse','HEAD:roblox-games/demo']),tree);
+    assert.equal(git(snapshot,['rev-parse','HEAD']),pinned);
+    assert.equal(currentSourceTreeSha({repoRoot:snapshot,sourcePath:'roblox-games/demo'}),tree);
+    assert.equal(fs.readFileSync(path.join(snapshot,'roblox-games','demo','server.luau'),'utf8'),'original game source');
+    fs.mkdirSync(path.join(snapshot,'design'));fs.writeFileSync(path.join(snapshot,'design','runtime.json'),'runtime design overlay');
+    assert.equal(currentSourceTreeSha({repoRoot:snapshot,sourcePath:'roblox-games/demo'}),tree);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

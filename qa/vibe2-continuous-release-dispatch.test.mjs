@@ -584,13 +584,16 @@ test('Web successful syntax and promotion cannot settle PASS without production 
 });
 
 
-test('Vibe2 runtime design overlay never runs git inside the archived main snapshot',()=>{
+test('Vibe2 runtime design overlay preserves pinned main Git identity without modifying its source',()=>{
   assert.doesNotMatch(workflow,/git -C \/tmp\/vibe2-main (?:fetch|checkout|reset|cat-file)/);
   assert.match(workflow,/git -C "\$control_root" cat-file -e "\$company_runtime_snapshot_sha:\$runtime_design_path"/);
   assert.match(workflow,/git -C "\$control_root" archive "\$company_runtime_snapshot_sha" "\$runtime_design_path" \| tar -x -C \/tmp\/vibe2-main/);
   assert.match(workflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
   assert.equal(workflow.split('VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json').length-1,2);
-  assert.equal(workflow.split('git -C /tmp/vibe2-main').length-1,0);
+  // A pinned worktree requires exactly one read-only SHA check; overlay must not mutate Git state.
+  assert.match(workflow,/GIT_LFS_SKIP_SMUDGE=1 git worktree add --detach \/tmp\/vibe2-main "\$contract_sha"/);
+  assert.match(workflow,/test "\$\(git -C \/tmp\/vibe2-main rev-parse HEAD\)" = "\$contract_sha"/);
+  assert.equal(workflow.split('git -C /tmp/vibe2-main').length-1,1);
 });
 
 test('platform review cannot claim native runtime F9 before platform verification',()=>{
