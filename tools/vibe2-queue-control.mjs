@@ -374,8 +374,11 @@ export function recoverCompletedRunningReservations(queueInput, {
     // Requeue only when the separate API probe proved the run and artifact absence;
     // keep every review-verified or artifact-bearing fan-in reservation untouched.
     const evidence=Array.isArray(task.evidence)?task.evidence:[];
+    // Earlier retries may retain role-result:WAITING_FAN_IN and candidate-sha markers.
+    // Neither proves a result for the CURRENT reserved run. Only verified review /
+    // final web evidence and recorded neuron results protect a missing-artifact wait.
     const noResultFanIn=noResults.has(runId)&&/^slot-released-awaiting-fan-in$/i.test(clean(task.blocker))
-      &&!evidence.some(value=>/^role-result:|^candidate-sha:|^web-f0-f9-verified$/i.test(clean(value)))
+      &&!evidence.some(value=>/^role-result:review:PASS$|^web-f0-f9-verified$/i.test(clean(value)))
       &&!(Array.isArray(task.neuronResults)&&task.neuronResults.length);
     if(!runId||!completed.has(runId)||(clean(task.blocker)&&!noResultFanIn))return task;
     recovered+=1;
