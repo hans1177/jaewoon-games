@@ -79154,11 +79154,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_283547a333a629a14be55763",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8979",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d24069b18a75342ed1b70fdb9d99c7ede10d14bb",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8979,
+        "baseBranch": "main",
+        "headBranch": "fix/cc0-inventory-insect-materials-20261022",
+        "baseSha": "d24069b18a75342ed1b70fdb9d99c7ede10d14bb",
+        "headSha": "c2df5cb9a34a37b972cb151b5eda952730f291b3",
+        "mergeCommitSha": "4748a1212bc284d4a0bbf6aca97750e6321cf17e",
+        "mergedAt": "2026-10-21T20:09:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f8070b6af43064fc4a6c1ba6c8745369147df0ee782f152a34cc49317c5ad4bc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/cc0-inventory-insect-materials-20261022",
+        "candidateSha": "c2df5cb9a34a37b972cb151b5eda952730f291b3"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 1526,
+        "deletedLineCount": 220,
+        "changedFiles": [
+          "assets/asset-selector.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/insect-survival.test.mjs",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "tools/asset-health-check.mjs",
+          "web-games/insect-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/asset-selector.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/insect-survival.test.mjs",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "tools/asset-health-check.mjs",
+          "web-games/insect-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8979",
+        "merge-commit:4748a1212bc284d4a0bbf6aca97750e6321cf17e",
+        "base-main:d24069b18a75342ed1b70fdb9d99c7ede10d14bb"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 626
+    "total": 627
   }
 }
