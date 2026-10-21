@@ -912,3 +912,36 @@ test('asset source hashes are revalidated before cached incremental QA success',
 });
 
 
+
+test('causal replay rejects a symlinked test that escapes its reserved game source',t=>{
+  const root=repo();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const source=path.join(root,'web-games/demo'),other=path.join(root,'web-games/other/qa');
+  fs.mkdirSync(path.join(source,'qa'),{recursive:true});fs.mkdirSync(other,{recursive:true});
+  fs.writeFileSync(path.join(source,'index.js'),'export const placed=2;\n');
+  const external=path.join(other,'outside.test.mjs');
+  fs.writeFileSync(external,"import test from 'node:test'; test('wrong game',()=>{});\n");
+  const link=path.join(source,'qa/escaped.test.mjs');
+  fs.symlinkSync(path.relative(path.dirname(link),external),link);
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({sourceRoot:'web-games/demo',changedFiles:['index.js'],
+    exploration:{editContract:{causalReplay:{required:true,prePatchReproduced:true,
+      executable:true,mode:'NODE_TEST_TARGETS',nodeTestTargets:['qa/escaped.test.mjs']}}}}));
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:symlink-escape'}),
+    /CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT/);
+});
+
+test('causal replay rejects a symlinked game source rooted outside the repository',t=>{
+  const root=repo(),outside=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-replay-outside-'));
+  t.after(()=>{fs.rmSync(root,{recursive:true,force:true});fs.rmSync(outside,{recursive:true,force:true});});
+  fs.mkdirSync(path.join(root,'web-games'),{recursive:true});
+  fs.mkdirSync(path.join(outside,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(outside,'index.js'),'export const placed=2;\n');
+  fs.writeFileSync(path.join(outside,'qa/scenario.test.mjs'),"import test from 'node:test'; test('scenario',()=>{});\n");
+  fs.symlinkSync(outside,path.join(root,'web-games/demo'),'dir');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({sourceRoot:'web-games/demo',changedFiles:['index.js'],
+    exploration:{editContract:{causalReplay:{required:true,prePatchReproduced:true,
+      executable:true,mode:'NODE_TEST_TARGETS',nodeTestTargets:['qa/scenario.test.mjs']}}}}));
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:source-escape'}),
+    /CAUSAL_REPLAY_SOURCE_ROOT_ESCAPED_REPOSITORY/);
+});
