@@ -2612,7 +2612,13 @@ export function bindApprovedF0GameplayRepairToTask(taskInput,project,repoRoot,{v
   if(!design?.record||!taskInput.buildUpDirective?.directiveId
     ||clean(taskInput.buildUpDirective.designFingerprint)!==approvedDesignFingerprintForProject(design.record,project,'roblox'))
     return taskInput;
-  const missing=[...new Set((observed.qualityFailureKinds||[]).map(clean)
+  // collectProjects projects verified F0 failure kinds onto queueRobloxQualityFailureKinds,
+  // while retaining only condensed details in queueRobloxQualityBuildUpEvidence.
+  // Require the already-matched source/artifact evidence above before consuming them.
+  const projectedFailureKinds=(project.queueRobloxQualityFailureKinds||[]).length
+    ?project.queueRobloxQualityFailureKinds
+    :observed.qualityFailureKinds||[];
+  const missing=[...new Set(projectedFailureKinds.map(clean)
     .filter(value=>/^(?:MISSING_GAMEPLAY_CAPABILITY:[A-Z_]+|CORE_LOOP_STEP_UNIMPLEMENTED:\d+|SIGNATURE_SYSTEM_UNIMPLEMENTED:\d+|GENERIC_SCOPE_HANDLER_SKELETON)$/.test(value)))].slice(0,24);
   if(!missing.length)return taskInput;
   const root=posix(project.projectPath);
