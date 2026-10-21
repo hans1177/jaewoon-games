@@ -79966,11 +79966,157 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_bdb663226c1c52f741838833",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9042",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "84f6b2762d6b5b1ed1ec0cb4fff1176d0496d6ca",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9042,
+        "baseBranch": "main",
+        "headBranch": "star-echoes-webgl3d-20261022",
+        "baseSha": "84f6b2762d6b5b1ed1ec0cb4fff1176d0496d6ca",
+        "headSha": "e69f5f658fd33515d6dc70077203fbd2533d9b8b",
+        "mergeCommitSha": "2d0a682bbbf17316324adca4c36dbaa88f702851",
+        "mergedAt": "2026-10-21T23:37:22Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b0db2cbb27e8b146d9cec42f32230265c1cbe852246928638cc86b8bdebd5eb7",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "star-echoes-webgl3d-20261022",
+        "candidateSha": "e69f5f658fd33515d6dc70077203fbd2533d9b8b"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 16,
+        "addedLineCount": 1658,
+        "deletedLineCount": 313,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/seed-action-survival-rogu-echoes-of-the-lost-star-3d.test.mjs",
+          "qa/seed-action-survival-rogu-echoes-of-the-lost-star-touch-bottleneck.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/tower-choice-rpg/roblox-source-bootstrap.json",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/seed-action-survival-rogu-echoes-of-the-lost-star-3d.test.mjs",
+          "qa/seed-action-survival-rogu-echoes-of-the-lost-star-touch-bottleneck.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/tower-choice-rpg/roblox-source-bootstrap.json",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9042",
+        "merge-commit:2d0a682bbbf17316324adca4c36dbaa88f702851",
+        "base-main:84f6b2762d6b5b1ed1ec0cb4fff1176d0496d6ca"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 632
+    "total": 633
   }
 }
