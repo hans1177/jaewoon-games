@@ -148590,7 +148590,7 @@
     },
     {
       "id": "recovery-recovery-cd3cf615cf3faf138144",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -148631,13 +148631,14 @@
         "deployment:.github/workflows/vibe2-candidate-release.yml:6a99d098f4b2c1d3a29e6c26db35d1686b91beb2:unresolved-run-38936711266",
         "recovery-recovery-cd3cf615cf3faf138144",
         "recovery-recovery-4fb8afffd5c37f1dfc2b",
-        "recovery-recovery-8fd4a266c158771684b2"
+        "recovery-recovery-8fd4a266c158771684b2",
+        "recovery-recovery-5ada659bfc740addea85"
       ],
       "blockedTaskIds": [
         "deployment:.github/workflows/vibe2-candidate-release.yml:6a99d098f4b2c1d3a29e6c26db35d1686b91beb2:unresolved-run-38936711266"
       ],
       "retries": 0,
-      "recurrenceCount": 3,
+      "recurrenceCount": 4,
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "source-mutation-required-before-revalidation",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
@@ -148650,8 +148651,8 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39610306188:1",
+      "reservedAt": "2026-10-21T13:45:57.100Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
@@ -148706,22 +148707,25 @@
         "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
         "failure-cause:source-mutation-required-before-revalidation",
         "system-ai-duplicate-repair-coalesced:YES",
-        "system-ai-coalesced-count:2"
+        "system-ai-coalesced-count:2",
+        "system-ai-impact-score:827",
+        "system-ai-blocked-task-count:7",
+        "system-ai-representative-canary:source-mutation-required-before-revalidation"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1002,
+      "impactScore": 827,
       "impactComponents": {
         "severity": 4,
-        "blockedTaskCount": 11,
-        "recurrenceCount": 10,
-        "dependencyCentrality": 1,
+        "blockedTaskCount": 7,
+        "recurrenceCount": 4,
+        "dependencyCentrality": 5,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 108.91,
+        "ageHours": 116.65,
         "repairRisk": 1
       },
       "createdAt": "2026-10-16T17:06:55.209Z",
-      "updatedAt": "2026-10-21T09:57:19.318Z"
+      "updatedAt": "2026-10-21T13:45:57.100Z"
     },
     {
       "id": "recovery-recovery-4fb8afffd5c37f1dfc2b",
@@ -149530,7 +149534,7 @@
     },
     {
       "id": "recovery-recovery-5ada659bfc740addea85",
-      "status": "queued",
+      "status": "cancelled",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -149568,31 +149572,32 @@
       ],
       "dependencies": [],
       "relatedTaskIds": [
-        "deployment:.github/workflows/vibe2-candidate-release.yml:3a700d95af9f92d8eeb99e0556d83095d2358729:unresolved-run-39041929973"
+        "deployment:.github/workflows/vibe2-candidate-release.yml:3a700d95af9f92d8eeb99e0556d83095d2358729:unresolved-run-39041929973",
+        "recovery-recovery-5ada659bfc740addea85"
       ],
       "blockedTaskIds": [
         "deployment:.github/workflows/vibe2-candidate-release.yml:3a700d95af9f92d8eeb99e0556d83095d2358729:unresolved-run-39041929973"
       ],
-      "retries": 2,
+      "retries": 0,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
-      "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureSignature": "source-mutation-required-before-revalidation",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 1,
       "previousReservationId": "system-ai:39590689404:1",
-      "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+      "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "3a700d95af9f92d8eeb99e0556d83095d2358729",
+      "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
       "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "lastOutcome": "SUPERSEDED_DUPLICATE_WORK",
+      "blocker": "system-ai-duplicate-repair-superseded",
       "evidence": [
         "deployment-failure-run:39041929973:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -149649,7 +149654,12 @@
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
         "system-ai-impact-score:791",
         "system-ai-handoff-to-reservation:system-ai:39604695319:1",
-        "actions-run:39604695319"
+        "actions-run:39604695319",
+        "recovery-queue:recovery-75a8ffd94e27cae8fbff",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+        "failure-cause:source-mutation-required-before-revalidation",
+        "system-ai-duplicate-repair-coalesced:YES",
+        "system-ai-duplicate-repair-superseded-by:recovery-recovery-cd3cf615cf3faf138144"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 791,
@@ -149664,7 +149674,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T14:51:05.748Z",
-      "updatedAt": "2026-10-21T13:41:53.572Z"
+      "updatedAt": "2026-10-21T13:45:56.835Z"
     },
     {
       "id": "recovery-recovery-90fac0fa1498d57026cd",
