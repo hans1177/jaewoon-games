@@ -751,8 +751,8 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
     // 현재 CORE_FUN 등 실제 게임 구현에서도 차단되는 경우만 복구한다.
     // 원본 작업/진행/근거/그래픽 계약은 보존하며 역사적 표식만 비실행 표식으로 바꾼다.
     const currentFocus=clean(task?.buildUpDirective?.primaryFocus).toUpperCase();
-    const webRoot=clean(task.sourceRoot).replaceAll('\\','/').replace(/\\/$/,'');
-    const approvedWebRoot=clean(focus.ownerFocusedWebSourcePaths?.[task.gameId]).replaceAll('\\','/').replace(/\\/$/,'');
+    const webRoot=clean(task.sourceRoot).replaceAll('\\','/').replace(/[/]+$/,'');
+    const approvedWebRoot=clean(focus.ownerFocusedWebSourcePaths?.[task.gameId]).replaceAll('\\','/').replace(/[/]+$/,'');
     const assetTargets=policy?.assetProductionParallelContract?.activeProductionTargets;
     const restoreGameplayLane=task.status==='queued'
       &&!retiredWeb
