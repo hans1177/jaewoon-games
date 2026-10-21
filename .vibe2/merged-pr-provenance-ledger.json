@@ -76348,11 +76348,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d7bb86cfcc3650785d53096e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8825",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c68ddb1e2291c33e28125233fd2fa7f0b30991f5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8825,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-focused-stale-recovery-all-reserve-lanes-20261021",
+        "baseSha": "c68ddb1e2291c33e28125233fd2fa7f0b30991f5",
+        "headSha": "1257bf36067214f8700a01899be2e0bd85e35860",
+        "mergeCommitSha": "a150bb637a314f6520b912e872afb579998cce6d",
+        "mergedAt": "2026-10-21T07:23:40Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2ca9b6fabe7bd106db54a88dddf024bf6fad0dc8612dc59a898b07cacd8d801a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-focused-stale-recovery-all-reserve-lanes-20261021",
+        "candidateSha": "1257bf36067214f8700a01899be2e0bd85e35860"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 12,
+        "addedLineCount": 1536,
+        "deletedLineCount": 233,
+        "changedFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-auto-planner.test.mjs",
+          "roblox-games/chess-battle/client/Game.client.luau",
+          "roblox-games/chess-battle/roblox-source-bootstrap.json",
+          "roblox-games/chess-battle/shared/GameConfig.luau",
+          "roblox-games/insect-survival/client/Game.client.luau",
+          "roblox-games/insect-survival/roblox-source-bootstrap.json",
+          "roblox-games/insect-survival/shared/GameConfig.luau",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-auto-planner.test.mjs",
+          "roblox-games/chess-battle/client/Game.client.luau",
+          "roblox-games/chess-battle/roblox-source-bootstrap.json",
+          "roblox-games/chess-battle/shared/GameConfig.luau",
+          "roblox-games/insect-survival/client/Game.client.luau",
+          "roblox-games/insect-survival/roblox-source-bootstrap.json",
+          "roblox-games/insect-survival/shared/GameConfig.luau",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8825",
+        "merge-commit:a150bb637a314f6520b912e872afb579998cce6d",
+        "base-main:c68ddb1e2291c33e28125233fd2fa7f0b30991f5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 605
+    "total": 606
   }
 }
