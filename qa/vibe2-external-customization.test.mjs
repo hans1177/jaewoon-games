@@ -80,7 +80,7 @@ test('four acquired CC0 UI/mobile PNGs match library SHA-256 and licensed pack l
  const assets=library.assets.filter(row=>row.id.startsWith('kenney-cc0-'));
  assert.equal(assets.length,4);
  for(const asset of assets){
-   const repoPath=asset.path.replace(/^\\/+/, '');
+   const repoPath=asset.path.replace(/^\/+/, '');
    assert.ok(repoPath.startsWith('assets/shared/kenney-ui/'));
    const bytes=fs.readFileSync(repoPath);
    assert.deepEqual([...bytes.subarray(0,4)],[137,80,78,71]);
