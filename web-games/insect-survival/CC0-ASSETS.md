@@ -11,7 +11,7 @@
 | 거미 모델 | `assets/shared/forest/monster-53.obj` | isaiah658 50+ Monsters Pack 3D CC0-1.0, SHA-256 `73a08230391b74ee9293619e63ca7ab9f183282d7bf64d56a6668d12b8ad1d53` |
 | 거대한 풀숲 소품 | `assets/shared/forest/tree.fbx` | Quaternius Cute Animated Monsters CC0-1.0, SHA-256 `03330f2622b48c465447e8314aabdd2c7533a4af9f41d2bd765c52a23f237cc6` |
 | 버섯 소품 | `assets/shared/forest/mushroom.fbx` | Quaternius Cute Animated Monsters CC0-1.0, SHA-256 `d329b5cdc503c500aa9d915969e228fed103597f3885a7b0b9ee1aa0f1406158` |
-| 바닥·자갈·잎사귀 | `assets/shared/homely-house/{floor_base,cobblestones,foliage_A}.obj` | Tiny Treats Homely House CC0, 저장소 출처: `assets/asset-license-ledger.json#tinytreats-homely-house-cc0-v1`, 원본 commit `75ad29a12b4e26dd1c7abda1e1486d6d731d8e16`; 개별 원본 blob/해시는 `company-asset-library.json`에서 재확인 필요 |
+| 바닥·자갈·잎사귀 | `assets/shared/homely-house/floor_base.obj`, `assets/shared/homely-house/cobblestones.obj`, `assets/shared/homely-house/foliage_A.obj` | Tiny Treats Homely House CC0, 저장소 출처: `assets/asset-license-ledger.json#tinytreats-homely-house-cc0-v1`, 원본 commit `75ad29a12b4e26dd1c7abda1e1486d6d731d8e16`; 개별 원본 blob/해시는 `company-asset-library.json`에서 재확인 필요 |
 
 원본 증거: [Kenney Cube Pets](https://opengameart.org/content/cube-pets), [Quaternius Textured Cute Monsters](https://opengameart.org/content/textured-cute-monster-pack), [isaiah658 Monsters](https://opengameart.org/content/50-monsters-pack-3d), [KayKit Character Pack Adventures](https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0), [Tiny Treats Homely House](https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/tree/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16).
 
@@ -22,3 +22,7 @@
 - 기존 2D 렌더러는 정상 3D 로딩 후 숨겨지며, 3D 자산 로딩 실패 시 기존 저장·조작·전투 기능을 살리는 장애 복구 수단으로만 남는다. 과거 HUD CSS는 제거했다.
 - 게임 규칙·저장 키 `jaewoon_insect_survival_v3`는 유지한다. 추가 레벨/특성은 기존 상태 데이터에 기본값 병합으로 확장한다.
 - 다른 게임이 사용하는 공용 모델을 삭제하거나 변경하지 않는다. 자체 제작 저품질 모델의 영구 삭제는 소비자 조사·CC0 대체 실기기 검증 후 필요한 경우 별도로 수행한다.
+
+## CC0 액션 연결 점검
+
+찌르기·회전 베기·회피·피격·사망은 원본 KayKit 클립을 사용한다. 이동·대기는 반복하고 액션·사망은 단발 재생한다. 성공한 게임 행동의 표현용 일련번호로 연속 공격을 재시작하며, 실패한 스킬 입력은 모션을 재시작하지 않는다. 모션 메타데이터는 플레이어 저장 레코드에 추가하지 않는다. 실제 화면·모바일 모션 품질은 별도 검증 전까지 미확인이다.
