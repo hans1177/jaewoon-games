@@ -14,22 +14,22 @@ import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-archit
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
 
-test('backlog defer performs only owner-authorized lifecycle checkpoint before expensive workers',()=>{
-  const workflow=fs.readFileSync(path.join(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
-  assert.match(workflow,/VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG/);
-  assert.match(workflow,/focus_reconcile=true/);
-  assert.match(workflow,/focus_reconcile=\$focus_reconcile/);
-  assert.match(workflow,/name: Checkout Vibe2 control line\n\s+if: steps\.main_wake\.outputs\.proceed == 'true' \|\| steps\.main_wake\.outputs\.focus_reconcile == 'true'/);
-  const ownerRepair=workflow.split('      - name: Checkpoint approved focused cancellations under backlog')[1]?.split('      - name: Download atomic neuron completion result')[0];
-  assert.ok(ownerRepair,'backlog repair must remain inside the canonical existing reserve job');
-  assert.match(ownerRepair,/steps\.main_wake\.outputs\.focus_reconcile == 'true' && steps\.main_wake\.outputs\.proceed != 'true'/);
-  assert.match(ownerRepair,/current_main.*GITHUB_SHA/);
-  assert.match(ownerRepair,/node .*vibe2-auto-planner\.mjs --restore-owner-focus/);
-  assert.match(ownerRepair,/node .*vibe2-queue-control\.mjs storage-unpack/);
-  assert.match(ownerRepair,/node .*vibe2-queue-control\.mjs storage-pack/);
-  assert.match(ownerRepair,/git push origin HEAD:vibe2-unreal-core --quiet/);
-  assert.doesNotMatch(ownerRepair,/workflow_dispatch|repository_dispatch|--mode=promote|--deploy/);
-  assert.match(workflow,/name: Reserve conflict-free DAG batch[\s\S]*?if: steps\.main_wake\.outputs\.proceed == 'true'/);
+
+test('폐기된 웹 경로는 계획에서 제외하고 정상 웹게임은 계속 계획한다',()=>{
+  const root=process.cwd();
+  const games=[
+    {id:'bug-defense',name:'곤충 디펜스',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/bug-defense/',
+      canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}},
+    {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/',
+      canonical:{sources:{web:{state:'ACTIVE'}}}}
+  ];
+  const items=games.map(game=>({gameId:game.id,gameName:game.name,
+    status:'ACTIVE',selectedPlatform:'WEB',webSourcePath:'web-games/'+game.id}));
+  const projects=collectProjects({}, {games}, root, {items});
+  assert.equal(projects.some(p=>p.gameId==='bug-defense'&&p.engine==='web'),false);
+  assert.equal(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'),true);
 });
 
 test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{

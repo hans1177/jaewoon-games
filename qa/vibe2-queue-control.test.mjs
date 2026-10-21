@@ -10,6 +10,7 @@ import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {
   synchronizeOwnerDevelopmentHolds,
+  webSourceRetiredInCatalog,
   completeOwnerExclusiveGameScope,
   enqueueVibeTask,
   reserveNextVibeTask,
@@ -37,6 +38,34 @@ import {
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
+
+
+test('폐기된 웹 소스 예약을 보류하고 정상 웹과 네이티브 작업은 보존한다',()=>{
+  const retired={id:'bug-defense',canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}};
+  const restored={...retired,canonical:{sources:{web:{state:'ACTIVE'}}}};
+  const available={id:'fantasy-survival',canonical:{sources:{web:{state:'ACTIVE'}}}};
+  const make=(id,gameId,target,sourceRoot)=>({
+    id,gameId,target,sourceRoot,status:'queued',department:'development',
+    type:'implementation',priority:'high',goal:'continue real game',
+    responsibleFiles:[sourceRoot+'/index.html'],evidence:[]
+  });
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    make('old-web','bug-defense','web','web-games/bug-defense'),
+    make('native','bug-defense','roblox','roblox-games/bug-defense'),
+    make('live-web','fantasy-survival','web','web-games/fantasy-survival'),
+    make('new-web','new-web-game','web','web-games/new-web-game')
+  ]});
+  assert.equal(webSourceRetiredInCatalog(retired),true);
+  assert.equal(webSourceRetiredInCatalog(available),false);
+  const catalog={games:[retired,available,{id:'new-web-game',canonical:{sources:{web:{state:'NEEDS_BOOTSTRAP'}}}}]};
+  const held=synchronizeOwnerDevelopmentHolds(queue,{}, {catalog});
+  const byId=new Map(held.tasks.map(item=>[item.id,item]));
+  assert.equal(byId.get('old-web').ownerDevelopmentHold,true);
+  assert.equal(byId.get('old-web').status,'queued','절대로 작업 이력을 삭제하거나 완료로 위조하지 않는다');
+  for(const id of ['native','live-web','new-web'])assert.equal(byId.get(id).ownerDevelopmentHold,false);
+  const reopened=synchronizeOwnerDevelopmentHolds(held,{}, {catalog:{games:[restored,available]}});
+  assert.equal(reopened.tasks.find(task=>task.id==='old-web').ownerDevelopmentHold,false);
+});
 
 test('focused existing queues get exact game-platform priority and spare workers still develop other games',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
