@@ -410,6 +410,34 @@ jobs:
             echo "VIBE2_SEED_ARTBOOK_SOURCE=company-runtime:$runtime_design_sha"
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
             control_root="$PWD"
+            # Resume previously approved owner-focus development before long planner QA,
+            # handoff validation, auxiliary learning, or global replan can delay storage.
+            # No new worker, scheduler, or queue: use the existing atomic shard storage
+            # and the same optimistic control-branch push/retry contract.
+            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs --restore-owner-focus \
+              --queue=.vibe2/queue.json \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
+              --root=/tmp/vibe2-main | tee /tmp/vibe2-early-focus-lifecycle.log
+            early_focus_recovered="$(sed -n 's/^VIBE2_OWNER_FOCUS_LIFECYCLE_RESTORED=//p' /tmp/vibe2-early-focus-lifecycle.log | tail -n1)"
+            case "${early_focus_recovered:-}" in ''|*[!0-9]*) echo 'VIBE2_EARLY_FOCUS_RECOVERY_BAD_COUNT' >&2; exit 1;; esac
+            if [ "$early_focus_recovered" -gt 0 ]; then
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+              git add -A -- .vibe2/queue .vibe2/queue.json
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+              if ! git diff --cached --quiet -- .vibe2/queue .vibe2/queue.json; then
+                git commit -m 'vibe2: early owner-approved focused lifecycle recovery [skip ci]'
+                if git push origin HEAD:vibe2-unreal-core; then
+                  echo "VIBE2_EARLY_FOCUS_RECOVERY_CHECKPOINT=PUSHED:$early_focus_recovered"
+                  git fetch origin '+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core' --depth=2 --no-tags --quiet
+                else
+                  echo 'VIBE2_EARLY_FOCUS_RECOVERY_CHECKPOINT=CONTROL_REF_CONFLICT_RETRY'
+                  sleep 2
+                  continue
+                fi
+              fi
+            else
+              echo 'VIBE2_EARLY_FOCUS_RECOVERY_CHECKPOINT=NO_APPROVED_STALE_TASKS'
+            fi
             main_sha="$(git -C /tmp/vibe2-main rev-parse HEAD)"
             core_qa_reuse=0
             if curl --fail-with-body --silent --show-error \
