@@ -1,6 +1,6 @@
 local Config = {
   PolicySource = "company-learning/platform-release-roadmap.json",
-  Genre = "RPG",
+  Genre = "Survival",
   PlayMode = "COOP",
   MultiplayerRequired = true,
   Platform = "ROBLOX",
