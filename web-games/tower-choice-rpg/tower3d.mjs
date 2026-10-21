@@ -75,7 +75,7 @@ export async function createTower3d({canvas,WORLD}){
   // Known CC0 models from the existing repository. No external CDN or fabricated asset IDs.
   const loader=new GLTFLoader();
   const base=new URL('../../assets/roblox/actors/native/',import.meta.url);
-  let knight,skeleton,golem,heroSceneAnimations=[];
+  let knight,skeleton,golem,heroSceneAnimations=[],skeletonClips=[];
   try{
     const hero=await loader.loadAsync(new URL('knight.glb',base).href);
     knight=hero.scene;heroSceneAnimations=hero.animations||[];
@@ -83,7 +83,7 @@ export async function createTower3d({canvas,WORLD}){
   }catch(e){renderer.dispose();throw new Error('TOWER_KNIGHT_3D_ASSET_UNAVAILABLE: '+e.message)}
   try{
     const undead=await loader.loadAsync(new URL('skeleton-warrior.glb',base).href);
-    skeleton=undead.scene;
+    skeleton=undead.scene;skeletonClips=undead.animations||[];
   }catch(e){console.warn('Skeleton asset unavailable; 3D model coverage incomplete',e)}
   try{
     const mesh=await new OBJLoader().loadAsync(new URL('../../assets/shared/forest/monster-41.obj',import.meta.url).href);
@@ -119,14 +119,15 @@ export async function createTower3d({canvas,WORLD}){
     const native=Boolean(source);
     const group=native?fitSource(source,Math.max(.75,actor.r*SCALE*2.4)):fallback(actor);
     scene.add(group);
-    const slot={group,native,kind,lastX:NaN,lastZ:NaN};enemyNodes.set(actor.id,slot);
+    const mixer=native&&kind==='skeleton'&&skeletonClips.length?new THREE.AnimationMixer(group.children[0]):null;
+    const slot={group,native,kind,mixer,action:null,actionName:'',lastX:NaN,lastZ:NaN};enemyNodes.set(actor.id,slot);
     return slot;
   }
   const effects=new THREE.Group();scene.add(effects);
   const ringGeo=new THREE.RingGeometry(.83,1,36);
   const effectPalette=['#f4d091','#ffe1bf','#e95a71','#eb9273'].map(s=>new THREE.MeshBasicMaterial({color:s,transparent:true,side:THREE.DoubleSide,depthWrite:false}));
   const pool=Array.from({length:18},()=>{
-    const mesh=new THREE.Mesh(ringGeo,effectPalette[0]);
+    const mesh=new THREE.Mesh(ringGeo,effectPalette[0].clone());
     mesh.rotation.x=-Math.PI/2;mesh.visible=false;effects.add(mesh);return mesh;
   });
   function resize(){
@@ -159,6 +160,16 @@ export async function createTower3d({canvas,WORLD}){
       slot.group.rotation.y=Math.atan2(actor.dirX||0,actor.dirY||-1);
       if(actor.hit>0)slot.group.scale.setScalar(1+Math.min(.13,actor.hit));
       else slot.group.scale.setScalar(1);
+      if(slot.mixer){
+        const walking=Math.hypot(ex-slot.lastX,ez-slot.lastZ)>.001;
+        const preferred=walking?/walk|run/i:/idle|rest|stand/i;
+        const clip=skeletonClips.find(c=>preferred.test(c.name));
+        if(clip&&slot.actionName!==clip.name){
+          slot.action?.fadeOut(.12);
+          slot.action=slot.mixer.clipAction(clip);slot.action.reset().fadeIn(.12).play();slot.actionName=clip.name;
+        }
+        slot.mixer.update(dt);
+      }
       slot.lastX=ex;slot.lastZ=ez;
     }
     for(const [id,entry] of enemyNodes)if(!actors.some(actor=>actor.id===id&&!actor.dead)){
@@ -169,7 +180,7 @@ export async function createTower3d({canvas,WORLD}){
       if(!fx)continue;
       const [ex,ez]=P(fx.x,fx.y),alpha=Math.max(0,fx.t/fx.max);
       mesh.position.set(ex,.18,ez);mesh.rotation.z=fx.type==='slash'?Math.atan2(fx.dy,fx.dx):0;
-      mesh.material=effectPalette[fx.type==='slash'?0:fx.type==='hit'?1:fx.type==='hurt'?2:3];
+      mesh.material.color.copy(effectPalette[fx.type==='slash'?0:fx.type==='hit'?1:fx.type==='hurt'?2:3].color);
       const size=fx.type==='burst'?fx.r*SCALE:fx.type==='slash'?fx.range*SCALE*.72:fx.type==='hurt'?.48:.36;
       mesh.scale.setScalar(Math.max(.15,size*(1.20-.2*alpha)));
       mesh.material.opacity=Math.max(.08,alpha);
