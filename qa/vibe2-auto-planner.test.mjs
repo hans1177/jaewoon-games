@@ -5626,6 +5626,27 @@ test('F0 gameplay failure rebinds queued usability to approved design and real R
     assert.ok(fixed.evidence.includes('approved-f0-gameplay-source-repair:EXACT_DESIGN_AND_PACKAGE'));
     assert.deepEqual(bindApprovedF0GameplayRepairToTask(fixed,failing,root),fixed,'repeat planning must not amplify the goal');
 
+    const observedProjects=collectProjects({projects:[]},{
+      games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',
+        lifecycleState:'ACTIVE',robloxProjectPath:rel}]},
+      root,{items:[{
+        gameId,gameName:project.name,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+        selectedPlatform:'ROBLOX',robloxProjectPath:rel,
+        robloxSourceCommit:revision,robloxBuildOrPackagePassed:true,
+        robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,
+        robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:gap
+      }]});
+    const observedProject=observedProjects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+    assert.ok(observedProject,'project must be present in current runtime queue');
+    // The canonical planner injects platform play-mode/genre into the approved
+    // fingerprint. Seed the queue from that same collected project, not a
+    // hand-written fixture with a different platform projection.
+    const canonicalInitial=findStudioContinuousImprovementTask(observedProject,root,{tasks:[]},'USABILITY');
+    assert.ok(canonicalInitial?.buildUpDirective?.directiveId);
+    assert.equal(
+      canonicalInitial.buildUpDirective.designFingerprint,
+      bindApprovedF0GameplayRepairToTask(canonicalInitial,observedProject,root).buildUpDirective.designFingerprint
+    );
     const planned=planVibe2AutonomousTasks({
       status:{projects:[]},
       catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',
@@ -5639,29 +5660,17 @@ test('F0 gameplay failure rebinds queued usability to approved design and real R
         robloxFailureStage:'F0_SOURCE_INTEGRITY',
         robloxFailureSignature:'ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED'
       }]},
-      queue:{maxConcurrentTasks:20,tasks:[{...initial,id:gameId+'-queued-design-carrier',status:'queued'}]},
+      queue:{maxConcurrentTasks:20,tasks:[{...canonicalInitial,id:gameId+'-queued-design-carrier',status:'queued'}]},
       repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
       planningBacklogTarget:1,planningBacklogMinimum:0
     });
     const waiting=planned.queue.tasks.find(row=>row.id===gameId+'-queued-design-carrier');
     assert.ok(waiting,'existing queued work must remain in the canonical queue');
-    const observedProjects=collectProjects({projects:[]},{
-      games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',
-        lifecycleState:'ACTIVE',robloxProjectPath:rel}]},
-      root,{items:[{
-        gameId,gameName:project.name,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
-        selectedPlatform:'ROBLOX',robloxProjectPath:rel,
-        robloxSourceCommit:revision,robloxBuildOrPackagePassed:true,
-        robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,
-        robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:gap
-      }]});
-    const observedProject=observedProjects.find(row=>row.gameId===gameId&&row.engine==='roblox');
-    assert.ok(observedProject,'project must be present in current runtime queue');
     assert.ok(observedProject.queueRobloxQualityFailureKinds.includes('MISSING_GAMEPLAY_CAPABILITY:COMBAT'),
       'collectProjects must project exact current F0 gameplay failure kinds into the normalized project');
     assert.equal(observedProject.queueRobloxQualityBuildUpEvidence?.qualityFailureKinds,undefined,
       'the condensed evidence deliberately does not copy raw qualityFailureKinds');
-    const actualProjectedRepair=bindApprovedF0GameplayRepairToTask(initial,observedProject,root);
+    const actualProjectedRepair=bindApprovedF0GameplayRepairToTask(canonicalInitial,observedProject,root);
     assert.match(actualProjectedRepair.goal,/MISSING_GAMEPLAY_CAPABILITY:COMBAT/,
       'the real queue projection, not an in-memory fixture, must bind gameplay source repair');
     const probe=bindApprovedF0GameplayRepairToTask(waiting,observedProject,root);
