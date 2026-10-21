@@ -14,15 +14,14 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": true,
+  "serverSourceChanged": false,
   "foundationRepairApplied": false,
-  "studioMaterialRepairApplied": true,
+  "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau",
-    "server/Game.server.luau"
+    "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -62,10 +61,10 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 139,
-    "selectionFingerprint": "a8cdf6e9a79bf916b3431420339108e3e98c3bf9590311291e66b4642cd3919c",
-    "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-    "buildUpAssetSourceUsageLibraryVersion": 139,
+    "libraryVersion": 140,
+    "selectionFingerprint": "bfeb1a32e829e40cc2716616fcca22ce0bf50745ec6bb9ffc93c1f04038c03c6",
+    "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
+    "buildUpAssetSourceUsageLibraryVersion": 140,
     "selectedSourceContentHashes": [
       {
         "source": "company-asset-library.json#baseMaterialLibrary",
@@ -579,12 +578,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "core-clash-4v4-build-up-g1-02280b479d6e",
-  "buildUpGeneration": 1,
+  "buildUpDirectiveId": "core-clash-4v4-build-up-g2-080934142631",
+  "buildUpGeneration": 2,
   "buildUpGoal": "코어 전장 4대4. 서사시의 추방과 귀환·민속 금기와 전염 생존. 코어 전장 4대4에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "buildUpDirectiveFingerprint": "02280b479d6e1c85a11cb40825029b5ed1ee999d765d970d7d3193737744a2a5",
+  "buildUpDirectiveFingerprint": "08093414263102819b3d92ec3df3db6dc4c6a67c3d0bd1df78509c8d0e78dfcc",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-  "createdAt": "2026-10-20T05:56:20.612Z"
+  "createdAt": "2026-10-21T14:08:08.089Z"
 }
