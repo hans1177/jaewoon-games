@@ -116438,7 +116438,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116473,7 +116473,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 8,
-      "previousReservationId": "system-ai:39665840244:1",
+      "previousReservationId": "system-ai:39675538891:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -116481,12 +116481,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39675538891:1",
-      "reservedAt": "2026-10-21T21:05:15.466Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -116582,7 +116582,8 @@
         "actions-run:39665840244",
         "system-ai-impact-score:1102",
         "system-ai-blocked-task-count:16",
-        "system-ai-handoff-to-reservation:system-ai:39675538891:1"
+        "system-ai-handoff-to-reservation:system-ai:39675538891:1",
+        "actions-run:39675538891"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1102,
@@ -116597,7 +116598,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-21T21:05:15.466Z"
+      "updatedAt": "2026-10-21T21:36:56.790Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
@@ -144985,7 +144986,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145018,8 +145019,8 @@
       "failureStage": null,
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
-      "handoffCount": 3,
-      "previousReservationId": "system-ai:39667061266:1",
+      "handoffCount": 4,
+      "previousReservationId": "system-ai:39675538891:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145027,12 +145028,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39675538891:1",
-      "reservedAt": "2026-10-21T21:05:15.466Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145096,7 +145097,8 @@
         "system-ai-impact-score:402",
         "system-ai-blocked-task-count:2",
         "system-ai-representative-canary:system-ai-worker-missing-result-handoff",
-        "system-ai-handoff-to-reservation:system-ai:39675538891:1"
+        "system-ai-handoff-to-reservation:system-ai:39675538891:1",
+        "system-ai-handoff-from-reservation:system-ai:39675538891:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 402,
@@ -145111,7 +145113,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-21T21:05:15.466Z"
+      "updatedAt": "2026-10-21T21:36:58.764Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
@@ -145740,7 +145742,7 @@
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -145825,7 +145827,7 @@
         "internal-motion-la-llorona-walk-v1",
         "internal-motion-la-sayona-walk-v1"
       ],
-      "retries": 10,
+      "retries": 11,
       "recurrenceCount": 21,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "source-candidate-generation-failed",
@@ -145839,12 +145841,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39675538891:1",
-      "reservedAt": "2026-10-21T21:05:15.466Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146232,7 +146234,8 @@
         "actions-run:39665840244",
         "system-ai-handoff-to-reservation:system-ai:39671028632:1",
         "actions-run:39671028632",
-        "system-ai-handoff-to-reservation:system-ai:39675538891:1"
+        "system-ai-handoff-to-reservation:system-ai:39675538891:1",
+        "actions-run:39675538891"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
@@ -146247,7 +146250,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T21:05:15.466Z"
+      "updatedAt": "2026-10-21T21:36:56.790Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
@@ -147676,7 +147679,7 @@
     },
     {
       "id": "marketing-survival2-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -147709,9 +147712,9 @@
       "recurrenceCount": 0,
       "failureStage": null,
       "failureSignature": null,
-      "failureClass": null,
+      "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 1,
-      "previousReservationId": "system-ai:39559580530:1",
+      "previousReservationId": "system-ai:39675538891:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -147719,12 +147722,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39675538891:1",
-      "reservedAt": "2026-10-21T21:05:15.466Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -147747,7 +147750,19 @@
         "system-ai-blocked-task-count:13",
         "system-ai-common-bottleneck:YES",
         "system-ai-representative-canary:stale-system-ai-reservation-reclaimed",
-        "system-ai-handoff-to-reservation:system-ai:39675538891:1"
+        "system-ai-handoff-to-reservation:system-ai:39675538891:1",
+        "actions-run:39675538891",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
+        "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 952,
@@ -147762,7 +147777,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-10T15:42:04.174Z",
-      "updatedAt": "2026-10-21T21:05:15.466Z"
+      "updatedAt": "2026-10-21T21:36:56.790Z"
     },
     {
       "id": "marketing-defense-pre-release-v1",
@@ -150297,7 +150312,7 @@
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -150345,8 +150360,8 @@
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 0,
-      "previousReservationId": null,
+      "handoffCount": 1,
+      "previousReservationId": "system-ai:39675538891:1",
       "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -150354,12 +150369,12 @@
       "sourceMutationBaseline": "764dfc19939ceb8b7e0e60c70c833ab21de5eece",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39675538891:1",
-      "reservedAt": "2026-10-21T21:05:15.466Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "deployment-failure-run:39070113531:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -150446,7 +150461,13 @@
         "system-ai-impact-score:941",
         "actions-run:39665840244",
         "actions-run:39670892497",
-        "system-ai-impact-score:942"
+        "system-ai-impact-score:942",
+        "system-ai-handoff-state:MISSING_RESULT_REQUEUED",
+        "system-ai-handoff-from-reservation:system-ai:39675538891:1",
+        "system-ai-handoff-to-reservation:PENDING",
+        "system-ai-exact-checkpoint-resume:YES",
+        "retry-budget-consumed:NO",
+        "learning-penalty:NO"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 942,
@@ -150461,7 +150482,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:28:30.472Z",
-      "updatedAt": "2026-10-21T21:05:15.466Z"
+      "updatedAt": "2026-10-21T21:36:58.764Z"
     },
     {
       "id": "recovery-recovery-907315c8bf74eb20724e",
