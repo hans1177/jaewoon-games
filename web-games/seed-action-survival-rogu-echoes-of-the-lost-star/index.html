@@ -7,10 +7,13 @@
 <title>잃어버린 별의 메아리</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#060914;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;touch-action:none}canvas{position:fixed;inset:0;width:100%;height:100%;display:block}.hud{position:fixed;z-index:5;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 10px) 12px 0;pointer-events:none}.top{display:flex;justify-content:space-between;gap:8px}.pill{min-width:0;padding:7px 10px;border:1px solid #ffffff22;border-radius:14px;background:#071127cc;backdrop-filter:blur(8px);box-shadow:0 6px 20px #0007;font-size:12px;font-weight:800}.pill b{color:#8fdcff}.bars{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}.bar{height:12px;border-radius:99px;background:#ffffff18;border:1px solid #ffffff1f;overflow:hidden}.bar>i{display:block;height:100%;width:100%;transition:width .15s}.hp>i{background:linear-gradient(90deg,#ff4d6d,#ff8d6b)}.xp>i{background:linear-gradient(90deg,#5be7ff,#7c7cff)}.label{display:flex;justify-content:space-between;font-size:10px;font-weight:900;color:#c7d8ff;margin:0 2px 2px}.joystick{position:fixed;z-index:7;left:18px;bottom:calc(env(safe-area-inset-bottom) + 24px);width:116px;height:116px;border-radius:50%;border:2px solid #8fdcff55;background:#10233d88;box-shadow:inset 0 0 28px #7adfff18;touch-action:none}.stick{position:absolute;left:31px;top:31px;width:54px;height:54px;border-radius:50%;background:#d8f6ffcc;border:3px solid #7adfff;box-shadow:0 0 22px #52d9ff99;transform:translate(0,0)}.actions{position:fixed;z-index:7;right:18px;bottom:calc(env(safe-area-inset-bottom) + 25px);display:flex;align-items:flex-end;gap:10px}.btn{border:1px solid #ffffff2b;color:#fff;font-weight:950;background:#142647dd;box-shadow:0 8px 22px #0008;touch-action:none}.dash{width:86px;height:86px;border-radius:50%;font-size:15px}.pause{position:fixed;z-index:8;right:12px;top:calc(env(safe-area-inset-top) + 63px);width:42px;height:42px;border-radius:13px;font-size:18px}.overlay{position:fixed;z-index:20;inset:0;display:none;align-items:center;justify-content:center;padding:22px;background:#030611d9;backdrop-filter:blur(7px)}.overlay.show{display:flex}.panel{width:min(100%,430px);border:1px solid #6686c044;border-radius:24px;background:linear-gradient(180deg,#111d38,#091127);box-shadow:0 20px 70px #000a;padding:20px}.panel h1,.panel h2{margin:0 0 8px}.panel p{margin:0 0 16px;color:#b9c8e6;font-size:13px;line-height:1.5}.choices{display:grid;gap:9px}.choice,.wide{width:100%;min-height:58px;border:1px solid #7fa7e544;border-radius:16px;background:#17284a;color:#fff;text-align:left;padding:11px 13px;font-weight:850}.choice small{display:block;color:#a8badb;margin-top:4px;font-weight:650}.wide{text-align:center;background:#2763b9;font-size:15px}.titlemark{font-size:11px;letter-spacing:.12em;color:#7ee7ff;font-weight:950}.tip{position:fixed;z-index:4;left:50%;bottom:8px;transform:translateX(-50%);font-size:10px;color:#91a4c8;pointer-events:none;white-space:nowrap}.boss{position:fixed;z-index:6;left:50%;top:calc(env(safe-area-inset-top) + 108px);transform:translateX(-50%);width:min(82vw,430px);display:none}.boss.show{display:block}.boss .label{color:#ffd6df}.boss .bar>i{background:linear-gradient(90deg,#ff4d8d,#ffb34d)}@media(max-width:360px){.joystick{width:102px;height:102px}.stick{left:27px;top:27px;width:48px;height:48px}.dash{width:76px;height:76px}.pill{font-size:11px;padding:6px 8px}}
+
+#renderStatus{position:fixed;z-index:31;left:50%;bottom:145px;transform:translateX(-50%);max-width:90vw;border:1px solid #6fcafa;border-radius:12px;background:#07152ceb;padding:10px 14px;font-size:12px;text-align:center;color:#e1f8ff;pointer-events:none}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
+<canvas id="game" data-gameplay-surface="main" data-render-target="webgl-3d"></canvas>
+<div id="renderStatus" role="status">3D 별의 전장을 불러오는 중…</div>
 <div class="hud">
   <div class="top">
     <div class="pill">웨이브 <b id="wave">1</b> · 레벨 <b id="level">1</b></div>
@@ -32,20 +35,21 @@
 <div id="pauseOverlay" class="overlay"><div class="panel"><h2>일시정지</h2><p>현재 런은 그대로 유지돼.</p><button id="resumeBtn" class="wide">계속하기</button></div></div>
 <div id="gameOverOverlay" class="overlay"><div class="panel"><div class="titlemark">RUN OVER</div><h2>별빛이 꺼졌다</h2><p id="result"></p><button id="restartBtn" class="wide">다시 시작</button></div></div>
 
-<script>
+<script type="module">
+import {createStar3d} from './star3d.mjs';
 (()=>{
 'use strict';
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const canvas=document.getElementById('game');let star3d=null;
 const ui={wave:document.getElementById('wave'),level:document.getElementById('level'),kills:document.getElementById('kills'),time:document.getElementById('time'),hpText:document.getElementById('hpText'),hpBar:document.getElementById('hpBar'),xpText:document.getElementById('xpText'),xpBar:document.getElementById('xpBar'),bossHud:document.getElementById('bossHud'),bossHpText:document.getElementById('bossHpText'),bossHpBar:document.getElementById('bossHpBar'),dashState:document.getElementById('dashState')};
 let W=innerWidth,H=innerHeight,DPR=1,last=performance.now(),running=false,paused=true,elapsed=0,spawnTimer=0,waveTimer=0,wave=1,kills=0,boss=null,audio=null;
-const keys=new Set(),enemies=[],bullets=[],gems=[],particles=[],stars=[];
+const keys=new Set(),enemies=[],bullets=[],gems=[],particles=[];
 const joy={id:null,x:0,y:0,dx:0,dy:0};
 function releaseJoystick(){
   joy.id=null;joy.dx=joy.dy=0;
   document.getElementById('stick').style.transform='translate(0,0)';
 }
 const player={x:0,y:0,r:14,hp:100,maxHp:100,speed:210,level:1,xp:0,nextXp:8,damage:16,fireRate:.48,fireTimer:0,bulletSpeed:520,multi:1,pickup:76,armor:0,dashCd:0,dashMax:3,dashTime:0,inv:0};
-function resize(){DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);if(!stars.length)for(let i=0;i<90;i++)stars.push({x:Math.random()*W,y:Math.random()*H,s:Math.random()*1.7+.4,a:Math.random()*.7+.2});}
+function resize(){DPR=Math.min(1.5,devicePixelRatio||1);W=innerWidth;H=innerHeight;star3d?.resize()}
 addEventListener('resize',resize);resize();
 function tone(freq=220,dur=.05,type='sine',vol=.035){try{audio ||= new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+dur);o.stop(audio.currentTime+dur)}catch{}}
 function reset(){releaseJoystick();keys.clear();elapsed=0;spawnTimer=0;waveTimer=0;wave=1;kills=0;boss=null;enemies.length=bullets.length=gems.length=particles.length=0;Object.assign(player,{x:W/2,y:H/2,r:14,hp:100,maxHp:100,speed:210,level:1,xp:0,nextXp:8,damage:16,fireRate:.48,fireTimer:0,bulletSpeed:520,multi:1,pickup:76,armor:0,dashCd:0,dashMax:3,dashTime:0,inv:0});paused=false;running=true;document.getElementById('gameOverOverlay').classList.remove('show');document.getElementById('levelOverlay').classList.remove('show');document.getElementById('pauseOverlay').classList.remove('show');updateUi();}
@@ -79,14 +83,18 @@ function update(dt){if(paused||!running)return;elapsed+=dt;waveTimer+=dt;player.
  for(let i=gems.length-1;i>=0;i--){const g=gems[i];const d=Math.hypot(player.x-g.x,player.y-g.y);if(d<player.pickup){const sp=260+(player.pickup-d)*5;g.x+=(player.x-g.x)/Math.max(1,d)*sp*dt;g.y+=(player.y-g.y)/Math.max(1,d)*sp*dt}if(d<player.r+8){gainXp(g.v);gems.splice(i,1)}}
  for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.96;p.vy*=.96;p.life-=dt;if(p.life<=0)particles.splice(i,1)}updateUi()}
 function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed%60)).padStart(2,'0')}`;ui.hpText.textContent=`${Math.max(0,Math.ceil(player.hp))} / ${Math.ceil(player.maxHp)}`;ui.hpBar.style.width=(clamp(player.hp/player.maxHp,0,1)*100)+'%';ui.xpText.textContent=`${Math.floor(player.xp)} / ${player.nextXp}`;ui.xpBar.style.width=(clamp(player.xp/player.nextXp,0,1)*100)+'%';ui.dashState.textContent=player.dashCd<=0?'READY':player.dashCd.toFixed(1);if(boss){ui.bossHpText.textContent=`${Math.ceil(boss.hp)} / ${Math.ceil(boss.maxHp)}`;ui.bossHpBar.style.width=(clamp(boss.hp/boss.maxHp,0,1)*100)+'%'}}
-function draw(){ctx.clearRect(0,0,W,H);const grd=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,Math.max(W,H)*.8);grd.addColorStop(0,'#111f42');grd.addColorStop(.55,'#090f23');grd.addColorStop(1,'#040711');ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);for(const s of stars){ctx.globalAlpha=s.a;ctx.fillStyle='#d8efff';ctx.fillRect(s.x,s.y,s.s,s.s)}ctx.globalAlpha=1;
- ctx.strokeStyle='#4a6da018';ctx.lineWidth=1;const grid=42,ox=(-player.x*.08)%grid,oy=(-player.y*.08)%grid;for(let x=ox;x<W;x+=grid){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=oy;y<H;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
- for(const g of gems){ctx.save();ctx.translate(g.x,g.y);ctx.rotate(performance.now()*.002);ctx.fillStyle='#75edff';ctx.shadowColor='#62e6ff';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(0,-6);ctx.lineTo(5,0);ctx.lineTo(0,6);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();ctx.restore()}
- for(const b of bullets){ctx.fillStyle='#c9f7ff';ctx.shadowColor='#7feeff';ctx.shadowBlur=11;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill()}ctx.shadowBlur=0;
- for(const e of enemies){ctx.save();ctx.translate(e.x,e.y);ctx.fillStyle=e.hit?'#fff':e.color;ctx.shadowColor=e.color;ctx.shadowBlur=e.boss?24:12;ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#ffffff55';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,e.r*.55,0,Math.PI*2);ctx.stroke();if(e.boss){ctx.strokeStyle='#ffd0df';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,e.r+8,performance.now()*.002,performance.now()*.002+4.4);ctx.stroke()}ctx.restore()}
- for(const p of particles){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
- ctx.save();ctx.translate(player.x,player.y);if(player.inv>0&&Math.floor(player.inv*20)%2===0)ctx.globalAlpha=.45;ctx.shadowColor='#71e5ff';ctx.shadowBlur=24;ctx.fillStyle='#dffaff';ctx.beginPath();ctx.arc(0,0,player.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#5bdcff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,player.r+5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#5bdcff';ctx.beginPath();ctx.moveTo(18,0);ctx.lineTo(7,-6);ctx.lineTo(7,6);ctx.closePath();ctx.fill();ctx.restore()}
-function loop(now){const dt=Math.min(.033,(now-last)/1000||0);last=now;update(dt);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+function draw(){
+ if(!star3d)return;
+ try{star3d.render({player,enemies,bullets,gems,particles},performance.now())}
+ catch(error){
+  console.error('[Star Echoes WebGL3D frame]',error);
+  star3d=null;running=false;paused=true;releaseJoystick();keys.clear();
+  document.body.dataset.spatialDimension='3d-error';
+  document.getElementById('renderStatus').style.display='block';
+  document.getElementById('renderStatus').textContent='3D 화면 표시 실패: '+String(error?.message||error);
+ }
+}
+function loop(now){const dt=Math.min(.033,(now-last)/1000||0);last=now;update(dt);draw();if(star3d)requestAnimationFrame(loop)}
 function joyPoint(e){const r=document.getElementById('joystick').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy),lim=r.width*.31,k=Math.min(1,lim/Math.max(1,m));joy.dx=(dx*k)/lim;joy.dy=(dy*k)/lim;document.getElementById('stick').style.transform=`translate(${dx*k}px,${dy*k}px)`}
 const joyEl=document.getElementById('joystick');
 joyEl.addEventListener('pointerdown',e=>{
@@ -99,7 +107,18 @@ joyEl.addEventListener('pointerup',joyEnd);
 joyEl.addEventListener('pointercancel',joyEnd);
 joyEl.addEventListener('lostpointercapture',joyEnd);
 addEventListener('keydown',e=>{keys.add(e.key);if(e.code==='Space'){e.preventDefault();dash()}});addEventListener('keyup',e=>keys.delete(e.key));document.getElementById('dashBtn').addEventListener('pointerdown',e=>{e.preventDefault();dash()});
-function setPause(v){if(!running)return;paused=v;if(v){releaseJoystick();keys.clear()}document.getElementById('pauseOverlay').classList.toggle('show',v)}document.getElementById('pauseBtn').onclick=()=>setPause(true);document.getElementById('resumeBtn').onclick=()=>setPause(false);document.getElementById('startBtn').onclick=()=>{document.getElementById('startOverlay').classList.remove('show');tone(330,.08,'triangle',.03);reset()};document.getElementById('restartBtn').onclick=reset;document.addEventListener('visibilitychange',()=>{if(document.hidden){releaseJoystick();keys.clear();if(running&&!paused)setPause(true)}});addEventListener('blur',()=>{releaseJoystick();keys.clear();if(running&&!paused)setPause(true)});
+function setPause(v){if(!running)return;paused=v;if(v){releaseJoystick();keys.clear()}document.getElementById('pauseOverlay').classList.toggle('show',v)}document.getElementById('pauseBtn').onclick=()=>setPause(true);document.getElementById('resumeBtn').onclick=()=>setPause(false);document.getElementById('startBtn').onclick=()=>{if(!star3d)return;document.getElementById('startOverlay').classList.remove('show');tone(330,.08,'triangle',.03);reset()};document.getElementById('restartBtn').onclick=reset;document.addEventListener('visibilitychange',()=>{if(document.hidden){releaseJoystick();keys.clear();if(running&&!paused)setPause(true)}});addEventListener('blur',()=>{releaseJoystick();keys.clear();if(running&&!paused)setPause(true)});
+document.getElementById('startBtn').disabled=true;
+try{
+ star3d=createStar3d({canvas});
+ document.getElementById('startBtn').disabled=false;
+ document.getElementById('renderStatus').style.display='none';
+ last=performance.now();requestAnimationFrame(loop);
+}catch(error){
+ console.error('[Star Echoes WebGL3D]',error);
+ document.body.dataset.spatialDimension='3d-error';
+ document.getElementById('renderStatus').textContent='3D 실행 실패: '+String(error?.message||error)+' · WebGL2 지원 브라우저에서 다시 열어 줘.';
+}
 })();
 </script>
 </body>
