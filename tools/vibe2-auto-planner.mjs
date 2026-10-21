@@ -2596,6 +2596,72 @@ function applyRobloxQualityRepairDirective(directive,project,platformLane){
   };
 }
 
+export function bindApprovedF0GameplayRepairToTask(taskInput,project,repoRoot,{verifiedDesign=null}={}){
+  if(!taskInput||!project||clean(project.engine).toLowerCase()!=='roblox'
+    ||clean(taskInput.target).toLowerCase()!=='roblox'
+    ||clean(taskInput.status).toLowerCase()==='running'
+    ||!(taskInput.evidence||[]).includes('studio-quality-loop:v1'))return taskInput;
+  // Pending repair requests are scoped to one exact source, package and design.
+  // Retire a previously attached instruction when any of those changes;
+  // leave already-running implementation untouched.
+  const tag='\n\n[APPROVED_F0_GAMEPLAY_SOURCE_REPAIR]';
+  const priorGoal=String(taskInput.goal||'');
+  const hadPreviousRepair=priorGoal.includes(tag)
+    &&(taskInput.evidence||[]).includes('approved-f0-gameplay-source-repair:v1');
+  const baselineTask=hadPreviousRepair?{
+    ...taskInput,
+    goal:priorGoal.split(tag)[0].trimEnd(),
+    evidence:(taskInput.evidence||[]).filter(e=>!String(e).startsWith('approved-f0-gameplay-source-repair:'))
+  }:taskInput;
+  const observed=project.queueRobloxQualityBuildUpEvidence;
+  if(project.queueRobloxQualityBuildUpRequired!==true
+    ||observed?.authority!=='roblox-f0-gameplay-product-readiness-failure'
+    ||clean(observed.sourceRevision)!==clean(project.queueRobloxSourceCommit)
+    ||clean(observed.artifactIdentity)!==clean(project.queueRobloxArtifactIdentity))return baselineTask;
+  const design=verifiedDesign||latestVerifiedDesign(repoRoot,project.gameId);
+  if(!design?.record||!taskInput.buildUpDirective?.directiveId
+    ||clean(taskInput.buildUpDirective.designFingerprint)!==approvedDesignFingerprintForProject(design.record,project,'roblox'))
+    return baselineTask;
+  // collectProjects projects verified F0 failure kinds onto queueRobloxQualityFailureKinds,
+  // while retaining only condensed details in queueRobloxQualityBuildUpEvidence.
+  // Require the already-matched source/artifact evidence above before consuming them.
+  const projectedFailureKinds=(project.queueRobloxQualityFailureKinds||[]).length
+    ?project.queueRobloxQualityFailureKinds
+    :observed.qualityFailureKinds||[];
+  const missing=[...new Set(projectedFailureKinds.map(clean)
+    .filter(value=>/^(?:MISSING_GAMEPLAY_CAPABILITY:[A-Z_]+|CORE_LOOP_STEP_UNIMPLEMENTED:\d+|SIGNATURE_SYSTEM_UNIMPLEMENTED:\d+|GENERIC_SCOPE_HANDLER_SKELETON)$/.test(value)))].slice(0,24);
+  if(!missing.length)return baselineTask;
+  const root=posix(project.projectPath);
+  if(root!==('roblox-games/'+project.gameId))return baselineTask;
+  const directOwners=['server/Game.server.luau','shared/GameConfig.luau','client/Game.client.luau']
+    .map(rel=>root+'/'+rel)
+    .filter(file=>{
+      try{return fs.lstatSync(sourceFile(repoRoot,file)).isFile();}catch{return false;}
+    });
+  if(!directOwners.length)return baselineTask;
+  const baseGoal=String(baselineTask.goal||'').trimEnd();
+  const instruction=tag+
+    '\nAPPROVED_DESIGN_SOURCE='+posix(path.relative(repoRoot,design.file||''))+
+    '\nAPPROVED_DESIGN_FINGERPRINT='+clean(taskInput.buildUpDirective.designFingerprint)+
+    '\nF0_EXACT_SOURCE='+clean(observed.sourceRevision)+
+    '\nF0_EXACT_ARTIFACT='+clean(observed.artifactIdentity)+
+    '\nREAL_MISSING_GAMEPLAY='+missing.join('|')+
+    '\nNATIVE_RESPONSIBLE_GAME_SOURCE='+directOwners.join('|')+
+    '\n해당 승인 설계의 MAIN/A/B/C/D/@ 및 핵심 플레이 선택·상태 변화를 실제 서버/공유/클라이언트 책임 함수로 연결해 누락된 시스템을 구현한다. 우선 누락 기능과 연관된 현재 소스를 읽고 기존 게임 규칙·세이브·권한을 보존한다. UI나 빈 함수·검사 문자열만 추가해서 실제 플레이의 전투/월드/진행 누락을 통과시켜서는 안 된다. 검증 후 같은 게임 소스를 다시 패키징하여 정본 F0~F9를 실행한다. 설계 개정이 필요하면 기존 설계 사이클에서 승인받고, 임의로 새 게임 규칙을 선행 제작하지 않는다.';
+  return{
+    ...baselineTask,
+    priority:'critical',
+    responsibleFiles:[...new Set([...(baselineTask.responsibleFiles||[]).map(posix),...directOwners])],
+    goal:baseGoal+instruction,
+    evidence:[...new Set([...(baselineTask.evidence||[]),
+      'approved-f0-gameplay-source-repair:v1',
+      'approved-f0-gameplay-source-repair:EXACT_DESIGN_AND_PACKAGE',
+      'approved-f0-gameplay-source-repair:REAL_NATIVE_GAME_SOURCE',
+      'approved-f0-gameplay-source-repair:RETROACTIVE_RUNTIME_PASS_FORBIDDEN'
+    ])]
+  };
+}
+
 function buildUpDesignRecordForProject(rawDesignRecord,project,platformLane=studioQualityLane(project)){
   const effectiveDesignRecord=JSON.parse(JSON.stringify(rawDesignRecord||{}));
   effectiveDesignRecord.content=effectiveDesignRecord.content&&typeof effectiveDesignRecord.content==='object'?effectiveDesignRecord.content:{};
@@ -3269,7 +3335,8 @@ ${expectationInstruction}
   const presentationBound=focusPillar==='PRESENTATION'
     ?applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION',repoRoot)
     :out;
-  return attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
+  const designBound=attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
+  return bindApprovedF0GameplayRepairToTask(designBound,project,repoRoot,{verifiedDesign:designContext});
 }
 function bindSharedBuildUpDirective(taskInput,directive){
   if(!taskInput||!directive?.directiveId)return taskInput;
@@ -3618,6 +3685,9 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     if(lane==='roblox'&&!clean(candidate.goal).includes('[DESIGN_IMPLEMENTATION_FLOW]')){
       candidate={...candidate,goal:clean(candidate.goal)+DESIGN_IMPLEMENTATION_GOAL};
     }
+    // Reconcile the exact F0 gameplay failure with the current approved design.
+    if(lane==='roblox')candidate=bindApprovedF0GameplayRepairToTask(candidate,project,repoRoot,
+      {verifiedDesign:verifiedDesignByGame.get(gameId)||null});
     if(lane==='roblox'&&project.ownerFocusedCaretaker===true&&project.focusCompletionContract?.enabled===true){
       candidate={...candidate,priority:'critical',focusedCaretaker:true,caretakerStickyOwnership:true,
         packageLongWorkProtected:true,packageRole:'implementation-owner',focusCompletionContract:project.focusCompletionContract,
