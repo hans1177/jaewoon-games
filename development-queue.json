@@ -67139,10 +67139,10 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T03:05:15.145Z",
-      "updatedAt": "2026-10-21T07:09:32.475Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-21T06:58:20.352Z",
+      "updatedAt": "2026-10-21T07:14:19.389Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-21T07:14:19.389Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -67200,7 +67200,7 @@
         "capturedAt": "2026-10-12T03:25:06.835Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "25abdbf4270cd5bc64de32daa518abe1143ecfb1",
+      "robloxSourceCommit": "a2b25cd049cce7c89ceeebdeb5998e72664a35a9",
       "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -67706,12 +67706,12 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "25abdbf4270cd5bc64de32daa518abe1143ecfb1",
+      "robloxQualityBuildUpSourceRevision": "a2b25cd049cce7c89ceeebdeb5998e72664a35a9",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "star-frontier",
-        "sourceRevision": "25abdbf4270cd5bc64de32daa518abe1143ecfb1",
+        "sourceRevision": "a2b25cd049cce7c89ceeebdeb5998e72664a35a9",
         "sourceTreeSha": "c8fc45c7fe3fda21b6f50fb594b0eba6f4740d29",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -67780,8 +67780,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39554371710,
-        "testedAt": "2026-10-21T06:58:20.352Z"
+        "workflowRunId": 39556018709,
+        "testedAt": "2026-10-21T07:14:19.389Z"
       },
       "ownerWebEditPropagation": {
         "version": 1,
@@ -83040,7 +83040,7 @@
       "robloxPublicRelease": false
     }
   ],
-  "updatedAt": "2026-10-21T07:13:05.368Z",
+  "updatedAt": "2026-10-21T07:14:19.389Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
