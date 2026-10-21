@@ -1535,6 +1535,9 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   table.insert(civEnemiesByRace[raceID], item)
   return item
 end
+-- Stop the real server-owned movement tween before death/stun or verified respawn.
+-- Defined alongside the tween registry below; combat functions only call it at runtime.
+local civStopWalkModel
 -- targetModel is an optional mobile hint; only a server-owned enemy may be selected.
 local function civAttack(player, targetModel)
   if not civRace(player) or not civNowReady(player, "Attack", civ.AttackCooldown) then return end
@@ -1579,6 +1582,7 @@ local function civAttack(player, targetModel)
   chosen.Humanoid:TakeDamage(damage)
   remote:FireClient(player, "CIV_HIT", {Damage = damage, Enemy = chosen.Model.Name})
   if chosen.Humanoid.Health <= 0 then
+    civStopWalkModel(chosen.Model)
     civIncrease(player, "CivKills", 1)
     civIncrease(player, "CivResearch", 8)
     civIncrease(player, "CivSilver", 3)
@@ -1603,6 +1607,7 @@ local function civAttack(player, targetModel)
     chosen.Model:SetAttribute("IsPreparingAttack", false)
     task.delay(9, function()
       if chosen.Model.Parent then
+        civStopWalkModel(chosen.Model)
         chosen.Model:PivotTo(CFrame.new(chosen.Home))
         chosen.Humanoid.Health = chosen.Humanoid.MaxHealth
         if chosen.Model:GetAttribute("IsRaidBoss") == true then chosen.Model:SetAttribute("BossPhase", "Phase1") end
@@ -1815,6 +1820,19 @@ MultiverseEconomy.StartCaravans(civHub, civWorlds)
 -- 기존 서버 위치·거리·타격 판정과 동일한 모델 피벗을 연속 갱신한다.
 local civMoveTweenService = game:GetService("TweenService")
 local civMoveTweens = setmetatable({}, {__mode = "k"})
+civStopWalkModel = function(model)
+  if not model then return end
+  local prior = civMoveTweens[model]
+  if prior then
+    civMoveTweens[model] = nil
+    -- Cancel fires Completed(Cancelled), which owns the listener and CFrameValue cleanup.
+    prior.tween:Cancel()
+  end
+  if model.Parent and model:GetAttribute("CivilizationEnemy") == true then
+    if model:GetAttribute("MotionWalkingUntil") ~= 0 then model:SetAttribute("MotionWalkingUntil", 0) end
+    if model:GetAttribute("MotionMoveSpeed") ~= 0 then model:SetAttribute("MotionMoveSpeed", 0) end
+  end
+end
 local function civWalkModel(model, target, duration)
   if not model or not model.Parent then return end
   local prior = civMoveTweens[model]
@@ -1984,6 +2002,7 @@ task.spawn(function()
       end
       -- Dead or stunned enemies cannot keep a stale attack windup or auto-parry cue.
       if enemy.Humanoid.Health <= 0 or now < enemy.StunnedUntil then
+        civStopWalkModel(enemy.Model)
         AdvancedAIEcosystem.ForgetEnemy(enemy)
         enemy.TelegraphAt = 0
         enemy.TargetUserId = nil

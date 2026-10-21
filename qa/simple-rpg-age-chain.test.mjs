@@ -73,3 +73,17 @@ test('real world nodes, workstations, mobs and touch-safe production menus are w
   assert.match(client, /key == Enum.KeyCode.B then/);
   assert.match(client, /validUiTemplate\(template\)/);
 });
+
+
+test('dead and stunned creature movement tweens are cancelled before idle and respawn', () => {
+  assert.match(server, /local civStopWalkModel\s*\n/);
+  assert.match(server, /civStopWalkModel = function\(model\)/);
+  assert.match(server, /civMoveTweens\[model\] = nil\s*\n\s*-- Cancel fires Completed/);
+  assert.match(server, /prior\.tween:Cancel\(\)/);
+  assert.match(server, /model:SetAttribute\("MotionWalkingUntil", 0\)/);
+  assert.match(server, /model:SetAttribute\("MotionMoveSpeed", 0\)/);
+  assert.match(server, /if chosen\.Humanoid\.Health <= 0 then\s*\n\s*civStopWalkModel\(chosen\.Model\)/);
+  assert.match(server, /if chosen\.Model\.Parent then\s*\n\s*civStopWalkModel\(chosen\.Model\)\s*\n\s*chosen\.Model:PivotTo/);
+  assert.match(server, /if enemy\.Humanoid\.Health <= 0 or now < enemy\.StunnedUntil then\s*\n\s*civStopWalkModel\(enemy\.Model\)/);
+  assert.match(server, /if civMoveTweens\[model\] and civMoveTweens\[model\]\.tween == tween then/);
+});
