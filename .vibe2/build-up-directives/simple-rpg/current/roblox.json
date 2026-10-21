@@ -1,21 +1,64 @@
 {
   "version": 2,
-  "directiveId": "simple-rpg-build-up-g10-c7dcd3e2ad0e",
-  "directiveFingerprint": "c7dcd3e2ad0e9003ff66a05f407575c616c24cd3d2e0352725e107ca9f2341f9",
-  "previousDirectiveFingerprint": "72ba1d07efd5d5e07e972eaaed007229b8afd10ea33c89efdd69051c755f0fe8",
-  "forbiddenRepeatFingerprint": "72ba1d07efd5d5e07e972eaaed007229b8afd10ea33c89efdd69051c755f0fe8",
+  "directiveId": "simple-rpg-build-up-g11-c88c913f3f24",
+  "directiveFingerprint": "c88c913f3f24ca7090fc777fbe5d9e84aadd6b32b48d499ed4d1298b8b9a7ab4",
+  "previousDirectiveFingerprint": "c7dcd3e2ad0e9003ff66a05f407575c616c24cd3d2e0352725e107ca9f2341f9",
+  "forbiddenRepeatFingerprint": "c7dcd3e2ad0e9003ff66a05f407575c616c24cd3d2e0352725e107ca9f2341f9",
   "gameId": "simple-rpg",
-  "gameName": "작은 모험 RPG",
-  "generation": 10,
+  "gameName": "대충알피지",
+  "generation": 11,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/simple-rpg",
-  "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+  "sourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
   "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
+  "designSourceBuildUp": {
+    "version": 1,
+    "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
+    "currentDesignFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
+    "previousDesignFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
+    "sameApprovedDesign": true,
+    "previousVerifiedOutcome": false,
+    "revisionRequiredForNewGameplay": false,
+    "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
+    "sourceAuthority": "LATEST_APPROVED_SAME_GAME_DESIGN_ONLY",
+    "referenceA": null,
+    "baselineB": null,
+    "benchmarkDimensions": [
+      "INPUT_AND_PRIMARY_ACTION",
+      "HUD_AND_MENU_FLOW",
+      "CAMERA_AND_FEEDBACK",
+      "COMBAT_OR_CORE_LOOP",
+      "WORLD_AND_LEVEL_PROGRESSION",
+      "EQUIPMENT_REWARDS_AND_GROWTH",
+      "ONBOARDING_AND_FIRST_SESSION",
+      "FAILURE_RETRY_SAVE_RECOVERY",
+      "MID_LATE_DEPTH"
+    ],
+    "loop": [
+      "REVIEW_GAME_AND_NAMED_REFERENCE_EVIDENCE",
+      "REVISE_MAIN_A_B_C_D_AT_DESIGN",
+      "STRICT_DESIGN_REVIEW",
+      "BIND_RULE_IDS_TO_EXISTING_RESPONSIBLE_SOURCE",
+      "BUILD_SOURCE",
+      "EXACT_BUILD_RUNTIME_QA",
+      "NEXT_DESIGN_REVISION_FROM_VERIFIED_GAPS"
+    ],
+    "provenanceRule": "NAMED_SOURCE_OBSERVED_MECHANICS_OR_UNVERIFIED; NEVER_COPY_DISTINCTIVE_UI_ART_CHAR_TEXT_CODE",
+    "confirmedRuntimePass": false,
+    "preserves": [
+      "OWNER_GAME_IDENTITY",
+      "CORE_RULES",
+      "BALANCE",
+      "ECONOMY",
+      "SAVE_KEYS_AND_MEANING",
+      "NETWORK_AUTHORITY"
+    ]
+  },
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "RPG",
@@ -265,6 +308,7 @@
             "gameplayEffect": "상반된 빌드·세력·상태를 결합해 원래 없던 행동 규칙을 생성한다. 그 결과 사건의 비용과 다음 선택이 달라진다."
           }
         ],
+        "dCreations": [],
         "cPrimarySecondaryGenres": [
           {
             "role": "PRIMARY",
@@ -280,6 +324,7 @@
         "cGenreInterlock": "롤플레잉 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
         "cCausalWorldEffect": "서사시의 추방과 귀환에 의해 바뀐 인물·지역의 상태는 순례와 인물 변화의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다. 그리스 비극의 자기실현 예언와 철학의 변증법가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 그 결과 전투와 장비 운용의 가능 행동과 위험이 바뀌며, 전투 결과에 맞춰 장비와 동료의 다음 대응을 조정하면서 이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다. 다시 퀘스트와 인물 관계의 조건을 바꾼다.",
         "atUnboundedGrowthRule": "금기와 기회의 교차 이후 새로운 발견은 A와 B, C 장르 반응의 서로 다른 조건을 실험해 새 길·정보·관계·숙련을 열고 제한 없이 깊어진다.",
+        "standardGrammarVersion": null,
         "delveAtEvidence": [
           "금기와 기회의 교차: 추방과 귀환은 같은 장소를 다른 권리와 시선으로 다시 보게 만든다. 상황을 이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다. 방식으로 해석한다.",
           "되돌아온 선택: 목적지보다 여정에서 받은 흔적과 관계가 사람을 바꾼다. 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.",
@@ -292,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+        "sourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -323,7 +368,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
+      "referenceStatus": "SOURCE_NOT_AVAILABLE",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -340,17 +385,17 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
-    "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+    "sourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
     "multiplayerMode": "COOP",
-    "multiplayerRequired": true,
-    "minimumParticipants": 2,
+    "multiplayerRequired": false,
+    "minimumParticipants": 1,
     "platformCodingPlans": [
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/simple-rpg",
         "sharedUnitySource": false,
         "gameCodePlatformProfile": "ROBLOX",
-        "requiresSameServerTwoClientPlay": true,
+        "requiresSameServerTwoClientPlay": false,
         "requiresNativeRuntimeResult": true,
         "minimumRenderedDimension": "3D",
         "inspectedInThisDirective": true
@@ -360,7 +405,7 @@
         "canonicalGameSourceRoot": "unity-games/simple-rpg",
         "sharedUnitySource": true,
         "gameCodePlatformProfile": "UNITY",
-        "requiresSameServerTwoClientPlay": true,
+        "requiresSameServerTwoClientPlay": false,
         "requiresNativeRuntimeResult": true,
         "minimumRenderedDimension": "3D",
         "spatialDesignReady": false,
@@ -371,7 +416,7 @@
         "canonicalGameSourceRoot": "unity-games/simple-rpg",
         "sharedUnitySource": true,
         "gameCodePlatformProfile": "UNITY",
-        "requiresSameServerTwoClientPlay": true,
+        "requiresSameServerTwoClientPlay": false,
         "requiresNativeRuntimeResult": true,
         "minimumRenderedDimension": "3D",
         "inspectedInThisDirective": false
@@ -825,35 +870,63 @@
       ],
       "genreInterlock": "롤플레잉 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
       "abGameplayEffect": "서사시의 추방과 귀환에 의해 바뀐 인물·지역의 상태는 순례와 인물 변화의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다. 그리스 비극의 자기실현 예언와 철학의 변증법가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 그 결과 전투와 장비 운용의 가능 행동과 위험이 바뀌며, 전투 결과에 맞춰 장비와 동료의 다음 대응을 조정하면서 이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다. 다시 퀘스트와 인물 관계의 조건을 바꾼다.",
+      "standardVersion": null,
+      "dCreations": [],
+      "delveDLinks": [
+        {
+          "sourceDId": "",
+          "discovery": "금기와 기회의 교차: 추방과 귀환은 같은 장소를 다른 권리와 시선으로 다시 보게 만든다. 상황을 이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다. 방식으로 해석한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        },
+        {
+          "sourceDId": "",
+          "discovery": "되돌아온 선택: 목적지보다 여정에서 받은 흔적과 관계가 사람을 바꾼다. 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        },
+        {
+          "sourceDId": "",
+          "discovery": "두 소재의 숨은 규칙: 피하려는 행동이 오히려 예언의 조건을 완성한다. 원리와 충돌하는 두 입장은 한쪽 제거가 아니라 새로운 제3의 규칙을 낳는다. 원리가 동시에 작동함을 파악한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        },
+        {
+          "sourceDId": "",
+          "discovery": "역전된 종착점: 한쪽의 불리한 결과가 다른 쪽의 고급 활용 조건이 되는 인과 반전을 학습한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        }
+      ],
       "designAuthored": true,
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
-      "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/simple-rpg/server/Game.server.luau",
-      "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/shared/GameConfig.luau",
+      "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
-      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
+      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
     ],
     "executableCodeCandidateFiles": [
-      "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/simple-rpg/server/Game.server.luau",
       "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
-      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
+      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
     ],
     "gapReasons": [
       "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
@@ -875,7 +948,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+    "sourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4456,61 +4529,58 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=18",
+      "CURRENT_SOURCE_FILES=17",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
+      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 452,
-      "progression": 806,
-      "ai": 122,
-      "save": 172,
-      "multiplayer": 54,
-      "animation": 49,
-      "motionStates": 1019,
-      "gameFeel": 37,
-      "vfx": 72,
-      "camera": 84,
-      "audio": 4,
+      "combat": 503,
+      "progression": 429,
+      "ai": 157,
+      "save": 173,
+      "multiplayer": 32,
+      "animation": 81,
+      "motionStates": 678,
+      "gameFeel": 30,
+      "vfx": 27,
+      "camera": 65,
+      "audio": 1,
       "audioDynamics": 30,
-      "ui": 1090,
-      "uiFlow": 1324,
-      "entryFlow": 18,
+      "ui": 217,
+      "uiFlow": 321,
+      "entryFlow": 21,
       "loadingFlow": 0,
-      "input": 205,
-      "map": 449,
-      "landmark": 128,
-      "interaction": 346,
-      "inventory": 359,
-      "equipment": 83,
-      "settings": 25,
-      "feedback": 262,
-      "session": 52,
-      "content": 1146,
-      "choice": 1750,
-      "connection": 13,
-      "performance": 55,
-      "lighting": 81,
-      "primitive": 22,
+      "input": 142,
+      "map": 402,
+      "landmark": 102,
+      "interaction": 131,
+      "inventory": 113,
+      "equipment": 40,
+      "settings": 3,
+      "feedback": 231,
+      "session": 39,
+      "content": 903,
+      "choice": 129,
+      "connection": 7,
+      "performance": 43,
+      "lighting": 48,
+      "primitive": 13,
       "todo": 0,
-      "errorRecovery": 36
+      "errorRecovery": 42
     },
     "topFiles": [
       {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "score": 1517
-      },
-      {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "score": 1024
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "score": 535
+        "score": 1319
       },
       {
         "file": "roblox-games/simple-rpg/shared/GameConfig.luau",
         "score": 515
+      },
+      {
+        "file": "roblox-games/simple-rpg/client/Game.client.luau",
+        "score": 279
       },
       {
         "file": "roblox-games/simple-rpg/server/WeatherSystem.luau",
@@ -4518,19 +4588,15 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
-        "score": 49
+        "score": 50
       },
       {
         "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
-        "score": 43
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/WeatherVFX.luau",
-        "score": 34
+        "score": 45
       },
       {
         "file": "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
-        "score": 34
+        "score": 40
       },
       {
         "file": "roblox-games/simple-rpg/shared/RaceData.luau",
@@ -4543,52 +4609,20 @@
       {
         "file": "roblox-games/simple-rpg/shared/ProgressionData.luau",
         "score": 18
+      },
+      {
+        "file": "roblox-games/simple-rpg/client/WeatherVFX.luau",
+        "score": 15
+      },
+      {
+        "file": "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+        "score": 15
       }
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3921,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3960,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3976,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 138
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3937,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 130
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3993,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 122
-      },
-      {
         "file": "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
-        "line": 102,
+        "line": 107,
         "kind": "FUNCTION",
         "symbol": "AdvancedAIEcosystem.SetState",
         "context": "function AdvancedAIEcosystem.SetState(enemy: any, state: string): ()",
@@ -4603,48 +4637,16 @@
         "score": 114
       },
       {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 4011,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 114
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 82,
-        "kind": "FUNCTION",
-        "symbol": "reportNativeFoundationReady",
-        "context": "local function reportNativeFoundationReady()",
-        "score": 106
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 215,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "local function render()",
-        "score": 106
-      },
-      {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 995,
+        "line": 1539,
         "kind": "FUNCTION",
         "symbol": "civAttack",
         "context": "local function civAttack(player, targetModel)",
         "score": 106
       },
       {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 2761,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 106
-      },
-      {
         "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
-        "line": 86,
+        "line": 102,
         "kind": "FUNCTION",
         "symbol": "CompanionAI.Tick",
         "context": "function CompanionAI.Tick(enemies: {Enemy}, nodes: {Node}, increase: (Player, string, number) -> ()): ()",
@@ -4652,7 +4654,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 217,
+        "line": 204,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "context": "local function scopeHandler1(player)",
@@ -4660,7 +4662,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 240,
+        "line": 227,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "context": "local function scopeHandler2(player)",
@@ -4668,7 +4670,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 318,
+        "line": 305,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "context": "local function scopeHandler5(player)",
@@ -4676,47 +4678,15 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 342,
+        "line": 329,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "context": "local function scopeHandler6(player)",
         "score": 98
       },
       {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 2872,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 549,
-        "kind": "FUNCTION",
-        "symbol": "resizeCivMenuRail",
-        "context": "local function resizeCivMenuRail()",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
-        "line": 109,
-        "kind": "FUNCTION",
-        "symbol": "AdvancedAIEcosystem.ChaseTarget",
-        "context": "function AdvancedAIEcosystem.ChaseTarget(enemy: any, target: Vector3, now: number): Vector3",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
-        "line": 39,
-        "kind": "FUNCTION",
-        "symbol": "summon",
-        "context": "local function summon(player: Player, root: BasePart): State",
-        "score": 90
-      },
-      {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 425,
+        "line": 545,
         "kind": "FUNCTION",
         "symbol": "civNowReady",
         "context": "local function civNowReady(player, action, cooldown)",
@@ -4724,7 +4694,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 524,
+        "line": 601,
         "kind": "FUNCTION",
         "symbol": "civCraft",
         "context": "local function civCraft(player, itemKey)",
@@ -4732,7 +4702,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 582,
+        "line": 659,
         "kind": "FUNCTION",
         "symbol": "civBuild",
         "context": "local function civBuild(player, buildingKey, positionHint)",
@@ -4740,71 +4710,31 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 871,
+        "line": 1347,
         "kind": "FUNCTION",
         "symbol": "civResearch",
         "context": "local function civResearch(player, requestedTechID)",
         "score": 90
       },
       {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3466,
+        "file": "roblox-games/simple-rpg/client/Game.client.luau",
+        "line": 673,
         "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
-        "score": 90
+        "symbol": "reportFoundation",
+        "context": "local function reportFoundation(): ()",
+        "score": 82
       },
       {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3952,
+        "file": "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+        "line": 115,
         "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3957,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3973,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3990,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
-        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 4027,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 90
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 4101,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 90
+        "symbol": "AdvancedAIEcosystem.ForgetEnemy",
+        "context": "function AdvancedAIEcosystem.ForgetEnemy(enemy: any): ()",
+        "score": 82
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 209,
+        "line": 196,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
@@ -4812,111 +4742,31 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 501,
+        "line": 771,
         "kind": "FUNCTION",
-        "symbol": "civRestoreBuildings",
-        "context": "local function civRestoreBuildings(player)",
+        "symbol": "civBuildHousing",
+        "context": "local function civBuildHousing(player, request)",
         "score": 82
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 1341,
+        "line": 2209,
         "kind": "FUNCTION",
         "symbol": "queueInventorySync",
         "context": "local function queueInventorySync(player)",
         "score": 82
       },
       {
-        "file": "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
-        "line": 73,
+        "file": "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+        "line": 120,
         "kind": "FUNCTION",
-        "symbol": "createCaravan",
-        "context": "local function createCaravan(folder: Instance, itemID: string, index: number): Model",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 1050,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 2581,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateItemStateBadges",
-        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3914,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateInteractionProgress",
-        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 3933,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
-        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 4164,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
-        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 4319,
-        "kind": "FUNCTION",
-        "symbol": "sync",
-        "context": "local function sync(state)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 4373,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
-        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-        "line": 4885,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.AdaptActionMenu",
-        "context": "function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 437,
-        "kind": "FUNCTION",
-        "symbol": "civLabel",
-        "context": "local function civLabel(parent, name, text, size, pos, background)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 1040,
-        "kind": "FUNCTION",
-        "symbol": "syncAutoCombatSetting",
-        "context": "local function syncAutoCombatSetting()",
+        "symbol": "AdvancedAIEcosystem.ChaseTarget",
+        "context": "function AdvancedAIEcosystem.ChaseTarget(enemy: any, target: Vector3, now: number): Vector3",
         "score": 74
       },
       {
         "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
-        "line": 30,
+        "line": 33,
         "kind": "FUNCTION",
         "symbol": "remove",
         "context": "local function remove(player: Player)",
@@ -4924,30 +4774,254 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 436,
+        "line": 556,
         "kind": "FUNCTION",
         "symbol": "civIncrease",
         "context": "local function civIncrease(player, key, count)",
         "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 560,
+        "kind": "FUNCTION",
+        "symbol": "civOwnerBuildings",
+        "context": "local function civOwnerBuildings(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 578,
+        "kind": "FUNCTION",
+        "symbol": "civRestoreBuildings",
+        "context": "local function civRestoreBuildings(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 1007,
+        "kind": "FUNCTION",
+        "symbol": "bindCuratedEquipment",
+        "context": "local function bindCuratedEquipment(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 1213,
+        "kind": "FUNCTION",
+        "symbol": "civGather",
+        "context": "local function civGather(player, requestedType)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 1271,
+        "kind": "FUNCTION",
+        "symbol": "civTrade",
+        "context": "local function civTrade(player, itemID, amount, isBuying, currency)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 1424,
+        "kind": "FUNCTION",
+        "symbol": "civSpawnEnemy",
+        "context": "local function civSpawnEnemy(raceID, center, special, mobSlot)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 1818,
+        "kind": "FUNCTION",
+        "symbol": "civWalkModel",
+        "context": "local function civWalkModel(model, target, duration)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/shared/TradeMarketData.luau",
+        "line": 22,
+        "kind": "FUNCTION",
+        "symbol": "TradeMarketData.GetItem",
+        "context": "function TradeMarketData.GetItem(itemID: string): MarketItem?",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/client/Game.client.luau",
+        "line": 685,
+        "kind": "FUNCTION",
+        "symbol": "syncAutoCombat",
+        "context": "local function syncAutoCombat(): ()",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "line": 18,
+        "kind": "FUNCTION",
+        "symbol": "curatedCompanion",
+        "context": "local function curatedCompanion(): Model?",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 177,
+        "kind": "FUNCTION",
+        "symbol": "bindFoundationPlayer",
+        "context": "local function bindFoundationPlayer(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 257,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 281,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 447,
+        "kind": "FUNCTION",
+        "symbol": "curatedModelFor",
+        "context": "local function curatedModelFor(name)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
+        "line": 35,
+        "kind": "FUNCTION",
+        "symbol": "MultiverseEconomy.Quote",
+        "context": "function MultiverseEconomy.Quote(itemID: string, amount: number, isBuying: boolean): number?",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/simple-rpg/client/Game.client.luau",
+        "line": 365,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "line": 42,
+        "kind": "FUNCTION",
+        "symbol": "summon",
+        "context": "local function summon(player: Player, root: BasePart): State?",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "line": 80,
+        "kind": "FUNCTION",
+        "symbol": "CompanionAI.Command",
+        "context": "function CompanionAI.Command(player: Player, command: any, hasCivilization: boolean): boolean",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
+        "line": 60,
+        "kind": "FUNCTION",
+        "symbol": "MultiverseEconomy.Snapshot",
+        "context": "function MultiverseEconomy.Snapshot(): {[string]: any}",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
+        "line": 75,
+        "kind": "FUNCTION",
+        "symbol": "createCaravan",
+        "context": "local function createCaravan(folder: Instance, itemID: string, index: number): Model?",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/WeatherSystem.luau",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "rollWeather",
+        "context": "local function rollWeather(regionID: number): WeatherType",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/WeatherSystem.luau",
+        "line": 39,
+        "kind": "FUNCTION",
+        "symbol": "WeatherSystem.Snapshot",
+        "context": "function WeatherSystem.Snapshot(): {[number]: WeatherType}",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/simple-rpg/client/Game.client.luau",
+        "line": 180,
+        "kind": "FUNCTION",
+        "symbol": "bindExternalButton",
+        "context": "local function bindExternalButton(descendant: Instance): ()",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/simple-rpg/client/Game.client.luau",
+        "line": 442,
+        "kind": "FUNCTION",
+        "symbol": "bindVerifiedLearningControl",
+        "context": "local function bindVerifiedLearningControl(control)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/simple-rpg/client/Game.client.luau",
+        "line": 491,
+        "kind": "FUNCTION",
+        "symbol": "artPanel",
+        "context": "local function artPanel(name: string, pos: UDim2, size: UDim2, isShown: boolean, parent: Instance): ImageLabel",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+        "line": 75,
+        "kind": "FUNCTION",
+        "symbol": "AdvancedAIEcosystem.ClosestPlayer",
+        "context": "function AdvancedAIEcosystem.ClosestPlayer(position: Vector3, radius: number): (Player?, number)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/WeatherSystem.luau",
+        "line": 34,
+        "kind": "FUNCTION",
+        "symbol": "WeatherSystem.Initialize",
+        "context": "function WeatherSystem.Initialize(): ()",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/WeatherSystem.luau",
+        "line": 46,
+        "kind": "FUNCTION",
+        "symbol": "WeatherSystem.Tick",
+        "context": "function WeatherSystem.Tick(now: number, centers: {[number]: Vector3}): boolean",
+        "score": 50
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 9,
-    "previousSourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
-    "currentSourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+    "previousGeneration": 10,
+    "previousSourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+    "currentSourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-build-package-revalidation-pending"
+      "roblox-source-bootstrap:source-generation-failed"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -4955,13 +5029,13 @@
     "regressionPassed": false
   },
   "multiplayerImplementation": {
-    "required": true,
-    "policyVersion": 2,
+    "required": false,
+    "policyVersion": 0,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
+    "completionEvidence": null
   },
   "qualityGapMap": [
     {
@@ -5226,8 +5300,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -5806,8 +5880,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -6010,6 +6084,11 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
+      "domain": "AUDIO_MUSIC_SFX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
@@ -6037,9 +6116,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"작은 모험 RPG\", 현재 책임 소스는 roblox-games/simple-rpg/client/Game.client.luau::reportNativeFoundationReady, roblox-games/simple-rpg/client/Game.client.luau::render, roblox-games/simple-rpg/server/Game.server.luau::civAttack, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/client/Game.client.luau::resizeCivMenuRail이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"작은 모험 RPG\", 현재 책임 소스는 roblox-games/simple-rpg/server/Game.server.luau::civAttack, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/server/Game.server.luau::civNowReady, roblox-games/simple-rpg/server/Game.server.luau::civCraft, roblox-games/simple-rpg/server/Game.server.luau::civBuild이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/simple-rpg/client/Game.client.luau::reportNativeFoundationReady, roblox-games/simple-rpg/client/Game.client.luau::render, roblox-games/simple-rpg/server/Game.server.luau::civAttack, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/client/Game.client.luau::resizeCivMenuRail에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/simple-rpg/server/Game.server.luau::civAttack, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/server/Game.server.luau::civNowReady, roblox-games/simple-rpg/server/Game.server.luau::civCraft, roblox-games/simple-rpg/server/Game.server.luau::civBuild에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "작은 모험 RPG를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "퀘스트와 인물 관계 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6094,8 +6173,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 638077,
-        "largestFileBytes": 233644,
+        "sourceBytes": 448970,
+        "largestFileBytes": 130161,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -6127,8 +6206,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
+    "themeDepth": 11,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6138,9 +6217,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 10
+        "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6185,7 +6265,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 66,
+        "score": 48,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6299,11 +6379,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 10,
-    "previousGeneration": 9,
+    "generation": 11,
+    "previousGeneration": 10,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
-    "priorSourceFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
+    "sourceFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
+    "priorSourceFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6317,6 +6397,915 @@
     "returnToNextBuildUpAfterF9": true,
     "generationLimit": null,
     "shadowPipelineForbidden": true
+  },
+  "gameInternalAutoComposition": {
+    "version": 1,
+    "gameId": "simple-rpg",
+    "platform": "ROBLOX",
+    "sourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
+    "sourceOnlyEvidence": true,
+    "applicableGameFeaturesOnly": true,
+    "components": [
+      {
+        "id": "LOBBY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/MultiverseEconomy.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CUSTOMIZATION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "MATERIAL",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
+          "roblox-games/simple-rpg/client/MaterialPresentation.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "INVENTORY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/shared/TradeMarketData.luau",
+          "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+          "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "EQUIPMENT",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "UI",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "WORLD",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/WeatherSystem.luau",
+          "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "BIOME",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/shared/RaceData.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "MOTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RaceData.luau",
+          "roblox-games/simple-rpg/shared/TechTreeData.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "INTERACTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SHOP",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SAVE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+          "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "COMBAT",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+          "roblox-games/simple-rpg/shared/RaceData.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "REWARD",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+          "roblox-games/simple-rpg/shared/ProgressionData.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RaceData.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "QUEST_DIALOGUE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFTING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ECONOMY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/shared/TradeMarketData.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PROGRESSION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING",
+        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
+        "responsibleFiles": [],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "WEATHER",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/WeatherSystem.luau",
+          "roblox-games/simple-rpg/client/WeatherVFX.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PHYSICS",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CAMERA",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/client/WeatherVFX.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "AUDIO",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NETWORK",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      }
+    ],
+    "sourceFilesByRole": {
+      "LOBBY": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/MultiverseEconomy.luau"
+      ],
+      "CUSTOMIZATION": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau"
+      ],
+      "MATERIAL": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
+        "roblox-games/simple-rpg/client/MaterialPresentation.client.luau"
+      ],
+      "INVENTORY": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/shared/TradeMarketData.luau",
+        "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+        "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+      ],
+      "EQUIPMENT": [
+        "roblox-games/simple-rpg/server/Game.server.luau"
+      ],
+      "UI": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau"
+      ],
+      "WORLD": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/WeatherSystem.luau",
+        "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau"
+      ],
+      "BIOME": [
+        "roblox-games/simple-rpg/shared/RaceData.luau"
+      ],
+      "HOUSING": [
+        "roblox-games/simple-rpg/server/Game.server.luau"
+      ],
+      "MOTION": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau"
+      ],
+      "ACTION": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "roblox-games/simple-rpg/shared/RaceData.luau",
+        "roblox-games/simple-rpg/shared/TechTreeData.luau"
+      ],
+      "NPC_AI": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "roblox-games/simple-rpg/shared/RaceData.luau"
+      ],
+      "QUEST_DIALOGUE": [
+        "roblox-games/simple-rpg/shared/GameConfig.luau"
+      ],
+      "CRAFTING": [
+        "roblox-games/simple-rpg/shared/GameConfig.luau"
+      ],
+      "ECONOMY": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/shared/TradeMarketData.luau"
+      ],
+      "PROGRESSION": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau"
+      ],
+      "FARMING": [],
+      "WEATHER": [
+        "roblox-games/simple-rpg/server/WeatherSystem.luau",
+        "roblox-games/simple-rpg/client/WeatherVFX.luau"
+      ],
+      "PHYSICS": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau"
+      ],
+      "CAMERA": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/client/WeatherVFX.luau"
+      ],
+      "AUDIO": [
+        "roblox-games/simple-rpg/shared/GameConfig.luau"
+      ],
+      "SKILL_VFX": [
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau"
+      ],
+      "NETWORK": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau"
+      ],
+      "INTERACTION": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau"
+      ],
+      "REWARD": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+        "roblox-games/simple-rpg/shared/ProgressionData.luau"
+      ],
+      "SAVE": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+        "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+      ],
+      "COMBAT": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau",
+        "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+        "roblox-games/simple-rpg/shared/RaceData.luau"
+      ],
+      "SHOP": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau"
+      ]
+    },
+    "uiModeSelection": {
+      "combat": [
+        "HEALTH_STATUS",
+        "SKILL_AND_DODGE_FROM_EXISTING_BINDINGS",
+        "DANGER_FEEDBACK"
+      ],
+      "lobby": [
+        "EXISTING_GAME_ENTRY",
+        "PARTY_SHOP_PORTAL_ONLY_WHEN_IMPLEMENTED"
+      ],
+      "inventory": [
+        "OWNED_ITEM_LIST",
+        "COMPARE_EQUIP_ONLY_WHEN_IMPLEMENTED",
+        "SCROLL_CLOSE_REOPEN"
+      ],
+      "mobile": [
+        "SAFE_AREA",
+        "TOUCH_TARGET_CLEARANCE",
+        "NO_OVERLAPPING_ACTIONS",
+        "MODAL_INPUT_CONSUMED",
+        "LANDSCAPE_PORTRAIT_REVIEW"
+      ],
+      "noDeadButtons": true,
+      "noSyntheticGameplayActions": true,
+      "resizeValidationState": "RUNTIME_VIEWPORT_QA_PENDING"
+    },
+    "worldGraph": {
+      "enabled": true,
+      "nodesDiscoveredFromExactRuntime": false,
+      "sourceFiles": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/WeatherSystem.luau",
+        "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
+        "roblox-games/simple-rpg/server/CompanionAI.luau"
+      ],
+      "biomeSourceFiles": [
+        "roblox-games/simple-rpg/shared/RaceData.luau"
+      ],
+      "housingSourceFiles": [
+        "roblox-games/simple-rpg/server/Game.server.luau"
+      ],
+      "biomeNativeSceneBindingVerified": false,
+      "housingPlacementPersistenceVerified": false,
+      "entryFiles": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/MultiverseEconomy.luau"
+      ],
+      "interactionFiles": [
+        "roblox-games/simple-rpg/server/Game.server.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau"
+      ],
+      "edges": [
+        {
+          "from": "EXISTING_ENTRY",
+          "to": "EXISTING_WORLD_DESTINATION",
+          "sourceEvidence": "roblox-games/simple-rpg/server/Game.server.luau",
+          "state": "SOURCE_ROUTE_CANDIDATE_NOT_WALKABILITY_PROOF"
+        }
+      ],
+      "requiredChecks": [
+        "SPAWN_TO_EXISTING_DESTINATIONS",
+        "PORTAL_OR_DOOR_SERVER_AUTHORITY",
+        "RETURN_PATH",
+        "BLOCKED_PATH",
+        "RESPAWN_ROUTE",
+        "APPROVED_BIOME_TO_NATIVE_TERRAIN",
+        "REGION_NAVIGATION_AND_COLLISION",
+        "MOBILE_WORLD_STREAMING",
+        "BUILD_PLACEMENT_COLLISION",
+        "OWNER_COST_INVENTORY_AUTHORITY",
+        "HOUSING_SAVE_REJOIN"
+      ],
+      "inaccessibleAreasNotInvented": true,
+      "runtimeTraversalVerified": false
+    },
+    "stateChain": {
+      "applicable": true,
+      "checks": [
+        {
+          "id": "ACQUIRE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/simple-rpg/server/Game.server.luau",
+            "roblox-games/simple-rpg/shared/GameConfig.luau",
+            "roblox-games/simple-rpg/server/CompanionAI.luau",
+            "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
+            "roblox-games/simple-rpg/shared/ProgressionData.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "STORE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/simple-rpg/server/Game.server.luau",
+            "roblox-games/simple-rpg/shared/GameConfig.luau",
+            "roblox-games/simple-rpg/client/Game.client.luau",
+            "roblox-games/simple-rpg/shared/TradeMarketData.luau",
+            "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "EQUIP",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/simple-rpg/server/Game.server.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "STAT_AND_APPEARANCE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/simple-rpg/server/Game.server.luau",
+            "roblox-games/simple-rpg/shared/GameConfig.luau",
+            "roblox-games/simple-rpg/client/Game.client.luau",
+            "roblox-games/simple-rpg/server/CompanionAI.luau",
+            "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "SAVE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/simple-rpg/server/Game.server.luau",
+            "roblox-games/simple-rpg/shared/GameConfig.luau",
+            "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+            "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "RECONNECT_RESTORE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/simple-rpg/server/Game.server.luau",
+            "roblox-games/simple-rpg/shared/GameConfig.luau",
+            "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+            "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
+            "roblox-games/simple-rpg/client/Game.client.luau"
+          ],
+          "passed": false
+        }
+      ],
+      "needsAuthoritativeInventoryState": true,
+      "preserveSaveSchema": true,
+      "preserveEconomyAndCombatRules": true,
+      "runtimeVerified": false,
+      "qaPassed": false
+    },
+    "moduleConnections": [
+      {
+        "id": "WORLD_BIOME_WEATHER",
+        "roles": [
+          "WORLD",
+          "BIOME",
+          "WEATHER"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/WeatherSystem.luau",
+          "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RaceData.luau",
+          "roblox-games/simple-rpg/client/WeatherVFX.luau"
+        ],
+        "checks": [
+          "NATIVE_TERRAIN_AND_REGION_GRAPH",
+          "APPROVED_WEATHER_STATE",
+          "MOBILE_STREAMING"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING_INVENTORY_SAVE",
+        "roles": [
+          "HOUSING",
+          "INVENTORY",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/shared/TradeMarketData.luau",
+          "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+          "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+        ],
+        "checks": [
+          "ACTUAL_PLACEMENT_COLLISION",
+          "AUTHORITATIVE_COST_AND_OWNERSHIP",
+          "PERSIST_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CUSTOMIZATION_EQUIPMENT_SAVE",
+        "roles": [
+          "CUSTOMIZATION",
+          "EQUIPMENT",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
+          "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+          "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+        ],
+        "checks": [
+          "REAL_RIG_AND_OUTFIT_BINDING",
+          "SAVED_AVATAR_AND_EQUIPMENT",
+          "RECONNECT_RESTORE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI_QUEST",
+        "roles": [
+          "NPC_AI",
+          "QUEST_DIALOGUE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RaceData.luau"
+        ],
+        "checks": [
+          "NPC_DECISION_TO_DIALOGUE_EVENT",
+          "QUEST_STATE_AND_SERVER_AUTHORITY"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION_MOTION_COMBAT",
+        "roles": [
+          "ACTION",
+          "MOTION",
+          "COMBAT"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RaceData.luau",
+          "roblox-games/simple-rpg/shared/TechTreeData.luau",
+          "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau"
+        ],
+        "checks": [
+          "INPUT_TO_AUTHORITATIVE_HIT",
+          "EXACT_EXISTING_HIT_TIMING",
+          "RIG_PLAYBACK_AND_REACTION"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFT_ECONOMY_INVENTORY",
+        "roles": [
+          "CRAFTING",
+          "ECONOMY",
+          "INVENTORY"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/shared/TradeMarketData.luau",
+          "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
+          "roblox-games/simple-rpg/shared/TypeDefinitions.luau"
+        ],
+        "checks": [
+          "RECIPE_RESOURCE_CONSUMPTION",
+          "AUTHORITATIVE_CURRENCY_AND_ITEM_STATE",
+          "SAVE_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/server/CompanionAI.luau",
+          "roblox-games/simple-rpg/shared/RaceData.luau",
+          "roblox-games/simple-rpg/shared/TechTreeData.luau"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      }
+    ],
+    "sharedAssetSelection": {
+      "registry": "company-asset-library.json",
+      "archives": "assets/asset-manifest.json#sharedOriginalArchives",
+      "ui": "assets/roblox/common-ui-v1/catalog.json",
+      "materials": "assets/roblox/common-materials-v1/catalog.json",
+      "equipment": "assets/roblox/common-character-gear-v1/catalog.json",
+      "originalAssetsOnly": true,
+      "sourceHashAndLicenseRequired": true,
+      "noNewAssetGeneration": true,
+      "roleAndTargetCompatibilityRequired": true,
+      "gameBindingAndNativeRuntimeQaRequired": true
+    },
+    "editRule": "EDIT_EXISTING_RESPONSIBLE_GAME_FILES_ONLY",
+    "requiredProof": [
+      "SOURCE_ANCHOR",
+      "EXISTING_GAME_STATE",
+      "REAL_EVENT_HANDLER",
+      "SERVER_AUTHORITY_WHERE_APPLICABLE",
+      "NATIVE_PLATFORM_AND_MOBILE_QA",
+      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT",
+      "ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE"
+    ],
+    "implementationProven": false,
+    "runtimeVerified": false,
+    "passed": false
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -6373,7 +7362,7 @@
     "gameId": "simple-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+    "sourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6564,16 +7553,16 @@
     "responsibleSourceCandidates": [
       "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/Game.server.luau",
-      "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
-      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
+      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -6625,7 +7614,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "PRESENT"
+        "status": "WEAK_OR_MISSING"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -6655,7 +7644,9 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [],
+    "weakestTracks": [
+      "AUDIO_MUSIC_AND_FEEDBACK"
+    ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -6769,14 +7760,14 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN/A/B/C/@의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 집중 대상은 Roblox다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "FORTNITE_UEFN": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "UNREAL": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "ROBLOX": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "FORTNITE_UEFN": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "UNITY_APP": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNREAL": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
@@ -6784,39 +7775,21 @@
     "responsibleFiles": [
       "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/Game.server.luau",
-      "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
-      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
+      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 82,
-        "kind": "FUNCTION",
-        "symbol": "reportNativeFoundationReady",
-        "currentBehavior": "local function reportNativeFoundationReady()",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/simple-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 215,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "currentBehavior": "local function render()",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/simple-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 995,
+        "line": 1539,
         "kind": "FUNCTION",
         "symbol": "civAttack",
         "currentBehavior": "local function civAttack(player, targetModel)",
@@ -6825,7 +7798,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 217,
+        "line": 204,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "currentBehavior": "local function scopeHandler1(player)",
@@ -6834,7 +7807,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 240,
+        "line": 227,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "currentBehavior": "local function scopeHandler2(player)",
@@ -6843,7 +7816,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 318,
+        "line": 305,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "currentBehavior": "local function scopeHandler5(player)",
@@ -6852,7 +7825,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 342,
+        "line": 329,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "currentBehavior": "local function scopeHandler6(player)",
@@ -6860,28 +7833,34 @@
         "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 549,
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 545,
         "kind": "FUNCTION",
-        "symbol": "resizeCivMenuRail",
-        "currentBehavior": "local function resizeCivMenuRail()",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 resizeCivMenuRail의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/simple-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "civNowReady",
+        "currentBehavior": "local function civNowReady(player, action, cooldown)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civNowReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 601,
+        "kind": "FUNCTION",
+        "symbol": "civCraft",
+        "currentBehavior": "local function civCraft(player, itemKey)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civCraft의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 659,
+        "kind": "FUNCTION",
+        "symbol": "civBuild",
+        "currentBehavior": "local function civBuild(player, buildingKey, positionHint)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "symbol": "reportNativeFoundationReady",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "symbol": "render",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
         "symbol": "civAttack",
@@ -6913,9 +7892,21 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "symbol": "resizeCivMenuRail",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "symbol": "civNowReady",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "symbol": "civCraft",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "symbol": "civBuild",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -6944,219 +7935,45 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
-  "productionPlan": {
-    "version": 3,
-    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
-    "platform": "ROBLOX",
-    "executionSurface": "ROBLOX",
-    "mode": "EXISTING_SOURCE_REPAIR",
-    "gameId": "simple-rpg",
-    "genreProfile": "RPG",
-    "conceptIdentity": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
-    "ownerFeatureChanges": [],
-    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
-    "approvedCoreLoop": [
-      "퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
-      "전투와 장비 운용: 전투 결과에 맞춰 장비와 동료의 다음 대응을 조정하면서 이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다.",
-      "퀘스트와 인물 관계로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다."
+  "productionPlan": null,
+  "robloxProductionPlan": null,
+  "internalAlgorithmUse": {
+    "mode": "MAXIMIZE_TASK_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS",
+    "priority": [
+      "SAME_GAME_SAME_FAILURE_VERIFIED_CAUSAL_AND_CODE_PATTERN",
+      "SAME_GAME_VERIFIED_IMPLEMENTATION_AND_RESPONSIBILITY",
+      "EXISTING_VIBE2_VIBE3_ANALYSIS_STRATEGY_RECOMBINATION_AND_GAMEPLAY_TOOLS",
+      "EXISTING_VERIFIED_GAME_MECHANICS_ASSETS_AND_SOURCE_COMPOSITION",
+      "AUTHORIZED_AI_COLLABORATION_ON_DISJOINT_RESPONSIBILITY_WITH_CANDIDATE_BRANCH_QA"
     ],
-    "signatureSystems": [
-      "작은 모험 RPG",
-      "퀘스트와 인물 관계 × 서사시의 추방과 귀환",
-      "전투와 장비 운용 × 순례와 인물 변화",
-      "금기와 기회의 교차"
-    ],
-    "progressionDirection": "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 퀘스트와 인물 관계의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다.",
-    "depthAndReward": null,
-    "ideas": [
-      {
-        "id": "RPG:SOURCE_REPAIR",
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-      }
-    ],
-    "selectedIdea": {
-      "id": "RPG:SOURCE_REPAIR",
-      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-    },
-    "ideaHistory": [
-      "RPG:SOURCE_REPAIR"
-    ],
-    "implementationPackages": [
-      {
-        "role": "SERVER_AUTHORITY",
-        "files": [
-          "roblox-games/simple-rpg/server/Game.server.luau",
-          "roblox-games/simple-rpg/server/WeatherSystem.luau",
-          "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
-          "roblox-games/simple-rpg/server/CompanionAI.luau",
-          "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau"
-        ],
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
-      },
-      {
-        "role": "CLIENT_PRESENTATION",
-        "files": [
-          "roblox-games/simple-rpg/client/Game.client.luau",
-          "roblox-games/simple-rpg/client/WeatherVFX.luau"
-        ],
-        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
-      },
-      {
-        "role": "SHARED_DEFINITION",
-        "files": [
-          "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-          "roblox-games/simple-rpg/shared/GameConfig.luau",
-          "roblox-games/simple-rpg/shared/RaceData.luau",
-          "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-          "roblox-games/simple-rpg/shared/ProgressionData.luau"
-        ],
-        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
-      }
-    ],
-    "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
-    "spatialBlueprintContract": null,
-    "interfaceBlueprintContract": null,
-    "libraryReuseContract": null,
-    "detailedDesignContract": null,
-    "qualityContract": {
-      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
-      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
-      "required": [
-        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
-        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
-        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
-        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
-        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+    "relevantAlgorithmsOnly": true,
+    "aiCollaboration": {
+      "authority": "company-learning/platform-release-roadmap.json#externalAiVibeFullProcessCollaboration",
+      "vibePrimaryIntegrationAndLearning": true,
+      "approvedExternalAiMayImplementOnIsolatedCandidateBranch": true,
+      "existingAuthorizedAiRoles": [
+        "PLANNING",
+        "DESIGN",
+        "IMPLEMENTATION",
+        "REPAIR",
+        "QA",
+        "ASSETS",
+        "PLATFORM_ADAPTATION"
       ],
-      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
-      "markerOnlyCompletionAllowed": false,
-      "runtimeVerified": false
+      "sameResponsibleFileConflictSerialized": true,
+      "disjointResponsibleFilesMayRunParallel": true,
+      "externalAiUseRequiresExistingOptInAndAuthorization": true,
+      "deterministicallyVerifiedOutcomesFeedExistingLearningMotor": true,
+      "externalAiCannotWriteMainOrCentralPolicyOrApproveOwnWork": true
     },
-    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
-    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
-    "preservation": [
-      "APPROVED_CONCEPT",
-      "APPROVED_GENRE",
-      "STYLE_LOCK",
-      "SAVE_IDENTITY",
-      "BALANCE_AND_ECONOMY_MEANING",
-      "SERVER_AUTHORITY"
-    ],
-    "newWorkflow": false,
-    "newQaStage": false,
-    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
-  },
-  "robloxProductionPlan": {
-    "version": 3,
-    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
-    "platform": "ROBLOX",
-    "executionSurface": "ROBLOX",
-    "mode": "EXISTING_SOURCE_REPAIR",
-    "gameId": "simple-rpg",
-    "genreProfile": "RPG",
-    "conceptIdentity": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
-    "ownerFeatureChanges": [],
-    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
-    "approvedCoreLoop": [
-      "퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
-      "전투와 장비 운용: 전투 결과에 맞춰 장비와 동료의 다음 대응을 조정하면서 이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다.",
-      "퀘스트와 인물 관계로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다."
-    ],
-    "signatureSystems": [
-      "작은 모험 RPG",
-      "퀘스트와 인물 관계 × 서사시의 추방과 귀환",
-      "전투와 장비 운용 × 순례와 인물 변화",
-      "금기와 기회의 교차"
-    ],
-    "progressionDirection": "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 퀘스트와 인물 관계의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다.",
-    "depthAndReward": null,
-    "ideas": [
-      {
-        "id": "RPG:SOURCE_REPAIR",
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-      }
-    ],
-    "selectedIdea": {
-      "id": "RPG:SOURCE_REPAIR",
-      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-    },
-    "ideaHistory": [
-      "RPG:SOURCE_REPAIR"
-    ],
-    "implementationPackages": [
-      {
-        "role": "SERVER_AUTHORITY",
-        "files": [
-          "roblox-games/simple-rpg/server/Game.server.luau",
-          "roblox-games/simple-rpg/server/WeatherSystem.luau",
-          "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
-          "roblox-games/simple-rpg/server/CompanionAI.luau",
-          "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau"
-        ],
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
-      },
-      {
-        "role": "CLIENT_PRESENTATION",
-        "files": [
-          "roblox-games/simple-rpg/client/Game.client.luau",
-          "roblox-games/simple-rpg/client/WeatherVFX.luau"
-        ],
-        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
-      },
-      {
-        "role": "SHARED_DEFINITION",
-        "files": [
-          "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
-          "roblox-games/simple-rpg/shared/GameConfig.luau",
-          "roblox-games/simple-rpg/shared/RaceData.luau",
-          "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-          "roblox-games/simple-rpg/shared/ProgressionData.luau"
-        ],
-        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
-      }
-    ],
-    "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
-    "spatialBlueprintContract": null,
-    "interfaceBlueprintContract": null,
-    "libraryReuseContract": null,
-    "detailedDesignContract": null,
-    "qualityContract": {
-      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
-      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
-      "required": [
-        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
-        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
-        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
-        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
-        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
-      ],
-      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
-      "markerOnlyCompletionAllowed": false,
-      "runtimeVerified": false
-    },
-    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
-    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
-    "preservation": [
-      "APPROVED_CONCEPT",
-      "APPROVED_GENRE",
-      "STYLE_LOCK",
-      "SAVE_IDENTITY",
-      "BALANCE_AND_ECONOMY_MEANING",
-      "SERVER_AUTHORITY"
-    ],
-    "newWorkflow": false,
-    "newQaStage": false,
-    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+    "noDuplicateSubsystemsOrNewPipeline": true,
+    "noUnverifiedCapabilityClaims": true,
+    "preserveApprovedGameplaySaveEconomyAndServerAuthority": true,
+    "qaReleaseSecurityGatesUnchanged": true,
+    "rule": "AI_COLLABORATION_VIBE_PRIMARY_INTEGRATION_AND_LEARNING; MAXIMIZE_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS_AND_SAME_GAME_SAME_FAILURE_PATTERNS; AUTHORIZED_EXTERNAL_AI_MAY_DEVELOP_AND_REPAIR_ON_ISOLATED_CANDIDATE_BRANCHES_WITH_RESPONSIBLE_FILE_SCOPE_WHEN_ENABLED; PARALLEL_DISJOINT_FILES_SERIALIZE_CONFLICTS; DETERMINISTIC_QA_SECURITY_AND_CANONICAL_RELEASE_REQUIRED; FEED_VERIFIED_RESULTS_TO_EXISTING_LEARNING_MOTOR; NEVER_CREATE_SHADOW_PIPELINE_OR_FABRICATE_PASS"
   },
   "preserveConstraints": [
+    "게임 제작은 Vibe와 승인된 AI 협업으로 진행한다. 검증된 내부 분석·게임 로직·전략선택·재조합·에셋 재사용 알고리즘을 과제 관련 범위에서 최대 활용한다. 외부 AI는 기존 승인·활성화 조건 아래 격리 후보 브랜치의 독립 책임 파일에 직접 구현·수리 가능하며 Vibe가 통합·학습한다. 중앙정책·QA·보안·배포 게이트를 유지하고 중복 파이프라인·미검증 주장은 금지한다.",
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
     "멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다.",
@@ -7166,45 +7983,21 @@
     "files": [
       "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/Game.server.luau",
-      "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
-      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
+      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 82,
-        "kind": "FUNCTION",
-        "symbol": "reportNativeFoundationReady",
-        "context": "local function reportNativeFoundationReady()",
-        "score": 106,
-        "currentBehavior": "local function reportNativeFoundationReady()",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/simple-rpg/client/Game.client.luau::reportNativeFoundationReady이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/simple-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 215,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "local function render()",
-        "score": 106,
-        "currentBehavior": "local function render()",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/simple-rpg/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/simple-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 995,
+        "line": 1539,
         "kind": "FUNCTION",
         "symbol": "civAttack",
         "context": "local function civAttack(player, targetModel)",
@@ -7216,7 +8009,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 217,
+        "line": 204,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "context": "local function scopeHandler1(player)",
@@ -7228,7 +8021,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 240,
+        "line": 227,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "context": "local function scopeHandler2(player)",
@@ -7240,7 +8033,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 318,
+        "line": 305,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "context": "local function scopeHandler5(player)",
@@ -7252,7 +8045,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 342,
+        "line": 329,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "context": "local function scopeHandler6(player)",
@@ -7263,16 +8056,40 @@
         "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 549,
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 545,
         "kind": "FUNCTION",
-        "symbol": "resizeCivMenuRail",
-        "context": "local function resizeCivMenuRail()",
+        "symbol": "civNowReady",
+        "context": "local function civNowReady(player, action, cooldown)",
         "score": 90,
-        "currentBehavior": "local function resizeCivMenuRail()",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 resizeCivMenuRail의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/simple-rpg/client/Game.client.luau::resizeCivMenuRail이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/simple-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "currentBehavior": "local function civNowReady(player, action, cooldown)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civNowReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/simple-rpg/server/Game.server.luau::civNowReady이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 601,
+        "kind": "FUNCTION",
+        "symbol": "civCraft",
+        "context": "local function civCraft(player, itemKey)",
+        "score": 90,
+        "currentBehavior": "local function civCraft(player, itemKey)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civCraft의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/simple-rpg/server/Game.server.luau::civCraft이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 659,
+        "kind": "FUNCTION",
+        "symbol": "civBuild",
+        "context": "local function civBuild(player, buildingKey, positionHint)",
+        "score": 90,
+        "currentBehavior": "local function civBuild(player, buildingKey, positionHint)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/simple-rpg/server/Game.server.luau::civBuild이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -7320,16 +8137,16 @@
     "plannedFiles": [
       "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/Game.server.luau",
-      "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
-      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
+      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
     ],
     "impact": {
       "version": 1,
@@ -7406,11 +8223,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3131e038e0d868ced9e4b3b1070edf627fe7c31ace7302fedd993fa1d0c40589",
+      "sourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7465,7 +8282,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 11,
+    "nextGeneration": 12,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7527,5 +8344,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-15T07:31:56.908Z"
+  "generatedAt": "2026-10-21T08:02:37.034Z"
 }
