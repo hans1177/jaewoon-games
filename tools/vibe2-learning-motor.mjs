@@ -1466,6 +1466,10 @@ export function learningGuidance(context={}){
       // proof는 완료 판정이 아니라 새 프로젝트에서 다시 확인할 검증 조건이다.
       lines.push(`  - verified-source-bound-recipe=${row.id}; engine=${row.engine}; source=${clean(recipe.source).slice(0,280)}; required-fresh-runtime-checks=${recipe.proof.slice(0,12).map(clean).filter(Boolean).join('|')}; edit-existing-responsible-code-only; source-guidance-not-a-pass; no-gameplay-or-save-authority`);
     }
+    if(row?.observedReplay?.actualPlatformRuntime===true&&row?.observedReplay?.independentQaPass===true&&
+      clean(row.observedReplay.sourceRevision)===clean(row.sourceRevision)){
+      lines.push(`  - verified-gameplay-replay=${row.id}; scenario=${clean(row.observedReplay.scenarioId)}; horizon=${clean(row.observedReplay.horizon)}; revision=${clean(row.sourceRevision)}; replay-must-be-repeated-in-current-game; past-runtime-pass-does-not-transfer`);
+    }
   }
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; reuse=${(row.reusablePatterns||[]).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).join('|')||'none'}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
