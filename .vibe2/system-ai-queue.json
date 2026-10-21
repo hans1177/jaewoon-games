@@ -116768,7 +116768,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116811,12 +116811,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39655734523:1",
+      "reservedAt": "2026-10-21T18:59:15.212Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "stale-system-ai-reservation-reclaimed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -116886,14 +116886,18 @@
         "system-ai-stale-reservation-reclaimed:YES",
         "stale-reservation-cause:LEASE_EXPIRED",
         "system-ai-handoff-state:STALE_RECLAIM",
-        "system-ai-handoff-from-reservation:system-ai:39648116282:1"
+        "system-ai-handoff-from-reservation:system-ai:39648116282:1",
+        "system-ai-impact-score:1152",
+        "system-ai-blocked-task-count:17",
+        "system-ai-representative-canary:stale-system-ai-reservation-reclaimed",
+        "system-ai-handoff-to-reservation:system-ai:39655734523:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 902,
+      "impactScore": 1152,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 12,
-        "recurrenceCount": 12,
+        "blockedTaskCount": 17,
+        "recurrenceCount": 17,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -116901,7 +116905,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-21T18:30:56.967Z"
+      "updatedAt": "2026-10-21T18:59:15.212Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -145166,7 +145170,7 @@
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145208,12 +145212,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39655734523:1",
+      "reservedAt": "2026-10-21T18:59:15.212Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145248,14 +145252,18 @@
         "primary-ai-review-required:YES",
         "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
         "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
-        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER",
+        "system-ai-impact-score:702",
+        "system-ai-blocked-task-count:8",
+        "system-ai-representative-canary:system-ai-implementation-failed",
+        "system-ai-handoff-to-reservation:system-ai:39655734523:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1498,
+      "impactScore": 702,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 27,
-        "recurrenceCount": 27,
+        "blockedTaskCount": 8,
+        "recurrenceCount": 8,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -145263,7 +145271,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-21T10:53:30.391Z"
+      "updatedAt": "2026-10-21T18:59:15.212Z"
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
