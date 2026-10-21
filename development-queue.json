@@ -57,9 +57,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:37:22.817Z",
-      "updatedAt": "2026-10-21T14:15:00.661Z",
+      "updatedAt": "2026-10-21T14:15:47.452Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -69,9 +69,9 @@
         "capturedAt": "2026-10-12T02:39:01.675Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-21T13:08:14.995Z",
-      "robloxSourceCandidateBranch": null,
-      "robloxSourceCandidateReadyAt": null,
+      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceCandidateBranch": "development/roblox-amusement-tycoon-39609244944-1",
+      "robloxSourceCandidateReadyAt": "2026-10-21T14:15:47.452Z",
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
@@ -116,7 +116,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-verified-external-learning-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-source-promotion-pending"
       ],
       "robloxSourceCommit": "119a05efefa25bfe9af975c8ceda3e97125ab9ac",
       "robloxSourceBootstrapPassedAt": "2026-10-12T20:41:37.107Z",
@@ -85256,7 +85256,7 @@
       "updatedAt": "2026-10-21T14:15:00.661Z"
     }
   ],
-  "updatedAt": "2026-10-21T14:15:00.661Z",
+  "updatedAt": "2026-10-21T14:15:47.452Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -85322,5 +85322,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
