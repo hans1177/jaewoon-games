@@ -621,3 +621,47 @@ test('V5 code-admission grammar gate rejects a fake MAIN/A/B/C/@ label without s
   assert.ok(gate.blockers.includes('DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE')||gate.blockers.includes('DESIGN_MAIN_A_B_DELVE_REQUIRED'));
   assert.ok(gate.blockers.includes('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING'));
 });
+
+// 변경 없는 기존 설계의 재확인은 시간 필드만 바꿔 공유 저장 충돌을 만들면 안 된다.
+test('unchanged migration and promotion preserve all four runtime documents and timestamps',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'promotion-noop-'));
+  try{
+    base(root);
+    write(root,'game-seed-state.json',{version:1,seeds:[{
+      seedId:'S-NOOP',gameId:'stable-game',gameName:'Stable Game',status:'ACTIVE',
+      productionClass:'DESIGN_ONLY',GAME_CATEGORY:'PUZZLE',INITIAL_TARGET_PLATFORM:'ROBLOX'
+    }]});
+    writeMinimumDesign(root,'stable-game');
+    promoteReadyDesignSeeds({root});
+    for(let index=0;index<2;index++){migrateDirectNativeRuntime(root);promoteReadyDesignSeeds({root});}
+    const documents=['game-seed-state.json','autonomous-portfolio.json','game-catalog.json','development-queue.json'];
+    const baseline=new Map(),bytesBefore=new Map();
+    for(const file of documents){
+      const value=read(root,file);
+      value.updatedAt='2000-01-01T00:00:00.000Z';
+      for(const rows of [value.seeds,value.projects,value.games,value.items])
+        for(const row of rows||[])row.updatedAt='2000-01-01T00:00:00.000Z';
+      if(file==='development-queue.json'){
+        value.items[0].currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+        value.items[0].canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+      }
+      write(root,file,value);baseline.set(file,value);
+      bytesBefore.set(file,fs.readFileSync(path.join(root,file),'utf8'));
+    }
+    migrateDirectNativeRuntime(root);promoteReadyDesignSeeds({root});
+    for(const file of documents){
+      assert.deepEqual(read(root,file),baseline.get(file),file);
+      assert.equal(fs.readFileSync(path.join(root,file),'utf8'),bytesBefore.get(file),file+':unchanged bytes');
+    }
+
+    // 실제 카탈로그 불일치는 정상 복구하고 그 문서의 시각만 갱신한다.
+    const catalog=read(root,'game-catalog.json');catalog.games[0].productionTier=3;
+    write(root,'game-catalog.json',catalog);
+    promoteReadyDesignSeeds({root});
+    const repaired=read(root,'game-catalog.json');
+    assert.equal(repaired.games[0].productionTier,2);
+    assert.notEqual(repaired.games[0].updatedAt,baseline.get('game-catalog.json').games[0].updatedAt);
+    assert.notEqual(repaired.updatedAt,baseline.get('game-catalog.json').updatedAt);
+    for(const file of documents.filter(file=>file!=='game-catalog.json'))assert.deepEqual(read(root,file),baseline.get(file),file);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
