@@ -2366,6 +2366,9 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(promptDesignContext)}`,
+    `DESIGN_SOURCE_BUILD_UP: ${JSON.stringify(d.designSourceBuildUp||{})}`,
+    'DESIGN_SOURCE_BUILD_UP_RULE: 설계도 매 BUILD_UP에서 진화해야 한다. 첫 단계는 최신 승인된 MAIN/A/B/C/D/@ 설계와 직전 실제 소스·플레이 증거의 차이를 분석하고 기존 설계기에서 개정을 심사받는 것이다. 승인된 설계 규칙·상태·화면 전개·책임 함수에 추적되는 기능만 기존 소스에서 빌드업한다. 이전 설계가 그대로면 승인되지 않은 새 전투·경제·진행·저장 규칙을 코드에서 먼저 발명하지 말고 기존 설계 사이클의 설계 개정을 요청한다. 버그 수리와 승인된 설계 범위의 표현/편의 수정은 계속 진행한다. 검증된 플레이 결과는 다음 설계 개정의 입력이지 설계/런타임 PASS 자체가 아니다.',
+    'A_REFERENCE_SYSTEM_DEPTH: 비슷한 유명 게임의 조작, HUD, 메뉴/화면 동선, 카메라, 전투·핵심 플레이, 장비/성장/보상, 월드·스테이지 전개, 실패/재시도, 첫 세션/후반 깊이까지 참고한다. 이름·출처·관찰된 작동 원리·우리 게임 B와의 차이·적용/기각·검증 장면을 연결하되 타 게임 고유 UI 표현·그림·캐릭터·문구·코드·에셋 복제 금지.',
     `DESIGNED_GAME_VOLUME: mode=${volume.mode||'UNKNOWN'}; authored=${volume.authoredItemCount||0}; sourceNamedCandidates=${volume.namedSourceCandidateCount||0}; sourceReview=${volume.sourceReviewRequiredCount||0}; runtimeVerified=${volume.runtimeVerifiedCount||0}; countsAreNotPass=true`,
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
@@ -2444,6 +2447,31 @@ export function buildGameSpecificBuildUpDirective({
 }={}){
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
+  const currentDesignFingerprint=sha(JSON.stringify(design));
+  const previousDesignFingerprint=clean(previousDirective?.designFingerprint);
+  const sameApprovedDesign=Boolean(previousDirective&&previousDesignFingerprint&&previousDesignFingerprint===currentDesignFingerprint);
+  const previousVerifiedOutcome=['verified','done','completed','pass','passed'].includes(clean(previousDirectiveOutcome).toLowerCase());
+  const designSourceBuildUp=Object.freeze({
+    version:1,scope:'EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY',
+    currentDesignFingerprint,previousDesignFingerprint:previousDesignFingerprint||null,
+    sameApprovedDesign,previousVerifiedOutcome,
+    revisionRequiredForNewGameplay:sameApprovedDesign&&previousVerifiedOutcome&&!safeDesignlessMode,
+    nextDesignAction:safeDesignlessMode?'REPAIR_SOURCE_WITHOUT_NEW_UNAPPROVED_GAMEPLAY':
+      sameApprovedDesign&&previousVerifiedOutcome?'REQUEST_EXISTING_DESIGN_CYCLE_REVISION':
+      'TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE',
+    sourceAuthority:'LATEST_APPROVED_SAME_GAME_DESIGN_ONLY',
+    referenceA:design?.creativeGrammar?.a?.referenceGame||null,
+    baselineB:design?.creativeGrammar?.b?.existingSystemReference||null,
+    benchmarkDimensions:Object.freeze(['INPUT_AND_PRIMARY_ACTION','HUD_AND_MENU_FLOW','CAMERA_AND_FEEDBACK',
+      'COMBAT_OR_CORE_LOOP','WORLD_AND_LEVEL_PROGRESSION','EQUIPMENT_REWARDS_AND_GROWTH',
+      'ONBOARDING_AND_FIRST_SESSION','FAILURE_RETRY_SAVE_RECOVERY','MID_LATE_DEPTH']),
+    loop:Object.freeze(['REVIEW_GAME_AND_NAMED_REFERENCE_EVIDENCE','REVISE_MAIN_A_B_C_D_AT_DESIGN',
+      'STRICT_DESIGN_REVIEW','BIND_RULE_IDS_TO_EXISTING_RESPONSIBLE_SOURCE',
+      'BUILD_SOURCE','EXACT_BUILD_RUNTIME_QA','NEXT_DESIGN_REVISION_FROM_VERIFIED_GAPS']),
+    provenanceRule:'NAMED_SOURCE_OBSERVED_MECHANICS_OR_UNVERIFIED; NEVER_COPY_DISTINCTIVE_UI_ART_CHAR_TEXT_CODE',
+    confirmedRuntimePass:false,
+    preserves:Object.freeze(['OWNER_GAME_IDENTITY','CORE_RULES','BALANCE','ECONOMY','SAVE_KEYS_AND_MEANING','NETWORK_AUTHORITY'])
+  });
   const multiplayerPolicy=readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
   const multiplayerRequired=multiplayerPolicy.required===true;
   sourceRoot=posix(sourceRoot)||posix(sourceObservation?.sourceRoot);
@@ -2864,7 +2892,8 @@ export function buildGameSpecificBuildUpDirective({
     platform:clean(platform).toUpperCase()||'COMMON',
     sourceRoot:posix(sourceRoot),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    designFingerprint:sha(JSON.stringify(design)),
+    designFingerprint:currentDesignFingerprint,
+    designSourceBuildUp,
     identityReinforcement,
     designToPlatformCodingTrace,
     designedGameVolume,
