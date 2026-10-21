@@ -8977,3 +8977,22 @@ test('internal library source execution honors Roblox asset focus without a game
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+test('behavior sequence enters canonical Vibe2 source worker without claiming runtime verification',()=>{
+  const relative='client/Game.client.luau';
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/'+relative],taskId:'behavior-capsule'});
+  workOrder.goal='거대 거미가 추격하는 장면에서 카메라와 퇴로를 보존하고 주인공은 회피한 뒤 가만히 서야 해';
+  const capsule=buildGameContextCapsule({order:workOrder,responsibleFiles:[relative]});
+  assert.equal(capsule.target,'roblox');
+  assert.ok(capsule.intent.behaviorSequence.includes('NAVIGABLE_ESCAPE'));
+  assert.ok(capsule.intent.behaviorSequence.includes('GAMEPLAY_STATE_CHANGED'));
+  assert.ok(capsule.intent.behaviorSequence.includes('STOP_TO_IDLE'));
+  assert.equal(capsule.intent.behaviorEvidenceRequired,'ACTUAL_PLATFORM_RUNTIME_REPLAY');
+  assert.equal(capsule.intent.behaviorEvidenceVerified,false);
+  assert.equal(capsule.protected.preserveGameplayMeaning,true);
+  const prompt=buildPrompt(workOrder,{files:[{path:relative,editable:true,content:'local RunService = game:GetService("RunService")\\n'}]},[relative]);
+  assert.match(prompt,/\[GAME CONTEXT CAPSULE BEGIN\]/);
+  assert.match(prompt,/NAVIGABLE_ESCAPE/);
+  assert.match(prompt,/ACTUAL_PLATFORM_RUNTIME_REPLAY/);
+  assert.match(prompt,/\[PRE-SUBMIT SELF REVIEW BEGIN\]/);
+});
