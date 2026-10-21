@@ -3812,6 +3812,21 @@ function internalAssetSourceUsageGuidance(order={}){
   ].join('\n');
 }
 
+// Existing BUILD_UP source worker: Web graphics must follow the same approved
+// design and CC0 source, never a disconnected catalog-only visual proposal.
+function webDesignGraphicsWorkerGuidance(order={}){
+  if(clean(order?.target).toLowerCase()!=='web')return'';
+  const contract=order?.assetProduction?.webDesignGraphicsImplementationContract;
+  return [
+    '[WEB DESIGN = ACTUAL GRAPHICS SOURCE / CC0 ONLY]',
+    contract?'[CURRENT DESIGN/GRAPHICS HANDOFF] '+JSON.stringify(contract)
+      :'[HANDOFF GAP] Approved design-to-graphics contract missing; do not claim graphics finished.',
+    'Work in the original responsible Web game files only. Preserve approved game identity, gameplay, save, balance and server rules. Translate approved visual design into camera-visible real 3D meshes, materials, animations, VFX and UI consumed by actual gameplay events and input/state transitions, using compatible game-specific CC0 adaptations rather than generic placeholders.',
+    'Every external art, model, motion, material, UI, VFX and audio library or asset must have verified CC0 rights plus original provenance and exact file hash before use. Public-domain-only claims, CC-BY, MIT, unknown and proprietary licensing are NOT CC0 evidence. Leave a GAP and do not apply them.',
+    'Prove actual editable game consumer paths and real browser/mobile input -> state -> visible 3D animation/VFX/UI with same-build captures. Design notes, reference images, asset IDs, patches, downloads and syntax alone NEVER equal graphics applied or final QA PASS. Follow existing BUILD_UP/F0-F9 causal-repair gates; no new pipeline or fake verification.'
+  ].join('\n');
+}
+
 function universalAssetWorkerGuidance(order={}) {
   if(order?.source?.internalAssetMotion===true)return '';
   const target=clean(order?.target).toLowerCase();
@@ -4761,6 +4776,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 visualCraftWorkerGuidance(order,context),
 universalAssetWorkerGuidance(order),
+webDesignGraphicsWorkerGuidance(order),
 internalAssetSourceUsageGuidance(order),
 internalAssetApiIndexGuidance(context),
 gameContextCapsuleGuidance(order,exploration,responsibleFiles),
