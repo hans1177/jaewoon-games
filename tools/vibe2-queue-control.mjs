@@ -37,7 +37,7 @@ const CANONICAL_RESERVATION_POLICY = configuredPolicyPath
   : '';
 // [웹게임 원본] 최신 main 정책 작업 트리의 카탈로그를 우선한다. 별도 큐나 상태 파일은 만들지 않는다.
 const CANONICAL_CATALOG_PATH = configuredPolicyPath
-  ? path.resolve(path.dirname(CANONICAL_RESERVATION_POLICY),'..','..','game-catalog.json')
+  ? path.resolve(path.dirname(CANONICAL_RESERVATION_POLICY),'..','game-catalog.json')
   : path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','game-catalog.json');
 const RETIRED_WEB_SOURCE_STATES = new Set([
   'PERMANENTLY_REMOVED_REJECTED_TEST','WITHDRAWN_SIMPLE_PROTOTYPE',
