@@ -6,7 +6,7 @@ function clean(v){return String(v??'').trim();}
 function has(v,words){const s=clean(v).toLowerCase();return words.some(w=>s.includes(String(w).toLowerCase()));}
 function unique(v){return [...new Set(v.filter(Boolean))];}
 
-export function buildVibeQaScenario({request='',target='web'}={}){
+export function buildVibeQaScenario({request='',target='web',behaviorChain=[]}={}){
   const prompt=clean(request);if(!prompt)throw new Error('qa request required');
   const cases=['앱/페이지 로딩','게임 시작','기본 진행','터치 버튼','가상 조이스틱','화면 안전 여백','세로/가로 전환','일시정지','재시작','저장','불러오기','콘솔 오류'];
   if(has(prompt,['공격','전투','피해','데미지','투사체'])) cases.push('타겟 선택','사거리','공격 쿨타임','피해 적용','적 사망');
@@ -17,7 +17,31 @@ export function buildVibeQaScenario({request='',target='web'}={}){
   if(has(prompt,['세이브','저장','진행도'])) cases.push('게임 ID 일치','버전 호환','기존 세이브 보호');
   if(has(prompt,['오류','버그','고장','멈춰','안 돼'])) cases.push('동일 오류 재현','원인 수정 후 재현 실패 확인');
   if(target==='godot') cases.push('씬 참조','스크립트 참조','리소스 경로','실행 가능 여부');
-  return Object.freeze({version:1,target:target==='godot'?'godot':'web',request:prompt,cases:Object.freeze(unique(cases)),passCriteria:'모든 필수 시나리오 통과 + 새 콘솔/런타임 오류 없음'});
+  // 메인: 미래 상태까지 이동하는 재현 절차. 이 계획 자체는 실행 증거가 아니다.
+  const chain=Array.isArray(behaviorChain)?behaviorChain.filter(v=>typeof v==='string'):[];
+  const replayCases=[
+    {id:'entry-to-real-play',action:'start-and-enter-world',expected:'world-and-controllable-player-visible',horizon:'IMMEDIATE'},
+    {id:'restart-save-restore',action:'save-restart-reload',expected:'same-game-state-and-key',horizon:'SAVE_LOAD_CYCLE'},
+    {id:'progress-to-next-objective',action:'complete-current-objective-and-advance',expected:'no-softlock-or-lost-progress',horizon:'NEXT_STAGE'},
+    {id:'long-session',action:'repeat-gameplay-input-and-checkpoints',expected:'responsive-input-no-runtime-errors',horizon:'LONG_SESSION'},
+  ];
+  if(has(prompt,['공격','전투','회피','사격','총'])||chain.includes('AUTHORITATIVE_HIT'))
+    replayCases.push({id:'combat-input-to-resolution',action:'target-attack-dodge-return-idle',expected:'authoritative-result-matches-animation-and-controls',horizon:'NEXT_STATE_TRANSITION'});
+  if(has(prompt,['걷기','이동','모션','가만히','문워크','쓰러','다리'])||chain.includes('STOP_TO_IDLE'))
+    replayCases.push({id:'direction-and-contact',action:'move-turn-stop-hit-fall',expected:'facing-foot-contact-idle-and-grounded-fall-correct',horizon:'NEXT_STATE_TRANSITION'});
+  if(has(prompt,['추격','도망','장면','거미','퇴로'])||chain.includes('NAVIGABLE_ESCAPE'))
+    replayCases.push({id:'scene-threat-escape',action:'trigger-threat-move-through-scene-return-control',expected:'line-of-sight-navigation-camera-and-input-agree',horizon:'NEXT_STAGE'});
+  if(has(prompt,['프레임','렉','버벅','최적화','이펙트']))
+    replayCases.push({id:'mobile-presentation-budget',action:'stress-effects-on-mobile',expected:'presentation-scaled-without-gameplay-or-state-changes',horizon:'LONG_SESSION'});
+  const normalizedTarget=['web','godot','roblox','unity'].includes(clean(target).toLowerCase())?clean(target).toLowerCase():'web';
+  return Object.freeze({
+    version:2,target:normalizedTarget,request:prompt,cases:Object.freeze(unique(cases)),
+    replayCases:Object.freeze(replayCases.map(row=>Object.freeze({...row,evidenceRequired:'ACTUAL_PLATFORM_RUNTIME',verified:false}))),
+    replayExecuted:false,
+    replayPass:false,
+    replayAuthority:'PLANNING_ONLY',
+    passCriteria:'모든 필수 시나리오 통과 + 실제 기기/플랫폼 재현 증거 + 새 콘솔/런타임 오류 없음'
+  });
 }
 
 if(typeof window!=='undefined') window.buildJaewoonVibeQaScenario=buildVibeQaScenario;

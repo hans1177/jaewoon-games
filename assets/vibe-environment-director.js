@@ -1284,7 +1284,33 @@ export function scoreVibeMapPlacement({placements=[]}={}){let score=100,issues=[
 export function planVibeMapAutopilot({maps=[],regions=[],mobile=true,concept={},referencesByMap={},referenceImagesByMap={},genre='ADAPTIVE',learningEventsByMap={}}={}){return Object.freeze({version:7,variation:createVibeMapVariationPlan({maps}),plans:Object.freeze(maps.map(m=>{const region=regions.find(x=>x.name===m.region)||{};return Object.freeze({map:m.name,composition:createVibeMapComposition({map:m,region,mobile}),placement:createVibeMapPlacementGrammar(),adaptiveWorld:createVibeAdaptiveWorldGenerationPlan({map:m,region,concept,reference:referencesByMap[m.name]||{},referenceImage:referenceImagesByMap[m.name]||null,mobile,nodes:m.routeNodes||[],edges:m.routeEdges||[],genre,learningEvents:learningEventsByMap[m.name]||[]})})})),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',deterministic:true,gameplayFirst:true,noGameplayMutation:true,directReferenceLayoutCopyForbidden:true,rawReferencePersistentLearningForbidden:true,referenceImagesSourceBound:true,perceivedSeamlessStreamingTarget:true})})}
 export function createVibeSceneContext({game={},region={},situation={}}={}){return Object.freeze({gameplay:situation.gameplay||game.gameplay||'',world:game.world||'',region:region.name||'',biome:region.biome||'',time:situation.time||'',weather:situation.weather||'',danger:situation.danger||'',recentEvent:situation.recentEvent||'',faction:situation.faction||region.faction||'',mood:situation.mood||'',playerState:situation.playerState||''})}
 export function createVibePropRecreationBlueprint(prop={},context={}){return Object.freeze({id:prop.id||prop.name||'prop',cause:Object.freeze({function:prop.function||prop.use||'environmental',material:prop.material||'world-derived',history:prop.history||context.recentEvent||'normal-use'}),form:Object.freeze({primaryMass:'function-derived-main-volume',secondaryMass:'supporting-structure',contact:'ground-or-wall-contact',wear:'use-specific'}),depth:Object.freeze({sideFace:'volume-cue',castShadow:'grounding',contactShadow:'attachment',overlap:'layered-parts'}),protected:Object.freeze(['collision','interaction-range','gameplay-size','function'])})}
-export function createVibeSceneRecreationPlan({game={},region={},situation={},props=[]}={}){const context=createVibeSceneContext({game,region,situation});return Object.freeze({version:3,context,objects:Object.freeze(props.map(p=>createVibePropRecreationBlueprint(p,context))),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',noBlindAssetReuse:true,noGameplayMutation:true})})}
+export function createVibeSceneRecreationPlan({game={},region={},situation={},props=[]}={}){
+  const context=createVibeSceneContext({game,region,situation});
+  // 메인: 장식부터 만들지 않고 관찰할 플레이 경험에서 시선/동선 요구를 역으로 도출한다.
+  const goal=String(situation.playerGoal||situation.objective||'').trim();
+  const threat=String(situation.threat||situation.danger||'').trim();
+  const focus=String(situation.focusTarget||situation.playerFocus||'').trim();
+  const routes=(Array.isArray(situation.escapeRoutes)?situation.escapeRoutes:[])
+    .map(value=>String(value||'').trim()).filter(Boolean);
+  const requiredObservations=Object.freeze([
+    ...(goal?['OBJECTIVE_REACHABLE_WITH_EXISTING_NAVIGATION']:[]),
+    ...(threat?['THREAT_VISIBLE_BEFORE_COMMITMENT','THREAT_LINE_OF_SIGHT_CONSISTENT']:[]),
+    ...(focus?['CAMERA_FOCUS_DOES_NOT_HIDE_PRIMARY_CONTROL']:[]),
+    ...(routes.length?['ESCAPE_ROUTES_COLLISION_AND_NAVIGATION_VERIFIED']:[]),
+    'EXISTING_SPAWN_COLLISION_INTERACTION_AND_SAVE_PRESERVED'
+  ]);
+  return Object.freeze({
+    version:4,context,
+    objects:Object.freeze(props.map(p=>createVibePropRecreationBlueprint(p,context))),
+    reverseStaging:Object.freeze({
+      intendedPlayerExperience:Object.freeze({goal,threat,focus,escapeRoutes:Object.freeze(routes)}),
+      requiredObservations,sourceGeometryModificationAllowed:false,
+      actualReachabilityVerified:false,actualCameraVerified:false,planningOnly:true
+    }),
+    policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',
+      noBlindAssetReuse:true,noGameplayMutation:true,noSpawnOrRouteMutation:true})
+  });
+}
 export function scoreVibeSceneDimensionality({objects=[]}={}){let score=100,issues=[];for(const o of objects){if(!o.sideOrDepthCue){score-=10;issues.push('flat')}if(!o.contactShadow){score-=8;issues.push('floating')}if(!o.overlap){score-=8;issues.push('no-overlap')}}return Object.freeze({score:clamp(score),issues:Object.freeze(issues),pass:score>=72})}
 export function createVibeAssetRecreationGate({original={},candidate={}}={}){const changed=['silhouette','mass','parts','material','wear','attachment','depth','lighting'].filter(k=>JSON.stringify(original[k])!==JSON.stringify(candidate[k])),issues=[];if(changed.length<3)issues.push('too-close-to-reuse');if(candidate.collisionChanged)issues.push('collision-change');return Object.freeze({safe:!issues.length,issues:Object.freeze(issues),changedDimensions:Object.freeze(changed)})}
 export function planVibeAssetRecreationAutopilot({scenes=[]}={}){return Object.freeze({version:3,scenes:Object.freeze(scenes.map(s=>createVibeSceneRecreationPlan(s))),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',target:'re-creation-not-recycling',noRuleMutation:true})})}
