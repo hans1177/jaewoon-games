@@ -6,7 +6,7 @@ import vm from 'node:vm';
 // Runs the shipped game's own inline script with a minimal event/DOM harness.
 // No invented gameplay PASS: this proves only control-state logic, not a browser release.
 const html=fs.readFileSync('web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html','utf8');
-const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1]?.replace(/^import[^\n]*\n/,'');
+const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1]?.replace(/^\s*import\s*\{createStar3d\}\s*from\s*'\.\/star3d\.mjs';\s*/,'');
 test('Star Echo mobile joystick is single-pointer and releases on pause/blur/lost capture',()=>{
   assert.ok(script,'real game script present');
   assert.match(html,/\.joystick\{[^}]*touch-action:none/);
