@@ -202685,7 +202685,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T15:26:33.658Z"
+      "updatedAt": "2026-10-21T15:27:57.185Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202906,7 +202906,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T15:26:33.713Z"
+      "updatedAt": "2026-10-21T15:27:57.209Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237340,7 +237340,15 @@
         "system-ai-representative-canary:source-mutation-required-before-revalidation",
         "actions-run:39610306188",
         "system-ai-impact-score:828",
-        "actions-run:39614869108"
+        "actions-run:39614869108",
+        "system-ai-stale-reservation-reclaimed:YES",
+        "stale-reservation-cause:LEASE_EXPIRED",
+        "system-ai-handoff-state:STALE_RECLAIM",
+        "system-ai-handoff-from-reservation:system-ai:39620324919:1",
+        "system-ai-handoff-to-reservation:PENDING",
+        "system-ai-exact-checkpoint-resume:YES",
+        "retry-budget-consumed:NO",
+        "learning-penalty:NO"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -237358,7 +237366,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-21T15:26:33.849Z"
+      "updatedAt": "2026-10-21T15:27:57.297Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238002,7 +238010,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T15:26:33.800Z"
+      "updatedAt": "2026-10-21T15:27:57.273Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238510,7 +238518,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-21T15:26:33.757Z"
+      "updatedAt": "2026-10-21T15:27:57.246Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -239222,6 +239230,67 @@
       "maxRetries": null,
       "createdAt": "2026-10-21T15:00:07.151Z",
       "updatedAt": "2026-10-21T15:00:10.787Z"
+    },
+    {
+      "id": "recovery-093bcd8dff656d25baeb",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/vibe2-candidate-release.yml:d8c952d713e72eb98d511366869468b05b253775:unresolved-run-39617509974",
+      "gameId": null,
+      "responsibleFiles": [
+        ".github/workflows/vibe2-candidate-release.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/vibe2-candidate-release.yml"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO for an unresolved game using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+      "checkpoint": "d8c952d713e72eb98d511366869468b05b253775",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "d8c952d713e72eb98d511366869468b05b253775",
+      "evidence": [
+        "deployment-failure-run:39617509974:1",
+        "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+        "deployment-platform:WEB",
+        "deployment-game:UNRESOLVED",
+        "deployment-head-sha:d8c952d713e72eb98d511366869468b05b253775",
+        "deployment-production-class:UNVERIFIED",
+        "deployment-failed-job:REJECT",
+        "deployment-failed-step:RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/39617509974",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-10-21T15:27:56.899Z",
+      "updatedAt": "2026-10-21T15:27:59.624Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-10-21T15:27:59.624Z"
+      ]
     }
   ]
 }
