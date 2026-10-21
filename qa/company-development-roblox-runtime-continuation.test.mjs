@@ -416,3 +416,100 @@ test('owner-active Roblox lane retries platform-only failures while Unity remain
   assert.equal(JSON.parse(plan([{...item,robloxBuildSourceRevision:'c'.repeat(40)}])).length,0);
   assert.equal(item.selectedPlatform,'UNITY');
 });
+
+
+// 로블록스 외부 모델은 조언만 할 수 있고, 실제 패키지의 정확한 원본 검증을 통과로 위조할 수 없다.
+test('Roblox external review remains advisory for immutable exact-package preflight',async()=>{
+  const item={
+    gameId:'roblox-review-scope',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
+    robloxSourceCommit:'a'.repeat(40),robloxBuildSourceRevision:'a'.repeat(40),
+    robloxBuildOrPackagePassed:true,robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    webValidationPassedAt:null,musicValidationPassed:false
+  };
+  const priorKey=process.env.GEMINI_API_KEY;
+  process.env.GEMINI_API_KEY='mock-key-only';
+  let calls=0;
+  const externalReview=async(_url,options)=>{
+    calls++;
+    const body=JSON.parse(options.body);
+    const prompt=body.contents[0].parts[0].text;
+    const evidence=JSON.parse(prompt.split('BUILD_EVIDENCE=')[1].split('\n')[0]);
+    assert.equal(evidence.buildOrPackagePassed,true);
+    assert.equal(evidence.sourceRevision,item.robloxSourceCommit);
+    assert.equal(evidence.artifactIdentity,item.robloxBuildArtifactIdentity);
+    assert.equal(Object.hasOwn(evidence,'webValidationPassed'),false);
+    assert.equal(Object.hasOwn(evidence,'musicValidationPassed'),false);
+    return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({
+      decision:'BLOCK',blockers:['webValidationPassed is false'],note:'Misread optional web validation'
+    })}]}}]})};
+  };
+  try{
+    const result=await evaluateRobloxBuildPreflight({item,directive,fetchImpl:externalReview});
+    assert.equal(calls,1);
+    assert.equal(result.pass,true);
+    assert.equal(result.state,'PASS');
+    assert.deepEqual(result.blockers,[]);
+    assert.equal(result.leadReviews[0].decision,'BLOCK');
+    assert.equal(result.facts.build.webValidationPassed,false);
+    assert.equal(result.facts.build.musicValidationPassed,false);
+    const unavailable=await evaluateRobloxBuildPreflight({item,directive,
+      fetchImpl:async()=>{throw new Error('isolated model unavailable');}});
+    assert.equal(unavailable.pass,true);
+    assert.equal(unavailable.leadReviews[0].decision,'UNAVAILABLE');
+    const stale=await evaluateRobloxBuildPreflight({item:{...item,robloxBuildSourceRevision:'c'.repeat(40)},directive,
+      fetchImpl:async()=>{throw new Error('Invalid package must not request a reviewer');}});
+    assert.equal(stale.pass,false);
+    assert.ok(stale.blockers.includes('source-revision-mismatch'));
+    assert.equal(stale.leadReviews.length,0);
+  }finally{
+    if(priorKey===undefined)delete process.env.GEMINI_API_KEY;
+    else process.env.GEMINI_API_KEY=priorKey;
+  }
+});
+
+test('Roblox continuation retries only exact legacy AI or missing-review failures, never invalid source',()=>{
+  const header="          import fs from 'node:fs';";
+  const start=preflight.indexOf(header);
+  const end=preflight.indexOf('\n          NODE',start);
+  assert.ok(start>=0&&end>start);
+  const script=preflight.slice(start,end).replace(/^\s*import .*;$/gm,'');
+  const revision='a'.repeat(40),identity='sha256:'+'b'.repeat(64);
+  const base={
+    status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
+    robloxSourceCommit:revision,robloxBuildSourceRevision:revision,
+    robloxBuildOrPackagePassed:true,robloxBuildArtifactIdentity:identity,
+    robloxBuildPassedAt:'2026-10-21T04:51:24.727Z',
+    robloxBuildPreflightFailedAt:'2026-10-21T04:51:24.727Z',
+    robloxFailureStage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+    robloxFailureSignature:'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
+  };
+  const staleAi={
+    authority:'roblox-exact-package-build-preflight',facts:{pass:true,blockers:[]},
+    sourceRevision:revision,artifactIdentity:identity,
+    blockers:['lead-block:shared-review:webValidationPassed is false'],
+  };
+  const items=[
+    {...base,gameId:'missing-once',robloxBuildPreflightEvidence:null},
+    {...base,gameId:'review-misread',robloxBuildPreflightEvidence:staleAi,
+      robloxBuildPreflightFailedAt:'2026-10-21T05:07:57.889Z'},
+    {...base,gameId:'already-retried',robloxBuildPreflightEvidence:null,
+      robloxBuildPreflightFailedAt:'2026-10-21T05:07:57.889Z'},
+    {...base,gameId:'stale-source',robloxBuildSourceRevision:'c'.repeat(40),
+      robloxBuildPreflightEvidence:null},
+    {...base,gameId:'wrong-identity',robloxBuildPreflightEvidence:{...staleAi,artifactIdentity:'sha256:'+'c'.repeat(64)},
+      robloxBuildPreflightFailedAt:'2026-10-21T05:07:57.889Z'},
+    {...base,gameId:'true-gate-failure',robloxBuildPreflightEvidence:{...staleAi,blockers:['source-revision-mismatch']},
+      robloxBuildPreflightFailedAt:'2026-10-21T05:07:57.889Z'},
+  ];
+  const written=[];
+  runInNewContext(script,{
+    fs:{readFileSync:file=>JSON.stringify(file.endsWith('development-queue.json')?{items}:{roblox:{validationMode:'HEADLESS_FAST_MVP'}}),
+      appendFileSync:(_file,value)=>written.push(value)},
+    ownerFocusedSecondaryPlatformEligible:()=>false,
+    process:{env:{GITHUB_OUTPUT:'output'}},
+    console:{log:()=>{}},
+  });
+  const matrix=JSON.parse(written.find(x=>x.startsWith('matrix=')).slice('matrix='.length));
+  assert.deepEqual(matrix.include.map(x=>x.gameId),['missing-once','review-misread']);
+  assert.ok(matrix.include.every(x=>x.sourceRevision===revision&&x.artifactIdentity===identity));
+});
