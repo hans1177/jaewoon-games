@@ -366,7 +366,7 @@ function vibeSourceProvenance(asset={}){
   const httpsProof=value=>{try{const url=new URL(text(value));return url.protocol==='https:'&&!url.username&&!url.password&&Boolean(url.hostname)&&!/(^localhost$|\.localhost$|\.local$|\.internal$)/i.test(url.hostname);}catch{return false;}};
   const sourcePage=asset.sourceUrl||asset.originalSourceUrl;
   const rightsPage=asset.licenseEvidenceUrl||asset.licenseSourceUrl||asset.licenseEvidence;
-  return Boolean(id&&source&&asset.downloaded!==false&&httpsProof(sourcePage)&&httpsProof(rightsPage)
+  return Boolean(id&&source&&asset.downloaded===true&&httpsProof(sourcePage)&&httpsProof(rightsPage)
     &&/^[0-9a-f]{64}$/i.test(sourceHash)&&/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license)
     &&asset.securityBlocked!==true&&asset.internalUseForbidden!==true&&asset.quarantined!==true
     &&asset.practiceOnly!==true&&asset.practiceArtifact!==true&&asset.authority!=='PRACTICE_ONLY');

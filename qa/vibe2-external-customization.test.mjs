@@ -53,6 +53,7 @@ test('CC0 customization refuses unacquired or untraceable source metadata before
     {...validSource,id:'unsafe-origin',sourceUrl:'http://example.org/archive'},
     {...validSource,id:'unsafe-rights',licenseEvidenceUrl:'https://localhost/cc0'},
     {...validSource,id:'not-acquired',downloaded:false},
+    {...validSource,id:'unconfirmed-acquisition',downloaded:undefined},
     {...validSource,id:'malformed-hash',sourceHash:'a'.repeat(63)},
     {...validSource,id:'only-commercial',license:'MIT'},
     {...validSource,id:'practice',practiceArtifact:true}];
