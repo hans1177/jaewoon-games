@@ -623,7 +623,8 @@ test('current all-platform CC0 policy reaches game workers on Web Roblox and Uni
 });
 
 test('external native customization rejects non-CC0 game assets despite company runtime approval',()=>{
- const base={family:'CHARACTER',sourceHash:'a'.repeat(64),path:'assets/source.glb',verifiedCompanyReusable:true};
+ const base={family:'CHARACTER',sourceHash:'a'.repeat(64),path:'assets/source.glb',verifiedCompanyReusable:true,
+  downloaded:true,sourceUrl:'https://kenney.nl/assets/characters',licenseEvidenceUrl:'https://kenney.nl/assets/characters'};
  for(const target of ['web','roblox']){
   const plan=planVibeExternalCustomization({request:'character model',gameId:'demo',target,approvedDesignFingerprint:'a'.repeat(64),
    ownerScope:{status:'ACTIVE',activeTargets:['WEB','ROBLOX'],ownerHeldTargets:[],existingPipelineOnly:true},

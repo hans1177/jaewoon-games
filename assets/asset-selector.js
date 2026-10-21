@@ -361,7 +361,13 @@ function vibeSourceProvenance(asset={}){
   const id=text(asset.id),sourceHash=text(asset.sourceHash||asset.sha256||asset.contentHash);
   const license=text(asset.license||asset.licenseDeclared||asset.policy).toUpperCase();
   const source=Boolean(asset.path||asset.masterGlb||asset.sourceFiles?.length||asset.nativeArtifacts?.length);
-  return Boolean(id&&source&&/^[0-9a-f]{64}$/i.test(sourceHash)&&/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license)
+  // 실제 다운로드·고정 해시·CC0 원본의 권리 증명은 별개의 요건이다.
+  // 이름/해시 문자열만 적힌 카탈로그 항목은 네이티브 제작 입력으로 사용하지 않는다.
+  const httpsProof=value=>{try{const url=new URL(text(value));return url.protocol==='https:'&&!url.username&&!url.password&&Boolean(url.hostname)&&!/(^localhost$|\.localhost$|\.local$|\.internal$)/i.test(url.hostname);}catch{return false;}};
+  const sourcePage=asset.sourceUrl||asset.originalSourceUrl;
+  const rightsPage=asset.licenseEvidenceUrl||asset.licenseSourceUrl||asset.licenseEvidence;
+  return Boolean(id&&source&&asset.downloaded!==false&&httpsProof(sourcePage)&&httpsProof(rightsPage)
+    &&/^[0-9a-f]{64}$/i.test(sourceHash)&&/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license)
     &&asset.securityBlocked!==true&&asset.internalUseForbidden!==true&&asset.quarantined!==true
     &&asset.practiceOnly!==true&&asset.practiceArtifact!==true&&asset.authority!=='PRACTICE_ONLY');
 }
