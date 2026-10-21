@@ -1027,9 +1027,9 @@ jobs:
           const seen=new Set();
           for(const task of tasks){
             if(task.status!=='running'||String(task.blocker||'')!=='slot-released-awaiting-fan-in')continue;
-            // Historical role/candidate markers survive retries but do not prove
-            // this reserved run produced a downloadable result artifact.
-            if((task.evidence||[]).some(value=>/^role-result:review:PASS$|^web-f0-f9-verified$/i.test(String(value))))continue;
+            // Prior review PASS markers survive newer reservations; they are
+            // not evidence that this reservation produced its worker artifact.
+            if((task.evidence||[]).some(value=>/^web-f0-f9-verified$/i.test(String(value))))continue;
             if(Array.isArray(task.neuronResults)&&task.neuronResults.length)continue;
             const id=String(task.reservationRunId||'');
             if(!/^\d+$/.test(id)||seen.has(id))continue;

@@ -3171,7 +3171,14 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
       'role-result:implementation:PASS','role-result:review:WAITING_FAN_IN',
       'candidate-sha:'+'a'.repeat(40),'worker-artifact-run:99'
     ],responsibleFiles:['index.html'],buildUpNextAction:'CAUSAL_REPAIR'},
-    {...base,id:'reviewed',evidence:['role-result:review:PASS']},
+    {...base,id:'historical-reviewed',evidence:[
+      'role-result:review:PASS','candidate-sha:'+'b'.repeat(40),'worker-artifact-run:99'
+    ]},
+    {...base,id:'graphics-orphan',department:'graphics',assetProductionLane:true,
+      executionLane:'RELEASE_WAIT',sourceRoot:'assets/shared',
+      responsibleFiles:['assets/shared/monster.glb']},
+    {...base,id:'graphics-unrelated',department:'graphics',assetProductionLane:false,
+      executionLane:'RELEASE_WAIT'},
     {...base,id:'verified-web',evidence:['web-f0-f9-verified']},
     {...base,id:'preserved-result',neuronResults:[{variant:'primary'}]},
     {...base,id:'different-run',reservationRunId:'101',reservationId:'101:1'},
@@ -3182,7 +3189,22 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
   const notCompleted=recoverCompletedRunningReservations(queue,{completedRunIds:[],noResultRunIds:['100']});
   assert.equal(notCompleted.recovered,0,'artifact probe alone is not completed-run evidence');
   const recovered=recoverCompletedRunningReservations(queue,{completedRunIds:['100'],noResultRunIds:['100']});
-  assert.equal(recovered.recovered,2);
+  assert.equal(recovered.recovered,4);
+  const graphics=recovered.queue.tasks.find(row=>row.id==='graphics-orphan');
+  assert.equal(graphics.status,'queued','graphics implementation must recover despite RELEASE_WAIT lane');
+  assert.equal(graphics.blocker,null);
+  assert.equal(graphics.reservationRunId,null);
+  assert.equal(graphics.department,'graphics');
+  assert.equal(graphics.assetProductionLane,true);
+  assert.equal(graphics.sourceRoot,'assets/shared');
+  assert.deepEqual([...graphics.responsibleFiles],['assets/shared/monster.glb']);
+  assert.equal(graphics.goal,base.goal);
+  assert.equal(graphics.retries,1);
+  assert.equal(graphics.lastOutcome,'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED');
+  const reviewed=recovered.queue.tasks.find(row=>row.id==='historical-reviewed');
+  assert.equal(reviewed.status,'queued','historical review PASS must not certify a later artifact-empty reservation');
+  assert.equal(reviewed.lastOutcome,'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED');
+  assert.ok(reviewed.evidence.includes('role-result:review:PASS'),'old review evidence is preserved');
   const historical=recovered.queue.tasks.find(row=>row.id==='historical-only');
   assert.equal(historical.status,'queued','old result markers must not pin a completed, artifact-empty run');
   assert.equal(historical.blocker,null);
@@ -3202,11 +3224,11 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
   assert.deepEqual(orphan.retainedResponsibleFileLocks,[]);
   assert.equal(orphan.lastOutcome,'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED');
   assert.ok(orphan.evidence.includes('recovery:verified-completed-fan-in-no-worker-artifacts'));
-  for(const id of ['reviewed','verified-web','preserved-result','different-run','qa']){
+  for(const id of ['graphics-unrelated','verified-web','preserved-result','different-run','qa']){
     assert.equal(recovered.queue.tasks.find(row=>row.id===id).status,'running',id);
   }
   assert.match(continuousWorkflow,/VIBE2_FAN_IN_NO_RESULT_PROBE=VERIFIED_EMPTY/);
-  assert.match(continuousWorkflow,/\^role-result:review:PASS\$/);
+  assert.doesNotMatch(continuousWorkflow,/\^role-result:review:PASS\$\|\^web-f0-f9-verified\$/);
   assert.match(continuousWorkflow,/Array\.isArray\(task\.neuronResults\)/);
   assert.match(continuousWorkflow,/--no-result-runs="\$no_result_fanin_runs"/);
   assert.match(continuousWorkflow,/\[ "\$\(cat "\$status_file"\)" = 'completed' \] \|\| continue/);
