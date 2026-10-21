@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {deriveVerifiedCodePatterns} from '../tools/vibe2-code-pattern-ingest.mjs';
+import {buildVerifiedTrainingSample} from '../tools/vibe2-training-sample.mjs';
 
 test('verified sample yields abstract code patterns without raw patch',()=>{
   const rows=deriveVerifiedCodePatterns({
@@ -118,4 +119,26 @@ test('runtime, browser regression, stale trace and gameplay replay cannot be fab
     actualPlatformRuntime:true,independentQaPass:true,expectedObservationMet:true,gameplaySemanticsPreserved:true
   }]}});
   assert.ok(!wrongRevision.some(row=>row.system==='INPUT_ACTION_CAUSAL_CHAIN'));
+});
+
+
+test('canonical runtime replay is retained from training sample to reusable pattern only for exact revision',()=>{
+  const sourceRevision='8'.repeat(40);
+  const sample=buildVerifiedTrainingSample({
+    evidence:{gameId:'forest',candidateId:'forest-verified',sourcePath:'web-games/forest',
+      role:'development',goal:'터치 공격 판정 실제 상태 반응',summary:'real input action repair',
+      verificationTrace:{state:'PASS',sourceRevision,commitSha:sourceRevision,pullRequest:5,
+        ci:'PASS',independentQa:'PASS',runtime:'PASS',stale:false,flaky:false},
+      replayEvidence:[{scenarioId:'combat-input-to-resolution',horizon:'NEXT_STATE_TRANSITION',sourceRevision,
+        actualPlatformRuntime:true,independentQaPass:true,expectedObservationMet:true,gameplaySemanticsPreserved:true}]},
+    patch:'diff --git a/web-games/forest/index.html b/web-games/forest/index.html\\n-old\\n+new',
+    sourceRevision,taskType:'coding',independentQa:'PASS',browserQa:'PASS'
+  });
+  const causal=deriveVerifiedCodePatterns(sample,'verified-training.json')
+    .find(row=>row.system==='INPUT_ACTION_CAUSAL_CHAIN');
+  assert.equal(causal?.observedReplay?.sourceRevision,sourceRevision);
+  assert.equal(causal?.observedReplay?.actualPlatformRuntime,true);
+  assert.equal(causal?.rawCodeStored,false);
+  const unverified=deriveVerifiedCodePatterns({...sample,verification:{...sample.verification,replayEvidence:[]}},'no-actual-replay.json');
+  assert.ok(!unverified.some(row=>row.system==='INPUT_ACTION_CAUSAL_CHAIN'));
 });
