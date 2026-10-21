@@ -248,7 +248,8 @@ const debugPort=await allocateLocalPort();
 // Keep the established Chrome options unchanged for unrelated games.
 const wild3dOnly=gameIds.length===1&&gameIds[0]==='wild-survival';
 const tower3dOnly=gameIds.length===1&&gameIds[0]==='tower-choice-rpg';
-const native3dOnly=wild3dOnly||tower3dOnly;
+const star3dOnly=gameIds.length===1&&gameIds[0]==='seed-action-survival-rogu-echoes-of-the-lost-star';
+const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly;
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
@@ -363,6 +364,7 @@ try{
     // Only accept a completed Three.js frame AND a live WebGL2 drawing buffer.
     if(native3dOnly){
       currentPhase='TRUE_WEBGL_3D_FRAME';
+      if(star3dOnly)assert.equal(start?.clicked,true,'star-echoes: active gameplay start not clicked');
       assert.equal(start?.clicked,true,'wild-survival: survival start action was not triggered');
       let proof=null;
       for(let attempt=0;attempt<65;attempt++){
