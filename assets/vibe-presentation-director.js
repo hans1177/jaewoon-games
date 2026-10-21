@@ -262,13 +262,34 @@ export function createVibeHighEndPresentationStack({request=''}={}){return Objec
   rules:Object.freeze(['presentation-follows-authoritative-gameplay-events','signature-events-use-dedicated-presentation','scene-intent-precedes-decoration','character-and-creature-acting-is-part-of-visual-quality','primary-secondary-procedural-motion-layers-compose-together','game-specific-vfx-language-and-intensity-hierarchy','lighting-supports-region-risk-and-event-readability','camera-never-hides-required-telegraph','audio-vfx-camera-lighting-share-one-art-direction','audio-selection-follows-game-concept-and-runtime-state','mobile-readability-and-reduced-motion-preserved','presentation-checkpoint-never-means-terminal-completion']),
   protected:Object.freeze(['damage','cooldown','reward','spawn-rule','save','progression','economy','hit-semantics'])
 })}
-export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,game={},world={},viewport={width:393,height:852},uiSurfaces=[]}={}){
+export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,game={},world={},viewport={width:393,height:852},uiSurfaces=[],performanceTelemetry=null}={}){
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
   const craftPlans=Object.freeze((Array.isArray(uiSurfaces)&&uiSurfaces.length?uiSurfaces:[{surface:'HUD',components:[]}]).map(row=>buildVibePresentationCraft({game,world,viewport,surface:row.surface,components:row.components||[],safeInsets:row.safeInsets||{},focalRegion:row.focalRegion||null})));
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
   const cinematicDirection=highEnd.cinematicDirection;
+  // 메인: 관찰된 프레임 비용으로 연출 예산만 조정한다. 게임 판정/스폰/입력은 불변이다.
+  const width=Number(viewport?.width)||393, height=Number(viewport?.height)||852;
+  const mobile=Math.min(width,height)<600;
+  const observedFrameMs=Number(performanceTelemetry?.frameMs);
+  const measured=performanceTelemetry?.actualRuntime===true&&
+    Number.isFinite(observedFrameMs)&&observedFrameMs>0;
+  const frameBudgetMs=mobile?33.333:16.667;
+  const pressure=measured?observedFrameMs/frameBudgetMs:null;
+  const tier=!measured?'UNMEASURED':pressure>1.5?'CRITICAL':pressure>1?'PRESSURED':'NORMAL';
+  const presentationBudget=Object.freeze({
+    tier,mobile,frameBudgetMs,
+    observedFrameMs:measured?observedFrameMs:null,
+    telemetrySource:measured?'OBSERVED_RUNTIME':'UNVERIFIED_OR_ABSENT',
+    particlesPerImpact:tier==='CRITICAL'?4:tier==='PRESSURED'?8:16,
+    distantDecorativeEffectDensity:tier==='CRITICAL'?'MINIMAL':tier==='PRESSURED'?'REDUCED':'NORMAL',
+    essentialHitFeedbackRequired:true,
+    actionInputAndCollisionUnchanged:true,
+    spawnedEntityAndCombatBudgetUnchanged:true,
+    gameplayStateAndSaveMutationAllowed:false,
+    recommendedOnly:true,actualRuntimeBudgetApplied:false
+  });
   const tasks=[];
   for(const area of audit.priority)tasks.push(Object.freeze({domain:'presentation',target:area,action:`improve-${area}`,risk:['camera','transition'].includes(area)?'medium':'low'}));
   tasks.push(Object.freeze({domain:'presentation',target:'cinematic-direction',action:'align-scene-intent-acting-motion-vfx-camera-lighting-audio',risk:'medium'}));
@@ -277,7 +298,7 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
     version:3,
     request:String(request),
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
-    audit,designSystem,craftPlans,timeline,highEnd,cinematicDirection,
+    audit,designSystem,craftPlans,timeline,highEnd,cinematicDirection,presentationBudget,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
     policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})

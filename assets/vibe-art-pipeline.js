@@ -590,8 +590,18 @@ export function createVibeGraphicsProduction({
   const artSpec=createVibeArtPipeline({request,target:platforms.length===2?'native':String(platforms[0]||target).toLowerCase(),quality,style});
   const visualDirection=planVibeStyleAwareGraphicsAutopilot({game,world,characters,platform:platforms.length===2?'mobile':String(platforms[0]||'mobile').toLowerCase()});
   const visualWork=planVibeVisualAutopilot({files,graph,request});
+  // 메인: 기존 엔진 측정 캡처에서 확인된 프레임 데이터만 표현 예산에 전달한다.
+  // 누락된 데이터는 추정해 통과 처리하지 않으며 실제 게임 판정에 영향을 주지 않는다.
+  const verifiedFrameSample=engineMeasurementCapture?.automatic===true
+    &&Boolean(clean(engineMeasurementCapture?.sourceHash))
+    &&Boolean(clean(engineMeasurementCapture?.captureHash))
+    &&Number.isFinite(Number(engineMeasurementCapture?.frameMs))
+    &&Number(engineMeasurementCapture.frameMs)>0;
   const presentation=planVibePresentationAutopilot({
     files,events,request,changeRequest:changeRequestStability,game,world,
+    performanceTelemetry:verifiedFrameSample
+      ? {actualRuntime:true,frameMs:Number(engineMeasurementCapture.frameMs)}
+      : null,
     uiSurfaces:(Array.isArray(game?.interfaceComposition)?game.interfaceComposition:Array.isArray(game?.uiSurfaces)?game.uiSurfaces:[]).filter(row=>row&&typeof row==='object')
   });
   const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
