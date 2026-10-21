@@ -10,6 +10,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090c12;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
 canvas{display:block;width:100vw;height:100vh;background:#10151f}
+#renderStatus{position:fixed;left:50%;bottom:max(160px,calc(144px + env(safe-area-inset-bottom)));transform:translateX(-50%);z-index:29;max-width:94vw;padding:8px 12px;background:#101923ed;border:1px solid #f2b65d;border-radius:12px;color:#fff;font-size:12px;font-weight:850;text-align:center;pointer-events:none}
 button{font:inherit;touch-action:manipulation}
 #hud{position:fixed;left:10px;top:max(10px,env(safe-area-inset-top));z-index:5;pointer-events:none;text-shadow:0 2px 5px #000}
 .hudRow{display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100vw - 90px)}
@@ -50,7 +51,8 @@ button{font:inherit;touch-action:manipulation}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
+<canvas id="game" data-gameplay-surface="main" data-render-target="webgl-3d"></canvas>
+<div id="renderStatus" role="status">3D 원본 모델과 WebGL 화면을 불러오는 중…</div>
 
 <div id="hud">
   <div class="hudRow">
@@ -121,13 +123,16 @@ button{font:inherit;touch-action:manipulation}
   </div>
 </div>
 
-<script>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
+<script type="module">
 // 파일명: web-games/tower-choice-rpg/index.html
+import {createTower3d} from './tower3d.mjs';
 // 메인: 대충 RPG식 실시간 이동/공격 + 10층 로그라이크 선택 구조
 
 const SAVE_KEY='tower-choice-rpg-v1';
 const $=id=>document.getElementById(id);
-const canvas=$('game'),ctx=canvas.getContext('2d');
+const canvas=$('game');
+let tower3d=null;
 const WORLD={w:1600,h:1000};
 let W=innerWidth,H=innerHeight,dpr=1;
 let running=false,last=performance.now(),currentRoom='choice',floorCleared=false;
@@ -197,9 +202,8 @@ function maxHp(){return state.player.baseHp+ARMORS[state.player.armor].hp}
 function attackPower(){return state.player.baseAtk+state.player.bonusAtk+WEAPONS[state.player.weapon].atk}
 function healRatio(r){const p=state.player;p.hp=Math.min(maxHp(),p.hp+Math.ceil(maxHp()*r))}
 function resize(){
- dpr=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;
- canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);
- canvas.style.width=W+'px';canvas.style.height=H+'px';
+ dpr=Math.min(1.5,devicePixelRatio||1);W=innerWidth;H=innerHeight;
+ tower3d?.resize();
 }
 addEventListener('resize',resize);resize();
 
@@ -237,6 +241,7 @@ function toast(msg){
  const t=$('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.opacity='0',1200);
 }
 function hideControls(hide){
+ if(hide)releaseInputs();
  $('joy').style.display=hide?'none':'block';
  $('attackBtn').style.display=hide?'none':'block';
  $('bagBtn').style.display=hide?'none':'block';
@@ -481,63 +486,17 @@ function update(dt){
  for(let i=effects.length-1;i>=0;i--){effects[i].t-=dt;if(effects[i].t<=0)effects.splice(i,1)}
  camera.x=Math.max(0,Math.min(WORLD.w-W,p.x-W/2));camera.y=Math.max(0,Math.min(WORLD.h-H,p.y-H/2));
 }
+// The original game alone resolves authoritative combat and movement.
+ // The renderer is visual-only, consuming current authoritative state every frame.
 function draw(){
- ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
- if(!state){ctx.fillStyle='#10151f';ctx.fillRect(0,0,W,H);return}
- ctx.save();ctx.translate(-camera.x,-camera.y);drawRoom();
- for(const e of enemies)if(!e.dead)drawEnemy(e);
- drawPlayer();
- for(const fx of effects)drawEffect(fx);
- ctx.restore();
-}
-function drawRoom(){
- ctx.fillStyle='#191d24';ctx.fillRect(0,0,WORLD.w,WORLD.h);
- for(let y=0;y<WORLD.h;y+=80)for(let x=0;x<WORLD.w;x+=80){
-  ctx.fillStyle=((x/80+y/80)%2===0)?'#20252d':'#1c222a';ctx.fillRect(x,y,78,78);
- }
- ctx.fillStyle='#0d1118';ctx.fillRect(0,0,WORLD.w,60);ctx.fillRect(0,WORLD.h-45,WORLD.w,45);ctx.fillRect(0,0,45,WORLD.h);ctx.fillRect(WORLD.w-45,0,45,WORLD.h);
- ctx.fillStyle='#3d424b';
- for(let x=160;x<WORLD.w-100;x+=300){ctx.fillRect(x,105,44,44);ctx.fillRect(x,WORLD.h-155,44,44)}
- ctx.fillStyle='#f0a53c';for(let x=110;x<WORLD.w-100;x+=260){ctx.beginPath();ctx.arc(x,78,8,0,Math.PI*2);ctx.fill()}
-}
-function drawPlayer(){
- const p=state.player;ctx.save();if(p.inv>0&&Math.floor(p.inv*18)%2===0)ctx.globalAlpha=.4;
- ctx.translate(p.x,p.y);ctx.fillStyle='#e4c29b';ctx.beginPath();ctx.arc(0,-16,11,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#3c78d8';ctx.fillRect(-12,-5,24,29);ctx.fillStyle='#222a36';ctx.fillRect(-11,24,8,18);ctx.fillRect(3,24,8,18);
- const l=Math.hypot(p.dirX,p.dirY)||1,dx=p.dirX/l,dy=p.dirY/l;ctx.strokeStyle='#e8d6b0';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(dx*10,dy*10);ctx.lineTo(dx*32,dy*32);ctx.stroke();
- ctx.restore();
-}
-function drawEnemy(e){
- ctx.save();ctx.translate(e.x,e.y);
- if(e.telegraph){
-  ctx.strokeStyle=e.special==='doom'?'#d35cff':'#ff4b55';ctx.lineWidth=5;ctx.globalAlpha=.4+.3*Math.sin(performance.now()/80);
-  if(e.telegraph.type==='dash'){
-   ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(e.telegraph.dx*280,e.telegraph.dy*280);ctx.stroke();
-  }else{ctx.beginPath();ctx.arc(0,0,e.telegraph.r,0,Math.PI*2);ctx.stroke()}
-  ctx.globalAlpha=1;
- }
- ctx.fillStyle=e.hit>0?'#fff':e.color;ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#15181d';ctx.fillRect(-e.r*.45,-e.r*.15,6,6);ctx.fillRect(e.r*.25,-e.r*.15,6,6);
- ctx.fillStyle='#2c0d12';ctx.fillRect(-30,-e.r-27,60,7);ctx.fillStyle=e.boss?'#d85561':'#ef5a62';ctx.fillRect(-30,-e.r-27,60*Math.max(0,e.hp/e.maxHp),7);
- ctx.fillStyle='#fff';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(e.name,0,-e.r-34);ctx.textAlign='left';ctx.restore();
-}
-function drawEffect(fx){
- const a=Math.max(0,fx.t/fx.max);ctx.save();ctx.globalAlpha=a;
- if(fx.type==='slash'){
-  const ang=Math.atan2(fx.dy,fx.dx);ctx.strokeStyle='#fff4b8';ctx.lineWidth=9;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.range*.55,ang-.75,ang+.75);ctx.stroke();
- }else if(fx.type==='hit'){
-  ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(fx.x-16,fx.y-16);ctx.lineTo(fx.x+16,fx.y+16);ctx.moveTo(fx.x+16,fx.y-16);ctx.lineTo(fx.x-16,fx.y+16);ctx.stroke();
- }else if(fx.type==='hurt'){
-  ctx.fillStyle='#f33';ctx.beginPath();ctx.arc(fx.x,fx.y,32*(1-a)+18,0,Math.PI*2);ctx.fill();
- }else if(fx.type==='burst'){
-  ctx.strokeStyle='#ff735f';ctx.lineWidth=12;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*(1-a*.35),0,Math.PI*2);ctx.stroke();
- }
- ctx.restore();
+ if(tower3d&&state)tower3d.render({player:state.player,enemies,effects},performance.now());
 }
 function loop(t){
- requestAnimationFrame(loop);const dt=Math.min(.035,(t-last)/1000||0);last=t;if(running)update(dt);draw();
+ requestAnimationFrame(loop);
+ const dt=Math.min(.035,(t-last)/1000||0);last=t;
+ if(running)update(dt);
+ if(tower3d)draw();
 }
-
 const joyEl=$('joy'),knob=$('knob');let joyId=null,joyCenter={x:0,y:0};
 function setJoy(clientX,clientY){
  const r=joyEl.getBoundingClientRect();joyCenter.x=r.left+r.width/2;joyCenter.y=r.top+r.height/2;
@@ -545,12 +504,14 @@ function setJoy(clientX,clientY){
  joy.x=dx/m;joy.y=dy/m;knob.style.transform='translate('+dx+'px,'+dy+'px)';
 }
 function stopJoy(){joyId=null;joy.x=0;joy.y=0;knob.style.transform='translate(0,0)'}
-joyEl.addEventListener('pointerdown',e=>{e.preventDefault();joyId=e.pointerId;try{joyEl.setPointerCapture(e.pointerId)}catch{}setJoy(e.clientX,e.clientY)},{passive:false});
+joyEl.addEventListener('pointerdown',e=>{if(joyId!==null)return;e.preventDefault();joyId=e.pointerId;try{joyEl.setPointerCapture(e.pointerId)}catch{}setJoy(e.clientX,e.clientY)},{passive:false});
 joyEl.addEventListener('pointermove',e=>{if(e.pointerId!==joyId)return;e.preventDefault();setJoy(e.clientX,e.clientY)},{passive:false});
 joyEl.addEventListener('pointerup',e=>{if(e.pointerId===joyId)stopJoy()},{passive:false});
-joyEl.addEventListener('pointercancel',stopJoy);
-joyEl.addEventListener('lostpointercapture',stopJoy);
-addEventListener('blur',stopJoy);
+joyEl.addEventListener('pointercancel',e=>{if(e.pointerId===joyId)stopJoy()});
+joyEl.addEventListener('lostpointercapture',e=>{if(e.pointerId===joyId)stopJoy()});
+function releaseInputs(){stopJoy();for(const k of Object.keys(keys))delete keys[k]}
+addEventListener('blur',releaseInputs);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseInputs()});
 addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();attackNow()}});
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 
@@ -573,7 +534,18 @@ function winGame(){
  $('endTitle').textContent='10층 탑 정복';$('endText').textContent='최종보스를 쓰러뜨렸다. 남은 골드 '+state.player.gold+' G';$('endOverlay').classList.add('show');
 }
 if(localStorage.getItem(SAVE_KEY))$('continueBtn').style.display='block';
-requestAnimationFrame(loop);
+$('startBtn').disabled=true;$('continueBtn').disabled=true;
+createTower3d({canvas,WORLD}).then(renderer=>{
+ tower3d=renderer;
+ $('renderStatus').style.display='none';
+ $('startBtn').disabled=false;$('continueBtn').disabled=false;
+ last=performance.now();
+ requestAnimationFrame(loop);
+}).catch(error=>{
+ console.error('[Tower RPG WebGL 3D]',error);
+ document.body.dataset.spatialDimension='3d-error';
+ $('renderStatus').textContent='3D 실행 실패: '+String(error?.message||error)+' · WebGL 지원 브라우저에서 다시 열어 줘.';
+});
 </script>
 </body>
 </html>
