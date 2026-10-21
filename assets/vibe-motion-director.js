@@ -810,6 +810,12 @@ export function createSurvivalPlayerMotionProfile({platform='ROBLOX',tool='AXE'}
     platform:upper(platform),
     tool:toolKey,
     primaryToolMotion:toolMotion,
+    // 웹 모션: 확보된 KayKit CC0 리그의 실제 클립 이름. 게임 판정은 원래 상태가 소유한다.
+    cc0Clips:Object.freeze({
+      idle:'Idle',walk:'Walking_A',run:'Running_A',hit:'Hit_A',death:'Death_A',
+      dodge:'Dodge_Forward',block:'Block',interact:'Interact',
+      attack:toolKey==='SPEAR'?'1H_Melee_Attack_Stab':toolKey==='NONE'?'Unarmed_Melee_Attack_Punch_A':'1H_Melee_Attack_Chop'
+    }),
     groups:SURVIVAL_PLAYER_MOTION_PACK,
     mechanics:Object.freeze({
       accelerationBodyLean:true,

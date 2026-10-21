@@ -2398,6 +2398,26 @@ export function findPresentationQualityTask(project,repoRoot,queue){
 }
 export function findWebPresentationQualityTask(project,repoRoot,queue){
   if(clean(project?.engine).toLowerCase()!=='web')return null;
+  // 소유자 CC0 모션 교체: 모든 개발 중 웹 게임을 기존 그래픽 작업·검증 경로로 인계한다.
+  const replacement=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.assetAcquisitionAndReuse?.webActionMotionReplacement;
+  const id=clean(project.gameId)+'-web-cc0-action-motion-v1';
+  const catalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
+  const game=(catalog.games||[]).find(row=>clean(row.id)===clean(project.gameId));
+  const root=posix(project.projectPath);
+  if(replacement?.enabled===true&&clean(project.releaseState).toLowerCase()==='development-confirmed'
+    &&root==='web-games/'+clean(project.gameId)&&game&&!webSourceRetiredInCatalog(game)
+    &&clean(project.queueCanonicalState).toUpperCase()!=='WEB_VIBE_REPAIR_REQUIRED'
+    &&fs.existsSync(sourceFile(repoRoot,root+'/index.html'))&&!hasTask(queue,id)){
+    const relatives=presentationSourcesForProject(project,repoRoot);
+    const goal='[WEB_CC0_ACTION_MOTION_REPLACEMENT] 현재 승인 설계와 실제 실행 소스를 먼저 읽고 이 게임의 플레이어·NPC·적 액션 모션을 출처·CC0 라이선스·원본 SHA256이 확인된 기존 모션 라이브러리 클립으로 교체한다. assets/asset-license-ledger.json과 company-asset-library.json을 확인하고 KayKit 원본 리그의 Idle/Walking_A/Running_A/공격/방어/회피/피격/사망 클립을 장비·종·리그에 맞게 선택한다. 인간용 리그를 동물·곤충에 강제 적용하지 않는다. 원래 모델·실루엣·장비 접점은 보존하며 호환 리그를 검증해 리타게팅한다. 기존 THREE.AnimationMixer 또는 해당 게임의 실제 렌더러 책임 함수를 직접 수정하고 새 wrapper나 덧붙이기식 override는 만들지 않는다. 이미 CC0를 쓰면 실제 클립·상태 연결과 누락 동작을 검사해 필요한 부분만 고친다. 비액션 장르에는 전투 기능을 만들지 않는다. 기존 판정·공격 주기·이동 속도·저장·진행·밸런스·히트박스·서버 권한은 바꾸지 않는다. 한 번 재생할 액션은 LoopOnce, 반복 이동은 LoopRepeat로 구분하고 연속 공격·중단·재시작·사망 후 정지를 검증한다. 기존 2D나 호환 불가 리그는 임의 단순 도형 모션으로 완료 처리하지 말고 기존 3D 전환 책임 경로에서 호환 자산과 연결한다. CC0 원본 또는 호환 클립이 없으면 정확한 GAP를 기록하고 기존 동작은 검증된 교체 전까지 보존한다. 같은 빌드에서 모바일 이동·액션·피격·사망·재시작의 연속 프레임과 전후 비교를 남기고 기존 독립 QA·회귀·F0~F9를 통과한 뒤에만 교체 완료로 판정한다.';
+    const out=task(id,project,goal,relatives,'owner-immediate','medium',[
+      'owner-directive:'+replacement.requestId,'web-cc0-action-motion-replacement:v1',
+      'presentation-pass:ASSET_ADAPTATION','presentation-preserve-gameplay-semantics',
+      'presentation-runtime-qa-required','cc0-original-hash-and-license-required'
+    ]);
+    out.ownerDirective=true;out.speculativeEligible=false;
+    return out;
+  }
   return findPresentationQualityTask(project,repoRoot,queue);
 }
 
@@ -3850,6 +3870,8 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     ]);
   }
   if(project.engine==='web'){
+    const cc0Replacement=findWebPresentationQualityTask(project,repoRoot,queue);
+    if(cc0Replacement?.evidence?.includes('web-cc0-action-motion-replacement:v1'))return[cc0Replacement];
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
       return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
