@@ -183,6 +183,7 @@ test('Gemini 429 failover reaches only a pinned OpenRouter free model',async()=>
     assert.equal(last.url,'https://openrouter.ai/api/v1/chat/completions');
     assert.equal(body.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
     assert.ok(body.model.endsWith(':free'));
+    assert.equal(body.model,'google/gemma-4-31b-it:free','pin only a currently published, explicitly free model; never a paid base slug');
     assert.equal(body.messages[0].content,'JSON source task');
     assert.equal(last.options.headers.authorization,'Bearer openrouter-test-secret');
     assert.ok(!last.options.body.includes('gemini-test-secret'));

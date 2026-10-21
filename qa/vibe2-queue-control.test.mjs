@@ -3167,7 +3167,12 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
     retries:1,retainedResponsibleFileLocks:['index.html']};
   const queue=createVibeContinuousQueue({tasks:[
     {...base,id:'orphan-no-result'},
+    {...base,id:'historical-only',evidence:[
+      'role-result:implementation:PASS','role-result:review:WAITING_FAN_IN',
+      'candidate-sha:'+'a'.repeat(40),'worker-artifact-run:99'
+    ],responsibleFiles:['index.html'],buildUpNextAction:'CAUSAL_REPAIR'},
     {...base,id:'reviewed',evidence:['role-result:review:PASS']},
+    {...base,id:'verified-web',evidence:['web-f0-f9-verified']},
     {...base,id:'preserved-result',neuronResults:[{variant:'primary'}]},
     {...base,id:'different-run',reservationRunId:'101',reservationId:'101:1'},
     {...base,id:'qa',blocker:'candidate-awaiting-qa-and-deployment'}
@@ -3177,7 +3182,18 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
   const notCompleted=recoverCompletedRunningReservations(queue,{completedRunIds:[],noResultRunIds:['100']});
   assert.equal(notCompleted.recovered,0,'artifact probe alone is not completed-run evidence');
   const recovered=recoverCompletedRunningReservations(queue,{completedRunIds:['100'],noResultRunIds:['100']});
-  assert.equal(recovered.recovered,1);
+  assert.equal(recovered.recovered,2);
+  const historical=recovered.queue.tasks.find(row=>row.id==='historical-only');
+  assert.equal(historical.status,'queued','old result markers must not pin a completed, artifact-empty run');
+  assert.equal(historical.blocker,null);
+  assert.equal(historical.reservationRunId,null);
+  assert.equal(historical.lastOutcome,'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED');
+  assert.equal(historical.sourceRoot,'web-games/forest');
+  assert.equal(historical.goal,base.goal);
+  assert.deepEqual([...historical.responsibleFiles],['index.html']);
+  assert.equal(historical.buildUpNextAction,'CAUSAL_REPAIR','paired design/source build-up survives recovery');
+  assert.equal(historical.retries,1);
+  assert.ok(historical.evidence.some(value=>value.startsWith('candidate-sha:')),'historical evidence is retained without being treated as current proof');
   const orphan=recovered.queue.tasks.find(row=>row.id==='orphan-no-result');
   assert.equal(orphan.status,'queued');
   assert.equal(orphan.blocker,null);
@@ -3186,10 +3202,12 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
   assert.deepEqual(orphan.retainedResponsibleFileLocks,[]);
   assert.equal(orphan.lastOutcome,'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED');
   assert.ok(orphan.evidence.includes('recovery:verified-completed-fan-in-no-worker-artifacts'));
-  for(const id of ['reviewed','preserved-result','different-run','qa']){
+  for(const id of ['reviewed','verified-web','preserved-result','different-run','qa']){
     assert.equal(recovered.queue.tasks.find(row=>row.id===id).status,'running',id);
   }
   assert.match(continuousWorkflow,/VIBE2_FAN_IN_NO_RESULT_PROBE=VERIFIED_EMPTY/);
+  assert.match(continuousWorkflow,/\^role-result:review:PASS\$/);
+  assert.match(continuousWorkflow,/Array\.isArray\(task\.neuronResults\)/);
   assert.match(continuousWorkflow,/--no-result-runs="\$no_result_fanin_runs"/);
   assert.match(continuousWorkflow,/\[ "\$\(cat "\$status_file"\)" = 'completed' \] \|\| continue/);
 });
