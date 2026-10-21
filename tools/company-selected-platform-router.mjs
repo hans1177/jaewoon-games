@@ -207,13 +207,19 @@ export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platfor
   return targetPlatformDevelopmentEligible({...item,selectedPlatform:requested,targetPlatform:requested});
 }
 
-export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
+export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX,roadmap={}){
   const requested=Number(max);
   const limit=Number.isFinite(requested)&&requested>=0?requested:Number.POSITIVE_INFINITY;
+  const focus=roadmap?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+  const focusedRobloxGameIds=new Set(focus.enabled===true&&focus.completionPursuit?.enabled===true
+    ?(focus.ownerFocusedGameIds||[]).filter(id=>focus.ownerFocusedGamePlatforms?.[id]==='ROBLOX'):[]);
   return Object.freeze(items
     .filter(item=>DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
     .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE'}))
     .sort((a,b)=>{
+      // 집중 대상은 먼저 배정하고, 남는 용량은 기존 대기 순서로 일반 개발에 사용한다.
+      const focusOrder=Number(focusedRobloxGameIds.has(clean(b.gameId)))-Number(focusedRobloxGameIds.has(clean(a.gameId)));
+      if(focusOrder)return focusOrder;
       const at=Date.parse(a.enqueuedAt||'')||0;
       const bt=Date.parse(b.enqueuedAt||'')||0;
       if(at!==bt)return at-bt;
