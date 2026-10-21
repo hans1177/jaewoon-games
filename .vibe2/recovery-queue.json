@@ -202668,7 +202668,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T14:47:26.134Z"
+      "updatedAt": "2026-10-21T14:52:11.990Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202889,7 +202889,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T14:47:26.160Z"
+      "updatedAt": "2026-10-21T14:52:12.021Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237265,7 +237265,18 @@
         "actions-run:39552492280",
         "recovery-escalated-from:system-ai",
         "recovery-route:SYSTEM_AI",
-        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE"
+        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE",
+        "recovery-queue:recovery-6750d371f227c6d811a8",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+        "failure-cause:source-mutation-required-before-revalidation",
+        "system-ai-duplicate-repair-coalesced:YES",
+        "system-ai-coalesced-count:2",
+        "system-ai-impact-score:827",
+        "system-ai-blocked-task-count:7",
+        "system-ai-representative-canary:source-mutation-required-before-revalidation",
+        "actions-run:39610306188",
+        "system-ai-impact-score:828",
+        "actions-run:39614869108"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -237283,7 +237294,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-21T06:26:38.129Z"
+      "updatedAt": "2026-10-21T14:52:12.145Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -237924,7 +237935,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T14:47:26.217Z"
+      "updatedAt": "2026-10-21T14:52:12.085Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238430,7 +238441,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-21T14:47:26.199Z"
+      "updatedAt": "2026-10-21T14:52:12.059Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
