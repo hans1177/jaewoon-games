@@ -1,8 +1,8 @@
 {
-  "version": 139,
+  "version": 140,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-11T15:26:51.037565+00:00",
+  "updatedAt": "2026-10-21T12:04:02.721186+00:00",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -6396,7 +6396,9 @@
       "verifiedAt": "2026-09-24",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "161_HUMANOID_ANIMATIONS",
@@ -6417,7 +6419,8 @@
       "volumeAdaptationEligible": true,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
-      "rawRedistributionAllowed": true
+      "rawRedistributionAllowed": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kaykit-adventurers",
@@ -6432,7 +6435,9 @@
       "verifiedAt": "2026-09-24",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "GAME_READY_CHARACTER",
@@ -6446,7 +6451,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-universal-animation-library",
@@ -6459,7 +6465,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/universalanimationlibrary.html",
       "verifiedAt": "2026-09-24",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6485,7 +6494,8 @@
       "volumeAdaptationEligible": true,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
-      "rawRedistributionAllowed": true
+      "rawRedistributionAllowed": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-universal-animation-library-2",
@@ -6498,7 +6508,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/universalanimationlibrary2.html",
       "verifiedAt": "2026-09-24",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6525,7 +6538,8 @@
       "volumeAdaptationEligible": true,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
-      "rawRedistributionAllowed": true
+      "rawRedistributionAllowed": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-universal-base-characters",
@@ -6538,7 +6552,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/universalbasecharacters.html",
       "verifiedAt": "2026-09-24",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6556,7 +6573,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-ultimate-animated-animals",
@@ -6569,7 +6587,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/ultimateanimatedanimals.html",
       "verifiedAt": "2026-09-24",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6594,7 +6615,8 @@
       "volumeAdaptationEligible": true,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
-      "rawRedistributionAllowed": true
+      "rawRedistributionAllowed": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-bestiary-dungeon-monsters",
@@ -6622,7 +6644,10 @@
       "rawRedistributionAllowed": false,
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": false,
+      "gameUseForbidden": true,
+      "exclusionReason": "NON_CC0_GAME_ASSET_SOURCE"
     },
     {
       "id": "adobe-mixamo",
@@ -6648,7 +6673,9 @@
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
       "speculativeDownloadAllowed": false,
-      "automaticAcquisitionWhenSelected": false
+      "automaticAcquisitionWhenSelected": false,
+      "gameUseForbidden": true,
+      "exclusionReason": "NON_CC0_GAME_ASSET_SOURCE"
     },
     {
       "id": "kenney-mini-forest",
@@ -6663,7 +6690,9 @@
       "verifiedAt": "2026-09-30",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D_ENVIRONMENT",
@@ -6678,7 +6707,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-mini-dungeon",
@@ -6693,7 +6723,9 @@
       "verifiedAt": "2026-09-30",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D_ENVIRONMENT",
@@ -6711,7 +6743,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-modular-buildings",
@@ -6731,7 +6764,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D",
@@ -6750,7 +6785,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-building-kit",
@@ -6769,7 +6805,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D",
@@ -6788,7 +6826,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-ultimate-buildings",
@@ -6807,7 +6846,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatetexturedbuildings.html",
       "verifiedAt": "2026-10-04",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6831,7 +6873,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-medieval-village",
@@ -6850,7 +6893,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/medievalvillage.html",
       "verifiedAt": "2026-10-04",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6874,7 +6920,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-modular-medieval-buildings",
@@ -6892,7 +6939,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/modularmedievalbuildings.html",
       "verifiedAt": "2026-10-04",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6915,7 +6965,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-ultimate-fantasy-rts",
@@ -6934,7 +6985,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatefantasyrts.html",
       "verifiedAt": "2026-10-04",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -6959,7 +7013,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-furniture-kit",
@@ -6978,7 +7033,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D",
@@ -6997,7 +7054,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-ultimate-modular-ruins",
@@ -7016,7 +7074,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatemodularruins.html",
       "verifiedAt": "2026-10-04",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -7040,7 +7101,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-ui-pack",
@@ -7058,7 +7120,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "430_FILES",
@@ -7078,7 +7142,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-ui-audio",
@@ -7096,7 +7161,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "50_AUDIO_FILES",
@@ -7115,7 +7182,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-interface-sounds",
@@ -7133,7 +7201,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "100_AUDIO_FILES",
@@ -7152,7 +7222,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-rpg-audio",
@@ -7170,7 +7241,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "50_AUDIO_FILES",
@@ -7189,7 +7262,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-impact-sounds",
@@ -7207,7 +7281,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "130_AUDIO_FILES",
@@ -7225,7 +7301,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-nature-kit",
@@ -7245,7 +7322,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D",
@@ -7265,7 +7344,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "quaternius-ultimate-nature",
@@ -7283,7 +7363,10 @@
       "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatenature.html",
       "verifiedAt": "2026-10-04",
       "platformTargets": [
-        "UNITY"
+        "UNITY",
+        "WEB",
+        "ROBLOX",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "ROBLOX"
@@ -7306,7 +7389,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "poly-haven-cc0-library",
@@ -7326,7 +7410,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "PBR_TEXTURES",
@@ -7345,7 +7431,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-city-kit-roads",
@@ -7365,7 +7452,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D",
@@ -7385,7 +7474,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "kenney-city-kit-industrial",
@@ -7405,7 +7495,9 @@
       "verifiedAt": "2026-10-04",
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "capabilities": [
         "3D",
@@ -7425,7 +7517,8 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-fence-cc0",
@@ -7451,7 +7544,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7482,7 +7577,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-stag-cc0",
@@ -7508,7 +7604,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7539,7 +7637,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-mosswing-whelp-cc0",
@@ -7565,7 +7664,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7596,7 +7697,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-mossrune-wyrmling-cc0",
@@ -7622,7 +7724,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7653,7 +7757,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-wolf-cub-cc0",
@@ -7679,7 +7784,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7710,7 +7817,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-enchanted-table-cc0",
@@ -7736,7 +7844,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7767,7 +7877,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-enchanted-essence-cc0",
@@ -7793,7 +7904,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7824,7 +7937,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "meshy-illuminated-relic-cc0",
@@ -7850,7 +7964,9 @@
       },
       "platformTargets": [
         "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "FORTNITE_UEFN"
       ],
       "platformResearchTargets": [
         "WEB"
@@ -7881,7 +7997,8 @@
       "productionVerified": false,
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "acquired-quaternius-characters",
@@ -7897,7 +8014,10 @@
         "CREATURE"
       ],
       "platformTargets": [
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "UNITY",
+        "FORTNITE_UEFN"
       ],
       "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
       "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
@@ -7911,7 +8031,8 @@
       "productionVerified": false,
       "prefetchAllowed": false,
       "speculativeDownloadAllowed": false,
-      "automaticAcquisitionWhenSelected": true
+      "automaticAcquisitionWhenSelected": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "acquired-quaternius-cute",
@@ -7927,7 +8048,10 @@
         "CREATURE"
       ],
       "platformTargets": [
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "UNITY",
+        "FORTNITE_UEFN"
       ],
       "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
       "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
@@ -7941,7 +8065,8 @@
       "productionVerified": false,
       "prefetchAllowed": false,
       "speculativeDownloadAllowed": false,
-      "automaticAcquisitionWhenSelected": true
+      "automaticAcquisitionWhenSelected": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "acquired-quaternius-monsters",
@@ -7957,7 +8082,10 @@
         "CREATURE"
       ],
       "platformTargets": [
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "UNITY",
+        "FORTNITE_UEFN"
       ],
       "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
       "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
@@ -7971,7 +8099,8 @@
       "productionVerified": false,
       "prefetchAllowed": false,
       "speculativeDownloadAllowed": false,
-      "automaticAcquisitionWhenSelected": true
+      "automaticAcquisitionWhenSelected": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "acquired-kaykit-adventurers",
@@ -7987,7 +8116,10 @@
         "CREATURE"
       ],
       "platformTargets": [
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "UNITY",
+        "FORTNITE_UEFN"
       ],
       "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
       "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
@@ -8001,7 +8133,8 @@
       "productionVerified": false,
       "prefetchAllowed": false,
       "speculativeDownloadAllowed": false,
-      "automaticAcquisitionWhenSelected": true
+      "automaticAcquisitionWhenSelected": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "acquired-kaykit-skeletons",
@@ -8017,7 +8150,10 @@
         "CREATURE"
       ],
       "platformTargets": [
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "UNITY",
+        "FORTNITE_UEFN"
       ],
       "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
       "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
@@ -8031,7 +8167,8 @@
       "productionVerified": false,
       "prefetchAllowed": false,
       "speculativeDownloadAllowed": false,
-      "automaticAcquisitionWhenSelected": true
+      "automaticAcquisitionWhenSelected": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
     },
     {
       "id": "acquired-kenney-mini-characters",
@@ -8047,7 +8184,10 @@
         "CREATURE"
       ],
       "platformTargets": [
-        "ROBLOX"
+        "ROBLOX",
+        "WEB",
+        "UNITY",
+        "FORTNITE_UEFN"
       ],
       "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
       "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
@@ -8061,7 +8201,804 @@
       "productionVerified": false,
       "prefetchAllowed": false,
       "speculativeDownloadAllowed": false,
-      "automaticAcquisitionWhenSelected": true
+      "automaticAcquisitionWhenSelected": true,
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED"
+    },
+    {
+      "id": "kenney-survival-kit",
+      "name": "Survival Kit",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "PROP",
+        "WEAPON",
+        "BUILDING"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/survival-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/survival-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "survival",
+        "camp",
+        "tools",
+        "tree"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-pirate-kit",
+      "name": "Pirate Kit",
+      "category": "CHARACTER",
+      "categories": [
+        "CHARACTER",
+        "ENVIRONMENT",
+        "PROP",
+        "BUILDING"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/pirate-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/pirate-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "pirate",
+        "ship",
+        "boat",
+        "island",
+        "fortress"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-modular-cave-kit",
+      "name": "Modular Cave Kit",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "TERRAIN"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/modular-cave-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/modular-cave-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "cave",
+        "dungeon",
+        "modular",
+        "tiles"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-fantasy-town-kit",
+      "name": "Fantasy Town Kit",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "ENVIRONMENT",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "medieval",
+        "house",
+        "town",
+        "wall"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-space-kit",
+      "name": "Space Kit",
+      "category": "PROP",
+      "categories": [
+        "PROP",
+        "ENVIRONMENT"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/space-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/space-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "space",
+        "ship",
+        "planet"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-food-kit",
+      "name": "Food Kit",
+      "category": "PROP",
+      "categories": [
+        "PROP",
+        "ITEM"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/food-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/food-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "food",
+        "kitchen",
+        "eat"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-holiday-kit",
+      "name": "Holiday Kit",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "BUILDING",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/holiday-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/holiday-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "snow",
+        "winter",
+        "tree",
+        "cabin"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-retro-urban-kit",
+      "name": "Retro Urban Kit",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "ENVIRONMENT",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/retro-urban-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/retro-urban-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "urban",
+        "city",
+        "building"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-digital-audio",
+      "name": "Digital Audio",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/digital-audio",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/digital-audio",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "digital",
+        "ui",
+        "feedback"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-voiceover-pack",
+      "name": "Voiceover Pack",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/voiceover-pack",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/voiceover-pack",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "voice",
+        "announcement",
+        "feedback"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-music-jingles",
+      "name": "Music Jingles",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/music-jingles",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/music-jingles",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "music",
+        "reward",
+        "victory",
+        "jingle"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-sci-fi-sounds",
+      "name": "Sci-fi Sounds",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/sci-fi-sounds",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/sci-fi-sounds",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "sci-fi",
+        "laser",
+        "weapon",
+        "feedback"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-modular-dungeon-kit",
+      "name": "Modular Dungeon Kit",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "BUILDING",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/modular-dungeon-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/modular-dungeon-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "dungeon",
+        "modular",
+        "tiles"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-platformer-kit",
+      "name": "Platformer Kit",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "PROP",
+        "CHARACTER"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/platformer-kit",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/platformer-kit",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "platformer",
+        "obstacle",
+        "character"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-animated-characters-survivors",
+      "name": "Animated Characters Survivors",
+      "category": "CHARACTER",
+      "categories": [
+        "CHARACTER",
+        "MOTION"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/animated-characters-survivors",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/animated-characters-survivors",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "survivor",
+        "humanoid",
+        "animation"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "kenney-animated-characters-retro",
+      "name": "Animated Characters Retro",
+      "category": "CHARACTER",
+      "categories": [
+        "CHARACTER",
+        "MOTION"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/animated-characters-retro",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/animated-characters-retro",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "retro",
+        "humanoid",
+        "animation"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "quaternius-fantasy-props-megakit",
+      "name": "Fantasy Props MegaKit",
+      "category": "PROP",
+      "categories": [
+        "PROP",
+        "WEAPON",
+        "EQUIPMENT",
+        "BUILDING"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/fantasypropsmegakit.html",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/fantasypropsmegakit.html",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "medieval",
+        "sword",
+        "axe",
+        "tool",
+        "furniture",
+        "potion",
+        "chest"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
+    },
+    {
+      "id": "ambientcg-cc0-materials",
+      "name": "ambientCG CC0 Materials",
+      "category": "MATERIAL",
+      "categories": [
+        "MATERIAL",
+        "TEXTURE"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "ambientCG",
+      "sourceUrl": "https://ambientcg.com/",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://docs.ambientcg.com/license/",
+      "verifiedAt": "2026-10-21",
+      "licenseEvidenceSummary": "Official asset page or official asset license states Creative Commons CC0.",
+      "platformTargets": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "platformCompatibilityStatus": "SOURCE_CANDIDATE_NATIVE_CONVERSION_AND_RUNTIME_QA_REQUIRED",
+      "capabilities": [
+        "PBR",
+        "wood",
+        "stone",
+        "fabric",
+        "metal",
+        "ground"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true,
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "freeEditionOnly": true,
+      "paidResourceRequired": false,
+      "sourceFileAndHashMustBeVerifiedAfterDownload": true,
+      "runtimeVerified": false
     }
   ],
   "unarmedCombat": {

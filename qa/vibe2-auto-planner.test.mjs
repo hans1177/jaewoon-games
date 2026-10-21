@@ -5637,6 +5637,7 @@ test('F0 source gameplay gaps request causal source repair without claiming runt
 test('owner CC0 action replacement covers active Web games through the existing planner without fabricated completion',t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-cc0-motion-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ policy.assetProductionParallelContract.assetAcquisitionAndReuse.allPlatformLibraryReplacement.enabled=false; // 이전 웹 전용 지시의 호환 경로도 유지한다.
  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
  const games=['first','second','retired'].map(id=>({id,lifecycleState:'ACTIVE',canonical:{sources:{web:{state:id==='retired'?'PERMANENTLY_REMOVED_REJECTED_TEST':'ACTIVE'}}}}));
@@ -5661,4 +5662,27 @@ test('owner CC0 action replacement covers active Web games through the existing 
  const retired=findWebPresentationQualityTask({gameId:'retired',engine:'web',projectPath:'web-games/retired',releaseState:'development-confirmed'},root,{tasks:[]});
  assert.notEqual(retired?.id,'retired-web-cc0-action-motion-v1');
  assert.equal(findWebPresentationQualityTask({gameId:'first',engine:'roblox',projectPath:'roblox-games/first',releaseState:'development-confirmed'},root,{tasks:[]}),null);
+});
+
+test('all-platform library CC0 replacement uses registered responsible sources and keeps held targets pending',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'all-cc0-plan-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+ fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
+ fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{id:'demo',lifecycleState:'ACTIVE'}]}));
+ for(const [engine,file] of [['web','web-games/demo/index.html'],['roblox','roblox-games/demo/client/Game.client.luau'],['unity','unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs']]){
+  fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),'original presentation source');
+  const project={gameId:'demo',engine,projectPath:engine==='unity'?'unity-games/demo':engine==='roblox'?'roblox-games/demo':'web-games/demo',releaseState:'development-confirmed'};
+  const next=findPresentationQualityTask(project,root,{tasks:[]});
+  if(engine==='unity')assert.ok(!next?.evidence?.includes('owner-library-cc0-replacement:v1'),'held Unity must not be resumed');
+  else{
+   assert.equal(next.id,'demo-'+engine+'-library-cc0-replacement-v1');
+   assert.equal(next.ownerDirective,true);assert.ok(next.responsibleFiles.includes(file));
+   assert.match(next.goal,/CC0 라이선스·원본 SHA256/);assert.match(next.goal,/같은 빌드/);
+   assert.match(next.goal,/부족한 자산은 기존 공급 요구/);
+   const duplicate=findPresentationQualityTask(project,root,{tasks:[{...next,status:'verified'}]});
+   assert.notEqual(duplicate?.id,next.id);
+  }
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),'original presentation source');
+ }
 });

@@ -9,6 +9,7 @@ import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_
 import {buildVibeAssetProductionPlan,assetProductionGuidance} from '../tools/vibe2-asset-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
 import {extractDesignContext} from '../tools/company-build-up-directive.mjs';
+import {planVibeExternalCustomization} from '../assets/asset-selector.js';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
@@ -605,5 +606,31 @@ test('existing queued Web work receives current CC0 action motion directive at w
   const plan=buildVibeAssetProductionPlan({repoRoot:root,target,manifest:{assets:[]},task:{gameId:'demo',releaseState,goal:'기존 상태 연출'}});
   assert.equal(plan.webActionMotionReplacement?.enabled===true,required);
   assert.equal(assetProductionGuidance(plan).includes('[WEB CC0 ACTION MOTION OWNER DIRECTIVE]'),required);
+ }
+});
+
+test('current all-platform CC0 policy reaches game workers on Web Roblox and Unity without claiming runtime completion',t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'all-cc0-handoff-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+ fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(central));
+ for(const target of ['web','roblox','unity']){
+  const plan=buildVibeAssetProductionPlan({repoRoot:root,target,manifest:{assets:[]},task:{gameId:'demo',releaseState:'release-confirmed',goal:'현재 게임 표현 교체'}});
+  assert.equal(plan.libraryCc0Replacement.enabled,true);
+  assert.equal(plan.libraryCc0Replacement.runtimeVerified,false);
+  assert.ok(plan.libraryCc0Replacement.platforms.includes(target.toUpperCase()));
+  assert.match(assetProductionGuidance(plan),/ALL PLATFORM LIBRARY CC0 REPLACEMENT/);
+ }
+});
+
+test('external native customization rejects non-CC0 game assets despite company runtime approval',()=>{
+ const base={family:'CHARACTER',sourceHash:'a'.repeat(64),path:'assets/source.glb',verifiedCompanyReusable:true};
+ for(const target of ['web','roblox']){
+  const plan=planVibeExternalCustomization({request:'character model',gameId:'demo',target,approvedDesignFingerprint:'a'.repeat(64),
+   ownerScope:{status:'ACTIVE',activeTargets:['WEB','ROBLOX'],ownerHeldTargets:[],existingPipelineOnly:true},
+   assets:[{...base,id:'cc0',license:'CC0-1.0'},{...base,id:'commercial',license:'MIT'},{...base,id:'owned',license:'project-original'},{...base,id:'practice',license:'CC0',practiceOnly:true}]});
+  const candidates=plan.references.flatMap(row=>row.sourceCandidates);
+  assert.ok(candidates.some(row=>row.assetId==='cc0'));
+  assert.ok(candidates.every(row=>row.assetId==='cc0'));
+  assert.equal(plan.existingVerifiedSourceCount,1);
  }
 });

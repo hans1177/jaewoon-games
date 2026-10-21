@@ -5186,3 +5186,31 @@ test('common library synchronization removes self authored and practice records 
   assert.deepEqual(result.sourceConsumerRegistry.assets.map(asset=>asset.id),['external']);
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('commercial rights and public-domain labels cannot bypass CC0-only external acquisition on any native target',()=>{
+ const base={id:'candidate',name:'Building Kit',category:'BUILDING',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+  sourceUrl:'https://example.invalid/buildings',licenseEvidenceUrl:'https://example.invalid/license',verifiedAt:'2026-10-21',
+  platformTargets:['WEB','ROBLOX','UNITY'],automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true,capabilities:['house','GLB']};
+ for(const target of ['web','roblox','unity'])for(const license of ['CC0','CC0-1.0','MIT','CC-BY','PUBLIC-DOMAIN','project-original']){
+  const plan=buildAssetSupplyDecisionSummary({gameId:'demo',target,request:'building house',requirements:[{family:'BUILDING',role:'house'}],registry:{assets:[],externalSources:[{...base,license}]}});
+  const acquired=plan.nextActions.find(row=>row.family==='BUILDING')?.externalAcquisition?.sourceId==='candidate';
+  assert.equal(acquired,['CC0','CC0-1.0'].includes(license),target+':'+license);
+ }
+});
+
+test('expanded official CC0 supply is available as Web candidates without claiming download or native runtime verification',()=>{
+ const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ids=['kenney-survival-kit','kenney-pirate-kit','kenney-animated-characters-survivors','quaternius-fantasy-props-megakit','ambientcg-cc0-materials'];
+ for(const id of ids){
+  const row=registry.externalSources.find(row=>row.id===id);assert.ok(row,id);
+  assert.match(row.license,/^CC0/);assert.ok(row.platformTargets.includes('WEB'));
+  assert.ok(row.licenseEvidenceUrl.startsWith('https://'));assert.equal(row.runtimeVerified,false);
+  assert.equal(row.acquisitionState,'CANDIDATE_METADATA_ONLY_UNTIL_SELECTED');
+ }
+ const motion=registry.externalSources.find(row=>row.id==='quaternius-universal-animation-library');
+ assert.ok(motion.platformTargets.includes('WEB'),'existing motion supply must no longer exclude Web');
+ const plan=buildAssetSupplyDecisionSummary({gameId:'demo',target:'web',request:'food kitchen',requirements:[{family:'PROP',role:'food'}],registry:{assets:[],externalSources:registry.externalSources.filter(row=>row.id==='kenney-food-kit')}});
+ const supply=plan.nextActions.find(row=>row.family==='PROP').externalAcquisition;
+ assert.equal(supply.sourceId,'kenney-food-kit');assert.equal(plan.runtimeVerificationGranted,false);assert.equal(supply.downloaded,false);
+ for(const row of registry.externalSources.filter(row=>row.gameUseForbidden))assert.equal(row.automaticAcquisitionWhenSelected,false);
+});
