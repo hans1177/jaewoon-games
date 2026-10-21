@@ -2753,6 +2753,22 @@ export function buildGameSpecificBuildUpDirective({
       'NO_NEW_GAMEPLAY_OR_PROGRESSION_SEMANTIC_WITHOUT_DESIGN','EXISTING_RELEVANT_INCREMENTAL_QA_PASSES',
       'DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP'
     ])
+  }):designSourceBuildUp.revisionRequiredForNewGameplay?Object.freeze({
+    ...autonomousContentExpansionBase,
+    // 검증된 소스가 전진했지만 동일 승인 설계가 유지됐으면,
+    // 기존 승인 규칙의 실제 구현·결함 복구는 계속하고 새로운 규칙 발명만 금지한다.
+    executionMode:'APPROVED_DESIGN_SOURCE_BUILD_UP_WHILE_DESIGN_REVISION_PENDING',
+    designRevisionRequiredForNewGameplay:true,
+    derivedRuleEvolution:Object.freeze({
+      ...(autonomousContentExpansionBase.derivedRuleEvolution||{}),
+      allowed:false,
+      rule:'NEW_GAMEPLAY_RULES_REQUIRE_REVIEWED_CURRENT_DESIGN_REVISION; CONTINUE_APPROVED_SYSTEM_SOURCE_AND_SAFE_REPAIRS'
+    }),
+    completionAcceptance:Object.freeze([
+      ...(autonomousContentExpansionBase.completionAcceptance||[]),
+      'NO_UNAPPROVED_NEW_GAMEPLAY_WHILE_DESIGN_REVISION_PENDING',
+      'EXACT_SOURCE_RUNTIME_QA_AND_FEEDBACK_REQUIRED'
+    ])
   }):autonomousContentExpansionBase;
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
