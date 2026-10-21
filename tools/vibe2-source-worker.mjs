@@ -25,6 +25,7 @@ import { assertVibeAgentHandoffScope } from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {planVibeCodingTask} from '../assets/vibe-helper.js';
 import {planVibePresentationAutopilot} from '../assets/vibe-presentation-director.js';
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
@@ -3862,6 +3863,10 @@ export function buildGameContextCapsule({order={},exploration=null,responsibleFi
     .split(VERIFIED_LEARNING_MOTOR_BEGIN)[0]
     .split(VERIFIED_EXTERNAL_LEARNING_BEGIN)[0]
     .trim();
+  // 검증되지 않은 계획은 관찰 의도로만 전달하고 QA 또는 소스 수정 권한으로 승격하지 않는다.
+  const plannedBehavior=intentGoal
+    ?planVibeCodingTask({prompt:boundedPromptText(intentGoal,700),currentGame:gameId}).behaviorContract
+    :null;
   return Object.freeze({
     version:1,gameId,target,taskId:clean(order?.taskId||selected?.id)||null,
     responsibility:Object.freeze({
@@ -3879,7 +3884,13 @@ export function buildGameContextCapsule({order={},exploration=null,responsibleFi
     }),
     intent:Object.freeze({
       primaryGoal:boundedPromptText(clean(intentGoal),700),
-      expectedPlayerEffect:boundedPromptText(clean(directive?.effectivenessMeasurement?.expectedPlayerEffect),400)
+      expectedPlayerEffect:boundedPromptText(clean(directive?.effectivenessMeasurement?.expectedPlayerEffect),400),
+      ...(plannedBehavior?.sequence?.length?{
+        behaviorSequence:Object.freeze(plannedBehavior.sequence.slice(0,16)),
+        expectedObservations:Object.freeze(plannedBehavior.expectedObservations.slice(0,8)),
+        behaviorEvidenceRequired:'ACTUAL_PLATFORM_RUNTIME_REPLAY',
+        behaviorEvidenceVerified:false
+      }:{})
     }),
     style:Object.freeze({
       styleProfile:clean(order?.assetProduction?.qualityDNA?.styleProfile||order?.assetProduction?.styleBible?.profileKey)||null,
