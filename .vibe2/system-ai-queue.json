@@ -147519,7 +147519,7 @@
     },
     {
       "id": "recovery-recovery-cd3cf615cf3faf138144",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -147562,11 +147562,11 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/vibe2-candidate-release.yml:6a99d098f4b2c1d3a29e6c26db35d1686b91beb2:unresolved-run-38936711266"
       ],
-      "retries": 0,
+      "retries": 1,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
-      "failureClass": null,
+      "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 0,
       "previousReservationId": null,
       "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -147576,12 +147576,12 @@
       "sourceMutationBaseline": "6a99d098f4b2c1d3a29e6c26db35d1686b91beb2",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39549940912:1",
-      "reservedAt": "2026-10-21T05:32:51.891Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:38936711266:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -147609,7 +147609,23 @@
         "system-ai-impact-score:1001",
         "system-ai-blocked-task-count:11",
         "system-ai-common-bottleneck:YES",
-        "system-ai-representative-canary:WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO"
+        "system-ai-representative-canary:WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "actions-run:39549940912",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:skipped",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION",
+        "system-ai-failure-class:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-failure-route:SECURITY_IMMUNE_SYSTEM",
+        "retry-budget-consumed:YES",
+        "learning-penalty:YES",
+        "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1001,
@@ -147624,7 +147640,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-16T17:06:55.209Z",
-      "updatedAt": "2026-10-21T05:32:51.891Z"
+      "updatedAt": "2026-10-21T05:57:06.399Z"
     },
     {
       "id": "recovery-recovery-4fb8afffd5c37f1dfc2b",
