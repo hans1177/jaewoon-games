@@ -11227,10 +11227,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-21T05:42:29.176Z",
+      "updatedAt": "2026-10-21T05:42:33.797Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11248,11 +11248,11 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "e60694189d2c72d65d0334e197dcccf4eb33586c",
       "robloxBuildArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-      "robloxBuildPassedAt": "2026-10-21T05:42:01.596Z",
+      "robloxBuildPassedAt": "2026-10-21T05:42:33.797Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-21T05:42:01.596Z",
+      "robloxBuildPreflightFailedAt": "2026-10-21T05:42:33.797Z",
       "robloxBuildPreflightEvidence": null,
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
@@ -28328,7 +28328,7 @@
       "robloxPublicRelease": false
     }
   ],
-  "updatedAt": "2026-10-21T05:42:29.176Z",
+  "updatedAt": "2026-10-21T05:42:33.797Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -28394,5 +28394,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
