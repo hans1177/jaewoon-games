@@ -202713,7 +202713,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-21T21:33:30.973Z"
+      "updatedAt": "2026-10-21T21:38:27.417Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202934,7 +202934,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-21T21:33:30.993Z"
+      "updatedAt": "2026-10-21T21:38:27.442Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237442,7 +237442,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-21T21:33:31.091Z"
+      "updatedAt": "2026-10-21T21:38:27.561Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238106,7 +238106,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-21T21:33:31.057Z"
+      "updatedAt": "2026-10-21T21:38:27.512Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238615,7 +238615,8 @@
         "actions-run:39665840244",
         "system-ai-handoff-to-reservation:system-ai:39671028632:1",
         "actions-run:39671028632",
-        "system-ai-handoff-to-reservation:system-ai:39675538891:1"
+        "system-ai-handoff-to-reservation:system-ai:39675538891:1",
+        "actions-run:39675538891"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238633,7 +238634,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-21T21:33:31.019Z"
+      "updatedAt": "2026-10-21T21:38:27.470Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -239686,7 +239687,7 @@
     {
       "id": "recovery-292d5f85e2c25d1aa9e9",
       "status": "dispatched",
-      "priority": "critical",
+      "priority": "high",
       "sourceQueue": "system-ai",
       "sourceTaskId": "recovery-recovery-f84bbc96c4af1596274e",
       "gameId": null,
@@ -239703,7 +239704,7 @@
       ],
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
-      "blastRadius": "shared-worker-contract:2",
+      "blastRadius": "single-task",
       "checkpoint": "2026-10-21T17:45:04.849Z",
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
@@ -239830,7 +239831,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-21T21:33:30.943Z"
+      "updatedAt": "2026-10-21T21:38:27.592Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -239920,6 +239921,146 @@
       "maxRetries": null,
       "createdAt": "2026-10-21T18:30:42.172Z",
       "updatedAt": "2026-10-21T18:30:44.563Z"
+    },
+    {
+      "id": "recovery-a5a77f04f5dccb98c8c6",
+      "status": "dispatched",
+      "priority": "high",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "recovery-recovery-0b623e521c00a2fbed55",
+      "gameId": null,
+      "responsibleFiles": [
+        ".github/workflows/vibe2-candidate-release.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/vibe2-candidate-release.yml"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO for an unresolved game using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureSignature": "system-ai-worker-missing-result-handoff",
+      "blastRadius": "single-task",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "deployment-failure-run:39070113531:1",
+        "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+        "deployment-platform:WEB",
+        "deployment-game:UNRESOLVED",
+        "deployment-head-sha:764dfc19939ceb8b7e0e60c70c833ab21de5eece",
+        "deployment-production-class:UNVERIFIED",
+        "deployment-failed-job:REJECT",
+        "deployment-failed-step:RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/39070113531",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED",
+        "recovery-queue:recovery-0b623e521c00a2fbed55",
+        "recovery-exact-stage:DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "system-ai-scoped-game-repair:NO",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "learning-route:existing-vibe-learning-motor",
+        "primary-ai-collaboration-task:recovery-recovery-0b623e521c00a2fbed55",
+        "system-ai-impact-score:940",
+        "system-ai-blocked-task-count:10",
+        "system-ai-common-bottleneck:YES",
+        "system-ai-representative-canary:WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "actions-run:39650537850",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:skipped",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION",
+        "system-ai-failure-class:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-failure-route:SECURITY_IMMUNE_SYSTEM",
+        "retry-budget-consumed:YES",
+        "learning-penalty:YES",
+        "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
+        "actions-run:39655726326",
+        "implementation:success",
+        "verification:failure",
+        "changed-file:.github/workflows/vibe2-candidate-release.yml",
+        "external-ai-model:gemini-3.8-flash",
+        "external-ai-raw-output-sha256:828142b51e8e671d69b538a7b20d5f8b7158b533622d02875623768981a4d06e",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_3f9ed1eaf8c7ed00c283e5c3",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_f22782671545193f22176195",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_5f8b04f2525a6688fa6853c7",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_0a048d8a6982a42b5155ce3d",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_8ed38cd1aa8c893d405bb7b5",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_51c24e5073a331ae41d29a07",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_15e1b514c0d8383869445201",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_56ba56adf1adc7ac02005742",
+        "learning-knowledge-id:CODE_PATTERN:pat_1x7z0gk",
+        "learning-knowledge-id:CODE_PATTERN:pat_1xg0er9",
+        "learning-knowledge-id:CODE_PATTERN:pat_r3a1fy",
+        "learning-knowledge-id:CODE_PATTERN:pat_vzhsq4",
+        "learning-knowledge-id:CODE_PATTERN:pat_external_authorized_ed029ace908f2d11e81feb4d",
+        "learning-knowledge-id:CODE_PATTERN:pat_1dj8rdx",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-advanced-coding-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-visual-aesthetic-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-aquatic-animal-surface-motion-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-mammal-fur-anatomy-v1",
+        "system-ai-qa-contract-review:NOT_REQUIRED",
+        "system-ai-knowledge-outcome:PENDING_VERIFIED_FANIN",
+        "selected-hypothesis:pipeline-or-runner",
+        "hypothesis-rejected:save-compatibility",
+        "system-ai-deep-reasoning:YES",
+        "selected-strategy:strategy-a",
+        "system-ai-critic-verdict:PASS",
+        "system-ai-critic-decision-sha256:b3803aca3c665709a6c57ee8c32cefa2ee1e2371e0f0bdd14928fa4ff77194d7",
+        "system-ai-applied-answer-sha256:828142b51e8e671d69b538a7b20d5f8b7158b533622d02875623768981a4d06e",
+        "repair-strategy-fingerprint:f4c20dc856ecd99b821f8feb7a73722a92c5bb2e2b266bfad33f9e9d9d1be353",
+        "failed-strategy-fingerprint:f4c20dc856ecd99b821f8feb7a73722a92c5bb2e2b266bfad33f9e9d9d1be353",
+        "model-output-sha256:828142b51e8e671d69b538a7b20d5f8b7158b533622d02875623768981a4d06e",
+        "actions-run:39660981746",
+        "preflight:skipped",
+        "implementation:skipped",
+        "system-ai-impact-score:941",
+        "actions-run:39665840244",
+        "actions-run:39670892497",
+        "system-ai-impact-score:942",
+        "system-ai-handoff-state:MISSING_RESULT_REQUEUED",
+        "system-ai-handoff-from-reservation:system-ai:39675538891:1",
+        "system-ai-handoff-to-reservation:PENDING",
+        "system-ai-exact-checkpoint-resume:YES",
+        "retry-budget-consumed:NO",
+        "learning-penalty:NO",
+        "recovery-escalated-from:system-ai",
+        "recovery-route:SYSTEM_AI",
+        "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE"
+      ],
+      "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 0,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-10-21T21:38:27.623Z",
+      "updatedAt": "2026-10-21T21:38:30.279Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-10-21T21:38:30.279Z"
+      ]
     }
   ]
 }
