@@ -16671,9 +16671,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-21T14:55:23.611Z",
+      "updatedAt": "2026-10-21T15:15:28.779Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -16707,7 +16707,7 @@
         "capturedAt": "2026-10-12T02:23:12.492Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-21T15:15:28.779Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -16754,9 +16754,9 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
-      "robloxSourceCommit": "9f6b99659191e4185b06f721e69ee77bf7e22319",
+      "robloxSourceCommit": "a19ead4410d9740fdf0e0a1f1be19718950fde50",
       "robloxSourceBootstrapPassedAt": "2026-10-21T14:30:17.163Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -17287,13 +17287,13 @@
       },
       "robloxDedicatedExperiencePublished": false,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "50f807976be4c27bd68f9d7614323d59328b783c",
+      "robloxQualityBuildUpSourceRevision": "a19ead4410d9740fdf0e0a1f1be19718950fde50",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "cozy-island",
-        "sourceRevision": "50f807976be4c27bd68f9d7614323d59328b783c",
-        "sourceTreeSha": "892c64e4491dd65412e23e946a7d0c4ed7a71c8e",
+        "sourceRevision": "a19ead4410d9740fdf0e0a1f1be19718950fde50",
+        "sourceTreeSha": "7afb6908449bf181d1575a51c97c4188b6253368",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -17303,8 +17303,8 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "cf08f122f734bf8f9d20ae761f19eeb2820ee6c93dd43210a567b4e4c8473416",
-          "baselineFingerprint": "e5ca93f72a2e6d46fe5883b58674b32b6e95ee7e0a9acfd3c840b96d693857f7",
+          "libraryFingerprint": "b51e5b3cf874672384764b442aa22dd602af6c2c465afba4f4a396e8b8935405",
+          "baselineFingerprint": "49c8ba980220878874db0a8706393062596b2c7356094a7c90a0ae3c1ed19fb6",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
         "qualityFailureKinds": [
@@ -17321,8 +17321,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39597041157,
-        "testedAt": "2026-10-21T13:08:14.995Z"
+        "workflowRunId": 39617703460,
+        "testedAt": "2026-10-21T15:15:28.779Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -84596,7 +84596,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-21T15:14:26.099Z",
+  "updatedAt": "2026-10-21T15:15:28.779Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
