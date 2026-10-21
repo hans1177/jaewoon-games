@@ -145648,7 +145648,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -145745,8 +145745,8 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 0,
-      "previousReservationId": null,
+      "handoffCount": 1,
+      "previousReservationId": "system-ai:39558924296:1",
       "blastRadius": "portfolio:25",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145754,12 +145754,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39558924296:1",
-      "reservedAt": "2026-10-21T07:02:52.507Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146064,7 +146064,13 @@
         "retry-budget-consumed:YES",
         "learning-penalty:YES",
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
-        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR"
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
+        "system-ai-handoff-state:MISSING_RESULT_REQUEUED",
+        "system-ai-handoff-from-reservation:system-ai:39558924296:1",
+        "system-ai-handoff-to-reservation:PENDING",
+        "system-ai-exact-checkpoint-resume:YES",
+        "retry-budget-consumed:NO",
+        "learning-penalty:NO"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2042,
@@ -146079,7 +146085,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T07:02:52.507Z"
+      "updatedAt": "2026-10-21T07:47:45.698Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
@@ -148171,20 +148177,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-16T17:09:12.675Z",
-      "updatedAt": "2026-10-21T07:44:17.709Z",
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "multiplayerUserAssistanceRequired": false
-      }
+      "updatedAt": "2026-10-21T07:44:17.709Z"
     },
     {
       "id": "recovery-recovery-32d61512b06f928a5125",
