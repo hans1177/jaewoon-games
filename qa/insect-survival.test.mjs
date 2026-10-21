@@ -171,6 +171,8 @@ test('shared CC0 derivatives reuse materials by original and tint without changi
 });
 
 test('common CC0 source inventory does not authorize deletion and checks existing immutable sources',()=>{
+ const healthScript=fs.readFileSync('tools/asset-health-check.mjs','utf8');
+ assert.match(healthScript,/const licenseOk=\/\^\(\?:CC0/,'normal health gate must reject MIT');
  const result=spawnSync(process.execPath,['tools/asset-health-check.mjs','--inventory'],{
   encoding:'utf8',maxBuffer:8*1024*1024
  });
