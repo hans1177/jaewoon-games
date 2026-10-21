@@ -151666,7 +151666,7 @@
     },
     {
       "id": "recovery-recovery-0bdf0f4ac49f21a536b2",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -151710,11 +151710,11 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:5c8661b869da1ded73405d12c19f2e564a538861:fantasy-survival"
       ],
-      "retries": 0,
+      "retries": 1,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "WORKFLOW_FAILED_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
-      "failureClass": null,
+      "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 1,
       "previousReservationId": "system-ai:39585642880:1",
       "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -151724,12 +151724,12 @@
       "sourceMutationBaseline": "5c8661b869da1ded73405d12c19f2e564a538861",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39590512762:1",
-      "reservedAt": "2026-10-21T11:18:26.543Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39126098577:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -151764,7 +151764,23 @@
         "system-ai-exact-checkpoint-resume:YES",
         "retry-budget-consumed:NO",
         "learning-penalty:NO",
-        "system-ai-handoff-to-reservation:system-ai:39590512762:1"
+        "system-ai-handoff-to-reservation:system-ai:39590512762:1",
+        "actions-run:39590512762",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:skipped",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION",
+        "system-ai-failure-class:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-failure-route:SECURITY_IMMUNE_SYSTEM",
+        "retry-budget-consumed:YES",
+        "learning-penalty:YES",
+        "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1423,
@@ -151779,7 +151795,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T12:20:52.902Z",
-      "updatedAt": "2026-10-21T11:18:26.543Z"
+      "updatedAt": "2026-10-21T11:38:54.288Z"
     },
     {
       "id": "recovery-recovery-56727498741201875791",
