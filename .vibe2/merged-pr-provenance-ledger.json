@@ -79286,11 +79286,155 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_404b4876d2a48c23c6a21bc3",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9009",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "3f1d4a23b75fcdd746e4620102b82848a5f88c8b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9009,
+        "baseBranch": "main",
+        "headBranch": "vibe-pattern-proof-20261022",
+        "baseSha": "3f1d4a23b75fcdd746e4620102b82848a5f88c8b",
+        "headSha": "0b4e4684ac1218b0914ce658df5df495c1ca72d6",
+        "mergeCommitSha": "8e6417d1888a27016635d9cf7c405900ab4f30c5",
+        "mergedAt": "2026-10-21T21:08:40Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c51d4f619b08a26b99fb5f008eb1b24aadf264de3b978cba333fc63d24f752e6",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe-pattern-proof-20261022",
+        "candidateSha": "0b4e4684ac1218b0914ce658df5df495c1ca72d6"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 1971,
+        "deletedLineCount": 205,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/vibe2-code-pattern-ingest.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/roblox-source-bootstrap.json",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "tools/vibe2-code-pattern-ingest.mjs",
+          "tools/vibe2-learning-motor.mjs"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/vibe2-code-pattern-ingest.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/roblox-source-bootstrap.json",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "tools/vibe2-code-pattern-ingest.mjs",
+          "tools/vibe2-learning-motor.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9009",
+        "merge-commit:8e6417d1888a27016635d9cf7c405900ab4f30c5",
+        "base-main:3f1d4a23b75fcdd746e4620102b82848a5f88c8b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 627
+    "total": 628
   }
 }
