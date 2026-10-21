@@ -92,7 +92,17 @@ jobs:
             manifest="${matching_manifests[0]}"
             echo "VIBE2_CANDIDATE_MANIFEST_MATCH=$manifest"
           elif [ "${#manifests[@]}" -eq 1 ]; then
-            manifest="${manifests[0]}"
+            # Legacy manifests may omit branch. A manifest explicitly bound to
+            # another branch must never be treated as the current candidate.
+            legacy_manifest="${manifests[0]}"
+            legacy_branch="$(MANIFEST="$legacy_manifest" node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.MANIFEST,'utf8'));process.stdout.write(String(m.branch||''))")"
+            if [ -n "$legacy_branch" ] && [ "$legacy_branch" != "$SUBMITTED_CANDIDATE_BRANCH" ]; then
+              echo 'decision=reject' >> "$GITHUB_OUTPUT"
+              echo 'reason=candidate-legacy-manifest-branch-mismatch' >> "$GITHUB_OUTPUT"
+              echo "VIBE2_CANDIDATE_LEGACY_BRANCH_MISMATCH=$legacy_branch"
+              exit 0
+            fi
+            manifest="$legacy_manifest"
             echo "VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=$manifest"
           else
             echo 'decision=reject' >> "$GITHUB_OUTPUT"
