@@ -97,6 +97,32 @@ test('four acquired CC0 UI/mobile PNGs match library SHA-256 and licensed pack l
  }
 });
 
+test('two pinned CC BY SVG originals remain catalog-only with attribution and byte evidence',()=>{
+ const lib=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
+ const entries=lib.ccFamilyIntakeCatalog.filter(row=>row.id.startsWith('fontawesome-cc-by-'));
+ assert.equal(entries.length,2);
+ assert.ok(entries.every(row=>!lib.assets.some(item=>item.id===row.id)),'BY sources must not silently enter CC0 production pool');
+ for(const row of entries){
+   const filePath=row.path.slice(1);
+   const svg=fs.readFileSync(filePath,'utf8');
+   assert.match(svg,/Font Awesome Free/);
+   assert.equal(createHash('sha256').update(svg).digest('hex'),row.sourceHash);
+   assert.equal(row.license,'CC-BY-4.0');
+   assert.equal(row.catalogOnly,true);
+   assert.equal(row.releaseBlocked,true);
+   assert.equal(row.downloaded,true);
+   assert.equal(row.attribution.creator,'Fonticons, Inc.');
+   const record=ledger.entries.find(item=>item.id===row.sourceLicenseLedgerId);
+   assert.ok(record);
+   assert.equal(record.evidence.sourceHashes[filePath],row.sourceHash);
+   const result=assessCreativeCommonsAssetLicense(row);
+   assert.equal(result.catalogEligible,true);
+   assert.equal(result.gameCandidateEligible,false);
+   assert.equal(result.nativeRuntimeVerified,false);
+ }
+});
+
 test('catalog describes all approved external references without executable download commands',()=>{
   assert.deepEqual(VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(row=>row.id),[
     'FASTNOISELITE','WAVE_FUNCTION_COLLAPSE','ASTAR_PATHFINDING','BLENDER',
