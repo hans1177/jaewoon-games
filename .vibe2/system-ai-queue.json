@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -116591,7 +116591,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116633,12 +116633,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39656523804:1",
+      "reservedAt": "2026-10-21T18:56:38.080Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "stale-system-ai-reservation-reclaimed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -116748,7 +116748,8 @@
         "system-ai-impact-score:1202",
         "system-ai-blocked-task-count:18",
         "system-ai-handoff-to-reservation:system-ai:39648116282:1",
-        "system-ai-handoff-from-reservation:system-ai:39648116282:1"
+        "system-ai-handoff-from-reservation:system-ai:39648116282:1",
+        "system-ai-handoff-to-reservation:system-ai:39656523804:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1202,
@@ -116763,7 +116764,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-21T18:30:56.967Z"
+      "updatedAt": "2026-10-21T18:56:38.080Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -145060,7 +145061,7 @@
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145102,12 +145103,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39656523804:1",
+      "reservedAt": "2026-10-21T18:56:38.080Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145142,14 +145143,18 @@
         "primary-ai-review-required:YES",
         "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
         "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
-        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER",
+        "system-ai-impact-score:752",
+        "system-ai-blocked-task-count:9",
+        "system-ai-representative-canary:system-ai-implementation-failed",
+        "system-ai-handoff-to-reservation:system-ai:39656523804:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1526,
+      "impactScore": 752,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 28,
-        "recurrenceCount": 28,
+        "blockedTaskCount": 9,
+        "recurrenceCount": 9,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -145157,7 +145162,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-21T10:34:49.067Z"
+      "updatedAt": "2026-10-21T18:56:38.080Z"
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
@@ -145671,7 +145676,7 @@
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -145770,12 +145775,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39656523804:1",
+      "reservedAt": "2026-10-21T18:56:38.080Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-worker-missing-result-handoff",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -146154,7 +146159,8 @@
         "system-ai-handoff-to-reservation:system-ai:39647526532:1",
         "actions-run:39647526532",
         "system-ai-handoff-to-reservation:system-ai:39651492496:1",
-        "system-ai-handoff-from-reservation:system-ai:39651492496:1"
+        "system-ai-handoff-from-reservation:system-ai:39651492496:1",
+        "system-ai-handoff-to-reservation:system-ai:39656523804:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
@@ -146169,7 +146175,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-21T18:51:31.724Z"
+      "updatedAt": "2026-10-21T18:56:38.080Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
@@ -156935,6 +156941,5 @@
       "createdAt": "2026-10-21T15:47:49.217Z",
       "updatedAt": "2026-10-21T15:47:49.217Z"
     }
-  ],
-  "updatedAt": "2026-10-21T18:52:00.844Z"
+  ]
 }
