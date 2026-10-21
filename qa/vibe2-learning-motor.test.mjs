@@ -2180,7 +2180,9 @@ test('verified source-bound causal recipes reach the worker only for their prove
   const ctx=retrieveUnifiedLearning({
     task:{gameId:'forest',target:'web',goal:'touch input gameplay state attack'},
     codePatternsInput:{patterns:[
-      {...base,id:'same-web',gameId:'forest',engine:'web',implementationRecipe:recipe},
+      {...base,id:'same-web',gameId:'forest',engine:'web',sourceRevision:'a'.repeat(40),implementationRecipe:recipe,observedReplay:{
+        scenarioId:'combat-input-to-resolution',horizon:'NEXT_STATE_TRANSITION',sourceRevision:'a'.repeat(40),
+        actualPlatformRuntime:true,independentQaPass:true,gameplaySemanticsPreserved:true}},
       {...base,id:'wrong-roblox',gameId:'forest',engine:'roblox',implementationRecipe:recipe},
       {...base,id:'transferable-principle',gameId:'other',engine:'roblox',pattern:'Check input state feedback without native code'}
     ]}
@@ -2192,5 +2194,8 @@ test('verified source-bound causal recipes reach the worker only for their prove
   assert.match(guidance,/verified-source-bound-recipe=same-web/);
   assert.match(guidance,/required-fresh-runtime-checks=REAL_TOUCH_INPUT\|AUTHORITATIVE_STATE_CHANGED\|VISIBLE_ACTION_FEEDBACK/);
   assert.match(guidance,/source-guidance-not-a-pass/);
+  assert.match(guidance,/verified-gameplay-replay=same-web/);
+  assert.match(guidance,/scenario=combat-input-to-resolution/);
+  assert.match(guidance,/past-runtime-pass-does-not-transfer/);
   assert.doesNotMatch(guidance,/verified-source-bound-recipe=wrong-roblox/);
 });
