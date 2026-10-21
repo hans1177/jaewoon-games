@@ -75410,11 +75410,155 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_db6bc69a77920010119f9a28",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8803",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "22d1fdd46caff834916adf6009bf9cb5419b80bf",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8803,
+        "baseBranch": "main",
+        "headBranch": "fix/roblox-exact-preflight-pass-race",
+        "baseSha": "22d1fdd46caff834916adf6009bf9cb5419b80bf",
+        "headSha": "31d335347edaae3d9833134117d6e550431fa7c4",
+        "mergeCommitSha": "32799ab51cf74301240ed7d926bf9ddb4a9a665a",
+        "mergedAt": "2026-10-21T06:05:46Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3155115949aebd34b55cbeba9ba8554313484885abc2b0a8042cebde35edf738",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/roblox-exact-preflight-pass-race",
+        "candidateSha": "31d335347edaae3d9833134117d6e550431fa7c4"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 373,
+        "deletedLineCount": 254,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "roblox-games/egg-heist/client/Game.client.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "roblox-games/egg-heist/client/Game.client.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8803",
+        "merge-commit:32799ab51cf74301240ed7d926bf9ddb4a9a665a",
+        "base-main:22d1fdd46caff834916adf6009bf9cb5419b80bf"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 598
+    "total": 599
   }
 }
