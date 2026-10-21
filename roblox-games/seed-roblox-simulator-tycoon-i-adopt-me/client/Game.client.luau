@@ -350,6 +350,8 @@ for index, action in ipairs(Config.Actions) do
 end
 
 local watched = {"Score", "Coins", "Level", "Progress", "Health", "Wave", "Position", "Objective", "Combo", "EnemyHealth", "LastApprovedScope"}
+local teamProgress = math.max(0, ReplicatedStorage:GetAttribute("SharedObjective") or 0)
+local teamParticipants = math.max(1, #Players:GetPlayers())
 local function render()
   status.Text = string.format(
     "Score %d · Coins %d · Lv %d · Progress %d · HP %d · Wave %d",
@@ -360,7 +362,20 @@ local function render()
     player:GetAttribute("Health") or 100,
     player:GetAttribute("Wave") or 1
   )
+  status.Text = status.Text .. string.format(" · Team %d/%d", teamProgress, teamParticipants)
 end
+
+remote.OnClientEvent:Connect(function(kind, snapshot)
+  if kind ~= "SharedObjective" or type(snapshot) ~= "table" then return end
+  if typeof(snapshot.completed) ~= "number" or typeof(snapshot.participants) ~= "number" then return end
+  teamProgress = math.max(0, math.floor(snapshot.completed))
+  teamParticipants = math.max(1, math.floor(snapshot.participants))
+  render()
+end)
+ReplicatedStorage:GetAttributeChangedSignal("SharedObjective"):Connect(function()
+  teamProgress = math.max(0, ReplicatedStorage:GetAttribute("SharedObjective") or 0)
+  render()
+end)
 
 for _, name in ipairs(watched) do
   player:GetAttributeChangedSignal(name):Connect(render)

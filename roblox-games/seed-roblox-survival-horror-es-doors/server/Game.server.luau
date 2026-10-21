@@ -1,5 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local DataStoreService = game:GetService("DataStoreService")
+local store = DataStoreService:GetDataStore("seed-roblox-survival-horror-es-doors-development-v1")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
@@ -12,6 +14,26 @@ if not remote then
 end
 
 local lastAction = {}
+
+local SharedObjective = 0 -- session-wide cooperative progress; player save keys unchanged
+ReplicatedStorage:SetAttribute("SharedObjective", SharedObjective)
+local function broadcastSharedObjective()
+  ReplicatedStorage:SetAttribute("SharedObjective", SharedObjective)
+  remote:FireAllClients("SharedObjective", {
+    completed = SharedObjective,
+    participants = #Players:GetPlayers(),
+  })
+end
+
+local function syncNewParticipant(player)
+  if player.Parent ~= Players then return end
+  remote:FireClient(player, "SharedObjective", {
+    completed = SharedObjective,
+    participants = #Players:GetPlayers(),
+  })
+  broadcastSharedObjective()
+end
+
 
 local function readNumber(player, name, fallback)
   local value = player:GetAttribute(name)
@@ -76,7 +98,18 @@ local handlers = {
 }
 
 Players.PlayerAdded:Connect(function(player)
-  initializePlayer(player)
+  task.defer(syncNewParticipant, player)
+  local ok, saved = pcall(function()
+    return store:GetAsync("player:" .. player.UserId)
+  end)
+  if ok and typeof(saved) == "table" then
+    for key, fallback in pairs(Config.InitialState) do
+      local value = saved[key]
+      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
+    end
+  else
+    initializePlayer(player)
+  end
 end)
 
 for _, player in ipairs(Players:GetPlayers()) do
@@ -93,9 +126,22 @@ remote.OnServerEvent:Connect(function(player, actionId)
   local previous = lastAction[player] or 0
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
+  local beforeProgress = readNumber(player, "Progress", 0)
   handler(player)
+  if readNumber(player, "Progress", 0) > beforeProgress then
+    SharedObjective += 1
+    broadcastSharedObjective()
+  end
 end)
 
 Players.PlayerRemoving:Connect(function(player)
+  task.defer(broadcastSharedObjective)
+  local snapshot = {}
+  for key, fallback in pairs(Config.InitialState) do
+    snapshot[key] = readNumber(player, key, fallback)
+  end
+  pcall(function()
+    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
+  end)
   lastAction[player] = nil
 end)

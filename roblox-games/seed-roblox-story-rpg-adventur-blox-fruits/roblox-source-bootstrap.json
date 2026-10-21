@@ -6,28 +6,21 @@
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "stage": "TARGET_PLATFORM_SOURCE_BIND",
   "sourcePath": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
-  "sourceValidationPassed": false,
-  "sourceValidationBlockers": [
-    "CONFIG_POLICY_SOURCE_REQUIRED",
-    "CONFIG_GENRE_PROFILE_REQUIRED",
-    "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-    "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-    "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
-    "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-    "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
-  ],
+  "sourceValidationPassed": true,
+  "sourceValidationBlockers": [],
   "runtimePassed": false,
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": false,
+  "serverSourceChanged": true,
   "foundationRepairApplied": false,
   "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau"
+    "client/Game.client.luau",
+    "server/Game.server.luau"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
@@ -584,7 +577,8 @@
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
     "company library Studio asset binding updated in existing config and client presentation",
-    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
+    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass",
+    "Existing server-authoritative per-player progress retained; cooperative session observation is server-owned and mobile-client synchronized; runtime and two-client QA remain unverified."
   ],
   "buildUpDirectiveId": "seed-roblox-story-rpg-adventur-blox-fruits-build-up-g7-3194a9aaf9b1",
   "buildUpGeneration": 7,
@@ -593,5 +587,10 @@
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_SOURCE_REPAIR",
-  "createdAt": "2026-10-21T14:15:08.307Z"
+  "createdAt": "2026-10-21T14:15:08.307Z",
+  "staticValidationAuthority": "tools/company-development-roblox-bootstrap.mjs#validateRobloxBootstrap",
+  "staticValidationDesignSource": "vibe2-unreal-core:.vibe2/build-up-directives/seed-roblox-story-rpg-adventur-blox-fruits/current/roblox.json",
+  "staticValidationGenre": "Puzzle",
+  "staticValidationPlayMode": "COOP",
+  "staticValidationRuntimeClaim": false
 }

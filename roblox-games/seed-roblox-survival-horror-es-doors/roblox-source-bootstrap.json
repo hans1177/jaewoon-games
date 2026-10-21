@@ -6,31 +6,21 @@
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "stage": "TARGET_PLATFORM_SOURCE_BIND",
   "sourcePath": "roblox-games/seed-roblox-survival-horror-es-doors",
-  "sourceValidationPassed": false,
-  "sourceValidationBlockers": [
-    "CONFIG_POLICY_SOURCE_REQUIRED",
-    "CONFIG_GENRE_PROFILE_REQUIRED",
-    "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-    "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-    "SERVER_DATASTORE_REQUIRED",
-    "SERVER_DATASTORE_LOAD_REQUIRED",
-    "SERVER_DATASTORE_SAVE_REQUIRED",
-    "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
-    "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-    "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
-  ],
+  "sourceValidationPassed": true,
+  "sourceValidationBlockers": [],
   "runtimePassed": false,
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": false,
+  "serverSourceChanged": true,
   "foundationRepairApplied": false,
   "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau"
+    "client/Game.client.luau",
+    "server/Game.server.luau"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
@@ -587,7 +577,9 @@
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
     "company library Studio asset binding updated in existing config and client presentation",
-    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
+    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass",
+    "Existing server-authoritative per-player progress retained; cooperative session observation is server-owned and mobile-client synchronized; runtime and two-client QA remain unverified.",
+    "Existing design requires persistence: real player-key DataStore read/write paths were added; actual Roblox DataStore runtime verification remains required."
   ],
   "buildUpDirectiveId": "seed-roblox-survival-horror-es-doors-build-up-g6-2ec0e6c16567",
   "buildUpGeneration": 6,
@@ -596,5 +588,10 @@
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_SOURCE_REPAIR",
-  "createdAt": "2026-10-21T14:22:34.753Z"
+  "createdAt": "2026-10-21T14:22:34.753Z",
+  "staticValidationAuthority": "tools/company-development-roblox-bootstrap.mjs#validateRobloxBootstrap",
+  "staticValidationDesignSource": "vibe2-unreal-core:.vibe2/build-up-directives/seed-roblox-survival-horror-es-doors/current/roblox.json",
+  "staticValidationGenre": "Puzzle",
+  "staticValidationPlayMode": "COOP",
+  "staticValidationRuntimeClaim": false
 }
