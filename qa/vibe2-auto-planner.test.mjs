@@ -14,6 +14,24 @@ import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-archit
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
 
+
+test('폐기된 웹 경로는 계획에서 제외하고 정상 웹게임은 계속 계획한다',()=>{
+  const root=process.cwd();
+  const games=[
+    {id:'bug-defense',name:'곤충 디펜스',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/bug-defense/',
+      canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}},
+    {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/',
+      canonical:{sources:{web:{state:'ACTIVE'}}}}
+  ];
+  const items=games.map(game=>({gameId:game.id,gameName:game.name,
+    status:'ACTIVE',selectedPlatform:'WEB',webSourcePath:'web-games/'+game.id}));
+  const projects=collectProjects({}, {games}, root, {items});
+  assert.equal(projects.some(p=>p.gameId==='bug-defense'&&p.engine==='web'),false);
+  assert.equal(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'),true);
+});
+
 test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
