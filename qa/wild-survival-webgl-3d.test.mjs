@@ -36,7 +36,10 @@ test('3D scene consumes live authoritative survival entities and native asset',(
   assert.match(runtime,/S\.weather/);
   assert.match(runtime,/S\.time/);
   assert.match(runtime,/GLTFLoader/);
-  assert.match(runtime,/humanoid-traveler\.glb/);
+  assert.match(runtime,/barbarian\.glb/);
+  assert.match(runtime,/new THREE\.AnimationMixer\(model\)/);
+  assert.match(runtime,/profile\.cc0Clips\[motion\]/);
+  assert.match(runtime,/THREE\.LoopOnce/);
 });
 test('survival rules and save semantics remain in the original game',()=>{
   assert.match(page,/const SAVE_KEY='jg-wild-survival-v1'/);

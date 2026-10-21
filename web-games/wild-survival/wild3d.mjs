@@ -2,6 +2,7 @@
 // Gameplay, save, combat, animal AI, crafting, and world coordinates remain authoritative in index.html.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
 
 const SCALE=72;
 const WHITE='#f0ead6';
@@ -214,11 +215,13 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     const label=document.getElementById('renderStatus');
     if(label){label.hidden=false;label.textContent='3D 그래픽 연결이 끊어졌어. 새로고침해 줘.';}
   });
-  // Optional shared GLB for the same player, with visible 3D geometry if loading fails.
+  // CC0 원본: 실제 액션 클립을 기존 플레이어 상태에 연결하며 판정·저장은 변경하지 않는다.
+  let humanMixer=null,humanClips=[],humanAction=null,humanMotion='',humanAttackAt=0;
+  const motionProfiles=Object.fromEntries(['SPEAR','AXE','NONE'].map(tool=>[tool,createSurvivalPlayerMotionProfile({platform:'WEB',tool})]));
   document.body.dataset.nativeHumanModel='loading';
   try{
     const loader=new GLTFLoader();
-    loader.load(new URL('../../assets/shared/humanoid-traveler.glb',import.meta.url).href,
+    loader.load(new URL('../../assets/roblox/actors/native/barbarian.glb',import.meta.url).href,
       gltf=>{
         const model=gltf.scene;
         if(!model)return;
@@ -229,7 +232,10 @@ export function createWild3D({canvas,WORLD,resources,animals}){
         model.scale.setScalar(scale);
         model.position.set(-(bounds.min.x+bounds.max.x)*.5*scale,-bounds.min.y*scale,
           -(bounds.min.z+bounds.max.z)*.5*scale);
+        model.rotation.y=Math.PI;
         root.add(model);
+        humanClips=gltf.animations||[];
+        humanMixer=humanClips.length?new THREE.AnimationMixer(model):null;
         for(const part of human.root.children)if(part!==root)part.visible=false;
         document.body.dataset.nativeHumanModel='loaded';
       },undefined,err=>{
@@ -265,9 +271,26 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     human.root.rotation.y=Math.atan2(-p.faceX,-p.faceY);
     const moving=S.started&&!S.dead&&
       (Math.abs(keysInput())>.01);
-    for(let i=0;i<human.legs.length;i++)human.legs[i].rotation.x=moving?
-      Math.sin(now*.009+i*Math.PI)*.35:0;
-    human.weapon.visible=S.gear.spear||S.gear.axe||S.gear.knife;
+    const tool=S.gear.spear?'SPEAR':S.gear.axe?'AXE':S.gear.knife?'SPEAR':'NONE';
+    const profile=motionProfiles[tool];
+    const attacking=now-(Number(p.attackAt)||0)<160;
+    const motion=S.dead?'death':attacking?'attack':moving?'run':'idle';
+    const desired=humanClips.find(clip=>clip.name===profile.cc0Clips[motion]);
+    const attackAt=Number(p.attackAt)||0;
+    if(humanMixer&&desired&&(humanMotion!==desired.name||(motion==='attack'&&attackAt!==humanAttackAt))){
+      humanAction?.fadeOut(.12);
+      humanAction=humanMixer.clipAction(desired).reset();
+      const once=motion==='attack'||motion==='death';
+      humanAction.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity);
+      humanAction.clampWhenFinished=once;
+      humanAction.setEffectiveTimeScale(1);
+      if(motion==='attack')humanAction.setDuration(.16);
+      humanAction.fadeIn(.12).play();humanMotion=desired.name;
+      if(motion==='attack')humanAttackAt=attackAt;
+    }
+    if(humanMixer)humanMixer.update(Math.min(.05,Math.max(0,(now-previous)/1000)));
+    else for(let i=0;i<human.legs.length;i++)human.legs[i].rotation.x=moving?Math.sin(now*.009+i*Math.PI)*.35:0;
+    human.weapon.visible=!humanMixer&&(S.gear.spear||S.gear.axe||S.gear.knife);
     strike.visible=now-p.attackAt<160;
     tent.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
     tent.visible=S.camp.shelter>0;
