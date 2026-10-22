@@ -202,7 +202,8 @@ test('weapon-specific attacks use visibly different arcs without affecting base 
     const gameplay={x:20,y:12,damage:12,attackCooldown:0.7};
     const rig=new JaewoonMotionRig({x:gameplay.x,y:gameplay.y});
     rig.triggerAttack({style,duration:1,contactAt:.52,comboIndex:0});
-    rig.update(.52);
+    // 실제 렌더 루프처럼 0.1초 이하의 프레임으로 컨택트 시점까지 진행한다.
+    for(let frame=0;frame<52;frame++)rig.update(.01);
     const pose=rig.sample();
     samples.set(style,pose);
     assert.equal(pose.actionStyle,style);
