@@ -1592,6 +1592,123 @@ export function chooseRegressionSafeVibeWinner(candidates=[],{sourceRevision='',
   });
 }
 
+// C05 · 실제 3D 공간/프레임 증거를 사용하는 모션·접촉 검사.
+// 메인 학습 모터의 read-only verifier: 증거의 형식·인과를 확인하되 엔진 수행/게시 PASS를 만들지 않는다.
+export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
+  const issues=new Set(),frames=capabilityRows(trace.frames);
+  const sourceRevision=capabilityClean(contract.sourceRevision);
+  const accepted=capabilityProof(trace,sourceRevision)&&
+    /^[a-f0-9]{40}$/i.test(sourceRevision)&&
+    capabilityClean(contract.gameId)!==''&&trace.gameId===contract.gameId&&
+    capabilityClean(contract.actorId)!==''&&trace.actorId===contract.actorId&&
+    ['WEB','ROBLOX'].includes(capabilityClean(contract.platform).toUpperCase())&&
+    trace.platform===contract.platform;
+  if(!accepted)issues.add('EXACT_NATIVE_SPATIAL_RUNTIME_EVIDENCE_REQUIRED');
+  if(frames.length<2||frames.length>240)issues.add('SPATIAL_FRAME_WINDOW_OUT_OF_RANGE');
+  const kind=capabilityClean(contract.motionKind).toUpperCase();
+  if(!['MOVE','ATTACK','PICKUP'].includes(kind))issues.add('UNSUPPORTED_SPATIAL_ACTION');
+  const vec=p=>p&&typeof p==='object'&&[p.x,p.y,p.z].every(Number.isFinite)?p:null;
+  const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
+  const maxSlide=Number.isFinite(contract.maxFootSlideMeters)&&contract.maxFootSlideMeters>0?contract.maxFootSlideMeters:0.08;
+  const stationaryMps=Number.isFinite(contract.stationaryThresholdMps)&&contract.stationaryThresholdMps>0?contract.stationaryThresholdMps:0.08;
+  const maxContact=Number.isFinite(contract.maxContactDistanceMeters)&&contract.maxContactDistanceMeters>0?contract.maxContactDistanceMeters:0.65;
+  const maxFacing=Number.isFinite(contract.maxFacingErrorDeg)&&contract.maxFacingErrorDeg>0&&contract.maxFacingErrorDeg<=180?contract.maxFacingErrorDeg:45;
+  let validFrames=true,previous=null,measuredTravel=0;
+  for(const frame of frames){
+    if(!frame||frame.actorId!==contract.actorId||!Number.isFinite(frame.timestampMs)||
+      !vec(frame.rootPosition)||!Number.isFinite(frame.facingYawRad)||!Number.isFinite(frame.animationSpeed)){
+      issues.add('MISSING_ACTOR_FRAME_TELEMETRY');validFrames=false;break;
+    }
+    if(previous){
+      const dt=(frame.timestampMs-previous.timestampMs)/1000;
+      if(!Number.isFinite(dt)||dt<=0){issues.add('NON_MONOTONIC_SPATIAL_FRAMES');validFrames=false;break;}
+      const dx=frame.rootPosition.x-previous.rootPosition.x,dz=frame.rootPosition.z-previous.rootPosition.z;
+      const travel=Math.hypot(dx,dz),speed=travel/dt;
+      measuredTravel+=travel;
+      if(kind==='MOVE'){
+        if(['WALK','RUN'].includes(frame.animationState)&&frame.animationSpeed>0.15&&
+          speed<stationaryMps&&frame.blockedByCollision!==true){
+          if(frame.moveIntent===true)issues.add('ANIMATED_MOONWALK_WITHOUT_TRAVEL');
+          if(frame.moveIntent===false)issues.add('IDLE_ACTOR_FEET_STILL_CYCLING');
+        }
+        if(frame.moveIntent===true&&speed>=stationaryMps&&frame.animationState==='IDLE')
+          issues.add('LOCOMOTION_WITH_IDLE_ANIMATION');
+        if(frame.moveIntent===true&&speed>=stationaryMps){
+          const input=frame.worldMoveInput;
+          if(!input||!Number.isFinite(input.x)||!Number.isFinite(input.z)||Math.hypot(input.x,input.z)<0.001)
+            issues.add('WORLD_SPACE_INPUT_DIRECTION_MISSING');
+          else if((dx*input.x+dz*input.z)/(travel*Math.hypot(input.x,input.z))<0.35)
+            issues.add('ROOT_MOTION_CONTRADICTS_INPUT');
+        }
+        if(frame.footPlanted===true&&previous.footPlanted===true){
+          if(!vec(frame.footWorldPosition)||!vec(previous.footWorldPosition))
+            issues.add('PLANTED_FOOT_WORLD_POSITION_REQUIRED');
+          else if(distance(frame.footWorldPosition,previous.footWorldPosition)>maxSlide)
+            issues.add('PLANTED_FOOT_SLIDES');
+        }
+        if(contract.rigProportionCheckRequired===true){
+          for(const key of ['leftShinRadiusMeters','rightShinRadiusMeters']){
+            const radius=frame[key],previousRadius=previous[key];
+            const permitted=Number.isFinite(contract.maxLegThicknessChangeRatio)&&
+              contract.maxLegThicknessChangeRatio>=0&&contract.maxLegThicknessChangeRatio<1?
+              contract.maxLegThicknessChangeRatio:0.15;
+            if(!Number.isFinite(radius)||!Number.isFinite(previousRadius)||radius<=0||previousRadius<=0)
+              issues.add('RIG_MEASUREMENT_MISSING');
+            else if(Math.abs(radius-previousRadius)/previousRadius>permitted)
+              issues.add('RIG_PROPORTIONS_CHANGE_DURING_ANIMATION');
+          }
+        }
+        if(contract.groundedRequired===true&&(frame.grounded!==true||
+          !Number.isFinite(frame.footGroundGapMeters)||Math.abs(frame.footGroundGapMeters)>maxSlide))
+          issues.add('FLOATING_OR_UNGROUNDED_FOOT');
+      }
+    }
+    previous=frame;
+  }
+  if(kind==='MOVE'&&validFrames&&measuredTravel<Number(contract.minTravelMeters||0))
+    issues.add('MINIMUM_ACTUAL_TRAVEL_MISSING');
+  const contacts=capabilityRows(trace.contacts);
+  if(kind==='ATTACK'){
+    const matches=contacts.filter(x=>x?.kind==='WEAPON_HIT'&&x.actionId===contract.actionId&&x.targetId===contract.targetId);
+    if(!capabilityClean(contract.actionId)||!capabilityClean(contract.targetId)||matches.length!==1)
+      issues.add('EXACT_ATTACK_CONTACT_REQUIRED');
+    for(const hit of matches){
+      const hand=vec(hit.weaponTip),target=vec(hit.targetContactPoint),root=vec(hit.actorPosition),targetRoot=vec(hit.targetPosition);
+      if(!hand||!target||!root||!targetRoot||distance(hand,target)>maxContact||hit.collisionVerified!==true)
+        issues.add('ATTACK_CONTACT_OUTSIDE_HITBOX');
+      if(hit.actorId!==contract.actorId||!Number.isFinite(hit.timestampMs)||
+        !Number.isFinite(frames[0]?.timestampMs)||!Number.isFinite(frames.at(-1)?.timestampMs)||
+        hit.timestampMs<frames[0].timestampMs||hit.timestampMs>frames.at(-1).timestampMs)
+        issues.add('CONTACT_NOT_BOUND_TO_ACTOR_FRAMES');
+      if(root&&targetRoot&&Number.isFinite(hit.facingYawRad)){
+        const dx=targetRoot.x-root.x,dz=targetRoot.z-root.z;
+        if(Math.hypot(dx,dz)<0.001||Math.cos(hit.facingYawRad)*dz+Math.sin(hit.facingYawRad)*dx <
+          Math.hypot(dx,dz)*Math.cos(maxFacing*Math.PI/180))
+          issues.add('ATTACK_NOT_FACING_TARGET');
+      }else issues.add('ATTACK_FACING_TELEMETRY_MISSING');
+      if(!Number.isFinite(hit.beforeHp)||!Number.isFinite(hit.afterHp)||hit.afterHp>=hit.beforeHp||
+        hit.afterHp<0||((trace.multiplayer===true||contract.platform==='ROBLOX')&&hit.authority!=='SERVER'))
+        issues.add('UNVERIFIED_AUTHORITATIVE_HIT');
+    }
+  }
+  if(kind==='PICKUP'){
+    const touching=contacts.filter(x=>x?.kind==='HAND_TOUCH'&&x.actorId===contract.actorId&&x.itemId===contract.itemId);
+    const attached=contacts.filter(x=>x?.kind==='ITEM_ATTACHED'&&x.actorId===contract.actorId&&x.itemId===contract.itemId);
+    if(!capabilityClean(contract.itemId)||!touching.length||!attached.length)issues.add('HAND_CONTACT_BEFORE_PICKUP_REQUIRED');
+    if(!touching.some(x=>vec(x.handPosition)&&vec(x.itemPosition)&&
+      distance(x.handPosition,x.itemPosition)<=maxContact&&x.contactVerified===true))
+      issues.add('PICKUP_WITHOUT_REACHABLE_HAND_CONTACT');
+    if(!attached.some(x=>x.attachedToHand===true&&x.itemStateChanged===true&&
+      touching.some(t=>Number.isFinite(x.timestampMs)&&Number.isFinite(t.timestampMs)&&x.timestampMs>t.timestampMs)))
+      issues.add('PICKUP_ATTACHMENT_NOT_CAUSAL');
+  }
+  return capabilityResult('C05_SPATIAL',issues.size===0,[...issues],{
+    evidenceAccepted:accepted,framesChecked:frames.length,measuredTravelMeters:measuredTravel,
+    diagnosticOnly:true,automaticSourceWrite:false,sourceMutationAuthorized:false,
+    nativePlatformVerifiedByThisFunction:false
+  });
+}
+
 export function verifyVibeCausalGameplayContract(contract={},trace={}){
   const issues=[];
   const steps=['INPUT','STATE_TRANSITION','PHYSICS_OR_ANIMATION','COLLISION_OR_HIT','FEEDBACK_OR_REWARD'];
@@ -1644,7 +1761,13 @@ export function verifyVibeCausalGameplayContract(contract={},trace={}){
       issues.push('FEEDBACK_NOT_BOUND_TO_ACTUAL_DAMAGE');
     }
   }
-  return capabilityResult('C05',issues.length===0,issues,{observedSteps:Object.freeze(actual)});
+  const spatial=contract.spatialReplayRequired===true?
+    verifyVibeSpatialGameplayReplay({...contract.spatialContract,
+      sourceRevision:contract.sourceRevision,gameId:contract.gameId},trace.spatialTrace||{}):null;
+  if(spatial&&!spatial.verified)issues.push(...spatial.issues);
+  return capabilityResult('C05',issues.length===0,issues,{
+    observedSteps:Object.freeze(actual),...(spatial?{spatialDiagnostics:spatial}:{})
+  });
 }
 
 export function buildVerifiedVibeCapabilityLedger(attempts=[]){
@@ -1781,13 +1904,24 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
   const state=createMasteryState(masteryInput);
   const goal=clean(task.goal);
   const repeated=Object.values(state.failureSignatures||{}).some(row=>Number(row.count)>=2&&(row.domains||[]).some(d=>inferDomains(goal,task.target).includes(d)));
+  const spatialDiagnostics=task.spatialReplay?.contract&&task.spatialReplay?.trace?
+    verifyVibeSpatialGameplayReplay(task.spatialReplay.contract,task.spatialReplay.trace):null;
+  const measuredMotionRisk=spatialDiagnostics?.evidenceAccepted===true&&
+    spatialDiagnostics.issues.some(code=>[
+      'ANIMATED_MOONWALK_WITHOUT_TRAVEL','IDLE_ACTOR_FEET_STILL_CYCLING',
+      'LOCOMOTION_WITH_IDLE_ANIMATION','RIG_PROPORTIONS_CHANGE_DURING_ANIMATION',
+      'PLANTED_FOOT_SLIDES','FLOATING_OR_UNGROUNDED_FOOT',
+      'ROOT_MOTION_CONTRADICTS_INPUT','ATTACK_NOT_FACING_TARGET',
+      'ATTACK_CONTACT_OUTSIDE_HITBOX','PICKUP_WITHOUT_REACHABLE_HAND_CONTACT',
+      'PICKUP_ATTACHMENT_NOT_CAUSAL'
+    ].includes(code));
   const highRisk=lower(task.priority)==='critical'||lower(task.estimatedRisk)==='high'||/FULL_WEB_GAME_REBUILD|release|migration|multiplayer|datastore/i.test(goal);
   const strategies=Object.values(state.codingStrategyMemory?.strategies||{}),promotionGap=strategies.some(row=>row.state==='VERIFIED')&&!strategies.some(row=>row.state==='PREFERRED')&&lower(task.type||'implementation')==='implementation';
-  const count=repeated||highRisk||promotionGap?3:1;
+  const count=repeated||highRisk||promotionGap||measuredMotionRisk?3:1;
   // C01-C08 측정 결과는 기존 후보 비교 정책의 검증 정보이며 QA/권한 우회에 쓰지 않는다.
   const capabilities=task.capabilityEvidence?assessVibeCodingCapabilities(task.capabilityEvidence):null;
-  return {candidateCount:count,maxCandidates:5,reason:repeated?'repeated-verified-failure':highRisk?'high-risk':promotionGap?'strategy-promotion-evidence-gap':'normal',winnerRule:'VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK',gateBypass:false,
-    ...(capabilities?{capabilities}:{} )};
+  return {candidateCount:count,maxCandidates:5,reason:repeated?'repeated-verified-failure':highRisk?'high-risk':measuredMotionRisk?'verified-spatial-motion-defect':promotionGap?'strategy-promotion-evidence-gap':'normal',winnerRule:'VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK',gateBypass:false,
+    ...(capabilities?{capabilities}:{} ),...(spatialDiagnostics?{spatialDiagnostics}:{} )};
 }
 
 function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput={}){
