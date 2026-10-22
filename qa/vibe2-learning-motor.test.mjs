@@ -2390,3 +2390,70 @@ test('C06 winner requires independent same-device matched proof and strict no-re
   assert.equal(report.requirements.C06.winnerId,'candidate');
   assert.equal(report.requirements.C06.verified,true);
 });
+
+test('C02 deeply nested source-bound recipes use stack-safe dependency traversal',()=>{
+  const sourceRevision='d'.repeat(40);
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  // Reverse enumeration maximizes DFS depth: recursion overflows on the old engine.
+  const count=12000;
+  const recipes=Array.from({length:count},(_,i)=>({
+    id:'step-'+i,sourceRevision,evidenceId:'recipe-proof-'+i,proof,verified:true,
+    engine:'web',genre:'survival',rollbackFingerprint:'rollback-'+i,
+    permittedEditScope:['file/owner-'+i],preconditions:['source-contract-present'],
+    declarativeTransformation:{kind:'CONNECT_EXISTING_ACTION'},
+    dependencies:i?['step-'+(i-1)]:[]
+  })).reverse();
+  const result=composeVerifiedCodingRecipes(recipes,{engine:'web',genre:'survival',sourceRevision});
+  assert.equal(result.verified,true);
+  assert.equal(result.order.length,count);
+  assert.equal(result.order[0],'step-0');
+  assert.equal(result.order[count-1],'step-'+(count-1));
+  assert.equal(result.manualExecutionRequired,true);
+  const cyclic=recipes.slice(0,2).map(x=>({...x}));
+  cyclic[1].dependencies=[cyclic[0].id];
+  cyclic[0].dependencies=[cyclic[1].id];
+  assert.equal(composeVerifiedCodingRecipes(cyclic,{engine:'web',genre:'survival',sourceRevision}).verified,false);
+});
+
+test('C03 invalid evidence cannot squat on a later valid proof identifier',()=>{
+  const sourceRevision='a'.repeat(40);
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const valid={sourceRevision,evidenceId:'shared-evidence-1',proof,domain:'COMBAT',genre:'survival',
+    platform:'WEB',benchmarkVersion:'fixed-v1',independentQaRecorded:true,
+    regressionRecorded:true,result:'PASS',modelCalls:0,holdout:true};
+  const invalidRevision={...valid,sourceRevision:'not-a-git-sha'};
+  const invalidProof={...valid,proof:{...proof,regression:'FAIL'}};
+  const invalidBenchmark={...valid,benchmarkVersion:''};
+  const results=buildVerifiedVibeCapabilityLedger([invalidRevision,invalidProof,invalidBenchmark,valid,valid]);
+  assert.equal(results.length,1);
+  assert.equal(results[0].attempts,1);
+  assert.equal(results[0].pass,1);
+  assert.equal(results[0].verifiedPassRate,1);
+});
+
+test('C06 linear winner tournament is deterministic for large candidate sets',()=>{
+  const sourceRevision='a'.repeat(40);
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const base={id:'baseline',sourceRevision,evidenceId:'baseline-proof',proof,
+    benchmarkKey:'same-task-1',deviceClass:'phone-a',modelFingerprint:'model@exact-build',
+    saveAndBalancePreserved:true,sameTaskBudget:true,regressionCount:0,
+    runtimeMs:20,peakMemoryMb:100,modelCalls:3};
+  const candidates=Array.from({length:5000},(_,i)=>({
+    ...base,id:'candidate-'+String(i).padStart(5,'0'),evidenceId:'measured-'+i,
+    runtimeMs:12,peakMemoryMb:90,modelCalls:2
+  }));
+  const special={...base,id:'candidate-best',evidenceId:'measured-best',
+    runtimeMs:5,peakMemoryMb:80,modelCalls:1};
+  const spec={sourceRevision,benchmarkKey:base.benchmarkKey,deviceClass:base.deviceClass,
+    modelFingerprint:base.modelFingerprint,baselineId:base.id};
+  const result=chooseRegressionSafeVibeWinner([base,...candidates,special],spec);
+  assert.equal(result.verified,true);
+  assert.equal(result.winnerId,'candidate-best');
+  assert.equal(result.eligibleCandidates,5002);
+  assert.equal(result.automaticCodePromotion,false);
+  assert.equal(result.externalMeasurementVerified,false);
+  const reordered=chooseRegressionSafeVibeWinner([special,...candidates.slice().reverse(),base],spec);
+  assert.equal(reordered.winnerId,result.winnerId);
+  const blocked=chooseRegressionSafeVibeWinner([base,{...special,peakMemoryMb:101}],spec);
+  assert.equal(blocked.verified,false);
+});
