@@ -6129,11 +6129,12 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
       ?accumulatedFullWeb.content
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
+    // 초기 압축이 필요했던 요청은 재시도에도 같은 책임 소스 문맥을 쓴다. 필수 계약은 아래에서 원본으로 재결합한다.
     let attemptPrompt=singleMotionWorkUnit
       ?initialStudioPrompt+(retry?'\n[SINGLE MOTION REPAIR FEEDBACK]\n'+clean(lastError?.message)+'\nReturn the complete same-target patch and all grounded depth evidence; do not reduce this work unit to one partial edit.':'')
       :expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery,failureRepeatCount}):initialStudioPrompt));
+      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(sourceCandidatePressureInitial?initialStudioPrompt:prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery,failureRepeatCount}):initialStudioPrompt));
     if(!allowFullRewrite&&retry&&lastRepeatedRejectedPatch){
       attemptPrompt+='\n'+[
         '[REPEATED REJECTED SOURCE PATCH]',

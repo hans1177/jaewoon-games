@@ -3280,6 +3280,22 @@ test('stale release reject callback checks canonical queue before fail without g
   assert.equal(contains([{id:taskId}]),true);
 });
 
+test('provider cooldown preserves game retry budget and releases execution capacity to independent work',()=>{
+  const resumeAt=new Date(Date.now()+3600000).toISOString();
+  const waiting={id:'model-wait',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'develop source',sourceRoot:'web-games/game-a',responsibleFiles:['index.html'],status:'running',retries:3,maxRetries:4,reservationId:'lease',reservationRunId:'1234',reservedAt:new Date().toISOString()};
+  const ready={...waiting,id:'ready-work',gameId:'game-b',sourceRoot:'web-games/game-b',status:'queued',retries:0,reservationId:null,reservationRunId:null,reservedAt:null};
+  const result={taskId:waiting.id,reservationId:'lease',variant:'primary',outcome:'FAIL',blocker:'source-candidate-generation-failed',candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',message:'GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:gemini-3.8-flash:COOLDOWN,gemini-3.5-flash-lite:COOLDOWN:NEXT_RETRY_AT='+resumeAt}};
+  const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[waiting,ready]}),[result]);
+  const deferred=settled.queue.tasks.find(t=>t.id===waiting.id);
+  assert.equal(deferred.retries,3);
+  assert.equal(deferred.reservationId,null);
+  assert.equal(deferred.blocker,'EXTERNAL_AI_QUOTA_COOLDOWN');
+  const batch=reserveVibeTaskBatch(settled.queue,{maxConcurrentTasks:1,lane:'game-primary',policy:{developmentAccess:{WEB:'ALWAYS_ALLOWED'}}});
+  assert.deepEqual(batch.tasks.map(t=>t.id),['ready-work']);
+  assert.equal(batch.queue.tasks.find(t=>t.id===waiting.id).retries,3);
+  const resumed=recoverStaleRunningReservations(settled.queue,{nowMs:Date.parse(resumeAt)+1000});
+  assert.equal(resumed.queue.tasks.find(t=>t.id===waiting.id).status,'queued');
+});
 
 test('false new-game gate is recovered only for an independently runnable existing game task',()=>{
   const appended='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nmenuStructure: 타이틀→계속하기 또는 새 게임→본편. 게임 제작 구상은 기존 게임에 대한 설명이다.';

@@ -8996,3 +8996,19 @@ test('behavior sequence enters canonical Vibe2 source worker without claiming ru
   assert.match(prompt,/ACTUAL_PLATFORM_RUNTIME_REPLAY/);
   assert.match(prompt,/\[PRE-SUBMIT SELF REVIEW BEGIN\]/);
 });
+
+test('malformed retry keeps bounded source context instead of restoring the oversized planning payload',async()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'game.js'),'let state = 1;');
+  const prompt=['You are the Vibe2 game source worker. Return JSON only.','Engine: web','Goal: repair the existing game','UNRELATED_PLANNING_PAYLOAD '+('historic detail '.repeat(120000)),'Allowed edit paths: game.js','=== FILE game.js [EDITABLE] ===','let state = 1;'].join('\n');
+  const first=path.join(cwd,'first.json'),second=path.join(cwd,'second.json');
+  write(first,'invalid JSON');
+  write(second,JSON.stringify({edits:[{path:'game.js',find:'let state = 1;',replace:'let state = 2;'}]}));
+  const result=await generateCandidateWithRecovery({prompt,model:'fixture',target:'web',responsibleFiles:['game.js'],sourceRoot:cwd,sourceRootRelative:'web-games/demo',allowFullRewrite:false,responseFiles:[first,second]});
+  assert.equal(result.generation.attempts,2);
+  assert.ok(result.generation.initialPromptBytes>1000000);
+  assert.ok(result.generation.requestPromptBytes<64000);
+  assert.equal(result.candidate.edits[0].path,'game.js');
+  assert.equal(result.candidate.edits[0].find,'let state = 1;');
+  assert.equal(result.candidate.edits[0].replace,'let state = 2;');
+});
