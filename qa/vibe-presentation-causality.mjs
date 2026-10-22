@@ -2,7 +2,8 @@
 // 역할: Presentation Event의 결정성, 인과관계, 권한 격리, motion/VFX/audio/UI 실행 계약을 회귀 검사
 import assert from 'node:assert/strict';
 import {createVibePresentationEvent,compileVibePresentationEvents,routeVibePresentationEvent,createVibeAudioUIExecution,executeVibeAudioUIEvent} from '../assets/vibe-presentation-director.js';
-import {createVibeMotionEffectExecution} from '../assets/vibe-motion-effects-director.js';
+import {createVibeMotionEffectExecution,createVibeMotionProfile,planVibeMotionEffectsAutopilot,executeVibeMotionEngineEvent} from '../assets/vibe-motion-effects-director.js';
+import {createCommonCareerMotionLoadout,resolveCommonMotionGenre} from '../assets/vibe-motion-director.js';
 
 const base={sourceId:'player',targetId:'enemy-1',causeId:'cause_attack_1',timestamp:120,sequence:2,importance:'normal',payload:{animation:'attack',vfx:'slash',audio:'swing',camera:'shake',ui:'hit',damage:999,hp:0,reward:999}};
 const first=createVibePresentationEvent('hit',base);
@@ -59,5 +60,116 @@ const rejected=createVibeMotionEffectExecution({...first,authority:'engine-resol
 assert.equal(rejected.accepted,false,'authoritative gameplay events must not bypass presentation compiler');
 const audioUIRejected=createVibeAudioUIExecution({...first,gameplayMutationAllowed:true});
 assert.equal(audioUIRejected.accepted,false,'audio/ui execution must reject gameplay mutation authority');
+
+
+// 그래픽·직업·스킬·이펙트는 하나의 렌더 이벤트에서만 결합하며, 게임 밸런스 권한은 없다.
+const genres={
+  JRPG:'JRPG',TRADITIONAL_RPG:'TRADITIONAL_RPG',ACTION:'ACTION_RPG',
+  PUZZLE:'PUZZLE',ACTION_PUZZLE:'ACTION_PUZZLE',CASUAL:'CASUAL',
+  ONLINE_RPG:'MMORPG',ROG:'ROGUELIKE'
+};
+for(const [request,expected] of Object.entries(genres)){
+  assert.equal(resolveCommonMotionGenre(request),expected);
+  const profile=createVibeMotionProfile('skill',{genre:request,mobile:true});
+  assert.equal(profile.genre,expected);
+  assert.equal(profile.gameplayAuthority,false);
+  assert.ok(profile.visualLanguage.motion);
+  assert.ok(profile.visualLanguage.readability);
+}
+assert.notEqual(createVibeMotionProfile('skill',{genre:'JRPG'}).visualLanguage.effects,
+  createVibeMotionProfile('skill',{genre:'PUZZLE'}).visualLanguage.effects);
+
+// 실제 직업 라이브러리에서 스킬의 동작·부위·VFX를 가져온다. 클립 실재/런타임 인증은 별개다.
+for(const row of [
+  ['SAMURAI','IAI_DRAW','CHARGE','JRPG'],
+  ['MAGE','ARCANE_BOLT','PROJECTILE','TRADITIONAL_RPG'],
+  ['PRIEST','GREATER_RESTORE','HEAL','JRPG'],
+  ['ROGUE','ROGUE_DASH','DASH','ROG'],
+  ['SUMMONER','SPIRIT_CALL','SUMMON','ONLINE_RPG'],
+  ['DANCER','DANCE_CHAIN','COMBO','CASUAL']
+]){
+  const [careerId,skillId,kind,genre]=row;
+  const source=createCommonCareerMotionLoadout({careerId,genre});
+  assert.ok(source.skills.some(skill=>skill.id===skillId&&skill.kind===kind),row.join('/'));
+  const event=createVibePresentationEvent('skill',{
+    sourceId:'actor-1',causeId:'verified-game-skill-'+skillId,timestamp:60,
+    payload:{careerId,skillId,genre,damage:888,hitbox:'forbidden',cooldown:0}
+  });
+  assert.equal('damage' in event.payload,false);
+  assert.equal('hitbox' in event.payload,false);
+  assert.equal('cooldown' in event.payload,false);
+  const output=createVibeMotionEffectExecution(event,{mobile:true,enemyCount:20});
+  assert.equal(output.accepted,true,skillId);
+  assert.equal(output.genre,resolveCommonMotionGenre(genre));
+  assert.equal(output.skillBinding.skillId,skillId);
+  assert.equal(output.skillBinding.kind,kind);
+  assert.equal(output.skillBinding.runtimeVerified,false);
+  assert.equal(output.gameplayMutationAllowed,false);
+  assert.ok(output.skillBinding.phases.includes('PREPARE'));
+  assert.ok(output.skillBinding.phases.includes('RECOVERY'));
+  assert.ok(output.commands.find(command=>command.channel==='vfx').effects.includes(output.skillBinding.vfxSlot));
+  assert.equal(output.commands.find(command=>command.channel==='vfx').impact,null);
+}
+const badSkill=createVibePresentationEvent('skill',{payload:{genre:'JRPG',careerId:'SAMURAI',skillId:'NOT_A_REAL_SKILL'}});
+assert.equal(createVibeMotionEffectExecution(badSkill).accepted,false);
+assert.equal(createVibeMotionEffectExecution(badSkill).reason,'skill-not-in-career-motion-loadout');
+const noCareer=createVibePresentationEvent('skill',{payload:{genre:'JRPG',skillId:'IAI_DRAW'}});
+assert.equal(createVibeMotionEffectExecution(noCareer).accepted,false);
+const prepared=planVibeMotionEffectsAutopilot({genre:'JRPG',careerId:'KENSEI',platform:'WEB'});
+assert.ok(prepared.skillActions.some(skill=>skill.skillId==='IAI_DRAW'));
+assert.ok(prepared.skillActions.some(skill=>skill.skillId==='KENSEI_FINAL_DRAW'));
+assert.ok(prepared.skillActions.every(skill=>skill.nativeRuntimeVerified===false));
+assert.equal(prepared.policy.noRuleMutation,true);
+
+// 명중 증거가 없는 공격·스킬은 충돌 VFX가 발생하지 않는다.
+const attack=createVibePresentationEvent('attack',{sourceId:'player',causeId:'swing-1'});
+const attacking=createVibeMotionEffectExecution(attack);
+assert.equal(attacking.commands.find(command=>command.channel==='vfx').effects.includes('contact-spark'),false);
+const genericSkill=createVibePresentationEvent('skill',{sourceId:'player',causeId:'cast-1'});
+assert.equal(createVibeMotionEffectExecution(genericSkill).commands.find(command=>command.channel==='vfx').effects.includes('impact-burst'),false);
+assert.equal(createVibeMotionEffectExecution(first).commands.find(command=>command.channel==='vfx').impact.contact.confirmedContactRequired,true);
+
+// 캐주얼·퍼즐은 확정된 게임 이벤트만 부드럽게 표현하며 공격 이벤트를 자체 생성하지 않는다.
+const solved=createVibePresentationEvent('solve',{causeId:'authoritative-puzzle-solve',payload:{ui:'solved',hp:9000}});
+assert.equal('hp' in solved.payload,false);
+const solvedOutput=createVibeMotionEffectExecution(solved,{genre:'PUZZLE'});
+assert.equal(solvedOutput.accepted,true);
+assert.equal(solvedOutput.commands.some(command=>command.channel==='camera'),false);
+assert.ok(solvedOutput.commands.some(command=>command.channel==='vfx'));
+assert.equal(createVibeMotionProfile('heal',{genre:'CASUAL'}).camera.shake,'none');
+
+// 온라인의 동일 시퀀스 이벤트 중복은 1회로 합치되 별도의 타격 시퀀스는 보존한다.
+const online=compileVibePresentationEvents([
+  {event:'hit',sourceId:'ally-1',targetId:'boss',causeId:'remote-attack-7',timestamp:100,sequence:2},
+  {event:'hit',sourceId:'ally-1',targetId:'boss',causeId:'remote-attack-7',timestamp:100,sequence:2},
+  {event:'hit',sourceId:'ally-1',targetId:'boss',causeId:'remote-attack-7',timestamp:100,sequence:3}
+]);
+assert.equal(online.length,2);
+assert.notEqual(online[0].presentationEventId,online[1].presentationEventId);
+
+// 액션 도중에는 기존 이동 보간 상태가 끊기지 않고, 회복 기술이 공격을 재생하지 않는다.
+const bridgeCalls=[];
+const bridge={
+  ready:true,
+  rig:{
+    setMotionState:args=>bridgeCalls.push(['move',args.moving]),
+    setLod:()=>{},triggerAttack:()=>bridgeCalls.push(['attack']),
+    triggerHit:()=>bridgeCalls.push(['hit']),triggerContact:()=>bridgeCalls.push(['contact']),
+    triggerLand:()=>bridgeCalls.push(['land'])
+  },
+  camera:{impulse:()=>bridgeCalls.push(['camera'])}
+};
+executeVibeMotionEngineEvent(attack,bridge,{speed:3});
+assert.equal(bridgeCalls.some(call=>call[0]==='move'),false);
+assert.equal(bridgeCalls.some(call=>call[0]==='attack'),true);
+bridgeCalls.length=0;
+executeVibeMotionEngineEvent(createVibePresentationEvent('skill',{
+  payload:{genre:'JRPG',careerId:'PRIEST',skillId:'GREATER_RESTORE'}
+}),bridge);
+assert.equal(bridgeCalls.some(call=>call[0]==='attack'),false);
+assert.equal(bridgeCalls.some(call=>call[0]==='camera'),false);
+bridgeCalls.length=0;
+executeVibeMotionEngineEvent(createVibePresentationEvent('move'),bridge,{speed:3});
+assert.deepEqual(bridgeCalls,[['move',true]]);
 
 console.log('vibe-presentation-causality: ok');

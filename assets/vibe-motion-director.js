@@ -1059,6 +1059,11 @@ export const COMMON_CAREER_NATIVE_SOURCE_ACTION=Object.freeze({
 
 export const COMMON_GENRE_MOTION_CONTEXTS=Object.freeze({
   ACTION_RPG:freezeList(['stance','locomotion','attacks','defense','skills','signature']),
+  // 그래픽/모션만 투영한다. 턴 순서·스킬 비용·퍼즐 판정은 기존 게임이 소유한다.
+  JRPG:freezeList(['stance','locomotion','attacks','defense','skills','interactions','signature']),
+  TRADITIONAL_RPG:freezeList(['stance','attacks','defense','skills','interactions','signature']),
+  ACTION_PUZZLE:freezeList(['locomotion','defense','interactions','skills','signature']),
+  CASUAL:freezeList(['stance','locomotion','interactions','skills','signature']),
   MMORPG:freezeList(['stance','locomotion','attacks','defense','skills','interactions','signature']),
   ROGUELIKE:freezeList(['locomotion','attacks','defense','skills','signature']),
   FIGHTING:freezeList(['stance','locomotion','attacks','defense','skills','signature']),
@@ -1093,6 +1098,10 @@ export function resolveCommonMotionGenre(value=''){
   const requested=upper(value).replace(/[\s-]+/g,'_');
   const aliases=Object.freeze({
     RPG:'ACTION_RPG',ARPG:'ACTION_RPG',ACTION:'ACTION_RPG',HACK_AND_SLASH:'ACTION_RPG',
+    JAPANESE_RPG:'JRPG',JRPG_TURN_BASED:'JRPG',
+    CLASSIC_RPG:'TRADITIONAL_RPG',CRPG:'TRADITIONAL_RPG',TURN_BASED_RPG:'TRADITIONAL_RPG',
+    CASUAL_GAME:'CASUAL',HYPER_CASUAL:'CASUAL',ACTION_PUZZLE_GAME:'ACTION_PUZZLE',
+    ONLINE:'MMORPG',ONLINE_RPG:'MMORPG',ROG:'ROGUELIKE',ROGUE:'ROGUELIKE',
     ROGUELITE:'ROGUELIKE',ROGUE_LITE:'ROGUELIKE',
     TOWERDEFENSE:'TOWER_DEFENSE',DEFENSE:'TOWER_DEFENSE',
     AUTO_CHESS:'STRATEGY',RTS:'STRATEGY',TURN_BASED_STRATEGY:'TACTICAL_RPG',
