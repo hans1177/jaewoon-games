@@ -60,6 +60,59 @@ test('CC0 floor tile pitch matches its actual OBJ footprint and the playable map
   assert.doesNotMatch(render,/panel\.scale\.x\*=13\.8/,'old overlapping CC0 tiles must stay removed');
 });
 
+
+test('runtime CC0 tile placement is exact: 12 non-overlapping panels with ground y=0',()=>{
+  const bounds=objBounds(floor);
+  const h=bounds.y.max-bounds.y.min;
+  const normalize=.18/h;
+  const makePosition=(x=0,y=0,z=0)=>({x,y,z,set(a,b,c){this.x=a;this.y=b;this.z=c}});
+  const master={
+    kind:'cc0-floor',
+    position:makePosition(0,-bounds.y.min*normalize,0),
+    scale:{x:normalize,y:normalize,z:normalize},
+    clone(){return {kind:this.kind,position:makePosition(this.position.x,this.position.y,this.position.z),
+      scale:{...this.scale},clone:this.clone}}
+  };
+  const world={items:[],add(value){this.items.push(value)}};
+  const mockTHREE={
+    Vector3:class{constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z})}},
+    Box3:class{
+      setFromObject(){return this}
+      getSize(vector){Object.assign(vector,{x:(bounds.x.max-bounds.x.min)*normalize,y:.18,
+        z:(bounds.z.max-bounds.z.min)*normalize});return vector}
+      getCenter(vector){Object.assign(vector,{x:(bounds.x.max+bounds.x.min)*normalize/2,y:.09,
+        z:(bounds.z.max+bounds.z.min)*normalize/2});return vector}
+      get max(){return {y:.18}}
+    },
+    PlaneGeometry:class{constructor(width,depth){Object.assign(this,{width,depth})}},
+    MeshStandardMaterial:class{},
+    Mesh:class{constructor(geometry,material){this.geometry=geometry;this.material=material;
+      this.rotation={};this.position=makePosition()}}
+  };
+  const start=render.slice(render.indexOf('function environment(frame){'),render.indexOf(' const rand=i=>'));
+  assert.ok(start.includes('const floor=derived('));
+  const execute=new Function('THREE','world','model','ratio','GROUND_TILE_SPAN','GROUND_SURFACE_Y',
+    'let fieldBuilt=false;const derived=()=>model;'+start+
+    '\\n}\\nenvironment({world:{w:2200,h:1600}});return fieldBuilt;');
+  const [ratio,surface,,pitch]=renderingConstants();
+  assert.equal(execute(mockTHREE,world,master,ratio,pitch,surface),true);
+  const panels=world.items.filter(item=>item.kind==='cc0-floor');
+  assert.equal(panels.length,12);
+  const centers=panels.map(p=>[p.position.x,p.position.y,p.position.z]);
+  assert.equal(new Set(centers.map(v=>v.join(','))).size,12);
+  for(const panel of panels){
+    const width=panel.scale.x*(bounds.x.max-bounds.x.min);
+    const depth=panel.scale.z*(bounds.z.max-bounds.z.min);
+    assert.ok(Math.abs(width-pitch)<1e-8);
+    assert.ok(Math.abs(depth-pitch)<1e-8);
+    assert.ok(Math.abs(panel.position.y)<1e-8,'ground origin must be at Y=0');
+    assert.ok(Math.abs((panel.position.x-pitch/2)/pitch-Math.round((panel.position.x-pitch/2)/pitch))<1e-8);
+    assert.ok(Math.abs((panel.position.z-pitch/2)/pitch-Math.round((panel.position.z-pitch/2)/pitch))<1e-8);
+  }
+  assert.equal(world.items[0].geometry.width,56);
+  assert.equal(world.items[0].geometry.depth,42);
+});
+
 test('seam foundation is local geometry below CC0 surface, not an asset replacement',()=>{
   assert.match(render,/new THREE\.PlaneGeometry\(fieldWidth,fieldDepth\)/);
   assert.match(render,/GROUND_SURFACE_Y-\.025/);
