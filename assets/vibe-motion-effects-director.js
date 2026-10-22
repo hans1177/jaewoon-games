@@ -51,7 +51,7 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
   if(!genreId)return Object.freeze({accepted:false,reason:'unsupported-presentation-genre'});
   const career=String(careerId||event.payload?.careerId||'').toUpperCase();
   const requestedSkill=String(skillId||event.payload?.skillId||'').toUpperCase();
-  let binding=null;
+  let binding=null,assetReuse=null,activeWeapon=String(weaponFamily||event.payload?.weaponFamily||'').toUpperCase();
   if(type==='skill'&&(career||requestedSkill)){
     if(!career||!requestedSkill)return Object.freeze({accepted:false,reason:'career-and-skill-required'});
     let loadout;
@@ -61,6 +61,8 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
     const skill=loadout.skills.find(row=>row.id===requestedSkill);
     if(!skill)return Object.freeze({accepted:false,reason:'skill-not-in-career-motion-loadout'});
     const role=loadout.roleRequests.find(row=>row.group==='skills'&&row.id===skill.id);
+    assetReuse=loadout.cc0PlatformReuse;
+    activeWeapon=loadout.weaponFamily;
     binding=Object.freeze({
       careerId:career,sourceCareerId:role?.sourceCareerId||career,skillId:skill.id,kind:skill.kind,
       phases:skill.sequence.phases,contactPart:skill.contactPart,
@@ -69,6 +71,22 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
       nativeRigBindingRequired:true,runtimeVerified:false,gameplayAuthority:false
     });
   }
+  // 직업 스킬은 승인된 기존 무기군에서만 큰 동작의 실루엣을 선택한다.
+  // 클립이 없는 경우에도 히트박스나 실제 이동속도를 바꾸지 않는 절차적 표현이다.
+  const requestedStyle=String(event.payload?.motionStyle||'').toUpperCase();
+  const weaponStyles={
+    KATANA:'SLASH',ONE_HAND_SWORD:'SLASH',SHIELD_SWORD:'SLASH',TWO_HAND_SWORD:'CLEAVE',
+    AXE:'CLEAVE',HAMMER:'CLEAVE',SPEAR:'THRUST',DAGGER:'THRUST',
+    UNARMED:'PUNCH',BOW:'CAST',FIREARM:'CAST',STAFF_OR_WAND:'CAST',
+    GADGET:'CAST',TOOL:'CLEAVE',INSTRUMENT:'CAST'
+  };
+  const skillStyles={
+    DASH:'THRUST',COMBO:'SLASH',COUNTER:'THRUST',CHARGE:'CLEAVE',
+    PROJECTILE:'CAST',BEAM:'CAST',AREA:'CAST',ULTIMATE:'CLEAVE',
+    TRAP:'CAST',SUMMON:'CAST',HEAL:'CAST',BUFF:'CAST'
+  };
+  const motionStyle=['SLASH','THRUST','CLEAVE','PUNCH','KICK','CAST','BITE'].includes(requestedStyle)
+    ?requestedStyle:(skillStyles[binding?.kind]||weaponStyles[activeWeapon]||'DEFAULT');
   const profile=createVibeMotionProfile(type,{importance:event.importance||'normal',mobile,genre:genreId});
   const impact=createVibeImpactRecipe({
     kind:type==='hit'?'hard':'normal',importance:event.importance||'normal',
@@ -78,7 +96,7 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
   const channels=new Set(event.channels||[]),commands=[];
   if(channels.has('animation'))commands.push(Object.freeze({
     channel:'animation',action:'play-motion-profile',layers:profile.layers,timing:profile.timing,
-    genre:genreId,visualLanguage:profile.visualLanguage.motion,skillBinding:binding
+    genre:genreId,visualLanguage:profile.visualLanguage.motion,skillBinding:binding,motionStyle
   }));
   if(channels.has('vfx')){
     // 선공격과 스킬 시전은 명중 확인이 아니다. 접촉 불꽃/폭발은 authoritative hit 사건으로만 재생한다.
@@ -98,6 +116,7 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
   return Object.freeze({
     accepted:true,eventId:event.presentationEventId,causeId:event.causeId,eventType:type,
     genre:genreId,readability:profile.visualLanguage.readability,skillBinding:binding,
+    motionStyle,assetReuse,
     commands:Object.freeze(commands),authority:'presentation-only',
     gameplayMutationAllowed:false,runtimeVerified:false,forbid:FORBID
   });
@@ -125,7 +144,8 @@ export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,
   return Object.freeze({
     version:2,request:String(request),genre:genreId,careerId:loadout?.id||null,
     audit,secondaryMotion:createVibeSecondaryMotionRig({parts}),tasks:Object.freeze(tasks),
-    skillActions,engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),
+    skillActions,cc0PlatformReuse:loadout?.cc0PlatformReuse||null,
+    engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),
     policy:Object.freeze({serverAI:false,eventDriven:true,checkpoint:true,mobileFirst:mobile,gameplayAuthoritative:true,noRuleMutation:true}),
     runtimeVerified:false,authorityExpanded:false
   });
@@ -144,14 +164,14 @@ export function createVibeMotionEngineBridge({engine=null,reducedMotion=false,lo
 // 실행: 기존 보간 리그를 그대로 사용하고 이동 상태는 이동/대기 이벤트에서만 갱신한다.
 export function executeVibeMotionEngineEvent(event,bridge,{speed=0,facing=1,hitDirection=-1,bodyRegion='TORSO',turn=0,lodTier='NEAR'}={}){
   if(!bridge?.ready||!bridge.rig||!bridge.camera)return Object.freeze({accepted:false,reason:'motion-engine-bridge-not-ready'});
-  const execution=createVibeMotionEffectExecution(event,{mobile:true,enemyCount:0});
+  const execution=createVibeMotionEffectExecution(event,{mobile:true,enemyCount:0,platform:'WEB'});
   if(!execution.accepted)return execution;
   const type=String(event.eventType||''),major=event.importance==='major'||type==='boss';
   const supportSkill=execution.skillBinding&&['HEAL','BUFF','CHANNEL','GUARD','SUMMON','TRAP','TRANSFORM','REPAIR','INTERACT','COMMAND','PERFORM','STANCE'].includes(execution.skillBinding.kind);
   if(type==='move'||type==='idle')bridge.rig.setMotionState({moving:type==='move',speed,facing,turn});
   if(typeof bridge.rig.setLod==='function')bridge.rig.setLod({tier:lodTier});
   if(type==='attack'||(type==='skill'&&!supportSkill))
-    bridge.rig.triggerAttack({strength:major?1.5:1,duration:major?.34:.24,weightClass:event.weightClass||'STANDARD',contactAt:event.contactAt??.52,comboIndex:event.comboIndex||0});
+    bridge.rig.triggerAttack({strength:major?1.5:1,duration:major?.34:.24,weightClass:event.weightClass||'STANDARD',contactAt:event.contactAt??.52,comboIndex:event.payload?.comboIndex??event.comboIndex??0,style:execution.motionStyle});
   if(type==='hit'){
     bridge.rig.triggerHit({direction:hitDirection,strength:major?1.5:1,bodyRegion});
     if(typeof bridge.rig.triggerContact==='function'){
