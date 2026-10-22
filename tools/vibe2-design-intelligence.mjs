@@ -631,10 +631,18 @@ export function evaluateVibeReferenceCapabilities(input={}){
     clean(g.problem)&&clean(g.existingResponsibleFile)&&
     Number.isFinite(g.severity)&&g.severity>=0&&g.severity<=10&&
     g.proposedRuleChange!==true);
-  verifiedGaps.sort((a,b)=>b.severity-a.severity||clean(a.id).localeCompare(clean(b.id)));
+  // 자율 개선은 재현 가능한 기존 책임 파일만 정렬한다. 외부 표현 복제·자동 코드 수정은 금지.
+  verifiedGaps.sort((a,b)=>b.severity-a.severity||
+    clean(a.existingResponsibleFile).localeCompare(clean(b.existingResponsibleFile))||
+    clean(a.id).localeCompare(clean(b.id)));
+  const prioritizedGaps=verifiedGaps.map(g=>({
+    id:clean(g.id).slice(0,90),file:clean(g.existingResponsibleFile).slice(0,180),
+    severity:g.severity,sourceRevision:g.sourceRevision,
+    proposal:'MEASURE_EXISTING_SYSTEM_AND_RECHECK',
+    readOnlyFirst:true,productionPass:false
+  }));
   const r06=referenceGate('R06',verifiedGaps.length>0,verifiedGaps.length?[]:['REPRODUCED_RUNTIME_GAPS_REQUIRED'],
-    {prioritized:freezeList(verifiedGaps.map(g=>({id:g.id,file:g.existingResponsibleFile,severity:g.severity}))),
-      candidateOnly:true});
+    {prioritized:freezeList(prioritizedGaps),candidateOnly:true});
   const skills=referenceRows(input.genreSkills);
   const validSkills=skills.filter(s=>s&&clean(s.genre)&&clean(s.domain)&&
     Number.isInteger(s.pass)&&Number.isInteger(s.fail)&&s.pass>=0&&s.fail>=0&&
@@ -670,7 +678,15 @@ export function evaluateVibeReferenceCapabilities(input={}){
   const r10=referenceGate('R10',successful.length>0,successful.length?[]:['REPEATED_HOLDOUT_EXPERIMENT_REQUIRED'],{
     tested:experiments.length,eligible:successful.length,automaticKnowledgePromotion:false});
   const requirements=freeze({R01:r01,R02:r02,R03:r03,R04:r04,R05:r05,R06:r06,R07:r07,R08:r08,R09:r09,R10:r10});
+  // 기존 Game Designer / Source Worker에 제안으로만 전달하며 파일 쓰기/릴리스 권한을 부여하지 않는다.
+  const nextImprovementCandidates=freezeList(prioritizedGaps.slice(0,3).map(g=>freeze({
+    requirementId:'R06',sourceRevision:g.sourceRevision,reason:'VERIFIED_PLAYTEST_GAP',
+    responsibleFile:g.file,issueId:g.id,severity:g.severity,
+    nextStep:'EXISTING_DESIGN_REVIEW_THEN_SOURCE_OWNER_QA',
+    exactGameRuntimeRequired:true,automaticImplementation:false,automaticPromotion:false
+  })));
   return freeze({version:1,requirements,allVerified:REFERENCE_REQUIREMENTS.every(id=>requirements[id].verified),
+    nextImprovementCandidates,readOnlyImprovementBudget:3,
     evidenceOnly:true,authorityExpanded:false,sourceMutationAuthorized:false});
 }
 
@@ -731,6 +747,9 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     causality.status === 'UNVERIFIED' ? '인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.' : `인과 그래프 상태: ${causality.status}`,
     narrative.required ? `서사 계약: ${narrative.status}. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.` : '서사 계약: 필요 없음.',
     simulation.status === 'UNVERIFIED' ? '수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.' : '수치 시뮬레이션: 제공된 입력만 계산했다.',
+    referenceCapabilities.nextImprovementCandidates.length?
+      `측정된 개선 우선순위: ${referenceCapabilities.nextImprovementCandidates.map(item=>item.issueId||'unknown').join(', ')}. 기존 Game Designer 검토 및 정확 런타임 QA 전 자동 적용 금지.`:
+      '실제 플레이 격차 검증 증거 없음. 임의 개선/수치 변경 금지.',
     'R01-R10 참고 자료는 사용권한/실측/독립 QA 없는 한 구현 또는 경험 승격 증거가 아니다.',
     '구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.'
   ].join('\n');
