@@ -549,8 +549,11 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     records:(fullExperienceMemory.records||[]).filter(record=>clean(record?.taskType)!=='coding-capability-distillation')
   });
   const capabilityRecordsExcludedFromGenericLearning=Math.max(0,(fullExperienceMemory.records||[]).length-(genericLearningExperience.records||[]).length);
+  // [메인] 승인 유형은 원래 작업 지시만 판정한다. 자동 부착된 대규모 설계 문맥은 신규 게임 요청이 아니다.
+  // 상세 설계 문맥과 원본 goal은 이후 실제 코드 생성 지시에 그대로 유지한다.
+  const gateRequest=String(task.goal||'').split(/\r?\n\s*\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\](?:\r?\n|$)/i,1)[0];
   const plan = planVibeCoreTask({
-    request:task.goal, target:task.target, gameId:task.gameId, file:normalizeResponsibleFile(task),
+    request:gateRequest, target:task.target, gameId:task.gameId, file:normalizeResponsibleFile(task),
     experienceMemory:genericLearningExperience, departments:task.department?[task.department]:[], ownerDirective:task.ownerDirective, motionRepairWorkUnit:task.motionRepairWorkUnit
   });
   const gateReasons = [...(plan.executionGate?.reasons || [])];
