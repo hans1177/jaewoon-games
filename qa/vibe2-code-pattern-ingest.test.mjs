@@ -206,3 +206,37 @@ test('unverified or dangerous learned actions cannot become executable recipes',
   const arbitrary=deriveVerifiedCodePatterns({...base,instruction:'모바일 버튼 data-gameplay-action="castSpell();evil()"'} ,'company-learning/training-samples/c.json');
   assert.ok(arbitrary.every(row=>!row.executableRecipe));
 });
+
+
+test('model-free action authoring handles many distinct controls with one indexed ID pass and no source mutation',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-control-index-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const controls=Array.from({length:32},(_,i)=>
+    '<button id="attack-'+i+'" data-gameplay-action="attack">공격</button>').join('');
+  const script='<script>let hp=100;function attack(){hp-=1;}</script>';
+  const original=controls+script;
+  fs.writeFileSync(path.join(root,'index.html'),original,'utf8');
+  const args={order:{target:'web',goal:'모바일 공격 버튼 입력 연결'},
+    sourceRoot:root,responsibleFiles:['index.html']};
+  const candidate=deterministicWebInputCandidate(args);
+  assert.equal(candidate?.deterministicWebInput,true);
+  assert.equal(candidate?.edits.length,1);
+  const updated=original.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  const bound=[...updated.matchAll(/addEventListener\("click", attack\);/g)];
+  assert.equal(bound.length,32);
+  assert.equal(updated.slice(0,controls.length),controls);
+  const handlers=new Map();
+  const runtime={document:{getElementById:id=>({addEventListener:(type,fn)=>handlers.set(id+':'+type,fn)})}};
+  runInNewContext(updated.match(/<script>([\s\S]*?)<\/script>/)[1],runtime);
+  assert.equal(handlers.size,32);
+  handlers.get('attack-31:click')();
+  assert.equal(runInNewContext('hp',runtime),99);
+  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),original);
+  // Duplicate IDs must not be bound even when another button has a unique ID.
+  const duplicate=original.replace('id="attack-0"','id="attack-1"');
+  fs.writeFileSync(path.join(root,'index.html'),duplicate,'utf8');
+  const safe=deterministicWebInputCandidate(args);
+  assert.ok(safe);
+  assert.ok(!safe.edits[0].replace.includes('getElementById("attack-1")'));
+  assert.ok(safe.edits[0].replace.includes('getElementById("attack-2")'));
+});
