@@ -78,15 +78,27 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
     KATANA:'SLASH',ONE_HAND_SWORD:'SLASH',SHIELD_SWORD:'SLASH',TWO_HAND_SWORD:'CLEAVE',
     AXE:'CLEAVE',HAMMER:'CLEAVE',SPEAR:'THRUST',DAGGER:'THRUST',
     UNARMED:'PUNCH',BOW:'CAST',FIREARM:'CAST',STAFF_OR_WAND:'CAST',
-    GADGET:'CAST',TOOL:'CLEAVE',INSTRUMENT:'CAST'
+    GADGET:'CAST',TOOL:'CLEAVE',INSTRUMENT:'CAST',DUAL_BLADE:'DUAL_CROSS'
   };
   const skillStyles={
     DASH:'THRUST',COMBO:'SLASH',COUNTER:'THRUST',CHARGE:'CLEAVE',
     PROJECTILE:'CAST',BEAM:'CAST',AREA:'CAST',ULTIMATE:'CLEAVE',
     TRAP:'CAST',SUMMON:'CAST',HEAL:'CAST',BUFF:'CAST'
   };
-  const motionStyle=['SLASH','THRUST','CLEAVE','PUNCH','KICK','CAST','BITE'].includes(requestedStyle)
-    ?requestedStyle:(skillStyles[binding?.kind]||weaponStyles[activeWeapon]||'DEFAULT');
+  // 기술명은 기존 직업 데이터에서만 읽는다. 원본 무기·타이밍·콤보 판정을 수정하지 않는다.
+  const signatureStyle=binding
+    ?/DIVE|SKY_BREAK|FALLING_THRUST/.test(binding.skillId)?'LEAP_DIVE'
+      :/SHIELD_BASH|SHIELD_WALL/.test(binding.skillId)?'SHIELD_BASH'
+      :/CRESCENT|MOON_CUT|SPEAR_WHIRL/.test(binding.skillId)?'SPIN_SLASH'
+      :/RISING|UPPERCUT|PALM_WAVE/.test(binding.skillId)?'RISING_CUT'
+      :binding.kind==='COMBO'&&activeWeapon==='DUAL_BLADE'?'DUAL_CROSS'
+      :binding.kind==='ULTIMATE'&&['TWO_HAND_SWORD','AXE','HAMMER'].includes(activeWeapon)?'HEAVY_SLAM'
+      :null
+    :null;
+  const allowedStyles=['SLASH','THRUST','CLEAVE','PUNCH','KICK','CAST','BITE',
+    'HEAVY_SLAM','DUAL_CROSS','SPIN_SLASH','RISING_CUT','LEAP_DIVE','UPPERCUT','SHIELD_BASH','TAIL_SWIPE'];
+  const motionStyle=allowedStyles.includes(requestedStyle)
+    ?requestedStyle:(signatureStyle||skillStyles[binding?.kind]||weaponStyles[activeWeapon]||'DEFAULT');
   const profile=createVibeMotionProfile(type,{importance:event.importance||'normal',mobile,genre:genreId});
   const impact=createVibeImpactRecipe({
     kind:type==='hit'?'hard':'normal',importance:event.importance||'normal',
@@ -201,8 +213,18 @@ export function executeVibeMotionEngineEvent(event,bridge,{speed=0,facing=1,hitD
     }
   }
   if(type==='spawn'||type==='death')bridge.rig.triggerLand({strength:major?1.4:.8});
-  if(type==='hit'||type==='attack'||type==='boss'||(type==='skill'&&!supportSkill))
-    bridge.camera.impulse({x:(type==='hit'?hitDirection:facing)*(major?90:45),y:major?-45:-18,rotation:(major?.7:.25)*facing});
+  if(type==='hit'||type==='attack'||type==='boss'||(type==='skill'&&!supportSkill)){
+    // 공격 예고는 미세하게, 실제 명중은 무기 무게에 맞게 전달한다. 입력·물리 카메라는 건드리지 않는다.
+    const confirmed=type==='hit';
+    const weight=String(event.weightClass||'STANDARD').toUpperCase();
+    const weightScale=confirmed?(weight==='HEAVY'?1.25:weight==='LIGHT'?.72:1):1;
+    const accentScale=type==='attack'?.28:confirmed?weightScale:1;
+    bridge.camera.impulse({
+      x:(confirmed?hitDirection:facing)*(major?90:45)*accentScale,
+      y:(major?-45:-18)*accentScale,
+      rotation:(major?.7:.25)*facing*accentScale
+    });
+  }
   return Object.freeze({
     accepted:true,eventType:type,skillBinding:execution.skillBinding,authority:'presentation-only',
     gameplayMutationAllowed:false,forbid:FORBID,bridgeApplied:true
