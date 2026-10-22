@@ -8,7 +8,7 @@ import path from 'node:path';
 import {validatedHomepageMedia,webTreeFingerprint} from '../tools/game-catalog-normalization.mjs';
 import vm from 'node:vm';
 import {execFileSync} from 'node:child_process';
-import {mergeRuntimeCatalogMissingGames,syncPublishedWebRoutes} from '../tools/company-status-sync.mjs';
+import {mergeRuntimeCatalogMissingGames,syncPublishedWebRoutes,applyHomepageRuntimeInfo} from '../tools/company-status-sync.mjs';
 import {writePagesLanding} from '../tools/github-pages-landing.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
@@ -118,13 +118,14 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
     identity:{gameId:id,name:id},
     lifecycle:{state:'ACTIVE'},
     production:{class:cls},
+    homepage:{runtime:{developmentActive:cls!=='DESIGN_ONLY'}},
     sources:{web:{path:'web-games/'+id,playable:false,archive:false},unity:{projectPath:'unity-games/'+id}}
   }});
   const dev=base('dev-without-release','DEVELOPMENT_CONFIRMED');
   const design=base('design-without-release','DESIGN_ONLY');
   const released=base('released-without-build','RELEASE_CONFIRMED');
   const list=api.developmentRows({games:[dev,design,released]},{});
-  assert.deepEqual(Array.from(list,game=>game.id),['dev-without-release','design-without-release','released-without-build'],'canonical registered games remain displayed even while unverified');
+  assert.deepEqual(Array.from(list,game=>game.id),['dev-without-release','released-without-build'],'only active development games remain displayed even while unverified');
   assert.equal(api.hasRunnableHomepageTarget(dev),false,'source-only must not be treated as runnable');
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
@@ -231,10 +232,10 @@ test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게�
     !['RETIRED','REMOVED','ARCHIVED'].includes(String(game.canonical?.lifecycle?.state||game.lifecycleState||'').toUpperCase())
     &&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.canonical?.production?.class||game.productionClass||'').toUpperCase())
   );
-  const shouldList=game=>String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE';
+  const shouldList=game=>game.canonical?.homepage?.runtime?.developmentActive===true&&String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE';
   const expected=eligible.filter(shouldList);
   assert.deepEqual([...present].sort(),expected.map(row=>row.id).sort(),'정식 게임은 유지하고 출처만 있는 미검증 시제품은 제외한다');
-  assert.equal(expected.length,catalog.games.length,'개발 중 게임은 모두 게시한다');
+  assert.ok(expected.length<catalog.games.length,'개발 대기열 밖 게임은 숨긴다');
   for(const row of eligible.filter(game=>!shouldList(game)))assert.equal(present.has(row.id),false,'시제품이 홈피에 남음: '+row.id);
   for(const row of expected)assert.ok(present.has(row.id),'실제 게임 누락: '+row.id);
 });
@@ -244,6 +245,7 @@ test('개발 확정 게임은 게시하되 철회된 테스트의 플레이 버�
   const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,hasRunnableHomepageTarget,buildCard})',{document:{readyState:'loading',addEventListener(){}}});
   const row=(id,state)=>({id,canonical:{
     identity:{gameId:id,name:id},lifecycle:{state:'ACTIVE',ownerExistingGame:true},
+    homepage:{runtime:{developmentActive:true}},
     production:{class:'DEVELOPMENT_CONFIRMED'},
     sources:{web:{path:'web-games/'+id,state},roblox:{projectPath:'roblox-games/'+id}}
   }});
@@ -727,4 +729,27 @@ test('Pages source cache restores only changed bytes and rejects unverified outp
   restores.length=0;fs.rmSync('assets',{recursive:true,force:true});run();
   assert.deepEqual(restores,[Object.keys(bytes).sort()],'a cache miss must use the unchanged canonical Git fallback');
  }finally{process.chdir(before);fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 동기화 회귀: 등록·출시 여부가 아닌 현재 개발 대기열과 보류 상태로 노출한다.
+test('개발 중단·대기열 누락·오너 보류는 모든 홈페이지 목록에서 제외하고 재개 시 복원한다',()=>{
+  const catalog={games:['working','paused','missing','held'].map(id=>({id,name:id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))};
+  const developmentQueue={items:[{gameId:'working',status:'ACTIVE'},{gameId:'paused',status:'PAUSED'},{gameId:'held',status:'ACTIVE',ownerDevelopmentHold:true}]};
+  applyHomepageRuntimeInfo({catalog,developmentQueue});
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({developmentRows,recentModificationRows,activeLifecycle})',{document:{readyState:'loading',addEventListener(){}},Date,Intl});
+  assert.deepEqual(Array.from(api.developmentRows(catalog,{}),row=>row.id),['working']);
+  assert.deepEqual(Array.from(api.recentModificationRows(catalog),row=>row.game.id),['working']);
+  developmentQueue.items[1].status='ACTIVE';
+  applyHomepageRuntimeInfo({catalog,developmentQueue});
+  assert.deepEqual(Array.from(api.developmentRows(catalog,{}),row=>row.id).sort(),['paused','working']);
+  assert.equal(catalog.games.find(row=>row.id==='missing').canonical.homepage.runtime.developmentActive,false);
+});
+
+test('중앙 집중 개발 게임과 지정 플랫폼만 홈페이지 노출에 반영한다',()=>{
+  const catalog={games:['selected','backlog','held'].map(id=>({id,name:id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))};
+  const developmentQueue={items:catalog.games.map(g=>({gameId:g.id,status:'ACTIVE'}))};
+  const policy={developmentAccess:{ROBLOX:'OWNER_HOLD',WEB:'ALWAYS_ALLOWED'},developmentLifecycleMachine:{focusedDevelopmentCaretakers:{enabled:true,focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',ownerFocusedGameIds:['selected','held'],ownerFocusedGamePlatforms:{selected:'WEB',held:'ROBLOX'}}}};
+  applyHomepageRuntimeInfo({catalog,developmentQueue,policy});
+  assert.deepEqual(catalog.games.filter(g=>g.canonical.homepage.runtime.developmentActive).map(g=>g.id),['selected']);
 });

@@ -3,6 +3,7 @@
 // 원칙: productionClass가 유일한 정식 제작 분류이며 DEVELOPMENT_CONFIRMED는 최소 공통 설계 후 Roblox+Unity 네이티브를 동시 진행한다.
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
 import {
   PRODUCTION_CLASSES,
@@ -86,10 +87,12 @@ const latestById=(rows,idField)=>{const map=new Map();for(const row of Array.isA
 const developmentHomepageScore=()=>({score:null,label:'점수 미평가',current:false,source:'DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT'});
 const homepageLatestWork=(game,queue)=>clean(queue?.homepageRecentWork||game?.homepageRecentWork||queue?.currentStep||queue?.resumeStage||queue?.canonicalState)||'개발 작업 정보 없음';
 
-export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={}}={}){
+export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={},policy={}}={}){
   if(!catalog||!Array.isArray(catalog.games))return catalog;
   const queueById=latestById(developmentQueue?.items,'gameId');
   const seedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
+  const focus=policy.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+  const exactFocus=focus?.enabled===true&&focus.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY';
   catalog.runtimeAuthority='company-runtime';
   catalog.runtimeInfoAuthority='company-runtime';
   catalog.runtimeSupportedPlatforms=[...PLATFORM_PRIORITY];
@@ -105,6 +108,12 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
     const playMode=clean(seed?.MULTIPLAYER_DESIGN_MODE||seed?.INITIAL_PLAY_MODE||queue?.ROBLOX_PLAY_MODE||queue?.playMode).toUpperCase();
     game.homepageInfo={
       authority:'company-runtime',
+      developmentActive:Boolean((!exactFocus||(focus.ownerFocusedGameIds||[]).includes(id))
+        &&queue&&clean(queue.status).toUpperCase()==='ACTIVE'
+        &&['ACTIVE','REBUILD'].includes(clean(queue.lifecycleState||'ACTIVE').toUpperCase())
+        &&queue.ownerDevelopmentHold!==true
+        &&['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(clean(queue.productionClass||game.productionClass).toUpperCase())
+        &&(exactFocus?[clean(focus.ownerFocusedGamePlatforms?.[id]).toLowerCase()]:['roblox','web']).some(target=>['roblox','web'].includes(target)&&!ownerDevelopmentHeld(policy,id,target,queue))),
       platform,
       platformLabel:platformLabel(platform),
       score:score.score,
@@ -569,7 +578,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
 
   synchronizeCompanyStatusPolicy(company,{filesystem});
   const classResult=syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem});
-  applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
+  applyHomepageRuntimeInfo({catalog,developmentQueue,seedState,policy:optionalJson(filesystem,centralPolicyPath,{})});
   company.runtimeAuthority='company-runtime';
   company.updatedAt=supervision.dateKst||company.updatedAt;
   company.supervision={

@@ -6789,7 +6789,7 @@
         },
         {
           "id": "IN_DEVELOPMENT",
-          "source": "ALL_CANONICAL_DEPLOYED_ACTIVE_GAMES_WITHOUT_CONFIRMED_PLATFORM_RELEASE",
+          "source": "ACTIVE_OWNER_FOCUSED_DEVELOPMENT_WITH_OWNER_HOLDS_APPLIED",
           "label": "개발 중"
         }
       ],
@@ -6890,7 +6890,7 @@
         ],
         "cardVisibilityRequiresRunnableTarget": false,
         "titleOnlyCardExposureForbidden": false,
-        "deployedGameCardAlwaysVisible": true,
+        "deployedGameCardAlwaysVisible": false,
         "unverifiedPlayButtonDisabled": true
       },
       "recentUpdates": {
@@ -7293,16 +7293,16 @@
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-10-10",
       "status": "OWNER_DIRECT_LOCKED",
-      "mode": "ALWAYS_SHOW_DEPLOYED_GAMES_IN_DEVELOPMENT_AND_RELEASE",
-      "allDeployedGamesVisible": true,
+      "mode": "ACTIVE_OWNER_FOCUSED_DEVELOPMENT_ONLY",
+      "allDeployedGamesVisible": false,
       "allActiveDevelopmentGamesVisible": true,
       "missingBuildDisablesPlayButtonOnly": true,
-      "showDevelopmentAndReleasedGames": true,
+      "showDevelopmentAndReleasedGames": false,
       "gameCardVisibilityIndependentOfReleaseClassification": true,
       "gameCardVisibilityIndependentOfUnityWebRuntimeQa": true,
       "gameCardVisibilityIndependentOfPlayableTarget": true,
-      "canonicalRegisteredWebPathCountsForListing": true,
-      "nativeVerifiedRunnableTargetCountsForListing": true,
+      "canonicalRegisteredWebPathCountsForListing": false,
+      "nativeVerifiedRunnableTargetCountsForListing": false,
       "simpleClickOnlyNonGamePrototypesRemainExcluded": true,
       "unverifiedOrMissingGameBuildDisablesPlayButtonOnly": true,
       "noFalseNative3dRuntimeOrReleasePass": true,

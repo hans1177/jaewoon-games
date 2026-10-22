@@ -279,7 +279,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     {id:'dev-playable',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/dev-playable/'},
     {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'}
   ]},{testBuilds:[]}).map(gameIdOf)`,context);
-  assert.deepEqual([...visible].sort(),['click-only','design-playable','dev-playable','no-build'],'registered games stay visible but unverified HTML cannot gain an active game play link');
+  assert.deepEqual([...visible].sort(),[],'games without active development evidence stay hidden');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
@@ -332,7 +332,7 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
   });
   ui.setExposure({unityWebEnabled:true,games:[]});
   const cards=ui.developmentRows(sourceCatalog,{});
-  assert.equal(cards.length,sourceCatalog.games.filter(game=>String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE').length,'active approved development games must be listed');
+  assert.equal(cards.length,sourceCatalog.games.filter(game=>game.canonical?.homepage?.runtime?.developmentActive===true&&String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE').length,'active approved development games must be listed');
   assert.equal(new Set(Array.from(cards,game=>game.id)).size,cards.length);
 }
 
