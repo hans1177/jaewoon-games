@@ -249,7 +249,8 @@ const debugPort=await allocateLocalPort();
 const wild3dOnly=gameIds.length===1&&gameIds[0]==='wild-survival';
 const tower3dOnly=gameIds.length===1&&gameIds[0]==='tower-choice-rpg';
 const star3dOnly=gameIds.length===1&&gameIds[0]==='seed-action-survival-rogu-echoes-of-the-lost-star';
-const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly;
+const gem3dOnly=gameIds.length===1&&gameIds[0]==='gem-survivor';
+const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly||gem3dOnly;
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
@@ -288,7 +289,7 @@ try{
     await loaded;
     await delay(500);
 
-    if(tower3dOnly){
+    if(tower3dOnly||gem3dOnly){
       // The owner game cannot start until the exact approved GLB is decoded.
       // Do not treat a click on a disabled Start button as native game evidence.
       currentPhase='TRUE_3D_ASSET_READY';
@@ -299,11 +300,11 @@ try{
           error:document.body.dataset.spatialDimension==='3d-error',
           status:document.querySelector('#renderStatus')?.textContent||''
         }))()`);
-        if(state?.error)throw Error('TOWER_3D_ASSET_INIT_FAILED:'+state.status);
+        if(state?.error)throw Error('NATIVE_3D_ASSET_INIT_FAILED:'+gameId+':'+state.status);
         if(state?.startEnabled){ready=true;break}
         await delay(250);
       }
-      assert.equal(ready,true,'tower-choice-rpg: licensed native GLB or renderer failed to initialize');
+      assert.equal(ready,true,gameId+': native GLB or renderer failed to initialize');
     }
     currentPhase='START_INPUT';
     const start=await cdp.evaluate(`(()=>{
@@ -364,7 +365,7 @@ try{
     // Only accept a completed Three.js frame AND a live WebGL2 drawing buffer.
     if(native3dOnly){
       currentPhase='TRUE_WEBGL_3D_FRAME';
-      if(star3dOnly)assert.equal(start?.clicked,true,'star-echoes: active gameplay start not clicked');
+      if(star3dOnly||gem3dOnly)assert.equal(start?.clicked,true,gameId+': active gameplay start not clicked');
       assert.equal(start?.clicked,true,'wild-survival: survival start action was not triggered');
       let proof=null;
       for(let attempt=0;attempt<65;attempt++){
