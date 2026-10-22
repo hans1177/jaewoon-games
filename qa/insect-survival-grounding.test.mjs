@@ -68,10 +68,10 @@ test('runtime CC0 tile placement is exact: 12 non-overlapping panels with ground
   const normalize=.18/h;
   const makePosition=(x=0,y=0,z=0)=>({x,y,z,set(a,b,c){this.x=a;this.y=b;this.z=c}});
   const master={
-    kind:'cc0-floor',
+    kind:'cc0-floor',userData:{},
     position:makePosition(0,-bounds.y.min*normalize,0),
     scale:{x:normalize,y:normalize,z:normalize},
-    clone(){return {kind:this.kind,position:makePosition(this.position.x,this.position.y,this.position.z),
+    clone(){return {kind:this.kind,userData:{...this.userData},position:makePosition(this.position.x,this.position.y,this.position.z),
       scale:{...this.scale},clone:this.clone}}
   };
   const world={items:[],add(value){this.items.push(value)}};
@@ -139,7 +139,7 @@ test('WebGL crash and context-loss recovery shows the original playable 2D canva
   const end=render.indexOf("renderer.domElement.addEventListener('webglcontextlost'");
   assert.ok(begin>=0&&end>begin,'original renderer must own WebGL failure recovery');
   const legacy={style:{visibility:'hidden'}};
-  const webgl={style:{display:'block'}};
+  const webgl={style:{display:'block'},dataset:{renderedFrame:'true'}};
   const warns=[];
   const context={window:{insectScene3DReady:true},renderer:{domElement:webgl},
     document:{getElementById(id){return id==='cv'?legacy:null}},
