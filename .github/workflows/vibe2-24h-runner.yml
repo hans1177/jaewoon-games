@@ -999,7 +999,7 @@ jobs:
           base_store='/tmp/vibe2-verified-learning-main-base.json'
           rm -rf "$promote_root"
           git worktree prune
-          git fetch origin main --quiet
+          git fetch origin main --quiet --depth=1 --no-tags
           git worktree add --detach "$promote_root" origin/main >/dev/null
 
           test -s "$promote_root/.vibe2/external-ai-distilled-knowledge.json"
@@ -1340,7 +1340,7 @@ jobs:
           # semantic queue command on every optimistic retry.
           for attempt in 1 2 3; do
             echo "VIBE2_RELEASE_RECOVERY_OPTIMISTIC_ATTEMPT=$attempt/3"
-            git fetch origin vibe2-unreal-core --quiet
+            git fetch origin vibe2-unreal-core --quiet --depth=1 --no-tags
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
 
