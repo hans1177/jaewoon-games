@@ -82512,11 +82512,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_74bd0fc9dddadef997c28545",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9216",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "47d8ddd316d9ced1b85c35b5012047c315021f4e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9216,
+        "baseBranch": "main",
+        "headBranch": "vibe2/asset-role-korean-insect-cozy-main-sync-20261022",
+        "baseSha": "47d8ddd316d9ced1b85c35b5012047c315021f4e",
+        "headSha": "050f6a0ddc5be7d3d9c781e6d3bd2192e861c8d8",
+        "mergeCommitSha": "257059a830828bc4312885b2d5863f5530998a85",
+        "mergedAt": "2026-10-22T11:27:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "42f806800c2f352eb5d87f01325df983f1471ffdb502ee808f5c1151248e349a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/asset-role-korean-insect-cozy-main-sync-20261022",
+        "candidateSha": "050f6a0ddc5be7d3d9c781e6d3bd2192e861c8d8"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 1984,
+        "deletedLineCount": 258,
+        "changedFiles": [
+          "assets/asset-selector.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-external-customization.test.mjs",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/human-go/client/Game.client.luau",
+          "roblox-games/human-go/roblox-source-bootstrap.json",
+          "roblox-games/human-go/shared/GameConfig.luau",
+          "roblox-games/monster-adventure/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json"
+        ],
+        "codingRelevantFiles": [
+          "assets/asset-selector.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-external-customization.test.mjs",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/human-go/client/Game.client.luau",
+          "roblox-games/human-go/roblox-source-bootstrap.json",
+          "roblox-games/human-go/shared/GameConfig.luau",
+          "roblox-games/monster-adventure/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9216",
+        "merge-commit:257059a830828bc4312885b2d5863f5530998a85",
+        "base-main:47d8ddd316d9ced1b85c35b5012047c315021f4e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 652
+    "total": 653
   }
 }
