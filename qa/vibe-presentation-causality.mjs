@@ -224,4 +224,17 @@ executeVibeMotionEngineEvent(styleOverride,{
 });
 assert.deepEqual(styleCalls.map(x=>[x.style,x.comboIndex]),[['KICK',15]]);
 
+
+// 기존 대전격투 동작팩과 종별 관절 키포즈를 소스 레벨에서 재사용하는지 검사한다.
+const meleePlan=planVibeMotionEffectsAutopilot({genre:'ACTION_RPG',careerId:'SAMURAI',platform:'WEB'});
+assert.ok(meleePlan.combatActions.length>6);
+assert.ok(meleePlan.combatActions.some(row=>row.group==='lightCombo'));
+assert.ok(meleePlan.combatActions.some(row=>row.group==='finisher'));
+assert.ok(meleePlan.combatActions.every(row=>row.sourcePack==='EXISTING_DUEL_COMBAT_MOTION_LIBRARY'&&row.nativeRuntimeVerified===false));
+const wildPlan=planVibeMotionEffectsAutopilot({genre:'SURVIVAL',speciesId:'WOLF',monsterTier:'ELITE',platform:'ROBLOX'});
+assert.ok(wildPlan.creatureActions.length>2);
+assert.ok(wildPlan.creatureActions.some(row=>row.group==='attacks'));
+assert.ok(wildPlan.creatureActions.every(row=>row.bodyPlan&&row.jointTracks.length>=2&&row.actualNativeRigBindingRequired===true));
+assert.ok(wildPlan.creatureActions.every(row=>row.runtimeVerified===false&&row.gameplayAuthority===false));
+
 console.log('vibe-presentation-causality: ok');
