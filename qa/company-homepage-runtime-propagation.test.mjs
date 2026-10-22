@@ -235,7 +235,7 @@ test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게�
   const shouldList=game=>game.canonical?.homepage?.runtime?.developmentActive===true&&String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE';
   const expected=eligible.filter(shouldList);
   assert.deepEqual([...present].sort(),expected.map(row=>row.id).sort(),'정식 게임은 유지하고 출처만 있는 미검증 시제품은 제외한다');
-  assert.ok(expected.length<catalog.games.length,'개발 대기열 밖 게임은 숨긴다');
+  assert.ok(expected.length>3,'집중 개발 밖의 정상 게임도 노출한다');
   for(const row of eligible.filter(game=>!shouldList(game)))assert.equal(present.has(row.id),false,'시제품이 홈피에 남음: '+row.id);
   for(const row of expected)assert.ok(present.has(row.id),'실제 게임 누락: '+row.id);
 });
@@ -732,24 +732,31 @@ test('Pages source cache restores only changed bytes and rejects unverified outp
 });
 
 // 동기화 회귀: 등록·출시 여부가 아닌 현재 개발 대기열과 보류 상태로 노출한다.
-test('개발 중단·대기열 누락·오너 보류는 모든 홈페이지 목록에서 제외하고 재개 시 복원한다',()=>{
+test('개발 중단·보류만 숨기고 대기열 누락 게임은 유지하며 재개 시 복원한다',()=>{
   const catalog={games:['working','paused','missing','held'].map(id=>({id,name:id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))};
-  const developmentQueue={items:[{gameId:'working',status:'ACTIVE'},{gameId:'paused',status:'PAUSED'},{gameId:'held',status:'ACTIVE',ownerDevelopmentHold:true}]};
+  const developmentQueue={items:[{gameId:'working',status:'ACTIVE'},{gameId:'paused',status:'PAUSED',lifecycleState:'ACTIVE'},{gameId:'held',status:'ACTIVE',ownerDevelopmentHold:true}]};
   applyHomepageRuntimeInfo({catalog,developmentQueue});
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(renderer+';({developmentRows,recentModificationRows,activeLifecycle})',{document:{readyState:'loading',addEventListener(){}},Date,Intl});
-  assert.deepEqual(Array.from(api.developmentRows(catalog,{}),row=>row.id),['working']);
-  assert.deepEqual(Array.from(api.recentModificationRows(catalog),row=>row.game.id),['working']);
+  assert.deepEqual(Array.from(api.developmentRows(catalog,{}),row=>row.id).sort(),['missing','working']);
+  assert.deepEqual(Array.from(api.recentModificationRows(catalog),row=>row.game.id).sort(),['missing','working']);
   developmentQueue.items[1].status='ACTIVE';
   applyHomepageRuntimeInfo({catalog,developmentQueue});
-  assert.deepEqual(Array.from(api.developmentRows(catalog,{}),row=>row.id).sort(),['paused','working']);
-  assert.equal(catalog.games.find(row=>row.id==='missing').canonical.homepage.runtime.developmentActive,false);
+  assert.deepEqual(Array.from(api.developmentRows(catalog,{}),row=>row.id).sort(),['missing','paused','working']);
+  assert.equal(catalog.games.find(row=>row.id==='missing').canonical.homepage.runtime.developmentActive,true);
 });
 
-test('중앙 집중 개발 게임과 지정 플랫폼만 홈페이지 노출에 반영한다',()=>{
+test('집중 개발 3개와 플랫폼 우선순위는 다른 게임의 노출을 막지 않는다',()=>{
   const catalog={games:['selected','backlog','held'].map(id=>({id,name:id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))};
   const developmentQueue={items:catalog.games.map(g=>({gameId:g.id,status:'ACTIVE'}))};
   const policy={developmentAccess:{ROBLOX:'OWNER_HOLD',WEB:'ALWAYS_ALLOWED'},developmentLifecycleMachine:{focusedDevelopmentCaretakers:{enabled:true,focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',ownerFocusedGameIds:['selected','held'],ownerFocusedGamePlatforms:{selected:'WEB',held:'ROBLOX'}}}};
   applyHomepageRuntimeInfo({catalog,developmentQueue,policy});
-  assert.deepEqual(catalog.games.filter(g=>g.canonical.homepage.runtime.developmentActive).map(g=>g.id),['selected']);
+  assert.deepEqual(catalog.games.filter(g=>g.canonical.homepage.runtime.developmentActive).map(g=>g.id).sort(),['backlog','held','selected']);
+});
+
+test('명시적인 영구 개발 제외 게임은 집중 대상이나 대기열 상태와 무관하게 숨긴다',()=>{
+  const catalog={permanentRemovalPolicy:{ids:['excluded']},games:[{id:'excluded',name:'제외',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'},{id:'normal',name:'정상',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  applyHomepageRuntimeInfo({catalog,developmentQueue:{items:[{gameId:'excluded',status:'ACTIVE'}]}});
+  assert.equal(catalog.games.some(g=>g.id==='excluded'&&g.homepageInfo.developmentActive===true),false);
+  assert.equal(catalog.games.find(g=>g.id==='normal').homepageInfo.developmentActive,true);
 });

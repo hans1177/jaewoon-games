@@ -3,7 +3,6 @@
 // 원칙: productionClass가 유일한 정식 제작 분류이며 DEVELOPMENT_CONFIRMED는 최소 공통 설계 후 Roblox+Unity 네이티브를 동시 진행한다.
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
 import {
   PRODUCTION_CLASSES,
@@ -91,8 +90,7 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
   if(!catalog||!Array.isArray(catalog.games))return catalog;
   const queueById=latestById(developmentQueue?.items,'gameId');
   const seedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
-  const focus=policy.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
-  const exactFocus=focus?.enabled===true&&focus.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY';
+  const removed=new Set([...(policy.permanentProjectRemoval?.ids||[]),...(catalog.permanentRemovalPolicy?.ids||[])].map(clean));
   catalog.runtimeAuthority='company-runtime';
   catalog.runtimeInfoAuthority='company-runtime';
   catalog.runtimeSupportedPlatforms=[...PLATFORM_PRIORITY];
@@ -108,12 +106,11 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
     const playMode=clean(seed?.MULTIPLAYER_DESIGN_MODE||seed?.INITIAL_PLAY_MODE||queue?.ROBLOX_PLAY_MODE||queue?.playMode).toUpperCase();
     game.homepageInfo={
       authority:'company-runtime',
-      developmentActive:Boolean((!exactFocus||(focus.ownerFocusedGameIds||[]).includes(id))
-        &&queue&&clean(queue.status).toUpperCase()==='ACTIVE'
-        &&['ACTIVE','REBUILD'].includes(clean(queue.lifecycleState||'ACTIVE').toUpperCase())
-        &&queue.ownerDevelopmentHold!==true
-        &&['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(clean(queue.productionClass||game.productionClass).toUpperCase())
-        &&(exactFocus?[clean(focus.ownerFocusedGamePlatforms?.[id]).toLowerCase()]:['roblox','web']).some(target=>['roblox','web'].includes(target)&&!ownerDevelopmentHeld(policy,id,target,queue))),
+      // 집중 개발 우선순위·대기열 유무는 노출 제한이 아니다. 명시적인 개발 제외만 반영한다.
+      developmentActive:Boolean(!removed.has(id)
+        &&['ACTIVE','REBUILD'].includes(clean(game.lifecycleState||'ACTIVE').toUpperCase())
+        &&![queue?.lifecycleState,queue?.status].some(value=>['PAUSED','DISABLED','REMOVED','RETIRED','ARCHIVED','CANCELLED','STOPPED'].includes(clean(value).toUpperCase()))
+        &&queue?.ownerDevelopmentHold!==true),
       platform,
       platformLabel:platformLabel(platform),
       score:score.score,
