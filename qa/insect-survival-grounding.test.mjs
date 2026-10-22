@@ -92,11 +92,11 @@ test('runtime CC0 tile placement is exact: 12 non-overlapping panels with ground
   };
   const start=render.slice(render.indexOf('function environment(frame){'),render.indexOf(' const rand=i=>'));
   assert.ok(start.includes('const floor=derived('));
-  const execute=new Function('THREE','world','model','ratio','GROUND_TILE_SPAN','GROUND_SURFACE_Y',
+  const execute=new Function('THREE','world','model','ratio','GROUND_TILE_SPAN','GROUND_SURFACE_Y','window',
     'let fieldBuilt=false;const derived=()=>model;'+start+
     String.fromCharCode(10)+'}'+String.fromCharCode(10)+'environment({world:{w:2200,h:1600}});return fieldBuilt;');
   const [ratio,surface,,pitch]=renderingConstants();
-  assert.equal(execute(mockTHREE,world,master,ratio,pitch,surface),true);
+  assert.equal(execute(mockTHREE,world,master,ratio,pitch,surface,{}),true);
   const panels=world.items.filter(item=>item.kind==='cc0-floor');
   assert.equal(panels.length,12);
   const centers=panels.map(p=>[p.position.x,p.position.y,p.position.z]);
