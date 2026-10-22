@@ -202737,7 +202737,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-22T07:50:25.035Z"
+      "updatedAt": "2026-10-22T07:52:33.532Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -202958,7 +202958,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-22T07:50:25.069Z"
+      "updatedAt": "2026-10-22T07:52:33.554Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237500,7 +237500,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-22T07:50:25.173Z"
+      "updatedAt": "2026-10-22T07:52:33.654Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -237840,7 +237840,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-22T07:50:25.252Z"
+      "updatedAt": "2026-10-22T07:52:33.736Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -238293,7 +238293,44 @@
         "actions-run:39738187529",
         "system-ai-handoff-to-reservation:system-ai:39739917610:1",
         "actions-run:39739917610",
-        "system-ai-handoff-to-reservation:system-ai:39742133984:1"
+        "system-ai-handoff-to-reservation:system-ai:39742133984:1",
+        "actions-run:39742133984",
+        "implementation:success",
+        "verification:failure",
+        "changed-file:assets/roblox/world-ghosts/motions/mongdal/init.luau",
+        "external-ai-model:gemini-3.8-flash",
+        "external-ai-raw-output-sha256:37da42ba30b5cf91a83dd967492584620718f802e1fad91c038fc17bd6f55a7e",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_5c9eae6cfbf7bacef69a1942",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_2b85332e992c8a45252a2ace",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_70f1ba7309841e162c13bfef",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_981feaf0fba08cf4c60e3ae8",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_6507b0b70b2051c25809eaee",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_9aaaef9fedb310cfdc3a0b40",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_61fd92257efaced4a8e3beaa",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_1a3490f6492f7d24a36a2a35",
+        "learning-knowledge-id:CODE_PATTERN:pat_1x7z0gk",
+        "learning-knowledge-id:CODE_PATTERN:pat_1xg0er9",
+        "learning-knowledge-id:CODE_PATTERN:pat_r3a1fy",
+        "learning-knowledge-id:CODE_PATTERN:pat_vzhsq4",
+        "learning-knowledge-id:CODE_PATTERN:pat_130jf9c",
+        "learning-knowledge-id:CODE_PATTERN:pat_14v79w7",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-advanced-coding-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-visual-aesthetic-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-aquatic-animal-surface-motion-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-mammal-fur-anatomy-v1",
+        "system-ai-qa-contract-review:NOT_REQUIRED",
+        "system-ai-knowledge-outcome:PENDING_VERIFIED_FANIN",
+        "selected-hypothesis:source-generation-path",
+        "hypothesis-rejected:save-compatibility",
+        "hypothesis-rejected:pipeline-or-runner",
+        "system-ai-deep-reasoning:YES",
+        "selected-strategy:STRAT-WALK-REFINED",
+        "system-ai-critic-verdict:PASS",
+        "system-ai-critic-decision-sha256:8308b1f82b8506e09567fd7377c0b1597669699fb9cd72cd8b5b0dc5bae861c1",
+        "system-ai-applied-answer-sha256:37da42ba30b5cf91a83dd967492584620718f802e1fad91c038fc17bd6f55a7e",
+        "repair-strategy-fingerprint:c936a2963e9ba1972b19033d66ef8bda472589d692a60a09d87b80af70c076f2",
+        "failed-strategy-fingerprint:c936a2963e9ba1972b19033d66ef8bda472589d692a60a09d87b80af70c076f2",
+        "model-output-sha256:37da42ba30b5cf91a83dd967492584620718f802e1fad91c038fc17bd6f55a7e"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238311,7 +238348,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-22T07:50:25.128Z"
+      "updatedAt": "2026-10-22T07:52:33.618Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -238886,7 +238923,8 @@
         "actions-run:39738187529",
         "system-ai-handoff-to-reservation:system-ai:39739917610:1",
         "actions-run:39739917610",
-        "system-ai-handoff-to-reservation:system-ai:39742133984:1"
+        "system-ai-handoff-to-reservation:system-ai:39742133984:1",
+        "actions-run:39742133984"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238904,7 +238942,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-22T07:50:25.091Z"
+      "updatedAt": "2026-10-22T07:52:33.577Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -240126,7 +240164,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-22T07:50:25.202Z"
+      "updatedAt": "2026-10-22T07:52:33.685Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -240752,7 +240790,8 @@
         "system-ai-handoff-to-reservation:system-ai:39739917610:1",
         "actions-run:39739917610",
         "system-ai-impact-score:1460",
-        "system-ai-handoff-to-reservation:system-ai:39742133984:1"
+        "system-ai-handoff-to-reservation:system-ai:39742133984:1",
+        "actions-run:39742133984"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -240770,7 +240809,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-22T07:50:25.221Z"
+      "updatedAt": "2026-10-22T07:52:33.711Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
