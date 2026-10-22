@@ -1534,22 +1534,35 @@ export function composeVerifiedCodingRecipes(recipes=[],{engine='',genre='',sour
     found.set(id,r);
   }
   if(rows.length<2)issues.push('TWO_RECIPES_REQUIRED');
+  // Use explicit DFS frames so deep verified dependency chains cannot overflow the JS call stack.
+  // Each recipe and dependency is visited at most once; preserve post-order and scope conflict detection.
   const ordered=[],visited=new Set(),visiting=new Set(),scopes=new Set();
-  const visit=id=>{
-    if(visited.has(id))return;
-    if(visiting.has(id)){issues.push('CYCLIC_RECIPE_DEPENDENCY');return;}
-    const row=found.get(id);
-    if(!row){issues.push('MISSING_RECIPE_DEPENDENCY:'+id);return;}
-    visiting.add(id);
-    for(const dep of capabilityRows(row.dependencies))visit(capabilityClean(dep));
-    visiting.delete(id);visited.add(id);
-    for(const scope of row.permittedEditScope){
-      if(scopes.has(scope))issues.push('EDIT_SCOPE_CONFLICT:'+scope);
-      scopes.add(scope);
+  for(const rootId of found.keys()){
+    if(visited.has(rootId))continue;
+    const stack=[{id:rootId,dependencies:capabilityRows(found.get(rootId).dependencies),next:0}];
+    visiting.add(rootId);
+    while(stack.length){
+      const frame=stack[stack.length-1];
+      if(frame.next<frame.dependencies.length){
+        const dependencyId=capabilityClean(frame.dependencies[frame.next++]);
+        if(visited.has(dependencyId))continue;
+        if(visiting.has(dependencyId)){issues.push('CYCLIC_RECIPE_DEPENDENCY');continue;}
+        const dependency=found.get(dependencyId);
+        if(!dependency){issues.push('MISSING_RECIPE_DEPENDENCY:'+dependencyId);continue;}
+        visiting.add(dependencyId);
+        stack.push({id:dependencyId,dependencies:capabilityRows(dependency.dependencies),next:0});
+        continue;
+      }
+      stack.pop();
+      visiting.delete(frame.id);
+      visited.add(frame.id);
+      for(const scope of capabilityRows(found.get(frame.id).permittedEditScope)){
+        if(scopes.has(scope))issues.push('EDIT_SCOPE_CONFLICT:'+scope);
+        scopes.add(scope);
+      }
+      ordered.push(frame.id);
     }
-    ordered.push(id);
-  };
-  for(const id of found.keys())visit(id);
+  }
   return capabilityResult('C02',issues.length===0,issues,{
     order:Object.freeze(issues.length?[]:ordered),manualExecutionRequired:true
   });
@@ -1581,16 +1594,22 @@ export function chooseRegressionSafeVibeWinner(candidates=[],{sourceRevision='',
     new Set(evidenceIds).size!==evidenceIds.length){
     issues.push('EXACT_PAIRED_CANDIDATE_EVIDENCE_REQUIRED');
   }
-  const challengers=baseline?eligible.filter(c=>c.id!==baselineId&&
-    c.regressionCount<=baseline.regressionCount&&c.runtimeMs<=baseline.runtimeMs&&
-    c.peakMemoryMb<=baseline.peakMemoryMb&&c.modelCalls<=baseline.modelCalls&&
-    (c.regressionCount<baseline.regressionCount||c.runtimeMs<baseline.runtimeMs||
-      c.peakMemoryMb<baseline.peakMemoryMb||c.modelCalls<baseline.modelCalls)):[];
-  challengers.sort((a,b)=>a.regressionCount-b.regressionCount||
+  // Winner-only tournament: a linear scan avoids sorting every candidate (O(n log n)).
+  // Preserve the exact previous ordering by regressions, runtime, memory, calls, then ID.
+  const betterThan=(a,b)=>a.regressionCount-b.regressionCount||
     a.runtimeMs-b.runtimeMs||a.peakMemoryMb-b.peakMemoryMb||
-    a.modelCalls-b.modelCalls||a.id.localeCompare(b.id));
-  if(!challengers.length)issues.push('NO_REGRESSION_SAFE_MEASURED_IMPROVEMENT');
-  const winner=issues.length?null:challengers[0];
+    a.modelCalls-b.modelCalls||a.id.localeCompare(b.id);
+  let best=null;
+  if(baseline)for(const c of eligible){
+    if(c.id===baselineId||c.regressionCount>baseline.regressionCount||
+      c.runtimeMs>baseline.runtimeMs||c.peakMemoryMb>baseline.peakMemoryMb||
+      c.modelCalls>baseline.modelCalls)continue;
+    if(!(c.regressionCount<baseline.regressionCount||c.runtimeMs<baseline.runtimeMs||
+      c.peakMemoryMb<baseline.peakMemoryMb||c.modelCalls<baseline.modelCalls))continue;
+    if(!best||betterThan(c,best)<0)best=c;
+  }
+  if(!best)issues.push('NO_REGRESSION_SAFE_MEASURED_IMPROVEMENT');
+  const winner=issues.length?null:best;
   return capabilityResult('C06',issues.length===0,issues,{
     winnerId:winner?.id||null,baselineId:baseline?.id||null,eligibleCandidates:eligible.length,
     modelFingerprint:capabilityClean(modelFingerprint)||null,
@@ -1661,8 +1680,8 @@ export function verifyVibeCausalGameplayContract(contract={},trace={}){
 export function buildVerifiedVibeCapabilityLedger(attempts=[]){
   const domains=new Map(),seen=new Set();
   for(const a of capabilityRows(attempts)){
-    if(!a||!capabilityClean(a.evidenceId)||seen.has(a.evidenceId))continue;
-    seen.add(a.evidenceId);
+    const evidenceId=capabilityClean(a?.evidenceId);
+    if(!evidenceId||seen.has(evidenceId))continue;
     const domain=capabilityClean(a.domain),genre=capabilityClean(a.genre),platform=capabilityClean(a.platform);
     const result=capabilityClean(a.result).toUpperCase();
     if(!domain||!genre||!['WEB','ROBLOX'].includes(platform)||!['PASS','FAIL'].includes(result))continue;
@@ -1670,6 +1689,8 @@ export function buildVerifiedVibeCapabilityLedger(attempts=[]){
       a.independentQaRecorded!==true||a.regressionRecorded!==true||
       !capabilityClean(a.benchmarkVersion))continue;
     if(result==='PASS'&&!capabilityProof(a))continue;
+    // Invalid earlier rows must not reserve an evidence ID and suppress a later attested attempt.
+    seen.add(evidenceId);
     const key=[domain,genre,platform,a.benchmarkVersion].join('|');
     const row=domains.get(key)||{domain,genre,platform,benchmarkVersion:a.benchmarkVersion,pass:0,fail:0,holdoutPass:0,holdoutTotal:0,modelFreePass:0,regressions:0};
     row[result==='PASS'?'pass':'fail']++;
