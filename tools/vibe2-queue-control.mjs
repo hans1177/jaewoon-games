@@ -470,10 +470,17 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
       &&clean(task.blocker)==='VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED'
       &&clean(task.department).toLowerCase()==='learning'
       &&clean(task.type).toLowerCase()==='research'
+      &&['web','roblox'].includes(clean(task.target).toLowerCase())
       &&clean(task.gameId)===''
       &&clean(task.id).startsWith('LEARNING-PRACTICE-')
       &&clean(task.sourceRoot).startsWith('learning-practice:')
       &&clean(task.goal).startsWith('[VIBE_LEARNING_PRACTICE]')
+      &&Array.isArray(task.evidence)
+      &&task.evidence.includes('learning-practice-only')
+      &&(clean(task.target).toLowerCase()==='web'
+        ?task.evidence.includes('learning-web-artifact-practice')
+        :task.evidence.includes('learning-analysis-practice'))
+      &&(!Array.isArray(task.responsibleFiles)||task.responsibleFiles.length===0)
       &&task.ownerDevelopmentHold!==true
       &&task.requiresOwnerDecision!==true) {
       recovered+=1;
