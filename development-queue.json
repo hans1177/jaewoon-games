@@ -13280,10 +13280,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-22T22:49:53.136Z",
+      "updatedAt": "2026-10-22T23:34:42.991Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -13809,14 +13809,14 @@
       "robloxBuildSourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-22T21:49:01.989Z",
+      "robloxBuildPreflightPassedAt": "2026-10-22T23:34:42.991Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "core-clash-4v4",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-22T21:36:45.807Z",
+        "checkedAt": "2026-10-22T23:27:16.208Z",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:d11142083635ac9063cde07360e7dad5f20408de29b11357b1001d0f7bfb54ea",
         "secondaryOwnerFocus": false,
@@ -13851,10 +13851,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
+            "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All provided build evidence indicates that the immutable Roblox package has passed source validation and build/package checks. No contradictions exist in the BUILD_EVIDENCE, so runtime testing may commence."
+            "note": "All required build evidence and exact deterministic package identity checks have successfully passed."
           }
         ],
         "blockers": [],
@@ -13868,12 +13868,12 @@
         "gameId": "core-clash-4v4",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-22T21:36:46.388Z",
+        "checkedAt": "2026-10-22T23:27:16.816Z",
         "sourcePath": "roblox-games/core-clash-4v4",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:d11142083635ac9063cde07360e7dad5f20408de29b11357b1001d0f7bfb54ea",
         "rebuiltArtifactIdentity": "sha256:d11142083635ac9063cde07360e7dad5f20408de29b11357b1001d0f7bfb54ea",
-        "artifactRunId": 39855623807,
+        "artifactRunId": 39869131567,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "bfeb1a32e829e40cc2716616fcca22ce0bf50745ec6bb9ffc93c1f04038c03c6",
         "observedAssetSelectionFingerprint": "bfeb1a32e829e40cc2716616fcca22ce0bf50745ec6bb9ffc93c1f04038c03c6",
@@ -14175,12 +14175,12 @@
         "gameId": "core-clash-4v4",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-22T21:36:46.388Z",
+        "checkedAt": "2026-10-22T23:27:16.816Z",
         "sourcePath": "roblox-games/core-clash-4v4",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:d11142083635ac9063cde07360e7dad5f20408de29b11357b1001d0f7bfb54ea",
         "rebuiltArtifactIdentity": "sha256:d11142083635ac9063cde07360e7dad5f20408de29b11357b1001d0f7bfb54ea",
-        "artifactRunId": 39855623807,
+        "artifactRunId": 39869131567,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "bfeb1a32e829e40cc2716616fcca22ce0bf50745ec6bb9ffc93c1f04038c03c6",
         "observedAssetSelectionFingerprint": "bfeb1a32e829e40cc2716616fcca22ce0bf50745ec6bb9ffc93c1f04038c03c6",
@@ -14509,8 +14509,8 @@
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:d11142083635ac9063cde07360e7dad5f20408de29b11357b1001d0f7bfb54ea",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39855623807,
-        "testedAt": "2026-10-22T21:49:01.989Z",
+        "workflowRunId": 39869131567,
+        "testedAt": "2026-10-22T23:34:42.991Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -17868,7 +17868,7 @@
         ]
       },
       "robloxBuildArtifactIdentity": "sha256:d11142083635ac9063cde07360e7dad5f20408de29b11357b1001d0f7bfb54ea",
-      "robloxBuildPassedAt": "2026-10-22T21:49:01.989Z",
+      "robloxBuildPassedAt": "2026-10-22T23:34:42.991Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -90384,7 +90384,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-22T23:34:03.787Z",
+  "updatedAt": "2026-10-22T23:34:42.991Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -90450,5 +90450,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
