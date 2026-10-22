@@ -495,6 +495,7 @@ export function canonicalizeGameRecord(game={}){
       recentWork:clean(game.homepageRecentWork),
       runtime:{
         authority:clean(runtime.authority)||'company-runtime',
+        developmentActive:runtime.developmentActive===true,
         platform:selectedPlatform,
         platformLabel:clean(runtime.platformLabel),
         score:runtime.score??null,
