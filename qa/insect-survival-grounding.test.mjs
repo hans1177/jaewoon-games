@@ -205,3 +205,16 @@ test('insect-specific Chromium smoke must prove live WebGL2 and aligned CC0 hero
   assert.match(script,/proof\?\.ground\?\.tileCount,12/);
   assert.match(script,/proof\.ground\.heroBottom>=proof\.ground\.floorTop-\.12/);
 });
+
+test('mobile browser smoke must check native touch dodge and animated CC0 ground contact',()=>{
+ const script=fs.readFileSync(path.join(root,'qa/vibe2-development-web-browser-smoke.mjs'),'utf8');
+ assert.match(script,/INSECT_EMULATED_MOBILE_GROUNDED_TOUCH/);
+ assert.match(script,/Emulation\.setDeviceMetricsOverride/);
+ assert.match(script,/Emulation\.setTouchEmulationEnabled/);
+ assert.match(script,/DEVELOPMENT_WEB_MOBILE_EMULATION_EVIDENCE_insect-survival/);
+ assert.match(script,/DEVELOPMENT_WEB_MOBILE_TOUCH_EVIDENCE_insect-survival/);
+ assert.match(script,/Input\.dispatchTouchEvent/);
+ assert.match(script,/mobileProof\.ground\.heroBottom>=-\.12/);
+ assert.match(script,/touchResult\?\.serial>mobileProof\.serial/);
+ assert.match(script,/touchResult\?\.grounded,true/);
+});
