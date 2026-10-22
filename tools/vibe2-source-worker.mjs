@@ -4542,6 +4542,7 @@ export function buildGenreCareerAuthoringGuidance(order={}, {
     unrecognizedExplicitCareer:explicitCareer&&!validCareer?explicitCareer:null,
     nativeMasters,cc0SourceExamples:cc0Examples,examplesNotAssetSelectionCap:true,
     completeCatalogStillEligible:true,choreography:palette.choreography,
+    genreSpecificActing:palette.genreActing,
     protected:['GAME_RULES','SAVE_SCHEMA','NETWORK_AUTHORITY','COMBAT_WINDOWS','MOBILE_INPUT'],
     verifiedByThisGuidance:false,
     qaNeeded:['ACTUAL_CC0_SHA256','RIG_COMPATIBILITY','REAL_CLIP_BINDING',
