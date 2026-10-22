@@ -98,6 +98,7 @@ function derived(key,height,tint){
 const originals={},enemies=[],resources=[];
 let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
+let resourceVisualRebuilds=0;
 const heroGroundBounds=new THREE.Box3();
 const headingVector=new THREE.Vector3(),cameraBehind=new THREE.Vector3(),cameraFocus=new THREE.Vector3();
 const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();scene.add(world,actors,decor);
@@ -197,8 +198,21 @@ function actorsFromFrame(frame){
   const color={spider:'#d0a2a0',beetle:'#628b74',soldierAnt:'#b16a53',ant:'#8d644b',mite:'#9f8f75'}[b.type];
   const group=new THREE.Group();group.add(derived(kind,height,color));actors.add(group);enemies.push(group);
  }
- const nodeOrigin={branch:'foliage',fiber:'foliage',pebble:'stone'};
- for(const n of frame.nodes){const group=new THREE.Group();group.add(derived(nodeOrigin[n.type]||'stone',n.type==='pebble'?.33:.5,n.type==='fiber'?'#c2dca0':'#bda782'));actors.add(group);resources.push(group)}
+ for(const n of frame.nodes)syncResourceVisual(resources.length,n);
+}
+// Reconcile by slot instead of cloning every CC0 resource when an item is picked
+// up or respawns. A role change still rebinds the correct source geometry/color.
+function syncResourceVisual(index,node){
+ const type=node.type==='pebble'?'stone':'foliage';
+ const height=node.type==='pebble'?.33:.5;
+ const tint=node.type==='fiber'?'#c2dca0':'#bda782';
+ const visualKey=type+':'+height+':'+tint;
+ let group=resources[index];
+ if(!group){group=new THREE.Group();actors.add(group);resources.push(group)}
+ if(group.userData.visualKey!==visualKey){
+  group.clear();group.add(derived(type,height,tint));
+  group.userData.visualKey=visualKey;resourceVisualRebuilds++;
+ }
 }
 // 액션 모션: CC0 원본 단발 클립과 반복 이동을 구분한다. 판정·재사용 시간은 게임이 소유한다.
 function setHeroMotion(motion,restart=false,duration=0){
@@ -277,13 +291,13 @@ function follow(frame,dt){
   actor.visible=!b.dead;
   if(!b.dead){actor.position.set(b.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,b.y*ratio);actor.rotation.y=Math.atan2(p.x-b.x,p.y-b.y);actor.children[0].rotation.z=b.hit>0?.28:0}
  }
- // Resource nodes may respawn; remake lightweight CC0 derived models only when changed.
- let alive=frame.nodes.length;
- if(resources.length!==alive){
-  while(resources.length){const old=resources.pop();actors.remove(old)}
-  for(const n of frame.nodes){const type=n.type==='pebble'?'stone':'foliage';const g=new THREE.Group();g.add(derived(type,n.type==='pebble'?.35:.65,'#cbd8a9'));actors.add(g);resources.push(g)}
+ // Resource pooling is visual-only; the authoritative alive state stays in index.html.
+ while(resources.length>frame.nodes.length){actors.remove(resources.pop())}
+ for(let i=0;i<frame.nodes.length;i++){
+  const node=frame.nodes[i];
+  syncResourceVisual(i,node);
+  resources[i].position.set(node.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,node.y*ratio);
  }
- for(let i=0;i<frame.nodes.length;i++)resources[i].position.set(frame.nodes[i].x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,frame.nodes[i].y*ratio);
 }
 function resize(){
  renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
@@ -294,7 +308,7 @@ window.insect3DPerformanceProof=()=>({
  framesObserved:perfBudget.frames,frameSampleValid:perfBudget.frameSampleValid,
  averageFrameMs:perfBudget.averageFrameMs,latestFrameMs:perfBudget.latestFrameMs,
  pixelRatio:perfBudget.pixelRatio,pixelRatioCap:perfBudget.cap,pixelRatioFloor:perfBudget.floor,
- resolutionAdjustments:perfBudget.adjustments,
+ resolutionAdjustments:perfBudget.adjustments,resourceVisualRebuilds,
  renderCalls:perfBudget.renderCalls,triangles:perfBudget.triangles,
  activeWebGL:worldReady&&renderer.domElement.dataset.renderedFrame==='true',
  rendererVisible:renderer.domElement.style.display==='block',
