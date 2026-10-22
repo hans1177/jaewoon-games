@@ -134,7 +134,7 @@ export function requiredReviewPass(workflows,checkRuns,sha){
 function options(argv){
   const out={};
   for(const arg of argv){
-    if(arg==='--apply'||arg==='--pr'||arg==='--check')out[arg.slice(2)]=true;
+    if(arg==='--apply'||arg==='--pr'||arg==='--check'||arg==='--sync-main')out[arg.slice(2)]=true;
     else if(/^--(game|goal|match|merge-pr)=/.test(arg)){
       const at=arg.indexOf('=');out[arg.slice(2,at)]=arg.slice(at+1);
     }else fail('LOCAL_DEV_UNKNOWN_ARGUMENT:'+arg.slice(0,40));
@@ -150,6 +150,42 @@ function cleanMain(){
   const origin=git(['remote','get-url','origin']);
   if(!/^(?:https:\/\/github\.com\/|git@github\.com:)hans1177\/jaewoon-games(?:\.git)?$/i.test(origin))
     fail('LOCAL_DEV_WRONG_REPOSITORY');
+}
+// Owner-side, fail-closed refresh of an unmodified local main checkout.
+export function assessLocalMainSync({branch='',dirty='',origin='',fastForward=true,mergeIncluded=true}={}){
+ const blockers=[];
+ if(branch!=='main')blockers.push('LOCAL_SYNC_MAIN_BRANCH_REQUIRED');
+ if(clean(dirty))blockers.push('LOCAL_SYNC_DIRTY_WORKTREE');
+ if(!/^(?:https:\/\/github\.com\/|git@github\.com:)hans1177\/jaewoon-games(?:\.git)?$/i.test(clean(origin)))
+  blockers.push('LOCAL_SYNC_WRONG_REPOSITORY');
+ if(fastForward!==true)blockers.push('LOCAL_SYNC_NON_FAST_FORWARD_BLOCKED');
+ if(mergeIncluded!==true)blockers.push('LOCAL_SYNC_EXPECTED_MERGE_NOT_ON_MAIN');
+ return {pass:blockers.length===0,blockers};
+}
+function syncLocalMain({expectedMergeSha=''}={}){
+ centralPolicy();
+ const branch=git(['branch','--show-current']);
+ const dirty=git(['status','--porcelain']);
+ const origin=git(['remote','get-url','origin']);
+ const preflight=assessLocalMainSync({branch,dirty,origin});
+ if(!preflight.pass)fail(preflight.blockers.join(','));
+ const expected=clean(expectedMergeSha);
+ if(expected&&!/^[a-f0-9]{40}$/i.test(expected))fail('LOCAL_SYNC_EXPECTED_SHA_INVALID');
+ git(['fetch','--quiet','origin','main']);
+ let ff=true,mergeIncluded=true;
+ try{command('git',['merge-base','--is-ancestor','HEAD','refs/remotes/origin/main']);}catch{ff=false;}
+ if(expected){
+  try{command('git',['merge-base','--is-ancestor',expected,'refs/remotes/origin/main']);}
+  catch{mergeIncluded=false;}
+ }
+ const gate=assessLocalMainSync({branch,dirty,origin,fastForward:ff,mergeIncluded});
+ if(!gate.pass)fail(gate.blockers.join(','));
+ git(['merge','--ff-only','refs/remotes/origin/main']);
+ if(git(['rev-parse','HEAD'])!==git(['rev-parse','refs/remotes/origin/main']))
+  fail('LOCAL_SYNC_SHA_MISMATCH');
+ console.log('LOCAL_MAIN_SYNC=FAST_FORWARD_VERIFIED SHA='+git(['rev-parse','HEAD']));
+ console.log('VIBE_LOCAL_SOURCE_BIND=EXISTING_GIT_MAIN; LEARNING_PROMOTION=UNCHANGED');
+ console.log('CANONICAL_RELEASE_AND_TRAINING_GATES=UNCHANGED');
 }
 async function suggestSourceEdit({gameId,goal,match}){
   const selected=readApprovedWebGame(gameId,ROOT);
@@ -246,6 +282,10 @@ function reviewAndMerge(number){
   const after=json(gh(['api',prefix+'/pulls/'+number]));
   if(after.merged!==true)fail('LOCAL_DEV_MERGE_NOT_VERIFIED');
   console.log('PR_MERGED='+number+' SHA='+after.merge_commit_sha);
+  // Sync only after the owner's explicit and independently verified merge.
+  // Do not roll back a successful GitHub merge if this local checkout is unsuitable.
+  try{syncLocalMain({expectedMergeSha:after.merge_commit_sha});}
+  catch(error){console.warn('LOCAL_MAIN_SYNC=BLOCKED:'+clean(error.message));}
   console.log('DEPLOYMENT=VERIFY_EXISTING_MAIN_PIPELINE_SEPARATELY');
 }
 async function main(){
@@ -258,6 +298,10 @@ async function main(){
     if(!res.ok)fail('LOCAL_DEV_OLLAMA_NOT_CONNECTED:'+res.status);
     console.log('LOCAL_DEVELOP_READINESS=PASS; NO_SOURCE_WRITE');
     return;
+  }
+  if(parsed['sync-main']){
+    if(Object.keys(parsed).length!==1)fail('LOCAL_SYNC_ARGUMENTS_EXCLUSIVE');
+    syncLocalMain();return;
   }
   if(parsed['merge-pr']){reviewAndMerge(parsed['merge-pr']);return;}
   if(!parsed.game||!parsed.goal)fail('USAGE: --game=GAME_ID --goal=TEXT [--match=SOURCE_FRAGMENT] [--apply --pr]');
