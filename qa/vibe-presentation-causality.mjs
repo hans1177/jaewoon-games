@@ -172,4 +172,56 @@ bridgeCalls.length=0;
 executeVibeMotionEngineEvent(createVibePresentationEvent('move'),bridge,{speed:3});
 assert.deepEqual(bridgeCalls,[['move',true]]);
 
+
+// CC0 원본은 웹/로블록스에서 라이선스와 출처만 재사용한다.
+// 실제 GLB→로블록스 Animator 변환 및 모바일 실행 검증은 무조건 별개다.
+for(const platform of ['WEB','ROBLOX']){
+  const loadout=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'ACTION_RPG',platform});
+  const reuse=loadout.cc0PlatformReuse;
+  assert.equal(reuse.sourcePath,loadout.master.path);
+  assert.equal(reuse.license,'CC0-1.0');
+  assert.equal(reuse.targetPlatform,platform);
+  assert.equal(reuse.cacheAssetById,true);
+  assert.equal(reuse.cacheAnimationClipsBySource,true);
+  assert.equal(reuse.crossPlatformNativeBinaryReuseAllowed,false);
+  assert.equal(reuse.runtimeBindingVerified,false);
+  assert.equal(reuse.performanceVerified,false);
+  assert.equal(reuse.actualConvertedClipCountVerified,0);
+  assert.equal(reuse.mobilePresentation.keepGameplayUpdateUnchanged,true);
+  assert.ok(reuse.releaseRequired.includes('ACTUAL_MOBILE_FPS'));
+  assert.equal(platform==='ROBLOX',reuse.platformBinding.includes('ROBLOX_STUDIO'));
+}
+const planned=planVibeMotionEffectsAutopilot({genre:'ACTION_RPG',careerId:'SAMURAI',platform:'WEB'});
+assert.equal(planned.cc0PlatformReuse.targetPlatform,'WEB');
+assert.equal(planned.runtimeVerified,false);
+
+const strikeVariants=[
+  ['KATANA','SLASH'],['SPEAR','THRUST'],['AXE','CLEAVE'],
+  ['UNARMED','PUNCH'],['STAFF_OR_WAND','CAST']
+];
+for(const [weaponFamily,style] of strikeVariants){
+  const event=createVibePresentationEvent('attack',{causeId:'game-attack-'+weaponFamily,payload:{weaponFamily,comboIndex:2,motionStyle:''}});
+  const execution=createVibeMotionEffectExecution(event);
+  assert.equal(execution.motionStyle,style,weaponFamily);
+  assert.equal(execution.commands.find(row=>row.channel==='animation').motionStyle,style);
+  assert.equal(execution.gameplayMutationAllowed,false);
+}
+const styleOverride=createVibePresentationEvent('attack',{
+  causeId:'authoritative-martial-hit',payload:{weaponFamily:'UNARMED',motionStyle:'KICK',comboIndex:12345,damage:9999}
+});
+assert.equal(styleOverride.payload.motionStyle,'KICK');
+assert.equal(styleOverride.payload.comboIndex,15);
+assert.equal('damage' in styleOverride.payload,false);
+assert.equal(createVibeMotionEffectExecution(styleOverride).motionStyle,'KICK');
+const styleCalls=[];
+executeVibeMotionEngineEvent(styleOverride,{
+  ready:true,
+  rig:{
+    setMotionState:()=>{throw Error('attack must preserve movement state');},
+    setLod:()=>{},triggerAttack:row=>styleCalls.push(row),
+    triggerHit:()=>{},triggerContact:()=>{},triggerLand:()=>{}
+  },camera:{impulse:()=>{}}
+});
+assert.deepEqual(styleCalls.map(x=>[x.style,x.comboIndex]),[['KICK',15]]);
+
 console.log('vibe-presentation-causality: ok');
