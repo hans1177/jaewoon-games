@@ -2346,6 +2346,7 @@ test('C05 strict causal replay verifies actual target HP change, ordered evidenc
     bad(3,{authority:'CLIENT'}),
     bad(4,{reportedHp:80}),
     bad(2,{causedBy:'wrong-parent'}),
+    bad(2,{eventId:'event-1'}),
     bad(4,{timestampMs:300}),
     {...trace,events:[events[0],...events]}
   ])assert.equal(verifyVibeCausalGameplayContract(contract,altered).verified,false);
@@ -2373,6 +2374,7 @@ test('C06 winner requires independent same-device matched proof and strict no-re
   assert.equal(chooseRegressionSafeVibeWinner([base,{...better,proof:{...proof,runtime:'FAIL'}}],spec).verified,false);
   assert.equal(chooseRegressionSafeVibeWinner([base,{...better,id:'baseline'}],spec).verified,false);
   assert.equal(chooseRegressionSafeVibeWinner([base,better],{...spec,baselineId:'unrecorded'}).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,better],{...spec,sourceRevision:''}).verified,false);
   const report=assessVibeCodingCapabilities({sourceRevision,candidates:[base,better],optimizationBenchmark:spec});
   assert.equal(report.requirements.C06.winnerId,'candidate');
   assert.equal(report.requirements.C06.verified,true);
