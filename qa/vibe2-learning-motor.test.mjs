@@ -49,6 +49,10 @@ import {
   retrieveUnifiedLearning,
   learningGuidance,
   candidateTournamentPolicy,
+  assessVibeCodingCapabilities,
+  composeVerifiedCodingRecipes,
+  verifyVibeCausalGameplayContract,
+  buildVerifiedVibeCapabilityLedger,
   buildBenchmarkLadder,
   buildIdlePracticeQueue,
   injectIdlePracticeTask,
@@ -2198,4 +2202,47 @@ test('verified source-bound causal recipes reach the worker only for their prove
   assert.match(guidance,/scenario=combat-input-to-resolution/);
   assert.match(guidance,/past-runtime-pass-does-not-transfer/);
   assert.doesNotMatch(guidance,/verified-source-bound-recipe=wrong-roblox/);
+});
+
+
+test('C01-C08 verified coding contracts support real evidence and reject synthetic pass labels',()=>{
+  const sha='a'.repeat(40),proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const shown=id=>({sourceRevision:sha,evidenceId:id,proof});
+  const recipe=(id,scope,dependencies=[])=>({...shown(id),id,verified:true,engine:'web',genre:'rpg',
+    preconditions:['existing-source-match'],permittedEditScope:[scope],rollbackFingerprint:'fingerprint-'+id,
+    declarativeTransformation:{kind:'CONNECT_EXISTING_ACTION'},dependencies});
+  const recipes=[recipe('move','input'),recipe('attack','combat',['move'])];
+  const attempts=[{...shown('benchmark-1'),domain:'COMBAT',genre:'rpg',platform:'WEB',benchmarkVersion:'fixed-v1',
+    independentQaRecorded:true,regressionRecorded:true,result:'PASS',modelCalls:0,holdout:true}];
+  const trace={...shown('trace-1'),gameId:'demo',authoritativeStateChanged:true,saveAndBalancePreserved:true,
+    events:['INPUT','STATE_TRANSITION','PHYSICS_OR_ANIMATION','COLLISION_OR_HIT','FEEDBACK_OR_REWARD'].map(kind=>({kind}))};
+  const input={recipes,attempts,engine:'web',genre:'rpg',sourceRevision:sha,
+    failures:[{...shown('failure-1'),failureSignature:'FOOT_SLIDING',reproductionId:'red-1',
+      preventiveTest:'foot-contact-regression',reproduced:true,regressionTestRed:true,regressionTestGreen:true}],
+    causalContract:{sourceRevision:sha,gameId:'demo'},causalTrace:trace,
+    candidates:[{...shown('candidate-1'),id:'winner',regressionCount:0,runtimeMs:4,sameTaskBudget:true,saveAndBalancePreserved:true},
+      {...shown('candidate-2'),id:'loser',regressionCount:1,runtimeMs:5,sameTaskBudget:true,saveAndBalancePreserved:true}],
+    transfers:[{id:'genre-transfer',sourceGenre:'survival',targetGenre:'rpg',
+      sourceProof:shown('source-qa'),targetProof:shown('target-qa'),preconditionsMatch:true,protectedStatePreserved:true}],
+    holdouts:[{...shown('holdout-1'),blind:true,fixedTasks:true,modelCalls:0,
+      unseenFingerprint:true,result:'PASS'}]};
+  const report=assessVibeCodingCapabilities(input);
+  assert.equal(report.allVerified,true);
+  assert.deepEqual(Object.keys(report.requirements),['C01','C02','C03','C04','C05','C06','C07','C08']);
+  assert.deepEqual(report.requirements.C02.order,['move','attack']);
+  assert.equal(report.requirements.C03.ledger[0].verifiedPassRate,1);
+  assert.equal(report.requirements.C05.verified,true);
+  assert.equal(report.requirements.C06.winnerId,'winner');
+  assert.equal(report.requirements.C08.passRate,1);
+  assert.equal(report.sourceMutationAuthorized,false);
+  assert.equal(composeVerifiedCodingRecipes([recipe('a','same'),recipe('b','same')],{
+    engine:'web',genre:'rpg',sourceRevision:sha}).verified,false);
+  assert.equal(composeVerifiedCodingRecipes([recipe('a','x',['b']),recipe('b','y',['a'])],{
+    engine:'web',genre:'rpg',sourceRevision:sha}).verified,false);
+  assert.equal(verifyVibeCausalGameplayContract(input.causalContract,{...trace,
+    events:trace.events.filter(e=>e.kind!=='COLLISION_OR_HIT')}).verified,false);
+  assert.equal(buildVerifiedVibeCapabilityLedger([{...attempts[0],sourceRevision:'stale'}]).length,0);
+  assert.equal(assessVibeCodingCapabilities({...input,recipes:[],holdouts:[],candidates:[]}).allVerified,false);
+  assert.equal(assessVibeCodingCapabilities({...input,causalTrace:{...trace,proof:{...proof,runtime:'FAIL'}}})
+    .requirements.C05.verified,false);
 });
