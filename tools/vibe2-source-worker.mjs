@@ -1505,10 +1505,28 @@ export function robloxDeterministicPresentationEligible(order={}){
 
 // 자체 코딩 · 현재 HTML이 명시한 동작과 같은 이름의 기존 함수를 직접 연결한다.
 // 새 게임 규칙/대리 입력/래퍼는 만들지 않으며, 모호한 소스는 기존 생성 경로에 남긴다.
-export function deterministicWebInputCandidate({order={},sourceRoot='',responsibleFiles=[]}={}){
+export function deterministicWebInputCandidate({order={},sourceRoot='',responsibleFiles=[],patternLibrary=null}={}){
   if(clean(order.target).toLowerCase()!=='web'||worldLobbySourceWorkRequired(order)||!sourceRoot)return null;
   const intent=[order.goal,order.selectedTask?.goal,order.selectedTask?.description,order.selectedTask?.title].map(clean).join(' ');
   if(!/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent))return null;
+  // 기존 학습 라이브러리의 검증된 식별자만 실행 레시피로 사용한다. 임의 코드는 실행하지 않는다.
+  let library=patternLibrary;
+  if(!library){try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{patterns:[]});}catch{library={patterns:[]};}}
+  const learnedActions=new Map();
+  for(const pattern of Array.isArray(library?.patterns)?library.patterns:[]){
+    const recipe=pattern?.executableRecipe;
+    if(pattern?.verified!==true||pattern?.rawCodeStored!==false||clean(pattern?.authority)!=='verified-internal-code-pattern'||
+      clean(pattern?.system)!=='INPUT_EVENT_BINDING'||clean(pattern?.engine).toLowerCase()!=='web'||
+      clean(pattern?.independentQa)!=='PASS'||!/^[a-f0-9]{40}$/i.test(clean(pattern?.sourceRevision))||
+      !/(?:^|\/)company-learning\/training-samples\/[^/]+\.json$/.test(clean(pattern?.evidencePath))||
+      recipe?.kind!=='BIND_EXISTING_BUTTON_ACTION'||recipe?.requiresExactSourceFunction!==true||
+      recipe?.requiresTargetRuntimeQa!==true||!Array.isArray(recipe.actions))continue;
+    for(const action of recipe.actions.slice(0,12)){
+      if(typeof action!=='string'||!/^[A-Za-z_$][\w$]{0,39}$/.test(action)||
+        /^(?:delete|erase|clear|reset|wipe|save|load|grant|award|purchase|refund|admin|debug)/i.test(action))continue;
+      if(!learnedActions.has(action))learnedActions.set(action,clean(pattern.id));
+    }
+  }
   for(const relative of unique(responsibleFiles)){
     if(!/\.html?$/i.test(relative)||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..'))continue;
     const file=path.resolve(sourceRoot,relative),root=fs.realpathSync(sourceRoot);
@@ -1519,14 +1537,17 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     if(scripts.length!==1||scripts[0][1].trim()||/<!--|<(?:form|template)\b|\b(?:querySelectorAll|eval|Function)\s*\(|\bimport\b/.test(source))continue;
     const script=scripts[0],code=script[2],functions=inspectSourceFunctions(code,{language:'javascript'});
     if(/addEventListener\s*\(\s*["'](?:click|pointerdown|touchstart)["']/.test(code))continue;
-    const bindings=[];
+    const bindings=[],learnedPatternIds=[];
     for(const button of source.matchAll(/<button\b([^>]*)>/gi)){
       if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
       const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
       const ids=attrs.filter(row=>row[1].toLowerCase()==='id'),actions=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
       if(ids.length!==1||actions.length!==1)continue;
       const id=ids[0][3],action=actions[0][3];
-      if(!/^[A-Za-z_$][\w$]*$/.test(id)||! /^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting)$/.test(action))continue;
+      const builtInAction=/^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting)$/.test(action);
+      const learnedPatternId=learnedActions.get(action);
+      if(!/^[A-Za-z_$][\w$]*$/.test(id)||! /^[A-Za-z_$][\w$]{0,39}$/.test(action)||
+        (!builtInAction&&!learnedPatternId))continue;
       if([...source.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)].filter(row=>row[2]===id).length!==1)continue;
       // 이미 ID/동작을 참조하는 연결이 있으면 중복 호출 가능성이 있으므로 생성하지 않는다.
       if(code.includes('"'+id+'"')||code.includes("'"+id+"'")||code.includes('`'+id+'`')||/\b(?:onclick|onpointerdown|ontouchstart)\b/.test(code))continue;
@@ -1539,10 +1560,11 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       // 함수 이름이 다른 곳에서 재정의되는 소스는 현재 분석 범위를 벗어난다.
       if((code.match(new RegExp('function\\s+'+action+'\\s*\\(', 'g'))||[]).length!==1||new RegExp('\\b'+action+'\\s*=(?!=)').test(code))continue;
       bindings.push('document.getElementById('+JSON.stringify(id)+').addEventListener("click", '+action+');');
+      if(!builtInAction&&learnedPatternId)learnedPatternIds.push(learnedPatternId);
     }
     if(!bindings.length)continue;
     const replacement=script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
-    return{summary:'Vibe2 source-grounded mobile action implementation',expectedEffect:'Connect declared controls directly to existing gameplay actions',edits:[{path:relative,find:script[0],replace:replacement}],newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true};
+    return{summary:'Vibe2 source-grounded mobile action implementation',expectedEffect:'Connect declared controls directly to existing gameplay actions',edits:[{path:relative,find:script[0],replace:replacement}],newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,learnedCodePatternIds:unique(learnedPatternIds)};
   }
   return null;
 }
@@ -7400,7 +7422,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const candidate=normalizeCandidate(webInput,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       const candidateValidation=candidateValidator(candidate);
-      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,deterministicWebInput:true,mode:'DETERMINISTIC_WEB_INPUT',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_WEB_INPUT'}};
+      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,deterministicWebInput:true,learnedCodePatternIds:webInput.learnedCodePatternIds||[],mode:'DETERMINISTIC_WEB_INPUT',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_WEB_INPUT'}};
       console.log('VIBE2_DETERMINISTIC_WEB_INPUT=CANDIDATE_VALIDATED');
     }catch(error){
       console.log('VIBE2_DETERMINISTIC_WEB_INPUT=REJECTED:'+generationFailureClass(error));
