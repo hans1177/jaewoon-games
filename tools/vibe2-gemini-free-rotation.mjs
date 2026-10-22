@@ -158,10 +158,15 @@ export async function requestGeminiFreePair({
             if(/content[-_ ]?(policy|filter)|safety|moderation|disallowed|policy[-_ ]?violation|prohibited|prompt[-_ ]?blocked/i.test(detail))
               throw infrastructureFailure(route.provider+'_CONTENT_POLICY_BLOCKED_NO_FALLBACK');
           }
-          // 잘못된 모델/파라미터 400은 다음 실행에서 반복 요청하지 않도록 식힌다.
-          const delay=status===400?Math.max(1800000,retryDelayMs(response,status,errorBody))
-            :retryDelayMs(response,status,errorBody);
-          cooldownUntil.set(slot,Date.now()+delay);
+          // 큰 요청 하나의 문맥 초과는 공급자 전체 장애가 아니다. 다른 정상 크기 작업은 계속 사용한다.
+          const requestContextFailure=status===400&&/context[_ -]?length|maximum context|too many tokens|prompt[^.]{0,80}too (?:long|large)|input[^.]{0,80}token[^.]{0,80}(?:limit|exceed)/i.test(
+            [errorBody?.error?.code,errorBody?.error?.type,errorBody?.error?.message].map(clean).join(' '));
+          if(!requestContextFailure){
+            const delay=status===400?Math.max(1800000,retryDelayMs(response,status,errorBody))
+              :retryDelayMs(response,status,errorBody);
+            cooldownUntil.set(slot,Date.now()+delay);
+          }
+          if(requestContextFailure)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
           failures.push(slot+':HTTP_'+status);
           console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_'+status);
           continue;

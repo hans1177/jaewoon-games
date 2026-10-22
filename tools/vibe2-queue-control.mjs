@@ -1157,12 +1157,12 @@ export function applyVibeFanInResults(queueInput, results = []) {
       applied.push({taskId,outcome:'REQUEUED_TRANSIENT_LOCK',reason:blockers.join('|')||'work-lock-conflict'});
       continue;
     }
-    // 모든 독립 생성 후보가 확인된 외부 API 429에 막힌 경우만 보류한다.
+    // 외부 무료 API의 한도 또는 확인된 공급자 대기 상태는 게임 소스 실패로 누적하지 않는다.
     // 기존 재시도 횟수와 학습 평가를 변경하지 않고, 정해진 시각에 기존 큐로 복귀한다.
     const quotaFailures=passes.length===0&&variants.length>0&&variants.every(row=>
       clean(row.outcome).toUpperCase()==='FAIL'
       &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
-      &&/HTTP_429/.test(clean(row?.candidateFailure?.message))
+      &&/(?:HTTP_429|GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE[^\n]*:COOLDOWN)/.test(clean(row?.candidateFailure?.message))
       &&/NEXT_RETRY_AT=/.test(clean(row?.candidateFailure?.message))
     );
     if(quotaFailures){

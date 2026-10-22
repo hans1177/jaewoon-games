@@ -315,3 +315,27 @@ test('provider policy rejection stops free-provider rotation without bypass',asy
     assert.ok(urls.every(url=>!url.includes('openrouter.ai')));
   });
 });
+
+for(const provider of ['GROQ','OPENROUTER']){
+  test(provider+' context overflow does not disable the next independent source request',async()=>{
+    await withExternalFixture(async()=>{
+      process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+      if(provider==='GROQ'){
+        process.env.GROQ_API_KEY='fixture-not-real';
+        process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+      }else process.env.OPENROUTER_API_KEY='fixture-not-real';
+      const {requestGeminiFreePair:request}=await import('../tools/vibe2-gemini-free-rotation.mjs?context-'+provider+'-'+Date.now());
+      let providerCalls=0;
+      const fetchImpl=async(url)=>{
+        if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '60'}};
+        providerCalls++;
+        if(providerCalls===1)return{ok:false,status:400,json:async()=>({error:{code:'context_length_exceeded',message:'maximum context length exceeded'}})};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],usage:{cost:0}})};
+      };
+      await assert.rejects(request({apiKey:'fixture',contents:[{role:'user',parts:[{text:'oversized source fixture'}]}],fetchImpl}),/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE/);
+      const result=await request({apiKey:'fixture',contents:[{role:'user',parts:[{text:'independent bounded source fixture'}]}],fetchImpl});
+      assert.equal(providerCalls,2,'one request context error must not impose provider-wide cooldown');
+      assert.equal(result.text,'{"edits":[]}');
+    });
+  });
+}
