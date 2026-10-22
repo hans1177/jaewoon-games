@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 const source = (name) => readFileSync(new URL('../roblox-games/simple-rpg/' + name, import.meta.url), 'utf8');
 const server = source('server/Game.server.luau');
@@ -9,6 +13,41 @@ const companion = source('server/CompanionAI.luau');
 const market = source('server/MultiverseEconomy.luau');
 const weather = source('client/WeatherVFX.luau');
 const project = JSON.parse(source('default.project.json'));
+
+test('CC0 insect source-only downloader retains verified archives and refuses unknown targets', () => {
+  const downloader = readFileSync(new URL('../tools/simple-rpg-priority-cc0-download.py', import.meta.url),'utf8');
+  const workflow = readFileSync(new URL('../.github/workflows/owner-simple-rpg-direct-publish.yml',import.meta.url),'utf8');
+  assert.match(downloader,/ant-rigged\\.blend/);
+  assert.match(downloader,/ant-3d-model-rigging-animated-low-poly-ish/);
+  assert.match(downloader,/UNAPPROVED_CC0_TARGET_ONLY/);
+  assert.match(downloader,/EXISTING_VERIFIED_SOURCE_MANIFEST_REQUIRED/);
+  assert.match(downloader,/TARGETED_CC0_ACQUISITION_NOT_VERIFIED/);
+  assert.match(downloader,/prior_manifest\["packs"\]/);
+  assert.match(workflow,/VIBE_CC0_ONLY_PACK:/);
+  assert.equal((workflow.match(/priority-cc0-ant-download/g)||[]).length,3);
+  assert.match(workflow,/priority-cc0-ant-download[\s\S]*?publish:/);
+  const tmp = mkdtempSync(path.join(tmpdir(),'cc0-ant-candidate-'));
+  try {
+    const root=path.join(tmp,'assets/external/simple-rpg/priority-v1');
+    mkdirSync(root,{recursive:true});
+    const bytes=Buffer.concat([Buffer.from('BLENDER'),Buffer.alloc(800,65)]);
+    const hash=createHash('sha256').update(bytes).digest('hex');
+    writeFileSync(path.join(root,'ant-rigged.blend'),bytes);
+    const manifest={gameId:'simple-rpg',sourceOnly:true,packs:[{file:'ant-rigged.blend',bytes:bytes.length,sha256:hash}]};
+    writeFileSync(path.join(root,'manifest.json'),JSON.stringify(manifest));
+    const command=new URL('../tools/simple-rpg-priority-cc0-download.py',import.meta.url).pathname;
+    const env={...process.env,VIBE_CC0_ONLY_PACK:'ant-rigged.blend'};
+    const result=spawnSync('python3',[command],{cwd:tmp,env,encoding:'utf8',timeout:9000});
+    assert.equal(result.status,0,result.stderr);
+    assert.match(result.stdout,/CC0_SOURCE_ALREADY_PRESENT_VERIFIED=ant-rigged.blend/);
+    assert.deepEqual(JSON.parse(readFileSync(path.join(root,'manifest.json'),'utf8')),manifest);
+    const denied=spawnSync('python3',[command],{cwd:tmp,env:{...env,VIBE_CC0_ONLY_PACK:'unsanctioned.zip'},encoding:'utf8',timeout:9000});
+    assert.notEqual(denied.status,0);
+    assert.match(denied.stderr,/UNAPPROVED_CC0_TARGET_ONLY/);
+  } finally {
+    rmSync(tmp,{recursive:true,force:true});
+  }
+});
 
 test('no hand-built monster, companion, or character preview geometry', () => {
   for (const moduleSource of [companion, market, weather]) {
