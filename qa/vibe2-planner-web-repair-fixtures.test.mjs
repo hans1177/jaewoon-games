@@ -144,7 +144,7 @@ test('connected nested modules are inspected and repair owns the existing render
     const repair=findSafeTasks(project,root,{tasks:[]})[0];
     assert.match(repair.id,/web-startup-spatial-repair/);
     assert.deepEqual(new Set(repair.responsibleFiles),new Set(['web-games/modular/index.html','web-games/modular/main.mjs','web-games/modular/view/world.mjs']));
-    fs.writeFileSync(renderer,'const camera=new THREE.PerspectiveCamera();const mesh=new THREE.Mesh();const renderer=new THREE.WebGLRenderer();renderer.render(scene,camera);\n'+'// source structure only\n'.repeat(80));
+    fs.writeFileSync(renderer,"import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';\n"+'const camera=new THREE.PerspectiveCamera();const mesh=new THREE.Mesh();const renderer=new THREE.WebGLRenderer();renderer.render(scene,camera);\n'+'// source structure only\n'.repeat(80));
     const next=findSafeTasks(project,root,{tasks:[]});
     assert.equal(next.some(row=>/web-startup-spatial-repair/.test(row.id)),false);
     fs.appendFileSync(renderer,"\nimport './missing.mjs';");

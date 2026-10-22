@@ -1226,6 +1226,7 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
       if(visited.has(current))continue;
       visited.add(current);
       const source=readText(current);contents.push(source);
+      const scriptSources=new Set([...source.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(match=>match[1]));
       const references=[
         ...source.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi),
         ...source.matchAll(/\b(?:import|export)\s+(?:[^;'"\n]*?\s+from\s*)?["']([^"']+)["']/g),
@@ -1233,7 +1234,7 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
       ];
       for(const match of references){
         const src=clean(match[1]).split(/[?#]/)[0];
-        if(!src||/^(?:[a-z]+:|\/\/)/i.test(src)||(!src.startsWith('.')&&!src.startsWith('/')&&!/\.(?:m?js|html?)$/i.test(src)))continue;
+        if(!src||/^(?:[a-z]+:|\/\/)/i.test(src)||(!src.startsWith('.')&&!src.startsWith('/')&&!scriptSources.has(match[1])))continue;
         const dependency=src.startsWith('/')?sourceFile(repoRoot,src.replace(/^\/+/, '')):path.resolve(path.dirname(current),src);
         if(!/\.(?:m?js|html?)$/i.test(dependency))continue;
         if(!fs.existsSync(dependency)){blockers.push(`LOCAL_RUNTIME_DEPENDENCY_MISSING:${src}`);continue;}
