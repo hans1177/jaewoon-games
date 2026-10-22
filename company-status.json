@@ -95,11 +95,11 @@
     "fortniteUefnAutomaticDevelopment": false,
     "fortniteUefnState": "OWNER_HOLD",
     "focusedDevelopmentCaretakers": {
-      "version": 3,
+      "version": 4,
       "enabled": true,
       "ownerFocusedGameIds": [
         "simple-rpg",
-        "fantasy-survival",
+        "insect-survival",
         "cozy-island"
       ],
       "includeAllReleaseConfirmed": false,
@@ -174,7 +174,7 @@
         "implementationOrderAuthority": "robloxStudioProductionFlowContract.designImplementationFlow",
         "targetPlatformsByGame": {
           "simple-rpg": "ROBLOX",
-          "fantasy-survival": "WEB",
+          "insect-survival": "WEB",
           "cozy-island": "WEB"
         },
         "retainUntilByPlatform": {
@@ -191,12 +191,12 @@
       },
       "ownerFocusedGamePlatforms": {
         "simple-rpg": "ROBLOX",
-        "fantasy-survival": "WEB",
+        "insect-survival": "WEB",
         "cozy-island": "WEB"
       },
       "focusScope": "OWNER_EXACT_GAME_AND_PLATFORM_ONLY",
       "ownerFocusedWebSourcePaths": {
-        "fantasy-survival": "web-games/fantasy-survival",
+        "insect-survival": "web-games/insect-survival",
         "cozy-island": "web-games/cozy-island"
       }
     }
@@ -242,7 +242,7 @@
       "preferredGameIds": [],
       "focusedGameIds": [
         "simple-rpg",
-        "fantasy-survival",
+        "insect-survival",
         "cozy-island"
       ],
       "games": [
@@ -261,16 +261,16 @@
         },
         {
           "slot": 2,
-          "gameId": "fantasy-survival",
-          "slug": "fantasy-survival",
-          "name": "마력숲 생존기",
-          "score": 0,
+          "gameId": "insect-survival",
+          "slug": "insect-survival",
+          "name": "곤충 생존기",
+          "score": 8,
           "slotRole": "owner-build-completion",
           "lane": "selected-platform",
           "selectedPlatform": "WEB",
           "targetPlatformReady": true,
           "homepageCategory": "development-confirmed",
-          "webPath": "/web-games/fantasy-survival/"
+          "webPath": "/web-games/insect-survival/"
         },
         {
           "slot": 3,
