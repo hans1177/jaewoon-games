@@ -24,15 +24,13 @@ function resolveProject(task,{catalog={},status={},repoRoot=process.cwd(),filesy
   if(!game)throw new Error(`게임 카탈로그에서 찾을 수 없음: ${gameId||'EMPTY'}`);
   const requestedPlatform=clean(task?.platform||task?.requestedPlatform).toLowerCase();
   if(requestedPlatform&&requestedPlatform!=='web')throw new Error('명시적 플랫폼 요청은 웹만 지원');
-  if(requestedPlatform==='web'){
-    const onlyWeb=webRoot(game);
-    if(!onlyWeb||!filesystem.existsSync(path.join(repoRoot,onlyWeb)))throw new Error('웹게임 소스가 없어 작업을 접수할 수 없음: '+gameId);
-    return {game,target:'web',sourceRoot:onlyWeb,actualReleaseState:actualReleaseState(game)};
-  }
-  const project=(status.projects||[]).find(row=>clean(row.gameId)===gameId),unityRoot=posix(project?.projectPath||game.unityProjectPath);
-  if(unityRoot&&unityRoot.startsWith('unity-games/')&&filesystem.existsSync(path.join(repoRoot,unityRoot)))return {game,target:'unity',sourceRoot:unityRoot,actualReleaseState:actualReleaseState(game)};
-  const web=webRoot(game);if(web&&filesystem.existsSync(path.join(repoRoot,web)))return {game,target:'web',sourceRoot:web,actualReleaseState:actualReleaseState(game)};
-  throw new Error(`실제 수정 가능한 게임 소스가 없음: ${gameId}`);
+  // The PWA/GitHub bridge is WEB-only. Unity development is on owner hold;
+  // never select a Unity project, even when one exists in historical status.
+  // Roblox stays in its existing separate native development pipeline.
+  const web=webRoot(game);
+  if(!web||!filesystem.existsSync(path.join(repoRoot,web)))
+    throw new Error('웹게임 소스가 없어 작업을 접수할 수 없음: '+gameId);
+  return {game,target:'web',sourceRoot:web,actualReleaseState:actualReleaseState(game)};
 }
 // The existing owner queue bridge may receive an authenticated local web directive.
 // Repository dispatch identity is independently verified by GitHub Actions, never by the AI model.
@@ -66,7 +64,7 @@ function ownerContext(task){const rows=Array.isArray(task?.ownerMessages)?task.o
 export function buildGithubDevelopmentFocus({gameId='',sourceRoot=''}={}){
  const id=clean(gameId),root=posix(sourceRoot);
  if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(id)||
-    !/^(?:web-games|unity-games)\/[a-zA-Z0-9._-]+$/.test(root)||
+    !/^web-games\/[a-zA-Z0-9._-]+$/.test(root)||
     root.split('/')[1]!==id)throw new Error('GITHUB_DEVELOPMENT_FOCUS_SOURCE_MISMATCH');
  return [
   '[GITHUB_DEVELOPMENT_FIRST]',
