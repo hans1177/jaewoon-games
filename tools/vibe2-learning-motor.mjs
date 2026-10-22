@@ -1491,6 +1491,158 @@ export function learningGuidance(context={}){
   return lines.join('\n');
 }
 
+// 메인 · C01-C08: 기존 학습/후보 비교 엔진에서 사용하는 검증 전용 계약.
+// 게임 소스 수정이나 학습 승격은 하지 않는다. 실제 QA/런타임 근거 없는 PASS 금지.
+const VIBE_CODING_REQUIREMENTS=Object.freeze(['C01','C02','C03','C04','C05','C06','C07','C08']);
+const capabilityRows=value=>Array.isArray(value)?value:[];
+const capabilityClean=value=>String(value??'').trim();
+const capabilityEngine=value=>capabilityClean(value).toLowerCase();
+const capabilityProof=(row={},revision='')=>{
+  const proof=row?.proof||row?.verification||{};
+  const sha=capabilityClean(row.sourceRevision||proof.sourceRevision);
+  return /^[a-f0-9]{40}$/i.test(sha)&&(!revision||sha===revision)
+    &&capabilityClean(row.evidenceId||proof.evidenceId)!==''
+    &&capabilityClean(proof.independentQa).toUpperCase()==='PASS'
+    &&capabilityClean(proof.regression).toUpperCase()==='PASS'
+    &&capabilityClean(proof.runtime).toUpperCase()==='PASS'
+    &&proof.actualPlatformRuntime===true
+    &&proof.stale!==true&&proof.flaky!==true;
+};
+const capabilityResult=(id,pass,issues=[],details={})=>Object.freeze({
+  id,status:pass?'VERIFIED':'BLOCKED',verified:pass,
+  issues:Object.freeze([...new Set(issues)]),...details,
+  countsAsReleasePass:false,authorityExpanded:false
+});
+
+export function composeVerifiedCodingRecipes(recipes=[],{engine='',genre='',sourceRevision=''}={}){
+  const rows=capabilityRows(recipes);
+  const issues=[];
+  const found=new Map();
+  for(const r of rows){
+    const id=capabilityClean(r?.id);
+    if(!id||found.has(id)){issues.push('DUPLICATE_OR_MISSING_RECIPE_ID');continue;}
+    if(!capabilityProof(r,sourceRevision)||r.verified!==true||
+      capabilityEngine(r.engine)!==capabilityEngine(engine)||
+      (genre&&capabilityEngine(r.genre)!==capabilityEngine(genre))||
+      !capabilityClean(r.rollbackFingerprint)||
+      !capabilityRows(r.permittedEditScope).length||
+      !capabilityRows(r.preconditions).length||
+      !['CONNECT_EXISTING_ACTION','REPLACE_EXACT_SCOPE'].includes(r.declarativeTransformation?.kind)||
+      r.rawPatch||r.arbitraryCode){
+      issues.push('UNVERIFIED_OR_INCOMPATIBLE_RECIPE:'+id);continue;
+    }
+    found.set(id,r);
+  }
+  if(rows.length<2)issues.push('TWO_RECIPES_REQUIRED');
+  const ordered=[],visited=new Set(),visiting=new Set(),scopes=new Set();
+  const visit=id=>{
+    if(visited.has(id))return;
+    if(visiting.has(id)){issues.push('CYCLIC_RECIPE_DEPENDENCY');return;}
+    const row=found.get(id);
+    if(!row){issues.push('MISSING_RECIPE_DEPENDENCY:'+id);return;}
+    visiting.add(id);
+    for(const dep of capabilityRows(row.dependencies))visit(capabilityClean(dep));
+    visiting.delete(id);visited.add(id);
+    for(const scope of row.permittedEditScope){
+      if(scopes.has(scope))issues.push('EDIT_SCOPE_CONFLICT:'+scope);
+      scopes.add(scope);
+    }
+    ordered.push(id);
+  };
+  for(const id of found.keys())visit(id);
+  return capabilityResult('C02',issues.length===0,issues,{
+    order:Object.freeze(issues.length?[]:ordered),manualExecutionRequired:true
+  });
+}
+
+export function verifyVibeCausalGameplayContract(contract={},trace={}){
+  const issues=[];
+  const steps=['INPUT','STATE_TRANSITION','PHYSICS_OR_ANIMATION','COLLISION_OR_HIT','FEEDBACK_OR_REWARD'];
+  if(!capabilityProof(trace,capabilityClean(contract.sourceRevision)))issues.push('EXACT_RUNTIME_PROOF_REQUIRED');
+  if(!capabilityClean(contract.gameId)||!capabilityClean(contract.sourceRevision))issues.push('SOURCE_CONTRACT_REQUIRED');
+  if(trace.gameId!==contract.gameId)issues.push('GAME_ID_MISMATCH');
+  if(trace.authoritativeStateChanged!==true)issues.push('NO_AUTHORITATIVE_STATE_CHANGE');
+  if(trace.saveAndBalancePreserved!==true)issues.push('PROTECTED_STATE_NOT_PRESERVED');
+  const actual=capabilityRows(trace.events).map(e=>capabilityClean(e.kind));
+  let index=-1;
+  for(const step of steps){const next=actual.indexOf(step,index+1);if(next<0){issues.push('CAUSAL_STEP_MISSING_OR_ORDER:'+step);break;}index=next;}
+  if(trace.multiplayer===true&&trace.serverAuthorityVerified!==true)issues.push('SERVER_AUTHORITY_REQUIRED');
+  return capabilityResult('C05',issues.length===0,issues,{observedSteps:Object.freeze(actual)});
+}
+
+export function buildVerifiedVibeCapabilityLedger(attempts=[]){
+  const domains=new Map(),seen=new Set();
+  for(const a of capabilityRows(attempts)){
+    if(!a||!capabilityClean(a.evidenceId)||seen.has(a.evidenceId))continue;
+    seen.add(a.evidenceId);
+    const domain=capabilityClean(a.domain),genre=capabilityClean(a.genre),platform=capabilityClean(a.platform);
+    const result=capabilityClean(a.result).toUpperCase();
+    if(!domain||!genre||!['WEB','ROBLOX'].includes(platform)||!['PASS','FAIL'].includes(result))continue;
+    if(!/^[a-f0-9]{40}$/i.test(capabilityClean(a.sourceRevision))||
+      a.independentQaRecorded!==true||a.regressionRecorded!==true||
+      !capabilityClean(a.benchmarkVersion))continue;
+    if(result==='PASS'&&!capabilityProof(a))continue;
+    const key=[domain,genre,platform,a.benchmarkVersion].join('|');
+    const row=domains.get(key)||{domain,genre,platform,benchmarkVersion:a.benchmarkVersion,pass:0,fail:0,holdoutPass:0,holdoutTotal:0,modelFreePass:0,regressions:0};
+    row[result==='PASS'?'pass':'fail']++;
+    if(a.holdout===true){row.holdoutTotal++;if(result==='PASS')row.holdoutPass++;}
+    if(result==='PASS'&&a.modelCalls===0)row.modelFreePass++;
+    if(a.regressionDetected===true)row.regressions++;
+    domains.set(key,row);
+  }
+  return Object.freeze([...domains.values()].map(row=>Object.freeze({
+    ...row,attempts:row.pass+row.fail,
+    verifiedPassRate:row.pass/(row.pass+row.fail),
+    holdoutPassRate:row.holdoutTotal?row.holdoutPass/row.holdoutTotal:null,
+    regressionRate:row.regressions/(row.pass+row.fail),
+    modelFreeRate:row.modelFreePass/(row.pass+row.fail),
+    confidence:'EVIDENCE_ONLY'
+  })));
+}
+
+export function assessVibeCodingCapabilities({recipes=[],attempts=[],failures=[],causalContract={},causalTrace={},candidates=[],transfers=[],holdouts=[],engine='',genre='',sourceRevision=''}={}){
+  const valid=capabilityRows(recipes).filter(r=>capabilityProof(r,sourceRevision)&&r.verified===true
+    &&capabilityEngine(r.engine)===capabilityEngine(engine)
+    &&(!genre||capabilityEngine(r.genre)===capabilityEngine(genre))
+    &&capabilityRows(r.permittedEditScope).length
+    &&capabilityRows(r.preconditions).length&&capabilityClean(r.rollbackFingerprint));
+  const c01=capabilityResult('C01',valid.length>0,valid.length?[]:['NO_SOURCE_BOUND_VERIFIED_RECIPE'],
+    {eligibleRecipeIds:Object.freeze(valid.map(r=>r.id)),automaticPromotion:false});
+  const c02=composeVerifiedCodingRecipes(valid,{engine,genre,sourceRevision});
+  const ledger=buildVerifiedVibeCapabilityLedger(attempts);
+  const c03=capabilityResult('C03',ledger.length>0,ledger.length?[]:['NO_ATTESTED_BENCHMARKS'],{ledger});
+  const verifiedFailures=capabilityRows(failures).filter(f=>capabilityClean(f.reproductionId)&&
+    capabilityClean(f.failureSignature)&&capabilityClean(f.preventiveTest)&&
+    f.reproduced===true&&f.regressionTestRed===true&&
+    f.regressionTestGreen===true&&capabilityProof(f,sourceRevision));
+  const c04=capabilityResult('C04',verifiedFailures.length>0,verifiedFailures.length?[]:['RED_GREEN_CAUSAL_FAILURE_REQUIRED'],
+    {preventions:Object.freeze(verifiedFailures.map(f=>({failureSignature:f.failureSignature,preventiveTest:f.preventiveTest})))});
+  const c05=verifyVibeCausalGameplayContract(causalContract,causalTrace);
+  const verifiedCandidates=capabilityRows(candidates).filter(c=>capabilityProof(c,sourceRevision)&&
+    c.saveAndBalancePreserved===true&&c.sameTaskBudget===true&&
+    Number.isFinite(c.regressionCount)&&c.regressionCount>=0&&Number.isFinite(c.runtimeMs)&&c.runtimeMs>=0);
+  verifiedCandidates.sort((a,b)=>a.regressionCount-b.regressionCount||a.runtimeMs-b.runtimeMs||capabilityClean(a.id).localeCompare(capabilityClean(b.id)));
+  const c06=capabilityResult('C06',verifiedCandidates.length>=2,verifiedCandidates.length>=2?[]:['PAIRED_VERIFIED_CANDIDATES_REQUIRED'],{
+    winnerId:verifiedCandidates.length>=2?verifiedCandidates[0].id:null,comparisonOnly:true
+  });
+  const goodTransfers=capabilityRows(transfers).filter(t=>t.sourceGenre&&t.targetGenre&&t.sourceGenre!==t.targetGenre
+    &&capabilityProof(t.sourceProof)&&capabilityProof(t.targetProof)
+    &&t.preconditionsMatch===true&&t.protectedStatePreserved===true);
+  const c07=capabilityResult('C07',goodTransfers.length>0,goodTransfers.length?[]:['BOTH_GENRES_REQUIRE_QA'],{
+    eligibleTransfers:Object.freeze(goodTransfers.map(t=>t.id))
+  });
+  const eligibleHoldouts=capabilityRows(holdouts).filter(h=>h.blind===true&&h.fixedTasks===true&&
+    h.modelCalls===0&&h.unseenFingerprint===true&&capabilityProof(h,sourceRevision));
+  const c08=capabilityResult('C08',eligibleHoldouts.length>0,eligibleHoldouts.length?[]:['MODEL_FREE_HOLDOUT_RUNTIME_REQUIRED'],{
+    tested:eligibleHoldouts.length,success:eligibleHoldouts.filter(h=>h.result==='PASS').length,
+    passRate:eligibleHoldouts.length?eligibleHoldouts.filter(h=>h.result==='PASS').length/eligibleHoldouts.length:null
+  });
+  return Object.freeze({version:1,requirements:Object.freeze({
+    C01:c01,C02:c02,C03:c03,C04:c04,C05:c05,C06:c06,C07:c07,C08:c08
+  }),allVerified:VIBE_CODING_REQUIREMENTS.every(id=>({C01:c01,C02:c02,C03:c03,C04:c04,C05:c05,C06:c06,C07:c07,C08:c08})[id].verified),
+    authorityExpanded:false,sourceMutationAuthorized:false});
+}
+
 export function candidateTournamentPolicy({task={},masteryInput={}}={}){
   const state=createMasteryState(masteryInput);
   const goal=clean(task.goal);
