@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "zombie-survival-build-up-g8-58b7eea74c35",
-  "directiveFingerprint": "58b7eea74c35d87c2a06f234845d27f929649d81e462e52aafb9b822256162de",
-  "previousDirectiveFingerprint": "9958721ec46a3e19949fa6d50699b94c581591cce5dd7bec6b00e90bb601456e",
-  "forbiddenRepeatFingerprint": "9958721ec46a3e19949fa6d50699b94c581591cce5dd7bec6b00e90bb601456e",
+  "directiveId": "zombie-survival-build-up-g9-053b297c8fdd",
+  "directiveFingerprint": "053b297c8fddeac4467f071f4c1b2d412b436096f42a995b5ef5ff6f500e0969",
+  "previousDirectiveFingerprint": "58b7eea74c35d87c2a06f234845d27f929649d81e462e52aafb9b822256162de",
+  "forbiddenRepeatFingerprint": "58b7eea74c35d87c2a06f234845d27f929649d81e462e52aafb9b822256162de",
   "gameId": "zombie-survival",
   "gameName": "좀비 생존기",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/zombie-survival",
-  "sourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+  "sourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
   "designFingerprint": "0ff1cd69150b17b3b2d04aa43eee1b2e13a7d48f291145a7a2646abd1bcb8245",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+        "sourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "0ff1cd69150b17b3b2d04aa43eee1b2e13a7d48f291145a7a2646abd1bcb8245",
-    "sourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+    "sourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+    "sourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4535,8 +4535,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 182,
-      "progression": 525,
+      "combat": 180,
+      "progression": 527,
       "ai": 62,
       "save": 119,
       "multiplayer": 43,
@@ -4546,12 +4546,12 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 27,
+      "audioDynamics": 29,
       "ui": 898,
       "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 151,
+      "input": 153,
       "map": 290,
       "landmark": 36,
       "interaction": 287,
@@ -4989,9 +4989,9 @@
   "previousVersionDelta": {
     "previousGoal": "좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "ed6d744f56718ca9e2cd07ad3594ea4e0e98db6cdd6d8f521b6cbf75afb474ed",
-    "currentSourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+    "currentSourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5117,10 +5117,25 @@
         }
       ]
     },
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [
-      "roblox-build-package-pending"
+      "roblox-f0-gameplay-product-readiness-failed",
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6267,7 +6282,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 401556,
+        "sourceBytes": 430907,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6300,8 +6315,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
+    "themeDepth": 9,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6311,9 +6326,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 8
+        "PRESENTATION_WORLD_COHESION": 9
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6356,7 +6372,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 110,
+        "score": 92,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6470,11 +6486,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 8,
-    "previousGeneration": 7,
+    "generation": 9,
+    "previousGeneration": 8,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
-    "priorSourceFingerprint": "ed6d744f56718ca9e2cd07ad3594ea4e0e98db6cdd6d8f521b6cbf75afb474ed",
+    "sourceFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
+    "priorSourceFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6493,7 +6509,7 @@
     "version": 1,
     "gameId": "zombie-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+    "sourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7398,7 +7414,7 @@
     "gameId": "zombie-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+    "sourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8232,11 +8248,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "4b057c5cdd3be48b64aed5a37aa17270fdafeab1cf77f710e3fdd457ab26e398",
+      "sourceTreeFingerprint": "7a3cf854fe614f414f1bee57bae4a6bcd68979c1ed6a30a1ec6bf709e57b0653",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8291,7 +8307,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8353,5 +8369,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T16:15:41.410Z"
+  "generatedAt": "2026-10-22T17:45:16.033Z"
 }
