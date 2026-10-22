@@ -145113,7 +145113,7 @@
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145155,12 +145155,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39711152133:1",
+      "reservedAt": "2026-10-22T02:25:51.782Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-verification-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145273,14 +145273,15 @@
         "system-ai-applied-answer-sha256:49e1a415c5b4d9c2e6d42df88f102e1edccabc71e8c23ca02da2dfdeae63ce27",
         "repair-strategy-fingerprint:568be0068ca140d03b7778f837930bca3ac307ceba68689de2d02c95e030349b",
         "failed-strategy-fingerprint:568be0068ca140d03b7778f837930bca3ac307ceba68689de2d02c95e030349b",
-        "model-output-sha256:66dc5a35f4ae99f9c6d0aee759bfacf64ead227fe1ce7a1e99b550ff128e66ff"
+        "model-output-sha256:66dc5a35f4ae99f9c6d0aee759bfacf64ead227fe1ce7a1e99b550ff128e66ff",
+        "system-ai-handoff-to-reservation:system-ai:39711152133:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1202,
+      "impactScore": 302,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 18,
-        "recurrenceCount": 18,
+        "blockedTaskCount": 0,
+        "recurrenceCount": 0,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -145288,7 +145289,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-22T01:45:53.406Z"
+      "updatedAt": "2026-10-22T02:25:51.782Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
@@ -145515,7 +145516,7 @@
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145557,12 +145558,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39711152133:1",
+      "reservedAt": "2026-10-22T02:25:51.782Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145601,14 +145602,18 @@
         "primary-ai-review-required:YES",
         "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
         "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
-        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER",
+        "system-ai-impact-score:1102",
+        "system-ai-blocked-task-count:16",
+        "system-ai-representative-canary:system-ai-implementation-failed",
+        "system-ai-handoff-to-reservation:system-ai:39711152133:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1414,
+      "impactScore": 1102,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 24,
-        "recurrenceCount": 24,
+        "blockedTaskCount": 16,
+        "recurrenceCount": 16,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -145616,7 +145621,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-21T12:06:10.175Z"
+      "updatedAt": "2026-10-22T02:25:51.782Z"
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
@@ -150808,7 +150813,7 @@
     },
     {
       "id": "recovery-recovery-907315c8bf74eb20724e",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -150866,12 +150871,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39711152133:1",
+      "reservedAt": "2026-10-22T02:25:51.782Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39070616916:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -150938,22 +150943,25 @@
         "system-ai-representative-canary:stale-system-ai-reservation-reclaimed",
         "system-ai-handoff-to-reservation:system-ai:39702607308:1",
         "actions-run:39702607308",
-        "implementation:cancelled"
+        "implementation:cancelled",
+        "system-ai-impact-score:1290",
+        "system-ai-blocked-task-count:17",
+        "system-ai-handoff-to-reservation:system-ai:39711152133:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1139,
+      "impactScore": 1290,
       "impactComponents": {
         "severity": 4,
-        "blockedTaskCount": 14,
-        "recurrenceCount": 12,
+        "blockedTaskCount": 17,
+        "recurrenceCount": 15,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 99.5,
+        "ageHours": 100.92,
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:30:30.043Z",
-      "updatedAt": "2026-10-22T01:29:49.022Z"
+      "updatedAt": "2026-10-22T02:25:51.782Z"
     },
     {
       "id": "recovery-recovery-919dea22a6ccc3578fc7",
