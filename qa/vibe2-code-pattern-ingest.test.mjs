@@ -172,9 +172,13 @@ test('verified learned action expands model-free source generation with exact so
   const learned=deterministicWebInputCandidate({...args,patternLibrary:{patterns:[pattern]}});
   assert.equal(learned?.deterministicWebInput,true);
   assert.deepEqual(learned.learnedCodePatternIds,[pattern.id]);
-  assert.equal(learned.edits[0].find,source);
+  const expectedScript=source.match(/<script>[\s\S]*?<\/script>/)[0];
+  assert.equal(learned.edits[0].find,expectedScript);
+  const updatedSource=source.replace(learned.edits[0].find,learned.edits[0].replace);
+  assert.ok(updatedSource.startsWith('<button id="magic" data-gameplay-action="castSpell">마법</button>'));
+  assert.notEqual(updatedSource,source);
   const handlers=new Map();
-  const script=learned.edits[0].replace.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const script=updatedSource.match(/<script>([\s\S]*?)<\/script>/)[1];
   const sandbox={document:{getElementById:id=>({addEventListener:(type,fn)=>handlers.set(id+':'+type,fn)})}};
   runInNewContext(script,sandbox);
   assert.equal(runInNewContext('mana',sandbox),4);
