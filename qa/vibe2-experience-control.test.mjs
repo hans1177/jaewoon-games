@@ -532,6 +532,8 @@ test('existing Web 3D repair is not mistaken for a new game by appended build-up
   const task=(id,request)=>({
     id,gameId:'core-clash-4v4',target:'web',department:'development',type:'implementation',
     sourceRoot:'web-games/core-clash-4v4',
+    buildUpDirectiveId:'core-clash-4v4-build-up-g1',
+    buildUpDirective:{version:2,directiveId:'core-clash-4v4-build-up-g1',gameId:'core-clash-4v4',sourceRoot:'web-games/core-clash-4v4'},
     responsibleFiles:['web-games/core-clash-4v4/index.html'],
     goal:request+'\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nmenuStructure: 타이틀→계속하기 또는 새 게임→본편. 기존 게임 정체성을 보존하면서 게임 제작 방향을 기록한다.',
     ownerDirective:true,priority:'high',releaseState:'development-confirmed',
