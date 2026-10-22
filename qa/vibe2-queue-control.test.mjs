@@ -69,8 +69,8 @@ test('폐기된 웹 소스 예약을 보류하고 정상 웹과 네이티브 작
 
 test('focused existing queues get exact game-platform priority and spare workers still develop other games',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
-    enabled:true,ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
-    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+    enabled:true,ownerFocusedGameIds:['simple-rpg','insect-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'},
     completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
   }},developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}};
   const task=(id,gameId,target)=>({id,gameId,target,department:'development',type:'implementation',
@@ -80,7 +80,7 @@ test('focused existing queues get exact game-platform priority and spare workers
     task('normal-older','ordinary','roblox'),
     task('wrong-platform','cozy-island','roblox'),
     task('focus-rpg','simple-rpg','roblox'),
-    task('focus-web','fantasy-survival','web')
+    task('focus-web','insect-survival','web')
   ]});
   const synced=synchronizeOwnerDevelopmentHolds(queue,policy);
   assert.equal(synced.tasks.find(item=>item.id==='focus-rpg').ownerFocusedCaretaker,true);
@@ -97,15 +97,15 @@ test('focused existing queues get exact game-platform priority and spare workers
 
 test('focused Web queue beats ordinary Roblox without starving remaining capacity',()=>{
   const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
-    enabled:true,ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
-    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+    enabled:true,ownerFocusedGameIds:['simple-rpg','insect-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'},
     completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true}
   }},developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED'}};
   const tasks=[
     {id:'ordinary-roblox',gameId:'ordinary',target:'roblox',department:'development',type:'implementation',
       status:'queued',goal:'develop',sourceRoot:'roblox-games/ordinary',responsibleFiles:['server/a.luau'],priority:'normal'},
-    {id:'focused-web',gameId:'fantasy-survival',target:'web',department:'development',type:'implementation',
-      status:'queued',goal:'develop',sourceRoot:'web-games/fantasy-survival',responsibleFiles:['index.html'],priority:'normal'}
+    {id:'focused-web',gameId:'insect-survival',target:'web',department:'development',type:'implementation',
+      status:'queued',goal:'develop',sourceRoot:'web-games/insect-survival',responsibleFiles:['index.html'],priority:'normal'}
   ];
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks});
   const one=reserveVibeTaskBatch(queue,{policy,maxConcurrentTasks:1,lane:'game-primary'});
