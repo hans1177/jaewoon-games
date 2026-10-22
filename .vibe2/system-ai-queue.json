@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -150838,7 +150838,7 @@
     },
     {
       "id": "recovery-recovery-907315c8bf74eb20724e",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -150882,7 +150882,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/vibe2-candidate-release.yml:6bb73cbaa0766dff175e154c3a04c099531dde36:unresolved-run-39070616916"
       ],
-      "retries": 3,
+      "retries": 4,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "stale-system-ai-reservation-reclaimed",
@@ -150896,12 +150896,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39716609568:1",
-      "reservedAt": "2026-10-22T03:26:56.617Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39070616916:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -150977,7 +150977,43 @@
         "actions-run:39714068139",
         "system-ai-impact-score:1340",
         "system-ai-blocked-task-count:18",
-        "system-ai-handoff-to-reservation:system-ai:39716609568:1"
+        "system-ai-handoff-to-reservation:system-ai:39716609568:1",
+        "actions-run:39716609568",
+        "implementation:success",
+        "verification:failure",
+        "changed-file:.github/workflows/vibe2-candidate-release.yml",
+        "external-ai-model:gemini-3.8-flash",
+        "external-ai-raw-output-sha256:c3db5b120d457019eca49cb101d9e3ac357e5c50af65bc2273210f372f2f8986",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_3f9ed1eaf8c7ed00c283e5c3",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_f22782671545193f22176195",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_51c24e5073a331ae41d29a07",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_15e1b514c0d8383869445201",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_5f8b04f2525a6688fa6853c7",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_56ba56adf1adc7ac02005742",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_0a048d8a6982a42b5155ce3d",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_2b65bb2529d8db13565c7073",
+        "learning-knowledge-id:CODE_PATTERN:pat_1x7z0gk",
+        "learning-knowledge-id:CODE_PATTERN:pat_1xg0er9",
+        "learning-knowledge-id:CODE_PATTERN:pat_r3a1fy",
+        "learning-knowledge-id:CODE_PATTERN:pat_vzhsq4",
+        "learning-knowledge-id:CODE_PATTERN:pat_external_authorized_ed029ace908f2d11e81feb4d",
+        "learning-knowledge-id:CODE_PATTERN:pat_1dj8rdx",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-advanced-coding-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-visual-aesthetic-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-aquatic-animal-surface-motion-v1",
+        "learning-knowledge-id:EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-material-lighting-v1",
+        "system-ai-qa-contract-review:NOT_REQUIRED",
+        "system-ai-knowledge-outcome:PENDING_VERIFIED_FANIN",
+        "selected-hypothesis:save-compatibility",
+        "hypothesis-rejected:pipeline-or-runner",
+        "system-ai-deep-reasoning:YES",
+        "selected-strategy:strategy-allow-empty",
+        "system-ai-critic-verdict:PASS",
+        "system-ai-critic-decision-sha256:514d088581f10a5b48bf633fb201182ad002be5dd5f69ceaeb80858c8dd446dc",
+        "system-ai-applied-answer-sha256:ac48aaf3b4aab25d10782ce62ab3cb43665f110cfad892a18b7a999b00441f8b",
+        "repair-strategy-fingerprint:c5d373e304616c71eb4ed00a9f8e82b0de3c00aa2a568fc8ebdbc3179e766b39",
+        "failed-strategy-fingerprint:c5d373e304616c71eb4ed00a9f8e82b0de3c00aa2a568fc8ebdbc3179e766b39",
+        "model-output-sha256:c3db5b120d457019eca49cb101d9e3ac357e5c50af65bc2273210f372f2f8986"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1340,
@@ -150992,7 +151028,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:30:30.043Z",
-      "updatedAt": "2026-10-22T03:26:56.617Z"
+      "updatedAt": "2026-10-22T04:03:18.765Z"
     },
     {
       "id": "recovery-recovery-919dea22a6ccc3578fc7",
@@ -157788,6 +157824,5 @@
       "createdAt": "2026-10-21T15:47:49.217Z",
       "updatedAt": "2026-10-21T15:47:49.217Z"
     }
-  ],
-  "updatedAt": "2026-10-22T04:00:50.103Z"
+  ]
 }
