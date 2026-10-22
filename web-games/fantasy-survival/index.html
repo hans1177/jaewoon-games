@@ -207,6 +207,61 @@ body[data-hud-hand="left"] .stick{left:auto;right:max(20px,env(safe-area-inset-r
 .recipe b,.invItem b{color:#f3dfb2}
 .recipe small,.invItem small{color:#d1d8c9}
 .info{border:1px solid #aa895e61;background:#213126;color:#f5e8c9}
+
+/* 메인: 마력숲 장비·가방 화면. 기존 저장/장착 함수가 수치를 관리한다. */
+.mfInventory{--mf-inv-gold:#e8c78b;--mf-inv-green:#a7dbbd;color:#f8eed7}
+.mfInventory .mfInvTitle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:12px 14px;border:1px solid #d7ae6370;border-radius:12px;background:radial-gradient(circle at 0 0,#54704b75,transparent 65%),linear-gradient(130deg,#344b37,#141e1b)}
+.mfInventory .mfInvTitle strong{display:block;font:900 clamp(17px,2vw,22px)/1.25 system-ui;color:#fce3a3;letter-spacing:.035em}
+.mfInventory .mfInvTitle small{display:block;color:#c5dac5;font-size:11px;letter-spacing:.08em}
+.mfInventory .mfInvTitle .mfPackMark{display:grid;place-items:center;width:46px;height:46px;flex:0 0 46px;border:1px solid #e2c08680;border-radius:10px;background:linear-gradient(145deg,#816438,#28362a);box-shadow:inset 0 1px #ffffff40,0 5px 12px #0006}
+.mfInventory svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.7}
+.mfInventory .mfCharacterPanel{display:grid;grid-template-columns:minmax(118px,.78fr) minmax(0,1.6fr);gap:12px;margin-bottom:14px;padding:12px;border:1px solid #b18f597c;border-radius:14px;background:linear-gradient(145deg,#344433,#101d1b 72%);box-shadow:inset 0 1px #fff2,0 12px 24px #0004}
+.mfInventory .mfCharacterArt{position:relative;min-height:198px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #d4b67350;border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 50% 62%,#456e578a,transparent 67%),linear-gradient(180deg,#2e4339,#101e19)}
+.mfInventory .mfCharacterArt:before{content:'';position:absolute;inset:13px;border:1px solid #d0be8240;border-radius:60px 60px 9px 9px}
+.mfInventory .mfCharacterArt:after{content:'';position:absolute;left:22%;right:22%;bottom:22px;height:13px;border-radius:50%;background:#07180eaa;filter:blur(4px)}
+.mfInventory .mfCharacterFigure{position:relative;z-index:1;width:84px;height:126px;filter:drop-shadow(0 6px 5px #0009)}
+.mfInventory .mfCharacterFigure .head{position:absolute;top:3px;left:26px;width:32px;height:35px;clip-path:polygon(15% 0,85% 0,100% 36%,78% 100%,22% 100%,0 36%);background:linear-gradient(115deg,#f1d6a0,#887048 75%)}
+.mfInventory .mfCharacterFigure .head:after{content:'';position:absolute;top:13px;left:5px;right:5px;height:5px;background:#152c2b;border:1px solid #d4b578}
+.mfInventory .mfCharacterFigure .body{position:absolute;top:35px;left:13px;width:58px;height:68px;clip-path:polygon(16% 0,84% 0,100% 25%,81% 100%,19% 100%,0 25%);background:linear-gradient(100deg,#b4c9b9,#4f7366 45%,#2d4843 75%,#b78b4c);border-radius:10px}
+.mfInventory .mfCharacterFigure .body:after{content:'';position:absolute;top:12px;left:17px;width:24px;height:42px;border:2px solid #dfba72;border-radius:9px 9px 16px 16px}
+.mfInventory .mfCharacterFigure .legs{position:absolute;top:98px;left:25px;width:14px;height:28px;background:linear-gradient(#7b5d3f,#344a3c);box-shadow:22px 0 #344a3c;border-radius:4px}
+.mfInventory .mfCharacterArt .mfClassName{position:relative;z-index:2;margin-top:2px;color:#f9e3af;font-size:11px;font-weight:900;text-align:center}
+.mfInventory .mfCharacterInfo h3{margin:0 0 7px;color:#fbe6ad;font-size:14px;letter-spacing:.02em}
+.mfInventory .mfCharacterStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-bottom:10px}
+.mfInventory .mfCharacterStats div{min-width:0;border:1px solid #abc39b26;border-radius:7px;padding:7px 4px;text-align:center;background:#0d201bb5}
+.mfInventory .mfCharacterStats small{display:block;color:#acc4b1;font-size:9px}
+.mfInventory .mfCharacterStats b{display:block;margin-top:3px;color:#ffdb9b;font-size:12px}
+.mfInventory .mfEquipSlots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.mfInventory .mfGearCell{min-width:0;display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #a0b99736;border-radius:8px;background:linear-gradient(145deg,#24392f,#121f1b)}
+.mfInventory .mfGearCell[data-filled="true"]{border-color:#d7b6758c;box-shadow:inset 0 0 0 1px #e8cc8030}
+.mfInventory .mfGearCell .mfSlotIcon{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:7px;background:linear-gradient(145deg,#6b6249,#243d34);color:#f7dea5}
+.mfInventory .mfGearCell svg{width:24px;height:24px}
+.mfInventory .mfGearCell span:last-child{min-width:0}
+.mfInventory .mfGearCell small{display:block;font-size:9px;color:#a8bda9}
+.mfInventory .mfGearCell b{display:block;font-size:10px;color:#fff2cd;line-height:1.35;overflow-wrap:anywhere}
+.mfInventory .invSection{display:flex;align-items:center;gap:9px;margin:14px 0 9px;color:#f8d99d;font-weight:950;font-size:13px}
+.mfInventory .invSection:before{content:'✦';color:#ddad62;font-size:14px}
+.mfInventory .invSection:after{content:'';height:1px;flex:1;background:linear-gradient(90deg,#be965f77,transparent)}
+.mfInventory .invMaterials{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.mfInventory .mat{position:relative;min-width:0;display:flex;flex-direction:column;gap:4px;min-height:53px;padding:9px 8px 8px 28px;border:1px solid #8ca88a40;background:linear-gradient(140deg,#32453a,#17251e);color:#e3ead6;font-size:10px;overflow-wrap:anywhere}
+.mfInventory .mat:before{content:'◆';position:absolute;left:9px;top:10px;color:#b5cda8;font-size:12px;text-shadow:0 1px 5px #08190b}
+.mfInventory .mat b{float:none;color:#ffdf96;font-size:12px}
+.mfInventory .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mfInventory .invItem{display:grid;grid-template-columns:48px minmax(0,1fr);align-content:center;column-gap:9px;min-height:107px;border:1px solid #ad955c77;border-radius:9px;padding:10px;background:linear-gradient(145deg,#344436,#182820);box-shadow:inset 0 1px #ffffff17,0 5px 10px #0004;opacity:1}
+.mfInventory .invItem:disabled{opacity:.82}
+.mfInventory .invItem:not(:disabled):active{border-color:#efd197;background:#4b5940}
+.mfInventory .mfItemArt{grid-row:span 3;display:grid;place-items:center;width:48px;height:55px;border:1px solid #cfb57877;border-radius:8px;background:radial-gradient(circle at 45% 35%,#777954,#202f29 75%);color:#f9e2ab;box-shadow:inset 0 0 0 2px #182a2588}
+.mfInventory .invItem[data-kind="consumable"] .mfItemArt{color:#eaa6a1;background:radial-gradient(circle,#794f4a,#332329 75%)}
+.mfInventory .invItem[data-kind="ingredient"] .mfItemArt,.mfInventory .invItem[data-kind="seed"] .mfItemArt{color:#ade0a7;background:radial-gradient(circle,#3e6343,#1d3325 75%)}
+.mfInventory .invItem b{font-size:12px;color:#fff0c5;margin:0 0 3px;overflow-wrap:anywhere}
+.mfInventory .invItem small{font-size:10px;color:#c5d2bb;line-height:1.36}
+.mfInventory .invItem .tierBadge{white-space:nowrap}
+.mfInventory .invItem .slot{width:max-content;max-width:100%;padding:3px 7px;border:1px solid #c6af6d66;border-radius:5px;background:#c2a56a24;color:#ffe2a7!important;font-size:10px}
+.mfInventory .mfInventoryNotice{font-size:11px;color:#b6c9b9;margin:3px 0 11px;padding:0 3px}
+@media(max-width:600px){.mfInventory .mfCharacterPanel{grid-template-columns:105px minmax(0,1fr);gap:8px;padding:8px}.mfInventory .mfCharacterArt{min-height:187px}.mfInventory .mfCharacterStats{gap:3px}.mfInventory .mfCharacterStats b{font-size:10px}.mfInventory .mfCharacterStats div{padding:6px 2px}.mfInventory .mfGearCell{padding:4px;gap:3px}.mfInventory .mfGearCell .mfSlotIcon{width:28px;height:30px;flex-basis:28px}.mfInventory .mfGearCell svg{width:18px;height:18px}.mfInventory .mfGearCell b{font-size:9px}.mfInventory .invMaterials{grid-template-columns:repeat(3,minmax(0,1fr))}.mfInventory .invItem{grid-template-columns:38px minmax(0,1fr);min-height:98px;column-gap:6px;padding:7px}.mfInventory .mfItemArt{width:38px;height:44px}.mfInventory .mfItemArt svg{width:26px;height:26px}}
+@media(max-width:360px){.mfInventory .mfCharacterPanel{grid-template-columns:86px minmax(0,1fr)}.mfInventory .mfCharacterFigure{transform:scale(.8)}.mfInventory .mfCharacterArt{min-height:176px}.mfInventory .mfGearCell .mfSlotIcon{display:none}.mfInventory .invMaterials{grid-template-columns:repeat(2,minmax(0,1fr))}.mfInventory .grid{grid-template-columns:1fr}}
+.quickMenu>.act svg{display:block;width:21px;height:21px;margin:0 auto 2px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.quickMenu>.act span{display:block}
 .smelt,.optionsPanel,.multiPanel{border:2px solid #ac8a54;border-radius:15px;background:linear-gradient(160deg,#292d25f9,#111e1bfc);color:#f5ebd6;box-shadow:0 18px 50px #000c}
 .smelt h3,.optionHead b,.multiHead b{color:#f4dca7}
 .smeltBtn,.multiRow button{min-height:46px;border:1px solid #bc9562;background:linear-gradient(160deg,#765636,#413520);color:#fff0d3;border-radius:9px}
@@ -323,8 +378,8 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
  <button id="hudGuideClose" type="button">모험으로 돌아가기</button></div>
 </div>
 <div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick" data-joystick="true" data-touch-control="move" data-gameplay-action="move" data-mechanic-id="movement-joystick"><div id="knob" class="knob"></div></div>
-<nav class="quickMenu" aria-label="빠른 메뉴"><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button></nav><div class="actions" aria-label="전투 조작"><button id="gather" class="act gather" data-gameplay-action="gather" data-mechanic-id="gather-resource">채집</button><button id="attack" class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">공격</button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="petSpecial" class="act gather" data-gameplay-action="pet-special" aria-label="악어 특수공격" hidden>특수공격</button><button id="dismount" class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount">내리기</button></div>
-<div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="jungleBenchTab" class="tab">독점석 제작대</button><button id="sunstoneBenchTab" class="tab">태양석 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
+<nav class="quickMenu" aria-label="빠른 메뉴"><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open" aria-label="장비와 가방"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V6a5 5 0 0110 0v2m-12 0h14l2 13H3zM9 12v4m6-4v4"/></svg><span>가방</span></button><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20L15 9m-5-3 8 8m-2-12 6 6"/></svg><span>제작</span></button><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 7 17l5-3 5 3zM12 14v8"/></svg><span>지도</span></button></nav><div class="actions" aria-label="전투 조작"><button id="gather" class="act gather" data-gameplay-action="gather" data-mechanic-id="gather-resource">채집</button><button id="attack" class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">공격</button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="petSpecial" class="act gather" data-gameplay-action="pet-special" aria-label="악어 특수공격" hidden>특수공격</button><button id="dismount" class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount">내리기</button></div>
+<div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="jungleBenchTab" class="tab">독점석 제작대</button><button id="sunstoneBenchTab" class="tab">태양석 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">장비·가방</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
 <div id="smeltPanel" class="smelt"><h3 id="smeltTitle">화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">사슴고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정사슴고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="squidSmeltBtn" class="smeltBtn">오징어고기 굽기</button><button id="sunstoneSmeltBtn" class="smeltBtn" hidden>태양석 · 20초</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
 <div class="legend">E 채집 · C 제작 · I 인벤토리 · 화로 두 번 누르기 · WASD 이동</div><div id="recorderOverlay" class="recorderOverlay"><div class="recorderTitle">연구소 녹음기</div><div id="recorderCaption" class="recorderCaption"></div><div id="recorderState" class="recorderState">재생 중</div></div><div id="flash" class="flash"></div>
 <div id="multiPanel" class="multiPanel">
@@ -2064,12 +2119,68 @@ function openCooking(){
  state.panelMode='cooking';ui.sheet.classList.add('open');renderCooking()
 }
 function renderInventory(){
- tabState();const p=state.player,gear=recipes.filter(r=>['weapon','tool','armor','ammo','consumable','ingredient','seed'].includes(r.kind)&&invCount(r.id)>0);
- let html='<div class="info"><b>인벤토리</b><br>한 번도 얻지 못한 상위 재료와 제작물은 ???로 표시돼.</div><div class="invSection">재료</div><div class="invMaterials"><div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'+materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div><div class="invSection">설치물</div><div class="invMaterials">'+structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('toxic-furnace',state.toxicFurnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('sunstone-bench',state.sunstoneBench)+structureInventoryRow('blacksmith-anvil',state.blacksmithAnvil)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)+structureCountRow('상자',state.chests.length)+structureCountRow('나무벽',state.walls.length)+structureCountRow('나무문',state.doors.length)+structureCountRow('수비탑',state.towers.length)+structureCountRow('침대',state.beds.length)+structureCountRow('텃밭',state.gardens.length)+structureCountRow('포탈',state.portals.length)+structureCountRow('깃발',state.flags.length)+structureCountRow('재배 중',state.crops.length)+'</div><div class="invSection">아이템</div><div class="grid">';
- if(p.torch)html+='<button class="invItem" id="torchToggle"><b>마력 횃불</b><small>왼손 · 남은 내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'왼손 장착 중':'왼손에 들기')+'</small></button>';
- if(!gear.length&&!p.torch&&!isCreative())html+='<div class="info">아직 보유한 장비나 소모품이 없어.</div>';
- for(const r of gear){let action='보유';if(r.kind==='weapon')action=p.weapon===r.id?'장착 중':'장착';if(r.kind==='tool')action=p.tool===r.id?'장착 중':'장착';if(r.kind==='armor')action=p.armor===r.id?'장착 중':'장착';if(r.kind==='ammo')action=p.arrowType===r.id?'선택 중':'화살 선택';if(r.kind==='consumable')action='사용';if(r.kind==='ingredient')action='요리 재료';if(r.kind==='seed')action='심기';const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');html+='<button class="invItem" data-id="'+r.id+'" '+(clickable?'':'disabled')+'><b>'+upgradedName(r.id)+' ×'+invCount(r.id)+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="slot">'+action+'</small></button>'}
- if(isCreative())html+='<button class="invItem" id="creativeBlockItem"><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 종류와 마릿수 선택</small><small class="slot">설치하기</small></button>';html+='</div>';ui.sheetBody.innerHTML=html;const cb=document.getElementById('creativeBlockItem');if(cb)cb.addEventListener('click',()=>{closeSheet();state.creativePlacing=true;showNotice('원하는 바닥을 눌러 스폰 블록 설치')});const tt=document.getElementById('torchToggle');if(tt)tt.addEventListener('click',toggleTorch);ui.sheetBody.querySelectorAll('.invItem:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{const r=item(b.dataset.id);if(r?.kind==='consumable')useItem(r.id);else if(r?.kind==='seed')plantSeed(r.id);else if(r?.kind==='ammo')selectArrow(r.id);else equipItem(r.id)}))
+  // 메인: 마력숲 고유 장비/재료/아이템 화면. 장착·사용·저장 로직은 기존 함수만 사용한다.
+  tabState();
+  const p=state.player,scrollTop=ui.sheetBody.scrollTop;
+  const gear=recipes.filter(r=>['weapon','tool','armor','ammo','consumable','ingredient','seed'].includes(r.kind)&&invCount(r.id)>0);
+  const paths={
+    weapon:'M4 20l6-6m-3 3 3 3m1-9 9-9 3 3-9 9-3 1z',
+    tool:'M4 19l9-9m-8-3c5-5 12-4 16 0-6-2-9 1-11 5z',
+    armor:'M5 4l5-2 2 3 2-3 5 2 3 6-4 3-1 8H7l-1-8-4-3z',
+    ammo:'M4 20L20 4m-8 0h8v8M3 13l8 8',
+    consumable:'M9 3h6m-5 0v7l-5 7a3 3 0 003 4h8a3 3 0 003-4l-5-7V3M8 16h8',
+    ingredient:'M4 20c2-10 7-16 17-17-1 11-6 17-17 17zm1-1L17 8',
+    seed:'M12 21V10M12 14C6 14 4 11 4 6c5 0 8 2 8 8zm0-4c0-5 3-8 8-8 0 5-3 8-8 8z',
+    torch:'M10 22l4-12M9 9c-1-3 3-6 4-8 1 3 5 5 4 8-1 4-7 4-8 0z',
+    pack:'M7 8V6a5 5 0 0110 0v2m-12 0h14l2 13H3zM9 12v4m6-4v4'
+  };
+  const icon=kind=>'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(paths[kind]||paths.ingredient)+'"/></svg>';
+  const appearanceNames={knight:'기사',mage:'마법사',barbarian:'전사',rogue:'도적','rogue-hooded':'후드 도적'};
+  const appearanceName=appearanceNames[avatarAppearance?.model]||'모험가';
+  const equipped=[
+    {label:'주무기',id:p.weapon,kind:'weapon'},
+    {label:'채집 도구',id:p.tool,kind:'tool'},
+    {label:'방어구',id:p.armor,kind:'armor'},
+    {label:'왼손 횃불',id:p.torchEquipped?'torch':null,kind:'torch'}
+  ];
+  let html='<section class="mfInventory" aria-label="마력숲 장비와 가방">'+
+    '<header class="mfInvTitle"><div><small>마력숲 · 모험가 장비 수첩</small><strong>캐릭터와 가방</strong></div><span class="mfPackMark">'+icon('pack')+'</span></header>'+
+    '<div class="mfCharacterPanel"><div class="mfCharacterArt"><div class="mfCharacterFigure" aria-hidden="true"><i class="head"></i><i class="body"></i><i class="legs"></i></div><span class="mfClassName">'+appearanceName+'</span></div>'+
+    '<div class="mfCharacterInfo"><h3>생존자 장비</h3><div class="mfCharacterStats"><div><small>체력</small><b>'+Math.ceil(p.hp)+'/'+p.maxHp+'</b></div><div><small>포만감</small><b>'+Math.ceil(p.hunger)+'/100</b></div><div><small>처치</small><b>'+p.kills+'</b></div></div>'+
+    '<div class="mfEquipSlots">'+equipped.map(slot=>'<div class="mfGearCell" data-filled="'+Boolean(slot.id)+'"><span class="mfSlotIcon">'+icon(slot.kind)+'</span><span><small>'+slot.label+'</small><b>'+(slot.kind==='torch'?(slot.id?'장착 중':'미장착'):(slot.id?upgradedName(slot.id):'미장착'))+'</b></span></div>').join('')+'</div></div></div>'+
+    '<div class="invSection">탐험 재료</div><div class="invMaterials"><div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'+
+    materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div>'+
+    '<div class="invSection">설치한 시설</div><div class="invMaterials">'+structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('toxic-furnace',state.toxicFurnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('sunstone-bench',state.sunstoneBench)+structureInventoryRow('blacksmith-anvil',state.blacksmithAnvil)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)+structureCountRow('상자',state.chests.length)+structureCountRow('나무벽',state.walls.length)+structureCountRow('나무문',state.doors.length)+structureCountRow('수비탑',state.towers.length)+structureCountRow('침대',state.beds.length)+structureCountRow('텃밭',state.gardens.length)+structureCountRow('포탈',state.portals.length)+structureCountRow('깃발',state.flags.length)+structureCountRow('재배 중',state.crops.length)+'</div>'+
+    '<div class="invSection">보유 아이템</div><p class="mfInventoryNotice">아이콘과 금색 테두리로 종류를 구분해. 아이템을 누르면 기존 장착·사용 기능이 실행돼.</p><div class="grid">';
+  if(p.torch)html+='<button class="invItem" id="torchToggle" data-kind="torch"><span class="mfItemArt">'+icon('torch')+'</span><b>마력 횃불</b><small>왼손 · 남은 내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'장착 중':'왼손에 들기')+'</small></button>';
+  if(!gear.length&&!p.torch&&!isCreative())html+='<div class="info">아직 보유한 장비나 소모품이 없어.</div>';
+  for(const r of gear){
+    let action='보유';
+    if(r.kind==='weapon')action=p.weapon===r.id?'장착 중':'장착';
+    if(r.kind==='tool')action=p.tool===r.id?'장착 중':'장착';
+    if(r.kind==='armor')action=p.armor===r.id?'장착 중':'장착';
+    if(r.kind==='ammo')action=p.arrowType===r.id?'선택 중':'화살 선택';
+    if(r.kind==='consumable')action='사용';
+    if(r.kind==='ingredient')action='요리 재료';
+    if(r.kind==='seed')action='심기';
+    const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');
+    html+='<button class="invItem" data-kind="'+r.kind+'" data-id="'+r.id+'" '+(clickable?'':'disabled')+'><span class="mfItemArt">'+icon(r.kind)+'</span><b>'+upgradedName(r.id)+' ×'+invCount(r.id)+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="slot">'+action+'</small></button>';
+  }
+  if(isCreative())html+='<button class="invItem" id="creativeBlockItem" data-kind="tool"><span class="mfItemArt">'+icon('tool')+'</span><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 종류와 마릿수 선택</small><small class="slot">설치하기</small></button>';
+  html+='</div></section>';
+  ui.sheetBody.innerHTML=html;
+  ui.sheetBody.scrollTop=scrollTop;
+  const cb=document.getElementById('creativeBlockItem');
+  if(cb)cb.addEventListener('click',()=>{closeSheet();state.creativePlacing=true;showNotice('원하는 바닥을 눌러 스폰 블록 설치')});
+  const tt=document.getElementById('torchToggle');
+  if(tt)tt.addEventListener('click',toggleTorch);
+  ui.sheetBody.querySelectorAll('.invItem[data-id]:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{
+    const r=item(b.dataset.id);
+    if(r?.kind==='consumable')useItem(r.id);
+    else if(r?.kind==='seed')plantSeed(r.id);
+    else if(r?.kind==='ammo')selectArrow(r.id);
+    else if(r)equipItem(r.id);
+  }));
 }
 function mapTerrainColorAt(x,y){
  const r=regionAt(x,y);
@@ -2621,7 +2732,7 @@ function openCraft(mode=state.craftMode){
   showNotice(label+'를 먼저 만들어 설치해야 해');mode='hand'
  }
  state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()
-}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');renderInventory()}
+}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');ui.sheetBody.scrollTop=0;renderInventory()}
 
 function chestById(id){return state.chests.find(x=>x.id===id)||null}
 function renderChest(){
