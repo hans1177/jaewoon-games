@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import vm from 'node:vm';
 
 const root=path.resolve(import.meta.dirname,'..');
 const renderFile=path.join(root,'web-games/insect-survival/world3d.mjs');
@@ -127,6 +128,29 @@ test('character, insects, and resources use the same ground reference, existing 
   assert.match(render,/resources\[i\]\.position\.set\(frame\.nodes\[i\]\.x\*ratio,GROUND_SURFACE_Y\+FOOT_CLEARANCE/);
   assert.match(game,/const SAVE_KEY='jaewoon_insect_survival_v3'/);
   assert.match(game,/window\.insectWorldSnapshot=/);
+});
+
+test('WebGL crash and context-loss recovery shows the original playable 2D canvas',()=>{
+  assert.match(render,/webglcontextlost/);
+  assert.match(render,/event\.preventDefault\(\)/);
+  assert.match(render,/restoreLegacyView\('INSECT_CC0_3D_ASSET_FAILED',error\)/);
+  assert.match(render,/restoreLegacyView\('INSECT_WEBGL_FRAME_FAILED',error\)/);
+  const begin=render.indexOf('function restoreLegacyView(');
+  const end=render.indexOf("renderer.domElement.addEventListener('webglcontextlost'");
+  assert.ok(begin>=0&&end>begin,'original renderer must own WebGL failure recovery');
+  const legacy={style:{visibility:'hidden'}};
+  const webgl={style:{display:'block'}};
+  const warns=[];
+  const context={window:{insectScene3DReady:true},renderer:{domElement:webgl},
+    document:{getElementById(id){return id==='cv'?legacy:null}},
+    console:{warn(...args){warns.push(args)},error(...args){warns.push(args)}}};
+  vm.runInNewContext('let worldReady=true;'+render.slice(begin,end)+
+    ';restoreLegacyView("TEST_WEBGL_CONTEXT_LOST");globalThis.actualReady=worldReady;',context);
+  assert.equal(context.actualReady,false);
+  assert.equal(context.window.insectScene3DReady,false);
+  assert.equal(legacy.style.visibility,'visible');
+  assert.equal(webgl.style.display,'none');
+  assert.equal(warns.length,1);
 });
 
 test('native CC0 animations and fade transitions remain bound to the original clips',()=>{
