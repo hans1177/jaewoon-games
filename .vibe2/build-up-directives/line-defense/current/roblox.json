@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g35-2e80282f5e21",
-  "directiveFingerprint": "2e80282f5e21c6899328d32380c1544e173d85d8a5cc657fc7c0ed7eab27f24c",
-  "previousDirectiveFingerprint": "418fde081c4bf6a81b005d28327e84af9549526e0317236341f2959496b1b3be",
-  "forbiddenRepeatFingerprint": "418fde081c4bf6a81b005d28327e84af9549526e0317236341f2959496b1b3be",
+  "directiveId": "line-defense-build-up-g36-0b2e7e89945e",
+  "directiveFingerprint": "0b2e7e89945e4f753c7cdbdb4808e660eac7eb179f84363ab4e1431c75dc2d3f",
+  "previousDirectiveFingerprint": "2e80282f5e21c6899328d32380c1544e173d85d8a5cc657fc7c0ed7eab27f24c",
+  "forbiddenRepeatFingerprint": "2e80282f5e21c6899328d32380c1544e173d85d8a5cc657fc7c0ed7eab27f24c",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 35,
+  "generation": 36,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+  "sourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
   "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+        "sourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
-    "sourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "sourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "sourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4468,7 +4468,7 @@
     ],
     "signals": {
       "combat": 291,
-      "progression": 577,
+      "progression": 598,
       "ai": 75,
       "save": 93,
       "multiplayer": 40,
@@ -4512,11 +4512,11 @@
       },
       {
         "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 281
+        "score": 301
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "score": 168
+        "score": 169
       },
       {
         "file": "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
@@ -4921,56 +4921,19 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 34,
-    "previousSourceTreeFingerprint": "236986b4b49b784311f30e0e9f7c4c7601ab4bdda7062f1584cb7b2da0fc5ef1",
-    "currentSourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "previousGeneration": 35,
+    "previousSourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "currentSourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "5615dea015decd28223e0319b61fa61e678b961a",
-      "artifactIdentity": null,
-      "runtimeVerified": false,
-      "productionVerified": false,
-      "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 39666929588,
-      "testedAt": "2026-10-21T20:40:55.978Z",
-      "repairSurfaces": [
-        "SOURCE_CONTRACT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-      "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-      "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-      "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6117,7 +6080,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 375775,
+        "sourceBytes": 405255,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6150,8 +6113,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 7,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=3.",
+    "themeDepth": 8,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6159,7 +6122,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 8,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 12
       },
@@ -6170,7 +6133,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6206,7 +6169,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 74,
+        "score": 56,
         "gapDomains": []
       },
       {
@@ -6320,11 +6283,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 35,
-    "previousGeneration": 34,
+    "generation": 36,
+    "previousGeneration": 35,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
-    "priorSourceFingerprint": "236986b4b49b784311f30e0e9f7c4c7601ab4bdda7062f1584cb7b2da0fc5ef1",
+    "sourceFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
+    "priorSourceFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6343,7 +6306,7 @@
     "version": 1,
     "gameId": "line-defense",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "sourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7249,7 +7212,7 @@
     "gameId": "line-defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "sourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8078,12 +8041,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+      "sourceTreeFingerprint": "d98bd10f4ec6660d541d8d0e083f7ccf8ef2192193eac2ed8a92ca6053d073d3",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8098,8 +8061,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8142,7 +8105,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 36,
+    "nextGeneration": 37,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8204,5 +8167,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T16:15:37.554Z"
+  "generatedAt": "2026-10-22T05:41:45.693Z"
 }

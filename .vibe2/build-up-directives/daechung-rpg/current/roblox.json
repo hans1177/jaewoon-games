@@ -1,21 +1,64 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g49-9d3cc54f6604",
-  "directiveFingerprint": "9d3cc54f66041e8335ee83c73f3e3263d2c1a2a8c9e759d85b7d9383d2d2ac9e",
-  "previousDirectiveFingerprint": "3cc3aefc669fa8c09c5aceb28571e52addea44d3f7736e4d12e87ec8eaf65a02",
-  "forbiddenRepeatFingerprint": "3cc3aefc669fa8c09c5aceb28571e52addea44d3f7736e4d12e87ec8eaf65a02",
+  "directiveId": "daechung-rpg-build-up-g50-8a3276cfc043",
+  "directiveFingerprint": "8a3276cfc043bad1f95df43b0dc6a2c1fce02825bd6fa7ed38a4c4892df46cf7",
+  "previousDirectiveFingerprint": "9d3cc54f66041e8335ee83c73f3e3263d2c1a2a8c9e759d85b7d9383d2d2ac9e",
+  "forbiddenRepeatFingerprint": "9d3cc54f66041e8335ee83c73f3e3263d2c1a2a8c9e759d85b7d9383d2d2ac9e",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 49,
+  "generation": 50,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+  "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
   "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
+  "designSourceBuildUp": {
+    "version": 1,
+    "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
+    "currentDesignFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
+    "previousDesignFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
+    "sameApprovedDesign": true,
+    "previousVerifiedOutcome": false,
+    "revisionRequiredForNewGameplay": false,
+    "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
+    "sourceAuthority": "LATEST_APPROVED_SAME_GAME_DESIGN_ONLY",
+    "referenceA": null,
+    "baselineB": null,
+    "benchmarkDimensions": [
+      "INPUT_AND_PRIMARY_ACTION",
+      "HUD_AND_MENU_FLOW",
+      "CAMERA_AND_FEEDBACK",
+      "COMBAT_OR_CORE_LOOP",
+      "WORLD_AND_LEVEL_PROGRESSION",
+      "EQUIPMENT_REWARDS_AND_GROWTH",
+      "ONBOARDING_AND_FIRST_SESSION",
+      "FAILURE_RETRY_SAVE_RECOVERY",
+      "MID_LATE_DEPTH"
+    ],
+    "loop": [
+      "REVIEW_GAME_AND_NAMED_REFERENCE_EVIDENCE",
+      "REVISE_MAIN_A_B_C_D_AT_DESIGN",
+      "STRICT_DESIGN_REVIEW",
+      "BIND_RULE_IDS_TO_EXISTING_RESPONSIBLE_SOURCE",
+      "BUILD_SOURCE",
+      "EXACT_BUILD_RUNTIME_QA",
+      "NEXT_DESIGN_REVISION_FROM_VERIFIED_GAPS"
+    ],
+    "provenanceRule": "NAMED_SOURCE_OBSERVED_MECHANICS_OR_UNVERIFIED; NEVER_COPY_DISTINCTIVE_UI_ART_CHAR_TEXT_CODE",
+    "confirmedRuntimePass": false,
+    "preserves": [
+      "OWNER_GAME_IDENTITY",
+      "CORE_RULES",
+      "BALANCE",
+      "ECONOMY",
+      "SAVE_KEYS_AND_MEANING",
+      "NETWORK_AUTHORITY"
+    ]
+  },
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "RPG",
@@ -294,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+        "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -444,7 +487,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -999,7 +1042,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4609,8 +4652,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 912,
-      "progression": 1085,
+      "combat": 914,
+      "progression": 1077,
       "ai": 185,
       "save": 261,
       "multiplayer": 27,
@@ -4622,12 +4665,12 @@
       "audio": 44,
       "audioDynamics": 35,
       "ui": 1131,
-      "uiFlow": 1535,
+      "uiFlow": 1537,
       "entryFlow": 39,
       "loadingFlow": 0,
       "input": 219,
       "map": 898,
-      "landmark": 110,
+      "landmark": 114,
       "interaction": 436,
       "inventory": 322,
       "equipment": 269,
@@ -4654,11 +4697,11 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "score": 518
+        "score": 517
       },
       {
         "file": "roblox-games/daechung-rpg/shared/GameConfig.luau",
-        "score": 370
+        "score": 348
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
@@ -5083,19 +5126,19 @@
   "previousVersionDelta": {
     "previousGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티와 퀘스트와 인물 관계 × 서사시의 추방과 귀환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 48,
-    "previousSourceTreeFingerprint": "176192a85649e5cc31f12a16b47a189aa9eea572fbdb3439cf2914e8c6afd62b",
-    "currentSourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "previousGeneration": 49,
+    "previousSourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "currentSourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-build-package-revalidation-pending"
+      "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6242,7 +6285,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 744094,
+        "sourceBytes": 743889,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6275,8 +6318,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "MID_LATE_ENDGAME_COMPLETION",
-    "themeDepth": 1,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=2.",
+    "themeDepth": 2,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=MID_LATE_ENDGAME_COMPLETION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=1.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6285,14 +6328,13 @@
         "QUEST_STORY_PROGRESSION_CHAIN": 9,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
-        "MID_LATE_ENDGAME_COMPLETION": 1,
+        "MID_LATE_ENDGAME_COMPLETION": 2,
         "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -6302,6 +6344,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "MID_LATE_ENDGAME_COMPLETION",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "requiredThemes": [
@@ -6327,12 +6370,7 @@
     "scoredThemes": [
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 16,
-        "gapDomains": []
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 14,
+        "score": 158,
         "gapDomains": []
       },
       {
@@ -6359,6 +6397,11 @@
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": -146,
+        "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": -146,
         "gapDomains": []
       },
@@ -6441,11 +6484,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 49,
-    "previousGeneration": 48,
+    "generation": 50,
+    "previousGeneration": 49,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
-    "priorSourceFingerprint": "176192a85649e5cc31f12a16b47a189aa9eea572fbdb3439cf2914e8c6afd62b",
+    "sourceFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
+    "priorSourceFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6464,7 +6507,7 @@
     "version": 1,
     "gameId": "daechung-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6488,7 +6531,9 @@
           "roblox-games/daechung-rpg/server/Game.server.luau",
           "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/GameConfig.luau",
-          "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+          "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6503,7 +6548,9 @@
           "roblox-games/daechung-rpg/server/Game.server.luau",
           "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/default.project.json",
-          "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+          "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonCreatureParts.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6575,6 +6622,67 @@
         "runtimeVerified": false
       },
       {
+        "id": "BIOME",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/RaceData.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "MOTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/TechTreeData.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
         "id": "INTERACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
@@ -6597,7 +6705,234 @@
           "roblox-games/daechung-rpg/server/Game.server.luau",
           "roblox-games/daechung-rpg/client/Game.client.luau",
           "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SAVE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "COMBAT",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "REWARD",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "QUEST_DIALOGUE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFTING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ECONOMY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
           "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PROGRESSION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "WEATHER",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PHYSICS",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CAMERA",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "AUDIO",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NETWORK",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6615,13 +6950,17 @@
         "roblox-games/daechung-rpg/server/Game.server.luau",
         "roblox-games/daechung-rpg/client/Game.client.luau",
         "roblox-games/daechung-rpg/shared/GameConfig.luau",
-        "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+        "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+        "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
       ],
       "MATERIAL": [
         "roblox-games/daechung-rpg/server/Game.server.luau",
         "roblox-games/daechung-rpg/client/Game.client.luau",
         "roblox-games/daechung-rpg/default.project.json",
-        "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+        "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+        "roblox-games/daechung-rpg/shared/RobloxCommonCreatureParts.luau",
+        "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau"
       ],
       "INVENTORY": [
         "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
@@ -6649,6 +6988,102 @@
         "roblox-games/daechung-rpg/shared/GameConfig.luau",
         "roblox-games/daechung-rpg/shared/RPGMenu.luau",
         "roblox-games/daechung-rpg/launch-mvp.json"
+      ],
+      "BIOME": [
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/RaceData.luau"
+      ],
+      "HOUSING": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+      ],
+      "MOTION": [
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+      ],
+      "ACTION": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "roblox-games/daechung-rpg/shared/TechTreeData.luau"
+      ],
+      "NPC_AI": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "roblox-games/daechung-rpg/launch-mvp.json"
+      ],
+      "QUEST_DIALOGUE": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "roblox-games/daechung-rpg/launch-mvp.json"
+      ],
+      "CRAFTING": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+      ],
+      "ECONOMY": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+      ],
+      "PROGRESSION": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+        "roblox-games/daechung-rpg/launch-mvp.json"
+      ],
+      "FARMING": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+      ],
+      "WEATHER": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau"
+      ],
+      "PHYSICS": [
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau"
+      ],
+      "CAMERA": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau"
+      ],
+      "AUDIO": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau"
+      ],
+      "SKILL_VFX": [
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+      ],
+      "NETWORK": [
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/shared/RPGMenu.luau"
       ],
       "INTERACTION": [
         "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
@@ -6681,7 +7116,8 @@
         "roblox-games/daechung-rpg/server/Game.server.luau",
         "roblox-games/daechung-rpg/client/Game.client.luau",
         "roblox-games/daechung-rpg/shared/RPGMenu.luau",
-        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+        "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
       ]
     },
     "uiModeSelection": {
@@ -6721,6 +7157,19 @@
         "roblox-games/daechung-rpg/shared/RPGMenu.luau",
         "roblox-games/daechung-rpg/launch-mvp.json"
       ],
+      "biomeSourceFiles": [
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/RaceData.luau"
+      ],
+      "housingSourceFiles": [
+        "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+      ],
+      "biomeNativeSceneBindingVerified": false,
+      "housingPlacementPersistenceVerified": false,
       "entryFiles": [
         "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
         "roblox-games/daechung-rpg/launch-mvp.json"
@@ -6744,7 +7193,13 @@
         "PORTAL_OR_DOOR_SERVER_AUTHORITY",
         "RETURN_PATH",
         "BLOCKED_PATH",
-        "RESPAWN_ROUTE"
+        "RESPAWN_ROUTE",
+        "APPROVED_BIOME_TO_NATIVE_TERRAIN",
+        "REGION_NAVIGATION_AND_COLLISION",
+        "MOBILE_WORLD_STREAMING",
+        "BUILD_PLACEMENT_COLLISION",
+        "OWNER_COST_INVENTORY_AUTHORITY",
+        "HOUSING_SAVE_REJOIN"
       ],
       "inaccessibleAreasNotInvented": true,
       "runtimeTraversalVerified": false
@@ -6827,6 +7282,217 @@
       "runtimeVerified": false,
       "qaPassed": false
     },
+    "moduleConnections": [
+      {
+        "id": "WORLD_BIOME_WEATHER",
+        "roles": [
+          "WORLD",
+          "BIOME",
+          "WEATHER"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json",
+          "roblox-games/daechung-rpg/shared/RaceData.luau"
+        ],
+        "checks": [
+          "NATIVE_TERRAIN_AND_REGION_GRAPH",
+          "APPROVED_WEATHER_STATE",
+          "MOBILE_STREAMING"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING_INVENTORY_SAVE",
+        "roles": [
+          "HOUSING",
+          "INVENTORY",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "checks": [
+          "ACTUAL_PLACEMENT_COLLISION",
+          "AUTHORITATIVE_COST_AND_OWNERSHIP",
+          "PERSIST_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CUSTOMIZATION_EQUIPMENT_SAVE",
+        "roles": [
+          "CUSTOMIZATION",
+          "EQUIPMENT",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonCharacterGear.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau"
+        ],
+        "checks": [
+          "REAL_RIG_AND_OUTFIT_BINDING",
+          "SAVED_AVATAR_AND_EQUIPMENT",
+          "RECONNECT_RESTORE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI_QUEST",
+        "roles": [
+          "NPC_AI",
+          "QUEST_DIALOGUE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "checks": [
+          "NPC_DECISION_TO_DIALOGUE_EVENT",
+          "QUEST_STATE_AND_SERVER_AUTHORITY"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION_MOTION_COMBAT",
+        "roles": [
+          "ACTION",
+          "MOTION",
+          "COMBAT"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/TechTreeData.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "checks": [
+          "INPUT_TO_AUTHORITATIVE_HIT",
+          "EXACT_EXISTING_HIT_TIMING",
+          "RIG_PLAYBACK_AND_REACTION"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFT_ECONOMY_INVENTORY",
+        "roles": [
+          "CRAFTING",
+          "ECONOMY",
+          "INVENTORY"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau"
+        ],
+        "checks": [
+          "RECIPE_RESOURCE_CONSUMPTION",
+          "AUTHORITATIVE_CURRENCY_AND_ITEM_STATE",
+          "SAVE_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING_WORLD_WEATHER",
+        "roles": [
+          "FARMING",
+          "WORLD",
+          "WEATHER"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/launch-mvp.json"
+        ],
+        "checks": [
+          "APPROVED_CROP_REGION_AND_SEASON",
+          "HARVEST_STATE_AND_STORAGE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/TechTreeData.luau"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      }
+    ],
     "sharedAssetSelection": {
       "registry": "company-asset-library.json",
       "archives": "assets/asset-manifest.json#sharedOriginalArchives",
@@ -6845,7 +7511,9 @@
       "EXISTING_GAME_STATE",
       "REAL_EVENT_HANDLER",
       "SERVER_AUTHORITY_WHERE_APPLICABLE",
-      "NATIVE_PLATFORM_AND_MOBILE_QA"
+      "NATIVE_PLATFORM_AND_MOBILE_QA",
+      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT",
+      "ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE"
     ],
     "implementationProven": false,
     "runtimeVerified": false,
@@ -6906,7 +7574,7 @@
     "gameId": "daechung-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7760,11 +8428,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+      "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7819,7 +8487,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 50,
+    "nextGeneration": 51,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7881,5 +8549,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-17T05:45:21.082Z"
+  "generatedAt": "2026-10-22T05:41:45.036Z"
 }
