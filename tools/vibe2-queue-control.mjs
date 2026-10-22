@@ -474,7 +474,12 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
       &&task.ownerDevelopmentHold!==true
       &&task.requiresOwnerDecision!==true) {
       const sections=String(task.goal||'').split(/\r?\n\s*\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\](?:\r?\n|$)/i);
-      if(sections.length>1&&clean(task.gameId)) {
+      const trustedBuildUp=task.buildUpDirective?.version>=1
+        &&clean(task.buildUpDirective?.directiveId)===clean(task.buildUpDirectiveId)
+        &&Boolean(clean(task.buildUpDirectiveId))
+        &&clean(task.buildUpDirective?.gameId)===clean(task.gameId)
+        &&clean(task.buildUpDirective?.sourceRoot)===clean(task.sourceRoot);
+      if(trustedBuildUp&&sections.length>1&&clean(task.gameId)) {
         const source=Array.isArray(task.responsibleFiles)?task.responsibleFiles.find(Boolean):null;
         const review=planVibeCoreTask({request:sections[0],target:task.target,gameId:task.gameId,file:source});
         if(review.executionGate?.mayExecute===true) {
