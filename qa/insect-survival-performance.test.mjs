@@ -55,6 +55,17 @@ test('Vibe derives observed bottlenecks without fabricated hardware certificatio
  assert.equal(few.observed,true);
  assert.equal(few.frameIntervalMeasured,false);
  assert.ok(few.bottlenecks.includes('INSUFFICIENT_FRAME_SAMPLES'));
+ const batched=diagnoseVibeWebFrameBottleneck(frameProof({
+  decorGpuBatches:2,decorGpuInstances:45,decorGpuProps:39
+ }));
+ assert.equal(batched.evidence.decorGpuBatches,2);
+ assert.equal(batched.evidence.decorGpuInstances,45);
+ assert.equal(batched.evidence.decorGpuProps,39);
+ assert.equal(batched.evidence.hardwareBenchmarkVerified,false);
+ const invalid=diagnoseVibeWebFrameBottleneck(frameProof({
+  decorGpuBatches:2,decorGpuInstances:1,decorGpuProps:50
+ }));
+ assert.equal(invalid.evidence.decorGpuBatches,null,'impossible Vibe counters must not be certified');
 });
 
 test('existing Chromium smoke connects raw game performance evidence to Vibe only',()=>{
