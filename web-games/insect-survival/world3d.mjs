@@ -21,7 +21,38 @@ const mobile=matchMedia('(pointer:coarse)').matches,clock=new THREE.Clock();
 const scene=new THREE.Scene();scene.background=new THREE.Color('#a6b898');scene.fog=new THREE.FogExp2('#829d7a',.024);
 const camera=new THREE.PerspectiveCamera(mobile?67:63,innerWidth/innerHeight,.08,170);
 const renderer=new THREE.WebGLRenderer({antialias:!mobile,powerPreference:mobile?'default':'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.3:1.65));
+// On low-end Android software/GPU paths, scale ONLY WebGL pixel work.
+ // Source assets, physics, input cadence and game saves are never throttled.
+const perfBudget={
+ cap:Math.min(devicePixelRatio||1,mobile?1.3:1.65),
+ pixelRatio:Math.min(devicePixelRatio||1,mobile?1.3:1.65),
+ floor:Math.min(devicePixelRatio||1,mobile?.8:1),
+ frames:0,sampled:0,windowMs:0,averageFrameMs:0,latestFrameMs:0,
+ slowWindows:0,fastWindows:0,adjustments:0,lastAdjustmentAt:0,
+ lastFrameAt:0,frameSampleValid:false,renderCalls:0,triangles:0
+};
+renderer.setPixelRatio(perfBudget.pixelRatio);
+// Sample actual animation-frame intervals, not GPU timing or fabricated device FPS.
+// Ignore background/first-frame gaps and use hysteresis to avoid resolution thrashing.
+function sampleWebFrameBudget(now){
+ const interval=now-perfBudget.lastFrameAt;perfBudget.lastFrameAt=now;
+ if(document.hidden||!Number.isFinite(interval)||interval<=0||interval>150)return;
+ perfBudget.frames++;perfBudget.sampled++;perfBudget.windowMs+=interval;
+ perfBudget.latestFrameMs=interval;perfBudget.frameSampleValid=true;
+ if(perfBudget.sampled<45)return;
+ const average=perfBudget.windowMs/perfBudget.sampled;
+ perfBudget.averageFrameMs=average;perfBudget.sampled=0;perfBudget.windowMs=0;
+ perfBudget.slowWindows=average>23?perfBudget.slowWindows+1:0;
+ perfBudget.fastWindows=average<16.5?perfBudget.fastWindows+1:0;
+ if(now-perfBudget.lastAdjustmentAt<2000)return;
+ let next=perfBudget.pixelRatio;
+ if(perfBudget.slowWindows>=2)next=Math.max(perfBudget.floor,Math.round((next-.15)*100)/100);
+ else if(perfBudget.fastWindows>=4)next=Math.min(perfBudget.cap,Math.round((next+.1)*100)/100);
+ if(next!==perfBudget.pixelRatio){
+  perfBudget.pixelRatio=next;renderer.setPixelRatio(next);perfBudget.adjustments++;
+  perfBudget.lastAdjustmentAt=now;perfBudget.slowWindows=0;perfBudget.fastWindows=0;
+ }
+}
 renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 renderer.domElement.id='insect3d';
@@ -67,6 +98,9 @@ function derived(key,height,tint){
 const originals={},enemies=[],resources=[];
 let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
+let resourceVisualRebuilds=0,decorVisibilityTick=0;
+const heroGroundBounds=new THREE.Box3();
+const headingVector=new THREE.Vector3(),cameraBehind=new THREE.Vector3(),cameraFocus=new THREE.Vector3();
 const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();scene.add(world,actors,decor);
 const announce=document.createElement('div');announce.textContent='CC0 3D 숲과 캐릭터 불러오는 중…';
 Object.assign(announce.style,{position:'absolute',zIndex:'8',top:'42%',left:'50%',transform:'translate(-50%,-50%)',padding:'13px 19px',border:'1px solid #b3ac7b',borderRadius:'8px',background:'#1a2d26e8',fontSize:'12px',color:'#f2e4ba',pointerEvents:'none'});
@@ -131,18 +165,32 @@ function environment(frame){
   const kind=i%5===0?'mushroom':i%7===0?'foliage':'tree';
   const model=derived(kind,kind==='tree'?9+rand(i+810)*7:kind==='mushroom'?1.7+rand(i)*2:2+rand(i)*2.4,kind==='tree'?'#96c486':kind==='mushroom'?'#d6b77d':'#9ddc7f');
   model.position.set(x,0,z);model.rotation.y=rand(i+345)*Math.PI*2;
+  model.userData.visualRange=kind==='tree'?37:kind==='mushroom'?27:30;
   decor.add(model);
  }
  for(let i=0;i<20;i++){
   const angle=i*2.399,mag=Math.sqrt((i+1)/20);
   const p=derived('stone',.3,'#d4c6a0');
   p.position.set((frame.gravel.x+Math.cos(angle)*frame.gravel.rx*mag)*ratio,0,(frame.gravel.y+Math.sin(angle)*frame.gravel.ry*mag)*ratio);
-  decor.add(p);
+  p.userData.visualRange=25;decor.add(p);
  }
  for(let i=0;i<5;i++){
   const p=derived('stone',.5,'#a47a51');
   p.position.set((frame.hill.x+Math.cos(i*1.26)*frame.hill.r*.45)*ratio,0,(frame.hill.y+Math.sin(i*1.26)*frame.hill.r*.35)*ratio);
-  decor.add(p);
+  p.userData.visualRange=30;decor.add(p);
+ }
+}
+// Fog-distance render culling applies ONLY to cosmetic CC0 props, never to
+// combat enemies, pickups, floor panels, or the authoritative game world.
+// The 4m visible/hidden gap avoids rapid popping near the same distance.
+function refreshDecorVisibility(heroX,heroZ,immediate=false){
+ if(!immediate&&++decorVisibilityTick%8!==0)return;
+ for(const item of decor.children){
+  const range=item.userData.visualRange;
+  if(!range)continue;
+  const effectiveRange=range+(item.visible?4:-4);
+  const dx=item.position.x-heroX,dz=item.position.z-heroZ;
+  item.visible=dx*dx+dz*dz<=effectiveRange*effectiveRange;
  }
 }
 function actorsFromFrame(frame){
@@ -164,8 +212,22 @@ function actorsFromFrame(frame){
   const color={spider:'#d0a2a0',beetle:'#628b74',soldierAnt:'#b16a53',ant:'#8d644b',mite:'#9f8f75'}[b.type];
   const group=new THREE.Group();group.add(derived(kind,height,color));actors.add(group);enemies.push(group);
  }
- const nodeOrigin={branch:'foliage',fiber:'foliage',pebble:'stone'};
- for(const n of frame.nodes){const group=new THREE.Group();group.add(derived(nodeOrigin[n.type]||'stone',n.type==='pebble'?.33:.5,n.type==='fiber'?'#c2dca0':'#bda782'));actors.add(group);resources.push(group)}
+ for(const n of frame.nodes)syncResourceVisual(resources.length,n);
+ refreshDecorVisibility(frame.player.x*ratio,frame.player.y*ratio,true);
+}
+// Reconcile by slot instead of cloning every CC0 resource when an item is picked
+// up or respawns. A role change still rebinds the correct source geometry/color.
+function syncResourceVisual(index,node){
+ const type=node.type==='pebble'?'stone':'foliage';
+ const height=node.type==='pebble'?.33:.5;
+ const tint=node.type==='fiber'?'#c2dca0':'#bda782';
+ const visualKey=type+':'+height+':'+tint;
+ let group=resources[index];
+ if(!group){group=new THREE.Group();actors.add(group);resources.push(group)}
+ if(group.userData.visualKey!==visualKey){
+  group.clear();group.add(derived(type,height,tint));
+  group.userData.visualKey=visualKey;resourceVisualRebuilds++;
+ }
 }
 // 액션 모션: CC0 원본 단발 클립과 반복 이동을 구분한다. 판정·재사용 시간은 게임이 소유한다.
 function setHeroMotion(motion,restart=false,duration=0){
@@ -196,7 +258,7 @@ function visualWalking(wasWalking,travel,dt){
 // Resolve penetration on the presentation group AFTER the original mixer runs;
 // never move the gameplay player or rewrite any CC0 bone/animation tracks.
 function groundAnimatedHero(){
- const bounds=new THREE.Box3().setFromObject(avatar);
+ const bounds=heroGroundBounds.setFromObject(avatar);
  if(bounds.isEmpty())return;
  const penetration=GROUND_SURFACE_Y+FOOT_CLEARANCE-bounds.min.y;
  const lift=Math.max(0,penetration);
@@ -233,28 +295,45 @@ function follow(frame,dt){
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;
  scene.background.set(night?'#263c3f':'#a2b998');
  scene.fog.color.set(night?'#293e3e':'#7eaa80');
- const dir=new THREE.Vector3(p.dirX,0,p.dirY).normalize();
+ const dx=Number(p.dirX),dz=Number(p.dirY);
+ const dir=headingVector.set(Number.isFinite(dx)?dx:0,0,Number.isFinite(dz)?dz:0);
+ if(dir.lengthSq()<1e-8)dir.set(0,0,1);else dir.normalize();
  // Low over-shoulder camera, looking through giant grass. Combat widens framing slightly.
  const nearby=frame.bugs.some(b=>!b.dead&&Math.hypot(b.x-p.x,b.y-p.y)<250);
- const behind=new THREE.Vector3(pos.x-dir.x*(nearby?8.2:6.8),nearby?5.2:4.65,pos.z-dir.z*(nearby?8.2:6.8));
+ const behind=cameraBehind.set(pos.x-dir.x*(nearby?8.2:6.8),nearby?5.2:4.65,pos.z-dir.z*(nearby?8.2:6.8));
  camera.position.lerp(behind,Math.min(1,dt*5));
- const focus=pos.clone();focus.y=1.25;camera.lookAt(focus);
+ cameraFocus.set(pos.x,1.25,pos.z);camera.lookAt(cameraFocus);
+ refreshDecorVisibility(pos.x,pos.z);
  for(let i=0;i<frame.bugs.length;i++){
   const b=frame.bugs[i],actor=enemies[i];if(!actor)continue;
   actor.visible=!b.dead;
   if(!b.dead){actor.position.set(b.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,b.y*ratio);actor.rotation.y=Math.atan2(p.x-b.x,p.y-b.y);actor.children[0].rotation.z=b.hit>0?.28:0}
  }
- // Resource nodes may respawn; remake lightweight CC0 derived models only when changed.
- let alive=frame.nodes.length;
- if(resources.length!==alive){
-  while(resources.length){const old=resources.pop();actors.remove(old)}
-  for(const n of frame.nodes){const type=n.type==='pebble'?'stone':'foliage';const g=new THREE.Group();g.add(derived(type,n.type==='pebble'?.35:.65,'#cbd8a9'));actors.add(g);resources.push(g)}
+ // Resource pooling is visual-only; the authoritative alive state stays in index.html.
+ while(resources.length>frame.nodes.length){actors.remove(resources.pop())}
+ for(let i=0;i<frame.nodes.length;i++){
+  const node=frame.nodes[i];
+  syncResourceVisual(i,node);
+  resources[i].position.set(node.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,node.y*ratio);
  }
- for(let i=0;i<frame.nodes.length;i++)resources[i].position.set(frame.nodes[i].x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,frame.nodes[i].y*ratio);
 }
 function resize(){
  renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
 }
+window.insect3DPerformanceProof=()=>({
+ version:1,kind:'VIBE_WEB_RUNTIME_FRAME_EVIDENCE',advisoryOnly:true,
+ source:'insect-survival/world3d.mjs',ready:worldReady,
+ framesObserved:perfBudget.frames,frameSampleValid:perfBudget.frameSampleValid,
+ averageFrameMs:perfBudget.averageFrameMs,latestFrameMs:perfBudget.latestFrameMs,
+ pixelRatio:perfBudget.pixelRatio,pixelRatioCap:perfBudget.cap,pixelRatioFloor:perfBudget.floor,
+ resolutionAdjustments:perfBudget.adjustments,resourceVisualRebuilds,
+ visibleDecor:decor.children.filter(item=>item.visible).length,totalDecor:decor.children.length,
+ renderCalls:perfBudget.renderCalls,triangles:perfBudget.triangles,
+ activeWebGL:worldReady&&renderer.domElement.dataset.renderedFrame==='true',
+ rendererVisible:renderer.domElement.style.display==='block',
+ // No physical-device benchmark claim: software Chromium is useful for diagnosis only.
+ hardwareBenchmarkVerified:false
+});
 addEventListener('resize',resize);
 // Restore the authoritative 2D game if WebGL fails after initial loading.
 // A hidden legacy canvas must never leave the player in a blank, unsavable view.
@@ -291,11 +370,17 @@ function tick(){
  requestAnimationFrame(tick);
  try{
   const dt=Math.min(.05,clock.getDelta()),frame=snapshot();
-  if(frame){
+  if(frame&&!document.hidden){
    time+=dt;
    follow(frame,dt);
    renderer.render(scene,camera);
    renderer.domElement.dataset.renderedFrame='true';
+   perfBudget.renderCalls=renderer.info.render.calls;
+   perfBudget.triangles=renderer.info.render.triangles;
+   sampleWebFrameBudget(performance.now());
+  }else if(document.hidden){
+   // Browser already throttles RAF; never spend GPU work on an invisible tab.
+   perfBudget.lastFrameAt=0;perfBudget.sampled=0;perfBudget.windowMs=0;
   }
  }catch(error){
   restoreLegacyView('INSECT_WEBGL_FRAME_FAILED',error);
