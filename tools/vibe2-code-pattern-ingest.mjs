@@ -99,6 +99,11 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     clean(sample.output).split('검증된 패치:')[0]
   ].filter(Boolean).join(' ');
   const sourceRevision=clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision);
+  // 실행 가능한 학습: 검증된 내부 결과에서 함수 식별자만 추출한다. 소스 패치는 저장하지 않는다.
+  const verifiedActions=uniq([sample.instruction,sample.input].filter(Boolean)
+    .flatMap(value=>[...String(value).matchAll(/\\bdata-gameplay-action\\s*=\\s*["']([A-Za-z_$][\\w$]{0,39})["']/g)].map(match=>match[1])))
+    .filter(action=>!/^(?:delete|erase|clear|reset|wipe|save|load|grant|award|purchase|refund|admin|debug)/i.test(action))
+    .slice(0,12);
   const replay=(Array.isArray(sample.verification?.replayEvidence)?sample.verification.replayEvidence:[])
     .filter(row=>row&&clean(row.sourceRevision)===sourceRevision&&
       row.actualPlatformRuntime===true&&row.independentQaPass===true&&
@@ -115,6 +120,10 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     problem:clean(sample.instruction).slice(0,220),
     pattern:`VERIFIED_${system}_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION`,
     ...(VISUAL_CODING_RECIPES[system]?{implementationRecipe:VISUAL_CODING_RECIPES[system]}:{}),
+    ...(system==='INPUT_EVENT_BINDING'&&engine==='web'&&verifiedActions.length?{executableRecipe:{
+      kind:'BIND_EXISTING_BUTTON_ACTION',actions:verifiedActions,
+      requiresExactSourceFunction:true,requiresTargetRuntimeQa:true
+    }}:{}),
     ...(CAUSAL_REPLAY_SCENARIOS[system]?{observedReplay:Object.freeze({
       scenarioId:CAUSAL_REPLAY_SCENARIOS[system],sourceRevision,
       horizon:clean(replay.find(row=>clean(row.scenarioId)===CAUSAL_REPLAY_SCENARIOS[system])?.horizon),
