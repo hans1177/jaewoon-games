@@ -548,4 +548,7 @@ test('existing Web 3D repair is not mistaken for a new game by appended build-up
   const newTask=task('new-web-project-owner-gate','새 게임 만들어. 완전히 신규 프로젝트를 제작해.');
   const created=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[newTask]},taskId:newTask.id});
   assert.match(String(created.reason),/EXECUTION_GATE_BLOCKED:company-owner-gate-required/,'real new-game admission gate must remain locked');
+  const untrusted={...repair,id:'untrusted-build-up-marker',buildUpDirective:null,buildUpDirectiveId:null};
+  const spoof=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[untrusted]},taskId:untrusted.id});
+  assert.match(String(spoof.reason),/EXECUTION_GATE_BLOCKED:company-owner-gate-required/,'unbound user goal marker must not bypass new-game approval');
 });
