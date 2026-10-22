@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "island-village-build-up-g7-0c1b81286d19",
-  "directiveFingerprint": "0c1b81286d196c6e4fe8fe6712bfdc31b16999b9d8e5215e302af35bff3515bc",
-  "previousDirectiveFingerprint": "2adab00b6cd2f3da827394af9ff01604d12d939dbf14f69f0ae9106861a0619a",
-  "forbiddenRepeatFingerprint": "2adab00b6cd2f3da827394af9ff01604d12d939dbf14f69f0ae9106861a0619a",
+  "directiveId": "island-village-build-up-g8-cb94447fcadb",
+  "directiveFingerprint": "cb94447fcadb1379d1f0d4bf6fa2b5b86906f24f728f7a9d7a5d0232e34d5e26",
+  "previousDirectiveFingerprint": "0c1b81286d196c6e4fe8fe6712bfdc31b16999b9d8e5215e302af35bff3515bc",
+  "forbiddenRepeatFingerprint": "0c1b81286d196c6e4fe8fe6712bfdc31b16999b9d8e5215e302af35bff3515bc",
   "gameId": "island-village",
   "gameName": "무인도 마을",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/island-village",
-  "sourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+  "sourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
   "designFingerprint": "bf7386c5d9103714377772c1db910b63d52b5c807e45c1a87917ed5642a2fe72",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+        "sourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "bf7386c5d9103714377772c1db910b63d52b5c807e45c1a87917ed5642a2fe72",
-    "sourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+    "sourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+    "sourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4525,8 +4525,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 154,
-      "progression": 545,
+      "combat": 156,
+      "progression": 543,
       "ai": 62,
       "save": 119,
       "multiplayer": 42,
@@ -4536,12 +4536,12 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 30,
+      "audioDynamics": 28,
       "ui": 897,
       "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 155,
+      "input": 153,
       "map": 295,
       "landmark": 36,
       "interaction": 285,
@@ -4979,34 +4979,19 @@
   "previousVersionDelta": {
     "previousGoal": "무인도 마을. 서사시의 추방과 귀환·민속 금기와 전염 생존. 무인도 마을에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
-    "currentSourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+    "currentSourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-f0-gameplay-product-readiness-failed",
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6153,7 +6138,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 428439,
+        "sourceBytes": 428448,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6186,8 +6171,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 7,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
+    "themeDepth": 8,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6197,9 +6182,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 7
+        "PRESENTATION_WORLD_COHESION": 8
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6241,7 +6227,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6355,11 +6341,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 7,
-    "previousGeneration": 6,
+    "generation": 8,
+    "previousGeneration": 7,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
-    "priorSourceFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
+    "sourceFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
+    "priorSourceFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6378,7 +6364,7 @@
     "version": 1,
     "gameId": "island-village",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+    "sourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7283,7 +7269,7 @@
     "gameId": "island-village",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+    "sourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8112,16 +8098,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "무인도 마을. 서사시의 추방과 귀환·민속 금기와 전염 생존. 무인도 마을에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "07f89fd42f39112b62d203edaa4123e3d5fdbc34baad21d5abb616a477a7dfa4",
+      "sourceTreeFingerprint": "932f282dcbc13fb364800a355977b3f08a7e92a6b6542e7be1d3f4f98790c53a",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-static-revalidation-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8132,8 +8118,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8176,7 +8162,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8238,5 +8224,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-22T17:45:16.522Z"
+  "generatedAt": "2026-10-22T19:35:28.748Z"
 }
