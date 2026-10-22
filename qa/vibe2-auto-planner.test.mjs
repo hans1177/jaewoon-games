@@ -15,6 +15,9 @@ import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs'
 
 
 
+// 소스 구조 검사 전용 3D fixture. 실행 성공이나 런타임 검증을 뜻하지 않는다.
+const spatialFixture=`<script>const camera=new THREE.PerspectiveCamera();const mesh=new THREE.Mesh();const renderer=new THREE.WebGLRenderer();renderer.render(scene,camera);</script>`;
+
 test('폐기된 웹 경로는 계획에서 제외하고 정상 웹게임은 계속 계획한다',()=>{
   const root=process.cwd();
   const games=[
@@ -607,7 +610,7 @@ test('queued low-value micro diagnostics are consolidated so holistic studio bui
   const gameId='studio-web';
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas>${spatialFixture}<main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
   writeStudioDesign(root,gameId);
   const validationDir=path.join(root,'design',gameId,'2026-09-24');
   fs.mkdirSync(validationDir,{recursive:true});
@@ -1407,7 +1410,7 @@ test('development web is assessed before deterministic diagnostics',()=>{
 test('planner groups disjoint post-assessment candidates into one work package',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/dev-web');
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Dev</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button></body></html>\n`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Dev</title></head><body data-spatial-dimension="2.5d" style="perspective:800px">${spatialFixture}<main>${'x'.repeat(900)}</main><button>Play</button></body></html>\n`,'utf8');
   fs.writeFileSync(path.join(webRoot,'extra.js'),'// TODO: harden secondary UI path\n','utf8');
   const assessed={id:'dev-web-existing-web-assessment-v1',gameId:'dev-web',target:'web',sourceRoot:'web-games/dev-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const result=planVibe2AutonomousTasks({
@@ -1427,7 +1430,7 @@ test('completed diagnostic package is never recreated after assessment and compl
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Diag</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button></body></html>`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Diag</title></head><body data-spatial-dimension="2.5d" style="perspective:800px">${spatialFixture}<main>${'x'.repeat(900)}</main><button>Play</button></body></html>`,'utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
   const assessed={id:'diag-web-existing-web-assessment-v1',gameId:'diag-web',target:'web',sourceRoot:'web-games/diag-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4});
@@ -1555,7 +1558,7 @@ test('stale runtime repair state cannot reopen source work when catalog authorit
 });
 
 
-test('preservation pilot bypasses generic Web assessment and queues ASSET_ADAPTATION first',()=>{
+test('preservation pilot repairs flat gameplay before asset adaptation',()=>{
   const root=tempRepo();
   const gameId='preservation-web';
   const sourceRoot=path.join(root,'web-games',gameId);
@@ -1573,8 +1576,8 @@ test('preservation pilot bypasses generic Web assessment and queues ASSET_ADAPTA
   });
   const task=result.tasks.find(row=>row.gameId===gameId);
   assert.ok(task);
-  assert.equal(task.id,`${gameId}-presentation-asset-adaptation-v1`);
-  assert.ok(task.evidence.includes('presentation-pass:ASSET_ADAPTATION'));
+  assert.equal(task.id,`${gameId}-web-startup-spatial-repair-v1`);
+  assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
   assert.notEqual(task.id,`${gameId}-existing-web-assessment-v1`);
   assert.notEqual(task.id,`${gameId}-existing-web-development-continuation-v1`);
 });
@@ -1859,7 +1862,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   const gameId='studio-full-queue-repeat';
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas>${spatialFixture}<main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
   const validationDir=path.join(root,'design',gameId,'2026-09-24');
   fs.mkdirSync(validationDir,{recursive:true});
   fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
@@ -2801,7 +2804,7 @@ test('higher-value owner signal outranks automatic presentation issue',()=>{
   assert.equal(next.ownerDirective,true);
 });
 
-test('flat or unstartable Web games enter 2.5D repair after canonical existing-Web assessment',()=>{
+test('flat or unstartable Web games enter real 3D repair after canonical existing-Web assessment',()=>{
   const root=tempRepo();
   const gameId='flat-start-game';
   const dir=path.join(root,'web-games',gameId);
@@ -2830,7 +2833,7 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
   assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
-  assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
+  assert.ok(task.evidence.some(value=>value.includes('REAL_3D_GAMEPLAY_IMPLEMENTATION_REQUIRED')));
   assert.match(task.goal,/실제 WebGL 렌더/);
   assert.equal(task.maxRetries,null);
 });
@@ -5657,7 +5660,10 @@ test('owner CC0 action replacement covers active Web games through the existing 
   assert.ok(!motion.evidence.includes('runtime-pass'));
   const duplicate=findWebPresentationQualityTask(project,root,{tasks:[{...motion,status:'queued'}]});
   assert.notEqual(duplicate?.id,motion.id);
-  const first=findSafeTasks(project,root,{tasks:[]})[0];assert.equal(first.id,motion.id);
+  const first=findSafeTasks(project,root,{tasks:[]})[0];assert.equal(first.id,id+'-existing-web-assessment-v1');
+  const afterAssessment=findSafeTasks(project,root,{tasks:[{...first,status:'verified'}]})[0];
+  assert.equal(afterAssessment.id,id+'-web-startup-spatial-repair-v1');
+  assert.ok(afterAssessment.responsibleFiles.includes('web-games/'+id+'/world3d.mjs'));
  }
  const retired=findWebPresentationQualityTask({gameId:'retired',engine:'web',projectPath:'web-games/retired',releaseState:'development-confirmed'},root,{tasks:[]});
  assert.notEqual(retired?.id,'retired-web-cc0-action-motion-v1');
