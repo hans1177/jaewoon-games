@@ -33,3 +33,9 @@
 - `world3d.mjs`는 **CC0 원본을 손대지 않고** 정규화된 원본 모델의 `Box3` 경계를 측정해 X/Z 실측 비율별 14 간격 타일로 맞춘다. 타일 윗면 Y=0, 캐릭터·곤충·자원 원점 Y=0.035로 고정한다. 원본 타일의 모서리 틈 아래에는 Y=-0.025의 로컬 3D 메시를 깔아 비어 보이는 곳만 메운다. 캐릭터 공격 판정·세계좌표·세이브는 바꾸지 않는다.
 - 로컬 그래픽 후속 제작은 기존 Blender 기반 책임 파일 `assets/native-authoring/build-game-visual.py`를 참고한다. 원본 CC0의 라이선스, 원본 SHA-256, 부모 자산 ID를 추적하고 모델이 **미터 단위 / Y축 높이 / 바닥 접점 Y=0 / 애니메이션 리그 원점**을 유지하도록 검증해야 한다. 출력 파일은 승인된 기존 GRAPHICS_PRODUCTION 경로에서만 만들며 새 자산으로 간주해 검증 없이 배포하지 않는다.
 - 자동 회귀 `qa/insect-survival-grounding.test.mjs`는 실제 원본 OBJ 경계와 소스 코드의 좌표·애니메이션 유지 조건을 검사한다. **실제 모바일 브라우저의 3D 렌더링·성능·접지 장면 검증은 별도**로 필요하며 아직 PASS가 아니다.
+
+## 런타임 오류 복구 보강
+
+- WebGL 컨텍스트 손실(`webglcontextlost`) 또는 3D 프레임 렌더링 예외 발생 시 `insectScene3DReady=false`로 되돌리고 `#cv` 2D 원본 캔버스를 다시 보이게 한다. 3D 캔버스는 숨기며 전투·제작·저장 로직은 계속 원래 `index.html`에서 실행한다.
+- 로딩 실패도 같은 복구 함수로 처리한다. 복구 검증은 `qa/insect-survival-grounding.test.mjs`에 추가했고 총 7개 집중 검사를 확인했다. 이는 오류 상황 모의 검증이며 WebGL 컨텍스트 재생성이나 실제 모바일 장면 QA 완료를 뜻하지 않는다.
+- 2026-10-22 기준 브라우저 시작 smoke 기록에서 `DEVELOPMENT_WEB_BROWSER_GAME=insect-survival` 및 `DEVELOPMENT_WEB_BROWSER_SMOKE=PASS`를 확인했다. 이는 이전 후보 커밋에 대한 시작 검사이므로 최신 코드와 실기기 접지 결과를 인증하지 않는다.
