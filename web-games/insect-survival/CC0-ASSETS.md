@@ -78,3 +78,11 @@
 - 실 Chromium 계측에서 **데스크톱 305 draw calls / 모바일 모의 189 draw calls**가 감지되었다. 이에 따라 안개 거리 너머의 **순수 장식** 나무·버섯·돌만 주기적으로 시각 숨김 처리한다(거리 히스테리시스 적용). 지면 CC0 패널, 플레이어, 곤충, 실제 채집 노드, 전투와 자원 생성 로직은 이 필터를 적용하지 않는다. 개선 후 호출 수는 새 CI 증거로 다시 확인한다.
 - 실제 렌더러는 `window.insect3DPerformanceProof()`를 통해 프레임 샘플, WebGL 호출량, 실제 DPR 및 감소·복구 횟수, CC0 노드 재생성 횟수만 읽기 전용으로 제공한다. 기존 `tools/vibe2-performance-sanity.mjs`의 `diagnoseVibeWebFrameBottleneck`이 이를 진단한다. 별도 엔진이나 병렬 학습 시스템은 만들지 않는다.
 - 기존 Chromium QA는 데스크톱 WebGL2와 모바일 모의 터치 검증을 유지하고, Vibe 진단 증거 `DEVELOPMENT_WEB_VIBE_BOTTLENECK_DIAGNOSIS_insect-survival`을 추가 기록한다. **소프트웨어 Chromium 결과를 실제 Android GPU FPS나 발열 성능 PASS로 간주하지 않는다.** Vibe 진단은 권고만 제공하고 자동 병합이나 QA 승인으로 승격되지 않는다.
+
+## CC0 바닥 GPU 인스턴싱 성능 개선
+
+- 3D 장면의 **12개 바닥 패널**은 원본 `floor_base.obj`의 형상, 원본 3D 변환, 실제 지면 Y=0을 그대로 유지하면서 **GPU `THREE.InstancedMesh`**로 반복 그리기만 묶는다. 각 원본 CC0 패널은 런타임 접지 증명을 위해 보존한다(중복 렌더링을 피하려고 화면 출력만 숨김).
+- InstancedMesh가 없는 환경이거나 바닥 원본의 하위 메시 구조가 달라지면 원래 바닥 패널을 보이도록 유지한다. 모델 원본 파일 및 이동·공격·판정·채집·저장 로직은 변경하지 않는다.
+- 브라우저 QA는 기존 바닥의 실제 박스 표면·캐릭터 바닥 높이·모바일 회피 터치 검증에 더해 `floorGpuInstances=12`, 실제 렌더 가능한 `floorGpuVisible=true`, 바닥 메시 인스턴싱 묶음 수를 검사한다.
+- Vibe가 읽는 기존 `window.insect3DPerformanceProof()`에 `floorGpuBatches`, `floorGpuInstances`, `renderCalls`를 그대로 노출한다. 기존 로컬 프로그램이나 Vibe 학습/배포 정책을 변경하지 않고 브라우저 실측으로 이전 298/184 draw calls(정적 헤드리스 Chromium 환경)와 비교한다.
+- GPU 드로우 호출 수 감소가 **실기기 FPS·발열 개선을 인증하지는 않는다.** 실기기와 장시간 플레이는 별도로 검증해야 한다.
