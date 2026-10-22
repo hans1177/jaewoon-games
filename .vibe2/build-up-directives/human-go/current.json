@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "human-go-build-up-g3-05c5813bb79a",
-  "directiveFingerprint": "05c5813bb79a994e5f5e44c11b5592da17ed9ffb7aa594fd164424844a80fb33",
-  "previousDirectiveFingerprint": "4d64db526a278884bc01ee9bea0c5ec1bfc415af62370498f4415674ef8949bf",
-  "forbiddenRepeatFingerprint": "4d64db526a278884bc01ee9bea0c5ec1bfc415af62370498f4415674ef8949bf",
+  "directiveId": "human-go-build-up-g4-33f3150604df",
+  "directiveFingerprint": "33f3150604dffb92f19a8a0e864f6eabd05b89a4237fe4d289641fafb6cc3459",
+  "previousDirectiveFingerprint": "05c5813bb79a994e5f5e44c11b5592da17ed9ffb7aa594fd164424844a80fb33",
+  "forbiddenRepeatFingerprint": "05c5813bb79a994e5f5e44c11b5592da17ed9ffb7aa594fd164424844a80fb33",
   "gameId": "human-go",
   "gameName": "휴먼 GO",
-  "generation": 3,
+  "generation": 4,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/human-go",
-  "sourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+  "sourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
   "designFingerprint": "90e5e8479f2f600f01af3375afbdd77a30b8b70aaf8072312c95bca15a005953",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+        "sourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "90e5e8479f2f600f01af3375afbdd77a30b8b70aaf8072312c95bca15a005953",
-    "sourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+    "sourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+    "sourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4510,7 +4510,7 @@
     "signals": {
       "combat": 154,
       "progression": 547,
-      "ai": 64,
+      "ai": 62,
       "save": 117,
       "multiplayer": 43,
       "animation": 45,
@@ -4519,13 +4519,13 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 38,
+      "audioDynamics": 40,
       "ui": 898,
       "uiFlow": 1145,
       "entryFlow": 18,
       "loadingFlow": 0,
       "input": 155,
-      "map": 292,
+      "map": 290,
       "landmark": 36,
       "interaction": 287,
       "inventory": 245,
@@ -4533,8 +4533,8 @@
       "settings": 25,
       "feedback": 170,
       "session": 30,
-      "content": 504,
-      "choice": 1657,
+      "content": 502,
+      "choice": 1655,
       "connection": 9,
       "performance": 34,
       "lighting": 64,
@@ -4549,7 +4549,7 @@
       },
       {
         "file": "roblox-games/human-go/shared/GameConfig.luau",
-        "score": 489
+        "score": 509
       },
       {
         "file": "roblox-games/human-go/server/Game.server.luau",
@@ -4557,7 +4557,7 @@
       },
       {
         "file": "roblox-games/human-go/client/Game.client.luau",
-        "score": 163
+        "score": 164
       },
       {
         "file": "roblox-games/human-go/shared/RobloxCommonMaterials.luau",
@@ -4962,19 +4962,40 @@
   "previousVersionDelta": {
     "previousGoal": "휴먼 GO. 희극의 오해와 엇갈림·비극과 희극의 운명 반전 생활. 휴먼 GO에서 사회관계 선택 × 희극의 오해와 엇갈림과 생활 공간 탐색 × 비극과 희극의 운명 반전이 서로 결과를 되돌려 바꾸며 생활·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
-    "currentSourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+    "previousGeneration": 3,
+    "previousSourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+    "currentSourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "ba6109aa9c796aac7e192b1ae70848260e4ecc6b",
+      "artifactIdentity": null,
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 39773467606,
+      "testedAt": "2026-10-22T12:31:27.668Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+      "CONFIG_GENRE_PROFILE_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6121,7 +6142,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 429668,
+        "sourceBytes": 429673,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6154,8 +6175,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6165,9 +6186,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -6205,7 +6227,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 192,
+        "score": 174,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6319,11 +6341,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 4,
+    "previousGeneration": 3,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
-    "priorSourceFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
+    "sourceFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
+    "priorSourceFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6342,7 +6364,7 @@
     "version": 1,
     "gameId": "human-go",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+    "sourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6507,8 +6529,7 @@
         "id": "SHOP",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/human-go/shared/RobloxCommonUI.luau",
-          "roblox-games/human-go/shared/GameConfig.luau"
+          "roblox-games/human-go/shared/RobloxCommonUI.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6839,8 +6860,7 @@
         "roblox-games/human-go/shared/RobloxCommonMaterials.luau"
       ],
       "SHOP": [
-        "roblox-games/human-go/shared/RobloxCommonUI.luau",
-        "roblox-games/human-go/shared/GameConfig.luau"
+        "roblox-games/human-go/shared/RobloxCommonUI.luau"
       ]
     },
     "uiModeSelection": {
@@ -7249,7 +7269,7 @@
     "gameId": "human-go",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+    "sourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8078,12 +8098,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "휴먼 GO. 희극의 오해와 엇갈림·비극과 희극의 운명 반전 생활. 휴먼 GO에서 사회관계 선택 × 희극의 오해와 엇갈림과 생활 공간 탐색 × 비극과 희극의 운명 반전이 서로 결과를 되돌려 바꾸며 생활·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "REGRESSION",
+      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "524196f26b2cce3b60f8cbd7a7e78e18ef3a52fcb35e8f7377fc3ad3ef4dc36a",
+      "sourceTreeFingerprint": "5f41a7765a89c021947f07cdde492ec8370888bf5147b7be99ceb3600201b7c1",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8098,8 +8118,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8142,7 +8162,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 5,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8204,5 +8224,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-22T05:41:47.356Z"
+  "generatedAt": "2026-10-22T15:15:32.396Z"
 }

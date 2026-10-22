@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "dice-battle-board-build-up-g5-818fd8a932ca",
-  "directiveFingerprint": "818fd8a932ca813997b58bde41877722e474be534c31e0989c94e5a372467a27",
-  "previousDirectiveFingerprint": "77f5cadc2b0b16d3401fcf6696fa04010b9525d8959f9dbeb484516070389131",
-  "forbiddenRepeatFingerprint": "77f5cadc2b0b16d3401fcf6696fa04010b9525d8959f9dbeb484516070389131",
+  "directiveId": "dice-battle-board-build-up-g6-ef4b17b243b6",
+  "directiveFingerprint": "ef4b17b243b602e84a800d03ade0576e5a6e393885f4213991d2f4e2c2fc73ea",
+  "previousDirectiveFingerprint": "818fd8a932ca813997b58bde41877722e474be534c31e0989c94e5a372467a27",
+  "forbiddenRepeatFingerprint": "818fd8a932ca813997b58bde41877722e474be534c31e0989c94e5a372467a27",
   "gameId": "dice-battle-board",
   "gameName": "주사위 전투 보드",
-  "generation": 5,
+  "generation": 6,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/dice-battle-board",
-  "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+  "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
   "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+        "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4519,7 +4519,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 521,
+      "progression": 525,
       "ai": 62,
       "save": 117,
       "multiplayer": 43,
@@ -4529,22 +4529,22 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 28,
+      "audioDynamics": 30,
       "ui": 898,
       "uiFlow": 1149,
-      "entryFlow": 16,
+      "entryFlow": 18,
       "loadingFlow": 0,
       "input": 155,
-      "map": 292,
+      "map": 290,
       "landmark": 36,
       "interaction": 286,
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
       "feedback": 170,
-      "session": 31,
-      "content": 504,
-      "choice": 1658,
+      "session": 29,
+      "content": 502,
+      "choice": 1656,
       "connection": 9,
       "performance": 34,
       "lighting": 64,
@@ -4972,19 +4972,153 @@
   "previousVersionDelta": {
     "previousGoal": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 4,
-    "previousSourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
-    "currentSourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "previousGeneration": 5,
+    "previousSourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "currentSourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-static-revalidation-failed",
+    "studioQualityFailure": {
+      "sourceRevision": "cec9bd715b631df580bb9742b06c5416b6b40dd3",
+      "artifactIdentity": "sha256:7851c7598083357dc17770a398e05df8bc200d151a535fe4babb65235a12ef0f",
+      "authority": "roblox-f0-gameplay-product-readiness-failure",
+      "workflowRunId": 39796634081,
+      "testedAt": "2026-10-22T15:06:38.586Z",
+      "repairSurfaces": [
+        "CORE_GAMEPLAY",
+        "WORLD_MAP",
+        "COMBAT_FEEL",
+        "PROGRESSION_CONTENT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        },
+        {
+          "id": "GENERIC_SCOPE_HANDLER_SKELETON",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"dice-battle-board\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\",\"SESSION_FLOW\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true,\"SESSION_FLOW\":false},\"coreLoopTrace\":[{\"index\":0,\"step\":\"단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"주사위 전투 보드\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"단서 조합 × 증언과 합의된 현실\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"공간 상태 변환 × 테세우스의 배와 정체성\",\"capabilities\":[\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"EQUIPMENT\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"ca5560efbb72ca057ef31349e12c6fb395320c02177f00725f46f47200ef9ace\",\"antiSkeletonPassed\":false,\"designGenre\":\"Strategy\",\"sourceGenre\":\"Strategy\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
+        }
+      ]
+    },
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
+      "roblox-f0-gameplay-product-readiness-failed",
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6131,7 +6265,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 430392,
+        "sourceBytes": 430374,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6164,8 +6298,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=6.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6175,9 +6309,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 5
+        "PRESENTATION_WORLD_COHESION": 6
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6217,7 +6352,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 156,
+        "score": 138,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6331,11 +6466,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 5,
-    "previousGeneration": 4,
+    "generation": 6,
+    "previousGeneration": 5,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
-    "priorSourceFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
+    "sourceFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
+    "priorSourceFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6354,7 +6489,7 @@
     "version": 1,
     "gameId": "dice-battle-board",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7259,7 +7394,7 @@
     "gameId": "dice-battle-board",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8088,16 +8223,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "REGRESSION",
+      "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+      "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-static-revalidation-failed"
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8108,8 +8243,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8152,7 +8287,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 6,
+    "nextGeneration": 7,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8214,5 +8349,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-22T05:41:46.666Z"
+  "generatedAt": "2026-10-22T15:15:31.284Z"
 }
