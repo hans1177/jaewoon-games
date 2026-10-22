@@ -18,6 +18,27 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const smoothstep = t => { const x = clamp(t, 0, 1); return x * x * (3 - 2 * x); };
 
+  // 유틸: 근접·마법·생물 공격은 같은 피해 판정 위에 서로 다른 렌더 자세를 올린다.
+  const ATTACK_VISUAL_STYLES = Object.freeze({
+    DEFAULT: Object.freeze({ reach: 1, arc: 1, lift: 0, stretch: 1 }),
+    SLASH: Object.freeze({ reach: 1.42, arc: 1.65, lift: -5, stretch: 1.18 }),
+    THRUST: Object.freeze({ reach: 1.75, arc: 0.52, lift: -1, stretch: 1.12 }),
+    CLEAVE: Object.freeze({ reach: 1.50, arc: 1.92, lift: -7, stretch: 1.27 }),
+    PUNCH: Object.freeze({ reach: 1.32, arc: 0.90, lift: -2, stretch: 1.05 }),
+    KICK: Object.freeze({ reach: 1.58, arc: 1.25, lift: 6, stretch: 1.24 }),
+    CAST: Object.freeze({ reach: 1.15, arc: 1.30, lift: -8, stretch: 1.08 }),
+    BITE: Object.freeze({ reach: 1.36, arc: 1.42, lift: 3, stretch: 1.13 }),
+    // 거친 대검/망치, 이도류, 공중 낙하, 격투기, 짐승의 체중 이동은 화면 자세만 바꾼다.
+    HEAVY_SLAM: Object.freeze({ reach: 1.72, arc: 2.08, lift: -11, stretch: 1.32 }),
+    DUAL_CROSS: Object.freeze({ reach: 1.46, arc: 1.78, lift: -4, stretch: 1.18 }),
+    SPIN_SLASH: Object.freeze({ reach: 1.32, arc: 2.05, lift: -2, stretch: 1.13 }),
+    RISING_CUT: Object.freeze({ reach: 1.48, arc: 1.64, lift: -12, stretch: 1.17 }),
+    LEAP_DIVE: Object.freeze({ reach: 1.67, arc: 1.53, lift: 9, stretch: 1.18 }),
+    UPPERCUT: Object.freeze({ reach: 1.31, arc: 1.72, lift: -10, stretch: 1.12 }),
+    SHIELD_BASH: Object.freeze({ reach: 1.45, arc: 0.52, lift: 0, stretch: 1.09 }),
+    TAIL_SWIPE: Object.freeze({ reach: 1.51, arc: 1.85, lift: 2, stretch: 1.15 })
+  });
+
   const DEFAULT_PROFILE = Object.freeze({
     idleBreathAmplitude: 1,
     idleBreathFrequency: 1,
@@ -114,7 +135,9 @@
       this.lodTier = 'NEAR';
       this.visualPause = 0;
       this.contactPulse = 0;
-      this.attack = { time: 0, duration: 0.24, strength: 1, weightClass: 'STANDARD', contactAt: 0.52, comboIndex: 0 };
+      this.attack = { time: 0, duration: 0.24, strength: 1, weightClass: 'STANDARD', contactAt: 0.52, comboIndex: 0, style: 'DEFAULT' };
+      this.actionPose = { x: 0, y: 0, rotation: 0, scaleX: 0, scaleY: 0 };
+      this.actionBlend = { time: 0, duration: 0.08, from: this.actionPose };
       this.hit = { time: 0, duration: 0.16, direction: -1, strength: 1, bodyRegion: 'TORSO' };
       this.land = { time: 0, duration: 0.2, strength: 1 };
       this.flash = 0;
@@ -162,16 +185,23 @@
       return this;
     }
 
-    triggerAttack({ strength = 1, duration = 0.24, weightClass = 'STANDARD', contactAt = 0.52, comboIndex = 0 } = {}) {
+    triggerAttack({ strength = 1, duration = 0.24, weightClass = 'STANDARD', contactAt = 0.52, comboIndex = 0, style = 'DEFAULT' } = {}) {
       const d = Math.max(0.08, finite(duration, 0.24));
       const weight = String(weightClass || 'STANDARD').toUpperCase();
+      const visualStyle = String(style || 'DEFAULT').toUpperCase();
+      // 이미 시전 중인 동작이 이어지면 이전 관절 표현을 짧게 섞어 자세 점프를 막는다.
+      if (this.attack.time > 0) {
+        this.sample();
+        this.actionBlend = { time: 0.08, duration: 0.08, from: { ...this.actionPose } };
+      } else this.actionBlend = { time: 0, duration: 0.08, from: this.actionPose };
       this.attack = {
         time: d,
         duration: d,
         strength: clamp(finite(strength, 1), 0, 3),
         weightClass: ['LIGHT', 'STANDARD', 'HEAVY'].includes(weight) ? weight : 'STANDARD',
         contactAt: clamp(finite(contactAt, 0.52), 0.2, 0.82),
-        comboIndex: Math.max(0, Math.floor(finite(comboIndex)))
+        comboIndex: Math.max(0, Math.floor(finite(comboIndex))),
+        style: ATTACK_VISUAL_STYLES[visualStyle] ? visualStyle : 'DEFAULT'
       };
       return this;
     }
@@ -232,6 +262,7 @@
         this.tiltPhase = (this.tiltPhase + motionDelta * TAU * (1.4 + intensity * 0.6) * this.profile.moveFrequency) % TAU;
       }
       this.attack.time = Math.max(0, this.attack.time - motionDelta);
+      this.actionBlend.time = Math.max(0, this.actionBlend.time - motionDelta);
       this.hit.time = Math.max(0, this.hit.time - motionDelta);
       this.land.time = Math.max(0, this.land.time - motionDelta);
       this.flash = Math.max(0, this.flash - delta * 8);
@@ -240,8 +271,11 @@
       if (this.lodTier === 'FAR' || this.lodTier === 'OFFSCREEN') this.history = [];
       else {
         this.history.unshift({ ...this.lastSample, sampledAt: this.presentationTime, age: 0 });
+        // 웹 모바일·로블록스 원본 재사용 시 중·원거리에는 렌더 잔상만 줄인다.
+        const sampleLimit = this.lowPower ? Math.min(2, this.maxHistory)
+          : this.lodTier === 'MID' ? Math.min(3, this.maxHistory) : this.maxHistory;
         this.history = this.history.filter(entry => this.presentationTime - entry.sampledAt < this.afterimageDuration)
-          .slice(0, this.maxHistory).map(entry => ({ ...entry, age: (this.presentationTime - entry.sampledAt) / this.afterimageDuration }));
+          .slice(0, sampleLimit).map(entry => ({ ...entry, age: (this.presentationTime - entry.sampledAt) / this.afterimageDuration }));
       }
       return this.lastSample;
     }
@@ -262,7 +296,7 @@
       const moveBob = Math.sin(this.movePhase) * 3.2 * moveIntensity * k * pfx.moveBobAmplitude;
       const moveTilt = Math.sin(this.tiltPhase) * 0.035 * moveIntensity * k * pfx.moveTiltAmplitude;
 
-      let attackX = 0, attackRot = 0, attackScaleX = 0, attackScaleY = 0;
+      let attackX = 0, attackY = 0, attackRot = 0, attackScaleX = 0, attackScaleY = 0;
       if (this.attack.time > 0) {
         const p = 1 - this.attack.time / this.attack.duration;
         const weight = this.attack.weightClass === 'HEAVY' ? 1.28 : this.attack.weightClass === 'LIGHT' ? 0.82 : 1;
@@ -288,7 +322,25 @@
           attackScaleX = 0.08 * q * s * pfx.attackStretch;
           attackScaleY = -0.06 * q * s * pfx.attackStretch;
         }
+        const visualStyle = ATTACK_VISUAL_STYLES[this.attack.style] || ATTACK_VISUAL_STYLES.DEFAULT;
+        const progress = 1 - this.attack.time / this.attack.duration;
+        // 연속 기술은 번갈아 큰 좌·우 실루엣을 만들되 공격 방향과 명중 좌표는 바꾸지 않는다.
+        const arcSide = this.attack.style !== 'DEFAULT' && this.attack.comboIndex % 2 ? -1 : 1;
+        attackX *= visualStyle.reach;
+        attackY = Math.sin(Math.PI * progress) * visualStyle.lift * s;
+        attackRot *= visualStyle.arc * arcSide;
+        attackScaleX *= visualStyle.stretch;
+        attackScaleY *= visualStyle.stretch;
       }
+      if (this.actionBlend.time > 0) {
+        const t = smoothstep(1 - this.actionBlend.time / this.actionBlend.duration);
+        attackX = lerp(this.actionBlend.from.x, attackX, t);
+        attackY = lerp(this.actionBlend.from.y, attackY, t);
+        attackRot = lerp(this.actionBlend.from.rotation, attackRot, t);
+        attackScaleX = lerp(this.actionBlend.from.scaleX, attackScaleX, t);
+        attackScaleY = lerp(this.actionBlend.from.scaleY, attackScaleY, t);
+      }
+      this.actionPose = { x: attackX, y: attackY, rotation: attackRot, scaleX: attackScaleX, scaleY: attackScaleY };
 
       let hitX = 0, hitY = 0, hitRot = 0;
       if (this.hit.time > 0) {
@@ -312,7 +364,7 @@
 
       return {
         x: this.channels.x.value + attackX + hitX,
-        y: this.channels.y.value + moveBob + landY + hitY,
+        y: this.channels.y.value + moveBob + landY + hitY + attackY,
         rotation: this.channels.rotation.value + moveTilt + attackRot + hitRot,
         scaleX: Math.max(0.05, this.channels.scaleX.value * (1 + idleBreath + attackScaleX + landScaleX)),
         scaleY: Math.max(0.05, this.channels.scaleY.value * (1 - idleBreath + attackScaleY + landScaleY)),
@@ -326,6 +378,8 @@
         hitBodyRegion: this.hit.bodyRegion,
         reducedMotion: this.reducedMotion,
         profileVersion: 2,
+        actionStyle: this.attack.time > 0 ? this.attack.style : null,
+        comboVisualIndex: this.attack.time > 0 ? this.attack.comboIndex : null,
       };
     }
 
