@@ -1,5 +1,6 @@
 // Candidate-only CC0 ground placement, runtime frame and WebGL recovery regression.
 import './insect-survival-grounding.test.mjs';
+import './insect-survival-performance.test.mjs';
 // 원래 게임 규칙·저장을 보존한 채 UI와 3D 화면을 전환하는 회귀 검증.
 import test from 'node:test';
 import assert from 'node:assert/strict';
