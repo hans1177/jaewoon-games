@@ -2307,7 +2307,10 @@ test('two consecutive unimproved failures pause identical practice generations w
     {id:'gap-save',kind:'MINI_GAME_SYSTEM_DRILL',domains:['SAVE']}]};
   const first=injectIdlePracticeTask({tasks:[]},idle).task;
   const failedOne={...first,status:'failed',evidence:[...first.evidence,'practice-artifact-improved:NO']};
-  const second=injectIdlePracticeTask({tasks:[failedOne]},idle).task;
+  // 현 canonical 큐는 다음 세대보다 아직 한 번도 시도하지 않은 신규 과제를 먼저 선택한다.
+  const diversified=injectIdlePracticeTask({tasks:[failedOne]},idle);
+  assert.match(diversified.task.id,/gap-save-g1$/);
+  const second=injectIdlePracticeTask({tasks:[failedOne]},{drills:[idle.drills[0]]}).task;
   assert.match(second.id,/-g2$/);
   const failedTwo={...second,status:'failed',evidence:[...second.evidence,'practice-artifact-improved:NO']};
   const resumed=injectIdlePracticeTask({tasks:[failedOne,failedTwo]},idle);
