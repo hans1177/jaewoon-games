@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {
   validateLocalDevelopmentPolicy,proposeBoundedReplacement,selectRelevantExcerpt,
   requiredReviewPass,cleanMain
@@ -96,6 +97,8 @@ test('local Vibe automatically syncs clean main from authenticated GitHub, never
     if(cmd==='rev-parse HEAD')return head;
     if(cmd==='rev-parse refs/remotes/origin/main')return after;
     if(cmd==='merge-base HEAD refs/remotes/origin/main')return before;
+    if(args[0]==='show'&&args[1]?.startsWith('refs/remotes/origin/main:'))
+      return readFileSync(args[1].slice('refs/remotes/origin/main:'.length),'utf8');
     if(cmd==='merge --ff-only refs/remotes/origin/main'){merges++;head=after;return '';}
     throw Error('UNEXPECTED_GIT_COMMAND:'+cmd);
   };
@@ -110,7 +113,8 @@ test('local Vibe blocks dirty, non-main, foreign remote, divergent and invalid r
     {dirty:' M game.html',error:/LOCAL_DEV_DIRTY_WORKTREE_STOP/},
     {origin:'https://github.com/unknown/repo.git',error:/LOCAL_DEV_WRONG_REPOSITORY/},
     {base:'c'.repeat(40),error:/LOCAL_DEV_DIVERGED_MAIN_STOP/},
-    {head:'bad-sha',error:/LOCAL_DEV_SYNC_REVISION_INVALID/}
+    {head:'bad-sha',error:/LOCAL_DEV_SYNC_REVISION_INVALID/},
+    {badPolicy:true,error:/LOCAL_DEV_REMOTE_CENTRAL_POLICY_NOT_VERIFIED/}
   ];
   for(const scenario of scenarios){
     const calls=[];
@@ -123,6 +127,10 @@ test('local Vibe blocks dirty, non-main, foreign remote, divergent and invalid r
       if(cmd==='rev-parse HEAD')return scenario.head||local;
       if(cmd==='rev-parse refs/remotes/origin/main')return remote;
       if(cmd==='merge-base HEAD refs/remotes/origin/main')return scenario.base||local;
+      if(args[0]==='show'&&args[1]?.startsWith('refs/remotes/origin/main:')){
+        if(scenario.badPolicy&&args[1].endsWith('security-immune-system.json'))return '{}';
+        return readFileSync(args[1].slice('refs/remotes/origin/main:'.length),'utf8');
+      }
       throw Error('UNEXPECTED_MUTATION:'+cmd);
     };
     assert.throws(()=>cleanMain({gitCommand}),scenario.error);
@@ -148,4 +156,16 @@ test('manual merge requires head QA and security; Cloudflare is separately not a
     status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,true);
   assert.equal(requiredReviewPass(runs.map(r=>r.name==='Company Security Immune System'
     ?{...r,conclusion:'failure'}:r),checks,sha).pass,false);
+});
+
+test('existing periodic supervisor sync verifies all four policies and preserves diverged commits',()=>{
+  const supervisor=readFileSync('tools/unity-mcp/run-company-supervisor.ps1','utf8');
+  const sync=supervisor.split('function Sync-Repository {')[1]?.split('function Test-PublishPolicy {')[0];
+  assert.ok(sync,'canonical supervisor sync function must exist');
+  for(const name of ['platform-release-roadmap','company-log-map','company-architecture-map','security-immune-system'])
+    assert.ok(sync.includes(name+'.json'),name);
+  assert.ok(sync.includes("Invoke-Git @('merge','--ff-only','origin/main')"));
+  assert.ok(sync.includes('Diverged local main: automatic rebase forbidden'));
+  assert.ok(!sync.includes("Invoke-Git @('rebase'"));
+  assert.ok(!sync.includes("Invoke-Git @('reset'"));
 });

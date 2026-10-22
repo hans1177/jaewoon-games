@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {readLocalChatPolicy,readApprovedWebGame} from './vibe2-local-web-chat.mjs';
+import {readLocalChatPolicy,readApprovedWebGame,validateLocalWebChatPolicy} from './vibe2-local-web-chat.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const REPO='hans1177/jaewoon-games';
@@ -156,6 +156,23 @@ export function cleanMain({gitCommand=git}={}){
   if(localSha===remoteSha)return {synced:false,revision:localSha};
   if(gitCommand(['merge-base','HEAD','refs/remotes/origin/main'])!==localSha)
     fail('LOCAL_DEV_DIVERGED_MAIN_STOP');
+  // 원격 중앙정책 4개를 검증한 이후에만 안전한 fast-forward를 허용한다.
+  const central=[
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ];
+  try{
+    const docs=central.map(path=>JSON.parse(gitCommand(['show','refs/remotes/origin/main:'+path])));
+    validateLocalWebChatPolicy(docs[0]);
+    validateLocalDevelopmentPolicy(docs[0]);
+    if(docs[0]?.parallelLearningPipelineAllowed!==false||
+      docs[1]?.retained?.unknownOrMissingPolicy!=='FAIL_CLOSED'||
+      docs[2]?.constitutionalEnforcement?.mode!=='FAIL_CLOSED'||
+      docs[3]?.defaultTrust!=='DENY_OR_QUARANTINE_UNTIL_VERIFIED')
+      fail('REMOTE_CENTRAL_POLICY_INVALID');
+  }catch(error){fail('LOCAL_DEV_REMOTE_CENTRAL_POLICY_NOT_VERIFIED:'+clean(error.message));}
   gitCommand(['merge','--ff-only','refs/remotes/origin/main']);
   if(gitCommand(['rev-parse','HEAD'])!==remoteSha)
     fail('LOCAL_DEV_SYNC_REVISION_MISMATCH');
