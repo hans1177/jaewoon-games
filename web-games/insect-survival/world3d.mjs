@@ -136,14 +136,34 @@ function setHeroMotion(motion,restart=false,duration=0){
  if(duration>0)next.setDuration(duration);
  next.fadeIn(.13).play();playingAction=motion;
 }
+// 시각 레이어만 연속 보간한다. 게임이 소유한 위치·충돌·이동속도는 그대로 사용한다.
+function blendFacingYaw(current,target,dt){
+ const delta=Math.atan2(Math.sin(target-current),Math.cos(target-current));
+ const blend=1-Math.exp(-Math.min(.05,Math.max(0,Number(dt)||0))*10);
+ return current+delta*blend;
+}
+function visualWalking(wasWalking,travel,dt){
+ if(!Number.isFinite(dt)||dt<=0)return Boolean(wasWalking);
+ // 프레임별 거리 대신 초당 이동량을 사용해 30/60/120Hz 상태 떨림을 줄인다.
+ const speed=Math.max(0,Number(travel)||0)/Math.max(1/240,Math.min(.05,dt));
+ return speed>(wasWalking?.13:.24);
+}
 function follow(frame,dt){
  const p=frame.player,pos=to3(p);
  const travel=Math.hypot(pos.x-(avatar.userData.lastX??pos.x),pos.z-(avatar.userData.lastZ??pos.z));
  avatar.userData.lastX=pos.x;avatar.userData.lastZ=pos.z;
  avatar.position.copy(pos);
- avatar.rotation.y=Math.atan2(p.dirX,p.dirY);
+ const dirX=Number(p.dirX),dirY=Number(p.dirY);
+ if(Number.isFinite(dirX)&&Number.isFinite(dirY)&&Math.hypot(dirX,dirY)>1e-5){
+  const wantedYaw=Math.atan2(dirX,dirY);
+  avatar.rotation.y=avatar.userData.facingInitialized
+   ?blendFacingYaw(avatar.rotation.y,wantedYaw,dt):wantedYaw;
+  avatar.userData.facingInitialized=true;
+ }
+ const walking=visualWalking(avatar.userData.wasWalking===true,travel,dt);
+ avatar.userData.wasWalking=walking;
  const swing=(p.swingTimer||0)>0,roll=(p.rollTimer||0)>0;
- const motion=frame.state.dead?'death':p.hit>0?'hit':roll?'dodge':swing?(p.motionAction==='spin'?'spin':'stab'):travel>.004?'run':'idle';
+ const motion=frame.state.dead?'death':p.hit>0?'hit':roll?'dodge':swing?(p.motionAction==='spin'?'spin':'stab'):walking?'run':'idle';
  const serial=Number(p.motionSerial)||0;
  const replay=serial!==(avatar.userData.motionSerial??serial)&&['stab','spin','dodge'].includes(motion);
  const duration=motion==='dodge'?(Number(p.rollTimer)||0):['stab','spin'].includes(motion)?(Number(p.swingTimer)||0):0;
