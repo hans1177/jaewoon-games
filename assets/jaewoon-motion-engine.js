@@ -27,7 +27,16 @@
     PUNCH: Object.freeze({ reach: 1.32, arc: 0.90, lift: -2, stretch: 1.05 }),
     KICK: Object.freeze({ reach: 1.58, arc: 1.25, lift: 6, stretch: 1.24 }),
     CAST: Object.freeze({ reach: 1.15, arc: 1.30, lift: -8, stretch: 1.08 }),
-    BITE: Object.freeze({ reach: 1.36, arc: 1.42, lift: 3, stretch: 1.13 })
+    BITE: Object.freeze({ reach: 1.36, arc: 1.42, lift: 3, stretch: 1.13 }),
+    // 거친 대검/망치, 이도류, 공중 낙하, 격투기, 짐승의 체중 이동은 화면 자세만 바꾼다.
+    HEAVY_SLAM: Object.freeze({ reach: 1.72, arc: 2.08, lift: -11, stretch: 1.32 }),
+    DUAL_CROSS: Object.freeze({ reach: 1.46, arc: 1.78, lift: -4, stretch: 1.18 }),
+    SPIN_SLASH: Object.freeze({ reach: 1.32, arc: 2.05, lift: -2, stretch: 1.13 }),
+    RISING_CUT: Object.freeze({ reach: 1.48, arc: 1.64, lift: -12, stretch: 1.17 }),
+    LEAP_DIVE: Object.freeze({ reach: 1.67, arc: 1.53, lift: 9, stretch: 1.18 }),
+    UPPERCUT: Object.freeze({ reach: 1.31, arc: 1.72, lift: -10, stretch: 1.12 }),
+    SHIELD_BASH: Object.freeze({ reach: 1.45, arc: 0.52, lift: 0, stretch: 1.09 }),
+    TAIL_SWIPE: Object.freeze({ reach: 1.51, arc: 1.85, lift: 2, stretch: 1.15 })
   });
 
   const DEFAULT_PROFILE = Object.freeze({
