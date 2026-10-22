@@ -334,17 +334,17 @@ export function planVibeUniversalComposition({
   });
 }
 const VIBE_ROLE_PATTERNS=Object.freeze({
-  TERRAIN:/terrain|world|biome|landscape|valley|canyon|cliff|지형|월드|협곡|산|강|숲|바위|지질/i,
-  ENVIRONMENT:/environment|forest|weather|nature|환경|자연|숲|날씨|바람/i,
+  TERRAIN:/terrain|world|biome|landscape|valley|canyon|cliff|지형|월드|협곡|산|강|숲|바위|지질|섬|습지|초원/i,
+  ENVIRONMENT:/environment|forest|weather|nature|환경|자연|숲|날씨|바람|생태계|서식지/i,
   DUNGEON:/dungeon|room|maze|level|던전|미궁|동굴|방|미로/i,
-  BUILDING:/building|architecture|house|town|village|건물|집|마을|건축/i,
+  BUILDING:/building|architecture|house|town|village|건물|집|마을|건축|농장|온실|헛간/i,
   MAP:/map|path|route|level|tile|맵|경로|지도|타일/i,
   ENEMY_AI:/enemy|monster|boss|combat|hostile|몬스터|적|보스|전투/i,
   NPC:/npc|villager|citizen|주민|상인|대화/i,
-  CHARACTER:/character|avatar|player|hero|캐릭터|아바타|플레이어|주인공/i,
-  CREATURE:/creature|animal|wildlife|pet|monster|크리처|동물|야생|몬스터/i,
-  PROP:/prop|object|rock|tree|decoration|소품|오브젝트|돌|나무|장식/i,
-  ITEM:/item|weapon|armor|equipment|검|무기|방어구|아이템|장비/i,
+  CHARACTER:/character|avatar|player|hero|캐릭터|아바타|플레이어|주인공|탐험가|생존자/i,
+  CREATURE:/creature|animal|wildlife|pet|monster|insect|spider|mantis|크리처|동물|야생|몬스터|곤충|벌레|거미|사마귀|개미|꿀벌|딱정벌레/i,
+  PROP:/prop|object|rock|tree|decoration|소품|오브젝트|돌|나무|장식|둥지|덫|먹이통/i,
+  ITEM:/item|weapon|armor|equipment|검|무기|방어구|아이템|장비|곡괭이|도끼|채집도구|채집 도구|가방/i,
   MATERIAL:/material|texture|shader|surface|stone|metal|wood|재질|텍스처|표면|금속|나무/i,
   UI:/interface|hud|button|menu|inventory|ui|버튼|메뉴|인벤토리/i
 });
