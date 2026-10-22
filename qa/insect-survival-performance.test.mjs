@@ -102,3 +102,29 @@ test('resource CC0 pooling reuses existing meshes and only rebuilds changed sour
  assert.doesNotMatch(source,/while\(resources\.length\)\{const old=resources\.pop\(\)/,
   'resource count changes must not rebuild all CC0 visuals');
 });
+
+test('fog decor culling affects distant graphics only and keeps the game world intact',()=>{
+ const start=source.indexOf('function refreshDecorVisibility(');
+ const end=source.indexOf('function actorsFromFrame(',start);
+ assert.ok(start>=0&&end>start,'in-place cosmetic culling required');
+ const code=source.slice(start,end);
+ const make=(x,range)=>({position:{x,z:0},userData:{visualRange:range},visible:true});
+ const near=make(0,25),far=make(70,25);
+ const decor={children:[near,far]};
+ const context=vm.createContext({decor,decorVisibilityTick:0});
+ vm.runInContext(code,context);
+ vm.runInContext('refreshDecorVisibility(0,0,true)',context);
+ assert.equal(near.visible,true);
+ assert.equal(far.visible,false);
+ vm.runInContext('refreshDecorVisibility(70,0,true)',context);
+ assert.equal(near.visible,false);
+ assert.equal(far.visible,true);
+ // Hysteresis: hidden decoration needs to get inside range - 4 to reappear.
+ vm.runInContext('refreshDecorVisibility(45,0,true)',context);
+ assert.equal(near.visible,false,'out-of-range prop stays hidden in hysteresis band');
+ assert.equal(far.visible,true,'visible prop stays visible in hysteresis band');
+ assert.match(source,/refreshDecorVisibility\(frame\.player\.x\*ratio,frame\.player\.y\*ratio,true\)/);
+ assert.match(source,/refreshDecorVisibility\(pos\.x,pos\.z\)/);
+ assert.match(source,/visibleDecor:decor\.children\.filter/);
+ assert.doesNotMatch(code,/enemies|resources|world\.children|state\.|player\.hp|SAVE_KEY/);
+});
