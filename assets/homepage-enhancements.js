@@ -64,9 +64,10 @@ const selectedPlatform=row=>runtimeInfo(row).platform||productionOf(row).selecte
 const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).displayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT'?'ROBLOX':selectedPlatform(row);
 // 홈에 표시할 정식 게임은 실행 빌드 유무와 별개로 유지하고, 단순 버튼형 시제품만 제외한다.
 // 파일명: assets/homepage-enhancements.js / 게임 표시
-// 배포된 게임 카드는 개발 중·출시 상태와 무관하게 유지한다. 3D QA는 실행 링크 활성화만 제어한다.
+// 집중 개발 3개와 노출 범위는 별개다. 명시적으로 개발 제외된 게임만 숨긴다.
 const activeLifecycle=row=>{
   const id=gameIdOf(row);
+  if(runtimeInfo(row).developmentActive!==true)return false;
   if(!id||!['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase()))return false;
   const sources=sourcesOf(row),web=sources.web||{};
   const state=String(web.state||row?.ownerWebSourceState||'').toUpperCase();
