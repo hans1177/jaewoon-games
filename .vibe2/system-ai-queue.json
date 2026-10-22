@@ -151844,7 +151844,7 @@
     },
     {
       "id": "recovery-recovery-50505ca6d4967c41c872",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -151888,7 +151888,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:7d57e27e25bfeea10e116863f13bbccce622abce:fantasy-survival"
       ],
-      "retries": 1,
+      "retries": 2,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE",
       "failureSignature": "WORKFLOW_FAILED_VERIFY_EVERY_PUBLISHED_GAME_ROUTE_AND_THE_CANONICAL_OFFICIAL_HOMEPAGE",
@@ -151902,12 +151902,12 @@
       "sourceMutationBaseline": "7d57e27e25bfeea10e116863f13bbccce622abce",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39714654782:1",
-      "reservedAt": "2026-10-22T03:05:21.222Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39121604002:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -151960,7 +151960,8 @@
         "learning-penalty:YES",
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
-        "system-ai-handoff-to-reservation:system-ai:39714654782:1"
+        "system-ai-handoff-to-reservation:system-ai:39714654782:1",
+        "actions-run:39714654782"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1136,
@@ -151975,7 +151976,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T11:09:09.133Z",
-      "updatedAt": "2026-10-22T03:05:21.222Z"
+      "updatedAt": "2026-10-22T03:28:09.708Z"
     },
     {
       "id": "recovery-recovery-3eef59e56d734d665eb9",
