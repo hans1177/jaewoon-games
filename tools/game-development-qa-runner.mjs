@@ -48,11 +48,16 @@ export function runGameQa({selected=[],repoRoot=ROOT,execute=false,timeoutMs=120
     const summaries=[...String(check.stdout||'').matchAll(/^# fail (\d+)\r?$/gm)];
     const reportedFailures=summaries.length?Number(summaries.at(-1)[1]):null;
     const passed=!check.error&&check.status===0&&reportedFailures===0;
+    // Preserve the exact failing subtest names instead of retaining only the
+    // LAST 3.5k of a 37+ case suite (which frequently contains only PASS lines).
+    const failedSubtests=[...String(check.stdout||'').matchAll(/^not ok \d+ - (.+)$/gm)]
+      .map(match=>match[1].trim()).slice(0,24);
     results.push({
       gameId:game.gameId,testCount:game.tests.length,
       state:passed?'GAME_QA_PASSED':'GAME_QA_FAILED',
       exitCode:check.status,
       error:check.error?.message||null,
+      failedSubtests,
       outputTail:(check.stdout||'').slice(-3500),
       errorTail:(check.stderr||'').slice(-1200)
     });
@@ -117,6 +122,8 @@ function main(){
   console.log('GAME_SCOPED_QA_MERGE_READY='+report.mergeReady);
   for(const group of report.failureGroups)console.log('GAME_SCOPED_QA_FAILURE_GROUP='+group.signature+':'+group.gameIds.join(','));
   for(const r of report.results)console.log('GAME_SCOPED_QA='+r.gameId+':'+r.state);
+  for(const r of report.results)for(const name of (r.failedSubtests||[]))
+    console.log('GAME_SCOPED_QA_FAILED_SUBTEST='+r.gameId+':'+name);
   if(!report.pass||(options['require-merge-ready']===true&&!report.mergeReady))process.exitCode=1;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))main();

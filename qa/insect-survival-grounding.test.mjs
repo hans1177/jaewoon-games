@@ -125,7 +125,7 @@ test('seam foundation is local geometry below CC0 surface, not an asset replacem
 test('character, insects, and resources use the same ground reference, existing save is unchanged',()=>{
   assert.match(render,/new THREE\.Vector3\(p\.x\*ratio,GROUND_SURFACE_Y\+FOOT_CLEARANCE,p\.y\*ratio\)/);
   assert.match(render,/actor\.position\.set\(b\.x\*ratio,GROUND_SURFACE_Y\+FOOT_CLEARANCE,b\.y\*ratio\)/);
-  assert.match(render,/resources\[i\]\.position\.set\(frame\.nodes\[i\]\.x\*ratio,GROUND_SURFACE_Y\+FOOT_CLEARANCE/);
+  assert.match(render,/resources\[i\]\.position\.set\(node\.x\*ratio,GROUND_SURFACE_Y\+FOOT_CLEARANCE/);
   assert.match(game,/const SAVE_KEY='jaewoon_insect_survival_v3'/);
   assert.match(game,/window\.insectWorldSnapshot=/);
 });
@@ -166,10 +166,10 @@ test('CC0 animated hero foot penetration is corrected after the original animati
   };
   const context={
     avatar:actor,GROUND_SURFACE_Y:0,FOOT_CLEARANCE:.035,
-    THREE:{Box3:class{
-      setFromObject(target){this.min={y:target.position.y-.256};return this}
+    heroGroundBounds:{
+      setFromObject(target){this.min={y:target.position.y-.256};return this},
       isEmpty(){return false}
-    }}
+    }
   };
   vm.runInNewContext(code+';groundAnimatedHero();globalThis.firstLift=avatar.userData.visualGroundCorrection;',context);
   assert.ok(Math.abs(context.firstLift-.256)<1e-8,'22cm real browser penetration must be corrected');

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
 import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
+import { diagnoseVibeWebFrameBottleneck } from '../tools/vibe2-performance-sanity.mjs';
 
 const ROOT=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'game-catalog.json'),'utf8'));
@@ -399,6 +400,22 @@ try{
         'insect-survival: original CC0 floor must align with ground Y=0');
       assert.ok(Number.isFinite(proof?.ground?.heroBottom)&&proof.ground.heroBottom>=proof.ground.floorTop-.12,
         'insect-survival: animated character is below original CC0 floor');
+      // Feed actual browser counters into the EXISTING read-only Vibe diagnostic.
+      // This doesn't claim Android hardware FPS or replace gameplay/security QA.
+      await delay(450);
+      const frameBudget=await cdp.evaluate('window.insect3DPerformanceProof?.()');
+      const vibeDiagnosis=diagnoseVibeWebFrameBottleneck(frameBudget);
+      console.log('DEVELOPMENT_WEB_VIBE_PERFORMANCE_EVIDENCE_insect-survival='+JSON.stringify(frameBudget));
+      console.log('DEVELOPMENT_WEB_VIBE_BOTTLENECK_DIAGNOSIS_insect-survival='+JSON.stringify(vibeDiagnosis));
+      assert.equal(frameBudget?.kind,'VIBE_WEB_RUNTIME_FRAME_EVIDENCE');
+      assert.equal(frameBudget?.ready,true);
+      assert.equal(frameBudget?.activeWebGL,true);
+      assert.equal(frameBudget?.hardwareBenchmarkVerified,false);
+      assert.equal(vibeDiagnosis?.observed,true,'Vibe cannot infer bottlenecks without observed WebGL frame');
+      assert.equal(vibeDiagnosis?.advisoryOnly,true,'Vibe performance hints must not auto-promote');
+      assert.ok(frameBudget?.pixelRatio<=frameBudget?.pixelRatioCap+.001);
+      assert.ok(frameBudget?.pixelRatio>=frameBudget?.pixelRatioFloor-.001);
+      assert.ok(frameBudget?.framesObserved>=1,'3D performance counters must advance on actual frames');
     }
     if(insect3dOnly){
       // Chromium Android-sized viewport and native CDP touch event regression.
@@ -463,6 +480,12 @@ try{
           grounded:Boolean(g&&Number.isFinite(g.heroBottom)&&g.heroBottom>=g.floorTop-.12),
           ready:window.insectScene3DReady===true};
       })()`);
+      const mobileBudget=await cdp.evaluate('window.insect3DPerformanceProof?.()');
+      console.log('DEVELOPMENT_WEB_MOBILE_VIBE_PERFORMANCE_EVIDENCE_insect-survival='+JSON.stringify(mobileBudget));
+      assert.equal(mobileBudget?.ready,true,'mobile WebGL frame budget must observe a ready scene');
+      assert.ok(mobileBudget?.pixelRatio<=1.3+.001,'mobile resolution must respect the original cap');
+      assert.ok(mobileBudget?.pixelRatio>=mobileBudget?.pixelRatioFloor-.001,'adaptive resolution floor');
+      assert.equal(mobileBudget?.hardwareBenchmarkVerified,false,'emulation is not physical device profiling');
       console.log('DEVELOPMENT_WEB_MOBILE_TOUCH_EVIDENCE_insect-survival='+JSON.stringify(touchResult));
       assert.ok(touchResult?.serial>mobileProof.serial,
         'insect-survival: physical touch event did not trigger accepted dodge');
