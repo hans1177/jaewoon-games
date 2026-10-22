@@ -109,6 +109,17 @@ jobs:
           git cat-file -e "$head_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$head_sha"
           git cat-file -e "$base_sha^{commit}"
           git cat-file -e "$head_sha^{commit}"
+          # 보안 스캐너는 base...head 공통 조상 기준으로 모든 변경을 검사한다.
+          # shallow checkout 때문에 조상이 사라졌다면 추가 이력을 받아 복원한다.
+          if ! git merge-base "$base_sha" "$head_sha" >/dev/null 2>&1; then
+            if [ "$(git rev-parse --is-shallow-repository)" = 'true' ]; then
+              git fetch --no-tags --deepen=128 origin "$base_sha" "$head_sha"
+            fi
+          fi
+          git merge-base "$base_sha" "$head_sha" >/dev/null || {
+            echo 'SECURITY_SCAN_MERGE_BASE_UNVERIFIED'
+            exit 1
+          }
           echo "base=$base_sha" >> "$GITHUB_OUTPUT"
           echo "head=$head_sha" >> "$GITHUB_OUTPUT"
 
