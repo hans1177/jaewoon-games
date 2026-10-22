@@ -17,7 +17,7 @@ const project = JSON.parse(source('default.project.json'));
 test('CC0 insect source-only downloader retains verified archives and refuses unknown targets', () => {
   const downloader = readFileSync(new URL('../tools/simple-rpg-priority-cc0-download.py', import.meta.url),'utf8');
   const workflow = readFileSync(new URL('../.github/workflows/owner-simple-rpg-direct-publish.yml',import.meta.url),'utf8');
-  assert.match(downloader,/ant-rigged\\.blend/);
+  assert.match(downloader,/ant-rigged\.blend/);
   assert.match(downloader,/ant-3d-model-rigging-animated-low-poly-ish/);
   assert.match(downloader,/UNAPPROVED_CC0_TARGET_ONLY/);
   assert.match(downloader,/EXISTING_VERIFIED_SOURCE_MANIFEST_REQUIRED/);
