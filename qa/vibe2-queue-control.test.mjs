@@ -3340,6 +3340,11 @@ test('only exact non-writing practice drills recover false external semantic map
   };
   const tasks=[
     base,
+    {...base,id:'LEARNING-PRACTICE-roblox-readonly',target:'roblox',
+      sourceRoot:'learning-practice:roblox-readonly',
+      evidence:['learning-practice-only','learning-analysis-practice']},
+    {...base,id:'LEARNING-PRACTICE-roblox-bad-evidence',target:'roblox',
+      evidence:['learning-practice-only','learning-web-artifact-practice']},
     {...base,id:'LEARNING-PRACTICE-untrusted-path',sourceRoot:'web-games/actual-source'},
     {...base,id:'LEARNING-PRACTICE-game-source',gameId:'core-clash-4v4'},
     {...base,id:'LEARNING-PRACTICE-write-file',responsibleFiles:['web-games/game/index.html']},
@@ -3351,15 +3356,16 @@ test('only exact non-writing practice drills recover false external semantic map
     {...base,id:'REAL-GAME-gate-not-practice',department:'development',type:'implementation',gameId:'core-clash-4v4',sourceRoot:'web-games/core-clash-4v4'}
   ];
   const recovered=recoverStaleRunningReservations(createVibeContinuousQueue({tasks}));
-  assert.equal(recovered.recovered,1);
+  assert.equal(recovered.recovered,2);
   const byId=new Map(recovered.queue.tasks.map(t=>[t.id,t]));
+  assert.equal(byId.get('LEARNING-PRACTICE-roblox-readonly').status,'queued');
   const passed=byId.get(base.id);
   assert.equal(passed.status,'queued');
   assert.equal(passed.blocker,null);
   assert.equal(passed.retries,1);
   assert.equal(passed.lastOutcome,'READ_ONLY_PRACTICE_MAPPING_GATE_RECOVERED');
   assert.ok(passed.evidence.includes('recovery:read-only-practice-semantic-mapping-v1'));
-  for(const task of tasks.slice(1)){
+  for(const task of tasks.slice(2)){
     assert.equal(byId.get(task.id).status,'blocked',task.id);
   }
 });
