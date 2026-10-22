@@ -165,7 +165,10 @@ test('local source edit refuses an active PR before any model request or source 
   assert.ok(focusAt>=0&&inferenceAt>focusAt);
   assert.match(source,/focus\.pendingPRs\.length&&options\.apply/);
   assert.match(source,/LOCAL_DEV_FOCUSED_PR_MUST_COMPLETE_FIRST/);
-  assert.match(source,/LOCAL_DEV_FOCUS_PR_LIST_INCOMPLETE/);
+  assert.match(source,/git\/matching-refs\/heads\/local-vibe-web-/);
+  assert.match(source,/pulls\?head=hans1177%3A/);
+  assert.match(source,/LOCAL_DEV_FOCUS_BRANCH_INDEX_INVALID/);
+  assert.doesNotMatch(source,/pulls\?state=open&per_page=100&page=/);
 });
 
 test('manual merge requires head QA and security; Cloudflare is separately not a deploy PASS',()=>{
