@@ -2464,13 +2464,15 @@ test('experience retrieval excludes same-engine-only confirmation noise and pres
     id:'unrelated-fishing-'+i,gameId:'other-fishing-'+i,engine:'web',
     verified:true,reusable:true,outcome:'PASS',
     problem:'bait fishing pond',goal:'fishing equipment ponds',
-    change:'update fishing bait',reusablePatterns:['fishing bait'],confirmations:1000
+    change:'update fishing bait',evidence:['independent-fishing-qa:PASS'],
+    reusablePatterns:['fishing bait'],confirmations:1000
   }));
   const relevant={
     id:'verified-save-restore',gameId:'different-save-project',engine:'unity',
     verified:true,reusable:true,outcome:'PASS',
     problem:'checkpoint save restore',goal:'save restore checkpoint',
-    change:'repair checkpoint persistence',reusablePatterns:['durable checkpoint restore'],confirmations:1
+    change:'repair checkpoint persistence',evidence:['independent-save-qa:PASS'],
+    reusablePatterns:['durable checkpoint restore'],confirmations:1
   };
   const context=retrieveUnifiedLearning({
     task:{gameId:'insect-survival',target:'web',goal:'save restore checkpoint'},
