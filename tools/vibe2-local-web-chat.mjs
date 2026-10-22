@@ -236,7 +236,10 @@ async function main() {
           continue;
         }
         if (input.startsWith('/game ')) {
-          game = readApprovedWebGame(input.slice(6));
+          const selected = readApprovedWebGame(input.slice(6));
+          if (game && selected.gameId !== game.gameId)
+            throw new Error('LOCAL_VIBE_ONE_WEB_GAME_FOCUS:' + game.gameId);
+          game = selected;
           turns = [];
           console.log('WEB_GAME_SOURCE_LOADED=' + game.file + ' (앞부분 5500자)');
           continue;
@@ -245,8 +248,12 @@ async function main() {
           const parts = /^\/develop\s+(\S+)\s+([\s\S]+)$/.exec(input);
           if (!parts) throw new Error('USAGE: /develop GAME_ID TASK');
           readLocalChatPolicy();
-          const payload = buildExistingOwnerWebDispatch({ gameId: parts[1], goal: parts[2] });
+          const selected = readApprovedWebGame(parts[1]);
+          if (game && selected.gameId !== game.gameId)
+            throw new Error('LOCAL_VIBE_ONE_WEB_GAME_FOCUS:' + game.gameId);
+          const payload = buildExistingOwnerWebDispatch({ gameId: selected.gameId, goal: parts[2] });
           const submitted = await submitExistingOwnerWebDispatch(payload);
+          if (!game) { game = selected; turns = []; }
           console.log('GITHUB_OWNER_EVENT_ACCEPTED=' + submitted.jobId);
           console.log('VIBE2_QUEUE_INGEST=NOT_YET_VERIFIED');
           console.log('DEPLOYMENT=WAIT_FOR_EXISTING_VERIFIED_QA');
