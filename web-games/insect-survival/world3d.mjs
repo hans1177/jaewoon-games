@@ -98,7 +98,7 @@ function derived(key,height,tint){
 const originals={},enemies=[],resources=[];
 let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
-let resourceVisualRebuilds=0;
+let resourceVisualRebuilds=0,decorVisibilityTick=0;
 const heroGroundBounds=new THREE.Box3();
 const headingVector=new THREE.Vector3(),cameraBehind=new THREE.Vector3(),cameraFocus=new THREE.Vector3();
 const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();scene.add(world,actors,decor);
@@ -165,18 +165,32 @@ function environment(frame){
   const kind=i%5===0?'mushroom':i%7===0?'foliage':'tree';
   const model=derived(kind,kind==='tree'?9+rand(i+810)*7:kind==='mushroom'?1.7+rand(i)*2:2+rand(i)*2.4,kind==='tree'?'#96c486':kind==='mushroom'?'#d6b77d':'#9ddc7f');
   model.position.set(x,0,z);model.rotation.y=rand(i+345)*Math.PI*2;
+  model.userData.visualRange=kind==='tree'?37:kind==='mushroom'?27:30;
   decor.add(model);
  }
  for(let i=0;i<20;i++){
   const angle=i*2.399,mag=Math.sqrt((i+1)/20);
   const p=derived('stone',.3,'#d4c6a0');
   p.position.set((frame.gravel.x+Math.cos(angle)*frame.gravel.rx*mag)*ratio,0,(frame.gravel.y+Math.sin(angle)*frame.gravel.ry*mag)*ratio);
-  decor.add(p);
+  p.userData.visualRange=25;decor.add(p);
  }
  for(let i=0;i<5;i++){
   const p=derived('stone',.5,'#a47a51');
   p.position.set((frame.hill.x+Math.cos(i*1.26)*frame.hill.r*.45)*ratio,0,(frame.hill.y+Math.sin(i*1.26)*frame.hill.r*.35)*ratio);
-  decor.add(p);
+  p.userData.visualRange=30;decor.add(p);
+ }
+}
+// Fog-distance render culling applies ONLY to cosmetic CC0 props, never to
+// combat enemies, pickups, floor panels, or the authoritative game world.
+// The 4m visible/hidden gap avoids rapid popping near the same distance.
+function refreshDecorVisibility(heroX,heroZ,immediate=false){
+ if(!immediate&&++decorVisibilityTick%8!==0)return;
+ for(const item of decor.children){
+  const range=item.userData.visualRange;
+  if(!range)continue;
+  const effectiveRange=range+(item.visible?4:-4);
+  const dx=item.position.x-heroX,dz=item.position.z-heroZ;
+  item.visible=dx*dx+dz*dz<=effectiveRange*effectiveRange;
  }
 }
 function actorsFromFrame(frame){
@@ -199,6 +213,7 @@ function actorsFromFrame(frame){
   const group=new THREE.Group();group.add(derived(kind,height,color));actors.add(group);enemies.push(group);
  }
  for(const n of frame.nodes)syncResourceVisual(resources.length,n);
+ refreshDecorVisibility(frame.player.x*ratio,frame.player.y*ratio,true);
 }
 // Reconcile by slot instead of cloning every CC0 resource when an item is picked
 // up or respawns. A role change still rebinds the correct source geometry/color.
@@ -288,6 +303,7 @@ function follow(frame,dt){
  const behind=cameraBehind.set(pos.x-dir.x*(nearby?8.2:6.8),nearby?5.2:4.65,pos.z-dir.z*(nearby?8.2:6.8));
  camera.position.lerp(behind,Math.min(1,dt*5));
  cameraFocus.set(pos.x,1.25,pos.z);camera.lookAt(cameraFocus);
+ refreshDecorVisibility(pos.x,pos.z);
  for(let i=0;i<frame.bugs.length;i++){
   const b=frame.bugs[i],actor=enemies[i];if(!actor)continue;
   actor.visible=!b.dead;
@@ -311,6 +327,7 @@ window.insect3DPerformanceProof=()=>({
  averageFrameMs:perfBudget.averageFrameMs,latestFrameMs:perfBudget.latestFrameMs,
  pixelRatio:perfBudget.pixelRatio,pixelRatioCap:perfBudget.cap,pixelRatioFloor:perfBudget.floor,
  resolutionAdjustments:perfBudget.adjustments,resourceVisualRebuilds,
+ visibleDecor:decor.children.filter(item=>item.visible).length,totalDecor:decor.children.length,
  renderCalls:perfBudget.renderCalls,triangles:perfBudget.triangles,
  activeWebGL:worldReady&&renderer.domElement.dataset.renderedFrame==='true',
  rendererVisible:renderer.domElement.style.display==='block',
