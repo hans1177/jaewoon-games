@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -145892,7 +145892,7 @@
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145934,12 +145934,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39833273530:1",
+      "reservedAt": "2026-10-22T18:45:12.619Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -146092,7 +146092,8 @@
         "system-ai-handoff-to-reservation:system-ai:39786885118:1",
         "actions-run:39786885118",
         "system-ai-handoff-to-reservation:system-ai:39811467500:1",
-        "actions-run:39811467500"
+        "actions-run:39811467500",
+        "system-ai-handoff-to-reservation:system-ai:39833273530:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1052,
@@ -146107,7 +146108,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T14:21:40.195Z",
-      "updatedAt": "2026-10-22T16:24:44.591Z"
+      "updatedAt": "2026-10-22T18:45:12.619Z"
     },
     {
       "id": "marketing-cat-step-pre-release-v1",
@@ -158886,6 +158887,5 @@
       "createdAt": "2026-10-21T15:47:49.217Z",
       "updatedAt": "2026-10-21T15:47:49.217Z"
     }
-  ],
-  "updatedAt": "2026-10-22T18:40:17.945Z"
+  ]
 }
