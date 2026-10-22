@@ -83146,11 +83146,156 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b8eb8921accf66b2f44ebe90",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-9262",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1cdcc5d007fa670ab155198ad9384308098d99ce",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9262,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/insect-grounding-local-graphics-20261022",
+        "baseSha": "1cdcc5d007fa670ab155198ad9384308098d99ce",
+        "headSha": "4cfacc79ee3cbedb030ba2fde2dbba1cdbe0903f",
+        "mergeCommitSha": "c98fd17b9f2bf6046c32236ffc279a9675426557",
+        "mergedAt": "2026-10-22T17:14:55Z",
+        "authorLogin": "hans1177",
+        "titleHash": "99d39de28650c34680a11c50773bf0cdd89921d14d6aba2f067ef07c7d1fdf5a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/insect-grounding-local-graphics-20261022",
+        "candidateSha": "4cfacc79ee3cbedb030ba2fde2dbba1cdbe0903f"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 957,
+        "deletedLineCount": 229,
+        "changedFiles": [
+          ".github/workflows/company-security-immune.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/assistant-vibe-coauthoring-log.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/insect-survival-grounding.test.mjs",
+          "qa/insect-survival.test.mjs",
+          "qa/pwa-command-vibe2-task.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-local-web-develop.test.mjs",
+          "tools/pwa-command-vibe2-task.mjs",
+          "tools/vibe2-local-web-develop.mjs",
+          "web-games/insect-survival/CC0-ASSETS.md",
+          "web-games/insect-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-security-immune.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/assistant-vibe-coauthoring-log.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/insect-survival-grounding.test.mjs",
+          "qa/insect-survival.test.mjs",
+          "qa/pwa-command-vibe2-task.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-local-web-develop.test.mjs",
+          "tools/pwa-command-vibe2-task.mjs",
+          "tools/vibe2-local-web-develop.mjs",
+          "web-games/insect-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9262",
+        "merge-commit:c98fd17b9f2bf6046c32236ffc279a9675426557",
+        "base-main:1cdcc5d007fa670ab155198ad9384308098d99ce"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 657
+    "total": 658
   }
 }
