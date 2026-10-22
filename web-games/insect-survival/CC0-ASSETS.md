@@ -63,3 +63,9 @@
 - `qa/pwa-command-vibe2-task.test.mjs`에서 게임과 소스 경계, 작업 우선순위, 기존 `department=development`·`type=implementation`, 안전 조건 및 기존 검증 증거를 검사한다.
 - 실제 게임 소스 수정 없이 보고서나 계획만 작성한 작업은 개발 완료로 취급하지 않는다. 단, 중앙 정책·보안·F0~F9·독립 QA·소유자 승인·기존 릴리스 경로를 절대 생략하지 않는다.
 - 이는 개발 작업 **우선순위와 책임 범위만 간결하게 지정**하는 변경이다. CI와 별도의 회사 운영 기능을 삭제하거나 이미 돌아가는 백그라운드 런너를 중단·경감했다고 주장하지 않는다.
+
+## 개발 플랫폼 제외 조건
+
+- 소유자 지시에 따라 **Unity 개발은 수행하지 않는다**. 과거 프로젝트 메타데이터가 있어도 `tools/pwa-command-vibe2-task.mjs`에서 Unity를 우선 선택하지 않는다. 웹 게임 지시는 `web-games/<gameId>`만 사용하고, 웹 소스가 없으면 다른 플랫폼으로 대체하지 않고 차단한다.
+- Roblox 개발은 기존 전용 Roblox/Vibe 경로를 유지한다. 이 웹 지시 수신 도구는 Roblox 전용 경로까지 변경하거나 Roblox 소스를 Unity로 변환하지 않는다.
+- `qa/pwa-command-vibe2-task.test.mjs`에 기존 Unity 프로젝트가 있어도 웹만 선택하며, 웹 소스가 없으면 fail-closed 처리하는 회귀 테스트를 추가했다.
