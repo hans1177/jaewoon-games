@@ -6,6 +6,12 @@ const RAID_INTERVAL=120;
 const FARM_GROW_MS=20000;
 const WORKER_PRICE=50, WORKER_MAX=3, WORK_TICK=10, DELIVERY_INTERVAL=60, FEED_INTERVAL=180, FEED_COST=10;
 const SOLDIER_MAX=5, ARCHER_MAX=3;
+// 성채 방어 건축은 기존 공격력·습격·자원 생산을 변경하지 않는 별도 확장이다.
+const FORT_BUILD={
+  wall:{name:'돌 성벽',wood:2,stone:3,hp:180},
+  gate:{name:'성문',wood:5,stone:4,hp:220},
+  tower:{name:'궁수 망루',wood:4,stone:6,hp:160}
+};
 const TOOLS=[
   {id:'hand',label:'손',icon:'🤲'},
   {id:'rod',label:'낚싯대',icon:'🎣'},
@@ -13,7 +19,7 @@ const TOOLS=[
   {id:'water',label:'물뿌리개',icon:'💧'}
 ];
 const DEFAULT_STATE={
-  version:3,day:1,minutes:480,coins:40,weather:'맑음',expanded:false,decor:[],barracksBuilt:false,army:[],raidTimer:0,raidNumber:0,
+  version:3,day:1,minutes:480,coins:40,weather:'맑음',expanded:false,decor:[],barracksBuilt:false,army:[],fortress:{parts:[],gateOpen:false},raidTimer:0,raidNumber:0,
   inventory:{wood:0,stone:0,flower:0,fish:0,crop:0,seeds:3,food:0},
   plots:Array.from({length:6},()=>({state:'empty',watered:false,wateredAt:0,ready:false})),
   player:{x:730,y:640},playMinutes:0,
@@ -27,7 +33,7 @@ const renderer=new IslandRendererV3(canvas);
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
 let selectedTool=0,lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
-let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
+let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0},blueprint=null,fortId=0;
 const barracks={x:1080,y:650},workerShop={x:1200,y:820};
 const wolves=[
   makeWolf(1,1650,360),makeWolf(2,2050,760),makeWolf(3,2450,420),makeWolf(4,2720,840)
@@ -42,9 +48,9 @@ const npcs=[
   {id:'momo',name:'모모',icon:'👩‍🦱',x:805,y:600,line:'연못에는 물고기가 있어.'},
   {id:'danbi',name:'단비',icon:'🧒',x:960,y:700,line:'농작물은 물을 준 뒤 20초면 자라.'}
 ];
-const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId};
+const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,fortress:state.fortress,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId};
 const ui={
-  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),tool:qs('#toolButton'),action:qs('#actionButton'),inventory:qs('#inventoryButton'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
+  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),tool:qs('#toolButton'),action:qs('#actionButton'),inventory:qs('#inventoryButton'),build:qs('#buildButton'),fort:qs('#fortText'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
 function qs(s){return document.querySelector(s)}
 function normalizeState(raw){
@@ -53,7 +59,9 @@ function normalizeState(raw){
   const oldBuf=typeof r.workers==='object'&&r.workers?.buffer?r.workers.buffer:r.workerStorage||{};
   const inv={...base.inventory,...(r.inventory||{})};
   const plots=Array.isArray(r.plots)&&r.plots.length===6?r.plots.map(p=>({state:'empty',watered:false,wateredAt:0,ready:false,...p})):base.plots;
-  return {...base,...r,version:3,inventory:inv,plots,
+  const oldFort=r.fortress&&typeof r.fortress==='object'?r.fortress:{};
+  const parts=Array.isArray(oldFort.parts)?oldFort.parts.filter(p=>p&&FORT_BUILD[p.kind]&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y))).slice(0,90).map((p,i)=>({id:String(p.id||`wall-${i}`),kind:p.kind,x:Number(p.x),y:Number(p.y),axis:p.axis==='z'?'z':'x',hp:Math.max(0,Math.min(FORT_BUILD[p.kind].hp,Number(p.hp)||0))})):[];
+  return {...base,...r,version:3,inventory:inv,plots,fortress:{parts,gateOpen:oldFort.gateOpen===true},
     army:Array.isArray(r.army)?r.army.filter(x=>x?.kind==='soldier'||x?.kind==='archer').slice(0,SOLDIER_MAX+ARCHER_MAX):[],
     workers:Math.min(WORKER_MAX,Math.max(0,oldWorkers)),
     workerStorage:{wood:Math.max(0,Number(oldBuf.wood)||0),stone:Math.max(0,Number(oldBuf.stone)||0),food:Math.max(0,Number(oldBuf.food)||0),crop:Math.max(0,Number(oldBuf.crop)||0)},
@@ -73,13 +81,79 @@ runtime.bindKeyboard({
   KeyS:{down:()=>pressed.add('down'),up:()=>pressed.delete('down')},ArrowDown:{down:()=>pressed.add('down'),up:()=>pressed.delete('down')},
   KeyA:{down:()=>pressed.add('left'),up:()=>pressed.delete('left')},ArrowLeft:{down:()=>pressed.add('left'),up:()=>pressed.delete('left')},
   KeyD:{down:()=>pressed.add('right'),up:()=>pressed.delete('right')},ArrowRight:{down:()=>pressed.add('right'),up:()=>pressed.delete('right')},
+  KeyB:{down:openFortress},
   Space:{down:e=>{e.preventDefault();interact()}},KeyE:{down:cycleTool}
 });
-runtime.bindTouchButton(ui.action,interact);runtime.bindTouchButton(ui.tool,cycleTool);runtime.bindTouchButton(ui.inventory,openInventory);runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());runtime.bindTouchButton(ui.catch,catchFish);runtime.bindTouchButton(ui.cancelFishing,stopFishing);
+runtime.bindTouchButton(ui.action,interact);runtime.bindTouchButton(ui.tool,cycleTool);runtime.bindTouchButton(ui.inventory,openInventory);runtime.bindTouchButton(ui.build,openFortress);runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());runtime.bindTouchButton(ui.catch,catchFish);runtime.bindTouchButton(ui.cancelFishing,stopFishing);
 window.addEventListener('resize',()=>renderer.resize());window.addEventListener('jaewoon:pause',e=>{if(e.detail.paused)pressed.clear()});
-canvas.addEventListener('dblclick',e=>commandWolfAt(e.clientX,e.clientY));
-canvas.addEventListener('pointerup',e=>{const now=performance.now();if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);lastTap={time:now,x:e.clientX,y:e.clientY}});
+// 3D 전환 뒤에도 투명한 기존 캔버스 대신 앱 배경에서 배치 입력을 받는다.
+const view=document.querySelector('#app');
+view.addEventListener('pointerup',e=>{
+  if(e.target.closest('button,dialog,.hud,.controls'))return;
+  if(blueprint){placeFort(e.clientX,e.clientY);return;}
+  const now=performance.now();
+  if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
+  lastTap={time:now,x:e.clientX,y:e.clientY};
+});
 
+// -- 성벽 / 성문 / 망루 건설 --
+function openFortress(){
+  if(ui.panel.open||ui.fishing.open)return;
+  const fort=state.fortress,inv=state.inventory;
+  ui.panelTitle.textContent='성채 건설';
+  ui.panelBody.innerHTML='<p class="panel-note">건물을 골라 바닥을 터치해 배치해. 기존 농장·병영과 연결되는 방어선이야.</p>'+
+    '<div class="inventory-grid">'+itemCard('돌',inv.stone)+itemCard('나무',inv.wood)+itemCard('방어시설',fort.parts.filter(p=>p.hp>0).length)+'</div>'+
+    '<div class="choice-grid">'+Object.entries(FORT_BUILD).map(([kind,b])=>`<button class="choice" data-fort="${kind}" ${inv.wood<b.wood||inv.stone<b.stone?'disabled':''}><span>${b.name}</span><b>나무 ${b.wood} · 돌 ${b.stone}</b></button>`).join('')+
+    `<button class="choice" data-fort-gate><span>성문 ${fort.gateOpen?'닫기':'열기'}</span><b>${fort.parts.some(p=>p.kind==='gate'&&p.hp>0)?'작동':'성문 필요'}</b></button>`+
+    '<button class="choice" data-fort-archer><span>궁수 망루 배치</span><b>기존 궁수 사용</b></button>'+
+    '<button class="choice" data-fort-cancel><span>건설 취소</span><b>돌아가기</b></button></div>';
+  ui.panelBody.querySelectorAll('[data-fort]').forEach(button=>button.addEventListener('click',()=>{
+    blueprint=button.dataset.fort;ui.panel.close();toast(FORT_BUILD[blueprint].name+' 위치를 터치해');
+  }));
+  ui.panelBody.querySelector('[data-fort-gate]').addEventListener('click',()=>{
+    if(!fort.parts.some(p=>p.kind==='gate'&&p.hp>0))return toast('성문을 먼저 건설해');
+    fort.gateOpen=!fort.gateOpen;saveSoon();ui.panel.close();toast(fort.gateOpen?'성문을 열었어':'성문을 닫았어');
+  });
+  ui.panelBody.querySelector('[data-fort-archer]').addEventListener('click',()=>{
+    stationArchers();ui.panel.close();
+  });
+  ui.panelBody.querySelector('[data-fort-cancel]').addEventListener('click',()=>{blueprint=null;ui.panel.close();toast('건설 취소')});
+  ui.panel.showModal();
+}
+function placeFort(sx,sy){
+  const def=FORT_BUILD[blueprint],p=renderer.screenToWorld(game,sx,sy);
+  if(!def||!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))return;
+  const x=Math.round(p.x/60)*60,y=Math.round(p.y/60)*60;
+  if(x<200||x>1280||y<180||y>990||Math.hypot(x-player.x,y-player.y)>650||
+    !canMoveTo(x,y)||Math.hypot(x-765,y-340)<155||
+    Math.hypot(x-barracks.x,y-barracks.y)<105||
+    state.fortress.parts.some(b=>b.hp>0&&Math.hypot(b.x-x,b.y-y)<58)){
+    toast('여기에는 건설할 수 없어');return;
+  }
+  if(state.inventory.wood<def.wood||state.inventory.stone<def.stone){toast('건축 재료가 부족해');blueprint=null;return}
+  state.inventory.wood-=def.wood;state.inventory.stone-=def.stone;
+  state.fortress.parts.push({id:'fort-'+(++fortId)+'-'+Date.now(),kind:blueprint,x,y,axis:'x',hp:def.hp});
+  saveSoon();toast(def.name+' 건설 완료');blueprint=null;
+}
+function stationArchers(){
+  const towers=state.fortress.parts.filter(p=>p.kind==='tower'&&p.hp>0);
+  const archers=allies.filter(u=>u.kind==='archer'&&u.hp>0);
+  if(!towers.length||!archers.length){toast('망루와 궁수를 먼저 준비해');return}
+  archers.forEach((u,i)=>{const t=towers[i%towers.length];u.towerId=t.id;u.x=t.x;u.y=t.y});
+  toast('궁수 '+archers.length+'명이 망루에 배치됐어');
+}
+function siegeWall(u,nx,ny){
+  const obstruction=state.fortress.parts.find(p=>p.hp>0&&!(p.kind==='gate'&&state.fortress.gateOpen)&&
+    Math.abs(nx-p.x)<(p.kind==='tower'?38:34)&&Math.abs(ny-p.y)<(p.kind==='tower'?38:26));
+  if(!obstruction)return false;
+  if(u.cool<=0){
+    obstruction.hp=Math.max(0,obstruction.hp-u.attack);
+    u.cool=u.kind==='archer'?1.15:.85;
+    if(obstruction.hp===0)toast(FORT_BUILD[obstruction.kind].name+'이 무너졌어');
+    saveSoon();
+  }
+  return true;
+}
 function cycleTool(){if(ui.panel.open||ui.fishing.open)return;selectedTool=(selectedTool+1)%TOOLS.length;updateToolUI();toast(`${TOOLS[selectedTool].icon} ${TOOLS[selectedTool].label}`)}
 function updateToolUI(){const t=TOOLS[selectedTool];ui.tool.innerHTML=`${t.icon}<small>${t.label}</small>`}
 function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p>`;ui.panel.showModal()}
@@ -117,11 +191,28 @@ function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.wo
 function feedWorkers(){let survivors=0;for(let i=0;i<state.workers;i++){if(state.inventory.food>=FEED_COST){state.inventory.food-=FEED_COST;survivors++}}const dead=state.workers-survivors;state.workers=survivors;saveSoon();if(dead>0)toast(`⚠️ 식량 부족으로 노비 ${dead}명이 굶어 죽었어`);else toast(`🍖 노비 급식 -${survivors*FEED_COST}`)}
 
 function updateRaid(dt){if(!raidActive){state.raidTimer+=dt;if(state.raidTimer>=RAID_INTERVAL)startRaid();return}updateRaidCombat(dt);if(enemies.length===0){raidActive=false;game.raidActive=false;state.raidTimer=0;saveSoon();toast('✅ 습격 방어 성공')}}
-function startRaid(){state.raidTimer=0;state.raidNumber=(state.raidNumber%3)+1;raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));else if(state.raidNumber===2){for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));for(let i=0;i<2;i++)enemies.push(createUnit('archer',true))}else enemies.push(createUnit('soldier',true,true));game.enemies=enemies;toast(state.raidNumber===3?'👹 보스 습격!':`⚠️ ${state.raidNumber}차 습격!`);saveSoon()}
+function startRaid(){state.raidTimer=0;stationArchersSilently();state.raidNumber=(state.raidNumber%3)+1;raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));else if(state.raidNumber===2){for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));for(let i=0;i<2;i++)enemies.push(createUnit('archer',true))}else enemies.push(createUnit('soldier',true,true));game.enemies=enemies;toast(state.raidNumber===3?'👹 보스 습격!':`⚠️ ${state.raidNumber}차 습격!`);saveSoon()}
 function updateRaidCombat(dt){for(const u of allies)updateCombatUnit(u,enemies,dt,false);for(const u of enemies)updateCombatUnit(u,allies,dt,true);allies=allies.filter(u=>u.hp>0);enemies=enemies.filter(u=>u.hp>0);game.allies=allies;game.enemies=enemies;saveArmyIfChanged()}
-function updateCombatUnit(u,targets,dt,hostile){u.cool=Math.max(0,u.cool-dt);let t=nearestLiving(u,targets);if(!t&&hostile){moveToward(u,barracks.x,barracks.y,dt);return}if(!t)return;const d=Math.hypot(t.x-u.x,t.y-u.y)||1;if(d>u.range)moveToward(u,t.x,t.y,dt);else if(u.cool<=0){t.hp-=u.attack;u.cool=u.kind==='archer'?1.15:.85}}
+function updateCombatUnit(u,targets,dt,hostile){
+  u.cool=Math.max(0,u.cool-dt);
+  const t=nearestLiving(u,targets);
+  if(!t){if(hostile)moveToward(u,barracks.x,barracks.y,dt,true);return}
+  const d=Math.hypot(t.x-u.x,t.y-u.y)||1;
+  if(d>u.range){if(!u.towerId)moveToward(u,t.x,t.y,dt,hostile)}
+  else if(u.cool<=0){t.hp-=u.attack;u.cool=u.kind==='archer'?1.15:.85}
+}
 function nearestLiving(u,arr){let b=null,bd=1e9;for(const t of arr){if(t.hp<=0)continue;const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;b=t}}return b}
-function moveToward(u,x,y,dt){const dx=x-u.x,dy=y-u.y,d=Math.hypot(dx,dy)||1;u.x+=dx/d*u.speed*dt;u.y+=dy/d*u.speed*dt}
+function moveToward(u,x,y,dt,hostile=false){
+  const dx=x-u.x,dy=y-u.y,d=Math.hypot(dx,dy)||1;
+  const nx=u.x+dx/d*u.speed*dt,ny=u.y+dy/d*u.speed*dt;
+  if(hostile&&siegeWall(u,nx,ny))return;
+  u.x=nx;u.y=ny;
+}
+function stationArchersSilently(){
+  const towers=state.fortress.parts.filter(p=>p.kind==='tower'&&p.hp>0);
+  const archers=allies.filter(u=>u.kind==='archer'&&u.hp>0);
+  archers.forEach((u,i)=>{if(!towers.length){delete u.towerId;return}const t=towers[i%towers.length];u.towerId=t.id;u.x=t.x;u.y=t.y});
+}
 function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length){state.army=alive.map(u=>({kind:u.kind}));saveSoon()}}
 
 function makeWolf(id,x,y){return{id,x,y,homeX:x,homeY:y,hp:200,maxHp:200,attack:10,speed:68,cool:0,alive:true,respawnAt:0,wander:0,vx:0,vy:0}}
@@ -131,13 +222,13 @@ function updateWolves(dt){const now=Date.now();for(const w of wolves){if(!w.aliv
     const target=nearestLiving(w,soldiers);if(target){const d=Math.hypot(target.x-w.x,target.y-w.y)||1;if(d>52)moveToward(w,target.x,target.y,dt);else if(w.cool<=0){target.hp-=w.attack;w.cool=.9}}
     if(w.hp<=0){w.alive=false;w.respawnAt=now+60000;selectedWolfId=null;game.selectedWolfId=null;toast('🐺 늑대를 처치했어!')}allies=allies.filter(u=>u.hp>0);game.allies=allies;saveArmyIfChanged()}}
 
-function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(wolf&&u.kind==='soldier')continue;u.wander-=dt;if(u.wander<=0){const a=Math.random()*Math.PI*2;u.vx=Math.cos(a);u.vy=Math.sin(a);u.wander=1.2+Math.random()*2.2}const nx=u.x+u.vx*u.speed*.28*dt,ny=u.y+u.vy*u.speed*.28*dt;if(nx>350&&nx<1280)u.x=nx;else u.vx*=-1;if(ny>450&&ny<900)u.y=ny;else u.vy*=-1}}
+function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(u.towerId&&state.fortress.parts.some(t=>t.id===u.towerId&&t.hp>0))continue;if(wolf&&u.kind==='soldier')continue;u.wander-=dt;if(u.wander<=0){const a=Math.random()*Math.PI*2;u.vx=Math.cos(a);u.vy=Math.sin(a);u.wander=1.2+Math.random()*2.2}const nx=u.x+u.vx*u.speed*.28*dt,ny=u.y+u.vy*u.speed*.28*dt;if(nx>350&&nx<1280)u.x=nx;else u.vx*=-1;if(ny>450&&ny<900)u.y=ny;else u.vy*=-1}}
 function advanceClock(dt){clockCarry+=dt;if(clockCarry<.5)return;const ticks=Math.floor(clockCarry/.5);clockCarry-=ticks*.5;state.minutes+=ticks*5;state.playMinutes+=ticks*2.5/60;while(state.minutes>=1440){state.minutes-=1440;state.day++;state.weather=seededWeather(state.day);game.weather=state.weather;toast(`${state.day}일차 · ${state.weather}`)}updateHUD();saveSoon()}
 function seededWeather(day){return Math.abs(Math.sin(day*91.731)*10000)%1<.28?'비':'맑음'}
 function updateHUD(){const h=Math.floor(state.minutes/60),m=Math.floor(state.minutes%60),pm=h>=12,h12=((h+11)%12)+1;ui.day.textContent=`${state.day}일차`;ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';ui.coins.textContent=String(state.coins);if(raidActive)ui.raid.textContent=`⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;else{const r=Math.max(0,Math.ceil(RAID_INTERVAL-state.raidTimer));ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`}}
-function canMoveTo(x,y){const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
+function canMoveTo(x,y){if(state.fortress.parts.some(p=>p.hp>0&&!(p.kind==='gate'&&state.fortress.gateOpen)&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<30))return false;const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
 function updateMovement(dt){let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);if(!dx&&!dy)return;const mag=Math.hypot(dx,dy)||1;dx/=mag;dy/=mag;const nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;if(canMoveTo(nx,player.y))player.x=nx;if(canMoveTo(player.x,ny))player.y=ny}
-function updateHint(){ui.hint.textContent=interactionHint(nearestInteraction())}
-function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
+function updateHint(){ui.hint.textContent=blueprint?'건설 위치를 터치해 · 성채 버튼으로 취소':interactionHint(nearestInteraction())}
+function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;game.fortress=state.fortress;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
 allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;updateToolUI();updateHUD();requestAnimationFrame(frame);
