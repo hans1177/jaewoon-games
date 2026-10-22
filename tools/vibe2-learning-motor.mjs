@@ -1560,6 +1560,7 @@ export function composeVerifiedCodingRecipes(recipes=[],{engine='',genre='',sour
 export function chooseRegressionSafeVibeWinner(candidates=[],{sourceRevision='',benchmarkKey='',deviceClass='',baselineId=''}={}){
   const rows=capabilityRows(candidates);
   const issues=[];
+  if(!/^[a-f0-9]{40}$/i.test(capabilityClean(sourceRevision)))issues.push('EXACT_SOURCE_REVISION_REQUIRED');
   if(!capabilityClean(benchmarkKey)||!capabilityClean(deviceClass)||!capabilityClean(baselineId)){
     issues.push('FIXED_BENCHMARK_DEVICE_AND_BASELINE_REQUIRED');
   }
@@ -1615,6 +1616,7 @@ export function verifyVibeCausalGameplayContract(contract={},trace={}){
     }
     if(events.length!==steps.length)issues.push('UNEXPECTED_OR_MISSING_CAUSAL_EVENT');
     let previous=null;
+    const uniqueEventIds=new Set();
     for(let i=0;i<events.length;i++){
       const event=events[i];
       if(!event||event.kind!==steps[i]||event.actionId!==actionId||
@@ -1623,6 +1625,8 @@ export function verifyVibeCausalGameplayContract(contract={},trace={}){
         (previous&&event.timestampMs<=previous.timestampMs)){
         issues.push('UNBOUND_OR_OUT_OF_ORDER_CAUSAL_EVENT:'+i);
       }
+      if(event?.eventId&&uniqueEventIds.has(event.eventId))issues.push('DUPLICATE_CAUSAL_EVENT_ID:'+i);
+      if(event?.eventId)uniqueEventIds.add(event.eventId);
       previous=event;
     }
     const start=events[0],last=events.at(-1),hit=events[3];
