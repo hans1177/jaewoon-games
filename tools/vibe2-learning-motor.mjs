@@ -1673,7 +1673,7 @@ export function buildVerifiedVibeCapabilityLedger(attempts=[]){
   })));
 }
 
-export function assessVibeCodingCapabilities({recipes=[],attempts=[],failures=[],causalContract={},causalTrace={},candidates=[],transfers=[],holdouts=[],engine='',genre='',sourceRevision=''}={}){
+export function assessVibeCodingCapabilities({recipes=[],attempts=[],failures=[],causalContract={},causalTrace={},candidates=[],transfers=[],holdouts=[],engine='',genre='',sourceRevision='',optimizationBenchmark=null}={}){
   const valid=capabilityRows(recipes).filter(r=>capabilityProof(r,sourceRevision)&&r.verified===true
     &&capabilityEngine(r.engine)===capabilityEngine(engine)
     &&(!genre||capabilityEngine(r.genre)===capabilityEngine(genre))
@@ -1695,8 +1695,8 @@ export function assessVibeCodingCapabilities({recipes=[],attempts=[],failures=[]
     c.saveAndBalancePreserved===true&&c.sameTaskBudget===true&&
     Number.isFinite(c.regressionCount)&&c.regressionCount>=0&&Number.isFinite(c.runtimeMs)&&c.runtimeMs>=0);
   verifiedCandidates.sort((a,b)=>a.regressionCount-b.regressionCount||a.runtimeMs-b.runtimeMs||capabilityClean(a.id).localeCompare(capabilityClean(b.id)));
-  const c06=arguments[0]?.optimizationBenchmark?
-    chooseRegressionSafeVibeWinner(candidates,{...arguments[0].optimizationBenchmark,sourceRevision}):
+  const c06=optimizationBenchmark?
+    chooseRegressionSafeVibeWinner(candidates,{...optimizationBenchmark,sourceRevision}):
     capabilityResult('C06',verifiedCandidates.length>=2,verifiedCandidates.length>=2?[]:['PAIRED_VERIFIED_CANDIDATES_REQUIRED'],{
       winnerId:verifiedCandidates.length>=2?verifiedCandidates[0].id:null,comparisonOnly:true
     });
