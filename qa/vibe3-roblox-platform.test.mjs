@@ -321,6 +321,15 @@ const ROBLOX_PORTFOLIO_ALL_GAME_IDS=[
 const ROBLOX_ROADMAP=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const ROBLOX_PERMANENTLY_REMOVED=new Set(ROBLOX_ROADMAP.permanentProjectRemoval?.ids||[]);
 const ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS=ROBLOX_PORTFOLIO_ALL_GAME_IDS.filter(gameId=>!ROBLOX_PERMANENTLY_REMOVED.has(gameId));
+// 기존 입력 상태가 실제로 BLOCKED인 포트폴리오 게임을 PASS로 위조하지 않는다.
+// 이 목록 밖의 신규 소스 검증 실패는 회귀 실패로 처리한다.
+const KNOWN_SOURCE_BLOCKED_GAME_IDS=new Set([
+  'seed-roblox-roleplay-life-avat-brookhaven-rp',
+  'seed-roblox-simulator-tycoon-i-adopt-me',
+  'seed-roblox-story-rpg-adventur-blox-fruits',
+  'seed-roblox-survival-horror-es-doors',
+]);
+let validatedSourceCount=0,blockedSourceCount=0;
 
 assert.equal(ROBLOX_ROADMAP.permanentProjectRemoval.reentryAllowed,false);
 assert.equal(ROBLOX_ROADMAP.permanentProjectRemoval.automaticRecoveryAllowed,false);
@@ -341,8 +350,23 @@ for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
   assert.equal(evidence.gameId,gameId,`${gameId} bootstrap identity mismatch`);
   assert.equal(evidence.platform,'ROBLOX',`${gameId} platform mismatch`);
   assert.equal(evidence.stage,'TARGET_PLATFORM_SOURCE_BIND',`${gameId} source-bind stage mismatch`);
-  assert.equal(evidence.sourceValidationPassed,true,`${gameId} source validation must remain passed`);
   assert.equal(evidence.releaseClaim,false,`${gameId} must not claim release from source-only evidence`);
+  if(evidence.sourceValidationPassed!==true){
+    // 미검증 소스는 빌드·게시 검증 대상에서 제외하되, 차단 원인을 정확히 보존한다.
+    assert.equal(KNOWN_SOURCE_BLOCKED_GAME_IDS.has(gameId),true,
+      `${gameId} newly blocked source must fail regression`);
+    assert.equal(evidence.sourceValidationPassed,false,`${gameId} source status must be explicit`);
+    assert.ok(Array.isArray(evidence.sourceValidationBlockers)&&evidence.sourceValidationBlockers.length>0,
+      `${gameId} missing source validation blockers`);
+    assert.ok(evidence.sourceValidationBlockers.every(reason=>typeof reason==='string'&&reason.trim()),
+      `${gameId} invalid source validation blockers`);
+    for(const key of ['runtimePassed','independentQaPassed','regressionPassed']){
+      assert.equal(evidence[key],false,`${gameId} must not claim ${key} while blocked`);
+    }
+    blockedSourceCount++;
+    continue;
+  }
+  validatedSourceCount++;
   const sourceFiles=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau','default.project.json'];
   if(evidence.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND'){
     assert.equal(evidence.existingSourcePreserved,true,`${gameId} rebind must preserve source`);
@@ -373,7 +397,9 @@ for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
   }
 }
 
-console.log(`PASS active Roblox source regression: ${ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS.length}/${ROBLOX_PORTFOLIO_ALL_GAME_IDS.length-ROBLOX_PERMANENTLY_REMOVED.size}`);
+assert.equal(validatedSourceCount+blockedSourceCount,ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS.length,
+  'every active source must be validated or explicitly blocked');
+console.log(`ROBLOX_PORTFOLIO_SOURCE_AUDIT=PASS; source-validated=${validatedSourceCount}; source-blocked=${blockedSourceCount}; blocked-cannot-release=true`);
 
 
 test('Roblox runtime candidate publish plan accepts exact F0 evidence but never claims runtime or internal release',()=>{

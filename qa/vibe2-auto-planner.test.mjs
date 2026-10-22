@@ -70,9 +70,9 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
     .developmentLifecycleMachine.focusedDevelopmentCaretakers;
-  assert.deepEqual(focus.ownerFocusedGameIds,['simple-rpg','fantasy-survival','cozy-island']);
+  assert.deepEqual(focus.ownerFocusedGameIds,['simple-rpg','insect-survival','cozy-island']);
   assert.deepEqual(focus.ownerFocusedGamePlatforms,{
-    'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'
+    'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'
   });
   const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
   assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
@@ -84,20 +84,26 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
     assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
       'other owner permanent removals must remain protected');
+  assert.ok(realProjects.some(project=>project.gameId==='insect-survival'&&project.engine==='web'
+    &&focusedCaretakerProject(project,repoRoot)),
+    'the existing insect-survival Web source must be admitted to the focused lane');
+  assert.ok(realProjects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='web'
+    &&!focusedCaretakerProject(project,repoRoot)),
+    'fantasy-survival must remain developable but leave the focused lane');
   const projects=collectProjects({}, {games:[
-    {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
-      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'},
+    {id:'insect-survival',name:'곤충 생존기',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/insect-survival/'},
     {id:'cozy-island',name:'포근섬',productionClass:'DEVELOPMENT_CONFIRMED',
       lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/cozy-island/'}
   ]},repoRoot,{items:[]});
   const selected=projects.filter(project=>focusedCaretakerProject(project,repoRoot))
     .map(project=>project.gameId+'|'+project.engine).sort();
   assert.deepEqual(selected,[
-    'cozy-island|web','fantasy-survival|web','simple-rpg|roblox'
+    'cozy-island|web','insect-survival|web','simple-rpg|roblox'
   ]);
-  assert.ok(projects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='roblox'
+  assert.ok(projects.some(project=>project.gameId==='insect-survival'&&project.engine==='roblox'
     &&!focusedCaretakerProject(project,repoRoot)),
-    'the matching Roblox counterpart must keep developing but not consume a focus slot');
+    'the matching Roblox counterpart must not consume a Web focus slot');
   assert.ok(projects.some(project=>project.gameId==='cozy-island'&&project.engine==='roblox'
     &&!focusedCaretakerProject(project,repoRoot)));
   assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
@@ -114,8 +120,8 @@ test('exact focus lanes remain visible when generic backlog is full without bypa
       enabled:true,targetFocusedGames:3,maxFocusedGames:3,
       completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true},
       focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
-      ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
-      ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'}
+      ownerFocusedGameIds:['simple-rpg','insect-survival','cozy-island'],
+      ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'}
     }}}));
     const projectRoot=path.join(root,'roblox-games/simple-rpg');
     fs.mkdirSync(path.join(projectRoot,'server'),{recursive:true});
@@ -124,12 +130,12 @@ test('exact focus lanes remain visible when generic backlog is full without bypa
     }));
     fs.writeFileSync(path.join(projectRoot,'server/Game.server.luau'),
       '-- TODO: preserve existing first-play save compatibility\nlocal SaveState={}\nreturn SaveState\n');
-    for(const id of ['fantasy-survival','cozy-island']){
+    for(const id of ['insect-survival','cozy-island']){
       fs.mkdirSync(path.join(root,'web-games',id),{recursive:true});
       fs.writeFileSync(path.join(root,'web-games',id,'index.html'),
         '<!doctype html><html><head><title>'+id+'</title></head><body><button id="start">Start</button><canvas></canvas><script>document.getElementById("start").onclick=()=>{};</script></body></html>');
     }
-    const games=['fantasy-survival','cozy-island'].map(id=>({
+    const games=['insect-survival','cozy-island'].map(id=>({
       id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
       webPath:'/web-games/'+id+'/',hasWebArchive:true
     }));
@@ -146,7 +152,7 @@ test('exact focus lanes remain visible when generic backlog is full without bypa
       maxConcurrentTasks:4,queueMaxConcurrentTasks:64,planningBacklogTarget:60});
     assert.equal(result.planningBacklog.normalCapacity,0);
     assert.deepEqual(result.planningBacklog.focusedMissingLanes,[
-      'cozy-island|web','fantasy-survival|web','simple-rpg|roblox'
+      'cozy-island|web','insect-survival|web','simple-rpg|roblox'
     ]);
     assert.equal(result.planningBacklog.focusedSeedCapacity,3);
     assert.equal(result.queue.maxConcurrentTasks,64);
