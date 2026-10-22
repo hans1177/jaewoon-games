@@ -99,6 +99,7 @@ const originals={},enemies=[],resources=[];
 let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
 let resourceVisualRebuilds=0,decorVisibilityTick=0;
+let floorGpuMeshes=[],floorGpuInstances=0;
 const heroGroundBounds=new THREE.Box3();
 const headingVector=new THREE.Vector3(),cameraBehind=new THREE.Vector3(),cameraFocus=new THREE.Vector3();
 const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();scene.add(world,actors,decor);
@@ -109,6 +110,42 @@ game.append(announce);
 // All game-state coordinates remain unchanged; these constants affect visuals only.
 const ratio=.025,GROUND_SURFACE_Y=0,FOOT_CLEARANCE=.035,GROUND_TILE_SPAN=14;
 const to3=p=>new THREE.Vector3(p.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,p.y*ratio);
+// Keep original CC0 panel objects as non-rendered geometry evidence while
+// rendering the same 12 transforms in GPU batches. No floor geometry edits.
+function batchGroundTiles(tiles){
+ if(!THREE.InstancedMesh||tiles.length===0)return false;
+ const batches=[];
+ try{
+  const surfaces=[];
+  for(const tile of tiles){
+   tile.updateMatrixWorld(true);
+   const meshes=[];
+   tile.traverse(part=>{if(part.isMesh)meshes.push(part)});
+   if(!meshes.length||(surfaces.length&&meshes.length!==surfaces[0].length))
+    throw Error('CC0_TILE_COMPONENT_MISMATCH');
+   surfaces.push(meshes);
+  }
+  for(let part=0;part<surfaces[0].length;part++){
+   const sample=surfaces[0][part];
+   const batch=new THREE.InstancedMesh(sample.geometry,sample.material,tiles.length);
+   batch.userData.cc0FloorInstance=true;
+   batch.frustumCulled=false; // tiny fixed field; prevent incomplete bounds clipping
+   batch.castShadow=false;batch.receiveShadow=true;
+   for(let tile=0;tile<tiles.length;tile++)
+    batch.setMatrixAt(tile,surfaces[tile][part].matrixWorld);
+   batch.instanceMatrix.needsUpdate=true;
+   batches.push(batch);
+  }
+  for(const mesh of batches)world.add(mesh);
+  for(const tile of tiles)tile.visible=false;
+  floorGpuMeshes=batches;floorGpuInstances=tiles.length;
+  return true;
+ }catch(error){
+  for(const batch of batches)batch.dispose?.();
+  console.warn('INSECT_CC0_FLOOR_GPU_BATCH_FAILED',error);
+  return false; // Original, unchanged CC0 tiles remain playable/visible.
+ }
+}
 function environment(frame){
  if(fieldBuilt)return;fieldBuilt=true;
  const floor=derived('floor',.18,'#adc291');
@@ -145,6 +182,8 @@ function environment(frame){
   panel.userData.isGroundTile=true;
   world.add(panel);
  }
+ const floorTiles=world.children.filter(item=>item.userData.isGroundTile===true);
+ batchGroundTiles(floorTiles);
  // Read-only browser QA evidence from actual transformed 3D meshes.
  window.insect3DGroundingProof=()=>{
   const tiles=world.children.filter(item=>item.userData.isGroundTile===true);
@@ -152,6 +191,9 @@ function environment(frame){
   const floorTop=first?new THREE.Box3().setFromObject(first).max.y:null;
   const heroBottom=avatar?new THREE.Box3().setFromObject(avatar).min.y:null;
   return {tileCount:tiles.length,floorTop,heroBottom,
+   floorGpuBatches:floorGpuMeshes.length,
+   floorGpuInstances,
+   floorGpuVisible:floorGpuMeshes.length>0&&floorGpuMeshes.every(mesh=>mesh.visible!==false&&mesh.count===tiles.length),
    worldReady,heroPresent:Boolean(avatar),
    animationGroundLift:avatar?.userData.visualGroundCorrection??0,
    // Stable visual-only world reference, not a gameplay collision claim.
@@ -327,6 +369,7 @@ window.insect3DPerformanceProof=()=>({
  averageFrameMs:perfBudget.averageFrameMs,latestFrameMs:perfBudget.latestFrameMs,
  pixelRatio:perfBudget.pixelRatio,pixelRatioCap:perfBudget.cap,pixelRatioFloor:perfBudget.floor,
  resolutionAdjustments:perfBudget.adjustments,resourceVisualRebuilds,
+ floorGpuBatches:floorGpuMeshes.length,floorGpuInstances,
  visibleDecor:decor.children.filter(item=>item.visible).length,totalDecor:decor.children.length,
  renderCalls:perfBudget.renderCalls,triangles:perfBudget.triangles,
  activeWebGL:worldReady&&renderer.domElement.dataset.renderedFrame==='true',
