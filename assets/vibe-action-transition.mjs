@@ -50,7 +50,7 @@ export function createObservedTravelSampler({sampleWindowMs=75,minStartSpeed=14,
   return Object.freeze({sample,reset,get state(){return last;}});
 }
 export function selectExistingTravelClip({clips=[],profile={},travel={}}={}){
-  const names=new Set((Array.isArray(clips)?clips:[]).map(row=>
+  const names=clips instanceof Set?clips:new Set((Array.isArray(clips)?clips:[]).map(row=>
     typeof row==='string'?row:row?.name).filter(Boolean));
   const preferred=profile.cc0Clips||{};
   const first=(...options)=>options.find(name=>name&&names.has(name))||'';
@@ -70,7 +70,7 @@ export function selectExistingTravelClip({clips=[],profile={},travel={}}={}){
   return Object.freeze({name,playbackRate:clamp(speed/base,.82,1.22)});
 }
 export function selectExistingWeaponAttack({clips=[],profile={},weapon='NONE',strikeIndex=0}={}){
-  const available=new Set((Array.isArray(clips)?clips:[]).map(c=>
+  const available=clips instanceof Set?clips:new Set((Array.isArray(clips)?clips:[]).map(c=>
     typeof c==='string'?c:c?.name).filter(Boolean));
   const key=String(weapon||'NONE').toUpperCase();
   const candidates={
