@@ -1,8 +1,9 @@
+import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   validateLocalDevelopmentPolicy,proposeBoundedReplacement,selectRelevantExcerpt,
-  requiredReviewPass
+  requiredReviewPass,assessLocalMainSync
 } from '../tools/vibe2-local-web-develop.mjs';
 
 const chat={sourceWriteAllowed:false,githubWriteAllowed:false,
@@ -102,4 +103,27 @@ test('manual merge requires head QA and security; Cloudflare is separately not a
     status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,true);
   assert.equal(requiredReviewPass(runs.map(r=>r.name==='Company Security Immune System'
     ?{...r,conclusion:'failure'}:r),checks,sha).pass,false);
+});
+
+test('post-merge local sync blocks stale, dirty and foreign sources',()=>{
+ const safe={branch:'main',dirty:'',origin:'https://github.com/hans1177/jaewoon-games.git',fastForward:true,mergeIncluded:true};
+ assert.deepEqual(assessLocalMainSync(safe),{pass:true,blockers:[]});
+ for(const [change,reason] of [
+  [{branch:'vibe2/candidate/game'},'LOCAL_SYNC_MAIN_BRANCH_REQUIRED'],
+  [{dirty:' M web-games/insect-survival/index.html'},'LOCAL_SYNC_DIRTY_WORKTREE'],
+  [{origin:'https://github.com/untrusted/other.git'},'LOCAL_SYNC_WRONG_REPOSITORY'],
+  [{fastForward:false},'LOCAL_SYNC_NON_FAST_FORWARD_BLOCKED'],
+  [{mergeIncluded:false},'LOCAL_SYNC_EXPECTED_MERGE_NOT_ON_MAIN']
+ ]){
+  const result=assessLocalMainSync({...safe,...change});
+  assert.equal(result.pass,false);
+  assert.ok(result.blockers.includes(reason));
+ }
+ const source=fs.readFileSync('tools/vibe2-local-web-develop.mjs','utf8');
+ assert.match(source,/--sync-main/);
+ assert.match(source,/merge','--ff-only','refs\/remotes\/origin\/main/);
+ assert.match(source,/expectedMergeSha:after\.merge_commit_sha/);
+ assert.doesNotMatch(source,/git\(\['reset','--hard'/);
+ assert.doesNotMatch(source,/git\(\['push','--force'/);
+ assert.match(source,/LOCAL_MAIN_SYNC=FAST_FORWARD_VERIFIED/);
 });
