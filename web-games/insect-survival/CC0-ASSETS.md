@@ -46,3 +46,12 @@
 - 월드 렌더러는 화면 표시를 변경하지 않는 읽기 전용 진단 `window.insect3DGroundingProof()`를 통해 CC0 바닥 타일 실제 메시 수(12), `THREE.Box3` 변환된 바닥 윗면 Y, 현재 애니메이션 캐릭터 메시의 최저점 Y를 제공한다. 단독 브라우저 QA에서 지표와 캐릭터 접지를 확인하고 기준 위반 시 실패한다.
 - 기존 Core QA에서 실행하던 `qa/insect-survival.test.mjs`가 새 `qa/insect-survival-grounding.test.mjs`를 가져오므로 지면 정렬·오류 복구 집중 회귀 8개가 실제 CI 명령에 포함된다.
 - 이 추가 검증 코드 자체는 로컬 시뮬레이션에서 통과했지만 **해당 CI 브라우저 검사 결과와 실제 모바일 기기 검증은 아직 별개**이며 미검증 상태를 유지한다.
+
+## 로컬 개발·Vibe 엔진 동기화와 기술 공유
+
+- 기존 시스템의 단일 권위 저장소는 `main`이며, 개발 후보는 별도 브랜치와 PR에서 검증한다. 로컬 Ollama 개발은 `tools/vibe2-local-web-develop.mjs`를 사용하고, 기존 Vibe QA·보안·F0~F9 릴리스 관문과 소유자 병합 승인은 그대로 유지한다.
+- **로컬에서 소유자가 직접 승인 PR을 병합**하는 `node tools/vibe2-local-web-develop.mjs --merge-pr=번호` 흐름은 병합 검증 직후 동기화를 시도한다. 로컬이 원본 저장소의 **깨끗한 `main`**이고 원격이 현재 커밋의 후손이며 병합 커밋을 포함할 때만 `git merge --ff-only`를 실행한다. 그 외에는 `LOCAL_MAIN_SYNC=BLOCKED` 로그를 남기고 개발 파일·로컬 브랜치를 덮어쓰지 않는다.
+- **웹 GitHub에서 병합한 경우** 로컬 PC는 원격으로 직접 조작되지 않는다. 소유자가 PC의 같은 저장소 `main`에서 `node tools/vibe2-local-web-develop.mjs --sync-main`을 실행하면 안전한 fast-forward 동기화를 수행한다. 이 명령의 원격 접근과 PC 전원·접속은 로컬 실행 환경에 달려 있으며, 웹 도구로 사용자의 컴퓨터에 자동 설치·스케줄링했다는 뜻이 아니다.
+- Vibe 엔진과의 **개발 방식 공유**는 새 학습 파이프라인을 생성하지 않는다. 기존 `company-learning/assistant-vibe-coauthoring-log.json`의 `assistant_insect_grounding_cc0_local_vibe_handoff_20261023` 기록과 기존 `tools/company-system-ai-external-learning-feed.mjs` 검증 단계가 연결된다. 현재 `learningState=TRACE_ONLY`; 검증되지 않은 후보 개발을 `PROMOTED`, 모델 학습 성공, 플랫폼별 실기기 QA PASS로 표시하지 않는다.
+- 재사용 아이디어: ① CC0 지면 원본의 실제 경계 기준으로 타일 배치 ② 오리지널 리그 모션 실행 **후** 캐릭터 시각 접지 ③ HTML 시작 성공 대신 실 WebGL2 버퍼·캐릭터 바닥 좌표 검사 ④ 모바일 화면 모의뿐 아니라 실제 터치 입력과 동작 상태 변화 검증 ⑤ 실기기 Android/GPU 및 장시간 게임 QA는 별도 검증.
+- 곤충생존기 PR #9262는 최신 코드·보안·전체 QA 및 소유자 승인 전까지 `Draft`, `main` 미병합 상태를 유지한다.
