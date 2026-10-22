@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   validateLocalDevelopmentPolicy,proposeBoundedReplacement,selectRelevantExcerpt,
-  requiredReviewPass
+  requiredReviewPass,cleanMain
 } from '../tools/vibe2-local-web-develop.mjs';
 
 const chat={sourceWriteAllowed:false,githubWriteAllowed:false,
@@ -84,6 +84,52 @@ test('only bounded relevant source excerpts are offered to a small local model',
   assert.match(found.text,/PLACE_HERE/);
   assert.throws(()=>selectRelevantExcerpt(source,'UNKNOWN_NEEDLE'),/EXCERPT_MATCH_NOT_FOUND/);
 });
+test('local Vibe automatically syncs clean main from authenticated GitHub, never repeats unchanged merges',()=>{
+  const before='a'.repeat(40),after='b'.repeat(40);
+  let head=before,merges=0;
+  const gitCommand=args=>{
+    const cmd=args.join(' ');
+    if(cmd==='branch --show-current')return 'main';
+    if(cmd==='status --porcelain')return '';
+    if(cmd==='remote get-url origin')return 'git@github.com:hans1177/jaewoon-games.git';
+    if(cmd==='fetch --quiet origin main')return '';
+    if(cmd==='rev-parse HEAD')return head;
+    if(cmd==='rev-parse refs/remotes/origin/main')return after;
+    if(cmd==='merge-base HEAD refs/remotes/origin/main')return before;
+    if(cmd==='merge --ff-only refs/remotes/origin/main'){merges++;head=after;return '';}
+    throw Error('UNEXPECTED_GIT_COMMAND:'+cmd);
+  };
+  assert.deepEqual(cleanMain({gitCommand}),{synced:true,revision:after});
+  assert.deepEqual(cleanMain({gitCommand}),{synced:false,revision:after});
+  assert.equal(merges,1);
+});
+test('local Vibe blocks dirty, non-main, foreign remote, divergent and invalid revisions',()=>{
+  const local='a'.repeat(40),remote='b'.repeat(40);
+  const scenarios=[
+    {branch:'feature',error:/LOCAL_DEV_MAIN_BRANCH_REQUIRED/},
+    {dirty:' M game.html',error:/LOCAL_DEV_DIRTY_WORKTREE_STOP/},
+    {origin:'https://github.com/unknown/repo.git',error:/LOCAL_DEV_WRONG_REPOSITORY/},
+    {base:'c'.repeat(40),error:/LOCAL_DEV_DIVERGED_MAIN_STOP/},
+    {head:'bad-sha',error:/LOCAL_DEV_SYNC_REVISION_INVALID/}
+  ];
+  for(const scenario of scenarios){
+    const calls=[];
+    const gitCommand=args=>{
+      const cmd=args.join(' ');calls.push(cmd);
+      if(cmd==='branch --show-current')return scenario.branch||'main';
+      if(cmd==='status --porcelain')return scenario.dirty||'';
+      if(cmd==='remote get-url origin')return scenario.origin||'https://github.com/hans1177/jaewoon-games';
+      if(cmd==='fetch --quiet origin main')return '';
+      if(cmd==='rev-parse HEAD')return scenario.head||local;
+      if(cmd==='rev-parse refs/remotes/origin/main')return remote;
+      if(cmd==='merge-base HEAD refs/remotes/origin/main')return scenario.base||local;
+      throw Error('UNEXPECTED_MUTATION:'+cmd);
+    };
+    assert.throws(()=>cleanMain({gitCommand}),scenario.error);
+    assert.ok(!calls.some(c=>/(?:merge --ff-only|rebase|reset|push|force)/.test(c)));
+  }
+});
+
 test('manual merge requires head QA and security; Cloudflare is separately not a deploy PASS',()=>{
   const sha='a'.repeat(40);
   const names=['Vibe2 Parallelism Contract QA','Company Evolution QA','Vibe3 Engine Contract',
