@@ -76,7 +76,7 @@ export function buildGithubDevelopmentFocus({gameId='',sourceRoot=''}={}){
   '지시와 무관한 홈페이지, 타 게임, 관리 보고서, 학습 상태, 회사 정책 수정은 별도 작업으로 확장하지 않는다.',
   '코드 변경이 없거나 테스트 증거가 없으면 개발 완료로 표시하지 않는다.',
   '보안, 중앙 정책, 실제 실행, F0-F9, 독립 QA, 소유자 승인·병합 관문은 그대로 적용한다.'
- ].join('\\n');
+ ].join('\n');
 }
 export function buildPwaVibeTask(task,context={}){
   const taskId=safeUuid(task?.id);if(!taskId)throw new Error('PWA 작업 UUID 오류');
