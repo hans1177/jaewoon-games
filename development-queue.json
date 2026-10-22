@@ -83873,10 +83873,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-22T01:43:50.257Z",
+      "updatedAt": "2026-10-22T01:45:21.940Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -84402,14 +84402,14 @@
       "robloxBuildSourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-21T17:17:09.052Z",
+      "robloxBuildPreflightPassedAt": "2026-10-22T01:45:21.940Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "tower-choice-rpg",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-21T17:06:21.979Z",
+        "checkedAt": "2026-10-22T01:33:59.768Z",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:fd3dc9a9dee965827e7f58752a8574e3070b4f362678cb548f401e8bdf6b4e18",
         "secondaryOwnerFocus": false,
@@ -84444,10 +84444,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "gemini-3.5-flash-lite",
+            "model": "openai/gpt-oss-20b",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence and exact deterministic package identity checks have successfully passed."
+            "note": "All provided build evidence indicates that the source revision, artifact identity, and validation checks have passed. No contradictions exist in the BUILD_EVIDENCE, so the immutable package is cleared to begin runtime testing."
           }
         ],
         "blockers": [],
@@ -84461,12 +84461,12 @@
         "gameId": "tower-choice-rpg",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T17:06:22.680Z",
+        "checkedAt": "2026-10-22T01:34:00.645Z",
         "sourcePath": "roblox-games/tower-choice-rpg",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:fd3dc9a9dee965827e7f58752a8574e3070b4f362678cb548f401e8bdf6b4e18",
         "rebuiltArtifactIdentity": "sha256:fd3dc9a9dee965827e7f58752a8574e3070b4f362678cb548f401e8bdf6b4e18",
-        "artifactRunId": 39634552732,
+        "artifactRunId": 39702679020,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "1f6dd3ae6e679c1b0e901806ef224e0891ac80b9767b6e059e89a2aebbaedd10",
         "observedAssetSelectionFingerprint": "1f6dd3ae6e679c1b0e901806ef224e0891ac80b9767b6e059e89a2aebbaedd10",
@@ -84763,12 +84763,12 @@
         "gameId": "tower-choice-rpg",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-21T17:06:22.680Z",
+        "checkedAt": "2026-10-22T01:34:00.645Z",
         "sourcePath": "roblox-games/tower-choice-rpg",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:fd3dc9a9dee965827e7f58752a8574e3070b4f362678cb548f401e8bdf6b4e18",
         "rebuiltArtifactIdentity": "sha256:fd3dc9a9dee965827e7f58752a8574e3070b4f362678cb548f401e8bdf6b4e18",
-        "artifactRunId": 39634552732,
+        "artifactRunId": 39702679020,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "1f6dd3ae6e679c1b0e901806ef224e0891ac80b9767b6e059e89a2aebbaedd10",
         "observedAssetSelectionFingerprint": "1f6dd3ae6e679c1b0e901806ef224e0891ac80b9767b6e059e89a2aebbaedd10",
@@ -85092,8 +85092,8 @@
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:fd3dc9a9dee965827e7f58752a8574e3070b4f362678cb548f401e8bdf6b4e18",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39634552732,
-        "testedAt": "2026-10-21T17:17:09.052Z",
+        "workflowRunId": 39702679020,
+        "testedAt": "2026-10-22T01:45:21.940Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -88158,7 +88158,7 @@
         ]
       },
       "robloxBuildArtifactIdentity": "sha256:fd3dc9a9dee965827e7f58752a8574e3070b4f362678cb548f401e8bdf6b4e18",
-      "robloxBuildPassedAt": "2026-10-21T17:17:09.052Z",
+      "robloxBuildPassedAt": "2026-10-22T01:45:21.940Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -92914,7 +92914,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-22T01:43:50.257Z",
+  "updatedAt": "2026-10-22T01:45:21.940Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -92980,5 +92980,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
