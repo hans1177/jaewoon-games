@@ -246,6 +246,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   # PR updates supersede their own checks, but each merged main commit must finish its QA.
@@ -262,7 +263,9 @@ jobs:
       coding_benchmark: ${{ steps.scope.outputs.coding_benchmark }}
       changed_web_games: ${{ steps.scope.outputs.changed_web_games }}
     steps:
+      # Read PR path diffs from API: avoid gigantic game asset checkout in scope.
       - uses: actions/checkout@v4
+        if: ${{ github.event_name == 'push' }}
         with:
           fetch-depth: 2
           fetch-tags: false
@@ -275,25 +278,51 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PR_BASE: ${{ github.event.pull_request.base.sha }}
           PUSH_BEFORE: ${{ github.event.before }}
+          GH_READ_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          REPO_NAME: ${{ github.repository }}
         run: |
           set -euo pipefail
           parallelism_only=NO
-          # PR 검증은 GitHub가 만든 현재 합성 병합 커밋의 첫 부모와 비교한다.
-          # 오래된 PR 생성 당시 base SHA를 쓰면 이후 main 변경까지 PR 소스로 오분류한다.
-          if [ "$EVENT_NAME" = 'pull_request' ] && git rev-parse --verify -q 'HEAD^2' >/dev/null; then
-            base_sha="$(git rev-parse 'HEAD^1')"
-          elif [ "$EVENT_NAME" = 'pull_request' ] && [ -n "${PR_BASE:-}" ]; then
-            base_sha="$PR_BASE"
+          if [ "$EVENT_NAME" = 'pull_request' ]; then
+            # Exact-head paginated PR files; errors, truncation and stale heads stop QA.
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const {GH_READ_TOKEN:token,REPO_NAME:repo,PR_NUMBER:number,EXPECTED_PR_HEAD:head}=process.env;
+          if(!token||!/^\d+$/.test(number||'')||!repo||!(/^[a-f0-9]{40}$/i).test(head||''))throw Error('CORE_SCOPE_PR_IDENTITY_INVALID');
+          const api='https://api.github.com/repos/'+repo+'/pulls/'+number;
+          const headers={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          async function get(url){
+            const response=await fetch(url,{headers,signal:AbortSignal.timeout(30000)});
+            if(!response.ok)throw Error('CORE_SCOPE_GITHUB_API_FAILED:'+response.status);
+            return response.json();
+          }
+          const before=await get(api);
+          if(before.head?.sha!==head)throw Error('CORE_SCOPE_STALE_HEAD');
+          if(!Number.isSafeInteger(before.changed_files)||before.changed_files<1||before.changed_files>3000)throw Error('CORE_SCOPE_CHANGED_FILE_LIMIT');
+          const files=[];
+          for(let page=1;page<=30;page++){
+            const entries=await get(api+'/files?per_page=100&page='+page);
+            if(!Array.isArray(entries)||entries.some(item=>typeof item.filename!=='string'||!item.filename))throw Error('CORE_SCOPE_MALFORMED_PR_FILES');
+            files.push(...entries.map(item=>item.filename));
+            if(entries.length<100)break;
+          }
+          const after=await get(api);
+          if(after.head?.sha!==head||files.length!==after.changed_files||new Set(files).size!==files.length)throw Error('CORE_SCOPE_STALE_OR_PARTIAL_PR_FILES');
+          fs.writeFileSync('/tmp/vibe2-core-qa-files.txt',files.join('\n')+'\n');
+          console.log('VIBE2_CORE_QA_PR_FILES_API=PASS changed_files='+files.length);
+          NODE
           elif [ "$EVENT_NAME" = 'push' ] && [ -n "${PUSH_BEFORE:-}" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+$'; then
             base_sha="$PUSH_BEFORE"
+            git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
+            git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
           else
             echo "parallelism_only=$parallelism_only" >> "$GITHUB_OUTPUT"
             echo 'changed_web_games=ALL' >> "$GITHUB_OUTPUT"
             echo 'VIBE2_CORE_QA_SCOPE=FULL_NON_DIFF_EVENT'
             exit 0
           fi
-          git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
-          git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
           changed_web_games=ALL
           if [ "$EVENT_NAME" = 'pull_request' ]; then
             changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
