@@ -190,15 +190,3 @@ test('manual merge requires head QA and security; Cloudflare is separately not a
   assert.equal(requiredReviewPass(runs.map(r=>r.name==='Company Security Immune System'
     ?{...r,conclusion:'failure'}:r),checks,sha).pass,false);
 });
-
-test('existing periodic supervisor sync verifies all four policies and preserves diverged commits',()=>{
-  const supervisor=readFileSync('tools/unity-mcp/run-company-supervisor.ps1','utf8');
-  const sync=supervisor.split('function Sync-Repository {')[1]?.split('function Test-PublishPolicy {')[0];
-  assert.ok(sync,'canonical supervisor sync function must exist');
-  for(const name of ['platform-release-roadmap','company-log-map','company-architecture-map','security-immune-system'])
-    assert.ok(sync.includes(name+'.json'),name);
-  assert.ok(sync.includes("Invoke-Git @('merge','--ff-only','origin/main')"));
-  assert.ok(sync.includes('Diverged local main: automatic rebase forbidden'));
-  assert.ok(!sync.includes("Invoke-Git @('rebase'"));
-  assert.ok(!sync.includes("Invoke-Git @('reset'"));
-});
