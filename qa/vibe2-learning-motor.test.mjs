@@ -2399,6 +2399,17 @@ test('C05 real 3D locomotion detects moonwalking, slipping feet, levitation and 
   assert.equal(pass.nativePlatformVerifiedByThisFunction,false);
   const failed=(code,row)=>assert.ok(verifyVibeSpatialGameplayReplay(contract,{...trace,...row}).issues.includes(code),code);
   failed('ANIMATED_MOONWALK_WITHOUT_TRAVEL',{frames:[frame(100,0),frame(200,0)]});
+  failed('IDLE_ACTOR_FEET_STILL_CYCLING',{frames:[frame(100,0),
+    {...frame(200,0),moveIntent:false}]});
+  failed('LOCOMOTION_WITH_IDLE_ANIMATION',{frames:[frame(100,0),
+    {...frame(200,0.3),animationState:'IDLE'}]});
+  const malformedLeg=verifyVibeSpatialGameplayReplay({...contract,rigProportionCheckRequired:true},{
+    ...trace,frames:[
+      {...frame(100,0),leftShinRadiusMeters:0.08,rightShinRadiusMeters:0.08},
+      {...frame(200,0.3),leftShinRadiusMeters:0.2,rightShinRadiusMeters:0.08}
+    ]
+  });
+  assert.ok(malformedLeg.issues.includes('RIG_PROPORTIONS_CHANGE_DURING_ANIMATION'));
   failed('ROOT_MOTION_CONTRADICTS_INPUT',{frames:[frame(100,0),frame(200,-0.3)]});
   const planted=[frame(100,0),frame(200,0.3)].map((f,i)=>({...f,footPlanted:true,
     footWorldPosition:{x:i*0.4,y:0,z:0}}));
