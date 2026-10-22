@@ -31,6 +31,8 @@ export class StrongholdView3D {
     this.tmp=new THREE.Vector3();
     this.fortKey='';
     this.groundKey='';
+    this.lastDrawAt=performance.now();
+    this.cc0Character=null;
     this.palette={
       wood:this.material(0x805c38),stone:this.material(0xaaa89d),stoneDark:this.material(0x858c8b),
       slate:this.material(0x3e5055),roof:this.material(0x9c5747),thatch:this.material(0xc1a376),
@@ -59,6 +61,7 @@ export class StrongholdView3D {
     legacy.canvas.style.opacity='0';
     this.onContextLost=e=>{e.preventDefault();legacy.canvas.style.opacity='1';this.canvas.style.display='none';};
     this.canvas.addEventListener('webglcontextlost',this.onContextLost,false);
+    this.loadCC0Character();
   }
   material(color){return new THREE.MeshStandardMaterial({color,roughness:.88,metalness:0});}
   mesh(geometry,material,parent=this.ground){
@@ -145,6 +148,44 @@ export class StrongholdView3D {
     }
     this.groundKey=expanded+':'+g.state.barracksBuilt+':'+g.state.plots.map(q=>q.state+q.ready).join('');
   }
+  // Load the unmodified CC0 native rig and its original named clips once. Primitive
+  // actors remain a visual fallback only if the source asset cannot be loaded.
+  async loadCC0Character(){
+    try{
+      const [{GLTFLoader},{clone}]=await Promise.all([
+        import('three/addons/loaders/GLTFLoader.js'),
+        import('three/addons/utils/SkeletonUtils.js')
+      ]);
+      const url=new URL('../../assets/roblox/actors/native/rogue.glb',import.meta.url);
+      const gltf=await new GLTFLoader().loadAsync(url.href);
+      const bounds=new THREE.Box3().setFromObject(gltf.scene);
+      const size=bounds.getSize(new THREE.Vector3());
+      if(!Number.isFinite(size.y)||size.y<.01)throw Error('Empty CC0 character bounds');
+      this.cc0Character={model:gltf.scene,clips:gltf.animations||[],clone,bottom:bounds.min.y,height:size.y};
+      for(const actor of this.actors.values())this.applyOriginalCharacter(actor);
+    }catch(error){console.warn('[포근섬 CC0 원본 캐릭터 폴백]',error)}
+  }
+  applyOriginalCharacter(actor){
+    if(!this.cc0Character||actor.mixer)return;
+    const source=this.cc0Character;
+    const model=source.clone(source.model),ratio=68/source.height;
+    model.scale.multiplyScalar(ratio);
+    model.position.y=-source.bottom*ratio;
+    const tint=new THREE.Color(actor.type==='enemy'?0xf1b4a6:actor.type==='villager'?0xf4e0ac:0xd0e4f5);
+    model.traverse(piece=>{
+      if(!piece.isMesh)return;
+      const update=original=>{const copy=original?.clone?.()||new THREE.MeshStandardMaterial();if(copy.color)copy.color.multiply(tint);return copy};
+      piece.material=Array.isArray(piece.material)?piece.material.map(update):update(piece.material);
+    });
+    actor.group.clear();actor.group.add(model);
+    actor.mixer=new THREE.AnimationMixer(model);
+    actor.actions={};
+    for(const [kind,name] of Object.entries({idle:'Idle',run:'Running_A'})){
+      const clip=source.clips.find(c=>c.name===name);
+      if(clip)actor.actions[kind]=actor.mixer.clipAction(clip);
+    }
+    if(actor.actions.idle){actor.actions.idle.play();actor.currentMotion='idle'}
+  }
   createPerson(id,x,z,type='ally',large=false){
     const p=this.palette,mat=p[type]||p.ally,group=new THREE.Group();
     this.occupants.add(group);
@@ -157,7 +198,9 @@ export class StrongholdView3D {
     this.cube(group,p.wood,-22,40,0,5,42,5);
     group.position.set(x,16,z);
     if(large)group.scale.setScalar(1.65);
-    this.actors.set(id,{group,left,right,oldX:x,oldZ:z,lastMove:0,type});
+    const actor={group,left,right,oldX:x,oldZ:z,lastMove:0,type};
+    this.actors.set(id,actor);
+    if(this.cc0Character)this.applyOriginalCharacter(actor);
     return group;
   }
   makeFort(g){
@@ -217,8 +260,17 @@ export class StrongholdView3D {
     const motion=moving?Math.sin(seconds*13)*6:0;
     data.group.position.set(x,16+elevation+(moving?Math.abs(motion)*.4:0),z);
     if(moving)data.group.rotation.y=Math.atan2(dx,dz);
-    data.left.rotation.x=moving?motion*.035:0;
-    data.right.rotation.x=moving?-motion*.035:0;
+    if(data.mixer){
+      const next=moving?'run':'idle';
+      if(next!==data.currentMotion&&data.actions[next]){
+        data.actions[data.currentMotion]?.fadeOut(.13);
+        data.actions[next].reset().fadeIn(.13).play();
+        data.currentMotion=next;
+      }
+    }else{
+      data.left.rotation.x=moving?motion*.035:0;
+      data.right.rotation.x=moving?-motion*.035:0;
+    }
     data.oldX=x;data.oldZ=z;
   }
   syncActors(g,t){
@@ -276,8 +328,10 @@ export class StrongholdView3D {
     const fortressKey=this.fortSignature(g);
     if(fortressKey!==this.fortKey)this.makeFort(g);
     this.updateCamera(g);
-    const t=performance.now()*.001;
+    const now=performance.now(),t=now*.001;
+    const dt=Math.min(.05,Math.max(0,(now-this.lastDrawAt)/1000));this.lastDrawAt=now;
     this.syncActors(g,t);
+    for(const actor of this.actors.values())actor.mixer?.update(dt);
     const hour=g.state.minutes/60;
     const night=hour<6||hour>19;
     this.scene.background.setHex(night?0x24394e:0x94c9de);
