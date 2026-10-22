@@ -143,6 +143,31 @@ test('CC0 original spin, dodge and death actions use one-shot playback and accep
  a.node('saveBtn').events.click({});
 });
 
+test('native CC0 facing takes the shortest smooth turn and keeps idle feet still across refresh rates',()=>{
+ const start=world.indexOf('function blendFacingYaw('),end=world.indexOf('function follow(');
+ assert.ok(start>=0&&end>start,'presentation-only yaw and movement helpers required');
+ const context={Math,Number};
+ vm.runInNewContext(world.slice(start,end)+';globalThis.turn=blendFacingYaw;globalThis.walk=visualWalking',context);
+ const nearPi=Math.PI-.04,wrapped=-Math.PI+.04;
+ const turned=context.turn(nearPi,wrapped,1/60);
+ const before=Math.abs(Math.atan2(Math.sin(wrapped-nearPi),Math.cos(wrapped-nearPi)));
+ const after=Math.abs(Math.atan2(Math.sin(wrapped-turned),Math.cos(wrapped-turned)));
+ assert.ok(after<before,'turn follows shortest angle across +/- pi');
+ assert.ok(Math.abs(turned-nearPi)<.03,'turn must not snap through a full revolution');
+ assert.equal(context.turn(.5,1.2,0),.5,'zero elapsed time does not rotate');
+ for(const fps of [30,60,120]){
+  assert.equal(context.walk(false,.3/fps,1/fps),true,'walk at all refresh rates');
+  assert.equal(context.walk(false,.18/fps,1/fps),false,'stationary jitter does not start walking');
+  assert.equal(context.walk(true,.18/fps,1/fps),true,'hysteresis prevents rapid walk idle flicker');
+  assert.equal(context.walk(true,.08/fps,1/fps),false,'idle settles without moonwalking');
+ }
+ assert.match(world,/avatar\.position\.copy\(pos\)/,'gameplay-owned world position is preserved');
+ assert.match(world,/avatar\.userData\.facingInitialized=true/);
+ assert.match(world,/avatar\.userData\.wasWalking=walking/);
+ assert.match(world,/frame\.state\.dead\?'death'/);
+ assert.match(world,/next\.fadeIn\(\.13\)\.play\(\)/,'existing CC0 native clip crossfade remains intact');
+});
+
 test('shared CC0 derivatives reuse materials by original and tint without changing the master',()=>{
  const body=world.slice(world.indexOf('const derivedMaterials='),world.indexOf('const originals='));
  assert.ok(body.startsWith('const derivedMaterials=new Map()'),'reuse stays inside the existing renderer');
