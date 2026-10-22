@@ -1118,6 +1118,61 @@
           "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9"
         ]
       }
+    },
+    {
+      "id": "assistant_insect_grounding_cc0_local_vibe_handoff_20261023",
+      "date": "2026-10-23",
+      "gameId": "insect-survival",
+      "engine": "WEB",
+      "domains": [
+        "CC0_ORIGINAL_VISUALS",
+        "3D_GROUND_CONTACT",
+        "NATIVE_ANIMATION",
+        "WEBGL2_BROWSER_QA",
+        "MOBILE_TOUCH",
+        "LOCAL_VIBE_DEVELOPMENT",
+        "CANONICAL_LEARNING"
+      ],
+      "actionType": "QA_OR_REGRESSION_RESULT",
+      "problem": "Actual CC0 floor meshes were enlarged beyond the tile pitch, while the animated KayKit skinned actor dipped below the corrected floor. The original generic Chrome smoke gave false-positive 3D readiness without proving contact; local-to-Vibe transfer requires traceable and gated release provenance.",
+      "decision": "Preserve CC0 originals and source clips. Derive tile placement from real OBJ bounds, correct animated presentation Y after the native mixer, require real WebGL2 frame and ground bounds, exercise mobile-emulated native touch input. Integrate only with existing owner-authorized local Web flow and canonical Vibe evidence-to-learning chain.",
+      "change": "PR #9262 adds grounded CC0 tiles, WebGL context-loss 2D recovery, real Chromium 3D/mobile emulation and touch-dodge QA, plus guarded owner-side local main fast-forward sync and existing-Vibe development method trace. No direct main write, model-weight promotion, independent learning pipeline or release bypass.",
+      "evidence": [
+        "pull-request:9262",
+        "runtime-failure:GitHub-Actions-run:39805398612:browser-job:119917871342:heroBottom:-0.22109330116405834",
+        "runtime-repair:GitHub-Actions-run:39806585691:browser-job:119923282158:PASS:heroBottom:0.035",
+        "mobile-emulation:GitHub-Actions-run:39809488346:browser-job:119932032921:PASS:393x852:DPR2.5:touch-dodge-serial:0-to-1",
+        "source:web-games/insect-survival/world3d.mjs",
+        "source:qa/insect-survival-grounding.test.mjs",
+        "source:tools/vibe2-local-web-develop.mjs",
+        "qa:qa/vibe2-local-web-develop.test.mjs",
+        "policy:company-learning/canonical-learning-pipeline.json"
+      ],
+      "reusablePatterns": [
+        "CC0_FLOOR_TILE_PITCH_FROM_REAL_MODEL_BOUNDS_NOT_ARBITRARY_VISUAL_SCALE",
+        "GROUNDED_NATIVE_SKINNED_RIG_BOUNDS_CHECK_AFTER_ORIGINAL_ANIMATION_MIXER",
+        "THREE_JS_FRAME_AND_WEBGL2_BUFFER_REQUIRED_NOT_HTML_BOOT_ONLY",
+        "MOBILE_TOUCH_DISPATCH_REQUIRES_AUTHORITATIVE_MOTION_STATE_CHANGE_AND_CONTACT_PROOF",
+        "LOCAL_GIT_MAIN_FAST_FORWARD_ONLY_WITH_CLEAN_WORKTREE_AND_EXACT_MERGE_SHA",
+        "LINK_VERIFIED_TECHNIQUES_TO_EXISTING_VIBE_RETRIEVAL_ONLY_AFTER_SUPERVISION"
+      ],
+      "avoidPatterns": [
+        "UPSCALE_CC0_FLOOR_TILE_BEYOND_GRID_PITCH_AND_ACCEPT_INTERSECTING_GROUND",
+        "MARK_3D_PASS_WHEN_ONLY_2D_FALLBACK_OR_HTML_BOOT_RUNS",
+        "CLAIM_PHYSICAL_ANDROID_QA_FROM_HEADLESS_CHROMIUM_EMULATION",
+        "FORCE_PULL_OR_OVERWRITE_UNSAVED_LOCAL_GAME_CODE",
+        "PROMOTE_CANDIDATE_TRACE_DIRECTLY_TO_TRAINING_OR_MAIN",
+        "CREATE_SHADOW_SYNC_LEARNING_OR_RELEASE_PIPELINE"
+      ],
+      "qa": [
+        "exact-head-browser:1bfa9db798fc9f9d55252e73c5970e39869cc30d:WebGL2-3D-contact-PASS",
+        "exact-head-browser:ad0bbc1ad675cabe9b3535c83a1a504906ae9fd7:Chromium-mobile-emulation-touch-PASS",
+        "qa:local-main-sync-guard:NEW_CANDIDATE_NOT_REMOTE_VERIFIED",
+        "qa:physical-mobile-FPS-thermal-gameplay:NOT_RUN",
+        "qa:full-current-head-security-and-release:NOT_VERIFIED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "DRAFT_PR_CANDIDATE_PARTIAL_3D_MOBILE_BROWSER_QA_VERIFIED;LOCAL_SYNC_UNTESTED_ON_OWNER_MACHINE;NO_MAIN_MERGE_OR_MODEL_PROMOTION"
     }
   ]
 }
