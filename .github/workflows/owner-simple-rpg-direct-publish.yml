@@ -405,7 +405,7 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs icons
   download_priority_cc0_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[priority-cc0-download]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[priority-cc0-download]') || contains(github.event.head_commit.message, '[priority-cc0-ant-download]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -417,8 +417,12 @@ jobs:
         with:
           persist-credentials: true
           lfs: true
+      - name: Verify approved CC0 acquisition isolation and existing game preservation
+        run: node --test qa/simple-rpg-external-visuals-only.test.mjs
       - name: Download priority assets in requested order
         shell: bash
+        env:
+          VIBE_CC0_ONLY_PACK: ${{ contains(github.event.head_commit.message, '[priority-cc0-ant-download]') && 'ant-rigged.blend' || '' }}
         run: |
           set -euo pipefail
           python3 tools/simple-rpg-priority-cc0-download.py
@@ -472,7 +476,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[priority-cc0-download]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true)) }}
+    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || (contains(github.event.head_commit.message, '[priority-cc0-download]') || contains(github.event.head_commit.message, '[priority-cc0-ant-download]')))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:

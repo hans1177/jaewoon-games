@@ -5,6 +5,7 @@ Never extract archive entries into the repository.
 """
 import hashlib
 import json
+import os
 import pathlib
 import subprocess
 import tarfile
@@ -17,6 +18,7 @@ DEST.mkdir(parents=True, exist_ok=True)
 
 # Priority, unique stored name, upstream original filename, CC0 evidence page slug, file format.
 PACKS = [
+  ["01-insects", "ant-rigged.blend", "ant.blend", "ant-3d-model-rigging-animated-low-poly-ish", "blend"],
   [
     "01-insects",
     "bee-rigged.blend",
@@ -249,6 +251,25 @@ PACKS = [
   ["12-dungeon-interiors","dungeon-interior-kit.zip","Dungeon.zip","dungeon-assets","zip"]
 ]
 
+# 좁은 범위만 다운로드: 명시적으로 검증한 CC0 개미만 선택한다.
+# 기존 56종 원본과 매니페스트를 다시 다운로드하거나 덮어쓰지 않는다.
+ONLY_PACK = os.environ.get("VIBE_CC0_ONLY_PACK", "").strip()
+if ONLY_PACK not in ("", "ant-rigged.blend"):
+    raise SystemExit("UNAPPROVED_CC0_TARGET_ONLY:" + ONLY_PACK)
+prior_manifest_file = DEST / "manifest.json"
+prior_manifest = json.loads(prior_manifest_file.read_text("utf-8")) if ONLY_PACK and prior_manifest_file.exists() else {}
+if ONLY_PACK and (prior_manifest.get("gameId") != "simple-rpg"
+                  or prior_manifest.get("sourceOnly") is not True
+                  or not isinstance(prior_manifest.get("packs"), list)):
+    raise SystemExit("EXISTING_VERIFIED_SOURCE_MANIFEST_REQUIRED")
+if ONLY_PACK:
+    old = next((row for row in prior_manifest["packs"] if row.get("file") == ONLY_PACK), None)
+    original = DEST / ONLY_PACK
+    if old and original.exists() and original.stat().st_size == old.get("bytes"):
+        if hashlib.sha256(original.read_bytes()).hexdigest() == old.get("sha256"):
+            print("CC0_SOURCE_ALREADY_PRESENT_VERIFIED=" + ONLY_PACK, flush=True)
+            raise SystemExit(0)
+
 def previous_hashes():
     result = set()
     for manifest in (REPO / "manifest.json", REPO / "wildlife" / "manifest.json",
@@ -311,6 +332,8 @@ def verify(path, fmt):
 existing = previous_hashes()
 passed, failed, duplicates = [], [], []
 for priority, local_name, remote_name, page_slug, fmt in PACKS:
+    if ONLY_PACK and local_name != ONLY_PACK:
+        continue
     dest = DEST / local_name
     url = "https://opengameart.org/sites/default/files/" + quote(remote_name)
     evidence = "https://opengameart.org/content/" + page_slug
@@ -344,13 +367,22 @@ for priority, local_name, remote_name, page_slug, fmt in PACKS:
         failed.append({"file": local_name, "priority": priority, "reason": str(error), "source": evidence})
         print("PRIORITY_VERIFY_FAILED", priority, local_name, str(error), flush=True)
 
+if ONLY_PACK:
+    # 실제 원본 확보 실패라면 기존 매니페스트를 수정하지 않는다.
+    if failed or duplicates or len(passed) != 1:
+        raise SystemExit("TARGETED_CC0_ACQUISITION_NOT_VERIFIED")
+    retained = [row for row in prior_manifest["packs"] if row.get("file") != ONLY_PACK]
+    passed = retained + passed
+    duplicates = prior_manifest.get("duplicateSources", [])
+    failed = prior_manifest.get("failed", [])
+
 bypriority = {
     key: {"packs": len([x for x in passed if x["priority"] == key]),
           "fileCandidates": sum(x["sourceFileCandidates"] or 0 for x in passed if x["priority"] == key)}
     for key in sorted(set(x[0] for x in PACKS))
 }
 manifest = {
-    "gameId": "simple-rpg", "version": 1, "sourceOnly": True, "robloxImported": False,
+    "gameId": "simple-rpg", "version": 1, "license": "CC0-1.0", "sourceOnly": True, "robloxImported": False,
     "gameApplied": False, "speciesCountVerified": False,
     "licenseCaveat": "Source page states CC0; file validation does not independently audit every embedded texture.",
     "priorityOrder": ["01-insects", "02-wildlife-prehistoric", "03-equipment", "04-npc-buildings", "05-environment-sfx"],
@@ -366,7 +398,7 @@ if len(passed) < 12 or not all(v["packs"] > 0 for v in bypriority.values()):
 # [공용 에셋 목록] 기존 원본 매니페스트 4종에서 실제 저장된 CC0 원본만
 # SHA256 기준으로 합치고 회사 공용 선택 목록을 자동 갱신한다. 게임 배포는 하지 않는다.
 shared_file = pathlib.Path("assets/asset-manifest.json")
-if shared_file.exists():
+if shared_file.exists() and not ONLY_PACK:
     shared = json.loads(shared_file.read_text("utf-8"))
     summary = shared.get("sharedOriginalArchives")
     if isinstance(summary, dict):
