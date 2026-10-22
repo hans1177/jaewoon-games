@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "dice-battle-board-build-up-g9-fd464a69a1df",
-  "directiveFingerprint": "fd464a69a1dfc3647da604dca8c02a4d38cf1a5b8fe4b2b79557a1947e6a8c8d",
-  "previousDirectiveFingerprint": "e84d9da19ff3bc6b86aab137b6862d49d9c646abf6349bba042d8100e6808336",
-  "forbiddenRepeatFingerprint": "e84d9da19ff3bc6b86aab137b6862d49d9c646abf6349bba042d8100e6808336",
+  "directiveId": "dice-battle-board-build-up-g10-41e66755706f",
+  "directiveFingerprint": "41e66755706ffc90763f78939417f47fff0d6f6b645d1991240439e743443b6b",
+  "previousDirectiveFingerprint": "fd464a69a1dfc3647da604dca8c02a4d38cf1a5b8fe4b2b79557a1947e6a8c8d",
+  "forbiddenRepeatFingerprint": "fd464a69a1dfc3647da604dca8c02a4d38cf1a5b8fe4b2b79557a1947e6a8c8d",
   "gameId": "dice-battle-board",
   "gameName": "주사위 전투 보드",
-  "generation": 9,
+  "generation": 10,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/dice-battle-board",
-  "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+  "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
   "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+        "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4519,7 +4519,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 521,
+      "progression": 525,
       "ai": 62,
       "save": 117,
       "multiplayer": 43,
@@ -4529,22 +4529,22 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 28,
+      "audioDynamics": 30,
       "ui": 898,
       "uiFlow": 1149,
-      "entryFlow": 16,
+      "entryFlow": 18,
       "loadingFlow": 0,
       "input": 155,
-      "map": 292,
+      "map": 290,
       "landmark": 36,
       "interaction": 286,
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
       "feedback": 170,
-      "session": 31,
-      "content": 504,
-      "choice": 1658,
+      "session": 29,
+      "content": 502,
+      "choice": 1656,
       "connection": 9,
       "performance": 34,
       "lighting": 64,
@@ -4972,9 +4972,9 @@
   "previousVersionDelta": {
     "previousGoal": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 8,
-    "previousSourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
-    "currentSourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "previousGeneration": 9,
+    "previousSourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "currentSourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6265,7 +6265,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 430392,
+        "sourceBytes": 430374,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6298,8 +6298,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6309,9 +6309,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6355,7 +6356,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 84,
+        "score": 66,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6469,11 +6470,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 9,
-    "previousGeneration": 8,
+    "generation": 10,
+    "previousGeneration": 9,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
-    "priorSourceFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
+    "sourceFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
+    "priorSourceFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6492,7 +6493,7 @@
     "version": 1,
     "gameId": "dice-battle-board",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7397,7 +7398,7 @@
     "gameId": "dice-battle-board",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+    "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8231,7 +8232,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2b396e004cedffe22f1f547adc0e885abf7155365a8fa8adfac29d8a80b47149",
+      "sourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -8290,7 +8291,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 10,
+    "nextGeneration": 11,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8352,5 +8353,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-22T22:59:58.611Z"
+  "generatedAt": "2026-10-22T23:44:28.012Z"
 }

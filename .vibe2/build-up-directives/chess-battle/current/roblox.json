@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "chess-battle-build-up-g7-117fcf357dff",
-  "directiveFingerprint": "117fcf357dffc0fa60cc105cb61edf2496ba14f4bd4e2d555323ac2e3aeed6e6",
-  "previousDirectiveFingerprint": "ced5f6ab206aff326b04ab753bd6961620f7f85ac0a8e204cd7a5626a24b9cee",
-  "forbiddenRepeatFingerprint": "ced5f6ab206aff326b04ab753bd6961620f7f85ac0a8e204cd7a5626a24b9cee",
+  "directiveId": "chess-battle-build-up-g8-2fdedbb823ae",
+  "directiveFingerprint": "2fdedbb823ae3768e4ac64abfc9f06ec6c1da40b17bbd4c1ab8af94ba2a63174",
+  "previousDirectiveFingerprint": "117fcf357dffc0fa60cc105cb61edf2496ba14f4bd4e2d555323ac2e3aeed6e6",
+  "forbiddenRepeatFingerprint": "117fcf357dffc0fa60cc105cb61edf2496ba14f4bd4e2d555323ac2e3aeed6e6",
   "gameId": "chess-battle",
   "gameName": "체스 배틀",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/chess-battle",
-  "sourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+  "sourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
   "designFingerprint": "a47a667da35e7a9a399240e997599a9cea928163ad17c8dde801a2b1a1f0af0a",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+        "sourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "a47a667da35e7a9a399240e997599a9cea928163ad17c8dde801a2b1a1f0af0a",
-    "sourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+    "sourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+    "sourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4526,7 +4526,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 521,
+      "progression": 525,
       "ai": 62,
       "save": 117,
       "multiplayer": 43,
@@ -4536,22 +4536,22 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 28,
+      "audioDynamics": 30,
       "ui": 898,
       "uiFlow": 1149,
-      "entryFlow": 16,
+      "entryFlow": 18,
       "loadingFlow": 0,
       "input": 155,
-      "map": 292,
+      "map": 290,
       "landmark": 36,
       "interaction": 286,
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
       "feedback": 170,
-      "session": 31,
-      "content": 504,
-      "choice": 1658,
+      "session": 29,
+      "content": 502,
+      "choice": 1656,
       "connection": 9,
       "performance": 34,
       "lighting": 64,
@@ -4979,9 +4979,9 @@
   "previousVersionDelta": {
     "previousGoal": "체스 배틀. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 체스 배틀에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
-    "currentSourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+    "currentSourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6263,7 +6263,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 430336,
+        "sourceBytes": 430318,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6296,8 +6296,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 7,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
+    "themeDepth": 8,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6307,9 +6307,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 7
+        "PRESENTATION_WORLD_COHESION": 8
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6351,7 +6352,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 128,
+        "score": 110,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6465,11 +6466,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 7,
-    "previousGeneration": 6,
+    "generation": 8,
+    "previousGeneration": 7,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
-    "priorSourceFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
+    "sourceFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
+    "priorSourceFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6488,7 +6489,7 @@
     "version": 1,
     "gameId": "chess-battle",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+    "sourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7393,7 +7394,7 @@
     "gameId": "chess-battle",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+    "sourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8227,7 +8228,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "1b8761f628840a4eff527eba9761d89cce33907e221f1765bec61d4b480ab336",
+      "sourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -8286,7 +8287,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8348,5 +8349,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-22T22:59:58.466Z"
+  "generatedAt": "2026-10-22T23:44:27.893Z"
 }
