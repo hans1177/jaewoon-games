@@ -166,10 +166,10 @@ test('CC0 animated hero foot penetration is corrected after the original animati
   };
   const context={
     avatar:actor,GROUND_SURFACE_Y:0,FOOT_CLEARANCE:.035,
-    THREE:{Box3:class{
-      setFromObject(target){this.min={y:target.position.y-.256};return this}
+    heroGroundBounds:{
+      setFromObject(target){this.min={y:target.position.y-.256};return this},
       isEmpty(){return false}
-    }}
+    }
   };
   vm.runInNewContext(code+';groundAnimatedHero();globalThis.firstLift=avatar.userData.visualGroundCorrection;',context);
   assert.ok(Math.abs(context.firstLift-.256)<1e-8,'22cm real browser penetration must be corrected');
