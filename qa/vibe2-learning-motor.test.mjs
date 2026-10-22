@@ -2235,6 +2235,7 @@ test('C01-C08 verified coding contracts support real evidence and reject synthet
   assert.equal(report.requirements.C06.winnerId,'winner');
   assert.equal(report.requirements.C08.passRate,1);
   assert.equal(report.sourceMutationAuthorized,false);
+  assert.equal(candidateTournamentPolicy({task:{capabilityEvidence:input}}).capabilities.allVerified,true);
   assert.equal(composeVerifiedCodingRecipes([recipe('a','same'),recipe('b','same')],{
     engine:'web',genre:'rpg',sourceRevision:sha}).verified,false);
   assert.equal(composeVerifiedCodingRecipes([recipe('a','x',['b']),recipe('b','y',['a'])],{
