@@ -394,3 +394,43 @@ test('missing design or owner scope cannot turn a library gap into automatic aut
   assert.ok(held.roleAssetCoverage.every(row=>row.status==='OWNER_POLICY_HELD'));
   assert.equal(held.newQueueOrShadowPipelineCreated,false);
 });
+
+test('Korean insect survival requests reuse approved creature, tool, nest and farm roles',()=>{
+  const assets=[
+    {...validSource,id:'licensed-spider',family:'CREATURE'},
+    {...validSource,id:'licensed-harvest-tool',family:'ITEM'},
+    {...validSource,id:'licensed-nest',family:'PROP'},
+    {...validSource,id:'licensed-greenhouse',family:'BUILDING'},
+    {...validSource,id:'blocked-mantis',family:'CREATURE',quarantined:true}
+  ];
+  const plan=planVibeExternalCustomization({
+    ...input,gameId:'insect-survival',target:'WEB',
+    request:'곤충 생존기에서 거미, 사마귀와 꿀벌, 채집 도구, 둥지, 농장, 탐험가를 만든다',
+    requirements:[],assets
+  });
+  for(const role of ['CREATURE','ITEM','PROP','BUILDING','CHARACTER']){
+    assert.ok(plan.roles.includes(role),'missing source-bound role: '+role);
+  }
+  assert.ok(!plan.roles.includes('ENEMY_AI'),'an insect must not imply enemy AI without combat intent');
+  const coverage=Object.fromEntries(plan.roleAssetCoverage.map(row=>[row.role,row]));
+  assert.deepEqual(coverage.CREATURE.reusableSourceIds,['licensed-spider']);
+  assert.deepEqual(coverage.ITEM.reusableSourceIds,['licensed-harvest-tool']);
+  assert.deepEqual(coverage.PROP.reusableSourceIds,['licensed-nest']);
+  assert.deepEqual(coverage.BUILDING.reusableSourceIds,['licensed-greenhouse']);
+  assert.equal(coverage.CHARACTER.status,'VERIFIED_SOURCE_GAP_REVIEW_REQUIRED');
+  assert.ok(plan.missingVerifiedSourceRoles.includes('CHARACTER'));
+  assert.equal(plan.sourceMutationPerformed,false);
+  assert.equal(plan.appliedToGame,false);
+  assert.equal(plan.nativeRuntimeVerified,false);
+});
+
+test('cozy island roles detect island and greenhouse without inventing unrelated combat',()=>{
+  const plan=planVibeExternalCustomization({
+    ...input,gameId:'cozy-island',request:'작은 섬의 초원, 온실과 헛간을 꾸민다',
+    requirements:[],target:'WEB',assets:[]});
+  assert.ok(plan.roles.includes('TERRAIN'));
+  assert.ok(plan.roles.includes('BUILDING'));
+  assert.equal(plan.roles.includes('ENEMY_AI'),false);
+  assert.ok(plan.roleAssetCoverage.every(row=>row.status==='VERIFIED_SOURCE_GAP_REVIEW_REQUIRED'));
+  assert.equal(plan.appliedToGame,false);
+});
