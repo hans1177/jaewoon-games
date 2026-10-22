@@ -400,6 +400,76 @@ try{
       assert.ok(Number.isFinite(proof?.ground?.heroBottom)&&proof.ground.heroBottom>=proof.ground.floorTop-.12,
         'insect-survival: animated character is below original CC0 floor');
     }
+    if(insect3dOnly){
+      // Chromium Android-sized viewport and native CDP touch event regression.
+      // This is browser emulation only and never substitutes for physical mobile QA.
+      currentPhase='INSECT_EMULATED_MOBILE_GROUNDED_TOUCH';
+      await cdp.send('Emulation.setDeviceMetricsOverride',{
+        width:393,height:852,deviceScaleFactor:2.5,mobile:true
+      });
+      await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+      const mobileLoaded=cdp.waitEvent('Page.loadEventFired',12000);
+      await cdp.send('Page.navigate',{url});
+      await mobileLoaded;
+      let mobileProof=null;
+      for(let attempt=0;attempt<90;attempt++){
+        mobileProof=await cdp.evaluate(`(()=>{
+          const canvas=document.querySelector('#insect3d');
+          const gl=canvas?.getContext('webgl2');
+          const ground=window.insect3DGroundingProof?.();
+          const dodge=document.querySelector('#dodgeBtn');
+          const rect=dodge?.getBoundingClientRect();
+          return {
+            mobile:matchMedia('(pointer:coarse)').matches,
+            viewport:{w:innerWidth,h:innerHeight,dpr:devicePixelRatio},
+            ready:window.insectScene3DReady===true,
+            rendered:canvas?.dataset.renderedFrame==='true',
+            webgl2:gl instanceof WebGL2RenderingContext&&gl.drawingBufferWidth>0&&gl.drawingBufferHeight>0,
+            canvasVisible:canvas&&getComputedStyle(canvas).display!=='none',
+            ground:ground||null,
+            dodge:rect?{x:rect.left+rect.width/2,y:rect.top+rect.height/2,
+              fullyVisible:rect.width>0&&rect.height>0&&rect.left>=0&&rect.right<=innerWidth&&
+                rect.top>=0&&rect.bottom<=innerHeight}:null,
+            serial:Number(window.insectWorldSnapshot?.()?.player?.motionSerial)||0
+          };
+        })()`);
+        if(mobileProof?.ready&&mobileProof?.rendered&&mobileProof?.webgl2&&mobileProof?.ground?.heroPresent)break;
+        await delay(250);
+      }
+      console.log('DEVELOPMENT_WEB_MOBILE_EMULATION_EVIDENCE_insect-survival='+JSON.stringify(mobileProof));
+      assert.equal(mobileProof?.mobile,true,'insect-survival: touch emulation not active');
+      assert.equal(mobileProof?.viewport?.w,393,'insect-survival: mobile viewport width incorrect');
+      assert.equal(mobileProof?.viewport?.h,852,'insect-survival: mobile viewport height incorrect');
+      assert.equal(mobileProof?.ready,true,'insect-survival: mobile 3D did not initialize');
+      assert.equal(mobileProof?.rendered,true,'insect-survival: mobile 3D frame missing');
+      assert.equal(mobileProof?.webgl2,true,'insect-survival: mobile WebGL2 buffer missing');
+      assert.equal(mobileProof?.canvasVisible,true,'insect-survival: mobile 3D canvas hidden');
+      assert.equal(mobileProof?.ground?.tileCount,12,'insect-survival: mobile CC0 tiles missing');
+      assert.ok(Math.abs(mobileProof?.ground?.floorTop)<.005,
+        'insect-survival: mobile CC0 ground Y mismatch');
+      assert.ok(Number.isFinite(mobileProof?.ground?.heroBottom)&&mobileProof.ground.heroBottom>=-.12,
+        'insect-survival: character sinks through ground in mobile viewport');
+      assert.equal(mobileProof?.dodge?.fullyVisible,true,'insect-survival: mobile dodge control offscreen');
+      // Send real CDP touch input to the game button, not a JS click().
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{
+        x:mobileProof.dodge.x,y:mobileProof.dodge.y,id:1,radiusX:1,radiusY:1,force:1
+      }]});
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      await delay(180);
+      const touchResult=await cdp.evaluate(`(()=>{
+        const p=window.insectWorldSnapshot?.()?.player;
+        const g=window.insect3DGroundingProof?.();
+        return {serial:Number(p?.motionSerial)||0,motion:p?.motionAction,
+          grounded:Boolean(g&&Number.isFinite(g.heroBottom)&&g.heroBottom>=g.floorTop-.12),
+          ready:window.insectScene3DReady===true};
+      })()`);
+      console.log('DEVELOPMENT_WEB_MOBILE_TOUCH_EVIDENCE_insect-survival='+JSON.stringify(touchResult));
+      assert.ok(touchResult?.serial>mobileProof.serial,
+        'insect-survival: physical touch event did not trigger accepted dodge');
+      assert.equal(touchResult?.motion,'dodge','insect-survival: touch routed to wrong action');
+      assert.equal(touchResult?.grounded,true,'insect-survival: actor sinks during touch-triggered dodge');
+      assert.equal(touchResult?.ready,true,'insect-survival: 3D renderer stopped after touch action');
+    }
     if(native3dOnly&&!insect3dOnly){
       currentPhase='TRUE_WEBGL_3D_FRAME';
       if(star3dOnly||gem3dOnly||forestDefense3dOnly)assert.equal(start?.clicked,true,gameId+': active gameplay start not clicked');
