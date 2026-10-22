@@ -51,12 +51,23 @@ export async function createGem3d({canvas}){
   inst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   inst.frustumCulled=false;inst.count=0;scene.add(inst);return inst;
  }
+ // Grow CPU/GPU instance capacity only when a real game actor count requires it.
+ // Invisible enemies may still damage the player, so never silently cap enemy rendering.
+ function growPool(mesh,required){
+  if(required<=mesh.instanceMatrix.count)return mesh;
+  const capacity=Math.max(required,mesh.instanceMatrix.count*2);
+  const bigger=new THREE.InstancedMesh(mesh.geometry,mesh.material,capacity);
+  bigger.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  bigger.frustumCulled=false;bigger.count=0;
+  scene.remove(mesh);scene.add(bigger);mesh.dispose?.();
+  return bigger;
+ }
  const enemyMeshes=new Map(SPECIES.map(kind=>{
   const mesh=pool(makeSpeciesGeometry(kind),mat(PALETTE[kind]),MAX_EACH);
   return [kind,mesh];
  }));
- const projectiles=pool(new THREE.OctahedronGeometry(1,0),mat('#e5ffff'),MAX_PROJECTILES);
- const gems=pool(crystalGeo,mat('#42ffd4'),MAX_GEMS);
+ let projectiles=pool(new THREE.OctahedronGeometry(1,0),mat('#e5ffff'),MAX_PROJECTILES);
+ let gems=pool(crystalGeo,mat('#42ffd4'),MAX_GEMS);
  const particles=pool(new THREE.TetrahedronGeometry(1,0),mat('#ffffff'),MAX_PARTICLES);
  const blades=pool(new THREE.BoxGeometry(1,1,1),mat('#bddfff'),5);
  const pools=pool(new THREE.CylinderGeometry(1,1,.015,24),new THREE.MeshStandardMaterial({
@@ -128,19 +139,23 @@ export async function createGem3d({canvas}){
   for(const e of enemyActors){const kind=buckets.has(e.type)?e.type:'slime';buckets.get(kind).push(e)}
   let clipped=0;
   for(const [kind,list] of buckets){
-   clipped+=write(enemyMeshes.get(kind),list,MAX_EACH,(e,i,d)=>{
+   const grown=growPool(enemyMeshes.get(kind),list.length);
+   enemyMeshes.set(kind,grown);
+   clipped+=write(grown,list,grown.instanceMatrix.count,(e,i,d)=>{
     const radius=Math.max(.18,e.r/SCALE);
     d.position.set(e.x/SCALE,radius*1.08+(e.hit>0?.1:0),e.y/SCALE);
     d.scale.set(radius,kind==='boss'?radius*2.5:radius*1.6,radius);
     d.rotation.y=now*.0007+i*.23;
    });
   }
-  clipped+=write(projectiles,shots,MAX_PROJECTILES,(p,i,d)=>{
+  projectiles=growPool(projectiles,shots.length);
+  clipped+=write(projectiles,shots,projectiles.instanceMatrix.count,(p,i,d)=>{
    const r=Math.max(.045,p.r/SCALE);
    d.position.set(p.x/SCALE,r*2+.13,p.y/SCALE);
    d.scale.set(r,p.kind==='arrow'?r*3:r,r);d.rotation.y=Math.atan2(p.vx||0,p.vy||0);
   });
-  clipped+=write(gems,drops,MAX_GEMS,(g,i,d)=>{
+  gems=growPool(gems,drops.length);
+  clipped+=write(gems,drops,gems.instanceMatrix.count,(g,i,d)=>{
    d.position.set(g.x/SCALE,.17+Math.sin(now*.006+i)*.035,g.y/SCALE);
    d.scale.set(.16,.25,.16);d.rotation.y=now*.002;
   });
