@@ -9,7 +9,8 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#a7ddff;color:#142033;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:manipulation}
 button{font:inherit}
-#game{position:fixed;inset:0;width:100%;height:100%;display:block}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;background:#142b3c}
+#renderStatus{position:fixed;z-index:110;left:50%;bottom:155px;transform:translateX(-50%);max-width:90vw;border:1px solid #9bd9ee;border-radius:13px;background:#10243be8;padding:10px 12px;color:#ebfaff;text-align:center;font-size:12px;pointer-events:none}
 .panel{background:#ffffffed;border:2px solid #24364f;border-radius:13px;box-shadow:0 4px 0 #24364f}
 .hud{position:fixed;z-index:20;left:7px;right:7px;top:max(7px,env(safe-area-inset-top));display:grid;grid-template-columns:1fr auto;gap:6px;pointer-events:none}
 .stats{padding:6px;display:flex;gap:5px;flex-wrap:wrap}.pill{padding:4px 6px;border:1px solid #24364f;border-radius:999px;background:#f6fbff;font-size:9px;font-weight:1000}.money{background:#fff1a9}
@@ -38,7 +39,8 @@ button{font:inherit}
 </head>
 <body>
 <!-- 파일명: web-games/line-defense/index.html -->
-<canvas id="game"></canvas>
+<canvas id="game" data-gameplay-surface="main" data-render-target="webgl-3d"></canvas>
+<div id="renderStatus" role="status">3D 고양이 전장을 준비 중…</div>
 <div class="hud">
   <div class="stats panel"><span class="pill money" id="money">0 / 800</span><span class="pill" id="income">초당 +28</span><span class="pill" id="timer">0초</span></div>
   <div class="phase panel"><b id="phase">준비</b><small id="stageLabel">스테이지 1</small></div>
@@ -113,11 +115,14 @@ button{font:inherit}
   </div>
 </div>
 
-<script>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
+<script type="module">
+import {createFrontline3d} from './frontline3d.mjs';
 (()=>{
 'use strict';
 // ===== 파일명 / 기본 =====
-const C=document.getElementById('game'),X=C.getContext('2d'),q=id=>document.getElementById(id),KEY='jaewoon-line-defense-v1';
+const C=document.getElementById('game'),q=id=>document.getElementById(id),KEY='jaewoon-line-defense-v1';
+let frontline3d=null;
 const MAX_SQUAD=6;
 
 // ===== 캐릭터 =====
@@ -219,7 +224,7 @@ function metaCost(type){
 function charUpgradeCost(id){const lv=save.charLv[id]||0;return lv>=3?Infinity:100*(lv+1)}
 
 // ===== 캔버스 =====
-function resize(){let d=Math.min(2,devicePixelRatio||1);C.width=innerWidth*d;C.height=innerHeight*d;C.style.width=innerWidth+'px';C.style.height=innerHeight+'px';X.setTransform(d,0,0,d,0,0)}
+function resize(){frontline3d?.resize()}
 addEventListener('resize',resize,{passive:true});resize();
 let fighterSeq=0;
 function fighter(t,x,team){return Object.assign({},t,{x,team,uid:++fighterSeq,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}
@@ -290,6 +295,7 @@ function upgradeMeta(type){
 
 // ===== 전투 =====
 function start(){
+  if(!frontline3d)return;
   s=fresh();buttons();q('startOverlay').hidden=true;q('restOverlay').hidden=true;q('defeatOverlay').hidden=true;q('battleBar').hidden=false;q('phase').textContent='전투 중';q('stageLabel').textContent='스테이지 '+s.stage;
   if(s.stage===7){spawn('boar','stage7OpeningBoar');spawn('boar','stage7OpeningBoar')}
   if(s.stage===10){for(let i=0;i<2;i++)spawn('goose','stage10OpeningGoose');for(let i=0;i<4;i++)spawn('rabbit','stage10OpeningRabbit')}
@@ -413,50 +419,19 @@ function finish(win){
   updateMeta();q('restOverlay').hidden=false;
 }
 
-// ===== 그리기 =====
-function world(w,h,g){
-  const sky=X.createLinearGradient(0,0,0,g);sky.addColorStop(0,'#bde9ff');sky.addColorStop(1,'#f9f1c3');X.fillStyle=sky;X.fillRect(0,0,w,g);
-  X.fillStyle='#d9f2a7';X.beginPath();X.moveTo(0,g-90);for(let x=0;x<=w;x+=70)X.quadraticCurveTo(x+35,g-125+(x%140?16:0),x+70,g-90);X.lineTo(w,g);X.lineTo(0,g);X.fill();
-  X.fillStyle='#caa36a';X.fillRect(0,g,w,h-g);X.fillStyle='#b48a56';for(let x=0;x<w;x+=42)X.fillRect(x,g+18+(x%84?7:0),24,5);base(42,g-22,'ally');base(w-42,g-22,'enemy');
-}
-function base(x,y,side){
-  X.save();X.translate(x,y);X.fillStyle=side==='ally'?'#f6fbff':'#594a57';X.strokeStyle='#26374e';X.lineWidth=3;X.fillRect(-27,-51,54,51);X.strokeRect(-27,-51,54,51);X.fillStyle=side==='ally'?'#7bd0ff':'#ff806f';X.beginPath();X.moveTo(-33,-51);X.lineTo(0,-75);X.lineTo(33,-51);X.closePath();X.fill();X.stroke();X.fillStyle='#26374e';X.fillRect(-7,-20,14,20);X.fillStyle='#fff';X.font='bold 11px system-ui';X.textAlign='center';X.fillText(side==='ally'?'우리 성':'적 성',0,-32);X.restore();
-}
-function visualOffsets(list){
-  const buckets=new Map(),out=new Map(),pattern=[0,-10,10,-18,18,-26,26,-34,34];
-  list.filter(f=>!f.dead).forEach(f=>{const key=Math.round(f.x/6);if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(f)});
-  buckets.forEach(group=>group.sort((a,b)=>a.uid-b.uid).forEach((f,i)=>out.set(f.uid,pattern[i%pattern.length])));
-  return out;
-}
+// ===== 실제 WebGL3D 렌더링: 원본 전투 계산과 세이브 로직은 수정하지 않음 =====
 function draw(){
-  const w=innerWidth,h=innerHeight,g=h-Math.min(110,h*.19)-58;X.save();if(s)X.translate((Math.random()-.5)*s.shake,0);world(w,h,g);
-  if(s){const ao=visualOffsets(s.a),eo=visualOffsets(s.e);s.a.forEach(f=>actor(f,g,ao.get(f.uid)||0));s.e.forEach(f=>actor(f,g,eo.get(f.uid)||0))}
-  X.restore();
+ if(!frontline3d)return;
+ try{frontline3d.render({state:s},performance.now())}
+ catch(error){
+  console.error('[Cat Frontline native WebGL3D frame]',error);
+  frontline3d=null;
+  if(s){s.running=false;s.paused=true;}
+  document.body.dataset.spatialDimension='3d-error';
+  q('renderStatus').style.display='block';
+  q('renderStatus').textContent='3D 렌더링 실패: '+String(error?.message||error);
+ }
 }
-function actor(f,g,visualY=0){
-  const y=g-8+visualY;X.save();X.translate(f.x,y);if(f.team==='enemy')X.scale(-1,1);X.lineWidth=2.5;X.strokeStyle='#26374e';X.fillStyle=f.flash>0?'#fff':(f.team==='ally'?'#f7fbff':enemyColor(f.kind));body(f);X.stroke();face(f);gear(f);
-  if(f.team==='enemy')X.scale(-1,1);const hp=clamp(f.hp/f.maxHp,0,1);X.fillStyle='#26374e';X.fillRect(-f.size,-f.size-18,f.size*2,5);X.fillStyle=f.team==='ally'?'#65d77a':'#ff6c69';X.fillRect(-f.size+1,-f.size-17,(f.size*2-2)*hp,3);if(f.kind==='boss'){X.fillStyle='#26374e';X.font='bold 9px system-ui';X.textAlign='center';X.fillText('바위왕',0,-f.size-23)}X.restore();
-}
-function body(f){
-  const z=f.size;X.beginPath();if(f.kind==='rush'||f.kind==='boar'||f.kind==='seaWolf')X.ellipse(0,-z*.5,z*1.08,z*.72,0,0,Math.PI*2);else if(f.kind==='goose')X.ellipse(0,-z*.55,z*.92,z*.7,0,0,Math.PI*2);else if(f.kind==='boss'){X.moveTo(-z,-z*.2);for(let i=0;i<8;i++){const a=i/8*Math.PI*2,r=i%2?z*.86:z;X.lineTo(Math.cos(a)*r,Math.sin(a)*r-z*.55)}X.closePath()}else X.arc(0,-z*.55,z,0,Math.PI*2);X.fill();
-  if(f.team==='ally'){X.beginPath();X.moveTo(-z*.65,-z*1.18);X.lineTo(-z*.28,-z*1.78);X.lineTo(-z*.05,-z*1.2);X.closePath();X.moveTo(z*.05,-z*1.2);X.lineTo(z*.28,-z*1.78);X.lineTo(z*.65,-z*1.18);X.closePath();X.fill()}
-}
-function face(f){const z=f.size;X.fillStyle='#26374e';X.beginPath();X.arc(-z*.28,-z*.68,2.2,0,Math.PI*2);X.arc(z*.28,-z*.68,2.2,0,Math.PI*2);X.fill();X.beginPath();X.arc(0,-z*.5,z*.2,0,Math.PI);X.stroke()}
-function gear(f){
-  const z=f.size;X.strokeStyle='#26374e';X.fillStyle='#26374e';X.lineWidth=3;
-  if(f.kind==='shield'||f.kind==='knight'){X.fillStyle='#8bc9ff';X.fillRect(z*.45,-z*1.12,z*.72,z*1.12);X.strokeRect(z*.45,-z*1.12,z*.72,z*1.12)}
-  else if(f.kind==='spear'||f.kind==='blade'){X.beginPath();X.moveTo(z*.45,-z*.7);X.lineTo(z*1.65,-z*1.3);X.stroke()}
-  else if(f.kind==='ranger'||f.kind==='mage'){X.beginPath();X.arc(z*.6,-z*.55,z*.55,-1.2,1.2);X.stroke()}
-  else if(f.kind==='rush'){X.beginPath();X.moveTo(-z*.55,-z*1.25);X.lineTo(-z*.25,-z*1.7);X.lineTo(0,-z*1.2);X.moveTo(z*.25,-z*1.2);X.lineTo(z*.55,-z*1.65);X.lineTo(z*.75,-z*1.08);X.stroke()}
-  else if(f.kind==='hammer'){X.fillRect(z*.45,-z*1.35,z*.75,z*.38);X.fillRect(z*.78,-z*1.0,z*.12,z*.9)}
-  else if(f.kind==='rabbit'){X.beginPath();X.ellipse(-z*.35,-z*1.55,z*.22,z*.65,-.2,0,Math.PI*2);X.ellipse(z*.35,-z*1.55,z*.22,z*.65,.2,0,Math.PI*2);X.stroke()}
-  else if(f.kind==='mole'){X.fillStyle='#78879a';X.fillRect(-z*.85,-z*1.1,z*1.7,z*.42)}
-  else if(f.kind==='boar'){X.fillStyle='#fff3da';X.beginPath();X.moveTo(z*.7,-z*.55);X.lineTo(z*1.15,-z*.34);X.lineTo(z*.72,-z*.2);X.fill()}
-  else if(f.kind==='goose'){X.fillStyle='#d99b45';X.beginPath();X.moveTo(z*.72,-z*.68);X.lineTo(z*1.25,-z*.52);X.lineTo(z*.72,-z*.36);X.closePath();X.fill();X.strokeStyle='#7b5b32';X.beginPath();X.moveTo(-z*.2,-z*1.15);X.quadraticCurveTo(-z*.65,-z*1.7,-z*.15,-z*1.95);X.stroke()}
-  else if(f.kind==='seaWolf'){X.fillStyle='#dff6ff';X.beginPath();X.moveTo(-z*.55,-z*1.05);X.lineTo(-z*.3,-z*1.65);X.lineTo(-z*.05,-z*1.1);X.moveTo(z*.05,-z*1.1);X.lineTo(z*.3,-z*1.65);X.lineTo(z*.55,-z*1.05);X.fill();X.strokeStyle='#325a7a';X.beginPath();X.moveTo(-z*.9,-z*.25);X.quadraticCurveTo(-z*1.4,-z*.6,-z*1.55,-z*.15);X.stroke()}
-  else if(f.kind==='boss'){X.fillStyle='#ffd15a';X.fillRect(-z*.5,-z*1.6,z,.3)}
-}
-function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',goose:'#e6cf8a',seaWolf:'#5aa7c8',boss:'#7d746d'}[k]||'#ddd'}
 function hud(){
   if(!s)return;q('money').textContent=Math.floor(s.money)+' / '+s.maxMoney;q('income').textContent='초당 +'+s.income;q('timer').textContent=Math.floor(s.time)+'초';q('allyText').textContent=Math.ceil(s.ally.hp)+' / '+s.ally.maxHp;q('enemyText').textContent=Math.ceil(s.enemy.hp)+' / '+s.enemy.maxHp;q('allyBar').style.width=100*s.ally.hp/s.ally.maxHp+'%';q('enemyBar').style.width=100*s.enemy.hp/s.enemy.maxHp+'%';
   const wc=walletUpgradeCost(),wb=q('walletBattle');wb.disabled=s.paused||s.walletLv>=10||s.money<wc;wb.textContent=s.walletLv>=10?'최대 재화 MAX':'최대 재화 Lv.'+s.walletLv+' · '+wc;
@@ -478,7 +453,18 @@ q('upCastle').addEventListener('click',()=>upgradeMeta('castleLv'));
 q('upStartWallet').addEventListener('click',()=>upgradeMeta('startWalletLv'));
 q('upKillReward').addEventListener('click',()=>upgradeMeta('killRewardLv'));
 
-buttons();updateMeta();draw();
+buttons();updateMeta();
+q('start').disabled=true;
+try{
+ frontline3d=createFrontline3d({canvas:C});
+ q('start').disabled=false;
+ q('renderStatus').style.display='none';
+ draw();
+}catch(error){
+ console.error('[Cat Frontline native WebGL3D startup]',error);
+ document.body.dataset.spatialDimension='3d-error';
+ q('renderStatus').textContent='3D 시작 실패: '+String(error?.message||error)+' · WebGL2 지원 브라우저에서 다시 열어 줘.';
+}
 })();
 </script>
 </body>
