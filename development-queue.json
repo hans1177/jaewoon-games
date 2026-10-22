@@ -50578,7 +50578,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-22T18:40:19.828Z",
+      "updatedAt": "2026-10-22T18:52:36.985Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -50588,9 +50588,9 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "f2e5fc7a5967869fde389780c1928f50826c9505",
+      "robloxSourceCommit": "be792020f42f0eb68ca2aad401d2685e212a5b5e",
       "robloxSourceBootstrapPassedAt": "2026-10-22T14:14:58.515Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-22T18:40:19.828Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-22T18:52:36.985Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -51137,12 +51137,12 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "f2e5fc7a5967869fde389780c1928f50826c9505",
+      "robloxQualityBuildUpSourceRevision": "be792020f42f0eb68ca2aad401d2685e212a5b5e",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "zombie-survival",
-        "sourceRevision": "f2e5fc7a5967869fde389780c1928f50826c9505",
+        "sourceRevision": "be792020f42f0eb68ca2aad401d2685e212a5b5e",
         "sourceTreeSha": "6185b3efcb35cc4ead855c963dad239e14bcfaea",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -51171,8 +51171,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39827657281,
-        "testedAt": "2026-10-22T18:40:19.828Z"
+        "workflowRunId": 39830237059,
+        "testedAt": "2026-10-22T18:52:36.985Z"
       },
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
@@ -51195,7 +51195,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-22T18:51:45.146Z",
+  "updatedAt": "2026-10-22T18:52:36.985Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
