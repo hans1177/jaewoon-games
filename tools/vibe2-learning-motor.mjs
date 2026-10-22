@@ -1643,6 +1643,61 @@ export function assessVibeCodingCapabilities({recipes=[],attempts=[],failures=[]
     authorityExpanded:false,sourceMutationAuthorized:false});
 }
 
+// 메인 · 자율 고도화는 검증된 실패와 회귀의 원인별 연습·실험 과제만 기존 큐에 제공한다.
+// 추가 파이프라인/소스 쓰기/품질 게이트 우회 없이 고정 예산과 증거 기반으로 선택한다.
+export function planVibeAutonomousImprovement({stateInput={},capabilityEvidence=null,maxProposals=4}={}){
+  const state=createMasteryState(stateInput);
+  const cap=Math.min(4,Math.max(1,Number.isInteger(maxProposals)?maxProposals:4));
+  const suggestions=new Map();
+  const add=(id,priority,kind,domains,reason,fingerprint)=>{
+    const safeId=clean(id).replace(/[^a-zA-Z0-9._-]/g,'-').slice(0,100);
+    const validDomains=uniq(domains).filter(domain=>state.domains[domain]);
+    if(!safeId||!validDomains.length||suggestions.has(safeId))return;
+    suggestions.set(safeId,Object.freeze({
+      id:safeId,priority,kind,domains:Object.freeze(validDomains),reason,
+      sourceFailure:clean(fingerprint)||null,practiceOnly:true,
+      independentQaRequired:true,automaticSourceWrite:false,automaticPromotion:false,
+      productionPreemptible:true,countsAsProductionPass:false
+    }));
+  };
+  for(const [signature,row] of Object.entries(state.failureSignatures||{})){
+    const count=Number(row?.count)||0;
+    if(!Number.isInteger(count)||count<2)continue;
+    add('causal-prevention-'+hash(signature),Math.min(100,count*8+20),
+      'REPRO_DRILL',row.domains||[],'REPEATED_VERIFIED_FAILURE',signature);
+  }
+  for(const [key,row] of Object.entries(state.regressionHotspots?.entries||{})){
+    const risk=hotspotRisk(row),failures=Number(row?.verifiedRegressionFailures)||0;
+    if(failures<2||risk.level==='LOW'||!clean(row?.name)||!clean(row?.gameId))continue;
+    const domain=(row?.kind==='SYSTEM'&&state.domains[upper(row.name)])?upper(row.name):
+      (state.domains.DEBUGGING?'DEBUGGING':'RECOVERY');
+    add('regression-hotspot-'+hash(key),Math.min(95,failures*6+25),
+      'PREVIOUS_RESULT_COMPARISON_DRILL',[domain],'VERIFIED_GAME_REGRESSION_HOTSPOT',row.lastFailureEvidence);
+  }
+  const attempts=capabilityEvidence?.attempts;
+  if(Array.isArray(attempts)&&attempts.length){
+    const ledger=buildVerifiedVibeCapabilityLedger(attempts);
+    for(const row of ledger){
+      if(row.attempts<3||row.verifiedPassRate>=0.7&&row.regressionRate===0)continue;
+      const domain=upper(row.domain);
+      if(!state.domains[domain])continue;
+      add('capability-benchmark-'+hash([domain,row.genre,row.platform,row.benchmarkVersion].join('|')),
+        Math.min(90,35+Math.round((1-row.verifiedPassRate)*40)+Math.round(row.regressionRate*15)),
+        'HYPOTHESIS_FALSIFICATION_DRILL',[domain],
+        'MEASURED_UNDERPERFORMING_CAPABILITY',row.benchmarkVersion);
+    }
+  }
+  const ranked=[...suggestions.values()].sort((a,b)=>b.priority-a.priority||a.id.localeCompare(b.id));
+  return Object.freeze({
+    version:1,proposals:Object.freeze(ranked.slice(0,cap)),
+    eligible:ranked.length>0,observedCandidates:ranked.length,
+    skippedForInsufficientEvidence:ranked.length===0,
+    practiceOnly:true,sourceMutationAuthorized:false,trainingPromotionAuthorized:false,
+    independentQaAndNativeRuntimeRequired:true,
+    newPipelineCreated:false
+  });
+}
+
 export function candidateTournamentPolicy({task={},masteryInput={}}={}){
   const state=createMasteryState(masteryInput);
   const goal=clean(task.goal);
@@ -1877,6 +1932,12 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
+  const improvement=planVibeAutonomousImprovement({stateInput:state,capabilityEvidence:benchmarkInput?.capabilityEvidence});
+  const adaptiveDrills=improvement.proposals.map(row=>({
+    id:row.id,kind:row.kind,priority:'high',productionPreemptible:true,
+    countsAsProductionPass:false,domains:[...row.domains],sourceFailure:row.sourceFailure,
+    optimizationReason:row.reason,improvementOnly:true,automaticPromotion:false
+  }));
   const phase4Drills=(benchmarkInput?.cases||[])
     .filter(row=>row?.track==='CAPABILITY_GENERALIZATION'&&row?.state==='READY_FOR_UNSEEN_SCREEN'&&row?.screenOnly===true)
     .flatMap(row=>['CONTROL','CHALLENGER'].map(role=>({
@@ -1960,6 +2021,7 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
     ...externalDrills,
     ...repeatedFailureDrills,
     ...relearningDrills,
+    ...adaptiveDrills,
     ...phase4Drills,
     ...robloxDrills,
     ...platformDrills,
@@ -1975,7 +2037,7 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
     hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
     previousResultComparisonRequired:true,
     externalGameplayPracticeDrills:externalDrills.length,
-    phase4GeneralizationDrills:phase4Drills.length,drills
+    phase4GeneralizationDrills:phase4Drills.length,adaptiveImprovementDrills:adaptiveDrills.length,drills
   };
 }
 
@@ -2002,6 +2064,10 @@ function nextPracticeGeneration(tasks=[],drill={}){
   if(!rows.length)return {baseId,generation:1,previousScore:null};
   const latest=rows[rows.length-1],status=lower(latest.task?.status);
   if(['queued','running','blocked'].includes(status))return null;
+  // 같은 과제가 연속 두 차례 실패하고 개선도 없으면 새 원인/근거가 나오기 전에는 무한 재시도하지 않는다.
+  const recent=rows.slice(-2);
+  if(recent.length===2&&recent.every(row=>lower(row.task?.status)==='failed'&&
+    (row.task?.evidence||[]).map(clean).includes('practice-artifact-improved:NO')))return null;
   const verifiedScores=rows
     .filter(row=>{
       const evidence=(row.task?.evidence||[]).map(clean);
@@ -2080,6 +2146,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     robloxCodePractice?'robloxPracticeDrill='+clean(drill.robloxPracticeDrill):'',
     codingPractice?'codingPracticeDrill='+clean(drill.codingPracticeDrill):'',
     clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
+    drill.improvementOnly===true?`verifiedLearningGap=${clean(drill.optimizationReason)}; no production promotion`:'',
     drill.externalGameplayPractice?'APK 입력 관찰을 참고한 독립 엔진 실습이다. 동일 게임 행동·물리·모션·메뉴의 재현 성공은 별도 관찰 비교 전까지 미확인이다.':'',
     phase4?`phase4CapabilityId=${clean(drill.phase4CapabilityId)}`:'',
     phase4?`phase4BenchmarkCaseId=${clean(drill.phase4BenchmarkCaseId)}`:'',
