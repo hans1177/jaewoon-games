@@ -101,7 +101,7 @@ export class StrongholdView3D {
   makeEnvironment(g){
     this.ground.clear();
     const p=this.palette,expanded=g.state.expanded,w=expanded?2810:1260;
-    this.cube(this.ground,p.water,1530,0,600,3500,12,1640);
+    this.cube(this.ground,p.water,150,0,600,8000,12,4200);
     this.cube(this.ground,p.sand,100+w/2,6,595,w,16,1010);
     this.cube(this.ground,p.grass,145+(w-90)/2,14,595,w-90,8,920);
     // Render each previously-unlocked legacy region in actual 3D so quests and
