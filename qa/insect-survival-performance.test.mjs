@@ -178,3 +178,75 @@ test('real Chromium WebGL QA requires instanced 12-tile ground, no fake draw-cal
  assert.match(source,/batchGroundTiles\(floorTiles\)/);
  assert.match(source,/const floorTop=first\?new THREE\.Box3\(\)\.setFromObject\(first\)\.max\.y:null/);
 });
+
+test('repeated static CC0 decor meshes batch without altering models or fog visibility',()=>{
+ const start=source.indexOf('function batchStaticDecor(');
+ const end=source.indexOf('// Fog-distance render culling',start);
+ const visStart=source.indexOf('function refreshDecorVisibility(');
+ const visEnd=source.indexOf('function actorsFromFrame(',visStart);
+ assert.ok(start>0&&end>start&&visStart>end&&visEnd>visStart);
+ const sharedGeometry={id:'original-CC0-geometry'},sharedMaterial={id:'derived-tint'};
+ const uniqueMaterial={id:'different-tint'};
+ const make=(x,material)=>{
+  const mesh={isMesh:true,isSkinnedMesh:false,geometry:sharedGeometry,material,
+   matrixWorld:{x},visible:true};
+  return {visible:true,userData:{visualRange:30},position:{x,z:0},
+   updateMatrixWorld(){},traverse(fn){fn(mesh)},sourceMesh:mesh};
+ };
+ const p1=make(0,sharedMaterial),p2=make(12,sharedMaterial),p3=make(75,sharedMaterial),
+   unique=make(80,uniqueMaterial);
+ class InstancedMesh{
+  constructor(geometry,material,count){Object.assign(this,{geometry,material,count,userData:{},
+   visible:true,instanceMatrix:{needsUpdate:false},transforms:[]});}
+  setMatrixAt(index,matrix){this.transforms[index]=matrix;}
+ }
+ const created=[];
+ const hidden={hidden:true};
+ const ctx=vm.createContext({
+  THREE:{InstancedMesh},decor:{children:[p1,p2,p3,unique]},scene:{add(mesh){created.push(mesh)}},
+  console:{warn(){throw Error('Valid CC0 instances must not fail')}},
+  hiddenDecorTransform:hidden
+ });
+ vm.runInContext('let decorGpuBatches=0,decorGpuInstances=0,decorGpuProps=0,decorVisibilityTick=0;'+
+  source.slice(start,end)+source.slice(visStart,visEnd)+
+  ';globalThis.batch=batchStaticDecor;globalThis.cull=refreshDecorVisibility;'+
+  'globalThis.metrics=()=>({batches:decorGpuBatches,instances:decorGpuInstances,props:decorGpuProps})',ctx);
+ ctx.batch();
+ assert.equal(created.length,1,'identical source geometry/material must share one GPU draw');
+ assert.equal(created[0].count,3,'all matching decorative props must keep their own transform');
+ assert.deepEqual([...created[0].transforms.map(x=>x.x)],[0,12,75]);
+ assert.equal(ctx.metrics().batches,1);
+ assert.equal(ctx.metrics().instances,3);
+ assert.equal(ctx.metrics().props,3);
+ assert.ok([p1,p2,p3].every(p=>p.visible===false&&p.userData.decorBatchSlots?.length===1));
+ assert.equal(unique.visible,true,'different original-tint must remain independent');
+ assert.strictEqual(p1.sourceMesh.geometry,sharedGeometry,'original geometry stays immutable');
+ ctx.cull(0,0,true);
+ assert.strictEqual(created[0].transforms[2],hidden,
+  'distant instance must not be drawn even while batch is visible');
+ assert.ok(p1.userData.rangeVisible);
+ assert.equal(unique.visible,false,'unbatched unique prop still uses normal fog culling');
+ ctx.cull(75,0,true);
+ assert.equal(created[0].transforms[2].x,75,'nearby instance must be restored in-place');
+ assert.strictEqual(created[0].transforms[0],hidden);
+ assert.equal(created[0].instanceMatrix.needsUpdate,true);
+ const noInstanceProps=[make(0,sharedMaterial),make(6,sharedMaterial)];
+ const fallback=vm.createContext({
+  THREE:{},decor:{children:noInstanceProps},scene:{add(){throw Error('no GPU batch expected')}},
+  console:{warn(){}},hiddenDecorTransform:hidden
+ });
+ vm.runInContext('let decorGpuBatches=0,decorGpuInstances=0,decorGpuProps=0;'+
+  source.slice(start,end)+';globalThis.batch=batchStaticDecor;',fallback);
+ fallback.batch();
+ assert.ok(noInstanceProps.every(p=>p.visible===true),
+  'unsupported renderer must preserve original CC0 decor visibility');
+ assert.doesNotMatch(source.slice(start,end),/state\.hp|player\.x|save\(|enemies\.push|resources\.push/);
+});
+
+test('real Chromium and Vibe inspect decorative instancing without hardware FPS claims',()=>{
+ assert.match(smoke,/decorGpuBatches/);
+ assert.match(smoke,/decorGpuInstances/);
+ assert.match(source,/batchStaticDecor\(\)/);
+ assert.match(source,/decorGpuBatches,decorGpuInstances,decorGpuProps/);
+ assert.match(source,/visibleDecor:decor\.children\.filter/);
+});
