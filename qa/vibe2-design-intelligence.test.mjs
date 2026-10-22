@@ -1,7 +1,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, buildDesignEvolutionBrief, validateDesignAwareExperience } from '../tools/vibe2-design-intelligence.mjs';
+import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, buildDesignEvolutionBrief, validateDesignAwareExperience, evaluateVibeReferenceCapabilities } from '../tools/vibe2-design-intelligence.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-control.mjs';
 
@@ -521,4 +521,64 @@ test('canonical queue preserves designer revision and scope for real worker hand
     designScope:'',designFields:[],proposedDesignChanges:[]
   }]}).tasks[0];
   assert.equal(buildVibeDesignIntelligence({task:unchanged}).designerHandoff.required,false);
+});
+
+
+test('R01-R10 permitted reference observations require rights, measured gameplay and independent QA',()=>{
+  const sha='b'.repeat(40);
+  const proven=id=>({id,sourceRevision:sha,evidenceId:id,
+    actualPlatformRuntime:true,independentQaPass:true,regressionPass:true,preservesGameplaySaveBalance:true});
+  const facts=['ref-a','ref-b'].map(sourceId=>({sourceId,sourceTimestamp:'2026-10-21',
+    observationKind:'OBSERVED',rightsBasis:'ABSTRACT_TECHNIQUE',evidence:'visible-player-choice'}));
+  const study={
+    facts,
+    funHypotheses:[{sourceId:'ref-a',mechanic:'RISK_REWARD',evidence:'visible-player-choice',
+      playtestScenario:'two-risk-routes'}],
+    compositions:[{sourceIds:['ref-a','ref-b'],originalTheme:'new forest',
+      originalRules:'player-specific multi-route rule',conflictTest:'both mechanics playable',copiesProtectedExpression:false}],
+    gameFeelSamples:[{...proven('feel'),platform:'WEB',deviceClass:'phone',
+      inputTimeMs:10,actionTimeMs:30,hitTimeMs:80,sameImpactEvent:true,cameraReadable:true}],
+    techniqueTransfers:[{...proven('trans'),sourceId:'ref-a',existingCodeMatch:'gameplay-input',
+      missingTechnique:'collision-event-timing',independentNativeReview:true}],
+    playtestGaps:[{...proven('gap'),problem:'attack never hits',existingResponsibleFile:'game.js',
+      reproduced:true,severity:9,proposedRuleChange:false}],
+    genreSkills:[{genre:'rpg',domain:'combat',pass:3,fail:1,independentBenchmarks:true,
+      holdoutPassRate:0.5,benchmarkVersion:'fixed-v1'}],
+    sceneObservations:[{sourceId:'ref-a',timestampMs:100,event:'VISIBLE_CONTACT',visualEvidence:'frame-10'},
+      {sourceId:'ref-a',timestampMs:150,event:'VISIBLE_FEEDBACK',visualEvidence:'frame-15'}],
+    improvementTrials:[{...proven('improve'),originalRuleDifference:'different travel route',
+      comparedSameDevice:true,beforeFrictionMs:1200,afterFrictionMs:900}],
+    techniqueExperiments:[{hypothesis:'two verified motion patterns can combine',
+      trials:[proven('trial-1'),proven('trial-2')],holdoutPassed:true,
+      negativeCasesPassed:true,usesExistingLearningMotor:true}]
+  };
+  const result=evaluateVibeReferenceCapabilities(study);
+  assert.equal(result.allVerified,true);
+  assert.deepEqual(Object.keys(result.requirements),['R01','R02','R03','R04','R05','R06','R07','R08','R09','R10']);
+  assert.equal(result.requirements.R04.measurements[0].inputToHitMs,70);
+  assert.equal(result.requirements.R06.prioritized[0].severity,9);
+  assert.equal(result.nextImprovementCandidates.length,1);
+  assert.equal(result.nextImprovementCandidates[0].responsibleFile,'game.js');
+  assert.equal(result.nextImprovementCandidates[0].automaticImplementation,false);
+  assert.equal(result.readOnlyImprovementBudget,3);
+  assert.match(buildVibeDesignIntelligence({task:{referenceStudy:study}}).guidance,/측정된 개선 우선순위/);
+  assert.equal(result.requirements.R08.inferredEngineInternalsVerified,false);
+  assert.equal(result.authorityExpanded,false);
+  assert.equal(result.sourceMutationAuthorized,false);
+  assert.equal(buildVibeDesignIntelligence({task:{referenceStudy:study}})
+    .referenceCapabilities.allVerified,true);
+  assert.equal(evaluateVibeReferenceCapabilities({...study,facts:[...facts,{
+    sourceId:'unlicensed',sourceTimestamp:'2026-10-21',observationKind:'OBSERVED',
+    rightsBasis:'UNKNOWN',evidence:'asset',originalAssets:'protected'}]})
+    .requirements.R01.verified,false);
+  assert.equal(evaluateVibeReferenceCapabilities({...study,sceneObservations:[
+    {sourceId:'ref-a',timestampMs:100,event:'VISIBLE_MOTION',visualEvidence:'video'}]})
+    .requirements.R08.verified,false);
+  assert.equal(evaluateVibeReferenceCapabilities({...study,gameFeelSamples:[{
+    ...study.gameFeelSamples[0],actualPlatformRuntime:false}]})
+    .requirements.R04.verified,false);
+  const missing=evaluateVibeReferenceCapabilities();
+  assert.equal(missing.allVerified,false);
+  assert.ok(Object.values(missing.requirements).every(row=>row.status==='BLOCKED'));
+  assert.deepEqual(missing.nextImprovementCandidates,[]);
 });
