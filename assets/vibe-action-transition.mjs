@@ -84,8 +84,9 @@ export function selectExistingWeaponAttack({clips=[],profile={},weapon='NONE',st
   }[key]||[profile.cc0Clips?.attack];
   const real=candidates.filter(n=>available.has(n));
   if(real.length)return real[Math.abs(Math.trunc(finite(strikeIndex)))%real.length];
-  const fallback=profile.cc0Clips?.attack;
-  return available.has(fallback)?fallback:'';
+  // No clip for this weapon: do not substitute another weapon's attack.
+  // Gameplay may still attack; this controller only renders existing poses.
+  return '';
 }
 
 export function createVibeActionTransition({mixer,clips=[],LoopOnce='once',LoopRepeat='repeat'}={}){
