@@ -71,13 +71,43 @@ const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();s
 const announce=document.createElement('div');announce.textContent='CC0 3D 숲과 캐릭터 불러오는 중…';
 Object.assign(announce.style,{position:'absolute',zIndex:'8',top:'42%',left:'50%',transform:'translate(-50%,-50%)',padding:'13px 19px',border:'1px solid #b3ac7b',borderRadius:'8px',background:'#1a2d26e8',fontSize:'12px',color:'#f2e4ba',pointerEvents:'none'});
 game.append(announce);
-const ratio=.025,to3=p=>new THREE.Vector3(p.x*ratio,0,p.y*ratio);
+// Grounding is measured from the CC0 floor's actual world-space top surface.
+// All game-state coordinates remain unchanged; these constants affect visuals only.
+const ratio=.025,GROUND_SURFACE_Y=0,FOOT_CLEARANCE=.035,GROUND_TILE_SPAN=14;
+const to3=p=>new THREE.Vector3(p.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,p.y*ratio);
 function environment(frame){
  if(fieldBuilt)return;fieldBuilt=true;
  const floor=derived('floor',.18,'#adc291');
- // Grounded-like miniature yard: original CC0 ground panel tiled under the grass canopy.
- for(let x=0;x<56;x+=14)for(let z=0;z<42;z+=14){
-  const panel=floor.clone(true);panel.position.set(x+7,0,z+7);panel.scale.x*=13.8;panel.scale.z*=13.8;
+ // Local mesh is only a narrow, seam-filling foundation beneath the original CC0 tiles.
+ // It does not replace the CC0 floor source, which remains visible and unmodified.
+ const fieldWidth=Math.ceil(frame.world.w*ratio/GROUND_TILE_SPAN)*GROUND_TILE_SPAN;
+ const fieldDepth=Math.ceil(frame.world.h*ratio/GROUND_TILE_SPAN)*GROUND_TILE_SPAN;
+ const underlay=new THREE.Mesh(
+  new THREE.PlaneGeometry(fieldWidth,fieldDepth),
+  new THREE.MeshStandardMaterial({color:'#71935c',roughness:1,metalness:0})
+ );
+ underlay.rotation.x=-Math.PI/2;
+ underlay.position.set(fieldWidth/2,GROUND_SURFACE_Y-.025,fieldDepth/2);
+ world.add(underlay);
+ // The CC0 floor OBJ spans 10x8 units and rises 0.5 units below its origin.
+ // Measure the transformed bounds instead of magnifying both axes 13.8 times:
+ // that used to make ~50-unit floor panels overlap every 14 units, causing
+ // coplanar flicker and the ground surface to cover the hero's feet.
+ const floorBounds=new THREE.Box3().setFromObject(floor);
+ const floorSize=floorBounds.getSize(new THREE.Vector3());
+ const floorCenter=floorBounds.getCenter(new THREE.Vector3());
+ if(floorSize.x<.001||floorSize.z<.001)throw Error('CC0 floor footprint invalid');
+ const floorXScale=GROUND_TILE_SPAN/floorSize.x;
+ const floorZScale=GROUND_TILE_SPAN/floorSize.z;
+ const tileY=GROUND_SURFACE_Y+floor.position.y-floorBounds.max.y;
+ for(let x=0;x<fieldWidth;x+=GROUND_TILE_SPAN)for(let z=0;z<fieldDepth;z+=GROUND_TILE_SPAN){
+  const panel=floor.clone(true);
+  panel.scale.x*=floorXScale;panel.scale.z*=floorZScale;
+  panel.position.set(
+   x+GROUND_TILE_SPAN/2-(floorCenter.x-floor.position.x)*floorXScale,
+   tileY,
+   z+GROUND_TILE_SPAN/2-(floorCenter.z-floor.position.z)*floorZScale
+  );
   world.add(panel);
  }
  const rand=i=>{const t=Math.sin(i*102.64+18.82)*43758.5453;return t-Math.floor(t)};
@@ -183,7 +213,7 @@ function follow(frame,dt){
  for(let i=0;i<frame.bugs.length;i++){
   const b=frame.bugs[i],actor=enemies[i];if(!actor)continue;
   actor.visible=!b.dead;
-  if(!b.dead){actor.position.set(b.x*ratio,0,b.y*ratio);actor.rotation.y=Math.atan2(p.x-b.x,p.y-b.y);actor.children[0].rotation.z=b.hit>0?.28:0}
+  if(!b.dead){actor.position.set(b.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,b.y*ratio);actor.rotation.y=Math.atan2(p.x-b.x,p.y-b.y);actor.children[0].rotation.z=b.hit>0?.28:0}
  }
  // Resource nodes may respawn; remake lightweight CC0 derived models only when changed.
  let alive=frame.nodes.length;
@@ -191,7 +221,7 @@ function follow(frame,dt){
   while(resources.length){const old=resources.pop();actors.remove(old)}
   for(const n of frame.nodes){const type=n.type==='pebble'?'stone':'foliage';const g=new THREE.Group();g.add(derived(type,n.type==='pebble'?.35:.65,'#cbd8a9'));actors.add(g);resources.push(g)}
  }
- for(let i=0;i<frame.nodes.length;i++)resources[i].position.set(frame.nodes[i].x*ratio,0,frame.nodes[i].y*ratio);
+ for(let i=0;i<frame.nodes.length;i++)resources[i].position.set(frame.nodes[i].x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,frame.nodes[i].y*ratio);
 }
 function resize(){
  renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
