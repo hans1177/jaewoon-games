@@ -102,6 +102,7 @@ test('game renderer uses real confirmed clips and leaves gameplay ownership unto
   assert.match(renderer,/token:oneShot\?attackAt:null/);
   assert.match(renderer,/heroTravel\.sample\(px,py,now/);
   assert.match(renderer,/selectExistingWeaponAttack/);
+  assert.match(renderer,/const tool=String\(p\.weapon\|\|p\.tool\|\|'NONE'\)/);
   assert.doesNotMatch(renderer,/heroAction\.setDuration\(/);
 });
 
@@ -173,4 +174,15 @@ test('teleports are not misclassified as a sprint clip',()=>{
   const t=sampler.sample(10000,0,1090);
   assert.equal(t.teleported,true);
   assert.equal(t.moving,false);
+});
+
+test('pre-indexed native clip names support allocation-free frame selection',()=>{
+  const names=new Set(['Idle','Running_A','Walking_A','Running_Strafe_Left',
+    '1H_Melee_Attack_Chop','1H_Melee_Attack_Slice_Diagonal']);
+  const profile={cc0Clips:{idle:'Idle',walk:'Walking_A',run:'Running_A',attack:'1H_Melee_Attack_Chop'}};
+  assert.equal(selectExistingTravelClip({clips:names,profile,travel:{
+    moving:true,speed:170,forward:0,side:-1
+  }}).name,'Running_Strafe_Left');
+  assert.equal(selectExistingWeaponAttack({clips:names,profile,weapon:'AXE',strikeIndex:1}),
+    '1H_Melee_Attack_Slice_Diagonal');
 });
