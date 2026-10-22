@@ -416,7 +416,7 @@ test('Korean insect survival requests reuse approved creature, tool, nest and fa
   assert.deepEqual(coverage.CREATURE.reusableSourceIds,['licensed-spider']);
   assert.deepEqual(coverage.ITEM.reusableSourceIds,['licensed-harvest-tool']);
   assert.deepEqual(coverage.PROP.reusableSourceIds,['licensed-nest']);
-  assert.deepEqual(coverage.BUILDING.reusableSourceIds,['licensed-greenhouse']);
+  assert.deepEqual(coverage.BUILDING.reusableSourceIds,['licensed-greenhouse','licensed-nest']);
   assert.equal(coverage.CHARACTER.status,'VERIFIED_SOURCE_GAP_REVIEW_REQUIRED');
   assert.ok(plan.missingVerifiedSourceRoles.includes('CHARACTER'));
   assert.equal(plan.sourceMutationPerformed,false);
