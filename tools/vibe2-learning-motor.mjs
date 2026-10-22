@@ -1555,6 +1555,42 @@ export function composeVerifiedCodingRecipes(recipes=[],{engine='',genre='',sour
   });
 }
 
+// C06: 동일 시나리오/디바이스/예산으로 비교한 실제 QA 후보만 파레토 비교한다.
+// 회귀가 하나라도 늘거나 기준 조건이 다르면 단순 속도가 빨라도 자동 승자로 선정하지 않는다.
+export function chooseRegressionSafeVibeWinner(candidates=[],{sourceRevision='',benchmarkKey='',deviceClass='',baselineId=''}={}){
+  const rows=capabilityRows(candidates);
+  const issues=[];
+  if(!capabilityClean(benchmarkKey)||!capabilityClean(deviceClass)||!capabilityClean(baselineId)){
+    issues.push('FIXED_BENCHMARK_DEVICE_AND_BASELINE_REQUIRED');
+  }
+  const eligible=rows.filter(c=>capabilityProof(c,sourceRevision)&&c.saveAndBalancePreserved===true&&
+    c.sameTaskBudget===true&&c.benchmarkKey===benchmarkKey&&c.deviceClass===deviceClass&&
+    capabilityClean(c.id)&&Number.isInteger(c.regressionCount)&&c.regressionCount>=0&&
+    Number.isFinite(c.runtimeMs)&&c.runtimeMs>=0&&Number.isFinite(c.peakMemoryMb)&&c.peakMemoryMb>=0&&
+    Number.isInteger(c.modelCalls)&&c.modelCalls>=0);
+  const baseline=eligible.find(c=>c.id===baselineId);
+  if(!baseline||eligible.length!==rows.length||new Set(eligible.map(c=>c.id)).size!==eligible.length){
+    issues.push('EXACT_PAIRED_CANDIDATE_EVIDENCE_REQUIRED');
+  }
+  const challengers=baseline?eligible.filter(c=>c.id!==baselineId&&
+    c.regressionCount<=baseline.regressionCount&&c.runtimeMs<=baseline.runtimeMs&&
+    c.peakMemoryMb<=baseline.peakMemoryMb&&c.modelCalls<=baseline.modelCalls&&
+    (c.regressionCount<baseline.regressionCount||c.runtimeMs<baseline.runtimeMs||
+      c.peakMemoryMb<baseline.peakMemoryMb||c.modelCalls<baseline.modelCalls)):[];
+  challengers.sort((a,b)=>a.regressionCount-b.regressionCount||
+    a.runtimeMs-b.runtimeMs||a.peakMemoryMb-b.peakMemoryMb||
+    a.modelCalls-b.modelCalls||a.id.localeCompare(b.id));
+  if(!challengers.length)issues.push('NO_REGRESSION_SAFE_MEASURED_IMPROVEMENT');
+  const winner=issues.length?null:challengers[0];
+  return capabilityResult('C06',issues.length===0,issues,{
+    winnerId:winner?.id||null,baselineId:baseline?.id||null,eligibleCandidates:eligible.length,
+    runtimeSpeedup:winner&&baseline&&winner.runtimeMs>0?baseline.runtimeMs/winner.runtimeMs:null,
+    memorySavedMb:winner&&baseline?baseline.peakMemoryMb-winner.peakMemoryMb:null,
+    modelCallsSaved:winner&&baseline?baseline.modelCalls-winner.modelCalls:null,
+    comparisonOnly:true,automaticCodePromotion:false
+  });
+}
+
 export function verifyVibeCausalGameplayContract(contract={},trace={}){
   const issues=[];
   const steps=['INPUT','STATE_TRANSITION','PHYSICS_OR_ANIMATION','COLLISION_OR_HIT','FEEDBACK_OR_REWARD'];
@@ -1567,6 +1603,43 @@ export function verifyVibeCausalGameplayContract(contract={},trace={}){
   let index=-1;
   for(const step of steps){const next=actual.indexOf(step,index+1);if(next<0){issues.push('CAUSAL_STEP_MISSING_OR_ORDER:'+step);break;}index=next;}
   if(trace.multiplayer===true&&trace.serverAuthorityVerified!==true)issues.push('SERVER_AUTHORITY_REQUIRED');
+  // 정밀 인과 리플레이 선택 시: 화면상의 타격 효과와 실제 서버 체력 변경은 별개다.
+  // 모든 단계는 같은 input ID의 단조 시간 이벤트와 이전 단계 연결을 가져야 한다.
+  if(contract.causalReplayRequired===true){
+    const events=capabilityRows(trace.events);
+    const actionId=capabilityClean(contract.actionId);
+    const targetId=capabilityClean(contract.targetId);
+    const maxLatency=Number(contract.maxLatencyMs);
+    if(!actionId||!targetId||!Number.isFinite(maxLatency)||maxLatency<=0){
+      issues.push('STRICT_CAUSAL_REPLAY_SPEC_REQUIRED');
+    }
+    if(events.length!==steps.length)issues.push('UNEXPECTED_OR_MISSING_CAUSAL_EVENT');
+    let previous=null;
+    for(let i=0;i<events.length;i++){
+      const event=events[i];
+      if(!event||event.kind!==steps[i]||event.actionId!==actionId||
+        !capabilityClean(event.eventId)||!Number.isFinite(event.timestampMs)||
+        (i===0?event.causedBy!==null:event.causedBy!==previous?.eventId)||
+        (previous&&event.timestampMs<=previous.timestampMs)){
+        issues.push('UNBOUND_OR_OUT_OF_ORDER_CAUSAL_EVENT:'+i);
+      }
+      previous=event;
+    }
+    const start=events[0],last=events.at(-1),hit=events[3];
+    if(!Number.isFinite(start?.timestampMs)||!Number.isFinite(last?.timestampMs)||
+      last.timestampMs-start.timestampMs>maxLatency){
+      issues.push('CAUSAL_LATENCY_BUDGET_EXCEEDED');
+    }
+    if(hit?.targetId!==targetId||hit?.collisionVerified!==true||
+      hit?.authority!=='SERVER'&&trace.multiplayer===true||
+      !Number.isFinite(hit.beforeHp)||!Number.isFinite(hit.afterHp)||
+      hit.beforeHp<=hit.afterHp||hit.afterHp<0){
+      issues.push('NO_AUTHORITATIVE_TARGET_DAMAGE');
+    }
+    if(last?.targetId!==targetId||last?.reportedHp!==hit?.afterHp){
+      issues.push('FEEDBACK_NOT_BOUND_TO_ACTUAL_DAMAGE');
+    }
+  }
   return capabilityResult('C05',issues.length===0,issues,{observedSteps:Object.freeze(actual)});
 }
 
@@ -1622,9 +1695,11 @@ export function assessVibeCodingCapabilities({recipes=[],attempts=[],failures=[]
     c.saveAndBalancePreserved===true&&c.sameTaskBudget===true&&
     Number.isFinite(c.regressionCount)&&c.regressionCount>=0&&Number.isFinite(c.runtimeMs)&&c.runtimeMs>=0);
   verifiedCandidates.sort((a,b)=>a.regressionCount-b.regressionCount||a.runtimeMs-b.runtimeMs||capabilityClean(a.id).localeCompare(capabilityClean(b.id)));
-  const c06=capabilityResult('C06',verifiedCandidates.length>=2,verifiedCandidates.length>=2?[]:['PAIRED_VERIFIED_CANDIDATES_REQUIRED'],{
-    winnerId:verifiedCandidates.length>=2?verifiedCandidates[0].id:null,comparisonOnly:true
-  });
+  const c06=arguments[0]?.optimizationBenchmark?
+    chooseRegressionSafeVibeWinner(candidates,{...arguments[0].optimizationBenchmark,sourceRevision}):
+    capabilityResult('C06',verifiedCandidates.length>=2,verifiedCandidates.length>=2?[]:['PAIRED_VERIFIED_CANDIDATES_REQUIRED'],{
+      winnerId:verifiedCandidates.length>=2?verifiedCandidates[0].id:null,comparisonOnly:true
+    });
   const goodTransfers=capabilityRows(transfers).filter(t=>t.sourceGenre&&t.targetGenre&&t.sourceGenre!==t.targetGenre
     &&capabilityProof(t.sourceProof)&&capabilityProof(t.targetProof)
     &&t.preconditionsMatch===true&&t.protectedStatePreserved===true);
