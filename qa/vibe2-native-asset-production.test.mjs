@@ -5243,3 +5243,25 @@ test('expanded official CC0 supply is available as Web candidates without claimi
  assert.equal(supply.sourceId,'kenney-food-kit');assert.equal(plan.runtimeVerificationGranted,false);assert.equal(supply.downloaded,false);
  for(const row of registry.externalSources.filter(row=>row.gameUseForbidden))assert.equal(row.automaticAcquisitionWhenSelected,false);
 });
+
+test('existing build-up guidance exposes verified library roles and missing-role review without claiming binding',()=>{
+  const handoff={
+    gameId:'insect-survival',target:'WEB',authorized:true,status:'EXISTING_ASSET_PRODUCTION_HANDOFF_REQUIRED',
+    roles:['CREATURE','PROP'],designFingerprint:'sha256:'+'a'.repeat(64),
+    applicationOrder:['REUSE_VERIFIED_LIBRARY','DERIVE_APPROVED_NATIVE_VARIANT','EXACT_RUNTIME_QA'],
+    roleAssetCoverage:[
+      {role:'CREATURE',verifiedSourceCount:1,reusableSourceIds:['licensed-insect'],status:'VERIFIED_LIBRARY_CANDIDATE_AVAILABLE',actualGameBindingVerified:false,nativeRuntimeVerified:false},
+      {role:'PROP',verifiedSourceCount:0,reusableSourceIds:[],status:'VERIFIED_SOURCE_GAP_REVIEW_REQUIRED',actualGameBindingVerified:false,nativeRuntimeVerified:false}
+    ],
+    missingVerifiedSourceRoles:['PROP'],
+    references:[{id:'BLENDER',kind:'AUTHORING_TOOL',roles:['CREATURE'],responsibleOwner:'existing-native-asset-tool',
+      integration:'REVIEWED_NATIVE_3D_AUTHORING',sourceUrl:'https://www.blender.org/',status:'EXTERNAL_TOOL_AUTHORIZATION_AND_LOCAL_AVAILABILITY_REQUIRED',
+      sourceCandidates:[],nextAction:'VERIFY_TOOL_LICENSE_BINARY_AND_SOURCE_IN_EXISTING_ASSET_DEVELOPMENT'}]
+  };
+  const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan',externalCustomization:handoff});
+  assert.match(guidance,/roleAssetCoverage/);
+  assert.match(guidance,/missingVerifiedSourceRoles/);
+  assert.match(guidance,/licensed-insect/);
+  assert.match(guidance,/VERIFIED_SOURCE_GAP_REVIEW_REQUIRED/);
+  assert.match(guidance,/EXACT_RUNTIME_QA/);
+});
