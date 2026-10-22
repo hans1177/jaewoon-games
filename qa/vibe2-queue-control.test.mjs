@@ -3296,6 +3296,7 @@ test('false new-game gate is recovered only for an independently runnable existi
   const held={...old,id:'owner-held',ownerDevelopmentHold:true};
   const requiresOwner={...old,id:'owner-decision',requiresOwnerDecision:true};
   const unrelated={...old,id:'other-cause',blocker:'WEB_3D_RUNTIME_QA_FAILED'};
+  const spoof={...old,id:'untrusted-directive-marker',buildUpDirective:null,buildUpDirectiveId:null};
   const unityHeld={...old,id:'unity-hold',target:'unity',sourceRoot:'unity-games/core-clash-4v4'};
   const queue=createVibeContinuousQueue({tasks:[old,newProject,held,requiresOwner,unrelated,unityHeld]});
   const recovered=recoverStaleRunningReservations(queue);
