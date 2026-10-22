@@ -145766,7 +145766,7 @@
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145800,7 +145800,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 1,
-      "previousReservationId": "system-ai:39740012436:1",
+      "previousReservationId": "system-ai:39742779875:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145808,12 +145808,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39742779875:1",
-      "reservedAt": "2026-10-22T07:50:29.827Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145936,7 +145936,15 @@
         "actions-run:39738734871",
         "system-ai-handoff-to-reservation:system-ai:39740012436:1",
         "actions-run:39740012436",
-        "system-ai-handoff-to-reservation:system-ai:39742779875:1"
+        "system-ai-handoff-to-reservation:system-ai:39742779875:1",
+        "actions-run:39742779875",
+        "external-ai-raw-output-sha256:9240f72ad1ac21da579c7402269e28f345c97b5374a8a70c9707df3f75180bf2",
+        "selected-strategy:comprehensive-prerelease-marketing-package",
+        "system-ai-critic-decision-sha256:84890b3bdff90e3005c03bc4993525388ab2b32afb0a13f21ba5e26b0790fe43",
+        "system-ai-applied-answer-sha256:9240f72ad1ac21da579c7402269e28f345c97b5374a8a70c9707df3f75180bf2",
+        "repair-strategy-fingerprint:1e4167fd6023165579a61e9a5344d3a456a41da47c1e158815cd847fdd736891",
+        "failed-strategy-fingerprint:1e4167fd6023165579a61e9a5344d3a456a41da47c1e158815cd847fdd736891",
+        "model-output-sha256:9240f72ad1ac21da579c7402269e28f345c97b5374a8a70c9707df3f75180bf2"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1052,
@@ -145951,7 +145959,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T14:21:40.195Z",
-      "updatedAt": "2026-10-22T07:50:29.827Z"
+      "updatedAt": "2026-10-22T07:55:41.855Z"
     },
     {
       "id": "marketing-cat-step-pre-release-v1",
