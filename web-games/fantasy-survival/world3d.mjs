@@ -331,7 +331,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
         ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
-      if(clip)actor.motion.play(clip.name,{oneShot:attacking,token:attacking?Number(e.attackAt)||0:null});
+      if(clip){
+        const realAttackClip=attacking&&/attack|swing|bite/i.test(clip.name);
+        actor.motion.play(clip.name,{oneShot:realAttackClip,token:realAttackClip?Number(e.attackAt)||0:null});
+      }
       actor.motion.update(performance.now());
       actor.seen=stamp;
     }
@@ -401,7 +404,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
         ||actor.clips.find(c=>/idle|walk/i.test(c.name));
-      if(clip)actor.motion.play(clip.name,{oneShot:attacking,token:attacking?Number(e.attackAt)||0:null});
+      if(clip){
+        const realAttackClip=attacking&&/attack|swing|bite/i.test(clip.name);
+        actor.motion.play(clip.name,{oneShot:realAttackClip,token:realAttackClip?Number(e.attackAt)||0:null});
+      }
       actor.motion.update(performance.now());actor.seen=stamp;
     }
     for(const [key,actor] of nativeCreatureActors){
