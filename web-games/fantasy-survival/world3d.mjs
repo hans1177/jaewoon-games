@@ -11,7 +11,7 @@ import {clone as cloneAnimatedRig} from '../../assets/roblox/world-ghosts/native
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
-import {createVibeActionTransition,motionFrameDelta,smoothPresentationYaw} from '../../assets/vibe-action-transition.mjs';
+import {createVibeActionTransition,motionFrameDelta,smoothPresentationYaw,createObservedTravelSampler,selectExistingTravelClip,selectExistingWeaponAttack} from '../../assets/vibe-action-transition.mjs';
 import {planAssetApplication} from '../../assets/asset-selector.js';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
@@ -149,6 +149,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const models=await loadSourceModels(); // Fail closed: leave the old game active.
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
   let hero=null,heroMixer=null,heroClips=[],heroMotion=null,lastHeroYawAt=0;
+  const heroTravel=createObservedTravelSampler({sampleWindowMs:75});
+  let lastVisualAttackAt=0,visualStrikeIndex=0;
   let scene=null,disposed=false,heroLoadVersion=0;
   let selectedAppearance=null;
   async function setAvatarAppearance(requested){
@@ -174,7 +176,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       heroClips=gltf.animations||[];
       heroMixer=heroClips.length?new THREE.AnimationMixer(model):null;
       heroMotion=createVibeActionTransition({mixer:heroMixer,clips:heroClips,LoopOnce:THREE.LoopOnce,LoopRepeat:THREE.LoopRepeat});
-      lastHeroYawAt=0;
+      lastHeroYawAt=0;heroTravel.reset();
       selectedAppearance=choice;
       if(previous){
         previousMotion?.dispose();
@@ -527,16 +529,32 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const tool=String(p.tool||p.weapon||'NONE');
       if(tool!==playerToolName){
         playerToolName=tool;
-        const family=/axe/i.test(tool)?'AXE':/pick/i.test(tool)?'PICKAXE':/spear/i.test(tool)?'SPEAR':'NONE';
+        const family=/pick/i.test(tool)?'PICKAXE':/axe/i.test(tool)?'AXE':
+          /hammer|mace/i.test(tool)?'HAMMER':/spear|lance/i.test(tool)?'SPEAR':
+          /sword|blade/i.test(tool)?'SWORD':/dagger|knife/i.test(tool)?'DAGGER':'NONE';
         playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:family});
       }
       const now=performance.now();
-      const moving=(state.keys?.size||0)>0||Math.hypot(Number(state.stick?.x)||0,Number(state.stick?.y)||0)>.16;
-      const pose=now-(Number(p.attackAt)||0)<330?'attack':moving?'move':'idle';
-      // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
-      const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
-      // Real source clip only; cosmetic transitions cannot alter authoritative combat windows.
-      heroMotion?.play(clipName,{oneShot:pose==='attack',token:pose==='attack'?Number(p.attackAt)||0:null});
+      const travel=heroTravel.sample(px,py,now,{
+        faceX:Number(p.faceX)||0,faceY:Number(p.faceY)||1
+      });
+      const attackAt=Number(p.attackAt)||0;
+      const attacking=attackAt>0&&now-attackAt>=0&&now-attackAt<330;
+      if(attacking&&attackAt!==lastVisualAttackAt){
+        lastVisualAttackAt=attackAt;
+        visualStrikeIndex++;
+      }
+      const locomotion=selectExistingTravelClip({clips:heroClips,profile:playerMotionProfile,travel});
+      const attackClip=attacking?selectExistingWeaponAttack({
+        clips:heroClips,profile:playerMotionProfile,weapon:playerMotionProfile.tool,
+        strikeIndex:Math.max(0,visualStrikeIndex-1)
+      }):'';
+      // Never simulate damage or a new attack; all events come from the existing game.
+      // Confirm the animation exists before selecting it. Missing clip -> locomotion.
+      const oneShot=attacking&&Boolean(attackClip);
+      const clipName=oneShot?attackClip:locomotion.name;
+      heroMotion?.play(clipName,{oneShot,token:oneShot?attackAt:null,
+        playbackRate:oneShot?1:locomotion.playbackRate});
       heroMotion?.update(now);
     }
     synchronizeUndead(state,px,py,seen);
@@ -626,7 +644,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
     getAdaptiveQuality:()=>qualityFactor,getFallbackReason:()=>fallbackReason,
     getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles}),
-    getMotionDiagnostics:()=>({player:heroMotion?.diagnostics||null,undeadActors:undeadActors.size,nativeCreatureActors:nativeCreatureActors.size}),
+    getMotionDiagnostics:()=>({player:heroMotion?.diagnostics||null,
+      travel:heroTravel.state,weaponFamily:playerMotionProfile?.tool||'NONE',
+      observedVisualStrikes:visualStrikeIndex,
+      undeadActors:undeadActors.size,nativeCreatureActors:nativeCreatureActors.size}),
     productionReady:false
   };
 }
