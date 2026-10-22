@@ -464,6 +464,23 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
   const queue = createVibeContinuousQueue(queueInput);
   let recovered = 0;
   const tasks = queue.tasks.map((task) => {
+    // 과거 asset-development 실행 구간에 혼입된 읽기 전용 연구만 구별해 기존 큐로 복귀한다.
+    // 실제 게임/에셋 구현과 외부 원칙 미분류 차단은 변경하지 않는다.
+    if(task.status==='blocked'
+      &&clean(task.blocker)==='VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED'
+      &&clean(task.department).toLowerCase()==='learning'
+      &&clean(task.type).toLowerCase()==='research'
+      &&clean(task.gameId)===''
+      &&clean(task.id).startsWith('LEARNING-PRACTICE-')
+      &&clean(task.sourceRoot).startsWith('learning-practice:')
+      &&clean(task.goal).startsWith('[VIBE_LEARNING_PRACTICE]')
+      &&task.ownerDevelopmentHold!==true
+      &&task.requiresOwnerDecision!==true) {
+      recovered+=1;
+      return {...task,...clearedReservation(),status:'queued',blocker:null,
+        lastOutcome:'RECOVERED_READ_ONLY_RESEARCH_SOURCE_GATE',
+        evidence:[...new Set([...(task.evidence||[]),'recovery:read-only-learning-practice-source-gate-v1'])]};
+    }
     // [개발 병목 복구] 과거 장문 설계가 신규 게임 요청으로 오인된 기존 작업만 정확히 재판정한다.
     // 실제 신규 제작·승인 보류·플랫폼 보류는 기존 실행 게이트를 통과하지 못하므로 큐를 변경하지 않는다.
     if(task.status==='blocked'
