@@ -9,6 +9,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09111d;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;touch-action:none}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#renderStatus{position:fixed;z-index:30;bottom:150px;left:50%;transform:translateX(-50%);width:max-content;max-width:90vw;padding:10px 14px;background:#0b1a30e8;border:1px solid #60e7c6;border-radius:14px;color:#e3fff8;font-size:12px;pointer-events:none;text-align:center}
 .hud{position:fixed;z-index:5;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 9px) 10px 0;pointer-events:none}
 .top{display:flex;justify-content:space-between;gap:7px}
 .pill{padding:7px 9px;border:1px solid #ffffff24;border-radius:13px;background:#071321d9;box-shadow:0 5px 18px #0007;font-size:12px;font-weight:900}
@@ -45,7 +46,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
+<canvas id="game" data-gameplay-surface="main" data-render-target="webgl-3d"></canvas>
+<div id="renderStatus" role="status">3D 보석 던전 모델을 불러오는 중…</div>
 <div class="hud">
  <div class="top">
   <div class="pill">보석 <b id="gemCount">0</b> / <b id="gemNeed">3</b></div>
@@ -78,7 +80,9 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 <div id="pauseOverlay" class="overlay"><div class="panel"><h2>일시정지</h2><p>현재 진행 상태는 그대로 유지돼.</p><button id="resumeBtn" class="wide">계속하기</button></div></div>
 <div id="endOverlay" class="overlay"><div class="panel"><div id="endEyebrow" class="eyebrow"></div><h2 id="endTitle"></h2><div id="result" class="result"></div><button id="restartBtn" class="wide">다시 시작</button></div></div>
 
-<script>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
+<script type="module">
+import {createGem3d} from './gem3d.mjs';
 (()=>{
 'use strict';
 
@@ -90,7 +94,7 @@ const INITIAL_GEM_NEED=3;
 const GEM_NEED_MULTIPLIER=1.65;
 
 const canvas=document.getElementById('game');
-const ctx=canvas.getContext('2d');
+let gem3d=null;
 const $=function(id){return document.getElementById(id)};
 const ui={
  gemCount:$('gemCount'),gemNeed:$('gemNeed'),kills:$('kills'),time:$('time'),
@@ -140,10 +144,8 @@ function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dist2(a,b){const dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy}
 function fmtTime(v){const s=Math.floor(v);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 function resize(){
- DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;
- canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);
- canvas.style.width=W+'px';canvas.style.height=H+'px';
- ctx.setTransform(DPR,0,0,DPR,0,0)
+ DPR=Math.min(1.5,devicePixelRatio||1);W=innerWidth;H=innerHeight;
+ gem3d?.resize()
 }
 addEventListener('resize',resize);resize();
 
@@ -167,6 +169,7 @@ function burst(x,y,color,n){
 
 // ==================== 메인 ====================
 function reset(){
+ releaseInputs();
  elapsed=0;spawnTimer=0;kills=0;bossSpawned=false;boss=null;screenShake=0;
  enemies.length=0;projectiles.length=0;gems.length=0;effects.length=0;poisonPools.length=0;particles.length=0;
  Object.assign(player,{x:W/2,y:H/2,r:15,hp:100,maxHp:100,speed:220,inv:0,gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92});
@@ -457,86 +460,20 @@ function updateUi(){
 
 // ==================== 그리기 ====================
 function draw(){
- ctx.clearRect(0,0,W,H);ctx.save();
- if(screenShake>0)ctx.translate(rnd(-screenShake,screenShake),rnd(-screenShake,screenShake));
-
- const bg=ctx.createRadialGradient(player.x,player.y,10,player.x,player.y,Math.max(W,H)*.85);
- bg.addColorStop(0,'#173147');bg.addColorStop(.58,'#0c1b2b');bg.addColorStop(1,'#07101b');
- ctx.fillStyle=bg;ctx.fillRect(-20,-20,W+40,H+40);
-
- const grid=52;ctx.strokeStyle='#8bc6d90b';ctx.lineWidth=1;
- for(let x=0;x<W;x+=grid){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
- for(let y=0;y<H;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
-
- poisonPools.forEach(function(p){
-  ctx.globalAlpha=.18+.12*Math.sin(performance.now()*.006);ctx.fillStyle='#72ed56';
-  ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-  ctx.strokeStyle='#9aff72';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.stroke()
- });
-
- gems.forEach(function(g){
-  ctx.save();ctx.translate(g.x,g.y);ctx.rotate(performance.now()*.0025);
-  ctx.fillStyle='#52f0bf';ctx.shadowColor='#4cf1c0';ctx.shadowBlur=12;
-  ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(6,0);ctx.lineTo(0,7);ctx.lineTo(-6,0);ctx.closePath();ctx.fill();ctx.restore()
- });
- ctx.shadowBlur=0;
-
- projectiles.forEach(function(b){
-  ctx.fillStyle=b.color;ctx.shadowColor=b.color;ctx.shadowBlur=9;
-  if(b.kind==='arrow'){
-   const a=Math.atan2(b.vy,b.vx);ctx.save();ctx.translate(b.x,b.y);ctx.rotate(a);
-   ctx.fillRect(-9,-2,18,4);ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(4,-5);ctx.lineTo(4,5);ctx.closePath();ctx.fill();ctx.restore()
-  }else{
-   ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill()
-  }
- });
- ctx.shadowBlur=0;
-
- enemies.forEach(function(e){
-  ctx.save();ctx.translate(e.x,e.y);ctx.fillStyle=e.hit>0?'#ffffff':e.color;ctx.shadowColor=e.color;ctx.shadowBlur=e.boss?26:11;
-  ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-  ctx.strokeStyle='#ffffff50';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,e.r*.62,0,Math.PI*2);ctx.stroke();
-  if(e.dot>0){ctx.strokeStyle='#ffb255';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,e.r+4,0,Math.PI*2);ctx.stroke()}
-  ctx.restore();
-
-  if(e.boss||e.hp<e.maxHp){
-   ctx.fillStyle='#08111b';ctx.fillRect(e.x-e.r,e.y-e.r-9,e.r*2,4);
-   ctx.fillStyle=e.boss?'#ff5770':'#78e2b2';ctx.fillRect(e.x-e.r,e.y-e.r-9,e.r*2*clamp(e.hp/e.maxHp,0,1),4)
-  }
- });
-
- orbitBlades().forEach(function(b){
-  ctx.save();ctx.translate(b.x,b.y);ctx.rotate(orbitAngle*2);ctx.fillStyle='#dde9ff';ctx.shadowColor='#a8c6ff';ctx.shadowBlur=10;
-  ctx.fillRect(-11,-3,22,6);ctx.restore()
- });
-
- effects.forEach(function(fx){
-  if(fx.kind!=='lightning')return;
-  ctx.globalAlpha=clamp(fx.life/fx.max,0,1);ctx.strokeStyle='#d9f7ff';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(fx.x1,fx.y1);
-  const mx=(fx.x1+fx.x2)/2+rnd(-12,12),my=(fx.y1+fx.y2)/2+rnd(-12,12);
-  ctx.lineTo(mx,my);ctx.lineTo(fx.x2,fx.y2);ctx.stroke();ctx.globalAlpha=1
- });
-
- particles.forEach(function(p){
-  ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()
- });
- ctx.globalAlpha=1;
-
- ctx.save();ctx.translate(player.x,player.y);
- if(player.inv>0&&Math.floor(player.inv*18)%2===0)ctx.globalAlpha=.45;
- ctx.shadowColor='#66ffd0';ctx.shadowBlur=22;ctx.fillStyle='#eafff8';ctx.beginPath();ctx.arc(0,0,player.r,0,Math.PI*2);ctx.fill();
- ctx.shadowBlur=0;ctx.strokeStyle='#59e7bd';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,player.r+5,0,Math.PI*2);ctx.stroke();
- ctx.fillStyle='#59e7bd';ctx.beginPath();ctx.moveTo(19,0);ctx.lineTo(7,-6);ctx.lineTo(7,6);ctx.closePath();ctx.fill();ctx.restore();
-
- ctx.restore()
+ if(!gem3d)return;
+ try{gem3d.render({player,enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades(),effects},performance.now())}
+ catch(error){
+  console.error('[Gem Survivor WebGL3D]',error);
+  gem3d=null;running=false;paused=true;releaseInputs();
+  document.body.dataset.spatialDimension='3d-error';
+  $('renderStatus').style.display='block';
+  $('renderStatus').textContent='3D 렌더링 실패: '+String(error?.message||error);
+ }
 }
-
 function loop(now){
- const dt=Math.min(.033,(now-last)/1000||0);last=now;update(dt);draw();requestAnimationFrame(loop)
+ const dt=Math.min(.033,(now-last)/1000||0);last=now;update(dt);draw();
+ if(gem3d)requestAnimationFrame(loop)
 }
-requestAnimationFrame(loop);
-
 // ==================== 입력 ====================
 function joyPoint(e){
  const r=$('joystick').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
@@ -544,20 +481,32 @@ function joyPoint(e){
  joy.dx=(dx*k)/lim;joy.dy=(dy*k)/lim;$('stick').style.transform='translate('+dx*k+'px,'+dy*k+'px)'
 }
 const joyEl=$('joystick');
-joyEl.addEventListener('pointerdown',function(e){joy.id=e.pointerId;joyEl.setPointerCapture(e.pointerId);joyPoint(e)});
+joyEl.addEventListener('pointerdown',function(e){if(joy.id!==null)return;e.preventDefault();joy.id=e.pointerId;joyEl.setPointerCapture(e.pointerId);joyPoint(e)});
 joyEl.addEventListener('pointermove',function(e){if(e.pointerId===joy.id)joyPoint(e)});
-function joyEnd(e){if(e.pointerId!==joy.id)return;joy.id=null;joy.dx=joy.dy=0;$('stick').style.transform='translate(0,0)'}
-joyEl.addEventListener('pointerup',joyEnd);joyEl.addEventListener('pointercancel',joyEnd);
+function joyEnd(e){if(e.pointerId!==joy.id)return;releaseInputs()}
+function releaseInputs(){joy.id=null;joy.dx=joy.dy=0;$('stick').style.transform='translate(0,0)';keys.clear()}
+joyEl.addEventListener('pointerup',joyEnd);joyEl.addEventListener('pointercancel',joyEnd);joyEl.addEventListener('lostpointercapture',joyEnd);
 
 addEventListener('keydown',function(e){keys.add(e.key)});
 addEventListener('keyup',function(e){keys.delete(e.key)});
 
-function setPause(v){if(!running)return;paused=v;$('pauseOverlay').classList.toggle('show',v)}
+function setPause(v){if(!running)return;paused=v;if(v)releaseInputs();$('pauseOverlay').classList.toggle('show',v)}
 $('pauseBtn').onclick=function(){setPause(true)};
 $('resumeBtn').onclick=function(){setPause(false)};
-$('startBtn').onclick=function(){$('startOverlay').classList.remove('show');tone(330,.08,'triangle',.03);reset()};
+$('startBtn').onclick=function(){if(!gem3d)return;$('startOverlay').classList.remove('show');tone(330,.08,'triangle',.03);reset()};
 $('restartBtn').onclick=function(){reset()};
-document.addEventListener('visibilitychange',function(){if(document.hidden&&running&&!paused)setPause(true)});
+document.addEventListener('visibilitychange',function(){if(document.hidden){releaseInputs();if(running&&!paused)setPause(true)}});
+addEventListener('blur',function(){releaseInputs();if(running&&!paused)setPause(true)});
+$('startBtn').disabled=true;
+createGem3d({canvas}).then(renderer=>{
+ gem3d=renderer;
+ $('startBtn').disabled=false;$('renderStatus').style.display='none';
+ last=performance.now();requestAnimationFrame(loop);
+}).catch(error=>{
+ console.error('[Gem Survivor native WebGL3D]',error);
+ document.body.dataset.spatialDimension='3d-error';
+ $('renderStatus').textContent='3D 모델 로딩 실패: '+String(error?.message||error)+' · WebGL2 지원 브라우저에서 다시 열어 줘.';
+});
 })();
 </script>
 </body>
