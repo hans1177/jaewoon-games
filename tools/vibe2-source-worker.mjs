@@ -4494,11 +4494,13 @@ export function buildGenreCareerAuthoringGuidance(order={}, {
   const declared=clean(order.selectedTask?.genre||order.assetProduction?.genre||order.genre);
   const artLock=clean(order.assetProduction?.styleBible?.profileKey||
     order.assetProduction?.styleBible?.styleFamily||order.selectedTask?.styleFamily||order.styleFamily);
-  const context=(declared+' '+task+' '+artLock).toLowerCase();
-  let profile='FANTASY';
+  const context=(declared+' '+task+' '+clean(order.gameId)+' '+artLock).toLowerCase();
+  let profile='';
   if(/공포|horror|terror|undead|zombie|귀신|유령/i.test(context))profile='HORROR';
   else if(/코지|cozy|농장|생활|farm|chef|cooking|귀여운/i.test(context))profile='COZY';
   else if(/디아블로|diablo|dark.?arpg|hack.?and.?slash|핵앤슬래시|dark.?fantasy/i.test(context))profile='DARK_ARPG';
+  else if(/판타지|fantasy|마력숲|simple.?rpg|고전.?rpg/i.test(context))profile='FANTASY';
+  if(!profile)return '';
   const explicitCareer=clean(order.selectedTask?.careerId||order.selectedTask?.career||order.careerId).toUpperCase();
   const validCareer=explicitCareer&&Object.hasOwn(COMMON_CAREER_MOTION_HIERARCHY,explicitCareer);
   const palette=createGenreCareerMotionPalette({
