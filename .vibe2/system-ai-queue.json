@@ -153833,23 +153833,24 @@
       ],
       "dependencies": [],
       "relatedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:4e6e0af788dfdde920992fb14439c5e64f1fcbc8:fantasy-survival"
+        "deployment:.github/workflows/magic-forest-pages.yml:4e6e0af788dfdde920992fb14439c5e64f1fcbc8:fantasy-survival",
+        "recovery-recovery-ba5ec463250d4fa6f1a3"
       ],
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:4e6e0af788dfdde920992fb14439c5e64f1fcbc8:fantasy-survival"
       ],
-      "retries": 2,
+      "retries": 0,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
-      "failureSignature": "WORKFLOW_FAILED_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
+      "failureSignature": "source-mutation-required-before-revalidation",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 1,
       "previousReservationId": "system-ai:39716837274:1",
-      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "4e6e0af788dfdde920992fb14439c5e64f1fcbc8",
+      "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -153857,7 +153858,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39128754826:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -153911,7 +153912,10 @@
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
         "system-ai-impact-score:1136",
         "system-ai-handoff-to-reservation:system-ai:39721901245:1",
-        "actions-run:39721901245"
+        "actions-run:39721901245",
+        "recovery-queue:recovery-f68c72857f68d260dc84",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+        "failure-cause:source-mutation-required-before-revalidation"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1136,
@@ -153926,7 +153930,20 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T13:00:20.594Z",
-      "updatedAt": "2026-10-22T04:35:56.923Z"
+      "updatedAt": "2026-10-22T04:36:47.602Z",
+      "repairMode": "FOCUSED_REPAIR",
+      "userAssistanceRequired": false,
+      "gameRepairContract": {
+        "version": 1,
+        "mode": "FOCUSED_REPAIR",
+        "prePatchReproductionRequired": true,
+        "causalResponsibleSystemRequired": true,
+        "originalScenarioReplayRequired": true,
+        "invariantValidationRequired": true,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "multiplayerUserAssistanceRequired": false
+      }
     },
     {
       "id": "marketing-moon-ruins-pre-release-v1",
