@@ -1409,6 +1409,13 @@ export function runQueueCommand(args = {}) {
     });
     if(!sync.pass)throw new Error(`VIBE_WORKER_SYNC_FAILED:${sync.failures.join(',')}`);
     result={command,...sync,queue,summary:summarizeVibeContinuousQueue(queue)};
+  } else if (command === 'recover-infrastructure') {
+    // [기존 큐 복구] 디자인 핸드오프가 차단되어도 승인된 정밀 인프라 복구는 독립 진행한다.
+    // 작업 예약/소스 쓰기/승인 통과를 위조하지 않고 기존 안전 게이트로 재심사한다.
+    const repaired=recoverRunnableInfrastructureState(queue);
+    queue=repaired.queue;
+    if(repaired.recovered)writeJson(file,queue);
+    result={command,updated:repaired.recovered>0,...repaired,summary:summarizeVibeContinuousQueue(queue)};
   } else if (command === 'enqueue') {
     queue = enqueueVibeTask(queue, {
       id: args.id, gameId: args.game, target: args.target, department: args.department, type: args.type, goal: args.goal,

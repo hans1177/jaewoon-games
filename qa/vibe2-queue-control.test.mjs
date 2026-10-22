@@ -3326,3 +3326,40 @@ test('false new-game gate is recovered only for an independently runnable existi
     assert.equal(mapped.get(name).status,'blocked',name);
   }
 });
+
+
+test('recovery-fast CLI safely requeues only independently verified false new-game gate tasks',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-recovery-fast-gate-'));
+  const queueFile=path.join(dir,'queue.json');
+  const sourceRoot='web-games/core-clash-4v4';
+  const buildUpDirectiveId='core-clash-4v4-build-up-g1';
+  const appended='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nmenuStructure: 계속하기 또는 새 게임→본편. 원래 게임 제작 내용을 설명한다.';
+  const base={
+    gameId:'core-clash-4v4',target:'web',sourceRoot,department:'development',
+    type:'implementation',ownerDirective:true,status:'blocked',
+    responsibleFiles:[sourceRoot+'/index.html'],retries:1,maxRetries:2,
+    blocker:'EXECUTION_GATE_BLOCKED:company-owner-gate-required',
+    buildUpDirectiveId,
+    buildUpDirective:{version:2,directiveId:buildUpDirectiveId,gameId:'core-clash-4v4',sourceRoot}
+  };
+  const repair={...base,id:'recovery-fast-existing',goal:'[WEB_REPAIR] 기존 Web 게임의 3D 렌더 오류를 수정하고 저장 규칙을 보존한다.'+appended};
+  const newGame={...base,id:'recovery-fast-actual-new',goal:'새 게임 만들어. 신규 게임을 제작해.'+appended};
+  const ownerHold={...repair,id:'recovery-fast-held',ownerDevelopmentHold:true};
+  const spoof={...repair,id:'recovery-fast-untrusted',buildUpDirectiveId:'forged'};
+  fs.writeFileSync(queueFile,JSON.stringify(createVibeContinuousQueue({tasks:[repair,newGame,ownerHold,spoof]})));
+  const recovered=runQueueCommand({command:'recover-infrastructure',queue:queueFile});
+  assert.equal(recovered.command,'recover-infrastructure');
+  assert.equal(recovered.updated,true);
+  assert.equal(recovered.recovered,1);
+  const after=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  const byId=new Map(after.tasks.map(t=>[t.id,t]));
+  assert.equal(byId.get(repair.id).status,'queued');
+  assert.equal(byId.get(repair.id).blocker,null);
+  assert.equal(byId.get(repair.id).retries,1);
+  assert.equal(byId.get(repair.id).lastOutcome,'RECOVERED_FALSE_NEW_GAME_GATE');
+  assert.ok(byId.get(repair.id).evidence.includes('recovery:existing-game-long-context-gate-v1'));
+  for(const id of [newGame.id,ownerHold.id,spoof.id])assert.equal(byId.get(id).status,'blocked',id);
+  const repeated=runQueueCommand({command:'recover-infrastructure',queue:queueFile});
+  assert.equal(repeated.recovered,0,'recovery must be idempotent');
+  assert.equal(repeated.updated,false);
+});

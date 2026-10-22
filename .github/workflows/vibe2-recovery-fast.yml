@@ -76,6 +76,11 @@ jobs:
             node tools/vibe2-queue-control.mjs storage-unpack --queue="$control/.vibe2/queue.json"
 
             test -f "$control/.vibe2/queue.json"
+            # [기존 복구 흐름] 설계 게이트 실패와 무관하게 구분된 오차단만 안전하게 재심사한다.
+            # 새 게임 승인/설계/Unity 보류/배포 게이트는 이 단계에서 해제하지 않는다.
+            COMPANY_VERIFIED_POLICY_PATH="$GITHUB_WORKSPACE/company-learning/platform-release-roadmap.json" \
+              node tools/vibe2-queue-control.mjs recover-infrastructure --queue="$control/.vibe2/queue.json" \
+              | tee /tmp/vibe2-recovery-fast/infrastructure-recovery.log
             test -f "$control/.vibe2/system-ai-queue.json" || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > "$control/.vibe2/system-ai-queue.json"
             test -f "$control/.vibe2/recovery-queue.json" || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > "$control/.vibe2/recovery-queue.json"
 
