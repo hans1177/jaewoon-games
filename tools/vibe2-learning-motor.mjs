@@ -1557,20 +1557,28 @@ export function composeVerifiedCodingRecipes(recipes=[],{engine='',genre='',sour
 
 // C06: 동일 시나리오/디바이스/예산으로 비교한 실제 QA 후보만 파레토 비교한다.
 // 회귀가 하나라도 늘거나 기준 조건이 다르면 단순 속도가 빨라도 자동 승자로 선정하지 않는다.
-export function chooseRegressionSafeVibeWinner(candidates=[],{sourceRevision='',benchmarkKey='',deviceClass='',baselineId=''}={}){
+export function chooseRegressionSafeVibeWinner(candidates=[],{sourceRevision='',benchmarkKey='',deviceClass='',modelFingerprint='',baselineId=''}={}){
   const rows=capabilityRows(candidates);
   const issues=[];
   if(!/^[a-f0-9]{40}$/i.test(capabilityClean(sourceRevision)))issues.push('EXACT_SOURCE_REVISION_REQUIRED');
-  if(!capabilityClean(benchmarkKey)||!capabilityClean(deviceClass)||!capabilityClean(baselineId)){
-    issues.push('FIXED_BENCHMARK_DEVICE_AND_BASELINE_REQUIRED');
+  // 모델의 정확한 빌드와 측정 시나리오를 모두 고정한다. 기기와 예산만 같아도 다른 모델이면 비교 금지.
+  if(!capabilityClean(benchmarkKey)||!capabilityClean(deviceClass)||
+    !capabilityClean(modelFingerprint)||!capabilityClean(baselineId)){
+    issues.push('FIXED_BENCHMARK_DEVICE_MODEL_AND_BASELINE_REQUIRED');
   }
   const eligible=rows.filter(c=>capabilityProof(c,sourceRevision)&&c.saveAndBalancePreserved===true&&
     c.sameTaskBudget===true&&c.benchmarkKey===benchmarkKey&&c.deviceClass===deviceClass&&
-    capabilityClean(c.id)&&Number.isInteger(c.regressionCount)&&c.regressionCount>=0&&
-    Number.isFinite(c.runtimeMs)&&c.runtimeMs>=0&&Number.isFinite(c.peakMemoryMb)&&c.peakMemoryMb>=0&&
+    c.modelFingerprint===modelFingerprint&&capabilityClean(c.id)&&
+    Number.isInteger(c.regressionCount)&&c.regressionCount>=0&&
+    Number.isFinite(c.runtimeMs)&&c.runtimeMs>0&&
+    Number.isFinite(c.peakMemoryMb)&&c.peakMemoryMb>0&&
     Number.isInteger(c.modelCalls)&&c.modelCalls>=0);
   const baseline=eligible.find(c=>c.id===baselineId);
-  if(!baseline||eligible.length!==rows.length||new Set(eligible.map(c=>c.id)).size!==eligible.length){
+  const ids=eligible.map(c=>c.id);
+  const evidenceIds=eligible.map(c=>capabilityClean(c.evidenceId||c.proof?.evidenceId||c.verification?.evidenceId));
+  // 재사용한 증거와 0ms/0MB 같은 무효 측정치를 실제 개선으로 계산하지 않는다.
+  if(!baseline||eligible.length!==rows.length||new Set(ids).size!==ids.length||
+    new Set(evidenceIds).size!==evidenceIds.length){
     issues.push('EXACT_PAIRED_CANDIDATE_EVIDENCE_REQUIRED');
   }
   const challengers=baseline?eligible.filter(c=>c.id!==baselineId&&
@@ -1585,10 +1593,12 @@ export function chooseRegressionSafeVibeWinner(candidates=[],{sourceRevision='',
   const winner=issues.length?null:challengers[0];
   return capabilityResult('C06',issues.length===0,issues,{
     winnerId:winner?.id||null,baselineId:baseline?.id||null,eligibleCandidates:eligible.length,
-    runtimeSpeedup:winner&&baseline&&winner.runtimeMs>0?baseline.runtimeMs/winner.runtimeMs:null,
+    modelFingerprint:capabilityClean(modelFingerprint)||null,
+    runtimeSpeedup:winner&&baseline?baseline.runtimeMs/winner.runtimeMs:null,
     memorySavedMb:winner&&baseline?baseline.peakMemoryMb-winner.peakMemoryMb:null,
     modelCallsSaved:winner&&baseline?baseline.modelCalls-winner.modelCalls:null,
-    comparisonOnly:true,automaticCodePromotion:false
+    // 전달된 증거의 형식 검증만 수행한다. 실제 게임 성능이나 외부 CI 결과를 대신 증명하지 않는다.
+    externalMeasurementVerified:false,comparisonOnly:true,automaticCodePromotion:false
   });
 }
 
@@ -1620,7 +1630,8 @@ export function verifyVibeCausalGameplayContract(contract={},trace={}){
     for(let i=0;i<events.length;i++){
       const event=events[i];
       if(!event||event.kind!==steps[i]||event.actionId!==actionId||
-        !capabilityClean(event.eventId)||!Number.isFinite(event.timestampMs)||
+        (typeof event.eventId!=='string'||!capabilityClean(event.eventId))||
+        !Number.isFinite(event.timestampMs)||event.timestampMs<0||
         (i===0?event.causedBy!==null:event.causedBy!==previous?.eventId)||
         (previous&&event.timestampMs<=previous.timestampMs)){
         issues.push('UNBOUND_OR_OUT_OF_ORDER_CAUSAL_EVENT:'+i);

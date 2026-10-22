@@ -2347,6 +2347,8 @@ test('C05 strict causal replay verifies actual target HP change, ordered evidenc
     bad(4,{reportedHp:80}),
     bad(2,{causedBy:'wrong-parent'}),
     bad(2,{eventId:'event-1'}),
+    bad(1,{eventId:123}),
+    bad(0,{timestampMs:-1}),
     bad(4,{timestampMs:300}),
     {...trace,events:[events[0],...events]}
   ])assert.equal(verifyVibeCausalGameplayContract(contract,altered).verified,false);
@@ -2357,10 +2359,12 @@ test('C06 winner requires independent same-device matched proof and strict no-re
   const sourceRevision='c'.repeat(40);
   const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
   const base={id:'baseline',sourceRevision,evidenceId:'qa-base',proof,
-    benchmarkKey:'fixed-combat-s1',deviceClass:'android-mid',saveAndBalancePreserved:true,
+    benchmarkKey:'fixed-combat-s1',deviceClass:'android-mid',modelFingerprint:'same-model@build-1',
+    saveAndBalancePreserved:true,
     sameTaskBudget:true,regressionCount:0,runtimeMs:16,peakMemoryMb:80,modelCalls:2};
   const better={...base,id:'candidate',evidenceId:'qa-new',runtimeMs:12,peakMemoryMb:76,modelCalls:1};
-  const spec={sourceRevision,benchmarkKey:base.benchmarkKey,deviceClass:base.deviceClass,baselineId:base.id};
+  const spec={sourceRevision,benchmarkKey:base.benchmarkKey,deviceClass:base.deviceClass,
+    modelFingerprint:base.modelFingerprint,baselineId:base.id};
   const winner=chooseRegressionSafeVibeWinner([base,better],spec);
   assert.equal(winner.verified,true);
   assert.equal(winner.winnerId,'candidate');
@@ -2368,9 +2372,16 @@ test('C06 winner requires independent same-device matched proof and strict no-re
   assert.equal(winner.memorySavedMb,4);
   assert.equal(winner.modelCallsSaved,1);
   assert.equal(winner.automaticCodePromotion,false);
+  assert.equal(winner.externalMeasurementVerified,false);
+  assert.equal(winner.modelFingerprint,base.modelFingerprint);
   assert.equal(chooseRegressionSafeVibeWinner([base,{...better,regressionCount:1}],spec).verified,false);
   assert.equal(chooseRegressionSafeVibeWinner([base,{...better,peakMemoryMb:82}],spec).verified,false);
   assert.equal(chooseRegressionSafeVibeWinner([base,{...better,deviceClass:'desktop'}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,modelFingerprint:'other-model@build-1'}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,evidenceId:'qa-base'}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,runtimeMs:0}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,peakMemoryMb:0}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,better],{...spec,modelFingerprint:''}).verified,false);
   assert.equal(chooseRegressionSafeVibeWinner([base,{...better,proof:{...proof,runtime:'FAIL'}}],spec).verified,false);
   assert.equal(chooseRegressionSafeVibeWinner([base,{...better,id:'baseline'}],spec).verified,false);
   assert.equal(chooseRegressionSafeVibeWinner([base,better],{...spec,baselineId:'unrecorded'}).verified,false);
