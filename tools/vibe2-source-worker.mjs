@@ -4530,14 +4530,15 @@ export function buildGenreCareerAuthoringGuidance(order={}, {
       .filter(row=>/^[a-f0-9]{64}$/i.test(clean(row.sha256))
         &&sourceKeywords[profile].test(clean(row.path))&&sourceExists(row.path))
       .map(row=>({path:row.path,sha256:row.sha256,license:pack.license,
-        packageId:pack.id,nativeRigConversionRequired:true}))).slice(0,20);
+        packageId:pack.id,nativeRigConversionRequired:true}))).slice(0,16);
   const payload={
     version:1,source:'EXISTING_VIBE_MOTION_DIRECTOR_AND_CC0_ACTOR_MANIFEST',
     target:platform,genre:palette.profile,styleFamily:palette.styleFamily,
     artLockPreserved:palette.originalStyleLockPreserved,
     careers:palette.careers.map(row=>({
       id:row.careerId,weapon:row.weaponFamily,master:row.actualCc0MasterPath,
-      actionRoles:row.roles,semanticNamesNeedRealClipMapping:true
+      actionRoleSamples:Object.fromEntries(Object.entries(row.roles).map(([group,names])=>[group,names.slice(-6)])),
+      fullCareerHierarchyAndMotionLibraryStillEligible:true,semanticNamesNeedRealClipMapping:true
     })),
     unrecognizedExplicitCareer:explicitCareer&&!validCareer?explicitCareer:null,
     nativeMasters,cc0SourceExamples:cc0Examples,examplesNotAssetSelectionCap:true,
