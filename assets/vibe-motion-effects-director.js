@@ -3,7 +3,7 @@
 // 원칙: 모션과 이펙트는 판정을 표현하며 데미지/체력/쿨타임/스폰/보상/저장 규칙은 변경하지 않음
 
 // 임포트: 기존 직업·장르 모션 원본을 재사용하고 별도 스킬 데이터베이스를 만들지 않는다.
-import {createCommonCareerMotionLoadout,resolveCommonMotionGenre} from './vibe-motion-director.js';
+import {createCommonCareerMotionLoadout,createCommonMonsterActionLoadout,resolveCommonMotionGenre} from './vibe-motion-director.js';
 const uniq=a=>[...new Set((a||[]).filter(Boolean))];
 const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
 const EVENTS=['idle','move','attack','hit','skill','death','spawn','boss','victory','interact','solve','guard','combo','heal','buff','summon'];
@@ -123,7 +123,7 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
 }
 export function executeVibeMotionEffectEvent(event,handlers={},options={}){const execution=createVibeMotionEffectExecution(event,options);if(!execution.accepted)return execution;const results=[];for(const command of execution.commands){const handler=handlers[command.channel];if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}))}return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)})}
 // 계획: 기존 직업 모션 원본의 실제 스킬 슬롯을 그대로 이펙트 담당 단계에 전달한다.
-export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request='',genre='ACTION_RPG',careerId='',platform='SHARED',weaponFamily=''}={}){
+export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request='',genre='ACTION_RPG',careerId='',speciesId='',monsterTier='NORMAL',platform='SHARED',weaponFamily=''}={}){
   const audit=auditVibeMotionEffects(graph),tasks=[];
   const genreId=resolveCommonMotionGenre(genre);
   if(!genreId)throw Error('UNSUPPORTED_GRAPHICS_MOTION_GENRE:'+genre);
@@ -141,10 +141,31 @@ export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,
     cameraSlot:skill.cameraPresentationSlot,actualJointClipRequired:true,
     nativeRuntimeVerified:false,gameplayAuthority:false
   })));
+  // 기존 대전격투 무기 모션팩과 생물 관절 변형을 기술별로 준비한다.
+  // 원본 동작 ID, 히트박스·스킬 프레임·이동 속도는 절대 변경하지 않는다.
+  const combatActions=Object.freeze(Object.entries(loadout?.combatSourcePack?.groups||{})
+    .flatMap(([group,ids])=>(ids||[]).map((motionId,index)=>Object.freeze({
+      group,motionId,sourceWeaponFamily:loadout.weaponFamily,variationIndex:index,
+      sourcePack:'EXISTING_DUEL_COMBAT_MOTION_LIBRARY',actualClipRequired:true,
+      nativeRuntimeVerified:false,gameplayAuthority:false
+    }))));
+  const creature=speciesId?createCommonMonsterActionLoadout({
+    speciesId,genre:genreId,platform,tier:monsterTier
+  }):null;
+  const creatureActions=Object.freeze([
+    ...(creature?.choreography||[]),
+    ...(creature?.expressiveChoreography||[])
+  ].map(row=>Object.freeze({
+    id:row.id,group:row.group||'attacks',bodyPlan:creature.bodyPlan,
+    contactLimb:row.primaryContactLimb,
+    poseKeyTimes:row.poseKeyTimes,jointTracks:row.jointTracks,
+    tier:creature.presentationTier,authoritativeRootMovement:false,
+    actualNativeRigBindingRequired:true,runtimeVerified:false,gameplayAuthority:false
+  })));
   return Object.freeze({
     version:2,request:String(request),genre:genreId,careerId:loadout?.id||null,
     audit,secondaryMotion:createVibeSecondaryMotionRig({parts}),tasks:Object.freeze(tasks),
-    skillActions,cc0PlatformReuse:loadout?.cc0PlatformReuse||null,
+    skillActions,combatActions,creatureActions,cc0PlatformReuse:loadout?.cc0PlatformReuse||null,
     engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),
     policy:Object.freeze({serverAI:false,eventDriven:true,checkpoint:true,mobileFirst:mobile,gameplayAuthoritative:true,noRuleMutation:true}),
     runtimeVerified:false,authorityExpanded:false
