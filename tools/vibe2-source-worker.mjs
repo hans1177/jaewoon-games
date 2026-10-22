@@ -1552,7 +1552,9 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       const id=ids[0][3],action=actions[0][3];
       const builtInAction=/^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting)$/.test(action);
       const learnedPatternId=learnedActions.get(action);
-      if(!/^[A-Za-z_$][\w$]*$/.test(id)||! /^[A-Za-z_$][\w$]{0,39}$/.test(action)||
+      // HTML element IDs may contain hyphens even though JavaScript function identifiers may not.
+      // IDs are used solely as JSON-escaped getElementById string literals, never as executable code.
+      if(!/^[A-Za-z_$][\w$-]{0,79}$/.test(id)||! /^[A-Za-z_$][\w$]{0,39}$/.test(action)||
         (!builtInAction&&!learnedPatternId))continue;
       if(idCounts.get(id)!==1)continue;
       // 이미 ID/동작을 참조하는 연결이 있으면 중복 호출 가능성이 있으므로 생성하지 않는다.
