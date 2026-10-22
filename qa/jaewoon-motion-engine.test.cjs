@@ -193,3 +193,56 @@ test('offscreen LOD immediately evicts historical render poses and regular movem
   rig.setLod({ tier: 'NEAR' });
   assert.deepEqual(rig.afterimages(), []);
 });
+
+
+// 메인: 기존 게임 타격값은 유지하고 무기별 큰 렌더 실루엣과 콤보 연속성을 검증한다.
+test('weapon-specific attacks use visibly different arcs without affecting base gameplay position',()=>{
+  const samples=new Map();
+  for(const style of ['DEFAULT','SLASH','THRUST','CLEAVE','PUNCH','KICK','CAST','BITE']){
+    const gameplay={x:20,y:12,damage:12,attackCooldown:0.7};
+    const rig=new JaewoonMotionRig({x:gameplay.x,y:gameplay.y});
+    rig.triggerAttack({style,duration:1,contactAt:.52,comboIndex:0});
+    rig.update(.52);
+    const pose=rig.sample();
+    samples.set(style,pose);
+    assert.equal(pose.actionStyle,style);
+    assert.equal(rig.channels.x.value,20);
+    assert.equal(rig.channels.y.value,12);
+    assert.deepEqual(gameplay,{x:20,y:12,damage:12,attackCooldown:0.7});
+    assert.ok(Number.isFinite(pose.x)&&Number.isFinite(pose.y)&&Number.isFinite(pose.rotation));
+  }
+  assert.ok(samples.get('THRUST').x>samples.get('DEFAULT').x+8);
+  assert.ok(samples.get('CLEAVE').x>samples.get('DEFAULT').x+7);
+  assert.ok(samples.get('KICK').y>samples.get('DEFAULT').y+3);
+  assert.ok(samples.get('CAST').y<samples.get('DEFAULT').y-3);
+  assert.notEqual(samples.get('SLASH').rotation,samples.get('THRUST').rotation);
+});
+
+test('back-to-back combo attacks crossfade without snapping and alternate strike arcs',()=>{
+  const rig=new JaewoonMotionRig({x:100,y:40});
+  rig.triggerAttack({style:'SLASH',duration:.4,comboIndex:0});
+  rig.update(.19);
+  const before=rig.sample();
+  rig.triggerAttack({style:'SLASH',duration:.4,comboIndex:1});
+  const resumed=rig.update(1/600);
+  assert.ok(Math.abs(resumed.x-before.x)<2,'combo x pop');
+  assert.ok(Math.abs(resumed.rotation-before.rotation)<.03,'combo rotation pop');
+  assert.equal(resumed.comboVisualIndex,1);
+  for(let i=0;i<60;i++)rig.update(1/60);
+  const final=rig.sample();
+  assert.equal(final.actionStyle,null);
+  assert.ok(Math.abs(final.x-100)<.1);
+  assert.equal(rig.channels.x.value,100);
+});
+
+test('web mobile and mid-distance rendering shed afterimages without reducing gameplay pose updates',()=>{
+  const low=new JaewoonMotionRig({lowPower:true,afterimageSamples:30});
+  const mid=new JaewoonMotionRig({afterimageSamples:30});
+  low.setMotionState({moving:true,speed:180});
+  mid.setMotionState({moving:true,speed:180}).setLod({tier:'MID'});
+  for(let i=0;i<20;i++){low.update(1/60);mid.update(1/60);}
+  assert.ok(low.history.length<=2);
+  assert.ok(mid.history.length<=3);
+  assert.ok(low.sample().locomotionBlend>0);
+  assert.ok(mid.sample().locomotionBlend>0);
+});
