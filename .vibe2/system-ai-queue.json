@@ -145722,7 +145722,7 @@
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145764,12 +145764,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39740012436:1",
+      "reservedAt": "2026-10-22T07:28:24.405Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145889,7 +145889,8 @@
         "system-ai-handoff-to-reservation:system-ai:39735387933:1",
         "actions-run:39735387933",
         "system-ai-handoff-to-reservation:system-ai:39738734871:1",
-        "actions-run:39738734871"
+        "actions-run:39738734871",
+        "system-ai-handoff-to-reservation:system-ai:39740012436:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1052,
@@ -145904,7 +145905,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T14:21:40.195Z",
-      "updatedAt": "2026-10-22T07:22:00.098Z"
+      "updatedAt": "2026-10-22T07:28:24.405Z"
     },
     {
       "id": "marketing-cat-step-pre-release-v1",
