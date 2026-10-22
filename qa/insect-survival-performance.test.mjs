@@ -150,8 +150,7 @@ test('CC0 floor GPU instancing must preserve all 12 original meshes and their wo
   setMatrixAt(index,value){this.transforms[index]=value}
  }
  const world={add(item){batches.push(item)}};
- const context=vm.createContext({THREE:{InstancedMesh},world,console:{warn(){}}},
-  tiles});
+ const context=vm.createContext({THREE:{InstancedMesh},world,console:{warn(){}},tiles});
  vm.runInContext('let floorGpuMeshes=[],floorGpuInstances=0;'+code+
    ';globalThis.batched=batchGroundTiles(tiles);globalThis.count=floorGpuInstances;'+
    'globalThis.batchList=floorGpuMeshes;',context);
