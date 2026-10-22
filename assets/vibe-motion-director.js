@@ -3648,6 +3648,80 @@ export function createSpeciesSignature({archetype='',idle='',locomotion='',attac
   });
 }
 
+// Game-authoring selection adapter. Reuses existing career motion loadouts and source
+// masters; this is not a second animation engine or an asset registry.
+export const COMMON_GENRE_CAREER_PRESENTATIONS=Object.freeze({
+  DARK_ARPG:Object.freeze({
+    motionGenre:'ACTION_RPG',styleFamily:'DARK_FANTASY',
+    careers:freezeList(['KNIGHT','PALADIN','BERSERKER','ROGUE','ASSASSIN','ARCHER','MAGE','NECROMANCER','MONK'])
+  }),
+  COZY:Object.freeze({
+    motionGenre:'COZY',styleFamily:'CARTOON',
+    careers:freezeList(['FARMER','CHEF','ARTISAN','BLACKSMITH','BUILDER','MERCHANT','BARD','DANCER'])
+  }),
+  FANTASY:Object.freeze({
+    motionGenre:'ACTION_RPG',styleFamily:'STYLIZED_FANTASY',
+    careers:freezeList(['KNIGHT','PALADIN','LANCER','ARCHER','RANGER','MAGE','DRUID','SUMMONER','SAMURAI'])
+  }),
+  HORROR:Object.freeze({
+    motionGenre:'HORROR',styleFamily:'DARK_FANTASY',
+    careers:freezeList(['NECROMANCER','ROGUE','ASSASSIN','ALCHEMIST','CLERIC','PRIEST','RANGER'])
+  })
+});
+export function createGenreCareerMotionPalette({genre='FANTASY',platform='WEB',styleFamily='',careerIds=[]}={}){
+  const key=upper(genre).replace(/[\s-]+/g,'_');
+  const alias={
+    DIABLO:'DARK_ARPG',DIABLO_LIKE:'DARK_ARPG',HACK_AND_SLASH:'DARK_ARPG',
+    ARPG:'DARK_ARPG',ACTION_RPG:'DARK_ARPG',DARK_FANTASY:'DARK_ARPG',
+    COZY_FARMING:'COZY',FARMING:'COZY',LIFE_SIM:'COZY',
+    FANTASY_RPG:'FANTASY',STYLIZED_FANTASY:'FANTASY',HIGH_FANTASY:'FANTASY',
+    SURVIVAL_HORROR:'HORROR',DARK_HORROR:'HORROR'
+  };
+  const family=alias[key]||key;
+  const profile=COMMON_GENRE_CAREER_PRESENTATIONS[family];
+  if(!profile)return null;
+  const platformId=upper(platform);
+  if(!['WEB','ROBLOX'].includes(platformId))return null;
+  const actualStyle=upper(styleFamily)||profile.styleFamily;
+  const chosen=[...new Set((careerIds.length?careerIds:profile.careers).map(upper))];
+  const careers=chosen.map(careerId=>{
+    const loadout=createCommonCareerMotionLoadout({
+      careerId,genre:profile.motionGenre,platform:platformId,styleFamily:actualStyle
+    });
+    const roles=Object.freeze(Object.fromEntries(
+      ['stance','locomotion','attacks','defense','interactions','skills','signature'].map(group=>[
+        group,freezeList(loadout.roleRequests.filter(row=>row.group===group).map(row=>row.id))
+      ])
+    ));
+    return Object.freeze({
+      careerId,weaponFamily:loadout.weaponFamily,
+      inheritedCareers:loadout.careerHierarchy||loadout.ancestors||freezeList([]),
+      actualCc0MasterPath:loadout.master.path,
+      roles,sourceState:'AUTHORING_PLAN_NOT_APPLIED',
+      sourceClipNamesNotEqualSemanticRoles:true,
+      requiresNativeRigRetarget:true,runtimeVerified:false
+    });
+  });
+  return Object.freeze({
+    version:1,profile:family,motionGenre:profile.motionGenre,platform:platformId,
+    styleFamily:actualStyle,originalStyleLockPreserved:!!upper(styleFamily),
+    careers:Object.freeze(careers),careerCount:careers.length,
+    choreography:Object.freeze({
+      continuity:'POSE_VELOCITY_MATCH_AND_INERTIALIZED_BLEND',
+      locomotion:'DIRECTIONAL_STRAFE_PIVOT_PHASE_SYNC_AND_GROUNDED_FEET',
+      upperLowerBody:'COMPATIBLE_RIG_MASKED_LAYERS_ONLY',
+      attack:'ANTICIPATION_CONTACT_FOLLOW_THROUGH_RECOVERY_TIMING',
+      impact:'ONLY_EXISTING_AUTHORITY_CONFIRMED_GAMEPLAY_EVENTS',
+      idle:'NO_ROOT_OR_FEET_SLIDING_WHEN_STATIONARY',
+      mobile:'ADAPTIVE_ANIMATION_LOD_NO_LOST_CORE_READABILITY'
+    }),
+    assetSelection:'USE_REGISTERED_COMPATIBLE_CC0_SOURCES_NOT_PLACEHOLDERS',
+    gameplayAuthority:false,sourceOnly:true,productionVerified:false,runtimeVerified:false,
+    nativeRigImportRequired:platformId==='ROBLOX',
+    originalGameplayAndSaveImmutable:true
+  });
+}
+
 export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
