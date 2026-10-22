@@ -2457,3 +2457,33 @@ test('C06 linear winner tournament is deterministic for large candidate sets',()
   const blocked=chooseRegressionSafeVibeWinner([base,{...special,peakMemoryMb:101}],spec);
   assert.equal(blocked.verified,false);
 });
+
+// 관련성 없는 다회 성공 기록이 다른 게임의 정확한 코딩 경험을 밀어내지 못하게 검증한다.
+test('experience retrieval excludes same-engine-only confirmation noise and preserves verified semantic matches',()=>{
+  const noise=Array.from({length:12},(_,i)=>({
+    id:'unrelated-fishing-'+i,gameId:'other-fishing-'+i,engine:'web',
+    verified:true,reusable:true,outcome:'PASS',
+    problem:'bait fishing pond',goal:'fishing equipment ponds',
+    change:'update fishing bait',evidence:['independent-fishing-qa:PASS'],
+    reusablePatterns:['fishing bait'],confirmations:1000
+  }));
+  const relevant={
+    id:'verified-save-restore',gameId:'different-save-project',engine:'unity',
+    verified:true,reusable:true,outcome:'PASS',
+    problem:'checkpoint save restore',goal:'save restore checkpoint',
+    change:'repair checkpoint persistence',evidence:['independent-save-qa:PASS'],
+    reusablePatterns:['durable checkpoint restore'],confirmations:1
+  };
+  const context=retrieveUnifiedLearning({
+    task:{gameId:'insect-survival',target:'web',goal:'save restore checkpoint'},
+    experienceInput:{records:[...noise,relevant]}
+  });
+  assert.deepEqual(context.experience.map(row=>row.id),['verified-save-restore']);
+  assert.deepEqual(context.exactKnowledgeIds.filter(id=>id.startsWith('EXPERIENCE:')),['EXPERIENCE:verified-save-restore']);
+  assert.ok(!learningGuidance(context).includes('fishing bait'));
+  const local=retrieveUnifiedLearning({
+    task:{gameId:'insect-survival',target:'web',goal:'save restore checkpoint'},
+    experienceInput:{records:[...noise,{...noise[0],id:'same-game-verified',gameId:'insect-survival'}]}
+  });
+  assert.equal(local.experience[0].id,'same-game-verified');
+});
