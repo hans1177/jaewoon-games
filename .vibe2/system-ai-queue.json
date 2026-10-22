@@ -145777,7 +145777,7 @@
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145811,7 +145811,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 1,
-      "previousReservationId": "system-ai:39743995588:1",
+      "previousReservationId": "system-ai:39745115756:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145819,12 +145819,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39745115756:1",
-      "reservedAt": "2026-10-22T08:11:57.618Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145958,7 +145958,8 @@
         "model-output-sha256:9240f72ad1ac21da579c7402269e28f345c97b5374a8a70c9707df3f75180bf2",
         "system-ai-handoff-to-reservation:system-ai:39743995588:1",
         "actions-run:39743995588",
-        "system-ai-handoff-to-reservation:system-ai:39745115756:1"
+        "system-ai-handoff-to-reservation:system-ai:39745115756:1",
+        "actions-run:39745115756"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1052,
@@ -145973,7 +145974,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T14:21:40.195Z",
-      "updatedAt": "2026-10-22T08:11:57.618Z"
+      "updatedAt": "2026-10-22T08:17:22.861Z"
     },
     {
       "id": "marketing-cat-step-pre-release-v1",
