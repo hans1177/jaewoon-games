@@ -74,7 +74,7 @@ test('runtime CC0 tile placement is exact: 12 non-overlapping panels with ground
     clone(){return {kind:this.kind,userData:{...this.userData},position:makePosition(this.position.x,this.position.y,this.position.z),
       scale:{...this.scale},clone:this.clone}}
   };
-  const world={items:[],add(value){this.items.push(value)}};
+  const world={items:[],get children(){return this.items},add(value){this.items.push(value)}};
   const mockTHREE={
     Vector3:class{constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z})}},
     Box3:class{
