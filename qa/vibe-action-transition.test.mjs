@@ -146,6 +146,9 @@ test('weapon-specific source attack variants never select unrelated animations',
   assert.equal(selectExistingWeaponAttack({clips,weapon:'SPEAR',strikeIndex:0}),'1H_Melee_Attack_Stab');
   assert.equal(selectExistingWeaponAttack({clips,weapon:'NONE',strikeIndex:1}),'Unarmed_Melee_Attack_Punch_B');
   assert.equal(selectExistingWeaponAttack({clips:['Idle'],weapon:'AXE'}),'');
+  assert.equal(selectExistingWeaponAttack({
+    clips:['1H_Melee_Attack_Chop'],profile:{cc0Clips:{attack:'1H_Melee_Attack_Chop'}},weapon:'SPEAR'
+  }),'','incompatible sword/axe action must not stand in for a spear');
 });
 
 test('animation phase carries normalized timing between compatible walking clips',()=>{
