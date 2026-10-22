@@ -1537,6 +1537,12 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     if(scripts.length!==1||scripts[0][1].trim()||/<!--|<(?:form|template)\b|\b(?:querySelectorAll|eval|Function)\s*\(|\bimport\b/.test(source))continue;
     const script=scripts[0],code=script[2],functions=inspectSourceFunctions(code,{language:'javascript'});
     if(/addEventListener\s*\(\s*["'](?:click|pointerdown|touchstart)["']/.test(code))continue;
+    // 코딩 성능: 중복 id를 한 번만 인덱싱한다. 버튼마다 HTML 전체를 재스캔하지 않는다.
+    // 기존 정확한 id 유일성/보존 게이트는 동일하며, 데이터나 이벤트를 추정하지 않는다.
+    const idCounts=new Map();
+    for(const match of source.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)){
+      idCounts.set(match[2],(idCounts.get(match[2])||0)+1);
+    }
     const bindings=[],learnedPatternIds=[];
     for(const button of source.matchAll(/<button\b([^>]*)>/gi)){
       if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
@@ -1548,7 +1554,7 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       const learnedPatternId=learnedActions.get(action);
       if(!/^[A-Za-z_$][\w$]*$/.test(id)||! /^[A-Za-z_$][\w$]{0,39}$/.test(action)||
         (!builtInAction&&!learnedPatternId))continue;
-      if([...source.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)].filter(row=>row[2]===id).length!==1)continue;
+      if(idCounts.get(id)!==1)continue;
       // 이미 ID/동작을 참조하는 연결이 있으면 중복 호출 가능성이 있으므로 생성하지 않는다.
       if(code.includes('"'+id+'"')||code.includes("'"+id+"'")||code.includes('`'+id+'`')||/\b(?:onclick|onpointerdown|ontouchstart)\b/.test(code))continue;
       const fn=functions.find(row=>row.name===action);
