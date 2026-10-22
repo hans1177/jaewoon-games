@@ -153508,7 +153508,7 @@
     },
     {
       "id": "recovery-recovery-89b1e4d27fdbbbd8a954",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153552,7 +153552,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:d60e7efa5936b3d7a9098ae88a127838914a5334:fantasy-survival"
       ],
-      "retries": 1,
+      "retries": 2,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "WORKFLOW_FAILED_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
@@ -153566,12 +153566,12 @@
       "sourceMutationBaseline": "d60e7efa5936b3d7a9098ae88a127838914a5334",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39705171411:1",
-      "reservedAt": "2026-10-22T01:23:28.261Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39128621050:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -153624,7 +153624,8 @@
         "learning-penalty:YES",
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
-        "system-ai-handoff-to-reservation:system-ai:39705171411:1"
+        "system-ai-handoff-to-reservation:system-ai:39705171411:1",
+        "actions-run:39705171411"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1183,
@@ -153639,7 +153640,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T12:58:29.195Z",
-      "updatedAt": "2026-10-22T01:23:28.261Z"
+      "updatedAt": "2026-10-22T01:53:46.572Z"
     },
     {
       "id": "recovery-recovery-ba5ec463250d4fa6f1a3",
