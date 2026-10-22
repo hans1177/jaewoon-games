@@ -1609,7 +1609,6 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
   if(!['MOVE','ATTACK','PICKUP'].includes(kind))issues.add('UNSUPPORTED_SPATIAL_ACTION');
   const vec=p=>p&&typeof p==='object'&&[p.x,p.y,p.z].every(Number.isFinite)?p:null;
   const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
-  const horizontal=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
   const maxSlide=Number.isFinite(contract.maxFootSlideMeters)&&contract.maxFootSlideMeters>0?contract.maxFootSlideMeters:0.08;
   const stationaryMps=Number.isFinite(contract.stationaryThresholdMps)&&contract.stationaryThresholdMps>0?contract.stationaryThresholdMps:0.08;
   const maxContact=Number.isFinite(contract.maxContactDistanceMeters)&&contract.maxContactDistanceMeters>0?contract.maxContactDistanceMeters:0.65;
@@ -1627,10 +1626,13 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
       const travel=Math.hypot(dx,dz),speed=travel/dt;
       measuredTravel+=travel;
       if(kind==='MOVE'){
-        if(frame.moveIntent===true&&['WALK','RUN'].includes(frame.animationState)){
-          if(frame.animationSpeed>0.15&&speed<stationaryMps&&frame.blockedByCollision!==true)
-            issues.add('ANIMATED_MOONWALK_WITHOUT_TRAVEL');
+        if(['WALK','RUN'].includes(frame.animationState)&&frame.animationSpeed>0.15&&
+          speed<stationaryMps&&frame.blockedByCollision!==true){
+          if(frame.moveIntent===true)issues.add('ANIMATED_MOONWALK_WITHOUT_TRAVEL');
+          if(frame.moveIntent===false)issues.add('IDLE_ACTOR_FEET_STILL_CYCLING');
         }
+        if(frame.moveIntent===true&&speed>=stationaryMps&&frame.animationState==='IDLE')
+          issues.add('LOCOMOTION_WITH_IDLE_ANIMATION');
         if(frame.moveIntent===true&&speed>=stationaryMps){
           const input=frame.worldMoveInput;
           if(!input||!Number.isFinite(input.x)||!Number.isFinite(input.z)||Math.hypot(input.x,input.z)<0.001)
@@ -1643,6 +1645,18 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
             issues.add('PLANTED_FOOT_WORLD_POSITION_REQUIRED');
           else if(distance(frame.footWorldPosition,previous.footWorldPosition)>maxSlide)
             issues.add('PLANTED_FOOT_SLIDES');
+        }
+        if(contract.rigProportionCheckRequired===true){
+          for(const key of ['leftShinRadiusMeters','rightShinRadiusMeters']){
+            const radius=frame[key],previousRadius=previous[key];
+            const permitted=Number.isFinite(contract.maxLegThicknessChangeRatio)&&
+              contract.maxLegThicknessChangeRatio>=0&&contract.maxLegThicknessChangeRatio<1?
+              contract.maxLegThicknessChangeRatio:0.15;
+            if(!Number.isFinite(radius)||!Number.isFinite(previousRadius)||radius<=0||previousRadius<=0)
+              issues.add('RIG_MEASUREMENT_MISSING');
+            else if(Math.abs(radius-previousRadius)/previousRadius>permitted)
+              issues.add('RIG_PROPORTIONS_CHANGE_DURING_ANIMATION');
+          }
         }
         if(contract.groundedRequired===true&&(frame.grounded!==true||
           !Number.isFinite(frame.footGroundGapMeters)||Math.abs(frame.footGroundGapMeters)>maxSlide))
@@ -1894,7 +1908,9 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
     verifyVibeSpatialGameplayReplay(task.spatialReplay.contract,task.spatialReplay.trace):null;
   const measuredMotionRisk=spatialDiagnostics?.evidenceAccepted===true&&
     spatialDiagnostics.issues.some(code=>[
-      'ANIMATED_MOONWALK_WITHOUT_TRAVEL','PLANTED_FOOT_SLIDES','FLOATING_OR_UNGROUNDED_FOOT',
+      'ANIMATED_MOONWALK_WITHOUT_TRAVEL','IDLE_ACTOR_FEET_STILL_CYCLING',
+      'LOCOMOTION_WITH_IDLE_ANIMATION','RIG_PROPORTIONS_CHANGE_DURING_ANIMATION',
+      'PLANTED_FOOT_SLIDES','FLOATING_OR_UNGROUNDED_FOOT',
       'ROOT_MOTION_CONTRADICTS_INPUT','ATTACK_NOT_FACING_TARGET',
       'ATTACK_CONTACT_OUTSIDE_HITBOX','PICKUP_WITHOUT_REACHABLE_HAND_CONTACT',
       'PICKUP_ATTACHMENT_NOT_CAUSAL'
