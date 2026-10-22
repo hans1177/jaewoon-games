@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1kui8l",
+      "worker": "vibe2",
+      "taskId": "simple-rpg-studio-evolution-roblox-stability-v1",
+      "gameId": "simple-rpg",
+      "files": [
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "roblox-games/simple-rpg/server/Game.server.luau"
+      ],
+      "baseSha": "b8541a49138cbfc6faf58c0ccbaf2e50a5b7195f",
+      "runId": "39841784770",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-22T19:59:25.711Z",
+      "expiresAt": "2026-10-22T20:44:25.711Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:simple-rpg-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
