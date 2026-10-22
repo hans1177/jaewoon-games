@@ -20,13 +20,13 @@ test('actual mobile WebGL frames adjust only presentation DPR with hysteresis',(
  assert.ok(start>=0&&end>start,'quality tuner is owned by the game renderer');
  const code=source.slice(start,end);
  const renderer={ratios:[],setPixelRatio(value){this.ratios.push(value)}};
- const context={renderer,devicePixelRatio:2.5,mobile:true,document:{hidden:false}};
- vm.runInNewContext(code,context);
- vm.runInNewContext('for(let i=1;i<=90;i++)sampleWebFrameBudget(i*28);',context);
+ const context=vm.createContext({renderer,devicePixelRatio:2.5,mobile:true,document:{hidden:false}});
+ vm.runInContext(code,context);
+ vm.runInContext('for(let i=1;i<=90;i++)sampleWebFrameBudget(i*28);',context);
  assert.ok(renderer.ratios.some(value=>value<1.3&&value>=.8),
    'low frame pacing should reduce WebGL-only resolution');
  const reduced=renderer.ratios.at(-1);
- vm.runInNewContext('for(let i=1;i<=180;i++)sampleWebFrameBudget(90*28+i*15);',context);
+ vm.runInContext('for(let i=1;i<=180;i++)sampleWebFrameBudget(90*28+i*15);',context);
  assert.ok(renderer.ratios.at(-1)>=reduced,'healthy pacing may restore only up to cap');
  assert.ok(renderer.ratios.at(-1)<=1.3);
  assert.match(source,/renderer\.setPixelRatio\(next\)/);
@@ -69,4 +69,36 @@ test('existing Chromium smoke connects raw game performance evidence to Vibe onl
  assert.match(source,/renderer\.domElement\.dataset\.renderedFrame='true'/);
  assert.match(source,/groundAnimatedHero\(\)/);
  assert.match(source,/renderer\.render\(scene,camera\)/);
+});
+
+test('resource CC0 pooling reuses existing meshes and only rebuilds changed source roles',()=>{
+ const start=source.indexOf('function syncResourceVisual(index,node){');
+ const end=source.indexOf('// 액션 모션:',start);
+ assert.ok(start>=0&&end>start,'real CC0 reconciliation helper required');
+ const data=source.slice(start,end);
+ const resources=[],attached=[];
+ let derivations=0;
+ class Group{
+  constructor(){this.children=[];this.userData={}}
+  add(child){this.children.push(child)}
+  clear(){this.children=[]}
+ }
+ const context=vm.createContext({
+  resources,actors:{add(group){attached.push(group)}},
+  resourceVisualRebuilds:0,THREE:{Group},
+  derived:(type,height,tint)=>({type,height,tint,id:++derivations})
+ });
+ vm.runInContext(data,context);
+ vm.runInContext("syncResourceVisual(0,{type:'fiber'})",context);
+ const first=resources[0].children[0];
+ vm.runInContext("syncResourceVisual(0,{type:'fiber'})",context);
+ assert.strictEqual(resources[0].children[0],first,'unchanged visual source must retain mesh identity');
+ assert.equal(derivations,1);
+ vm.runInContext("syncResourceVisual(0,{type:'pebble'})",context);
+ assert.equal(derivations,2,'different source roles must remap correctly');
+ assert.equal(resources[0].children[0].type,'stone');
+ assert.equal(attached.length,1,'role changes must not duplicate scene groups');
+ assert.match(source,/while\(resources\.length>frame\.nodes\.length\)/);
+ assert.doesNotMatch(source,/while\(resources\.length\)\{const old=resources\.pop\(\)/,
+  'resource count changes must not rebuild all CC0 visuals');
 });
