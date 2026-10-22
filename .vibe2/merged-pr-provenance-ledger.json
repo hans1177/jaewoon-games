@@ -83291,11 +83291,174 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d6c98f23a3042b06ed21e978",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-9305",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ed7e56a66fc9f567be3899f64b91b19661f821d7",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9305,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/insect-runtime-perf-vibe-proof-20261023",
+        "baseSha": "ed7e56a66fc9f567be3899f64b91b19661f821d7",
+        "headSha": "c4878cf8336976adfcbaf55a30173a83ed21d11d",
+        "mergeCommitSha": "f2e5fc7a5967869fde389780c1928f50826c9505",
+        "mergedAt": "2026-10-22T17:59:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2591ffdcf9d0e6e940d33dbfe98c7e50dd6f5131cb87dc248f96e3c11e89d1cb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/insect-runtime-perf-vibe-proof-20261023",
+        "candidateSha": "c4878cf8336976adfcbaf55a30173a83ed21d11d"
+      },
+      "changeStats": {
+        "changedFileCount": 25,
+        "codingRelevantFileCount": 24,
+        "addedLineCount": 721,
+        "deletedLineCount": 427,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/insect-survival-grounding.test.mjs",
+          "qa/insect-survival-performance.test.mjs",
+          "qa/insect-survival.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "roblox-games/party-rpg/client/Game.client.luau",
+          "roblox-games/party-rpg/roblox-source-bootstrap.json",
+          "roblox-games/party-rpg/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau",
+          "tools/game-development-qa-runner.mjs",
+          "tools/vibe2-performance-sanity.mjs",
+          "web-games/insect-survival/CC0-ASSETS.md",
+          "web-games/insect-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/insect-survival-grounding.test.mjs",
+          "qa/insect-survival-performance.test.mjs",
+          "qa/insect-survival.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "roblox-games/party-rpg/client/Game.client.luau",
+          "roblox-games/party-rpg/roblox-source-bootstrap.json",
+          "roblox-games/party-rpg/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau",
+          "tools/game-development-qa-runner.mjs",
+          "tools/vibe2-performance-sanity.mjs",
+          "web-games/insect-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9305",
+        "merge-commit:f2e5fc7a5967869fde389780c1928f50826c9505",
+        "base-main:ed7e56a66fc9f567be3899f64b91b19661f821d7"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 658
+    "total": 659
   }
 }
