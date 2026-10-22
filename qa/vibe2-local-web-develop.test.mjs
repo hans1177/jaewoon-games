@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
   validateLocalDevelopmentPolicy,proposeBoundedReplacement,selectRelevantExcerpt,
-  requiredReviewPass,cleanMain
+  requiredReviewPass,cleanMain,assertSingleLocalWebGame
 } from '../tools/vibe2-local-web-develop.mjs';
 
 const chat={sourceWriteAllowed:false,githubWriteAllowed:false,
@@ -136,6 +136,36 @@ test('local Vibe blocks dirty, non-main, foreign remote, divergent and invalid r
     assert.throws(()=>cleanMain({gitCommand}),scenario.error);
     assert.ok(!calls.some(c=>/(?:merge --ff-only|rebase|reset|push|force)/.test(c)));
   }
+});
+
+test('local Vibe is bound to exactly one active Web game until its PR is resolved',()=>{
+  const open=(game,number=99)=>({
+    number,state:'open',base:{ref:'main'},
+    head:{ref:'local-vibe-web-'+game+'-1792627200000',repo:{full_name:'hans1177/jaewoon-games'}}
+  });
+  assert.deepEqual(assertSingleLocalWebGame('forest',[]),{gameId:'forest',pendingPRs:[]});
+  assert.deepEqual(assertSingleLocalWebGame('forest',[open('forest')]),{gameId:'forest',pendingPRs:[99]});
+  assert.throws(()=>assertSingleLocalWebGame('other',[open('forest')]),/LOCAL_DEV_OTHER_GAME_FOCUS_BLOCKED/);
+  assert.throws(()=>assertSingleLocalWebGame('forest',[open('forest'),open('other',101)]),
+    /LOCAL_DEV_MULTIPLE_ACTIVE_GAMES_BLOCKED/);
+  assert.throws(()=>assertSingleLocalWebGame('../unsafe',[]),/LOCAL_DEV_FOCUS_GAME_INVALID/);
+  assert.throws(()=>assertSingleLocalWebGame('forest',null),/LOCAL_DEV_FOCUS_PR_LIST_INVALID/);
+  const unrelated=[
+    {...open('other'),state:'closed'},
+    {...open('other'),base:{ref:'development'}},
+    {...open('other'),head:{ref:'local-vibe-web-other-1792627200000',repo:{full_name:'other/fork'}}},
+    {...open('other'),head:{ref:'unrelated-local-work',repo:{full_name:'hans1177/jaewoon-games'}}}
+  ];
+  assert.deepEqual(assertSingleLocalWebGame('forest',unrelated),{gameId:'forest',pendingPRs:[]});
+});
+test('local source edit refuses an active PR before any model request or source mutation',()=>{
+  const source=readFileSync('tools/vibe2-local-web-develop.mjs','utf8');
+  const focusAt=source.indexOf('const focus=assertSingleLocalWebGame(gameId,open)');
+  const inferenceAt=source.indexOf('const proposed=await suggestSourceEdit({gameId,goal,match:options.match})');
+  assert.ok(focusAt>=0&&inferenceAt>focusAt);
+  assert.match(source,/focus\.pendingPRs\.length&&options\.apply/);
+  assert.match(source,/LOCAL_DEV_FOCUSED_PR_MUST_COMPLETE_FIRST/);
+  assert.match(source,/LOCAL_DEV_FOCUS_PR_LIST_INCOMPLETE/);
 });
 
 test('manual merge requires head QA and security; Cloudflare is separately not a deploy PASS',()=>{
