@@ -55,3 +55,11 @@
 - Vibe 엔진과의 **개발 방식 공유**는 새 학습 파이프라인을 생성하지 않는다. 기존 `company-learning/assistant-vibe-coauthoring-log.json`의 `assistant_insect_grounding_cc0_local_vibe_handoff_20261023` 기록과 기존 `tools/company-system-ai-external-learning-feed.mjs` 검증 단계가 연결된다. 현재 `learningState=TRACE_ONLY`; 검증되지 않은 후보 개발을 `PROMOTED`, 모델 학습 성공, 플랫폼별 실기기 QA PASS로 표시하지 않는다.
 - 재사용 아이디어: ① CC0 지면 원본의 실제 경계 기준으로 타일 배치 ② 오리지널 리그 모션 실행 **후** 캐릭터 시각 접지 ③ HTML 시작 성공 대신 실 WebGL2 버퍼·캐릭터 바닥 좌표 검사 ④ 모바일 화면 모의뿐 아니라 실제 터치 입력과 동작 상태 변화 검증 ⑤ 실기기 Android/GPU 및 장시간 게임 QA는 별도 검증.
 - 곤충생존기 PR #9262는 최신 코드·보안·전체 QA 및 소유자 승인 전까지 `Draft`, `main` 미병합 상태를 유지한다.
+
+## GitHub도 개발 우선: 기존 Vibe 작업 경로 단순화
+
+- 새 GitHub 앱·새 워크플로우를 만들지 않는다. **기존** `.github/workflows/pwa-command-bridge.yml` → `tools/pwa-command-vibe2-task.mjs` → `vibe2` 소스 워커/검증 PR 흐름으로만 소유자 게임 아이디어를 전달한다.
+- PWA 또는 인증된 GitHub 소유자 지시를 받으면 `[GITHUB_DEVELOPMENT_FIRST]`와 정확한 게임 ID/기존 소스 루트를 붙인다. 해당 게임의 **코드 수정 → 집중 QA → 실제 3D 브라우저·입력·저장 결과 → 기존 PR 검토** 순서로 실행하고, 무관한 홈페이지/회사 관리/다른 게임/별도 학습 엔진 작업으로 확대하지 않는다.
+- `qa/pwa-command-vibe2-task.test.mjs`에서 게임과 소스 경계, 작업 우선순위, 기존 `department=development`·`type=implementation`, 안전 조건 및 기존 검증 증거를 검사한다.
+- 실제 게임 소스 수정 없이 보고서나 계획만 작성한 작업은 개발 완료로 취급하지 않는다. 단, 중앙 정책·보안·F0~F9·독립 QA·소유자 승인·기존 릴리스 경로를 절대 생략하지 않는다.
+- 이는 개발 작업 **우선순위와 책임 범위만 간결하게 지정**하는 변경이다. CI와 별도의 회사 운영 기능을 삭제하거나 이미 돌아가는 백그라운드 런너를 중단·경감했다고 주장하지 않는다.
