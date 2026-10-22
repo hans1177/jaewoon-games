@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g2-02d09e273d99",
-  "directiveFingerprint": "02d09e273d99995433da99c7b8d6072a215c108786d657967ef41d027cc20e48",
-  "previousDirectiveFingerprint": "2a2f2177a940b5968f1b802c573141950404fa34b17132efbe70f0eada597014",
-  "forbiddenRepeatFingerprint": "2a2f2177a940b5968f1b802c573141950404fa34b17132efbe70f0eada597014",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g3-6451db7d7200",
+  "directiveFingerprint": "6451db7d72007491f907b78420517c00212f50b3a5a43675d19ad0f2da8de5d4",
+  "previousDirectiveFingerprint": "02d09e273d99995433da99c7b8d6072a215c108786d657967ef41d027cc20e48",
+  "forbiddenRepeatFingerprint": "02d09e273d99995433da99c7b8d6072a215c108786d657967ef41d027cc20e48",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+  "sourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
   "designFingerprint": "0d11d62ee952b9a23b30935bec225b7cfb8560ba796ce5ab8bc181b12e7e17b7",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+        "sourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "0d11d62ee952b9a23b30935bec225b7cfb8560ba796ce5ab8bc181b12e7e17b7",
-    "sourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+    "sourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+    "sourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4282,66 +4282,60 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=1",
+      "CURRENT_SOURCE_FILES=2",
       "GAME_FEEL_SPARSE",
-      "CAMERA_LANGUAGE_SPARSE",
-      "AUDIO_STATE_TRANSITION_SPARSE",
       "UI_MENU_FLOW_SPARSE",
       "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 48,
-      "progression": 75,
-      "ai": 5,
-      "save": 3,
+      "combat": 58,
+      "progression": 78,
+      "ai": 6,
+      "save": 0,
       "multiplayer": 0,
       "animation": 4,
-      "motionStates": 24,
+      "motionStates": 29,
       "gameFeel": 0,
-      "vfx": 7,
-      "camera": 0,
+      "vfx": 17,
+      "camera": 12,
       "audio": 11,
-      "audioDynamics": 0,
-      "ui": 35,
+      "audioDynamics": 5,
+      "ui": 39,
       "uiFlow": 8,
       "entryFlow": 0,
       "loadingFlow": 0,
       "input": 8,
-      "map": 8,
+      "map": 13,
       "landmark": 0,
       "interaction": 5,
       "inventory": 0,
       "equipment": 5,
       "settings": 0,
-      "feedback": 0,
+      "feedback": 3,
       "session": 9,
-      "content": 63,
+      "content": 83,
       "choice": 7,
       "connection": 0,
-      "performance": 2,
-      "lighting": 17,
-      "primitive": 0,
+      "performance": 16,
+      "lighting": 12,
+      "primitive": 2,
       "todo": 0,
-      "errorRecovery": 1
+      "errorRecovery": 5
     },
     "topFiles": [
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "score": 171
+        "score": 157
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "score": 44
       }
     ],
     "sourceAnchors": [
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 81,
-        "kind": "FUNCTION",
-        "symbol": "updateUi",
-        "context": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
-        "score": 394
-      },
-      {
-        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 72,
+        "line": 76,
         "kind": "FUNCTION",
         "symbol": "update",
         "context": "function update(dt){if(paused||!running)return;elapsed+=dt;waveTimer+=dt;player.fireTimer-=dt;player.inv=Math.max(0,player.inv-dt);player.dashCd=Math.max(0,player.dashCd-dt);",
@@ -4349,15 +4343,15 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 82,
+        "line": 85,
         "kind": "FUNCTION",
-        "symbol": "draw",
-        "context": "function draw(){ctx.clearRect(0,0,W,H);const grd=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,Math.max(W,H)*.8);grd.addColorStop(0,'#111f42');grd.addColorStop(.55",
-        "score": 338
+        "symbol": "updateUi",
+        "context": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
+        "score": 346
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 71,
+        "line": 75,
         "kind": "FUNCTION",
         "symbol": "dash",
         "context": "function dash(){if(paused||player.dashCd>0)return;let dx=joy.dx,dy=joy.dy;if(!dx&&!dy){dx=(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0);dy=",
@@ -4365,7 +4359,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 55,
+        "line": 59,
         "kind": "FUNCTION",
         "symbol": "fire",
         "context": "function fire(){if(!enemies.length)return;let target=null,best=Infinity;for(const e of enemies){const d=dist2(player,e);if(d<best){best=d;target=e}}if(!target)return;const a=Math.a",
@@ -4373,7 +4367,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 54,
+        "line": 58,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
         "context": "function spawnBoss(){if(boss)return;const hp=750*(1+(wave-1)*.12);boss={x:W/2,y:-60,r:38,hp,maxHp:hp,speed:42+wave,damage:28,color:'#ff4fa2',xp:18,boss:true,hit:0};enemies.push(bos",
@@ -4381,7 +4375,15 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 52,
+        "line": 86,
+        "kind": "FUNCTION",
+        "symbol": "draw",
+        "context": "function draw(){",
+        "score": 290
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "line": 56,
         "kind": "FUNCTION",
         "symbol": "rnd",
         "context": "function rnd(a,b){return a+Math.random()*(b-a)}function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function dist2(a,b){const dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy}",
@@ -4389,7 +4391,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 53,
+        "line": 57,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "function spawnEnemy(type){const side=Math.floor(Math.random()*4),m=36;let x,y;if(side===0){x=rnd(0,W);y=-m}else if(side===1){x=W+m;y=rnd(0,H)}else if(side===2){x=rnd(0,W);y=H+m}els",
@@ -4397,7 +4399,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 56,
+        "line": 60,
         "kind": "FUNCTION",
         "symbol": "burst",
         "context": "function burst(x,y,color,n=7){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=rnd(35,150);particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.25,.55),max:.55,r:r",
@@ -4405,7 +4407,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 69,
+        "line": 73,
         "kind": "FUNCTION",
         "symbol": "levelUp",
         "context": "function levelUp(){player.level++;player.xp-=player.nextXp;player.nextXp=Math.ceil(player.nextXp*1.38+2);paused=true;tone(760,.18,'sine',.05);const pool=[...upgrades].sort(()=>Math",
@@ -4413,7 +4415,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 70,
+        "line": 74,
         "kind": "FUNCTION",
         "symbol": "gainXp",
         "context": "function gainXp(v){player.xp+=v;if(player.xp>=player.nextXp&&!paused)levelUp()}",
@@ -4421,7 +4423,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 57,
+        "line": 61,
         "kind": "FUNCTION",
         "symbol": "hurt",
         "context": "function hurt(amount){if(player.inv>0)return;const dmg=Math.max(1,Math.round(amount*(1-player.armor)));player.hp-=dmg;player.inv=.55;burst(player.x,player.y,'#ffffff',10);tone(120,",
@@ -4429,7 +4431,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 51,
+        "line": 55,
         "kind": "FUNCTION",
         "symbol": "reset",
         "context": "function reset(){releaseJoystick();keys.clear();elapsed=0;spawnTimer=0;waveTimer=0;wave=1;kills=0;boss=null;enemies.length=bullets.length=gems.length=particles.length=0;Object.assi",
@@ -4437,7 +4439,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 58,
+        "line": 62,
         "kind": "FUNCTION",
         "symbol": "endGame",
         "context": "function endGame(){running=false;paused=true;ui.bossHud.classList.remove('show');document.getElementById('result').textContent=`${Math.floor(elapsed)}초 생존 · 웨이브 ${wave} · 레벨 ${play",
@@ -4445,7 +4447,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 50,
+        "line": 54,
         "kind": "FUNCTION",
         "symbol": "tone",
         "context": "function tone(freq=220,dur=.05,type='sine',vol=.035){try{audio ||= new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const o=audio.",
@@ -4453,31 +4455,71 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 89,
-        "kind": "FUNCTION",
-        "symbol": "loop",
-        "context": "function loop(now){const dt=Math.min(.033,(now-last)/1000||0);last=now;update(dt);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);",
-        "score": 114
-      },
-      {
-        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 90,
-        "kind": "FUNCTION",
-        "symbol": "joyPoint",
-        "context": "function joyPoint(e){const r=document.getElementById('joystick').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy)",
-        "score": 114
-      },
-      {
-        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 48,
+        "line": 52,
         "kind": "FUNCTION",
         "symbol": "resize",
-        "context": "function resize(){DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+'px';canvas.sty",
+        "context": "function resize(){DPR=Math.min(1.5,devicePixelRatio||1);W=innerWidth;H=innerHeight;star3d?.resize()}",
         "score": 90
       },
       {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 95,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "function render({player:state,enemies,bullets:shots,gems:drops,particles:sparks},now=0){",
+        "score": 90
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 76,
+        "kind": "FUNCTION",
+        "symbol": "writeInstances",
+        "context": "function writeInstances(inst,items,max,size,now,kind){",
+        "score": 50
+      },
+      {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 43,
+        "line": 97,
+        "kind": "FUNCTION",
+        "symbol": "loop",
+        "context": "function loop(now){const dt=Math.min(.033,(now-last)/1000||0);last=now;update(dt);draw();if(star3d)requestAnimationFrame(loop)}",
+        "score": 42
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "line": 98,
+        "kind": "FUNCTION",
+        "symbol": "joyPoint",
+        "context": "function joyPoint(e){const r=document.getElementById('joystick').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy)",
+        "score": 42
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 59,
+        "kind": "FUNCTION",
+        "symbol": "resize",
+        "context": "function resize(){",
+        "score": 42
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 7,
+        "kind": "FUNCTION",
+        "symbol": "C",
+        "context": "const C=(value)=>new THREE.Color(value||'#ffffff');",
+        "score": 34
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 8,
+        "kind": "FUNCTION",
+        "symbol": "material",
+        "context": "const material=(c,emissive=c)=>new THREE.MeshStandardMaterial({color:c,emissive,emissiveIntensity:.35,roughness:.36,metalness:.15});",
+        "score": 34
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "line": 47,
         "kind": "FUNCTION",
         "symbol": "releaseJoystick",
         "context": "function releaseJoystick(){",
@@ -4485,7 +4527,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 97,
+        "line": 105,
         "kind": "FUNCTION",
         "symbol": "joyEnd",
         "context": "function joyEnd(e){if(e.pointerId===joy.id)releaseJoystick()}",
@@ -4493,10 +4535,58 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 102,
+        "line": 110,
         "kind": "FUNCTION",
         "symbol": "setPause",
         "context": "function setPause(v){if(!running)return;paused=v;if(v){releaseJoystick();keys.clear()}document.getElementById('pauseOverlay').classList.toggle('show',v)}document.getElementById('pa",
+        "score": 26
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 9,
+        "kind": "FUNCTION",
+        "symbol": "createStar3d",
+        "context": "export function createStar3d({canvas}){",
+        "score": 26
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 32,
+        "kind": "FUNCTION",
+        "symbol": "pool",
+        "context": "function pool(geometry,mat,max){",
+        "score": 26
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 69,
+        "kind": "FUNCTION",
+        "symbol": "onResize",
+        "context": "const onResize=()=>resize();",
+        "score": 26
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 70,
+        "kind": "FUNCTION",
+        "symbol": "onLoss",
+        "context": "const onLoss=e=>{e.preventDefault();document.body.dataset.spatialDimension='3d-error'};",
+        "score": 26
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 71,
+        "kind": "FUNCTION",
+        "symbol": "onRestore",
+        "context": "const onRestore=()=>{document.body.dataset.spatialDimension='3d-error'};",
+        "score": 26
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs",
+        "line": 120,
+        "kind": "FUNCTION",
+        "symbol": "dispose",
+        "context": "function dispose(){",
         "score": 26
       }
     ]
@@ -4504,9 +4594,9 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "db6a7caee527eb9d53a6d9a4c44afba5956b2a63052e90cdda79a52e9e928ee1",
-    "currentSourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+    "currentSourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -4698,8 +4788,8 @@
     },
     {
       "domain": "SAVE_AND_RECOVERY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "SAVE_COMPLETENESS",
@@ -4708,8 +4798,8 @@
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
@@ -4753,13 +4843,13 @@
     },
     {
       "domain": "UI_INFORMATION_PRIORITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "FEEDBACK_CLARITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "TUTORIAL_ONBOARDING",
@@ -4793,8 +4883,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -4863,8 +4953,8 @@
     },
     {
       "domain": "CAMERA",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "UI_HUD",
@@ -4873,8 +4963,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENVIRONMENTAL_MOTION",
@@ -4888,18 +4978,18 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     }
   ],
   "allDomainImplementationDirectives": [
@@ -5202,8 +5292,8 @@
     },
     {
       "domain": "SAVE_AND_RECOVERY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5220,8 +5310,8 @@
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5301,8 +5391,8 @@
     },
     {
       "domain": "UI_INFORMATION_PRIORITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5310,8 +5400,8 @@
     },
     {
       "domain": "FEEDBACK_CLARITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5373,8 +5463,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5499,8 +5589,8 @@
     },
     {
       "domain": "CAMERA",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5517,8 +5607,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5544,8 +5634,8 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5553,8 +5643,8 @@
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5562,8 +5652,8 @@
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5607,12 +5697,12 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "SAVE_COMPLETENESS",
+      "domain": "SAVE_AND_RECOVERY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "RECONNECT_RECOVERY",
+      "domain": "SAVE_COMPLETENESS",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -5632,56 +5722,16 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "UI_INFORMATION_PRIORITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "FEEDBACK_CLARITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "GAME_FEEL",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "CAMERA",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "ERROR_RECOVERY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"잃어버린 별의 메아리\", 현재 책임 소스는 web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::updateUi, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::update, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::draw, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::dash, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::fire, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnBoss, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::rnd, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnEnemy이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"잃어버린 별의 메아리\", 현재 책임 소스는 web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::update, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::updateUi, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::dash, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::fire, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnBoss, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::draw, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::rnd, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnEnemy이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::updateUi, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::update, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::draw, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::dash, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::fire, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnBoss, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::rnd, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnEnemy에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::update, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::updateUi, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::dash, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::fire, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnBoss, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::draw, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::rnd, web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::spawnEnemy에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "잃어버린 별의 메아리를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "환경 탐색과 자원 확보 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5736,8 +5786,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 20078,
-        "largestFileBytes": 20078,
+        "sourceBytes": 26208,
+        "largestFileBytes": 19005,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5769,20 +5819,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
@@ -5819,7 +5870,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 208,
+        "score": 190,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -5858,15 +5909,13 @@
         ]
       },
       {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 32,
-        "gapDomains": [
-          "AUDIO_VISUAL_TIMING"
-        ]
-      },
-      {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 24,
+        "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 20,
         "gapDomains": []
       }
     ],
@@ -5943,11 +5992,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
-    "priorSourceFingerprint": "db6a7caee527eb9d53a6d9a4c44afba5956b2a63052e90cdda79a52e9e928ee1",
+    "sourceFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
+    "priorSourceFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -5966,7 +6015,7 @@
     "version": 1,
     "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
     "platform": "WEB",
-    "sourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+    "sourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -5992,8 +6041,10 @@
       },
       {
         "id": "MATERIAL",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6024,7 +6075,8 @@
         "id": "UI",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6078,7 +6130,8 @@
         "id": "ACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6122,7 +6175,8 @@
         "id": "COMBAT",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6226,8 +6280,10 @@
       },
       {
         "id": "CAMERA",
-        "state": "REVIEW_REQUIRED_NO_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
+        ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6270,11 +6326,14 @@
     "sourceFilesByRole": {
       "LOBBY": [],
       "CUSTOMIZATION": [],
-      "MATERIAL": [],
+      "MATERIAL": [
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
+      ],
       "INVENTORY": [],
       "EQUIPMENT": [],
       "UI": [
-        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
       ],
       "WORLD": [
         "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
@@ -6283,7 +6342,8 @@
       "HOUSING": [],
       "MOTION": [],
       "ACTION": [
-        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
       ],
       "NPC_AI": [],
       "QUEST_DIALOGUE": [],
@@ -6295,7 +6355,9 @@
       "FARMING": [],
       "WEATHER": [],
       "PHYSICS": [],
-      "CAMERA": [],
+      "CAMERA": [
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
+      ],
       "AUDIO": [
         "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
       ],
@@ -6309,7 +6371,8 @@
       ],
       "SAVE": [],
       "COMBAT": [
-        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
       ],
       "SHOP": []
     },
@@ -6486,7 +6549,7 @@
     "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+    "sourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6675,7 +6738,8 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -6727,11 +6791,11 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "WORLD_VISUAL_COHESION",
@@ -6743,7 +6807,7 @@
       },
       {
         "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       }
     ],
     "priorityOrder": [
@@ -6759,8 +6823,7 @@
     ],
     "weakestTracks": [
       "COMBAT_AND_PRIMARY_ACTION_FEEL",
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "VFX_CAMERA_AND_IMPACT_SYNC"
+      "MOBILE_TOUCH_AND_ACCESSIBILITY"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -6830,16 +6893,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 81,
-        "kind": "FUNCTION",
-        "symbol": "updateUi",
-        "currentBehavior": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
-        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateUi의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 72,
+        "line": 76,
         "kind": "FUNCTION",
         "symbol": "update",
         "currentBehavior": "function update(dt){if(paused||!running)return;elapsed+=dt;waveTimer+=dt;player.fireTimer-=dt;player.inv=Math.max(0,player.inv-dt);player.dashCd=Math.max(0,player.dashCd-dt);",
@@ -6848,16 +6902,16 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 82,
+        "line": 85,
         "kind": "FUNCTION",
-        "symbol": "draw",
-        "currentBehavior": "function draw(){ctx.clearRect(0,0,W,H);const grd=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,Math.max(W,H)*.8);grd.addColorStop(0,'#111f42');grd.addColorStop(.55",
-        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "symbol": "updateUi",
+        "currentBehavior": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
+        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateUi의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 71,
+        "line": 75,
         "kind": "FUNCTION",
         "symbol": "dash",
         "currentBehavior": "function dash(){if(paused||player.dashCd>0)return;let dx=joy.dx,dy=joy.dy;if(!dx&&!dy){dx=(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0);dy=",
@@ -6866,7 +6920,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 55,
+        "line": 59,
         "kind": "FUNCTION",
         "symbol": "fire",
         "currentBehavior": "function fire(){if(!enemies.length)return;let target=null,best=Infinity;for(const e of enemies){const d=dist2(player,e);if(d<best){best=d;target=e}}if(!target)return;const a=Math.a",
@@ -6875,7 +6929,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 54,
+        "line": 58,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
         "currentBehavior": "function spawnBoss(){if(boss)return;const hp=750*(1+(wave-1)*.12);boss={x:W/2,y:-60,r:38,hp,maxHp:hp,speed:42+wave,damage:28,color:'#ff4fa2',xp:18,boss:true,hit:0};enemies.push(bos",
@@ -6884,7 +6938,16 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 52,
+        "line": 86,
+        "kind": "FUNCTION",
+        "symbol": "draw",
+        "currentBehavior": "function draw(){",
+        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "line": 56,
         "kind": "FUNCTION",
         "symbol": "rnd",
         "currentBehavior": "function rnd(a,b){return a+Math.random()*(b-a)}function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function dist2(a,b){const dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy}",
@@ -6893,7 +6956,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 53,
+        "line": 57,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "function spawnEnemy(type){const side=Math.floor(Math.random()*4),m=36;let x,y;if(side===0){x=rnd(0,W);y=-m}else if(side===1){x=W+m;y=rnd(0,H)}else if(side===2){x=rnd(0,W);y=H+m}els",
@@ -6904,19 +6967,13 @@
     "serverClientResponsibility": [
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "symbol": "updateUi",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
         "symbol": "update",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "symbol": "draw",
+        "symbol": "updateUi",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -6935,6 +6992,12 @@
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
         "symbol": "spawnBoss",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "symbol": "draw",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7022,24 +7085,13 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
     ],
     "sourceAnchors": [
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 81,
-        "kind": "FUNCTION",
-        "symbol": "updateUi",
-        "context": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
-        "score": 394,
-        "currentBehavior": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
-        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateUi의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::updateUi이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 72,
+        "line": 76,
         "kind": "FUNCTION",
         "symbol": "update",
         "context": "function update(dt){if(paused||!running)return;elapsed+=dt;waveTimer+=dt;player.fireTimer-=dt;player.inv=Math.max(0,player.inv-dt);player.dashCd=Math.max(0,player.dashCd-dt);",
@@ -7051,19 +7103,19 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 82,
+        "line": 85,
         "kind": "FUNCTION",
-        "symbol": "draw",
-        "context": "function draw(){ctx.clearRect(0,0,W,H);const grd=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,Math.max(W,H)*.8);grd.addColorStop(0,'#111f42');grd.addColorStop(.55",
-        "score": 338,
-        "currentBehavior": "function draw(){ctx.clearRect(0,0,W,H);const grd=ctx.createRadialGradient(player.x,player.y,0,player.x,player.y,Math.max(W,H)*.8);grd.addColorStop(0,'#111f42');grd.addColorStop(.55",
-        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::draw이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "updateUi",
+        "context": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
+        "score": 346,
+        "currentBehavior": "function updateUi(){ui.wave.textContent=wave;ui.level.textContent=player.level;ui.kills.textContent=kills;ui.time.textContent=`${Math.floor(elapsed/60)}:${String(Math.floor(elapsed",
+        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateUi의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::updateUi이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 71,
+        "line": 75,
         "kind": "FUNCTION",
         "symbol": "dash",
         "context": "function dash(){if(paused||player.dashCd>0)return;let dx=joy.dx,dy=joy.dy;if(!dx&&!dy){dx=(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0);dy=",
@@ -7075,7 +7127,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 55,
+        "line": 59,
         "kind": "FUNCTION",
         "symbol": "fire",
         "context": "function fire(){if(!enemies.length)return;let target=null,best=Infinity;for(const e of enemies){const d=dist2(player,e);if(d<best){best=d;target=e}}if(!target)return;const a=Math.a",
@@ -7087,7 +7139,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 54,
+        "line": 58,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
         "context": "function spawnBoss(){if(boss)return;const hp=750*(1+(wave-1)*.12);boss={x:W/2,y:-60,r:38,hp,maxHp:hp,speed:42+wave,damage:28,color:'#ff4fa2',xp:18,boss:true,hit:0};enemies.push(bos",
@@ -7099,7 +7151,19 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 52,
+        "line": 86,
+        "kind": "FUNCTION",
+        "symbol": "draw",
+        "context": "function draw(){",
+        "score": 290,
+        "currentBehavior": "function draw(){",
+        "intendedBehavior": "CORE_FUN primary goal \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 잃어버린 별의 메아리를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 잃어버린 별의 메아리의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html::draw이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+        "line": 56,
         "kind": "FUNCTION",
         "symbol": "rnd",
         "context": "function rnd(a,b){return a+Math.random()*(b-a)}function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function dist2(a,b){const dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy}",
@@ -7111,7 +7175,7 @@
       },
       {
         "file": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-        "line": 53,
+        "line": 57,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "function spawnEnemy(type){const side=Math.floor(Math.random()*4),m=36;let x,y;if(side===0){x=rnd(0,W);y=-m}else if(side===1){x=W+m;y=rnd(0,H)}else if(side===2){x=rnd(0,W);y=H+m}els",
@@ -7130,7 +7194,6 @@
     "version": 1,
     "platform": "WEB",
     "categories": [
-      "GRAPHICS",
       "MAP",
       "UI",
       "GAMEPLAY",
@@ -7144,8 +7207,7 @@
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
       "SECURITY_AUTHORITY_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "VISUAL_BINDING_QA"
+      "REMOTE_AUTHORITY_AND_SYNC_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
@@ -7160,13 +7222,13 @@
     "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
     "platform": "WEB",
     "plannedFiles": [
-      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+      "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/star3d.mjs"
     ],
     "impact": {
       "version": 1,
       "platform": "WEB",
       "categories": [
-        "GRAPHICS",
         "MAP",
         "UI",
         "GAMEPLAY",
@@ -7180,8 +7242,7 @@
         "GAMEPLAY_STATE_DELTA_QA",
         "SAVE_LOAD_MIGRATION_QA",
         "SECURITY_AUTHORITY_QA",
-        "REMOTE_AUTHORITY_AND_SYNC_QA",
-        "VISUAL_BINDING_QA"
+        "REMOTE_AUTHORITY_AND_SYNC_QA"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
@@ -7205,8 +7266,7 @@
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
       "SECURITY_AUTHORITY_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "VISUAL_BINDING_QA"
+      "REMOTE_AUTHORITY_AND_SYNC_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
@@ -7225,7 +7285,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "73e9afe82fabfb15ffe46300000213c92fd854fbcdb4ade74efb19e734d32069",
+      "sourceTreeFingerprint": "80e9dbc6f14f67f352b19ea490117fdd66269637b42dbac97926c7ea49289f9a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7284,7 +7344,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7349,14 +7409,10 @@
       "SYSTEM_CONNECTION",
       "SAVE_COMPLETENESS",
       "SETTINGS_ACCESSIBILITY",
-      "MENU_FLOW",
-      "UI_INFORMATION_PRIORITY",
-      "FEEDBACK_CLARITY",
-      "PERFORMANCE_BUDGET",
-      "RUNTIME_STABILITY"
+      "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T22:56:01.310Z"
+  "generatedAt": "2026-10-22T00:08:01.320Z"
 }
