@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-174exyj",
+      "worker": "vibe2",
+      "taskId": "chess-battle-studio-evolution-roblox-usability-v2",
+      "gameId": "chess-battle",
+      "files": [
+        "roblox-games/chess-battle/client/Game.client.luau",
+        "roblox-games/chess-battle/shared/GameConfig.luau",
+        "roblox-games/chess-battle/server/Game.server.luau",
+        "roblox-games/chess-battle/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "0437fa2841c8ee820437d5f1449330e48d00f961",
+      "runId": "39706409448",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-22T01:46:22.499Z",
+      "expiresAt": "2026-10-22T02:31:22.499Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:chess-battle-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
