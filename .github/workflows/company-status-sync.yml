@@ -63,10 +63,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin main
+          git fetch origin main --depth=1 --no-tags
           git checkout -B company-status-engine origin/main
           if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
-            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git fetch origin "$COMPANY_RUNTIME_BRANCH" --depth=1 --no-tags
             echo "COMPANY_RUNTIME_HEAD=$(git rev-parse origin/$COMPANY_RUNTIME_BRANCH)"
           else
             echo 'COMPANY_RUNTIME_HEAD=NOT_CREATED'
@@ -256,9 +256,9 @@ jobs:
           persisted=0
           changed=0
           for attempt in 1 2 3 4; do
-            git fetch origin main
+            git fetch origin main --depth=1 --no-tags
             if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
-              git fetch origin "$COMPANY_RUNTIME_BRANCH"
+              git fetch origin "$COMPANY_RUNTIME_BRANCH" --depth=1 --no-tags
               git checkout -B company-status-persist "origin/$COMPANY_RUNTIME_BRANCH"
             else
               git checkout -B company-status-persist origin/main

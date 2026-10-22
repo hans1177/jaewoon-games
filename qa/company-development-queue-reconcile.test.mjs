@@ -830,3 +830,18 @@ test('owner permanent-removal verification heredoc closes before queue reconcili
   assert.ok(step.indexOf('DEVELOPMENT_QUEUE_OWNER_REACTIVATED_SIMPLE_RPG=AUTHORIZED_ROBLOX_SOURCE_ONLY')
     <step.indexOf('node tools/company-development-queue-reconcile.mjs'));
 });
+
+test('status and queue synchronization fetch current snapshots while retaining runtime retry and source ownership',()=>{
+  for(const file of ['.github/workflows/company-status-sync.yml','.github/workflows/company-development-queue-reconcile.yml']){
+    const workflow=fs.readFileSync(file,'utf8');
+    const reads=workflow.split('\n').filter(line=>/git fetch origin /.test(line));
+    assert.ok(reads.length>0);
+    for(const line of reads){assert.match(line,/--depth=1/);assert.match(line,/--no-tags/);}
+    assert.match(workflow,/for attempt in 1 2 3 4/);
+    assert.match(workflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
+  }
+  const status=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
+  assert.match(status,/COMPANY_RUNTIME_HISTORY_MERGE=NO/);
+  assert.match(status,/PUBLIC_MAIN_WRITE=NO/);
+  assert.match(status,/git checkout "\$generated_commit" -- "\$\{runtime_paths\[@\]\}"/);
+});
