@@ -30,6 +30,18 @@ const runtime=new JaewoonVibeRuntime({gameId:GAME_ID,autosaveDelay:350}).boot({e
 const state=normalizeState(runtime.loadProgress(DEFAULT_STATE));
 const canvas=document.querySelector('#game');
 const renderer=new IslandRendererV3(canvas);
+// Keep legacy rendering hooks alive for quests and save-driven extensions while the 3D scene renders on its own canvas.
+let strongholdView=null;
+const oldScreenToWorld=renderer.screenToWorld.bind(renderer);
+import('./stronghold-3d.mjs').then(({StrongholdView3D})=>{
+  strongholdView=new StrongholdView3D(game,renderer);
+  renderer.screenToWorld=(g,sx,sy)=>strongholdView?.screenToWorld(sx,sy)||oldScreenToWorld(g,sx,sy);
+  window.addEventListener('resize',()=>strongholdView?.resize());
+}).catch(error=>{
+  console.warn('[포근섬 3D 초기화 실패: 기존 화면 복구]',error);
+  canvas.style.opacity='1';
+  document.querySelector('#cozy3d')?.remove();
+});
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
 let selectedTool=0,lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
@@ -229,6 +241,6 @@ function updateHUD(){const h=Math.floor(state.minutes/60),m=Math.floor(state.min
 function canMoveTo(x,y){if(state.fortress.parts.some(p=>p.hp>0&&!(p.kind==='gate'&&state.fortress.gateOpen)&&Math.abs(x-p.x)<30&&Math.abs(y-p.y)<30))return false;const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
 function updateMovement(dt){let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);if(!dx&&!dy)return;const mag=Math.hypot(dx,dy)||1;dx/=mag;dy/=mag;const nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;if(canMoveTo(nx,player.y))player.x=nx;if(canMoveTo(player.x,ny))player.y=ny}
 function updateHint(){ui.hint.textContent=blueprint?'건설 위치를 터치해 · 성채 버튼으로 취소':interactionHint(nearestInteraction())}
-function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;game.fortress=state.fortress;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
+function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;game.fortress=state.fortress;updateHUD();updateHint();renderer.draw(game);if(strongholdView){try{strongholdView.draw(game)}catch(error){console.error('[포근섬 3D 렌더링 실패: 2D 복구]',error);canvas.style.opacity='1';strongholdView.canvas.style.display='none';strongholdView=null;renderer.screenToWorld=oldScreenToWorld}}requestAnimationFrame(frame)}
 
 allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;updateToolUI();updateHUD();requestAnimationFrame(frame);
