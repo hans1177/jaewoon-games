@@ -145398,7 +145398,7 @@
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145432,7 +145432,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:39662549422:1",
+      "previousReservationId": "system-ai:39707578185:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145440,12 +145440,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39707578185:1",
-      "reservedAt": "2026-10-22T01:51:20.770Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145490,7 +145490,8 @@
         "system-ai-blocked-task-count:17",
         "system-ai-handoff-to-reservation:system-ai:39662549422:1",
         "actions-run:39662549422",
-        "system-ai-handoff-to-reservation:system-ai:39707578185:1"
+        "system-ai-handoff-to-reservation:system-ai:39707578185:1",
+        "actions-run:39707578185"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1152,
@@ -145505,7 +145506,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-22T01:51:20.770Z"
+      "updatedAt": "2026-10-22T02:08:51.711Z"
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
