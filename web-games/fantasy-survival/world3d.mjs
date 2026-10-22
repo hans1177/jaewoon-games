@@ -148,7 +148,7 @@ async function loadSourceModels(){
 export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100}){
   const models=await loadSourceModels(); // Fail closed: leave the old game active.
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
-  let hero=null,heroMixer=null,heroClips=[],heroMotion=null,lastHeroYawAt=0;
+  let hero=null,heroMixer=null,heroClips=[],heroClipNames=new Set(),heroMotion=null,lastHeroYawAt=0;
   const heroTravel=createObservedTravelSampler({sampleWindowMs:75});
   let lastVisualAttackAt=0,visualStrikeIndex=0;
   let scene=null,disposed=false,heroLoadVersion=0;
@@ -174,6 +174,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(scene)scene.add(avatar);
       hero={avatar,model};
       heroClips=gltf.animations||[];
+      heroClipNames=new Set(heroClips.map(clip=>clip.name));
       heroMixer=heroClips.length?new THREE.AnimationMixer(model):null;
       heroMotion=createVibeActionTransition({mixer:heroMixer,clips:heroClips,LoopOnce:THREE.LoopOnce,LoopRepeat:THREE.LoopRepeat});
       lastHeroYawAt=0;heroTravel.reset();
@@ -526,7 +527,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         ?smoothPresentationYaw(hero.avatar.rotation.y,wantedYaw,motionFrameDelta(headingNow,lastHeroYawAt),{halfLife:.075})
         :wantedYaw;
       lastHeroYawAt=headingNow;
-      const tool=String(p.tool||p.weapon||'NONE');
+      const tool=String(p.weapon||p.tool||'NONE');
       if(tool!==playerToolName){
         playerToolName=tool;
         const family=/pick/i.test(tool)?'PICKAXE':/axe/i.test(tool)?'AXE':
@@ -544,9 +545,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         lastVisualAttackAt=attackAt;
         visualStrikeIndex++;
       }
-      const locomotion=selectExistingTravelClip({clips:heroClips,profile:playerMotionProfile,travel});
+      const locomotion=selectExistingTravelClip({clips:heroClipNames,profile:playerMotionProfile,travel});
       const attackClip=attacking?selectExistingWeaponAttack({
-        clips:heroClips,profile:playerMotionProfile,weapon:playerMotionProfile.tool,
+        clips:heroClipNames,profile:playerMotionProfile,weapon:playerMotionProfile.tool,
         strikeIndex:Math.max(0,visualStrikeIndex-1)
       }):'';
       // Never simulate damage or a new attack; all events come from the existing game.
