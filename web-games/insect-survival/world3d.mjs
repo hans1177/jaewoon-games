@@ -108,8 +108,20 @@ function environment(frame){
    tileY,
    z+GROUND_TILE_SPAN/2-(floorCenter.z-floor.position.z)*floorZScale
   );
+  panel.userData.isGroundTile=true;
   world.add(panel);
  }
+ // Read-only browser QA evidence from actual transformed 3D meshes.
+ window.insect3DGroundingProof=()=>{
+  const tiles=world.children.filter(item=>item.userData.isGroundTile===true);
+  const first=tiles[0];
+  const floorTop=first?new THREE.Box3().setFromObject(first).max.y:null;
+  const heroBottom=avatar?new THREE.Box3().setFromObject(avatar).min.y:null;
+  return {tileCount:tiles.length,floorTop,heroBottom,
+   worldReady,heroPresent:Boolean(avatar),
+   // Stable visual-only world reference, not a gameplay collision claim.
+   groundReferenceY:GROUND_SURFACE_Y};
+ };
  const rand=i=>{const t=Math.sin(i*102.64+18.82)*43758.5453;return t-Math.floor(t)};
  const count=mobile?32:56;
  for(let i=0;i<count;i++){
@@ -235,6 +247,7 @@ function restoreLegacyView(reason,error=null){
  const legacy=document.getElementById('cv');
  if(legacy)legacy.style.visibility='visible';
  renderer.domElement.style.display='none';
+ renderer.domElement.dataset.renderedFrame='false';
  if(error)console.error(reason,error);else console.warn(reason);
 }
 renderer.domElement.addEventListener('webglcontextlost',event=>{
@@ -261,7 +274,12 @@ function tick(){
  requestAnimationFrame(tick);
  try{
   const dt=Math.min(.05,clock.getDelta()),frame=snapshot();
-  if(frame){time+=dt;follow(frame,dt);renderer.render(scene,camera)}
+  if(frame){
+   time+=dt;
+   follow(frame,dt);
+   renderer.render(scene,camera);
+   renderer.domElement.dataset.renderedFrame='true';
+  }
  }catch(error){
   restoreLegacyView('INSECT_WEBGL_FRAME_FAILED',error);
  }
