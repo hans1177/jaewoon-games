@@ -473,7 +473,7 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
       &&['web','roblox'].includes(clean(task.target).toLowerCase())
       &&task.ownerDevelopmentHold!==true
       &&task.requiresOwnerDecision!==true) {
-      const sections=String(task.goal||'').split(/\\r?\\n\\s*\\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\\](?:\\r?\\n|$)/i);
+      const sections=String(task.goal||'').split(/\r?\n\s*\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\](?:\r?\n|$)/i);
       if(sections.length>1&&clean(task.gameId)) {
         const source=Array.isArray(task.responsibleFiles)?task.responsibleFiles.find(Boolean):null;
         const review=planVibeCoreTask({request:sections[0],target:task.target,gameId:task.gameId,file:source});
