@@ -6511,6 +6511,10 @@ export function assetProductionGuidance(plan={}){
         JSON.stringify({gameId:plan.externalCustomization.gameId,target:plan.externalCustomization.target,
           status:plan.externalCustomization.status,designFingerprint:plan.externalCustomization.designFingerprint,
           applicationOrder:plan.externalCustomization.applicationOrder,
+          // Include verified per-role library coverage in the existing build-up work order.
+          // These are design/asset candidate diagnostics, never evidence of a native binding or QA pass.
+          roleAssetCoverage:plan.externalCustomization.roleAssetCoverage,
+          missingVerifiedSourceRoles:plan.externalCustomization.missingVerifiedSourceRoles,
           references:plan.externalCustomization.references.filter(row=>row.roles.length).map(row=>({
             id:row.id,kind:row.kind,roles:row.roles,responsibleOwner:row.responsibleOwner,
             integration:row.integration,sourceUrl:row.sourceUrl,status:row.status,

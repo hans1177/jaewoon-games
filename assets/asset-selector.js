@@ -419,6 +419,38 @@ export function planVibeExternalCustomization({
   }
   const validAssets=(Array.isArray(assets)?assets:[]).filter(vibeSourceProvenance)
     .sort((a,b)=>text(a.id).localeCompare(text(b.id)));
+  // Build one verified library index for the current task. Never count provenance-only,
+  // quarantined, research, or not-yet-runtime-verified sources as reusable game assets.
+  const verifiedAssets=validAssets.filter(asset=>
+    asset.verifiedCompanyReusable===true||asset.runtimeVerificationState==='VERIFIED_RUNTIME');
+  const verifiedByFamily=new Map();
+  for(const asset of verifiedAssets){
+    const family=text(asset.family||asset.category).toUpperCase();
+    if(!family)continue;
+    if(!verifiedByFamily.has(family))verifiedByFamily.set(family,[]);
+    verifiedByFamily.get(family).push(asset);
+  }
+  const reusableForFamilies=families=>{
+    const uniqueSources=new Map();
+    for(const family of families)for(const asset of verifiedByFamily.get(family)||[]){
+      if(!uniqueSources.has(text(asset.id)))uniqueSources.set(text(asset.id),asset);
+    }
+    return [...uniqueSources.values()].sort((a,b)=>text(a.id).localeCompare(text(b.id)));
+  };
+  const roleAssetCoverage=Object.freeze([...selectedRoles].sort().map(role=>{
+    const families=VIBE_ROLE_FAMILIES[role]||[];
+    const found=reusableForFamilies(families);
+    return Object.freeze({
+      role,requiredFamilies:Object.freeze([...families]),verifiedSourceCount:found.length,
+      reusableSourceIds:Object.freeze(found.slice(0,8).map(asset=>text(asset.id))),
+      status:!eligible?'OWNER_POLICY_HELD'
+        :!styleFingerprint?'APPROVED_GAME_DESIGN_REQUIRED'
+        :found.length?'VERIFIED_LIBRARY_CANDIDATE_AVAILABLE':'VERIFIED_SOURCE_GAP_REVIEW_REQUIRED',
+      actualGameBindingVerified:false,
+      nativeRuntimeVerified:false,
+      automaticNewAssetCreation:false
+    });
+  }));
   const approvedVisualAxes=Object.freeze(['SILHOUETTE','PROPORTION','MATERIAL_RESPONSE','SURFACE_DETAIL','PALETTE','LIGHTING','MOTION_LANGUAGE','UI_LANGUAGE']);
   const actions=VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(reference=>{
     const suggestedRoles=reference.roles.filter(role=>selectedRoles.has(role));
@@ -429,10 +461,7 @@ export function planVibeExternalCustomization({
       &&!selectedRoles.has('ENEMY_AI')&&!selectedRoles.has('NPC')?[]
       :suggestedRoles;
     const families=[...new Set(matchingRoles.flatMap(role=>VIBE_ROLE_FAMILIES[role]||[]))];
-    const sourceCandidates=validAssets.filter(asset=>vibeMatchingFamilies(asset,families));
-    const verifiedSources=sourceCandidates.filter(asset=>
-      asset.verifiedCompanyReusable===true||asset.runtimeVerificationState==='VERIFIED_RUNTIME'
-    );
+    const verifiedSources=reusableForFamilies(families);
     const requiresNativeBindings=matchingRoles.some(role=>!['UI','MATERIAL'].includes(role));
     const styleProfile=text(style.profileKey||style.styleFamily||'');
     const relevant=matchingRoles.length>0;
@@ -481,9 +510,12 @@ export function planVibeExternalCustomization({
     authority:'company-learning/platform-release-roadmap.json#ownerActiveDevelopmentScope20261009',
     status:eligible?(styleFingerprint?'EXISTING_ASSET_PRODUCTION_HANDOFF_REQUIRED':'APPROVED_GAME_DESIGN_REQUIRED'):'OWNER_POLICY_HELD',
     roles:Object.freeze([...selectedRoles].sort()),referenceCount:actions.length,
+    // A design-bound inventory gap is a review prompt, never a permission to auto-create assets.
+    roleAssetCoverage,
+    missingVerifiedSourceRoles:Object.freeze(roleAssetCoverage.filter(row=>
+      row.status==='VERIFIED_SOURCE_GAP_REVIEW_REQUIRED').map(row=>row.role)),
     contentComposition,
-    references:Object.freeze(actions),existingVerifiedSourceCount:validAssets.filter(asset=>
-      asset.verifiedCompanyReusable===true||asset.runtimeVerificationState==='VERIFIED_RUNTIME').length,
+    references:Object.freeze(actions),existingVerifiedSourceCount:verifiedAssets.length,
     sourceRevision:sourceId||null,designFingerprint:styleFingerprint||null,
     applicationOrder:Object.freeze(['REUSE_VERIFIED_LIBRARY','DERIVE_APPROVED_NATIVE_VARIANT',
       'RECOMBINE_SOURCE_COMPATIBLE_PARTS','REVIEW_LICENSED_EXTERNAL_ALGORITHM_OR_TOOL','NATIVE_BINDING','EXACT_RUNTIME_QA']),
