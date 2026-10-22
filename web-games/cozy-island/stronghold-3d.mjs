@@ -88,17 +88,78 @@ export class StrongholdView3D {
     this.roof(parent,x,16+h+19,z,w+24,d+24);
     this.cube(parent,this.palette.dark,x,16+21,z+d/2+.5,22,42,3);
   }
+  environmentSignature(g){
+    const s=g.state;
+    return [s.expanded,s.barracksBuilt,(s.plots||[]).map(q=>q.state+q.ready).join(''),
+      s.productionBuildings?.lumberBuilt,s.productionBuildings?.mineBuilt,
+      s.villageDevelopment?.townHallBuilt,s.villageDevelopment?.defenseTowerBuilt,
+      s.townHallExpansion?.upgraded,s.ironWorkerV15?.mineBuilt,s.seedDepot?.built,
+      s.cozyExpansionV4?.west?.unlocked,s.northernRegion?.unlocked,s.southernJungle?.unlocked].join(':');
+  }
   makeEnvironment(g){
     this.ground.clear();
     const p=this.palette,expanded=g.state.expanded,w=expanded?2810:1260;
     this.cube(this.ground,p.water,1530,0,600,3500,12,1640);
     this.cube(this.ground,p.sand,100+w/2,6,595,w,16,1010);
     this.cube(this.ground,p.grass,145+(w-90)/2,14,595,w-90,8,920);
+    // Render each previously-unlocked legacy region in actual 3D so quests and
+    // existing navigation are not concealed by the castle overhaul.
+    if(g.state.cozyExpansionV4?.west?.unlocked){
+      this.cube(this.ground,p.sand,-1342,6,592,3015,16,865);
+      this.cube(this.ground,p.grassDark,-1342,14,592,2915,8,825);
+      for(let x=-2680;x<-200;x+=255){
+        this.cylinder(this.ground,p.trunk,x,40,340+(Math.abs(x)%340),10,52);
+        const pine=this.mesh(this.common.cone,p.leaves,this.ground);
+        pine.position.set(x,100,340+(Math.abs(x)%340));pine.scale.set(54,115,54);
+      }
+      this.building(this.ground,-2410,610,164,146,146,p.stoneDark);
+      this.cube(this.ground,p.gold,-1710,36,875,59,36,46);
+    }
+    if(g.state.northernRegion?.unlocked){
+      this.cube(this.ground,p.sand,2115,6,-350,1360,16,940);
+      this.cube(this.ground,this.material(0x99b6ab),2115,14,-350,1310,9,900);
+      for(let i=0;i<11;i++){
+        const x=1550+(i%4)*290,z=-685+Math.floor(i/4)*245;
+        this.cylinder(this.ground,p.trunk,x,45,z,9,54);
+        const fir=this.mesh(this.common.cone,p.grassDark,this.ground);
+        fir.position.set(x,105,z);fir.scale.set(49,128,49);
+      }
+    }
+    if(g.state.southernJungle?.unlocked){
+      this.cube(this.ground,p.sand,890,6,1612,1185,16,825);
+      this.cube(this.ground,p.grassDark,890,14,1612,1135,8,775);
+      for(let i=0;i<12;i++){
+        const x=350+(i%4)*270,z=1280+Math.floor(i/4)*285;
+        this.cylinder(this.ground,p.trunk,x,52,z,11,65);
+        const crown=this.sphere(this.ground,p.leaves2,x,100,z,45);
+        crown.scale.y=.7;
+      }
+      this.cube(this.ground,p.stoneDark,1445,64,1530,90,98,35);
+      this.building(this.ground,520,1920,110,95,84,p.wood);
+    }
     const pond=this.cylinder(this.ground,p.water,390,19,370,1,3);
     pond.scale.set(148,3,109);
     this.cube(this.ground,this.material(0xb5a37e),660,18,615,660,2,160);
     this.building(this.ground,765,322,210,145,123);
     this.building(this.ground,g.workerShop.x,g.workerShop.y,106,74,73);
+    const production=g.state.productionBuildings||{};
+    if(production.lumberBuilt)this.building(this.ground,245,850,103,90,68,p.wood);
+    else this.cube(this.ground,p.wood,245,19,850,100,7,75);
+    if(production.mineBuilt)this.building(this.ground,785,965,100,92,62,p.stoneDark);
+    else this.cube(this.ground,p.stone,785,20,965,115,7,85);
+    const village=g.state.villageDevelopment||{};
+    if(village.defenseTowerBuilt){
+      this.cylinder(this.ground,p.stoneDark,400,83,1090,38,136);
+      this.cylinder(this.ground,p.slate,400,157,1090,46,14);
+    }else this.cube(this.ground,p.stoneDark,400,19,1090,105,7,95);
+    if(village.townHallBuilt)this.building(this.ground,1010,1090,145,125,g.state.townHallExpansion?.upgraded?172:114,p.stone);
+    else this.cube(this.ground,p.stone,1010,19,1090,140,7,117);
+    this.building(this.ground,790,1080,103,86,75,p.iron);
+    if(g.state.seedDepot?.built)this.building(this.ground,835,505,65,58,49,p.thatch);
+    if(g.state.townHallExpansion?.upgraded){
+      if(g.state.ironWorkerV15?.mineBuilt)this.building(this.ground,300,1015,112,94,74,p.iron);
+      else this.cube(this.ground,p.stoneDark,300,20,1015,100,7,75);
+    }
     if(g.state.barracksBuilt) this.building(this.ground,g.barracks.x,g.barracks.y,116,90,83,this.palette.stone);
     else{
       const pad=this.cube(this.ground,p.stoneDark.clone(),g.barracks.x,18,g.barracks.y,116,8,90);
@@ -146,7 +207,7 @@ export class StrongholdView3D {
     }else{
       this.cube(this.ground,p.stoneDark,1358,46,600,20,80,245);
     }
-    this.groundKey=expanded+':'+g.state.barracksBuilt+':'+g.state.plots.map(q=>q.state+q.ready).join('');
+    this.groundKey=this.environmentSignature(g);
   }
   // Load the unmodified CC0 native rig and its original named clips once. Primitive
   // actors remain a visual fallback only if the source asset cannot be loaded.
@@ -323,7 +384,7 @@ export class StrongholdView3D {
     return null;
   }
   draw(g){
-    const groundKey=g.state.expanded+':'+g.state.barracksBuilt+':'+g.state.plots.map(q=>q.state+q.ready).join('');
+    const groundKey=this.environmentSignature(g);
     if(groundKey!==this.groundKey)this.makeEnvironment(g);
     const fortressKey=this.fortSignature(g);
     if(fortressKey!==this.fortKey)this.makeFort(g);
