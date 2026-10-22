@@ -161,3 +161,17 @@ test('native CC0 animations and fade transitions remain bound to the original cl
   assert.match(render,/\.fadeIn\(\.13\)/);
   assert.match(render,/heroMixer\.update\(dt\)/);
 });
+
+test('insect-specific Chromium smoke must prove live WebGL2 and aligned CC0 hero bounds',()=>{
+  const script=fs.readFileSync(path.join(root,'qa/vibe2-development-web-browser-smoke.mjs'),'utf8');
+  assert.match(render,/panel\.userData\.isGroundTile=true/);
+  assert.match(render,/window\.insect3DGroundingProof=\(\)=>/);
+  assert.match(render,/renderer\.domElement\.dataset\.renderedFrame='true'/);
+  assert.match(script,/insect3dOnly=gameIds\.length===1&&gameIds\[0\]==='insect-survival'/);
+  assert.match(script,/INSECT_CC0_TRUE_3D_GROUNDED_FRAME/);
+  assert.match(script,/DEVELOPMENT_WEB_TRUE_3D_BROWSER_EVIDENCE_insect-survival=/);
+  assert.match(script,/proof\?\.webgl2,true/);
+  assert.match(script,/proof\?\.legacyHidden,true/);
+  assert.match(script,/proof\?\.ground\?\.tileCount,12/);
+  assert.match(script,/proof\.ground\.heroBottom>=proof\.ground\.floorTop-\.12/);
+});
