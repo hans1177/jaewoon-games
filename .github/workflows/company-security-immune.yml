@@ -488,6 +488,33 @@ jobs:
           if(focusChanged){
             const prior=base.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
             const current=head.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+            // 오너 2026-10-22 한정 교체: 3개 집중개발 중 마력숲 Web만 곤충 생존기 Web로 변경.
+            // 기존 2026-10-19 마이그레이션 검사는 아래 else에서 그대로 보존한다.
+            if(prior?.version===3){
+              const oldIds=['simple-rpg','fantasy-survival','cozy-island'];
+              const oldPlatforms={'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'};
+              const oldWebPaths={'fantasy-survival':'web-games/fantasy-survival','cozy-island':'web-games/cozy-island'};
+              const newPlatforms={'simple-rpg':'ROBLOX','insect-survival':'WEB','cozy-island':'WEB'};
+              if(!current||!same(prior.ownerFocusedGameIds,oldIds)
+                ||!same(prior.ownerFocusedGamePlatforms,oldPlatforms)
+                ||!same(prior.ownerFocusedWebSourcePaths,oldWebPaths)
+                ||!same(prior.completionPursuit?.targetPlatformsByGame,oldPlatforms)
+                ||head.version!==base.version+1
+                ||changes.some(key=>key!=='version'&&!focusKeys.has(key)))
+                throw new Error('SECURITY_OWNER_INSECT_FOCUS_BASELINE_OR_SCOPE_INVALID');
+              const expected=structuredClone(prior);
+              expected.version=4;
+              expected.ownerFocusedGameIds=['simple-rpg','insect-survival','cozy-island'];
+              expected.ownerFocusedGamePlatforms=newPlatforms;
+              expected.ownerFocusedWebSourcePaths={'insect-survival':'web-games/insect-survival','cozy-island':'web-games/cozy-island'};
+              expected.completionPursuit.targetPlatformsByGame=newPlatforms;
+              if(!same(current,expected)
+                ||head.fixedAutonomousDevelopmentOperatingContract?.repeatDevelopmentConcurrency?.fixedSlots!==128
+                ||!same(base.fixedAutonomousDevelopmentOperatingContract,head.fixedAutonomousDevelopmentOperatingContract)
+                ||!same(base.developmentLifecycleMachine?.verifiedF0F9PublicationLoop,head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop))
+                throw new Error('SECURITY_OWNER_INSECT_FOCUS_INVARIANTS_FAIL');
+              console.log('SECURITY_OWNER_EXACT_INSECT_FOCUS_20261022=PASS');
+            }else{
             const ids=['simple-rpg','fantasy-survival','cozy-island'];
             const platforms={'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'};
             if(!prior||!current||!same(prior.ownerFocusedGameIds,['fantasy-survival','daechung-rpg','gem-survivor'])
@@ -524,6 +551,7 @@ jobs:
               ||!same(base.developmentLifecycleMachine?.verifiedF0F9PublicationLoop,head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop))
               throw new Error('SECURITY_OWNER_EXACT_FOCUS_MIGRATION_INVARIANTS_FAIL');
             console.log('SECURITY_OWNER_EXACT_THREE_GAME_PLATFORM_FOCUS=PASS');
+            }
           }
           // OWNER_APPROVED_AB_DESIGN_BEGIN: 2026-10-20 explicit owner approval.
           // Exact old/new design content only; other authority changes remain REVIEW.
