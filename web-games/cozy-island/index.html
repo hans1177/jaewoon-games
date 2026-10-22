@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#9bd6b3">
   <title>포근섬</title>
   <link rel="stylesheet" href="./style.css">
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
   <main id="app" aria-label="포근섬 게임">
@@ -24,6 +25,7 @@
     </section>
 
     <div id="raidText" class="raid-status">⏱️ 습격 2:00</div>
+    <div id="fortText" class="fort-status">🏰 성채를 건설해서 습격을 막아</div>
     <div id="hint" class="hint">섬을 천천히 둘러봐</div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -32,8 +34,10 @@
         <div class="joystick-ring"></div>
         <div id="joystickKnob" class="joystick-knob"></div>
       </div>
-      <button id="toolButton" class="tool" type="button">🤲<small>손</small></button>
-      <button id="actionButton" class="action" type="button">행동</button>
+      <div class="actions">
+        <button id="buildButton" class="build" type="button">🏰<small>성채</small></button>
+        <button id="toolButton" class="tool" type="button">🤲<small>손</small></button>
+        <button id="actionButton" class="action" type="button">행동</button>
       </div>
     </section>
 
