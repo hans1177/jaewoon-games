@@ -153,6 +153,36 @@ test('WebGL crash and context-loss recovery shows the original playable 2D canva
   assert.equal(warns.length,1);
 });
 
+test('CC0 animated hero foot penetration is corrected after the original animation mixer',()=>{
+  const begin=render.indexOf('function groundAnimatedHero(');
+  const end=render.indexOf('function follow(frame,dt){');
+  assert.ok(begin>=0&&end>begin,'animated visual grounding helper must exist');
+  const code=render.slice(begin,end);
+  const actor={
+    position:{y:.035},
+    userData:{},
+    updates:0,
+    updateMatrixWorld(){this.updates++}
+  };
+  const context={
+    avatar:actor,GROUND_SURFACE_Y:0,FOOT_CLEARANCE:.035,
+    THREE:{Box3:class{
+      setFromObject(target){this.min={y:target.position.y-.256};return this}
+      isEmpty(){return false}
+    }}
+  };
+  vm.runInNewContext(code+';groundAnimatedHero();globalThis.firstLift=avatar.userData.visualGroundCorrection;',context);
+  assert.ok(Math.abs(context.firstLift-.256)<1e-8,'22cm real browser penetration must be corrected');
+  assert.ok(Math.abs(actor.position.y-(.035+.256))<1e-8);
+  assert.equal(actor.updates,1);
+  vm.runInNewContext(code+';groundAnimatedHero();globalThis.secondLift=avatar.userData.visualGroundCorrection;',context);
+  assert.ok(context.secondLift<1e-7,'subsequent grounded frames must not drift upward');
+  const follow=render.slice(render.indexOf('function follow(frame,dt){'),render.indexOf('function resize()'));
+  assert.match(follow,/if\(heroMixer\)heroMixer\.update\(dt\);\s*groundAnimatedHero\(\);/,
+    'ground correction must run after actual native CC0 animation');
+  assert.match(render,/avatar\.position\.copy\(pos\)/,'gameplay player coordinates remain untouched');
+});
+
 test('native CC0 animations and fade transitions remain bound to the original clips',()=>{
   for(const name of ['Idle','Running_A','1H_Melee_Attack_Stab','2H_Melee_Attack_Spin','Dodge_Forward','Hit_A','Death_A']){
     assert.ok(render.includes(name),name+' clip missing');
