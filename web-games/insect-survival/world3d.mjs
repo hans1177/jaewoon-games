@@ -119,6 +119,7 @@ function environment(frame){
   const heroBottom=avatar?new THREE.Box3().setFromObject(avatar).min.y:null;
   return {tileCount:tiles.length,floorTop,heroBottom,
    worldReady,heroPresent:Boolean(avatar),
+   animationGroundLift:avatar?.userData.visualGroundCorrection??0,
    // Stable visual-only world reference, not a gameplay collision claim.
    groundReferenceY:GROUND_SURFACE_Y};
  };
@@ -190,6 +191,21 @@ function visualWalking(wasWalking,travel,dt){
  const speed=Math.max(0,Number(travel)||0)/Math.max(1/240,Math.min(.05,dt));
  return speed>(wasWalking?.13:.24);
 }
+// KayKit's authored animation clips can shift the animated skinned-mesh bounds
+// beneath the floor even when the source mesh was normalized correctly.
+// Resolve penetration on the presentation group AFTER the original mixer runs;
+// never move the gameplay player or rewrite any CC0 bone/animation tracks.
+function groundAnimatedHero(){
+ const bounds=new THREE.Box3().setFromObject(avatar);
+ if(bounds.isEmpty())return;
+ const penetration=GROUND_SURFACE_Y+FOOT_CLEARANCE-bounds.min.y;
+ const lift=Math.max(0,penetration);
+ if(lift>0){
+  avatar.position.y+=lift;
+  avatar.updateMatrixWorld(true);
+ }
+ avatar.userData.visualGroundCorrection=lift;
+}
 function follow(frame,dt){
  const p=frame.player,pos=to3(p);
  const travel=Math.hypot(pos.x-(avatar.userData.lastX??pos.x),pos.z-(avatar.userData.lastZ??pos.z));
@@ -212,6 +228,7 @@ function follow(frame,dt){
  setHeroMotion(motion,replay,duration);
  avatar.userData.motionSerial=serial;
  if(heroMixer)heroMixer.update(dt);
+ groundAnimatedHero();
  const night=frame.state.time/95>.68;
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;
  scene.background.set(night?'#263c3f':'#a2b998');
