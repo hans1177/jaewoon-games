@@ -1297,8 +1297,11 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     if(overlap){score+=Math.min(20,overlap*2);reasons.push('keyword-overlap:'+overlap);}
     score+=Math.min(10,Math.log2(Math.max(1,Number(record.confirmations)||1)+1)*2);
     score+=knowledgeEffectAdjustment(mastery,'EXPERIENCE',record.id);
-    return {record,score:Number(score.toFixed(3)),reasons};
-  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
+    // 같은 엔진이나 반복 성공 횟수만으로 무관한 학습을 코딩 맥락에 주입하지 않는다.
+    // 같은 게임·실패·실제 자산 동작 또는 의미 있는 키워드 일치가 있어야 재사용한다.
+    const retrievalRelevant=Boolean(sameAssetMotion||sameFailure||sameGame||overlap>0);
+    return {record,score:Number(score.toFixed(3)),reasons,retrievalRelevant};
+  }).filter(x=>x.retrievalRelevant&&x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
 
   const patterns=(codePatternsInput?.patterns||[])
     .filter(row=>{
