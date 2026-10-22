@@ -3,6 +3,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {deriveVerifiedCodePatterns} from '../tools/vibe2-code-pattern-ingest.mjs';
 import {buildVerifiedTrainingSample} from '../tools/vibe2-training-sample.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {runInNewContext} from 'node:vm';
+import {deterministicWebInputCandidate} from '../tools/vibe2-source-worker.mjs';
 
 test('verified sample yields abstract code patterns without raw patch',()=>{
   const rows=deriveVerifiedCodePatterns({
@@ -141,4 +146,59 @@ test('canonical runtime replay is retained from training sample to reusable patt
   assert.equal(causal?.rawCodeStored,false);
   const unverified=deriveVerifiedCodePatterns({...sample,verification:{...sample.verification,replayEvidence:[]}},'no-actual-replay.json');
   assert.ok(!unverified.some(row=>row.system==='INPUT_ACTION_CAUSAL_CHAIN'));
+});
+
+test('verified learned action expands model-free source generation with exact source and independent recheck',t=>{
+  const revision='b'.repeat(40);
+  const sample={
+    taskType:'coding',gameId:'spell-game',sourceRevision:revision,
+    independentQa:'PASS',browserQa:'PASS',
+    instruction:'모바일 버튼 입력 data-gameplay-action="castSpell" 연결',
+    input:'web-games/spell-game',
+    verification:{fullRegression:'PASS',runtime:'PASS'}
+  };
+  const rows=deriveVerifiedCodePatterns(sample,'company-learning/training-samples/spell-game.json');
+  const pattern=rows.find(row=>row.system==='INPUT_EVENT_BINDING');
+  assert.deepEqual(pattern?.executableRecipe?.actions,['castSpell']);
+  assert.equal(pattern.executableRecipe.requiresTargetRuntimeQa,true);
+  assert.equal(pattern.rawCodeStored,false);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-learned-action-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const source='<button id="magic" data-gameplay-action="castSpell">마법</button><script>let mana=4;function castSpell(){mana-=1;}</script>';
+  fs.writeFileSync(path.join(root,'index.html'),source,'utf8');
+  const order={target:'web',goal:'모바일 버튼 입력을 기존 마법 함수에 연결'};
+  const args={order,sourceRoot:root,responsibleFiles:['index.html']};
+  assert.equal(deterministicWebInputCandidate({...args,patternLibrary:{patterns:[]}}),null);
+  const learned=deterministicWebInputCandidate({...args,patternLibrary:{patterns:[pattern]}});
+  assert.equal(learned?.deterministicWebInput,true);
+  assert.deepEqual(learned.learnedCodePatternIds,[pattern.id]);
+  assert.equal(learned.edits[0].find,source);
+  const handlers=new Map();
+  const script=learned.edits[0].replace.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const sandbox={document:{getElementById:id=>({addEventListener:(type,fn)=>handlers.set(id+':'+type,fn)})}};
+  runInNewContext(script,sandbox);
+  assert.equal(runInNewContext('mana',sandbox),4);
+  handlers.get('magic:click')();
+  assert.equal(runInNewContext('mana',sandbox),3);
+  assert.equal(fs.readFileSync(path.join(root,'index.html'),'utf8'),source);
+  for(const unsafe of [
+    {...pattern,verified:false},
+    {...pattern,sourceRevision:'NOT_A_COMMIT'},
+    {...pattern,engine:'roblox'},
+    {...pattern,evidencePath:'unverified.json'},
+    {...pattern,executableRecipe:{...pattern.executableRecipe,actions:['deleteSave']}}
+  ])assert.equal(deterministicWebInputCandidate({...args,patternLibrary:{patterns:[unsafe]}}),null);
+});
+
+test('unverified or dangerous learned actions cannot become executable recipes',()=>{
+  const base={
+    taskType:'coding',gameId:'example',sourceRevision:'c'.repeat(40),
+    independentQa:'PASS',browserQa:'PASS',input:'web-games/example',
+    verification:{fullRegression:'PASS',runtime:'PASS'}
+  };
+  assert.deepEqual(deriveVerifiedCodePatterns({...base,instruction:'모바일 버튼 data-gameplay-action="castSpell"',verification:{...base.verification,runtime:'FAIL'}},'company-learning/training-samples/a.json'),[]);
+  const protectedRows=deriveVerifiedCodePatterns({...base,instruction:'모바일 버튼 data-gameplay-action="deleteSave"'},'company-learning/training-samples/b.json');
+  assert.ok(protectedRows.every(row=>!row.executableRecipe));
+  const arbitrary=deriveVerifiedCodePatterns({...base,instruction:'모바일 버튼 data-gameplay-action="castSpell();evil()"'} ,'company-learning/training-samples/c.json');
+  assert.ok(arbitrary.every(row=>!row.executableRecipe));
 });
