@@ -67,3 +67,24 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   .actions { transform: scale(.86); transform-origin: right bottom; }
   .toast { bottom: 112px; }
 }
+
+
+/* 성채 3D 화면 / 모바일 건설 조작 */
+#game { position: absolute; inset: 0; }
+#cozy3d { position: absolute; inset: 0; width: 100%; height: 100%; display: none; pointer-events: none; z-index: 1; }
+.hud, .raid-status, .fort-status, .hint, .toast { z-index: 5; }
+.controls { z-index: 10; }
+.actions { display: flex; align-items: flex-end; gap: 7px; }
+.build { width: 66px; height: 66px; border: 0; border-radius: 19px; background: #d1c6a4; color: #423f32; font-size: 25px; font-weight: 900; box-shadow: 0 5px 15px rgba(28,67,56,.24); }
+.build small { display: block; font-size: 10px; }
+.build:active { transform: scale(.96); }
+.fort-status { position: absolute; left: 10px; top: max(100px, calc(env(safe-area-inset-top) + 90px)); padding: 6px 10px; border-radius: 12px; background: #25352cca; color: #f1e4c6; font-size: 11px; pointer-events: none; }
+@media(max-width:410px) {
+  .controls { padding: 0 7px; }
+  .joystick { width: 101px; height: 101px; }
+  .joystick-knob { width: 52px; height: 52px; }
+  .actions { gap: 5px; }
+  .build,.tool { width: 53px; height: 57px; border-radius: 14px; font-size: 21px; }
+  .action { width: 67px; height: 67px; font-size: 14px; }
+  .hint { top: max(130px,calc(env(safe-area-inset-top) + 118px)); }
+}
