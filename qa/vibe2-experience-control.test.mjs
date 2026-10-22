@@ -552,3 +552,49 @@ test('existing Web 3D repair is not mistaken for a new game by appended build-up
   const spoof=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[untrusted]},taskId:untrusted.id});
   assert.match(String(spoof.reason),/EXECUTION_GATE_BLOCKED:company-owner-gate-required/,'unbound user goal marker must not bypass new-game approval');
 });
+
+
+test('read-only Web learning practice in asset lane never requires game-source semantic mapping',()=>{
+  const previous=process.env.VIBE2_EXECUTION_LANE;
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  try{
+    const playbooks={taskTypes:{web:{
+      authority:'verified-task-playbook',
+      reuse:[{
+        id:'external-black-box-unknown-mapping-test',
+        project:'approved-observation',sourceRevision:'sha256:'+'a'.repeat(64),score:1,
+        distilledApplicationPrinciples:['id=unmapped-future-principle;scope=observation;lesson=unknown']
+      }]
+    }}};
+    const runtime={continuous:{enabled:true},safety:{
+      existingWebMaintenanceAllowed:true,allowedWritableTargets:['web'],
+      paidAIAllowed:false,paidRunnerAllowed:false
+    }};
+    const practice={
+      id:'LEARNING-PRACTICE-verification-unit',gameId:null,target:'web',
+      department:'learning',type:'research',sourceRoot:'learning-practice:verification-unit',
+      goal:'[VIBE_LEARNING_PRACTICE]\\nkind=REPRO_DRILL\\n소스 파일을 수정하지 않고 인과 검증 연습한다.',
+      responsibleFiles:[],status:'queued',priority:'normal',
+      evidence:['learning-practice-only','learning-web-artifact-practice']
+    };
+    const research=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[practice]},taskId:practice.id,playbooks});
+    assert.notEqual(research.reason,'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED');
+    assert.equal(research.knowledgeApplicationContract?.mandatoryForGameTarget,false,
+      'read-only practice must not claim actual source-application requirements');
+
+    const production={...practice,
+      id:'real-game-write',gameId:'core-clash-4v4',target:'web',
+      department:'development',type:'implementation',
+      sourceRoot:'web-games/core-clash-4v4',
+      goal:'[WEB_REPAIR] 기존 Web 게임 입력 및 렌더 수리',
+      responsibleFiles:['web-games/core-clash-4v4/index.html'],evidence:[]
+    };
+    const writing=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[production]},taskId:production.id,playbooks});
+    assert.equal(writing.reason,'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',
+      'unknown verified principle still blocks a real game-source edit');
+    assert.equal(writing.knowledgeApplicationContract?.mandatoryForGameTarget,true);
+  }finally{
+    if(previous===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=previous;
+  }
+});
