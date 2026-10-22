@@ -1627,7 +1627,7 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
       const travel=Math.hypot(dx,dz),speed=travel/dt;
       measuredTravel+=travel;
       if(kind==='MOVE'){
-        if(frame.moveIntent===true&&frame.animationState==='WALK'||frame.moveIntent===true&&frame.animationState==='RUN'){
+        if(frame.moveIntent===true&&['WALK','RUN'].includes(frame.animationState)){
           if(frame.animationSpeed>0.15&&speed<stationaryMps&&frame.blockedByCollision!==true)
             issues.add('ANIMATED_MOONWALK_WITHOUT_TRAVEL');
         }
@@ -1638,10 +1638,13 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
           else if((dx*input.x+dz*input.z)/(travel*Math.hypot(input.x,input.z))<0.35)
             issues.add('ROOT_MOTION_CONTRADICTS_INPUT');
         }
-        if(frame.footPlanted===true&&previous.footPlanted===true&&vec(frame.footWorldPosition)&&vec(previous.footWorldPosition)&&
-          distance(frame.footWorldPosition,previous.footWorldPosition)>maxSlide)
-          issues.add('PLANTED_FOOT_SLIDES');
-        if(frame.groundedRequired===true&&(frame.grounded!==true||
+        if(frame.footPlanted===true&&previous.footPlanted===true){
+          if(!vec(frame.footWorldPosition)||!vec(previous.footWorldPosition))
+            issues.add('PLANTED_FOOT_WORLD_POSITION_REQUIRED');
+          else if(distance(frame.footWorldPosition,previous.footWorldPosition)>maxSlide)
+            issues.add('PLANTED_FOOT_SLIDES');
+        }
+        if(contract.groundedRequired===true&&(frame.grounded!==true||
           !Number.isFinite(frame.footGroundGapMeters)||Math.abs(frame.footGroundGapMeters)>maxSlide))
           issues.add('FLOATING_OR_UNGROUNDED_FOOT');
       }
@@ -1659,6 +1662,10 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
       const hand=vec(hit.weaponTip),target=vec(hit.targetContactPoint),root=vec(hit.actorPosition),targetRoot=vec(hit.targetPosition);
       if(!hand||!target||!root||!targetRoot||distance(hand,target)>maxContact||hit.collisionVerified!==true)
         issues.add('ATTACK_CONTACT_OUTSIDE_HITBOX');
+      if(hit.actorId!==contract.actorId||!Number.isFinite(hit.timestampMs)||
+        !Number.isFinite(frames[0]?.timestampMs)||!Number.isFinite(frames.at(-1)?.timestampMs)||
+        hit.timestampMs<frames[0].timestampMs||hit.timestampMs>frames.at(-1).timestampMs)
+        issues.add('CONTACT_NOT_BOUND_TO_ACTOR_FRAMES');
       if(root&&targetRoot&&Number.isFinite(hit.facingYawRad)){
         const dx=targetRoot.x-root.x,dz=targetRoot.z-root.z;
         if(Math.hypot(dx,dz)<0.001||Math.cos(hit.facingYawRad)*dz+Math.sin(hit.facingYawRad)*dx <
@@ -1666,7 +1673,7 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
           issues.add('ATTACK_NOT_FACING_TARGET');
       }else issues.add('ATTACK_FACING_TELEMETRY_MISSING');
       if(!Number.isFinite(hit.beforeHp)||!Number.isFinite(hit.afterHp)||hit.afterHp>=hit.beforeHp||
-        hit.afterHp<0||(trace.multiplayer===true&&hit.authority!=='SERVER'))
+        hit.afterHp<0||((trace.multiplayer===true||contract.platform==='ROBLOX')&&hit.authority!=='SERVER'))
         issues.add('UNVERIFIED_AUTHORITATIVE_HIT');
     }
   }
@@ -1683,7 +1690,8 @@ export function verifyVibeSpatialGameplayReplay(contract={},trace={}){
   }
   return capabilityResult('C05_SPATIAL',issues.size===0,[...issues],{
     evidenceAccepted:accepted,framesChecked:frames.length,measuredTravelMeters:measuredTravel,
-    diagnosticOnly:true,automaticSourceWrite:false,nativePlatformVerifiedByThisFunction:false
+    diagnosticOnly:true,automaticSourceWrite:false,sourceMutationAuthorized:false,
+    nativePlatformVerifiedByThisFunction:false
   });
 }
 
