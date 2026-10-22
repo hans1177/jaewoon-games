@@ -399,3 +399,28 @@ test('game worker acquisition instructions cannot retain create-new fallback',()
   assert.equal(plan.assetAcquisition.inactiveGamesMustRemainUnchanged,true);
   assert.ok(!plan.assetAcquisition.order.includes('CREATE_NEW_ASSET'));
 });
+
+// 기존 그래픽 제작 루트가 CC0 직업·격투·생물 모션을 직접 받아 쓰고 미검증 상태를 유지한다.
+test('graphics production wires existing CC0 duel and creature choreography for web and Roblox',()=>{
+  for(const target of ['web','roblox']){
+    const plan=createVibeGraphicsProduction({
+      gameId:'cc0-action-demo',request:'직업 무기 공격 모션과 몬스터 관절 타격감을 강화',
+      target,quality:2,game:{genre:'ACTION_RPG',careerId:'SAMURAI'},
+      world:{featuredSpeciesId:'WOLF'},characters:[]
+    });
+    assert.equal(plan.internalModules.motionEffects,'assets/vibe-motion-effects-director.js');
+    assert.equal(plan.motionEffects?.cc0PlatformReuse.targetPlatform,target.toUpperCase());
+    assert.equal(plan.motionEffects?.cc0PlatformReuse.runtimeBindingVerified,false);
+    assert.ok(plan.motionEffects?.combatActions.length>5);
+    assert.ok(plan.motionEffects?.creatureActions.length>2);
+    assert.ok(plan.motionEffects.combatActions.every(row=>row.nativeRuntimeVerified===false));
+    assert.equal(plan.authority.gameplayMutationAllowed,false);
+    assert.equal(plan.runtimeRepairLoop.status,'RUNTIME_EVIDENCE_PENDING');
+  }
+  const unknown=createVibeGraphicsProduction({
+    gameId:'unknown',request:'캐릭터 그래픽 개선',target:'web',quality:1,
+    game:{genre:'ACTION_RPG',careerId:'UNSUPPORTED'},world:{featuredSpeciesId:'UNKNOWN'}
+  });
+  assert.equal(unknown.motionEffects?.combatActions.length,0);
+  assert.equal(unknown.motionEffects?.creatureActions.length,0);
+});

@@ -3,7 +3,7 @@
 // 원칙: 모션과 이펙트는 판정을 표현하며 데미지/체력/쿨타임/스폰/보상/저장 규칙은 변경하지 않음
 
 // 임포트: 기존 직업·장르 모션 원본을 재사용하고 별도 스킬 데이터베이스를 만들지 않는다.
-import {createCommonCareerMotionLoadout,resolveCommonMotionGenre} from './vibe-motion-director.js';
+import {createCommonCareerMotionLoadout,createCommonMonsterActionLoadout,resolveCommonMotionGenre} from './vibe-motion-director.js';
 const uniq=a=>[...new Set((a||[]).filter(Boolean))];
 const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
 const EVENTS=['idle','move','attack','hit','skill','death','spawn','boss','victory','interact','solve','guard','combo','heal','buff','summon'];
@@ -51,7 +51,7 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
   if(!genreId)return Object.freeze({accepted:false,reason:'unsupported-presentation-genre'});
   const career=String(careerId||event.payload?.careerId||'').toUpperCase();
   const requestedSkill=String(skillId||event.payload?.skillId||'').toUpperCase();
-  let binding=null;
+  let binding=null,assetReuse=null,activeWeapon=String(weaponFamily||event.payload?.weaponFamily||'').toUpperCase();
   if(type==='skill'&&(career||requestedSkill)){
     if(!career||!requestedSkill)return Object.freeze({accepted:false,reason:'career-and-skill-required'});
     let loadout;
@@ -61,6 +61,8 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
     const skill=loadout.skills.find(row=>row.id===requestedSkill);
     if(!skill)return Object.freeze({accepted:false,reason:'skill-not-in-career-motion-loadout'});
     const role=loadout.roleRequests.find(row=>row.group==='skills'&&row.id===skill.id);
+    assetReuse=loadout.cc0PlatformReuse;
+    activeWeapon=loadout.weaponFamily;
     binding=Object.freeze({
       careerId:career,sourceCareerId:role?.sourceCareerId||career,skillId:skill.id,kind:skill.kind,
       phases:skill.sequence.phases,contactPart:skill.contactPart,
@@ -69,6 +71,34 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
       nativeRigBindingRequired:true,runtimeVerified:false,gameplayAuthority:false
     });
   }
+  // 직업 스킬은 승인된 기존 무기군에서만 큰 동작의 실루엣을 선택한다.
+  // 클립이 없는 경우에도 히트박스나 실제 이동속도를 바꾸지 않는 절차적 표현이다.
+  const requestedStyle=String(event.payload?.motionStyle||'').toUpperCase();
+  const weaponStyles={
+    KATANA:'SLASH',ONE_HAND_SWORD:'SLASH',SHIELD_SWORD:'SLASH',TWO_HAND_SWORD:'CLEAVE',
+    AXE:'CLEAVE',HAMMER:'CLEAVE',SPEAR:'THRUST',DAGGER:'THRUST',
+    UNARMED:'PUNCH',BOW:'CAST',FIREARM:'CAST',STAFF_OR_WAND:'CAST',
+    GADGET:'CAST',TOOL:'CLEAVE',INSTRUMENT:'CAST',DUAL_BLADE:'DUAL_CROSS'
+  };
+  const skillStyles={
+    DASH:'THRUST',COMBO:'SLASH',COUNTER:'THRUST',CHARGE:'CLEAVE',
+    PROJECTILE:'CAST',BEAM:'CAST',AREA:'CAST',ULTIMATE:'CLEAVE',
+    TRAP:'CAST',SUMMON:'CAST',HEAL:'CAST',BUFF:'CAST'
+  };
+  // 기술명은 기존 직업 데이터에서만 읽는다. 원본 무기·타이밍·콤보 판정을 수정하지 않는다.
+  const signatureStyle=binding
+    ?/DIVE|SKY_BREAK|FALLING_THRUST/.test(binding.skillId)?'LEAP_DIVE'
+      :/SHIELD_BASH|SHIELD_WALL/.test(binding.skillId)?'SHIELD_BASH'
+      :/CRESCENT|MOON_CUT|SPEAR_WHIRL/.test(binding.skillId)?'SPIN_SLASH'
+      :/RISING|UPPERCUT|PALM_WAVE/.test(binding.skillId)?'RISING_CUT'
+      :binding.kind==='COMBO'&&activeWeapon==='DUAL_BLADE'?'DUAL_CROSS'
+      :binding.kind==='ULTIMATE'&&['TWO_HAND_SWORD','AXE','HAMMER'].includes(activeWeapon)?'HEAVY_SLAM'
+      :null
+    :null;
+  const allowedStyles=['SLASH','THRUST','CLEAVE','PUNCH','KICK','CAST','BITE',
+    'HEAVY_SLAM','DUAL_CROSS','SPIN_SLASH','RISING_CUT','LEAP_DIVE','UPPERCUT','SHIELD_BASH','TAIL_SWIPE'];
+  const motionStyle=allowedStyles.includes(requestedStyle)
+    ?requestedStyle:(signatureStyle||skillStyles[binding?.kind]||weaponStyles[activeWeapon]||'DEFAULT');
   const profile=createVibeMotionProfile(type,{importance:event.importance||'normal',mobile,genre:genreId});
   const impact=createVibeImpactRecipe({
     kind:type==='hit'?'hard':'normal',importance:event.importance||'normal',
@@ -78,7 +108,7 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
   const channels=new Set(event.channels||[]),commands=[];
   if(channels.has('animation'))commands.push(Object.freeze({
     channel:'animation',action:'play-motion-profile',layers:profile.layers,timing:profile.timing,
-    genre:genreId,visualLanguage:profile.visualLanguage.motion,skillBinding:binding
+    genre:genreId,visualLanguage:profile.visualLanguage.motion,skillBinding:binding,motionStyle
   }));
   if(channels.has('vfx')){
     // 선공격과 스킬 시전은 명중 확인이 아니다. 접촉 불꽃/폭발은 authoritative hit 사건으로만 재생한다.
@@ -98,13 +128,14 @@ export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,
   return Object.freeze({
     accepted:true,eventId:event.presentationEventId,causeId:event.causeId,eventType:type,
     genre:genreId,readability:profile.visualLanguage.readability,skillBinding:binding,
+    motionStyle,assetReuse,
     commands:Object.freeze(commands),authority:'presentation-only',
     gameplayMutationAllowed:false,runtimeVerified:false,forbid:FORBID
   });
 }
 export function executeVibeMotionEffectEvent(event,handlers={},options={}){const execution=createVibeMotionEffectExecution(event,options);if(!execution.accepted)return execution;const results=[];for(const command of execution.commands){const handler=handlers[command.channel];if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}))}return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)})}
 // 계획: 기존 직업 모션 원본의 실제 스킬 슬롯을 그대로 이펙트 담당 단계에 전달한다.
-export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request='',genre='ACTION_RPG',careerId='',platform='SHARED',weaponFamily=''}={}){
+export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request='',genre='ACTION_RPG',careerId='',speciesId='',monsterTier='NORMAL',platform='SHARED',weaponFamily=''}={}){
   const audit=auditVibeMotionEffects(graph),tasks=[];
   const genreId=resolveCommonMotionGenre(genre);
   if(!genreId)throw Error('UNSUPPORTED_GRAPHICS_MOTION_GENRE:'+genre);
@@ -122,10 +153,32 @@ export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,
     cameraSlot:skill.cameraPresentationSlot,actualJointClipRequired:true,
     nativeRuntimeVerified:false,gameplayAuthority:false
   })));
+  // 기존 대전격투 무기 모션팩과 생물 관절 변형을 기술별로 준비한다.
+  // 원본 동작 ID, 히트박스·스킬 프레임·이동 속도는 절대 변경하지 않는다.
+  const combatActions=Object.freeze(Object.entries(loadout?.combatSourcePack?.groups||{})
+    .flatMap(([group,ids])=>(ids||[]).map((motionId,index)=>Object.freeze({
+      group,motionId,sourceWeaponFamily:loadout.weaponFamily,variationIndex:index,
+      sourcePack:'EXISTING_DUEL_COMBAT_MOTION_LIBRARY',actualClipRequired:true,
+      nativeRuntimeVerified:false,gameplayAuthority:false
+    }))));
+  const creature=speciesId?createCommonMonsterActionLoadout({
+    speciesId,genre:genreId,platform,tier:monsterTier
+  }):null;
+  const creatureActions=Object.freeze([
+    ...(creature?.choreography||[]),
+    ...(creature?.expressiveChoreography||[])
+  ].map(row=>Object.freeze({
+    id:row.id,group:row.group||'attacks',bodyPlan:creature.bodyPlan,
+    contactLimb:row.primaryContactLimb,
+    poseKeyTimes:row.poseKeyTimes,jointTracks:row.jointTracks,
+    tier:creature.presentationTier,authoritativeRootMovement:false,
+    actualNativeRigBindingRequired:true,runtimeVerified:false,gameplayAuthority:false
+  })));
   return Object.freeze({
     version:2,request:String(request),genre:genreId,careerId:loadout?.id||null,
     audit,secondaryMotion:createVibeSecondaryMotionRig({parts}),tasks:Object.freeze(tasks),
-    skillActions,engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),
+    skillActions,combatActions,creatureActions,cc0PlatformReuse:loadout?.cc0PlatformReuse||null,
+    engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),
     policy:Object.freeze({serverAI:false,eventDriven:true,checkpoint:true,mobileFirst:mobile,gameplayAuthoritative:true,noRuleMutation:true}),
     runtimeVerified:false,authorityExpanded:false
   });
@@ -144,14 +197,14 @@ export function createVibeMotionEngineBridge({engine=null,reducedMotion=false,lo
 // 실행: 기존 보간 리그를 그대로 사용하고 이동 상태는 이동/대기 이벤트에서만 갱신한다.
 export function executeVibeMotionEngineEvent(event,bridge,{speed=0,facing=1,hitDirection=-1,bodyRegion='TORSO',turn=0,lodTier='NEAR'}={}){
   if(!bridge?.ready||!bridge.rig||!bridge.camera)return Object.freeze({accepted:false,reason:'motion-engine-bridge-not-ready'});
-  const execution=createVibeMotionEffectExecution(event,{mobile:true,enemyCount:0});
+  const execution=createVibeMotionEffectExecution(event,{mobile:true,enemyCount:0,platform:'WEB'});
   if(!execution.accepted)return execution;
   const type=String(event.eventType||''),major=event.importance==='major'||type==='boss';
   const supportSkill=execution.skillBinding&&['HEAL','BUFF','CHANNEL','GUARD','SUMMON','TRAP','TRANSFORM','REPAIR','INTERACT','COMMAND','PERFORM','STANCE'].includes(execution.skillBinding.kind);
   if(type==='move'||type==='idle')bridge.rig.setMotionState({moving:type==='move',speed,facing,turn});
   if(typeof bridge.rig.setLod==='function')bridge.rig.setLod({tier:lodTier});
   if(type==='attack'||(type==='skill'&&!supportSkill))
-    bridge.rig.triggerAttack({strength:major?1.5:1,duration:major?.34:.24,weightClass:event.weightClass||'STANDARD',contactAt:event.contactAt??.52,comboIndex:event.comboIndex||0});
+    bridge.rig.triggerAttack({strength:major?1.5:1,duration:major?.34:.24,weightClass:event.weightClass||'STANDARD',contactAt:event.contactAt??.52,comboIndex:event.payload?.comboIndex??event.comboIndex??0,style:execution.motionStyle});
   if(type==='hit'){
     bridge.rig.triggerHit({direction:hitDirection,strength:major?1.5:1,bodyRegion});
     if(typeof bridge.rig.triggerContact==='function'){
@@ -160,8 +213,18 @@ export function executeVibeMotionEngineEvent(event,bridge,{speed=0,facing=1,hitD
     }
   }
   if(type==='spawn'||type==='death')bridge.rig.triggerLand({strength:major?1.4:.8});
-  if(type==='hit'||type==='attack'||type==='boss'||(type==='skill'&&!supportSkill))
-    bridge.camera.impulse({x:(type==='hit'?hitDirection:facing)*(major?90:45),y:major?-45:-18,rotation:(major?.7:.25)*facing});
+  if(type==='hit'||type==='attack'||type==='boss'||(type==='skill'&&!supportSkill)){
+    // 공격 예고는 미세하게, 실제 명중은 무기 무게에 맞게 전달한다. 입력·물리 카메라는 건드리지 않는다.
+    const confirmed=type==='hit';
+    const weight=String(event.weightClass||'STANDARD').toUpperCase();
+    const weightScale=confirmed?(weight==='HEAVY'?1.25:weight==='LIGHT'?.72:1):1;
+    const accentScale=type==='attack'?.28:confirmed?weightScale:1;
+    bridge.camera.impulse({
+      x:(confirmed?hitDirection:facing)*(major?90:45)*accentScale,
+      y:(major?-45:-18)*accentScale,
+      rotation:(major?.7:.25)*facing*accentScale
+    });
+  }
   return Object.freeze({
     accepted:true,eventType:type,skillBinding:execution.skillBinding,authority:'presentation-only',
     gameplayMutationAllowed:false,forbid:FORBID,bridgeApplied:true

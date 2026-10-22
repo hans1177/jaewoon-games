@@ -1240,9 +1240,30 @@ export function createCommonCareerMotionLoadout({
     sourceState:'CC0_ORIGINAL_ROLE_MAPPING_REQUIRED',
     productionVerified:false,runtimeVerified:false,gameplayAuthority:false
   });
+  // 웹·로블록스는 CC0 출처만 공유한다. GLB를 Roblox에서 직접 재생 가능한 네이티브 클립으로 오인하지 않는다.
+  const cc0PlatformReuse=Object.freeze({
+    assetId:master.assetId,sourcePath:master.path,license:master.license,
+    targetPlatform:platformId,sourceProvenanceRequired:true,
+    originalModelPreserved:true,cacheAssetById:true,cacheAnimationClipsBySource:true,
+    platformBinding:platformId==='WEB'
+      ?'WEB_GLTF_SKINNED_MESH_ANIMATION_MIXER_REUSE'
+      :platformId==='ROBLOX'
+        ?'ROBLOX_STUDIO_NATIVE_RIG_RETARGET_AND_ANIMATOR_IMPORT_REQUIRED'
+        :'SEPARATE_NATIVE_PLATFORM_ADAPTER_REQUIRED',
+    mobilePresentation: Object.freeze({
+      near:'FULL_VERIFIED_ARTICULATED_MOTION',
+      mid:'REDUCED_SECONDARY_MOTION_AND_VFX',
+      far:'NO_AFTERIMAGES_OR_OFFSCREEN_PARTICLE_EMISSION',
+      keepGameplayUpdateUnchanged:true,keepRootMovementGameOwned:true
+    }),
+    crossPlatformNativeBinaryReuseAllowed:false,
+    actualConvertedClipCountVerified:0,
+    runtimeBindingVerified:false,performanceVerified:false,
+    releaseRequired:freezeList(['SOURCE_AND_LICENSE_SHA256','PLATFORM_NATIVE_RIG_AND_CLIP_BIND','ACTUAL_MOBILE_FPS','SAVE_AND_GAMEPLAY_REGRESSION'])
+  });
   return Object.freeze({
     id,careerPath:freezeList(ancestors),genre:requestedGenre,platform:platformId,
-    master,actionSource,
+    master,actionSource,cc0PlatformReuse,
     bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
     weaponFamily:weapon,allowedWeapons:freezeList(allowedWeapons),
     groups,skills,genreGroups:requiredGroups,compositionLayers,roleRequests,
