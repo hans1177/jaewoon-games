@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "insect-survival-build-up-g7-41354665c0c1",
-  "directiveFingerprint": "41354665c0c1d3322ef0bb3977dba01b6dcc4b2318f77665ce895f8e15f13cc3",
-  "previousDirectiveFingerprint": "30d1235cce5ced4aa809f2972bb52e48270ff61b89169cb11ae5af954beabe9c",
-  "forbiddenRepeatFingerprint": "30d1235cce5ced4aa809f2972bb52e48270ff61b89169cb11ae5af954beabe9c",
+  "directiveId": "insect-survival-build-up-g8-4585917dcadf",
+  "directiveFingerprint": "4585917dcadf9f3c684e7c3b30a93233b6e675bfb5ac0587dbf4cbc8ebe55cbb",
+  "previousDirectiveFingerprint": "41354665c0c1d3322ef0bb3977dba01b6dcc4b2318f77665ce895f8e15f13cc3",
+  "forbiddenRepeatFingerprint": "41354665c0c1d3322ef0bb3977dba01b6dcc4b2318f77665ce895f8e15f13cc3",
   "gameId": "insect-survival",
   "gameName": "곤충 생존기",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/insect-survival",
-  "sourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+  "sourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
   "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+        "sourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
-    "sourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+    "sourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+    "sourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4363,33 +4363,33 @@
       "save": 38,
       "multiplayer": 0,
       "animation": 16,
-      "motionStates": 131,
+      "motionStates": 135,
       "gameFeel": 0,
       "vfx": 4,
       "camera": 20,
       "audio": 0,
       "audioDynamics": 2,
       "ui": 74,
-      "uiFlow": 44,
+      "uiFlow": 45,
       "entryFlow": 0,
       "loadingFlow": 0,
-      "input": 3,
-      "map": 154,
+      "input": 4,
+      "map": 180,
       "landmark": 0,
       "interaction": 17,
-      "inventory": 46,
+      "inventory": 55,
       "equipment": 57,
       "settings": 0,
-      "feedback": 29,
+      "feedback": 32,
       "session": 29,
-      "content": 189,
+      "content": 206,
       "choice": 30,
       "connection": 2,
-      "performance": 53,
-      "lighting": 26,
+      "performance": 57,
+      "lighting": 30,
       "primitive": 1,
       "todo": 0,
-      "errorRecovery": 9
+      "errorRecovery": 13
     },
     "topFiles": [
       {
@@ -4398,7 +4398,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "score": 72
+        "score": 96
       }
     ],
     "sourceAnchors": [
@@ -4604,15 +4604,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 111,
-        "kind": "FUNCTION",
-        "symbol": "to3",
-        "context": "const to3=p=>new THREE.Vector3(p.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,p.y*ratio);",
-        "score": 50
-      },
-      {
-        "file": "web-games/insect-survival/world3d.mjs",
-        "line": 186,
+        "line": 281,
         "kind": "FUNCTION",
         "symbol": "refreshDecorVisibility",
         "context": "function refreshDecorVisibility(heroX,heroZ,immediate=false){",
@@ -4620,7 +4612,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 112,
+        "line": 151,
         "kind": "FUNCTION",
         "symbol": "environment",
         "context": "function environment(frame){",
@@ -4628,7 +4620,15 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 196,
+        "line": 231,
+        "kind": "FUNCTION",
+        "symbol": "batchStaticDecor",
+        "context": "function batchStaticDecor(){",
+        "score": 42
+      },
+      {
+        "file": "web-games/insect-survival/world3d.mjs",
+        "line": 302,
         "kind": "FUNCTION",
         "symbol": "actorsFromFrame",
         "context": "function actorsFromFrame(frame){",
@@ -4636,7 +4636,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 220,
+        "line": 326,
         "kind": "FUNCTION",
         "symbol": "syncResourceVisual",
         "context": "function syncResourceVisual(index,node){",
@@ -4644,7 +4644,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 260,
+        "line": 366,
         "kind": "FUNCTION",
         "symbol": "groundAnimatedHero",
         "context": "function groundAnimatedHero(){",
@@ -4652,7 +4652,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 320,
+        "line": 426,
         "kind": "FUNCTION",
         "symbol": "resize",
         "context": "function resize(){",
@@ -4660,7 +4660,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 368,
+        "line": 478,
         "kind": "FUNCTION",
         "symbol": "tick",
         "context": "function tick(){",
@@ -4692,7 +4692,15 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 271,
+        "line": 114,
+        "kind": "FUNCTION",
+        "symbol": "to3",
+        "context": "const to3=p=>new THREE.Vector3(p.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,p.y*ratio);",
+        "score": 34
+      },
+      {
+        "file": "web-games/insect-survival/world3d.mjs",
+        "line": 377,
         "kind": "FUNCTION",
         "symbol": "follow",
         "context": "function follow(frame,dt){",
@@ -4700,7 +4708,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 340,
+        "line": 450,
         "kind": "FUNCTION",
         "symbol": "restoreLegacyView",
         "context": "function restoreLegacyView(reason,error=null){",
@@ -4716,7 +4724,15 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 160,
+        "line": 117,
+        "kind": "FUNCTION",
+        "symbol": "batchGroundTiles",
+        "context": "function batchGroundTiles(tiles){",
+        "score": 26
+      },
+      {
+        "file": "web-games/insect-survival/world3d.mjs",
+        "line": 204,
         "kind": "FUNCTION",
         "symbol": "rand",
         "context": "const rand=i=>{const t=Math.sin(i*102.64+18.82)*43758.5453;return t-Math.floor(t)};",
@@ -4724,7 +4740,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 233,
+        "line": 339,
         "kind": "FUNCTION",
         "symbol": "setHeroMotion",
         "context": "function setHeroMotion(motion,restart=false,duration=0){",
@@ -4732,7 +4748,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 245,
+        "line": 351,
         "kind": "FUNCTION",
         "symbol": "blendFacingYaw",
         "context": "function blendFacingYaw(current,target,dt){",
@@ -4740,7 +4756,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 250,
+        "line": 356,
         "kind": "FUNCTION",
         "symbol": "visualWalking",
         "context": "function visualWalking(wasWalking,travel,dt){",
@@ -4748,7 +4764,7 @@
       },
       {
         "file": "web-games/insect-survival/world3d.mjs",
-        "line": 353,
+        "line": 463,
         "kind": "FUNCTION",
         "symbol": "start",
         "context": "async function start(){",
@@ -4759,9 +4775,9 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 곤충 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 곤충 생존기를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "163417905555ea8aadeacfd3e03d174ec3933b890954fd006e5d049975c3eae4",
-    "currentSourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+    "currentSourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5936,7 +5952,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 86336,
+        "sourceBytes": 94000,
         "largestFileBytes": 49042,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5969,12 +5985,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 7,
-    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
+    "themeDepth": 8,
+    "selectedThemeReason": "3 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 7,
+        "WORLD_ECOLOGY_STORY_CHAIN": 8,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -5983,6 +5999,7 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6024,7 +6041,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 112,
+        "score": 94,
         "gapDomains": [
           "MAP_EXPANSION",
           "WORLD_DENSITY",
@@ -6144,11 +6161,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 7,
-    "previousGeneration": 6,
+    "generation": 8,
+    "previousGeneration": 7,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
-    "priorSourceFingerprint": "163417905555ea8aadeacfd3e03d174ec3933b890954fd006e5d049975c3eae4",
+    "sourceFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
+    "priorSourceFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6167,7 +6184,7 @@
     "version": 1,
     "gameId": "insect-survival",
     "platform": "WEB",
-    "sourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+    "sourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6774,7 +6791,7 @@
     "gameId": "insect-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+    "sourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7511,7 +7528,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f42e5d0e8f07e55a8b5e0545aa29ec71980f09fa1460bde68287fa31abaff64f",
+      "sourceTreeFingerprint": "424bafa621d823f4de61a607240a8bb5af3a5d55b2c7260d6c878d038a7c507d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7570,7 +7587,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7636,5 +7653,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-22T18:09:12.254Z"
+  "generatedAt": "2026-10-22T19:12:35.220Z"
 }
