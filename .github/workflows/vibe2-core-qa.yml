@@ -513,7 +513,50 @@ jobs:
           node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe-crossplatform-visual-components.test.mjs
+          # Heavy native CC0 and the remaining contracts run independently in
+          # sibling jobs, keeping the full suite without a 25-minute serial bottleneck.
+          echo 'VIBE2_CORE_QA_PARALLEL_SHARDS=EARLY_NATIVE_REMAINING'
+
+      - name: Generate machine handoff
+        run: |
+          set -euo pipefail
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff.json >/tmp/vibe2-handoff.log
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
+
+
+  native-asset-regression:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    name: Native CC0 asset production regression
+    runs-on: ubuntu-slim
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run complete original native CC0 asset regression
+        run: |
+          set -euo pipefail
           node --test qa/vibe2-native-asset-production.test.mjs
+
+  remaining-contracts:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    name: Vibe2 remaining core contracts
+    runs-on: ubuntu-slim
+    timeout-minutes: 25
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      VIBE2_BROWSER_CHANGED_GAMES: ${{ needs.scope.outputs.changed_web_games || 'ALL' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run remaining source, game, learning and design regressions
+        run: |
+          set -euo pipefail
           # [Rule5] Real approved seed artbooks live only on company-runtime, not main.
           # Reuse the identical read-only source hydration already verified by Vibe QA;
           # do not fake fixtures, skip tests, or promote missing artbook evidence.
@@ -574,11 +617,6 @@ jobs:
           node --test qa/company-design-pre-gate-resume.test.mjs
           node --test qa/company-machine-development-lifecycle.test.mjs
 
-      - name: Generate machine handoff
-        run: |
-          set -euo pipefail
-          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff.json >/tmp/vibe2-handoff.log
-          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
 
   browser-smoke:
     needs: scope
