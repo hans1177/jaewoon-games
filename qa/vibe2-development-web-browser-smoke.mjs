@@ -250,7 +250,8 @@ const wild3dOnly=gameIds.length===1&&gameIds[0]==='wild-survival';
 const tower3dOnly=gameIds.length===1&&gameIds[0]==='tower-choice-rpg';
 const star3dOnly=gameIds.length===1&&gameIds[0]==='seed-action-survival-rogu-echoes-of-the-lost-star';
 const gem3dOnly=gameIds.length===1&&gameIds[0]==='gem-survivor';
-const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly||gem3dOnly;
+const forestDefense3dOnly=gameIds.length===1&&gameIds[0]==='defense';
+const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly||gem3dOnly||forestDefense3dOnly;
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
@@ -365,7 +366,7 @@ try{
     // Only accept a completed Three.js frame AND a live WebGL2 drawing buffer.
     if(native3dOnly){
       currentPhase='TRUE_WEBGL_3D_FRAME';
-      if(star3dOnly||gem3dOnly)assert.equal(start?.clicked,true,gameId+': active gameplay start not clicked');
+      if(star3dOnly||gem3dOnly||forestDefense3dOnly)assert.equal(start?.clicked,true,gameId+': active gameplay start not clicked');
       assert.equal(start?.clicked,true,'wild-survival: survival start action was not triggered');
       let proof=null;
       for(let attempt=0;attempt<65;attempt++){
@@ -393,6 +394,30 @@ try{
       assert.equal(proof?.rendered,true,gameId+': no actual Three.js frame was produced');
       assert.equal(proof?.webgl2,true,gameId+': no live WebGL2 drawing buffer');
       assert.equal(proof?.loadingVisible,false,gameId+': 3D loading/error status remains visible');
+      if(forestDefense3dOnly){
+        currentPhase='DEFENSE_3D_TOWER_PICK';
+        const build=await cdp.evaluate(`(()=>{
+          const archer=document.querySelector('[data-build="archer"]'),canvas=document.querySelector('#game');
+          const startGold=document.querySelector('#gold')?.textContent;
+          if(!archer||!canvas)return {ok:false,reason:'missing controls'};
+          archer.click();
+          // Screen-space pointer must be translated through the 3D ground ray.
+          // Search a bounded grid; original game only spends coins on a valid pad.
+          const rect=canvas.getBoundingClientRect();
+          let clicked=false,position=null;
+          for(let row=0;row<15&&!clicked;row++)for(let col=0;col<15&&!clicked;col++){
+            const x=rect.left+rect.width*(col+.5)/15;
+            const y=rect.top+rect.height*(row+.5)/15;
+            canvas.dispatchEvent(new PointerEvent('pointerdown',{pointerId:1,clientX:x,clientY:y,bubbles:true,cancelable:true}));
+            if(document.querySelector('#gold')?.textContent!==startGold){clicked=true;position={x,y};}
+          }
+          return {clicked,startGold,finalGold:document.querySelector('#gold')?.textContent,position};
+        })()`);
+        console.log('DEFENSE_3D_TOWER_PICK='+JSON.stringify(build));
+        assert.equal(build?.clicked,true,'defense: 3D raycast does not reach original tower build pads');
+        assert.equal(build?.startGold,'골드 240');
+        assert.equal(build?.finalGold,'골드 160','defense: 3D touch must use original archer cost 80');
+      }
     }
 
     results.push({
