@@ -25,7 +25,8 @@ test('cat frontline renders with actual native 3D camera and visible collision-b
   ])assert.ok(native.includes(marker),marker);
   assert.match(native,/scene\.remove\(record\.group\);actors\.delete\(id\)/);
   assert.match(source,/frontline3d\.render\(\{state:s\},performance\.now\(\)\)/);
-  assert.doesNotMatch(native,/localStorage|\.hp\s*[-+]?=|\.money\s*[-+]?=|save\.gold\s*[-+]?=/);
+  // A comment may name saved gameplay data; only executing persistence access is forbidden here.
+  assert.doesNotMatch(native,/\blocalStorage\s*(?:\.|\[)|\.hp\s*[-+]?=|\.money\s*[-+]?=|save\.gold\s*[-+]?=/);
 });
 
 test('original ten-stage combat, 13 ally/7 enemy definitions, gacha and original save key survive',()=>{
