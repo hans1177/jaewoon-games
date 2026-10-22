@@ -2,21 +2,134 @@
 // 역할: 캐릭터 동작/애니메이션/카메라/VFX를 이벤트 기반으로 대폭 자동 고도화
 // 원칙: 모션과 이펙트는 판정을 표현하며 데미지/체력/쿨타임/스폰/보상/저장 규칙은 변경하지 않음
 
+// 임포트: 기존 직업·장르 모션 원본을 재사용하고 별도 스킬 데이터베이스를 만들지 않는다.
+import {createCommonCareerMotionLoadout,resolveCommonMotionGenre} from './vibe-motion-director.js';
 const uniq=a=>[...new Set((a||[]).filter(Boolean))];
 const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
-const EVENTS=['idle','move','attack','hit','skill','death','spawn','boss','victory'];
-const MOTION=Object.freeze({idle:['breathing','weight-shift','gaze-head-track','secondary-motion'],move:['pose-match','inertialization','lean','body-bob','foot-lock-ik','direction-response','secondary-motion'],attack:['pose-match','telegraph','anticipation','windup','motion-warp','contact-solver','strike','follow-through','recovery'],hit:['impact-freeze','directional-body-hit','partial-ragdoll','recoil','flash','recover'],skill:['pose-match','telegraph','charge','motion-warp','contact-solver','release','follow-through','recovery'],death:['impact','partial-ragdoll','collapse','settle','despawn'],spawn:['entrance','overshoot','settle'],boss:['entrance','presence','phase-pose','telegraph','gaze-head-track'],victory:['release','celebration','settle']});
-const EFFECTS=Object.freeze({attack:['weapon-trail','muzzle-or-slash','contact-spark'],hit:['hit-flash','impact-particles','damage-number','micro-shake'],skill:['charge-glow','trail','impact-burst','area-mark'],death:['death-burst','dissolve-or-fade','debris'],spawn:['spawn-ring','dust-or-glow'],boss:['focus-vignette','warning-pulse','boss-aura','major-impact'],victory:['celebration-particles','screen-accent']});
+const EVENTS=['idle','move','attack','hit','skill','death','spawn','boss','victory','interact','solve','guard','combo','heal','buff','summon'];
+const MOTION=Object.freeze({idle:['breathing','weight-shift','gaze-head-track','secondary-motion'],move:['pose-match','inertialization','lean','body-bob','foot-lock-ik','direction-response','secondary-motion'],attack:['pose-match','telegraph','anticipation','windup','motion-warp','contact-solver','strike','follow-through','recovery'],hit:['impact-freeze','directional-body-hit','partial-ragdoll','recoil','flash','recover'],skill:['pose-match','telegraph','charge','motion-warp','contact-solver','release','follow-through','recovery'],death:['impact','partial-ragdoll','collapse','settle','despawn'],spawn:['entrance','overshoot','settle'],boss:['entrance','presence','phase-pose','telegraph','gaze-head-track'],victory:['release','celebration','settle'],interact:['target-focus','reach','contact','settle'],solve:['confirmed-result','solution-reveal','celebration','settle'],guard:['brace','hold','release'],combo:['anticipation','strike-chain','follow-through','recovery'],heal:['cast-gesture','target-focus','release','settle'],buff:['channel','gesture','release','settle'],summon:['ritual','release','settle']});
+const EFFECTS=Object.freeze({attack:['weapon-trail','muzzle-or-slash','contact-spark'],hit:['hit-flash','impact-particles','damage-number','micro-shake'],skill:['charge-glow','trail','impact-burst','area-mark'],death:['death-burst','dissolve-or-fade','debris'],spawn:['spawn-ring','dust-or-glow'],boss:['focus-vignette','warning-pulse','boss-aura','major-impact'],victory:['celebration-particles','screen-accent'],interact:['contact-highlight'],solve:['verified-solution-glow','completion-accent'],guard:['guard-flash'],combo:['weapon-trail','combo-streak'],heal:['healing-aura'],buff:['buff-glow'],summon:['summon-circle']});
 const FORBID=Object.freeze(['hp-change','damage-change','cooldown-change','spawn-count-change','reward-change','save-change','hitbox-change']);
-export function createVibeMotionProfile(event,{importance='normal',mobile=true}={}){const layers=MOTION[event]||['feedback-motion'],effects=EFFECTS[event]||[],major=importance==='major'||event==='boss';return Object.freeze({event,layers:Object.freeze(layers),effects:Object.freeze(effects),timing:Object.freeze({anticipation:major?'medium':'short',impact:event==='hit'||event==='attack'?'sharp':'normal',recovery:major?'medium':'short'}),camera:Object.freeze({shake:major?'medium':effects.length?'subtle':'none',zoom:major?'brief-focus':'none'}),mobile:Object.freeze({particleBudget:mobile?(major?'medium':'low'):'high',shakeLimit:mobile?'strict':'normal'}),forbid:FORBID,ruleSafe:true})}
+// 장르별 그래픽 모션 언어: 기술 판정이 아닌 화면 표현만 구분한다.
+const GENRE_GRAPHICS_LANGUAGE=Object.freeze({
+  ACTION_RPG:Object.freeze({motion:'responsive-weapon-weight',effects:'contact-priority',camera:'follow-action',readability:'telegraph-before-impact'}),
+  JRPG:Object.freeze({motion:'party-facing-cast-and-return',effects:'elemental-skill-identity',camera:'brief-cast-focus',readability:'turn-result-clear'}),
+  TRADITIONAL_RPG:Object.freeze({motion:'readable-turn-gesture-and-settle',effects:'skill-result-clarity',camera:'stable-overview',readability:'commands-and-targets-visible'}),
+  MMORPG:Object.freeze({motion:'network-safe-state-blend',effects:'bounded-party-combat',camera:'local-player-focus',readability:'telegraph-and-ally-visibility'}),
+  ROGUELIKE:Object.freeze({motion:'quick-recovery-and-evade',effects:'low-clutter-threat-identity',camera:'stable-danger-readability',readability:'hazards-before-decoration'}),
+  ACTION_PUZZLE:Object.freeze({motion:'touch-responsive-move-and-interact',effects:'object-contact-feedback',camera:'puzzle-board-visible',readability:'obstacle-and-solution-first'}),
+  PUZZLE:Object.freeze({motion:'precise-manipulation',effects:'confirmed-solution-only',camera:'fixed-board-readability',readability:'rules-and-input-first'}),
+  CASUAL:Object.freeze({motion:'soft-responsive-easing',effects:'low-intensity-reward-feedback',camera:'gentle-focus',readability:'large-touch-feedback'})
+});
+export function createVibeMotionProfile(event,{importance='normal',mobile=true,genre='ACTION_RPG'}={}){
+  const layers=MOTION[event]||['feedback-motion'],effects=EFFECTS[event]||[];
+  const major=importance==='major'||event==='boss';
+  const genreId=resolveCommonMotionGenre(genre)||'ACTION_RPG';
+  const visualLanguage=GENRE_GRAPHICS_LANGUAGE[genreId]||GENRE_GRAPHICS_LANGUAGE.ACTION_RPG;
+  const gentle=['idle','move','interact','solve','guard','heal','buff','summon'].includes(event);
+  return Object.freeze({
+    event,genre:genreId,visualLanguage,
+    layers:Object.freeze(layers),effects:Object.freeze(effects),
+    timing:Object.freeze({anticipation:major?'medium':'short',impact:event==='hit'||event==='attack'?'sharp':'normal',recovery:major?'medium':'short'}),
+    camera:Object.freeze({shake:gentle?'none':major?'medium':effects.length?'subtle':'none',zoom:major?'brief-focus':'none'}),
+    mobile:Object.freeze({particleBudget:mobile?(major?'medium':'low'):'high',shakeLimit:mobile?'strict':'normal'}),
+    forbid:FORBID,ruleSafe:true,gameplayAuthority:false
+  });
+}
 export function auditVibeMotionEffects(graph){const spine={};for(const edge of graph?.edges||[]){if(edge.to?.startsWith('event:'))(spine[edge.to.slice(6)]??=[]).push(edge.from)}const rows=EVENTS.map(event=>{const owners=uniq(spine[event]||[]),motion=MOTION[event]||[],effects=EFFECTS[event]||[],present=owners.length>0,expected=motion.length+effects.length,coverage=present?clamp(Math.min(70,25+owners.length*15)):0;return Object.freeze({event,present,owners:Object.freeze(owners),coverage,debt:100-coverage,expectedLayers:expected})});rows.sort((a,b)=>b.debt-a.debt);return Object.freeze({score:clamp(rows.reduce((n,x)=>n+x.coverage,0)/(rows.length||1)),rows:Object.freeze(rows),priority:Object.freeze(rows.filter(x=>['attack','hit','move','death','skill','boss'].includes(x.event)).slice(0,5).map(x=>x.event))})}
 export function createVibeSecondaryMotionRig({parts=[]}={}){const names=parts.map(String),rules=[];for(const part of names){const p=part.toLowerCase();if(/weapon|sword|gun|staff|무기|검|총|지팡이/.test(p))rules.push({part,mode:'follow-through',lag:.08});else if(/wing|tail|hair|cape|antenna|날개|꼬리|머리|망토|더듬이/.test(p))rules.push({part,mode:'spring-lag',lag:.12});else if(/body|torso|몸/.test(p))rules.push({part,mode:'weight-shift',lag:.04})}return Object.freeze({rules:Object.freeze(rules),preserve:Object.freeze(['collision','hitbox','game-position'])})}
 export function createVibeImpactRecipe({kind='normal',importance='normal',mobile=true,weightClass='STANDARD',critical=false}={}){const major=importance==='major',weight=String(weightClass||'STANDARD').toUpperCase(),layers=['contact-flash','recoil','contact-audio-sync'];if(kind!=='soft')layers.push('particles');if(major||critical)layers.push('brief-hit-stop','camera-accent','screen-flash');const base=weight==='HEAVY'?70:weight==='LIGHT'?28:45;return Object.freeze({layers:Object.freeze(layers),limits:Object.freeze({hitStopMs:Math.min(95,Math.round(base*(major||critical?1.18:1))),shake:major||critical?'medium':weight==='HEAVY'?'medium':'subtle',particles:mobile?(major?18:8):(major?36:16),screenFlashOpacity:major?.18:.08}),contact:Object.freeze({confirmedContactRequired:true,weaponOrLimbVelocityDrivesWhoosh:true,impactPointDrivesVfxAndAudio:true}),camera:Object.freeze({directionalImpulse:true,weaponWeightScaled:true}),forbid:FORBID})}
 export function createVibeEffectBudget({mobile=true,enemyCount=0,boss=false}={}){const pressure=Math.min(1,enemyCount/(mobile?18:30)),base=mobile?70:100,score=clamp(base-pressure*45-(boss?10:0));const animationTier=score<45?'FAR':score<70?'MID':'NEAR';return Object.freeze({score,particlesPerImpact:score<45?4:score<70?8:16,maxPersistentEmitters:score<45?3:score<70?6:12,animationTier,animationUpdateHz:animationTier==='NEAR'?60:animationTier==='MID'?30:15,ikUpdateHz:animationTier==='NEAR'?60:animationTier==='MID'?20:0,secondaryMotionHz:animationTier==='NEAR'?30:animationTier==='MID'?15:0,offscreenUpdateHz:5,allowBlur:!mobile&&score>65,allowFullScreenDistortion:!mobile&&score>80,degradePresentationBeforeGameplay:true,policy:'readability-before-spectacle'})}
-export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0}={}){if(!event||event.authority!=='presentation-only'||event.gameplayMutationAllowed!==false)return Object.freeze({accepted:false,reason:'presentation-authority-required'});const type=String(event.eventType||''),profile=createVibeMotionProfile(type,{importance:event.importance||'normal',mobile}),impact=createVibeImpactRecipe({kind:type==='hit'?'hard':'normal',importance:event.importance||'normal',mobile,weightClass:event.weightClass||'STANDARD',critical:event.critical===true}),budget=createVibeEffectBudget({mobile,enemyCount,boss:type==='boss'}),channels=new Set(event.channels||[]),commands=[];if(channels.has('animation'))commands.push(Object.freeze({channel:'animation',action:'play-motion-profile',layers:profile.layers,timing:profile.timing}));// 공격 시작은 접촉 증명이 아니다. 명중 불꽃은 실제 hit 이벤트에서만 출력한다.
-  if(channels.has('vfx'))commands.push(Object.freeze({channel:'vfx',action:'play-effects',effects:Object.freeze(type==='attack'?profile.effects.filter(effect=>effect!=='contact-spark'):profile.effects),impact,budget}));if(channels.has('camera'))commands.push(Object.freeze({channel:'camera',action:'apply-camera-accent',camera:profile.camera}));return Object.freeze({accepted:true,eventId:event.presentationEventId,causeId:event.causeId,eventType:type,commands:Object.freeze(commands),authority:'presentation-only',gameplayMutationAllowed:false,forbid:FORBID})}
+// 메인: 하나의 gameplay-confirmed 사건을 직업 모션·스킬 연출·VFX·카메라 명령으로 투영한다.
+// 실제 스킬 클립/타격 여부는 게임이 확인해야 하며 이 계층은 판정값을 생산하지 않는다.
+export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0,genre='',careerId='',skillId='',platform='SHARED',weaponFamily=''}={}){
+  if(!event||event.authority!=='presentation-only'||event.gameplayMutationAllowed!==false)
+    return Object.freeze({accepted:false,reason:'presentation-authority-required'});
+  const type=String(event.eventType||'');
+  const requestedGenre=String(genre||event.payload?.genre||'ACTION_RPG');
+  const genreId=resolveCommonMotionGenre(requestedGenre);
+  if(!genreId)return Object.freeze({accepted:false,reason:'unsupported-presentation-genre'});
+  const career=String(careerId||event.payload?.careerId||'').toUpperCase();
+  const requestedSkill=String(skillId||event.payload?.skillId||'').toUpperCase();
+  let binding=null;
+  if(type==='skill'&&(career||requestedSkill)){
+    if(!career||!requestedSkill)return Object.freeze({accepted:false,reason:'career-and-skill-required'});
+    let loadout;
+    try{loadout=createCommonCareerMotionLoadout({
+      careerId:career,genre:genreId,platform,weaponFamily:weaponFamily||event.payload?.weaponFamily||''
+    });}catch{return Object.freeze({accepted:false,reason:'unsupported-career-genre-or-weapon'});}
+    const skill=loadout.skills.find(row=>row.id===requestedSkill);
+    if(!skill)return Object.freeze({accepted:false,reason:'skill-not-in-career-motion-loadout'});
+    const role=loadout.roleRequests.find(row=>row.group==='skills'&&row.id===skill.id);
+    binding=Object.freeze({
+      careerId:career,sourceCareerId:role?.sourceCareerId||career,skillId:skill.id,kind:skill.kind,
+      phases:skill.sequence.phases,contactPart:skill.contactPart,
+      vfxSlot:skill.vfxPresentationSlot,audioSlot:skill.audioPresentationSlot,
+      cameraSlot:skill.cameraPresentationSlot,actualJointClipRequired:true,
+      nativeRigBindingRequired:true,runtimeVerified:false,gameplayAuthority:false
+    });
+  }
+  const profile=createVibeMotionProfile(type,{importance:event.importance||'normal',mobile,genre:genreId});
+  const impact=createVibeImpactRecipe({
+    kind:type==='hit'?'hard':'normal',importance:event.importance||'normal',
+    mobile,weightClass:event.weightClass||'STANDARD',critical:event.critical===true
+  });
+  const budget=createVibeEffectBudget({mobile,enemyCount,boss:type==='boss'});
+  const channels=new Set(event.channels||[]),commands=[];
+  if(channels.has('animation'))commands.push(Object.freeze({
+    channel:'animation',action:'play-motion-profile',layers:profile.layers,timing:profile.timing,
+    genre:genreId,visualLanguage:profile.visualLanguage.motion,skillBinding:binding
+  }));
+  if(channels.has('vfx')){
+    // 선공격과 스킬 시전은 명중 확인이 아니다. 접촉 불꽃/폭발은 authoritative hit 사건으로만 재생한다.
+    const effects=profile.effects.filter(effect=>type!=='attack'||effect!=='contact-spark')
+      .filter(effect=>type!=='skill'||effect!=='impact-burst');
+    if(binding)effects.push(binding.vfxSlot);
+    commands.push(Object.freeze({
+      channel:'vfx',action:'play-effects',effects:Object.freeze(uniq(effects)),
+      impact:type==='hit'?impact:null,budget,visualLanguage:profile.visualLanguage.effects,
+      requiresConfirmedHitForContactEffects:true,skillBinding:binding
+    }));
+  }
+  if(channels.has('camera'))commands.push(Object.freeze({
+    channel:'camera',action:'apply-camera-accent',camera:profile.camera,
+    visualLanguage:profile.visualLanguage.camera,skillBinding:binding
+  }));
+  return Object.freeze({
+    accepted:true,eventId:event.presentationEventId,causeId:event.causeId,eventType:type,
+    genre:genreId,readability:profile.visualLanguage.readability,skillBinding:binding,
+    commands:Object.freeze(commands),authority:'presentation-only',
+    gameplayMutationAllowed:false,runtimeVerified:false,forbid:FORBID
+  });
+}
 export function executeVibeMotionEffectEvent(event,handlers={},options={}){const execution=createVibeMotionEffectExecution(event,options);if(!execution.accepted)return execution;const results=[];for(const command of execution.commands){const handler=handlers[command.channel];if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}))}return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)})}
-export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request=''}={}){const audit=auditVibeMotionEffects(graph),tasks=[];for(const event of audit.priority){tasks.push(Object.freeze({domain:'motion',event,profile:createVibeMotionProfile(event,{importance:event==='boss'?'major':'normal',mobile}),impact:createVibeImpactRecipe({kind:event==='hit'?'hard':'normal',importance:event==='boss'?'major':'normal',mobile}),risk:['attack','hit','skill'].includes(event)?'medium':'low'}))}return Object.freeze({version:2,request:String(request),audit,secondaryMotion:createVibeSecondaryMotionRig({parts}),tasks:Object.freeze(tasks),engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),policy:Object.freeze({serverAI:false,eventDriven:true,checkpoint:true,mobileFirst:mobile,gameplayAuthoritative:true,noRuleMutation:true})})}
+// 계획: 기존 직업 모션 원본의 실제 스킬 슬롯을 그대로 이펙트 담당 단계에 전달한다.
+export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request='',genre='ACTION_RPG',careerId='',platform='SHARED',weaponFamily=''}={}){
+  const audit=auditVibeMotionEffects(graph),tasks=[];
+  const genreId=resolveCommonMotionGenre(genre);
+  if(!genreId)throw Error('UNSUPPORTED_GRAPHICS_MOTION_GENRE:'+genre);
+  for(const event of audit.priority){
+    tasks.push(Object.freeze({
+      domain:'motion',event,profile:createVibeMotionProfile(event,{importance:event==='boss'?'major':'normal',mobile,genre:genreId}),
+      impact:createVibeImpactRecipe({kind:event==='hit'?'hard':'normal',importance:event==='boss'?'major':'normal',mobile}),
+      risk:['attack','hit','skill'].includes(event)?'medium':'low'
+    }));
+  }
+  const loadout=careerId?createCommonCareerMotionLoadout({careerId,genre:genreId,platform,weaponFamily}):null;
+  const skillActions=Object.freeze((loadout?.skills||[]).map(skill=>Object.freeze({
+    skillId:skill.id,kind:skill.kind,phases:skill.sequence.phases,
+    vfxSlot:skill.vfxPresentationSlot,audioSlot:skill.audioPresentationSlot,
+    cameraSlot:skill.cameraPresentationSlot,actualJointClipRequired:true,
+    nativeRuntimeVerified:false,gameplayAuthority:false
+  })));
+  return Object.freeze({
+    version:2,request:String(request),genre:genreId,careerId:loadout?.id||null,
+    audit,secondaryMotion:createVibeSecondaryMotionRig({parts}),tasks:Object.freeze(tasks),
+    skillActions,engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),
+    policy:Object.freeze({serverAI:false,eventDriven:true,checkpoint:true,mobileFirst:mobile,gameplayAuthoritative:true,noRuleMutation:true}),
+    runtimeVerified:false,authorityExpanded:false
+  });
+}
 export function validateVibeMotionPatch({beforeFingerprint={},afterFingerprint={}}={}){const changed=[];for(const key of uniq([...Object.keys(beforeFingerprint),...Object.keys(afterFingerprint)]))if(JSON.stringify(beforeFingerprint[key]||[])!==JSON.stringify(afterFingerprint[key]||[]))changed.push(key);return Object.freeze({safe:changed.length===0,changed:Object.freeze(changed),reason:changed.length?'protected-game-rule-changed':'presentation-only'})}
 
 function engineApi(engine){return engine||globalThis?.JaewoonMotionEngine||null}
@@ -28,22 +141,32 @@ export function createVibeMotionEngineBridge({engine=null,reducedMotion=false,lo
   return {ready:true,enginePath:'assets/jaewoon-motion-engine.js',rig,camera,authority:'presentation-only',gameplayMutationAllowed:false,forbid:FORBID};
 }
 
+// 실행: 기존 보간 리그를 그대로 사용하고 이동 상태는 이동/대기 이벤트에서만 갱신한다.
 export function executeVibeMotionEngineEvent(event,bridge,{speed=0,facing=1,hitDirection=-1,bodyRegion='TORSO',turn=0,lodTier='NEAR'}={}){
   if(!bridge?.ready||!bridge.rig||!bridge.camera)return Object.freeze({accepted:false,reason:'motion-engine-bridge-not-ready'});
   const execution=createVibeMotionEffectExecution(event,{mobile:true,enemyCount:0});
   if(!execution.accepted)return execution;
-  const type=String(event.eventType||'');
-  const major=event.importance==='major'||type==='boss';
-  // 공격·스킬·피격 이벤트는 기존 이동 상태를 끊지 않는다. 이동/대기 이벤트만 이동 상태를 갱신한다.
+  const type=String(event.eventType||''),major=event.importance==='major'||type==='boss';
+  const supportSkill=execution.skillBinding&&['HEAL','BUFF','CHANNEL','GUARD','SUMMON','TRAP','TRANSFORM','REPAIR','INTERACT','COMMAND','PERFORM','STANCE'].includes(execution.skillBinding.kind);
   if(type==='move'||type==='idle')bridge.rig.setMotionState({moving:type==='move',speed,facing,turn});
   if(typeof bridge.rig.setLod==='function')bridge.rig.setLod({tier:lodTier});
-  if(type==='attack'||type==='skill')bridge.rig.triggerAttack({strength:major?1.5:1,duration:major ? .34 : .24,weightClass:event.weightClass||'STANDARD',contactAt:event.contactAt??.52,comboIndex:event.comboIndex||0});
-  if(type==='hit'){bridge.rig.triggerHit({direction:hitDirection,strength:major?1.5:1,bodyRegion});if(typeof bridge.rig.triggerContact==='function'){const impact=createVibeImpactRecipe({kind:'hard',importance:event.importance||'normal',mobile:true,weightClass:event.weightClass||'STANDARD',critical:event.critical===true});bridge.rig.triggerContact({strength:major?1.5:1,hitStopMs:impact.limits.hitStopMs});}}
+  if(type==='attack'||(type==='skill'&&!supportSkill))
+    bridge.rig.triggerAttack({strength:major?1.5:1,duration:major?.34:.24,weightClass:event.weightClass||'STANDARD',contactAt:event.contactAt??.52,comboIndex:event.comboIndex||0});
+  if(type==='hit'){
+    bridge.rig.triggerHit({direction:hitDirection,strength:major?1.5:1,bodyRegion});
+    if(typeof bridge.rig.triggerContact==='function'){
+      const impact=createVibeImpactRecipe({kind:'hard',importance:event.importance||'normal',mobile:true,weightClass:event.weightClass||'STANDARD',critical:event.critical===true});
+      bridge.rig.triggerContact({strength:major?1.5:1,hitStopMs:impact.limits.hitStopMs});
+    }
+  }
   if(type==='spawn'||type==='death')bridge.rig.triggerLand({strength:major?1.4:.8});
-  if(type==='hit'||type==='attack'||type==='skill'||type==='boss')bridge.camera.impulse({x:(type==='hit'?hitDirection:facing)*(major?90:45),y:major?-45:-18,rotation:(major ? .7 : .25)*facing});
-  return Object.freeze({accepted:true,eventType:type,authority:'presentation-only',gameplayMutationAllowed:false,forbid:FORBID,bridgeApplied:true});
+  if(type==='hit'||type==='attack'||type==='boss'||(type==='skill'&&!supportSkill))
+    bridge.camera.impulse({x:(type==='hit'?hitDirection:facing)*(major?90:45),y:major?-45:-18,rotation:(major?.7:.25)*facing});
+  return Object.freeze({
+    accepted:true,eventType:type,skillBinding:execution.skillBinding,authority:'presentation-only',
+    gameplayMutationAllowed:false,forbid:FORBID,bridgeApplied:true
+  });
 }
-
 if(typeof window!=='undefined'){
   window.createJaewoonVibeMotionProfile=createVibeMotionProfile;
   window.auditJaewoonVibeMotionEffects=auditVibeMotionEffects;
