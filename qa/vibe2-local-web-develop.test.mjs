@@ -121,6 +121,8 @@ test('post-merge local sync blocks stale, dirty and foreign sources',()=>{
  }
  const source=fs.readFileSync('tools/vibe2-local-web-develop.mjs','utf8');
  assert.match(source,/--sync-main/);
+ assert.match(source,/function cleanMain\(\)\{[\s\S]*?syncLocalMain\(\)/,
+  'owner local development must refresh merged GitHub main before model input');
  assert.match(source,/merge','--ff-only','refs\/remotes\/origin\/main/);
  assert.match(source,/expectedMergeSha:after\.merge_commit_sha/);
  assert.doesNotMatch(source,/git\(\['reset','--hard'/);
