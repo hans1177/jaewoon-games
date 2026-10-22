@@ -3648,6 +3648,85 @@ export function createSpeciesSignature({archetype='',idle='',locomotion='',attac
   });
 }
 
+// Game-authoring selection adapter. Reuses existing career motion loadouts and source
+// masters; this is not a second animation engine or an asset registry.
+export const COMMON_GENRE_CAREER_PRESENTATIONS=Object.freeze({
+  DARK_ARPG:Object.freeze({
+    motionGenre:'ACTION_RPG',styleFamily:'DARK_FANTASY',
+    acting:freezeList(['FAST_CONTROL_RESPONSE','HEAVY_IMPACT_DECELERATION','TORSO_WEAPON_FOLLOW_THROUGH','DIRECTIONAL_HIT_RECOIL']),
+    careers:freezeList(['KNIGHT','PALADIN','BERSERKER','ROGUE','ASSASSIN','ARCHER','MAGE','NECROMANCER','MONK'])
+  }),
+  COZY:Object.freeze({
+    motionGenre:'COZY',styleFamily:'CARTOON',
+    acting:freezeList(['SOFT_EASED_STEPS','GENTLE_SECONDARY_BOUNCE','HAND_OBJECT_CONTACT','EXPRESSIVE_NON_COMBAT_IDLE']),
+    careers:freezeList(['FARMER','CHEF','ARTISAN','BLACKSMITH','BUILDER','MERCHANT','BARD','DANCER'])
+  }),
+  FANTASY:Object.freeze({
+    motionGenre:'ACTION_RPG',styleFamily:'STYLIZED_FANTASY',
+    acting:freezeList(['READABLE_HEROIC_POSE','SPELLCAST_HAND_FOCUS','WEAPON_AND_CAPE_SECONDARY_MOTION','CLEAN_GUARD_TO_ATTACK_BLEND']),
+    careers:freezeList(['KNIGHT','PALADIN','LANCER','ARCHER','RANGER','MAGE','DRUID','SUMMONER','SAMURAI'])
+  }),
+  HORROR:Object.freeze({
+    motionGenre:'HORROR',styleFamily:'DARK_FANTASY',
+    acting:freezeList(['PURPOSEFUL_ASYMMETRIC_GAIT','DELAYED_HEAD_AND_LIMB_FOLLOW','THREAT_TELEGRAPH_BEFORE_CHASE','NO_RANDOM_JITTER_OR_FOOT_SLIDE']),
+    careers:freezeList(['NECROMANCER','ROGUE','ASSASSIN','ALCHEMIST','CLERIC','PRIEST','RANGER'])
+  })
+});
+export function createGenreCareerMotionPalette({genre='FANTASY',platform='WEB',styleFamily='',careerIds=[]}={}){
+  const key=upper(genre).replace(/[\s-]+/g,'_');
+  const alias={
+    DIABLO:'DARK_ARPG',DIABLO_LIKE:'DARK_ARPG',HACK_AND_SLASH:'DARK_ARPG',
+    ARPG:'DARK_ARPG',ACTION_RPG:'DARK_ARPG',DARK_FANTASY:'DARK_ARPG',
+    COZY_FARMING:'COZY',FARMING:'COZY',LIFE_SIM:'COZY',
+    FANTASY_RPG:'FANTASY',STYLIZED_FANTASY:'FANTASY',HIGH_FANTASY:'FANTASY',
+    SURVIVAL_HORROR:'HORROR',DARK_HORROR:'HORROR'
+  };
+  const family=alias[key]||key;
+  const profile=COMMON_GENRE_CAREER_PRESENTATIONS[family];
+  if(!profile)return null;
+  const platformId=upper(platform);
+  if(!['WEB','ROBLOX'].includes(platformId))return null;
+  const actualStyle=upper(styleFamily)||profile.styleFamily;
+  const chosen=[...new Set((careerIds.length?careerIds:profile.careers).map(upper))];
+  const careers=chosen.map(careerId=>{
+    const loadout=createCommonCareerMotionLoadout({
+      careerId,genre:profile.motionGenre,platform:platformId,styleFamily:actualStyle
+    });
+    const roles=Object.freeze(Object.fromEntries(
+      ['stance','locomotion','attacks','defense','interactions','skills','signature'].map(group=>[
+        group,freezeList(loadout.roleRequests.filter(row=>row.group===group).map(row=>row.id))
+      ])
+    ));
+    return Object.freeze({
+      careerId,weaponFamily:loadout.weaponFamily,
+      inheritedCareers:loadout.careerPath,
+      actualCc0MasterPath:loadout.master.path,
+      roles,sourceState:'AUTHORING_PLAN_NOT_APPLIED',
+      sourceClipNamesNotEqualSemanticRoles:true,
+      requiresNativeRigRetarget:true,runtimeVerified:false
+    });
+  });
+  return Object.freeze({
+    version:1,profile:family,motionGenre:profile.motionGenre,platform:platformId,
+    styleFamily:actualStyle,originalStyleLockPreserved:!!upper(styleFamily),
+    genreActing:profile.acting,
+    careers:Object.freeze(careers),careerCount:careers.length,
+    choreography:Object.freeze({
+      continuity:'POSE_VELOCITY_MATCH_AND_INERTIALIZED_BLEND',
+      locomotion:'DIRECTIONAL_STRAFE_PIVOT_PHASE_SYNC_AND_GROUNDED_FEET',
+      upperLowerBody:'COMPATIBLE_RIG_MASKED_LAYERS_ONLY',
+      attack:'ANTICIPATION_CONTACT_FOLLOW_THROUGH_RECOVERY_TIMING',
+      impact:'ONLY_EXISTING_AUTHORITY_CONFIRMED_GAMEPLAY_EVENTS',
+      idle:'NO_ROOT_OR_FEET_SLIDING_WHEN_STATIONARY',
+      mobile:'ADAPTIVE_ANIMATION_LOD_NO_LOST_CORE_READABILITY'
+    }),
+    assetSelection:'USE_REGISTERED_COMPATIBLE_CC0_SOURCES_NOT_PLACEHOLDERS',
+    gameplayAuthority:false,sourceOnly:true,productionVerified:false,runtimeVerified:false,
+    nativeRigImportRequired:platformId==='ROBLOX',
+    originalGameplayAndSaveImmutable:true
+  });
+}
+
 export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
