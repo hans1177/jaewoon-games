@@ -21,7 +21,38 @@ const mobile=matchMedia('(pointer:coarse)').matches,clock=new THREE.Clock();
 const scene=new THREE.Scene();scene.background=new THREE.Color('#a6b898');scene.fog=new THREE.FogExp2('#829d7a',.024);
 const camera=new THREE.PerspectiveCamera(mobile?67:63,innerWidth/innerHeight,.08,170);
 const renderer=new THREE.WebGLRenderer({antialias:!mobile,powerPreference:mobile?'default':'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.3:1.65));
+// On low-end Android software/GPU paths, scale ONLY WebGL pixel work.
+ // Source assets, physics, input cadence and game saves are never throttled.
+const perfBudget={
+ cap:Math.min(devicePixelRatio||1,mobile?1.3:1.65),
+ pixelRatio:Math.min(devicePixelRatio||1,mobile?1.3:1.65),
+ floor:Math.min(devicePixelRatio||1,mobile?.8:1),
+ frames:0,sampled:0,windowMs:0,averageFrameMs:0,latestFrameMs:0,
+ slowWindows:0,fastWindows:0,adjustments:0,lastAdjustmentAt:0,
+ lastFrameAt:0,frameSampleValid:false,renderCalls:0,triangles:0
+};
+renderer.setPixelRatio(perfBudget.pixelRatio);
+// Sample actual animation-frame intervals, not GPU timing or fabricated device FPS.
+// Ignore background/first-frame gaps and use hysteresis to avoid resolution thrashing.
+function sampleWebFrameBudget(now){
+ const interval=now-perfBudget.lastFrameAt;perfBudget.lastFrameAt=now;
+ if(document.hidden||!Number.isFinite(interval)||interval<=0||interval>150)return;
+ perfBudget.frames++;perfBudget.sampled++;perfBudget.windowMs+=interval;
+ perfBudget.latestFrameMs=interval;perfBudget.frameSampleValid=true;
+ if(perfBudget.sampled<45)return;
+ const average=perfBudget.windowMs/perfBudget.sampled;
+ perfBudget.averageFrameMs=average;perfBudget.sampled=0;perfBudget.windowMs=0;
+ perfBudget.slowWindows=average>23?perfBudget.slowWindows+1:0;
+ perfBudget.fastWindows=average<16.5?perfBudget.fastWindows+1:0;
+ if(now-perfBudget.lastAdjustmentAt<2000)return;
+ let next=perfBudget.pixelRatio;
+ if(perfBudget.slowWindows>=2)next=Math.max(perfBudget.floor,Math.round((next-.15)*100)/100);
+ else if(perfBudget.fastWindows>=4)next=Math.min(perfBudget.cap,Math.round((next+.1)*100)/100);
+ if(next!==perfBudget.pixelRatio){
+  perfBudget.pixelRatio=next;renderer.setPixelRatio(next);perfBudget.adjustments++;
+  perfBudget.lastAdjustmentAt=now;perfBudget.slowWindows=0;perfBudget.fastWindows=0;
+ }
+}
 renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 renderer.domElement.id='insect3d';
@@ -67,6 +98,8 @@ function derived(key,height,tint){
 const originals={},enemies=[],resources=[];
 let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
+const heroGroundBounds=new THREE.Box3();
+const headingVector=new THREE.Vector3(),cameraBehind=new THREE.Vector3(),cameraFocus=new THREE.Vector3();
 const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();scene.add(world,actors,decor);
 const announce=document.createElement('div');announce.textContent='CC0 3D 숲과 캐릭터 불러오는 중…';
 Object.assign(announce.style,{position:'absolute',zIndex:'8',top:'42%',left:'50%',transform:'translate(-50%,-50%)',padding:'13px 19px',border:'1px solid #b3ac7b',borderRadius:'8px',background:'#1a2d26e8',fontSize:'12px',color:'#f2e4ba',pointerEvents:'none'});
@@ -196,7 +229,7 @@ function visualWalking(wasWalking,travel,dt){
 // Resolve penetration on the presentation group AFTER the original mixer runs;
 // never move the gameplay player or rewrite any CC0 bone/animation tracks.
 function groundAnimatedHero(){
- const bounds=new THREE.Box3().setFromObject(avatar);
+ const bounds=heroGroundBounds.setFromObject(avatar);
  if(bounds.isEmpty())return;
  const penetration=GROUND_SURFACE_Y+FOOT_CLEARANCE-bounds.min.y;
  const lift=Math.max(0,penetration);
@@ -233,12 +266,12 @@ function follow(frame,dt){
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;
  scene.background.set(night?'#263c3f':'#a2b998');
  scene.fog.color.set(night?'#293e3e':'#7eaa80');
- const dir=new THREE.Vector3(p.dirX,0,p.dirY).normalize();
+ const dir=headingVector.set(Number(p.dirX)||0,0,Number(p.dirY)||1).normalize();
  // Low over-shoulder camera, looking through giant grass. Combat widens framing slightly.
  const nearby=frame.bugs.some(b=>!b.dead&&Math.hypot(b.x-p.x,b.y-p.y)<250);
- const behind=new THREE.Vector3(pos.x-dir.x*(nearby?8.2:6.8),nearby?5.2:4.65,pos.z-dir.z*(nearby?8.2:6.8));
+ const behind=cameraBehind.set(pos.x-dir.x*(nearby?8.2:6.8),nearby?5.2:4.65,pos.z-dir.z*(nearby?8.2:6.8));
  camera.position.lerp(behind,Math.min(1,dt*5));
- const focus=pos.clone();focus.y=1.25;camera.lookAt(focus);
+ cameraFocus.set(pos.x,1.25,pos.z);camera.lookAt(cameraFocus);
  for(let i=0;i<frame.bugs.length;i++){
   const b=frame.bugs[i],actor=enemies[i];if(!actor)continue;
   actor.visible=!b.dead;
@@ -255,6 +288,19 @@ function follow(frame,dt){
 function resize(){
  renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
 }
+window.insect3DPerformanceProof=()=>({
+ version:1,kind:'VIBE_WEB_RUNTIME_FRAME_EVIDENCE',advisoryOnly:true,
+ source:'insect-survival/world3d.mjs',ready:worldReady,
+ framesObserved:perfBudget.frames,frameSampleValid:perfBudget.frameSampleValid,
+ averageFrameMs:perfBudget.averageFrameMs,latestFrameMs:perfBudget.latestFrameMs,
+ pixelRatio:perfBudget.pixelRatio,pixelRatioCap:perfBudget.cap,pixelRatioFloor:perfBudget.floor,
+ resolutionAdjustments:perfBudget.adjustments,
+ renderCalls:perfBudget.renderCalls,triangles:perfBudget.triangles,
+ activeWebGL:worldReady&&renderer.domElement.dataset.renderedFrame==='true',
+ rendererVisible:renderer.domElement.style.display==='block',
+ // No physical-device benchmark claim: software Chromium is useful for diagnosis only.
+ hardwareBenchmarkVerified:false
+});
 addEventListener('resize',resize);
 // Restore the authoritative 2D game if WebGL fails after initial loading.
 // A hidden legacy canvas must never leave the player in a blank, unsavable view.
@@ -291,11 +337,17 @@ function tick(){
  requestAnimationFrame(tick);
  try{
   const dt=Math.min(.05,clock.getDelta()),frame=snapshot();
-  if(frame){
+  if(frame&&!document.hidden){
    time+=dt;
    follow(frame,dt);
    renderer.render(scene,camera);
    renderer.domElement.dataset.renderedFrame='true';
+   perfBudget.renderCalls=renderer.info.render.calls;
+   perfBudget.triangles=renderer.info.render.triangles;
+   sampleWebFrameBudget(performance.now());
+  }else if(document.hidden){
+   // Browser already throttles RAF; never spend GPU work on an invisible tab.
+   perfBudget.lastFrameAt=0;perfBudget.sampled=0;perfBudget.windowMs=0;
   }
  }catch(error){
   restoreLegacyView('INSECT_WEBGL_FRAME_FAILED',error);
