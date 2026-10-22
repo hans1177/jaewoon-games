@@ -153784,7 +153784,7 @@
     },
     {
       "id": "recovery-recovery-ba5ec463250d4fa6f1a3",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153842,12 +153842,12 @@
       "sourceMutationBaseline": "4e6e0af788dfdde920992fb14439c5e64f1fcbc8",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39720231988:1",
+      "reservedAt": "2026-10-22T04:10:33.855Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": "system-ai-worker-missing-result-handoff",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39128754826:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -153881,7 +153881,8 @@
         "system-ai-handoff-to-reservation:PENDING",
         "system-ai-exact-checkpoint-resume:YES",
         "retry-budget-consumed:NO",
-        "learning-penalty:NO"
+        "learning-penalty:NO",
+        "system-ai-handoff-to-reservation:system-ai:39720231988:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1135,
@@ -153892,11 +153893,11 @@
         "dependencyCentrality": 1,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 86.51,
+        "ageHours": 87.17,
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T13:00:20.594Z",
-      "updatedAt": "2026-10-22T04:07:04.384Z"
+      "updatedAt": "2026-10-22T04:10:33.855Z"
     },
     {
       "id": "marketing-moon-ruins-pre-release-v1",
