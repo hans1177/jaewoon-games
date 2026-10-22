@@ -243,13 +243,16 @@ async function development(options){
   console.log('LOCAL_VIBE_MAIN_SYNC='+(sync.synced?'FAST_FORWARD':'CURRENT')+' SHA='+sync.revision);
   const gameId=clean(options.game),goal=clean(options.goal);
   // 기존 GitHub PR 상태가 선택한 웹게임과 충돌하면 모델 호출과 로컬 변경을 모두 중단한다.
+  const refs=json(gh(['api','repos/'+REPO+'/git/matching-refs/heads/local-vibe-web-']));
+  if(!Array.isArray(refs)||refs.length>200)fail('LOCAL_DEV_FOCUS_BRANCH_INDEX_INVALID');
   const open=[];
-  for(let page=1;page<=10;page++){
-    const rows=json(gh(['api','repos/'+REPO+'/pulls?state=open&per_page=100&page='+page]));
-    if(!Array.isArray(rows)||rows.length>100)fail('LOCAL_DEV_FOCUS_PR_LIST_INVALID');
-    open.push(...rows);
-    if(rows.length<100)break;
-    if(page===10)fail('LOCAL_DEV_FOCUS_PR_LIST_INCOMPLETE');
+  for(const ref of refs){
+    const name=clean(ref?.ref).replace(/^refs\/heads\//,'');
+    if(!/^local-vibe-web-[a-zA-Z0-9_-]+-[0-9]{13}$/.test(name))
+      fail('LOCAL_DEV_FOCUS_BRANCH_UNEXPECTED');
+    const prs=json(gh(['api','repos/'+REPO+'/pulls?head=hans1177%3A'+encodeURIComponent(name)+'&state=open&per_page=2']));
+    if(!Array.isArray(prs)||prs.length>1)fail('LOCAL_DEV_FOCUS_PR_LIST_INVALID');
+    open.push(...prs);
   }
   const focus=assertSingleLocalWebGame(gameId,open);
   if(focus.pendingPRs.length&&options.apply)
