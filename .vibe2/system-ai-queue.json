@@ -145634,7 +145634,7 @@
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145668,7 +145668,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:39819572143:1",
+      "previousReservationId": "system-ai:39824017384:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145676,12 +145676,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39824017384:1",
-      "reservedAt": "2026-10-22T17:38:07.663Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145857,7 +145857,8 @@
         "actions-run:39818604811",
         "system-ai-handoff-to-reservation:system-ai:39819572143:1",
         "actions-run:39819572143",
-        "system-ai-handoff-to-reservation:system-ai:39824017384:1"
+        "system-ai-handoff-to-reservation:system-ai:39824017384:1",
+        "actions-run:39824017384"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1102,
@@ -145872,7 +145873,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-22T17:38:07.663Z"
+      "updatedAt": "2026-10-22T17:42:45.085Z"
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
@@ -146936,7 +146937,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -147029,7 +147030,7 @@
         "internal-motion-shui-gui-walk-v1",
         "internal-motion-huapi-walk-v1"
       ],
-      "retries": 92,
+      "retries": 93,
       "recurrenceCount": 25,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
@@ -147043,12 +147044,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39824017384:1",
-      "reservedAt": "2026-10-22T17:38:07.663Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -147619,7 +147620,8 @@
         "actions-run:39820678265",
         "system-ai-handoff-to-reservation:system-ai:39822293143:1",
         "actions-run:39822293143",
-        "system-ai-handoff-to-reservation:system-ai:39824017384:1"
+        "system-ai-handoff-to-reservation:system-ai:39824017384:1",
+        "actions-run:39824017384"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -147634,7 +147636,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-22T17:38:07.663Z"
+      "updatedAt": "2026-10-22T17:42:45.085Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
