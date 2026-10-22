@@ -251,7 +251,8 @@ const tower3dOnly=gameIds.length===1&&gameIds[0]==='tower-choice-rpg';
 const star3dOnly=gameIds.length===1&&gameIds[0]==='seed-action-survival-rogu-echoes-of-the-lost-star';
 const gem3dOnly=gameIds.length===1&&gameIds[0]==='gem-survivor';
 const forestDefense3dOnly=gameIds.length===1&&gameIds[0]==='defense';
-const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly||gem3dOnly||forestDefense3dOnly;
+const catFrontline3dOnly=gameIds.length===1&&gameIds[0]==='line-defense';
+const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly||gem3dOnly||forestDefense3dOnly||catFrontline3dOnly;
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
@@ -366,7 +367,7 @@ try{
     // Only accept a completed Three.js frame AND a live WebGL2 drawing buffer.
     if(native3dOnly){
       currentPhase='TRUE_WEBGL_3D_FRAME';
-      if(star3dOnly||gem3dOnly||forestDefense3dOnly)assert.equal(start?.clicked,true,gameId+': active gameplay start not clicked');
+      if(star3dOnly||gem3dOnly||forestDefense3dOnly||catFrontline3dOnly)assert.equal(start?.clicked,true,gameId+': active gameplay start not clicked');
       assert.equal(start?.clicked,true,'wild-survival: survival start action was not triggered');
       let proof=null;
       for(let attempt=0;attempt<65;attempt++){
@@ -394,6 +395,30 @@ try{
       assert.equal(proof?.rendered,true,gameId+': no actual Three.js frame was produced');
       assert.equal(proof?.webgl2,true,gameId+': no live WebGL2 drawing buffer');
       assert.equal(proof?.loadingVisible,false,gameId+': 3D loading/error status remains visible');
+      if(catFrontline3dOnly){
+        currentPhase='CAT_FRONTLINE_3D_REAL_SUMMON';
+        const summon=await cdp.evaluate(`(()=>{
+          const button=document.querySelector('#unitBar .unit');
+          if(!button)return {ok:false,reason:'missing source-bound summon controls'};
+          button.click();return {ok:true};
+        })()`);
+        assert.equal(summon?.ok,true,gameId+': original summon input was not available');
+        let count=0;
+        for(let tick=0;tick<30;tick++){
+          count=Number(await cdp.evaluate("Number(document.querySelector('#game')?.dataset.renderedActors||0)"));
+          if(count>0)break;
+          await delay(100);
+        }
+        const after=await cdp.evaluate(`(()=>({
+          actors:Number(document.querySelector('#game')?.dataset.renderedActors||0),
+          missing:Number(document.querySelector('#game')?.dataset.unrenderedActors||0),
+          money:document.querySelector('#money')?.textContent||''
+        }))()`);
+        console.log('CAT_FRONTLINE_3D_SUMMON_EVIDENCE='+JSON.stringify({summon,...after}));
+        assert.ok(after?.actors>0,gameId+': spawned original unit was not rendered in 3D');
+        assert.equal(after?.missing,0,gameId+': active units must not disappear from 3D');
+        assert.ok(/^[0-9]+ \/ [0-9]+$/.test(after?.money||''),gameId+': original wallet HUD missing');
+      }
       if(forestDefense3dOnly){
         currentPhase='DEFENSE_3D_TOWER_PICK';
         const build=await cdp.evaluate(`(()=>{
