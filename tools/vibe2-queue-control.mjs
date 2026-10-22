@@ -3,6 +3,7 @@
 // 원칙: 기존 scheduler와 책임 파일 충돌 보호를 유지하고 source-root/game-wide lock은 만들지 않으며, 검증된 neural gated 실행은 재큐·재우선순위·refill 힌트만 직접 반영한다.
 
 import { resolveActiveOwnerPolicy } from './company-policy-steward.mjs';
+import { planVibeCoreTask } from '../assets/vibe-core-runtime.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -463,6 +464,32 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
   const queue = createVibeContinuousQueue(queueInput);
   let recovered = 0;
   const tasks = queue.tasks.map((task) => {
+    // [개발 병목 복구] 과거 장문 설계가 신규 게임 요청으로 오인된 기존 작업만 정확히 재판정한다.
+    // 실제 신규 제작·승인 보류·플랫폼 보류는 기존 실행 게이트를 통과하지 못하므로 큐를 변경하지 않는다.
+    if(task.status==='blocked'
+      &&clean(task.blocker)==='EXECUTION_GATE_BLOCKED:company-owner-gate-required'
+      &&clean(task.department).toLowerCase()==='development'
+      &&clean(task.type).toLowerCase()==='implementation'
+      &&['web','roblox'].includes(clean(task.target).toLowerCase())
+      &&task.ownerDevelopmentHold!==true
+      &&task.requiresOwnerDecision!==true) {
+      const sections=String(task.goal||'').split(/\r?\n\s*\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\](?:\r?\n|$)/i);
+      const trustedBuildUp=task.buildUpDirective?.version>=1
+        &&clean(task.buildUpDirective?.directiveId)===clean(task.buildUpDirectiveId)
+        &&Boolean(clean(task.buildUpDirectiveId))
+        &&clean(task.buildUpDirective?.gameId)===clean(task.gameId)
+        &&clean(task.buildUpDirective?.sourceRoot)===clean(task.sourceRoot);
+      if(trustedBuildUp&&sections.length>1&&clean(task.gameId)) {
+        const source=Array.isArray(task.responsibleFiles)?task.responsibleFiles.find(Boolean):null;
+        const review=planVibeCoreTask({request:sections[0],target:task.target,gameId:task.gameId,file:source});
+        if(review.executionGate?.mayExecute===true) {
+          recovered+=1;
+          return {...task,...clearedReservation(),status:'queued',blocker:null,
+            lastOutcome:'RECOVERED_FALSE_NEW_GAME_GATE',
+            evidence:[...new Set([...(task.evidence||[]),'recovery:existing-game-long-context-gate-v1'])]};
+        }
+      }
+    }
     // 외부 무료 API 제한은 소스 오류가 아니다. 정확한 재시도 시각까지 작업을 대기시킨다.
     if (task.status === 'blocked' && clean(task.blocker) === 'EXTERNAL_AI_QUOTA_COOLDOWN') {
       const evidence=Array.isArray(task.evidence)?task.evidence:[];

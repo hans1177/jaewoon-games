@@ -3296,3 +3296,33 @@ test('provider cooldown preserves game retry budget and releases execution capac
   const resumed=recoverStaleRunningReservations(settled.queue,{nowMs:Date.parse(resumeAt)+1000});
   assert.equal(resumed.queue.tasks.find(t=>t.id===waiting.id).status,'queued');
 });
+
+test('false new-game gate is recovered only for an independently runnable existing game task',()=>{
+  const appended='\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nmenuStructure: 타이틀→계속하기 또는 새 게임→본편. 게임 제작 구상은 기존 게임에 대한 설명이다.';
+  const base={
+    gameId:'core-clash-4v4',target:'web',sourceRoot:'web-games/core-clash-4v4',
+    department:'development',type:'implementation',status:'blocked',ownerDirective:true,
+    buildUpDirectiveId:'core-clash-4v4-build-up-g1',
+    buildUpDirective:{version:2,directiveId:'core-clash-4v4-build-up-g1',gameId:'core-clash-4v4',sourceRoot:'web-games/core-clash-4v4'},
+    blocker:'EXECUTION_GATE_BLOCKED:company-owner-gate-required',
+    responsibleFiles:['web-games/core-clash-4v4/index.html'],retries:1,maxRetries:null,evidence:[]
+  };
+  const old={...base,id:'existing-long-goal',goal:'[WEB_REPAIR] 기존 Web 게임의 3D 렌더 오류를 수정하고 저장 구조를 보존한다.'+appended};
+  const newProject={...base,id:'actual-new-project',goal:'새 게임 만들어. 처음부터 신규 제작해.'+appended};
+  const held={...old,id:'owner-held',ownerDevelopmentHold:true};
+  const requiresOwner={...old,id:'owner-decision',requiresOwnerDecision:true};
+  const unrelated={...old,id:'other-cause',blocker:'WEB_3D_RUNTIME_QA_FAILED'};
+  const spoof={...old,id:'untrusted-directive-marker',buildUpDirective:null,buildUpDirectiveId:null};
+  const unityHeld={...old,id:'unity-hold',target:'unity',sourceRoot:'unity-games/core-clash-4v4'};
+  const queue=createVibeContinuousQueue({tasks:[old,newProject,held,requiresOwner,unrelated,spoof,unityHeld]});
+  const recovered=recoverStaleRunningReservations(queue);
+  assert.equal(recovered.recovered,1);
+  const mapped=new Map(recovered.queue.tasks.map(task=>[task.id,task]));
+  assert.equal(mapped.get('existing-long-goal').status,'queued');
+  assert.equal(mapped.get('existing-long-goal').blocker,null);
+  assert.equal(mapped.get('existing-long-goal').retries,1);
+  assert.ok(mapped.get('existing-long-goal').evidence.includes('recovery:existing-game-long-context-gate-v1'));
+  for(const name of ['actual-new-project','owner-held','owner-decision','other-cause','untrusted-directive-marker','unity-hold']){
+    assert.equal(mapped.get(name).status,'blocked',name);
+  }
+});

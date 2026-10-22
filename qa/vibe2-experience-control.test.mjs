@@ -522,3 +522,33 @@ test('batch promotion persists phase 4 capability benchmark reviews through exis
   assert.equal(stored.capabilityBenchmarks[0].caseId,'case-evidence-1');
   assert.equal(stored.capabilityBenchmarks[0].freshIndependentQaPass,true);
 });
+
+
+test('existing Web 3D repair is not mistaken for a new game by appended build-up instructions',()=>{
+  const runtime={
+    continuous:{enabled:true},
+    safety:{existingWebMaintenanceAllowed:true,allowedWritableTargets:['web'],paidAIAllowed:false,paidRunnerAllowed:false}
+  };
+  const task=(id,request)=>({
+    id,gameId:'core-clash-4v4',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/core-clash-4v4',
+    buildUpDirectiveId:'core-clash-4v4-build-up-g1',
+    buildUpDirective:{version:2,directiveId:'core-clash-4v4-build-up-g1',gameId:'core-clash-4v4',sourceRoot:'web-games/core-clash-4v4'},
+    responsibleFiles:['web-games/core-clash-4v4/index.html'],
+    goal:request+'\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nmenuStructure: 타이틀→계속하기 또는 새 게임→본편. 기존 게임 정체성을 보존하면서 게임 제작 방향을 기록한다.',
+    ownerDirective:true,priority:'high',releaseState:'development-confirmed',
+    status:'queued',retries:0,maxRetries:2
+  });
+  const repair=task('existing-web-3d-repair-gate','[WEB_REPAIR] [STARTABILITY_AND_TRUE_3D] 기존 Web 게임의 입체 렌더와 시작 버튼을 수정하고 규칙·세이브를 보존한다.');
+  const existing=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[repair]},taskId:repair.id});
+  assert.ok(!String(existing.reason||'').includes('company-owner-gate-required'),JSON.stringify({reason:existing.reason,gate:existing.gate}));
+  assert.ok(!existing.gate?.reasons?.includes('company-owner-gate-required'));
+  if(existing.run===true)assert.ok(existing.goal.includes('[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]'),'actual development context must not be removed');
+
+  const newTask=task('new-web-project-owner-gate','새 게임 만들어. 완전히 신규 프로젝트를 제작해.');
+  const created=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[newTask]},taskId:newTask.id});
+  assert.match(String(created.reason),/EXECUTION_GATE_BLOCKED:company-owner-gate-required/,'real new-game admission gate must remain locked');
+  const untrusted={...repair,id:'untrusted-build-up-marker',buildUpDirective:null,buildUpDirectiveId:null};
+  const spoof=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[untrusted]},taskId:untrusted.id});
+  assert.match(String(spoof.reason),/EXECUTION_GATE_BLOCKED:company-owner-gate-required/,'unbound user goal marker must not bypass new-game approval');
+});
