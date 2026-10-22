@@ -3695,7 +3695,7 @@ export function createGenreCareerMotionPalette({genre='FANTASY',platform='WEB',s
     ));
     return Object.freeze({
       careerId,weaponFamily:loadout.weaponFamily,
-      inheritedCareers:loadout.careerHierarchy||loadout.ancestors||freezeList([]),
+      inheritedCareers:loadout.careerPath,
       actualCc0MasterPath:loadout.master.path,
       roles,sourceState:'AUTHORING_PLAN_NOT_APPLIED',
       sourceClipNamesNotEqualSemanticRoles:true,
