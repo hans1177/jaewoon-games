@@ -1,27 +1,27 @@
 {
   "version": 2,
-  "directiveId": "defense-build-up-g1-0118e6031432",
-  "directiveFingerprint": "0118e60314320b8999946dd660a303bce58df213bd1ab9ca98b37f6959bfdfe0",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "defense-build-up-g2-8b5c5698bb02",
+  "directiveFingerprint": "8b5c5698bb02140c89d8f5c645ed7267d3cac7b73c73e6b2fa7285af3d75e21d",
+  "previousDirectiveFingerprint": "0118e60314320b8999946dd660a303bce58df213bd1ab9ca98b37f6959bfdfe0",
+  "forbiddenRepeatFingerprint": "0118e60314320b8999946dd660a303bce58df213bd1ab9ca98b37f6959bfdfe0",
   "gameId": "defense",
   "gameName": "숲길 디펜스",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/defense",
-  "sourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+  "sourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
   "designFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
   "designSourceBuildUp": {
     "version": 1,
     "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
     "currentDesignFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
-    "previousDesignFingerprint": null,
-    "sameApprovedDesign": false,
+    "previousDesignFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
+    "sameApprovedDesign": true,
     "previousVerifiedOutcome": false,
     "revisionRequiredForNewGameplay": false,
     "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+        "sourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
-    "sourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+    "sourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+    "sourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4350,60 +4350,62 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=1",
+      "CURRENT_SOURCE_FILES=2",
       "GAME_FEEL_SPARSE",
-      "CAMERA_LANGUAGE_SPARSE",
       "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE",
       "INTERACTION_DISCOVERABILITY_SPARSE",
-      "SETTINGS_ACCESSIBILITY_SPARSE",
-      "PERFORMANCE_BUDGET_SPARSE"
+      "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 57,
-      "progression": 97,
-      "ai": 5,
+      "combat": 71,
+      "progression": 100,
+      "ai": 12,
       "save": 6,
       "multiplayer": 0,
       "animation": 4,
-      "motionStates": 47,
+      "motionStates": 61,
       "gameFeel": 0,
       "vfx": 5,
-      "camera": 0,
+      "camera": 14,
       "audio": 0,
-      "audioDynamics": 0,
-      "ui": 37,
+      "audioDynamics": 5,
+      "ui": 47,
       "uiFlow": 15,
-      "entryFlow": 5,
+      "entryFlow": 7,
       "loadingFlow": 0,
-      "input": 9,
-      "map": 5,
-      "landmark": 69,
+      "input": 10,
+      "map": 72,
+      "landmark": 98,
       "interaction": 0,
       "inventory": 0,
       "equipment": 0,
       "settings": 0,
-      "feedback": 24,
-      "session": 10,
-      "content": 33,
-      "choice": 71,
+      "feedback": 27,
+      "session": 13,
+      "content": 64,
+      "choice": 83,
       "connection": 0,
-      "performance": 0,
-      "lighting": 3,
-      "primitive": 0,
+      "performance": 11,
+      "lighting": 5,
+      "primitive": 2,
       "todo": 0,
-      "errorRecovery": 4
+      "errorRecovery": 8
     },
     "topFiles": [
       {
         "file": "web-games/defense/index.html",
         "score": 93
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "score": 45
       }
     ],
     "sourceAnchors": [
       {
         "file": "web-games/defense/index.html",
-        "line": 126,
+        "line": 130,
         "kind": "FUNCTION",
         "symbol": "updateHud",
         "context": "function updateHud(){",
@@ -4411,7 +4413,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 153,
+        "line": 157,
         "kind": "FUNCTION",
         "symbol": "startWave",
         "context": "function startWave(){",
@@ -4419,7 +4421,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 241,
+        "line": 245,
         "kind": "FUNCTION",
         "symbol": "hitEnemy",
         "context": "function hitEnemy(e,s){",
@@ -4427,7 +4429,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 246,
+        "line": 250,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "context": "function damageEnemy(e,dmg,shot){",
@@ -4435,15 +4437,31 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 255,
+        "line": 259,
         "kind": "FUNCTION",
         "symbol": "checkWaveEnd",
         "context": "function checkWaveEnd(){",
         "score": 82
       },
       {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 144,
+        "kind": "FUNCTION",
+        "symbol": "updateInstanced",
+        "context": "function updateInstanced(mesh,items,fn){",
+        "score": 66
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 192,
+        "kind": "FUNCTION",
+        "symbol": "pick",
+        "context": "function pick(clientX,clientY){",
+        "score": 66
+      },
+      {
         "file": "web-games/defense/index.html",
-        "line": 162,
+        "line": 166,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "function spawnEnemy(type){",
@@ -4451,7 +4469,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 106,
+        "line": 111,
         "kind": "FUNCTION",
         "symbol": "clamp",
         "context": "function clamp(v,a,b){return Math.max(a,Math.min(b,v))}",
@@ -4459,7 +4477,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 107,
+        "line": 112,
         "kind": "FUNCTION",
         "symbol": "loadBest",
         "context": "function loadBest(){try{return Math.max(0,Number(JSON.parse(localStorage.getItem(KEY)||'{}').best)||0)}catch(e){return 0}}",
@@ -4467,7 +4485,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 108,
+        "line": 113,
         "kind": "FUNCTION",
         "symbol": "saveBest",
         "context": "function saveBest(){try{localStorage.setItem(KEY,JSON.stringify({best:Math.max(loadBest(),state.wave)}))}catch(e){}}",
@@ -4475,7 +4493,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 109,
+        "line": 114,
         "kind": "FUNCTION",
         "symbol": "toast",
         "context": "function toast(t){const el=q('toast');el.textContent=t;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),1100)}",
@@ -4483,7 +4501,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 228,
+        "line": 232,
         "kind": "FUNCTION",
         "symbol": "updateShots",
         "context": "function updateShots(dt){",
@@ -4491,7 +4509,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 265,
+        "line": 269,
         "kind": "FUNCTION",
         "symbol": "endGame",
         "context": "function endGame(win){",
@@ -4499,7 +4517,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 274,
+        "line": 278,
         "kind": "FUNCTION",
         "symbol": "buildAt",
         "context": "function buildAt(id){",
@@ -4507,15 +4525,31 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 410,
+        "line": 359,
         "kind": "FUNCTION",
         "symbol": "tick",
         "context": "function tick(ts){",
         "score": 58
       },
       {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 8,
+        "kind": "FUNCTION",
+        "symbol": "material",
+        "context": "const material=hex=>new THREE.MeshStandardMaterial({color:hex,roughness:.8,metalness:.02});",
+        "score": 50
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 150,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "function render({state,selectedTower=null}){",
+        "score": 50
+      },
+      {
         "file": "web-games/defense/index.html",
-        "line": 110,
+        "line": 115,
         "kind": "FUNCTION",
         "symbol": "resize",
         "context": "function resize(){",
@@ -4523,7 +4557,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 120,
+        "line": 124,
         "kind": "FUNCTION",
         "symbol": "fresh",
         "context": "function fresh(){",
@@ -4531,7 +4565,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 173,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "enemyProgress",
         "context": "function enemyProgress(e){",
@@ -4539,7 +4573,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 176,
+        "line": 180,
         "kind": "FUNCTION",
         "symbol": "moveEnemies",
         "context": "function moveEnemies(dt){",
@@ -4547,7 +4581,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 273,
+        "line": 277,
         "kind": "FUNCTION",
         "symbol": "towerAtPad",
         "context": "function towerAtPad(id){return state.towers.find(t=>t.pad===id)}",
@@ -4555,15 +4589,23 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 290,
+        "line": 294,
         "kind": "FUNCTION",
         "symbol": "updateTowerPanel",
         "context": "function updateTowerPanel(){",
         "score": 50
       },
       {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 9,
+        "kind": "FUNCTION",
+        "symbol": "createDefense3d",
+        "context": "export function createDefense3d({canvas,PATH_N,PADS_N}){",
+        "score": 42
+      },
+      {
         "file": "web-games/defense/index.html",
-        "line": 117,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "pathPoints",
         "context": "function pathPoints(){return PATH_N.map(p=>({x:p[0]*W,y:p[1]*H}))}",
@@ -4571,7 +4613,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 118,
+        "line": 122,
         "kind": "FUNCTION",
         "symbol": "pads",
         "context": "function pads(){return PADS_N.map((p,i)=>({id:i,x:p[0]*W,y:p[1]*H}))}",
@@ -4579,7 +4621,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 119,
+        "line": 123,
         "kind": "FUNCTION",
         "symbol": "dist",
         "context": "function dist(a,b,c,d){return Math.hypot(a-c,b-d)}",
@@ -4587,16 +4629,118 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 287,
+        "line": 291,
         "kind": "FUNCTION",
         "symbol": "selectTower",
         "context": "function selectTower(t){",
         "score": 42
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 66,
+        "kind": "FUNCTION",
+        "symbol": "instance",
+        "context": "function instance(geometry,mat,capacity){",
+        "score": 34
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 85,
+        "kind": "FUNCTION",
+        "symbol": "path",
+        "context": "function path(){",
+        "score": 34
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 103,
+        "kind": "FUNCTION",
+        "symbol": "rebuildPads",
+        "context": "function rebuildPads(){",
+        "score": 34
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 136,
+        "kind": "FUNCTION",
+        "symbol": "worldPos",
+        "context": "function worldPos(px,py){return [px/SCALE,py/SCALE]}",
+        "score": 34
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 71,
+        "kind": "FUNCTION",
+        "symbol": "grow",
+        "context": "function grow(mesh,needed){",
+        "score": 26
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 81,
+        "kind": "FUNCTION",
+        "symbol": "box",
+        "context": "function box(parent,x,y,z,w,h,d,mat){",
+        "score": 26
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 112,
+        "kind": "FUNCTION",
+        "symbol": "resize",
+        "context": "function resize(){",
+        "score": 26
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 137,
+        "kind": "FUNCTION",
+        "symbol": "createTower",
+        "context": "function createTower(actor){",
+        "score": 26
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 199,
+        "kind": "FUNCTION",
+        "symbol": "onLoss",
+        "context": "const onLoss=e=>{e.preventDefault();document.body.dataset.spatialDimension='3d-error'};",
+        "score": 26
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 200,
+        "kind": "FUNCTION",
+        "symbol": "onRestore",
+        "context": "const onRestore=()=>{document.body.dataset.spatialDimension='3d-error'};",
+        "score": 26
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 201,
+        "kind": "FUNCTION",
+        "symbol": "onResize",
+        "context": "const onResize=()=>resize();",
+        "score": 26
+      },
+      {
+        "file": "web-games/defense/defense3d.mjs",
+        "line": 204,
+        "kind": "FUNCTION",
+        "symbol": "dispose",
+        "context": "function dispose(){",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 숲길 디펜스를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
+    "previousFocus": "CORE_FUN",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+    "currentSourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -4706,13 +4850,13 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REGIONS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "WORLD_DENSITY",
@@ -4951,8 +5095,8 @@
     },
     {
       "domain": "CAMERA",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "UI_HUD",
@@ -4971,13 +5115,13 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RUNTIME_STABILITY",
@@ -5146,8 +5290,8 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵 확장은 면적만 늘리지 말고 새 지역 역할, 연결 경로, 잠금/해금, 랜드마크, 자원·적·이벤트 차이와 기존 지역으로 돌아올 이유를 함께 설계한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5155,8 +5299,8 @@
     },
     {
       "domain": "REGIONS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지역마다 지형, 적/상호작용, 자원, 위험, 조명/색, 이동 방식 중 여러 축이 달라 실제 플레이 역할이 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5587,8 +5731,8 @@
     },
     {
       "domain": "CAMERA",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5623,8 +5767,8 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5632,8 +5776,8 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5661,16 +5805,6 @@
   "detectedGaps": [
     {
       "domain": "CONTENT_DISCOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "REGIONS",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -5735,22 +5869,7 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "CAMERA",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE_BUDGET",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
@@ -5814,8 +5933,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 21381,
-        "largestFileBytes": 21381,
+        "sourceBytes": 29743,
+        "largestFileBytes": 18690,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5847,20 +5966,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -5896,21 +6016,12 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 78,
+        "score": 220,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
           "EQUIPMENT_LOADOUT",
           "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 65,
-        "gapDomains": [
-          "MAP_EXPANSION",
-          "REGIONS",
-          "CONTENT_DISCOVERY"
         ]
       },
       {
@@ -5922,17 +6033,17 @@
         ]
       },
       {
-        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": 36,
         "gapDomains": [
           "CONTENT_DISCOVERY"
         ]
       },
       {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 36,
         "gapDomains": [
-          "MAP_EXPANSION"
+          "CONTENT_DISCOVERY"
         ]
       },
       {
@@ -5948,6 +6059,11 @@
         "gapDomains": [
           "AUDIO_VISUAL_TIMING"
         ]
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 24,
+        "gapDomains": []
       }
     ],
     "coherentContentBundle": [
@@ -6023,12 +6139,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
+    "priorSourceFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6046,7 +6162,7 @@
     "version": 1,
     "gameId": "defense",
     "platform": "WEB",
-    "sourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+    "sourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6074,8 +6190,10 @@
       },
       {
         "id": "MATERIAL",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/defense/defense3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6106,7 +6224,8 @@
         "id": "UI",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/defense/index.html"
+          "web-games/defense/index.html",
+          "web-games/defense/defense3d.mjs"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6126,8 +6245,10 @@
       },
       {
         "id": "BIOME",
-        "state": "REVIEW_REQUIRED_NO_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/defense/defense3d.mjs"
+        ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6200,7 +6321,8 @@
         "id": "COMBAT",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/defense/index.html"
+          "web-games/defense/index.html",
+          "web-games/defense/defense3d.mjs"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6212,7 +6334,8 @@
         "id": "REWARD",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/defense/index.html"
+          "web-games/defense/index.html",
+          "web-games/defense/defense3d.mjs"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6222,8 +6345,10 @@
       },
       {
         "id": "NPC_AI",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/defense/defense3d.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6302,8 +6427,10 @@
       },
       {
         "id": "CAMERA",
-        "state": "REVIEW_REQUIRED_NO_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/defense/defense3d.mjs"
+        ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6348,20 +6475,27 @@
         "web-games/defense/index.html"
       ],
       "CUSTOMIZATION": [],
-      "MATERIAL": [],
+      "MATERIAL": [
+        "web-games/defense/defense3d.mjs"
+      ],
       "INVENTORY": [],
       "EQUIPMENT": [],
       "UI": [
-        "web-games/defense/index.html"
+        "web-games/defense/index.html",
+        "web-games/defense/defense3d.mjs"
       ],
       "WORLD": [],
-      "BIOME": [],
+      "BIOME": [
+        "web-games/defense/defense3d.mjs"
+      ],
       "HOUSING": [],
       "MOTION": [],
       "ACTION": [
         "web-games/defense/index.html"
       ],
-      "NPC_AI": [],
+      "NPC_AI": [
+        "web-games/defense/defense3d.mjs"
+      ],
       "QUEST_DIALOGUE": [],
       "CRAFTING": [],
       "ECONOMY": [],
@@ -6369,7 +6503,9 @@
       "FARMING": [],
       "WEATHER": [],
       "PHYSICS": [],
-      "CAMERA": [],
+      "CAMERA": [
+        "web-games/defense/defense3d.mjs"
+      ],
       "AUDIO": [],
       "SKILL_VFX": [
         "web-games/defense/index.html"
@@ -6377,11 +6513,13 @@
       "NETWORK": [],
       "INTERACTION": [],
       "REWARD": [
-        "web-games/defense/index.html"
+        "web-games/defense/index.html",
+        "web-games/defense/defense3d.mjs"
       ],
       "SAVE": [],
       "COMBAT": [
-        "web-games/defense/index.html"
+        "web-games/defense/index.html",
+        "web-games/defense/defense3d.mjs"
       ],
       "SHOP": []
     },
@@ -6408,10 +6546,12 @@
       "resizeValidationState": "RUNTIME_VIEWPORT_QA_PENDING"
     },
     "worldGraph": {
-      "enabled": false,
+      "enabled": true,
       "nodesDiscoveredFromExactRuntime": false,
       "sourceFiles": [],
-      "biomeSourceFiles": [],
+      "biomeSourceFiles": [
+        "web-games/defense/defense3d.mjs"
+      ],
       "housingSourceFiles": [],
       "biomeNativeSceneBindingVerified": false,
       "housingPlacementPersistenceVerified": false,
@@ -6425,7 +6565,10 @@
         "PORTAL_OR_DOOR_SERVER_AUTHORITY",
         "RETURN_PATH",
         "BLOCKED_PATH",
-        "RESPAWN_ROUTE"
+        "RESPAWN_ROUTE",
+        "APPROVED_BIOME_TO_NATIVE_TERRAIN",
+        "REGION_NAVIGATION_AND_COLLISION",
+        "MOBILE_WORLD_STREAMING"
       ],
       "inaccessibleAreasNotInvented": true,
       "runtimeTraversalVerified": false
@@ -6437,7 +6580,8 @@
           "id": "ACQUIRE",
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
-            "web-games/defense/index.html"
+            "web-games/defense/index.html",
+            "web-games/defense/defense3d.mjs"
           ],
           "passed": false
         },
@@ -6583,7 +6727,7 @@
     "gameId": "defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+    "sourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6772,7 +6916,8 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "web-games/defense/index.html"
+      "web-games/defense/index.html",
+      "web-games/defense/defense3d.mjs"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -6828,7 +6973,7 @@
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "WORLD_VISUAL_COHESION",
@@ -6840,7 +6985,7 @@
       },
       {
         "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       }
     ],
     "priorityOrder": [
@@ -6857,7 +7002,7 @@
     "weakestTracks": [
       "COMBAT_AND_PRIMARY_ACTION_FEEL",
       "AUDIO_MUSIC_AND_FEEDBACK",
-      "VFX_CAMERA_AND_IMPACT_SYNC"
+      "MOBILE_TOUCH_AND_ACCESSIBILITY"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -6927,7 +7072,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/defense/index.html",
-        "line": 126,
+        "line": 130,
         "kind": "FUNCTION",
         "symbol": "updateHud",
         "currentBehavior": "function updateHud(){",
@@ -6936,7 +7081,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 153,
+        "line": 157,
         "kind": "FUNCTION",
         "symbol": "startWave",
         "currentBehavior": "function startWave(){",
@@ -6945,7 +7090,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 241,
+        "line": 245,
         "kind": "FUNCTION",
         "symbol": "hitEnemy",
         "currentBehavior": "function hitEnemy(e,s){",
@@ -6954,7 +7099,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 246,
+        "line": 250,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "currentBehavior": "function damageEnemy(e,dmg,shot){",
@@ -6963,7 +7108,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 255,
+        "line": 259,
         "kind": "FUNCTION",
         "symbol": "checkWaveEnd",
         "currentBehavior": "function checkWaveEnd(){",
@@ -6972,7 +7117,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 162,
+        "line": 166,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "function spawnEnemy(type){",
@@ -6981,7 +7126,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 106,
+        "line": 111,
         "kind": "FUNCTION",
         "symbol": "clamp",
         "currentBehavior": "function clamp(v,a,b){return Math.max(a,Math.min(b,v))}",
@@ -6990,7 +7135,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 107,
+        "line": 112,
         "kind": "FUNCTION",
         "symbol": "loadBest",
         "currentBehavior": "function loadBest(){try{return Math.max(0,Number(JSON.parse(localStorage.getItem(KEY)||'{}').best)||0)}catch(e){return 0}}",
@@ -7119,12 +7264,13 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "web-games/defense/index.html"
+      "web-games/defense/index.html",
+      "web-games/defense/defense3d.mjs"
     ],
     "sourceAnchors": [
       {
         "file": "web-games/defense/index.html",
-        "line": 126,
+        "line": 130,
         "kind": "FUNCTION",
         "symbol": "updateHud",
         "context": "function updateHud(){",
@@ -7136,7 +7282,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 153,
+        "line": 157,
         "kind": "FUNCTION",
         "symbol": "startWave",
         "context": "function startWave(){",
@@ -7148,7 +7294,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 241,
+        "line": 245,
         "kind": "FUNCTION",
         "symbol": "hitEnemy",
         "context": "function hitEnemy(e,s){",
@@ -7160,7 +7306,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 246,
+        "line": 250,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "context": "function damageEnemy(e,dmg,shot){",
@@ -7172,7 +7318,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 255,
+        "line": 259,
         "kind": "FUNCTION",
         "symbol": "checkWaveEnd",
         "context": "function checkWaveEnd(){",
@@ -7184,7 +7330,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 162,
+        "line": 166,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "function spawnEnemy(type){",
@@ -7196,7 +7342,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 106,
+        "line": 111,
         "kind": "FUNCTION",
         "symbol": "clamp",
         "context": "function clamp(v,a,b){return Math.max(a,Math.min(b,v))}",
@@ -7208,7 +7354,7 @@
       },
       {
         "file": "web-games/defense/index.html",
-        "line": 107,
+        "line": 112,
         "kind": "FUNCTION",
         "symbol": "loadBest",
         "context": "function loadBest(){try{return Math.max(0,Number(JSON.parse(localStorage.getItem(KEY)||'{}').best)||0)}catch(e){return 0}}",
@@ -7228,7 +7374,6 @@
     "platform": "WEB",
     "categories": [
       "GRAPHICS",
-      "MAP",
       "UI",
       "GAMEPLAY",
       "SAVE",
@@ -7236,7 +7381,6 @@
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
@@ -7257,14 +7401,14 @@
     "gameId": "defense",
     "platform": "WEB",
     "plannedFiles": [
-      "web-games/defense/index.html"
+      "web-games/defense/index.html",
+      "web-games/defense/defense3d.mjs"
     ],
     "impact": {
       "version": 1,
       "platform": "WEB",
       "categories": [
         "GRAPHICS",
-        "MAP",
         "UI",
         "GAMEPLAY",
         "SAVE",
@@ -7272,7 +7416,6 @@
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
-        "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "GAMEPLAY_STATE_DELTA_QA",
         "SAVE_LOAD_MIGRATION_QA",
@@ -7297,7 +7440,6 @@
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
       "SAVE_LOAD_MIGRATION_QA",
@@ -7317,12 +7459,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 숲길 디펜스의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "03477bc9edfa43f3aae7bd387df998943f051d7fd4f8c3fbbebb100b640ddbad",
+      "sourceTreeFingerprint": "1d0025990d856d7575da7ce5472a4aaa2d2764376d7b26dc51c9d5ec0a208df9",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7337,8 +7479,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7381,12 +7523,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7439,8 +7581,6 @@
     ],
     "holisticGaps": [
       "CONTENT_DISCOVERY",
-      "MAP_EXPANSION",
-      "REGIONS",
       "INTERACTION_DISCOVERABILITY",
       "INVENTORY",
       "INVENTORY_USABILITY",
@@ -7449,11 +7589,10 @@
       "FIRST_10_MINUTES",
       "SAVE_COMPLETENESS",
       "SETTINGS_ACCESSIBILITY",
-      "MENU_FLOW",
-      "PERFORMANCE_BUDGET"
+      "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T10:21:03.489Z"
+  "generatedAt": "2026-10-22T03:39:54.570Z"
 }
