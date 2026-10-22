@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-40rluz",
+      "worker": "vibe2",
+      "taskId": "core-clash-4v4-web-startup-spatial-repair-v1",
+      "gameId": "core-clash-4v4",
+      "files": [
+        "web-games/core-clash-4v4/index.html"
+      ],
+      "baseSha": "b8541a49138cbfc6faf58c0ccbaf2e50a5b7195f",
+      "runId": "39841784770",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-22T19:56:56.479Z",
+      "expiresAt": "2026-10-22T20:41:56.479Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:core-clash-4v4-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
