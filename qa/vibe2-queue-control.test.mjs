@@ -3326,3 +3326,40 @@ test('false new-game gate is recovered only for an independently runnable existi
     assert.equal(mapped.get(name).status,'blocked',name);
   }
 });
+
+
+test('only exact non-writing practice drills recover false external semantic mapping blocks',()=>{
+  const base={
+    id:'LEARNING-PRACTICE-safety-test',gameId:null,target:'web',
+    department:'learning',type:'research',
+    sourceRoot:'learning-practice:safety-test',
+    goal:'[VIBE_LEARNING_PRACTICE]\\nkind=REPRO_DRILL\\n연습 결과만 작성한다.',
+    responsibleFiles:[],status:'blocked',retries:1,
+    blocker:'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',
+    evidence:['learning-practice-only','learning-web-artifact-practice']
+  };
+  const tasks=[
+    base,
+    {...base,id:'LEARNING-PRACTICE-untrusted-path',sourceRoot:'web-games/actual-source'},
+    {...base,id:'LEARNING-PRACTICE-game-source',gameId:'core-clash-4v4'},
+    {...base,id:'LEARNING-PRACTICE-write-file',responsibleFiles:['web-games/game/index.html']},
+    {...base,id:'LEARNING-PRACTICE-implementation',type:'implementation'},
+    {...base,id:'LEARNING-PRACTICE-owner-hold',ownerDevelopmentHold:true},
+    {...base,id:'LEARNING-PRACTICE-owner-decision',requiresOwnerDecision:true},
+    {...base,id:'LEARNING-PRACTICE-bad-evidence',evidence:['learning-practice-only']},
+    {...base,id:'LEARNING-PRACTICE-other-block',blocker:'DESIGN_CONTRACT_NOT_PASSED'},
+    {...base,id:'REAL-GAME-gate-not-practice',department:'development',type:'implementation',gameId:'core-clash-4v4',sourceRoot:'web-games/core-clash-4v4'}
+  ];
+  const recovered=recoverStaleRunningReservations(createVibeContinuousQueue({tasks}));
+  assert.equal(recovered.recovered,1);
+  const byId=new Map(recovered.queue.tasks.map(t=>[t.id,t]));
+  const passed=byId.get(base.id);
+  assert.equal(passed.status,'queued');
+  assert.equal(passed.blocker,null);
+  assert.equal(passed.retries,1);
+  assert.equal(passed.lastOutcome,'READ_ONLY_PRACTICE_MAPPING_GATE_RECOVERED');
+  assert.ok(passed.evidence.includes('recovery:read-only-practice-semantic-mapping-v1'));
+  for(const task of tasks.slice(1)){
+    assert.equal(byId.get(task.id).status,'blocked',task.id);
+  }
+});
