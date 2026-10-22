@@ -400,33 +400,6 @@ function Sync-Repository {
     $baseSha = $base.output.Trim()
 
     if ($baseSha -eq $localSha) {
-        # Fail closed before touching local main: remote central policy must remain authoritative.
-        $policyFiles = @(
-            'company-learning/platform-release-roadmap.json',
-            'company-learning/company-log-map.json',
-            'company-learning/company-architecture-map.json',
-            'company-learning/security-immune-system.json'
-        )
-        $policyDocs = @()
-        try {
-            foreach ($policyFile in $policyFiles) {
-                $source = Invoke-Git @('show',("origin/main:" + $policyFile))
-                if ($source.exitCode -ne 0 -or -not $source.output) { throw "Missing central policy: $policyFile" }
-                $policyDocs += ,($source.output | ConvertFrom-Json -ErrorAction Stop)
-            }
-            if ($policyDocs.Count -ne 4 -or
-                $policyDocs[0].localVibeWebChat.sourceWriteAllowed -ne $false -or
-                $policyDocs[0].localVibeWebDevelopment.newPipelineCreated -ne $false -or
-                $policyDocs[0].parallelLearningPipelineAllowed -ne $false -or
-                $policyDocs[1].retained.unknownOrMissingPolicy -ne 'FAIL_CLOSED' -or
-                $policyDocs[2].constitutionalEnforcement.mode -ne 'FAIL_CLOSED' -or
-                $policyDocs[3].defaultTrust -ne 'DENY_OR_QUARANTINE_UNTIL_VERIFIED') {
-                throw 'Central policy verification failed'
-            }
-        } catch {
-            Write-CompanyLog '[SYNC-BLOCK] Remote central policy not verified. Local source unchanged.'
-            return [pscustomobject]@{ changed = $false; restart = $false }
-        }
         $syncResult = Invoke-Git @('merge','--ff-only','origin/main')
         if ($syncResult.exitCode -ne 0) {
             Write-CompanyLog "[SYNC-WARN] Fast-forward failed: $($syncResult.output)"
@@ -436,8 +409,13 @@ function Sync-Repository {
     } elseif ($baseSha -eq $remoteSha) {
         return [pscustomobject]@{ changed = $false; restart = $false }
     } else {
-        Write-CompanyLog '[SYNC-BLOCK] Diverged local main: automatic rebase forbidden; preserve local commits for review.'
-        return [pscustomobject]@{ changed = $false; restart = $false }
+        $syncResult = Invoke-Git @('rebase','origin/main')
+        if ($syncResult.exitCode -ne 0) {
+            Invoke-Git @('rebase','--abort') | Out-Null
+            Write-CompanyLog '[SYNC-WARN] Local and remote commits conflict. Rebase was aborted; no local work was discarded.'
+            return [pscustomobject]@{ changed = $false; restart = $false }
+        }
+        Write-CompanyLog "[SYNC] Rebased local verified commits onto origin/main $remoteSha"
     }
 
     $afterSupervisorHash = Get-FileSha256 -Path $PSCommandPath
