@@ -28,6 +28,8 @@ export class StrongholdView3D {
     this.fort=new THREE.Group();this.scene.add(this.fort);
     this.actors=new Map();
     this.occupants=new THREE.Group();this.scene.add(this.occupants);
+    this.projectileLayer=new THREE.Group();this.scene.add(this.projectileLayer);
+    this.projectiles=new Map();
     this.tmp=new THREE.Vector3();
     this.fortKey='';
     this.groundKey='';
@@ -227,7 +229,7 @@ export class StrongholdView3D {
     }catch(error){console.warn('[포근섬 CC0 원본 캐릭터 폴백]',error)}
   }
   applyOriginalCharacter(actor){
-    if(!this.cc0Character||actor.mixer)return;
+    if(!this.cc0Character||actor.mixer||actor.type==='siege')return;
     const source=this.cc0Character;
     const model=source.clone(source.model),ratio=68/source.height;
     model.scale.multiplyScalar(ratio);
@@ -248,6 +250,20 @@ export class StrongholdView3D {
     if(actor.actions.idle){actor.actions.idle.play();actor.currentMotion='idle'}
   }
   createPerson(id,x,z,type='ally',large=false){
+    if(type==='siege'){
+      const p=this.palette,group=new THREE.Group();this.occupants.add(group);
+      this.cube(group,p.wood,0,31,0,89,19,64);
+      const left=this.cylinder(group,p.wood,-43,19,0,21,12);
+      left.rotation.z=Math.PI/2;
+      const right=this.cylinder(group,p.wood,43,19,0,21,12);
+      right.rotation.z=Math.PI/2;
+      this.cube(group,p.wood,0,58,-12,20,92,19).rotation.x=-.39;
+      this.sphere(group,p.iron,0,102,-26,22);
+      this.cube(group,p.iron,0,45,35,64,9,12);
+      group.position.set(x,16,z);
+      const data={group,left,right,oldX:x,oldZ:z,lastMove:0,type};
+      this.actors.set(id,data);return group;
+    }
     const p=this.palette,mat=p[type]||p.ally,group=new THREE.Group();
     this.occupants.add(group);
     const head=this.mesh(this.common.unitHead,p.skin,group);head.position.y=68;
@@ -346,7 +362,7 @@ export class StrongholdView3D {
       const tower=u.towerId?g.state.fortress.parts.find(p=>p.id===u.towerId&&p.hp>0):null;
       a('ally:'+u.id,u.x,u.y,'ally',false,tower?125:0);
     }
-    for(const u of g.enemies||[])if(u.hp>0)a('enemy:'+u.id,u.x,u.y,'enemy',u.boss);
+    for(const u of g.enemies||[])if(u.hp>0)a('enemy:'+u.id,u.x,u.y,u.kind==='cannon'?'siege':'enemy',u.boss);
     for(const w of g.wolves||[]){
       if(!w.alive||!g.state.expanded)continue;
       a('wolf:'+w.id,w.x,w.y,'enemy');
@@ -356,6 +372,21 @@ export class StrongholdView3D {
     }
     for(const [id,actor] of this.actors)if(!current.has(id)){
       this.occupants.remove(actor.group);this.actors.delete(id);
+    }
+  }
+  updateSiegeProjectiles(g,now){
+    const active=new Set();
+    for(const u of g.enemies||[]){
+      if(u.kind!=='cannon'||!u._shotTarget||!(u._shotUntil>now))continue;
+      const id=String(u.id);active.add(id);
+      let ball=this.projectiles.get(id);
+      if(!ball){ball=this.mesh(this.common.sphere,this.palette.iron,this.projectileLayer);ball.scale.setScalar(13);this.projectiles.set(id,ball)}
+      const target=u._shotTarget;
+      const t=Math.min(1,Math.max(0,1-(u._shotUntil-now)/180));
+      ball.position.set(u.x+(target.x-u.x)*t,68+Math.sin(t*Math.PI)*100,u.y+(target.y-u.y)*t);
+    }
+    for(const [id,ball] of this.projectiles)if(!active.has(id)){
+      this.projectileLayer.remove(ball);this.projectiles.delete(id);
     }
   }
   resize(){
@@ -392,6 +423,7 @@ export class StrongholdView3D {
     const now=performance.now(),t=now*.001;
     const dt=Math.min(.05,Math.max(0,(now-this.lastDrawAt)/1000));this.lastDrawAt=now;
     this.syncActors(g,t);
+    this.updateSiegeProjectiles(g,now);
     for(const actor of this.actors.values())actor.mixer?.update(dt);
     const hour=g.state.minutes/60;
     const night=hour<6||hour>19;
