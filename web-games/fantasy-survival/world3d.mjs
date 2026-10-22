@@ -11,6 +11,7 @@ import {clone as cloneAnimatedRig} from '../../assets/roblox/world-ghosts/native
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
+import {createVibeActionTransition,motionFrameDelta,smoothPresentationYaw} from '../../assets/vibe-action-transition.mjs';
 import {planAssetApplication} from '../../assets/asset-selector.js';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
@@ -147,7 +148,7 @@ async function loadSourceModels(){
 export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100}){
   const models=await loadSourceModels(); // Fail closed: leave the old game active.
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
-  let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroAttackAt=0,lastHeroFrame=0;
+  let hero=null,heroMixer=null,heroClips=[],heroMotion=null,lastHeroYawAt=0;
   let scene=null,disposed=false,heroLoadVersion=0;
   let selectedAppearance=null;
   async function setAvatarAppearance(requested){
@@ -167,15 +168,17 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       model.position.y=-box.min.y*scaledHeight;
       avatar.add(model);
       avatar.userData.source=source.href;
-      const previous=hero,previousMixer=heroMixer;
+      const previous=hero,previousMotion=heroMotion,previousMixer=heroMixer;
       if(scene)scene.add(avatar);
       hero={avatar,model};
       heroClips=gltf.animations||[];
       heroMixer=heroClips.length?new THREE.AnimationMixer(model):null;
-      heroAction=null;heroActionName='';lastHeroFrame=0;
+      heroMotion=createVibeActionTransition({mixer:heroMixer,clips:heroClips,LoopOnce:THREE.LoopOnce,LoopRepeat:THREE.LoopRepeat});
+      lastHeroYawAt=0;
       selectedAppearance=choice;
       if(previous){
-        previousMixer?.stopAllAction();
+        previousMotion?.dispose();
+        previousMixer?.uncacheRoot(previous.model);
         if(scene)scene.remove(previous.avatar);
         previous.model.traverse(object=>{
           if(!object.isMesh)return;
@@ -305,11 +308,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         anchor.add(model);
         scene.add(anchor);
         const mixer=undeadClips.length?new THREE.AnimationMixer(model):null;
-        actor={anchor,model,mixer,clipName:'',action:null,lastFrame:performance.now(),seen:0};
+        actor={anchor,model,mixer,motion:createVibeActionTransition({mixer,clips:undeadClips,LoopOnce:THREE.LoopOnce,LoopRepeat:THREE.LoopRepeat}),lastYawAt:0,seen:0};
         undeadActors.set(id,actor);
       }
       actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
-      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      const yaw=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      const headingNow=performance.now();
+      actor.anchor.rotation.y=actor.lastYawAt
+        ?smoothPresentationYaw(actor.anchor.rotation.y,yaw,motionFrameDelta(headingNow,actor.lastYawAt))
+        :yaw;
+      actor.lastYawAt=headingNow;
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       // The game owns the tap-target/attack decision. Native skinned surfaces only
       // provide the correct original world coordinates to its existing handler.
@@ -323,19 +331,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
         ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
-      if(actor.mixer&&clip&&clip.name!==actor.clipName){
-        if(actor.action)actor.action.fadeOut(.12);
-        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.12).play();
-        actor.clipName=clip.name;
-      }
-      const now=performance.now();
-      actor.mixer?.update(Math.min(.05,Math.max(0,(now-actor.lastFrame)/1000)));
-      actor.lastFrame=now;
+      if(clip)actor.motion.play(clip.name,{oneShot:attacking,token:attacking?Number(e.attackAt)||0:null});
+      actor.motion.update(performance.now());
       actor.seen=stamp;
     }
     for(const [key,actor] of undeadActors){
       if(actor.seen===stamp)continue;
-      actor.mixer?.stopAllAction();
+      actor.motion?.dispose();
+      actor.mixer?.uncacheRoot(actor.model);
       scene.remove(actor.anchor);
       undeadActors.delete(key);
     }
@@ -375,12 +378,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         model.position.y=-source.floor*scale;
         const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
         const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
-        actor={anchor,model,mixer,clips:source.clips,clipName:'',action:null,
-          lastFrame:performance.now(),seen:0};
+        actor={anchor,model,mixer,clips:source.clips,
+          motion:createVibeActionTransition({mixer,clips:source.clips,LoopOnce:THREE.LoopOnce,LoopRepeat:THREE.LoopRepeat}),
+          lastYawAt:0,seen:0};
         nativeCreatureActors.set(key,actor);
       }
       actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
-      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      const yaw=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      const headingNow=performance.now();
+      actor.anchor.rotation.y=actor.lastYawAt
+        ?smoothPresentationYaw(actor.anchor.rotation.y,yaw,motionFrameDelta(headingNow,actor.lastYawAt))
+        :yaw;
+      actor.lastYawAt=headingNow;
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       actor.model.traverse(child=>{
         if(!child.isMesh)return;
@@ -392,18 +401,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
         ||actor.clips.find(c=>/idle|walk/i.test(c.name));
-      if(actor.mixer&&clip&&clip.name!==actor.clipName){
-        actor.action?.fadeOut(.12);
-        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.12).play();
-        actor.clipName=clip.name;
-      }
-      const now=performance.now();
-      actor.mixer?.update(Math.min(.05,Math.max(0,(now-actor.lastFrame)/1000)));
-      actor.lastFrame=now;actor.seen=stamp;
+      if(clip)actor.motion.play(clip.name,{oneShot:attacking,token:attacking?Number(e.attackAt)||0:null});
+      actor.motion.update(performance.now());actor.seen=stamp;
     }
     for(const [key,actor] of nativeCreatureActors){
       if(actor.seen===stamp)continue;
-      actor.mixer?.stopAllAction();
+      actor.motion?.dispose();
+      actor.mixer?.uncacheRoot(actor.model);
       scene.remove(actor.anchor);nativeCreatureActors.delete(key);
     }
     return unsafeUnmappedEncounter;
@@ -508,7 +512,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(hero){
       hero.avatar.visible=true;
       hero.avatar.position.set(centerX,0,centerY);
-      hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      const headingNow=performance.now();
+      const wantedYaw=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      hero.avatar.rotation.y=lastHeroYawAt
+        ?smoothPresentationYaw(hero.avatar.rotation.y,wantedYaw,motionFrameDelta(headingNow,lastHeroYawAt),{halfLife:.075})
+        :wantedYaw;
+      lastHeroYawAt=headingNow;
       const tool=String(p.tool||p.weapon||'NONE');
       if(tool!==playerToolName){
         playerToolName=tool;
@@ -520,23 +529,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const pose=now-(Number(p.attackAt)||0)<330?'attack':moving?'move':'idle';
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
-      const desired=heroClips.find(clip=>clip.name===clipName);
-      const nextName=desired?.name||'';
-      const attackAt=Number(p.attackAt)||0;
-      if(heroMixer&&(nextName!==heroActionName||(pose==='attack'&&attackAt!==lastHeroAttackAt))){
-        if(heroAction)heroAction.fadeOut(.15);
-        heroAction=desired?heroMixer.clipAction(desired):null;
-        if(heroAction){
-          heroAction.reset().setLoop(pose==='attack'?THREE.LoopOnce:THREE.LoopRepeat,pose==='attack'?1:Infinity);
-          heroAction.clampWhenFinished=pose==='attack';
-          heroAction.setEffectiveTimeScale(1);
-          if(pose==='attack')heroAction.setDuration(.33);
-          heroAction.fadeIn(.15).play();
-        }
-        heroActionName=nextName;
-        if(pose==='attack')lastHeroAttackAt=attackAt;
-      }
-      if(heroMixer){heroMixer.update(Math.min(.05,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
+      // Real source clip only; cosmetic transitions cannot alter authoritative combat windows.
+      heroMotion?.play(clipName,{oneShot:pose==='attack',token:pose==='attack'?Number(p.attackAt)||0:null});
+      heroMotion?.update(now);
     }
     synchronizeUndead(state,px,py,seen);
     const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
@@ -592,11 +587,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   }
   function dispose(){
     disposed=true;heroLoadVersion++;active=false;canvas.hidden=true;
-    if(hero){heroMixer?.stopAllAction();scene.remove(hero.avatar);
+    if(hero){heroMotion?.dispose();heroMixer?.uncacheRoot(hero.model);scene.remove(hero.avatar);
       hero.model.traverse(object=>{if(object.isMesh){object.geometry?.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];for(const mat of mats)mat?.dispose()}})}
-    for(const actor of undeadActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
+    for(const actor of undeadActors.values()){actor.motion?.dispose();actor.mixer?.uncacheRoot(actor.model);scene.remove(actor.anchor)}
     undeadActors.clear();
-    for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
+    for(const actor of nativeCreatureActors.values()){actor.motion?.dispose();actor.mixer?.uncacheRoot(actor.model);scene.remove(actor.anchor)}
     nativeCreatureActors.clear();
     if(undeadSource){undeadSource.traverse(o=>{if(!o.isMesh)return;
       o.geometry?.dispose();const materials=Array.isArray(o.material)?o.material:[o.material];
@@ -625,6 +620,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
     getAdaptiveQuality:()=>qualityFactor,getFallbackReason:()=>fallbackReason,
     getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles}),
+    getMotionDiagnostics:()=>({player:heroMotion?.diagnostics||null,undeadActors:undeadActors.size,nativeCreatureActors:nativeCreatureActors.size}),
     productionReady:false
   };
 }
