@@ -251,7 +251,8 @@ const tower3dOnly=gameIds.length===1&&gameIds[0]==='tower-choice-rpg';
 const star3dOnly=gameIds.length===1&&gameIds[0]==='seed-action-survival-rogu-echoes-of-the-lost-star';
 const gem3dOnly=gameIds.length===1&&gameIds[0]==='gem-survivor';
 const forestDefense3dOnly=gameIds.length===1&&gameIds[0]==='defense';
-const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly||gem3dOnly||forestDefense3dOnly;
+const insect3dOnly=gameIds.length===1&&gameIds[0]==='insect-survival';
+const native3dOnly=wild3dOnly||tower3dOnly||star3dOnly||gem3dOnly||forestDefense3dOnly||insect3dOnly;
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
@@ -364,7 +365,42 @@ try{
 
     // Static HTML metadata or an asset list cannot prove the game actually rendered 3D.
     // Only accept a completed Three.js frame AND a live WebGL2 drawing buffer.
-    if(native3dOnly){
+
+    if(insect3dOnly){
+      // Unlike the original generic smoke, this does not accept a 2D fallback.
+      currentPhase='INSECT_CC0_TRUE_3D_GROUNDED_FRAME';
+      let proof=null;
+      for(let attempt=0;attempt<90;attempt++){
+        proof=await cdp.evaluate(`(()=>{
+          const canvas=document.querySelector('#insect3d');
+          const gl=canvas?.getContext('webgl2');
+          const ground=window.insect3DGroundingProof?.();
+          return {
+            ready:window.insectScene3DReady===true,
+            rendered:canvas?.dataset.renderedFrame==='true',
+            webgl2:gl instanceof WebGL2RenderingContext&&gl.drawingBufferWidth>0&&gl.drawingBufferHeight>0,
+            canvasVisible:canvas&&getComputedStyle(canvas).display!=='none',
+            legacyHidden:document.querySelector('#cv')?.style.visibility==='hidden',
+            ground:ground||null,
+            notice:(document.body?.innerText||'').slice(0,180)
+          };
+        })()`);
+        if(proof?.ready&&proof?.rendered&&proof?.webgl2&&proof?.ground?.heroPresent)break;
+        await delay(250);
+      }
+      console.log('DEVELOPMENT_WEB_TRUE_3D_BROWSER_EVIDENCE_insect-survival='+JSON.stringify(proof));
+      assert.equal(proof?.ready,true,'insect-survival: CC0 3D scene never became ready');
+      assert.equal(proof?.rendered,true,'insect-survival: no completed WebGL frame');
+      assert.equal(proof?.webgl2,true,'insect-survival: WebGL2 drawing buffer absent');
+      assert.equal(proof?.canvasVisible,true,'insect-survival: 3D canvas not visible');
+      assert.equal(proof?.legacyHidden,true,'insect-survival: 2D fallback is still visible');
+      assert.equal(proof?.ground?.tileCount,12,'insect-survival: original CC0 floor tiles missing');
+      assert.ok(Math.abs(proof?.ground?.floorTop)<.005,
+        'insect-survival: original CC0 floor must align with ground Y=0');
+      assert.ok(Number.isFinite(proof?.ground?.heroBottom)&&proof.ground.heroBottom>=proof.ground.floorTop-.12,
+        'insect-survival: animated character is below original CC0 floor');
+    }
+    if(native3dOnly&&!insect3dOnly){
       currentPhase='TRUE_WEBGL_3D_FRAME';
       if(star3dOnly||gem3dOnly||forestDefense3dOnly)assert.equal(start?.clicked,true,gameId+': active gameplay start not clicked');
       assert.equal(start?.clicked,true,'wild-survival: survival start action was not triggered');
