@@ -98,7 +98,7 @@ export class StrongholdView3D {
     this.building(this.ground,g.workerShop.x,g.workerShop.y,106,74,73);
     if(g.state.barracksBuilt) this.building(this.ground,g.barracks.x,g.barracks.y,116,90,83,this.palette.stone);
     else{
-      const pad=this.cube(this.ground,p.stoneDark,g.barracks.x,18,g.barracks.y,116,8,90);
+      const pad=this.cube(this.ground,p.stoneDark.clone(),g.barracks.x,18,g.barracks.y,116,8,90);
       pad.material.transparent=true;pad.material.opacity=.55;
     }
     // Garden plots keep their world coordinates and original six planting cells.
@@ -129,7 +129,6 @@ export class StrongholdView3D {
         this.sphere(this.ground,p.flower,n.x,39,n.y,8);
       }
     }
-    for(const npc of g.npcs)this.createPerson('npc:'+npc.id,npc.x,npc.y,'villager',false);
     this.cube(this.ground,p.wood,770,25,755,30,30,30);
     this.cube(this.ground,p.wood,520,25,425,30,24,30);
     if(expanded){
@@ -167,7 +166,9 @@ export class StrongholdView3D {
     for(const part of g.state.fortress.parts){
       if(part.hp<=0)continue;
       const grp=new THREE.Group();
-      grp.position.set(part.x,16,part.y);this.fort.add(grp);
+      grp.position.set(part.x,16,part.y);
+      if(part.axis==='z'&&(part.kind==='wall'||part.kind==='gate'))grp.rotation.y=Math.PI/2;
+      this.fort.add(grp);
       const health=(part.hp/({wall:180,gate:220,tower:160}[part.kind]||1));
       const mat=health<.4?p.stoneDark:p.stone;
       if(part.kind==='wall'){
@@ -184,6 +185,18 @@ export class StrongholdView3D {
           this.cube(grp,p.iron,0,44,6,5,77,3);
           this.cube(grp,p.iron,0,44,6,39,6,3);
         }
+      }else if(part.kind==='keep'){
+        this.cube(grp,p.stoneDark,0,73,0,116,144,113);
+        this.cube(grp,mat,0,151,0,125,18,122);
+        this.cube(grp,p.wood,0,34,58,32,68,5);
+        for(const xx of [-55,55])for(const zz of [-55,55]){
+          this.cylinder(grp,p.stone,xx,98,zz,20,195);
+          this.cylinder(grp,p.slate,xx,199,zz,25,16);
+        }
+        for(let a=-48;a<=48;a+=24){
+          this.cube(grp,p.stone,a,170,-59,13,24,12);
+          this.cube(grp,p.stone,a,170,59,13,24,12);
+        }
       }else if(part.kind==='tower'){
         this.cylinder(grp,mat,0,62,0,36,125);
         this.cylinder(grp,p.slate,0,128,0,43,16);
@@ -195,7 +208,7 @@ export class StrongholdView3D {
     }
     this.fortKey=this.fortSignature(g);
   }
-  fortSignature(g){return g.state.fortress.gateOpen+'|'+g.state.fortress.parts.map(p=>p.id+':'+p.hp+':'+p.kind).join('|');}
+  fortSignature(g){return g.state.fortress.gateOpen+'|'+g.state.fortress.parts.map(p=>p.id+':'+p.hp+':'+p.kind+':'+p.axis).join('|');}
   moveActor(key,x,z,type,boss=false,elevation=0,seconds=0){
     let data=this.actors.get(key);
     if(!data){this.createPerson(key,x,z,type,boss);data=this.actors.get(key);}
