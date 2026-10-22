@@ -359,3 +359,38 @@ test('approved optional WFC room graph enforces socket adjacency and reachable s
   assert.equal('roomComposition' in createVibeProceduralWorldLayout(opts),false,
     'genres without explicit room design are unchanged');
 });
+
+test('game-specific library coverage lists reusable roles and verified source gaps without creating assets',()=>{
+  const inputAssets=[
+    validSource,
+    {...validSource,id:'verified-rock-2'},
+    {...validSource,id:'raw-research-creature',family:'CREATURE',verifiedCompanyReusable:false},
+    {...validSource,id:'quarantined-creature',family:'CREATURE',quarantined:true},
+    {...validSource,id:'verified-creature',family:'CREATURE',runtimeVerificationState:'VERIFIED_RUNTIME',verifiedCompanyReusable:false}
+  ];
+  const plan=planVibeExternalCustomization({...input,request:'지형 협곡 몬스터 몬스터 거대 나무 장식',target:'WEB',assets:inputAssets});
+  const terrain=plan.roleAssetCoverage.find(row=>row.role==='TERRAIN');
+  const monster=plan.roleAssetCoverage.find(row=>row.role==='CREATURE');
+  const decoration=plan.roleAssetCoverage.find(row=>row.role==='PROP');
+  assert.deepEqual(terrain.reusableSourceIds,['verified-rock-2','verified-stone']);
+  assert.equal(terrain.verifiedSourceCount,2);
+  assert.deepEqual(monster.reusableSourceIds,['verified-creature']);
+  assert.equal(monster.verifiedSourceCount,1);
+  assert.equal(decoration.status,'VERIFIED_SOURCE_GAP_REVIEW_REQUIRED');
+  assert.ok(plan.missingVerifiedSourceRoles.includes('PROP'));
+  assert.ok(!plan.missingVerifiedSourceRoles.includes('TERRAIN'));
+  assert.equal(plan.roleAssetCoverage.every(row=>row.actualGameBindingVerified===false
+    &&row.nativeRuntimeVerified===false&&row.automaticNewAssetCreation===false),true);
+  assert.equal(plan.appliedToGame,false);
+  assert.equal(plan.sourceMutationPerformed,false);
+});
+
+test('missing design or owner scope cannot turn a library gap into automatic authoring',()=>{
+  const noDesign=planVibeExternalCustomization({...input,target:'ROBLOX',approvedDesignFingerprint:'',assets:[]});
+  assert.deepEqual(noDesign.missingVerifiedSourceRoles,[]);
+  assert.ok(noDesign.roleAssetCoverage.every(row=>row.status==='APPROVED_GAME_DESIGN_REQUIRED'));
+  const held=planVibeExternalCustomization({...input,target:'WEB',ownerScope:null,assets:[]});
+  assert.deepEqual(held.missingVerifiedSourceRoles,[]);
+  assert.ok(held.roleAssetCoverage.every(row=>row.status==='OWNER_POLICY_HELD'));
+  assert.equal(held.newQueueOrShadowPipelineCreated,false);
+});
