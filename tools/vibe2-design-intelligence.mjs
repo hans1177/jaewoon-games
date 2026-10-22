@@ -565,7 +565,133 @@ function evaluateExperienceMemory(task = {}, designReview) {
   });
 }
 
+// 메인 · R01-R10: 허가된 참고자료의 관찰과 실행 근거를 기존 설계 흐름에서 평가한다.
+// 타사 원본 자산, 소스, 내부 물리값을 추정해 생성하지 않는다. 증거 부족은 BLOCKED.
+const REFERENCE_REQUIREMENTS=freezeList(['R01','R02','R03','R04','R05','R06','R07','R08','R09','R10']);
+const referenceRows=value=>Array.isArray(value)?value:[];
+const referenceProof=(row={})=>{
+  const proof=row?.proof||row?.verification||{};
+  return row?.actualPlatformRuntime===true&&row?.independentQaPass===true&&
+    row?.regressionPass===true&&row?.preservesGameplaySaveBalance===true&&
+    /^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))&&
+    clean(row?.evidenceId||proof.evidenceId).length>0&&row?.stale!==true;
+};
+const referenceGate=(id,pass,issues=[],details={})=>freeze({
+  id,status:pass?'VERIFIED':'BLOCKED',verified:pass,
+  issues:freezeList(unique(issues)),...details,
+  sourceMutationAuthorized:false,publicationAuthorized:false
+});
+const ALLOWED_REFERENCE_RIGHTS=new Set(['ABSTRACT_TECHNIQUE','PUBLIC_DOMAIN','CC0','MIT','APACHE-2.0','ORIGINAL','OWNER_PROVIDED']);
+const PROTECTED_REFERENCE_FIELDS=['rawSource','originalAssets','copiedMap','copiedDialogue','originalMusic','brandLogo','unlicensedCharacter'];
+
+export function evaluateVibeReferenceCapabilities(input={}){
+  const facts=referenceRows(input.facts);
+  const eligibleFacts=facts.filter(row=>row&&
+    ['OBSERVED','INFERRED','UNKNOWN'].includes(clean(row.observationKind))&&
+    ALLOWED_REFERENCE_RIGHTS.has(clean(row.rightsBasis).toUpperCase())&&
+    clean(row.sourceId)&&clean(row.sourceTimestamp)&&clean(row.evidence)&&
+    !PROTECTED_REFERENCE_FIELDS.some(key=>Boolean(row[key]))&&row.licenseVerified!==false);
+  const observed=eligibleFacts.filter(row=>row.observationKind==='OBSERVED');
+  const r01=referenceGate('R01',eligibleFacts.length>0&&observed.length>0&&eligibleFacts.length===facts.length,
+    eligibleFacts.length===facts.length&&observed.length?[]:['PERMITTED_OBSERVED_SOURCE_REQUIRED'],
+    {accepted:eligibleFacts.length,rejected:facts.length-eligibleFacts.length,inferredNotObserved:true});
+  const fun=referenceRows(input.funHypotheses);
+  const funAccepted=fun.filter(row=>row&&['RISK_REWARD','GROWTH','EXPLORATION','COOPERATION','CHOICE','FEEDBACK','REWARD_TIMING'].includes(row.mechanic)
+    &&observed.some(f=>f.sourceId===row.sourceId&&f.evidence===row.evidence)
+    &&clean(row.playtestScenario));
+  const r02=referenceGate('R02',funAccepted.length>0,funAccepted.length?[]:['OBSERVATION_BOUND_FUN_HYPOTHESIS_REQUIRED'],
+    {hypotheses:freezeList(funAccepted.map(x=>({mechanic:x.mechanic,playtestScenario:x.playtestScenario})))});
+  const compositions=referenceRows(input.compositions);
+  const composed=compositions.filter(row=>row&&new Set(referenceRows(row.sourceIds)).size>=2&&
+    referenceRows(row.sourceIds).every(id=>observed.some(f=>f.sourceId===id))&&
+    clean(row.originalTheme)&&clean(row.originalRules)&&clean(row.conflictTest)&&
+    row.copiesProtectedExpression!==true&&row.licenseConflict!==true);
+  const r03=referenceGate('R03',composed.length>0,composed.length?[]:['TWO_SOURCES_AND_DISTINCT_ORIGINAL_RULES_REQUIRED'],
+    {plans:freezeList(composed.map(row=>({originalTheme:row.originalTheme,originalRules:row.originalRules})))});
+  const feel=referenceRows(input.gameFeelSamples);
+  const feelValid=feel.filter(row=>referenceProof(row)&&
+    ['WEB','ROBLOX'].includes(clean(row.platform).toUpperCase())&&
+    clean(row.deviceClass)&&Number.isFinite(row.inputTimeMs)&&Number.isFinite(row.actionTimeMs)&&
+    row.actionTimeMs>=row.inputTimeMs&&Number.isFinite(row.hitTimeMs)&&row.hitTimeMs>=row.actionTimeMs&&
+    row.sameImpactEvent===true&&row.cameraReadable===true);
+  const r04=referenceGate('R04',feelValid.length>0,feelValid.length?[]:['REAL_INPUT_ACTION_HIT_TIMINGS_REQUIRED'],
+    {measurements:freezeList(feelValid.map(row=>({
+      inputToActionMs:row.actionTimeMs-row.inputTimeMs,
+      inputToHitMs:row.hitTimeMs-row.inputTimeMs,
+      deviceClass:row.deviceClass,sourceRevision:row.sourceRevision
+    })))});
+  const absorptions=referenceRows(input.techniqueTransfers).filter(t=>t&&
+    observed.some(f=>f.sourceId===t.sourceId)&&
+    clean(t.existingCodeMatch)&&clean(t.missingTechnique)&&
+    referenceProof(t)&&t.independentNativeReview===true);
+  const r05=referenceGate('R05',absorptions.length>0,absorptions.length?[]:['SOURCE_GAP_AND_RUNTIME_PROVEN_TARGET_REQUIRED'],
+    {recipeCandidates:freezeList(absorptions.map(t=>t.id)),autoPromote:false});
+  const gaps=referenceRows(input.playtestGaps);
+  const verifiedGaps=gaps.filter(g=>g&&referenceProof(g)&&g.reproduced===true&&
+    clean(g.problem)&&clean(g.existingResponsibleFile)&&
+    Number.isFinite(g.severity)&&g.severity>=0&&g.severity<=10&&
+    g.proposedRuleChange!==true);
+  // 자율 개선은 재현 가능한 기존 책임 파일만 정렬한다. 외부 표현 복제·자동 코드 수정은 금지.
+  verifiedGaps.sort((a,b)=>b.severity-a.severity||
+    clean(a.existingResponsibleFile).localeCompare(clean(b.existingResponsibleFile))||
+    clean(a.id).localeCompare(clean(b.id)));
+  const prioritizedGaps=verifiedGaps.map(g=>({
+    id:clean(g.id).slice(0,90),file:clean(g.existingResponsibleFile).slice(0,180),
+    severity:g.severity,sourceRevision:g.sourceRevision,
+    proposal:'MEASURE_EXISTING_SYSTEM_AND_RECHECK',
+    readOnlyFirst:true,productionPass:false
+  }));
+  const r06=referenceGate('R06',verifiedGaps.length>0,verifiedGaps.length?[]:['REPRODUCED_RUNTIME_GAPS_REQUIRED'],
+    {prioritized:freezeList(prioritizedGaps),candidateOnly:true});
+  const skills=referenceRows(input.genreSkills);
+  const validSkills=skills.filter(s=>s&&clean(s.genre)&&clean(s.domain)&&
+    Number.isInteger(s.pass)&&Number.isInteger(s.fail)&&s.pass>=0&&s.fail>=0&&
+    s.pass+s.fail>0&&s.independentBenchmarks===true&&
+    Number.isFinite(s.holdoutPassRate)&&s.holdoutPassRate>=0&&s.holdoutPassRate<=1&&
+    clean(s.benchmarkVersion));
+  const r07=referenceGate('R07',validSkills.length>0,validSkills.length?[]:['MEASURED_GENRE_DOMAIN_HOLDOUT_REQUIRED'],
+    {skills:freezeList(validSkills.map(s=>({genre:s.genre,domain:s.domain,rate:s.pass/(s.pass+s.fail),holdoutPassRate:s.holdoutPassRate})))});
+  const videos=referenceRows(input.sceneObservations);
+  const acceptedVideo=videos.filter(row=>row&&observed.some(f=>f.sourceId===row.sourceId)&&
+    Number.isFinite(row.timestampMs)&&row.timestampMs>=0&&
+    ['VISIBLE_INPUT','VISIBLE_MOTION','VISIBLE_CONTACT','VISIBLE_FEEDBACK','UNKNOWN_INTERNAL'].includes(row.event)&&
+    clean(row.visualEvidence));
+  const orderedVideo=[...acceptedVideo].sort((a,b)=>a.timestampMs-b.timestampMs);
+  const contactIndex=orderedVideo.findIndex(v=>v.event==='VISIBLE_CONTACT');
+  const sceneValid=orderedVideo.length>=2&&contactIndex>=0&&
+    orderedVideo.findIndex((v,i)=>i>contactIndex&&v.event==='VISIBLE_FEEDBACK')>contactIndex;
+  const r08=referenceGate('R08',sceneValid,
+    sceneValid?[]:orderedVideo.length>=2?['VISIBLE_CONTACT_AND_FEEDBACK_REQUIRED']:['TIME_ORDERED_SCENE_EVIDENCE_REQUIRED'],{
+      observations:freezeList(orderedVideo.map(v=>({time:v.timestampMs,event:v.event}))),
+      inferredEngineInternalsVerified:false
+    });
+  const improvements=referenceRows(input.improvementTrials).filter(row=>referenceProof(row)&&
+    clean(row.originalRuleDifference)&&row.comparedSameDevice===true&&
+    Number.isFinite(row.beforeFrictionMs)&&Number.isFinite(row.afterFrictionMs)&&
+    row.beforeFrictionMs>row.afterFrictionMs&&row.afterFrictionMs>=0);
+  const r09=referenceGate('R09',improvements.length>0,improvements.length?[]:['VERIFIED_BEFORE_AFTER_IMPROVEMENT_REQUIRED'],{
+    improvements:freezeList(improvements.map(t=>({id:t.id,savedMs:t.beforeFrictionMs-t.afterFrictionMs})))});
+  const experiments=referenceRows(input.techniqueExperiments);
+  const successful=experiments.filter(e=>e&&clean(e.hypothesis)&&
+    referenceRows(e.trials).length>=2&&referenceRows(e.trials).every(trial=>referenceProof(trial))&&
+    e.holdoutPassed===true&&e.negativeCasesPassed===true&&e.usesExistingLearningMotor===true);
+  const r10=referenceGate('R10',successful.length>0,successful.length?[]:['REPEATED_HOLDOUT_EXPERIMENT_REQUIRED'],{
+    tested:experiments.length,eligible:successful.length,automaticKnowledgePromotion:false});
+  const requirements=freeze({R01:r01,R02:r02,R03:r03,R04:r04,R05:r05,R06:r06,R07:r07,R08:r08,R09:r09,R10:r10});
+  // 기존 Game Designer / Source Worker에 제안으로만 전달하며 파일 쓰기/릴리스 권한을 부여하지 않는다.
+  const nextImprovementCandidates=freezeList(prioritizedGaps.slice(0,3).map(g=>freeze({
+    requirementId:'R06',sourceRevision:g.sourceRevision,reason:'VERIFIED_PLAYTEST_GAP',
+    responsibleFile:g.file,issueId:g.id,severity:g.severity,
+    nextStep:'EXISTING_DESIGN_REVIEW_THEN_SOURCE_OWNER_QA',
+    exactGameRuntimeRequired:true,automaticImplementation:false,automaticPromotion:false
+  })));
+  return freeze({version:1,requirements,allVerified:REFERENCE_REQUIREMENTS.every(id=>requirements[id].verified),
+    nextImprovementCandidates,readOnlyImprovementBudget:3,
+    evidenceOnly:true,authorityExpanded:false,sourceMutationAuthorized:false});
+}
+
 export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {} } = {}) {
+  const referenceCapabilities=evaluateVibeReferenceCapabilities(task.referenceStudy||{});
   const stability = evaluateStabilityTriage(task);
   const defectOwnership = evaluateDefectOwnership(task, stability);
   const designer = evaluateDesigner(task);
@@ -621,6 +747,10 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     causality.status === 'UNVERIFIED' ? '인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.' : `인과 그래프 상태: ${causality.status}`,
     narrative.required ? `서사 계약: ${narrative.status}. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.` : '서사 계약: 필요 없음.',
     simulation.status === 'UNVERIFIED' ? '수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.' : '수치 시뮬레이션: 제공된 입력만 계산했다.',
+    referenceCapabilities.nextImprovementCandidates.length?
+      `측정된 개선 우선순위: ${referenceCapabilities.nextImprovementCandidates.map(item=>item.issueId||'unknown').join(', ')}. 기존 Game Designer 검토 및 정확 런타임 QA 전 자동 적용 금지.`:
+      '실제 플레이 격차 검증 증거 없음. 임의 개선/수치 변경 금지.',
+    'R01-R10 참고 자료는 사용권한/실측/독립 QA 없는 한 구현 또는 경험 승격 증거가 아니다.',
     '구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.'
   ].join('\n');
 
@@ -636,6 +766,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     integrity,
     diversity,
     referenceHomage,
+    referenceCapabilities,
     narrative,
     implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers }),
     advisory:freezeList(advisory),

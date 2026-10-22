@@ -3327,45 +3327,41 @@ test('false new-game gate is recovered only for an independently runnable existi
   }
 });
 
-
-test('only exact non-writing practice drills recover false external semantic mapping blocks',()=>{
-  const base={
-    id:'LEARNING-PRACTICE-safety-test',gameId:null,target:'web',
-    department:'learning',type:'research',
-    sourceRoot:'learning-practice:safety-test',
-    goal:'[VIBE_LEARNING_PRACTICE]\\nkind=REPRO_DRILL\\n연습 결과만 작성한다.',
-    responsibleFiles:[],status:'blocked',retries:1,
-    blocker:'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',
-    evidence:['learning-practice-only','learning-web-artifact-practice']
+test('read-only learning practice source-attribution blocks recover without releasing real source or owner gates',()=>{
+  const sample={
+    id:'LEARNING-PRACTICE-gap-progression-g1',gameId:null,target:'web',
+    department:'learning',type:'research',sourceRoot:'learning-practice:gap-progression',
+    goal:'[VIBE_LEARNING_PRACTICE]\\nkind=REPRO_DRILL\\ndomains=PROGRESSION',
+    status:'blocked',blocker:'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',
+    retries:1,maxRetries:2,responsibleFiles:[],evidence:['failure-cause:VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED','learning-practice-only','learning-web-artifact-practice']
   };
-  const tasks=[
-    base,
-    {...base,id:'LEARNING-PRACTICE-roblox-readonly',target:'roblox',
-      sourceRoot:'learning-practice:roblox-readonly',
-      evidence:['learning-practice-only','learning-analysis-practice']},
-    {...base,id:'LEARNING-PRACTICE-roblox-bad-evidence',target:'roblox',
-      evidence:['learning-practice-only','learning-web-artifact-practice']},
-    {...base,id:'LEARNING-PRACTICE-untrusted-path',sourceRoot:'web-games/actual-source'},
-    {...base,id:'LEARNING-PRACTICE-game-source',gameId:'core-clash-4v4'},
-    {...base,id:'LEARNING-PRACTICE-write-file',responsibleFiles:['web-games/game/index.html']},
-    {...base,id:'LEARNING-PRACTICE-implementation',type:'implementation'},
-    {...base,id:'LEARNING-PRACTICE-owner-hold',ownerDevelopmentHold:true},
-    {...base,id:'LEARNING-PRACTICE-owner-decision',requiresOwnerDecision:true},
-    {...base,id:'LEARNING-PRACTICE-bad-evidence',evidence:['learning-practice-only']},
-    {...base,id:'LEARNING-PRACTICE-other-block',blocker:'DESIGN_CONTRACT_NOT_PASSED'},
-    {...base,id:'REAL-GAME-gate-not-practice',department:'development',type:'implementation',gameId:'core-clash-4v4',sourceRoot:'web-games/core-clash-4v4'}
-  ];
-  const recovered=recoverStaleRunningReservations(createVibeContinuousQueue({tasks}));
-  assert.equal(recovered.recovered,2);
-  const byId=new Map(recovered.queue.tasks.map(t=>[t.id,t]));
-  assert.equal(byId.get('LEARNING-PRACTICE-roblox-readonly').status,'queued');
-  const passed=byId.get(base.id);
-  assert.equal(passed.status,'queued');
-  assert.equal(passed.blocker,null);
-  assert.equal(passed.retries,1);
-  assert.equal(passed.lastOutcome,'READ_ONLY_PRACTICE_MAPPING_GATE_RECOVERED');
-  assert.ok(passed.evidence.includes('recovery:read-only-practice-semantic-mapping-v1'));
-  for(const task of tasks.slice(2)){
-    assert.equal(byId.get(task.id).status,'blocked',task.id);
+  const differentBlock={...sample,id:'LEARNING-PRACTICE-other-cause-g1',blocker:'DESIGN_CONTRACT_NOT_PASSED'};
+  const realGame={...sample,id:'real-game-work',gameId:'core-clash-4v4',department:'development',type:'implementation',sourceRoot:'web-games/core-clash-4v4'};
+  const disguised={...sample,id:'fake-learning-task'};
+  const ownerHold={...sample,id:'LEARNING-PRACTICE-hold-g1',ownerDevelopmentHold:true};
+  const ownerDecision={...sample,id:'LEARNING-PRACTICE-decision-g1',requiresOwnerDecision:true};
+  const otherGoal={...sample,id:'LEARNING-PRACTICE-other-goal-g1',goal:'새 게임 만들어'};
+  const missingProof={...sample,id:'LEARNING-PRACTICE-no-proof-g1',evidence:['failure-cause:VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED']};
+  const mismatchedProof={...sample,id:'LEARNING-PRACTICE-wrong-proof-g1',target:'roblox'};
+  const actualSourceWrite={...sample,id:'LEARNING-PRACTICE-with-source-g1',responsibleFiles:['web-games/game/index.html']};
+  const heldTarget={...sample,id:'LEARNING-PRACTICE-unity-hold-g1',target:'unity'};
+  const safeRobloxPractice={...sample,id:'LEARNING-PRACTICE-roblox-simulation-g1',target:'roblox',
+    sourceRoot:'learning-practice:roblox-simulation',
+    evidence:['learning-practice-only','learning-analysis-practice']};
+  const rejected=[differentBlock,realGame,disguised,ownerHold,ownerDecision,otherGoal,missingProof,mismatchedProof,actualSourceWrite,heldTarget];
+  const queue=createVibeContinuousQueue({tasks:[sample,safeRobloxPractice,...rejected]});
+  const actual=recoverStaleRunningReservations(queue);
+  assert.equal(actual.recovered,2);
+  const byId=new Map(actual.queue.tasks.map(t=>[t.id,t]));
+  const restored=byId.get(sample.id);
+  assert.equal(restored.status,'queued');
+  assert.equal(restored.blocker,null);
+  assert.equal(restored.retries,1);
+  assert.equal(restored.lastOutcome,'RECOVERED_READ_ONLY_RESEARCH_SOURCE_GATE');
+  assert.ok(restored.evidence.includes('recovery:read-only-learning-practice-source-gate-v1'));
+  assert.equal(byId.get(safeRobloxPractice.id).status,'queued');
+  for(const {id} of rejected){
+    assert.equal(byId.get(id).status,'blocked',id);
   }
+  assert.equal(recoverStaleRunningReservations(actual.queue).recovered,0,'recovery is idempotent');
 });

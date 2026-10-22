@@ -553,48 +553,47 @@ test('existing Web 3D repair is not mistaken for a new game by appended build-up
   assert.match(String(spoof.reason),/EXECUTION_GATE_BLOCKED:company-owner-gate-required/,'unbound user goal marker must not bypass new-game approval');
 });
 
-
-test('read-only Web learning practice in asset lane never requires game-source semantic mapping',()=>{
-  const previous=process.env.VIBE2_EXECUTION_LANE;
+test('asset-development runtime lane does not require game-source semantics for read-only practice research',()=>{
+  const old=process.env.VIBE2_EXECUTION_LANE;
   process.env.VIBE2_EXECUTION_LANE='asset-development';
+  const verified={
+    id:'external-black-box-test-read-only',project:'verified-reference',
+    sourceRevision:'sha256:'+'a'.repeat(64),score:1,verified:true,
+    authority:'verified-task-playbook',
+    distilledApplicationPrinciples:['id=unmapped-source-only-principle;scope=game-source;lesson=source change requires exact semantic mapping'],
+    distilledAvoidancePrinciples:['do not claim unverified gameplay changes'],
+    distilledLearningUseAllowed:['learning only with verified evidence']
+  };
+  const playbooks={generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{
+    web:{authority:'verified-task-playbook',reuse:[verified]},
+    coding:{authority:'verified-task-playbook',reuse:[verified]},
+    general:{authority:'verified-task-playbook',reuse:[verified]}
+  }};
+  const runtime={continuous:{enabled:true},safety:{
+    existingWebMaintenanceAllowed:true,allowedWritableTargets:['web'],
+    paidAIAllowed:false,paidRunnerAllowed:false
+  }};
   try{
-    const playbooks={taskTypes:{web:{
-      authority:'verified-task-playbook',
-      reuse:[{
-        id:'external-black-box-unknown-mapping-test',
-        project:'approved-observation',sourceRevision:'sha256:'+'a'.repeat(64),score:1,
-        distilledApplicationPrinciples:['id=unmapped-future-principle;scope=observation;lesson=unknown']
-      }]
-    }}};
-    const runtime={continuous:{enabled:true},safety:{
-      existingWebMaintenanceAllowed:true,allowedWritableTargets:['web'],
-      paidAIAllowed:false,paidRunnerAllowed:false
-    }};
-    const practice={
-      id:'LEARNING-PRACTICE-verification-unit',gameId:null,target:'web',
-      department:'learning',type:'research',sourceRoot:'learning-practice:verification-unit',
-      goal:'[VIBE_LEARNING_PRACTICE]\\nkind=REPRO_DRILL\\n소스 파일을 수정하지 않고 인과 검증 연습한다.',
-      responsibleFiles:[],status:'queued',priority:'normal',
-      evidence:['learning-practice-only','learning-web-artifact-practice']
+    const research={
+      id:'LEARNING-PRACTICE-gap-progression-g1',gameId:null,target:'web',
+      department:'learning',type:'research',sourceRoot:'learning-practice:gap-progression',
+      goal:'[VIBE_LEARNING_PRACTICE]\\nkind=REPRO_DRILL\\ndomains=PROGRESSION',
+      status:'queued',responsibleFiles:[]
     };
-    const research=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[practice]},taskId:practice.id,playbooks});
-    assert.notEqual(research.reason,'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED');
-    assert.equal(research.knowledgeApplicationContract?.mandatoryForGameTarget,false,
-      'read-only practice must not claim actual source-application requirements');
-
-    const production={...practice,
-      id:'real-game-write',gameId:'core-clash-4v4',target:'web',
-      department:'development',type:'implementation',
-      sourceRoot:'web-games/core-clash-4v4',
-      goal:'[WEB_REPAIR] 기존 Web 게임 입력 및 렌더 수리',
-      responsibleFiles:['web-games/core-clash-4v4/index.html'],evidence:[]
+    const read=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[research]},taskId:research.id,playbooks});
+    assert.notEqual(read.reason,'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED','read-only research must not inherit source-write gate');
+    if(read.knowledgeApplicationContract)assert.equal(read.knowledgeApplicationContract.mandatoryForGameTarget,false);
+    const implementation={
+      ...research,id:'real-web-source-edit',gameId:'core-clash-4v4',
+      department:'development',type:'implementation',sourceRoot:'web-games/core-clash-4v4',
+      goal:'기존 Web 게임의 모바일 UI 게임플레이 반응을 수정한다',
+      responsibleFiles:['web-games/core-clash-4v4/index.html']
     };
-    const writing=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[production]},taskId:production.id,playbooks});
-    assert.equal(writing.reason,'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',
-      'unknown verified principle still blocks a real game-source edit');
-    assert.equal(writing.knowledgeApplicationContract?.mandatoryForGameTarget,true);
+    const write=buildVibeContinuousWorkOrder({runtime,queue:{tasks:[implementation]},taskId:implementation.id,playbooks});
+    assert.equal(write.reason,'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED','real source changes must remain fail-closed for unmapped verified principles');
+    assert.equal(write.knowledgeApplicationContract.mandatoryForGameTarget,true);
   }finally{
-    if(previous===undefined)delete process.env.VIBE2_EXECUTION_LANE;
-    else process.env.VIBE2_EXECUTION_LANE=previous;
+    if(old===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=old;
   }
 });
