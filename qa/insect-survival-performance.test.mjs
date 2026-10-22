@@ -128,3 +128,53 @@ test('fog decor culling affects distant graphics only and keeps the game world i
  assert.match(source,/visibleDecor:decor\.children\.filter/);
  assert.doesNotMatch(code,/enemies|resources|world\.children|state\.|player\.hp|SAVE_KEY/);
 });
+
+test('CC0 floor GPU instancing must preserve all 12 original meshes and their world transforms',()=>{
+ const start=source.indexOf('function batchGroundTiles('),end=source.indexOf('function environment(frame){',start);
+ assert.ok(start>=0&&end>start,'GPU batching implementation required');
+ const code=source.slice(start,end);
+ const tiles=Array.from({length:12},(_,i)=>({
+  visible:true,
+  updateMatrixWorld(){this.updated=true},
+  traverse(cb){
+   cb({isMesh:true,geometry:{name:'CC0_FLOOR_A'},material:{name:'CC0_A'},matrixWorld:{id:'a'+i}});
+   cb({isMesh:true,geometry:{name:'CC0_FLOOR_B'},material:{name:'CC0_B'},matrixWorld:{id:'b'+i}});
+  }
+ }));
+ const batches=[];
+ class InstancedMesh{
+  constructor(geometry,material,count){
+   this.geometry=geometry;this.material=material;this.count=count;this.userData={};
+   this.instanceMatrix={needsUpdate:false};this.transforms=[];this.visible=true;
+  }
+  setMatrixAt(index,value){this.transforms[index]=value}
+ }
+ const world={add(item){batches.push(item)}};
+ const context=vm.createContext({THREE:{InstancedMesh},world,console:{warn(){}},tiles});
+ vm.runInContext('let floorGpuMeshes=[],floorGpuInstances=0;'+code+
+   ';globalThis.batched=batchGroundTiles(tiles);globalThis.count=floorGpuInstances;'+
+   'globalThis.batchList=floorGpuMeshes;',context);
+ assert.equal(context.batched,true);
+ assert.equal(context.count,12);
+ assert.equal(batches.length,2,'one draw-call source per original CC0 submesh, not per tile');
+ assert.ok(tiles.every(tile=>tile.updated&&tile.visible===false));
+ assert.ok(batches.every(group=>group.count===12&&group.instanceMatrix.needsUpdate===true));
+ assert.equal(batches[0].transforms[11].id,'a11');
+ assert.equal(batches[1].transforms[7].id,'b7');
+ assert.ok(batches.every(mesh=>mesh.userData.cc0FloorInstance===true));
+ assert.match(source,/window\.insect3DGroundingProof=\(\)=>/);
+ assert.match(source,/floorGpuVisible:/);
+ const fallbackTiles=[{visible:true}];
+ const missing=vm.createContext({THREE:{},world,console:{warn(){}},tiles:fallbackTiles});
+ vm.runInContext(code+';globalThis.batched=batchGroundTiles(tiles);',missing);
+ assert.equal(missing.batched,false,'missing InstancedMesh keeps original CC0 tiles');
+ assert.equal(fallbackTiles[0].visible,true);
+});
+
+test('real Chromium WebGL QA requires instanced 12-tile ground, no fake draw-call passing',()=>{
+ assert.match(smoke,/floorGpuInstances,12/);
+ assert.match(smoke,/floorGpuVisible,true/);
+ assert.match(smoke,/floorGpuBatches/);
+ assert.match(source,/batchGroundTiles\(floorTiles\)/);
+ assert.match(source,/const floorTop=first\?new THREE\.Box3\(\)\.setFromObject\(first\)\.max\.y:null/);
+});

@@ -396,6 +396,12 @@ try{
       assert.equal(proof?.canvasVisible,true,'insect-survival: 3D canvas not visible');
       assert.equal(proof?.legacyHidden,true,'insect-survival: 2D fallback is still visible');
       assert.equal(proof?.ground?.tileCount,12,'insect-survival: original CC0 floor tiles missing');
+      assert.equal(proof?.ground?.floorGpuInstances,12,
+        'insect-survival: GPU floor must retain all 12 CC0 original panels');
+      assert.equal(proof?.ground?.floorGpuVisible,true,
+        'insect-survival: GPU-instanced CC0 floor render is missing');
+      assert.ok(proof?.ground?.floorGpuBatches>=1,
+        'insect-survival: no original CC0 floor submesh is instanced');
       assert.ok(Math.abs(proof?.ground?.floorTop)<.005,
         'insect-survival: original CC0 floor must align with ground Y=0');
       assert.ok(Number.isFinite(proof?.ground?.heroBottom)&&proof.ground.heroBottom>=proof.ground.floorTop-.12,
@@ -462,6 +468,10 @@ try{
       assert.equal(mobileProof?.webgl2,true,'insect-survival: mobile WebGL2 buffer missing');
       assert.equal(mobileProof?.canvasVisible,true,'insect-survival: mobile 3D canvas hidden');
       assert.equal(mobileProof?.ground?.tileCount,12,'insect-survival: mobile CC0 tiles missing');
+      assert.equal(mobileProof?.ground?.floorGpuInstances,12,
+        'insect-survival: mobile GPU floor must retain all 12 original CC0 panels');
+      assert.equal(mobileProof?.ground?.floorGpuVisible,true,
+        'insect-survival: mobile original CC0 tiles must render via instancing');
       assert.ok(Math.abs(mobileProof?.ground?.floorTop)<.005,
         'insect-survival: mobile CC0 ground Y mismatch');
       assert.ok(Number.isFinite(mobileProof?.ground?.heroBottom)&&mobileProof.ground.heroBottom>=-.12,

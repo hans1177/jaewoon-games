@@ -74,7 +74,7 @@ test('runtime CC0 tile placement is exact: 12 non-overlapping panels with ground
     clone(){return {kind:this.kind,userData:{...this.userData},position:makePosition(this.position.x,this.position.y,this.position.z),
       scale:{...this.scale},clone:this.clone}}
   };
-  const world={items:[],add(value){this.items.push(value)}};
+  const world={items:[],get children(){return this.items},add(value){this.items.push(value)}};
   const mockTHREE={
     Vector3:class{constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z})}},
     Box3:class{
@@ -87,18 +87,19 @@ test('runtime CC0 tile placement is exact: 12 non-overlapping panels with ground
     },
     PlaneGeometry:class{constructor(width,depth){Object.assign(this,{width,depth})}},
     MeshStandardMaterial:class{},
-    Mesh:class{constructor(geometry,material){this.geometry=geometry;this.material=material;
+    Mesh:class{constructor(geometry,material){this.geometry=geometry;this.material=material;this.userData={};
       this.rotation={};this.position=makePosition()}}
   };
   const start=render.slice(render.indexOf('function environment(frame){'),render.indexOf(' const rand=i=>'));
   assert.ok(start.includes('const floor=derived('));
   const execute=new Function('THREE','world','model','ratio','GROUND_TILE_SPAN','GROUND_SURFACE_Y','window',
-    'let fieldBuilt=false;const derived=()=>model;'+start+
+    'let fieldBuilt=false;const derived=()=>model;const batchGroundTiles=()=>false;'+start+
     String.fromCharCode(10)+'}'+String.fromCharCode(10)+'environment({world:{w:2200,h:1600}});return fieldBuilt;');
   const [ratio,surface,,pitch]=renderingConstants();
   assert.equal(execute(mockTHREE,world,master,ratio,pitch,surface,{}),true);
   const panels=world.items.filter(item=>item.kind==='cc0-floor');
   assert.equal(panels.length,12);
+  assert.match(render,/batchGroundTiles\(floorTiles\)/,'GPU batching receives the 12 original CC0 tile instances');
   const centers=panels.map(p=>[p.position.x,p.position.y,p.position.z]);
   assert.equal(new Set(centers.map(v=>v.join(','))).size,12);
   for(const panel of panels){
