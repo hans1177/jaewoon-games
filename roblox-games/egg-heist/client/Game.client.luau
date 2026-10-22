@@ -211,9 +211,9 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = gui
-local verifiedLearningSemanticVariant = "PROGRESSION_RISK"
+local verifiedLearningSemanticVariant = "MOVEMENT_SPATIAL"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
-local verifiedLearningSemanticColor = Color3.fromRGB(156, 132, 255)
+local verifiedLearningSemanticColor = Color3.fromRGB(92, 190, 255)
 local verifiedLearningSemanticMood = "PRESERVE_AUTHORED_PRESENTATION"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
