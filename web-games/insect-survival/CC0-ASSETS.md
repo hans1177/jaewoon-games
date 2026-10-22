@@ -39,3 +39,10 @@
 - WebGL 컨텍스트 손실(`webglcontextlost`) 또는 3D 프레임 렌더링 예외 발생 시 `insectScene3DReady=false`로 되돌리고 `#cv` 2D 원본 캔버스를 다시 보이게 한다. 3D 캔버스는 숨기며 전투·제작·저장 로직은 계속 원래 `index.html`에서 실행한다.
 - 로딩 실패도 같은 복구 함수로 처리한다. 복구 검증은 `qa/insect-survival-grounding.test.mjs`에 추가했고 총 7개 집중 검사를 확인했다. 이는 오류 상황 모의 검증이며 WebGL 컨텍스트 재생성이나 실제 모바일 장면 QA 완료를 뜻하지 않는다.
 - 2026-10-22 기준 브라우저 시작 smoke 기록에서 `DEVELOPMENT_WEB_BROWSER_GAME=insect-survival` 및 `DEVELOPMENT_WEB_BROWSER_SMOKE=PASS`를 확인했다. 이는 이전 후보 커밋에 대한 시작 검사이므로 최신 코드와 실기기 접지 결과를 인증하지 않는다.
+
+## 실물 3D 브라우저 검사 강제 · PR #9262 후속
+
+- 기존 `qa/vibe2-development-web-browser-smoke.mjs`는 곤충생존기 페이지가 시작되기만 해도 PASS할 수 있었다. 게임 단독 검사에서는 이제 실제 `#insect3d` 캔버스의 **WebGL2 drawing buffer**, 렌더링 완료 프레임, 기존 `#cv` 숨김 여부를 확인한다. 2D 복구 화면만 뜨면 PASS할 수 없다.
+- 월드 렌더러는 화면 표시를 변경하지 않는 읽기 전용 진단 `window.insect3DGroundingProof()`를 통해 CC0 바닥 타일 실제 메시 수(12), `THREE.Box3` 변환된 바닥 윗면 Y, 현재 애니메이션 캐릭터 메시의 최저점 Y를 제공한다. 단독 브라우저 QA에서 지표와 캐릭터 접지를 확인하고 기준 위반 시 실패한다.
+- 기존 Core QA에서 실행하던 `qa/insect-survival.test.mjs`가 새 `qa/insect-survival-grounding.test.mjs`를 가져오므로 지면 정렬·오류 복구 집중 회귀 8개가 실제 CI 명령에 포함된다.
+- 이 추가 검증 코드 자체는 로컬 시뮬레이션에서 통과했지만 **해당 CI 브라우저 검사 결과와 실제 모바일 기기 검증은 아직 별개**이며 미검증 상태를 유지한다.
