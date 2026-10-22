@@ -25,11 +25,15 @@ export function createVibeActionTransition({mixer,clips=[],LoopOnce='once',LoopR
     .filter(clip=>clip&&typeof clip.name==='string'&&clip.name)
     .map(clip=>[clip.name,clip]));
   let current=null,currentName='',currentOneShot=false,lastToken=null,lastFrame=0;
+  const missingNames=new Set();
   const counters={transitions:0,attackReplays:0,missingClips:0};
   function play(name,{oneShot=false,token=null,fadeSeconds,playbackRate=1}={}){
     const clip=byName.get(name);
     if(!mixer||!clip){
-      if(name)counters.missingClips++;
+      if(name&&!missingNames.has(name)){
+        missingNames.add(name);
+        counters.missingClips++;
+      }
       return false;
     }
     const replay=Boolean(oneShot)&&token!==null&&token!==lastToken;
@@ -38,7 +42,7 @@ export function createVibeActionTransition({mixer,clips=[],LoopOnce='once',LoopR
     if(!next)return false;
     const fade=clamp(finite(fadeSeconds,oneShot?0.09:0.16),0.025,0.28);
     if(current&&current!==next)current.fadeOut(fade);
-    if(current===next&&replay){
+    if(current===next&&(replay||currentOneShot!==Boolean(oneShot))){
       // Three's mixer caches an AnimationAction per clip: avoid fading out
       // and fading in the same action on consecutive attacks.
       current.stop();
