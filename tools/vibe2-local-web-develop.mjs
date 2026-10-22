@@ -134,23 +134,35 @@ export function requiredReviewPass(workflows,checkRuns,sha){
 function options(argv){
   const out={};
   for(const arg of argv){
-    if(arg==='--apply'||arg==='--pr'||arg==='--check')out[arg.slice(2)]=true;
+    if(arg==='--apply'||arg==='--pr'||arg==='--check'||arg==='--sync')out[arg.slice(2)]=true;
     else if(/^--(game|goal|match|merge-pr)=/.test(arg)){
       const at=arg.indexOf('=');out[arg.slice(2,at)]=arg.slice(at+1);
     }else fail('LOCAL_DEV_UNKNOWN_ARGUMENT:'+arg.slice(0,40));
   }
   return out;
 }
-function cleanMain(){
-  if(git(['branch','--show-current'])!=='main')fail('LOCAL_DEV_MAIN_BRANCH_REQUIRED');
-  if(git(['status','--porcelain']))fail('LOCAL_DEV_DIRTY_WORKTREE_STOP');
-  git(['fetch','--quiet','origin','main']);
-  if(git(['rev-parse','HEAD'])!==git(['rev-parse','refs/remotes/origin/main']))
-    fail('LOCAL_DEV_PULL_MAIN_FIRST');
-  const origin=git(['remote','get-url','origin']);
+// [동기화] 기존 소스·커밋을 보호하고 검증된 GitHub main만 fast-forward 한다.
+export function cleanMain({gitCommand=git}={}){
+  if(gitCommand(['branch','--show-current'])!=='main')fail('LOCAL_DEV_MAIN_BRANCH_REQUIRED');
+  if(gitCommand(['status','--porcelain']))fail('LOCAL_DEV_DIRTY_WORKTREE_STOP');
+  const origin=gitCommand(['remote','get-url','origin']);
   if(!/^(?:https:\/\/github\.com\/|git@github\.com:)hans1177\/jaewoon-games(?:\.git)?$/i.test(origin))
     fail('LOCAL_DEV_WRONG_REPOSITORY');
+  gitCommand(['fetch','--quiet','origin','main']);
+  const localSha=gitCommand(['rev-parse','HEAD']);
+  const remoteSha=gitCommand(['rev-parse','refs/remotes/origin/main']);
+  if(!/^[0-9a-f]{40}$/i.test(localSha)||!/^[0-9a-f]{40}$/i.test(remoteSha))
+    fail('LOCAL_DEV_SYNC_REVISION_INVALID');
+  if(localSha===remoteSha)return {synced:false,revision:localSha};
+  if(gitCommand(['merge-base','HEAD','refs/remotes/origin/main'])!==localSha)
+    fail('LOCAL_DEV_DIVERGED_MAIN_STOP');
+  gitCommand(['merge','--ff-only','refs/remotes/origin/main']);
+  if(gitCommand(['rev-parse','HEAD'])!==remoteSha)
+    fail('LOCAL_DEV_SYNC_REVISION_MISMATCH');
+  if(gitCommand(['status','--porcelain']))fail('LOCAL_DEV_SYNC_WORKTREE_NOT_CLEAN');
+  return {synced:true,revision:remoteSha};
 }
+
 async function suggestSourceEdit({gameId,goal,match}){
   const selected=readApprovedWebGame(gameId,ROOT);
   const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'game-catalog.json'),'utf8'));
@@ -191,9 +203,10 @@ function scopedQa(sourceFile){
   if(staged.length!==1||staged[0]!==sourceFile)fail('LOCAL_DEV_UNEXPECTED_STAGED_FILE');
 }
 async function development(options){
-  centralPolicy();
   if(options.pr&&!options.apply)fail('LOCAL_DEV_PR_REQUIRES_EXPLICIT_APPLY');
-  cleanMain();
+  const sync=cleanMain();
+  centralPolicy(); // 반드시 원격 갱신 이후 중앙 문서 검증
+  console.log('LOCAL_VIBE_MAIN_SYNC='+(sync.synced?'FAST_FORWARD':'CURRENT')+' SHA='+sync.revision);
   const gameId=clean(options.game),goal=clean(options.goal);
   const proposed=await suggestSourceEdit({gameId,goal,match:options.match});
   console.log('LOCAL_CHANGE_FILE='+proposed.file);
@@ -250,9 +263,17 @@ function reviewAndMerge(number){
 }
 async function main(){
   const parsed=options(process.argv.slice(2));
-  if(parsed.check){
+  if(parsed.sync){
+    if(Object.keys(parsed).length!==1)fail('LOCAL_DEV_SYNC_EXCLUSIVE');
+    const sync=cleanMain();
     centralPolicy();
-    cleanMain();
+    console.log('LOCAL_VIBE_MAIN_SYNC='+(sync.synced?'FAST_FORWARD':'CURRENT')+' SHA='+sync.revision);
+    return;
+  }
+  if(parsed.check){
+    const sync=cleanMain();
+    centralPolicy();
+    console.log('LOCAL_VIBE_MAIN_SYNC='+(sync.synced?'FAST_FORWARD':'CURRENT')+' SHA='+sync.revision);
     gh(['auth','status']);
     const res=await fetch('http://127.0.0.1:11434/api/tags',{signal:AbortSignal.timeout(5000)});
     if(!res.ok)fail('LOCAL_DEV_OLLAMA_NOT_CONNECTED:'+res.status);
