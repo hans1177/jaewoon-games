@@ -280,7 +280,9 @@ function follow(frame,dt){
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;
  scene.background.set(night?'#263c3f':'#a2b998');
  scene.fog.color.set(night?'#293e3e':'#7eaa80');
- const dir=headingVector.set(Number(p.dirX)||0,0,Number(p.dirY)||1).normalize();
+ const dx=Number(p.dirX),dz=Number(p.dirY);
+ const dir=headingVector.set(Number.isFinite(dx)?dx:0,0,Number.isFinite(dz)?dz:0);
+ if(dir.lengthSq()<1e-8)dir.set(0,0,1);else dir.normalize();
  // Low over-shoulder camera, looking through giant grass. Combat widens framing slightly.
  const nearby=frame.bugs.some(b=>!b.dead&&Math.hypot(b.x-p.x,b.y-p.y)<250);
  const behind=cameraBehind.set(pos.x-dir.x*(nearby?8.2:6.8),nearby?5.2:4.65,pos.z-dir.z*(nearby?8.2:6.8));
