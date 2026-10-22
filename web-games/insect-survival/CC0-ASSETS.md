@@ -86,3 +86,11 @@
 - 브라우저 QA는 기존 바닥의 실제 박스 표면·캐릭터 바닥 높이·모바일 회피 터치 검증에 더해 `floorGpuInstances=12`, 실제 렌더 가능한 `floorGpuVisible=true`, 바닥 메시 인스턴싱 묶음 수를 검사한다.
 - Vibe가 읽는 기존 `window.insect3DPerformanceProof()`에 `floorGpuBatches`, `floorGpuInstances`, `renderCalls`를 그대로 노출한다. 기존 로컬 프로그램이나 Vibe 학습/배포 정책을 변경하지 않고 브라우저 실측으로 이전 298/184 draw calls(정적 헤드리스 Chromium 환경)와 비교한다.
 - GPU 드로우 호출 수 감소가 **실기기 FPS·발열 개선을 인증하지는 않는다.** 실기기와 장시간 플레이는 별도로 검증해야 한다.
+
+## CC0 장식물 GPU 인스턴싱과 Vibe 실측 병목 제거 후보
+
+- 동일한 **원본 CC0 geometry + 파생 색상 material**을 사용하는 정적인 나무·돌·잎사귀·버섯 표현만 `THREE.InstancedMesh`로 묶는다. 원본 모델 파일과 개별 transform 및 색상·높이는 수정하지 않는다. 스킨 리그, 애니메이션 메시, 다른 geometry/material 및 단독 장식물은 기존 렌더 방식으로 남긴다.
+- 이미 존재하던 안개 거리 렌더 최적화는 유지한다. 인스턴스별 거리 판단은 변경된 변환 행렬만 갱신하고, 원본 CC0 장식물의 그룹은 렌더 중복을 방지하기 위해 숨긴다. 이동·전투·곤충·채집 노드·12개 바닥 패널·저장 데이터에는 이 처리를 적용하지 않는다.
+- `window.insect3DPerformanceProof()`가 `decorGpuBatches`, `decorGpuInstances`, `decorGpuProps`, 실제 `renderCalls`, `visibleDecor`를 읽기 전용으로 제공한다. 기존 `tools/vibe2-performance-sanity.mjs`에만 측정 결과를 전달한다. 새로운 성능 엔진이나 배포·학습 파이프라인은 만들지 않는다.
+- 이전 병합 PR #9323 Chromium 한 장면에서 데스크톱 **284 draw calls**, 모바일 에뮬레이션 **178 draw calls**를 확인했다. 이번 GPU 장식물 묶음 후 감소량은 **같은 WebGL2 브라우저 QA로 재측정하기 전까지 미확정**이다.
+- 소프트웨어/에뮬레이터 프레임 기록은 물리 Android 기기의 GPU FPS·발열 인증이 아니며, QA 완료 및 소유자 승인 전에는 별도 후보 PR에서 유지한다. **로컬 PC/파일 변경 없음.**

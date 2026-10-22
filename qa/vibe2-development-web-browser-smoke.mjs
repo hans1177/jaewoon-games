@@ -422,6 +422,14 @@ try{
       assert.ok(frameBudget?.pixelRatio<=frameBudget?.pixelRatioCap+.001);
       assert.ok(frameBudget?.pixelRatio>=frameBudget?.pixelRatioFloor-.001);
       assert.ok(frameBudget?.framesObserved>=1,'3D performance counters must advance on actual frames');
+      assert.ok(frameBudget?.decorGpuBatches>=1,
+        'insect-survival: repeated original CC0 decoration not GPU batched');
+      assert.ok(frameBudget?.decorGpuInstances>=2,
+        'insect-survival: no repeated original CC0 decorative mesh instances');
+      assert.ok(frameBudget?.decorGpuProps>=2,
+        'insect-survival: decorative prop reuse not observed');
+      assert.ok(frameBudget?.decorGpuProps<=frameBudget?.totalDecor,
+        'insect-survival: decorative GPU batches cannot duplicate source props');
     }
     if(insect3dOnly){
       // Chromium Android-sized viewport and native CDP touch event regression.
@@ -496,6 +504,10 @@ try{
       assert.ok(mobileBudget?.pixelRatio<=1.3+.001,'mobile resolution must respect the original cap');
       assert.ok(mobileBudget?.pixelRatio>=mobileBudget?.pixelRatioFloor-.001,'adaptive resolution floor');
       assert.equal(mobileBudget?.hardwareBenchmarkVerified,false,'emulation is not physical device profiling');
+      assert.ok(mobileBudget?.decorGpuBatches>=1,
+        'insect-survival: mobile decorative CC0 batch missing');
+      assert.ok(mobileBudget?.decorGpuInstances>=2,
+        'insect-survival: mobile repeated decorative GPU transforms missing');
       console.log('DEVELOPMENT_WEB_MOBILE_TOUCH_EVIDENCE_insect-survival='+JSON.stringify(touchResult));
       assert.ok(touchResult?.serial>mobileProof.serial,
         'insect-survival: physical touch event did not trigger accepted dodge');
