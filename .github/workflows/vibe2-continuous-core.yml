@@ -1924,11 +1924,8 @@ jobs:
             echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           else
-            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=GEMINI_API'
-            if [ -z "${GEMINI_API_KEY:-}" ]; then
-              echo 'GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK' >&2
-              exit 1
-            fi
+            # 자체 생성·진단 후보를 먼저 검증한다. 키 검사는 실제 모델 요청 함수가 맡는다.
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=VIBE_FIRST_OPTIONAL_GEMINI'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           fi
 

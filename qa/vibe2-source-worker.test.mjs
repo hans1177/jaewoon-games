@@ -9012,3 +9012,73 @@ test('malformed retry keeps bounded source context instead of restoring the over
   assert.equal(result.candidate.edits[0].find,'let state = 1;');
   assert.equal(result.candidate.edits[0].replace,'let state = 2;');
 });
+
+// 자체 코딩 · 모델 요청 없이 새 입력 연결을 생성하고 실제 상태 변화를 검증한다.
+import { deterministicWebInputCandidate } from '../tools/vibe2-source-worker.mjs';
+
+test('independent authoring generates working mobile action code without an AI response',async t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root='web-games/demo',sourceRoot=path.join(cwd,root);
+  const source='<button id="strike" data-gameplay-action="attack">공격</button><script>let hp=10;function attack(){hp-=2;}</script>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const work=order({target:'web',root,responsibleFiles:[root+'/index.html'],taskId:'independent-input'});
+  work.goal='모바일 버튼 입력을 기존 공격 동작에 연결';
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  const previous=process.env.GEMINI_API_KEY;delete process.env.GEMINI_API_KEY;
+  t.after(()=>{if(previous===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=previous;});
+  const raw=deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']});
+  assert.equal(raw.deterministicWebInput,true);
+  const normalized=normalizeCandidate(raw,{target:'web',responsibleFiles:['index.html'],sourceRootRelative:root,allowFullRewrite:false});
+  const documents=new Map([['index.html',source]]);
+  applyExactEdits('',normalized.edits,{documents});
+  const candidate=documents.get('index.html');
+  const events=new Map(),context={document:{getElementById:id=>({addEventListener:(event,handler)=>events.set(id+':'+event,handler)})}};
+  runInNewContext(candidate.match(/<script>([\s\S]*)<\/script>/)[1],context);
+  assert.equal(runInNewContext('hp',context),10);
+  assert.equal(events.size,1);
+  events.get('strike:click')();
+  assert.equal(runInNewContext('hp',context),8);
+  assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),source,'candidate does not mutate canonical source');
+  write(path.join(sourceRoot,'index.html'),candidate);
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']}),null,'replay cannot duplicate the handler');
+});
+
+test('independent authoring refuses ambiguous controls and preserves responsible file boundaries',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const base='<button id="strike" data-gameplay-action="attack">공격</button><script>function attack(){return 1;}</script>';
+  const work={target:'web',goal:'모바일 버튼 연결'};
+  for(const source of [
+    base.replace('attack()','attack(target)'),
+    base.replace('function attack(){return 1;}','function attack(){return this.hp;}'),
+    base.replace('function attack(){return 1;}','function outer(){function attack(){return 1;}}'),
+    base.replace('function attack(){return 1;}','if(false){function attack(){return 1;}}'),
+    base.replace('function attack(){return 1;}','function attack(){return 1;} attack=other;'),
+    base.replace('<script>','<script type="module">'),
+    base.replace('</script>','document.addEventListener("click",()=>{});</script>'),
+    base.replace('<script>','<button id="strike">중복</button><script>'),
+    base.replace('data-gameplay-action="attack"','data-gameplay-action="deleteSave"'),
+    base.replace('<script>','<script src="game.js"></script><script>'),
+    '<!--'+base+'-->',
+    '<form>'+base+'</form>'
+  ]){
+    write(path.join(sourceRoot,'index.html'),source);
+    assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']}),null,source);
+  }
+  write(path.join(sourceRoot,'index.html'),base);
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['../outside.html']}),null);
+  assert.equal(deterministicWebInputCandidate({order:{...work,target:'roblox'},sourceRoot,responsibleFiles:['index.html']}),null);
+  assert.equal(deterministicWebInputCandidate({order:{...work,goal:'음악 변경'},sourceRoot,responsibleFiles:['index.html']}),null);
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['other.html']}),null);
+});
+
+test('independent authoring key checks occur only at the actual optional model request',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const candidateStep=workflow.slice(workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n')),workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n'))+17000);
+  assert.ok(candidateStep.length>0);
+  assert.doesNotMatch(candidateStep,/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
+  assert.match(workflow,/VIBE2_ACTIVE_SOURCE_PROVIDER=VIBE_FIRST_OPTIONAL_GEMINI/);
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.ok(worker.indexOf('if(webInput){')<worker.indexOf('generated=await generateCandidateWithRecovery({prompt',worker.indexOf('if(webInput){')));
+  assert.match(worker,/if\(!key\)throw Object.assign\(new Error\('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'/);
+});
