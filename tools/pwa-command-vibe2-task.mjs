@@ -61,11 +61,28 @@ export function validateLocalWebOwnerEvent(event,{actor='',repository=''}={}){
   return {id:clean(p.id),game_id:clean(p.game_id),platform:'web',kind:'directive',priority:'urgent',body:clean(p.body),source:'LOCAL_VIBE_WEB_CHAT'};
 }
 function ownerContext(task){const rows=Array.isArray(task?.ownerMessages)?task.ownerMessages:[],messages=rows.map(row=>clean(row?.body)).filter(Boolean);return messages.length?`\n\n추가 지시:\n${messages.map(text=>`- ${text}`).join('\n')}`:'';}
+// An owner idea is a development task, not permission to create orchestration work.
+// Keep implementation inside the already-selected project and existing Vibe DAG.
+export function buildGithubDevelopmentFocus({gameId='',sourceRoot=''}={}){
+ const id=clean(gameId),root=posix(sourceRoot);
+ if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(id)||
+    !/^(?:web-games|unity-games)\/[a-zA-Z0-9._-]+$/.test(root)||
+    root.split('/')[1]!==id)throw new Error('GITHUB_DEVELOPMENT_FOCUS_SOURCE_MISMATCH');
+ return [
+  '[GITHUB_DEVELOPMENT_FIRST]',
+  '대상 게임: '+id+' · 기존 소스: '+root,
+  '우선순위: 실제 게임 코드 수정 -> 해당 게임 집중 QA -> 브라우저/입력/저장 실동작 증거 -> 기존 PR 검토.',
+  '기존 책임 함수와 원본 에셋·애니메이션을 먼저 재사용한다. 새 엔진/파이프라인/우회 래퍼를 만들지 않는다.',
+  '지시와 무관한 홈페이지, 타 게임, 관리 보고서, 학습 상태, 회사 정책 수정은 별도 작업으로 확장하지 않는다.',
+  '코드 변경이 없거나 테스트 증거가 없으면 개발 완료로 표시하지 않는다.',
+  '보안, 중앙 정책, 실제 실행, F0-F9, 독립 QA, 소유자 승인·병합 관문은 그대로 적용한다.'
+ ].join('\\n');
+}
 export function buildPwaVibeTask(task,context={}){
   const taskId=safeUuid(task?.id);if(!taskId)throw new Error('PWA 작업 UUID 오류');
   const body=clean(task?.body);if(!body)throw new Error('PWA 작업 내용 비어 있음');
   const resolved=resolveProject(task,context),kind=clean(task.kind)==='feedback'?'feedback':'directive',originalPriority=['normal','priority','urgent'].includes(clean(task.priority))?clean(task.priority):'normal';
-  const goal=['[OWNER_IMMEDIATE_PWA]',`게임: ${resolved.game.name||resolved.game.id}`,`사용자 ${kind==='feedback'?'플레이 피드백':'직접 지시'}: ${body}${ownerContext(task)}`,'최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.','기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.','모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.'].join('\n');
+  const goal=['[OWNER_IMMEDIATE_PWA]',`게임: ${resolved.game.name||resolved.game.id}`,`사용자 ${kind==='feedback'?'플레이 피드백':'직접 지시'}: ${body}${ownerContext(task)}`,buildGithubDevelopmentFocus({gameId:resolved.game.id,sourceRoot:resolved.sourceRoot}),'최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.','기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.','모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.'].join('\n');
   return {id:`pwa-${taskId}`,gameId:resolved.game.id,target:resolved.target,department:'development',type:'implementation',goal,responsibleFiles:[],dependencies:[],priority:'owner-immediate',releaseState:executionReleaseState(resolved.game),status:'queued',retries:0,maxRetries:2,ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,evidence:[`pwa-task:${taskId}`,`pwa-kind:${kind}`,`pwa-priority:${originalPriority}`,`actual-release-state:${resolved.actualReleaseState}`,`source-root:${resolved.sourceRoot}`,'owner-auto-deploy-authorization','verified-qa-required',...(task.source==='LOCAL_VIBE_WEB_CHAT'?['vibe-local-web-owner-directive']:[])],companyContext:{stageId:'owner-immediate',role:'director',assignmentAuthority:'owner-directive',sourceRef:`pwa-task:${taskId}`,reviewRequired:true}};
 }
 export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
