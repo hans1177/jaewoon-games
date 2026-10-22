@@ -227,6 +227,20 @@ function resize(){
  renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
 }
 addEventListener('resize',resize);
+// Restore the authoritative 2D game if WebGL fails after initial loading.
+// A hidden legacy canvas must never leave the player in a blank, unsavable view.
+function restoreLegacyView(reason,error=null){
+ worldReady=false;
+ window.insectScene3DReady=false;
+ const legacy=document.getElementById('cv');
+ if(legacy)legacy.style.visibility='visible';
+ renderer.domElement.style.display='none';
+ if(error)console.error(reason,error);else console.warn(reason);
+}
+renderer.domElement.addEventListener('webglcontextlost',event=>{
+ event.preventDefault();
+ restoreLegacyView('INSECT_WEBGL_CONTEXT_LOST');
+},{passive:false});
 async function start(){
  try{
   for(const key of Object.keys(BASE))originals[key]=await original(key);
@@ -238,14 +252,18 @@ async function start(){
   clock.start();tick();
  }catch(error){
   announce.textContent='3D CC0 모델 불러오기 실패 · 기존 저장 가능한 화면 유지';
-  console.error('INSECT_CC0_3D_ASSET_FAILED',error);
+  restoreLegacyView('INSECT_CC0_3D_ASSET_FAILED',error);
   // Failed 3D dependency leaves authoritative legacy game playable rather than a blank screen.
  }
 }
 function tick(){
  if(!worldReady)return;
  requestAnimationFrame(tick);
- const dt=Math.min(.05,clock.getDelta()),frame=snapshot();
- if(frame){time+=dt;follow(frame,dt);renderer.render(scene,camera)}
+ try{
+  const dt=Math.min(.05,clock.getDelta()),frame=snapshot();
+  if(frame){time+=dt;follow(frame,dt);renderer.render(scene,camera)}
+ }catch(error){
+  restoreLegacyView('INSECT_WEBGL_FRAME_FAILED',error);
+ }
 }
 start();
