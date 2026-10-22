@@ -651,7 +651,10 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
   // External AI/black-box learning is optional. Only selected verified source playbooks
   // are subject to fail-closed attribution, disposition and prompt coverage.
-  const externalLearningApplicable=(taskRequiresWrite(task)&&['roblox','unity','web'].includes(plan.target))||assetDevelopmentLearning;
+  // 자산 개발 레인으로 들어온 연구·연습은 게임 소스 편집이 아니다.
+  // 실제 코드/에셋 작성 작업에만 외부 원칙의 적용 위치를 강제하고, 미검증 원칙의 승격은 계속 막는다.
+  const externalLearningApplicable=taskRequiresWrite(task)
+    &&(['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning);
   const verifiedExternalPlaybookRows=freeze([...(unifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))]);
   const verifiedExternalPlaybookReuse=freezeList(verifiedExternalPlaybookRows.map(row=>row.id));
