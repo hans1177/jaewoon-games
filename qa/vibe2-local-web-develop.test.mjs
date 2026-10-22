@@ -127,3 +127,16 @@ test('post-merge local sync blocks stale, dirty and foreign sources',()=>{
  assert.doesNotMatch(source,/git\(\['push','--force'/);
  assert.match(source,/LOCAL_MAIN_SYNC=FAST_FORWARD_VERIFIED/);
 });
+
+test('insect CC0 handoff remains an unpromoted trace in canonical Vibe learning',()=>{
+ const trace=JSON.parse(fs.readFileSync('company-learning/assistant-vibe-coauthoring-log.json','utf8'));
+ const record=trace.records.find(row=>row.id==='assistant_insect_grounding_cc0_local_vibe_handoff_20261023');
+ assert.ok(record,'reuse needs a durable source-bound assistant trace');
+ assert.equal(record.gameId,'insect-survival');
+ assert.equal(record.learningState,'TRACE_ONLY','PR candidate alone is not promoted training');
+ assert.ok(record.evidence.some(row=>row.includes('runtime-failure:')));
+ assert.ok(record.evidence.some(row=>row.includes('mobile-emulation:')));
+ assert.ok(record.reusablePatterns.includes('LOCAL_GIT_MAIN_FAST_FORWARD_ONLY_WITH_CLEAN_WORKTREE_AND_EXACT_MERGE_SHA'));
+ assert.ok(record.avoidPatterns.includes('CREATE_SHADOW_SYNC_LEARNING_OR_RELEASE_PIPELINE'));
+ assert.match(fs.readFileSync('tools/company-system-ai-external-learning-feed.mjs','utf8'),/buildAssistantTraceLearningFeed/);
+});
