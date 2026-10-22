@@ -1,5 +1,5 @@
 // 파일명: tools/vibe2-source-worker.mjs
-// 역할: Vibe2 작업주문의 텍스트 소스 변경 후보를 무료 로컬 모델로 생성하고 격리 검증한다.
+// 역할: Vibe2 자체 소스 생성과 선택적 외부 모델 후보를 기존 책임 범위에서 격리 검증한다.
 // 기존 게임 루트만 사용하며, 소유자 지시가 명시된 Web 프로토타입은 같은 index 파일 전체 교체를 허용한다.
 
 import fs from 'node:fs';
@@ -1501,6 +1501,50 @@ export function robloxDeterministicPresentationEligible(order={}){
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired!==true
     &&!assetDevelopmentTask(order)
     &&!worldLobbySourceWorkRequired(order);
+}
+
+// 자체 코딩 · 현재 HTML이 명시한 동작과 같은 이름의 기존 함수를 직접 연결한다.
+// 새 게임 규칙/대리 입력/래퍼는 만들지 않으며, 모호한 소스는 기존 생성 경로에 남긴다.
+export function deterministicWebInputCandidate({order={},sourceRoot='',responsibleFiles=[]}={}){
+  if(clean(order.target).toLowerCase()!=='web'||worldLobbySourceWorkRequired(order)||!sourceRoot)return null;
+  const intent=[order.goal,order.selectedTask?.goal,order.selectedTask?.description,order.selectedTask?.title].map(clean).join(' ');
+  if(!/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent))return null;
+  for(const relative of unique(responsibleFiles)){
+    if(!/\.html?$/i.test(relative)||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..'))continue;
+    const file=path.resolve(sourceRoot,relative),root=fs.realpathSync(sourceRoot);
+    if(!fs.existsSync(file)||!fs.statSync(file).isFile()||!fs.realpathSync(file).startsWith(root+path.sep))continue;
+    const source=fs.readFileSync(file,'utf8');
+    const scripts=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+    // 단일 일반 스크립트만 지원한다. 모듈/외부 로더/이벤트 위임의 책임을 추측하지 않는다.
+    if(scripts.length!==1||scripts[0][1].trim()||/<!--|<(?:form|template)\b|\b(?:querySelectorAll|eval|Function)\s*\(|\bimport\b/.test(source))continue;
+    const script=scripts[0],code=script[2],functions=inspectSourceFunctions(code,{language:'javascript'});
+    if(/addEventListener\s*\(\s*["'](?:click|pointerdown|touchstart)["']/.test(code))continue;
+    const bindings=[];
+    for(const button of source.matchAll(/<button\b([^>]*)>/gi)){
+      if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
+      const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
+      const ids=attrs.filter(row=>row[1].toLowerCase()==='id'),actions=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
+      if(ids.length!==1||actions.length!==1)continue;
+      const id=ids[0][3],action=actions[0][3];
+      if(!/^[A-Za-z_$][\w$]*$/.test(id)||! /^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting)$/.test(action))continue;
+      if([...source.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)].filter(row=>row[2]===id).length!==1)continue;
+      // 이미 ID/동작을 참조하는 연결이 있으면 중복 호출 가능성이 있으므로 생성하지 않는다.
+      if(code.includes('"'+id+'"')||code.includes("'"+id+"'")||code.includes('`'+id+'`')||/\b(?:onclick|onpointerdown|ontouchstart)\b/.test(code))continue;
+      const fn=functions.find(row=>row.name===action);
+      if(!fn||!/^(?:async\s+)?function\s+/.test(code.slice(fn.start,fn.end))||!new RegExp('function\\s+'+action+'\\s*\\(\\s*\\)').test(code.slice(fn.start,fn.end)))continue;
+      if(/\b(?:this|arguments)\b/.test(fn.code)||functions.some(row=>row!==fn&&row.start<fn.start&&row.end>fn.end))continue;
+      let prefix=code.slice(0,fn.start);
+      for(const earlier of functions.filter(row=>row.end<=fn.start&&!functions.some(parent=>parent.start<row.start&&parent.end>=row.end)).sort((a,b)=>b.start-a.start))prefix=prefix.slice(0,earlier.start)+prefix.slice(earlier.end);
+      if(/[{}]/.test(prefix))continue;
+      // 함수 이름이 다른 곳에서 재정의되는 소스는 현재 분석 범위를 벗어난다.
+      if((code.match(new RegExp('function\\s+'+action+'\\s*\\(', 'g'))||[]).length!==1||new RegExp('\\b'+action+'\\s*=(?!=)').test(code))continue;
+      bindings.push('document.getElementById('+JSON.stringify(id)+').addEventListener("click", '+action+');');
+    }
+    if(!bindings.length)continue;
+    const replacement=script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
+    return{summary:'Vibe2 source-grounded mobile action implementation',expectedEffect:'Connect declared controls directly to existing gameplay actions',edits:[{path:relative,find:script[0],replace:replacement}],newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true};
+  }
+  return null;
 }
 
 export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){
@@ -7350,6 +7394,18 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   let generated=null;
+  const webInput=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicWebInputCandidate({order,sourceRoot,responsibleFiles}):null;
+  if(webInput){
+    try{
+      const candidate=normalizeCandidate(webInput,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
+      applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      const candidateValidation=candidateValidator(candidate);
+      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,deterministicWebInput:true,mode:'DETERMINISTIC_WEB_INPUT',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_WEB_INPUT'}};
+      console.log('VIBE2_DETERMINISTIC_WEB_INPUT=CANDIDATE_VALIDATED');
+    }catch(error){
+      console.log('VIBE2_DETERMINISTIC_WEB_INPUT=REJECTED:'+generationFailureClass(error));
+    }
+  }
   const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
   if(!generated&&deterministicDiagnostic){
     try{
@@ -7588,7 +7644,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     deterministicDiagnosticType:clean(generation.deterministicDiagnosticType)||null,
     deterministicRobloxBuildUp:generation.deterministicRobloxBuildUp===true,
     deterministicRobloxBuildStage:Number(generation.deterministicRobloxBuildStage||0),
-    sourceModelCallRequired:generation.deterministicRobloxBuildUp!==true,
+    deterministicWebInput:generation.deterministicWebInput===true,
+    sourceModelCallRequired:![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };
