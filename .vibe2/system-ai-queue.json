@@ -153794,7 +153794,7 @@
     },
     {
       "id": "recovery-recovery-ba5ec463250d4fa6f1a3",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153838,7 +153838,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:4e6e0af788dfdde920992fb14439c5e64f1fcbc8:fantasy-survival"
       ],
-      "retries": 1,
+      "retries": 2,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "WORKFLOW_FAILED_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
@@ -153852,12 +153852,12 @@
       "sourceMutationBaseline": "4e6e0af788dfdde920992fb14439c5e64f1fcbc8",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39721901245:1",
-      "reservedAt": "2026-10-22T04:31:11.983Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39128754826:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -153910,7 +153910,8 @@
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
         "system-ai-impact-score:1136",
-        "system-ai-handoff-to-reservation:system-ai:39721901245:1"
+        "system-ai-handoff-to-reservation:system-ai:39721901245:1",
+        "actions-run:39721901245"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1136,
@@ -153925,7 +153926,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T13:00:20.594Z",
-      "updatedAt": "2026-10-22T04:31:11.983Z"
+      "updatedAt": "2026-10-22T04:35:56.923Z"
     },
     {
       "id": "marketing-moon-ruins-pre-release-v1",
