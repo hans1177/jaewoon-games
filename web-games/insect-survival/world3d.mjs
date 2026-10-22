@@ -100,6 +100,8 @@ let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
 let resourceVisualRebuilds=0,decorVisibilityTick=0;
 let floorGpuMeshes=[],floorGpuInstances=0;
+let decorGpuBatches=0,decorGpuInstances=0,decorGpuProps=0;
+const hiddenDecorTransform=new THREE.Matrix4().makeTranslation(0,-1000,0);
 const heroGroundBounds=new THREE.Box3();
 const headingVector=new THREE.Vector3(),cameraBehind=new THREE.Vector3(),cameraFocus=new THREE.Vector3();
 const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();scene.add(world,actors,decor);
@@ -221,6 +223,57 @@ function environment(frame){
   p.position.set((frame.hill.x+Math.cos(i*1.26)*frame.hill.r*.45)*ratio,0,(frame.hill.y+Math.sin(i*1.26)*frame.hill.r*.35)*ratio);
   p.userData.visualRange=30;decor.add(p);
  }
+ batchStaticDecor();
+}
+// GPU batch only identical static CC0 meshes with the same original geometry
+// and presentation material. Unknown, animated, or unmatched props remain
+// ordinary meshes; gameplay state and original CC0 source objects are untouched.
+function batchStaticDecor(){
+ if(!THREE.InstancedMesh)return;
+ const buckets=[];
+ for(const parent of decor.children){
+  const meshes=[];
+  parent.updateMatrixWorld(true);
+  parent.traverse(part=>{if(part.isMesh)meshes.push(part)});
+  if(!meshes.length||meshes.some(mesh=>mesh.isSkinnedMesh||!mesh.geometry||
+     !mesh.material||Array.isArray(mesh.material)))continue;
+  let bucket=buckets.find(item=>item.sample.length===meshes.length&&
+    meshes.every((mesh,i)=>mesh.geometry===item.sample[i].geometry&&
+      mesh.material===item.sample[i].material));
+  if(!bucket){bucket={sample:meshes,props:[]};buckets.push(bucket)}
+  bucket.props.push({parent,meshes});
+ }
+ for(const bucket of buckets){
+  if(bucket.props.length<2)continue;
+  const batches=[];
+  try{
+   for(let part=0;part<bucket.sample.length;part++){
+    const master=bucket.sample[part];
+    const batch=new THREE.InstancedMesh(master.geometry,master.material,bucket.props.length);
+    batch.userData.cc0DecorInstance=true;
+    batch.castShadow=false;batch.receiveShadow=true;batch.frustumCulled=false;
+    for(let i=0;i<bucket.props.length;i++)
+      batch.setMatrixAt(i,bucket.props[i].meshes[part].matrixWorld);
+    batch.instanceMatrix.needsUpdate=true;
+    batches.push(batch);
+   }
+   for(const batch of batches)scene.add(batch);
+   for(let i=0;i<bucket.props.length;i++){
+    const item=bucket.props[i];
+    item.parent.userData.decorBatchSlots=batches.map((batch,part)=>({
+      batch,slot:i,matrix:item.meshes[part].matrixWorld
+    }));
+    item.parent.userData.rangeVisible=true;
+    item.parent.visible=false; // no duplicate CC0 master draws
+   }
+   decorGpuBatches+=batches.length;
+   decorGpuInstances+=bucket.props.length*batches.length;
+   decorGpuProps+=bucket.props.length;
+  }catch(error){
+   for(const batch of batches)batch.dispose?.();
+   console.warn('INSECT_CC0_DECOR_GPU_BATCH_FAILED',error);
+  }
+ }
 }
 // Fog-distance render culling applies ONLY to cosmetic CC0 props, never to
 // combat enemies, pickups, floor panels, or the authoritative game world.
@@ -230,9 +283,20 @@ function refreshDecorVisibility(heroX,heroZ,immediate=false){
  for(const item of decor.children){
   const range=item.userData.visualRange;
   if(!range)continue;
-  const effectiveRange=range+(item.visible?4:-4);
+  const slots=item.userData.decorBatchSlots;
+  const current=slots?item.userData.rangeVisible!==false:item.visible;
+  const effectiveRange=range+(current?4:-4);
   const dx=item.position.x-heroX,dz=item.position.z-heroZ;
-  item.visible=dx*dx+dz*dz<=effectiveRange*effectiveRange;
+  const next=dx*dx+dz*dz<=effectiveRange*effectiveRange;
+  if(slots){
+   if(next!==current){
+    for(const row of slots){
+     row.batch.setMatrixAt(row.slot,next?row.matrix:hiddenDecorTransform);
+     row.batch.instanceMatrix.needsUpdate=true;
+    }
+   }
+   item.userData.rangeVisible=next;
+  }else item.visible=next;
  }
 }
 function actorsFromFrame(frame){
@@ -370,7 +434,10 @@ window.insect3DPerformanceProof=()=>({
  pixelRatio:perfBudget.pixelRatio,pixelRatioCap:perfBudget.cap,pixelRatioFloor:perfBudget.floor,
  resolutionAdjustments:perfBudget.adjustments,resourceVisualRebuilds,
  floorGpuBatches:floorGpuMeshes.length,floorGpuInstances,
- visibleDecor:decor.children.filter(item=>item.visible).length,totalDecor:decor.children.length,
+ decorGpuBatches,decorGpuInstances,decorGpuProps,
+ visibleDecor:decor.children.filter(item=>item.userData.decorBatchSlots?
+   item.userData.rangeVisible!==false:item.visible).length,
+ totalDecor:decor.children.length,
  renderCalls:perfBudget.renderCalls,triangles:perfBudget.triangles,
  activeWebGL:worldReady&&renderer.domElement.dataset.renderedFrame==='true',
  rendererVisible:renderer.domElement.style.display==='block',
