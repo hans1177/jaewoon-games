@@ -15,7 +15,7 @@ const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h
 
 const CLASSIFIERS=[
   ['SAVE_PERSISTENCE',/save|load|restore|localStorage|sessionStorage|datastore|persist|migration/i],
-  ['INPUT_EVENT_BINDING',/addEventListener|onclick|pointer|touch|keydown|keyup|input/i],
+  ['INPUT_EVENT_BINDING',/addEventListener|onclick|pointer|touch|keydown|keyup|input|모바일|버튼|터치|입력/i],
   ['STATE_MACHINE',/state|phase|win|fail|retry|restart|objective|progress/i],
   ['AI_INTENT',/enemy|npc|opponent|pathfind|\bai\b|intent/i],
   ['COMBAT_RESOLUTION',/combat|attack|damage|hit|weapon|skill|boss/i],
