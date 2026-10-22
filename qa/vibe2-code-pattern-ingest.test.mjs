@@ -239,4 +239,8 @@ test('model-free action authoring handles many distinct controls with one indexe
   assert.ok(safe);
   assert.ok(!safe.edits[0].replace.includes('getElementById("attack-1")'));
   assert.ok(safe.edits[0].replace.includes('getElementById("attack-2")'));
+  // DOM id의 하이픈은 허용하지만 JS 코드/속성 삽입을 만들 수 있는 값은 여전히 거부한다.
+  const unsafe='<button id="attack;malicious" data-gameplay-action="attack">attack</button><script>function attack(){return 1;}</script>';
+  fs.writeFileSync(path.join(root,'index.html'),unsafe,'utf8');
+  assert.equal(deterministicWebInputCandidate(args),null);
 });
