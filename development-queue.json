@@ -85521,83 +85521,9 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
-    },
-    {
-      "gameId": "crystal-defense",
-      "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
-      "gameName": "수정 디펜스",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
-      "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX"
-      ],
-      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
-      "bidirectionalAutoPair": false,
-      "requestEitherStartsBoth": false,
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/crystal-defense"
-      },
-      "robloxProjectPath": "roblox-games/crystal-defense",
-      "targetSourcePath": "roblox-games/crystal-defense",
-      "sourcePath": "roblox-games/crystal-defense",
-      "designBaselineSource": "design/crystal-defense/2026-10-19/design-revised.json",
-      "designDate": "2026-10-19",
-      "minimumDesignContract": {
-        "version": 1,
-        "pass": true,
-        "source": "design/crystal-defense/2026-10-19/design-revised.json",
-        "date": "2026-10-19",
-        "releaseChecklist": {
-          "identity": true,
-          "coreLoop": true,
-          "sessionRules": true,
-          "signatureSystems": true,
-          "presentation": true
-        },
-        "commonCoreReady": true,
-        "platformProfiles": {
-          "ROBLOX": true,
-          "UNITY": true,
-          "distinct": true
-        }
-      },
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/crystal-defense/2026-10-19/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        }
-      },
-      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
-      "ownerPreservationPresentationUpgrade": false,
-      "presentationFirstPass": null,
-      "internalReleaseTarget": {
-        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
-      },
-      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
-      "enqueuedAt": "2026-10-22T06:57:51.831Z",
-      "updatedAt": "2026-10-22T09:47:00.047Z",
-      "sourceRootBootstrapRequired": false,
-      "legacyWebReference": {
-        "webSourcePath": null,
-        "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-        "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
-        "webValidationRequired": false,
-        "capturedAt": "2026-10-22T07:05:46.275Z"
-      },
-      "strictDesignReviewRefreshRequired": true,
-      "lifecycleState": "ACTIVE",
-      "saveNormalizationRequired": true,
-      "saveMeaningPreservationRequired": true,
-      "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-22T09:48:18.063Z",
+  "updatedAt": "2026-10-22T09:49:14.438Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -85663,6 +85589,5 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "executionContractVersion": 1
 }
