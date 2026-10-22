@@ -275,11 +275,21 @@ test('existing native 3D Web games cap mobile pixel work without altering game l
   }
 });
   
-// PR 소스 범위가 기존 main 변경사항까지 커지더라도 QA 강도는 유지한다.
-test('PR changed Web game scope uses current synthetic merge parent while main checks all games',()=>{
+// Changed PR files are now scoped by the exact-head paginated GitHub files API.
+// Preserve main push full checks, prohibit stale/partial scope, and keep browser QA.
+test('PR changed Web game scope uses exact-head API without giant checkout',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
-  assert.match(workflow,/git rev-parse --verify -q 'HEAD\^2'/);
-  assert.match(workflow,/base_sha="\$\(git rev-parse 'HEAD\^1'\)"/);
+  assert.match(workflow,/if: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/pull-requests: read/);
+  assert.match(workflow,/VIBE2_CORE_QA_PR_FILES_API=PASS/);
+  assert.match(workflow,/CORE_SCOPE_STALE_HEAD/);
+  assert.match(workflow,/CORE_SCOPE_STALE_OR_PARTIAL_PR_FILES/);
+  assert.match(workflow,/CORE_SCOPE_GITHUB_API_FAILED/);
+  assert.match(workflow,/EXPECTED_PR_HEAD:/);
+  assert.match(workflow,/before\.head\?\.sha!==head/);
+  assert.match(workflow,/after\.head\?\.sha!==head/);
+  assert.match(workflow,/files\.length!==after\.changed_files/);
+  assert.match(workflow,/new Set\(files\)\.size!==files\.length/);
   assert.match(workflow,/git diff --name-only "\$base_sha" HEAD/);
   assert.match(workflow,/changed_web_games=ALL/);
   assert.match(workflow,/Development Web browser startup smoke/);
