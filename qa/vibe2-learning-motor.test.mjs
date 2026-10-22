@@ -50,6 +50,7 @@ import {
   learningGuidance,
   candidateTournamentPolicy,
   assessVibeCodingCapabilities,
+  planVibeAutonomousImprovement,
   composeVerifiedCodingRecipes,
   verifyVibeCausalGameplayContract,
   buildVerifiedVibeCapabilityLedger,
@@ -2246,4 +2247,74 @@ test('C01-C08 verified coding contracts support real evidence and reject synthet
   assert.equal(assessVibeCodingCapabilities({...input,recipes:[],holdouts:[],candidates:[]}).allVerified,false);
   assert.equal(assessVibeCodingCapabilities({...input,causalTrace:{...trace,proof:{...proof,runtime:'FAIL'}}})
     .requirements.C05.verified,false);
+});
+
+
+test('autonomous learning selects only measured failure hotspots in existing preemptible practice lane',()=>{
+  const state=createMasteryState({
+    failureSignatures:{
+      f_repeat:{count:4,domains:['COMBAT'],example:'combat hit does not resolve'},
+      f_minor:{count:1,domains:['SAVE'],example:'isolated uncertain symptom'}
+    },
+    regressionHotspots:{entries:{
+      'arena|SYSTEM|SAVE':{gameId:'arena',target:'web',kind:'SYSTEM',name:'SAVE',
+        verifiedRegressionFailures:3,verifiedPasses:0,lastFailureEvidence:'run-save-12'},
+      'arena|SYSTEM|UI_STATE':{gameId:'arena',target:'web',kind:'SYSTEM',name:'UI_STATE',
+        verifiedRegressionFailures:1,verifiedPasses:0,lastFailureEvidence:'run-ui-1'}
+    }}
+  });
+  const proposals=planVibeAutonomousImprovement({stateInput:state,maxProposals:2});
+  assert.equal(proposals.proposals.length,2);
+  assert.equal(proposals.observedCandidates,2);
+  assert.equal(proposals.sourceMutationAuthorized,false);
+  assert.ok(proposals.proposals.every(p=>p.independentQaRequired&&p.automaticPromotion===false));
+  assert.ok(proposals.proposals.some(p=>p.reason==='REPEATED_VERIFIED_FAILURE'));
+  assert.ok(proposals.proposals.some(p=>p.reason==='VERIFIED_GAME_REGRESSION_HOTSPOT'));
+  const idle=buildIdlePracticeQueue(state);
+  assert.equal(idle.adaptiveImprovementDrills,2);
+  const selected=idle.drills.filter(drill=>drill.improvementOnly);
+  assert.equal(selected.length,2);
+  assert.ok(selected.every(drill=>drill.productionPreemptible&&drill.countsAsProductionPass===false));
+  const withoutEvidence=planVibeAutonomousImprovement({stateInput:createMasteryState()});
+  assert.equal(withoutEvidence.eligible,false);
+  assert.deepEqual(withoutEvidence.proposals,[]);
+});
+
+test('autonomous benchmark response requires independent runtime proof and stays resource bounded',()=>{
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const evidence=(n,result)=>({evidenceId:'bench-'+n,sourceRevision:'a'.repeat(40),proof,
+    domain:'COMBAT',genre:'action',platform:'WEB',benchmarkVersion:'fixed-v1',
+    independentQaRecorded:true,regressionRecorded:true,result,modelCalls:0,holdout:true});
+  const state=createMasteryState();
+  const measured=planVibeAutonomousImprovement({stateInput:state,capabilityEvidence:{
+    attempts:[evidence(1,'PASS'),evidence(2,'PASS'),evidence(3,'PASS')]
+  }});
+  assert.equal(measured.proposals.length,0);
+  const limited=planVibeAutonomousImprovement({stateInput:state,capabilityEvidence:{
+    attempts:[evidence(1,'PASS'),evidence(2,'FAIL'),evidence(3,'FAIL')]
+  },maxProposals:60});
+  assert.equal(limited.proposals.length,1);
+  assert.equal(limited.proposals[0].reason,'MEASURED_UNDERPERFORMING_CAPABILITY');
+  assert.equal(limited.proposals[0].automaticSourceWrite,false);
+  const stale=planVibeAutonomousImprovement({stateInput:state,capabilityEvidence:{
+    attempts:[{...evidence(1,'PASS'),proof:{...proof,runtime:'FAIL'}}]
+  }});
+  assert.equal(stale.eligible,false);
+});
+
+test('two consecutive unimproved failures pause identical practice generations without blocking other drills',()=>{
+  const idle={drills:[{id:'adaptive-combat',kind:'REPRO_DRILL',domains:['COMBAT']},
+    {id:'gap-save',kind:'MINI_GAME_SYSTEM_DRILL',domains:['SAVE']}]};
+  const first=injectIdlePracticeTask({tasks:[]},idle).task;
+  const failedOne={...first,status:'failed',evidence:[...first.evidence,'practice-artifact-improved:NO']};
+  const second=injectIdlePracticeTask({tasks:[failedOne]},idle).task;
+  assert.match(second.id,/-g2$/);
+  const failedTwo={...second,status:'failed',evidence:[...second.evidence,'practice-artifact-improved:NO']};
+  const resumed=injectIdlePracticeTask({tasks:[failedOne,failedTwo]},idle);
+  assert.equal(resumed.added,true);
+  assert.match(resumed.task.id,/gap-save-g1$/);
+  assert.equal(resumed.task.sourceRoot,'learning-practice:gap-save');
+  const oneOnly=injectIdlePracticeTask({tasks:[failedOne,failedTwo]},{drills:[idle.drills[0]]});
+  assert.equal(oneOnly.added,false);
+  assert.equal(oneOnly.reason,'ALL_PRACTICE_GENERATIONS_ACTIVE');
 });
