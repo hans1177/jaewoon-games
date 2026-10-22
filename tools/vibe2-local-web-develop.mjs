@@ -219,12 +219,42 @@ function scopedQa(sourceFile){
   const staged=git(['diff','--cached','--name-only']).split(/\r?\n/).filter(Boolean);
   if(staged.length!==1||staged[0]!==sourceFile)fail('LOCAL_DEV_UNEXPECTED_STAGED_FILE');
 }
+// [메인] 로컬 후보는 선택된 Web 게임 한 개에만 집중한다.
+export function assertSingleLocalWebGame(gameId,pulls=[]){
+  const id=clean(gameId);
+  if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(id))fail('LOCAL_DEV_FOCUS_GAME_INVALID');
+  if(!Array.isArray(pulls))fail('LOCAL_DEV_FOCUS_PR_LIST_INVALID');
+  const active=pulls.filter(pr=>
+    pr?.state==='open'&&pr?.base?.ref==='main'&&
+    pr?.head?.repo?.full_name===REPO&&
+    /^local-vibe-web-[a-zA-Z0-9_-]+-[0-9]{13}$/.test(clean(pr?.head?.ref))
+  );
+  const focused=new Set(active.map(pr=>clean(pr.head.ref).slice('local-vibe-web-'.length).replace(/-[0-9]{13}$/,'')));
+  if(focused.size>1)fail('LOCAL_DEV_MULTIPLE_ACTIVE_GAMES_BLOCKED');
+  if(focused.size===1&&!focused.has(id))
+    fail('LOCAL_DEV_OTHER_GAME_FOCUS_BLOCKED:'+Array.from(focused)[0]);
+  return {gameId:id,pendingPRs:active.map(pr=>pr.number)};
+}
+
 async function development(options){
   if(options.pr&&!options.apply)fail('LOCAL_DEV_PR_REQUIRES_EXPLICIT_APPLY');
   const sync=cleanMain();
   centralPolicy(); // 반드시 원격 갱신 이후 중앙 문서 검증
   console.log('LOCAL_VIBE_MAIN_SYNC='+(sync.synced?'FAST_FORWARD':'CURRENT')+' SHA='+sync.revision);
   const gameId=clean(options.game),goal=clean(options.goal);
+  // 기존 GitHub PR 상태가 선택한 웹게임과 충돌하면 모델 호출과 로컬 변경을 모두 중단한다.
+  const open=[];
+  for(let page=1;page<=10;page++){
+    const rows=json(gh(['api','repos/'+REPO+'/pulls?state=open&per_page=100&page='+page]));
+    if(!Array.isArray(rows)||rows.length>100)fail('LOCAL_DEV_FOCUS_PR_LIST_INVALID');
+    open.push(...rows);
+    if(rows.length<100)break;
+    if(page===10)fail('LOCAL_DEV_FOCUS_PR_LIST_INCOMPLETE');
+  }
+  const focus=assertSingleLocalWebGame(gameId,open);
+  if(focus.pendingPRs.length&&options.apply)
+    fail('LOCAL_DEV_FOCUSED_PR_MUST_COMPLETE_FIRST:'+focus.pendingPRs.join(','));
+  console.log('LOCAL_VIBE_GAME_FOCUS='+focus.gameId);
   const proposed=await suggestSourceEdit({gameId,goal,match:options.match});
   console.log('LOCAL_CHANGE_FILE='+proposed.file);
   console.log('PROPOSED_OLD='+JSON.stringify(proposed.oldText));
