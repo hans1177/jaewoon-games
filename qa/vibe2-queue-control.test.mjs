@@ -3286,6 +3286,8 @@ test('false new-game gate is recovered only for an independently runnable existi
   const base={
     gameId:'core-clash-4v4',target:'web',sourceRoot:'web-games/core-clash-4v4',
     department:'development',type:'implementation',status:'blocked',ownerDirective:true,
+    buildUpDirectiveId:'core-clash-4v4-build-up-g1',
+    buildUpDirective:{version:2,directiveId:'core-clash-4v4-build-up-g1',gameId:'core-clash-4v4',sourceRoot:'web-games/core-clash-4v4'},
     blocker:'EXECUTION_GATE_BLOCKED:company-owner-gate-required',
     responsibleFiles:['web-games/core-clash-4v4/index.html'],retries:1,maxRetries:null,evidence:[]
   };
