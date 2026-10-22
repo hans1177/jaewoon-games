@@ -53,6 +53,7 @@ import {
   planVibeAutonomousImprovement,
   composeVerifiedCodingRecipes,
   verifyVibeCausalGameplayContract,
+  chooseRegressionSafeVibeWinner,
   buildVerifiedVibeCapabilityLedger,
   buildBenchmarkLadder,
   buildIdlePracticeQueue,
@@ -2320,4 +2321,61 @@ test('two consecutive unimproved failures pause identical practice generations w
   const oneOnly=injectIdlePracticeTask({tasks:[failedOne,failedTwo]},{drills:[idle.drills[0]]});
   assert.equal(oneOnly.added,false);
   assert.equal(oneOnly.reason,'ALL_PRACTICE_GENERATIONS_ACTIVE');
+});
+
+
+test('C05 strict causal replay verifies actual target HP change, ordered evidence and visible feedback',()=>{
+  const sha='b'.repeat(40);
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const contract={sourceRevision:sha,gameId:'arena',causalReplayRequired:true,
+    actionId:'tap-attack-1',targetId:'boar-1',maxLatencyMs:160};
+  const kinds=['INPUT','STATE_TRANSITION','PHYSICS_OR_ANIMATION','COLLISION_OR_HIT','FEEDBACK_OR_REWARD'];
+  const events=kinds.map((kind,i)=>({
+    kind,actionId:contract.actionId,eventId:'event-'+i,causedBy:i===0?null:'event-'+(i-1),timestampMs:100+i*20,
+    ...(i===3?{targetId:'boar-1',collisionVerified:true,authority:'SERVER',beforeHp:80,afterHp:67}:{}),
+    ...(i===4?{targetId:'boar-1',reportedHp:67}:{})
+  }));
+  const trace={sourceRevision:sha,evidenceId:'actual-replay-1',proof,gameId:'arena',
+    multiplayer:true,serverAuthorityVerified:true,authoritativeStateChanged:true,
+    saveAndBalancePreserved:true,events};
+  assert.equal(verifyVibeCausalGameplayContract(contract,trace).verified,true);
+  const bad=(index,delta)=>({...trace,events:events.map((e,i)=>i===index?{...e,...delta}:e)});
+  for(const altered of [
+    bad(3,{afterHp:80}),
+    bad(3,{collisionVerified:false}),
+    bad(3,{authority:'CLIENT'}),
+    bad(4,{reportedHp:80}),
+    bad(2,{causedBy:'wrong-parent'}),
+    bad(2,{eventId:'event-1'}),
+    bad(4,{timestampMs:300}),
+    {...trace,events:[events[0],...events]}
+  ])assert.equal(verifyVibeCausalGameplayContract(contract,altered).verified,false);
+  assert.equal(verifyVibeCausalGameplayContract({...contract,targetId:''},trace).verified,false);
+});
+
+test('C06 winner requires independent same-device matched proof and strict no-regression Pareto gain',()=>{
+  const sourceRevision='c'.repeat(40);
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const base={id:'baseline',sourceRevision,evidenceId:'qa-base',proof,
+    benchmarkKey:'fixed-combat-s1',deviceClass:'android-mid',saveAndBalancePreserved:true,
+    sameTaskBudget:true,regressionCount:0,runtimeMs:16,peakMemoryMb:80,modelCalls:2};
+  const better={...base,id:'candidate',evidenceId:'qa-new',runtimeMs:12,peakMemoryMb:76,modelCalls:1};
+  const spec={sourceRevision,benchmarkKey:base.benchmarkKey,deviceClass:base.deviceClass,baselineId:base.id};
+  const winner=chooseRegressionSafeVibeWinner([base,better],spec);
+  assert.equal(winner.verified,true);
+  assert.equal(winner.winnerId,'candidate');
+  assert.equal(winner.runtimeSpeedup,16/12);
+  assert.equal(winner.memorySavedMb,4);
+  assert.equal(winner.modelCallsSaved,1);
+  assert.equal(winner.automaticCodePromotion,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,regressionCount:1}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,peakMemoryMb:82}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,deviceClass:'desktop'}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,proof:{...proof,runtime:'FAIL'}}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,{...better,id:'baseline'}],spec).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,better],{...spec,baselineId:'unrecorded'}).verified,false);
+  assert.equal(chooseRegressionSafeVibeWinner([base,better],{...spec,sourceRevision:''}).verified,false);
+  const report=assessVibeCodingCapabilities({sourceRevision,candidates:[base,better],optimizationBenchmark:spec});
+  assert.equal(report.requirements.C06.winnerId,'candidate');
+  assert.equal(report.requirements.C06.verified,true);
 });
