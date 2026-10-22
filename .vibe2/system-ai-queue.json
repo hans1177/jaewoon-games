@@ -145644,7 +145644,7 @@
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145686,12 +145686,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39832308809:1",
+      "reservedAt": "2026-10-22T18:39:31.059Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145872,7 +145872,8 @@
         "system-ai-handoff-to-reservation:system-ai:39828244973:1",
         "actions-run:39828244973",
         "system-ai-handoff-to-reservation:system-ai:39830695112:1",
-        "actions-run:39830695112"
+        "actions-run:39830695112",
+        "system-ai-handoff-to-reservation:system-ai:39832308809:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1102,
@@ -145887,7 +145888,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-22T18:32:02.996Z"
+      "updatedAt": "2026-10-22T18:39:31.059Z"
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
