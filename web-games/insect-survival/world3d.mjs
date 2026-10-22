@@ -71,15 +71,58 @@ const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();s
 const announce=document.createElement('div');announce.textContent='CC0 3D 숲과 캐릭터 불러오는 중…';
 Object.assign(announce.style,{position:'absolute',zIndex:'8',top:'42%',left:'50%',transform:'translate(-50%,-50%)',padding:'13px 19px',border:'1px solid #b3ac7b',borderRadius:'8px',background:'#1a2d26e8',fontSize:'12px',color:'#f2e4ba',pointerEvents:'none'});
 game.append(announce);
-const ratio=.025,to3=p=>new THREE.Vector3(p.x*ratio,0,p.y*ratio);
+// Grounding is measured from the CC0 floor's actual world-space top surface.
+// All game-state coordinates remain unchanged; these constants affect visuals only.
+const ratio=.025,GROUND_SURFACE_Y=0,FOOT_CLEARANCE=.035,GROUND_TILE_SPAN=14;
+const to3=p=>new THREE.Vector3(p.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,p.y*ratio);
 function environment(frame){
  if(fieldBuilt)return;fieldBuilt=true;
  const floor=derived('floor',.18,'#adc291');
- // Grounded-like miniature yard: original CC0 ground panel tiled under the grass canopy.
- for(let x=0;x<56;x+=14)for(let z=0;z<42;z+=14){
-  const panel=floor.clone(true);panel.position.set(x+7,0,z+7);panel.scale.x*=13.8;panel.scale.z*=13.8;
+ // Local mesh is only a narrow, seam-filling foundation beneath the original CC0 tiles.
+ // It does not replace the CC0 floor source, which remains visible and unmodified.
+ const fieldWidth=Math.ceil(frame.world.w*ratio/GROUND_TILE_SPAN)*GROUND_TILE_SPAN;
+ const fieldDepth=Math.ceil(frame.world.h*ratio/GROUND_TILE_SPAN)*GROUND_TILE_SPAN;
+ const underlay=new THREE.Mesh(
+  new THREE.PlaneGeometry(fieldWidth,fieldDepth),
+  new THREE.MeshStandardMaterial({color:'#71935c',roughness:1,metalness:0})
+ );
+ underlay.rotation.x=-Math.PI/2;
+ underlay.position.set(fieldWidth/2,GROUND_SURFACE_Y-.025,fieldDepth/2);
+ world.add(underlay);
+ // The CC0 floor OBJ spans 10x8 units and rises 0.5 units below its origin.
+ // Measure the transformed bounds instead of magnifying both axes 13.8 times:
+ // that used to make ~50-unit floor panels overlap every 14 units, causing
+ // coplanar flicker and the ground surface to cover the hero's feet.
+ const floorBounds=new THREE.Box3().setFromObject(floor);
+ const floorSize=floorBounds.getSize(new THREE.Vector3());
+ const floorCenter=floorBounds.getCenter(new THREE.Vector3());
+ if(floorSize.x<.001||floorSize.z<.001)throw Error('CC0 floor footprint invalid');
+ const floorXScale=GROUND_TILE_SPAN/floorSize.x;
+ const floorZScale=GROUND_TILE_SPAN/floorSize.z;
+ const tileY=GROUND_SURFACE_Y+floor.position.y-floorBounds.max.y;
+ for(let x=0;x<fieldWidth;x+=GROUND_TILE_SPAN)for(let z=0;z<fieldDepth;z+=GROUND_TILE_SPAN){
+  const panel=floor.clone(true);
+  panel.scale.x*=floorXScale;panel.scale.z*=floorZScale;
+  panel.position.set(
+   x+GROUND_TILE_SPAN/2-(floorCenter.x-floor.position.x)*floorXScale,
+   tileY,
+   z+GROUND_TILE_SPAN/2-(floorCenter.z-floor.position.z)*floorZScale
+  );
+  panel.userData.isGroundTile=true;
   world.add(panel);
  }
+ // Read-only browser QA evidence from actual transformed 3D meshes.
+ window.insect3DGroundingProof=()=>{
+  const tiles=world.children.filter(item=>item.userData.isGroundTile===true);
+  const first=tiles[0];
+  const floorTop=first?new THREE.Box3().setFromObject(first).max.y:null;
+  const heroBottom=avatar?new THREE.Box3().setFromObject(avatar).min.y:null;
+  return {tileCount:tiles.length,floorTop,heroBottom,
+   worldReady,heroPresent:Boolean(avatar),
+   animationGroundLift:avatar?.userData.visualGroundCorrection??0,
+   // Stable visual-only world reference, not a gameplay collision claim.
+   groundReferenceY:GROUND_SURFACE_Y};
+ };
  const rand=i=>{const t=Math.sin(i*102.64+18.82)*43758.5453;return t-Math.floor(t)};
  const count=mobile?32:56;
  for(let i=0;i<count;i++){
@@ -148,6 +191,21 @@ function visualWalking(wasWalking,travel,dt){
  const speed=Math.max(0,Number(travel)||0)/Math.max(1/240,Math.min(.05,dt));
  return speed>(wasWalking?.13:.24);
 }
+// KayKit's authored animation clips can shift the animated skinned-mesh bounds
+// beneath the floor even when the source mesh was normalized correctly.
+// Resolve penetration on the presentation group AFTER the original mixer runs;
+// never move the gameplay player or rewrite any CC0 bone/animation tracks.
+function groundAnimatedHero(){
+ const bounds=new THREE.Box3().setFromObject(avatar);
+ if(bounds.isEmpty())return;
+ const penetration=GROUND_SURFACE_Y+FOOT_CLEARANCE-bounds.min.y;
+ const lift=Math.max(0,penetration);
+ if(lift>0){
+  avatar.position.y+=lift;
+  avatar.updateMatrixWorld(true);
+ }
+ avatar.userData.visualGroundCorrection=lift;
+}
 function follow(frame,dt){
  const p=frame.player,pos=to3(p);
  const travel=Math.hypot(pos.x-(avatar.userData.lastX??pos.x),pos.z-(avatar.userData.lastZ??pos.z));
@@ -170,6 +228,7 @@ function follow(frame,dt){
  setHeroMotion(motion,replay,duration);
  avatar.userData.motionSerial=serial;
  if(heroMixer)heroMixer.update(dt);
+ groundAnimatedHero();
  const night=frame.state.time/95>.68;
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;
  scene.background.set(night?'#263c3f':'#a2b998');
@@ -183,7 +242,7 @@ function follow(frame,dt){
  for(let i=0;i<frame.bugs.length;i++){
   const b=frame.bugs[i],actor=enemies[i];if(!actor)continue;
   actor.visible=!b.dead;
-  if(!b.dead){actor.position.set(b.x*ratio,0,b.y*ratio);actor.rotation.y=Math.atan2(p.x-b.x,p.y-b.y);actor.children[0].rotation.z=b.hit>0?.28:0}
+  if(!b.dead){actor.position.set(b.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,b.y*ratio);actor.rotation.y=Math.atan2(p.x-b.x,p.y-b.y);actor.children[0].rotation.z=b.hit>0?.28:0}
  }
  // Resource nodes may respawn; remake lightweight CC0 derived models only when changed.
  let alive=frame.nodes.length;
@@ -191,12 +250,27 @@ function follow(frame,dt){
   while(resources.length){const old=resources.pop();actors.remove(old)}
   for(const n of frame.nodes){const type=n.type==='pebble'?'stone':'foliage';const g=new THREE.Group();g.add(derived(type,n.type==='pebble'?.35:.65,'#cbd8a9'));actors.add(g);resources.push(g)}
  }
- for(let i=0;i<frame.nodes.length;i++)resources[i].position.set(frame.nodes[i].x*ratio,0,frame.nodes[i].y*ratio);
+ for(let i=0;i<frame.nodes.length;i++)resources[i].position.set(frame.nodes[i].x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,frame.nodes[i].y*ratio);
 }
 function resize(){
  renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
 }
 addEventListener('resize',resize);
+// Restore the authoritative 2D game if WebGL fails after initial loading.
+// A hidden legacy canvas must never leave the player in a blank, unsavable view.
+function restoreLegacyView(reason,error=null){
+ worldReady=false;
+ window.insectScene3DReady=false;
+ const legacy=document.getElementById('cv');
+ if(legacy)legacy.style.visibility='visible';
+ renderer.domElement.style.display='none';
+ renderer.domElement.dataset.renderedFrame='false';
+ if(error)console.error(reason,error);else console.warn(reason);
+}
+renderer.domElement.addEventListener('webglcontextlost',event=>{
+ event.preventDefault();
+ restoreLegacyView('INSECT_WEBGL_CONTEXT_LOST');
+},{passive:false});
 async function start(){
  try{
   for(const key of Object.keys(BASE))originals[key]=await original(key);
@@ -208,14 +282,23 @@ async function start(){
   clock.start();tick();
  }catch(error){
   announce.textContent='3D CC0 모델 불러오기 실패 · 기존 저장 가능한 화면 유지';
-  console.error('INSECT_CC0_3D_ASSET_FAILED',error);
+  restoreLegacyView('INSECT_CC0_3D_ASSET_FAILED',error);
   // Failed 3D dependency leaves authoritative legacy game playable rather than a blank screen.
  }
 }
 function tick(){
  if(!worldReady)return;
  requestAnimationFrame(tick);
- const dt=Math.min(.05,clock.getDelta()),frame=snapshot();
- if(frame){time+=dt;follow(frame,dt);renderer.render(scene,camera)}
+ try{
+  const dt=Math.min(.05,clock.getDelta()),frame=snapshot();
+  if(frame){
+   time+=dt;
+   follow(frame,dt);
+   renderer.render(scene,camera);
+   renderer.domElement.dataset.renderedFrame='true';
+  }
+ }catch(error){
+  restoreLegacyView('INSECT_WEBGL_FRAME_FAILED',error);
+ }
 }
 start();

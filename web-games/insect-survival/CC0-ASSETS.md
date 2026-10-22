@@ -26,3 +26,46 @@
 ## CC0 액션 연결 점검
 
 찌르기·회전 베기·회피·피격·사망은 원본 KayKit 클립을 사용한다. 이동·대기는 반복하고 액션·사망은 단발 재생한다. 성공한 게임 행동의 표현용 일련번호로 연속 공격을 재시작하며, 실패한 스킬 입력은 모션을 재시작하지 않는다. 모션 메타데이터는 플레이어 저장 레코드에 추가하지 않는다. 실제 화면·모바일 모션 품질은 별도 검증 전까지 미확인이다.
+
+## 지형 침하 오류 수정 · 로컬 그래픽 참고
+
+- 기존 `floor_base.obj`의 실제 로컬 경계는 X=-5..5, Y=-0.5..0, Z=-4..4이다. 기존 0.18 높이로 크기를 정규화한 뒤 X/Z를 13.8배 확장하면 한 장의 땅 크기가 약 49.7×39.7이 되며, 14 간격으로 배치된 지형이 겹친다. Y 윗면 또한 캐릭터 발보다 0.18 높아서 파묻히는 표현이 생긴다.
+- `world3d.mjs`는 **CC0 원본을 손대지 않고** 정규화된 원본 모델의 `Box3` 경계를 측정해 X/Z 실측 비율별 14 간격 타일로 맞춘다. 타일 윗면 Y=0, 캐릭터·곤충·자원 원점 Y=0.035로 고정한다. 원본 타일의 모서리 틈 아래에는 Y=-0.025의 로컬 3D 메시를 깔아 비어 보이는 곳만 메운다. 캐릭터 공격 판정·세계좌표·세이브는 바꾸지 않는다.
+- 로컬 그래픽 후속 제작은 기존 Blender 기반 책임 파일 `assets/native-authoring/build-game-visual.py`를 참고한다. 원본 CC0의 라이선스, 원본 SHA-256, 부모 자산 ID를 추적하고 모델이 **미터 단위 / Y축 높이 / 바닥 접점 Y=0 / 애니메이션 리그 원점**을 유지하도록 검증해야 한다. 출력 파일은 승인된 기존 GRAPHICS_PRODUCTION 경로에서만 만들며 새 자산으로 간주해 검증 없이 배포하지 않는다.
+- 자동 회귀 `qa/insect-survival-grounding.test.mjs`는 실제 원본 OBJ 경계와 소스 코드의 좌표·애니메이션 유지 조건을 검사한다. **실제 모바일 브라우저의 3D 렌더링·성능·접지 장면 검증은 별도**로 필요하며 아직 PASS가 아니다.
+
+## 런타임 오류 복구 보강
+
+- WebGL 컨텍스트 손실(`webglcontextlost`) 또는 3D 프레임 렌더링 예외 발생 시 `insectScene3DReady=false`로 되돌리고 `#cv` 2D 원본 캔버스를 다시 보이게 한다. 3D 캔버스는 숨기며 전투·제작·저장 로직은 계속 원래 `index.html`에서 실행한다.
+- 로딩 실패도 같은 복구 함수로 처리한다. 복구 검증은 `qa/insect-survival-grounding.test.mjs`에 추가했고 총 7개 집중 검사를 확인했다. 이는 오류 상황 모의 검증이며 WebGL 컨텍스트 재생성이나 실제 모바일 장면 QA 완료를 뜻하지 않는다.
+- 2026-10-22 기준 브라우저 시작 smoke 기록에서 `DEVELOPMENT_WEB_BROWSER_GAME=insect-survival` 및 `DEVELOPMENT_WEB_BROWSER_SMOKE=PASS`를 확인했다. 이는 이전 후보 커밋에 대한 시작 검사이므로 최신 코드와 실기기 접지 결과를 인증하지 않는다.
+
+## 실물 3D 브라우저 검사 강제 · PR #9262 후속
+
+- 기존 `qa/vibe2-development-web-browser-smoke.mjs`는 곤충생존기 페이지가 시작되기만 해도 PASS할 수 있었다. 게임 단독 검사에서는 이제 실제 `#insect3d` 캔버스의 **WebGL2 drawing buffer**, 렌더링 완료 프레임, 기존 `#cv` 숨김 여부를 확인한다. 2D 복구 화면만 뜨면 PASS할 수 없다.
+- 월드 렌더러는 화면 표시를 변경하지 않는 읽기 전용 진단 `window.insect3DGroundingProof()`를 통해 CC0 바닥 타일 실제 메시 수(12), `THREE.Box3` 변환된 바닥 윗면 Y, 현재 애니메이션 캐릭터 메시의 최저점 Y를 제공한다. 단독 브라우저 QA에서 지표와 캐릭터 접지를 확인하고 기준 위반 시 실패한다.
+- 기존 Core QA에서 실행하던 `qa/insect-survival.test.mjs`가 새 `qa/insect-survival-grounding.test.mjs`를 가져오므로 지면 정렬·오류 복구 집중 회귀 8개가 실제 CI 명령에 포함된다.
+- 이 추가 검증 코드 자체는 로컬 시뮬레이션에서 통과했지만 **해당 CI 브라우저 검사 결과와 실제 모바일 기기 검증은 아직 별개**이며 미검증 상태를 유지한다.
+
+## 로컬 개발·Vibe 엔진 동기화와 기술 공유
+
+- 기존 시스템의 단일 권위 저장소는 `main`이며, 개발 후보는 별도 브랜치와 PR에서 검증한다. 로컬 Ollama 개발은 `tools/vibe2-local-web-develop.mjs`를 사용하고, 기존 Vibe QA·보안·F0~F9 릴리스 관문과 소유자 병합 승인은 그대로 유지한다.
+- **로컬에서 소유자가 직접 승인 PR을 병합**하는 `node tools/vibe2-local-web-develop.mjs --merge-pr=번호` 흐름은 병합 검증 직후 동기화를 시도한다. 로컬이 원본 저장소의 **깨끗한 `main`**이고 원격이 현재 커밋의 후손이며 병합 커밋을 포함할 때만 `git merge --ff-only`를 실행한다. 그 외에는 `LOCAL_MAIN_SYNC=BLOCKED` 로그를 남기고 개발 파일·로컬 브랜치를 덮어쓰지 않는다.
+- **웹 GitHub에서 병합한 경우** 원격은 사용자의 로컬 PC를 직접 조작하지 않는다. 다만 소유자가 PC의 `main`에서 기존 로컬 개발 명령(`--check` 또는 `--game=... --goal=...`)을 다음에 실행할 때, 소스 검토·모델 요청에 앞서 `syncLocalMain()`이 **깨끗한 main만 자동 fast-forward**한다. 필요한 시점에 `node tools/vibe2-local-web-develop.mjs --sync-main`으로 단독 동기화할 수도 있다. PC가 꺼져 있거나 개발 도구가 실행되지 않으면 자동으로 동기화되는 것이 아니며, 백그라운드 스케줄러를 새로 만들지 않는다.
+- Vibe 엔진과의 **개발 방식 공유**는 새 학습 파이프라인을 생성하지 않는다. 기존 `company-learning/assistant-vibe-coauthoring-log.json`의 `assistant_insect_grounding_cc0_local_vibe_handoff_20261023` 기록과 기존 `tools/company-system-ai-external-learning-feed.mjs` 검증 단계가 연결된다. 현재 `learningState=TRACE_ONLY`; 검증되지 않은 후보 개발을 `PROMOTED`, 모델 학습 성공, 플랫폼별 실기기 QA PASS로 표시하지 않는다.
+- 재사용 아이디어: ① CC0 지면 원본의 실제 경계 기준으로 타일 배치 ② 오리지널 리그 모션 실행 **후** 캐릭터 시각 접지 ③ HTML 시작 성공 대신 실 WebGL2 버퍼·캐릭터 바닥 좌표 검사 ④ 모바일 화면 모의뿐 아니라 실제 터치 입력과 동작 상태 변화 검증 ⑤ 실기기 Android/GPU 및 장시간 게임 QA는 별도 검증.
+- 곤충생존기 PR #9262는 최신 코드·보안·전체 QA 및 소유자 승인 전까지 `Draft`, `main` 미병합 상태를 유지한다.
+
+## GitHub도 개발 우선: 기존 Vibe 작업 경로 단순화
+
+- 새 GitHub 앱·새 워크플로우를 만들지 않는다. **기존** `.github/workflows/pwa-command-bridge.yml` → `tools/pwa-command-vibe2-task.mjs` → `vibe2` 소스 워커/검증 PR 흐름으로만 소유자 게임 아이디어를 전달한다.
+- PWA 또는 인증된 GitHub 소유자 지시를 받으면 `[GITHUB_DEVELOPMENT_FIRST]`와 정확한 게임 ID/기존 소스 루트를 붙인다. 해당 게임의 **코드 수정 → 집중 QA → 실제 3D 브라우저·입력·저장 결과 → 기존 PR 검토** 순서로 실행하고, 무관한 홈페이지/회사 관리/다른 게임/별도 학습 엔진 작업으로 확대하지 않는다.
+- `qa/pwa-command-vibe2-task.test.mjs`에서 게임과 소스 경계, 작업 우선순위, 기존 `department=development`·`type=implementation`, 안전 조건 및 기존 검증 증거를 검사한다.
+- 실제 게임 소스 수정 없이 보고서나 계획만 작성한 작업은 개발 완료로 취급하지 않는다. 단, 중앙 정책·보안·F0~F9·독립 QA·소유자 승인·기존 릴리스 경로를 절대 생략하지 않는다.
+- 이는 개발 작업 **우선순위와 책임 범위만 간결하게 지정**하는 변경이다. CI와 별도의 회사 운영 기능을 삭제하거나 이미 돌아가는 백그라운드 런너를 중단·경감했다고 주장하지 않는다.
+
+## 개발 플랫폼 제외 조건
+
+- 소유자 지시에 따라 **Unity 개발은 수행하지 않는다**. 과거 프로젝트 메타데이터가 있어도 `tools/pwa-command-vibe2-task.mjs`에서 Unity를 우선 선택하지 않는다. 웹 게임 지시는 `web-games/<gameId>`만 사용하고, 웹 소스가 없으면 다른 플랫폼으로 대체하지 않고 차단한다.
+- Roblox 개발은 기존 전용 Roblox/Vibe 경로를 유지한다. 이 웹 지시 수신 도구는 Roblox 전용 경로까지 변경하거나 Roblox 소스를 Unity로 변환하지 않는다.
+- `qa/pwa-command-vibe2-task.test.mjs`에 기존 Unity 프로젝트가 있어도 웹만 선택하며, 웹 소스가 없으면 fail-closed 처리하는 회귀 테스트를 추가했다.

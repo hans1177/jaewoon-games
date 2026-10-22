@@ -1,8 +1,9 @@
+import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   validateLocalDevelopmentPolicy,proposeBoundedReplacement,selectRelevantExcerpt,
-  requiredReviewPass
+  requiredReviewPass,assessLocalMainSync
 } from '../tools/vibe2-local-web-develop.mjs';
 
 const chat={sourceWriteAllowed:false,githubWriteAllowed:false,
@@ -102,4 +103,42 @@ test('manual merge requires head QA and security; Cloudflare is separately not a
     status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,true);
   assert.equal(requiredReviewPass(runs.map(r=>r.name==='Company Security Immune System'
     ?{...r,conclusion:'failure'}:r),checks,sha).pass,false);
+});
+
+test('post-merge local sync blocks stale, dirty and foreign sources',()=>{
+ const safe={branch:'main',dirty:'',origin:'https://github.com/hans1177/jaewoon-games.git',fastForward:true,mergeIncluded:true};
+ assert.deepEqual(assessLocalMainSync(safe),{pass:true,blockers:[]});
+ for(const [change,reason] of [
+  [{branch:'vibe2/candidate/game'},'LOCAL_SYNC_MAIN_BRANCH_REQUIRED'],
+  [{dirty:' M web-games/insect-survival/index.html'},'LOCAL_SYNC_DIRTY_WORKTREE'],
+  [{origin:'https://github.com/untrusted/other.git'},'LOCAL_SYNC_WRONG_REPOSITORY'],
+  [{fastForward:false},'LOCAL_SYNC_NON_FAST_FORWARD_BLOCKED'],
+  [{mergeIncluded:false},'LOCAL_SYNC_EXPECTED_MERGE_NOT_ON_MAIN']
+ ]){
+  const result=assessLocalMainSync({...safe,...change});
+  assert.equal(result.pass,false);
+  assert.ok(result.blockers.includes(reason));
+ }
+ const source=fs.readFileSync('tools/vibe2-local-web-develop.mjs','utf8');
+ assert.match(source,/--sync-main/);
+ assert.match(source,/function cleanMain\(\)\{[\s\S]*?syncLocalMain\(\)/,
+  'owner local development must refresh merged GitHub main before model input');
+ assert.match(source,/merge','--ff-only','refs\/remotes\/origin\/main/);
+ assert.match(source,/expectedMergeSha:after\.merge_commit_sha/);
+ assert.doesNotMatch(source,/git\(\['reset','--hard'/);
+ assert.doesNotMatch(source,/git\(\['push','--force'/);
+ assert.match(source,/LOCAL_MAIN_SYNC=FAST_FORWARD_VERIFIED/);
+});
+
+test('insect CC0 handoff remains an unpromoted trace in canonical Vibe learning',()=>{
+ const trace=JSON.parse(fs.readFileSync('company-learning/assistant-vibe-coauthoring-log.json','utf8'));
+ const record=trace.records.find(row=>row.id==='assistant_insect_grounding_cc0_local_vibe_handoff_20261023');
+ assert.ok(record,'reuse needs a durable source-bound assistant trace');
+ assert.equal(record.gameId,'insect-survival');
+ assert.equal(record.learningState,'TRACE_ONLY','PR candidate alone is not promoted training');
+ assert.ok(record.evidence.some(row=>row.includes('runtime-failure:')));
+ assert.ok(record.evidence.some(row=>row.includes('mobile-emulation:')));
+ assert.ok(record.reusablePatterns.includes('LOCAL_GIT_MAIN_FAST_FORWARD_ONLY_WITH_CLEAN_WORKTREE_AND_EXACT_MERGE_SHA'));
+ assert.ok(record.avoidPatterns.includes('CREATE_SHADOW_SYNC_LEARNING_OR_RELEASE_PIPELINE'));
+ assert.match(fs.readFileSync('tools/company-system-ai-external-learning-feed.mjs','utf8'),/buildAssistantTraceLearningFeed/);
 });

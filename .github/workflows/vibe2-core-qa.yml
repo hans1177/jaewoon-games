@@ -246,6 +246,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   # PR updates supersede their own checks, but each merged main commit must finish its QA.
@@ -262,7 +263,9 @@ jobs:
       coding_benchmark: ${{ steps.scope.outputs.coding_benchmark }}
       changed_web_games: ${{ steps.scope.outputs.changed_web_games }}
     steps:
+      # Read PR path diffs from API: avoid gigantic game asset checkout in scope.
       - uses: actions/checkout@v4
+        if: ${{ github.event_name == 'push' }}
         with:
           fetch-depth: 2
           fetch-tags: false
@@ -275,25 +278,51 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PR_BASE: ${{ github.event.pull_request.base.sha }}
           PUSH_BEFORE: ${{ github.event.before }}
+          GH_READ_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          REPO_NAME: ${{ github.repository }}
         run: |
           set -euo pipefail
           parallelism_only=NO
-          # PR 검증은 GitHub가 만든 현재 합성 병합 커밋의 첫 부모와 비교한다.
-          # 오래된 PR 생성 당시 base SHA를 쓰면 이후 main 변경까지 PR 소스로 오분류한다.
-          if [ "$EVENT_NAME" = 'pull_request' ] && git rev-parse --verify -q 'HEAD^2' >/dev/null; then
-            base_sha="$(git rev-parse 'HEAD^1')"
-          elif [ "$EVENT_NAME" = 'pull_request' ] && [ -n "${PR_BASE:-}" ]; then
-            base_sha="$PR_BASE"
+          if [ "$EVENT_NAME" = 'pull_request' ]; then
+            # Exact-head paginated PR files; errors, truncation and stale heads stop QA.
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const {GH_READ_TOKEN:token,REPO_NAME:repo,PR_NUMBER:number,EXPECTED_PR_HEAD:head}=process.env;
+          if(!token||!/^\d+$/.test(number||'')||!repo||!(/^[a-f0-9]{40}$/i).test(head||''))throw Error('CORE_SCOPE_PR_IDENTITY_INVALID');
+          const api='https://api.github.com/repos/'+repo+'/pulls/'+number;
+          const headers={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          async function get(url){
+            const response=await fetch(url,{headers,signal:AbortSignal.timeout(30000)});
+            if(!response.ok)throw Error('CORE_SCOPE_GITHUB_API_FAILED:'+response.status);
+            return response.json();
+          }
+          const before=await get(api);
+          if(before.head?.sha!==head)throw Error('CORE_SCOPE_STALE_HEAD');
+          if(!Number.isSafeInteger(before.changed_files)||before.changed_files<1||before.changed_files>3000)throw Error('CORE_SCOPE_CHANGED_FILE_LIMIT');
+          const files=[];
+          for(let page=1;page<=30;page++){
+            const entries=await get(api+'/files?per_page=100&page='+page);
+            if(!Array.isArray(entries)||entries.some(item=>typeof item.filename!=='string'||!item.filename))throw Error('CORE_SCOPE_MALFORMED_PR_FILES');
+            files.push(...entries.map(item=>item.filename));
+            if(entries.length<100)break;
+          }
+          const after=await get(api);
+          if(after.head?.sha!==head||files.length!==after.changed_files||new Set(files).size!==files.length)throw Error('CORE_SCOPE_STALE_OR_PARTIAL_PR_FILES');
+          fs.writeFileSync('/tmp/vibe2-core-qa-files.txt',files.join('\n')+'\n');
+          console.log('VIBE2_CORE_QA_PR_FILES_API=PASS changed_files='+files.length);
+          NODE
           elif [ "$EVENT_NAME" = 'push' ] && [ -n "${PUSH_BEFORE:-}" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+$'; then
             base_sha="$PUSH_BEFORE"
+            git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
+            git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
           else
             echo "parallelism_only=$parallelism_only" >> "$GITHUB_OUTPUT"
             echo 'changed_web_games=ALL' >> "$GITHUB_OUTPUT"
             echo 'VIBE2_CORE_QA_SCOPE=FULL_NON_DIFF_EVENT'
             exit 0
           fi
-          git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
-          git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
           changed_web_games=ALL
           if [ "$EVENT_NAME" = 'pull_request' ]; then
             changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
@@ -484,7 +513,50 @@ jobs:
           node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe-crossplatform-visual-components.test.mjs
+          # Heavy native CC0 and the remaining contracts run independently in
+          # sibling jobs, keeping the full suite without a 25-minute serial bottleneck.
+          echo 'VIBE2_CORE_QA_PARALLEL_SHARDS=EARLY_NATIVE_REMAINING'
+
+      - name: Generate machine handoff
+        run: |
+          set -euo pipefail
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff.json >/tmp/vibe2-handoff.log
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
+
+
+  native-asset-regression:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    name: Native CC0 asset production regression
+    runs-on: ubuntu-slim
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run complete original native CC0 asset regression
+        run: |
+          set -euo pipefail
           node --test qa/vibe2-native-asset-production.test.mjs
+
+  remaining-contracts:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    name: Vibe2 remaining core contracts
+    runs-on: ubuntu-slim
+    timeout-minutes: 25
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      VIBE2_BROWSER_CHANGED_GAMES: ${{ needs.scope.outputs.changed_web_games || 'ALL' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run remaining source, game, learning and design regressions
+        run: |
+          set -euo pipefail
           # [Rule5] Real approved seed artbooks live only on company-runtime, not main.
           # Reuse the identical read-only source hydration already verified by Vibe QA;
           # do not fake fixtures, skip tests, or promote missing artbook evidence.
@@ -512,6 +584,7 @@ jobs:
           node --test qa/vibe2-existing-web-assessment.test.mjs
           # Actual game consumer proof: canonical CC0 bytes, lineage and original mobile save/input contract.
           node --test qa/insect-survival.test.mjs
+          node --test qa/vibe2-local-web-develop.test.mjs
           # 기존 중단된 로컬 모델·유니티 작업 시험은 제외하고 유효한 소스/저장/권한 검증은 유지.
           node --test --test-name-pattern='Web true 3D engine selection keeps|asset synchronization detects|single motion work unit rejects stale source|game context capsule keeps|candidate self review rejects comment-only|full-file candidates compare against|rejected patch fingerprint ignores|repeat-rejected source candidates|Vibe libraries and development tools rematch|native game BUILD_UP receives bounded|source worker wires deterministic diagnostic|exact edit validates the entire batch|asset inspection and exact writes share|semantic diff hard gate protects existing save keys|semantic diff invariant blocks variable-backed save|native save key changes remain possible|invalid edit path recovery requires|exact edit accepts only unique indentation|exact edit still rejects materially different|model response completion stops only|failed source generation still performs post-work|runtime model-call gate rejects|source worker emits auditable APK learning' qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-distillation.test.mjs
@@ -544,11 +617,6 @@ jobs:
           node --test qa/company-design-pre-gate-resume.test.mjs
           node --test qa/company-machine-development-lifecycle.test.mjs
 
-      - name: Generate machine handoff
-        run: |
-          set -euo pipefail
-          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff.json >/tmp/vibe2-handoff.log
-          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
 
   browser-smoke:
     needs: scope
