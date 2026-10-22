@@ -3326,3 +3326,33 @@ test('false new-game gate is recovered only for an independently runnable existi
     assert.equal(mapped.get(name).status,'blocked',name);
   }
 });
+
+test('read-only learning practice source-attribution blocks recover without releasing real source or owner gates',()=>{
+  const sample={
+    id:'LEARNING-PRACTICE-gap-progression-g1',gameId:null,target:'web',
+    department:'learning',type:'research',sourceRoot:'learning-practice:gap-progression',
+    goal:'[VIBE_LEARNING_PRACTICE]\\nkind=REPRO_DRILL\\ndomains=PROGRESSION',
+    status:'blocked',blocker:'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',
+    retries:1,maxRetries:2,evidence:['failure-cause:VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED']
+  };
+  const differentBlock={...sample,id:'LEARNING-PRACTICE-other-cause-g1',blocker:'DESIGN_CONTRACT_NOT_PASSED'};
+  const realGame={...sample,id:'real-game-work',gameId:'core-clash-4v4',department:'development',type:'implementation',sourceRoot:'web-games/core-clash-4v4'};
+  const disguised={...sample,id:'fake-learning-task'};
+  const ownerHold={...sample,id:'LEARNING-PRACTICE-hold-g1',ownerDevelopmentHold:true};
+  const ownerDecision={...sample,id:'LEARNING-PRACTICE-decision-g1',requiresOwnerDecision:true};
+  const otherGoal={...sample,id:'LEARNING-PRACTICE-other-goal-g1',goal:'새 게임 만들어'};
+  const queue=createVibeContinuousQueue({tasks:[sample,differentBlock,realGame,disguised,ownerHold,ownerDecision,otherGoal]});
+  const actual=recoverStaleRunningReservations(queue);
+  assert.equal(actual.recovered,1);
+  const byId=new Map(actual.queue.tasks.map(t=>[t.id,t]));
+  const restored=byId.get(sample.id);
+  assert.equal(restored.status,'queued');
+  assert.equal(restored.blocker,null);
+  assert.equal(restored.retries,1);
+  assert.equal(restored.lastOutcome,'RECOVERED_READ_ONLY_RESEARCH_SOURCE_GATE');
+  assert.ok(restored.evidence.includes('recovery:read-only-learning-practice-source-gate-v1'));
+  for(const id of [differentBlock.id,realGame.id,disguised.id,ownerHold.id,ownerDecision.id,otherGoal.id]){
+    assert.equal(byId.get(id).status,'blocked',id);
+  }
+  assert.equal(recoverStaleRunningReservations(actual.queue).recovered,0,'recovery is idempotent');
+});

@@ -648,10 +648,12 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     ...(unifiedLearning?.exactKnowledgeIds||[]),
     ...(verifiedCapabilityMemory?.records||[]).map(record=>'VERIFIED_CAPABILITY:'+clean(record?.id))
   ]);
-  const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
+  // 실행 구간이 asset-development여도 읽기 전용 LEARNING-PRACTICE/research는 게임 소스 수정이 아니다.
+  // 실제 소스/에셋 구현에는 기존 검증된 외부 원칙 분류·적용 게이트를 그대로 요구한다.
+  const assetDevelopmentLearning=requiresWrite&&clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
   // External AI/black-box learning is optional. Only selected verified source playbooks
   // are subject to fail-closed attribution, disposition and prompt coverage.
-  const externalLearningApplicable=(taskRequiresWrite(task)&&['roblox','unity','web'].includes(plan.target))||assetDevelopmentLearning;
+  const externalLearningApplicable=requiresWrite&&(['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning);
   const verifiedExternalPlaybookRows=freeze([...(unifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))]);
   const verifiedExternalPlaybookReuse=freezeList(verifiedExternalPlaybookRows.map(row=>row.id));
