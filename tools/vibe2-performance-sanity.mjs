@@ -96,6 +96,45 @@ export function verifyPerformanceSanity({root=process.cwd(),manifest={}}={}){
   return{version:2,role:'performance',sourceWrite:false,pass,sourceRoot,changedFiles:changed,actualSourceChangedFiles,runtimeVerified:false,fileGrowth,checks};
 }
 
+// Web game 3D runtime measurements are facts for the existing Vibe diagnostic path,
+// not a replacement for its source sanity, game QA, Android profiling or release gates.
+export function diagnoseVibeWebFrameBottleneck(metrics={}){
+ const finite=value=>typeof value==='number'&&Number.isFinite(value);
+ const ready=metrics?.kind==='VIBE_WEB_RUNTIME_FRAME_EVIDENCE'&&metrics.ready===true&&
+  metrics.activeWebGL===true&&metrics.rendererVisible===true;
+ const frames=metrics.framesObserved;
+ const hasFrames=ready&&Number.isInteger(frames)&&frames>=1&&
+  finite(metrics.pixelRatio)&&finite(metrics.pixelRatioCap)&&finite(metrics.pixelRatioFloor)&&
+  metrics.pixelRatio>0&&metrics.pixelRatioFloor>0&&
+  metrics.pixelRatio>=metrics.pixelRatioFloor-.001&&metrics.pixelRatio<=metrics.pixelRatioCap+.001&&
+  Number.isInteger(metrics.resolutionAdjustments)&&metrics.resolutionAdjustments>=0&&
+  Number.isInteger(metrics.renderCalls)&&metrics.renderCalls>0;
+ const measured=hasFrames&&metrics.frameSampleValid===true&&frames>=45&&
+  finite(metrics.averageFrameMs)&&metrics.averageFrameMs>0;
+ const bottlenecks=[];
+ if(!hasFrames)bottlenecks.push('NO_VERIFIED_WEBGL_FRAME_TELEMETRY');
+ else{
+  if(!measured)bottlenecks.push('INSUFFICIENT_FRAME_SAMPLES');
+  else if(metrics.averageFrameMs>23)bottlenecks.push('FRAME_BUDGET_PRESSURE');
+  if(metrics.pixelRatio<metrics.pixelRatioCap-.005)bottlenecks.push('RESOLUTION_AUTO_REDUCED');
+  if(metrics.renderCalls>180)bottlenecks.push('DRAW_CALL_PRESSURE');
+ }
+ return {
+  role:'vibe-runtime-performance-diagnosis',sourceWrite:false,advisoryOnly:true,
+  observed:hasFrames,frameIntervalMeasured:measured,
+  bottlenecks,source:'insect-survival/world3d.mjs',
+  evidence:hasFrames?{
+   frames,averageFrameMs:measured?metrics.averageFrameMs:null,
+   pixelRatio:metrics.pixelRatio,pixelRatioCap:metrics.pixelRatioCap,
+   resolutionAdjustments:metrics.resolutionAdjustments,renderCalls:metrics.renderCalls,
+   hardwareBenchmarkVerified:false
+  }:null,
+  recommendation:!hasFrames?'VERIFY_ACTUAL_3D_RENDERING_FIRST'
+   :bottlenecks.includes('FRAME_BUDGET_PRESSURE')?'INSPECT_WEBGL_RESOLUTION_AND_DRAW_CALLS'
+   :bottlenecks.includes('DRAW_CALL_PRESSURE')?'REDUCE_VISUAL_DRAW_WORK_WITHOUT_GAMEPLAY_MUTATION'
+   :'KEEP_GAMEPLAY_AND_MONITOR_RUNTIME_WITHOUT_UNVERIFIED_PASS'
+ };
+}
 export function runPerformanceSanity({root=process.cwd(),manifestFile='',outputFile=''}={}){
   if(!clean(manifestFile))throw new Error('manifest file required');
   const result=verifyPerformanceSanity({root,manifest:readJson(manifestFile)});
