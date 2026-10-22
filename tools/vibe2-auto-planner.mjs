@@ -897,7 +897,7 @@ function supervisedWebBuildRequired(project={},goal=''){
   const text=clean(goal);
   if(/\[(?:WEB_BASE_IMPLEMENTATION|EXISTING_WEB_ASSESS_AND_IMPLEMENT|EXISTING_WEB_DEVELOPMENT_CONTINUATION|WEB_STRICT_80_88_TO_89|PRESENTATION_PASS:[A-Z_]+)\]/.test(text))return true;
   return /\[WEB_REPAIR\]/.test(text)
-    &&/REAL_PLAYABLE_WEB_GAME_REQUIRED|REAL_GAME_MECHANIC_COUNT_TOO_LOW|REAL_GAME_SYSTEM_COUNT_REQUIRED|WEB_TEST_HARNESS_FORBIDDEN|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|STARTABILITY_AND_2_5D|MINIMUM_2_5D_PRESENTATION_REQUIRED|START_CONTROL_NOT_WIRED|EMPTY_OR_MISSING_WEB_ENTRYPOINT|VALIDATION_PROXY_NOT_REAL_GAMEPLAY/.test(text);
+    &&/REAL_PLAYABLE_WEB_GAME_REQUIRED|REAL_GAME_MECHANIC_COUNT_TOO_LOW|REAL_GAME_SYSTEM_COUNT_REQUIRED|WEB_TEST_HARNESS_FORBIDDEN|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|STARTABILITY_AND_2_5D|STARTABILITY_AND_TRUE_3D|MINIMUM_2_5D_PRESENTATION_REQUIRED|REAL_3D_GAMEPLAY_IMPLEMENTATION_REQUIRED|START_CONTROL_NOT_WIRED|EMPTY_OR_MISSING_WEB_ENTRYPOINT|VALIDATION_PROXY_NOT_REAL_GAMEPLAY/.test(text);
 }
 function supervisedWebBuildContract(){
   return{
@@ -1206,7 +1206,7 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
   const relative=`${posix(project.projectPath)}/index.html`;
   const file=sourceFile(repoRoot,relative);
   const text=readText(file);
-  const blockers=[];
+  const blockers=[],responsibleFiles=[relative];
   if(!fs.existsSync(file)||!text.trim())blockers.push('EMPTY_OR_MISSING_WEB_ENTRYPOINT');
   if(text){
     for(const match of text.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)){
@@ -1218,21 +1218,53 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
     const validationProxy=/<button\b[^>]*(?:data-session-stage|data-content-depth-stage|data-validation-stage|data-test-stage)|\bid=["']scope-control-/i.test(text);
     const realGameplay=/data-web-artifact-type=["']REAL_PLAYABLE_GAME["']|data-gameplay-action=|data-playable-cycle-contract=|<canvas\b/i.test(text);
     if(validationProxy&&!realGameplay)blockers.push('VALIDATION_PROXY_NOT_REAL_GAMEPLAY');
+    // 실제 진입점에서 연결된 게임 책임 모듈을 검사한다. 표시 문구·CSS 깊이는 3D 근거가 아니다.
+    const sourceFiles=[relative],pending=[file],visited=new Set(),contents=[];
+    const gameRoot=fs.realpathSync(path.dirname(file))+path.sep;
+    while(pending.length){
+      const current=pending.pop();
+      if(visited.has(current))continue;
+      visited.add(current);
+      const source=readText(current);contents.push(source);
+      const scriptSources=new Set([...source.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(match=>match[1]));
+      const references=[
+        ...source.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi),
+        ...source.matchAll(/\b(?:import|export)\s+(?:[^;'"\n]*?\s+from\s*)?["']([^"']+)["']/g),
+        ...source.matchAll(/\bimport\s*\(\s*["']([^"']+)["']\s*\)/g)
+      ];
+      for(const match of references){
+        const src=clean(match[1]).split(/[?#]/)[0];
+        if(!src||/^(?:[a-z]+:|\/\/)/i.test(src)||(!src.startsWith('.')&&!src.startsWith('/')&&!scriptSources.has(match[1])))continue;
+        const dependency=src.startsWith('/')?sourceFile(repoRoot,src.replace(/^\/+/, '')):path.resolve(path.dirname(current),src);
+        if(!/\.(?:m?js|html?)$/i.test(dependency))continue;
+        if(!fs.existsSync(dependency)){blockers.push(`LOCAL_RUNTIME_DEPENDENCY_MISSING:${src}`);continue;}
+        const actual=fs.realpathSync(dependency);
+        // 공용 엔진 자체의 클래스 선언을 실제 게임 구현으로 오인하지 않는다.
+        if(!actual.startsWith(gameRoot))continue;
+        sourceFiles.push(posix(path.relative(repoRoot,actual)));pending.push(actual);
+      }
+    }
+    const runtimeSource=contents.join('\n');
     const startMatch=text.match(/<button\b([^>]*)>([\s\S]{0,160}?)<\/button>/gi)||[];
     const startButtons=startMatch.filter(value=>/(?:게임\s*시작|시작하기|start\s*game|play\s*now|놀이공원\s*열기)/i.test(value));
     if(startButtons.length){
       const ids=startButtons.map(value=>clean(value.match(/\bid=["']([^"']+)["']/i)?.[1])).filter(Boolean);
       const direct=startButtons.some(value=>/\bonclick\s*=/i.test(value));
-      const wired=direct||ids.some(id=>new RegExp(`(?:getElementById\\s*\\(\\s*['"]${id}['"]|querySelector\\s*\\(\\s*['"]#${id}['"]|\\b${id}\\s*\\.\\s*(?:onclick|addEventListener))`,'i').test(text));
+      const wired=direct||ids.some(id=>new RegExp(`(?:getElementById\\s*\\(\\s*['"]${id}['"]|querySelector\\s*\\(\\s*['"]#${id}['"]|\\b${id}\\s*\\.\\s*(?:onclick|addEventListener))`,'i').test(runtimeSource));
       if(!wired)blockers.push('START_CONTROL_NOT_WIRED');
     }
-    const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
-    const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
-    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
-    if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
-    if(text.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
+
+    const camera=/new\s+(?:THREE\.|BABYLON\.)?(?:PerspectiveCamera|OrthographicCamera|ArcRotateCamera|FreeCamera|UniversalCamera)\s*\(/.test(runtimeSource);
+    const meshes=/new\s+(?:THREE\.)?(?:Mesh|InstancedMesh|SkinnedMesh)\s*\(|\b(?:GLTFLoader|SceneLoader|MeshBuilder)\b/.test(runtimeSource);
+    const renderer=/new\s+(?:THREE\.)?WebGLRenderer\s*\(|new\s+BABYLON\.Engine\s*\(/.test(runtimeSource);
+    const draw=/\.render\s*\(/.test(runtimeSource);
+    const playCanvas=/new\s+pc\.Application\s*\(/.test(runtimeSource)&&/addComponent\s*\(\s*['"]camera['"]/.test(runtimeSource)&&/addComponent\s*\(\s*['"](?:render|model)['"]/.test(runtimeSource)&&/\.start\s*\(/.test(runtimeSource);
+    const nativeWebGL=/getContext\s*\(\s*['"]webgl2?['"]/.test(runtimeSource)&&/\.draw(?:Elements|Arrays)(?:Instanced)?\s*\(/.test(runtimeSource)&&/\b(?:perspective|lookAt|projectionMatrix)\b/.test(runtimeSource);
+    if(!((camera&&meshes&&renderer&&draw)||playCanvas||nativeWebGL))blockers.push('REAL_3D_GAMEPLAY_IMPLEMENTATION_REQUIRED');
+    responsibleFiles.push(...sourceFiles);
+    if(runtimeSource.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
   }
-  return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative};
+  return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative,responsibleFiles:[...new Set(responsibleFiles)]};
 }
 function findWebStartupSpatialRepairTask(project,repoRoot,queue){
   if(clean(project.engine).toLowerCase()!=='web')return null;
@@ -1246,7 +1278,7 @@ function findWebStartupSpatialRepairTask(project,repoRoot,queue){
 빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.
 평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 실제 3D 월드 메시·원근 카메라·깊이 버퍼·WebGL 삼각형 렌더와 공간 상호작용을 구현한다. CSS 원근 효과·등각·parallax·2.5D는 최종 통과 금지한다. UI 오버레이만 2D를 유지할 수 있다.
 기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-  const out=task(id,project,goal,[audit.relative],'owner-immediate','high',[
+  const out=task(id,project,goal,audit.responsibleFiles,'owner-immediate','high',[
     'owner-directive:all-web-games-must-start',
     'owner-directive:real-3d-final-gameplay',
     'web-stage:WEB_REPAIR',
@@ -1270,7 +1302,7 @@ function webRepairImplementationHints(evidence=[]){
   add(/LOCAL_RUNTIME_DEPENDENCY_MISSING/,'누락된 로컬 script/asset 의존을 실제 파일과 경로에 맞게 복구한다.');
   add(/VALIDATION_PROXY_NOT_REAL_GAMEPLAY/,'검증 단계·scope 버튼을 실제 gameplay UI로 사용하지 말고 진짜 게임 시작/입력/상태 진행 화면으로 교체한다.');
   add(/START_CONTROL_NOT_WIRED/,'시작 버튼을 실제 게임 초기화·입력 활성화·게임 상태 전환 함수에 직접 연결한다.');
-  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED/,'평면 2D 최종 표현을 최소 2.5D로 재구성한다. 등각/원근 카메라·깊이 정렬·전경/중경/후경 parallax·높이/접지 그림자·깊이 대응 VFX 중 실제 공간 단서를 결합하고 UI만 2D overlay로 남긴다.');
+  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED|REAL_3D_GAMEPLAY_IMPLEMENTATION_REQUIRED/,'기존 책임 소스에서 실제 3D 메시·카메라·WebGL 렌더를 연결한다. CSS 원근·등각·parallax·2.5D와 표시 문구는 최종 3D 증거가 아니다. UI만 2D로 유지하고 같은 빌드의 모바일 런타임과 저장 호환을 검증한다.');
   add(/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/,'카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.');
   add(/APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED/,'실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.');
   add(/REAL_GAME_MECHANIC_COUNT_TOO_LOW/,'누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.');
@@ -3886,10 +3918,9 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     ]);
   }
   if(project.engine==='web'){
-    const cc0Replacement=findWebPresentationQualityTask(project,repoRoot,queue);
-    if(cc0Replacement?.evidence?.some(value=>['web-cc0-action-motion-replacement:v1','owner-library-cc0-replacement:v1'].includes(value)))return[cc0Replacement];
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
+      if(startupSpatialRepair)return[startupSpatialRepair];
       return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
     }
     // Preserve canonical Web bootstrap/exact-repair authority before quality backfill.
@@ -3897,6 +3928,8 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair)return[startupSpatialRepair];
+    const cc0Replacement=findWebPresentationQualityTask(project,repoRoot,queue);
+    if(cc0Replacement?.evidence?.some(value=>['web-cc0-action-motion-replacement:v1','owner-library-cc0-replacement:v1'].includes(value)))return[cc0Replacement];
     return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),...holisticBackfillTasks,findPresentationQualityTask(project,repoRoot,queue),...normalStudioTasks,findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];

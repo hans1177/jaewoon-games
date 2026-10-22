@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { planVibe2AutonomousTasks } from '../tools/vibe2-auto-planner.mjs';
+import { planVibe2AutonomousTasks, findSafeTasks } from '../tools/vibe2-auto-planner.mjs';
 
 function tempRepo(){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-web-repair-fixture-'));
@@ -115,4 +115,40 @@ test('missing Web root plans candidate bootstrap with explicit evidence and no s
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+// 회귀: 3D 표시·CSS 또는 미연결 렌더러로 전환 대상이 누락되면 안 된다.
+test('3D labels, CSS depth and unconnected renderer files cannot suppress redevelopment',()=>{
+  const root=tempRepo();
+  try{
+    const dir=path.join(root,'web-games','flat');fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'index.html'),`<body data-spatial-dimension="3d" style="perspective:800px"><canvas></canvas>${' '.repeat(900)}</body>`);
+    fs.writeFileSync(path.join(dir,'unused.mjs'),'new THREE.PerspectiveCamera();new THREE.Mesh();new THREE.WebGLRenderer().render(scene,camera);');
+    const project={gameId:'flat',engine:'web',projectPath:'web-games/flat',releaseState:'development-confirmed',ownerPreservationPresentationUpgrade:true};
+    const rows=findSafeTasks(project,root,{tasks:[]});
+    assert.match(rows[0].id,/web-startup-spatial-repair/);
+    assert.ok(rows[0].evidence.some(value=>value.includes('REAL_3D_GAMEPLAY_IMPLEMENTATION_REQUIRED')));
+    assert.deepEqual(rows[0].responsibleFiles,['web-games/flat/index.html']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('connected nested modules are inspected and repair owns the existing renderer',()=>{
+  const root=tempRepo();
+  try{
+    const dir=path.join(root,'web-games','modular');fs.mkdirSync(path.join(dir,'view'),{recursive:true});
+    fs.writeFileSync(path.join(dir,'index.html'),'<canvas></canvas><script type="module" src="main.mjs"></script>');
+    fs.writeFileSync(path.join(dir,'main.mjs'),"import './view/world.mjs';");
+    const renderer=path.join(dir,'view/world.mjs');
+    fs.writeFileSync(renderer,"import '../main.mjs';\n"+'// flat renderer\n'.repeat(80));
+    const project={gameId:'modular',engine:'web',projectPath:'web-games/modular',releaseState:'development-confirmed',ownerPreservationPresentationUpgrade:true};
+    const repair=findSafeTasks(project,root,{tasks:[]})[0];
+    assert.match(repair.id,/web-startup-spatial-repair/);
+    assert.deepEqual(new Set(repair.responsibleFiles),new Set(['web-games/modular/index.html','web-games/modular/main.mjs','web-games/modular/view/world.mjs']));
+    fs.writeFileSync(renderer,"import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';\n"+'const camera=new THREE.PerspectiveCamera();const mesh=new THREE.Mesh();const renderer=new THREE.WebGLRenderer();renderer.render(scene,camera);\n'+'// source structure only\n'.repeat(80));
+    const next=findSafeTasks(project,root,{tasks:[]});
+    assert.equal(next.some(row=>/web-startup-spatial-repair/.test(row.id)),false);
+    fs.appendFileSync(renderer,"\nimport './missing.mjs';");
+    const missing=findSafeTasks(project,root,{tasks:[]})[0];
+    assert.ok(missing.evidence.some(value=>value.includes('LOCAL_RUNTIME_DEPENDENCY_MISSING:./missing.mjs')));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
