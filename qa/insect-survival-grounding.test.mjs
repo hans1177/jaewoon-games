@@ -87,7 +87,7 @@ test('runtime CC0 tile placement is exact: 12 non-overlapping panels with ground
     },
     PlaneGeometry:class{constructor(width,depth){Object.assign(this,{width,depth})}},
     MeshStandardMaterial:class{},
-    Mesh:class{constructor(geometry,material){this.geometry=geometry;this.material=material;
+    Mesh:class{constructor(geometry,material){this.geometry=geometry;this.material=material;this.userData={};
       this.rotation={};this.position=makePosition()}}
   };
   const start=render.slice(render.indexOf('function environment(frame){'),render.indexOf(' const rand=i=>'));
