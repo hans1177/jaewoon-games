@@ -82130,11 +82130,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_76b2f5970d9a488bf832ab82",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9196",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c1ad31c464bea8cf87bddcfd07555fffac7a84c6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9196,
+        "baseBranch": "main",
+        "headBranch": "vibe2/focus-insect-survival-20261022",
+        "baseSha": "c1ad31c464bea8cf87bddcfd07555fffac7a84c6",
+        "headSha": "599276cd70ba31f97e5678c5a44d0ccb86171223",
+        "mergeCommitSha": "259fea6efef1bc99f5c247c4a41b64c6efc009dd",
+        "mergedAt": "2026-10-22T09:45:15Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1760387afbb1327f940c54d11b0c9b307d7c587a8e3c326434da4a1ec67a9f0f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/focus-insect-survival-20261022",
+        "candidateSha": "599276cd70ba31f97e5678c5a44d0ccb86171223"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 121,
+        "deletedLineCount": 39,
+        "changedFiles": [
+          ".github/workflows/company-security-immune.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-status-sync-direct-native.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "qa/vibe3-roblox-platform.test.mjs",
+          "tools/vibe2-learning-motor.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-security-immune.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-status-sync-direct-native.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "qa/vibe3-roblox-platform.test.mjs",
+          "tools/vibe2-learning-motor.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9196",
+        "merge-commit:259fea6efef1bc99f5c247c4a41b64c6efc009dd",
+        "base-main:c1ad31c464bea8cf87bddcfd07555fffac7a84c6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 649
+    "total": 650
   }
 }
