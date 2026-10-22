@@ -592,7 +592,7 @@ export function evaluateVibeReferenceCapabilities(input={}){
     clean(row.sourceId)&&clean(row.sourceTimestamp)&&clean(row.evidence)&&
     !PROTECTED_REFERENCE_FIELDS.some(key=>Boolean(row[key]))&&row.licenseVerified!==false);
   const observed=eligibleFacts.filter(row=>row.observationKind==='OBSERVED');
-  const r01=referenceGate('R01',eligibleFacts.length>0&&observed.length>0,
+  const r01=referenceGate('R01',eligibleFacts.length>0&&observed.length>0&&eligibleFacts.length===facts.length,
     eligibleFacts.length===facts.length&&observed.length?[]:['PERMITTED_OBSERVED_SOURCE_REQUIRED'],
     {accepted:eligibleFacts.length,rejected:facts.length-eligibleFacts.length,inferredNotObserved:true});
   const fun=referenceRows(input.funHypotheses);
@@ -649,9 +649,10 @@ export function evaluateVibeReferenceCapabilities(input={}){
     ['VISIBLE_INPUT','VISIBLE_MOTION','VISIBLE_CONTACT','VISIBLE_FEEDBACK','UNKNOWN_INTERNAL'].includes(row.event)&&
     clean(row.visualEvidence));
   const orderedVideo=[...acceptedVideo].sort((a,b)=>a.timestampMs-b.timestampMs);
-  const r08=referenceGate('R08',orderedVideo.length>=2&&orderedVideo.some(v=>v.event==='VISIBLE_CONTACT')&&
-    orderedVideo.some(v=>v.event==='VISIBLE_FEEDBACK'),
-    orderedVideo.length>=2?['VISIBLE_CONTACT_AND_FEEDBACK_REQUIRED']:['TIME_ORDERED_SCENE_EVIDENCE_REQUIRED'],{
+  const sceneValid=orderedVideo.length>=2&&orderedVideo.some(v=>v.event==='VISIBLE_CONTACT')&&
+    orderedVideo.some(v=>v.event==='VISIBLE_FEEDBACK');
+  const r08=referenceGate('R08',sceneValid,
+    sceneValid?[]:orderedVideo.length>=2?['VISIBLE_CONTACT_AND_FEEDBACK_REQUIRED']:['TIME_ORDERED_SCENE_EVIDENCE_REQUIRED'],{
       observations:freezeList(orderedVideo.map(v=>({time:v.timestampMs,event:v.event}))),
       inferredEngineInternalsVerified:false
     });
