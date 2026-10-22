@@ -1650,7 +1650,10 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
   const highRisk=lower(task.priority)==='critical'||lower(task.estimatedRisk)==='high'||/FULL_WEB_GAME_REBUILD|release|migration|multiplayer|datastore/i.test(goal);
   const strategies=Object.values(state.codingStrategyMemory?.strategies||{}),promotionGap=strategies.some(row=>row.state==='VERIFIED')&&!strategies.some(row=>row.state==='PREFERRED')&&lower(task.type||'implementation')==='implementation';
   const count=repeated||highRisk||promotionGap?3:1;
-  return {candidateCount:count,maxCandidates:5,reason:repeated?'repeated-verified-failure':highRisk?'high-risk':promotionGap?'strategy-promotion-evidence-gap':'normal',winnerRule:'VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK',gateBypass:false};
+  // C01-C08 측정 결과는 기존 후보 비교 정책의 검증 정보이며 QA/권한 우회에 쓰지 않는다.
+  const capabilities=task.capabilityEvidence?assessVibeCodingCapabilities(task.capabilityEvidence):null;
+  return {candidateCount:count,maxCandidates:5,reason:repeated?'repeated-verified-failure':highRisk?'high-risk':promotionGap?'strategy-promotion-evidence-gap':'normal',winnerRule:'VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK',gateBypass:false,
+    ...(capabilities?{capabilities}:{} )};
 }
 
 function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput={}){
