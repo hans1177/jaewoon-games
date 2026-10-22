@@ -142,14 +142,12 @@ function options(argv){
   return out;
 }
 function cleanMain(){
-  if(git(['branch','--show-current'])!=='main')fail('LOCAL_DEV_MAIN_BRANCH_REQUIRED');
-  if(git(['status','--porcelain']))fail('LOCAL_DEV_DIRTY_WORKTREE_STOP');
-  git(['fetch','--quiet','origin','main']);
-  if(git(['rev-parse','HEAD'])!==git(['rev-parse','refs/remotes/origin/main']))
-    fail('LOCAL_DEV_PULL_MAIN_FIRST');
-  const origin=git(['remote','get-url','origin']);
-  if(!/^(?:https:\/\/github\.com\/|git@github\.com:)hans1177\/jaewoon-games(?:\.git)?$/i.test(origin))
-    fail('LOCAL_DEV_WRONG_REPOSITORY');
+ if(git(['branch','--show-current'])!=='main')fail('LOCAL_DEV_MAIN_BRANCH_REQUIRED');
+ if(git(['status','--porcelain']))fail('LOCAL_DEV_DIRTY_WORKTREE_STOP');
+ // Whenever owner starts a local game development/check session, refresh an
+ // already-merged GitHub main via the same verified fast-forward-only path.
+ // No background remote access to an offline workstation is implied.
+ syncLocalMain();
 }
 // Owner-side, fail-closed refresh of an unmodified local main checkout.
 export function assessLocalMainSync({branch='',dirty='',origin='',fastForward=true,mergeIncluded=true}={}){
