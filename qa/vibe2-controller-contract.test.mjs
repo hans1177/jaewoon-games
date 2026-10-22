@@ -1841,3 +1841,18 @@ test('pinned reserve snapshot retains exact Git source identity after control br
     assert.equal(currentSourceTreeSha({repoRoot:snapshot,sourcePath:'roblox-games/demo'}),tree);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+// 큐 최신 상태 재생과 후보 fan-in은 과거 전체 브랜치 이력을 입력으로 쓰지 않는다.
+test('canonical Vibe reserve and fan-in fetch bounded latest state without changing replay ownership',()=>{
+  for(const file of ['.github/workflows/vibe2-continuous-core.yml','.github/workflows/vibe2-24h-runner.yml']){
+    const workflow=fs.readFileSync(file,'utf8');
+    const fetches=workflow.split('\n').filter(line=>/git(?: -C [^ ]+)? fetch origin (?:main|company-runtime|vibe2-unreal-core) --quiet/.test(line));
+    assert.ok(fetches.length>0);
+    for(const line of fetches){assert.match(line,/--depth=1/);assert.match(line,/--no-tags/);}
+  }
+  const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
+  assert.match(core,/VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
+  assert.match(core,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(core,/storage-unpack/);assert.match(core,/storage-pack/);
+});

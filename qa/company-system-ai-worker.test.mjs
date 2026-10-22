@@ -35,6 +35,20 @@ test('growth marketing fetches only the canonical runtime refs it consumes',()=>
   assert.match(workflow,/"\$CONTROL_BRANCH:refs\/remotes\/origin\/\$CONTROL_BRANCH"/);
 });
 
+test('shared System AI worker loads latest main without downloading repository history',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-system-ai-workers.yml',import.meta.url),'utf8');
+  const worker=workflow.slice(workflow.indexOf('\n  worker:'),workflow.indexOf('\n  fan_in:'));
+  const checkout=worker.slice(worker.indexOf('uses: actions/checkout@v4'),worker.indexOf('uses: actions/setup-node@v4'));
+  assert.match(checkout,/ref: main/);
+  assert.match(checkout,/fetch-depth: 1/);
+  assert.doesNotMatch(checkout,/fetch-depth: 0/);
+  assert.match(worker,/git fetch --no-tags --depth=1 origin "\+refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core"/);
+  assert.match(worker,/git show origin\/vibe2-unreal-core:\.vibe2\/system-ai-queue\.json/);
+  assert.match(worker,/assignment reservation changed/);
+  assert.match(worker,/node tools\/company-security-steward\.mjs/);
+  assert.match(worker,/git push origin "HEAD:\$\{SYSTEM_AI_BRANCH\}"/);
+});
+
 test('growth marketing refreshes and regenerates from the latest queue on every push retry',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-growth-marketing-runtime.yml',import.meta.url),'utf8');
   const persist=workflow.slice(workflow.indexOf('- name: Persist marketing work'),workflow.indexOf('- name: Select exact queued marketing tasks'));

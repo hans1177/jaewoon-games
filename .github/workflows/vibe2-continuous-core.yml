@@ -272,7 +272,7 @@ jobs:
           node --check /tmp/vibe2-main/tools/vibe2-queue-control.mjs
           resolved=0
           for attempt in 1 2 3; do
-            git fetch --no-tags origin vibe2-unreal-core --quiet
+            git fetch --no-tags origin vibe2-unreal-core --quiet --depth=1
             git reset --hard FETCH_HEAD >/dev/null
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack \
               --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
@@ -711,7 +711,7 @@ jobs:
           while [ "$state_persisted" != 1 ]; do
             state_attempt=$((state_attempt+1))
             echo "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=$state_attempt"
-            git -C "$control_root" fetch origin vibe2-unreal-core --quiet
+            git -C "$control_root" fetch origin vibe2-unreal-core --quiet --depth=1 --no-tags
             git -C "$control_root" reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
 
@@ -807,7 +807,7 @@ jobs:
             # control queue, but it must not refetch/re-extract the same external runtime snapshot.
             # Planner/steward/learning still rerun on every attempt against the freshly reset control state.
             if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then
-              git -C "$control_root" fetch origin company-runtime --quiet
+              git -C "$control_root" fetch origin company-runtime --quiet --depth=1 --no-tags
               company_runtime_snapshot_sha="$(git -C "$control_root" rev-parse origin/company-runtime)"
               git -C "$control_root" show "$company_runtime_snapshot_sha:development-queue.json" > /tmp/vibe2-company-runtime-queue.json
               for runtime_design_path in design game-seed-state.json; do
@@ -3079,7 +3079,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-fan-in'
           git config user.email 'vibe2-fan-in@users.noreply.github.com'
-          git fetch origin vibe2-unreal-core --quiet
+          git fetch origin vibe2-unreal-core --quiet --depth=1 --no-tags
           git reset --hard origin/vibe2-unreal-core
           control_root="$GITHUB_WORKSPACE"
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
@@ -3172,7 +3172,7 @@ jobs:
             while [ "$pushed" != 1 ]; do
               attempt=$((attempt+1))
               echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=$attempt"
-              git fetch origin vibe2-unreal-core --quiet
+              git fetch origin vibe2-unreal-core --quiet --depth=1 --no-tags
               git reset --hard origin/vibe2-unreal-core
               node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
               node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
@@ -3272,7 +3272,7 @@ jobs:
             echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
           fi
 
-          git fetch origin company-runtime --quiet
+          git fetch origin company-runtime --quiet --depth=1 --no-tags
           git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
           for runtime_design_path in design game-seed-state.json; do
             if git -C "$GITHUB_WORKSPACE" cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
@@ -3288,7 +3288,7 @@ jobs:
           while [ "$pushed" != 1 ]; do
             attempt=$((attempt+1))
             echo "VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=$attempt"
-            git fetch origin vibe2-unreal-core --quiet
+            git fetch origin vibe2-unreal-core --quiet --depth=1 --no-tags
             git reset --hard origin/vibe2-unreal-core
             node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
 
