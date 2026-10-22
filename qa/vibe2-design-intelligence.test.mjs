@@ -557,6 +557,11 @@ test('R01-R10 permitted reference observations require rights, measured gameplay
   assert.deepEqual(Object.keys(result.requirements),['R01','R02','R03','R04','R05','R06','R07','R08','R09','R10']);
   assert.equal(result.requirements.R04.measurements[0].inputToHitMs,70);
   assert.equal(result.requirements.R06.prioritized[0].severity,9);
+  assert.equal(result.nextImprovementCandidates.length,1);
+  assert.equal(result.nextImprovementCandidates[0].responsibleFile,'game.js');
+  assert.equal(result.nextImprovementCandidates[0].automaticImplementation,false);
+  assert.equal(result.readOnlyImprovementBudget,3);
+  assert.match(buildVibeDesignIntelligence({task:{referenceStudy:study}}).guidance,/측정된 개선 우선순위/);
   assert.equal(result.requirements.R08.inferredEngineInternalsVerified,false);
   assert.equal(result.authorityExpanded,false);
   assert.equal(result.sourceMutationAuthorized,false);
@@ -575,4 +580,5 @@ test('R01-R10 permitted reference observations require rights, measured gameplay
   const missing=evaluateVibeReferenceCapabilities();
   assert.equal(missing.allVerified,false);
   assert.ok(Object.values(missing.requirements).every(row=>row.status==='BLOCKED'));
+  assert.deepEqual(missing.nextImprovementCandidates,[]);
 });
