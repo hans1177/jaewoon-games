@@ -2403,8 +2403,11 @@ test('C05 real 3D locomotion detects moonwalking, slipping feet, levitation and 
   const planted=[frame(100,0),frame(200,0.3)].map((f,i)=>({...f,footPlanted:true,
     footWorldPosition:{x:i*0.4,y:0,z:0}}));
   failed('PLANTED_FOOT_SLIDES',{frames:planted});
-  failed('FLOATING_OR_UNGROUNDED_FOOT',{frames:[frame(100,0),
-    {...frame(200,0.3),groundedRequired:true,grounded:true,footGroundGapMeters:0.3}]});
+  const floating=verifyVibeSpatialGameplayReplay({...contract,groundedRequired:true},
+    {...trace,frames:[frame(100,0),{...frame(200,0.3),grounded:true,footGroundGapMeters:0.3}]});
+  assert.ok(floating.issues.includes('FLOATING_OR_UNGROUNDED_FOOT'));
+  failed('PLANTED_FOOT_WORLD_POSITION_REQUIRED',{frames:[{...frame(100,0),footPlanted:true},
+    {...frame(200,0.3),footPlanted:true}]});
   failed('NON_MONOTONIC_SPATIAL_FRAMES',{frames:[frame(200,0),frame(100,0.3)]});
   assert.equal(verifyVibeSpatialGameplayReplay(contract,{...trace,proof:{...proof,runtime:'FAIL'}}).verified,false);
   assert.equal(verifyVibeSpatialGameplayReplay(contract,{...trace,sourceRevision:'a'.repeat(40)}).verified,false);
@@ -2419,7 +2422,7 @@ test('C05 native Roblox combat requires facing, physical contact and server HP a
   const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
   const f=t=>({actorId:'player-1',timestampMs:t,rootPosition:{x:0,y:0,z:0},
     facingYawRad:0,animationSpeed:1,animationState:'ATTACK'});
-  const hit={kind:'WEAPON_HIT',actionId:'swing-01',targetId:'boar-01',
+  const hit={kind:'WEAPON_HIT',actionId:'swing-01',targetId:'boar-01',actorId:'player-1',timestampMs:60,
     actorPosition:{x:0,y:0,z:0},targetPosition:{x:0,y:0,z:1},facingYawRad:0,
     weaponTip:{x:0,y:0,z:0.9},targetContactPoint:{x:0,y:0,z:1},
     collisionVerified:true,beforeHp:50,afterHp:38,authority:'SERVER'};
@@ -2430,7 +2433,8 @@ test('C05 native Roblox combat requires facing, physical contact and server HP a
     [{...hit,facingYawRad:Math.PI},'ATTACK_NOT_FACING_TARGET'],
     [{...hit,weaponTip:{x:50,y:0,z:50}},'ATTACK_CONTACT_OUTSIDE_HITBOX'],
     [{...hit,afterHp:50},'UNVERIFIED_AUTHORITATIVE_HIT'],
-    [{...hit,authority:'CLIENT'},'UNVERIFIED_AUTHORITATIVE_HIT']
+    [{...hit,authority:'CLIENT'},'UNVERIFIED_AUTHORITATIVE_HIT'],
+    [{...hit,timestampMs:999},'CONTACT_NOT_BOUND_TO_ACTOR_FRAMES']
   ]){
     const fail=verifyVibeSpatialGameplayReplay(contract,{...trace,contacts:[variant]});
     assert.equal(fail.verified,false);
