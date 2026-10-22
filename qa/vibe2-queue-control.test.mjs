@@ -3306,7 +3306,7 @@ test('false new-game gate is recovered only for an independently runnable existi
   assert.equal(mapped.get('existing-long-goal').blocker,null);
   assert.equal(mapped.get('existing-long-goal').retries,1);
   assert.ok(mapped.get('existing-long-goal').evidence.includes('recovery:existing-game-long-context-gate-v1'));
-  for(const name of ['actual-new-project','owner-held','owner-decision','other-cause','unity-hold']){
+  for(const name of ['actual-new-project','owner-held','owner-decision','other-cause','untrusted-directive-marker','unity-hold']){
     assert.equal(mapped.get(name).status,'blocked',name);
   }
 });
