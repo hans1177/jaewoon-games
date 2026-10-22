@@ -30,6 +30,16 @@ test('central policy explicitly permits web-only advisory chat without changing 
   assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.newPipelineWrapperOrShadowStructureForThisOperatingModel, false);
 });
 
+test('local chat fixes one selected Web game per session without affecting GitHub work',()=>{
+  const source=fs.readFileSync(path.join(ROOT,'tools/vibe2-local-web-chat.mjs'),'utf8');
+  assert.match(source,/if \(game && selected\.gameId !== game\.gameId\)/);
+  assert.match(source,/LOCAL_VIBE_ONE_WEB_GAME_FOCUS/);
+  assert.match(source,/LOCAL_VIBE_ONLY_FANTASY_SURVIVAL/);
+  assert.match(source,/if \(!game\) \{ game = selected; turns = \[\]; \}/);
+  assert.match(source,/buildExistingOwnerWebDispatch\(\{ gameId: selected\.gameId, goal: parts\[2\] \}\)/);
+  assert.doesNotMatch(source,/workflow_dispatch|git push|git reset/);
+});
+
 test('local conversation rejects any source/GitHub/deployment/QA authority expansion', () => {
   for (const key of ['sourceWriteAllowed', 'githubWriteAllowed', 'workflowDispatchAllowed',
     'deploymentAllowed', 'qaVerdictAllowed', 'centralPolicyOverrideAllowed']) {
