@@ -649,8 +649,9 @@ export function evaluateVibeReferenceCapabilities(input={}){
     ['VISIBLE_INPUT','VISIBLE_MOTION','VISIBLE_CONTACT','VISIBLE_FEEDBACK','UNKNOWN_INTERNAL'].includes(row.event)&&
     clean(row.visualEvidence));
   const orderedVideo=[...acceptedVideo].sort((a,b)=>a.timestampMs-b.timestampMs);
-  const sceneValid=orderedVideo.length>=2&&orderedVideo.some(v=>v.event==='VISIBLE_CONTACT')&&
-    orderedVideo.some(v=>v.event==='VISIBLE_FEEDBACK');
+  const contactIndex=orderedVideo.findIndex(v=>v.event==='VISIBLE_CONTACT');
+  const sceneValid=orderedVideo.length>=2&&contactIndex>=0&&
+    orderedVideo.findIndex((v,i)=>i>contactIndex&&v.event==='VISIBLE_FEEDBACK')>contactIndex;
   const r08=referenceGate('R08',sceneValid,
     sceneValid?[]:orderedVideo.length>=2?['VISIBLE_CONTACT_AND_FEEDBACK_REQUIRED']:['TIME_ORDERED_SCENE_EVIDENCE_REQUIRED'],{
       observations:freezeList(orderedVideo.map(v=>({time:v.timestampMs,event:v.event}))),
