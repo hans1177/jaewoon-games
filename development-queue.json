@@ -48695,9 +48695,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-22T08:10:39.102Z",
+      "updatedAt": "2026-10-22T08:39:06.076Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -48707,7 +48707,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-22T05:24:33.898Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-22T08:39:06.076Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -48756,7 +48756,7 @@
       "routingBlockers": [
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "fcecf287e332ea91a27eac65d39335ebda651bdd",
+      "robloxSourceCommit": "5da2f094cb04d25385b9134919ee12d54997c98b",
       "robloxSourceBootstrapPassedAt": "2026-10-21T14:30:17.163Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -49262,13 +49262,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "fcecf287e332ea91a27eac65d39335ebda651bdd",
+      "robloxQualityBuildUpSourceRevision": "5da2f094cb04d25385b9134919ee12d54997c98b",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
-        "sourceRevision": "fcecf287e332ea91a27eac65d39335ebda651bdd",
-        "sourceTreeSha": "982964bb79fef75498aea02f9fccdac2c3bb9142",
+        "sourceRevision": "5da2f094cb04d25385b9134919ee12d54997c98b",
+        "sourceTreeSha": "6578a631fbd605f48f1b6d82607c3bc0ccf35da0",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -49285,7 +49285,7 @@
         },
         "assetRepairContext": {
           "libraryFingerprint": "b51e5b3cf874672384764b442aa22dd602af6c2c465afba4f4a396e8b8935405",
-          "baselineFingerprint": "bce7e8ee22d14ea0bdc7d44b8007160d2f705d513aa97d3c6fd2238cf0e82176",
+          "baselineFingerprint": "e8d7d1d84192c31ca784db5c3f3a8d075b8e616d77d0c3cbf39dc13f9b2eb17d",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
         "qualityFailureKinds": [
@@ -49344,8 +49344,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39727256985,
-        "testedAt": "2026-10-22T05:24:33.898Z"
+        "workflowRunId": 39746133470,
+        "testedAt": "2026-10-22T08:39:06.076Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -73163,7 +73163,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-22T08:38:56.542Z",
+  "updatedAt": "2026-10-22T08:39:06.076Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
