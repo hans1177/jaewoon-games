@@ -27,7 +27,7 @@ import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemAr
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {planVibeCodingTask} from '../assets/vibe-helper.js';
 import {planVibePresentationAutopilot} from '../assets/vibe-presentation-director.js';
-import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
+import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile,createGenreCareerMotionPalette,COMMON_CAREER_MOTION_HIERARCHY} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 import {inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
@@ -4482,6 +4482,79 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
   }
   return best;
 }
+// Creation-time projection of existing motion engine roles onto licensed, present
+// actor files. This is guidance for the canonical worker, not new runtime authority.
+export function buildGenreCareerAuthoringGuidance(order={}, {
+  actorManifest=null,sourceExists=(file)=>fs.existsSync(path.resolve(process.cwd(),file))
+}={}){
+  const platform=clean(order.target).toUpperCase();
+  if(!['WEB','ROBLOX'].includes(platform)||order.source?.internalAssetMotion===true)return '';
+  const task=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].map(clean).join(' ');
+  if(!/캐릭터|직업|애니|모션|액션|동작|그래픽|전투|무기|몬스터|장르|연출|character|career|class|animation|motion|combat|weapon|graphics|visual|creature|action|actor|rig|asset|diablo|cozy|horror|fantasy/i.test(task))return '';
+  const declared=clean(order.selectedTask?.genre||order.assetProduction?.genre||order.genre);
+  const artLock=clean(order.assetProduction?.styleBible?.profileKey||
+    order.assetProduction?.styleBible?.styleFamily||order.selectedTask?.styleFamily||order.styleFamily);
+  const context=(declared+' '+task+' '+clean(order.gameId)+' '+artLock).toLowerCase();
+  let profile='';
+  if(/공포|horror|terror|undead|zombie|귀신|유령/i.test(context))profile='HORROR';
+  else if(/코지|cozy|농장|생활|farm|chef|cooking|귀여운/i.test(context))profile='COZY';
+  else if(/디아블로|diablo|dark.?arpg|hack.?and.?slash|핵앤슬래시|dark.?fantasy/i.test(context))profile='DARK_ARPG';
+  else if(/판타지|fantasy|마력숲|simple.?rpg|고전.?rpg/i.test(context))profile='FANTASY';
+  if(!profile)return '';
+  const explicitCareer=clean(order.selectedTask?.careerId||order.selectedTask?.career||order.careerId).toUpperCase();
+  const validCareer=explicitCareer&&Object.hasOwn(COMMON_CAREER_MOTION_HIERARCHY,explicitCareer);
+  const palette=createGenreCareerMotionPalette({
+    genre:profile,platform,styleFamily:artLock,careerIds:validCareer?[explicitCareer]:[]
+  });
+  if(!palette)return '';
+  const registry=actorManifest||readJson(path.join(process.cwd(),'assets/roblox/actors/manifest.json'),{});
+  const nativeModels=Array.isArray(registry?.models)?registry.models:[];
+  const nativeMasters=[...new Set(palette.careers.map(row=>row.actualCc0MasterPath))].map(file=>{
+    const model=nativeModels.find(row=>row.path===file);
+    return {path:file,registered:!!model,present:!!model&&sourceExists(file),
+      manifestSha256:model?.sha256||null,sourceSha256:model?.sourceSha256||null,
+      registeredClipCount:model?.animationCount||0,
+      actualClipNames:(model?.animationNames||[]).filter(name=>
+        /^(?:Idle|Running|Walking|1H_|2H_|Jump|Dodge|Block|Spellcast|Hit|PickUp|Interact)/i.test(name)).slice(0,16),
+      actualRuntimePlaybackVerified:false};
+  });
+  const sourceKeywords={
+    DARK_ARPG:/knight|viking|wizard|witch|ninja|skeleton|goblin|demon/i,
+    COZY:/casual|chef|worker|cow|chicken|pig|panda|penguin|mushroom/i,
+    FANTASY:/knight|elf|wizard|witch|ninja|pirate|viking|dragon|goblin/i,
+    HORROR:/zombie|witch|ghost|skeleton|demon|cthulhu|skull|bat/i
+  };
+  const cc0Examples=(Array.isArray(registry?.sources)?registry.sources:[])
+    .filter(pack=>/^CC0(?:-1\.0)?$/i.test(clean(pack.license)))
+    .flatMap(pack=>(Array.isArray(pack.sourceFiles)?pack.sourceFiles:[])
+      .filter(row=>/^[a-f0-9]{64}$/i.test(clean(row.sha256))
+        &&sourceKeywords[profile].test(clean(row.path))&&sourceExists(row.path))
+      .map(row=>({path:row.path,sha256:row.sha256,license:pack.license,
+        packageId:pack.id,nativeRigConversionRequired:true}))).slice(0,16);
+  const payload={
+    version:1,source:'EXISTING_VIBE_MOTION_DIRECTOR_AND_CC0_ACTOR_MANIFEST',
+    target:platform,genre:palette.profile,styleFamily:palette.styleFamily,
+    artLockPreserved:palette.originalStyleLockPreserved,
+    careers:palette.careers.map(row=>({
+      id:row.careerId,weapon:row.weaponFamily,master:row.actualCc0MasterPath,
+      actionRoleSamples:Object.fromEntries(Object.entries(row.roles).map(([group,names])=>[group,names.slice(-6)])),
+      fullCareerHierarchyAndMotionLibraryStillEligible:true,semanticNamesNeedRealClipMapping:true
+    })),
+    unrecognizedExplicitCareer:explicitCareer&&!validCareer?explicitCareer:null,
+    nativeMasters,cc0SourceExamples:cc0Examples,examplesNotAssetSelectionCap:true,
+    completeCatalogStillEligible:true,choreography:palette.choreography,
+    genreSpecificActing:palette.genreActing,
+    protected:['GAME_RULES','SAVE_SCHEMA','NETWORK_AUTHORITY','COMBAT_WINDOWS','MOBILE_INPUT'],
+    verifiedByThisGuidance:false,
+    qaNeeded:['ACTUAL_CC0_SHA256','RIG_COMPATIBILITY','REAL_CLIP_BINDING',
+      'SAME_SCENE_MULTI_FRAME_IMAGE_COMPARISON','POSE_VELOCITY_CONTINUITY','MOBILE_FPS'],
+    studioExecutionRequested:false,cloudflareRequested:false,
+    cloudApiThumbnailNotRuntimeScreenshot:true,studioGateNotWaived:true
+  };
+  return '[GENRE CAREER CC0 AUTHORING BEGIN]\n'+JSON.stringify(payload)+
+    '\nChoose only actions supported by existing game mechanics. Adapt compatible licensed source actors into the exact existing game render/Animator code and retarget semantic roles to REAL joint clips, not renamed placeholders. Preserve the game art-style lock, original assets, source hash and authoritative input/damage/save semantics. Differentiation requires observed weapon arcs, pose-inertialized transitions, weight, grounded feet, attack contact timing, expressive idle and mobile LOD; static naming is not improvement. Do NOT run Roblox Studio or Cloudflare deployment. Use existing Open Cloud API and real image/pose samples where available; thumbnails are not proof of motion. Mark unobserved results UNVERIFIED and never bypass preexisting policy gates.\n[GENRE CAREER CC0 AUTHORING END]';
+}
+
 export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
@@ -4858,6 +4931,7 @@ singleMotionBlock,
 assetTeachingBlock,
 applyFirstBlock,
 assetImplementationBlock,
+buildGenreCareerAuthoringGuidance(order),
 genreMenuImplementationBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
