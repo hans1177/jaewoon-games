@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { ingestPwaTask, buildSyncPayload, validateLocalWebOwnerEvent } from '../tools/pwa-command-vibe2-task.mjs';
+import { ingestPwaTask, buildSyncPayload, validateLocalWebOwnerEvent, buildGithubDevelopmentFocus } from '../tools/pwa-command-vibe2-task.mjs';
 
 const UUID='11111111-2222-4333-8444-555555555555';
 function fixture(){
@@ -141,4 +141,35 @@ test('owner ingress uses direct Vibe2 execution and published WEB QA runs only a
     'production publication precedes live HTTP, browser, and defect reporting');
   assert.match(pages.slice(browser,issues),/VIBE_SMOKE_LIVE_BASE:/);
   assert.match(pages.slice(live,issues),/steps\.deployment\.outputs\.page_url/);
+});
+
+test('GitHub owner ideas use the existing Vibe queue for one-game source-first work',()=>{
+ const focus=buildGithubDevelopmentFocus({gameId:'insect-survival',sourceRoot:'web-games/insect-survival'});
+ assert.match(focus,/GITHUB_DEVELOPMENT_FIRST/);
+ assert.match(focus,/실제 게임 코드 수정/);
+ assert.match(focus,/해당 게임 집중 QA/);
+ assert.match(focus,/불필요|무관한 홈페이지/);
+ assert.match(focus,/F0-F9/);
+ for(const bad of [
+  {gameId:'insect-survival',sourceRoot:'web-games/cozy-island'},
+  {gameId:'../escape',sourceRoot:'web-games/../escape'},
+  {gameId:'insect-survival',sourceRoot:'../../secrets'},
+  {gameId:'insect-survival',sourceRoot:'tools/vibe2-engine'}
+ ])assert.throws(()=>buildGithubDevelopmentFocus(bad),/GITHUB_DEVELOPMENT_FOCUS_SOURCE_MISMATCH/);
+ const f=fixture();
+ const result=ingestPwaTask({task:{id:UUID,game_id:'insect-survival',body:'곤충 3D 땅속 침하 수정',
+  platform:'web',kind:'directive'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
+ const row=result.tasks[0];
+ assert.equal(row.type,'implementation');
+ assert.equal(row.department,'development');
+ assert.equal(row.priority,'owner-immediate');
+ assert.equal(row.ownerDirective,true);
+ assert.deepEqual(row.responsibleFiles,[]);
+ assert.deepEqual(row.dependencies,[]);
+ assert.match(row.goal,/GITHUB_DEVELOPMENT_FIRST/);
+ assert.match(row.goal,/곤충 3D 땅속 침하 수정/);
+ assert.match(row.goal,/web-games\/insect-survival/);
+ assert.match(row.goal,/독립 QA/);
+ assert.ok(row.evidence.includes('verified-qa-required'));
+ assert.ok(result.maxConcurrentTasks>1,'must reuse existing parallel owner queue');
 });
