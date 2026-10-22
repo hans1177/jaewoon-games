@@ -53,6 +53,7 @@ import {
   planVibeAutonomousImprovement,
   composeVerifiedCodingRecipes,
   verifyVibeCausalGameplayContract,
+  verifyVibeSpatialGameplayReplay,
   chooseRegressionSafeVibeWinner,
   buildVerifiedVibeCapabilityLedger,
   buildBenchmarkLadder,
@@ -2378,4 +2379,113 @@ test('C06 winner requires independent same-device matched proof and strict no-re
   const report=assessVibeCodingCapabilities({sourceRevision,candidates:[base,better],optimizationBenchmark:spec});
   assert.equal(report.requirements.C06.winnerId,'candidate');
   assert.equal(report.requirements.C06.verified,true);
+});
+
+
+test('C05 real 3D locomotion detects moonwalking, slipping feet, levitation and reversed root movement',()=>{
+  const sourceRevision='d'.repeat(40);
+  const contract={gameId:'forest',actorId:'survivor-1',platform:'WEB',sourceRevision,
+    motionKind:'MOVE',minTravelMeters:0.2,maxFootSlideMeters:0.08};
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const frame=(timestampMs,x)=>({actorId:'survivor-1',timestampMs,
+    rootPosition:{x,y:0,z:0},facingYawRad:Math.PI/2,animationSpeed:1,animationState:'WALK',
+    moveIntent:true,worldMoveInput:{x:1,z:0},footPlanted:false});
+  const trace={gameId:'forest',actorId:'survivor-1',platform:'WEB',
+    sourceRevision,evidenceId:'web-motion-trace',proof,frames:[frame(100,0),frame(200,0.3)]};
+  const pass=verifyVibeSpatialGameplayReplay(contract,trace);
+  assert.equal(pass.verified,true);
+  assert.equal(pass.measuredTravelMeters,0.3);
+  assert.equal(pass.diagnosticOnly,true);
+  assert.equal(pass.nativePlatformVerifiedByThisFunction,false);
+  const failed=(code,row)=>assert.ok(verifyVibeSpatialGameplayReplay(contract,{...trace,...row}).issues.includes(code),code);
+  failed('ANIMATED_MOONWALK_WITHOUT_TRAVEL',{frames:[frame(100,0),frame(200,0)]});
+  failed('ROOT_MOTION_CONTRADICTS_INPUT',{frames:[frame(100,0),frame(200,-0.3)]});
+  const planted=[frame(100,0),frame(200,0.3)].map((f,i)=>({...f,footPlanted:true,
+    footWorldPosition:{x:i*0.4,y:0,z:0}}));
+  failed('PLANTED_FOOT_SLIDES',{frames:planted});
+  failed('FLOATING_OR_UNGROUNDED_FOOT',{frames:[frame(100,0),
+    {...frame(200,0.3),groundedRequired:true,grounded:true,footGroundGapMeters:0.3}]});
+  failed('NON_MONOTONIC_SPATIAL_FRAMES',{frames:[frame(200,0),frame(100,0.3)]});
+  assert.equal(verifyVibeSpatialGameplayReplay(contract,{...trace,proof:{...proof,runtime:'FAIL'}}).verified,false);
+  assert.equal(verifyVibeSpatialGameplayReplay(contract,{...trace,sourceRevision:'a'.repeat(40)}).verified,false);
+  assert.equal(verifyVibeSpatialGameplayReplay(contract,{...trace,platform:'ROBLOX'}).verified,false);
+  assert.equal(verifyVibeSpatialGameplayReplay(contract,{...trace,frames:Array.from({length:241},(_,i)=>frame(100+i,0.01*i))}).verified,false);
+});
+
+test('C05 native Roblox combat requires facing, physical contact and server HP authority',()=>{
+  const sourceRevision='e'.repeat(40);
+  const contract={gameId:'boar-battle',actorId:'player-1',platform:'ROBLOX',sourceRevision,
+    motionKind:'ATTACK',actionId:'swing-01',targetId:'boar-01',maxContactDistanceMeters:0.35};
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const f=t=>({actorId:'player-1',timestampMs:t,rootPosition:{x:0,y:0,z:0},
+    facingYawRad:0,animationSpeed:1,animationState:'ATTACK'});
+  const hit={kind:'WEAPON_HIT',actionId:'swing-01',targetId:'boar-01',
+    actorPosition:{x:0,y:0,z:0},targetPosition:{x:0,y:0,z:1},facingYawRad:0,
+    weaponTip:{x:0,y:0,z:0.9},targetContactPoint:{x:0,y:0,z:1},
+    collisionVerified:true,beforeHp:50,afterHp:38,authority:'SERVER'};
+  const trace={gameId:'boar-battle',actorId:'player-1',platform:'ROBLOX',sourceRevision,
+    evidenceId:'roblox-hit-qa',proof,multiplayer:true,frames:[f(0),f(120)],contacts:[hit]};
+  assert.equal(verifyVibeSpatialGameplayReplay(contract,trace).verified,true);
+  for(const [variant,issue] of [
+    [{...hit,facingYawRad:Math.PI},'ATTACK_NOT_FACING_TARGET'],
+    [{...hit,weaponTip:{x:50,y:0,z:50}},'ATTACK_CONTACT_OUTSIDE_HITBOX'],
+    [{...hit,afterHp:50},'UNVERIFIED_AUTHORITATIVE_HIT'],
+    [{...hit,authority:'CLIENT'},'UNVERIFIED_AUTHORITATIVE_HIT']
+  ]){
+    const fail=verifyVibeSpatialGameplayReplay(contract,{...trace,contacts:[variant]});
+    assert.equal(fail.verified,false);
+    assert.ok(fail.issues.includes(issue),issue);
+  }
+  assert.equal(verifyVibeSpatialGameplayReplay(contract,{...trace,contacts:[]}).verified,false);
+});
+
+test('C05 pickup rejects telekinetic attachment and requires hand contact before item transfer',()=>{
+  const sourceRevision='f'.repeat(40);
+  const contract={gameId:'forest',actorId:'hero',platform:'WEB',sourceRevision,
+    motionKind:'PICKUP',itemId:'stone',maxContactDistanceMeters:0.25};
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const frame=t=>({actorId:'hero',timestampMs:t,rootPosition:{x:0,y:0,z:0},
+    facingYawRad:0,animationSpeed:1,animationState:'PICKUP'});
+  const touch={kind:'HAND_TOUCH',actorId:'hero',itemId:'stone',timestampMs:110,
+    handPosition:{x:0,y:1,z:0.3},itemPosition:{x:0,y:1,z:0.35},contactVerified:true};
+  const attach={kind:'ITEM_ATTACHED',actorId:'hero',itemId:'stone',
+    timestampMs:150,attachedToHand:true,itemStateChanged:true};
+  const trace={gameId:'forest',actorId:'hero',platform:'WEB',sourceRevision,
+    evidenceId:'pickup-qa',proof,frames:[frame(100),frame(200)],contacts:[touch,attach]};
+  assert.equal(verifyVibeSpatialGameplayReplay(contract,trace).verified,true);
+  const far={...touch,itemPosition:{x:0,y:1,z:99}};
+  assert.ok(verifyVibeSpatialGameplayReplay(contract,{...trace,contacts:[far,attach]}).issues.includes('PICKUP_WITHOUT_REACHABLE_HAND_CONTACT'));
+  assert.ok(verifyVibeSpatialGameplayReplay(contract,{...trace,contacts:[{...attach,timestampMs:95},touch]}).issues.includes('PICKUP_ATTACHMENT_NOT_CAUSAL'));
+  assert.ok(verifyVibeSpatialGameplayReplay(contract,{...trace,contacts:[attach]}).issues.includes('HAND_CONTACT_BEFORE_PICKUP_REQUIRED'));
+});
+
+test('spatial evidence feeds existing C05 and increases verified defect coding candidates only',()=>{
+  const sourceRevision='a'.repeat(40);
+  const proof={independentQa:'PASS',regression:'PASS',runtime:'PASS',actualPlatformRuntime:true};
+  const contract={sourceRevision,gameId:'forest',actorId:'hero',platform:'WEB',
+    motionKind:'MOVE',minTravelMeters:0.2};
+  const frames=[0,1].map(i=>({actorId:'hero',timestampMs:100+i*100,
+    rootPosition:{x:0,y:0,z:0},facingYawRad:0,animationSpeed:1,animationState:'RUN',
+    moveIntent:true,worldMoveInput:{x:0,z:1}}));
+  const spatialTrace={sourceRevision,evidenceId:'runtime-replay',proof,gameId:'forest',
+    actorId:'hero',platform:'WEB',frames};
+  const policy=candidateTournamentPolicy({task:{target:'web',goal:'fix avatar foot motion',
+    spatialReplay:{contract,trace:spatialTrace}}});
+  assert.equal(policy.candidateCount,3);
+  assert.equal(policy.reason,'verified-spatial-motion-defect');
+  assert.equal(policy.spatialDiagnostics.sourceMutationAuthorized,false);
+  const fake=candidateTournamentPolicy({task:{target:'web',goal:'fix avatar foot motion',
+    spatialReplay:{contract,trace:{...spatialTrace,proof:{...proof,runtime:'FAIL'}}}}});
+  assert.equal(fake.candidateCount,1);
+  const kinds=['INPUT','STATE_TRANSITION','PHYSICS_OR_ANIMATION','COLLISION_OR_HIT','FEEDBACK_OR_REWARD'];
+  const causal={sourceRevision,gameId:'forest',spatialReplayRequired:true,spatialContract:contract};
+  const replay={sourceRevision,evidenceId:'causal-combat',proof,gameId:'forest',
+    authoritativeStateChanged:true,saveAndBalancePreserved:true,
+    events:kinds.map(kind=>({kind})),spatialTrace};
+  const failed=verifyVibeCausalGameplayContract(causal,replay);
+  assert.equal(failed.verified,false);
+  assert.ok(failed.issues.includes('ANIMATED_MOONWALK_WITHOUT_TRAVEL'));
+  const valid={...spatialTrace,frames:frames.map((row,i)=>({
+    ...row,rootPosition:{x:0,y:0,z:i*0.3}}))};
+  assert.equal(verifyVibeCausalGameplayContract(causal,{...replay,spatialTrace:valid}).verified,true);
 });
