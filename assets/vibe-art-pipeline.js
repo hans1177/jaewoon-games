@@ -5,7 +5,8 @@
 import {planVibeStyleAwareGraphicsAutopilot,planVibeVisualAutopilot} from './vibe-visual-autopilot.js';
 import {planVibePresentationAutopilot} from './vibe-presentation-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison,auditVibeHighEndTargetFrameEvidence} from './vibe-visual-quality-gate.js';
-import {createMotionDirectorPlan,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES,MOTION_GRAMMARS} from './vibe-motion-director.js';
+import {createMotionDirectorPlan,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES,MOTION_GRAMMARS} from './vibe-motion-director.js';
+import {planVibeMotionEffectsAutopilot} from './vibe-motion-effects-director.js';
 import {createStudioAssetUniversePlan,STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES} from './vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from './vibe-environment-director.js';
 import {planVibeCharacterIdentityAutopilot} from './vibe-character-identity-director.js';
@@ -32,6 +33,7 @@ export const GRAPHICS_PRODUCTION_INTERNAL_MODULES=Object.freeze({
   presentation:'assets/vibe-presentation-director.js',
   runtimeQuality:'assets/vibe-visual-quality-gate.js',
   motionDirector:'assets/vibe-motion-director.js',
+  motionEffects:'assets/vibe-motion-effects-director.js',
   studioAssetUniverse:'assets/vibe-studio-asset-universe.js',
   environmentDirector:'assets/vibe-environment-director.js',
   characterIdentity:'assets/vibe-character-identity-director.js'
@@ -604,6 +606,18 @@ export function createVibeGraphicsProduction({
       : null,
     uiSurfaces:(Array.isArray(game?.interfaceComposition)?game.interfaceComposition:Array.isArray(game?.uiSurfaces)?game.uiSurfaces:[]).filter(row=>row&&typeof row==='object')
   });
+  // 메인: 기존 GRAPHICS_PRODUCTION의 모션 단계에 검증 대상인 직업·종족 액션 후보를 연결한다.
+  // 알 수 없는 직업/종족은 추측해 생성하지 않으며, 모션 계층은 게임 수치에 접근하지 않는다.
+  const motionGenre=resolveCommonMotionGenre(game?.genre||'ACTION_RPG');
+  const requestedCareer=clean(game?.careerId||game?.heroCareerId||characters.find(row=>row?.careerId)?.careerId).toUpperCase();
+  const requestedSpecies=clean(game?.featuredSpeciesId||world?.featuredSpeciesId||'').toUpperCase();
+  const motionPlatform=platforms.length===1?platforms[0]:'SHARED';
+  const motionEffects=motionGenre?planVibeMotionEffectsAutopilot({
+    graph,request,genre:motionGenre,platform:motionPlatform,
+    careerId:COMMON_CAREER_MOTION_HIERARCHY[requestedCareer]?requestedCareer:'',
+    speciesId:COMMON_MONSTER_ACTION_SPECIES[requestedSpecies]?requestedSpecies:'',
+    mobile:true
+  }):null;
   const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
   const mapDetail=mapDetailInput&&typeof mapDetailInput==='object'?createVibeMapDetailReconstruction(mapDetailInput):null;
   const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
@@ -684,6 +698,7 @@ export function createVibeGraphicsProduction({
     visualDirection,
     visualWork,
     presentation,
+    motionEffects,
     characterIdentity,
     mapDetail,
     referenceImageStudies,
