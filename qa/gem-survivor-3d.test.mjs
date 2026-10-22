@@ -21,6 +21,13 @@ test('gem survivor uses actual 3D renderer, authored model, bounded native geome
  assert.match(native,/document\.body\.dataset\.renderer='three-webgl'/);
  assert.match(native,/new THREE\.AnimationMixer\(model\)/);
  assert.match(native,/new THREE\.InstancedMesh\(/);
+ assert.match(native,/function growPool\(mesh,required\)/);
+ assert.match(native,/const grown=growPool\(enemyMeshes\.get\(kind\),list\.length\)/);
+ assert.match(native,/projectiles=growPool\(projectiles,shots\.length\)/);
+ assert.match(native,/gems=growPool\(gems,drops\.length\)/);
+ assert.match(native,/scene\.remove\(mesh\);scene\.add\(bigger\)/);
+ assert.ok(html.includes('"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"'));
+
  assert.match(native,/MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=260/);
  assert.match(native,/nativeArtCoverage='incomplete'/);
  assert.match(native,/webglcontextlost/);
