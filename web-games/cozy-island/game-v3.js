@@ -137,10 +137,15 @@ function placeFort(sx,sy){
   const def=FORT_BUILD[blueprint],p=renderer.screenToWorld(game,sx,sy);
   if(!def||!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))return;
   const x=Math.round(p.x/60)*60,y=Math.round(p.y/60)*60;
-  if(x<200||x>1280||y<180||y>990||Math.hypot(x-player.x,y-player.y)>650||
-    !canMoveTo(x,y)||Math.hypot(x-765,y-340)<155||
-    Math.hypot(x-barracks.x,y-barracks.y)<105||
-    state.fortress.parts.some(b=>b.hp>0&&Math.hypot(b.x-x,b.y-y)<58)){
+  const mainZone=x>=200&&x<=(state.expanded?2800:1280)&&y>=180&&y<=990&&canMoveTo(x,y);
+  const westZone=state.cozyExpansionV4?.west?.unlocked&&x>=-2780&&x<145&&y>=190&&y<=990;
+  const northZone=state.northernRegion?.unlocked&&x>=1490&&x<=2750&&y>=-770&&y<=100;
+  const southZone=state.southernJungle?.unlocked&&x>=360&&x<=1430&&y>=1260&&y<=1980;
+  const blockedSites=[[765,340,155],[barracks.x,barracks.y,105],[workerShop.x,workerShop.y,90],
+    [1010,1090,120],[400,1090,85],[245,850,85],[785,965,85],[790,1080,85],[835,505,65]];
+  if(!(mainZone||westZone||northZone||southZone)||Math.hypot(x-player.x,y-player.y)>650||
+    blockedSites.some(([bx,by,r])=>Math.hypot(x-bx,y-by)<r)||
+    state.fortress.parts.some(b=>b.hp>0&&Math.hypot(b.x-x,b.y-y)<(blueprint==='keep'||b.kind==='keep'?92:58))){
     toast('여기에는 건설할 수 없어');return;
   }
   if(state.inventory.wood<def.wood||state.inventory.stone<def.stone){toast('건축 재료가 부족해');blueprint=null;return}
@@ -168,8 +173,9 @@ function siegeWall(u,nx,ny){
     fortCollision(p,nx,ny));
   if(!obstruction)return false;
   if(u.cool<=0){
-    obstruction.hp=Math.max(0,obstruction.hp-u.attack);
-    u.cool=u.kind==='archer'?1.15:.85;
+    const damage=u.kind==='cannon'?Number(u.cannonDamage)||75:u.attack;
+    obstruction.hp=Math.max(0,obstruction.hp-damage);
+    u.cool=u.kind==='cannon'?(Number(u.cannonInterval)||2.5):u.kind==='archer'?1.15:.85;
     if(obstruction.hp===0)toast(FORT_BUILD[obstruction.kind].name+'이 무너졌어');
     saveSoon();
   }
