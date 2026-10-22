@@ -1,27 +1,5 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": [
-    {
-      "id": "wl-mclflt",
-      "worker": "vibe2",
-      "taskId": "human-go-studio-evolution-roblox-stability-v2",
-      "gameId": "human-go",
-      "files": [
-        "roblox-games/human-go/client/Game.client.luau",
-        "roblox-games/human-go/shared/GameConfig.luau",
-        "roblox-games/human-go/server/Game.server.luau"
-      ],
-      "baseSha": "1cdcc5d007fa670ab155198ad9384308098d99ce",
-      "runId": "39801383344",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-22T15:45:54.358Z",
-      "expiresAt": "2026-10-22T16:30:54.358Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:human-go-studio-evolution-roblox-stability-v2"
-      ]
-    }
-  ]
+  "locks": []
 }
