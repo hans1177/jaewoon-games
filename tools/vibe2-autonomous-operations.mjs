@@ -209,8 +209,8 @@ export function assessAutonomousExpansionAdmission({
     :'AUTONOMOUS_ADMITTED';
   return Object.freeze({allowed,reason,backlog,threshold,countsKnown,ownerKnown,
     ownerPublishPending:!!ownerWait,scope:'NEW_AUTONOMOUS_WAVES_ONLY',
-    // 기존 GAME_PRIMARY/ASSET_DEVELOPMENT 예약은 가용 슬롯·중복 검증 경로가 판단한다.
-    // owner publication 우선순위와 신규 자율 확장 보류만 별개로 적용한다.
-    existingQueueDispatchAllowed:!ownerWait,
+    // 새 자율 확장은 소유자 게시 작업을 우선하되, 기존 서로 다른 게임의 실행은 멈추지 않는다.
+    // 파일 충돌·예약 슬롯·소유자 우선순위는 기존 개별 실행 경로에서 유지한다.
+    existingQueueDispatchAllowed:true,
     existingWorkCancelled:false,ownerDirectWorkAllowed:true,finalQaPreserved:true});
 }
