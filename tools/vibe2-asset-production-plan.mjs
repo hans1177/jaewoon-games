@@ -1447,7 +1447,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
-  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map();
+  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map(),currentRolesByFamily=new Map(),unclassifiedNativeByFamily=new Map();
   let intendedOnlyCount=0;
   // [다운로드 원본 우선] 역할·권리·플랫폼 필터를 통과한 확보 원본을 우선한다.
   // 출처 URL과 해시 외에 실제 파일이 없는 카탈로그 메타데이터는 우선하지 않는다.
@@ -1501,6 +1501,16 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       currentAssetIds.add(assetId);
       if(family){
         currentFamilyCounts.set(family,(currentFamilyCounts.get(family)||0)+1);
+        const known=currentRolesByFamily.get(family)||new Set();
+        for(const role of roleFit.matchedRoles)known.add(role);
+        currentRolesByFamily.set(family,known);
+        // 기존 실물 3D지만 역할 명칭이 없는 모델은 먼저 내용 검사를 요청한다.
+        // 단일 역할을 바로 외부 후보로 대체하지 않으며 적용 PASS도 주장하지 않는다.
+        if(spatialFamilies.has(family)&&!roleFit.matchedRoles.length
+          &&!clean(asset.role||asset.subfamily||asset.speciesId)
+          &&/\.(?:glb|gltf|fbx|obj)$/i.test(clean(asset.masterGlb||asset.path))){
+          unclassifiedNativeByFamily.set(family,true);
+        }
         const primary=currentPrimaryByFamily.get(family);
         if(!primary||assetId.localeCompare(clean(primary.id))<0)currentPrimaryByFamily.set(family,asset);
       }
@@ -1514,7 +1524,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const roleIndex=reusableByFamilyRole.get(family)||new Map();
       const originalIdentity=acquiredOriginal(asset)?unique([asset.title,asset.name]
         .map(value=>clean(value).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_').replace(/^_+|_+$/g,''))):[];
-      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory,...originalIdentity])
+      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory,...originalIdentity,...roleFit.matchedRoles])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))){
         const candidates=roleIndex.get(role)||[];
         candidates.push(asset);
@@ -1679,23 +1689,24 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   for(const family of requiredFamilies){
     const usedCount=currentFamilyCounts.get(family)||0;
     const requestedRoles=requestedRolesByFamily.get(family)||[];
-    const currentFamilyAssets=currentAssets.filter(asset=>clean(asset.family||asset.category).toUpperCase()===family);
-    const coveredRoles=new Set(currentFamilyAssets.flatMap(asset=>
-      roleEvidenceById.get(clean(asset.id))?.matchedRoles||[]));
+    const coveredRoles=currentRolesByFamily.get(family)||new Set();
     const missingRoles=requestedRoles.filter(role=>role!=='generic'&&!coveredRoles.has(role));
+    const needsNativeRoleInspection=usedCount>0&&requestedRoles.length===1
+      &&unclassifiedNativeByFamily.get(family)===true;
     if(missingRoles.length)roleGaps.push(Object.freeze({
       family,requestedRoles:freezeList(requestedRoles),coveredRoles:freezeList([...coveredRoles].sort()),
-      missingRoles:freezeList(missingRoles),sourceConnectionIsNotRuntimeProof:true
+      missingRoles:freezeList(missingRoles),nativeRoleInspectionPending:needsNativeRoleInspection,
+      sourceConnectionIsNotRuntimeProof:true
     }));
-    if(usedCount&&missingRoles.length){
+    if(usedCount&&missingRoles.length&&!needsNativeRoleInspection){
       for(const role of missingRoles){
         // 기존 회사 에셋 중 정확히 일치하는 역할을 먼저 비교하며 타 종족 치환은 금지한다.
-        const reusable=assets.filter(asset=>
-          clean(asset.family||asset.category).toUpperCase()===family
-          &&!currentAssetIds.has(clean(asset.id))
-          &&assetSupplyCandidateAllowed(asset,target)
-          &&(roleEvidenceById.get(clean(asset.id))?.matchedRoles||[]).includes(role)
-        ).sort(compareReusable)[0];
+        let reusable=null;
+        // 기존 원장 단일 순회에서 미리 구축한 family/role 색인만 읽는다.
+        for(const asset of reusableByFamilyRole.get(family)?.get(role)||[]){
+          if(currentAssetIds.has(clean(asset.id)))continue;
+          if(betterReusable(asset,reusable))reusable=asset;
+        }
         if(reusable){
           pushAction({
             action:'ADAPT',assetId:clean(reusable.id),family,requestedRole:role,
