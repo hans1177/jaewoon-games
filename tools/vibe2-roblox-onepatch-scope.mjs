@@ -75,19 +75,13 @@ export function mergeOwnerRobloxPatchIntoExistingBuildUp({queue,gameId,task,requ
       ...queued,ownerDirective:true,priority:'owner-immediate',
       goal:queued.goal.includes('owner-request-instance:'+requestId)?queued.goal:queued.goal+suffix,
       responsibleFiles:[...new Set([...(queued.responsibleFiles||[]),...task.responsibleFiles])],
-      buildUpOnePatchLineage:{
-        gameId,platform:'ROBLOX',sourceRoot:task.sourceRoot,
-        parentTaskId:queued.id,
-        directiveId:String(queued.buildUpDirective?.directiveId||queued.buildUpDirectiveId||''),
-        generation:Number(queued.buildUpGeneration||queued.buildUpDirective?.generation||0),
-        previousStatus:queued.status,
-        ownerRequestId:requestId,
-        previousEvidencePreserved:true,
-        resumeMode:'MERGED_CURRENT_QUEUED_BUILD_UP'
-      },
       evidence:[...new Set([...(queued.evidence||[]),...task.evidence,
         'owner-onepatch-merged-active-build-up','owner-onepatch-resume-impacted-stage-not-f0',
-        'owner-onepatch-use-exact-unchanged-qa-evidence'])],
+        'owner-onepatch-use-exact-unchanged-qa-evidence',
+        'owner-onepatch-parent-task:'+queued.id,
+        'owner-onepatch-parent-directive:'+String(queued.buildUpDirective?.directiveId||queued.buildUpDirectiveId||''),
+        'owner-onepatch-parent-generation:'+Number(queued.buildUpGeneration||queued.buildUpDirective?.generation||0),
+        'owner-onepatch-resume-mode:MERGED_CURRENT_QUEUED_BUILD_UP'])],
     };
     return {queue:{...queue,tasks:rows.map(row=>row.id===queued.id?combined:row)},
       taskId:queued.id,added:false,merged:true,resume:'QUEUED_BUILD_UP'};
@@ -107,21 +101,23 @@ export function mergeOwnerRobloxPatchIntoExistingBuildUp({queue,gameId,task,requ
   const current=[...running].sort((a,b)=>
     Number(b.buildUpGeneration||b.buildUpDirective?.generation||0)
     -Number(a.buildUpGeneration||a.buildUpDirective?.generation||0))[0]||null;
-  const lineage=current?{
-    gameId,platform:'ROBLOX',sourceRoot:task.sourceRoot,
-    parentTaskId:current.id,
-    directiveId:String(current.buildUpDirective?.directiveId||current.buildUpDirectiveId||''),
-    generation:Number(current.buildUpGeneration||current.buildUpDirective?.generation||0),
-    previousStatus:current.status,
-    ownerRequestId:requestId,
-    previousEvidencePreserved:true,
-    resumeMode:overlapping.length?'WAIT_FOR_SOURCE_COLLISION':'IMMEDIATE_DISJOINT_SOURCE'
-  }:null;
   const updated={...task,
     dependencies:[...new Set([...(task.dependencies||[]),...overlapping.map(row=>row.id)])],
-    ...(lineage?{buildUpOnePatchLineage:lineage}:{}),
+    // Reuse the canonical queue's existing build-up fields; extra fields are
+    // intentionally not persisted by createVibeContinuousQueue.
+    ...(current?{
+      buildUpDirectiveId:String(current.buildUpDirective?.directiveId||current.buildUpDirectiveId||''),
+      buildUpGeneration:Number(current.buildUpGeneration||current.buildUpDirective?.generation||0),
+      buildUpStatus:'ONEPATCH_IN_CURRENT_BUILD_UP'
+    }:{}),
     evidence:[...new Set([...(task.evidence||[]),
       ...(running.length?['owner-onepatch-resume-impacted-stage-not-f0','owner-onepatch-in-current-build-up']:[]),
+      ...(current?[
+        'owner-onepatch-parent-task:'+current.id,
+        'owner-onepatch-parent-directive:'+String(current.buildUpDirective?.directiveId||current.buildUpDirectiveId||''),
+        'owner-onepatch-parent-generation:'+Number(current.buildUpGeneration||current.buildUpDirective?.generation||0),
+        'owner-onepatch-resume-mode:'+(overlapping.length?'WAIT_FOR_SOURCE_COLLISION':'IMMEDIATE_DISJOINT_SOURCE')
+      ]:[]),
       ...(overlapping.length?['owner-onepatch-source-collision-serialized']
         :running.length?['owner-onepatch-disjoint-source-start-now']:[])])],
   };
