@@ -1579,7 +1579,7 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
 
 test('stateless fan-in refill admission coalesces duplicate pending SHA/lane wakes without cancelling active workers',()=>{
   assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
-  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
   assert.match(workflow,/VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE_EXACT:/);
   assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_WAKE_COALESCING');

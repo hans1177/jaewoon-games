@@ -22,7 +22,7 @@ test('central v499 preserves every result artifact while coalescing callback wor
 
 test('continuous core suppresses non-asset callback storms under pressure and preserves cohort fan-in',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
-  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}'/);
+  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha,/);
   assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'/);
   assert.match(workflow,/vibe2-neuron-complete'[\s\S]*'ubuntu-latest'/);
   assert.match(workflow,/fan_in:[\s\S]*runs-on: ubuntu-latest/);
@@ -44,7 +44,7 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-neuron-refill-active\.txt\)"/);
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-regression-refill-active\.txt\)"/);
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-fanin-refill-active\.txt\)"/);
-  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.run_id,/);
-  assert.doesNotMatch(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha,/);
+  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha,/);
+  assert.doesNotMatch(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.run_id,/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
