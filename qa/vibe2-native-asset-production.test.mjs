@@ -5265,3 +5265,55 @@ test('existing build-up guidance exposes verified library roles and missing-role
   assert.match(guidance,/VERIFIED_SOURCE_GAP_REVIEW_REQUIRED/);
   assert.match(guidance,/EXACT_RUNTIME_QA/);
 });
+
+test('verified CC0 source candidates from every existing library family receive light adaptation recipes, without fake application',()=>{
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const spatial=new Set(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP']);
+  const assets=families.map((family,index)=>({
+    id:'cc0-'+family.toLowerCase(),family,platform:'SHARED',
+    license:'CC0-1.0',path:'assets/shared/'+family.toLowerCase()+(spatial.has(family)?'.glb':'.json'),
+    sourceHash:'a'.repeat(64),sourceUrl:'https://example.org/cc0',
+    licenseEvidenceUrl:'https://example.org/cc0/license',
+    verifiedCompanyReusable:false
+  }));
+  const withBlocked=[...assets,
+    {...assets[0],id:'non-cc0',license:'CC-BY-NC'},
+    {...assets[1],id:'practice-only',practiceOnly:true},
+    {...assets[2],id:'quarantine',quarantined:true}];
+  for(const target of ['web','roblox','unity']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:777,assets:withBlocked},target,gameId:'cc0-demo'});
+    assert.equal(plan.allLibraryFamiliesLightAdaptationCovered,true);
+    assert.equal(plan.compatibleCandidateCount,12);
+    for(const family of families){
+      const row=plan.familyCandidates[family].find(x=>x.assetId==='cc0-'+family.toLowerCase());
+      assert.ok(row, target+' '+family);
+      assert.equal(row.cc0LightAdaptation.sourceState,'DERIVATIVE_INPUT_CANDIDATE');
+      assert.ok(row.cc0LightAdaptation.transforms.length>=2);
+      assert.equal(row.cc0LightAdaptation.sourceOriginalImmutable,true);
+      assert.equal(row.cc0LightAdaptation.actualSourceBytesSha256Required,true);
+      assert.equal(row.cc0LightAdaptation.productionVerified,false);
+      assert.equal(row.cc0LightAdaptation.gameBindingVerified,false);
+      assert.equal(row.cc0LightAdaptation.gameApplied,false);
+    }
+    for(const id of ['non-cc0','practice-only','quarantine']){
+      assert.equal(plan.evaluatedAssets.find(x=>x.assetId===id).eligibleForRoleEvaluation,false);
+    }
+  }
+});
+
+test('CC0 adaptation never promotes unpinned or unlicensed provenance to usable gameplay asset',()=>{
+  const assets=[
+    {id:'no-hash',family:'UI',platform:'SHARED',license:'CC0',path:'assets/icons/ui.svg'},
+    {id:'no-rights-url',family:'UI',platform:'SHARED',license:'CC0',path:'assets/icons/effect.svg',sourceHash:'b'.repeat(64)},
+    {id:'native-transfer',family:'UI',platform:'UNITY',license:'CC0',path:'assets/icons/common.svg',
+      sourceHash:'c'.repeat(64),sourceUrl:'https://example.org/source',
+      licenseEvidenceUrl:'https://example.org/license'}
+  ];
+  const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{assets},target:'roblox',gameId:'demo'});
+  const get=id=>plan.familyCandidates.UI.find(x=>x.assetId===id).cc0LightAdaptation;
+  assert.equal(get('no-hash').sourceState,'SOURCE_SHA256_REVERIFY_REQUIRED');
+  assert.equal(get('no-rights-url').sourceState,'RIGHTS_EVIDENCE_REVERIFY_REQUIRED');
+  assert.equal(get('native-transfer').sourceState,'DERIVATIVE_INPUT_CANDIDATE');
+  assert.equal(get('native-transfer').nativePlatformReauthoringRequired,true);
+  assert.ok([get('no-hash'),get('no-rights-url'),get('native-transfer')].every(x=>!x.productionVerified&&!x.gameApplied));
+});
