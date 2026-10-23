@@ -85861,11 +85861,155 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5dd6c7b0a1e1570ba52e7c6b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9494",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "59cd9c96c7d8f94d8cfe41cf798c488ed05c9bc7",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9494,
+        "baseBranch": "main",
+        "headBranch": "feature/roblox-onepatch-unbounded-impact-f9-20261023",
+        "baseSha": "59cd9c96c7d8f94d8cfe41cf798c488ed05c9bc7",
+        "headSha": "b06d12cfe379c166dee2cfea05529ba3aef7a018",
+        "mergeCommitSha": "48f24cfc124227f6b6bff9146c1dc994e958365f",
+        "mergedAt": "2026-10-23T11:42:05Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0c1b2a05a0dabee0c03af1043884895710833553fe1d61c6a97aa4c901d22315",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feature/roblox-onepatch-unbounded-impact-f9-20261023",
+        "candidateSha": "b06d12cfe379c166dee2cfea05529ba3aef7a018"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 489,
+        "deletedLineCount": 212,
+        "changedFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/autonomous-development-worker.test.mjs",
+          "qa/pwa-command-vibe2-task.test.mjs",
+          "qa/roblox-onepatch.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "tools/autonomous-development-worker.mjs",
+          "tools/autonomous-safe-edit.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-roblox-onepatch-scope.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/autonomous-development-worker.test.mjs",
+          "qa/pwa-command-vibe2-task.test.mjs",
+          "qa/roblox-onepatch.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "tools/autonomous-development-worker.mjs",
+          "tools/autonomous-safe-edit.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-roblox-onepatch-scope.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9494",
+        "merge-commit:48f24cfc124227f6b6bff9146c1dc994e958365f",
+        "base-main:59cd9c96c7d8f94d8cfe41cf798c488ed05c9bc7"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 678
+    "total": 679
   }
 }
