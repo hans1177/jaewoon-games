@@ -9204,6 +9204,10 @@ test('no-model source-grounded new quest recipe enemy and region records preserv
   }
   assert.deepEqual(Array.from(runInNewContext('chosen',context)),['q2','c2','e2','r2']);
   assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),source,'candidate does not write game files');
+  const prebound=source.replace('<script>','<script>document.addEventListener("click",()=>{});');
+  write(path.join(sourceRoot,'index.html'),prebound);
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']})?.deterministicWebContent,true,
+    'existing click handlers cannot suppress independent content development');
   write(path.join(sourceRoot,'index.html'),docs.get('index.html'));
   assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']}),null,'idempotent: duplicate content rejected');
   write(path.join(sourceRoot,'index.html'),source);
