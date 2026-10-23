@@ -85479,11 +85479,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_104c1a8f52e0df0089c2f22f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9483",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "734056534caf4d108a64820621357a0d95307022",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9483,
+        "baseBranch": "main",
+        "headBranch": "feature/cozy-cc0-library-force-patch-20261023",
+        "baseSha": "734056534caf4d108a64820621357a0d95307022",
+        "headSha": "5a14d8d86903e90cb16d002bae282152195cd86d",
+        "mergeCommitSha": "49e4ee2b0d10d4ffc35e39485ecc4076dedf9d1c",
+        "mergedAt": "2026-10-23T10:41:32Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ec7bc16320631c76cc3c5b04511b684b1157c4b601ac4839cf9430e63bdd2289",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feature/cozy-cc0-library-force-patch-20261023",
+        "candidateSha": "5a14d8d86903e90cb16d002bae282152195cd86d"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 597,
+        "deletedLineCount": 173,
+        "changedFiles": [
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          ".github/workflows/primary-three-release-polish-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/cozy-cc0-library-audit.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "qa/roblox-onepatch.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/CozyCC0Library.luau",
+          "tools/cozy-cc0-library-audit.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          ".github/workflows/primary-three-release-polish-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/cozy-cc0-library-audit.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "qa/roblox-onepatch.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/CozyCC0Library.luau",
+          "tools/cozy-cc0-library-audit.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9483",
+        "merge-commit:49e4ee2b0d10d4ffc35e39485ecc4076dedf9d1c",
+        "base-main:734056534caf4d108a64820621357a0d95307022"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 675
+    "total": 676
   }
 }
