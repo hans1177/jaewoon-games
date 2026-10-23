@@ -4416,6 +4416,9 @@ export function enqueueOwnerRobloxOnePatch({queue={},catalog={},request={},repoR
     goal:'[OWNER_ROBLOX_ONEPATCH]\n요청: '+goal+
       '\n현재 책임 Luau 파일의 기존 함수를 먼저 읽고 그 구조 안에서 직접 수정한다.'+
       '\n기존 규칙·세이브·수치·서버 권위·모바일 입력을 보존한다. 명시적으로 요청하지 않은 변경은 금지한다.'+
+      '\n그래픽·모션·UI 요청은 먼저 기존 Roblox CC0 원본 장부와 14종 공용 라이브러리, 게임별 실제 적용 경로를 모두 감사한다.'+
+      '\n외부 자산은 확인된 CC0만, 소스 SHA와 게임별 Roblox Universe Use 권한 검증 후 기존 Vibe2 자산/출시 경로로 연결한다.'+
+      '\n단순 원본 등록과 실제 화면 반영은 구별하며 해당 게임의 모바일·모션·품질 증거 없이 적용 완료라고 주장하지 않는다.'+
       '\n기존 F0~F9/보안/런타임/출시 검증을 유지한다. 검증 전 PASS 또는 배포 성공이라고 주장하지 않는다.',
     sourceRoot,responsibleFiles:[expectedFile],dependencies:[],priority:'owner-immediate',
     releaseState:clean(game.homepageCategory)||'development-confirmed',

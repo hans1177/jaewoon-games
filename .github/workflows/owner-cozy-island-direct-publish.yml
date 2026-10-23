@@ -6,6 +6,11 @@ on:
     branches: [main]
     paths:
       - 'roblox-games/cozy-island/**'
+      - 'assets/roblox/**'
+      - 'assets/shared/**'
+      - 'assets/external/**'
+      - 'assets/asset-license-ledger.json'
+      - 'tools/cozy-cc0-library-audit.mjs'
       - '.github/workflows/owner-cozy-island-direct-publish.yml'
       - 'tools/company-roblox-dedicated-experience.mjs'
   workflow_dispatch:
@@ -50,7 +55,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test qa/cozy-rpg-release-hardening.test.mjs
+          node --test qa/cozy-rpg-release-hardening.test.mjs qa/cozy-cc0-library-audit.test.mjs
+          node tools/cozy-cc0-library-audit.mjs
 
       - name: Install pinned Rojo
         shell: bash
@@ -92,6 +98,23 @@ jobs:
           console.log('COZY_OWNER_UNIVERSE_ID='+(reuse?chosen.universeId:'NEW'));
           console.log('COZY_OWNER_PLACE_ID='+(reuse?chosen.placeId:'NEW'));
           NODE
+
+      - name: Grant verified CC0 original models to the existing Cozy Island Universe
+        working-directory: main
+        env:
+          REUSE_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
+          REUSE_PLACE_ID: ${{ steps.reuse.outputs.place_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          COZY_CC0_AUDIT_OUTPUT: /tmp/cozy-cc0-audit.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$REUSE_UNIVERSE_ID" = "10767445741"
+          test "$REUSE_PLACE_ID" = "116850096561713"
+          node tools/cozy-cc0-library-audit.mjs --grant
+          node -e "const a=require('/tmp/cozy-cc0-audit.json'); if(a.pass!==true||a.universeUseGranted?.assetIds?.length<7)process.exit(1);"
 
       - name: Build Cozy Island from current main
         working-directory: main
@@ -150,5 +173,6 @@ jobs:
           path: |
             /tmp/cozy-owner-publish/cozy-island.result.json
             /tmp/cozy-owner-publish/build.sha256
+            /tmp/cozy-cc0-audit.json
           if-no-files-found: error
           retention-days: 14
