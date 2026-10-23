@@ -10,6 +10,7 @@ local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
 local CC0=require(Shared:WaitForChild("CozyCC0Library"))
+local Materials=require(Shared:WaitForChild("RobloxCommonMaterials"))
 local Wildlife=require(Shared:WaitForChild("SurvivalWildlife"))
 local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
 
@@ -73,7 +74,9 @@ foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
 
 local function part(parent,name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
- x.TopSurface=Enum.SurfaceType.Smooth;x.BottomSurface=Enum.SurfaceType.Smooth;x.Parent=parent;return x
+ x.TopSurface=Enum.SurfaceType.Smooth;x.BottomSurface=Enum.SurfaceType.Smooth;x.Parent=parent
+ Materials.ApplyAuthoredSurface(x,"COZY")
+ return x
 end
 local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
@@ -81,6 +84,7 @@ local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  local rot=rotation or Vector3.zero
  x.CFrame=rootPart.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
  if shape then x.Shape=shape end;x.Parent=rootPart
+ Materials.ApplyAuthoredSurface(x,"COZY")
  local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x;return x
 end
 local function stripAsset(root)
