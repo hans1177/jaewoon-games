@@ -1510,7 +1510,9 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   const intent=[order.goal,order.selectedTask?.goal,order.selectedTask?.description,order.selectedTask?.title].map(clean).join(' ');
   // 기존 코드의 플레이 동작만 연결한다. 시스템별 요청은 관련 없는 행동을 제외한다.
   const generalInputIntent=/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent);
-  const connectedIntent=/connected|content|bundle|progression|expansion|퀘스트.*지역|콘텐츠|연결된|동선|확장/i.test(intent);
+  const connectedIntent=/(?:connected|content|bundle|progression|expansion|퀘스트.*지역|콘텐츠|연결된|동선|확장)/i.test(intent)
+    &&/(?:add|create|generate|expand|new|추가|생성|확장|신규|새로운)/i.test(intent)
+    &&!/(?:fix|repair|bug|regression|오류|버그|복구|수정)/i.test(intent);
   const gameplayFamilies=[
     {requested:/combat|battle|attack|enemy|전투|공격|회피|사냥|적 행동/i,action:/^(?:attack|dodge|interact|gather|setEnemyBehavior|chooseEnemyAction)$/},
     {requested:/quest|mission|퀘스트|의뢰/i,action:/quest|mission/i},
