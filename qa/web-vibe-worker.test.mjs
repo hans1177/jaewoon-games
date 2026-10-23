@@ -68,7 +68,7 @@ test('WEB onepatch preserves existing save keys and JSON structure across files'
     oldText:'"game-save-v1"',newText:'"game-save-v2"'
   }),{relative:'client/game.mjs'}),/SAVE_KEY_CHANGED/);
   assert.throws(()=>safeWebVibeReplacement('{"health":50}',JSON.stringify({
-    oldText:'{"health":50}',newText:'{"health":'
+    oldText:'{"health":50}',newText:'{"health":xx}'
   }),{relative:'data/config.json'}),/JSON_STRUCTURE_INVALID/);
 });
 test('WEB onepatch requires explicit owner scope, real changes, and retains canonical PR/main publication',()=>{
