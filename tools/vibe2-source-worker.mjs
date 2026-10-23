@@ -1511,11 +1511,18 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   // 기존 코드의 플레이 동작만 연결한다. 시스템별 요청은 관련 없는 행동을 제외한다.
   const generalInputIntent=/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent);
   const gameplayFamilies=[
-    {requested:/combat|battle|attack|전투|공격|회피|사냥/i,action:/^(?:attack|dodge|interact|gather)$/},
+    {requested:/combat|battle|attack|enemy|전투|공격|회피|사냥|적 행동/i,action:/^(?:attack|dodge|interact|gather|setEnemyBehavior|chooseEnemyAction)$/},
     {requested:/quest|mission|퀘스트|의뢰/i,action:/quest|mission/i},
     {requested:/craft|forge|제작|대장간/i,action:/craft|recipe|forge/i},
     {requested:/region|area|dungeon|map|지역|던전|지도/i,action:/region|area|dungeon|map/i}
   ].filter(group=>group.requested.test(intent));
+  // 기존 소스의 확정된 콘텐츠 식별자만 UI에 연결한다. 보상·밸런스·세이브 생성 금지.
+  const choiceFamilies=[
+    {requested:/quest|mission|퀘스트|의뢰/i,action:/^(?:selectQuest|chooseQuest)$/,catalog:'questIds'},
+    {requested:/craft|forge|제작|대장간/i,action:/^(?:craft|craftItem)$/,catalog:'recipeIds'},
+    {requested:/combat|battle|enemy|전투|적 행동/i,action:/^(?:setEnemyBehavior|chooseEnemyAction)$/,catalog:'enemyBehaviorIds'},
+    {requested:/region|area|dungeon|map|지역|던전|지도/i,action:/^(?:enterRegion|travelToRegion|enterDungeon)$/,catalog:'regionIds'}
+  ].filter(family=>family.requested.test(intent));
   if(!generalInputIntent&&!gameplayFamilies.length)return null;
   // 기존 학습 라이브러리의 검증된 식별자만 실행 레시피로 사용한다. 임의 코드는 실행하지 않는다.
   let library=patternLibrary;
@@ -1552,32 +1559,80 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       idCounts.set(match[2],(idCounts.get(match[2])||0)+1);
     }
     const bindings=[],learnedPatternIds=[];
+    const declaredChoices=new Map();
+    for(const family of choiceFamilies){
+      const pattern=new RegExp('\\bconst\\s+'+family.catalog+'\\s*=\\s*(\\[[^\\r\\n]*?\\])\\s*;?','g');
+      const declarations=[...code.matchAll(pattern)];
+      if(declarations.length!==1)continue;
+      let ids;try{ids=JSON.parse(declarations[0][1]);}catch{continue;}
+      if(!Array.isArray(ids)||ids.length<1||ids.length>24||
+        ids.some(id=>typeof id!=='string'||!/^[A-Za-z0-9_-]{1,48}$/.test(id))||
+        new Set(ids).size!==ids.length)continue;
+      declaredChoices.set(family.catalog,ids);
+    }
+    // 기존 책임 함수 한 곳에서 0개 또는 1개의 인자 계약을 검증한다.
+    const declaredAction=(action,oneArgument=false)=>{
+      const fn=functions.find(row=>row.name===action);
+      if(!fn||!/^(?:async\s+)?function\s+/.test(code.slice(fn.start,fn.end)))return false;
+      const signature=oneArgument
+        ?new RegExp('function\\s+'+action+'\\s*\\(\\s*[A-Za-z_$][\\w$]*\\s*\\)')
+        :new RegExp('function\\s+'+action+'\\s*\\(\\s*\\)');
+      if(!signature.test(code.slice(fn.start,fn.end))||/\b(?:this|arguments)\b/.test(fn.code)||
+        functions.some(row=>row!==fn&&row.start<fn.start&&row.end>fn.end))return false;
+      let prefix=code.slice(0,fn.start);
+      for(const earlier of functions.filter(row=>row.end<=fn.start&&
+        !functions.some(parent=>parent.start<row.start&&parent.end>=row.end)).sort((a,b)=>b.start-a.start))
+        prefix=prefix.slice(0,earlier.start)+prefix.slice(earlier.end);
+      return !/[{}]/.test(prefix)&&
+        (code.match(new RegExp('function\\s+'+action+'\\s*\\(', 'g'))||[]).length===1&&
+        !new RegExp('\\b'+action+'\\s*=(?!=)').test(code);
+    };
     for(const button of source.matchAll(/<button\b([^>]*)>/gi)){
       if(button.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(button[1]))continue;
       const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
       const ids=attrs.filter(row=>row[1].toLowerCase()==='id'),actions=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
       if(ids.length!==1||actions.length!==1)continue;
       const id=ids[0][3],action=actions[0][3];
+      const choiceAttrs=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-id');
+      const choiceFamily=choiceFamilies.find(family=>family.action.test(action));
+      const choiceValue=choiceAttrs.length===1?choiceAttrs[0][3]:null;
+      const hasChoice=Boolean(choiceFamily&&choiceValue!==null&&
+        declaredChoices.get(choiceFamily.catalog)?.includes(choiceValue));
       const builtInAction=/^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting|openQuestLog|openQuestBoard|openRegionMap|openDungeonMap)$/.test(action);
       const learnedPatternId=learnedActions.get(action);
-      // HTML element IDs may contain hyphens even though JavaScript function identifiers may not.
-      // IDs are used solely as JSON-escaped getElementById string literals, never as executable code.
+      // HTML ID와 데이터 ID는 검증된 리터럴만 인자로 전달한다.
       if(!/^[A-Za-z_$][\w$-]{0,79}$/.test(id)||! /^[A-Za-z_$][\w$]{0,39}$/.test(action)||
-        (!builtInAction&&!learnedPatternId))continue;
+        (!builtInAction&&!learnedPatternId&&!hasChoice)||choiceAttrs.length>1||
+        (choiceAttrs.length===1&&!hasChoice))continue;
       if(!generalInputIntent&&!gameplayFamilies.some(group=>group.action.test(action)))continue;
       if(idCounts.get(id)!==1)continue;
-      // 이미 ID/동작을 참조하는 연결이 있으면 중복 호출 가능성이 있으므로 생성하지 않는다.
-      if(code.includes('"'+id+'"')||code.includes("'"+id+"'")||code.includes('`'+id+'`')||/\b(?:onclick|onpointerdown|ontouchstart)\b/.test(code))continue;
-      const fn=functions.find(row=>row.name===action);
-      if(!fn||!/^(?:async\s+)?function\s+/.test(code.slice(fn.start,fn.end))||!new RegExp('function\\s+'+action+'\\s*\\(\\s*\\)').test(code.slice(fn.start,fn.end)))continue;
-      if(/\b(?:this|arguments)\b/.test(fn.code)||functions.some(row=>row!==fn&&row.start<fn.start&&row.end>fn.end))continue;
-      let prefix=code.slice(0,fn.start);
-      for(const earlier of functions.filter(row=>row.end<=fn.start&&!functions.some(parent=>parent.start<row.start&&parent.end>=row.end)).sort((a,b)=>b.start-a.start))prefix=prefix.slice(0,earlier.start)+prefix.slice(earlier.end);
-      if(/[{}]/.test(prefix))continue;
-      // 함수 이름이 다른 곳에서 재정의되는 소스는 현재 분석 범위를 벗어난다.
-      if((code.match(new RegExp('function\\s+'+action+'\\s*\\(', 'g'))||[]).length!==1||new RegExp('\\b'+action+'\\s*=(?!=)').test(code))continue;
-      bindings.push('document.getElementById('+JSON.stringify(id)+').addEventListener("click", '+action+');');
-      if(!builtInAction&&learnedPatternId)learnedPatternIds.push(learnedPatternId);
+      if(code.includes('"'+id+'"')||code.includes("'"+id+"'")||
+        code.includes(String.fromCharCode(96)+id+String.fromCharCode(96))||
+        /\b(?:onclick|onpointerdown|ontouchstart)\b/.test(code))continue;
+      if(!declaredAction(action,hasChoice))continue;
+      const handler=hasChoice?'()=>'+action+'('+JSON.stringify(choiceValue)+')':action;
+      bindings.push('document.getElementById('+JSON.stringify(id)+').addEventListener("click", '+handler+');');
+      if(!builtInAction&&!hasChoice&&learnedPatternId)learnedPatternIds.push(learnedPatternId);
+    }
+    // 이미 선언된 콘텐츠 목록을 플레이어가 선택하도록 표시한다. 데이터와 세이브 구조는 보존한다.
+    for(const holder of source.matchAll(/<(div|section|nav)\b([^>]*)>\s*<\/\1>/gi)){
+      if(holder.index>script.index||/\bon[a-z]+\s*=|\bdisabled\b/i.test(holder[2]))continue;
+      const attrs=[...holder[2].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
+      const ids=attrs.filter(row=>row[1].toLowerCase()==='id');
+      const lists=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-list');
+      const actions=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
+      if(ids.length!==1||lists.length!==1||actions.length!==1)continue;
+      const id=ids[0][3],catalog=lists[0][3],action=actions[0][3];
+      const family=choiceFamilies.find(row=>row.catalog===catalog&&row.action.test(action));
+      if(!family||!declaredChoices.has(catalog)||!/^[A-Za-z_$][\w$-]{0,79}$/.test(id)||
+        idCounts.get(id)!==1||!declaredAction(action,true))continue;
+      if(code.includes('"'+id+'"')||code.includes("'"+id+"'")||
+        code.includes(String.fromCharCode(96)+id+String.fromCharCode(96))||
+        /\b(?:onclick|onpointerdown|ontouchstart)\b/.test(code))continue;
+      bindings.push('for (const choiceId of '+catalog+') { const choiceButton=document.createElement("button");'+
+        'choiceButton.type="button";choiceButton.textContent=choiceId;'+
+        'choiceButton.addEventListener("click",()=>'+action+'(choiceId));'+
+        'document.getElementById('+JSON.stringify(id)+').appendChild(choiceButton); }');
     }
     if(!bindings.length)continue;
     const replacement=script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
