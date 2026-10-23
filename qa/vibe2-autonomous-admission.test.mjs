@@ -1,3 +1,4 @@
+// 파일명: qa/vibe2-autonomous-admission.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -11,6 +12,7 @@ test('new automatic waves give priority to queued owner publication without canc
     });
     assert.equal(result.allowed,false,status);
     assert.equal(result.reason,'OWNER_PUBLICATION_PRIORITY',status);
+    assert.equal(result.existingQueueDispatchAllowed,false,'owner priority must be preserved');
     assert.equal(result.existingWorkCancelled,false);
     assert.equal(result.ownerDirectWorkAllowed,true);
     assert.equal(result.finalQaPreserved,true);
@@ -28,6 +30,7 @@ test('queued plus pending workflows, not running workflow count, apply fair back
   assert.equal(boundary.allowed,false);
   assert.equal(boundary.reason,'AUTONOMOUS_WORKFLOW_BACKLOG');
   assert.equal(boundary.backlog,48);
+  assert.equal(boundary.existingQueueDispatchAllowed,true,'existing work may refill under QA backlog');
   const unknown=assessAutonomousExpansionAdmission({queuedWorkflowRuns:null,pendingWorkflowRuns:23,ownerPublishRuns:null});
   assert.equal(unknown.allowed,true,'temporary status API failures may not permanently freeze production');
   assert.equal(unknown.countsKnown,false);
@@ -41,7 +44,11 @@ test('24h scheduler stops only new fanout; recovery, owner-direct and finished Q
   assert.match(main,/VIBE2_AUTO_WAVE_QUEUED=/);
   assert.match(main,/VIBE2_AUTO_WAVE_PENDING=/);
   assert.match(main,/admitted=\$admitted/);
-  assert.match(main,/if: steps\.auto_admission\.outputs\.admitted == 'true'/);
+  assert.match(main,/if: steps\.auto_admission\.outputs\.dispatch_admitted == 'true'/);
+  assert.match(main,/dispatch_admitted=true/);
+  assert.match(main,/dispatch_admitted=false/);
+  assert.ok(main.includes('echo "dispatch_admitted=$dispatch_admitted" >> "$GITHUB_OUTPUT"'));
+  assert.match(main,/VIBE2_EXISTING_QUEUE_DISPATCH_ADMITTED=/);
   assert.match(main,/needs\.plan\.outputs\.autonomy_admitted == 'true' && needs\.plan\.outputs\.game_refill_ready/);
   assert.match(main,/needs\.plan\.outputs\.autonomy_admitted == 'true' && needs\.plan\.outputs\.asset_development_refill_ready/);
   assert.match(main,/VIBE2_24H_REFILL=DEFERRED_OWNER_OR_QUEUE_PRESSURE/);
@@ -57,6 +64,11 @@ test('core cron and main-push auto-only reserve yields; explicit manual and owne
   const bridge=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   assert.match(core,/VIBE2_AUTO_MAIN_WAKE_DEFERRED=OWNER_PAGES_PUBLICATION_PRIORITY/);
   assert.match(core,/VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG/);
+  assert.match(core,/VIBE2_AUTO_MAIN_WAKE_BACKLOG=EXISTING_GAME_PRIMARY_RESERVE_ALLOWED/);
+  const gate=core.slice(core.indexOf('if [[ "$owner_publish"'),core.indexOf('echo "proceed=$proceed"'));
+  assert.ok(gate.includes('VIBE2_EXECUTION_LANE:-game-primary'));
+  assert.ok(gate.includes("if [[ \"${VIBE2_EXECUTION_LANE:-game-primary}\" == 'game-primary' ]]"));
+  assert.match(gate,/proceed=false/);
   assert.match(core,/\[\[ "\$\{GITHUB_EVENT_NAME:-\}" == 'schedule' \]\]/);
   assert.match(core,/\[\[ "\$\{GITHUB_REF_NAME:-\}" == 'main' \]\]/);
   assert.match(core,/echo "proceed=\$proceed" >> "\$GITHUB_OUTPUT"/);

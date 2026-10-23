@@ -178,10 +178,14 @@ jobs:
           owner_pending="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/owner-fast-pages-publish.yml/runs?per_page=20" \
             --jq '[.workflow_runs[] | select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress")] | length' 2>/dev/null || echo unknown)"
           admitted=true
+          # [배정/확장 분리] 대기 중인 기존 게임 작업은 빈 슬롯을 채우되
+          # 새 자율 기획·팬아웃만 대기량에 따라 보류한다.
+          dispatch_admitted=true
           reason=AUTONOMOUS_ADMITTED
           threshold=48
           if [[ "$owner_pending" =~ ^[0-9]+$ ]] && [ "$owner_pending" -gt 0 ]; then
             admitted=false
+            dispatch_admitted=false
             reason=OWNER_PUBLICATION_PRIORITY
           elif [[ "$queued_count" =~ ^[0-9]+$ && "$pending_count" =~ ^[0-9]+$ ]] && \
                [ "$((queued_count+pending_count))" -ge "$threshold" ]; then
@@ -189,6 +193,8 @@ jobs:
             reason=AUTONOMOUS_WORKFLOW_BACKLOG
           fi
           echo "admitted=$admitted" >> "$GITHUB_OUTPUT"
+          echo "dispatch_admitted=$dispatch_admitted" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_EXISTING_QUEUE_DISPATCH_ADMITTED=$dispatch_admitted"
           echo "VIBE2_AUTO_WAVE_ADMISSION=$admitted"
           echo "VIBE2_AUTO_WAVE_ADMISSION_REASON=$reason"
           echo "VIBE2_AUTO_WAVE_QUEUED=$queued_count"
@@ -198,7 +204,7 @@ jobs:
           echo 'VIBE2_VERIFIED_QA_RECOVERY=UNCHANGED'
 
       - name: Dispatch queued GAME_PRIMARY and independent asset work before full planning
-        if: steps.auto_admission.outputs.admitted == 'true'
+        if: steps.auto_admission.outputs.dispatch_admitted == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash

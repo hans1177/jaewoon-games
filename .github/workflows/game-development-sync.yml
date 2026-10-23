@@ -75,6 +75,7 @@ jobs:
           PR_BASE: ${{ github.event.pull_request.base.sha }}
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
           PUSH_BASE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -97,6 +98,16 @@ jobs:
               if [ -z "$PR_HEAD" ]; then echo 'GAME_QA_PR_HEAD_REQUIRED' >&2; exit 1; fi
               git cat-file -e "$PR_HEAD^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PR_HEAD"
               head="$PR_HEAD"
+              # [PR 실제 변경 범위] main이 앞으로 이동해도 타 게임을 포함하지 않는다.
+              # GitHub가 판정한 공통 조상을 정확히 사용하고 조회 실패 시 fail closed.
+              common_base="$(gh api "repos/$GITHUB_REPOSITORY/compare/$base...$head" --jq '.merge_base_commit.sha')"
+              if ! [[ "$common_base" =~ ^[a-f0-9]{40}$ ]]; then
+                echo 'GAME_QA_PR_MERGE_BASE_UNKNOWN' >&2
+                exit 1
+              fi
+              git cat-file -e "$common_base^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$common_base"
+              base="$common_base"
+              echo "GAME_QA_PR_MERGE_BASE=$base"
             fi
             git diff --name-only "$base" "$head" > /tmp/changed-game-files.txt
           fi
