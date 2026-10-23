@@ -34,7 +34,7 @@ on:
         type: string
         default: ''
       roblox_file:
-        description: '로블록스 소스 파일 (예 client/Game.client.luau)'
+        description: '파일 여러 개: 쉼표로 구분. 공란=해당 게임 전체, * = 전체 소스/그래픽/모션/UI'
         required: false
         type: string
         default: ''

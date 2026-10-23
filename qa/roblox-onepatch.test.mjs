@@ -119,3 +119,83 @@ test('Roblox onepatch engine requires CC0 graphics and motion license, source SH
   assert.equal(item.responsibleFiles.length,1);
   assert.ok(item.evidence.includes('existing-canonical-vibe2-queue'));
 });
+
+
+test('Owner Roblox onepatch accepts arbitrary many game-local code, UI, motion and asset files',t=>{
+  const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
+  const files=[];
+  for(let i=0;i<17;i++){
+    const relative='shared/System'+i+'.luau';
+    const dest=path.join(f.root,'roblox-games/demo',relative);
+    fs.mkdirSync(path.dirname(dest),{recursive:true});
+    fs.writeFileSync(dest,'return {system='+i+'}\n');
+    files.push(relative);
+  }
+  for(const relative of ['shared/VisualStyle.json','client/Buttons.svg','assets/characters/Npc.glb','default.project.json']){
+    const dest=path.join(f.root,'roblox-games/demo',relative);
+    fs.mkdirSync(path.dirname(dest),{recursive:true});
+    fs.writeFileSync(dest,'licensed-test-fixture');
+    files.push(relative);
+  }
+  files.push('client/Game.client.luau');
+  const req={...f.request,file:files.join(',')};
+  const one=enqueueOwnerRobloxOnePatch({queue:{tasks:[]},catalog:f.catalog,request:req,repoRoot:f.root,policy});
+  assert.equal(one.queue.tasks[0].responsibleFiles.length,22);
+  assert.ok(one.queue.tasks[0].responsibleFiles.includes('roblox-games/demo/assets/characters/Npc.glb'));
+  assert.ok(one.queue.tasks[0].evidence.includes('owner-onepatch-no-file-count-limit'));
+  const same=enqueueOwnerRobloxOnePatch({queue:one.queue,catalog:f.catalog,request:req,repoRoot:f.root,policy});
+  assert.equal(same.added,false);
+  const all=enqueueOwnerRobloxOnePatch({queue:{tasks:[]},catalog:f.catalog,
+    request:{...f.request,requestId:'123457',file:'*'},repoRoot:f.root,policy});
+  assert.equal(all.queue.tasks[0].responsibleFiles.length,21);
+  assert.equal(all.queue.tasks[0].responsibleFiles.includes('roblox-games/demo/assets/characters/Npc.glb'),false,
+    'native GLB must remain on explicitly requested editor route, not auto-text wildcard');
+  assert.deepEqual(all.queue.tasks[0].responsibleFiles,
+    one.queue.tasks[0].responsibleFiles.filter(file=>!file.endsWith('.glb')));
+});
+
+test('Owner Roblox patch merges queued build-up without resetting its generation, and serializes running work',t=>{
+  const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
+  const current={
+    id:'build-up-demo',gameId:'demo',target:'roblox',sourceRoot:'roblox-games/demo',
+    department:'development',type:'implementation',goal:'기존 5단계 월드 빌드업 유지',
+    responsibleFiles:['roblox-games/demo/shared/Existing.luau'],dependencies:[],
+    buildUpDirectiveId:'keep-existing-fingerprint',status:'queued',evidence:['original-f5-evidence']
+  };
+  const merged=enqueueOwnerRobloxOnePatch({queue:{tasks:[current]},catalog:f.catalog,
+    request:f.request,repoRoot:f.root,policy});
+  assert.equal(merged.added,false);
+  assert.equal(merged.merged,true);
+  assert.equal(merged.taskId,current.id);
+  assert.equal(merged.queue.tasks.length,1);
+  assert.equal(merged.queue.tasks[0].buildUpDirectiveId,'keep-existing-fingerprint');
+  assert.equal(merged.queue.tasks[0].status,'queued');
+  assert.ok(merged.queue.tasks[0].responsibleFiles.includes('roblox-games/demo/client/Game.client.luau'));
+  assert.ok(merged.queue.tasks[0].evidence.includes('original-f5-evidence'));
+  const repeat=enqueueOwnerRobloxOnePatch({queue:merged.queue,catalog:f.catalog,
+    request:f.request,repoRoot:f.root,policy});
+  assert.equal(repeat.added,false);
+  assert.equal(repeat.queue.tasks.length,1);
+  const running=enqueueOwnerRobloxOnePatch({queue:{tasks:[{...current,status:'running'}]},
+    catalog:f.catalog,request:f.request,repoRoot:f.root,policy});
+  assert.equal(running.added,true);
+  assert.equal(running.queue.tasks[0].status,'running');
+  assert.equal(running.queue.tasks.length,2);
+  assert.ok(running.queue.tasks[1].dependencies.includes(current.id));
+  assert.ok(running.queue.tasks[1].evidence.includes('owner-onepatch-resume-impacted-stage-not-f0'));
+});
+
+test('Owner Roblox onepatch work order keeps unlimited source responsibility and F9 gate without duplicate QA',()=>{
+  const runner=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const promote=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(core,/공란=해당 게임 전체/);
+  assert.match(planner,/onePatchInput\[1\]='\*'/);
+  assert.match(runner,/unchangedScopeEvidenceReuse:'SAME_SOURCE_HASH_AND_DEPENDENCIES_ONLY'/);
+  assert.match(runner,/neverReuseRuntimeOrF9WithoutExactArtifactIdentity:true/);
+  assert.match(runner,/owner-onepatch-no-file-count-limit/);
+  assert.match(f9,/publish_stage=final/);
+  assert.match(promote,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
+});
