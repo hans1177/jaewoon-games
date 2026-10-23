@@ -112,6 +112,9 @@ export function diagnoseVibeWebFrameBottleneck(metrics={}){
  const decorObserved=hasFrames&&[metrics.decorGpuBatches,metrics.decorGpuInstances,metrics.decorGpuProps]
   .every(value=>Number.isSafeInteger(value)&&value>=0)&&
   metrics.decorGpuInstances>=metrics.decorGpuProps;
+ const resourceObserved=hasFrames&&[metrics.resourceGpuBatches,metrics.resourceGpuModels,metrics.resourceGpuUpdates]
+  .every(value=>Number.isSafeInteger(value)&&value>=0)&&
+  metrics.resourceGpuBatches<=Math.max(metrics.resourceGpuModels,1);
  const measured=hasFrames&&metrics.frameSampleValid===true&&frames>=45&&
   finite(metrics.averageFrameMs)&&metrics.averageFrameMs>0;
  const bottlenecks=[];
@@ -133,6 +136,9 @@ export function diagnoseVibeWebFrameBottleneck(metrics={}){
    decorGpuBatches:decorObserved?metrics.decorGpuBatches:null,
    decorGpuInstances:decorObserved?metrics.decorGpuInstances:null,
    decorGpuProps:decorObserved?metrics.decorGpuProps:null,
+   resourceGpuBatches:resourceObserved?metrics.resourceGpuBatches:null,
+   resourceGpuModels:resourceObserved?metrics.resourceGpuModels:null,
+   resourceGpuUpdates:resourceObserved?metrics.resourceGpuUpdates:null,
    hardwareBenchmarkVerified:false
   }:null,
   recommendation:!hasFrames?'VERIFY_ACTUAL_3D_RENDERING_FIRST'
