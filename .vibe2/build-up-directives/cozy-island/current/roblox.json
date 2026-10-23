@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "cozy-island-build-up-g11-9318a20d041d",
-  "directiveFingerprint": "9318a20d041d81c812f8ad76d73ceb58aa8f48734d4fe35ad60f7de1ed80644e",
-  "previousDirectiveFingerprint": "16a075edc9e0c636ae730a43db966710d8bac938eb09f0a85bcf19fe8e843945",
-  "forbiddenRepeatFingerprint": "16a075edc9e0c636ae730a43db966710d8bac938eb09f0a85bcf19fe8e843945",
+  "directiveId": "cozy-island-build-up-g12-a44eb94f0f64",
+  "directiveFingerprint": "a44eb94f0f6443852849d25276dc1174b41f4d3a1e06edbd27f454c5d81e47d8",
+  "previousDirectiveFingerprint": "9318a20d041d81c812f8ad76d73ceb58aa8f48734d4fe35ad60f7de1ed80644e",
+  "forbiddenRepeatFingerprint": "9318a20d041d81c812f8ad76d73ceb58aa8f48734d4fe35ad60f7de1ed80644e",
   "gameId": "cozy-island",
   "gameName": "포근섬",
-  "generation": 11,
+  "generation": 12,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cozy-island",
-  "sourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+  "sourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
   "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+        "sourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
-    "sourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+    "sourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -836,7 +836,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+    "sourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4777,19 +4777,48 @@
   "previousVersionDelta": {
     "previousGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "45238f4b0150ff620ed2060cc0763ff71ec4c3df814f6a6ee81a86280ae0d5e0",
-    "currentSourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+    "previousGeneration": 11,
+    "previousSourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+    "currentSourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "ad64556ea9f66a0b2137f9233ce6b8a07e602302",
+      "artifactIdentity": null,
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 39955938323,
+      "testedAt": "2026-10-23T13:25:51.532Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "SERVER_PLACEHOLDER_FORBIDDEN",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+    "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED|SERVER_PLACEHOLDER_FORBIDDEN"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|SERVER_PLACEHOLDER_FORBIDDEN",
+      "CONFIG_GENRE_PROFILE_REQUIRED",
+      "SERVER_PLACEHOLDER_FORBIDDEN"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -5936,7 +5965,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 475976,
+        "sourceBytes": 476014,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5969,8 +5998,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
+    "themeDepth": 11,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5980,9 +6009,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 10
+        "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6027,7 +6057,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 74,
+        "score": 56,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6141,11 +6171,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 11,
-    "previousGeneration": 10,
+    "generation": 12,
+    "previousGeneration": 11,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
-    "priorSourceFingerprint": "45238f4b0150ff620ed2060cc0763ff71ec4c3df814f6a6ee81a86280ae0d5e0",
+    "sourceFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
+    "priorSourceFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6164,7 +6194,7 @@
     "version": 1,
     "gameId": "cozy-island",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+    "sourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7153,7 +7183,7 @@
     "gameId": "cozy-island",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+    "sourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8002,16 +8032,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "REGRESSION",
+      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "89efb52d3fa720b789444860652ee2c93e64c9c9553cd1cd16aa7f78fa46956b",
+      "sourceTreeFingerprint": "e67ecb66a8b839425e6651871cf3f543411f223e588e0fa1afc511e50fdc0f4f",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED"
+      "failureSignature": "existing-source-static-revalidation-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8022,8 +8052,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8066,7 +8096,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 13,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8128,5 +8158,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-23T11:10:11.364Z"
+  "generatedAt": "2026-10-23T13:47:12.634Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "human-go-temp-build-up-g2-afeaf5e68ac5",
-  "directiveFingerprint": "afeaf5e68ac53d4b30330898f1a3ad1ee3d289426633b9682387f5ba231c1b6e",
-  "previousDirectiveFingerprint": "68e36ea4c0ab29e2105d84026ee4bbc9041ac059a4efb7a1844d4db60f172913",
-  "forbiddenRepeatFingerprint": "68e36ea4c0ab29e2105d84026ee4bbc9041ac059a4efb7a1844d4db60f172913",
+  "directiveId": "human-go-temp-build-up-g3-225e9737c269",
+  "directiveFingerprint": "225e9737c2690680bc7db80801df6b225cd8101cce65045e405313eed9bf012b",
+  "previousDirectiveFingerprint": "afeaf5e68ac53d4b30330898f1a3ad1ee3d289426633b9682387f5ba231c1b6e",
+  "forbiddenRepeatFingerprint": "afeaf5e68ac53d4b30330898f1a3ad1ee3d289426633b9682387f5ba231c1b6e",
   "gameId": "human-go-temp",
   "gameName": "휴먼 GO!",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/human-go-temp",
-  "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+  "sourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
   "designFingerprint": "d24cec31593846aa22bbe11354578ee23ba05fa1dd325ae35625206d974ad049",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+        "sourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "d24cec31593846aa22bbe11354578ee23ba05fa1dd325ae35625206d974ad049",
-    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "sourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "sourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4996,22 +4996,22 @@
   "previousVersionDelta": {
     "previousGoal": "휴먼 GO!. 서사시의 추방과 귀환·민속 금기와 전염 생존. 휴먼 GO!에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "616ba25a9d92be2512678006acf2d30e634e08c183b5cc209661ba002696e0b4",
-    "currentSourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "currentSourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "980d73239331ad71b616d3344ead9e3165c10421",
+      "sourceRevision": "07a67e6e273017609dc6c1758830ba8b5b42bc1a",
       "artifactIdentity": null,
       "runtimeVerified": false,
       "productionVerified": false,
       "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 39898743286,
-      "testedAt": "2026-10-23T04:31:14.527Z",
+      "workflowRunId": 39958594652,
+      "testedAt": "2026-10-23T13:41:42.662Z",
       "repairSurfaces": [
         "SOURCE_CONTRACT"
       ],
@@ -6209,8 +6209,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6220,9 +6220,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -6259,7 +6260,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 210,
+        "score": 192,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6373,11 +6374,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
-    "priorSourceFingerprint": "616ba25a9d92be2512678006acf2d30e634e08c183b5cc209661ba002696e0b4",
+    "sourceFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
+    "priorSourceFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6396,7 +6397,7 @@
     "version": 1,
     "gameId": "human-go-temp",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "sourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7301,7 +7302,7 @@
     "gameId": "human-go-temp",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+    "sourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8135,7 +8136,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "b07a1093afcede1e5964e3045f24c13055822d1e41a472365a36ea05a8cef130",
+      "sourceTreeFingerprint": "9dd4b669d41e33dfa9601b85d85dcd043f03f329cc2a560e31299ad158c297f5",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8194,7 +8195,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8256,5 +8257,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T16:15:40.298Z"
+  "generatedAt": "2026-10-23T13:47:16.701Z"
 }

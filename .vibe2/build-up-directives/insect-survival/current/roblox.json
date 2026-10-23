@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "insect-survival-build-up-g12-5c869c14a1cb",
-  "directiveFingerprint": "5c869c14a1cbe9df7ad16fb2007edfd59ac0903590ac3dad1b9b61c19670256f",
-  "previousDirectiveFingerprint": "1e3c113e62f2d25893c700935f57a2e58f9ddaf692314f2d406c2c96e4b7b2a4",
-  "forbiddenRepeatFingerprint": "1e3c113e62f2d25893c700935f57a2e58f9ddaf692314f2d406c2c96e4b7b2a4",
+  "directiveId": "insect-survival-build-up-g13-5dfecef897e3",
+  "directiveFingerprint": "5dfecef897e37b1172b20501eda3684f1341d758533902b7dc56f180e246311c",
+  "previousDirectiveFingerprint": "5c869c14a1cbe9df7ad16fb2007edfd59ac0903590ac3dad1b9b61c19670256f",
+  "forbiddenRepeatFingerprint": "5c869c14a1cbe9df7ad16fb2007edfd59ac0903590ac3dad1b9b61c19670256f",
   "gameId": "insect-survival",
   "gameName": "곤충 생존기",
-  "generation": 12,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/insect-survival",
-  "sourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+  "sourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
   "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+        "sourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
-    "sourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+    "sourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+    "sourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4989,153 +4989,19 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 곤충 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 11,
-    "previousSourceTreeFingerprint": "1c7e50a20bdab041d6d74f672b599a36f5d899d62cbe0129b732964bec66dcff",
-    "currentSourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+    "currentSourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "5f808f663774ecbd5226a9b5d350cb53436a1864",
-      "artifactIdentity": "sha256:9a0a49b0531631685f8e9b78a2f99996197d704b41e6ea31bf28187fa7353f86",
-      "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 39927532494,
-      "testedAt": "2026-10-23T09:34:56.937Z",
-      "repairSurfaces": [
-        "CORE_GAMEPLAY",
-        "WORLD_MAP",
-        "COMBAT_FEEL",
-        "PROGRESSION_CONTENT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        },
-        {
-          "id": "GENERIC_SCOPE_HANDLER_SKELETON",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"insect-survival\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:3\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\",\"PROGRESSION\",\"SAVE\",\"MOBILE_UI\",\"MULTIPLAYER\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":true,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"SAVE\":true,\"MOBILE_UI\":true,\"MULTIPLAYER\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"step\":\"제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":2,\"step\":\"환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.\",\"capabilities\":[\"CONTENT_ENTITY\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"곤충 생존기\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":1,\"name\":\"환경 탐색과 자원 확보 × 서사시의 추방과 귀환\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\"],\"pass\":false},{\"index\":2,\"name\":\"제작과 방어 거점 관리 × 민속 금기와 전염\",\"capabilities\":[\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"EQUIPMENT\"],\"pass\":false},{\"index\":3,\"name\":\"금기와 기회의 교차\",\"capabilities\":[\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"PLAYABLE\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":3,\"pass\":true},\"firstTenMinutes\":{\"signalCount\":4,\"pass\":true},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"8a6c4fac116ffc8894470ef4625708d9cc824db6dd32637e1289718afdfaf72c\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"COOP\",\"sourcePlayMode\":\"COOP\"}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
     "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [
-      "roblox-f0-gameplay-product-readiness-failed",
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
+      "roblox-runtime-evidence-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6282,7 +6148,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 430920,
+        "sourceBytes": 430922,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6314,14 +6180,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 12,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=6.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6340,7 +6206,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6351,12 +6218,11 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 1,
+      "distinctCovered": 2,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6364,7 +6230,6 @@
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6373,16 +6238,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 38,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -6394,6 +6249,16 @@
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 24,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 20,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6417,13 +6282,13 @@
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -6489,11 +6354,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 12,
-    "previousGeneration": 11,
+    "generation": 13,
+    "previousGeneration": 12,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
-    "priorSourceFingerprint": "1c7e50a20bdab041d6d74f672b599a36f5d899d62cbe0129b732964bec66dcff",
+    "sourceFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
+    "priorSourceFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6512,7 +6377,7 @@
     "version": 1,
     "gameId": "insect-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+    "sourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7417,7 +7282,7 @@
     "gameId": "insect-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+    "sourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8246,12 +8111,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "곤충 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 곤충 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "dca1cb8f544522cf66be18ebc4a32f4f4a9319bdc21248416b269c4e753297ae",
+      "sourceTreeFingerprint": "ab3214d70bfa52b812168468d0c1828466c218a996d5c6461106aa41633d101b",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -8266,8 +8131,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8310,7 +8175,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 13,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8372,5 +8237,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-22T23:44:28.246Z"
+  "generatedAt": "2026-10-23T13:47:16.830Z"
 }

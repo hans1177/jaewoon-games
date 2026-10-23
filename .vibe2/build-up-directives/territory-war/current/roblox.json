@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "territory-war-build-up-g2-6191f436ccf6",
-  "directiveFingerprint": "6191f436ccf677feebf6bc72148737ed4a50317a28cdd9bbb0916de8b22fe1cc",
-  "previousDirectiveFingerprint": "b073ebce4b2e6298955ed0e34f5f506f1372dbe80f49e65d2e7452761ca05de1",
-  "forbiddenRepeatFingerprint": "b073ebce4b2e6298955ed0e34f5f506f1372dbe80f49e65d2e7452761ca05de1",
+  "directiveId": "territory-war-build-up-g3-d4c71992926c",
+  "directiveFingerprint": "d4c71992926ce47433c1742362ec232072de95a9110726a8d9e9f28b1bc51b9d",
+  "previousDirectiveFingerprint": "6191f436ccf677feebf6bc72148737ed4a50317a28cdd9bbb0916de8b22fe1cc",
+  "forbiddenRepeatFingerprint": "6191f436ccf677feebf6bc72148737ed4a50317a28cdd9bbb0916de8b22fe1cc",
   "gameId": "territory-war",
   "gameName": "영토전쟁",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/territory-war",
-  "sourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+  "sourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
   "designFingerprint": "6a9fa99b4b9cb1cb6d812530fbfc6e543f0efe3e8385977ca802438577ebd8ad",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+        "sourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "6a9fa99b4b9cb1cb6d812530fbfc6e543f0efe3e8385977ca802438577ebd8ad",
-    "sourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+    "sourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -852,7 +852,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+    "sourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4916,48 +4916,19 @@
   "previousVersionDelta": {
     "previousGoal": "영토전쟁. 역사적 세력 균형·왕조의 정통성과 민심 전략. 영토전쟁에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "a10b2c0fff3a49018134a1d5bf62c1e19072429172405556223032182c691e65",
-    "currentSourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+    "currentSourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "8550277bcdc8b1a25bc31e20a6bd183ad6805091",
-      "artifactIdentity": null,
-      "runtimeVerified": false,
-      "productionVerified": false,
-      "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 39855677417,
-      "testedAt": "2026-10-22T21:40:28.114Z",
-      "repairSurfaces": [
-        "SOURCE_CONTRACT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-      "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-      "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6137,8 +6108,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6148,9 +6119,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -6187,7 +6159,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 210,
+        "score": 192,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6301,11 +6273,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
-    "priorSourceFingerprint": "a10b2c0fff3a49018134a1d5bf62c1e19072429172405556223032182c691e65",
+    "sourceFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
+    "priorSourceFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6324,7 +6296,7 @@
     "version": 1,
     "gameId": "territory-war",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+    "sourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7209,7 +7181,7 @@
     "gameId": "territory-war",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+    "sourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7400,8 +7372,8 @@
     "responsibleSourceCandidates": [
       "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/server/Game.server.luau",
-      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonUI.luau",
+      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonMaterials.luau",
       "roblox-games/territory-war/default.project.json",
       "roblox-games/territory-war/client/MaterialPresentation.client.luau"
@@ -7615,8 +7587,8 @@
     "responsibleFiles": [
       "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/server/Game.server.luau",
-      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonUI.luau",
+      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonMaterials.luau",
       "roblox-games/territory-war/default.project.json",
       "roblox-games/territory-war/client/MaterialPresentation.client.luau"
@@ -7818,8 +7790,8 @@
     "files": [
       "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/server/Game.server.luau",
-      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonUI.luau",
+      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonMaterials.luau",
       "roblox-games/territory-war/default.project.json",
       "roblox-games/territory-war/client/MaterialPresentation.client.luau"
@@ -7965,8 +7937,8 @@
     "plannedFiles": [
       "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/server/Game.server.luau",
-      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonUI.luau",
+      "roblox-games/territory-war/shared/GameConfig.luau",
       "roblox-games/territory-war/shared/RobloxCommonMaterials.luau",
       "roblox-games/territory-war/default.project.json",
       "roblox-games/territory-war/client/MaterialPresentation.client.luau"
@@ -8038,12 +8010,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "영토전쟁. 역사적 세력 균형·왕조의 정통성과 민심 전략. 영토전쟁에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "aa9ddb334761a438cbba89f3e5157fc90ffc29b3f0c9ad454dc7d7d95e8b6a71",
+      "sourceTreeFingerprint": "e4e4e5a7110fd3ae4c6d67cfc763ff520f95b2b04a6d768b40f38b3588061bf9",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8058,8 +8030,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8102,7 +8074,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8164,5 +8136,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T16:15:41.097Z"
+  "generatedAt": "2026-10-23T13:47:17.342Z"
 }

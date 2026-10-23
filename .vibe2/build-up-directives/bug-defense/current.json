@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g30-7ca83656a8b8",
-  "directiveFingerprint": "7ca83656a8b84bef1b10a793b0c260ab30360c7a1a71f5d6da8aca3d275b93f4",
-  "previousDirectiveFingerprint": "8dad05f750ebededd968234bc18ae090743536ecb69216916db55e41ee4cbba7",
-  "forbiddenRepeatFingerprint": "8dad05f750ebededd968234bc18ae090743536ecb69216916db55e41ee4cbba7",
+  "directiveId": "bug-defense-build-up-g31-41a050076763",
+  "directiveFingerprint": "41a050076763e227c44606d53a3dcc6b44df089f01c48fab01bc2458eb7abbe3",
+  "previousDirectiveFingerprint": "7ca83656a8b84bef1b10a793b0c260ab30360c7a1a71f5d6da8aca3d275b93f4",
+  "forbiddenRepeatFingerprint": "7ca83656a8b84bef1b10a793b0c260ab30360c7a1a71f5d6da8aca3d275b93f4",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
-  "generation": 30,
+  "generation": 31,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+  "sourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
   "designFingerprint": "5fb36b3d8d7721a1ee6b8e289fa47db87bf01c00123b8ee4e9c6bd9c654612fa",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+        "sourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "5fb36b3d8d7721a1ee6b8e289fa47db87bf01c00123b8ee4e9c6bd9c654612fa",
-    "sourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+    "sourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+    "sourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4989,15 +4989,49 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 29,
-    "previousSourceTreeFingerprint": "bc8fd7502d07233df2bb79030221d1a5b523ff9914162c331990ef9f442e4bb3",
-    "currentSourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+    "previousGeneration": 30,
+    "previousSourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+    "currentSourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "b205da4c8a7824aefdf4e8b67aaa882a5cc5ecb4",
+      "artifactIdentity": null,
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 39957879593,
+      "testedAt": "2026-10-23T13:41:54.339Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
@@ -6184,8 +6218,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 8,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=3.",
+    "themeDepth": 9,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6193,7 +6227,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 8,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 9,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
       },
@@ -6203,7 +6237,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6240,7 +6274,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 56,
+        "score": 38,
         "gapDomains": []
       },
       {
@@ -6354,11 +6388,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 30,
-    "previousGeneration": 29,
+    "generation": 31,
+    "previousGeneration": 30,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
-    "priorSourceFingerprint": "bc8fd7502d07233df2bb79030221d1a5b523ff9914162c331990ef9f442e4bb3",
+    "sourceFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
+    "priorSourceFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6377,7 +6411,7 @@
     "version": 1,
     "gameId": "bug-defense",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+    "sourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7273,7 +7307,7 @@
     "gameId": "bug-defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+    "sourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8107,7 +8141,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "44958a3c64b552fb9634b03258da734fab1e7ce4017153b0788bd40c4a78059c",
+      "sourceTreeFingerprint": "3be6614b1944c35333889d146792f230664aa4a6bfc90ce3d3004bc75b3aa584",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8166,7 +8200,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 31,
+    "nextGeneration": 32,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8228,5 +8262,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T16:15:35.911Z"
+  "generatedAt": "2026-10-23T13:47:13.208Z"
 }
