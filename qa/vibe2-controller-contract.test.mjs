@@ -1058,6 +1058,28 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(workflow.includes('vibe2-queue-control.mjs reserve-batch'));
 });
 
+test('reserve probes live hosted jobs in bounded parallel cohorts and never invents capacity from partial API results',()=>{
+  const start=workflow.indexOf("          # Count real in-progress JOBS, not workflow runs.");
+  const end=workflow.indexOf('          echo "VIBE2_RUNNER_PROBE_SCOPE=CURRENT_REPOSITORY_ONLY"',start);
+  assert.ok(start>0&&end>start,'live runner probe block must exist');
+  const probe=workflow.slice(start,end);
+  assert.match(probe,/live_probe_parallelism=6/);
+  assert.match(probe,/live_probe_pids=\(\)/);
+  assert.match(probe,/live_probe_pids\+=\("\$!"\)/);
+  assert.match(probe,/live_probe_pids\[@\]/);
+  assert.match(probe,/wait "\$probe_pid" \|\| live_probe_ok=0/);
+  assert.match(probe,/run_id\.failed/);
+  assert.match(probe,/live_probe_ok=0/);
+  assert.match(probe,/VIBE2_LIVE_JOB_PROBE=INCOMPLETE_CONSERVATIVE_FALLBACK/);
+  assert.match(probe,/rows\.length>=100/,'incomplete workflow pages remain unknown');
+  assert.match(probe,/data\.total_count<=100\?data\.jobs:null/,'incomplete job pages remain unknown');
+  assert.match(probe,/snapshot\.known\?String\(snapshot\.observedJobs\):'UNKNOWN'/);
+  assert.match(probe,/if \[\[ "\$live_job_count" =~ \^\[0-9\]\+\$ \]\]; then/,'only complete integer snapshots can set observed job count');
+  assert.match(probe,/VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS="\$live_job_count"/);
+  assert.match(workflow,/VIBE2_HOSTED_RUNNER_LIMIT: '20'/);
+  assert.match(workflow,/VIBE2_OWNER_RESERVED_SLOTS: '8'/);
+});
+
 test('free-slot refill keeps game-study idle-gated while learning-idle yields first under runner pressure',()=>{
   assert(safetyNetWorkflow.includes("const waveReady=activeGame===0?'YES':'NO'"));
   assert(safetyNetWorkflow.includes("const gameRefillReady=freeWorkerSlots>0?'YES':'NO'"));
