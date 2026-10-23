@@ -9172,7 +9172,7 @@ test('no-model connected quest routes add distinct playable source records witho
   const root='web-games/demo',sourceRoot=path.join(cwd,root);
   const original=[
     '<html><body><script>',
-    'const questIds=["main","side"],recipeIds=["sword","shield"],enemyBehaviorIds=["chase","guard"],regionIds=["town","forest"];',
+    'const questIds=["main","side"];const recipeIds=["sword","shield"];const enemyBehaviorIds=["chase","guard"];const regionIds=["town","forest"];',
     'const questRoutes=[{"id":"base","questId":"main","regionId":"town","enemyBehaviorId":"chase","recipeId":"sword","nextRegionId":"forest"}];',
     'const saveKey="demo-v1";const health=100;',
     'function selectQuest(id){} function enterRegion(id){} function setEnemyBehavior(id){} function craftItem(id){}',
@@ -9196,9 +9196,11 @@ test('no-model connected quest routes add distinct playable source records witho
   assert.notEqual(routes[1].id,routes[0].id);
   assert.ok(['questId','regionId','enemyBehaviorId','recipeId','nextRegionId'].filter(k=>routes[0][k]!==routes[1][k]).length>=2);
   assert.equal(runInNewContext('renderRoutes().length',context),2,'existing game renderer exposes newly authored route');
-  assert.equal(deterministicWebInputCandidate({...args,sourceRoot}),produced===null?null:produced,'unchanged source yields the same deterministic candidate');
+  assert.deepEqual(deterministicWebInputCandidate(args),produced,'unchanged source yields the same deterministic candidate');
   write(path.join(sourceRoot,'index.html'),next);
-  assert.equal(deterministicWebInputCandidate(args),null,'already generated route is not duplicated without a new valid choice');
+  const nextRoute=deterministicWebInputCandidate(args);
+  assert.ok(nextRoute?.deterministicWebContent,'a new distinct connected route may be authored on a later BUILD_UP');
+  assert.notEqual(nextRoute.generatedRouteId,produced.generatedRouteId,'do not duplicate the same content identifier');
   const unsafe=original.replace('const questRoutes=[','const questRoutes=[{"id":"bonus","questId":"main","regionId":"town","enemyBehaviorId":"chase","recipeId":"sword","nextRegionId":"forest","reward":500},');
   write(path.join(sourceRoot,'index.html'),unsafe);
   assert.equal(deterministicWebInputCandidate(args),null,'unrecognized reward schema fails closed');
