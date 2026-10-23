@@ -394,6 +394,35 @@ test('24h planner retries concurrent control-state writes from the latest branch
   assert.doesNotMatch(block,/git rebase --abort/);
 });
 
+test('24h planner pins its latest-main source across optimistic queue retries and rejects protected authority drift',()=>{
+  const plan=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  plan:'),safetyNetWorkflow.indexOf('  recovery_fast:'));
+  const begin=plan.indexOf('- name: Plan from latest main and persist control queue');
+  const end=plan.indexOf('- name: Propose verified distilled knowledge promotion to main',begin);
+  assert.ok(begin>=0&&end>begin);
+  const block=plan.slice(begin,end);
+  assert.match(plan,/timeout-minutes: 15/);
+  assert.match(block,/plan_main_sha=''/);
+  assert.match(block,/plan_main_sha="\$\(git rev-parse origin\/main\)"/);
+  assert.match(block,/git worktree add --detach \/tmp\/vibe2-main "\$plan_main_sha"/);
+  assert.doesNotMatch(block,/git worktree add --detach \/tmp\/vibe2-main origin\/main/);
+  assert.match(block,/VIBE2_AUTOPLAN_MAIN_SNAPSHOT=PINNED_AT_INGRESS/);
+  assert.match(block,/VIBE2_AUTOPLAN_MAIN_SNAPSHOT=REUSED_ON_CONTROL_RETRY/);
+  assert.match(block,/git diff --quiet "\$plan_main_sha" origin\/main/);
+  for(const protectedFile of [
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json',
+    'tools/company-constitution-enforcer.mjs',
+    'tools/main-write-guard.mjs',
+    'tools/vibe2-auto-planner.mjs',
+    'tools/vibe2-queue-control.mjs'
+  ])assert.ok(block.includes(protectedFile),'planner must fail closed on protected drift: '+protectedFile);
+  assert.match(block,/VIBE2_AUTOPLAN_PINNED_AUTHORITY_DRIFT=BLOCKED_NEW_MAIN_CYCLE_REQUIRED/);
+  assert.match(block,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(block,/VIBE2_24H_SAME_MAIN_QA_REUSE=VERIFIED_SAME_MAIN_SHA/);
+});
+
 test('controller pins each isolated candidate to the reserve-time main contract and never writes main directly',()=>{
   assert(workflow.includes('git fetch --depth=1 --no-tags origin main --quiet'));
   assert(workflow.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
