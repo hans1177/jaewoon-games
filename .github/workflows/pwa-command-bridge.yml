@@ -22,7 +22,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
   actions: write
   id-token: write
 
@@ -323,6 +322,8 @@ jobs:
 
   web-cloud-onepatch:
     # Run WEB_VIBE_1 on GitHub with existing WEB-only queue; no native task dispatch.
+    permissions:
+      contents: read
     needs: bridge
     if: >-
       github.event_name == 'issue_comment' &&
