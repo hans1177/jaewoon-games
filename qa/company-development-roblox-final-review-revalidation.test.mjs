@@ -154,3 +154,26 @@ test('F9 requires gameplay product readiness and routes failures back to Vibe bu
   assert.match(workflow,/gameplayProductReadiness:productReadiness/);
 });
 
+
+test('F9 automatically retries Roblox canonical server dispatch without bypassing exact evidence or pausing game development',()=>{
+  const dispatch=workflow.slice(
+    workflow.indexOf('      - name: Dispatch exact F9-verified artifact'),
+    workflow.indexOf('      - name: Immediately continue each successfully persisted Roblox F9 game')
+  );
+  assert.match(dispatch,/row\.finalReviewPassed!==true\|\|row\.f9ReleaseRegressionPassed!==true/);
+  assert.match(dispatch,/row\.cycleId!==row\.sourceRevision\+':'\+row\.artifactIdentity/);
+  assert.match(dispatch,/row\.f0Evidence\?\.sourceRevision!==row\.sourceRevision/);
+  assert.match(dispatch,/row\.f9Evidence\?\.sourceRevision!==row\.sourceRevision/);
+  assert.match(dispatch,/\['PENDING','RETRY_REQUIRED'\]/);
+  assert.match(dispatch,/for attempt in 1 2 3; do/);
+  assert.match(dispatch,/gh workflow run company-development-roblox-release-promotion\.yml[^\n]*publish_stage=final[^\n]*publish_cycle_id="\$cycle_id"/);
+  assert.match(dispatch,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_RETRY_REQUIRED/);
+  assert.match(dispatch,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_BLOCKS_NEXT_CYCLE=NO/);
+  assert.doesNotMatch(dispatch,/publish_stage=validation/);
+  const publisher=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(publisher,/ROBLOX_OPEN_CLOUD_API_KEY: \$\{\{ secrets\.ROBLOX_OPEN_CLOUD_API_KEY \}\}/);
+  assert.match(publisher,/assertRobloxLatestPublishCandidate\(\{/);
+  assert.match(publisher,/await publishRobloxPlace\(\{plan/);
+  assert.match(publisher,/ROBLOX_CANONICAL_FINAL_OPEN_CLOUD_PUBLISH=PASS/);
+  assert.match(publisher,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
+});
