@@ -271,6 +271,7 @@ local function attachDownloadedArtwork(): ()
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
+local verifiedLearningLighting = game:GetService("Lighting")
 local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
 local verifiedLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
@@ -292,8 +293,49 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticDomain", verifiedLear
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
--- Preserve the game's imported/cloud-published artwork and lighting. No self-authored
--- ColorCorrection/Bloom/DepthOfField/Atmosphere overlays on top of the asset pipeline.
+-- Game-specific color and atmosphere response, authored locally in Roblox.
+local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
+if not verifiedLearningColorGrade then
+  verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
+  verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
+  verifiedLearningColorGrade.Parent = verifiedLearningLighting
+end
+verifiedLearningColorGrade.Saturation = 0
+verifiedLearningColorGrade.Contrast = 0
+verifiedLearningColorGrade.Brightness = 0
+verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
+if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+-- Survival alone receives atmospheric depth and threat haze.
+local verifiedLearningBloom = verifiedLearningLighting:FindFirstChild("VerifiedLearningBloom")
+if not verifiedLearningBloom then
+  verifiedLearningBloom = Instance.new("BloomEffect")
+  verifiedLearningBloom.Name = "VerifiedLearningBloom"
+  verifiedLearningBloom.Parent = verifiedLearningLighting
+end
+verifiedLearningBloom.Intensity = 0.22
+verifiedLearningBloom.Size = 18
+verifiedLearningBloom.Threshold = 1.1
+local verifiedLearningAtmosphere = verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
+if not verifiedLearningAtmosphere then
+  verifiedLearningAtmosphere = Instance.new("Atmosphere")
+  verifiedLearningAtmosphere.Name = "VerifiedLearningAtmosphere"
+  verifiedLearningAtmosphere.Parent = verifiedLearningLighting
+end
+verifiedLearningAtmosphere.Density = 0.22
+verifiedLearningAtmosphere.Haze = 1.1
+verifiedLearningAtmosphere.Glare = 0.08
+local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
+if not verifiedLearningDepth then
+  verifiedLearningDepth = Instance.new("DepthOfFieldEffect")
+  verifiedLearningDepth.Name = "VerifiedLearningDepthOfField"
+  verifiedLearningDepth.Parent = verifiedLearningLighting
+end
+verifiedLearningDepth.FarIntensity = 0.08
+verifiedLearningDepth.NearIntensity = 0.02
+verifiedLearningDepth.FocusDistance = 28
+verifiedLearningDepth.InFocusRadius = 24
+
+end
 
 if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Roblox character animation / motion adaptation.
@@ -352,9 +394,46 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   end
 
   if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-    -- Combat authority is server-confirmed. Display belongs to already-verified
-    -- cloud/bundled images and the existing UI, never generated placeholder VFX.
-    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningCombatImpactAt", os.clock())
+  local character = verifiedLearningPlayer.Character
+  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+  if character and rootPart then
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "VerifiedLearningSkillImpact"
+    highlight.FillTransparency = 0.35
+    highlight.OutlineTransparency = 0.12
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Parent = character
+    verifiedLearningTweenService:Create(highlight, TweenInfo.new(0.20), {FillTransparency = 1, OutlineTransparency = 1}):Play()
+    local sparkles = Instance.new("Sparkles")
+    sparkles.Name = "VerifiedLearningSkillSparkles"
+    sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
+    sparkles.Parent = rootPart
+    local impactAttachment = Instance.new("Attachment")
+    impactAttachment.Name = "VerifiedLearningSkillAttachment"
+    impactAttachment.Parent = rootPart
+    local particles = Instance.new("ParticleEmitter")
+    particles.Name = "VerifiedLearningSkillParticles"
+    particles.Rate = 0
+    particles.Lifetime = NumberRange.new(0.18, 0.32)
+    particles.Speed = NumberRange.new(5, 9)
+    particles.SpreadAngle = Vector2.new(45, 45)
+    particles.LightEmission = 0.7
+    particles.Parent = impactAttachment
+    particles:Emit(18)
+    local impactLight = Instance.new("PointLight")
+    impactLight.Name = "VerifiedLearningSkillLight"
+    impactLight.Color = Color3.fromRGB(160, 215, 255)
+    impactLight.Brightness = 2.2
+    impactLight.Range = 10
+    impactLight.Parent = rootPart
+    verifiedLearningTweenService:Create(impactLight, TweenInfo.new(0.18), {Brightness = 0, Range = 4}):Play()
+    task.delay(0.24, function()
+      if impactAttachment then impactAttachment:Destroy() end
+      if impactLight then impactLight:Destroy() end
+      if sparkles then sparkles:Destroy() end
+      if highlight then highlight:Destroy() end
+    end)
+  end
   end
 
 end
