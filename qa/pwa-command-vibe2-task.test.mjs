@@ -140,13 +140,16 @@ test('direct owner game work preserves parallel pool and upgrades legacy one-slo
   assert.deepEqual(old.tasks[0],prior);
 });
 
-test('owner ingress uses direct Vibe2 execution and published WEB QA runs only after deployment',()=>{
+test('owner ingress queues to separate WEB Vibe only, publication QA remains unchanged',()=>{
   const bridge=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   const cloud=bridge.slice(bridge.indexOf('  bridge:'));
   assert.doesNotMatch(cloud,/needs: local-advisory|needs\.local-advisory/);
   assert.match(cloud,/github\.event\.comment\.author_association == 'OWNER'/);
   assert.match(cloud,/validateLocalWebOwnerEvent/);
-  assert.match(cloud,/gh workflow run vibe2-continuous-core\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary/);
+  assert.match(bridge,/WEB_VIBE_BRANCH: web-vibe-control/);
+  assert.match(cloud,/tools\/web-vibe-organization\.mjs/);
+  assert.match(cloud,/WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED/);
+  assert.doesNotMatch(cloud,/vibe2-continuous-core\.yml|\.vibe2\/queue\.json/);
   assert.doesNotMatch(cloud,/gh workflow run vibe2-24h-runner\.yml/);
   const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   const published=pages.indexOf('uses: actions/deploy-pages@v4');
