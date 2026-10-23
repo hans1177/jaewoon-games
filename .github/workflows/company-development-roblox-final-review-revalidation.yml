@@ -794,10 +794,23 @@ jobs:
             [ -n "$row" ] || continue
             id="${row%%$'\t'*}"
             cycle_id="${row#*$'\t'}"
-            if gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=final -f publish_cycle_id="$cycle_id"; then
+            # 파일명: .github/workflows/company-development-roblox-final-review-revalidation.yml / 로블조직 자동 게시
+            # 인증·F9 증거 확인을 통과한 동일 회차만 기존 게시 작업으로 전달한다.
+            # 일시적인 GitHub Actions 접수 실패는 같은 게시 명령 안에서 재시도한다.
+            dispatched=false
+            for attempt in 1 2 3; do
+              if gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=final -f publish_cycle_id="$cycle_id"; then
+                dispatched=true
+                break
+              fi
+              echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_RETRY=$id:$cycle_id:$attempt/3" >&2
+              if [ "$attempt" -lt 3 ]; then sleep $((attempt*5)); fi
+            done
+            if [ "$dispatched" = true ]; then
               count=$((count+1))
               echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=$id:$cycle_id"
             else
+              # 정확한 F9 publish queue PENDING 상태를 보존하고, 다음 게임 개발은 중단하지 않는다.
               echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_RETRY_REQUIRED=$id:$cycle_id" >&2
               echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_BLOCKS_NEXT_CYCLE=NO"
             fi
