@@ -28,6 +28,21 @@ on:
         required: false
         type: string
         default: ''
+      roblox_game:
+        description: '로블조직 게임 ID (한방패치)'
+        required: false
+        type: string
+        default: ''
+      roblox_file:
+        description: '로블록스 소스 파일 (예 client/Game.client.luau)'
+        required: false
+        type: string
+        default: ''
+      roblox_goal:
+        description: '기존 파일에 적용할 구체적인 수정 지시'
+        required: false
+        type: string
+        default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
   # Independent game reserve safety net while older 24H runs or slow workers drain.
@@ -628,11 +643,20 @@ jobs:
           VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY: '1'
           VIBE2_HOSTED_RUNNER_LIMIT: '20'
           VIBE2_OWNER_RESERVED_SLOTS: '8'
+          # 로블조직만: 입력은 기존 game-primary/정책 검수/큐 저장 절차로 들어간다.
+          VIBE2_ROBLOX_ONEPATCH_GAME: ${{ inputs.roblox_game || '' }}
+          VIBE2_ROBLOX_ONEPATCH_FILE: ${{ inputs.roblox_file || '' }}
+          VIBE2_ROBLOX_ONEPATCH_GOAL: ${{ inputs.roblox_goal || '' }}
         shell: bash
         run: |
           set -euo pipefail
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
             echo "VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=$VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS"
+          fi
+          # 로블조직 수동 요청은 기존 게임 주 작업 레인에서만 처리한다.
+          if [ -n "${VIBE2_ROBLOX_ONEPATCH_GAME:-}${VIBE2_ROBLOX_ONEPATCH_FILE:-}${VIBE2_ROBLOX_ONEPATCH_GOAL:-}" ] && [ "$VIBE2_EXECUTION_LANE" != 'game-primary' ]; then
+            echo 'ROBLOX_ONEPATCH_GAME_PRIMARY_LANE_REQUIRED' >&2
+            exit 1
           fi
           # Count real in-progress JOBS, not workflow runs. Scope is current repository.
           # Any unavailable/incomplete API page falls back to the conservative 12-slot ceiling.
