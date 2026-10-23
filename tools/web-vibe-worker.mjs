@@ -71,7 +71,8 @@ function verifiedLocalMain(){
   if(run('git',['branch','--show-current'])!=='main')fail('WEB_VIBE_LOCAL_MAIN_REQUIRED');
   if(run('git',['status','--porcelain']))fail('WEB_VIBE_LOCAL_UNCOMMITTED_CHANGES');
   const origin=run('git',['remote','get-url','origin']);
-  if(!/^(?:https:\/\/github\.com\/|git@github\.com:)hans1177\/jaewoon-games(?:\.git)?$/i.test(origin))
+  // The WEB worker must not fall back to a native team's SSH key.
+  if(!/^https:\/\/github\.com\/hans1177\/jaewoon-games(?:\.git)?$/i.test(origin))
     fail('WEB_VIBE_UNTRUSTED_REPOSITORY');
   run('git',['fetch','--quiet','origin','main']);
   if(run('git',['rev-parse','HEAD'])!==run('git',['rev-parse','origin/main']))
@@ -107,7 +108,10 @@ function createPr(task,source,edit,token){
   const staged=run('git',['diff','--cached','--name-only']).split(/\r?\n/).filter(Boolean);
   if(staged.length!==1||staged[0]!==source.relative)fail('WEB_VIBE_UNEXPECTED_CHANGED_FILE');
   run('git',['commit','-m','fix(web): dedicated Web Vibe candidate for '+task.gameId]);
-  run('git',['push','-u','origin',branch],{env:{GH_TOKEN:token}});
+  // Drop all preconfigured Git credential helpers. Only the dedicated WEB token
+  // is available to the fixed GitHub CLI helper for this scoped PR push.
+  run('git',['-c','credential.helper=','-c','credential.helper=!gh auth git-credential',
+    'push','-u','origin',branch],{env:{GH_TOKEN:token,GIT_TERMINAL_PROMPT:'0'}});
   const pr=run('gh',['pr','create','--repo',REPO,'--base','main','--head',branch,
     '--title','fix(web): independent Web Vibe candidate '+task.gameId,
     '--body',[
