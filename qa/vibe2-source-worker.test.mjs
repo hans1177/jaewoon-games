@@ -9094,7 +9094,9 @@ test('Roblox native candidate can edit more than eight approved files without br
   };
   const native=normalizeCandidate(candidate,{target:'roblox',responsibleFiles:files,sourceRootRelative:'roblox-games/test'});
   assert.equal(native.edits.length,18);
-  assert.throws(()=>normalizeCandidate(candidate,{target:'web',responsibleFiles:files,sourceRootRelative:'web-games/test'}),/변경 파일 수/);
+  const webFiles=files.map(file=>file.replace(/\.luau$/,'.js'));
+  const webCandidate={...candidate,edits:candidate.edits.map(row=>({...row,path:row.path.replace(/\.luau$/,'.js')}))};
+  assert.throws(()=>normalizeCandidate(webCandidate,{target:'web',responsibleFiles:webFiles,sourceRootRelative:'web-games/test'}),/변경 파일 수/);
   assert.throws(()=>normalizeCandidate(candidate,{target:'roblox',responsibleFiles:files.slice(0,17),sourceRootRelative:'roblox-games/test'}),/책임 파일 범위 밖/);
   assert.throws(()=>normalizeCandidate({...candidate,edits:[{path:files[0],find:'same',replace:'same'}]},
     {target:'roblox',responsibleFiles:files,sourceRootRelative:'roblox-games/test'}),/변경 없는 edit/);
