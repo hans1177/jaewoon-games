@@ -3703,7 +3703,7 @@ function internalAssetPlatformApplicationMode(asset={},target=''){
   const targets=unique([...(asset?.targetPlatforms||[]),...(asset?.platforms||[])].map(value=>clean(value).toUpperCase()));
   const variants=Object.keys(asset?.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}).map(value=>clean(value).toUpperCase());
   if(platform===resolved||targets.includes(resolved)||variants.includes(resolved))return'USE_AS_IS';
-  if(/^SHARED_/.test(platform)||platform==='SHARED'||targets.length===0&&variants.length===0)return'STYLE_ADAPT';
+  if(/^SHARED_/.test(platform)||platform==='SHARED'||(!platform&&targets.length===0&&variants.length===0))return'STYLE_ADAPT';
   if(['ROBLOX','UNITY','WEB'].includes(resolved))return'NATIVE_REAUTHOR_BASE';
   return'NOT_SUPPORTED';
 }
