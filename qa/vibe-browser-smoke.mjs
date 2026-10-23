@@ -148,6 +148,8 @@ try{
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught browser errors before movement');
     // Real published GLB swap, not a dropdown-only or source-marker check.
     if(!viewport.mobile){
+      // 캐릭터 꾸미기는 접힌 게임 메뉴 안에 있으므로 실제 사용자 순서로 연다.
+      await game.locator('.hudMenu>summary').click();
       await game.locator('#avatarOpen').click();
       await game.locator('#avatarModel').selectOption('mage');
       await game.locator('#avatarSize').selectOption('110');
