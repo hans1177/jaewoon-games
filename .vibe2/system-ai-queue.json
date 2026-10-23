@@ -154417,7 +154417,7 @@
     },
     {
       "id": "recovery-recovery-14e80275e875a40a2953",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -154470,7 +154470,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:80df2d1d3df3f9fe5c8a915311388bb5a31e5c93:fantasy-survival"
       ],
-      "retries": 250,
+      "retries": 251,
       "recurrenceCount": 9,
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "source-mutation-required-before-revalidation",
@@ -154484,12 +154484,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39960896195:1",
-      "reservedAt": "2026-10-23T13:26:49.697Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39125330568:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -155095,7 +155095,8 @@
         "actions-run:39958102903",
         "system-ai-handoff-to-reservation:system-ai:39959588209:1",
         "actions-run:39959588209",
-        "system-ai-handoff-to-reservation:system-ai:39960896195:1"
+        "system-ai-handoff-to-reservation:system-ai:39960896195:1",
+        "actions-run:39960896195"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1431,
@@ -155110,7 +155111,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T12:05:12.952Z",
-      "updatedAt": "2026-10-23T13:26:49.697Z"
+      "updatedAt": "2026-10-23T13:31:38.750Z"
     },
     {
       "id": "recovery-recovery-d90b9f15e26888b0a88c",
