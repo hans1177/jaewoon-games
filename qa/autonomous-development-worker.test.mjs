@@ -253,7 +253,7 @@ test('autonomous development routes through existing Vibe company bridge before 
 test('one patch can edit many related code UI and asset-link files without arbitrary count cap',async()=>{
   setup();
   try{
-    const rows=Array.from({length:12},(_,i)=>({path:`part-${i}.js`,content:`export const updated${i} = true;\\n`}));
+    const rows=Array.from({length:12},(_,i)=>({path:`part-${i}.js`,content:`export const updated${i} = true;\n`}));
     const candidate=parseModelCandidate(JSON.stringify({summary:'connected feature',files:rows}));
     assert.equal(candidate.files.length,12);
     const evidence=await generateAutonomousCandidate({gameId:'TEST',sourcePath:fixture,goal:'related feature repair',
