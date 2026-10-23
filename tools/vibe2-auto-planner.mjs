@@ -3769,12 +3769,40 @@ export function applyBuildUpNextActionController(tasks=[]){
 }
 
 export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
+  // A same-game owner patch belongs to BUILD_UP, not a detached lifecycle.
+  // Do not plan the next generation while this patch is still changing source.
+  const sourceRoot=posix(project?.projectPath);
+  const roblox=clean(project?.engine).toLowerCase()==='roblox';
+  const patchHistory=roblox?(queue?.tasks||[]).filter(row=>
+    clean(row.gameId)===clean(project?.gameId)
+    &&clean(row.target).toLowerCase()==='roblox'
+    &&posix(row.sourceRoot)===sourceRoot
+    &&(row.evidence||[]).some(value=>clean(value).startsWith('owner-request-instance:'))):[];
+  if(patchHistory.some(row=>['queued','running','blocked'].includes(clean(row.status).toLowerCase())))
+    return [];
+  const carried=[...patchHistory].reverse().find(row=>clean(row.status).toLowerCase()==='verified')||null;
   const tasks=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']
     .map(focus=>findStudioContinuousImprovementTask(project,repoRoot,queue,focus))
     .filter(Boolean);
   const canonical=tasks.find(row=>row?.buildUpDirective?.directiveId)?.buildUpDirective||null;
   if(!canonical)return tasks;
-  const bound=tasks.map(row=>bindSharedBuildUpDirective(row,canonical));
+  const bound=tasks.map(row=>{
+    const current=bindSharedBuildUpDirective(row,canonical);
+    if(!carried)return current;
+    const marker='build-up-owner-onepatch-carried:'+carried.id;
+    const existing=(current.evidence||[]).map(clean);
+    if(existing.includes(marker))return current;
+    const ownerRequest=clean(carried.goal).match(/(?:^|\n)요청:\s*([^\n]+)/)?.[1]||'';
+    return {...current,
+      goal:clean(current.goal)+'\n[PREVIOUS_VERIFIED_OWNER_ONEPATCH]\n'+
+        '같은 게임의 기존 한방패치 결과를 소스에서 확인하고 다음 빌드업에 이어 적용한다. '+
+        '이전 요청: '+ownerRequest.slice(0,320)+
+        '\n기존 저장/게임플레이/검증 증거를 유지하며 새 소스 변경은 독립 검증한다.',
+      evidence:[...new Set([...existing,marker,'build-up-owner-onepatch-verified-history:source-recheck-required',
+        'build-up-owner-onepatch-parent-directive:'+clean(carried.buildUpDirectiveId),
+        'build-up-owner-onepatch-parent-generation:'+Number(carried.buildUpGeneration||0)])]
+    };
+  });
   const primary=clean(canonical.primaryFocus).toUpperCase();
   const stableOrder=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
   const ordered=bound.sort((a,b)=>{

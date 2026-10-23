@@ -77,22 +77,51 @@ export function mergeOwnerRobloxPatchIntoExistingBuildUp({queue,gameId,task,requ
       responsibleFiles:[...new Set([...(queued.responsibleFiles||[]),...task.responsibleFiles])],
       evidence:[...new Set([...(queued.evidence||[]),...task.evidence,
         'owner-onepatch-merged-active-build-up','owner-onepatch-resume-impacted-stage-not-f0',
-        'owner-onepatch-use-exact-unchanged-qa-evidence'])],
+        'owner-onepatch-use-exact-unchanged-qa-evidence',
+        'owner-onepatch-parent-task:'+queued.id,
+        'owner-onepatch-parent-directive:'+String(queued.buildUpDirective?.directiveId||queued.buildUpDirectiveId||''),
+        'owner-onepatch-parent-generation:'+Number(queued.buildUpGeneration||queued.buildUpDirective?.generation||0),
+        'owner-onepatch-resume-mode:MERGED_CURRENT_QUEUED_BUILD_UP'])],
     };
     return {queue:{...queue,tasks:rows.map(row=>row.id===queued.id?combined:row)},
       taskId:queued.id,added:false,merged:true,resume:'QUEUED_BUILD_UP'};
   }
-  // Never overwrite a running worker's immutable input. The existing DAG serializes
-  // overlapping source work and the new patch starts at the affected stage, not by
-  // resetting any existing F0-F9 results.
+  // Running build-up input is immutable. In the existing DAG, wait only for an actual
+  // source responsibility collision; unrelated owner edits start now, not at a future F stage.
   const running=rows.filter(item=>item.gameId===gameId&&String(item.target).toLowerCase()==='roblox'
     &&item.status==='running'&&(item.buildUpDirective?.directiveId||item.buildUpDirectiveId)
     &&item.sourceRoot===task.sourceRoot&&item.id!==task.id);
+  const patchFiles=new Set(task.responsibleFiles||[]);
+  const isShared=file=>file===task.sourceRoot+'/default.project.json'||file.startsWith(task.sourceRoot+'/shared/');
+  const overlapping=running.filter(row=>{
+    const active=row.responsibleFiles||[];
+    return !active.length||!patchFiles.size||active.some(file=>patchFiles.has(file)||isShared(file))
+      ||[...patchFiles].some(isShared);
+  });
+  const current=[...running].sort((a,b)=>
+    Number(b.buildUpGeneration||b.buildUpDirective?.generation||0)
+    -Number(a.buildUpGeneration||a.buildUpDirective?.generation||0))[0]||null;
   const updated={...task,
-    dependencies:[...new Set([...(task.dependencies||[]),...running.map(row=>row.id)])],
-    evidence:[...task.evidence,
-      ...(running.length?['owner-onepatch-follows-running-build-up','owner-onepatch-resume-impacted-stage-not-f0']:[])],
+    dependencies:[...new Set([...(task.dependencies||[]),...overlapping.map(row=>row.id)])],
+    // Reuse the canonical queue's existing build-up fields; extra fields are
+    // intentionally not persisted by createVibeContinuousQueue.
+    ...(current?{
+      buildUpDirectiveId:String(current.buildUpDirective?.directiveId||current.buildUpDirectiveId||''),
+      buildUpGeneration:Number(current.buildUpGeneration||current.buildUpDirective?.generation||0),
+      buildUpStatus:'ONEPATCH_IN_CURRENT_BUILD_UP'
+    }:{}),
+    evidence:[...new Set([...(task.evidence||[]),
+      ...(running.length?['owner-onepatch-resume-impacted-stage-not-f0','owner-onepatch-in-current-build-up']:[]),
+      ...(current?[
+        'owner-onepatch-parent-task:'+current.id,
+        'owner-onepatch-parent-directive:'+String(current.buildUpDirective?.directiveId||current.buildUpDirectiveId||''),
+        'owner-onepatch-parent-generation:'+Number(current.buildUpGeneration||current.buildUpDirective?.generation||0),
+        'owner-onepatch-resume-mode:'+(overlapping.length?'WAIT_FOR_SOURCE_COLLISION':'IMMEDIATE_DISJOINT_SOURCE')
+      ]:[]),
+      ...(overlapping.length?['owner-onepatch-source-collision-serialized']
+        :running.length?['owner-onepatch-disjoint-source-start-now']:[])])],
   };
   return {queue:{...queue,tasks:[...rows,updated]},taskId:task.id,added:true,merged:false,
-    resume:running.length?'RUNNING_BUILD_UP_FOLLOW_UP':'NEW_OWNER_PATCH'};
+    resume:overlapping.length?'RUNNING_BUILD_UP_SOURCE_COLLISION'
+      :running.length?'RUNNING_BUILD_UP_DISJOINT_IMMEDIATE':'NEW_OWNER_PATCH'};
 }
