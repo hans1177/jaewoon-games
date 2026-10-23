@@ -9,6 +9,7 @@ local AssetService=game:GetService("AssetService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
+local CC0=require(Shared:WaitForChild("CozyCC0Library"))
 local Wildlife=require(Shared:WaitForChild("SurvivalWildlife"))
 local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
 
@@ -41,7 +42,7 @@ local mobs={}
 local villageBears={}
 local assetCache={}
 local dataLoaded={}
-local ASSETS={Nature=6933438443,City=6933556508,Forest=6432306802}
+-- Asset pack IDs without CC0 provenance and current-universe grants are not loaded.
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
 local function s(p,k,v)p:SetAttribute(k,math.max(0,math.floor(v)))end
@@ -108,27 +109,10 @@ local function assetProp(parent,assetId,keywords,pos,scale,seed)
  local t=pool[((seed or 1)-1)%#pool+1];local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=false;x.CanTouch=false;x.Size=x.Size*(scale or 1)
  x.CFrame=CFrame.new(pos)*CFrame.Angles(0,math.rad(((seed or 1)*43)%360),0);x.Parent=parent;return x
 end
-local function decorateHomeAssets(parent,topY)
- task.spawn(function()
-  for i=1,40 do
-   local a=i/28*math.pi*2;local r=58+(i%5)*19
-   assetProp(parent,ASSETS.Nature,{"tree","bush","flower","rock","log","stump"},Vector3.new(math.cos(a)*r,topY+1,math.sin(a)*r),.62+(i%4)*.08,i)
-  end
-  for i=1,12 do
-   local a=i/12*math.pi*2
-   assetProp(parent,ASSETS.City,{"bench","lamp","fence","table","trash","sign"},Vector3.new(math.cos(a)*44,topY+1,math.sin(a)*44),.62,i)
-  end
- end)
-end
-local function decorateRemoteIsland(parent,r,topY,index)
- task.spawn(function()
-  local pack=index==3 and ASSETS.Forest or ASSETS.Nature
-  for i=1,16 do
-   local a=i/16*math.pi*2;local radius=34+(i%4)*14
-   assetProp(parent,pack,{"tree","bush","rock","log","plant"},Vector3.new(r.Pos.X+math.cos(a)*radius,topY+1,r.Pos.Z+math.sin(a)*radius),.6+(i%3)*.1,index*30+i)
-  end
- end)
-end
+-- Licensed-only import. Decorative mesh-pack paths are deliberately disabled until each
+-- original obtains source digest + CC0 evidence + the Cozy Universe use permission.
+local function decorateHomeAssets(_parent,_topY)end
+local function decorateRemoteIsland(_parent,_region,_topY,_index)end
 
 local function label(target,text,color,maxDist)
  local g=Instance.new("BillboardGui");g.Name="WorldLabel";g.Size=UDim2.fromOffset(118,24);g.StudsOffset=Vector3.new(0,4.8,0);g.AlwaysOnTop=false;g.MaxDistance=maxDist or 34;g.LightInfluence=.35;g.Parent=target
@@ -137,6 +121,41 @@ local function label(target,text,color,maxDist)
 end
 local function prompt(target,objectText,actionText)
  local pr=Instance.new("ProximityPrompt");pr.ObjectText=objectText;pr.ActionText=actionText;pr.MaxActivationDistance=10;pr.HoldDuration=.15;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
+end
+-- Vibe2 Roblox native CC0 adaptation: scale only verified library model instances.
+-- Original GLB remains immutable; server controls hitboxes, prompts, damage and persistence.
+local cc0VisualCount=0
+local function applyCC0Appearance(rootPart,assetId,maxHeight)
+ if not assetId or not rootPart.Parent then return end
+ local original=loadAsset(assetId)
+ if not original or not rootPart.Parent then
+  rootPart:SetAttribute("CC0VisualFailure","ASSET_UNAVAILABLE")
+  return
+ end
+ local visual=original:Clone()
+ local group=Instance.new("Model");group.Name="VerifiedCC0Visual";visual.Parent=group
+ local pieces={}
+ for _,piece in ipairs(group:GetDescendants())do
+  if piece:IsA("BasePart")then table.insert(pieces,piece)end
+ end
+ if #pieces==0 then group:Destroy();rootPart:SetAttribute("CC0VisualFailure","MODEL_EMPTY");return end
+ local _,size=group:GetBoundingBox()
+ local maxSize=math.max(size.X,size.Y,size.Z)
+ if maxSize<=.01 then group:Destroy();rootPart:SetAttribute("CC0VisualFailure","MODEL_SIZE");return end
+ group:ScaleTo(math.clamp((maxHeight or 6)/maxSize,.12,2.5))
+ group:PivotTo(rootPart.CFrame)
+ group.Parent=rootPart
+ for _,piece in ipairs(pieces)do
+  piece.Anchored=false;piece.CanCollide=false;piece.CanTouch=false;piece.CanQuery=false;piece.Massless=true
+  local weld=Instance.new("WeldConstraint");weld.Part0=rootPart;weld.Part1=piece;weld.Parent=piece
+ end
+ for _,child in ipairs(rootPart:GetChildren())do
+  if child~=group and child:IsA("BasePart")then child.Transparency=1 end
+ end
+ rootPart:SetAttribute("CC0LicensedAssetId",assetId)
+ rootPart:SetAttribute("CC0VisualReady",true)
+ cc0VisualCount+=1
+ workspace:SetAttribute("CozyCC0VisualsReady",cc0VisualCount)
 end
 local function figure(parent,name,pos,color,accent,scale)
  scale=math.clamp(scale or 1,.72,1.05)
@@ -178,6 +197,9 @@ local function figure(parent,name,pos,color,accent,scale)
  elseif string.find(name,"Villager",1,true)then
   add("VillagerPouch",Vector3.new(.9,1.05,.62),Vector3.new(1.2,-.85,.4),Color3.fromRGB(135,96,64),Enum.Material.Fabric,Enum.PartType.Ball)
  end
+ -- Replace stylized block actors by role-matched CC0 KayKit original models.
+ local licenseAsset=CC0.Npc[name]
+ if licenseAsset then task.spawn(applyCC0Appearance,r,licenseAsset,6*scale)end
  return r
 end
 local function tree(parent,pos,scale)
@@ -267,19 +289,8 @@ local function attackBase(p)
 end
 
 -- 메인: 공용 GLB 몬스터 외형 10종. 기존 체력·공격·보상·저장 규칙은 그대로 사용한다.
-local SHARED_MONSTER_ASSETS={
- {id=110808635634531,name="늑대"},
- {id=122386724686135,name="거미"},
- {id=98440047381376,name="딱정벌레"},
- {id=123382901571219,name="골렘"},
- {id=133759547998155,name="뱀"},
- {id=79270829530403,name="해골 마법사"},
- {id=135382255157972,name="해골 병사"},
- {id=99895015440866,name="해골 도적"},
- {id=104892549506438,name="해골 전사"},
- {id=132224690298312,name="해골"}
-}
-
+-- Only role-matched, source-verified CC0 KayKit skeletons for raider actors.
+-- No wolf/snake/spider placeholder imports from unknown license or unrelated species.
 -- 유틸: 공용 자산은 외형만 소유한다. 기존 뿌리 파트가 이동과 공격 판정을 계속 담당한다.
 local function bindMonsterAppearance(rootPart,assetInfo)
  if not assetInfo or not rootPart.Parent then return end
@@ -344,9 +355,9 @@ local function spawnMob(kind,pos,visualIndex)
   attach(r,"TuskL",Vector3.new(.34,.34,1.15),Vector3.new(-.92,1.92,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
   attach(r,"TuskR",Vector3.new(.34,.34,1.15),Vector3.new(.92,1.92,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
  end
- local selected=visualIndex and SHARED_MONSTER_ASSETS[visualIndex] or nil
+ local selected=isRaider and {id=CC0.Raider[((visualIndex or 1)-1)%#CC0.Raider+1],name="섬 약탈병"} or nil
  label(r,selected and selected.name or (isRaider and"섬 약탈병"or"멧돼지"),isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
- if selected then task.spawn(bindMonsterAppearance,r,selected)end
+ if selected then task.spawn(applyCC0Appearance,r,selected.id,6)end
  local pr=prompt(r,isRaider and"섬 약탈병"or"멧돼지","공격")
  local e={part=r,kind=kind,hp=hp,max=hp,damage=damage,spawn=pos,lastHit=0};table.insert(mobs,e);r:SetAttribute("HP",hp)
  pr.Triggered:Connect(function(p)
@@ -476,7 +487,10 @@ end)
    for i=1,8 do part(world,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-40+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
   end
  end
- workspace:SetAttribute("WorldArtPass","COZY_CHIBI_KINGDOM_WORLD_V9_WILDLIFE")
+ workspace:SetAttribute("WorldArtPass","COZY_CC0_KAYKIT_NATIVE_V10")
+ workspace:SetAttribute("CozyCC0AuditLibrary","CC0-1.0")
+ workspace:SetAttribute("CozyCC0ExpectedNPCs",9)
+ workspace:SetAttribute("CozyCC0ExpectedRaiders",5)
  foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
