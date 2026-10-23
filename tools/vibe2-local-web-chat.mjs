@@ -79,7 +79,7 @@ export function readLocalWebStatus(root = ROOT) {
   return {
     source: 'vibe2-runtime.json + existing .vibe2 machine state',
     snapshotConsistent: true,
-    totalTaskCountsAllPlatforms: state.statusCounts || {},
+    // 공용 상태 총계는 다른 조직의 개발량을 노출하므로 웹 상태 출력에서 제외한다.
     webTaskSamplesOnly: webTasks,
     sampleLimitNote: 'Handoff previews are partial. Do not report them as exact web totals.',
     cloudRunnerStatus: 'NOT_CHECKED',

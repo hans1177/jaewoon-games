@@ -55,8 +55,8 @@ test('유니티 소스는 개발 금지하며 웹 소스만 기존 GitHub 게임
 
 test('Vibe2 작업 상태를 PWA 채팅 상태로 변환한다',()=>{
   const queue={tasks:[
-    {id:`pwa-${UUID}`,status:'running',blocker:'candidate-awaiting-qa-and-deployment'},
-    {id:'pwa-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',status:'done'},
+    {id:`pwa-${UUID}`,target:'web',status:'running',blocker:'candidate-awaiting-qa-and-deployment'},
+    {id:'pwa-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',target:'web',status:'done'},
     {id:'other',status:'failed'}
   ]};
   const payload=buildSyncPayload(queue);
@@ -234,4 +234,25 @@ test('PWA 웹 개발은 실제 바이브 작업 주문에서도 로블록스·�
     'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
   assert.equal(order({gameId:'cozy-island'}).reason,
     'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+});
+
+test('웹 PWA 상태는 로블록스와 유니티 작업 및 대상이 없는 기록을 노출하지 않는다',()=>{
+  const queue={tasks:[
+    {id:'pwa-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',target:'roblox',status:'failed',blocker:'native-private'},
+    {id:'pwa-bbbbbbbb-cccc-4ddd-8eee-ffffffffffff',target:'unity',status:'done'},
+    {id:'pwa-cccccccc-dddd-4eee-8fff-aaaaaaaaaaaa',status:'done'},
+    {id:`pwa-${UUID}`,target:'web',status:'running',blocker:'web-only'},
+    {id:'pwa-dddddddd-eeee-4fff-8aaa-bbbbbbbbbbbb',target:'web',status:'done',evidence:['vibe-local-web-owner-directive']}
+  ]};
+  assert.deepEqual(buildSyncPayload(queue),{action:'sync',updates:[
+    {taskId:UUID,status:'working',blocker:'web-only'}
+  ]});
+});
+
+test('동일 UUID에 타 조직 작업이 있다면 웹 작업 성공으로 처리하지 않는다',()=>{
+  const f=fixture(),task={id:UUID,game_id:'insect-survival',body:'웹 조작 개선',platform:'web'};
+  const queue={version:3,tasks:[{id:`pwa-${UUID}`,gameId:'insect-survival',target:'roblox',sourceRoot:'roblox-games/insect-survival',status:'queued'}]};
+  assert.throws(()=>ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
+  const mismatched={...queue,tasks:[{...queue.tasks[0],target:'web',sourceRoot:'web-games/cozy-island'}]};
+  assert.throws(()=>ingestPwaTask({task,queue:mismatched,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
 });
