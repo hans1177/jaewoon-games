@@ -1539,7 +1539,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const actions=[],actionKeys=new Set();
   const pushAction=row=>{
     const action=ASSET_SUPPLY_DECISIONS.includes(row.action)?row.action:'HOLD';
-    const key=[action,row.assetId||'',row.family||'',row.reason||''].join('|');
+    // 역할별 부족분은 같은 family/reason이어도 서로 다른 실제 제작 수요다.
+    const key=[action,row.assetId||'',row.family||'',row.reason||'',row.requestedRole||''].join('|');
     if(actionKeys.has(key))return;actionKeys.add(key);
     // [라이브러리 재사용] 기존 선택 자산을 버리지 않고 검증 가능한 원본만 파생 제작 후보로 연결한다.
     // 선택·재질 조정 계획은 실제 파일 제작이나 런타임 승격을 의미하지 않는다.
@@ -1610,13 +1611,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   // 기존 소스 바인딩을 즉시 덮어쓰지 않고, 기존 제작 책임에서 요청형 취득/플랫폼 검증을 수행한다.
   const planOriginalAcquisition=(family,roles,reason='',previousAssetId='')=>{
     if(!id)return false;
-    const externalCandidates=externalSourceCandidatesFor(family,roles);
+    // 같은 family의 다른 몬스터/장비를 정확한 역할의 확보 원본인 것처럼 선택하지 않는다.
+    // 가족 단위 최초 수급은 기존 source inspection 정책을 유지한다.
+    const missingRole=reason==='CURRENT_GAME_MISSING_ROLE_CC0_SOURCE'?clean(roles[0]):'';
+    const externalCandidates=externalSourceCandidatesFor(family,roles).filter(row=>
+      !missingRole||row.matchedRoles.includes(missingRole));
     if(!externalCandidates.length)return false;
     if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
           action:'ACQUIRE_ADAPT',assetId:null,family,
+          requestedRole:missingRole||null,
           reason:reason||'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
           replacesCandidateAssetId:clean(previousAssetId)||null,
           gameSourceComparisonRequired:true,
@@ -1676,7 +1682,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const currentFamilyAssets=currentAssets.filter(asset=>clean(asset.family||asset.category).toUpperCase()===family);
     const coveredRoles=new Set(currentFamilyAssets.flatMap(asset=>
       roleEvidenceById.get(clean(asset.id))?.matchedRoles||[]));
-    const missingRoles=requestedRoles.filter(role=>!coveredRoles.has(role));
+    const missingRoles=requestedRoles.filter(role=>role!=='generic'&&!coveredRoles.has(role));
     if(missingRoles.length)roleGaps.push(Object.freeze({
       family,requestedRoles:freezeList(requestedRoles),coveredRoles:freezeList([...coveredRoles].sort()),
       missingRoles:freezeList(missingRoles),sourceConnectionIsNotRuntimeProof:true
