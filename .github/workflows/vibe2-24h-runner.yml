@@ -185,7 +185,7 @@ jobs:
           threshold=48
           if [[ "$owner_pending" =~ ^[0-9]+$ ]] && [ "$owner_pending" -gt 0 ]; then
             admitted=false
-            dispatch_admitted=false
+            # 소유자 게시 작업은 새 자동 확장만 막는다. 기존 다른 게임의 예약은 파일/슬롯 보호 하에 계속된다.
             reason=OWNER_PUBLICATION_PRIORITY
           elif [[ "$queued_count" =~ ^[0-9]+$ && "$pending_count" =~ ^[0-9]+$ ]] && \
                [ "$((queued_count+pending_count))" -ge "$threshold" ]; then
