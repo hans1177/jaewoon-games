@@ -1551,7 +1551,6 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     // 단일 일반 스크립트만 지원한다. 모듈/외부 로더/이벤트 위임의 책임을 추측하지 않는다.
     if(scripts.length!==1||scripts[0][1].trim()||/<!--|<(?:form|template)\b|\b(?:querySelectorAll|eval|Function)\s*\(|\bimport\b/.test(source))continue;
     const script=scripts[0],code=script[2],functions=inspectSourceFunctions(code,{language:'javascript'});
-    if(/addEventListener\s*\(\s*["'](?:click|pointerdown|touchstart)["']/.test(code))continue;
     // 코딩 성능: 중복 id를 한 번만 인덱싱한다. 버튼마다 HTML 전체를 재스캔하지 않는다.
     // 기존 정확한 id 유일성/보존 게이트는 동일하며, 데이터나 이벤트를 추정하지 않는다.
     const idCounts=new Map();
@@ -1622,6 +1621,8 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       // 요청된 콘텐츠가 무효라면 무관한 버튼 연결을 성공 결과로 대체하지 않는다.
       return null;
     }
+    // 기존 클릭 핸들러가 있어도 데이터 확장은 가능하지만 입력 바인딩 중복은 금지한다.
+    if(/addEventListener\s*\(\s*["'](?:click|pointerdown|touchstart)["']/.test(code))continue;
     const bindings=[],learnedPatternIds=[];
     const declaredChoices=new Map();
     for(const family of choiceFamilies){
