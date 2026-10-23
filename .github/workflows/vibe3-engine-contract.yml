@@ -242,7 +242,7 @@ jobs:
         run: node --test qa/company-development-roblox-runtime-continuation.test.mjs
 
       - name: Run Roblox post-F9 Vibe build-up planner regression
-        run: node --test qa/vibe2-auto-planner.test.mjs
+        run: node --test qa/vibe2-auto-planner.test.mjs qa/roblox-onepatch.test.mjs
 
       - name: Run direct native router tests
         run: node --test qa/company-selected-platform-router.test.mjs
