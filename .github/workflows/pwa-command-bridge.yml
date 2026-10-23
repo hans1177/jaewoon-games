@@ -33,7 +33,7 @@ concurrency:
 
 env:
   COMPANY_BRIDGE_URL: https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-bridge
-  VIBE2_BRANCH: vibe2-unreal-core
+  WEB_VIBE_BRANCH: web-vibe-control
 
 jobs:
   bridge:
@@ -66,7 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/pwa-command-vibe2-task.mjs
-          node --test qa/pwa-command-vibe2-task.test.mjs
+          node --test qa/pwa-command-vibe2-task.test.mjs qa/web-vibe-organization.test.mjs
 
       - name: Get short-lived GitHub OIDC token
         if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
@@ -80,14 +80,14 @@ jobs:
           echo "::add-mask::$token"
           echo "COMPANY_OIDC_TOKEN=$token" >> "$GITHUB_ENV"
 
-      - name: Sync existing Vibe2 task states to PWA chat
+      - name: Sync independent WEB Vibe task states to PWA chat
         if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin "$VIBE2_BRANCH" --quiet
-          git show "origin/$VIBE2_BRANCH:.vibe2/queue.json" > /tmp/vibe2-queue.json || printf '{"version":3,"tasks":[]}\n' > /tmp/vibe2-queue.json
-          node tools/pwa-command-vibe2-task.mjs sync --queue=/tmp/vibe2-queue.json --output=/tmp/pwa-sync.json
+          git fetch origin "$WEB_VIBE_BRANCH" --quiet
+          git show "origin/$WEB_VIBE_BRANCH:.web-vibe/queue.json" > /tmp/web-vibe-queue.json
+          node tools/web-vibe-organization.mjs sync --queue=/tmp/web-vibe-queue.json --output=/tmp/pwa-sync.json
           curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
             -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
             -H 'Content-Type: application/json' \
@@ -133,7 +133,7 @@ jobs:
           console.log('LOCAL_WEB_OWNER_DIRECTIVE=AUTHORIZED');
           NODE
 
-      - name: Add owner instruction to Vibe2 control queue
+      - name: Add owner instruction to independent WEB Vibe queue
         if: steps.next.outputs.has_work == 'true' || steps.local.outputs.has_work == 'true'
         id: ingest
         env:
@@ -145,32 +145,28 @@ jobs:
           git config user.email 'pwa-vibe-bridge@users.noreply.github.com'
           success=0
           for attempt in 1 2 3; do
-            git fetch origin "$VIBE2_BRANCH" main --quiet
-            work="/tmp/pwa-vibe2-${GITHUB_RUN_ID}-${attempt}"
+            git fetch origin "$WEB_VIBE_BRANCH" main --quiet
+            work="/tmp/web-vibe-${GITHUB_RUN_ID}-${attempt}"
             rm -rf "$work"
             git worktree prune
-            git worktree add --detach "$work" "origin/$VIBE2_BRANCH" >/dev/null
-            node tools/vibe2-queue-control.mjs storage-unpack --queue="$work/.vibe2/queue.json"
-            if ! node "$GITHUB_WORKSPACE/tools/pwa-command-vibe2-task.mjs" ingest \
+            git worktree add --detach "$work" "origin/$WEB_VIBE_BRANCH" >/dev/null
+            if ! node "$GITHUB_WORKSPACE/tools/web-vibe-organization.mjs" ingest \
               --task=/tmp/pwa-next.json \
-              --queue="$work/.vibe2/queue.json" \
+              --queue="$work/.web-vibe/queue.json" \
               --catalog="$GITHUB_WORKSPACE/game-catalog.json" \
               --status="$GITHUB_WORKSPACE/company-status.json" \
               --root="$GITHUB_WORKSPACE" \
-              --output="$work/.vibe2/queue.json"; then
+              --output="$work/.web-vibe/queue.json"; then
               git worktree remove --force "$work" >/dev/null 2>&1 || true
               break
             fi
             cd "$work"
-            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-pack --queue=.vibe2/queue.json
-            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
-            git add .vibe2/queue.json
-            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
+            git add .web-vibe/queue.json
             if git diff --cached --quiet; then
               success=1
             else
-              git commit -m "vibe2: enqueue PWA owner directive ${TASK_ID} [skip ci]"
-              if git push origin "HEAD:$VIBE2_BRANCH"; then success=1; fi
+              git commit -m "web-vibe: enqueue WEB-only owner directive ${TASK_ID} [skip ci]"
+              if git push origin "HEAD:$WEB_VIBE_BRANCH"; then success=1; fi
             fi
             cd "$GITHUB_WORKSPACE"
             git worktree remove --force "$work" >/dev/null 2>&1 || true
@@ -190,16 +186,15 @@ jobs:
             exit 1
           fi
           echo 'queued=true' >> "$GITHUB_OUTPUT"
-          echo 'PWA_VIBE_QUEUE_WRITE=PASS'
+          echo 'WEB_VIBE_QUEUE_WRITE=PASS'
+          echo 'WEB_VIBE_QUEUE_ORGANIZATION=WEB_ONLY'
 
-      - name: Start owner development directly in existing Vibe2 worker
+      - name: Confirm independent WEB Vibe handoff
         if: steps.ingest.outputs.queued == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
-          # Owner ingress bypasses the periodic auto-planner, not source/security/release guards.
-          # The existing main deployment publishes first and validates the public route afterwards.
-          gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary
-          echo 'PWA_OWNER_GAME_DIRECT_DISPATCH=PASS'
-          echo 'PWA_OWNER_POST_PUBLISH_QA=EXISTING_MAIN_RELEASE_PIPELINE'
+          # Fail closed: never wake Roblox/Unity/Vibe2 workers if the WEB local engine is offline.
+          echo 'WEB_VIBE_ENGINE=WEB_VIBE_1'
+          echo 'WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED'
+          echo 'WEB_VIBE_PUBLICATION=NOT_VERIFIED'
