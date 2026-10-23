@@ -20,16 +20,39 @@ function webRoot(game={}){const value=posix(game.webPath).replace(/^\//,'');retu
 function actualReleaseState(game={}){const value=clean(game.homepageCategory).toLowerCase();return ['release-confirmed','development-confirmed','reviewing','other'].includes(value)?value:'other';}
 function executionReleaseState(game={}){const actual=actualReleaseState(game);return ['release-confirmed','development-confirmed'].includes(actual)?actual:'development-confirmed';}
 function resolveProject(task,{catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
-  const gameId=clean(task?.game_id||task?.gameId),game=(catalog.games||[]).find(row=>clean(row.id)===gameId);
-  if(!game)throw new Error(`게임 카탈로그에서 찾을 수 없음: ${gameId||'EMPTY'}`);
+  const gameId=clean(task?.game_id||task?.gameId);
+  if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(gameId))throw new Error('WEB_ORG_GAME_ID_INVALID');
+  const policy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),null);
+  const active=policy?.ownerActiveDevelopmentScope20261009;
+  const webChat=policy?.localVibeWebChat;
+  // 기존 중앙정책의 WEB 권한만 사용한다. 로블록스/유니티 작업 권한을 웹 접수에서 상속하지 않는다.
+  if(policy?.status!=='OWNER_DIRECT_LOCKED'||
+     policy?.developmentAccess?.WEB!=='ALWAYS_ALLOWED'||
+     active?.status!=='ACTIVE'||!active.activeTargets?.includes('WEB')||
+     webChat?.enabled!==true||webChat?.platform!=='WEB'||
+     policy?.finalDevelopmentLock?.sequenceLock?.status!=='LOCKED')
+    throw new Error('WEB_ORG_CENTRAL_BOUNDARY_NOT_VERIFIED');
+  const game=(catalog.games||[]).find(row=>clean(row.id)===gameId);
+  if(!game)throw new Error('게임 카탈로그에서 찾을 수 없음: '+gameId);
   const requestedPlatform=clean(task?.platform||task?.requestedPlatform).toLowerCase();
   if(requestedPlatform&&requestedPlatform!=='web')throw new Error('명시적 플랫폼 요청은 웹만 지원');
-  // The PWA/GitHub bridge is WEB-only. Unity development is on owner hold;
-  // never select a Unity project, even when one exists in historical status.
-  // Roblox stays in its existing separate native development pipeline.
+  // 웹게임 index.html만 개발 대상으로 인정한다. 공유 라이브러리는 읽기 전용이며 타 조직 소스는 접근하지 않는다.
   const web=webRoot(game);
-  if(!web||!filesystem.existsSync(path.join(repoRoot,web)))
+  if(web!=='web-games/'+gameId)throw new Error('WEB_ORG_WEB_SOURCE_MISMATCH');
+  try{
+    const rootReal=filesystem.realpathSync(repoRoot);
+    const webReal=filesystem.realpathSync(path.join(repoRoot,'web-games'));
+    const sourceReal=filesystem.realpathSync(path.join(repoRoot,web));
+    const indexReal=filesystem.realpathSync(path.join(repoRoot,web,'index.html'));
+    if(webReal!==path.join(rootReal,'web-games')||
+       sourceReal!==path.join(webReal,gameId)||
+       indexReal!==path.join(sourceReal,'index.html')||
+       !filesystem.statSync(indexReal).isFile())throw new Error('WEB_ORG_SOURCE_OUTSIDE_WEB');
+  }catch(error){
+    if(error?.message==='WEB_ORG_SOURCE_OUTSIDE_WEB')throw error;
     throw new Error('웹게임 소스가 없어 작업을 접수할 수 없음: '+gameId);
+  }
+  void status;
   return {game,target:'web',sourceRoot:web,actualReleaseState:actualReleaseState(game)};
 }
 // The existing owner queue bridge may receive an authenticated local web directive.
@@ -71,6 +94,8 @@ export function buildGithubDevelopmentFocus({gameId='',sourceRoot=''}={}){
   '대상 게임: '+id+' · 기존 소스: '+root,
   '우선순위: 실제 게임 코드 수정 -> 해당 게임 집중 QA -> 브라우저/입력/저장 실동작 증거 -> 기존 PR 검토.',
   '기존 책임 함수와 원본 에셋·애니메이션을 먼저 재사용한다. 새 엔진/파이프라인/우회 래퍼를 만들지 않는다.',
+  '웹 조직은 web-games/ 게임 코드만 개발한다. 로블록스·유니티 소스, 타 조직의 작업 큐·정책·인증키는 수정하거나 호출하지 않는다.',
+  '공유 assets/ 라이브러리는 읽기 전용이다. 홈페이지에는 게임 소개·출시 상태·실행 링크만 전달하고 개발 명령은 보내지 않는다.',
   '지시와 무관한 홈페이지, 타 게임, 관리 보고서, 학습 상태, 회사 정책 수정은 별도 작업으로 확장하지 않는다.',
   '코드 변경이 없거나 테스트 증거가 없으면 개발 완료로 표시하지 않는다.',
   '보안, 중앙 정책, 실제 실행, F0-F9, 독립 QA, 소유자 승인·병합 관문은 그대로 적용한다.'
@@ -81,7 +106,7 @@ export function buildPwaVibeTask(task,context={}){
   const body=clean(task?.body);if(!body)throw new Error('PWA 작업 내용 비어 있음');
   const resolved=resolveProject(task,context),kind=clean(task.kind)==='feedback'?'feedback':'directive',originalPriority=['normal','priority','urgent'].includes(clean(task.priority))?clean(task.priority):'normal';
   const goal=['[OWNER_IMMEDIATE_PWA]',`게임: ${resolved.game.name||resolved.game.id}`,`사용자 ${kind==='feedback'?'플레이 피드백':'직접 지시'}: ${body}${ownerContext(task)}`,buildGithubDevelopmentFocus({gameId:resolved.game.id,sourceRoot:resolved.sourceRoot}),'최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.','기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.','모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.'].join('\n');
-  return {id:`pwa-${taskId}`,gameId:resolved.game.id,target:resolved.target,department:'development',type:'implementation',goal,responsibleFiles:[],dependencies:[],priority:'owner-immediate',releaseState:executionReleaseState(resolved.game),status:'queued',retries:0,maxRetries:2,ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,evidence:[`pwa-task:${taskId}`,`pwa-kind:${kind}`,`pwa-priority:${originalPriority}`,`actual-release-state:${resolved.actualReleaseState}`,`source-root:${resolved.sourceRoot}`,'owner-auto-deploy-authorization','verified-qa-required',...(task.source==='LOCAL_VIBE_WEB_CHAT'?['vibe-local-web-owner-directive']:[])],companyContext:{stageId:'owner-immediate',role:'director',assignmentAuthority:'owner-directive',sourceRef:`pwa-task:${taskId}`,reviewRequired:true}};
+  return {id:`pwa-${taskId}`,gameId:resolved.game.id,target:resolved.target,sourceRoot:resolved.sourceRoot,department:'development',type:'implementation',goal,responsibleFiles:[],dependencies:[],priority:'owner-immediate',releaseState:executionReleaseState(resolved.game),status:'queued',retries:0,maxRetries:2,ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,evidence:[`pwa-task:${taskId}`,`pwa-kind:${kind}`,`pwa-priority:${originalPriority}`,`actual-release-state:${resolved.actualReleaseState}`,`source-root:${resolved.sourceRoot}`,'owner-auto-deploy-authorization','verified-qa-required','web-organization-boundary:v1',...(task.source==='LOCAL_VIBE_WEB_CHAT'?['vibe-local-web-owner-directive']:[])],companyContext:{stageId:'owner-immediate',role:'director',assignmentAuthority:'owner-directive',sourceRef:`pwa-task:${taskId}`,reviewRequired:true}};
 }
 export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
   const next=buildPwaVibeTask(task,{catalog,status,repoRoot,filesystem}),tasks=Array.isArray(queue.tasks)?queue.tasks:[];
