@@ -88,3 +88,21 @@ test('Onepatch is GitHub-only on the existing Roblox Vibe worker, not a separate
   assert.match(planner,/existing-canonical-vibe2-queue/);
   assert.doesNotMatch(planner,/\.roblox-vibe\/queue\.json/);
 });
+
+test('Onepatch automatically follows the existing verified Roblox source-to-server deployment chain',()=>{
+  const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const candidate=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  const post=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const release=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(core,/VIBE2_ROBLOX_ONEPATCH_GAME/);
+  assert.match(core,/node \/tmp\/vibe2-main\/tools\/vibe2-auto-planner\.mjs/);
+  assert.match(candidate,/Promote verified Roblox source and declared generated assets through reviewed PR/);
+  assert.match(candidate,/ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN/);
+  assert.match(post,/gh workflow run company-development-roblox-final-review-revalidation\.yml/);
+  assert.match(f9,/gh workflow run company-development-roblox-release-promotion\.yml[^\n]*publish_stage=final/);
+  assert.match(release,/ROBLOX_OPEN_CLOUD_API_KEY: \$\{\{ secrets\.ROBLOX_OPEN_CLOUD_API_KEY \}\}/);
+  assert.match(release,/await publishRobloxPlace\(\{plan/);
+  assert.match(release,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
+  assert.doesNotMatch(core,/ROBLOX_OPEN_CLOUD_API_KEY:.*VIBE2_ROBLOX_ONEPATCH_GAME/);
+});
