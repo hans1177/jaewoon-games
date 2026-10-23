@@ -6,7 +6,9 @@ import path from 'node:path';
 
 const posix=value=>String(value??'').trim().replaceAll('\\','/').replace(/^\.\//,'');
 const writable=/^(?:client|server|shared|assets)\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\.(?:luau|lua|json|toml|svg|rbxmx|rbxm|glb|gltf|fbx|obj|mtl|png|webp)$|^default\.project\.json$/i;
-const terminal=new Set(['verified','failed','cancelled']);
+// '*' expands authorable text/runtime connections; native binary imports require
+// the existing engine-editor route rather than sending binary bytes to a text model.
+const automaticText=/\.(?:luau|lua|json|toml|svg)$/i;
 function fail(reason){throw new Error('ROBLOX_ONEPATCH_'+reason);}
 function assertGameRoot(repoRoot,sourceRoot){
   const repo=fs.realpathSync(repoRoot);
@@ -47,7 +49,7 @@ export function resolveOwnerRobloxOnePatchFiles({repoRoot=process.cwd(),sourceRo
       if(item.isDirectory()){discover(full);continue;}
       if(!item.isFile())continue;
       const relative=path.relative(game,full).replaceAll(path.sep,'/');
-      if(writable.test(relative))include(relative);
+      if(writable.test(relative)&&automaticText.test(relative))include(relative);
     }
   }
   for(const raw of entries){
