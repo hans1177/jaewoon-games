@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - 'web-games/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-owner-web-edit-propagation.yml'
+      - 'qa/company-owner-web-isolation.test.mjs'
 
 permissions:
   contents: read
@@ -14,7 +19,19 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  isolation-qa:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reject WEB-to-native development coupling
+        run: node --test qa/company-owner-web-isolation.test.mjs
   audit:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
