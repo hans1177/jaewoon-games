@@ -69113,9 +69113,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-23T16:35:46.938Z",
+      "updatedAt": "2026-10-23T16:43:26.177Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -69125,7 +69125,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-23T13:22:34.763Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-23T16:43:26.177Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -69174,7 +69174,7 @@
       "routingBlockers": [
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "ad64556ea9f66a0b2137f9233ce6b8a07e602302",
+      "robloxSourceCommit": "f62aa3d0ffda741412e01835d473d5ebbe5e63cf",
       "robloxSourceBootstrapPassedAt": "2026-10-23T13:02:00.587Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -69680,13 +69680,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "ad64556ea9f66a0b2137f9233ce6b8a07e602302",
+      "robloxQualityBuildUpSourceRevision": "f62aa3d0ffda741412e01835d473d5ebbe5e63cf",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
-        "sourceRevision": "ad64556ea9f66a0b2137f9233ce6b8a07e602302",
-        "sourceTreeSha": "a971a29106554a7054b8d53da807be01db8aa449",
+        "sourceRevision": "f62aa3d0ffda741412e01835d473d5ebbe5e63cf",
+        "sourceTreeSha": "ea837b1dea60b5abb74e1c532453ae760d7caa38",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -69704,7 +69704,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
           "baselineFingerprint": "e8d7d1d84192c31ca784db5c3f3a8d075b8e616d77d0c3cbf39dc13f9b2eb17d",
-          "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
+          "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
         "qualityFailureKinds": [
           "CONFIG_POLICY_SOURCE_REQUIRED",
@@ -69762,8 +69762,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39955995061,
-        "testedAt": "2026-10-23T13:22:34.763Z"
+        "workflowRunId": 39983783064,
+        "testedAt": "2026-10-23T16:43:26.177Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -89593,7 +89593,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-23T16:41:38.256Z",
+  "updatedAt": "2026-10-23T16:43:26.177Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
