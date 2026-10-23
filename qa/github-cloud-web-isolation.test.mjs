@@ -54,6 +54,7 @@ test('Github-hosted WEB_VIBE_1 onepatch uses its own queue and existing bridge, 
   assert.match(cloud,/WEB_VIBE_GH_TOKEN: \$\{\{ secrets.WEB_VIBE_GH_TOKEN \}\}/);
   assert.match(cloud,/GEMINI_API_KEY: \$\{\{ secrets.GEMINI_API_KEY \}\}/);
   assert.match(cloud,/web-vibe-worker.mjs/);
+  assert.match(cloud,/node tools\/company-constitution-enforcer\.mjs --phase=worker-before-source-write/);
   assert.match(cloud,/--cloud --apply --pr/);
   assert.match(cloud,/persist-credentials: false/);
   assert.doesNotMatch(cloud,/vibe2-unreal-core|roblox-games\/|unity-games\/|gh workflow run|cloudflare/i);
