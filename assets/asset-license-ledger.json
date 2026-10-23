@@ -671,6 +671,179 @@
         "mobileRuntimeVerification": "PENDING",
         "publicReleaseClaimed": false
       }
+    },
+    {
+      "id": "fantasy-survival-lossless-transfer-v1",
+      "license": "CC0-1.0",
+      "commercialUse": true,
+      "modificationUse": true,
+      "targetGame": "fantasy-survival",
+      "purpose": "Lossless gzip transfer of licensed originals; original geometry, rigs, materials and animation clips preserved",
+      "modified": true,
+      "evidence": {
+        "parentLedgerIds": [
+          "kaykit-adventurers-cc0-v1",
+          "tinytreats-homely-house-cc0-v1"
+        ],
+        "transform": "DETERMINISTIC_GZIP_LEVEL_9_MTIME_0; OBJ_MTL_JSON_PACK_WITHOUT_GEOMETRY_CHANGES",
+        "files": [
+          {
+            "path": "web-games/fantasy-survival/knight.glb.gz",
+            "sha256": "743d21e1a634f5726ba8b9709cd3a32b7fea1ffd691cb571a83edfd81775b700",
+            "bytes": 1157234,
+            "sourcePath": "assets/roblox/actors/native/knight.glb",
+            "sourceSha256": "d945e019f0e07e34297296c3d982e379051696ecffeba9e9799b64077f7e1155",
+            "sourceBytes": 3659844
+          },
+          {
+            "path": "web-games/fantasy-survival/mage.glb.gz",
+            "sha256": "6cfce27b8edd07533f5b98b9321f7bc6e18d3b7df0b491bfbce8d009660bde4f",
+            "bytes": 1130003,
+            "sourcePath": "assets/roblox/actors/native/mage.glb",
+            "sourceSha256": "0deafa1e3156705fa617f2a125381792ed58ab4efeeefa8a0f255c37a20cc75c",
+            "sourceBytes": 3589552
+          },
+          {
+            "path": "web-games/fantasy-survival/barbarian.glb.gz",
+            "sha256": "1974cbf895f3f8338b62b6396b4cbd6ab37a1ba9565a701d9d76e8e75b659f30",
+            "bytes": 1140316,
+            "sourcePath": "assets/roblox/actors/native/barbarian.glb",
+            "sourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+            "sourceBytes": 3613580
+          },
+          {
+            "path": "web-games/fantasy-survival/rogue.glb.gz",
+            "sha256": "d8735f6c9d19268ab8ef07c3d53a01326b14c4fa1aecd51f530bcd33a252e6e5",
+            "bytes": 1140076,
+            "sourcePath": "assets/roblox/actors/native/rogue.glb",
+            "sourceSha256": "9b41cc7c6300299d46477fea5175d222bdec0aed5f215d16c1de4d8711761683",
+            "sourceBytes": 3616596
+          },
+          {
+            "path": "web-games/fantasy-survival/rogue-hooded.glb.gz",
+            "sha256": "89f78c69a9666cc57ae31e2c6b00f688030b842f2e9bb92ff9ec63773d147419",
+            "bytes": 1131715,
+            "sourcePath": "assets/roblox/actors/native/rogue-hooded.glb",
+            "sourceSha256": "9aed88eede1480f44090494baeab930cc6353db99891decf2dd2c03af3467735",
+            "sourceBytes": 3597964
+          },
+          {
+            "path": "web-games/fantasy-survival/models.json.gz",
+            "sha256": "33fd5d6bb2f2310afde05dacec410c60773518ef4a739cd296ac3c3a7b9e62b8",
+            "bytes": 111549,
+            "sourceBytes": 489835,
+            "sources": [
+              {
+                "path": "assets/shared/homely-house/floor_base.obj",
+                "sha256": "5cb3f33b9999ab14808d2b9ee803332ed253784ef2a96457f58f3476785025e1"
+              },
+              {
+                "path": "assets/shared/homely-house/floor_base.mtl",
+                "sha256": "3406f03175fe1cb451194608a156a09db39c56e3342a2df922514db7162e380e"
+              },
+              {
+                "path": "assets/shared/homely-house/tree.obj",
+                "sha256": "2857ae18918afa6ed96fcaa5b1bf6c95c24d38361b46b8a88d0e5298e0f7c797"
+              },
+              {
+                "path": "assets/shared/homely-house/tree.mtl",
+                "sha256": "6d0f4ac60eb614c5c36af024af8c76fc3733433d3bf21e48fa2c62d03fedb76d"
+              },
+              {
+                "path": "assets/shared/homely-house/tree_large.obj",
+                "sha256": "33b7a5a40b579a6790bea2662ff51ae2fcb2e5736c153337c6e760e46d351e3d"
+              },
+              {
+                "path": "assets/shared/homely-house/tree_large.mtl",
+                "sha256": "5a9f7e47705f824108208c4bfa39b6024f8671dbc067cfd1abe30fbb6957cfcf"
+              },
+              {
+                "path": "assets/shared/homely-house/foliage_A.obj",
+                "sha256": "6b8620a47dd815ca5ed3b02567ad78b3ed395758a47b81eb89a5b1b5ce2460d4"
+              },
+              {
+                "path": "assets/shared/homely-house/foliage_A.mtl",
+                "sha256": "dac3f132b123dae7cf894ba4669eabe4877bb022d5b845945c3a3dc9d3380732"
+              },
+              {
+                "path": "assets/shared/homely-house/foliage_B.obj",
+                "sha256": "392aa2cb2d2b26eb654225e45c95e99a35c7fa552333828d0202b674fd825fac"
+              },
+              {
+                "path": "assets/shared/homely-house/foliage_B.mtl",
+                "sha256": "eab54208c3acb6a503556bc7a98dc0e199a57780717c901cc309b944bccab84e"
+              },
+              {
+                "path": "assets/shared/homely-house/cobblestones.obj",
+                "sha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9"
+              },
+              {
+                "path": "assets/shared/homely-house/cobblestones.mtl",
+                "sha256": "1f8cf281bf846099b857d3c8935f698eec07ad61bf74ee579059848b57eadbcf"
+              },
+              {
+                "path": "assets/shared/homely-house/bench_A.obj",
+                "sha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b"
+              },
+              {
+                "path": "assets/shared/homely-house/bench_A.mtl",
+                "sha256": "e8cbce5c49abf8add0b8ff27d54280d4678c17acde1d4f4b78f742c121ff517f"
+              },
+              {
+                "path": "assets/shared/homely-house/bench_B.obj",
+                "sha256": "d7a373ea5018733d6e254f12457caa46840a91fe760d17f8cb04377eda94b8de"
+              },
+              {
+                "path": "assets/shared/homely-house/bench_B.mtl",
+                "sha256": "3cda97de3837c4ccc8877feea45a2d1361303087debbb7d4bcb34e9d5866e7d4"
+              },
+              {
+                "path": "assets/shared/homely-house/fence_straight.obj",
+                "sha256": "d0423955b5584af172044493b29ac1db2b02bf34fb84a6ba5c6b5b2280e4bb5c"
+              },
+              {
+                "path": "assets/shared/homely-house/fence_straight.mtl",
+                "sha256": "3375cb4fd890fe910866b047632f954fbf3295d4e8893ede3b637f7f2b44adbb"
+              },
+              {
+                "path": "assets/shared/homely-house/house.obj",
+                "sha256": "85e0f7edc9ce27d54372458ad632dd07536aab383a7e0ae65f7965b900c37f27"
+              },
+              {
+                "path": "assets/shared/homely-house/house.mtl",
+                "sha256": "55802c85cda78cc590720fa3f4f2ca32a6cfd60a01d75fba61f17ad2ed6c7a4b"
+              },
+              {
+                "path": "assets/shared/homely-house/gate_single.obj",
+                "sha256": "f8be65e712f4837498a4fa6c6ebce16ffb330c7491ee707d020c8912bdb585e4"
+              },
+              {
+                "path": "assets/shared/homely-house/gate_single.mtl",
+                "sha256": "65f3637393a8bb44b7bcb467bb295d8686937a3f8a0f17220e72d59b0647931c"
+              },
+              {
+                "path": "assets/shared/homely-house/package.obj",
+                "sha256": "6ec78c12641965b7567d341301509e2d0f81ddc662199667bab8f0f3f984fe30"
+              },
+              {
+                "path": "assets/shared/homely-house/package.mtl",
+                "sha256": "6322d3df21c667bb47734ea18b12055923f0b9fddc06d6fe8ec99e23cf0f2d90"
+              }
+            ]
+          }
+        ],
+        "nativeRuntimeVerification": "PENDING",
+        "publicReleaseClaimed": false,
+        "sourceUrls": [
+          "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+          "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/tree/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16"
+        ]
+      },
+      "source": "KayKit Adventurers and Tiny Treats Homely House licensed originals",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "creator": "Kay Lousberg; Isa Lousberg",
+      "attribution": "Optional: www.kaylousberg.com; www.isalousberg.com",
+      "verifiedAt": "2026-10-23"
     }
   ]
 }

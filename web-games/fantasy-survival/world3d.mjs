@@ -7,6 +7,7 @@ import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three
 import {FBXLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/FBXLoader.js';
 import {OBJLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/OBJLoader.js';
 import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+import {mergeVertices} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/BufferGeometryUtils.js';
 import {clone as cloneAnimatedRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
@@ -115,10 +116,12 @@ function parseDownloadedObj(text, modelName, materialText=''){
     }
   }
   if(pos.length<9)throw new Error('Empty downloaded 3D geometry: '+modelName);
-  const geometry=new THREE.BufferGeometry();
+  let geometry=new THREE.BufferGeometry();
   geometry.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
   geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
   geometry.computeVertexNormals();
+  // 형식: 같은 위치·법선·색의 중복 정점을 인덱스 버퍼로 공유한다.
+  const indexed=mergeVertices(geometry,1e-6);geometry.dispose();geometry=indexed;
   geometry.computeBoundingSphere();
   const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.94,metalness:0,flatShading:true,side:THREE.DoubleSide});
   const model=new THREE.Mesh(geometry,material);
@@ -127,7 +130,18 @@ function parseDownloadedObj(text, modelName, materialText=''){
 }
 
 async function loadSourceModels(){
+  let packedModels=null;
+  if(typeof DecompressionStream==='function'){
+    const response=await fetch(new URL('./models.json.gz',import.meta.url),{cache:'force-cache'});
+    if(!response.ok)throw new Error('Compressed CC0 model pack unavailable: '+response.status);
+    packedModels=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+  }
   const results=await Promise.all(MODEL_NAMES.map(async name=>{
+    if(packedModels){
+      const entry=packedModels[name];
+      if(!entry?.obj||!entry?.mtl)throw new Error('Compressed CC0 model missing: '+name);
+      return [name,parseDownloadedObj(entry.obj,name,entry.mtl)];
+    }
     const geometryUrl=new URL(name+'.obj',SOURCE);
     const materialUrl=new URL(name+'.mtl',SOURCE);
     const [response,mtlResponse]=await Promise.all([
@@ -144,8 +158,9 @@ async function loadSourceModels(){
   return new Map(results);
 }
 
-export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100}){
-  const models=await loadSourceModels(); // Fail closed: leave the old game active.
+export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100},initialState=null){
+  // 로딩: 배경·플레이어·몬스터 요청을 함께 시작하고 한 번만 합류한다.
+  const modelsPromise=loadSourceModels();
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
   let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroAttackAt=0,lastHeroFrame=0;
   let scene=null,disposed=false,heroLoadVersion=0;
@@ -156,7 +171,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     const version=++heroLoadVersion;
     const source=new URL('../../assets/roblox/actors/native/'+HERO_MODEL_FILES[choice.model],import.meta.url);
     try{
-      const gltf=await new GLTFLoader().loadAsync(source.href);
+      let gltf;
+      if(typeof DecompressionStream==='function'){
+        const compressed=new URL('./'+HERO_MODEL_FILES[choice.model]+'.gz',import.meta.url);
+        const response=await fetch(compressed,{cache:'force-cache'});
+        if(!response.ok)throw new Error('Compressed CC0 avatar unavailable: '+response.status);
+        const bytes=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+        gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',source).href);
+      }else gltf=await new GLTFLoader().loadAsync(source.href);
       if(disposed||version!==heroLoadVersion)return false;
       const avatar=new THREE.Group(),model=gltf.scene;
       const box=new THREE.Box3().setFromObject(model);
@@ -190,24 +212,19 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       return false;
     }
   }
-  await setAvatarAppearance(initialAppearance);
+  const heroPromise=setAvatarAppearance(initialAppearance);
   // A native CC0 humanoid undead is a visual proxy only for the existing
   // wastelandMummy type. Its AI, hitbox, spawn, skills, loot and ID stay authoritative.
   // More distant species remain missing; do not render arbitrary substitutes.
-  let undeadSource=null,undeadClips=[];
-  try{
-    const gltf=await new GLTFLoader().loadAsync(UNDEAD_URL.href);
-    undeadSource=gltf.scene;
-    undeadClips=gltf.animations||[];
-  }catch(error){
-    console.warn('Downloaded undead GLB unavailable; 3D monster preview remains incomplete',error);
-  }
-  // 메인: 생성 모델 대신 내려받은 CC0 원본 FBX/GLB/OBJ를 읽는다.
-  // 원본 리그/클립/UV/팔레트를 유지한다. 정적 OBJ에는 애니메이션 PASS를 만들지 않는다.
-  const nativeCreatureSources=new Map();
-  await Promise.all(Object.keys(NATIVE_CREATURE_MODELS).map(async file=>{
+  let undeadSource=null,undeadClips=[],undeadModelHeight=1;
+  // 로딩: 현재 위치에 필요한 종부터 거리순, 모바일은 동시 두 요청만 처리한다.
+  const nativeCreatureSources=new Map(),creatureRequests=new Map(),creatureFailures=new Map();
+  let loadingCreatureCount=0,nextCreatureScan=0;
+  async function loadCreatureSource(file){
+    if(disposed||nativeCreatureSources.has(file)||creatureRequests.has(file))return;
+    creatureRequests.set(file,true);loadingCreatureCount++;
     try{
-      const url=new URL(file,CREATURE_SOURCE);
+      const url=file==='skeleton-warrior.glb'?UNDEAD_URL:new URL(file,CREATURE_SOURCE);
       let model,clips=[];
       if(file.endsWith('.fbx')){
         model=await new FBXLoader().setResourcePath(CREATURE_SOURCE.href).loadAsync(url.href);
@@ -226,16 +243,49 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const box=new THREE.Box3().setFromObject(model);
       if(box.isEmpty())throw new Error('Missing downloaded creature mesh');
       model.traverse(child=>{if(child.isMesh){child.castShadow=true;child.receiveShadow=true}});
+      if(disposed){
+        model.traverse(child=>{if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}});
+        return;
+      }
       nativeCreatureSources.set(file,{model,clips,height:Math.max(.1,box.max.y-box.min.y),floor:box.min.y});
-    }catch(error){console.warn('CC0 original 3D monster unavailable: '+file,error)}
-  }));
+      if(file==='skeleton-warrior.glb'){
+        undeadSource=model;undeadClips=clips;undeadModelHeight=Math.max(.1,box.max.y-box.min.y);
+      }
+    }catch(error){
+      const previous=creatureFailures.get(file);
+      creatureFailures.set(file,{at:performance.now(),attempts:(previous?.attempts||0)+1});
+      if(!previous)console.warn('CC0 original 3D monster unavailable: '+file,error);
+    }finally{loadingCreatureCount--;creatureRequests.delete(file)}
+  }
+  const initialFiles=new Map();
+  for(const e of initialState?.enemies||[]){
+    const distance=Math.hypot(e.x-initialState.player.x,e.y-initialState.player.y);
+    if(e.hp<=0||e.area!==initialState.area||distance>1200)continue;
+    const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
+    if(file)initialFiles.set(file,Math.min(initialFiles.get(file)??Infinity,distance));
+  }
+  const creaturesPromise=(async()=>{
+    const ordered=[...initialFiles].sort((a,b)=>a[1]-b[1]).map(([file])=>file),limit=mobileBudget?2:4;
+    for(let i=0;i<ordered.length;i+=limit)await Promise.all(ordered.slice(i,i+limit).map(loadCreatureSource));
+  })();
+  let models;
+  try{[models]=await Promise.all([modelsPromise,heroPromise,creaturesPromise])}
+  catch(error){
+    disposed=true;heroLoadVersion++;
+    for(const source of nativeCreatureSources.values())source.model.traverse(child=>{
+      if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}
+    });
+    nativeCreatureSources.clear();
+    hero?.model.traverse(child=>{if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}});
+    throw error;
+  }
   const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.18;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
-  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type=THREE.PCFShadowMap;
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
   scene.fog=new THREE.Fog(0x244238,22,90);
@@ -265,12 +315,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     worldtree:{floor:0x335039,sky:0x203e2d},flowerfield:{floor:0x668551,sky:0x586b50},
     giantgarden:{floor:0x625071,sky:0x4a3d55},desert:{floor:0xb38c55,sky:0xa38259}
   });
-  const biomeTiles=Array.from({length:49},()=>{
-    // Source geometry and original source MTL material are shared by all tiles.
-    const mesh=sourceFloor.clone();
-    mesh.receiveShadow=true;
-    scene.add(mesh);return mesh;
-  });
+  const biomeTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,49);
+  biomeTiles.receiveShadow=true;biomeTiles.frustumCulled=false;scene.add(biomeTiles);
+  const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
+  const resourceBatches=new Map();
   let currentBiome='forest';
   const raycaster=new THREE.Raycaster();
   const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
@@ -278,20 +326,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const interactables=[];
   const undeadActors=new Map();
   const nativeCreatureActors=new Map();
+  const cameraFrustum=new THREE.Frustum(),cameraProjection=new THREE.Matrix4();
+  const creatureBounds=new THREE.Sphere(new THREE.Vector3(),4);
   const missingVisibleMonsterIds=new Set();
   let fallbackReason='';
-  let qualityFactor=1,framesInWindow=0,fpsWindowStart=0;
-  let undeadModelHeight=1;
-  if(undeadSource){
-    const dimensions=new THREE.Box3().setFromObject(undeadSource);
-    undeadModelHeight=Math.max(.1,dimensions.max.y-dimensions.min.y);
-  }
+  let qualityFactor=1,framesInWindow=0,fpsWindowStart=0,stableQualityWindows=0,measuredFps=0;
   function synchronizeUndead(state,px,py,stamp){
     if(!undeadSource)return;
     const candidates=(state.enemies||[]).filter(e=>e?.type?.id==='wastelandMummy'&&e.hp>0&&e.area===state.area
-      &&Math.hypot(e.x-px,e.y-py)<940).sort((a,b)=>
-      Math.hypot(a.x-px,a.y-py)-Math.hypot(b.x-px,b.y-py)).slice(0,mobileBudget?6:12);
+      &&Math.hypot(e.x-px,e.y-py)<940);
     for(const e of candidates){
+      creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
+      if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
       const id=String(e.netId||e.id||'');
       if(!id)continue;
       let actor=undeadActors.get(id);
@@ -318,7 +364,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         child.userData.worldPoint={x:e.x,y:e.y};
         interactables.push(child);
       });
-      const moving=Math.hypot(Number(e.vx)||0,Number(e.vy)||0)>.05;
+      const moving=e.moving===true||Math.hypot(Number(e.vx)||0,Number(e.vy)||0)>.05;
       const attacking=performance.now()-(Number(e.attackAt)||0)<400;
       const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
@@ -329,8 +375,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.clipName=clip.name;
       }
       const now=performance.now();
-      actor.mixer?.update(Math.min(.05,Math.max(0,(now-actor.lastFrame)/1000)));
-      actor.lastFrame=now;
+      if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
+        actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+        actor.lastFrame=now;
+      }
       actor.seen=stamp;
     }
     for(const [key,actor] of undeadActors){
@@ -345,26 +393,25 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   function synchronizeNativeCreatures(state,px,py,stamp){
     const near=mobileBudget?720:1000;
     missingVisibleMonsterIds.clear();
-    let displayed=0,unsafeUnmappedEncounter=false;
+    let unsafeUnmappedEncounter=false;
     for(const e of state.enemies||[]){
       if(!e||e.hp<=0||e.area!==state.area||Math.hypot(e.x-px,e.y-py)>Math.max(430,near*qualityFactor))continue;
+      // 성능: 화면 밖 개체만 제외한다. 화면 안 개체 수로 2D 복귀를 결정하지 않는다.
+      creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
+      if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
       const kind=NATIVE_CREATURE_BY_ID.get(e.type?.id);
       if(!kind||!nativeCreatureSources.has(kind)){
         if(e.type?.id!=='wastelandMummy'||!undeadSource){
           missingVisibleMonsterIds.add(e.type?.id||'unknown');
           // Never let an invisible, original monster attack the player.
-          // The unmodified 2D renderer keeps that encounter playable until
-          // an exact-species native mesh is licensed, mapped and verified.
+          // 모델이 준비되지 않은 전투는 3D 준비 화면에서 대기한다.
+          // 화면을 2D 월드로 바꾸거나 보이지 않는 적과 전투하지 않는다.
           if(Math.hypot(e.x-px,e.y-py)<430)unsafeUnmappedEncounter=true;
         }
         continue;
       }
-      // Rendering limits must not create invisible, attacking monsters.
-      if(displayed>=(mobileBudget?12:22)){
-        if(Math.hypot(e.x-px,e.y-py)<430)unsafeUnmappedEncounter=true;
-        continue;
-      }
-      displayed++;
+      // 표시: 실제 위협 개체는 고정 개수 제한으로 생략하지 않는다.
+      // 거리는 기존 범위로 제한하고 화면 밖 메시의 제외는 Three.js가 처리한다.
       const key=String(e.netId||e.id||e.type.id+':'+e.x+':'+e.y);
       let actor=nativeCreatureActors.get(key);
       if(!actor){
@@ -387,7 +434,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         child.userData.worldPoint={x:e.x,y:e.y};
         interactables.push(child);
       });
-      const moving=Math.hypot(Number(e.vx)||0,Number(e.vy)||0)>.05;
+      const moving=e.moving===true||Math.hypot(Number(e.vx)||0,Number(e.vy)||0)>.05;
       const attacking=performance.now()-(Number(e.attackAt)||0)<400;
       const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
@@ -398,8 +445,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.clipName=clip.name;
       }
       const now=performance.now();
-      actor.mixer?.update(Math.min(.05,Math.max(0,(now-actor.lastFrame)/1000)));
-      actor.lastFrame=now;actor.seen=stamp;
+      if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
+        actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+        actor.lastFrame=now;
+      }actor.seen=stamp;
     }
     for(const [key,actor] of nativeCreatureActors){
       if(actor.seen===stamp)continue;
@@ -435,34 +484,80 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     interactables.push(model);
   }
   function resources(arr,kind,px,py,seen,scale=1){
-    if(!Array.isArray(arr))return;
-    let rendered=0;
-    for(const item of arr){
-      if(!item||item.dead)continue;
-      if(Math.hypot(item.x-px,item.y-py)>1000*qualityFactor)continue;
-      addVisibleEntity(kind+':'+String(item.id),kind,item.x,item.y,scale,seen);
-      if(++rendered>=65)break;
+    if(!Array.isArray(arr)||!models.has(kind))return;
+    const source=models.get(kind);
+    let batch=resourceBatches.get(kind);
+    if(!batch){
+      const mesh=new THREE.InstancedMesh(source.geometry,source.material,128);
+      mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;
+      batch={mesh,capacity:128,points:[]};scene.add(mesh);resourceBatches.set(kind,batch);
     }
+    let count=0;
+    for(const item of arr){
+      if(!item||item.dead||Math.hypot(item.x-px,item.y-py)>Math.max(430,1000*qualityFactor))continue;
+      const key=kind+':'+String(item.id),variation=assetAppearanceFactor(key),size=scale*variation.scale;
+      creatureBounds.center.copy(source.geometry.boundingSphere.center).multiplyScalar(size);
+      creatureBounds.center.x+=item.x*SCALE;creatureBounds.center.z+=item.y*SCALE;
+      creatureBounds.radius=source.geometry.boundingSphere.radius*size;
+      if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
+      if(count===batch.capacity){
+        const previous=batch.mesh;batch.capacity*=2;
+        batch.mesh=new THREE.InstancedMesh(source.geometry,source.material,batch.capacity);
+        batch.mesh.castShadow=true;batch.mesh.receiveShadow=true;batch.mesh.frustumCulled=false;
+        for(let i=0;i<count;i++){previous.getMatrixAt(i,resourceTransform.matrix);batch.mesh.setMatrixAt(i,resourceTransform.matrix)}
+        scene.remove(previous);previous.dispose();scene.add(batch.mesh);
+      }
+      resourceTransform.position.set(item.x*SCALE,0,item.y*SCALE);
+      resourceTransform.scale.setScalar(size);resourceTransform.rotation.y=variation.rotation*Math.PI/180;
+      resourceTransform.updateMatrix();batch.mesh.setMatrixAt(count,resourceTransform.matrix);
+      const point=batch.points[count]||(batch.points[count]={});point.x=item.x;point.y=item.y;count++;
+    }
+    batch.points.length=count;batch.mesh.count=count;
+    batch.mesh.userData.worldPoints=batch.points;batch.mesh.instanceMatrix.needsUpdate=true;
+    // 이동 후에도 인스턴스 선택 검사가 이전 프레임의 경계를 재사용하지 않는다.
+    batch.mesh.boundingSphere=null;
+    if(count)interactables.push(batch.mesh);
+    creatureBounds.radius=4;
   }
   function frame(state,regionAt){
     if(disposed)return;
     // Additional optimization: reduce active model range and GPU resolution only
     // when the actual frame rate remains low. Never change simulation tick or AI.
     const sampleNow=performance.now();
+    if(document.hidden){framesInWindow=0;fpsWindowStart=0;return}
     if(!fpsWindowStart)fpsWindowStart=sampleNow;
     framesInWindow++;
     if(sampleNow-fpsWindowStart>=2400){
-      const fps=framesInWindow*1000/(sampleNow-fpsWindowStart);
+      const fps=framesInWindow*1000/(sampleNow-fpsWindowStart);measuredFps=fps;
+      stableQualityWindows=fps>48?stableQualityWindows+1:0;
       const next=fps<25?Math.max(.58,qualityFactor-.13):
-        fps>48?Math.min(1,qualityFactor+.08):qualityFactor;
+        stableQualityWindows>=3?Math.min(1,qualityFactor+.08):qualityFactor;
       if(Math.abs(next-qualityFactor)>.01){
-        qualityFactor=next;
+        qualityFactor=next;stableQualityWindows=0;
+        renderer.shadowMap.enabled=!mobileBudget&&qualityFactor>=.8;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5)*qualityFactor);
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
     if(state.area!=='surface'||!state.player){canvas.hidden=true;active=false;fallbackReason='region-3d-not-yet-mapped';return}
     const p=state.player,px=Number(p.x)||0,py=Number(p.y)||0,centerX=px*SCALE,centerY=py*SCALE;
+    if(sampleNow>=nextCreatureScan){
+      nextCreatureScan=sampleNow+250;
+      const needed=new Map();
+      for(const e of state.enemies||[]){
+        const distance=Math.hypot(e.x-px,e.y-py);
+        if(e.hp<=0||e.area!==state.area||distance>1200)continue;
+        const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
+        const failed=creatureFailures.get(file);
+        if(!file||nativeCreatureSources.has(file)||creatureRequests.has(file)
+          ||(failed&&(failed.attempts>=3||sampleNow-failed.at<10000)))continue;
+        needed.set(file,Math.min(needed.get(file)??Infinity,distance));
+      }
+      for(const [file] of [...needed].sort((a,b)=>a[1]-b[1])){
+        if(loadingCreatureCount>=(mobileBudget?2:4))break;
+        void loadCreatureSource(file);
+      }
+    }
     const w=window.innerWidth,h=window.innerHeight;
     if(w!==lastW||h!==lastH){
       lastW=w;lastH=h;
@@ -477,6 +572,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // Follow real saved player coordinates without rotating while the player moves.
     camera.position.set(centerX+10.5,17,centerY+13);
     camera.lookAt(centerX,0,centerY);
+    camera.updateMatrixWorld();
+    cameraProjection.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
+    cameraFrustum.setFromProjectionMatrix(cameraProjection);
      const classify=typeof regionAt==='function'?regionAt:()=> 'forest';
     const zone=String(classify(px,py)||'forest');
     currentBiome=BIOME_STYLE[zone]?zone:'forest';
@@ -496,13 +594,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     let tileIndex=0;
     const centerTileX=Math.round(centerX/10),centerTileY=Math.round(centerY/10);
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
-      const tile=biomeTiles[tileIndex++];
+
       const gx=(centerTileX+tx)*10,gz=(centerTileY+tz)*10;
       // The original floor_base geometry is in world XZ and already has depth.
       // Biome conditions are expressed through existing game light/fog; do not
       // generate palette-filled 2D floor planes or replacement materials.
-      tile.position.set(gx,.015,gz);
+      tile.position.set(gx,.015,gz);tile.updateMatrix();
+      biomeTiles.setMatrixAt(tileIndex++,tile.matrix);
     }
+    biomeTiles.instanceMatrix.needsUpdate=true;
     interactables.length=0;
     const seen=state.last||Date.now();
     if(hero){
@@ -585,8 +685,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     const normalized=new THREE.Vector2(clientX/Math.max(1,lastW)*2-1,-(clientY/Math.max(1,lastH))*2+1);
     raycaster.setFromCamera(normalized,camera);
     const hits=raycaster.intersectObjects(interactables,false);
-    if(hits.length&&hits[0].object.userData.worldPoint)
-      return {...hits[0].object.userData.worldPoint};
+    if(hits.length){
+      const hit=hits[0],point=hit.object.userData.worldPoints?.[hit.instanceId]||hit.object.userData.worldPoint;
+      if(point)return {...point};
+    }
     const point=new THREE.Vector3();
     return raycaster.ray.intersectPlane(groundPlane,point)?{x:point.x/SCALE,y:point.z/SCALE}:null;
   }
@@ -598,9 +700,6 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     undeadActors.clear();
     for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
     nativeCreatureActors.clear();
-    if(undeadSource){undeadSource.traverse(o=>{if(!o.isMesh)return;
-      o.geometry?.dispose();const materials=Array.isArray(o.material)?o.material:[o.material];
-      for(const m of materials)m?.dispose()})}
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
@@ -610,21 +709,26 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       o.geometry?.dispose();
       for(const m of (Array.isArray(o.material)?o.material:[o.material]))m?.dispose();
     });
-    for(const tile of biomeTiles)scene.remove(tile);
+    scene.remove(biomeTiles);biomeTiles.dispose();
+    for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
+    resourceBatches.clear();
     // Source floor geometry/material are disposed once by the source model pool.
   }
   return {
     frame,pick,dispose,setAvatarAppearance,getAvatarAppearance:()=>({...selectedAppearance}),isActive:()=>active&&!disposed&&!canvas.hidden,
     kind:'NATIVE_WEBGL_GAME_RENDERER',
-    get playerSource(){return hero?.avatar.userData.source||''},creatureSources:[...nativeCreatureSources.keys()],
+    get playerSource(){return hero?.avatar.userData.source||''},get creatureSources(){return [...nativeCreatureSources.keys()]},
     modelCount:models.size,get playerAssetLoaded(){return !!hero},get playerMotionClipCount(){return heroClips.length},
-    undeadProxySourceLoaded:!!undeadSource,undeadProxyMotionClipCount:undeadClips.length,
+    get undeadProxySourceLoaded(){return !!undeadSource},get undeadProxyMotionClipCount(){return undeadClips.length},
     getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
     getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
     getMissingAssetTypes:()=>assetReadiness.missingTypes,
     getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
     getAdaptiveQuality:()=>qualityFactor,getFallbackReason:()=>fallbackReason,
-    getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles}),
+    getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,
+      nativeCreatures:nativeCreatureActors.size,undeadCreatures:undeadActors.size,
+      resourceBatches:resourceBatches.size,loadingModels:loadingCreatureCount,loadedModels:nativeCreatureSources.size,
+      measuredFps,pixelRatio:renderer.getPixelRatio()}),
     productionReady:false
   };
 }
