@@ -110,7 +110,14 @@ export function buildPwaVibeTask(task,context={}){
 }
 export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
   const next=buildPwaVibeTask(task,{catalog,status,repoRoot,filesystem}),tasks=Array.isArray(queue.tasks)?queue.tasks:[];
-  if(tasks.some(row=>row.id===next.id))return {...queue,tasks,ingest:{added:false,taskId:next.id,reason:'ALREADY_QUEUED'}};
+  // 웹 조직의 UUID가 공용 큐의 다른 플랫폼 작업과 충돌하면 덮어쓰거나 성공 처리하지 않는다.
+  const existing=tasks.find(row=>row.id===next.id);
+  if(existing){
+    if(clean(existing.target).toLowerCase()!=='web'||clean(existing.gameId)!==next.gameId||
+       (clean(existing.sourceRoot)&&clean(existing.sourceRoot)!==next.sourceRoot))
+      throw new Error('WEB_ORG_QUEUE_IDENTITY_COLLISION');
+    return {...queue,tasks,ingest:{added:false,taskId:next.id,reason:'ALREADY_QUEUED'}};
+  }
   // Owner-submitted source edits share the existing DAG worker pool, not a new one-slot queue.
   // Preserve a real capacity limit. Recover old PWA-only serialized queues without touching tasks.
   const priorMax=Number(queue.maxConcurrentTasks);
@@ -121,7 +128,16 @@ export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=proce
 }
 function pwaTaskId(row={}){const match=clean(row.id).match(/^pwa-([0-9a-f-]{36})$/i);return match?match[1]:null;}
 function mapStatus(row={}){const status=clean(row.status).toLowerCase(),blocker=clean(row.blocker).toLowerCase();if(status==='queued')return'working';if(status==='running')return blocker.includes('candidate-awaiting-qa-and-deployment')?'testing':'working';if(status==='blocked')return'needs_input';if(status==='done')return'done';if(status==='failed')return'failed';if(status==='cancelled')return'cancelled';return null;}
-export function buildSyncPayload(queue={}){const updates=[];for(const row of(Array.isArray(queue.tasks)?queue.tasks:[])){if((row.evidence||[]).includes('vibe-local-web-owner-directive'))continue;const taskId=pwaTaskId(row),status=mapStatus(row);if(taskId&&status)updates.push({taskId,status,blocker:clean(row.blocker)||null});}return {action:'sync',updates};}
+export function buildSyncPayload(queue={}){
+  const updates=[];
+  for(const row of(Array.isArray(queue.tasks)?queue.tasks:[])){
+    // 공유 상태 브랜치가 남아 있어도 웹 PWA로 타 조직 작업의 상태를 반환하지 않는다.
+    if(clean(row.target).toLowerCase()!=='web'||(row.evidence||[]).includes('vibe-local-web-owner-directive'))continue;
+    const taskId=pwaTaskId(row),status=mapStatus(row);
+    if(taskId&&status)updates.push({taskId,status,blocker:clean(row.blocker)||null});
+  }
+  return {action:'sync',updates};
+}
 
 function main(){
   const [mode='']=process.argv.slice(2).filter(arg=>!arg.startsWith('--')),args=parseArgs();

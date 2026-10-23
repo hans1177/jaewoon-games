@@ -218,3 +218,14 @@ test('웹 작업은 유니티 전용 로컬 실행기를 깨우지 않고 인증
   assert.match(bridge,/validateLocalWebOwnerEvent/);
   assert.match(bridge,/gh workflow run vibe2-continuous-core\.yml/);
 });
+
+test('웹 상태 응답은 다른 플랫폼의 전체 작업 수를 노출하지 않는다',()=>{
+  const source=fs.readFileSync(path.join(ROOT,'tools/vibe2-local-web-chat.mjs'),'utf8');
+  const begin=source.indexOf('export function readLocalWebStatus(');
+  const end=source.indexOf('export function readApprovedWebGame(',begin);
+  assert.ok(begin>0&&end>begin,'웹 상태 책임 함수가 존재해야 한다');
+  const implementation=source.slice(begin,end);
+  assert.match(implementation,/clean\(row\.target\)\.toLowerCase\(\) === 'web'/);
+  assert.match(implementation,/webTaskSamplesOnly/);
+  assert.doesNotMatch(implementation,/totalTaskCountsAllPlatforms|state\.statusCounts/);
+});
