@@ -2444,7 +2444,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     scanScope:consumerGameScope?'REQUESTED_GAME_IDS':'ALL_ELIGIBLE_GAMES',
     requestedGameIds:freezeList(consumerGameScope?[...consumerGameScope].sort():[])
   });
-  // source-bound 소비자는 현재 소스의 동적 overlay다. canonical library version/fingerprint는 바꾸지 않는다.
+  // [중앙 실제 사용처 자동 갱신] 전체 스캔에서 확인한 코드 바인딩만 원장에 반영한다.
+  // 한 게임만 검사한 스코프 결과로 다른 게임의 기존 바인딩을 지우지 않는다.
+  // 소비 기록은 제품/런타임 검증이 아니며 원본/게임 전용 파생본을 덮어쓰지 않는다.
+  if(!consumerGameScope)next.assets=consumerSync.registry.assets;
   const qualityInputs=new Map();
   const planningAssets=next.assets.map(asset=>{
     const evidenceRef=clean(asset.internalAuditEvidenceRef);
@@ -2724,7 +2727,16 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     'internalAssetStandard',
     'npcRoleProduction'
   ];
-  const catalogAssetsChanged=beforePracticeRemoval!==next.assets.length||organizationAssetsChanged||syncRows.some(row=>row.changed===true);
+  const consumerFields=['sourceBoundConsumerGameIds','sourceConsumerBindings','sourceConsumerState'];
+  const previousAssets=new Map((original.assets||[]).map(asset=>[clean(asset.id),asset]));
+  // [변경 영향] 바인딩·근거가 실제로 달라졌을 때만 assets 버전을 갱신한다.
+  // 불변 조회나 선택적 게임 스캔은 파일 쓰기·버전 증가를 일으키지 않는다.
+  const consumerBindingsChanged=!consumerGameScope&&next.assets.some(asset=>{
+    const previous=previousAssets.get(clean(asset.id))||{};
+    return consumerFields.some(field=>JSON.stringify(previous[field]??null)!==JSON.stringify(asset[field]??null));
+  });
+  const catalogAssetsChanged=beforePracticeRemoval!==next.assets.length||organizationAssetsChanged
+    ||syncRows.some(row=>row.changed===true)||consumerBindingsChanged;
   const changedSections=mutableSections.filter(key=>
     key==='assets'
       ?catalogAssetsChanged
