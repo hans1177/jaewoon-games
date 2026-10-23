@@ -110,7 +110,7 @@ test('local chat adds no queue writer, shell, or direct publication method', () 
   assert.match(source, /spawnImpl\('gh'/);
   assert.match(source, /repos\/hans1177\/jaewoon-games\/dispatches/);
   assert.match(source,/assertWebVibeQueue/);
-  assert.doesNotMatch(source,/generateVibe2Handoff|vibe2-runtime\\.json/);
+  assert.doesNotMatch(source,/generateVibe2Handoff|vibe2-runtime/);
   assert.match(source, /127\.0\.0\.1:11434\/api\/chat/);
 });
 
@@ -218,7 +218,7 @@ test('웹 작업은 유니티 전용 로컬 실행기를 깨우지 않고 인증
   assert.match(bridge,/github.event.comment.user.type == 'User'/);
   assert.match(bridge,/validateLocalWebOwnerEvent/);
   assert.match(bridge,/WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED/);
-  assert.doesNotMatch(bridge,/gh workflow run vibe2-continuous-core|\\.vibe2\\/queue\\.json/);
+  assert.doesNotMatch(bridge,/gh workflow run vibe2-continuous-core|vibe2-queue-control/);
 });
 
 test('웹 상태 응답은 다른 플랫폼의 전체 작업 수를 노출하지 않는다',()=>{
@@ -228,7 +228,7 @@ test('웹 상태 응답은 다른 플랫폼의 전체 작업 수를 노출하지
   assert.ok(begin>0&&end>begin,'웹 상태 책임 함수가 존재해야 한다');
   const implementation=source.slice(begin,end);
   assert.match(implementation,/assertWebVibeQueue/);
-  assert.doesNotMatch(implementation,/generateVibe2Handoff|vibe2-runtime\\.json/);
+  assert.doesNotMatch(implementation,/generateVibe2Handoff|vibe2-runtime/);
   assert.match(implementation,/webTaskSamplesOnly/);
   assert.doesNotMatch(implementation,/totalTaskCountsAllPlatforms|state\.statusCounts/);
 });
