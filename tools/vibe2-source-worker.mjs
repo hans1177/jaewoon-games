@@ -1604,7 +1604,7 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
             newTextContent=true;
           }
         }
-        if(!valid||!newTextContent)break;
+        if(!valid||!newTextContent){valid=false;break;}
         const originalLiteral=hit[1];
         const appended=originalLiteral.slice(0,-1)+','+JSON.stringify(newRecord)+']';
         const updated=hit[0].replace(originalLiteral,appended);
