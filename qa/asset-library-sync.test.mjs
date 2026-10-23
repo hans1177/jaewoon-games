@@ -736,3 +736,35 @@ test('asset gallery separates source connections, historical declarations, and r
  assert.match(source,/연결만으로 실행검증을 인정하지 않음/);
  assert.match(source,/실제 연결 미확인/);
 });
+
+test('game scoped consumer refresh preserves evidence for unaffected games',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-scoped-consumers-'));
+ try{
+  const asset=path.join(root,'assets','shared','wolf.fbx');
+  fs.mkdirSync(path.dirname(asset),{recursive:true});
+  fs.writeFileSync(asset,'canonical native source');
+  for(const id of ['a','b']){
+   const folder=path.join(root,'web-games',id);
+   fs.mkdirSync(folder,{recursive:true});
+   fs.writeFileSync(path.join(folder,'index.html'),
+    '<script>const files={wolf:"../../assets/shared/wolf.fbx"};loader.loadAsync(files.wolf)</script>');
+  }
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+   games:['a','b'].map(id=>({id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))
+  }));
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+   version:1,assets:[{id:'wolf',family:'CREATURE',path:'assets/shared/wolf.fbx',license:'CC0',
+    productionVerified:false}],externalSources:[]
+  }));
+  const full=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(full.persisted,true);
+  assert.deepEqual(full.registry.assets[0].sourceBoundConsumerGameIds,['a','b']);
+  fs.writeFileSync(path.join(root,'web-games','a','index.html'),'<script>const unrelated=1</script>');
+  const scoped=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true,consumerGameIds:['a']});
+  assert.equal(scoped.persisted,true);
+  const latest=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.deepEqual(latest.assets[0].sourceBoundConsumerGameIds,['b'],'unaffected game connection retained');
+  assert.deepEqual(latest.assets[0].sourceConsumerBindings.map(x=>x.gameId),['b']);
+  assert.equal(latest.assets[0].productionVerified,false);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
