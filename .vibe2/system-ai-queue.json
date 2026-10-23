@@ -147536,7 +147536,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -147629,7 +147629,7 @@
         "internal-motion-shui-gui-walk-v1",
         "internal-motion-huapi-walk-v1"
       ],
-      "retries": 195,
+      "retries": 196,
       "recurrenceCount": 25,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
@@ -147643,12 +147643,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:39952714465:1",
-      "reservedAt": "2026-10-23T12:27:13.850Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -148444,7 +148444,8 @@
         "repair-strategy-fingerprint:5a5cf0e46b033ff28b03bf396cc9feca9f3061dbc6f6e19a92319ab924222fcd",
         "failed-strategy-fingerprint:5a5cf0e46b033ff28b03bf396cc9feca9f3061dbc6f6e19a92319ab924222fcd",
         "model-output-sha256:c5bd712130b97e32d6bd406e1655803448010d656d3215176662f5cc7145da3f",
-        "system-ai-handoff-to-reservation:system-ai:39952714465:1"
+        "system-ai-handoff-to-reservation:system-ai:39952714465:1",
+        "actions-run:39952714465"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -148459,7 +148460,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-23T12:27:13.850Z"
+      "updatedAt": "2026-10-23T12:33:51.788Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
