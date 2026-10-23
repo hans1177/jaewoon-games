@@ -41,7 +41,7 @@ test('backlog preserves existing game-primary reservation and confines focused r
   assert.match(workflow,/VIBE2_AUTO_MAIN_WAKE_BACKLOG=EXISTING_GAME_PRIMARY_RESERVE_ALLOWED/);
   const wakeGate=workflow.split('# Only cron/main-push automatic reserve wakes')[1]?.split('echo "proceed=$proceed"')[0];
   assert.ok(wakeGate);
-  assert.ok(wakeGate.includes("if [[ \"\u0024{VIBE2_EXECUTION_LANE:-game-primary}\" == 'game-primary' ]]"));
+  assert.ok(wakeGate.includes("if [[ \"\u0024{VIBE2_EXECUTION_LANE:-game-primary}\" == 'game-primary' || \"\u0024{VIBE2_EXECUTION_LANE:-game-primary}\" == 'asset-development' ]]"));
   assert.ok(wakeGate.indexOf('OWNER_PAGES_PUBLICATION_PRIORITY')<wakeGate.indexOf('EXISTING_GAME_PRIMARY_RESERVE_ALLOWED'));
   assert.match(wakeGate,/EXISTING_GAME_PRIMARY_RESERVE_ALLOWED[\s\S]*?else[\s\S]*?proceed=false/);
   assert.match(workflow,/focus_reconcile=true/);
