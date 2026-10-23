@@ -145901,7 +145901,7 @@
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145935,7 +145935,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:39916206236:1",
+      "previousReservationId": "system-ai:39917273688:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145943,12 +145943,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39917273688:1",
-      "reservedAt": "2026-10-23T07:24:03.691Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -146180,7 +146180,19 @@
         "actions-run:39915572129",
         "system-ai-handoff-to-reservation:system-ai:39916206236:1",
         "actions-run:39916206236",
-        "system-ai-handoff-to-reservation:system-ai:39917273688:1"
+        "system-ai-handoff-to-reservation:system-ai:39917273688:1",
+        "actions-run:39917273688",
+        "external-ai-raw-output-sha256:ab9341ded45ef3ac194d82accc54bcd49fe0bb9cd473c440ed9df237285a804c",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_3f9ed1eaf8c7ed00c283e5c3",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_f22782671545193f22176195",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_5f8b04f2525a6688fa6853c7",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_31bc6402f5611fd66c298fb4",
+        "selected-strategy:comprehensive-pre-release-marketing-artifact",
+        "system-ai-critic-decision-sha256:740bf929a485b697c1261c5d6d84b89c72df6f6b4c74c4deaf6ddb1e2456b887",
+        "system-ai-applied-answer-sha256:ab9341ded45ef3ac194d82accc54bcd49fe0bb9cd473c440ed9df237285a804c",
+        "repair-strategy-fingerprint:ff6605a983a7882a46828a994d28ed885fcb858cf731e3ba09f6731b77e12f7a",
+        "failed-strategy-fingerprint:ff6605a983a7882a46828a994d28ed885fcb858cf731e3ba09f6731b77e12f7a",
+        "model-output-sha256:ab9341ded45ef3ac194d82accc54bcd49fe0bb9cd473c440ed9df237285a804c"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1052,
@@ -146195,7 +146207,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-23T07:24:03.691Z"
+      "updatedAt": "2026-10-23T07:28:41.781Z"
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
