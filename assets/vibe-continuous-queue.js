@@ -662,9 +662,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const candidates = [];
   queue.tasks.forEach((task, index) => {
     if (task.status !== 'queued') return;
-    if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&task.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')){laneDeferred.push(task);return;}
     const ownerWebBlocker=ownerWebReservationBlocker(task);
     if(ownerWebBlocker){blocked.push(freeze({task,reasons:freezeList([ownerWebBlocker])}));return;}
+    if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&task.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')){laneDeferred.push(task);return;}
     const reasons = taskBlockedReasons(task, completed);
     if (reasons.length) blocked.push(freeze({ task, reasons }));
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
