@@ -56,6 +56,14 @@ test('포근섬 모바일 UI는 채집 버튼 없이 마을 운영과 정복만 
  assert.doesNotMatch(cozyClient,/AutoGatherStatus/);
 });
 
+test('포근섬 모바일 채집 안내는 시작 버튼 이후 9초간 표시하고 종료 후 복원되지 않는다',()=>{
+ assert.match(cozyClient,/local touchGatherHintUntil=0/);
+ assert.match(cozyClient,/touchGatherHintUntil=os\.clock\(\)\+9/);
+ assert.match(cozyClient,/local hint=gui:FindFirstChild\("ManualGatherHint"\)/);
+ assert.match(cozyClient,/gatherHint\.Visible=ready and not actionPopup\.Visible and \(not touchEnabled or os\.clock\(\)<touchGatherHintUntil\)/);
+ assert.doesNotMatch(cozyClient,/if touchEnabled then task\.delay\(9,function\(\)if gatherHint\.Parent/);
+});
+
 test('포근섬 실제 배치 함수는 가로 화면에서 메뉴와 행동 탭을 겹치지 않게 배치한다',{skip:!process.env.VIBE2_LUAU_BINARY},()=>{
  const start=cozyClient.indexOf('local function layoutControls()');
  const end=cozyClient.indexOf('actionPopup:GetPropertyChangedSignal("Visible")',start);
@@ -66,6 +74,7 @@ local UDim2={new=function(xs,x,ys,y)return{xs,x,ys,y}end,fromOffset=function(x,y
 local gui={};local hud={};local resources={};local objective={};local gatherHint={}
 local controls={};local actionPopup={Size=UDim2.fromOffset(260,128)}
 local actionButtons={{},{},{},{}};local startupOverlay={};local touchEnabled=true
+local touchGatherHintUntil=os.clock()+9
 ${cozyClient.slice(start,end)}
 local function rect(o,w,h)
  local s=o.Size;local p=o.Position;local a=o.AnchorPoint or Vector2.zero
@@ -82,11 +91,17 @@ for _,v in ipairs({{320,480},{390,760},{480,270},{568,274},{667,320},{844,350},{
   assert(dock.w*.46>=44 and dock.h>=52,'터치 영역 부족')
   assert(not hud.Visible and not objective.Visible and not gatherHint.Visible and controls.Visible)
   actionPopup.Visible=false;layoutControls();assert(hud.Visible and objective.Visible and controls.Visible)
-  assert(gatherHint.Visible==not touch)
+  assert(gatherHint.Visible,'첫 진입 채집 안내가 메뉴를 닫으면 보이지 않음')
   startupOverlay.Parent={};actionPopup.Visible=true;layoutControls()
   assert(not actionPopup.Visible and not controls.Visible and not hud.Visible)
  end
 end
+touchEnabled=true
+startupOverlay.Parent=nil
+actionPopup.Visible=false
+touchGatherHintUntil=os.clock()-1
+layoutControls()
+assert(not gatherHint.Visible,'9초가 지난 모바일 안내가 다시 표시됨')
 print('COZY_LAYOUT_MOCK_PASS:7_VIEWPORTS')
 `;
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cozy-layout-'));

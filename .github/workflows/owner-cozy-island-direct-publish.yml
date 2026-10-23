@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout canonical main
+      - name: Checkout exact verified Cozy Island source revision
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           path: main
           fetch-depth: 1
 
@@ -44,6 +44,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Verify Cozy Island regression before Roblox Cloud publish
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test qa/cozy-rpg-release-hardening.test.mjs
 
       - name: Install pinned Rojo
         shell: bash
