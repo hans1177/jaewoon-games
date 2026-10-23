@@ -8,7 +8,8 @@
   "sourcePath": "roblox-games/cozy-island",
   "sourceValidationPassed": false,
   "sourceValidationBlockers": [
-    "CONFIG_GENRE_PROFILE_REQUIRED"
+    "CONFIG_GENRE_PROFILE_REQUIRED",
+    "SERVER_PLACEHOLDER_FORBIDDEN"
   ],
   "runtimePassed": false,
   "independentQaPassed": false,
@@ -63,10 +64,10 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 140,
-    "selectionFingerprint": "4124606bdfe42975f09f9aa8a40ecdba011fc5dbb1cedb53be355c9a806c5387",
-    "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
-    "buildUpAssetSourceUsageLibraryVersion": 140,
+    "libraryVersion": 141,
+    "selectionFingerprint": "50a31f8de649d0a7883087418f63719264ee0c8843a58d3acb1eece8dd4d81b7",
+    "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
+    "buildUpAssetSourceUsageLibraryVersion": 141,
     "selectedSourceContentHashes": [
       {
         "source": "company-asset-library.json#baseMaterialLibrary",
@@ -580,12 +581,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "cozy-island-build-up-g8-6dcab97327b9",
-  "buildUpGeneration": 8,
+  "buildUpDirectiveId": "cozy-island-build-up-g11-9318a20d041d",
+  "buildUpGeneration": 11,
   "buildUpGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독와 미지 공간과 지도 정보 수집 × 문화·언어와 번역가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "buildUpDirectiveFingerprint": "6dcab97327b98f157fcfe81a49f31d3c95bfa7ff858fe180e844f0f74fab8d1d",
+  "buildUpDirectiveFingerprint": "9318a20d041d81c812f8ad76d73ceb58aa8f48734d4fe35ad60f7de1ed80644e",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_SOURCE_REPAIR",
-  "createdAt": "2026-10-21T14:06:32.505Z"
+  "createdAt": "2026-10-23T12:30:03.346Z"
 }
