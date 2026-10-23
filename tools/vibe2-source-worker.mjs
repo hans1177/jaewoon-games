@@ -1586,10 +1586,10 @@ export function deterministicWebAutosaveLifecycleCandidate({order={},sourceRoot=
   const original='setInterval(()=>{if(!state.dead)save(false)},20000);';
   const replacement=[
     'let autosaveInterval=setInterval(()=>{if(!state.dead)save(false)},20000);',
-    "window.addEventListener('pagehide',()=>{",
+    "addEventListener('pagehide',()=>{",
     '  if(autosaveInterval!==null){clearInterval(autosaveInterval);autosaveInterval=null;}',
     '});',
-    "window.addEventListener('pageshow',event=>{",
+    "addEventListener('pageshow',event=>{",
     '  if(event.persisted&&autosaveInterval===null){',
     '    autosaveInterval=setInterval(()=>{if(!state.dead)save(false)},20000);',
     '  }',

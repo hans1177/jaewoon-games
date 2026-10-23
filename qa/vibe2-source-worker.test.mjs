@@ -9106,7 +9106,7 @@ test('Vibe offline Web autosave repair edits existing game code and survives bfc
   const sandbox={
     setInterval:(fn,ms)=>{const id=++sequence;timers.set(id,{fn,ms});return id;},
     clearInterval:id=>{cleared.push(id);timers.delete(id);},
-    window:{addEventListener:(type,fn)=>listeners.set(type,fn)}
+    addEventListener:(type,fn)=>listeners.set(type,fn)
   };
   runInNewContext(updated.match(/<script>([\s\S]*?)<\/script>/)[1],sandbox);
   assert.equal(timers.size,1);
@@ -9151,8 +9151,8 @@ test('Vibe offline autosave source coding runs before any external model request
   assert.ok(a>0&&b>a);
   assert.match(worker,/VIBE2_DETERMINISTIC_WEB_AUTOSAVE_LIFECYCLE=PASS/);
   const game=fs.readFileSync('web-games/insect-survival/index.html','utf8');
-  assert.match(game,/window\.addEventListener\('pagehide'/);
-  assert.match(game,/window\.addEventListener\('pageshow'/);
+  assert.match(game,/addEventListener\('pagehide'/);
+  assert.match(game,/addEventListener\('pageshow'/);
   assert.equal((game.match(/autosaveInterval=setInterval\(/g)||[]).length,2);
 });
 
