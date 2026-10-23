@@ -124,7 +124,7 @@ test('owner comment rejects forged identities, edits, malformed commands and pla
 test('direct owner game work preserves parallel pool and upgrades legacy one-slot PWA queues',()=>{
   const f=fixture();
   const task={id:UUID,game_id:'insect-survival',body:'몬스터 행동을 개선해',kind:'directive',priority:'urgent'};
-  const prior={id:'existing-worker',gameId:'insect-survival',status:'running'};
+  const prior={id:'existing-worker',gameId:'insect-survival',target:'web',status:'running'};
   const queue={version:5,mode:'hierarchical-dag-sharded-work-stealing-queue',maxConcurrentTasks:128,tasks:[prior]};
   const result=ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root});
   assert.equal(result.maxConcurrentTasks,128,'do not replace existing parallel capacity with one slot');
@@ -255,4 +255,33 @@ test('동일 UUID에 타 조직 작업이 있다면 웹 작업 성공으로 처�
   assert.throws(()=>ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
   const mismatched={...queue,tasks:[{...queue.tasks[0],target:'web',sourceRoot:'web-games/cozy-island'}]};
   assert.throws(()=>ingestPwaTask({task,queue:mismatched,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
+});
+
+test('웹 작업 접수는 기존 로블록스/유니티 전역 큐 설정을 변경하지 않는다',()=>{
+  const f=fixture(),task={id:UUID,game_id:'insect-survival',body:'웹 전용 인벤토리 개선',platform:'web'};
+  for(const platform of ['roblox','unity','unreal']){
+    const native={id:'native-'+platform,gameId:'fort',target:platform,status:'running',
+      sourceRoot:platform+'-games/fort',responsibleFiles:[platform+'-games/fort/start.js']};
+    const queue={version:5,mode:'single-worker-priority-serial-queue',
+      maxConcurrentTasks:1,ownerDirectivePreemptsAutonomy:false,
+      schedulerMetadata:{nativeSlots:9,original:true},tasks:[native]};
+    const oldBytes=JSON.stringify(queue);
+    const result=ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root});
+    assert.equal(JSON.stringify(queue),oldBytes,'원래 큐는 수정하지 않는다');
+    assert.equal(result.maxConcurrentTasks,1,'타 조직 실행 수를 변경하지 않는다');
+    assert.equal(result.mode,queue.mode,'타 조직 스케줄링 모드를 변경하지 않는다');
+    assert.equal(result.ownerDirectivePreemptsAutonomy,false,'타 조직 owner 정책을 변경하지 않는다');
+    assert.deepEqual(result.schedulerMetadata,queue.schedulerMetadata);
+    assert.deepEqual(result.tasks[0],native);
+    assert.equal(result.tasks[1].target,'web');
+    assert.equal(result.tasks[1].sourceRoot,'web-games/insect-survival');
+  }
+  const unknownQueue={version:5,mode:'single-worker-priority-serial-queue',
+    maxConcurrentTasks:1,tasks:[{id:'legacy-target-missing',status:'queued'}]};
+  const unknown=ingestPwaTask({task,queue:unknownQueue,catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(unknown.maxConcurrentTasks,1,'정체가 확인되지 않은 레거시 작업도 보존한다');
+  const webQueue={version:5,mode:'single-worker-priority-serial-queue',
+    maxConcurrentTasks:1,tasks:[{id:'legacy-web',gameId:'insect-survival',target:'web',status:'queued'}]};
+  const web=ingestPwaTask({task,queue:webQueue,catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(web.maxConcurrentTasks,256,'웹 작업만 있는 레거시 큐는 기존 복구를 유지한다');
 });

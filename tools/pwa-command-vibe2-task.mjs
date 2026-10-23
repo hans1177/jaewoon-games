@@ -118,6 +118,13 @@ export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=proce
       throw new Error('WEB_ORG_QUEUE_IDENTITY_COLLISION');
     return {...queue,tasks,ingest:{added:false,taskId:next.id,reason:'ALREADY_QUEUED'}};
   }
+  // 웹 작업 접수에서 로블록스/유니티 큐의 전역 동시 실행 수나 모드를 바꾸지 않는다.
+  // 오직 명시적으로 웹 작업만 존재하는 과거 직렬화 큐에서만 복구한다.
+  const hasNonWebTasks=tasks.some(row=>clean(row.target).toLowerCase()!=='web');
+  if(hasNonWebTasks)return {
+    ...queue,tasks:[...tasks,next],
+    ingest:{added:true,taskId:next.id,gameId:next.gameId,target:next.target,reason:'OWNER_IMMEDIATE_PWA'}
+  };
   // Owner-submitted source edits share the existing DAG worker pool, not a new one-slot queue.
   // Preserve a real capacity limit. Recover old PWA-only serialized queues without touching tasks.
   const priorMax=Number(queue.maxConcurrentTasks);
