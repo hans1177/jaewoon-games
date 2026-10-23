@@ -5375,4 +5375,21 @@ test('active game missing individual creature roles reuses matching CC0 and sour
   &&row.requestedRole==='dragon'&&row.reason==='CURRENT_GAME_MISSING_ROLE_UNRESOLVED'));
  assert.ok(blocked.nextActions.some(row=>row.requestedRole==='spider'
   &&row.reason==='CURRENT_GAME_MISSING_ROLE_REUSE'));
+ // 서로 다른 부족 역할은 동일 family의 수급 요청으로 합치지 않는다.
+ const golem={...dragon,id:'cc0-golem-original',name:'Golem Model',capabilities:['golem','glb']};
+ const multiple=buildAssetSupplyDecisionSummary({...inputs,
+  requirements:[...inputs.requirements,{family:'CREATURE',role:'golem'}],
+  registry:{assets:[wolf,spider],externalSources:[dragon,golem]}});
+ const roleSources=multiple.nextActions.filter(row=>row.reason==='CURRENT_GAME_MISSING_ROLE_CC0_SOURCE');
+ assert.deepEqual(roleSources.map(row=>row.requestedRole).sort(),['dragon','golem']);
+ assert.deepEqual(roleSources.map(row=>row.externalAcquisition.sourceId).sort(),
+  [dragon.id,golem.id].sort());
+ assert.equal(multiple.missingRoleCount,3);
+ // 단순 종류 공통 요구는 기존 자산이 있으면 별도의 부재 역할로 처리하지 않는다.
+ const generic=buildAssetSupplyDecisionSummary({
+  gameId:inputs.gameId,target:inputs.target,
+  requirements:[{family:'CREATURE',role:'generic'}],
+  registry:{assets:[wolf],externalSources:[]}
+ });
+ assert.equal(generic.missingRoleCount,0);
 });
