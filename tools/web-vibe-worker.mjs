@@ -5,6 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {assertWebVibeQueue,assertWebVibeTask,WEB_VIBE_CONTROL_BRANCH} from './web-vibe-organization.mjs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const REPO='hans1177/jaewoon-games';
 const clean=v=>String(v??'').trim();
@@ -16,15 +17,25 @@ function run(binary,args,{cwd=ROOT,timeout=120000,env={}}={}){
     windowsHide:true,env:{...process.env,...env},stdio:['ignore','pipe','pipe']}).trim();
 }
 function options(argv){const out={};for(const part of argv){
-  if(part==='--check'||part==='--apply'||part==='--pr'||part==='--all')out[part.slice(2)]=true;
+  if(part==='--check'||part==='--apply'||part==='--pr'||part==='--all'||part==='--cloud')out[part.slice(2)]=true;
   else if(part.startsWith('--task='))out.task=part.slice(7);
   else if(part.startsWith('--files='))out.files=part.slice(8);
   else fail('WEB_VIBE_UNKNOWN_ARGUMENT');
 }if(out.all&&out.files!==undefined)fail('WEB_VIBE_SCOPE_CONFLICT');return out;}
-export function assertWebVibeWorkerEnvironment({token='',endpoint=OLLAMA_URL,model=MODEL}={}){
+export function assertWebVibeWorkerEnvironment({token='',endpoint=OLLAMA_URL,model=MODEL,cloud=false,
+  environment=process.env}={}){
   if(!clean(token)||clean(token).length<12)fail('WEB_VIBE_DEDICATED_TOKEN_REQUIRED');
+  if(cloud){
+    if(environment.GITHUB_ACTIONS!=='true'||environment.GITHUB_ACTOR!=='hans1177'
+      ||environment.GITHUB_REPOSITORY!==REPO||!['issue_comment','repository_dispatch'].includes(environment.GITHUB_EVENT_NAME)
+      ||environment.GITHUB_REF!=='refs/heads/main')
+      fail('WEB_VIBE_GITHUB_OWNER_MAIN_CONTEXT_REQUIRED');
+    if(!clean(environment.GEMINI_API_KEY))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING');
+    return {endpoint:'EXISTING_GEMINI_FREE_API',model:'EXISTING_VERIFIED_FREE_PAIR',
+      organization:'WEB',sharedNativeCredentialAllowed:false,githubHosted:true};
+  }
   if(endpoint!==OLLAMA_URL||model!==MODEL)fail('WEB_VIBE_DEDICATED_MODEL_ENDPOINT_REQUIRED');
-  return {endpoint,model,organization:'WEB',sharedNativeCredentialAllowed:false};
+  return {endpoint,model,organization:'WEB',sharedNativeCredentialAllowed:false,githubHosted:false};
 }
 export function chooseWebVibeTask(queue,taskId){
   const data=assertWebVibeQueue(queue),task=data.tasks.find(item=>item.id===taskId);
@@ -117,28 +128,41 @@ function verifiedLocalMain(){
   if(run('git',['rev-parse','HEAD'])!==run('git',['rev-parse','origin/main']))
     fail('WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST');
 }
-async function propose(task,source,fetchImpl=fetch,previousVerified=[]){
+// 클라우드/로컬은 같은 WEB_VIBE_1 파일 검증과 PR 경로를 사용한다.
+// 원격 모델 응답은 절대 권한이 아니며 기존 단일 bounded edit 검사만 통과한다.
+export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fetch,
+  geminiImpl=requestGeminiFreePair,apiKey='',previousVerified=[]}={}){
   const excerpt=source.original.slice(0,13500);
-  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),95000);
-  try{
-    const response=await fetchImpl(OLLAMA_URL,{method:'POST',redirect:'error',
-      headers:{'Content-Type':'application/json'},signal:controller.signal,
-      body:JSON.stringify({model:MODEL,stream:false,format:'json',options:{temperature:0,num_ctx:8192},
-        messages:[
-          {role:'system',content:'You are the independent WEB-only coding assistant. Inspect this specific web game file. If no change needed, respond JSON with skip:true and reason; otherwise return one unique bounded oldText/newText replacement for this file. Respond JSON with oldText,newText,reason, or skip:true. Never modify saves, security, deployment, tokens, or unrelated functionality. Do not use commands or tools.'},
-          {role:'user',content:'Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,2000)+
-            '\nPrior same-game independently merged owner patches (context only; recheck current source):\n'+
-            previousVerified.map(row=>row.id+': '+clean(row.goal).slice(0,300)).join('\n').slice(0,1300)+
-            '\nContinue from current game source and preserve existing mechanics/saves. Do not reset prior build-up or invent verified outcomes.'+
-            '\nExisting source excerpt:\n'+excerpt}
-        ]})});
-    if(!response.ok)fail('WEB_VIBE_LOCAL_MODEL_HTTP_'+response.status);
-    const data=await response.json();
-    const answer=clean(data.message?.content||'');
-    let value;try{value=JSON.parse(answer);}catch{fail('WEB_VIBE_MODEL_JSON_INVALID');}
-    if(value?.skip===true&&typeof value.reason==='string')return null;
-    return safeWebVibeReplacement(source.original,answer,{relative:source.relative});
-  }finally{clearTimeout(timeout);}
+  const system='You are the independent WEB-only coding assistant. Inspect only the provided existing web-game file. '
+    +'If no relevant change is needed, return JSON {"skip":true,"reason":"not affected"}. '
+    +'Otherwise return JSON with one unique bounded oldText,newText,reason replacement for this file. '
+    +'Never modify saves, security, deployment, tokens, Roblox/Unity, unrelated files, or run tools.';
+  const user='Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,2000)
+    +'\nPrior independently merged patches for this same WEB game (context only; recheck latest source):\n'
+    +previousVerified.map(row=>row.id+': '+clean(row.goal).slice(0,300)).join('\n').slice(0,1300)
+    +'\nContinue from current game source and preserve existing mechanics/saves. Do not reset previous build-up progress.'
+    +'\nExisting exact source excerpt:\n'+excerpt;
+  let answer='';
+  if(cloud){
+    const result=await geminiImpl({apiKey,
+      contents:[{role:'user',parts:[{text:system+'\n\n'+user}]}],
+      maxOutputTokens:3072,temperature:0,responseMimeType:'application/json',timeoutMs:95000});
+    answer=clean(result?.text);
+  }else{
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),95000);
+    try{
+      const response=await fetchImpl(OLLAMA_URL,{method:'POST',redirect:'error',
+        headers:{'Content-Type':'application/json'},signal:controller.signal,
+        body:JSON.stringify({model:MODEL,stream:false,format:'json',options:{temperature:0,num_ctx:8192},
+          messages:[{role:'system',content:system},{role:'user',content:user}]})});
+      if(!response.ok)fail('WEB_VIBE_LOCAL_MODEL_HTTP_'+response.status);
+      const data=await response.json();
+      answer=clean(data.message?.content||'');
+    }finally{clearTimeout(timeout);}
+  }
+  let value;try{value=JSON.parse(answer);}catch{fail('WEB_VIBE_MODEL_JSON_INVALID');}
+  if(value?.skip===true&&typeof value.reason==='string')return null;
+  return safeWebVibeReplacement(source.original,answer,{relative:source.relative});
 }
 // QA: 영향받은 JS 구문, 기존 WEB 큐·정책 검증만 재실행한다.
 function localQa(changed){
@@ -149,8 +173,9 @@ function localQa(changed){
   }
   run('node',['--test','qa/web-vibe-worker.test.mjs','qa/web-vibe-organization.test.mjs','qa/pwa-command-vibe2-task.test.mjs'],{timeout:180000});
 }
-function createPr(task,changed,token){
-  const branch='web-vibe/'+task.gameId+'-'+Date.now();
+function createPr(task,changed,token,{cloud=false}={}){
+  // Stable owner-task branch prevents duplicate PRs after retries or network races.
+  const branch='web-vibe/'+task.gameId+'-'+task.id.slice(4);
   run('git',['switch','-c',branch]);
   for(const {source,edit} of changed)fs.writeFileSync(source.file,edit.updated,'utf8');
   localQa(changed.map(row=>row.source));
@@ -166,19 +191,49 @@ function createPr(task,changed,token){
   const pr=run('gh',['pr','create','--repo',REPO,'--base','main','--head',branch,
     '--title','fix(web): independent Web Vibe candidate '+task.gameId,
     '--body',[
-      'WEB_VIBE_1 independent local model candidate (localhost:11435).',
+      cloud?'WEB_VIBE_1 GitHub-hosted existing free-model candidate.':'WEB_VIBE_1 independent local model candidate (localhost:11435).',
       'Game: '+task.gameId,'Owner task: '+task.id,'Sources: '+changed.map(row=>row.source.relative).join(', '),
       'Local scoped QA: PASS. Browser/mobile/runtime/production: NOT VERIFIED.',
       'Do not merge before independent security, game QA, and human review.'
     ].join('\n')],{env:{GH_TOKEN:token}});
   return pr;
 }
-export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fetch}={}){
+// Persist the existing WEB-only queue checkpoint after the actual PR exists.
+// Do not mark a source candidate 'merged' or 'verified' without independent QA.
+function markWebVibeReview(task,pr,token){
+  const url=clean(pr);
+  if(!/^https:\/\/github\.com\/hans1177\/jaewoon-games\/pull\/[0-9]+$/.test(url))
+    fail('WEB_VIBE_REVIEW_PR_URL_UNVERIFIED');
+  const state=remoteQueue(token),stored=state.queue.tasks.find(row=>row.id===task.id);
+  if(!stored||stored.gameId!==task.gameId||stored.sourceRoot!==task.sourceRoot
+    ||stored.target!=='web'||stored.goal!==task.goal||
+    !['queued','blocked','review'].includes(stored.status))fail('WEB_VIBE_REVIEW_QUEUE_STALE');
+  if(stored.status==='review'){
+    if(stored.reviewPrUrl!==url)fail('WEB_VIBE_REVIEW_PR_COLLISION');
+    return;
+  }
+  const tasks=state.queue.tasks.map(row=>row.id===task.id
+    ?{...row,status:'review',reviewPrUrl:url,blocker:null,evidence:[...new Set([
+        ...(row.evidence||[]),'web-vibe-pr-created:needs-independent-qa-and-owner-merge'
+      ])]}:row);
+  const queue=assertWebVibeQueue({...state.queue,tasks});
+  const payload={message:'web-vibe: review owner patch '+task.id+' [skip ci]',
+    content:Buffer.from(JSON.stringify(queue,null,2)+'\n').toString('base64'),
+    sha:state.sha,branch:WEB_VIBE_CONTROL_BRANCH};
+  const scratch=path.join(path.dirname(ROOT),'web-vibe-review-'+process.pid+'-'+task.id.slice(4)+'.json');
+  fs.writeFileSync(scratch,JSON.stringify(payload),{mode:0o600,flag:'wx'});
+  try{
+    run('gh',['api','-X','PUT','repos/'+REPO+'/contents/.web-vibe/queue.json','--input',scratch],
+      {env:{GH_TOKEN:token},timeout:90000});
+  }finally{fs.rmSync(scratch,{force:true});}
+}
+
+export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fetch,geminiImpl=requestGeminiFreePair}={}){
   const args=options(argv);
   if(args.pr&&!args.apply)fail('WEB_VIBE_PR_REQUIRES_EXPLICIT_APPLY');
   if(args.apply&&!args.pr)fail('WEB_VIBE_APPLY_REQUIRES_REVIEWABLE_PR');
   const token=clean(process.env.WEB_VIBE_GH_TOKEN);
-  assertWebVibeWorkerEnvironment({token});
+  assertWebVibeWorkerEnvironment({token,cloud:args.cloud===true});
   verifiedLocalMain();
   const state=remoteQueue(token);
   if(args.check)return {organization:'WEB',engine:'WEB_VIBE_1',webQueued:state.queue.tasks.filter(t=>t.status==='queued').length,sourceWritten:false,modelConnected:false};
@@ -193,7 +248,8 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
     fail('WEB_VIBE_BUILD_UP_HISTORY_NOT_VERIFIED');
   const changed=[];
   for(const source of sources){
-    const edit=await propose(task,source,fetchImpl,prior);
+    const edit=await proposeWebVibeChange(task,source,{cloud:args.cloud===true,fetchImpl,geminiImpl,
+      apiKey:args.cloud?clean(process.env.GEMINI_API_KEY):'',previousVerified:prior});
     if(edit)changed.push({source,edit});
   }
   if(!changed.length)fail('WEB_VIBE_NO_ACTUAL_SOURCE_DELTA');
@@ -201,7 +257,8 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
     affectedFiles:changed.map(row=>row.source.relative),
     changePreview:changed.map(row=>({file:row.source.relative,oldText:row.edit.oldText,newText:row.edit.newText})),
     sourceWritten:false,qaVerified:false};
-  const pr=createPr(task,changed,token);
+  const pr=createPr(task,changed,token,{cloud:args.cloud===true});
+  markWebVibeReview(task,pr,token);
   return {taskId:task.id,source:changed.map(row=>row.source.relative).join(','),
     selectedFiles:sources.length,changedFiles:changed.length,pr,
     sourceWritten:true,localQaVerified:true,merged:false,deployed:false};

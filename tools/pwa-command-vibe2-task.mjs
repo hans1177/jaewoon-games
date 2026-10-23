@@ -79,7 +79,16 @@ export function validateLocalWebOwnerEvent(event,{actor='',repository=''}={}){
      clean(p.kind)!=='directive'||
      p.autoDeployAfterVerifiedQa!==true||
      !clean(p.body)||clean(p.body).length>2000||/[\x00-\x08\x0b-\x1f]/.test(clean(p.body)))throw new Error('LOCAL_OWNER_EVENT_INVALID');
-  return {id:clean(p.id),game_id:clean(p.game_id),platform:'web',kind:'directive',priority:'urgent',body:clean(p.body),source:'LOCAL_VIBE_WEB_CHAT'};
+  // Files are only game-relative WEB text sources; '*' uses existing unlimited
+  // WEB_VIBE_1 source discovery, never the native Roblox/Unity organizations.
+  const files=p.files===undefined?'*':p.files;
+  if(typeof files!=='string'||files.length>1500||!files.length||
+    !files.split(/[;,]/).every(file=>(file==='*'||file==='all')||
+      (file.split('/').every(part=>part!=='.'&&part!=='..')
+        &&/^(?:[A-Za-z0-9._-]+\/)*[A-Za-z0-9._-]+\.(?:html?|css|js|mjs|cjs|json|svg)$/i.test(file))))
+    throw new Error('LOCAL_OWNER_WEB_FILE_SCOPE_INVALID');
+  return {id:clean(p.id),game_id:clean(p.game_id),platform:'web',kind:'directive',
+    priority:'urgent',body:clean(p.body),files,source:'LOCAL_VIBE_WEB_CHAT'};
 }
 function ownerContext(task){const rows=Array.isArray(task?.ownerMessages)?task.ownerMessages:[],messages=rows.map(row=>clean(row?.body)).filter(Boolean);return messages.length?`\n\n추가 지시:\n${messages.map(text=>`- ${text}`).join('\n')}`:'';}
 // An owner idea is a development task, not permission to create orchestration work.

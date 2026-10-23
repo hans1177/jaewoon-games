@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/pwa-command-bridge.yml'
       - 'tools/pwa-command-vibe2-task.mjs'
+      - 'tools/web-vibe-worker.mjs'
       - 'qa/pwa-command-vibe2-task.test.mjs'
       - 'command.html'
       - 'manifest.webmanifest'
@@ -38,9 +39,14 @@ env:
 
 jobs:
   bridge:
-    # Local WEB Vibe uses its own queue and never dispatches native/cloud worker jobs.
+    # WEB_VIBE_1 owner ingress. Native/Roblox queue and workers stay separate.
     # Keep exact owner identity checks; this independent local route does not require cloud Vibe2.
     if: >-
+      (github.event_name == 'repository_dispatch' &&
+       github.event.action == 'vibe-local-web-owner-directive' &&
+       github.repository == 'hans1177/jaewoon-games' &&
+       github.actor == 'hans1177' &&
+       github.event.sender.login == 'hans1177') ||
       (github.event_name == 'issue_comment' &&
        github.repository == 'hans1177/jaewoon-games' &&
        github.actor == 'hans1177' &&
@@ -51,6 +57,10 @@ jobs:
        startsWith(github.event.comment.body, '/vibe-local-web '))
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    outputs:
+      task_id: ${{ steps.local.outputs.task_id }}
+      files: ${{ steps.local.outputs.files }}
+      queued: ${{ steps.ingest.outputs.queued }}
     steps:
       - name: Checkout latest main
         uses: actions/checkout@v4
@@ -69,8 +79,8 @@ jobs:
           node --check tools/pwa-command-vibe2-task.mjs
           node --test qa/pwa-command-vibe2-task.test.mjs qa/web-vibe-organization.test.mjs
 
-      - name: Receive GitHub-authenticated local web owner directive
-        if: github.event_name == 'issue_comment'
+      - name: Receive GitHub-authenticated WEB-only owner directive
+        if: github.event_name == 'issue_comment' || github.event_name == 'repository_dispatch'
         id: local
         shell: bash
         run: |
@@ -83,7 +93,7 @@ jobs:
             actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY
           });
           fs.writeFileSync('/tmp/pwa-next.json',JSON.stringify({task})+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'has_work=true\n'+'task_id='+task.id+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'has_work=true\n'+'task_id='+task.id+'\n'+'files='+task.files+'\n');
           console.log('LOCAL_WEB_OWNER_DIRECTIVE=AUTHORIZED');
           NODE
 
@@ -154,9 +164,9 @@ jobs:
           echo 'WEB_VIBE_PUBLICATION=NOT_VERIFIED'
 
   github-cloud:
-    # Web owner instructions use only the cloud Web source route. No Unity/Roblox runner is dispatched.
-    # Keep the existing owner identity checks even when the local PC is unavailable.
-    if: github.event_name != 'issue_comment'
+    # Original PWA polling stays in the existing cloud lane. Local WEB chat
+    # and owner comments now execute only through independent WEB_VIBE_1.
+    if: github.event_name != 'issue_comment' && github.event_name != 'repository_dispatch'
     env:
       VIBE2_BRANCH: vibe2-unreal-core
     runs-on: ubuntu-latest
@@ -205,28 +215,12 @@ jobs:
             --data-binary @/tmp/pwa-sync.json > /tmp/pwa-sync-result.json
           cat /tmp/pwa-sync-result.json
 
-      - name: Accept owner WEB dispatch or claim next PWA instruction
+      - name: Claim next original PWA instruction
         id: next
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ]; then
-            # The owner PC does not execute this job; GitHub authenticates the
-            # event and the existing owner validator enforces WEB-only scope.
-            node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {validateLocalWebOwnerEvent} from './tools/pwa-command-vibe2-task.mjs';
-          const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
-          const task=validateLocalWebOwnerEvent(event,{
-            actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY
-          });
-          fs.writeFileSync('/tmp/pwa-next.json',JSON.stringify({task})+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,
-            'has_work=true\n'+'task_id='+task.id+'\n');
-          console.log('OWNER_WEB_CLOUD_INGEST=AUTHORIZED');
-          NODE
-          else
-            # Existing PWA polling and OIDC endpoint are unchanged.
+          # Existing PWA polling and OIDC endpoint are unchanged.
             printf '{"action":"next"}\n' > /tmp/pwa-next-request.json
             curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
               -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
@@ -241,8 +235,6 @@ jobs:
           fs.appendFileSync(out,`task_id=${data.task?.id||''}\n`);
           console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
           NODE
-          fi
-
       - name: Add owner instruction to Vibe2 control queue
         if: steps.next.outputs.has_work == 'true'
         id: ingest
@@ -288,10 +280,6 @@ jobs:
             sleep $((attempt * 2))
           done
           if [ "$success" != 1 ]; then
-            if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ] || [ "$GITHUB_EVENT_NAME" = 'issue_comment' ]; then
-              echo 'LOCAL_WEB_OWNER_DIRECTIVE_QUEUE_INGEST=FAIL' >&2
-              exit 1
-            fi
             printf '{"action":"sync","updates":[{"taskId":"%s","status":"needs_input","blocker":"Vibe2 큐 연결 실패. 다음 브리지 실행에서 다시 확인 필요."}]}\n' "$TASK_ID" > /tmp/pwa-ingest-fail.json
             curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
               -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
@@ -313,3 +301,58 @@ jobs:
           gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary
           echo 'PWA_OWNER_GAME_DIRECT_DISPATCH=PASS'
           echo 'PWA_OWNER_POST_PUBLISH_QA=EXISTING_MAIN_RELEASE_PIPELINE'
+
+
+  web-cloud-onepatch:
+    # Run WEB_VIBE_1 on GitHub with existing WEB-only queue; no native task dispatch.
+    permissions:
+      contents: read
+    needs: bridge
+    if: >-
+      (github.event_name == 'issue_comment' || github.event_name == 'repository_dispatch') &&
+      needs.bridge.result == 'success' &&
+      needs.bridge.outputs.queued == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    concurrency:
+      group: web-vibe-onepatch-${{ needs.bridge.outputs.task_id }}
+      cancel-in-progress: false
+    env:
+      WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      WEB_OWNER_TASK_ID: ${{ needs.bridge.outputs.task_id }}
+      WEB_OWNER_FILES: ${{ needs.bridge.outputs.files }}
+    steps:
+      - name: Checkout latest main for independent WEB Vibe
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify WEB-only source and existing model gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$WEB_VIBE_GH_TOKEN" || { echo 'WEB_VIBE_GITHUB_DEDICATED_PAT_REQUIRED' >&2; exit 1; }
+          test -n "$GEMINI_API_KEY" || { echo 'WEB_VIBE_GITHUB_FREE_MODEL_SECRET_REQUIRED' >&2; exit 1; }
+          # Canonical owner-policy enforcement is mandatory before any game source write.
+          node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
+          node --check tools/web-vibe-worker.mjs
+          node --check tools/web-vibe-organization.mjs
+          node --test qa/web-vibe-worker.test.mjs qa/web-vibe-organization.test.mjs qa/pwa-command-vibe2-task.test.mjs
+      - name: Run existing WEB_VIBE_1 patch on GitHub and create reviewable PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$WEB_OWNER_TASK_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$ ]] || exit 1
+          if [ "$WEB_OWNER_FILES" = '*' ]; then
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" --all --cloud --apply --pr
+          else
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" "--files=$WEB_OWNER_FILES" --cloud --apply --pr
+          fi
+          echo 'WEB_VIBE_CLOUD_PR_CREATED=YES'
+          echo 'WEB_VIBE_CLOUD_MERGE_AND_PUBLICATION=NOT_VERIFIED'

@@ -143,7 +143,7 @@ test('direct owner game work preserves parallel pool and upgrades legacy one-slo
 test('GitHub PWA cloud development and local WEB Vibe run independently',()=>{
   const flow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   const local=flow.slice(flow.indexOf('  bridge:'),flow.indexOf('  github-cloud:'));
-  const cloud=flow.slice(flow.indexOf('  github-cloud:'));
+  const cloud=flow.slice(flow.indexOf('  github-cloud:'),flow.indexOf('  web-cloud-onepatch:'));
   assert.ok(local.includes("github.event.comment.author_association == 'OWNER'"));
   assert.ok(local.includes('validateLocalWebOwnerEvent'));
   assert.ok(flow.includes('WEB_VIBE_BRANCH: web-vibe-control'));
@@ -152,12 +152,13 @@ test('GitHub PWA cloud development and local WEB Vibe run independently',()=>{
   assert.ok(!local.includes('gh workflow run vibe2-continuous-core.yml'));
   assert.ok(!local.includes('.vibe2/queue.json'));
   assert.ok(cloud.includes('VIBE2_BRANCH: vibe2-unreal-core'));
-  assert.ok(cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
-  assert.ok(!local.includes("github.event_name == 'repository_dispatch'"));
+  assert.ok(!cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
+  assert.ok(local.includes("github.event_name == 'repository_dispatch'"));
   assert.ok(cloud.includes("steps.next.outputs.has_work == 'true'"));
   assert.ok(cloud.includes('pwa-command-vibe2-task.mjs" ingest'));
   assert.ok(cloud.includes('gh workflow run vibe2-continuous-core.yml'));
   assert.ok(!cloud.includes('web-vibe-organization.mjs'));
+  assert.ok(cloud.includes("github.event_name != 'repository_dispatch'"));
   const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   const published=pages.indexOf('uses: actions/deploy-pages@v4');
   const live=pages.indexOf('id: director_live_qa');
@@ -270,4 +271,21 @@ test('동일 UUID에 타 조직 작업이 있다면 웹 작업 성공으로 처�
   assert.throws(()=>ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
   const mismatched={...queue,tasks:[{...queue.tasks[0],target:'web',sourceRoot:'web-games/cozy-island'}]};
   assert.throws(()=>ingestPwaTask({task,queue:mismatched,catalog:f.catalog,status:f.status,repoRoot:f.root}),/WEB_ORG_QUEUE_IDENTITY_COLLISION/);
+});
+
+
+test('authenticated WEB issue comment scopes Github cloud onepatch to game text files',()=>{
+  const payload={action:'vibe-local-web-owner-directive',client_payload:{
+    id:UUID,game_id:'insect-survival',platform:'web',kind:'directive',
+    body:'HUD animation and gameplay',autoDeployAfterVerifiedQa:true
+  }};
+  const context={actor:'hans1177',repository:'hans1177/jaewoon-games'};
+  assert.equal(validateLocalWebOwnerEvent(payload,context).files,'*');
+  assert.equal(validateLocalWebOwnerEvent({...payload,client_payload:{...payload.client_payload,
+    files:'index.html,client/Hud.js,shared/Level.json'}},context).files,'index.html,client/Hud.js,shared/Level.json');
+  for(const files of ['../unsafe.js','client/../../secrets.js','roblox-games/demo/source.luau',
+    'client/Power.lua','../../../etc/passwd','index.html\nGITHUB_OUTPUT=forged','',123]){
+    assert.throws(()=>validateLocalWebOwnerEvent({...payload,client_payload:{...payload.client_payload,files}},context),
+      /LOCAL_OWNER_WEB_FILE_SCOPE_INVALID/);
+  }
 });

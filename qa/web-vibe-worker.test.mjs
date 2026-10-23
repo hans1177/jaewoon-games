@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources} from '../tools/web-vibe-worker.mjs';
+import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:''}),/DEDICATED_TOKEN_REQUIRED/);
@@ -91,4 +91,56 @@ test('WEB-only next development receives verified past patches as context, not d
  assert.match(source,/Continue from current game source and preserve existing mechanics\/saves/);
  assert.match(source,/previousVerified\.map/);
  assert.doesNotMatch(source,/roblox-games\/|vibe2-unreal-core|Cloudflare/i);
+});
+
+
+test('GitHub-hosted WEB_VIBE_1 rejects spoofed identity and requires independent free-model credential',()=>{
+  const token='web-dedicated-repo-pat';
+  const context={GITHUB_ACTIONS:'true',GITHUB_ACTOR:'hans1177',
+    GITHUB_REPOSITORY:'hans1177/jaewoon-games',GITHUB_EVENT_NAME:'issue_comment',
+    GITHUB_REF:'refs/heads/main',GEMINI_API_KEY:'testing-fixture'};
+  assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,environment:context}).organization,'WEB');
+  assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,
+    environment:{...context,GITHUB_EVENT_NAME:'repository_dispatch'}}).githubHosted,true);
+  for(const env of [
+    {...context,GITHUB_ACTOR:'someone-else'},
+    {...context,GITHUB_REPOSITORY:'other/team'},
+    {...context,GITHUB_EVENT_NAME:'pull_request'},
+    {...context,GITHUB_REF:'refs/heads/feature'},
+    {...context,GEMINI_API_KEY:''}
+  ])assert.throws(()=>assertWebVibeWorkerEnvironment({token,cloud:true,environment:env}));
+  assert.throws(()=>assertWebVibeWorkerEnvironment({token:'',cloud:true,environment:context}));
+});
+test('existing cloud free-model response is bounded by same WEB source and save invariants',async()=>{
+  const task={gameId:'demo',goal:'fix score HUD'};
+  const source={relative:'web-games/demo/client/game.js',
+    original:'const score=1;\\nlocalStorage.setItem("player-save-v1", score);\\n'};
+  let calls=0;
+  const patch=await proposeWebVibeChange(task,source,{cloud:true,apiKey:'fixture',
+    geminiImpl:async args=>{
+      calls++;
+      assert.equal(args.responseMimeType,'application/json');
+      assert.ok(args.contents[0].parts[0].text.includes('web-games/demo/client/game.js'));
+      assert.ok(!args.contents[0].parts[0].text.includes('roblox-games/'));
+      return {text:JSON.stringify({oldText:'const score=1;',newText:'const score=2;',reason:'hud'})};
+    }});
+  assert.equal(calls,1);
+  assert.match(patch.updated,/score=2/);
+  assert.match(patch.updated,/player-save-v1/);
+  const irrelevant=await proposeWebVibeChange(task,source,{cloud:true,apiKey:'fixture',
+    geminiImpl:async()=>({text:JSON.stringify({skip:true,reason:'not affected'})})});
+  assert.equal(irrelevant,null);
+  await assert.rejects(()=>proposeWebVibeChange(task,source,{cloud:true,apiKey:'fixture',
+    geminiImpl:async()=>({text:JSON.stringify({oldText:'player-save-v1',newText:'player-save-v2'})})}));
+});
+
+
+test('WEB cloud patch uses stable owner task branch and review checkpoint instead of false merge',()=>{
+ const source=fs.readFileSync('tools/web-vibe-worker.mjs','utf8');
+ assert.match(source,/const branch='web-vibe\/'\+task.gameId\+'-'\+task.id.slice\(4\)/);
+ assert.match(source,/markWebVibeReview\(task,pr,token\)/);
+ assert.match(source,/status:'review',reviewPrUrl:url/);
+ assert.match(source,/WEB_VIBE_REVIEW_QUEUE_STALE/);
+ assert.match(source,/web-vibe-pr-created:needs-independent-qa-and-owner-merge/);
+ assert.match(source,/merged:false,deployed:false/);
 });
