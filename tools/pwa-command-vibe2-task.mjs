@@ -23,10 +23,14 @@ function resolveProject(task,{catalog={},status={},repoRoot=process.cwd(),filesy
   const gameId=clean(task?.game_id||task?.gameId);
   if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(gameId))throw new Error('WEB_ORG_GAME_ID_INVALID');
   const policy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),null);
-  const boundary=policy?.webDevelopmentOrganization;
-  if(boundary?.enabled!==true||boundary?.target!=='WEB'||boundary?.webSourceRoot!=='web-games/'||
-     boundary?.nativeDevelopmentDispatchDenied!==true||boundary?.nativeCodeWriteDenied!==true||
-     boundary?.sharedAssetLibraryReadOnly!==true||boundary?.homepageDevelopmentCommandDenied!==true)
+  const active=policy?.ownerActiveDevelopmentScope20261009;
+  const webChat=policy?.localVibeWebChat;
+  // 기존 중앙정책의 WEB 권한만 사용한다. 로블록스/유니티 작업 권한을 웹 접수에서 상속하지 않는다.
+  if(policy?.status!=='OWNER_DIRECT_LOCKED'||
+     policy?.developmentAccess?.WEB!=='ALWAYS_ALLOWED'||
+     active?.status!=='ACTIVE'||!active.activeTargets?.includes('WEB')||
+     webChat?.enabled!==true||webChat?.platform!=='WEB'||
+     policy?.finalDevelopmentLock?.sequenceLock?.status!=='LOCKED')
     throw new Error('WEB_ORG_CENTRAL_BOUNDARY_NOT_VERIFIED');
   const game=(catalog.games||[]).find(row=>clean(row.id)===gameId);
   if(!game)throw new Error('게임 카탈로그에서 찾을 수 없음: '+gameId);

@@ -13,9 +13,10 @@ function fixture(){
   fs.writeFileSync(path.join(root,'web-games','insect-survival','index.html'),'<html>web game</html>');
   fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
-    webDevelopmentOrganization:{enabled:true,target:'WEB',webSourceRoot:'web-games/',
-      nativeDevelopmentDispatchDenied:true,nativeCodeWriteDenied:true,
-      sharedAssetLibraryReadOnly:true,homepageDevelopmentCommandDenied:true}
+    status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED'},
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['WEB']},
+    localVibeWebChat:{enabled:true,platform:'WEB'},
+    finalDevelopmentLock:{sequenceLock:{status:'LOCKED'}}
   }));
   fs.mkdirSync(path.join(root,'unity-games','daechung-rpg'),{recursive:true});
   const catalog={games:[
@@ -201,7 +202,7 @@ test('웹 조직은 잘못된 원본 경로·빈 게임·정책 오류를 거부
   fs.writeFileSync(path.join(f.root,'web-games','insect-survival','index.html'),'<html>web game</html>');
   const policyPath=path.join(f.root,'company-learning','platform-release-roadmap.json');
   const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
-  policy.webDevelopmentOrganization.nativeCodeWriteDenied=false;
+  policy.ownerActiveDevelopmentScope20261009.activeTargets=['ROBLOX'];
   fs.writeFileSync(policyPath,JSON.stringify(policy));
   assert.throws(()=>ingest(f.catalog),/WEB_ORG_CENTRAL_BOUNDARY_NOT_VERIFIED/);
 });

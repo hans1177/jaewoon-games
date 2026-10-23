@@ -29537,38 +29537,4 @@
       "modelOutputCanAuthorizeWork": false
     }
   }
-,
-  "webDevelopmentOrganization": {
-    "version": 1,
-    "authority": "OWNER_DIRECTIVE_2026-10-23_WEB_ORGANIZATION_BOUNDARY",
-    "status": "WEB_INGRESS_ISOLATION_PHASE_1",
-    "enabled": true,
-    "target": "WEB",
-    "webSourceRoot": "web-games/",
-    "nativeSourceRootsDenied": [
-      "roblox-games/",
-      "unity-games/"
-    ],
-    "nativeDevelopmentDispatchDenied": true,
-    "nativeCodeWriteDenied": true,
-    "sharedAssetLibraryReadOnly": true,
-    "sharedAssetRoots": [
-      "assets/",
-      "company-asset-library.json"
-    ],
-    "homepageDevelopmentCommandDenied": true,
-    "homepageRole": "READ_ONLY_GAME_METADATA_AND_LINKS",
-    "homepageFields": [
-      "gameId",
-      "title",
-      "platform",
-      "releaseState",
-      "playUrl"
-    ],
-    "independentQaAndReleaseRequired": true,
-    "existingWebReleaseWorkflow": ".github/workflows/magic-forest-pages.yml",
-    "existingWorkerQueueRetainedUntilIsolatedStateVerified": true,
-    "gameRulesSavesAndSharedOriginalAssetsImmutableWithoutOwnerApproval": true,
-    "noNewShadowPipeline": true
-  }
 }

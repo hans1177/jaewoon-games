@@ -522,6 +522,21 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const task = resolved.task;
   const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:false });
   if (centralPolicy.required === true && centralPolicy.valid !== true) return freeze({ ...base, reason:`CENTRAL_POLICY_INVALID:${(centralPolicy.errors || []).join('|') || 'UNKNOWN'}`, selectedTask:task, centralPolicy });
+  // PWA 웹 조직 소유 작업은 플랫폼 개발 권한을 공유하지 않는다.
+  // 기존 단일 큐가 남아 있어도 웹 작업의 로블록스/유니티 전환은 실제 실행 주문 전에 차단한다.
+  const webOwnerWork=/^pwa-[0-9a-f-]{36}$/i.test(clean(task.id))||
+    (task.evidence||[]).includes('web-organization-boundary:v1')||
+    (task.evidence||[]).includes('vibe-local-web-owner-directive');
+  if(webOwnerWork){
+    const gameId=clean(task.gameId),root=posix(task.sourceRoot)||
+      posix((task.evidence||[]).find(e=>String(e).startsWith('source-root:'))?.slice('source-root:'.length));
+    if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(gameId)||
+       clean(task.target).toLowerCase()!=='web'||
+       root!=='web-games/'+gameId||
+       (task.responsibleFiles||[]).some(file=>!posix(file).startsWith(root+'/'))){
+      return freeze({...base,reason:'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN',selectedTask:task});
+    }
+  }
   if(clean(task.target).toLowerCase()==='system'&&task.systemSteward===true&&clean(task.department).toLowerCase()==='system-architecture'){
     return buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef,runtime,variant});
   }
@@ -826,6 +841,10 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     supervisionApproved?'Supervised approval is already recorded.':'Supervised approval is NOT recorded; automatic promotion must remain blocked.'
   ].join('\n'):'';
   const responsibleFiles = expandPresentationResponsibleFiles({task,target:plan.target,repoRoot:process.cwd(),fallbackRoot:adapter.source.root,assetProduction});
+  if(webOwnerWork&&(plan.target!=='web'||
+      responsibleFiles.some(file=>!posix(file).startsWith('web-games/'+clean(task.gameId)+'/')))){
+    return freeze({...base,reason:'WEB_OWNER_NATIVE_SOURCE_WRITE_FORBIDDEN',selectedTask:task});
+  }
   const compiledWorkContract = compileVibeCentralWorkContract({
     snapshot:centralPolicy,
     task:{...task,supervisionApproved},
