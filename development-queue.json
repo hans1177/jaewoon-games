@@ -73238,7 +73238,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-23T10:05:08.477Z",
+      "updatedAt": "2026-10-23T10:05:30.181Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -73254,16 +73254,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "62ea7a77ee2d00a82b7d10264ff4a9f1cffd495a",
       "robloxBuildArtifactIdentity": "sha256:2978f80cb1100da78a64a8a9a69108ce7ffbdf41a6a35045cdc446f781827350",
-      "robloxBuildPassedAt": "2026-10-23T10:00:32.013Z",
+      "robloxBuildPassedAt": "2026-10-23T10:05:30.181Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-23T10:00:32.013Z",
+      "robloxBuildPreflightPassedAt": "2026-10-23T10:05:30.181Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-23T09:42:04.144Z",
+        "checkedAt": "2026-10-23T09:54:05.421Z",
         "sourceRevision": "62ea7a77ee2d00a82b7d10264ff4a9f1cffd495a",
         "artifactIdentity": "sha256:2978f80cb1100da78a64a8a9a69108ce7ffbdf41a6a35045cdc446f781827350",
         "secondaryOwnerFocus": false,
@@ -73301,7 +73301,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence parameters, including exact-immutable-roblox-package eligibility, source validation, and build/package success, are fully satisfied with valid cryptographic identifiers."
+            "note": "All required build evidence and immutable package identity checks have successfully passed."
           }
         ],
         "blockers": [],
@@ -73315,12 +73315,12 @@
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-23T09:42:04.833Z",
+        "checkedAt": "2026-10-23T09:54:05.994Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "62ea7a77ee2d00a82b7d10264ff4a9f1cffd495a",
         "artifactIdentity": "sha256:2978f80cb1100da78a64a8a9a69108ce7ffbdf41a6a35045cdc446f781827350",
         "rebuiltArtifactIdentity": "sha256:2978f80cb1100da78a64a8a9a69108ce7ffbdf41a6a35045cdc446f781827350",
-        "artifactRunId": 39931169421,
+        "artifactRunId": 39931437464,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "765b11a641a25ce604ec76dcdae12e87dc69b92ba9bf689eb4da6d9e7796e686",
         "observedAssetSelectionFingerprint": "765b11a641a25ce604ec76dcdae12e87dc69b92ba9bf689eb4da6d9e7796e686",
@@ -73617,12 +73617,12 @@
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-23T09:42:04.833Z",
+        "checkedAt": "2026-10-23T09:54:05.994Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "62ea7a77ee2d00a82b7d10264ff4a9f1cffd495a",
         "artifactIdentity": "sha256:2978f80cb1100da78a64a8a9a69108ce7ffbdf41a6a35045cdc446f781827350",
         "rebuiltArtifactIdentity": "sha256:2978f80cb1100da78a64a8a9a69108ce7ffbdf41a6a35045cdc446f781827350",
-        "artifactRunId": 39931169421,
+        "artifactRunId": 39931437464,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "765b11a641a25ce604ec76dcdae12e87dc69b92ba9bf689eb4da6d9e7796e686",
         "observedAssetSelectionFingerprint": "765b11a641a25ce604ec76dcdae12e87dc69b92ba9bf689eb4da6d9e7796e686",
@@ -74460,8 +74460,8 @@
         "sourceRevision": "62ea7a77ee2d00a82b7d10264ff4a9f1cffd495a",
         "artifactIdentity": "sha256:2978f80cb1100da78a64a8a9a69108ce7ffbdf41a6a35045cdc446f781827350",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39931169421,
-        "testedAt": "2026-10-23T10:00:32.013Z",
+        "workflowRunId": 39931437464,
+        "testedAt": "2026-10-23T10:05:30.181Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -89629,7 +89629,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-23T10:05:08.477Z",
+  "updatedAt": "2026-10-23T10:05:30.181Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -89695,5 +89695,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
