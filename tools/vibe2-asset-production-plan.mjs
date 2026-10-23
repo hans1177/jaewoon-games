@@ -2803,8 +2803,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const previous=previousAssets.get(clean(asset.id))||{};
     return consumerFields.some(field=>JSON.stringify(previous[field]??null)!==JSON.stringify(asset[field]??null));
   });
-  const catalogAssetsChanged=beforePracticeRemoval!==next.assets.length||organizationAssetsChanged
-    ||syncRows.some(row=>row.changed===true)||consumerBindingsChanged;
+  const catalogAssetsChanged=beforePracticeRemoval!==next.assets.length||organizationAssetsChanged||syncRows.some(row=>row.changed===true)
+    ||consumerBindingsChanged;
   const changedSections=mutableSections.filter(key=>
     key==='assets'
       ?catalogAssetsChanged
