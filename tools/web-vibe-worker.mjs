@@ -27,7 +27,7 @@ export function assertWebVibeWorkerEnvironment({token='',endpoint=OLLAMA_URL,mod
   if(!clean(token)||clean(token).length<12)fail('WEB_VIBE_DEDICATED_TOKEN_REQUIRED');
   if(cloud){
     if(environment.GITHUB_ACTIONS!=='true'||environment.GITHUB_ACTOR!=='hans1177'
-      ||environment.GITHUB_REPOSITORY!==REPO||environment.GITHUB_EVENT_NAME!=='issue_comment'
+      ||environment.GITHUB_REPOSITORY!==REPO||!['issue_comment','repository_dispatch'].includes(environment.GITHUB_EVENT_NAME)
       ||environment.GITHUB_REF!=='refs/heads/main')
       fail('WEB_VIBE_GITHUB_OWNER_MAIN_CONTEXT_REQUIRED');
     if(!clean(environment.GEMINI_API_KEY))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING');
