@@ -85,3 +85,11 @@ test("파티 RPG 실존 CC0 3D 원본을 로드하고 미검증 적은 원본 2D
  assert.match(html,/return null;\s*}\s*window\.vibe3dCanRender/s,"no wrong-species 3D substitution");
  assert.match(html,/if\(window\.vibe3dCanRender&&window\.vibe3dCanRender\('enemy',e\)\)return/,"preserve original enemy canvas rendering");
 });
+
+test("파티 RPG Pages 서브경로에서 실제 배경 이미지가 로드되도록 상대 URL 사용",()=>{
+ assert.doesNotMatch(html,/url\(['"]\/assets\//,"GitHub Pages project root must not request domain-root assets");
+ for(const name of ["fantasy-rpg-v2.webp","card-rpg-v2.webp"]){
+  assert.ok(html.includes("url('../../assets/"+name+"')"),"Missing project-base asset "+name);
+  assert.equal(fs.existsSync(new URL("../assets/"+name,import.meta.url)),true);
+ }
+});
