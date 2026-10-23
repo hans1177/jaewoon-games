@@ -122,7 +122,7 @@ test('all-assets view follows canonical family order and keeps every original ob
   assert.match(script,/rank\(a\)-rank\(b\)/);
   assert.match(script,/asset\?\.subfamily/);
   assert.match(script,/a\.id\.localeCompare\(b\.id,'en'\)/);
-  assert.equal(registry.assets.filter(asset=>asset.packId==='roblox-world-ghost-skins-v1'&&asset.skinId).length,100);
+  assert.equal(registry.assets.filter(asset=>asset.packId==='roblox-world-ghost-skins-v1'&&asset.skinId).length,0,'removed self-authored ghost skin pack cannot return as production library');
   assert.ok(registry.assets.every(asset=>asset.gameExclusive===false));
 });
 
@@ -576,11 +576,11 @@ test('canonical asset library previews actual local skinned GLB and animation cl
   assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
   assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
   assert.match(viewer,/host\.dataset\.format='glb'/);
-  const binaries=registry.assets.filter(row=>row.platform==='SHARED_MASTER'&&
-    /^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(row.path||''));
+  // [현재 라이브러리] 삭제된 수제 GLB 대신 등록된 실제 CC0 네이티브 원본을 검사한다.
+  const binaries=registry.assets.filter(row=>/^(?:\/)?assets\/(?:roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?|shared\/[a-z0-9/-]+)\.glb$/i.test(String(row.path||'')));
   assert.ok(binaries.length>=4);
   for(const record of binaries.slice(0,4)){
-    const bytes=fs.readFileSync(record.path.slice(1));
+    const bytes=fs.readFileSync(String(record.path).replace(/^\//,''));
     assert.equal(bytes.subarray(0,4).toString(),'glTF',record.id);
     assert.equal(bytes.readUInt32LE(8),bytes.length);
     assert.notEqual(record.productionVerified,true);
@@ -676,7 +676,8 @@ test('complete native-first gallery distinguishes registered assets, material at
  const native=registry.assets.filter(row=>/^(?:\/)?assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(String(row.path||'')));
  assert.ok(native.length>0,'actual registered native models exist');
  const catalogs=registry.assets.filter(row=>Number.isInteger(row.catalogRowCount)&&row.catalogRowCount>0);
- assert.ok(catalogs.length>=10,'common registered catalogs must remain fully enumerable');
+ assert.equal(catalogs.length,0,'removed unlicensed catalog placeholders must not be reintroduced');
+ assert.ok(registry.externalSources.length>0,'current external source catalog remains enumerable');
  assert.match(code,/kind==='native'/);
  assert.match(code,/nativeGLB\(asset\.path\)/);
  assert.match(code,/renderSourceCollections\(registry\)/);
