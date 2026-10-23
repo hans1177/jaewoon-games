@@ -793,6 +793,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const queuedAssetReservationClaims=laneMode==='game-primary'
     ?queue.tasks.filter((task)=>
       task.status==='queued'
+      &&!ownerWebReservationBlocker(task)
       &&taskMatchesExecutionLane(task,'asset-development')
       &&(!internalAssetOnly||task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')
       &&taskBlockedReasons(task,completed).length===0
