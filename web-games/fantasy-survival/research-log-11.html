@@ -1,0 +1,493 @@
+<!doctype html>
+<!-- 파일명: web-games/fantasy-survival/research-log-11.html -->
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071a20"><title>마력숲 연구일지 11화 | 신입 연구원 생존 교육</title>
+<style>
+/* 화면 */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07111c;color:#effafa;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;user-select:none}
+#scene{display:block;width:100%;height:100dvh;touch-action:none}#shade{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 40%,transparent 27%,#000b18a4 100%);z-index:2}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:4;background:#f3ecb3;opacity:0}#hurt{position:fixed;inset:0;pointer-events:none;z-index:4;background:radial-gradient(ellipse,transparent 47%,#b21c2599);opacity:0}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:5}#top{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;text-shadow:0 2px 6px black}#top strong{display:block;font-size:10px;letter-spacing:.17em;color:#9ae7df}#sceneTitle{display:block;margin-top:5px;font-size:clamp(17px,4.4vw,27px);font-weight:900}#stamp{font-size:11px;text-align:right;border:1px solid #87b4bd88;padding:8px;border-radius:8px;background:#001320aa}
+#caption{position:absolute;bottom:calc(76px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(700px,calc(100vw - 24px));min-height:65px;padding:10px 14px;border:1px solid #789fa988;background:#061620ec;border-radius:11px;text-align:center;box-shadow:0 9px 35px #0008}#speaker{font-size:11px;letter-spacing:.12em;font-weight:900;color:#a0f1dc}#line{margin-top:3px;font-size:clamp(13px,3.7vw,18px);font-weight:760;line-height:1.4;word-break:keep-all}
+#bar{position:absolute;bottom:0;left:0;height:4px;background:#6bddc5;width:0;box-shadow:0 0 12px #99fff0}
+#guide,#rank{position:absolute;z-index:6;pointer-events:none;display:none;left:12px;top:calc(90px + env(safe-area-inset-top));width:min(455px,calc(100vw - 24px));border:1px solid #6ba59e;background:linear-gradient(135deg,#051d28f2,#0d2634ef);box-shadow:0 10px 30px #0009;border-radius:15px;padding:14px 17px;text-shadow:0 2px 5px #000}#guide h2,#rank h2{font-size:clamp(17px,4.7vw,22px);margin:2px 0 9px}#guide small,#rank small{color:#86d5c3;font-size:11px;font-weight:900;letter-spacing:.12em}#guide p,#rank p{margin:6px 0;line-height:1.47;font-size:clamp(12px,3.2vw,14px);word-break:keep-all}#guide ul{margin:8px 0;padding-left:20px}#guide li{line-height:1.4;font-size:clamp(11px,3vw,13px);margin:3px 0}#guide .warning{margin:9px 0 0;padding:7px 8px;background:#7b241849;border-left:3px solid #ffbb85;color:#ffe5cf;font-weight:700}
+#guide .stats{font-variant-numeric:tabular-nums;font-size:clamp(10px,2.8vw,12px);color:#d3faf5;line-height:1.55}#rank .creatures{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}#rank .creatures b{display:inline-block;padding:6px 9px;border:1px solid #548d94;border-radius:999px;background:#1c3c4abb;font-size:clamp(11px,3vw,13px)}#rank .number{color:#ffdca1;font-size:21px;font-weight:1000}
+#hit{position:absolute;top:20%;right:12px;display:none;padding:10px;background:#06151bd6;border:1px solid #ceaf7888;border-radius:12px;font-weight:900;font-size:12px}#wound{display:none;position:absolute;right:12px;top:25%;color:#e4ffe9;padding:8px 12px;background:#173b2fee;border-radius:9px;font-size:12px;font-weight:800}
+#controls{position:fixed;z-index:12;bottom:calc(12px + env(safe-area-inset-bottom));left:10px;right:10px;display:flex;justify-content:center;gap:7px}#controls button{background:#103846df;color:#e9fbff;border:1px solid #619c9c;border-radius:10px;font-weight:850;min-height:43px;padding:8px 14px;cursor:pointer;font-size:12px;touch-action:manipulation}#controls button:active{background:#28616e}
+#start,#end{position:fixed;inset:0;z-index:21;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 24%,#1b4e4c,#06141d 62%,#01060d);padding:19px;text-align:center}#end{display:none}#start .panel,#end .panel{width:min(480px,100%);padding:27px 21px;background:#071923cf;border:1px solid #5caca2;border-radius:21px;box-shadow:0 24px 60px #000a}h1{font-size:clamp(25px,6.2vw,38px);line-height:1.24}#start p,#end p{color:#bad8d9;line-height:1.7;font-size:14px}#start small,#end small{color:#9ae6d5;letter-spacing:.1em}#play,#replay{display:block;width:100%;padding:14px;border:0;border-radius:12px;color:#071820;background:#adebd5;font-size:17px;font-weight:900;margin:19px 0 13px;cursor:pointer}#start a,#end a{color:#a6e8d7;text-decoration:underline;font-size:13px}
+#error{display:none;position:fixed;inset:0;z-index:40;align-content:center;text-align:center;background:#090d15;color:#ffb0ac}
+@media(max-width:460px){#guide,#rank{top:calc(88px + env(safe-area-inset-top));padding:10px 12px}#guide h2,#rank h2{margin:2px 0 4px}#guide p,#rank p{margin:4px 0}#guide li{margin:2px 0}#caption{min-height:61px;padding:8px}#controls button{padding:7px 9px;font-size:11px}#stamp{font-size:10px;padding:7px}}@media(max-height:600px){#guide,#rank{top:55px;max-height:42vh;overflow:auto}#guide p,#rank p{font-size:11px}#guide li{font-size:10px}#caption{bottom:calc(61px + env(safe-area-inset-bottom));min-height:52px;padding:5px}#controls button{min-height:37px}}
+</style></head><body>
+<canvas id="scene" aria-label="마력숲 연구일지 11화 · 실시간 3차원 애니메이션"></canvas><div id="shade"></div><div id="flash"></div><div id="hurt"></div>
+<div id="hud"><div id="top"><div><strong>● REC · MAGIC FOREST 11</strong><span id="sceneTitle">신입 연구원</span></div><div id="stamp"><span id="chapterNum">교육 01 / 15</span><br><span id="clock">00:00</span></div></div><div id="caption"><div id="speaker"></div><div id="line"></div></div><div id="guide"></div><div id="rank"></div><div id="hit"></div><div id="wound"></div><div id="bar"></div></div>
+<div id="controls"><button type="button" id="pause">일시정지</button><button type="button" id="speed">1배속</button><button type="button" id="next">다음 장면</button></div>
+<div id="start"><div class="panel"><small>마력숲 · 연구 기록 11</small><h1>신입 연구원의<br>첫 생존 교육</h1><p>연구원 1·3과 생존자 2의 교육 영상, 9개 생존 가이드, 그림자늑대 실전, 그리고 수정지역 탐사 결심.</p><button id="play">11화 재생 ▶</button><a href="./research-log.html">마력숲 연구일지 1화</a></div></div><div id="end"><div class="panel"><small>연구 기록 11 · 종료</small><h1>다시, 수정지역으로</h1><p>신입 연구원은 첫 생존 훈련을 마쳤고, 연구원 2와 생존자 1은 다음 탐사를 결심했다.</p><button id="replay">11화 다시 보기</button><a href="./">마력숲 본편</a></div></div><div id="error">삼차원 영상 초기화에 실패했어.</div>
+<script>
+(()=>{'use strict';
+// 임포트 · 연구일지 10화 렌더러와 관절 캐릭터 직접 재사용
+const $=id=>document.getElementById(id),canvas=$('scene'),gl=canvas.getContext('webgl',{alpha:false,antialias:false,depth:true,powerPreference:'high-performance'});if(!gl){$('error').style.display='block';return;}
+const VS=`
+attribute vec3 position,normal;
+uniform mat4 projection,view,model;
+uniform vec3 eye;
+varying vec3 vPos,vNorm,vEye;
+varying float vDist;
+void main(){
+ vec4 world=model*vec4(position,1.0);
+ vPos=world.xyz;
+ vNorm=normalize(mat3(model)*normal);
+ vEye=eye;
+ vDist=distance(world.xyz,eye);
+ gl_Position=projection*view*world;
+}`;
+const FS=`
+precision mediump float;
+uniform vec3 tint,fogColor;
+uniform float glow,material,time;
+varying vec3 vPos,vNorm,vEye;
+varying float vDist;
+float noise3(vec3 p){return sin(p.x*5.73+p.y*9.21)*sin(p.z*7.19-p.x*3.67)*0.5+0.5;}
+void main(){
+ vec3 n=normalize(vNorm),eye=normalize(vEye-vPos);
+ vec3 sun=normalize(vec3(-0.52,0.86,0.39));
+ vec3 fill=normalize(vec3(0.59,0.41,-0.62));
+ float d=max(0.0,dot(n,sun));
+ float bounce=max(0.0,dot(n,fill));
+ float rim=pow(1.0-max(dot(n,eye),0.0),2.35);
+ float glint=pow(max(dot(reflect(-sun,n),eye),0.0),material>0.5?33.0:15.0);
+ float rough=material>1.5?noise3(vPos)*0.21:0.0;
+ vec3 light=vec3(0.37,0.48,0.59)+d*vec3(0.65,0.70,0.75)+bounce*vec3(0.15,0.27,0.36);
+ vec3 c=tint*(light-rough);
+ if(material>0.5&&material<1.5){
+    float ref=pow(1.0-max(dot(eye,n),0.0),3.0);
+    c=tint*(0.70+0.55*d+0.22*bounce)+vec3(0.20,0.37,0.51)*ref+vec3(0.52,0.75,0.82)*glint;
+    c+=vec3(0.05,0.11,0.21)*sin(vPos.y*3.0+time*0.55);
+ } else if(material>1.5){
+    c*=0.80+noise3(vPos*0.9)*0.26;
+ }
+ c+=rim*vec3(0.11,0.28,0.36)+glint*vec3(0.34,0.47,0.55);
+ c+=glow*tint*vec3(0.53,0.72,0.69);
+ float mist=clamp((vDist-22.0)/94.0,0.0,0.84);
+ c=mix(c,fogColor,mist);
+ c=pow(max(c,vec3(0.0)),vec3(0.92));
+ gl_FragColor=vec4(c,1.0);
+}`;
+function shader(type,source){const sh=gl.createShader(type);gl.shaderSource(sh,source);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh));return sh}
+let program;try{program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,VS));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program))}catch(e){$('error').style.display='block';$('error').textContent='3D 초기화 오류: '+e.message;return}gl.useProgram(program);
+const attrP=gl.getAttribLocation(program,'position'),attrN=gl.getAttribLocation(program,'normal'),uni={proj:gl.getUniformLocation(program,'projection'),view:gl.getUniformLocation(program,'view'),model:gl.getUniformLocation(program,'model'),tint:gl.getUniformLocation(program,'tint'),eye:gl.getUniformLocation(program,'eye'),fog:gl.getUniformLocation(program,'fogColor'),glow:gl.getUniformLocation(program,'glow'),mat:gl.getUniformLocation(program,'material'),time:gl.getUniformLocation(program,'time')};gl.enableVertexAttribArray(attrP);gl.enableVertexAttribArray(attrN);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);
+// 유틸 · 매트릭스 / 3D 메시
+const pi=Math.PI,clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),mix=(a,b,t)=>a+(b-a)*t,sm=(a,b,t)=>{let x=clamp((t-a)/(b-a),0,1);return x*x*(3-2*x)},rnd=n=>{let x=Math.sin(n*127.1+37.7)*43758.5453;return x-Math.floor(x)};
+const M={identity(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1])},mul(a,b){let o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];return o},translate(x,y,z){let a=M.identity();a[12]=x;a[13]=y;a[14]=z;return a},scale(x,y,z){let a=M.identity();a[0]=x;a[5]=y;a[10]=z;return a},rotateX(r){let a=M.identity();a[5]=Math.cos(r);a[6]=Math.sin(r);a[9]=-Math.sin(r);a[10]=Math.cos(r);return a},rotateY(r){let a=M.identity();a[0]=Math.cos(r);a[2]=-Math.sin(r);a[8]=Math.sin(r);a[10]=Math.cos(r);return a},rotateZ(r){let a=M.identity();a[0]=Math.cos(r);a[1]=Math.sin(r);a[4]=-Math.sin(r);a[5]=Math.cos(r);return a},compose(x,y,z,sx,sy,sz,rx=0,ry=0,rz=0){return M.mul(M.translate(x,y,z),M.mul(M.rotateY(ry),M.mul(M.rotateX(rx),M.mul(M.rotateZ(rz),M.scale(sx,sy,sz)))))},perspective(fov,aspect,near,far){const f=1/Math.tan(fov/2),o=new Float32Array(16);o[0]=f/aspect;o[5]=f;o[10]=(far+near)/(near-far);o[11]=-1;o[14]=2*far*near/(near-far);return o},look(eye,target){let zx=eye[0]-target[0],zy=eye[1]-target[1],zz=eye[2]-target[2],zl=Math.hypot(zx,zy,zz)||1;zx/=zl;zy/=zl;zz/=zl;let xx=zz,xz=-zx,xl=Math.hypot(xx,xz)||1;xx/=xl;xz/=xl;let yx=zy*xz,yy=zz*xx-zx*xz,yz=-zy*xx;const o=M.identity();o[0]=xx;o[1]=yx;o[2]=zx;o[4]=0;o[5]=yy;o[6]=zy;o[8]=xz;o[9]=yz;o[10]=zz;o[12]=-(xx*eye[0]+xz*eye[2]);o[13]=-(yx*eye[0]+yy*eye[1]+yz*eye[2]);o[14]=-(zx*eye[0]+zy*eye[1]+zz*eye[2]);return o}};
+function mesh(verts,norms,indices){const v=gl.createBuffer(),n=gl.createBuffer(),i=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,n);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(norms),gl.STATIC_DRAW);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,i);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(indices),gl.STATIC_DRAW);return {v,n,i,count:indices.length}}
+function cube(){let v=[],n=[],idx=[],faces=[[[0,0,1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],[[0,0,-1],[1,-1,-1],[-1,-1,-1],[-1,1,-1],[1,1,-1]],[[1,0,0],[1,-1,1],[1,-1,-1],[1,1,-1],[1,1,1]],[[-1,0,0],[-1,-1,-1],[-1,-1,1],[-1,1,1],[-1,1,-1]],[[0,1,0],[-1,1,1],[1,1,1],[1,1,-1],[-1,1,-1]],[[0,-1,0],[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]]];for(let f=0;f<faces.length;f++){const face=faces[f],b=v.length/3;for(let j=1;j<5;j++){v.push(...face[j].map(x=>x/2));n.push(...face[0])}idx.push(b,b+1,b+2,b,b+2,b+3)}return mesh(v,n,idx)}
+function cylinder(sides=8){let v=[],n=[],idx=[];for(let s=0;s<sides;s++){let a=s/sides*pi*2,b=(s+1)/sides*pi*2,nx=Math.cos((a+b)/2),nz=Math.sin((a+b)/2),j=v.length/3;v.push(Math.cos(a),-.5,Math.sin(a),Math.cos(b),-.5,Math.sin(b),Math.cos(b),.5,Math.sin(b),Math.cos(a),.5,Math.sin(a));for(let q=0;q<4;q++)n.push(nx,0,nz);idx.push(j,j+1,j+2,j,j+2,j+3)}for(const top of [false,true]){let y=top?.5:-.5,center=v.length/3;v.push(0,y,0);n.push(0,top?1:-1,0);for(let s=0;s<=sides;s++){let a=s/sides*pi*2;v.push(Math.cos(a),y,Math.sin(a));n.push(0,top?1:-1,0);if(s>0){if(top)idx.push(center,center+s,center+s+1);else idx.push(center,center+s+1,center+s)}}}return mesh(v,n,idx)}
+function sphere(lat=8,lon=12){let v=[],n=[],idx=[];for(let i=0;i<=lat;i++){let th=i/lat*pi;for(let j=0;j<=lon;j++){let a=j/lon*pi*2,x=Math.sin(th)*Math.cos(a),y=Math.cos(th),z=Math.sin(th)*Math.sin(a);v.push(x,y,z);n.push(x,y,z)}}for(let i=0;i<lat;i++)for(let j=0;j<lon;j++){let a=i*(lon+1)+j,b=a+lon+1;idx.push(a,b,a+1,a+1,b,b+1)}return mesh(v,n,idx)}
+function crystal(){let v=[],n=[],idx=[],sides=6,ring=[];for(let i=0;i<sides;i++){let a=i/sides*pi*2;ring.push([Math.sin(a),Math.cos(a)])}let top=[0,1.25,0],mid=.08,bot=[0,-.85,0];for(let i=0;i<sides;i++){const a=ring[i],b=ring[(i+1)%sides];for(const tri of [[top,[a[0],mid,a[1]],[b[0],mid,b[1]]],[bot,[b[0],mid,b[1]],[a[0],mid,a[1]]]]){let p=tri[0],q=tri[1],r=tri[2],ux=q[0]-p[0],uy=q[1]-p[1],uz=q[2]-p[2],vx=r[0]-p[0],vy=r[1]-p[1],vz=r[2]-p[2],nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx,l=Math.hypot(nx,ny,nz)||1,j=v.length/3;v.push(...p,...q,...r);for(let k=0;k<3;k++)n.push(nx/l,ny/l,nz/l);idx.push(j,j+1,j+2)}}return mesh(v,n,idx)}
+
+function torus(segs=36,tube=9){let v=[],n=[],idx=[];for(let j=0;j<=tube;j++){let b=2*pi*j/tube;for(let i=0;i<=segs;i++){let a=2*pi*i/segs,cs=Math.cos(a),sn=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b),r=.81+.19*cb;v.push(cs*r,sn*r,.19*sb);n.push(cs*cb,sn*cb,sb)}}for(let j=0;j<tube;j++)for(let i=0;i<segs;i++){let a=j*(segs+1)+i,b=a+segs+1;idx.push(a,b,a+1,a+1,b,b+1)}return mesh(v,n,idx)}
+function rubble(){let v=[],n=[],idx=[],latitude=9,longitude=15;for(let i=0;i<=latitude;i++){let lat=i/latitude*pi;for(let j=0;j<=longitude;j++){let lon=j/longitude*2*pi,c=Math.sin(lat),variation=1+.13*Math.sin(i*7.5+j*11.3)+.13*Math.cos(i*2.7-j*5.7);let x=c*Math.cos(lon),y=Math.cos(lat),z=c*Math.sin(lon);v.push(x*variation,y*variation,z*variation);n.push(x,y,z)}}for(let i=0;i<latitude;i++)for(let j=0;j<longitude;j++){let a=i*(longitude+1)+j,b=a+longitude+1;idx.push(a,b,a+1,a+1,b,b+1)}return mesh(v,n,idx)}
+const geo={box:cube(),cyl:cylinder(18),sphere:sphere(16,24),gem:crystal(),ring:torus(),rock:rubble()};const colors={
+ ground:[.095,.16,.18],rock:[.29,.41,.46],dark:[.092,.15,.20],path:[.28,.37,.40],
+ azure:[.14,.72,.86],cyan:[.31,.94,.83],violet:[.70,.39,.94],blue:[.30,.51,.90],
+ gold:[1.0,.71,.34],skin:[.84,.62,.48],coat:[.85,.93,.91],pants:[.17,.28,.30],
+ steel:[.41,.55,.62],wood:[.53,.37,.26],white:[.93,.97,.97],red:[1.0,.30,.28],
+ evergreen:[.16,.36,.34],moss:[.17,.35,.30],purple:[.33,.22,.50],
+ slate:[.27,.38,.44],silver:[.74,.87,.90],night:[.075,.12,.17]
+};
+const C=(c)=>Array.isArray(c)?c:colors[c]||colors.steel;
+const camera={x:0,y:1.7,z:0,tx:0,ty:1.7,tz:-1,shake:0,dodge:0,gun:0,blade:0};let sceneMode='out',time=0;
+function obj(type,pos,size,col,rx=0,ry=0,rz=0,glow=0){drawn.push({type,model:M.compose(pos[0],pos[1],pos[2],size[0],size[1],size[2],rx,ry,rz),color:C(col),glow})}let drawn=[];
+function renderObjects(){
+ const look=M.mul(M.rotateZ(camera.roll||0),M.look([camera.x,camera.y,camera.z],[camera.tx,camera.ty,camera.tz]));
+ const proj=M.perspective((sceneMode==='lab'?67:69)*pi/180,innerWidth/innerHeight,.08,220);
+ gl.useProgram(program);
+ gl.uniformMatrix4fv(uni.proj,false,proj);gl.uniformMatrix4fv(uni.view,false,look);
+ gl.uniform3fv(uni.eye,[camera.x,camera.y,camera.z]);
+ gl.uniform3fv(uni.fog,sceneMode==='lab'?[.23,.25,.27]:sceneMode==='earth'?[.50,.69,.77]:[.095,.19,.26]);
+ gl.uniform1f(uni.time,time);
+ let lastMesh=null;
+ for(let j=0;j<drawn.length;j++){
+  const d=drawn[j],m=geo[d.type];if(!m)continue;
+  if(m!==lastMesh){gl.bindBuffer(gl.ARRAY_BUFFER,m.v);gl.vertexAttribPointer(attrP,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,m.n);gl.vertexAttribPointer(attrN,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,m.i);lastMesh=m}
+  gl.uniformMatrix4fv(uni.model,false,d.model);gl.uniform3fv(uni.tint,d.color);gl.uniform1f(uni.glow,d.glow);
+  gl.uniform1f(uni.mat,d.type==='gem'?1:d.type==='rock'?2:0);
+  gl.drawElements(gl.TRIANGLES,m.count,gl.UNSIGNED_SHORT,0);
+ }
+}
+// 깊이 있는 실제 3D 배경 뒤의 하늘 · 오로라 및 멀리 있는 분진
+const SKY_V=`attribute vec2 xy;varying vec2 uv;void main(){uv=xy*.5+.5;gl_Position=vec4(xy,0.,1.);}`;
+const SKY_F=`precision mediump float;varying vec2 uv;uniform float tm,inside;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+void main(){
+ vec3 dark=vec3(.023,.071,.115),sky=vec3(.12,.25,.34);
+ float hh=smoothstep(.03,.95,uv.y);
+ vec3 color=mix(sky,dark,hh);
+ float column=sin(uv.x*11.0+sin(uv.y*3.0+tm*.04)*1.1+tm*.06);
+ float aurora=pow(max(0.,column),5.0)*smoothstep(.10,.60,uv.y)*smoothstep(1.0,.44,uv.y);
+ color+=vec3(.035,.23,.18)*aurora;
+ float beams=pow(max(0.,sin(uv.x*43.0+tm*.01)),12.0)*.021;
+ color+=vec3(.04,.14,.21)*beams;
+ float star=step(.9988,hash(floor(uv*vec2(344.,190.))))*smoothstep(.30,.80,uv.y);
+ color+=star*vec3(.43,.77,.81)*(0.55+sin(tm*1.1+uv.x*120.)*.23);
+ if(inside>1.5){color=mix(vec3(.62,.81,.95),vec3(.19,.42,.70),smoothstep(0.,1.,uv.y)); color+=vec3(.12,.13,.10)*pow(max(0.,sin(uv.x*20.+uv.y*2.)),18.)*smoothstep(.24,.75,uv.y);} else if(inside>.5){color=mix(color,vec3(.26,.29,.34),.88);}
+ gl_FragColor=vec4(color,1.);
+}`;
+const skyProgram=gl.createProgram();gl.attachShader(skyProgram,shader(gl.VERTEX_SHADER,SKY_V));gl.attachShader(skyProgram,shader(gl.FRAGMENT_SHADER,SKY_F));gl.linkProgram(skyProgram);
+const skyData={xy:gl.getAttribLocation(skyProgram,'xy'),tm:gl.getUniformLocation(skyProgram,'tm'),inside:gl.getUniformLocation(skyProgram,'inside')};
+const skyBuffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+function drawSky(){gl.disable(gl.DEPTH_TEST);gl.depthMask(false);gl.useProgram(skyProgram);gl.bindBuffer(gl.ARRAY_BUFFER,skyBuffer);gl.enableVertexAttribArray(skyData.xy);gl.vertexAttribPointer(skyData.xy,2,gl.FLOAT,false,0,0);gl.uniform1f(skyData.tm,time);gl.uniform1f(skyData.inside,sceneMode==='lab'?1:sceneMode==='earth'?2:0);gl.drawArrays(gl.TRIANGLES,0,6);gl.disableVertexAttribArray(skyData.xy);gl.depthMask(true);gl.enable(gl.DEPTH_TEST);gl.useProgram(program);gl.enableVertexAttribArray(attrP);gl.enableVertexAttribArray(attrN)}
+
+// 인물 · 전편 인물 관절과 기본 모션 유지
+const designs={
+ rookie:{body:[.82,.88,.77],head:[.77,.62,.49],hair:[.10,.14,.16],pants:[.18,.24,.22],accent:[.98,.70,.23]},
+ s1:{body:[.24,.37,.27],head:[.70,.58,.46],hair:[.15,.15,.17],pants:[.13,.19,.20],accent:[.65,.70,.33]},
+ s2:{body:[.36,.48,.30],head:[.82,.61,.46],hair:[.18,.20,.18],pants:[.17,.22,.27],accent:[.92,.52,.26]},
+ r1:{body:[.77,.83,.78],head:[.71,.59,.48],hair:[.13,.17,.19],pants:[.18,.23,.28],accent:[.17,.78,.80]},
+ r2:{body:[.83,.80,.79],head:[.76,.62,.51],hair:[.18,.18,.20],pants:[.21,.25,.29],accent:[.78,.49,.31]},
+ fr:{body:[.34,.45,.64],head:[.79,.60,.47],hair:[.28,.18,.11],pants:[.20,.22,.31],accent:[.87,.61,.37]},
+ r3:{body:[.62,.77,.82],head:[.72,.56,.47],hair:[.30,.22,.17],pants:[.14,.21,.28],accent:[.92,.70,.32]}
+};
+function objMatrix(type,parent,offset,size,col,rx=0,ry=0,rz=0,glow=0){
+ drawn.push({type,model:M.mul(parent,M.compose(offset[0],offset[1],offset[2],size[0],size[1],size[2],rx,ry,rz)),color:C(col),glow});
+}
+const joint=(parent,x,y,z,rx=0,ry=0,rz=0)=>M.mul(parent,M.mul(M.translate(x,y,z),M.mul(M.rotateY(ry),M.mul(M.rotateX(rx),M.rotateZ(rz)))));
+// 행렬을 월드 좌표로 변환해 팔꿈치·손끝을 실제 작업 물체와 접촉시킨다.
+const point3=(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12],m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13],m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]];
+const V3=(kind,parent,pos,scale,col,rx=0,ry=0,rz=0,glow=0)=>objMatrix(kind,parent,pos,scale,col,rx,ry,rz,glow);
+function person(kind,x,z,orientation=pi,walk=0,mode='idle',scale=1,anim={}){
+ const d=designs[kind],state=typeof mode==='string'?mode:mode.name;
+ const u=clamp(anim.u===undefined?0:anim.u,0,1), moving=state==='walk'||state==='carry'||state==='sprint';
+ const cycle=anim.gaitPhase===undefined?time*6.5+walk:anim.gaitPhase,step=moving?Math.sin(cycle):0,step2=moving?Math.sin(cycle+pi):0;
+ const launch=state==='leap',dive=state==='dive',sprint=state==='sprint',wounded=state==='fall',climbAct=state==='climb',attack=state==='attack',knock=state==='stumble';
+ const laid=['down','prone','skid','pinned'].includes(state);
+ const landing=state==='land',sitting=state==='sit',sidestep=state==='sidestep',counter=state==='counter',held=['caught','hoisted','envenomed'].includes(state);
+ const recovery=state==='rise'?sm(0,1,u):0;
+ // 보행이 실제로 진행되는 동안에만 발과 골반이 움직인다.
+ const divePose=dive?sm(0,1,u):laid?1:state==='rise'?1-recovery:0;
+ const torsoFall=wounded?mix(0,-1.31,sm(.06,.94,u)):sprint?-.25:dive?-mix(.26,1.40,divePose):laid?-1.40:
+   state==='rise'?mix(-1.40,0,recovery):climbAct?-.26:attack?-.19-.38*Math.sin(u*pi):launch?mix(-.32,-.12,u):landing?mix(-.25,0,sm(.1,1,u)):
+   state==='slam'?-1.25:knock?.22*Math.sin(u*pi):state==='reach'?-.20*sm(0,.7,u):sidestep?-.25*u:counter?-.12*u:state==='brace'?-.20:state==='carry'?-.20:0;
+ const torsoRoll=wounded?.10*Math.sin(u*pi):sprint?.055*Math.sin(cycle):dive?.12*Math.sin(u*pi):climbAct?.045*Math.sin(cycle):attack?.10*Math.sin(u*pi):sidestep?-(anim.side||1)*.20*u:counter?.04*u:laid?.08:0;
+ const height=anim.height!==undefined?anim.height:wounded?mix(1.19,.38,sm(.07,.92,u)):dive?mix(1.12,.38,sm(.12,.94,u)):sitting?.76:laid?.38:
+   state==='rise'?mix(.38,1.19,recovery):landing?mix(.81,1.19,sm(.14,1,u)):launch?mix(1.19,.81,sm(.73,1,u)):1.19;
+ const pelvisY=height+(moving?Math.abs(step)*.035:0);
+ const yaw=orientation+(moving?.016*Math.sin(cycle-.6):0);
+ // 하체는 골반을 따라 지면에 남는다. 가슴을 굽혀도 양쪽 다리가 같이 회전하지 않는다.
+ const root=M.mul(M.translate(x,(pelvisY+(anim.raise||0))*scale,z),M.rotateY(yaw));
+ const S=(a)=>a.map(n=>n*scale);
+ V3('sphere',root,[0,0,0],S([.29,.23,.22]),d.pants);
+ const bodyRoot=M.mul(root,M.mul(M.rotateZ(torsoRoll),M.rotateX(torsoFall)));
+ const torso=joint(bodyRoot,0,.16*scale,0,-.05+(moving?.016*Math.sin(cycle):0),0,(moving?.018*Math.sin(cycle*.5):0));
+ V3('sphere',torso,[0,.37*scale,0],S([.34,.49,.26]),d.body);
+ if(kind[0]==='r'||kind==='rookie'){
+  V3('sphere',torso,[0,.36*scale,.21*scale],S([.32,.48,.085]),'coat');
+  V3('sphere',torso,[-.16*scale,.34*scale,.28*scale],S([.14,.34,.055]),'white',0,0,-.09);
+  V3('sphere',torso,[.16*scale,.34*scale,.28*scale],S([.14,.34,.055]),'white',0,0,.09);
+  V3('box',torso,[0,.36*scale,.345*scale],S([.16,.10,.04]),d.accent,0,0,0,.10);
+ }else{
+  V3('sphere',torso,[0,.50*scale,.19*scale],S([.29,.24,.08]),d.accent);
+  V3('box',torso,[.25*scale,-.01*scale,.22*scale],S([.13,.17,.095]),'steel');
+  V3('cyl',torso,[0,-.13*scale,.22*scale],S([.45,.065,.13]),'dark',0,0,pi/2);
+ }
+ V3('cyl',torso,[0,-.08*scale,0],S([.27,.09,.25]),'dark');
+ V3('rock',torso,[0,.36*scale,-.23*scale],S([.26,.39,.15]),(kind[0]==='r'||kind==='rookie')?'steel':'slate');
+ // 반응 뒤에 살짝 늦게 따라오는 고개. 옆보기 또한 머리 회전으로 보인다.
+ const look=anim.headTurn||0;
+ const neck=joint(torso,0,.91*scale,0,-.05+(launch?.2:0),look+(moving?.085*Math.sin(cycle-1.1):0),0);
+ V3('cyl',neck,[0,0,0],S([.105,.17,.105]),d.head);
+ V3('sphere',neck,[0,.255*scale,0],S([.28,.32,.255]),d.head);
+ V3('sphere',neck,[0,.50*scale,-.035*scale],S([.30,.14,.27]),d.hair,0,0,-.10);
+ V3('sphere',neck,[-.15*scale,.46*scale,.10*scale],S([.17,.11,.19]),d.hair,0,0,-.16);
+ if(kind==='s2'||kind==='r3')V3('sphere',neck,[.17*scale,.48*scale,.11*scale],S([.15,.115,.19]),d.hair,0,0,.26);
+ V3('sphere',neck,[0,.15*scale,.245*scale],S([.05,.07,.035]),d.head);
+ V3('sphere',neck,[0,.07*scale,.254*scale],S([.08,.014,.022]),'dark');
+ for(const side of [-1,1]){
+  V3('sphere',neck,[side*.272*scale,.24*scale,.02*scale],S([.055,.083,.06]),d.head);
+  V3('sphere',neck,[side*.12*scale,.285*scale,.230*scale],S([.037,.031,.025]),'night');
+  V3('sphere',neck,[side*.106*scale,.299*scale,.249*scale],S([.011,.011,.011]),'white',0,0,0,.16);
+  V3('sphere',neck,[side*.12*scale,.42*scale,.21*scale],S([.11,.035,.035]),d.hair,0,0,side*.1);
+ }
+ // 대퇴부와 정강이를 별개 회전시키고 착지·보행 때 무릎을 굽힌다.
+ for(const side of [-1,1]){
+  let swing=side>0?step:step2,footlift=Math.max(0,-swing);
+  const legAngle=wounded?mix(0,side>0?-1.03:-.83,sm(.16,.85,u)):
+    sprint?swing*.64:dive?mix(swing*.64,side>0?-1.28:-1.10,divePose):climbAct?(-.40+.43*Math.sin(cycle+side)):
+    attack?(side>0?-.18:.30):held?(side>0?-.35:.25):sitting?-1.23:
+    moving?swing*.38:sidestep?(side===(anim.side||1)?-.65:-.18)*u:counter?(side>0?-.22:.22)*u:
+    launch?mix(side>0?-.92:-.44,side>0?-.35:-.28,sm(.65,1,u)):landing?mix(side>0?-.35:-.28,0,sm(.25,1,u)):
+    laid?(side>0?-1.38:-1.18):state==='rise'?mix(side>0?-1.38:-1.18,0,recovery):state==='brace'?.24:0;
+  const hip=joint(root,side*.20*scale,-.13*scale,.005*scale,legAngle,0,side*(laid?.20:launch?.22:.035));
+  V3('sphere',hip,[0,-.28*scale,0],S([.16,.34,.16]),d.pants);
+  V3('sphere',hip,[0,-.55*scale,0],S([.155,.15,.15]),d.pants);
+  let kneebend=wounded?-.54*sm(.1,.95,u):sprint?(-.20-footlift*.58):dive?mix(-.14,side>0?-.20:.44,divePose):climbAct?(-.52-.20*Math.sin(cycle+side)):
+    attack?-.20:held?-.48:sitting?1.28:moving?(-.08-footlift*.43):sidestep?-.5*u:counter?-.22*u:
+    launch?mix(-.08,-.98,sm(0,.78,u)):landing?mix(-.98,-.035,sm(.16,1,u)):
+    laid?(side>0?-.18:.43):state==='rise'?mix(side>0?-.18:.43,-.035,recovery):-.035;
+  const knee=joint(hip,0,-.56*scale,0,kneebend);
+  V3('cyl',knee,[0,-.23*scale,0],S([.135,.49,.135]),d.pants);
+  const ankle=joint(knee,0,-.49*scale,0,moving?footlift*.28:laid?.24:0);
+  V3('sphere',ankle,[0,-.02*scale,.18*scale],S([.175,.13,.30]),'dark');
+  V3('sphere',ankle,[0,-.09*scale,.30*scale],S([.15,.055,.22]),'slate');
+ }
+ // 어깨·팔꿈치·손목: 보행 교차 스윙, 비행 중 반사적 팔 펼침, 충격 시 바닥 짚기.
+ for(const side of [-1,1]){
+  // 두 팔은 양쪽 모두 정상적으로 이어진다.
+  // 과거 컷씬에서는 손이 실제 서류·장비·가방 위치를 따라간다. 제자리 손짓 금지.
+  const handTarget=anim.handTargets&&anim.handTargets[side];
+  if(handTarget){
+   const shoulderWorld=point3(torso,[side*.41*scale,.74*scale,0]);
+   const dx=handTarget[0]-shoulderWorld[0],dy=handTarget[1]-shoulderWorld[1],dz=handTarget[2]-shoulderWorld[2];
+   const rawLength=Math.hypot(dx,dy,dz)||.001;
+   const reach=Math.min(rawLength,.91*scale),ux=dx/rawLength,uy=dy/rawLength,uz=dz/rawLength;
+   const wristWorld=[shoulderWorld[0]+ux*reach,shoulderWorld[1]+uy*reach,shoulderWorld[2]+uz*reach];
+   const upper=.47*scale,lower=.47*scale;
+   const elbowAlong=(reach*reach+upper*upper-lower*lower)/(2*Math.max(reach,.001));
+   const elbowOffset=Math.sqrt(Math.max(0,upper*upper-elbowAlong*elbowAlong));
+   // 팔꿈치 굽힘 방향은 캐릭터의 좌우 어깨 방향이며, 3D 공간에서도 관절 길이가 고정된다.
+   const out=point3(torso,[side*.72*scale,.56*scale,-.22*scale]);
+   let bx=out[0]-shoulderWorld[0],by=out[1]-shoulderWorld[1],bz=out[2]-shoulderWorld[2];
+   const parallel=bx*ux+by*uy+bz*uz;bx-=parallel*ux;by-=parallel*uy;bz-=parallel*uz;
+   const bl=Math.hypot(bx,by,bz)||1;
+   const elbowWorld=[shoulderWorld[0]+ux*elbowAlong+bx/bl*elbowOffset,
+                     shoulderWorld[1]+uy*elbowAlong+by/bl*elbowOffset,
+                     shoulderWorld[2]+uz*elbowAlong+bz/bl*elbowOffset];
+   ball(...shoulderWorld,.17*scale,.17*scale,.17*scale,d.body);
+   line3(shoulderWorld,elbowWorld,.129*scale,d.body);
+   ball(...elbowWorld,.132*scale,.13*scale,.132*scale,d.body);
+   line3(elbowWorld,wristWorld,.107*scale,d.body);
+   ball(...wristWorld,.122*scale,.118*scale,.119*scale,d.head);
+   if(anim.gripOut)anim.gripOut[side]=wristWorld;
+   continue;
+  }
+  let swing=side>0?step2:step;
+  const shoulder=joint(torso,side*.41*scale,.74*scale,0,
+    held?-.9:wounded?-.85*sm(.25,.96,u):sprint?swing*.90:dive?mix(swing*.90,-1.24,divePose):climbAct?-.86:attack?-1.12:sitting?-.48:moving?swing*.38:sidestep?-.94*u:counter?(side>0?-1.55*u:-.71*u):launch?mix(-.08,-.96,sm(0,.40,u)):laid?(state==='skid'?mix(-1.24,-.45,sm(0,1,u)):-.28):
+    state==='brace'?-.9:state==='reach'&&side>0?-1.45*sm(0,.75,u):state==='carry'?-1.12:knock?-.8*Math.sin(u*pi):-.06,
+    0,side*(sidestep?.42*u:counter?.20*u:launch?.80*Math.sin(u*pi):laid?.92:state==='brace'?.32:state==='carry'?.29:.12));
+  V3('sphere',shoulder,[0,0,0],S([.20,.20,.20]),d.body);
+  V3('sphere',shoulder,[0,-.24*scale,0],S([.15,.29,.15]),d.body);
+  const elbow=joint(shoulder,0,-.47*scale,0,
+    held?-.65:sprint?-.80:wounded?-.32:dive?mix(-.80,-.45,divePose):climbAct?-.74:attack?-.82:sitting?-.75:moving?-.22:sidestep?-.38*u:counter?(side>0?-.23:-.65)*u:launch?-1.02*Math.sin(u*pi):laid?(-.7-side*.45):state==='reach'&&side>0?-.65:state==='carry'?-1.10:0);
+  V3('sphere',elbow,[0,0,0],S([.14,.15,.14]),d.body);
+  V3('cyl',elbow,[0,-.215*scale,0],S([.13,.46,.13]),d.body);
+  const wrist=joint(elbow,0,-.46*scale,0,laid?.17:0);
+  V3('sphere',wrist,[0,-.055*scale,0],S([.134,.157,.138]),d.head);
+  if(kind==='s1'&&counter&&side>0){V3('cyl',wrist,[0,-.28*scale,.04*scale],S([.035,.43,.035]),'steel',0,0,0,.05);V3('box',wrist,[0,-.51*scale,.04*scale],S([.13,.055,.07]),'slate');}
+ }
+ if(kind[0]==='r'||kind==='rookie'){
+  V3('box',torso,[.20*scale,.53*scale,.27*scale],S([.17,.055,.07]),'gold');
+  V3('sphere',torso,[-.30*scale,.02*scale,.16*scale],S([.18,.11,.14]),d.accent);
+ }
+ if(kind==='s2'&&state!=='down'&&!launch){
+  V3('box',torso,[.40*scale,-.07*scale,.16*scale],S([.16,.24,.22]),'dark');
+ }
+}
+
+
+const box=(x,y,z,w,h,d,c,ry=0,rx=0)=>obj('box',[x,y,z],[w,h,d],c,rx,ry);
+const cyl=(x,y,z,w,h,d,c,rx=0,ry=0)=>obj('cyl',[x,y,z],[w,h,d],c,rx,ry);
+const ball=(x,y,z,w,h,d,c,glow=0)=>obj('sphere',[x,y,z],[w,h,d],c,0,0,0,glow);
+Object.assign(colors,{leaf:[.13,.48,.30],leaf2:[.19,.59,.36],stem:[.25,.50,.24],grass:[.20,.44,.31],soil:[.27,.32,.24],petal1:[.96,.48,.67],petal2:[.96,.83,.45],petal3:[.70,.52,.93],petal4:[.91,.94,.94],bee:[.96,.72,.20],beeDark:[.13,.13,.15],wing:[.73,.85,.92],spider:[.22,.17,.23],spiderHi:[.43,.27,.38],fang:[.72,.78,.75],venom:[.35,.90,.47],web:[.61,.69,.72],friend:[.38,.54,.79],forest:[.10,.28,.20],flowerFloor:[.18,.38,.24],skin2:[.82,.64,.52]});
+
+
+// 유틸 · 동작과 대사 시각표
+const show=(id,on)=>$(id).style.display=on?(id==='end'?'grid':'block'):'none';
+function cam(x,y,z,tx,ty,tz){Object.assign(camera,{x,y,z,tx,ty,tz,roll:0});}
+function line3(a,b,r,col){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],dist=Math.hypot(dx,dy,dz)||.0001;let yaw=Math.atan2(dx,dz),pitch=Math.atan2(Math.hypot(dx,dz),dy);obj('cyl',[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],[r,dist,r],col,0,yaw,0);let o=drawn[drawn.length-1];o.model=M.mul(M.translate((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),M.mul(M.rotateY(yaw),M.mul(M.rotateX(pitch),M.scale(r,dist,r))));}
+function tree(x,z,scale=1){cyl(x,1.55*scale,z,.39*scale,3.1*scale,.39*scale,'wood');for(let i=0;i<3;i++)ball(x+.32*Math.sin(i*3.1)*scale,(3.1+i*.46)*scale,z+.25*Math.cos(i*2.1)*scale,2.4*scale,1.45*scale,2.3*scale,i===1?'leaf2':'leaf')}
+function bush(x,z,s=1){for(let i=0;i<3;i++)ball(x+Math.sin(i*2.1)*.42*s,.45*s,z+Math.cos(i*3)*.32*s,.87*s,.74*s,.84*s,'leaf')}
+function groundScene(mode){if(mode==='lab'||mode==='home'){
+ sceneMode='lab';box(0,-.18,-4,25,.3,27,'slate');box(0,4.2,-18,25,8,.65,'dark');box(-12,3,-5,.5,7,27,'slate');box(12,3,-5,.5,7,27,'slate');box(0,7,-5,25,.5,27,'dark');
+ for(let i=-4;i<5;i++)box(i*2.7,.015,-4,.035,.025,27,'steel');for(let z=-16;z<9;z+=3)box(0,.018,z,25,.025,.025,'steel');
+ for(let x of [-7,7]){box(x,3.3,-17.59,3.2,2.9,.09,'blue');box(x,3.3,-17.50,.13,2.9,.2,'steel');box(x,3.3,-17.50,3.2,.13,.2,'steel');}
+ for(let x of [-8,8])for(let z of [-9,-2,5]){cyl(x,6.6,z,.17,.7,.17,'gold');ball(x,6.15,z,.7,.11,.7,'white',.28)}
+ if(mode==='lab'){box(0,2.4,-14.6,9,4,.25,'steel');box(0,2.4,-14.39,8.3,3.35,.08,'forest');box(-5.2,.85,-4.9,2,1.2,1,'wood');box(4.8,.8,-4.9,2.2,1.1,1.2,'wood');}
+ else {box(-4.6,.86,-4.1,3.2,.14,2.0,'wood');for(const x of [-5.8,-3.4])for(const z of [-5,-3])cyl(x,.4,z,.14,.8,.14,'wood');box(1.5,1.4,-14.45,3.4,2.9,.12,'wood');box(1.5,1.4,-14.33,2.7,2.3,.08,'blue');ball(-7,1.7,-13,1.15,2.1,1.1,'leaf2');}
+ }else{
+ sceneMode='out';const canyon=mode==='canyon',inside=mode==='inside',world=mode==='world';
+ box(0,-.30,-10,90,.58,85,canyon?'soil':inside?'wood':'forest');
+ for(let i=0;i<19;i++){let side=i%2?-1:1,x=side*(5+(i%4)*1.5),z=-24+(i*6)%35;
+ if(canyon){ball(x,.5,z,2.7,2.7,2.4,'rock');ball(x+side*1.0,1.8,z-1.2,1.8,3.8,1.4,'slate');if(i%3===0)obj('gem',[x,2.1,z-1],[.7,1.6,.7],'steel',0,0,0,.15)}
+ else if(inside){cyl(x,5.2,z,1.1,10.4,1.1,'wood');for(let j=0;j<3;j++)line3([x,j*2.3,z],[x-side*2.2,j*2.3+1.5,z-3],.18,'moss');}
+ else{tree(x,z,(world?1.7:1.0)+rnd(i)*.35);if(i%2===0)bush(x-side*1.1,z+1.5,.8)}
+ }
+ if(world){cyl(0,9,-33,5.5,18,5.5,'wood');for(let k=0;k<7;k++)ball(Math.sin(k*2.8)*5.5,18,-33+Math.cos(k*2.8)*4,12,8,12,'leaf2');}
+ if(!inside&&!canyon){for(let k=0;k<45;k++){let x=(rnd(k+111)*2-1)*22,z=(rnd(k+241)*2-1)*27-10;obj('gem',[x,.13,z],[.06,.2,.06],'leaf2',0,0,0,.05)}}
+ }}
+// 메인 · 먹이사슬 단계별 영상의 실제 3D 생물
+function beast(type,x,z,s=1,motion=0){let y=.10+Math.sin(time*3+motion)*.025;
+ const wolf=['wolf','hound'].includes(type),quad=['wolf','hound','bear','boar','stag','ibex','deer','hare'].includes(type);
+ if(quad){const big=type==='bear'?1.45:type==='hare'?.46:1;
+ let col=type==='wolf'?[.16,.18,.26]:type==='hound'?[.32,.35,.36]:type==='bear'?[.32,.24,.20]:type==='boar'?[.22,.31,.25]:type==='stag'?[.35,.46,.31]:type==='ibex'?[.56,.52,.40]:type==='deer'?[.58,.41,.26]:[.7,.67,.55];
+ ball(x,y+.96*s*big,z,1.45*s*big,.90*s*big,2.05*s*big,col);ball(x,y+1.17*s*big,z+.88*s*big,.80*s*big,.73*s*big,.89*s*big,col);
+ ball(x,y+1.00*s*big,z+1.45*s*big,.48*s*big,.28*s*big,.59*s*big,wolf?'night':col);
+ for(let side of [-1,1]){for(let back of [-1,1]){let swing=Math.sin(time*5+side+back*2+motion)*.16*s;let zz=z+back*.61*s*big;let xx=x+side*.49*s*big;line3([xx,y+.68*s*big,zz],[xx+swing,y+.15*s*big,zz+.05],.17*s*big,col);ball(xx+swing,y+.15*s*big,zz+.15*s,.28*s*big,.21*s*big,.48*s*big,'dark')}
+ if(wolf||type==='hare'){obj('gem',[x+side*.33*s*big,y+1.73*s*big,z+1.00*s*big],[.24*s*big,.52*s*big,.27*s*big],col,0,0,0,.08)}
+ if(type==='stag'||type==='ibex'||type==='deer'){line3([x+side*.26*s,y+1.61*s,z+.91*s],[x+side*.48*s,y+2.25*s,z+.76*s],.11*s,type==='ibex'?'steel':'wood');line3([x+side*.48*s,y+2.24*s,z+.75*s],[x+side*.81*s,y+2.50*s,z+.65*s],.09*s,'wood')}
+ }ball(x,y+.96*s*big,z-1.18*s*big,.23*s*big,.26*s*big,.7*s*big,col);
+ for(let side of [-1,1]){ball(x+side*.22*s*big,y+1.24*s*big,z+1.61*s*big,.075*s*big,.075*s*big,.065*s*big,'gold',.2)}
+ }else if(type==='golem'||type==='root'){let bark=type==='root'?'wood':'rock';ball(x,y+2*s,z,1.7*s,2.45*s,1.5*s,bark);ball(x,y+3.65*s,z+.12*s,1.1*s,1.1*s,1.1*s,bark);for(let side of [-1,1]){line3([x+side*.8*s,y+2.6*s,z],[x+side*1.55*s,y+.8*s,z+.3*s],.35*s,bark);line3([x+side*.45*s,y+1.25*s,z],[x+side*.52*s,y,z],.4*s,bark);ball(x+side*.28*s,y+3.7*s,z+.55*s,.12*s,.12*s,.08*s,type==='root'?'red':'cyan',.7)}}
+ else if(type==='mushroom'){cyl(x,1.7*s,z,.72*s,3.4*s,.72*s,'white');ball(x,3.5*s,z,3.4*s,1.25*s,3.3*s,'purple');for(let k=0;k<7;k++){let a=k*6.28/7;ball(x+Math.cos(a)*1.2*s,3.85*s,z+Math.sin(a)*1.2*s,.28*s,.13*s,.28*s,'violet',.5)}}
+ else if(type==='spirit'){ball(x,1.55*s+Math.sin(time*2)*.14,z,1.4*s,1.1*s,1.2*s,'rock');obj('gem',[x,2.2*s,z],[.72*s,1.05*s,.70*s],'cyan',0,time*.5,0,.65);for(let side of [-1,1])obj('rock',[x+side*1.0*s,1.5*s,z],[.44*s,.69*s,.56*s],'steel',0,time*.2,0)}
+ else if(type==='goblin'){ball(x,1*s,z,.69*s,1.2*s,.45*s,'leaf');ball(x,2.0*s,z,.58*s,.64*s,.56*s,'moss');for(let side of [-1,1])obj('gem',[x+side*.63*s,2.03*s,z],[.54*s,.22*s,.24*s],'leaf',0,0,side*1.2)}
+ else if(type==='snake'){for(let i=0;i<7;i++){let zz=z-i*.47*s,xx=x+.38*Math.sin(time*2+i);ball(xx,.4*s+Math.max(0,2-i)*.27*s,zz,(.4-i*.03)*s,.39*s,(.49-i*.02)*s,'moss')}ball(x+.38*Math.sin(time*2),1.1*s,z+.2*s,.56*s,.44*s,.68*s,'moss')}
+ else if(type==='bird'){ball(x,1.05*s,z,.64*s,.54*s,.97*s,'leaf2');ball(x,1.56*s,z+.35*s,.39*s,.46*s,.40*s,'leaf2');for(let side of [-1,1])ball(x+side*.60*s,1.12*s,z-.03*s,.82*s,.14*s,.57*s,'leaf');obj('gem',[x,1.55*s,z+.74*s],[.12*s,.15*s,.43*s],'gold',Math.PI/2)}
+}
+const ranks=[
+ {label:'5등급 · 최상위 위험',names:['거대 독 포자 버섯','세계수 곰','뿌리 골렘'],species:['mushroom','bear','root'],bio:'접근보다 회피 우선 · 독 포자와 강력한 타격 주의',bg:'world'},
+ {label:'4등급 · 고위험',names:['가시숲 사냥개','철가죽 들개 (협곡)','돌 정령'],species:['hound','hound','golem'],bio:'무리 사냥, 돌진, 낙석 위험',bg:'canyon'},
+ {label:'3등급 · 경계',names:['그림자늑대','철 정령 (일반)','이끼뿔사슴','이끼 멧돼지','철갑산양','세계수 뱀'],species:['wolf','spirit','stag','boar','ibex','snake'],bio:'평범해 보여도 반격과 기습 가능',bg:'forest'},
+ {label:'2등급 · 낮은 위험',names:['숲 고블린','철 정령 (특정 1개체)'],species:['goblin','spirit'],bio:'철 정령은 일부 개체만 이 단계로 별도 기록',bg:'forest'},
+ {label:'1등급 · 최저 위험',names:['세계수 꿩','산 토끼','수액사슴'],species:['bird','hare','deer'],bio:'무해하다고 가까이 다가가지는 말 것',bg:'world'}
+];
+// 위험도는 1~5 교육 영상 기준. HP / 공격력은 기존 마력숲 적 도감 값, 없는 항목은 미확인.
+const guides=[
+ {name:'일반지역 소개 · 주의사항',bg:'forest',intro:'잔풀과 나무가 많고 낮과 밤의 시야가 크게 달라져.',stats:['숲 가장자리와 그늘진 수풀은 기습 지점이야.','기초 식량·회복 도구·총알을 확보하고 이동해.'],warn:'그림자늑대의 도주처럼 보이는 행동을 추격하지 마.'},
+ {name:'일반지역 적 · 주의사항',bg:'forest',intro:'등급과 별개로 적의 공격 범위를 확인해.',stats:['그림자늑대  체력 95 · 공격력 14 · 위험도 3','가시숲 사냥개  체력 128 · 공격력 18 · 위험도 4','숲 고블린  체력 42 · 공격력 7 · 위험도 2','이끼 멧돼지  체력 72 · 공격력 9 · 위험도 3','이끼뿔사슴  체력 105 · 공격력 12 · 위험도 3','산 토끼  체력 미확인 · 공격력 미확인 · 위험도 1'],warn:'뒤로 물러나는 그림자늑대도 갑자기 돌진할 수 있어.'},
+ {name:'협곡 지역 소개 · 주의사항',bg:'canyon',intro:'좁은 길, 높은 절벽과 광맥이 섞인 지형이야.',stats:['바위 뒤 사각지대에서 적과 마주칠 수 있어.','회피 방향을 먼저 확인하고 채광 경로를 정해.'],warn:'난간 없는 절벽 끝에서 싸우지 말고 낙석을 조심해.'},
+ {name:'협곡 철 소개 · 주의사항',bg:'canyon',intro:'협곡의 철 광맥은 장비 제작에 필요한 자원이야.',stats:['채광 전에 주변 적의 이동 경로부터 조사해.','철 정령과 광맥을 혼동하지 말 것.'],warn:'광맥에 집중하면 뒤쪽 철가죽 들개와 돌 정령을 놓쳐.'},
+ {name:'협곡 몬스터 · 주의사항',bg:'canyon',intro:'돌 정령의 공격을 피할 공간을 남겨 둬.',stats:['돌 정령  체력 150 · 공격력 18 · 위험도 4','철가죽 들개  체력 150 · 공격력 17 · 위험도 4','철 정령 (일반)  체력 66.5 · 공격력 9.8 · 위험도 3','철 정령 (특정 1개체)  체력 66.5 · 공격력 9.8 · 위험도 2','철갑산양  체력 180 · 공격력 18 · 위험도 3'],warn:'철 정령 1개체만 2등급이고 나머지는 3등급이야.'},
+ {name:'세계수 지역 소개 · 주의사항',bg:'world',intro:'거대한 뿌리와 짙은 나무 그늘이 시야를 가려.',stats:['세계수 생물은 평범한 숲 생물보다 위협적일 수 있어.','포자가 떠다니는 곳은 충분히 우회해.'],warn:'세계수 곰과 독 포자 버섯이 보이면 접근하지 마.'},
+ {name:'세계수 지역 몬스터 · 주의사항',bg:'world',intro:'먹이사슬의 높은 단계가 한곳에 모여 있어.',stats:['세계수 곰  체력 380 · 공격력 28 · 위험도 5','거대 독 포자 버섯  체력 340 · 공격력 24 · 위험도 5','세계수 뱀  체력 미확인 · 공격력 미확인 · 위험도 3','세계수 꿩  체력 미확인 · 공격력 미확인 · 위험도 1','수액사슴  체력 120 · 공격력 0 · 위험도 1'],warn:'포자 공격은 바람 방향을 고려해 피해야 해.'},
+ {name:'세계수 내부 · 주의사항',bg:'inside',intro:'줄기 속 어두운 통로는 공간이 좁고 도주로가 적어.',stats:['조명과 탈출 방향을 확인하고 진입해.','바닥 뿌리와 시야 밖 위쪽의 움직임을 함께 살펴.'],warn:'막다른 길에서 큰 적과 싸우지 마.'},
+ {name:'세계수 내부 적 · 주의사항',bg:'inside',intro:'내부로 들어갈수록 넓은 공격 범위를 경계해야 해.',stats:['뿌리 골렘  체력 미확인 · 공격력 미확인 · 위험도 5','세계수 뱀  체력 미확인 · 공격력 미확인 · 위험도 3'],warn:'뿌리 골렘 앞에서 멈추거나 뱀의 길목을 막지 마.'}
+];
+const segments=[
+ {kind:'intro',duration:17,label:'신입 연구원 입소'},
+ ...ranks.map((_,index)=>({kind:'rank',index,duration:7,label:`먹이사슬 ${5-index}등급 영상` })),
+ {kind:'toc',duration:11,label:'생존 가이드 · 9개 목차'},
+ ...guides.map((_,index)=>({kind:'guide',index,duration:8,label:`생존 가이드 ${index+1} / 9` })),
+ {kind:'field',duration:28,label:'첫 실전 · 그림자늑대'},
+ {kind:'home',duration:17,label:'그 시각 · 수정지역 회의'}
+];
+const starts=[],total=segments.reduce((a,s)=>{starts.push(a);return a+s.duration},0);
+const fieldIndex=segments.findIndex(s=>s.kind==='field'),fieldStart=starts[fieldIndex],shotTimes=[9.2,10.0,10.8,11.6,16.2,17.15];
+function caption(speaker,body){$('speaker').textContent=speaker;$('line').textContent=body;}
+function lineAt(local,rows){let row=rows[0];for(const r of rows)if(local>=r[0])row=r;caption(row[1],row[2])}
+function screenGuide(g,index){const html=`<small>생존 가이드 · ${index+1} / 9</small><h2>${g.name}</h2><p>${g.intro}</p><div class="stats">${g.stats.map(s=>`<div>${s}</div>`).join('')}</div><p class="warning">주의사항 · ${g.warn}</p>`;if($('guide').innerHTML!==html)$('guide').innerHTML=html;show('guide',true);}
+function rankGuide(g){const html=`<small>연구원 1·3 제작 · 먹이사슬 영상</small><h2><span class="number">${g.label}</span></h2><div class="creatures">${g.names.map(n=>`<b>${n}</b>`).join('')}</div><p>${g.bio}</p>`;if($('rank').innerHTML!==html)$('rank').innerHTML=html;show('rank',true);}
+// 훈련영상의 일반지역·세계수·협곡 3D 교차 화면
+function rankScene(index,local){let g=ranks[index];groundScene(g.bg);
+ let list=g.species,N=list.length;
+ for(let i=0;i<N;i++){let slots=N>=5?3:N,x=((i%slots)-(slots-1)/2)*4.4,z=-6-Math.floor(i/slots)*5;
+  beast(list[i],x,z,N>=5?.72:.85,i);}
+ cam(0,3.6,12,0,1.35,-9);
+ rankGuide(g);lineAt(local,[[0,'연구원 3',`${g.label}. 영상을 자세히 봐.`],[3,'연구원 1',g.bio]]);
+}
+function labScene(local){groundScene('lab');
+ // 입소식과 생존규칙 대본: 연구원 1·3이 작성한 종이를 생존자 2가 손에 쥔다.
+ person('rookie',0,1.5,0,0,'idle',.92,{headTurn:.05});
+ person('r1',-4,-3.8,.25,0,local>4&&local<8?'reach':'idle',1,{headTurn:.16});
+ person('r3',-1.7,-3.8,.25,0,'idle',1,{headTurn:-.15});
+ person('s2',3,-3.5,-.20,0,'reach',1,{handTargets:{'1':[3.18,1.78,-2.85],'-1':[2.8,1.75,-2.92]},headTurn:-.08});
+ box(3,1.75,-2.8,.52,.07,.72,'white');box(3.05,1.798,-2.74,.44,.012,.06,'night');box(3.02,1.798,-2.91,.39,.012,.05,'night');
+ cam(0,2.65,10,0,1.65,-3.1);
+ lineAt(local,[
+ [0,'연구원 1','신입 연구원, 마력숲 교육에 온 걸 환영해.'],
+ [2.9,'연구원 3','교육은 우리가 맡을게. 먼저 생태 기록부터 보자.'],
+ [5.7,'신입 연구원','네! 생존 규칙도 알려 주시는 거죠?'],
+ [8.5,'생존자 2','그… 규칙은 제가 설명할게요. 대본을 보면서요.'],
+ [11.4,'신입 연구원','그 대본은 직접 쓴 거예요?'],
+ [13.1,'생존자 2','아니… 연구원 1이랑 3이 써 줬어.'],
+ [15.2,'연구원 1','자, 첫 영상 시작!']]);
+}
+function tocScene(local){groundScene('lab');cam(0,2.65,9,0,1.8,-7);person('r1',-3,-5.8,.20,0,'idle');person('r3',2.4,-5.8,-.15,0,'idle');
+ const g={name:'생존 가이드 · 전체 목차 (9개)',intro:'9개 항목을 모두 익힌 뒤 일반지역 실전에 나가.',stats:guides.map((v,i)=>`${i+1}. ${v.name}`),warn:'모든 항목의 주의사항을 반드시 확인하고 이동해.'};screenGuide(g,-1);
+ $('guide').innerHTML=$('guide').innerHTML.replace('생존 가이드 · 0 / 9','생존 가이드 · 전체 목차');
+ lineAt(local,[[0,'연구원 1','이제 생존 가이드를 보자. 목차는 아홉 개야.'],[5,'연구원 3','일반지역, 협곡, 세계수와 세계수 내부까지. 주의사항을 빼먹지 마.']]);}
+function guideScene(index,local){let g=guides[index];groundScene(g.bg);let species=['wolf','hound','golem','spirit','spirit','bear','mushroom','root','root'][index];beast(species,2,-7,index===7||index===8?1.3:.9,0);if(index===3)for(let k=0;k<7;k++)obj('gem',[-4+k*.50,.4+Math.sin(k)*.12,-5-k*.39],[.32,.52,.32],'steel',0,0,0,.12);
+ cam(2.5,3.4,10,0,1.5,-9);
+ screenGuide(g,index);
+ lineAt(local,[[0,index%2?'연구원 3':'연구원 1',`${index+1}번. ${g.name}.`],[2.8,'연구원 1',g.intro],[5.5,'생존자 2',`주의사항! ${g.warn}`]]);
+}
+function bulletGuns(shot,local){if(shot){box(-.45,1.45,5.1,.40,.30,1.05,'steel');box(-.45,1.20,5.3,.16,.58,.21,'dark');box(-.45,1.42,4.48,.13,.13,.55,'slate');ball(-.45,1.43,4.07,.49,.48,.48,'gold',.9)}else{box(-.45,1.45,5.1,.40,.30,1.05,'steel');box(-.45,1.18,5.3,.16,.58,.21,'dark');box(-.45,1.42,4.48,.13,.13,.55,'slate')}}
+function fieldScene(local){groundScene('forest');let z,orientation=0,fall=0,confused=false;
+ if(local<4){z=mix(-8,-12,sm(1,4,local));orientation=0;}
+ else if(local<7.1){z=mix(-12,1.40,sm(4,7.1,local));orientation=0;}
+ else if(local<12.5){z=1.20;orientation=.15*Math.sin(local*17);confused=local>=9;}
+ else if(local<18.4){z=mix(1.2,-2.1,sm(12.5,14.5,local));orientation=local<16?Math.sin(local*4)*.9:0;confused=true;}
+ else {z=-2.1;fall=sm(18.2,19.3,local);}
+ const firing=shotTimes.some(x=>local>=x&&local<x+.095);const hits=shotTimes.filter(x=>local>=x).length;
+ // 도주 → 반전 돌진 → 물기 → 네 번 사격 → 후방 이동 → 머리 뒤 두 발 사격 → 쓰러짐
+ const wolfY=fall?Math.max(.04,1-fall)*0:.0;
+ const wolfBegin=drawn.length;beast('wolf',0,z,1.0,local<18?local*.8:0);
+ if(confused||fall){ // 늑대의 혼란/낙상: 기존 늑대 몸체 전체를 한 번에 회전, 부위 분리 없음
+  let wobble=confused&&!fall?Math.sin(local*9)*.22:0;
+  let root=M.mul(M.translate(0,.13,z),M.mul(M.rotateZ(wobble),M.mul(M.rotateX(-1.46*fall),M.translate(0,-.13,-z))));
+  for(let j=wolfBegin;j<drawn.length;j++)drawn[j].model=M.mul(root,drawn[j].model);
+ }
+ for(let n=0;n<shotTimes.length;n++){if(local>=shotTimes[n]&&local<shotTimes[n]+.19){
+  let headZ=z+(n>=4?1.55:1.37),a=(local-shotTimes[n])/.19;
+  ball(.24,1.29,headZ,.23+.46*a,.23+.46*a,.23+.46*a,'gold',.6*(1-a));
+ }}
+ const newbieX=local<12?0:mix(0,2.8,sm(12.0,15.2,local)), newbieZ=local<12?3.25:mix(3.25,-4.3,sm(12,15.6,local));
+ person('rookie',newbieX,newbieZ,local<12?Math.PI:1.0,local*3,(local>12&&local<15.8)?'walk':local>19?'reach':'idle',.9,{headTurn:local>=12&&local<=17?-.38:0});
+ // 6발은 정확히 발사 타이밍에서만 효과 표시
+ if(local>=9&&local<12.2||local>=16&&local<18){
+  let gx=newbieX, gz=newbieZ;box(gx+.27,1.55,gz-.6,.26,.24,.8,'steel');
+  if(firing)ball(gx+.28,1.54,gz-1.1,.65,.65,.65,'gold',.85);
+ }
+ if(local>=19.2){const n=local>=21?2:1;for(let b=0;b<n;b++)box(newbieX+.18+b*.15,1.16,newbieZ-.20,.12,.06,.33,'white');}
+ if(local<9){cam(0,1.76,5.4,0,1.04,-6);bulletGuns(false,local)}
+ else if(local<12.2){cam(.3,1.7,5.55,0,1.08,z);bulletGuns(firing,local)}
+ else{cam(4.0,2.72,6.0,0,1.10,-2.1);}
+ show('hit',local>=9&&local<20);$('hit').textContent=`그림자늑대 · 사격 ${hits} / 6발`;
+ show('wound',local>=19&&local<28);$('wound').textContent=`방어복 보호 · 작은 상처 · 밴드 ${local<21?1:2}개`;
+ $('hurt').style.opacity=local>=7.0&&local<9?String((1-sm(8.4,9,local))*.73):'0';
+ $('flash').style.opacity=firing?'0.25':'0';
+ lineAt(local,[
+ [0,'신입 연구원','일반지역 첫 실전… 저기 그림자늑대가 있어.'],
+ [3.1,'신입 연구원','뒤로 가네? 도망치는 건가?'],
+ [5.8,'신입 연구원','잠깐, 돌아온다!'],
+ [7.15,'신입 연구원','아악! 물렸어! 방어복이 버텨 줘!'],
+ [9.0,'신입 연구원','침착하게… 우선 네 발!'],
+ [12.2,'신입 연구원','혼란스러워하는 사이에 뒤로 이동하자.'],
+ [16.0,'신입 연구원','뒤쪽 머리! 두 발 더!'],
+ [18.4,'신입 연구원','쓰러졌다… 이제 상처를 확인하자.'],
+ [19.6,'신입 연구원','작은 상처뿐이야. 밴드 한 개.'],
+ [21.4,'신입 연구원','두 번째 밴드도 붙였어.'],
+ [24.2,'신입 연구원','방어복 덕분에 살았다. 첫 실전 종료.']]);
+}
+function homeScene(local){groundScene('home');
+ person('r2',-5.5,-3.2,-.25,0,'sit',1,{headTurn:local>11?.16:0});
+ person('s1',-3.8,-3.2,.25,0,'sit',1,{headTurn:local>7?-.1:0});
+ // 지도와 수정 표본을 직접 내려다보는 자세; 대화시간 정확히 17초.
+ box(-4.65,1.12,-4.1,2.4,.05,1.55,'white');box(-4.65,1.155,-4.1,1.8,.012,.95,'slate');
+ for(let j=0;j<5;j++)obj('gem',[-4.95+j*.22,1.4,-4.1+Math.sin(j)*.27],[.20,.50,.21],j%2?'violet':'cyan',0,0,0,.35);
+ cam(-1.8,2.65,7,-4.4,1.4,-4);
+ lineAt(local,[
+ [0,'연구원 2','수정지역 기록… 그때 놓친 게 많았어.'],
+ [2.8,'생존자 1','수정 멧돼지랑 수호자도 아직 위험하지.'],
+ [5.8,'연구원 2','맞아. 하지만 그 안쪽에 새로운 흔적이 있었어.'],
+ [8.7,'생존자 1','이번엔 장비를 챙기고 우회로도 준비하자.'],
+ [11.8,'연구원 2','계속 피하기만 하면 아무것도 알아내지 못해.'],
+ [14.5,'생존자 1','좋아. 이번에 다시 수정지역을 탐험하자.']]);
+}
+function activeScene(t){for(let i=segments.length-1;i>=0;i--)if(t>=starts[i])return i;return 0;}
+function draw(t){time=t;drawn.length=0;const i=activeScene(t),s=segments[i],local=t-starts[i];
+ show('guide',s.kind==='guide'||s.kind==='toc');show('rank',s.kind==='rank');if(s.kind!=='field'){show('hit',false);show('wound',false);$('hurt').style.opacity='0';$('flash').style.opacity='0';}
+ $('sceneTitle').textContent=s.label;$('chapterNum').textContent=`기록 ${i+1} / ${segments.length}`;$('clock').textContent=`${String(Math.floor(t/60)).padStart(2,'0')}:${String(Math.floor(t%60)).padStart(2,'0')}`;
+ $('bar').style.width=(t/total*100).toFixed(3)+'%';
+ if(s.kind==='intro')labScene(local);else if(s.kind==='rank')rankScene(s.index,local);else if(s.kind==='toc')tocScene(local);else if(s.kind==='guide')guideScene(s.index,local);else if(s.kind==='field')fieldScene(local);else if(s.kind==='home')homeScene(local);
+ let dpr=Math.min(devicePixelRatio||1,innerWidth<700?1:1.4),budget=Math.min(1,Math.sqrt(850000/(Math.max(1,innerWidth*innerHeight)*dpr*dpr)));let w=Math.max(2,Math.round(innerWidth*dpr*budget)),h=Math.max(2,Math.round(innerHeight*dpr*budget));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+ gl.viewport(0,0,w,h);gl.clearColor(.03,.11,.15,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);drawSky();renderObjects();
+}
+// 로그 · 재생 상태, 프레임별 중복 재생 방지
+let running=false,paused=false,ended=false,speed=1,seconds=0,last=null,seenShots=new Set();
+function playAudio(){try{const ctx=window._mfAudio||(window._mfAudio=new (window.AudioContext||window.webkitAudioContext)());if(ctx.state==='suspended')ctx.resume();const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='triangle';osc.frequency.setValueAtTime(190,ctx.currentTime);osc.frequency.exponentialRampToValueAtTime(46,ctx.currentTime+.11);gain.gain.setValueAtTime(.07,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.12);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.13)}catch(_){}}
+function tick(stamp){if(!running)return;if(last===null)last=stamp;const delta=Math.min(.08,(stamp-last)/1000);last=stamp;if(!paused){let old=seconds;seconds=Math.min(total,seconds+delta*speed);for(let n=0;n<shotTimes.length;n++){let at=fieldStart+shotTimes[n];if(seconds>=at&&old<at&&!seenShots.has(n)){seenShots.add(n);playAudio()}}}
+ draw(seconds);
+ if(seconds>=total){running=false;ended=true;show('end',true);return;}
+ requestAnimationFrame(tick);
+}
+function begin(){seconds=0;last=null;paused=false;ended=false;seenShots.clear();show('start',false);show('end',false);$('pause').textContent='일시정지';running=true;requestAnimationFrame(tick)}
+$('play').addEventListener('click',begin);$('replay').addEventListener('click',begin);
+$('pause').addEventListener('click',()=>{if(!running)return;paused=!paused;last=null;$('pause').textContent=paused?'이어보기':'일시정지'});
+$('speed').addEventListener('click',()=>{speed=speed===1?1.5:speed===1.5?2:1;$('speed').textContent=`${speed}배속`});
+$('next').addEventListener('click',()=>{if(!running)return;let i=activeScene(seconds);seconds=Math.min(total,starts[Math.min(i+1,starts.length-1)]);seenShots.clear();for(let k=0;k<shotTimes.length;k++)if(seconds>=fieldStart+shotTimes[k])seenShots.add(k);last=null;draw(seconds)});
+window.addEventListener('pagehide',()=>{running=false});
+// 정적 확인 용: 브라우저 콘솔에서 window.research11QA()로 구간별 데이터 검증.
+window.research11QA=()=>({duration:total,guideCount:guides.length,rankCount:ranks.length,shotCount:shotTimes.length,homeSeconds:segments.at(-1).duration,guideWarnings:guides.every(x=>!!x.warn),chapterCount:segments.length,chapterNames:segments.map(s=>s.label)});
+window.research11SetTime=t=>{seconds=clamp(Number(t)||0,0,total-.01);draw(seconds)};
+if(new URLSearchParams(location.search).has('qa')){draw(Number(new URLSearchParams(location.search).get('time')||0));}
+})();
+</script></body></html>
