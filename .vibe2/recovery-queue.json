@@ -202813,7 +202813,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-23T19:07:48.291Z"
+      "updatedAt": "2026-10-23T19:10:57.960Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203034,7 +203034,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-23T19:07:48.345Z"
+      "updatedAt": "2026-10-23T19:10:57.988Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237765,7 +237765,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-23T19:07:48.467Z"
+      "updatedAt": "2026-10-23T19:10:58.096Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -237958,9 +237958,9 @@
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "source-mutation-required-before-revalidation",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-23T18:55:45.852Z",
+      "checkpoint": "2026-10-23T19:08:11.507Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-23T18:55:45.852Z",
+      "sourceMutationBaseline": "2026-10-23T19:08:11.507Z",
       "evidence": [
         "deployment-failure-run:39125330568:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -238642,7 +238642,8 @@
         "system-ai-handoff-to-reservation:system-ai:40006473802:1",
         "actions-run:40006473802",
         "system-ai-handoff-to-reservation:system-ai:40007821760:1",
-        "actions-run:40007821760"
+        "actions-run:40007821760",
+        "system-ai-handoff-to-reservation:system-ai:40008170127:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238660,7 +238661,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-23T19:07:48.570Z"
+      "updatedAt": "2026-10-23T19:10:58.178Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -239560,7 +239561,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-23T19:07:48.421Z"
+      "updatedAt": "2026-10-23T19:10:58.059Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -240389,7 +240390,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-23T19:07:48.377Z"
+      "updatedAt": "2026-10-23T19:10:58.023Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -241664,7 +241665,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-23T19:07:48.508Z"
+      "updatedAt": "2026-10-23T19:10:58.134Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -242567,7 +242568,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-23T19:07:48.530Z"
+      "updatedAt": "2026-10-23T19:10:58.156Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
