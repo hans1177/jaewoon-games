@@ -215,28 +215,12 @@ jobs:
             --data-binary @/tmp/pwa-sync.json > /tmp/pwa-sync-result.json
           cat /tmp/pwa-sync-result.json
 
-      - name: Accept owner WEB dispatch or claim next PWA instruction
+      - name: Claim next original PWA instruction
         id: next
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ]; then
-            # The owner PC does not execute this job; GitHub authenticates the
-            # event and the existing owner validator enforces WEB-only scope.
-            node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {validateLocalWebOwnerEvent} from './tools/pwa-command-vibe2-task.mjs';
-          const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
-          const task=validateLocalWebOwnerEvent(event,{
-            actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY
-          });
-          fs.writeFileSync('/tmp/pwa-next.json',JSON.stringify({task})+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,
-            'has_work=true\n'+'task_id='+task.id+'\n');
-          console.log('OWNER_WEB_CLOUD_INGEST=AUTHORIZED');
-          NODE
-          else
-            # Existing PWA polling and OIDC endpoint are unchanged.
+          # Existing PWA polling and OIDC endpoint are unchanged.
             printf '{"action":"next"}\n' > /tmp/pwa-next-request.json
             curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
               -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
@@ -251,8 +235,6 @@ jobs:
           fs.appendFileSync(out,`task_id=${data.task?.id||''}\n`);
           console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
           NODE
-          fi
-
       - name: Add owner instruction to Vibe2 control queue
         if: steps.next.outputs.has_work == 'true'
         id: ingest
