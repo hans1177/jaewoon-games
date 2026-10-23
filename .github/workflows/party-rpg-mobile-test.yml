@@ -4,6 +4,12 @@ on:
     paths:
       - 'web-games/party-rpg/**'
       - '.github/workflows/party-rpg-mobile-test.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'web-games/party-rpg/**'
+      - 'qa/party-rpg-contract.test.mjs'
+      - '.github/workflows/party-rpg-mobile-test.yml'
   workflow_dispatch:
 jobs:
   android-emulation:
@@ -18,7 +24,9 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Verify game loads on emulated Android browser
         run: |
-          ln -s "$PWD" /tmp/jaewoon-games\n          (cd /tmp && python3 -m http.server 8765) &
+          set -euo pipefail
+          ln -s "$PWD" /tmp/jaewoon-games
+          (cd /tmp && python3 -m http.server 8765) &
           node --input-type=module <<'JS'
           import { chromium, devices } from 'playwright';
           const browser = await chromium.launch({headless:true});
@@ -28,12 +36,19 @@ jobs:
           page.on('pageerror',e=>errors.push(e.message));
           page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
           await page.goto('/jaewoon-games/web-games/party-rpg/',{waitUntil:'domcontentloaded'});
-          await page.waitForTimeout(12000);
+          await page.waitForFunction(
+            () => Array.isArray(window.vibe3dDiagnostics?.loaded) &&
+              window.vibe3dDiagnostics.loaded.length >= 5,
+            null,{timeout:60000});
           await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
-          console.log('3D overlay:',await page.locator('#vibe3d').count());
+          const diagnostics=await page.evaluate(()=>window.vibe3dDiagnostics);
+          console.log('Verified CC0 3D characters:',diagnostics);
           console.log('Errors:',errors);
-          if(errors.length)throw new Error(errors.join('\n'));
-          if(await page.locator('#vibe3d').count()===0)throw new Error('3D renderer not created');
+          if(errors.length)throw new Error(errors.join('\\n'));
+          if(diagnostics.missing.length)throw new Error('Missing licensed 3D models: '+diagnostics.missing.join(','));
+          if(await page.locator('#vibe3d').count()!==1)throw new Error('3D overlay not created');
+          if(!await page.evaluate(()=>typeof window.vibe3dFrame==='function'))
+            throw new Error('3D frame renderer not connected');
           await browser.close();
           JS
       - uses: actions/upload-artifact@v4
