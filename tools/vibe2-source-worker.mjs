@@ -1558,6 +1558,67 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     for(const match of source.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)){
       idCounts.set(match[2],(idCounts.get(match[2])||0)+1);
     }
+    const plans=order.selectedTask?.contentAdditions??order.contentAdditions;
+    // [무모델 콘텐츠 생성] 확정된 기존 데이터 스키마와 소비 함수가 있을 때만
+    // 명시된 새 레코드를 추가한다. 임의 난이도·보상·저장 형식은 추정하지 않는다.
+    if(Array.isArray(plans)&&plans.length>0&&plans.length<=4){
+      const contentFamilies=[
+        {family:'quest',catalog:'questData',intent:/quest|mission|퀘스트|의뢰/i},
+        {family:'craft',catalog:'recipeData',intent:/craft|forge|제작|대장간/i},
+        {family:'enemy',catalog:'enemyBehaviorData',intent:/enemy|combat|battle|적 행동|전투/i},
+        {family:'region',catalog:'regionData',intent:/region|area|map|지역|지도/i}
+      ];
+      let nextCode=code,valid=true;
+      for(const plan of plans){
+        const family=contentFamilies.find(row=>row.family===plan?.family);
+        const newRecord=plan?.record,sourceId=clean(plan?.referenceId);
+        if(!family||!family.intent.test(intent)||!newRecord||Array.isArray(newRecord)||
+          typeof newRecord!=='object'||Object.getPrototypeOf(newRecord)!==Object.prototype||
+          !/^[A-Za-z0-9_-]{1,48}$/.test(sourceId)){valid=false;break;}
+        const arrayPattern=new RegExp('\\bconst\\s+'+family.catalog+
+          '\\s*=\\s*(\\[[\\s\\S]{0,24000}?\\])\\s*;','g');
+        const declarations=[...nextCode.matchAll(arrayPattern)];
+        const consumerPattern=new RegExp('\\b'+family.catalog+
+          '\\s*\\.\\s*(?:find|map|filter|some|forEach)\\s*\\(|\\bof\\s+'+family.catalog+'\\b');
+        if(declarations.length!==1||!consumerPattern.test(nextCode)){valid=false;break;}
+        const hit=declarations[0];
+        let records;try{records=JSON.parse(hit[1]);}catch{valid=false;break;}
+        if(!Array.isArray(records)||records.length<1||records.length>80||
+          records.some(record=>!record||typeof record!=='object'||Array.isArray(record))){valid=false;break;}
+        const reference=records.find(row=>row.id===sourceId);
+        const id=clean(newRecord.id),keys=Object.keys(reference||{}).sort();
+        if(!reference||!/^[A-Za-z0-9_-]{1,48}$/.test(id)||
+          records.some(row=>row.id===id)||Object.keys(newRecord).sort().join('|')!==keys.join('|')||
+          keys.some(key=>/^(?:__proto__|prototype|constructor)$|script|handler|html|storage|save|authority|token|secret|url/i.test(key))){valid=false;break;}
+        let newTextContent=false;
+        for(const key of keys){
+          const was=reference[key],now=newRecord[key];
+          if(typeof now!==typeof was||was===null||now===null||
+            Array.isArray(now)||typeof now==='object'||typeof now==='function'){valid=false;break;}
+          if(typeof now==='number'&&(!Number.isFinite(now)||now!==was)){valid=false;break;}
+          if(typeof now==='boolean'&&now!==was){valid=false;break;}
+          if(typeof now==='string'&&(now.length>180||/[<>\x00-\x1f\x7f]/.test(now))){valid=false;break;}
+          if(key==='id')continue;
+          if(now!==was){
+            if(typeof now!=='string'||!/^(?:title|name|label|description|objective|text)$/.test(key)){valid=false;break;}
+            newTextContent=true;
+          }
+        }
+        if(!valid||!newTextContent)break;
+        const originalLiteral=hit[1];
+        const appended=originalLiteral.slice(0,-1)+','+JSON.stringify(newRecord)+']';
+        const updated=hit[0].replace(originalLiteral,appended);
+        nextCode=nextCode.slice(0,hit.index)+updated+nextCode.slice(hit.index+hit[0].length);
+      }
+      if(valid&&nextCode!==code){
+        const replacement=script[0].replace(code,nextCode);
+        return{summary:'Vibe2 schema-grounded no-model content authoring',
+          expectedEffect:'Extend existing playable content catalog without changing previous records or gameplay balance',
+          edits:[{path:relative,find:script[0],replace:replacement}],
+          newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,
+          deterministicWebContent:true,learnedCodePatternIds:[]};
+      }
+    }
     const bindings=[],learnedPatternIds=[];
     const declaredChoices=new Map();
     for(const family of choiceFamilies){
@@ -7494,8 +7555,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const candidate=normalizeCandidate(webInput,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       const candidateValidation=candidateValidator(candidate);
-      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,deterministicWebInput:true,learnedCodePatternIds:webInput.learnedCodePatternIds||[],mode:'DETERMINISTIC_WEB_INPUT',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_WEB_INPUT'}};
-      console.log('VIBE2_DETERMINISTIC_WEB_INPUT=CANDIDATE_VALIDATED');
+      const mode=webInput.deterministicWebContent===true?'DETERMINISTIC_WEB_CONTENT':'DETERMINISTIC_WEB_INPUT';
+      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,deterministicWebInput:true,deterministicWebContent:webInput.deterministicWebContent===true,learnedCodePatternIds:webInput.learnedCodePatternIds||[],mode,maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:mode}};
+      console.log('VIBE2_'+mode+'=CANDIDATE_VALIDATED');
     }catch(error){
       console.log('VIBE2_DETERMINISTIC_WEB_INPUT=REJECTED:'+generationFailureClass(error));
     }
