@@ -146,8 +146,11 @@ test('Owner Roblox onepatch accepts arbitrary many game-local code, UI, motion a
   assert.equal(same.added,false);
   const all=enqueueOwnerRobloxOnePatch({queue:{tasks:[]},catalog:f.catalog,
     request:{...f.request,requestId:'123457',file:'*'},repoRoot:f.root,policy});
-  assert.equal(all.queue.tasks[0].responsibleFiles.length,22);
-  assert.deepEqual(all.queue.tasks[0].responsibleFiles,one.queue.tasks[0].responsibleFiles);
+  assert.equal(all.queue.tasks[0].responsibleFiles.length,21);
+  assert.equal(all.queue.tasks[0].responsibleFiles.includes('roblox-games/demo/assets/characters/Npc.glb'),false,
+    'native GLB must remain on explicitly requested editor route, not auto-text wildcard');
+  assert.deepEqual(all.queue.tasks[0].responsibleFiles,
+    one.queue.tasks[0].responsibleFiles.filter(file=>!file.endsWith('.glb')));
 });
 
 test('Owner Roblox patch merges queued build-up without resetting its generation, and serializes running work',t=>{
