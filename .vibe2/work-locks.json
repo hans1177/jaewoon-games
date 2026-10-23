@@ -1,5 +1,30 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1wn0ee9",
+      "worker": "vibe2",
+      "taskId": "tekken-studio-evolution-roblox-usability-v2",
+      "gameId": "tekken",
+      "files": [
+        "roblox-games/tekken/client/Game.client.luau",
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/server/Game.server.luau",
+        "roblox-games/tekken/client/MaterialPresentation.client.luau",
+        "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
+        "roblox-games/tekken/shared/RobloxCommonUI.luau"
+      ],
+      "baseSha": "aaea4ab839d671d748e982bef70e1eb5dc382c57",
+      "runId": "39988611372",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-23T17:01:41.544Z",
+      "expiresAt": "2026-10-23T17:46:41.544Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:tekken-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
