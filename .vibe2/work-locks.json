@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1gbelsq",
+      "worker": "vibe2",
+      "taskId": "survival2-studio-evolution-roblox-stability-v1",
+      "gameId": "survival2",
+      "files": [
+        "roblox-games/survival2/client/Game.client.luau",
+        "roblox-games/survival2/shared/GameConfig.luau",
+        "roblox-games/survival2/server/Game.server.luau"
+      ],
+      "baseSha": "580b0959d6a88f08d8c316b1a871a12784f73f6c",
+      "runId": "39943772582",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-23T11:27:16.121Z",
+      "expiresAt": "2026-10-23T12:12:16.121Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival2-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
