@@ -50,6 +50,12 @@ test('internal web game links use the registered source path without a score gat
   assert.doesNotMatch(api.buildCard(eligible),/href="[^"]+roblox\.com/);
   assert.equal(api.playableWebHref(row('retired-prototype','WITHDRAWN_SIMPLE_PROTOTYPE',false)),'');
   assert.equal(api.playableWebHref(row('missing-entry','ENTRY_MISSING_OR_INVALID')),'');
+  for(const state of ['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE','PERMANENTLY_REMOVED_REJECTED_TEST']){
+    const broken=row('broken-entry',state);
+    assert.equal(api.sourceWebHref(broken),'',state);
+    assert.doesNotMatch(api.buildCard(broken),/href="[^\"]*web-games\/broken-entry\//,state);
+  }
+  assert.equal(api.sourceWebHref(row('no-archive','UNITY_WEB_VERIFICATION_REQUIRED',false)),'');
 });
 
 test('공개 매니페스트와 정확히 같은 원본 게임만 메인 실행 링크에 동기화한다',()=>{
@@ -130,14 +136,14 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
   assert.match(card,/Roblox · 개발 중/);
-  assert.match(card,/원본 게임 · 열기/);
-  assert.match(card,/https:\/\/hans1177.github.io\/jaewoon-games\/web-games\/dev-without-release\//);
+  assert.doesNotMatch(card,/원본 게임 · 열기/);
+  assert.doesNotMatch(card,/https:\/\/hans1177.github.io\/jaewoon-games\/web-games\/dev-without-release\//);
   assert.doesNotMatch(card,/Unity Web/);
   assert.doesNotMatch(api.buildCard({...dev,unityWebAvailable:false}),/Unity Web/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*robloxAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityWebAction"/);
-  assert.match(card,/data-direct-play="https:\/\/hans1177.github.io\/jaewoon-games\/web-games\/dev-without-release\/"/);
+  assert.match(card,/data-direct-play=""/);
 });
 
 // 회귀: 실행 링크는 선택적 QA 문서 장애와 무관하고, 하위 Unity 경로도 카드에 남아야 한다.
