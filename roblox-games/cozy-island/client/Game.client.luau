@@ -321,9 +321,18 @@ task.spawn(function()
  end
 end)
 
+-- 모바일 채집 안내는 로딩 화면이 아닌 게임 시작 시점부터 표시한다.
+local touchGatherHintUntil=0
 startupPlay.Activated:Connect(function()
  if not startupPlay.Visible then return end
  startupPlay.Active=false
+ if touchEnabled then
+  touchGatherHintUntil=os.clock()+9
+  task.delay(9,function()
+   local hint=gui:FindFirstChild("ManualGatherHint")
+   if hint then hint.Visible=false end
+  end)
+ end
  startupOverlay:Destroy()
 end)
 
@@ -620,7 +629,7 @@ gatherHint.Font=Enum.Font.GothamBold
 gatherHint.Text="나무·작물을 터치해 채집"
 gatherHint.Parent=gui
 roundify(gatherHint,8)
-if touchEnabled then task.delay(9,function()if gatherHint.Parent then gatherHint.Visible=false end end)end
+-- 채집 안내 카운트다운은 게임 시작 버튼에서 시작한다.
 
 -- 하단 조작: 채집은 월드 상호작용, 여기에는 마을 운영/정복만 표시
 local controls=Instance.new("Frame")
@@ -718,7 +727,7 @@ local function layoutControls()
  for _,b in ipairs(actionButtons)do b.ZIndex=21 end
  local ready=startupOverlay.Parent==nil
  hud.Visible=ready and not actionPopup.Visible;objective.Visible=ready and not actionPopup.Visible;controls.Visible=ready
- gatherHint.Visible=ready and not actionPopup.Visible and not touchEnabled
+ gatherHint.Visible=ready and not actionPopup.Visible and (not touchEnabled or os.clock()<touchGatherHintUntil)
  if not ready then actionPopup.Visible=false end
 end
 actionPopup:GetPropertyChangedSignal("Visible"):Connect(layoutControls)
