@@ -22,7 +22,7 @@ const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
 const freeze = (value) => Object.freeze(value);
 const freezeList = (values = []) => freeze([...new Set((values || []).map(clean).filter(Boolean))]);
-const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
+const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.rbxm', '.glb', '.gltf', '.fbx', '.png', '.webp', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 
@@ -152,6 +152,12 @@ export function expandPresentationResponsibleFiles({task={},target='',repoRoot=p
   const internalAssetBindingRequired=resolvedTarget==='roblox'
     &&assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
     &&assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
+  if(task.ownerDirective===true&&resolvedTarget==='roblox'
+    &&(task.evidence||[]).includes('owner-onepatch-no-file-count-limit')){
+    // The owner scope is already game-root/symlink validated at queue ingress.
+    // Do not reintroduce an implicit six-file ceiling for native graphics/motion/UI.
+    return base;
+  }
   if(!pass&&!internalAssetBindingRequired)return base;
   const root=posix(task.sourceRoot||fallbackRoot);
   if(!root)return base;
@@ -405,6 +411,10 @@ function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants =
     deterministicChecks:freezeList(['git-diff-check','conflict-marker-scan','text-sanity','js-syntax-when-applicable','json-parse-when-applicable']),
     fullRegressionAtFanIn:true,
     contentHashCache:true,
+    unchangedScopeEvidenceReuse:'SAME_SOURCE_HASH_AND_DEPENDENCIES_ONLY',
+    changeOnlyQa:'DETERMINISTIC_CHANGED_FILES_AND_IMPACTED_DEPENDENCIES',
+    neverReuseRuntimeOrF9WithoutExactArtifactIdentity:true,
+    fullRegressionRequiredBeforePrivatePublication:true,
     speculativeVariants:Math.max(1,Math.min(5,Number(speculativeVariants)||1))
   });
 }
