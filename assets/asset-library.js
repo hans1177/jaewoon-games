@@ -122,7 +122,8 @@ function showList(){
    &&(!query||text.includes(query));
  });
  const list=$('assetList'),scrollTop=list.scrollTop,scrollLeft=list.scrollLeft,focused=document.activeElement?.dataset?.id;list.replaceChildren();
- $('resultCount').textContent=filtered.length+'개 / 전체 '+rows.length+'개';
+ const linkedCount=rows.filter(row=>row.asset?.sourceBoundConsumerGameIds?.length>0).length;
+ $('resultCount').textContent=filtered.length+'개 / 전체 '+rows.length+'개 · 코드 연결 확인 '+linkedCount+'개';
  for(const row of filtered){
   const button=document.createElement('button');button.type='button';button.dataset.id=row.id;button.setAttribute('aria-pressed',String(row.id===selectedId));
   const title=document.createElement('strong');title.textContent=row.title;
