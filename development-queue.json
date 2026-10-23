@@ -11273,10 +11273,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-23T09:03:33.213Z",
+      "updatedAt": "2026-10-23T09:07:56.883Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11292,16 +11292,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
       "robloxBuildArtifactIdentity": "sha256:b81577bb25414688ff3d8bd0c1ae738729685f0cf6e8f65b4e788700874b012a",
-      "robloxBuildPassedAt": "2026-10-23T04:49:08.604Z",
+      "robloxBuildPassedAt": "2026-10-23T09:07:56.883Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-23T04:49:08.604Z",
+      "robloxBuildPreflightPassedAt": "2026-10-23T09:07:56.883Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-23T04:38:53.779Z",
+        "checkedAt": "2026-10-23T08:53:52.880Z",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:b81577bb25414688ff3d8bd0c1ae738729685f0cf6e8f65b4e788700874b012a",
         "secondaryOwnerFocus": false,
@@ -11336,10 +11336,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
+            "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All provided build evidence indicates that the source validation and build/package checks have passed, satisfying the prerequisites for starting runtime testing of the immutable Roblox package."
+            "note": "All required build evidence parameters for the Roblox package have successfully passed exact-immutable-roblox-package verification and build checks."
           }
         ],
         "blockers": [],
@@ -11353,12 +11353,12 @@
         "gameId": "defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-23T04:38:54.547Z",
+        "checkedAt": "2026-10-23T08:53:53.891Z",
         "sourcePath": "roblox-games/defense",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:b81577bb25414688ff3d8bd0c1ae738729685f0cf6e8f65b4e788700874b012a",
         "rebuiltArtifactIdentity": "sha256:b81577bb25414688ff3d8bd0c1ae738729685f0cf6e8f65b4e788700874b012a",
-        "artifactRunId": 39899811747,
+        "artifactRunId": 39925047862,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "da149a4ba2c597340ed83560191f4a16a249409a2d0fd409ec681f88b938868a",
         "observedAssetSelectionFingerprint": "da149a4ba2c597340ed83560191f4a16a249409a2d0fd409ec681f88b938868a",
@@ -11666,12 +11666,12 @@
         "gameId": "defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-23T04:38:54.547Z",
+        "checkedAt": "2026-10-23T08:53:53.891Z",
         "sourcePath": "roblox-games/defense",
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:b81577bb25414688ff3d8bd0c1ae738729685f0cf6e8f65b4e788700874b012a",
         "rebuiltArtifactIdentity": "sha256:b81577bb25414688ff3d8bd0c1ae738729685f0cf6e8f65b4e788700874b012a",
-        "artifactRunId": 39899811747,
+        "artifactRunId": 39925047862,
         "buildUpAssetSourceUsageFingerprint": "f2bbb71479d61e6ac3ad8e16584327a48728cbb03bdb7cd9d37f7a83c33f445d",
         "assetSelectionFingerprint": "da149a4ba2c597340ed83560191f4a16a249409a2d0fd409ec681f88b938868a",
         "observedAssetSelectionFingerprint": "da149a4ba2c597340ed83560191f4a16a249409a2d0fd409ec681f88b938868a",
@@ -12523,8 +12523,8 @@
         "sourceRevision": "9910debecf45c765c14e5d7017ef90ab04e11e52",
         "artifactIdentity": "sha256:b81577bb25414688ff3d8bd0c1ae738729685f0cf6e8f65b4e788700874b012a",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39899811747,
-        "testedAt": "2026-10-23T04:49:08.604Z",
+        "workflowRunId": 39925047862,
+        "testedAt": "2026-10-23T09:07:56.883Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -48204,7 +48204,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-23T09:06:49.516Z",
+  "updatedAt": "2026-10-23T09:07:56.883Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -48270,5 +48270,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
