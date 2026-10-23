@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -145914,7 +145914,7 @@
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145948,7 +145948,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 2,
-      "previousReservationId": "system-ai:39917886177:1",
+      "previousReservationId": "system-ai:39918943067:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -145956,12 +145956,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:39918943067:1",
-      "reservedAt": "2026-10-23T07:42:39.195Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -146208,7 +146208,8 @@
         "model-output-sha256:ab9341ded45ef3ac194d82accc54bcd49fe0bb9cd473c440ed9df237285a804c",
         "system-ai-handoff-to-reservation:system-ai:39917886177:1",
         "actions-run:39917886177",
-        "system-ai-handoff-to-reservation:system-ai:39918943067:1"
+        "system-ai-handoff-to-reservation:system-ai:39918943067:1",
+        "actions-run:39918943067"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1102,
@@ -146223,7 +146224,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-23T07:42:39.195Z"
+      "updatedAt": "2026-10-23T07:45:18.786Z"
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
@@ -159855,6 +159856,5 @@
       "createdAt": "2026-10-21T15:47:49.217Z",
       "updatedAt": "2026-10-21T15:47:49.217Z"
     }
-  ],
-  "updatedAt": "2026-10-23T07:44:29.908Z"
+  ]
 }
