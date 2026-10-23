@@ -408,6 +408,7 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
 test('game-specific compressed assets preserve original bytes and source hashes',()=>{
  const entry=ledger.entries.find(e=>e.id==='fantasy-survival-lossless-transfer-v1');
  assert.equal(entry.license,'CC0-1.0');
+ for(const field of ledger.policy.requiredFields)assert.ok(field in entry,'license provenance field missing: '+field);
  for(const file of entry.evidence.files){
   const bytes=fs.readFileSync(file.path);
   assert.equal(createHash('sha256').update(bytes).digest('hex'),file.sha256);
