@@ -784,6 +784,7 @@ test('web source consumer recognizes loaded model file tables but rejects mere c
     path:'assets/shared/wolf.fbx',productionVerified:false}]};
   const gameCatalog={games:[{id:'party-rpg',lifecycleState:'ACTIVE',
     productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(gameCatalog));
   fs.writeFileSync(entry,
    '<script>const files={wolf:"../../assets/shared/wolf.fbx"};Promise.all(Object.entries(files).map(([id,url])=>loader.loadAsync(url)))</script>');
   const used=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['party-rpg']});
