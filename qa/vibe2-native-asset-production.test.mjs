@@ -5326,7 +5326,7 @@ test('registered CC0 native sources retain verifiable official rights URLs and h
   const blocked=registry.assets.filter(asset=>asset.corruptSource===true);
   assert.ok(eligible.length>=106);
   for(const asset of eligible){
-    assert.match(asset.license,/^CC0(?:-1\\.0)?$/);
+    assert.match(asset.license,/^CC0(?:-1\.0)?$/);
     assert.match(asset.sourceUrl||'',/^https:\/\//);
     assert.match(asset.licenseEvidenceUrl||'',/^https:\/\//);
     assert.match(asset.editableSourceHash||asset.sourceHash||asset.sourceSha256||asset.masterGlbHash||asset.masterGlbSha256||'',/^[a-f0-9]{64}$/i);
