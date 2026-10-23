@@ -127,6 +127,7 @@ test('Owner Roblox onepatch accepts arbitrary many game-local code, UI, motion a
   for(let i=0;i<17;i++){
     const relative='shared/System'+i+'.luau';
     const dest=path.join(f.root,'roblox-games/demo',relative);
+    fs.mkdirSync(path.dirname(dest),{recursive:true});
     fs.writeFileSync(dest,'return {system='+i+'}\n');
     files.push(relative);
   }
