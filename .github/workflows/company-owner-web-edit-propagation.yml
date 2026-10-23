@@ -70,9 +70,9 @@ jobs:
           {
             echo '### GitHub recognized WEB source changes'
             echo 'No code generation or native development was dispatched.'
-            echo '\`\`\`text'
+            echo '```text'
             cat /tmp/web-changed-content-sha256.txt
-            echo '\`\`\`'
+            echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           # An observed WEB source delta cannot enqueue or dispatch Roblox/Unity work.
           echo 'WEB_EDIT_NATIVE_QUEUE_MUTATION=DENIED'
