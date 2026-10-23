@@ -236,8 +236,8 @@ jobs:
               # [기존 GAME_PRIMARY 작업 배정] 검사·배포 런 대기량은 신규 자율 확장
               # 신호이지 이미 등록된 게임 작업의 예약 차단 근거가 아니다.
               # 기존 예약기에서 빈 슬롯/충돌/중복을 확인하고 실제 워커만 배정한다.
-              # 비주력 자율 레인은 이전 보류 정책과 원인 복구를 유지한다.
-              if [[ "${VIBE2_EXECUTION_LANE:-game-primary}" == 'game-primary' ]]; then
+              # 기존 게임/에셋 큐 예약은 backlog로 차단하지 않는다. 학습/신규 fanout은 기존 admission gate를 유지한다.
+              if [[ "${VIBE2_EXECUTION_LANE:-game-primary}" == 'game-primary' || "${VIBE2_EXECUTION_LANE:-game-primary}" == 'asset-development' ]]; then
                 echo 'VIBE2_AUTO_MAIN_WAKE_BACKLOG=EXISTING_GAME_PRIMARY_RESERVE_ALLOWED'
               else
                 proceed=false
