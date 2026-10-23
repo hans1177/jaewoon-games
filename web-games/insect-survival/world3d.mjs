@@ -99,6 +99,8 @@ const originals={},enemies=[],resources=[];
 let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
 let resourceVisualRebuilds=0,decorVisibilityTick=0;
+const resourceGpuMeshes=new Map();
+let resourceGpuModels=0,resourceGpuRevision='',resourceGpuUpdates=0;
 let floorGpuMeshes=[],floorGpuInstances=0;
 let decorGpuBatches=0,decorGpuInstances=0,decorGpuProps=0;
 const hiddenDecorTransform=new THREE.Matrix4().makeTranslation(0,-1000,0);
@@ -415,6 +417,58 @@ function follow(frame,dt){
   actor.visible=!b.dead;
   if(!b.dead){actor.position.set(b.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,b.y*ratio);actor.rotation.y=Math.atan2(p.x-b.x,p.y-b.y);actor.children[0].rotation.z=b.hit>0?.28:0}
  }
+// Repeated CC0 stone/foliage pickup visuals share the original geometries
+// and derived materials. Keep scene groups for fallback and gameplay-ground QA.
+// Update instance buffers ONLY when pickup positions/types change, not every RAF.
+function syncResourceGpuInstances(nodes){
+ if(!THREE.InstancedMesh)return;
+ const revision=nodes.map(n=>n.type+':'+n.x+':'+n.y).join('|');
+ if(revision===resourceGpuRevision)return;
+ const entries=new Map();
+ try{
+  for(const group of resources){
+   group.updateMatrixWorld(true);
+   let parts=0;
+   group.traverse(part=>{
+    if(!part.isMesh)return;
+    if(part.isSkinnedMesh||!part.geometry||!part.material||Array.isArray(part.material))
+     throw Error('UNSUPPORTED_RESOURCE_GPU_PART');
+    parts++;
+    const key=part.geometry.uuid+'|'+part.material.uuid;
+    if(!entries.has(key))entries.set(key,{geometry:part.geometry,material:part.material,parts:[]});
+    entries.get(key).parts.push(part);
+   });
+   if(!parts)throw Error('EMPTY_RESOURCE_GPU_PART');
+  }
+  for(const [key,entry] of entries){
+   let batch=resourceGpuMeshes.get(key);
+   const capacity=Math.max(128,entry.parts.length*2);
+   if(!batch||batch.instanceMatrix.count<entry.parts.length){
+    const replacement=new THREE.InstancedMesh(entry.geometry,entry.material,capacity);
+    replacement.userData.cc0ResourceInstance=true;
+    replacement.frustumCulled=false;replacement.castShadow=false;
+    replacement.receiveShadow=true;
+    actors.add(replacement);
+    if(batch){actors.remove(batch);batch.dispose?.()}
+    batch=replacement;resourceGpuMeshes.set(key,batch);
+   }
+   for(let i=0;i<entry.parts.length;i++)batch.setMatrixAt(i,entry.parts[i].matrixWorld);
+   batch.count=entry.parts.length;
+   batch.instanceMatrix.needsUpdate=true;
+   batch.visible=true;
+  }
+  for(const [key,batch] of resourceGpuMeshes){
+   if(!entries.has(key))batch.count=0;
+  }
+  for(const group of resources)group.visible=false; // zero double draws
+  resourceGpuModels=nodes.length;resourceGpuRevision=revision;resourceGpuUpdates++;
+ }catch(error){
+  for(const batch of resourceGpuMeshes.values())batch.visible=false;
+  for(const group of resources)group.visible=true; // intact original CC0 fallback
+  resourceGpuModels=0;resourceGpuRevision='';
+  console.warn('INSECT_CC0_RESOURCE_GPU_BATCH_FAILED',error);
+ }
+}
  // Resource pooling is visual-only; the authoritative alive state stays in index.html.
  while(resources.length>frame.nodes.length){actors.remove(resources.pop())}
  for(let i=0;i<frame.nodes.length;i++){
@@ -422,6 +476,7 @@ function follow(frame,dt){
   syncResourceVisual(i,node);
   resources[i].position.set(node.x*ratio,GROUND_SURFACE_Y+FOOT_CLEARANCE,node.y*ratio);
  }
+ syncResourceGpuInstances(frame.nodes);
 }
 function resize(){
  renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
@@ -433,6 +488,7 @@ window.insect3DPerformanceProof=()=>({
  averageFrameMs:perfBudget.averageFrameMs,latestFrameMs:perfBudget.latestFrameMs,
  pixelRatio:perfBudget.pixelRatio,pixelRatioCap:perfBudget.cap,pixelRatioFloor:perfBudget.floor,
  resolutionAdjustments:perfBudget.adjustments,resourceVisualRebuilds,
+ resourceGpuBatches:resourceGpuMeshes.size,resourceGpuModels,resourceGpuUpdates,
  floorGpuBatches:floorGpuMeshes.length,floorGpuInstances,
  decorGpuBatches,decorGpuInstances,decorGpuProps,
  visibleDecor:decor.children.filter(item=>item.userData.decorBatchSlots?

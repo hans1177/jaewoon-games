@@ -261,3 +261,65 @@ test('real Chromium and Vibe inspect decorative instancing without hardware FPS 
  assert.match(source,/decorGpuBatches,decorGpuInstances,decorGpuProps/);
  assert.match(source,/visibleDecor:decor\.children\.filter/);
 });
+
+test('resource instancing uploads only on changed node data and restores safe CC0 fallback',()=>{
+ const start=source.indexOf('function syncResourceGpuInstances(nodes){');
+ const end=source.indexOf('// Resource pooling is visual-only',start);
+ assert.ok(start>=0&&end>start,'authoritative pickup presentation batching required');
+ const snippet=source.slice(start,end);
+ let uploads=0;
+ class InstancedMesh{
+  constructor(geometry,material,capacity){
+   this.geometry=geometry;this.material=material;this.count=capacity;this.visible=true;
+   this.instanceMatrix={count:capacity,needsUpdate:false};
+   this.userData={};this.matrices=[];
+  }
+  setMatrixAt(i,matrix){this.matrices[i]={...matrix};uploads++}
+  dispose(){this.disposed=true}
+ }
+ const geometry={uuid:'shared-cc0-foliage'},material={uuid:'cc0-fiber'};
+ const group=(x)=>({
+  position:{x,z:0},visible:true,
+  mesh:{isMesh:true,geometry,material,matrixWorld:{x}},
+  updateMatrixWorld(){this.mesh.matrixWorld={x:this.position.x,z:this.position.z}},
+  traverse(cb){cb(this.mesh)}
+ });
+ const resources=[group(1),group(2),group(3)],attached=[];
+ const context=vm.createContext({
+  THREE:{InstancedMesh},resourceGpuMeshes:new Map(),resourceGpuModels:0,
+  resourceGpuUpdates:0,resourceGpuRevision:'',resources,
+  actors:{add(value){attached.push(value)},remove(value){const i=attached.indexOf(value);if(i>=0)attached.splice(i,1)}},
+  console:{warn(){}}
+ });
+ vm.runInContext(snippet,context);
+ const state="[{type:'fiber',x:1,y:0},{type:'fiber',x:2,y:0},{type:'fiber',x:3,y:0}]";
+ vm.runInContext('syncResourceGpuInstances('+state+')',context);
+ assert.equal(context.resourceGpuMeshes.size,1);
+ assert.equal(context.resourceGpuModels,3);
+ assert.equal(uploads,3);
+ assert.ok(resources.every(item=>item.visible===false),'source CC0 groups cannot draw twice');
+ vm.runInContext('syncResourceGpuInstances('+state+')',context);
+ assert.equal(uploads,3,'unchanged resources must not upload GPU matrices every frame');
+ resources[2].position.x=5;
+ vm.runInContext("syncResourceGpuInstances([{type:'fiber',x:1,y:0},{type:'fiber',x:2,y:0},{type:'fiber',x:5,y:0}])",context);
+ assert.equal(uploads,6,'changed source data must update every instance');
+ assert.equal(context.resourceGpuUpdates,2);
+ resources[0].mesh.material=[]; // unsupported CC0 hierarchy cannot be force-instanced
+ vm.runInContext("syncResourceGpuInstances([{type:'fiber',x:9,y:0}])",context);
+ assert.ok(resources.every(item=>item.visible===true),'batch failure restores original visible CC0 resources');
+ assert.ok([...context.resourceGpuMeshes.values()].every(batch=>batch.visible===false));
+ assert.match(source,/syncResourceGpuInstances\(frame\.nodes\)/);
+ assert.match(source,/resourceGpuBatches:resourceGpuMeshes\.size/);
+ assert.doesNotMatch(snippet,/state\.inventory|player\.hp|localStorage|SAVE_KEY/);
+});
+
+test('Vibe diagnosis records resource GPU batches without claiming physical GPU benchmark',()=>{
+ const performance=frameProof({resourceGpuBatches:3,resourceGpuModels:70,resourceGpuUpdates:1});
+ const diagnosis=diagnoseVibeWebFrameBottleneck(performance);
+ assert.equal(diagnosis.evidence.resourceGpuBatches,3);
+ assert.equal(diagnosis.evidence.resourceGpuModels,70);
+ assert.equal(diagnosis.evidence.resourceGpuUpdates,1);
+ assert.equal(diagnosis.evidence.hardwareBenchmarkVerified,false);
+ const invalid=diagnoseVibeWebFrameBottleneck({...performance,resourceGpuModels:-9});
+ assert.equal(invalid.evidence.resourceGpuModels,null);
+});

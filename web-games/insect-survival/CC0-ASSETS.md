@@ -94,3 +94,12 @@
 - `window.insect3DPerformanceProof()`가 `decorGpuBatches`, `decorGpuInstances`, `decorGpuProps`, 실제 `renderCalls`, `visibleDecor`를 읽기 전용으로 제공한다. 기존 `tools/vibe2-performance-sanity.mjs`에만 측정 결과를 전달한다. 새로운 성능 엔진이나 배포·학습 파이프라인은 만들지 않는다.
 - 이전 병합 PR #9323 Chromium 한 장면에서 데스크톱 **284 draw calls**, 모바일 에뮬레이션 **178 draw calls**를 확인했다. 이번 GPU 장식물 묶음 후 감소량은 **같은 WebGL2 브라우저 QA로 재측정하기 전까지 미확정**이다.
 - 소프트웨어/에뮬레이터 프레임 기록은 물리 Android 기기의 GPU FPS·발열 인증이 아니며, QA 완료 및 소유자 승인 전에는 별도 후보 PR에서 유지한다. **로컬 PC/파일 변경 없음.**
+
+
+## 추가 후보: 채집 CC0 모델 GPU 인스턴스 병합
+
+- 기존 병합 #9305/#9323/#9332의 프레임 계측에서 데스크톱 224, 모바일 모의 142 드로우 호출을 확인했다. 장식·지면 일괄 렌더링을 유지하면서 남은 **반복 채집 자원**만 별도 GPU 인스턴스로 묶는다.
+- 기존 `index.html`의 권위 있는 채집/리스폰/전투/저장 코드는 변경하지 않는다. 화면용 자원 `Group`은 그대로 남겨두며, 정상 GPU 배치가 준비되면 원본 그룹의 중복 그리기만 숨긴다. `THREE.InstancedMesh`가 없거나 CC0 소재/리그 특성이 맞지 않으면 배치를 끄고 원래 자원 메시를 다시 보이게 한다.
+- 메시는 **동일한 원본 geometry + presentation material** 단위로만 합친다. 채집 자원 목록과 좌표/종류가 같으면 GPU 인스턴스 행렬을 프레임마다 다시 업로드하지 않는다. 채집·재생성 변경에는 전체 활성을 재바인딩한다.
+- 기존 Vibe 성능 진단은 `resourceGpuBatches`, `resourceGpuModels`, `resourceGpuUpdates`를 **읽기 전용**으로 받아 실제 WebGL 렌더 데이터와 함께 병목을 판단한다. 가상 FPS, 실제 Android 기기 성능, 모델 학습 성공은 주장하지 않는다.
+- `qa/insect-survival-performance.test.mjs`의 변경 시 갱신/미변경 시 업로드 생략/오류 시 원본 복구 검사와 기존 Chromium 모바일 터치·캐릭터 접지·게임 저장 검증이 모두 필요하다. 실 브라우저 검사에서 실제 배치 활성화 및 호출 수를 확인하기 전에는 성능 완료로 인정하지 않는다.
