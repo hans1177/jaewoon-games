@@ -2194,7 +2194,8 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       relationGames.add(gameId);
     }
     for(const gameId of previousDynamicByAsset.get(clean(asset.id))||[]){
-      if(currentBoundGames.has(gameId))continue;
+      // 이번에 검사하지 않은 게임은 오래된 연결로 판정하거나 삭제하지 않는다.
+      if(!consumerSummaryByGameId.has(gameId)||currentBoundGames.has(gameId))continue;
       relations.push(Object.freeze({
         assetId:clean(asset.id),gameId,family,classification:'STALE_SOURCE_BINDING',
         mode:'STALE_SOURCE_BINDING',bindingMode:'STALE_SOURCE_BINDING',
