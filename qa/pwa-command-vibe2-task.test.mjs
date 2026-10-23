@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { ingestPwaTask, buildSyncPayload, validateLocalWebOwnerEvent, buildGithubDevelopmentFocus } from '../tools/pwa-command-vibe2-task.mjs';
+import { buildVibeContinuousWorkOrder } from '../tools/vibe2-continuous-runner.mjs';
 
 const UUID='11111111-2222-4333-8444-555555555555';
 function fixture(){
@@ -205,4 +206,32 @@ test('웹 조직은 잘못된 원본 경로·빈 게임·정책 오류를 거부
   policy.ownerActiveDevelopmentScope20261009.activeTargets=['ROBLOX'];
   fs.writeFileSync(policyPath,JSON.stringify(policy));
   assert.throws(()=>ingest(f.catalog),/WEB_ORG_CENTRAL_BOUNDARY_NOT_VERIFIED/);
+});
+
+test('PWA 웹 개발은 실제 바이브 작업 주문에서도 로블록스·유니티·타 조직 파일로 전환할 수 없다',()=>{
+  const id='pwa-'+UUID;
+  const source={id,gameId:'insect-survival',status:'running',
+    target:'web',sourceRoot:'web-games/insect-survival',
+    department:'development',type:'implementation',goal:'웹 HUD 조정',responsibleFiles:[],
+    evidence:['web-organization-boundary:v1']};
+  const order=overrides=>buildVibeContinuousWorkOrder({
+    runtime:{continuous:{enabled:true}},
+    queue:{version:3,maxConcurrentTasks:4,tasks:[{...source,...overrides}]},
+    taskId:id,centralPolicySnapshot:{required:false,valid:true}
+  });
+  for(const native of ['roblox','unity','unreal']){
+    const result=order({target:native});
+    assert.equal(result.run,false);
+    assert.equal(result.reason,'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+  }
+  for(const file of ['roblox-games/insect-survival/init.luau',
+     'unity-games/insect-survival/Assets/Game.cs','assets/roblox/actor.glb']){
+    const result=order({responsibleFiles:[file]});
+    assert.equal(result.run,false);
+    assert.equal(result.reason,'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+  }
+  assert.equal(order({sourceRoot:'roblox-games/insect-survival'}).reason,
+    'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
+  assert.equal(order({gameId:'cozy-island'}).reason,
+    'WEB_OWNER_NATIVE_DEVELOPMENT_FORBIDDEN');
 });
