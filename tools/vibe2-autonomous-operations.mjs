@@ -1,3 +1,4 @@
+// 파일명: tools/vibe2-autonomous-operations.mjs
 // Vibe2 autonomous development operational protections.
 // Owner-directed work never enters the autonomous cooldown/admission/cleanup path.
 // The existing exact-source QA, release and security checks remain authoritative.
@@ -208,5 +209,8 @@ export function assessAutonomousExpansionAdmission({
     :'AUTONOMOUS_ADMITTED';
   return Object.freeze({allowed,reason,backlog,threshold,countsKnown,ownerKnown,
     ownerPublishPending:!!ownerWait,scope:'NEW_AUTONOMOUS_WAVES_ONLY',
+    // 기존 GAME_PRIMARY/ASSET_DEVELOPMENT 예약은 가용 슬롯·중복 검증 경로가 판단한다.
+    // owner publication 우선순위와 신규 자율 확장 보류만 별개로 적용한다.
+    existingQueueDispatchAllowed:!ownerWait,
     existingWorkCancelled:false,ownerDirectWorkAllowed:true,finalQaPreserved:true});
 }
