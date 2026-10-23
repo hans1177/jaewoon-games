@@ -56,10 +56,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:37:22.817Z",
-      "updatedAt": "2026-10-23T13:10:22.207Z",
+      "updatedAt": "2026-10-23T13:15:00.624Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -69,7 +69,7 @@
         "capturedAt": "2026-10-12T02:39:01.675Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-23T13:15:00.624Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -114,11 +114,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "39b677757fd3347b769d888759d00549069eca5d",
+      "robloxSourceCommit": "ade89f053cc96e808a18f789752efeaca876e94b",
       "robloxSourceBootstrapPassedAt": "2026-10-23T13:02:00.587Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -624,13 +624,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "b8541a49138cbfc6faf58c0ccbaf2e50a5b7195f",
+      "robloxQualityBuildUpSourceRevision": "ade89f053cc96e808a18f789752efeaca876e94b",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "amusement-tycoon",
-        "sourceRevision": "b8541a49138cbfc6faf58c0ccbaf2e50a5b7195f",
-        "sourceTreeSha": "64a2476909d34ab059fa8f89870f044d73156959",
+        "sourceRevision": "ade89f053cc96e808a18f789752efeaca876e94b",
+        "sourceTreeSha": "a595cdc025fd978c9dca3ee21fb6b3357fc4c790",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -645,7 +645,7 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "b51e5b3cf874672384764b442aa22dd602af6c2c465afba4f4a396e8b8935405",
+          "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
           "baselineFingerprint": "b7d874bb4a24b7c17ae6774ca29f4a8aefe853e512f0c20b7a8343b1cbcadb7b",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
@@ -698,8 +698,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39841885278,
-        "testedAt": "2026-10-22T20:09:19.576Z"
+        "workflowRunId": 39955281395,
+        "testedAt": "2026-10-23T13:15:00.624Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -88319,7 +88319,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-23T13:14:46.994Z",
+  "updatedAt": "2026-10-23T13:15:00.624Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
