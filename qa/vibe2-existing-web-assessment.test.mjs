@@ -96,12 +96,12 @@ test('stale high validation does not hide current approved scope gaps',()=>{
 
 
 // 메인: 정상 모듈 문법과 두 배포 경로에서 실존하는 원본 모델을 직접 재검증한다.
-test('existing module and shared model URLs parse and resolve on root and project paths',()=>{
+test('existing Web module and CC0 party RPG native binding preserve source integrity and 2D fallback',()=>{
   const moon=fs.readFileSync('web-games/moon-ruins/index.html','utf8');
   const moduleBody=moon.match(/<script\b[^>]*type=["']module["'][^>]*>([\s\S]*?)<\/script>/i)?.[1];
   assert.ok(moduleBody?.includes('await import'),'moon-ruins real module startup missing');
   const valid=spawnSync(process.execPath,['--check','--input-type=module'],{input:moduleBody,encoding:'utf8'});
-  assert.equal(valid.status,0,`moon-ruins module startup syntax: ${valid.stderr||''}`);
+  assert.equal(valid.status,0,'moon-ruins module syntax: '+(valid.stderr||''));
   const invalid=spawnSync(process.execPath,['--check','--input-type=module'],{input:'await import(;',encoding:'utf8'});
   assert.notEqual(invalid.status,0,'malformed module syntax must still fail');
 
@@ -109,7 +109,9 @@ test('existing module and shared model URLs parse and resolve on root and projec
   const partyImportMap=party.match(/<script\b[^>]*type=["']importmap["'][^>]*>([\s\S]*?)<\/script>/i)?.[1];
   assert.ok(partyImportMap,'party-rpg module importmap must remain present');
   assert.equal(typeof JSON.parse(partyImportMap).imports,'object');
-  assert.throws(()=>JSON.parse('{"imports":'),Sy  // [CC0 게임 연결] 영구 삭제된 자체 제작 모델은 재요청하지 않는다.
+  assert.throws(()=>JSON.parse('{"imports":'),SyntaxError,'invalid importmap must fail');
+
+  // [CC0 원본 검사] 등록된 늑대 FBX를 게임 전용 재질로 사용한다.
   const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const wolf=registry.assets.find(asset=>asset.id==='forest-cc0-wolf');
@@ -117,20 +119,24 @@ test('existing module and shared model URLs parse and resolve on root and projec
   assert.match(wolf.license,/^CC0(?:-1\.0)?$/);
   assert.ok(wolf.licenseEvidenceUrl?.startsWith('https://'),'CC0 rights evidence required');
   assert.equal(wolf.path,'assets/shared/forest/wolf.fbx');
-  assert.equal(fs.existsSync(wolf.path),true,'native wolf source file must exist');
-  assert.equal(createHash('sha256').update(fs.readFileSync(wolf.path)).digest('hex'),wolf.sourceHash,'registered wolf source hash must match exact bytes');
+  assert.ok(fs.existsSync(wolf.path),'native CC0 wolf source file must exist');
+  assert.equal(createHash('sha256').update(fs.readFileSync(wolf.path)).digest('hex'),
+    wolf.sourceHash,'wolf registry hash must match actual bytes');
   const nativeSources=[...party.matchAll(/['"]((?:\.\.\/){2}assets\/shared\/forest\/[^'"]+\.fbx)['"]/g)].map(row=>row[1]);
   assert.deepEqual(nativeSources,['../../assets/shared/forest/wolf.fbx']);
-  const deleted=policy.ownerCanonicalRules.rule5.permanentlyRemovedSharedAssetIds;
-  for(const assetId of deleted)assert.ok(!party.includes('assets/shared/'+assetId.slice('shared-'.length)+'.glb'),
-    'permanently removed Vibe model must not be requested: '+assetId);
-  assert.ok(party.includes("window.vibe3dDiagnostics={loaded,missing:[...unavailableRoles"),'unbound roles must not be claimed as 3D');
-  assert.ok(party.includes('const originalRoles='),'all gameplay model roles must stay accounted for');
-  assert.ok(party.includes('variant.color.multiply(new THREE.Color(0xbacaa8))'),'wolf requires game-specific light adaptation');
-  assert.ok(party.includes('if(!models[id])continue'),'2D fallback when no native CC0 model');
+  const removed=policy.ownerCanonicalRules.rule5.permanentlyRemovedSharedAssetIds;
+  for(const id of removed)assert.ok(!party.includes('assets/shared/'+id.slice('shared-'.length)+'.glb'),
+    'deleted self-authored GLB must not be requested: '+id);
+  assert.ok(party.includes('const originalRoles='),'all 12 roles must remain accounted for');
+  assert.ok(party.includes('window.vibe3dDiagnostics={loaded,missing:[...unavailableRoles'),
+    'unverified 3D roles must not claim native binding');
+  assert.ok(party.includes('variant.color.multiply(new THREE.Color(0xbacaa8))'),
+    'wolf requires game-specific non-destructive material adaptation');
+  assert.ok(party.includes('if(!models[id])continue'),'native 3D must not fake missing assets');
   for(const kind of ['enemy','player','ai']){
-    assert.ok(party.includes("window.vibe3dCanRender('"+kind+"',"),'2D fallback must remain active for '+kind);
-  }ing GLBs must not be rendered as loaded');
+    assert.ok(party.includes("window.vibe3dCanRender('"+kind+"',"),
+      'existing 2D fallback must remain active for '+kind);
+  }
 });
 
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
