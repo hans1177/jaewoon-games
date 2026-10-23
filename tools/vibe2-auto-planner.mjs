@@ -3798,15 +3798,9 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
         '같은 게임의 기존 한방패치 결과를 소스에서 확인하고 다음 빌드업에 이어 적용한다. '+
         '이전 요청: '+ownerRequest.slice(0,320)+
         '\n기존 저장/게임플레이/검증 증거를 유지하며 새 소스 변경은 독립 검증한다.',
-      buildUpOnePatchCarry:{
-        parentTaskId:carried.id,
-        directiveId:clean(carried.buildUpOnePatchLineage?.directiveId||carried.buildUpDirectiveId),
-        generation:Number(carried.buildUpOnePatchLineage?.generation||carried.buildUpGeneration||0),
-        verifiedStatus:'verified',
-        sameGame:project.gameId,
-        sourceRoot
-      },
-      evidence:[...new Set([...existing,marker,'build-up-owner-onepatch-verified-history:source-recheck-required'])]
+      evidence:[...new Set([...existing,marker,'build-up-owner-onepatch-verified-history:source-recheck-required',
+        'build-up-owner-onepatch-parent-directive:'+clean(carried.buildUpDirectiveId),
+        'build-up-owner-onepatch-parent-generation:'+Number(carried.buildUpGeneration||0)])]
     };
   });
   const primary=clean(canonical.primaryFocus).toUpperCase();
