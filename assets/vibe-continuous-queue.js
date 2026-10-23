@@ -623,6 +623,30 @@ function taskMatchesExecutionLane(task={},lane='all'){
   if(requested==='all')return true;
   return clean(task.executionLane).toLowerCase().replaceAll('_','-')===requested;
 }
+
+function ownerWebReservationBlocker(task={}){
+  const evidence=Array.isArray(task.evidence)?task.evidence.map(clean):[];
+  const id=clean(task.id);
+  const owned=/^pwa-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)
+    ||evidence.includes('web-organization-boundary:v1')
+    ||evidence.includes('vibe-local-web-owner-directive');
+  if(!owned)return null;
+  const gameId=clean(task.gameId);
+  if(!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(gameId)
+     ||clean(task.target).toLowerCase()!=='web')
+    return 'web-owner-native-platform-forbidden';
+  const root='web-games/'+gameId;
+  if(posix(task.sourceRoot)!==root||
+     (task.source?.root&&posix(task.source.root)!==root)||
+     (task.buildUpDirective?.sourceRoot&&posix(task.buildUpDirective.sourceRoot)!==root)||
+     (task.responsibleFiles||[]).some(file=>!posix(file).startsWith(root+'/'))||
+     task.assetProductionLane===true||
+     task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'||
+     task.systemSteward===true)
+    return 'web-owner-source-outside-web';
+  return null;
+}
+
 export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const laneMode=normalizedExecutionLane(lane);
@@ -638,6 +662,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const candidates = [];
   queue.tasks.forEach((task, index) => {
     if (task.status !== 'queued') return;
+    const ownerWebBlocker=ownerWebReservationBlocker(task);
+    if(ownerWebBlocker){blocked.push(freeze({task,reasons:freezeList([ownerWebBlocker])}));return;}
     if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&task.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')){laneDeferred.push(task);return;}
     const reasons = taskBlockedReasons(task, completed);
     if (reasons.length) blocked.push(freeze({ task, reasons }));
@@ -767,6 +793,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const queuedAssetReservationClaims=laneMode==='game-primary'
     ?queue.tasks.filter((task)=>
       task.status==='queued'
+      &&!ownerWebReservationBlocker(task)
       &&taskMatchesExecutionLane(task,'asset-development')
       &&(!internalAssetOnly||task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')
       &&taskBlockedReasons(task,completed).length===0
