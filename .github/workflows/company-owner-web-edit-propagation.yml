@@ -1,102 +1,59 @@
-name: Owner Web Edit Platform Propagation
+name: Owner Web Edit Native Isolation Audit
 
 on:
   push:
     branches: [main]
     paths:
       - 'web-games/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-owner-web-edit-propagation.yml'
+      - 'qa/company-owner-web-isolation.test.mjs'
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 concurrency:
-  group: owner-web-edit-platform-propagation
+  group: owner-web-edit-native-isolation-audit
   cancel-in-progress: false
 
-env:
-  COMPANY_RUNTIME_BRANCH: company-runtime
-
 jobs:
-  propagate:
+  isolation-qa:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reject WEB-to-native development coupling
+        run: node --test qa/company-owner-web-isolation.test.mjs
+  audit:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Bind current runtime queue
-        run: |
-          set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
-      - name: Detect owner Web semantic changes
+      - name: Confirm WEB edits do not wake native development
         env:
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          node tools/company-owner-web-edit-propagation.mjs \
-            --before="$BEFORE_SHA" \
-            --after="$AFTER_SHA" \
-            --queue=/tmp/development-queue.json \
-            --roadmap=company-learning/platform-release-roadmap.json \
-            --output=/tmp/owner-web-edit-propagation.json
-          # Persist exact verified main policy before the later company-runtime checkout.
-          cp company-learning/platform-release-roadmap.json /tmp/owner-web-edit-main-policy.json
-      - name: Persist propagation request
-        run: |
-          set -euo pipefail
-          git checkout -B owner-web-edit-runtime "origin/$COMPANY_RUNTIME_BRANCH"
-          cp /tmp/development-queue.json development-queue.json
-          mkdir -p company-learning/owner-web-edit-propagation
-          cp /tmp/owner-web-edit-propagation.json company-learning/owner-web-edit-propagation/latest.json
-          git config user.name 'jaewoon-owner-web-propagation'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json company-learning/owner-web-edit-propagation/latest.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
-            git commit -m 'runtime: persist owner Web edit platform propagation [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+          git cat-file -e "$AFTER_SHA^{commit}"
+          if git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+            git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" -- web-games/ > /tmp/web-edits.txt
+          else
+            git ls-tree -r --name-only "$AFTER_SHA" -- web-games/ > /tmp/web-edits.txt
           fi
-      - name: Wake affected platform caretakers
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          targets="$(node -p "const x=require('/tmp/owner-web-edit-propagation.json');[...new Set(x.manifests.flatMap(m=>m.platformTargets))].join(',')")"
-          if [[ ",$targets," == *",UNITY,"* ]]; then
-            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'OWNER_WEB_EDIT_UNITY_DISPATCH=YES'
-          fi
-          if [[ ",$targets," == *",ROBLOX,"* ]]; then
-            # Preserve game-specific owner intent: a Web edit is not a global Roblox
-            # development trigger. Respect the canonical permanent-removal lock.
-            node <<'NODE' > /tmp/owner-web-edit-roblox-game-ids.txt
-          const fs=require('fs');
-          const request=JSON.parse(fs.readFileSync('/tmp/owner-web-edit-propagation.json','utf8'));
-          const policy=JSON.parse(fs.readFileSync('/tmp/owner-web-edit-main-policy.json','utf8'));
-          if(!Array.isArray(policy.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED');
-          const removed=new Set(policy.permanentProjectRemoval.ids);
-          const gameIds=new Set();
-          for(const entry of request.manifests||[]){
-            if(!Array.isArray(entry.platformTargets)||!entry.platformTargets.includes('ROBLOX'))continue;
-            const id=String(entry.gameId||'');
-            if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw Error('OWNER_WEB_EDIT_GAME_ID_INVALID:'+id);
-            if(!removed.has(id))gameIds.add(id);
-          }
-          for(const id of gameIds)console.log(id);
-          NODE
-            mapfile -t roblox_game_ids < /tmp/owner-web-edit-roblox-game-ids.txt
-            for game_id in "${roblox_game_ids[@]}"; do
-              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
-              echo "OWNER_WEB_EDIT_ROBLOX_DISPATCH=EXACT:$game_id"
-            done
-            echo "OWNER_WEB_EDIT_ROBLOX_DISPATCH_COUNT=${#roblox_game_ids[@]}"
-          fi
-          echo 'OWNER_WEB_EDIT_LITERAL_CODE_COPY=FORBIDDEN'
-          echo 'OWNER_WEB_EDIT_PROPAGATION=SEMANTIC_INTENT'
+          echo "WEB_ONLY_CHANGED_GAME_FILE_COUNT=$(wc -l < /tmp/web-edits.txt)"
+          # An observed WEB source delta cannot enqueue or dispatch Roblox/Unity work.
+          echo 'WEB_EDIT_NATIVE_QUEUE_MUTATION=DENIED'
+          echo 'WEB_EDIT_ROBLOX_DISPATCH=DENIED'
+          echo 'WEB_EDIT_UNITY_DISPATCH=DENIED'
+          echo 'WEB_SHARED_ASSET_LIBRARY=READ_ONLY'
