@@ -100,6 +100,8 @@ test('GitHub-hosted WEB_VIBE_1 rejects spoofed identity and requires independent
     GITHUB_REPOSITORY:'hans1177/jaewoon-games',GITHUB_EVENT_NAME:'issue_comment',
     GITHUB_REF:'refs/heads/main',GEMINI_API_KEY:'testing-fixture'};
   assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,environment:context}).organization,'WEB');
+  assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,
+    environment:{...context,GITHUB_EVENT_NAME:'repository_dispatch'}}).githubHosted,true);
   for(const env of [
     {...context,GITHUB_ACTOR:'someone-else'},
     {...context,GITHUB_REPOSITORY:'other/team'},
