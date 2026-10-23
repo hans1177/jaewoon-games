@@ -1607,11 +1607,11 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
         if(!valid||!newTextContent){valid=false;break;}
         const originalLiteral=hit[1];
         const appended=originalLiteral.slice(0,-1)+','+JSON.stringify(newRecord)+']';
-        const updated=hit[0].replace(originalLiteral,appended);
+        const updated=hit[0].replace(originalLiteral,()=>appended);
         nextCode=nextCode.slice(0,hit.index)+updated+nextCode.slice(hit.index+hit[0].length);
       }
       if(valid&&nextCode!==code){
-        const replacement=script[0].replace(code,nextCode);
+        const replacement=script[0].replace(code,()=>nextCode);
         return{summary:'Vibe2 schema-grounded no-model content authoring',
           expectedEffect:'Extend existing playable content catalog without changing previous records or gameplay balance',
           edits:[{path:relative,find:script[0],replace:replacement}],
