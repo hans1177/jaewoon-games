@@ -676,11 +676,37 @@ jobs:
             )"
             live_probe_ok=1
             if [ "$live_ids" != UNKNOWN ]; then
+              # Read-only GitHub job probes used to be serial. Under runner
+              # pressure they kept the reserve runner occupied unnecessarily.
+              # Bound fan-out; any failed probe still disables the observation
+              # and retains the conservative scheduler admission policy.
+              live_probe_parallelism=6
+              live_probe_pids=()
+              live_probe_count=0
               for run_id in $live_ids; do
-                if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" > "/tmp/vibe2-live-run-jobs/$run_id.json" 2>/dev/null; then
-                  live_probe_ok=0; break
+                if [[ ! "$run_id" =~ ^[0-9]+$ ]]; then
+                  live_probe_ok=0
+                  break
+                fi
+                (
+                  if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" > "/tmp/vibe2-live-run-jobs/$run_id.json" 2>/dev/null; then
+                    : > "/tmp/vibe2-live-run-jobs/$run_id.failed"
+                  fi
+                ) &
+                live_probe_pids+=("$!")
+                live_probe_count=$((live_probe_count+1))
+                if [ "${#live_probe_pids[@]}" -ge "$live_probe_parallelism" ]; then
+                  for probe_pid in "${live_probe_pids[@]}"; do wait "$probe_pid" || live_probe_ok=0; done
+                  live_probe_pids=()
                 fi
               done
+              for probe_pid in "${live_probe_pids[@]}"; do wait "$probe_pid" || live_probe_ok=0; done
+              if [ -n "$(find /tmp/vibe2-live-run-jobs -maxdepth 1 -type f -name '*.failed' -print -quit)" ]; then
+                live_probe_ok=0
+              fi
+              echo "VIBE2_LIVE_JOB_PROBE_FANOUT=$live_probe_parallelism"
+              echo "VIBE2_LIVE_JOB_PROBE_RUNS=$live_probe_count"
+              if [ "$live_probe_ok" != 1 ]; then echo 'VIBE2_LIVE_JOB_PROBE=INCOMPLETE_CONSERVATIVE_FALLBACK'; fi
               if [ "$live_probe_ok" = 1 ]; then
                 live_job_count="$(node --input-type=module - <<'NODE'
           import fs from 'node:fs';
