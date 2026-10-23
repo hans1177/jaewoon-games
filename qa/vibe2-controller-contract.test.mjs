@@ -270,8 +270,8 @@ test('work order exposes source bootstrap only for explicit Web or Unity Web fir
   assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed,/);
 });
 
-test('asset and recovery reserve retries stay lane-local instead of rerunning global planning and learning',()=>{
-  const marker="if [[ \"$VIBE2_EXECUTION_LANE\" == 'asset-development' || \"$VIBE2_EXECUTION_LANE\" == 'recovery-fast' ]]; then";
+test('stateless fan-in refills plus asset and recovery reserves avoid full global replan while manual game-primary still plans',()=>{
+  const marker="if [[ \"$VIBE2_EXECUTION_LANE\" == 'asset-development' || \"$VIBE2_EXECUTION_LANE\" == 'recovery-fast' || \"$callback_kind\" == 'fanin' ]]; then";
   const markerAt=workflow.indexOf(marker);
   assert.ok(markerAt>=0);
   const elseAt=workflow.indexOf('\n            else\n',markerAt);
@@ -283,6 +283,8 @@ test('asset and recovery reserve retries stay lane-local instead of rerunning gl
   assert.match(laneLocalFastPath,/VIBE2_LANE_LOCAL_RESERVE_QUEUE_AUTHORITY=EXISTING_CANONICAL_VIBE_QUEUE/);
   assert.match(laneLocalFastPath,/asset-development/);
   assert.match(laneLocalFastPath,/recovery-fast/);
+  assert.match(laneLocalFastPath,/callback_kind/);
+  assert.match(laneLocalFastPath,/24H planner and game-primary main\/manual entries still own new planning/);
   assert.doesNotMatch(laneLocalFastPath,/vibe2-auto-planner\.mjs|vibe2-learning-motor\.mjs|vibe2-post-release-focus\.mjs/);
   assert.match(globalPath,/vibe2-post-release-focus\.mjs/);
   assert.match(globalPath,/vibe2-auto-planner\.mjs/);
