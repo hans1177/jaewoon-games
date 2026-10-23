@@ -15,6 +15,9 @@ test('Vibe2 coerces CC0 originals through entire source+license+model+PBR librar
   assert.equal(result.licensedPbrAvailable,true);
   assert.ok(result.licensedPbrVariantCount>=15);
   assert.equal(Object.keys(result.libraryFamilies).length,14);
+  assert.ok(result.allRobloxLibraryDirectories.length>=18,'must inspect special Roblox asset libraries too');
+  assert.ok(result.originalSourceInventory['assets/roblox'].files>0);
+  assert.ok(result.originalSourceInventory['assets/shared'].files>0);
   assert.ok(result.licenseLedgerEntries>=7);
   assert.ok(result.externalRecords>=15);
   assert.ok(result.sourceDigestsVerified>=7);
