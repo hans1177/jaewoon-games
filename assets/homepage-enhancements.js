@@ -140,12 +140,13 @@ function developmentRows(catalog,status){
     // 카드는 원본 카탈로그 순서를 유지한다. 게임 점수·플랫폼 빌드 여부는 노출 순서를 바꾸지 않는다.
     .sort((a,b)=>catalogOrderOf(a)-catalogOrderOf(b));
 }
-// 등록 원본 경로의 URL은 배포/QA/아카이브 상태를 기다리지 않고 링크로 제공한다.
-// 404 가능성이 있는 미배포 원본 링크를 검증된 '웹 플레이'로 홍보하지는 않는다.
+// 개발 중 게임은 유지하되 철회·삭제·누락된 웹 실행 링크는 제공하지 않는다.
 function sourceWebHref(row){
   const id=gameIdOf(row);
   if(!/^[a-z0-9][a-z0-9-]*$/.test(id))return '';
   const source=sourcesOf(row).web||{};
+  const state=String(source.state||row?.ownerWebSourceState||'').toUpperCase();
+  if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state)||source.archive===false)return '';
   const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
   return `https://hans1177.github.io/jaewoon-games/${root}/`;
