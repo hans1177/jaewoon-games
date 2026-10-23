@@ -88899,10 +88899,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-23T20:48:06.986Z",
+      "updatedAt": "2026-10-23T21:42:48.371Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -89422,20 +89422,679 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "cd79c96d7c6264865e0cbe560efd68f70c583a4c",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-23T21:42:48.371Z",
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "zombie-survival",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-23T21:28:12.680Z",
+        "sourceRevision": "cd79c96d7c6264865e0cbe560efd68f70c583a4c",
+        "artifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "cd79c96d7c6264865e0cbe560efd68f70c583a4c",
+            "artifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "openai/gpt-oss-20b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All provided build evidence indicates that the source revision, artifact identity, and validation checks have passed. No contradictions exist in the BUILD_EVIDENCE, so the immutable package is cleared to begin runtime testing."
+          }
+        ],
+        "blockers": [],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
+      "robloxFoundationF0Evidence": {
+        "version": 5,
+        "gameId": "zombie-survival",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-23T21:28:13.391Z",
+        "sourcePath": "roblox-games/zombie-survival",
+        "sourceRevision": "cd79c96d7c6264865e0cbe560efd68f70c583a4c",
+        "artifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
+        "rebuiltArtifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
+        "artifactRunId": 40023828121,
+        "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
+        "assetSelectionFingerprint": "e7d24796a309a9b64d3168ce941d53dea3be9a54ac48c25b74fbceb74a52c180",
+        "observedAssetSelectionFingerprint": "e7d24796a309a9b64d3168ce941d53dea3be9a54ac48c25b74fbceb74a52c180",
+        "assetLibraryVersion": 141,
+        "observedAssetLibraryVersion": 141,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "zombie-survival",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "EQUIPMENT",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": true,
+            "EQUIPMENT": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "좀비 생존기",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "PLAYABLE",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 4,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "EQUIPMENT_TO_COMBAT",
+                  "pass": false
+                },
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "f288cccfe58cebc7974a209b0e718541e38a750e6630b65328637be9e54031c8",
+          "antiSkeletonPassed": false,
+          "designGenre": "Survival",
+          "sourceGenre": "Survival",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "PLAYABLE",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 5,
+        "gameId": "zombie-survival",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-23T21:28:13.391Z",
+        "sourcePath": "roblox-games/zombie-survival",
+        "sourceRevision": "cd79c96d7c6264865e0cbe560efd68f70c583a4c",
+        "artifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
+        "rebuiltArtifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
+        "artifactRunId": 40023828121,
+        "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
+        "assetSelectionFingerprint": "e7d24796a309a9b64d3168ce941d53dea3be9a54ac48c25b74fbceb74a52c180",
+        "observedAssetSelectionFingerprint": "e7d24796a309a9b64d3168ce941d53dea3be9a54ac48c25b74fbceb74a52c180",
+        "assetLibraryVersion": 141,
+        "observedAssetLibraryVersion": 141,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "zombie-survival",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "EQUIPMENT",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": true,
+            "EQUIPMENT": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "좀비 생존기",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "PLAYABLE",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 4,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "EQUIPMENT_TO_COMBAT",
+                  "pass": false
+                },
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "f288cccfe58cebc7974a209b0e718541e38a750e6630b65328637be9e54031c8",
+          "antiSkeletonPassed": false,
+          "designGenre": "Survival",
+          "sourceGenre": "Survival",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "PLAYABLE",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -89458,8 +90117,8 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "cd79c96d7c6264865e0cbe560efd68f70c583a4c",
       "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
@@ -89469,8 +90128,8 @@
         "sourceRevision": "cd79c96d7c6264865e0cbe560efd68f70c583a4c",
         "artifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 40011164272,
-        "testedAt": "2026-10-23T19:50:38.991Z",
+        "workflowRunId": 40023828121,
+        "testedAt": "2026-10-23T21:42:48.371Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -92827,15 +93486,15 @@
           }
         ]
       },
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildArtifactIdentity": "sha256:c82fe61c1934c1c06b107499fdb7498a945a7f911c86c23bb1902bfb5010f5e8",
+      "robloxBuildPassedAt": "2026-10-23T21:42:48.371Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxBuildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
       "robloxBuildUpAssetSourceUsageLibraryVersion": 141,
       "robloxBuildAssetSelectionFingerprint": "e7d24796a309a9b64d3168ce941d53dea3be9a54ac48c25b74fbceb74a52c180",
@@ -92922,7 +93581,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-23T21:42:34.305Z",
+  "updatedAt": "2026-10-23T21:42:48.371Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
