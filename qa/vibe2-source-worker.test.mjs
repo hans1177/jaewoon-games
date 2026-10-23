@@ -9082,3 +9082,20 @@ test('independent authoring key checks occur only at the actual optional model r
   assert.ok(worker.indexOf('if(webInput){')<worker.indexOf('generated=await generateCandidateWithRecovery({prompt',worker.indexOf('if(webInput){')));
   assert.match(worker,/if\(!key\)throw Object.assign\(new Error\('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'/);
 });
+
+
+test('Roblox native candidate can edit more than eight approved files without broadening Web source authority',()=>{
+  const files=Array.from({length:18},(_,i)=>'shared/Step'+i+'.luau');
+  const candidate={
+    summary:'impact-scoped Roblox correction',
+    expectedEffect:'all eighteen affected Luau source consumers updated',
+    edits:files.map((file,index)=>({path:file,find:'local old'+index+'=true',replace:'local old'+index+'=false'})),
+    newFiles:[],replaceFiles:[],tests:[]
+  };
+  const native=normalizeCandidate(candidate,{target:'roblox',responsibleFiles:files,sourceRootRelative:'roblox-games/test'});
+  assert.equal(native.edits.length,18);
+  assert.throws(()=>normalizeCandidate(candidate,{target:'web',responsibleFiles:files,sourceRootRelative:'web-games/test'}),/변경 파일 수/);
+  assert.throws(()=>normalizeCandidate(candidate,{target:'roblox',responsibleFiles:files.slice(0,17),sourceRootRelative:'roblox-games/test'}),/책임 파일 범위 밖/);
+  assert.throws(()=>normalizeCandidate({...candidate,edits:[{path:files[0],find:'same',replace:'same'}]},
+    {target:'roblox',responsibleFiles:files,sourceRootRelative:'roblox-games/test'}),/변경 없는 edit/);
+});
