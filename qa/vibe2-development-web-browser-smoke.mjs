@@ -422,6 +422,14 @@ try{
       assert.ok(frameBudget?.pixelRatio<=frameBudget?.pixelRatioCap+.001);
       assert.ok(frameBudget?.pixelRatio>=frameBudget?.pixelRatioFloor-.001);
       assert.ok(frameBudget?.framesObserved>=1,'3D performance counters must advance on actual frames');
+      assert.ok(Number.isSafeInteger(frameBudget?.resourceGpuBatches)&&frameBudget.resourceGpuBatches>=1,
+        'insect-survival: CC0 pickup GPU batching was not activated');
+      assert.ok(Number.isSafeInteger(frameBudget?.resourceGpuModels)&&frameBudget.resourceGpuModels>=1,
+        'insect-survival: live collection models missing from GPU batches');
+      assert.ok(frameBudget.resourceGpuBatches<frameBudget.resourceGpuModels,
+        'insect-survival: resource batching must actually consolidate draw groups');
+      assert.equal(vibeDiagnosis?.evidence?.resourceGpuModels,frameBudget.resourceGpuModels,
+        'Vibe performance evidence must reflect actual resource GPU instances');
       assert.ok(frameBudget?.decorGpuBatches>=1,
         'insect-survival: repeated original CC0 decoration not GPU batched');
       assert.ok(frameBudget?.decorGpuInstances>=2,
@@ -504,6 +512,9 @@ try{
       assert.ok(mobileBudget?.pixelRatio<=1.3+.001,'mobile resolution must respect the original cap');
       assert.ok(mobileBudget?.pixelRatio>=mobileBudget?.pixelRatioFloor-.001,'adaptive resolution floor');
       assert.equal(mobileBudget?.hardwareBenchmarkVerified,false,'emulation is not physical device profiling');
+      assert.ok(mobileBudget?.resourceGpuModels>0,'mobile: CC0 collection instance batches absent');
+      assert.ok(mobileBudget?.resourceGpuBatches<mobileBudget?.resourceGpuModels,
+        'mobile: collection models must share GPU draw batches');
       assert.ok(mobileBudget?.decorGpuBatches>=1,
         'insect-survival: mobile decorative CC0 batch missing');
       assert.ok(mobileBudget?.decorGpuInstances>=2,
