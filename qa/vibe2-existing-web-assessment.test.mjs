@@ -114,12 +114,12 @@ test('existing module and shared model URLs parse and resolve on root and projec
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const wolf=registry.assets.find(asset=>asset.id==='forest-cc0-wolf');
   assert.ok(wolf,'registered CC0 wolf required');
-  assert.match(wolf.license,/^CC0(?:-1\\.0)?$/);
+  assert.match(wolf.license,/^CC0(?:-1\.0)?$/);
   assert.ok(wolf.licenseEvidenceUrl?.startsWith('https://'),'CC0 rights evidence required');
   assert.equal(wolf.path,'assets/shared/forest/wolf.fbx');
   assert.equal(fs.existsSync(wolf.path),true,'native wolf source file must exist');
   assert.equal(createHash('sha256').update(fs.readFileSync(wolf.path)).digest('hex'),wolf.sourceHash,'registered wolf source hash must match exact bytes');
-  const nativeSources=[...party.matchAll(/['"]((?:\\.\\.\\/){2}assets\\/shared\\/forest\\/[^'"]+\\.fbx)['"]/g)].map(row=>row[1]);
+  const nativeSources=[...party.matchAll(/['"]((?:\.\.\/){2}assets\/shared\/forest\/[^'"]+\.fbx)['"]/g)].map(row=>row[1]);
   assert.deepEqual(nativeSources,['../../assets/shared/forest/wolf.fbx']);
   const deleted=policy.ownerCanonicalRules.rule5.permanentlyRemovedSharedAssetIds;
   for(const assetId of deleted)assert.ok(!party.includes('assets/shared/'+assetId.slice('shared-'.length)+'.glb'),
