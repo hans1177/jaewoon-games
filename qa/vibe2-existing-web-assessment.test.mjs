@@ -109,18 +109,27 @@ test('existing module and shared model URLs parse and resolve on root and projec
   assert.ok(partyImportMap,'party-rpg module importmap must remain present');
   assert.equal(typeof JSON.parse(partyImportMap).imports,'object');
   assert.throws(()=>JSON.parse('{"imports":'),SyntaxError,'invalid importmap must fail');
-  const modelPaths=[...party.matchAll(/['"](\.\.\/\.\.\/assets\/shared\/[^'"]+\.glb)['"]/g)].map(row=>row[1]);
-  assert.equal(modelPaths.length,12,'party-rpg keeps all declared 3D roles without inventing replacement binaries');
-  // Rule5 removed these self-authored GLBs. Verify missing models are reported
-  // and the existing 2D gameplay renderer stays active until licensed 3D binding.
+  const modelPaths=[...party.matchAll(/['"]((?:\.\.\/)+assets\/[^'"]+\.glb)['"]/g)].map(row=>row[1]);
+  const expected=["Barbarian.glb","Knight.glb","Mage.glb","Rogue.glb","Rogue_Hooded.glb"];
+  assert.equal(modelPaths.length,expected.length,
+    'party-rpg must use actual licensed originals, not invented replacement binaries');
+  assert.deepEqual(modelPaths.map(x=>x.split('/').at(-1)).sort(),expected.sort());
+  const license=fs.readFileSync('assets/roblox/actors/sources/kaykit-adventurers/LICENSE.txt','utf8');
+  assert.match(license,/Creative Commons Zero, CC0/);
   for(const required of [
     "window.vibe3dDiagnostics={loaded,missing:Object.keys(files).filter(k=>!models[k])}",
     "catch(e){console.warn('Vibe model load:',id,e);}",
     'window.vibe3dCanRender=(kind,obj)=>!!models[role(kind,obj)]',
-    'if(!models[id])continue'
-  ])assert.ok(party.includes(required),'missing native-model fallback: '+required);
+    'if(!models[id])continue',
+    "if(kind==='player')return 'traveler'",
+    "if(obj.party)return 'guardian'"
+  ])assert.ok(party.includes(required),'3D asset/fallback contract missing: '+required);
+  assert.match(party,/name\.charCodeAt\(i\)/,'moving AI must keep the same model identity');
+  assert.match(party,/return null;\s*}\s*window\.vibe3dCanRender/s,
+    'unmatched creature species must remain on the existing 2D renderer');
   for(const kind of ['enemy','player','ai']){
-    assert.ok(party.includes("window.vibe3dCanRender('"+kind+"',"),'2D fallback must remain active for '+kind);
+    assert.ok(party.includes("window.vibe3dCanRender('"+kind+"',"),
+      'original 2D renderer fallback must remain active for '+kind);
   }
   const missingModels=new Set();
   for(const base of [
@@ -128,12 +137,13 @@ test('existing module and shared model URLs parse and resolve on root and projec
     'https://hans1177.github.io/jaewoon-games/web-games/party-rpg/index.html'
   ])for(const url of modelPaths){
     const actualPath=new URL(url,base).pathname.replace(/^\/jaewoon-games\//,'/').replace(/^\//,'');
-    assert.match(actualPath,/^assets\/shared\/(?:humanoid|creature)-[a-z-]+\.glb$/,'model path must remain in its declared asset root');
+    assert.match(actualPath,/^assets\/roblox\/actors\/sources\/kaykit-adventurers\/(?:Barbarian|Knight|Mage|Rogue|Rogue_Hooded)\.glb$/,
+      'deployed model URL must resolve to an actual authorized CC0 binary');
     if(!fs.existsSync(actualPath)){missingModels.add(actualPath);continue;}
     assert.ok(fs.statSync(actualPath).isFile(),`party-rpg non-file model ${base} -> ${actualPath}`);
+    assert.ok(fs.statSync(actualPath).size>100_000,'3D binary truncated: '+actualPath);
   }
-  // The removed models are visual debt, not verified 3D production artifacts.
-  if(missingModels.size)assert.ok(party.includes('if(!models[id])continue'),'missing GLBs must not be rendered as loaded');
+  assert.deepEqual([...missingModels],[],'all declared model assets must exist on both project URL bases');
 });
 
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{

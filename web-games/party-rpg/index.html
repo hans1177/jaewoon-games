@@ -56,11 +56,11 @@ button{font:inherit}
 #startCard{background:radial-gradient(ellipse at 50% 0%,#365c64,#11232c 75%);border:3px solid #b79559}
 #hpFill{background:linear-gradient(90deg,#8e222f,#ff6d65)}#xpFill{background:linear-gradient(90deg,#226ab6,#75dcff)}
 /* Vibe company library asset binding */
-#startCard{background:linear-gradient(180deg,#081b27bb,#0a1724ed),url('/assets/fantasy-rpg-v2.webp') center/cover no-repeat;border:3px solid #b79559}
+#startCard{background:linear-gradient(180deg,#081b27bb,#0a1724ed),url('../../assets/fantasy-rpg-v2.webp') center/cover no-repeat;border:3px solid #b79559}
 #startCard h1{font-size:clamp(28px,6vw,42px);text-shadow:0 3px 8px #000,0 0 20px #ffda7840}
 #startCard p,#startCard .note{background:#08151ec9;border-radius:8px;padding:8px}
-#modal .card{background:linear-gradient(145deg,#0b1823f2,#152d35ed),url('/assets/card-rpg-v2.webp') center/cover no-repeat}
-#zone{background:linear-gradient(120deg,#0a1921ed,#142b37e0),url('/assets/fantasy-rpg-v2.webp') center/cover}
+#modal .card{background:linear-gradient(145deg,#0b1823f2,#152d35ed),url('../../assets/card-rpg-v2.webp') center/cover no-repeat}
+#zone{background:linear-gradient(120deg,#0a1921ed,#142b37e0),url('../../assets/fantasy-rpg-v2.webp') center/cover}
 </style>
 </head>
 <body>
@@ -477,18 +477,18 @@ window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera});state.ai.forEach
 </script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
 <script type="module">
-/* Native 3D GLB assets from the verified Vibe company registry. No screenshots, cropping or primitive characters. */
+/* Native 3D character sources: existing licensed CC0 originals, not invented asset paths. Unmatched enemy species keep the original canvas renderer. */
 try {
  const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js');
  const {GLTFLoader}=await import('https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/loaders/GLTFLoader.js');
+ // Real CC0 KayKit original GLB files; shared and native libraries remain read-only.
+ // Species with no species-matched 3D source keep their original 2D gameplay artwork.
  const files={
- traveler:'../../assets/shared/humanoid-traveler.glb',guardian:'../../assets/shared/humanoid-guardian.glb',
- samurai:'../../assets/shared/humanoid-samurai.glb',archer:'../../assets/shared/humanoid-archer.glb',
- mage:'../../assets/shared/humanoid-mage.glb',rogue:'../../assets/shared/humanoid-rogue.glb',
- wolf:'../../assets/shared/creature-wolf.glb',spider:'../../assets/shared/creature-spider.glb',
- beetle:'../../assets/shared/creature-beetle.glb',golem:'../../assets/shared/creature-golem.glb',
- serpent:'../../assets/shared/creature-serpent.glb',
- blacksmith:'../../assets/shared/humanoid-blacksmith.glb'
+  traveler:'../../assets/roblox/actors/sources/kaykit-adventurers/Barbarian.glb',
+  guardian:'../../assets/roblox/actors/sources/kaykit-adventurers/Knight.glb',
+  mage:'../../assets/roblox/actors/sources/kaykit-adventurers/Mage.glb',
+  rogue:'../../assets/roblox/actors/sources/kaykit-adventurers/Rogue.glb',
+  scout:'../../assets/roblox/actors/sources/kaykit-adventurers/Rogue_Hooded.glb'
  };
  const canvas=document.getElementById('game');
  const overlay=document.createElement('canvas');overlay.id='vibe3d';overlay.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2';canvas.after(overlay);
@@ -500,7 +500,19 @@ try {
  const loader=new GLTFLoader(),models={},actors=new Map();
  await Promise.all(Object.entries(files).map(async ([id,url])=>{try{const gltf=await loader.loadAsync(url);models[id]=gltf.scene;}catch(e){console.warn('Vibe model load:',id,e);}}));
  const loaded=Object.keys(models);window.vibe3dDiagnostics={loaded,missing:Object.keys(files).filter(k=>!models[k])};console.info('Vibe assets:',window.vibe3dDiagnostics);
- function role(kind,obj){if(kind==='player')return 'traveler';if(kind==='ai')return obj.party?'guardian':['samurai','archer','mage','rogue','blacksmith'][Math.abs(Math.floor(obj.x))%5];const name=String(obj.name||'');if(/늑대|wolf/i.test(name))return 'wolf';if(/거미|spider/i.test(name))return 'spider';if(/골렘|golem/i.test(name))return 'golem';if(/뱀|serpent/i.test(name))return 'serpent';return 'beetle';}
+ function role(kind,obj){
+  if(kind==='player')return 'traveler';
+  if(kind==='ai'){
+   if(obj.party)return 'guardian';
+   // Stable AI cast: walking must not swap a character model each frame.
+   const name=String(obj.name||'');
+   let hash=0;
+   for(let i=0;i<name.length;i++)hash=(Math.imul(hash,31)+name.charCodeAt(i))>>>0;
+   return ['traveler','mage','rogue','scout'][hash%4];
+  }
+  // No fabricated wolves, spiders, golems or serpents; preserve native 2D species.
+  return null;
+ }
  window.vibe3dCanRender=(kind,obj)=>!!models[role(kind,obj)];
  window.vibe3dFrame=()=>{
   const w=canvas.width,h=canvas.height;renderer.setSize(w,h,false);camera3.left=-w/2;camera3.right=w/2;camera3.top=h/2;camera3.bottom=-h/2;camera3.updateProjectionMatrix();
