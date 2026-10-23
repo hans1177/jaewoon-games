@@ -3356,3 +3356,56 @@ test('read-only learning practice source-attribution blocks recover without rele
   }
   assert.equal(recoverStaleRunningReservations(actual.queue).recovered,0,'recovery is idempotent');
 });
+
+test('웹 PWA 소유 작업은 공용 큐 예약 전에 타 플랫폼 대상·소스 경로를 거부한다',()=>{
+  const task=(id,target='web',sourceRoot='web-games/insect-survival',extra={})=>({
+    id,gameId:'insect-survival',target,sourceRoot,status:'queued',
+    department:'development',type:'implementation',priority:'owner-immediate',
+    goal:'웹 HUD 수정',responsibleFiles:[sourceRoot+'/index.html'],
+    evidence:['web-organization-boundary:v1'],...extra
+  });
+  const uuid='pwa-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+  const valid=task(uuid);
+  const other={id:'roblox-ordinary',gameId:'fort',target:'roblox',
+    sourceRoot:'roblox-games/fort',status:'queued',department:'development',
+    type:'implementation',priority:'normal',goal:'네이티브 개발',
+    responsibleFiles:['roblox-games/fort/init.luau'],evidence:[]};
+  const invalid=[
+    task('bad-native-roblox','roblox','roblox-games/insect-survival'),
+    task('bad-native-unity','unity','unity-games/insect-survival'),
+    task('bad-file','web','web-games/insect-survival',
+      {responsibleFiles:['roblox-games/insect-survival/main.luau']}),
+    task('bad-source','web','web-games/cozy-island'),
+    task('bad-assets','web','web-games/insect-survival',{assetProductionLane:true}),
+    task('bad-motion','web','web-games/insect-survival',
+      {motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY'}}),
+    task('bad-system','web','web-games/insect-survival',{systemSteward:true}),
+    task('bad-directive','web','web-games/insect-survival',
+      {buildUpDirective:{sourceRoot:'unity-games/insect-survival'}}),
+    task('bad-nested','web','web-games/insect-survival',
+      {source:{root:'roblox-games/insect-survival'}}),
+    task('bad-game','web','web-games/insect-survival',{gameId:'../escape'})
+  ];
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:16,tasks:[valid,other,...invalid]});
+  const selected=selectVibeQueueBatch(queue,{lane:'game-primary',maxConcurrentTasks:16});
+  assert.ok(selected.selected.some(row=>row.id===uuid),'정상 웹 오너 작업은 예약 대상이어야 한다');
+  assert.ok(selected.selected.some(row=>row.id==='roblox-ordinary'),'독립적인 로블록스 개발은 그대로 진행한다');
+  for(const bad of invalid){
+    assert.ok(!selected.selected.some(row=>row.id===bad.id),bad.id+' must not reserve');
+    assert.ok(selected.blocked.some(row=>row.task.id===bad.id
+      &&row.reasons.some(reason=>reason.startsWith('web-owner-'))),bad.id+' must be explicitly blocked');
+  }
+  assert.ok(queue.tasks.every(row=>row.status==='queued'),'큐 원본과 다른 조직의 기록을 변경하지 않는다');
+});
+
+test('PWA UUID로 위장한 로블록스 개발 작업도 웹 예약 제한을 우회할 수 없다',()=>{
+  const forged={id:'pwa-11111111-2222-4333-8444-555555555555',gameId:'fort',
+    target:'roblox',sourceRoot:'roblox-games/fort',status:'queued',
+    department:'development',type:'implementation',priority:'high',
+    responsibleFiles:['roblox-games/fort/main.luau'],evidence:[]};
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[forged]});
+  const result=selectVibeQueueBatch(queue,{lane:'game-primary',maxConcurrentTasks:4});
+  assert.equal(result.selected.length,0);
+  assert.ok(result.blocked.some(row=>row.task.id===forged.id&&
+    row.reasons.includes('web-owner-native-platform-forbidden')));
+});
