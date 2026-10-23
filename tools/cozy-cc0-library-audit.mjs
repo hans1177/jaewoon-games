@@ -52,7 +52,11 @@ export function auditCozyCC0({root=process.cwd()}={}){
   if(registry.rules?.requireSourceDigestForReuse!==true||
     registry.rules?.requireUniverseGrantForEachGame!==true||
     registry.rules?.neverAssumeCrossUniversePermissions!==true)throw Error('CC0_LIBRARY_POLICY_MISSING');
-  for(const rootPath of ['assets/roblox/actors/sources','assets/external','assets/shared']){
+  const allRobloxLibraryDirs=fs.readdirSync(path.join(root,'assets/roblox'),{withFileTypes:true})
+    .filter(d=>d.isDirectory()).map(d=>d.name).sort();
+  report.allRobloxLibraryDirectories=allRobloxLibraryDirs;
+  if(allRobloxLibraryDirs.length<18)throw Error('ROBLOX_LIBRARY_DIRECTORY_COVERAGE_TOO_SMALL');
+  for(const rootPath of ['assets/roblox','assets/external','assets/shared']){
     report.originalSourceInventory[rootPath]=scanSources(path.join(root,rootPath));
   }
   const ambientLicense=fs.readFileSync(path.join(root,'assets/roblox/common-materials-v1/LICENSE.txt'),'utf8');
@@ -132,6 +136,7 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1
   const out=process.env.COZY_CC0_AUDIT_OUTPUT||'/tmp/cozy-cc0-audit.json';
   fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');
   console.log('COZY_CC0_LIBRARY_FAMILY_AUDIT=PASS:'+Object.keys(result.libraryFamilies).length);
+  console.log('COZY_CC0_ALL_ROBLOX_DIRECTORIES_SCANNED='+result.allRobloxLibraryDirectories.length);
   console.log('COZY_CC0_LICENSE_ENTRIES='+result.licenseLedgerEntries);
   console.log('COZY_CC0_PBR_VARIANTS='+result.licensedPbrVariantCount);
   console.log('COZY_CC0_ORIGINAL_MODELS_IN_INVENTORY='+Object.values(result.originalSourceInventory).reduce((n,x)=>n+x.nativeModels,0));
