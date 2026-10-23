@@ -1561,7 +1561,8 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     const plans=order.selectedTask?.contentAdditions??order.contentAdditions;
     // [무모델 콘텐츠 생성] 확정된 기존 데이터 스키마와 소비 함수가 있을 때만
     // 명시된 새 레코드를 추가한다. 임의 난이도·보상·저장 형식은 추정하지 않는다.
-    if(Array.isArray(plans)&&plans.length>0&&plans.length<=4){
+    if(plans!=null&&(!Array.isArray(plans)||plans.length===0||plans.length>4))return null;
+    if(Array.isArray(plans)&&plans.length>0){
       const contentFamilies=[
         {family:'quest',catalog:'questData',intent:/quest|mission|퀘스트|의뢰/i},
         {family:'craft',catalog:'recipeData',intent:/craft|forge|제작|대장간/i},
@@ -1618,6 +1619,8 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
           newFiles:[],replaceFiles:[],tests:[],deterministicWebInput:true,
           deterministicWebContent:true,learnedCodePatternIds:[]};
       }
+      // 요청된 콘텐츠가 무효라면 무관한 버튼 연결을 성공 결과로 대체하지 않는다.
+      return null;
     }
     const bindings=[],learnedPatternIds=[];
     const declaredChoices=new Map();
