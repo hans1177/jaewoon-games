@@ -5336,3 +5336,60 @@ test('registered CC0 native sources retain verifiable official rights URLs and h
   }
   assert.ok(registry.version>=141);
 });
+
+// [게임별 역할별 수급 회귀] 한 종류의 몬스터를 사용해도 다른 종류의 요구가 충족된 것은 아니다.
+test('active game missing individual creature roles reuses matching CC0 and sources only remaining gaps',()=>{
+ const wolf={id:'company-wolf',family:'CREATURE',role:'wolf',license:'CC0-1.0',
+  platform:'SHARED_MASTER',path:'assets/shared/forest/wolf.glb',sourceHash:'a'.repeat(64),
+  status:'REPO_ASSET',consumerGameIds:['forest-demo'],productionVerified:false};
+ const spider={id:'company-spider',family:'CREATURE',role:'spider',license:'CC0-1.0',
+  platform:'SHARED_MASTER',path:'assets/shared/forest/spider.glb',sourceHash:'b'.repeat(64),
+  status:'REPO_ASSET',consumerGameIds:[],productionVerified:false};
+ const dragon={id:'cc0-dragon-original',name:'Dragon Model',category:'CREATURE',
+  status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0-1.0',
+  sourceUrl:'https://kenney.nl/assets/dragon',licenseEvidenceUrl:'https://kenney.nl/assets/dragon',
+  verifiedAt:'2026-10-23',platformTargets:['WEB'],automaticAcquisitionWhenSelected:true,
+  commercialUseAllowed:true,derivativesAllowed:true,capabilities:['dragon','glb']};
+ const inputs={gameId:'forest-demo',target:'web',request:'wolf spider dragon',
+  requirements:[{family:'CREATURE',role:'wolf'},{family:'CREATURE',role:'spider'},{family:'CREATURE',role:'dragon'}]};
+ const result=buildAssetSupplyDecisionSummary({...inputs,
+  registry:{assets:[wolf,spider],externalSources:[dragon]}});
+ assert.equal(result.currentConsumers,1);
+ assert.equal(result.missingRoleCount,2);
+ assert.deepEqual(result.roleGaps[0].missingRoles,['spider','dragon']);
+ const spiderAction=result.nextActions.find(row=>row.reason==='CURRENT_GAME_MISSING_ROLE_REUSE');
+ assert.equal(spiderAction.assetId,spider.id);
+ assert.equal(spiderAction.requestedRole,'spider');
+ assert.equal(spiderAction.action,'ADAPT');
+ assert.equal(spiderAction.assetization.productionVerified,false);
+ const dragonAction=result.nextActions.find(row=>row.reason==='CURRENT_GAME_MISSING_ROLE_CC0_SOURCE');
+ assert.equal(dragonAction.action,'ACQUIRE_ADAPT');
+ assert.equal(dragonAction.externalAcquisition.sourceId,dragon.id);
+ assert.equal(dragonAction.externalAcquisition.onDemandOnly,true);
+ assert.equal(result.runtimeVerificationGranted,false);
+ assert.equal(result.productionVerificationGranted,false);
+ const blocked=buildAssetSupplyDecisionSummary({...inputs,
+  registry:{assets:[wolf,spider],externalSources:[{...dragon,license:'CC-BY'}]}});
+ assert.equal(blocked.selectedOnDemandExternalGapCount,0);
+ assert.ok(blocked.nextActions.some(row=>row.action==='HOLD'
+  &&row.requestedRole==='dragon'&&row.reason==='CURRENT_GAME_MISSING_ROLE_UNRESOLVED'));
+ assert.ok(blocked.nextActions.some(row=>row.requestedRole==='spider'
+  &&row.reason==='CURRENT_GAME_MISSING_ROLE_REUSE'));
+ // 서로 다른 부족 역할은 동일 family의 수급 요청으로 합치지 않는다.
+ const golem={...dragon,id:'cc0-golem-original',name:'Golem Model',capabilities:['golem','glb']};
+ const multiple=buildAssetSupplyDecisionSummary({...inputs,
+  requirements:[...inputs.requirements,{family:'CREATURE',role:'golem'}],
+  registry:{assets:[wolf,spider],externalSources:[dragon,golem]}});
+ const roleSources=multiple.nextActions.filter(row=>row.reason==='CURRENT_GAME_MISSING_ROLE_CC0_SOURCE');
+ assert.deepEqual(roleSources.map(row=>row.requestedRole).sort(),['dragon','golem']);
+ assert.deepEqual(roleSources.map(row=>row.externalAcquisition.sourceId).sort(),
+  [dragon.id,golem.id].sort());
+ assert.equal(multiple.missingRoleCount,3);
+ // 단순 종류 공통 요구는 기존 자산이 있으면 별도의 부재 역할로 처리하지 않는다.
+ const generic=buildAssetSupplyDecisionSummary({
+  gameId:inputs.gameId,target:inputs.target,
+  requirements:[{family:'CREATURE',role:'generic'}],
+  registry:{assets:[wolf],externalSources:[]}
+ });
+ assert.equal(generic.missingRoleCount,0);
+});

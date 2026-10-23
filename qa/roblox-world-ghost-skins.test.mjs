@@ -1,3 +1,4 @@
+// 파일명: qa/roblox-world-ghost-skins.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -124,21 +125,18 @@ test('object motion modules bind all 100 identities and preserve other states an
  `);
 });
 
-test('100 internal skins have reproducible source and honest verification metadata',()=>{
+test('100 ghost skin source recipes remain reproducible but retired pack stays outside canonical CC0 asset registry',()=>{
   const result=spawnSync(process.execPath,[root+'generate-catalog.mjs','--check'],{encoding:'utf8'});
   assert.equal(result.status,0,result.stderr);
   const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-world-ghost-skins-v1');
-  assert.equal(pack.skinCount,100);
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.verifiedCompanyReusable,false);
-  assert.deepEqual(pack.consumerGameIds,[]);
-  assert.ok(pack.intendedConsumerGameIds.includes('horror-escape-room'));
-  for(const file of pack.sourceFiles)assert.ok(fs.existsSync(file),file);
-  const variants=registry.assets.filter(row=>row.packId===pack.id);
-  assert.equal(variants.length,100);
-  assert.equal(new Set(variants.map(row=>row.skinId)).size,100);
-  for(const row of variants){assert.equal(row.productionVerified,false);assert.equal(row.verifiedCompanyReusable,false);}
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(registry.assets.some(row=>row.id==='roblox-world-ghost-skins-v1'),false,
+    'removed self-authored ghost pack must not regain production registration');
+  assert.equal(registry.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1').length,0,
+    'removed unlicensed ghost variants cannot claim CC0 game reuse');
+  assert.ok(policy.ownerCanonicalRules?.rule5,'current owner CC0 authority must exist');
+  assert.match(catalog,/gwisin-bride/,'historical source recipes remain inspectable but not approved for publication');
+  assert.equal(registry.productionPassAuthority,false,'catalog is never a runtime gate');
 });
 
 test('all 300 LOD recipes have bounded geometry and distinct shapes, beyond recolors',native,()=>{

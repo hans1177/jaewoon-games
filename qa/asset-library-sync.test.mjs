@@ -1,7 +1,11 @@
+// 파일명: qa/asset-library-sync.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import os from 'node:os';
+import path from 'node:path';
+import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 
 test('asset homepage automatically publishes new entries, preserves selection, excludes retired previews and recovers from outage',async()=>{
  const elements=new Map(),intervals=[],listeners={},requests=[];
@@ -118,7 +122,7 @@ test('all-assets view follows canonical family order and keeps every original ob
   assert.match(script,/rank\(a\)-rank\(b\)/);
   assert.match(script,/asset\?\.subfamily/);
   assert.match(script,/a\.id\.localeCompare\(b\.id,'en'\)/);
-  assert.equal(registry.assets.filter(asset=>asset.packId==='roblox-world-ghost-skins-v1'&&asset.skinId).length,100);
+  assert.equal(registry.assets.filter(asset=>asset.packId==='roblox-world-ghost-skins-v1'&&asset.skinId).length,0,'removed self-authored ghost skin pack cannot return as production library');
   assert.ok(registry.assets.every(asset=>asset.gameExclusive===false));
 });
 
@@ -572,11 +576,11 @@ test('canonical asset library previews actual local skinned GLB and animation cl
   assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
   assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
   assert.match(viewer,/host\.dataset\.format='glb'/);
-  const binaries=registry.assets.filter(row=>row.platform==='SHARED_MASTER'&&
-    /^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(row.path||''));
+  // [현재 라이브러리] 삭제된 수제 GLB 대신 등록된 실제 CC0 네이티브 원본을 검사한다.
+  const binaries=registry.assets.filter(row=>/^(?:\/)?assets\/(?:roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?|shared\/[a-z0-9/-]+)\.glb$/i.test(String(row.path||'')));
   assert.ok(binaries.length>=4);
   for(const record of binaries.slice(0,4)){
-    const bytes=fs.readFileSync(record.path.slice(1));
+    const bytes=fs.readFileSync(String(record.path).replace(/^\//,''));
     assert.equal(bytes.subarray(0,4).toString(),'glTF',record.id);
     assert.equal(bytes.readUInt32LE(8),bytes.length);
     assert.notEqual(record.productionVerified,true);
@@ -672,7 +676,8 @@ test('complete native-first gallery distinguishes registered assets, material at
  const native=registry.assets.filter(row=>/^(?:\/)?assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(String(row.path||'')));
  assert.ok(native.length>0,'actual registered native models exist');
  const catalogs=registry.assets.filter(row=>Number.isInteger(row.catalogRowCount)&&row.catalogRowCount>0);
- assert.ok(catalogs.length>=10,'common registered catalogs must remain fully enumerable');
+ assert.equal(catalogs.length,0,'removed unlicensed catalog placeholders must not be reintroduced');
+ assert.ok(registry.externalSources.length>0,'current external source catalog remains enumerable');
  assert.match(code,/kind==='native'/);
  assert.match(code,/nativeGLB\(asset\.path\)/);
  assert.match(code,/renderSourceCollections\(registry\)/);
@@ -683,4 +688,112 @@ test('complete native-first gallery distinguishes registered assets, material at
  assert.match(code,/제작 레시피|공용 모션 제작 레시피/);
  assert.match(html,/실행 검증은 서로 다른 상태/);
  assert.ok(registry.assets.some(row=>row.productionVerified===false));
+});
+
+test('canonical library sync persists only real game-source consumer evidence and cleans stale bindings',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-real-consumers-'));
+ try{
+  const assetPath=path.join(root,'assets','shared','wolf.fbx');
+  const webDir=path.join(root,'web-games','demo');
+  fs.mkdirSync(path.dirname(assetPath),{recursive:true});
+  fs.mkdirSync(webDir,{recursive:true});
+  fs.writeFileSync(assetPath,'verified fixture bytes');
+  const webFile=path.join(webDir,'index.html');
+  fs.writeFileSync(webFile,'<script>const assets={wolf:"../../assets/shared/wolf.fbx"};loader.loadAsync(assets.wolf);</script>');
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+   games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]
+  }));
+  const original={version:1,assets:[{
+   id:'wolf',family:'CREATURE',path:'assets/shared/wolf.fbx',license:'CC0-1.0',
+   productionVerified:false,runtimeVerificationState:'PENDING',consumerGameIds:['historical']
+  }],externalSources:[]};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(original));
+  const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(first.persisted,true,first.persistError||'source-backed registry not persisted');
+  const saved=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.deepEqual(saved.assets[0].sourceBoundConsumerGameIds,['demo']);
+  assert.deepEqual(saved.assets[0].consumerGameIds,['historical'],'declaration retained without fake runtime use');
+  assert.equal(saved.assets[0].sourceConsumerBindings[0].evidenceFiles[0],'web-games/demo/index.html');
+  assert.equal(saved.assets[0].sourceConsumerBindings[0].runtimeVerified,false);
+  assert.equal(saved.assets[0].productionVerified,false);
+  const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(second.changed,false,'identical code evidence must not churn library versions');
+  fs.writeFileSync(webFile,'<script>const unused=1;</script>');
+  const removed=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(removed.persisted,true,removed.persistError||'stale source binding failed to clear');
+  const latest=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.equal(latest.assets[0].sourceBoundConsumerGameIds,undefined);
+  assert.equal(latest.assets[0].sourceConsumerBindings,undefined);
+  assert.deepEqual(latest.assets[0].consumerGameIds,['historical']);
+  assert.ok(removed.sourceConsumerRelations.some(row=>row.classification==='STALE_SOURCE_BINDING'));
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('asset gallery separates source connections, historical declarations, and runtime proof',()=>{
+ const source=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(source,/sourceBoundConsumerGameIds/);
+ assert.match(source,/sourceConsumerBindings/);
+ assert.match(source,/실제 연결 근거:/);
+ assert.match(source,/연결만으로 실행검증을 인정하지 않음/);
+ assert.match(source,/실제 연결 미확인/);
+});
+
+test('game scoped consumer refresh preserves evidence for unaffected games',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-scoped-consumers-'));
+ try{
+  const asset=path.join(root,'assets','shared','wolf.fbx');
+  fs.mkdirSync(path.dirname(asset),{recursive:true});
+  fs.writeFileSync(asset,'canonical native source');
+  for(const id of ['a','b']){
+   const folder=path.join(root,'web-games',id);
+   fs.mkdirSync(folder,{recursive:true});
+   fs.writeFileSync(path.join(folder,'index.html'),
+    '<script>const files={wolf:"../../assets/shared/wolf.fbx"};Promise.all(Object.entries(files).map(([name,url])=>loader.loadAsync(url)))</script>');
+  }
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+   games:['a','b'].map(id=>({id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))
+  }));
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+   version:1,assets:[{id:'wolf',family:'CREATURE',path:'assets/shared/wolf.fbx',license:'CC0',
+    productionVerified:false}],externalSources:[]
+  }));
+  const full=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(full.persisted,true);
+  assert.deepEqual(full.registry.assets[0].sourceBoundConsumerGameIds,['a','b']);
+  fs.writeFileSync(path.join(root,'web-games','a','index.html'),'<script>const unrelated=1</script>');
+  const scoped=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true,consumerGameIds:['a']});
+  assert.equal(scoped.persisted,true);
+  const latest=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.deepEqual(latest.assets[0].sourceBoundConsumerGameIds,['b'],'unaffected game connection retained');
+  assert.deepEqual(latest.assets[0].sourceConsumerBindings.map(x=>x.gameId),['b']);
+  assert.equal(scoped.sourceConsumerRelations.some(row=>row.gameId==='b'
+    &&row.classification==='STALE_SOURCE_BINDING'),false,'unscanned game must not be reported stale');
+  assert.equal(latest.assets[0].productionVerified,false);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('web source consumer recognizes loaded model file tables but rejects mere catalogs',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-loaded-files-'));
+ try{
+  const model=path.join(root,'assets','shared','wolf.fbx');
+  const gameDir=path.join(root,'web-games','party-rpg');
+  fs.mkdirSync(path.dirname(model),{recursive:true});
+  fs.mkdirSync(gameDir,{recursive:true});
+  fs.writeFileSync(model,'model native bytes');
+  const entry=path.join(gameDir,'index.html');
+  const registry={assets:[{id:'wolf',family:'CREATURE',license:'CC0',
+    path:'assets/shared/wolf.fbx',productionVerified:false}]};
+  const gameCatalog={games:[{id:'party-rpg',lifecycleState:'ACTIVE',
+    productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(gameCatalog));
+  fs.writeFileSync(entry,
+   '<script>const files={wolf:"../../assets/shared/wolf.fbx"};Promise.all(Object.entries(files).map(([id,url])=>loader.loadAsync(url)))</script>');
+  const used=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['party-rpg']});
+  assert.deepEqual(used.sourceConsumerRegistry.assets[0].sourceBoundConsumerGameIds,['party-rpg']);
+  assert.equal(used.sourceConsumerBindings[0].evidenceFiles[0],'web-games/party-rpg/index.html');
+  assert.equal(used.sourceConsumerBindings[0].runtimeVerified,false);
+  fs.writeFileSync(entry,'<script>const files={wolf:"../../assets/shared/wolf.fbx"};</script>');
+  const unused=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['party-rpg']});
+  assert.equal(unused.sourceConsumerBindings.length,0,'unconsumed file table is not an applied asset');
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

@@ -1447,7 +1447,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
-  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map();
+  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map(),currentRolesByFamily=new Map(),unclassifiedNativeByFamily=new Map();
   let intendedOnlyCount=0;
   // [다운로드 원본 우선] 역할·권리·플랫폼 필터를 통과한 확보 원본을 우선한다.
   // 출처 URL과 해시 외에 실제 파일이 없는 카탈로그 메타데이터는 우선하지 않는다.
@@ -1501,6 +1501,16 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       currentAssetIds.add(assetId);
       if(family){
         currentFamilyCounts.set(family,(currentFamilyCounts.get(family)||0)+1);
+        const known=currentRolesByFamily.get(family)||new Set();
+        for(const role of roleFit.matchedRoles)known.add(role);
+        currentRolesByFamily.set(family,known);
+        // 기존 실물 3D지만 역할 명칭이 없는 모델은 먼저 내용 검사를 요청한다.
+        // 단일 역할을 바로 외부 후보로 대체하지 않으며 적용 PASS도 주장하지 않는다.
+        if(spatialFamilies.has(family)&&!roleFit.matchedRoles.length
+          &&!clean(asset.role||asset.subfamily||asset.speciesId)
+          &&/\.(?:glb|gltf|fbx|obj)$/i.test(clean(asset.masterGlb||asset.path))){
+          unclassifiedNativeByFamily.set(family,true);
+        }
         const primary=currentPrimaryByFamily.get(family);
         if(!primary||assetId.localeCompare(clean(primary.id))<0)currentPrimaryByFamily.set(family,asset);
       }
@@ -1514,7 +1524,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const roleIndex=reusableByFamilyRole.get(family)||new Map();
       const originalIdentity=acquiredOriginal(asset)?unique([asset.title,asset.name]
         .map(value=>clean(value).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_').replace(/^_+|_+$/g,''))):[];
-      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory,...originalIdentity])
+      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory,...originalIdentity,...roleFit.matchedRoles])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))){
         const candidates=roleIndex.get(role)||[];
         candidates.push(asset);
@@ -1539,7 +1549,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const actions=[],actionKeys=new Set();
   const pushAction=row=>{
     const action=ASSET_SUPPLY_DECISIONS.includes(row.action)?row.action:'HOLD';
-    const key=[action,row.assetId||'',row.family||'',row.reason||''].join('|');
+    // 역할별 부족분은 같은 family/reason이어도 서로 다른 실제 제작 수요다.
+    const key=[action,row.assetId||'',row.family||'',row.reason||'',row.requestedRole||''].join('|');
     if(actionKeys.has(key))return;actionKeys.add(key);
     // [라이브러리 재사용] 기존 선택 자산을 버리지 않고 검증 가능한 원본만 파생 제작 후보로 연결한다.
     // 선택·재질 조정 계획은 실제 파일 제작이나 런타임 승격을 의미하지 않는다.
@@ -1610,13 +1621,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   // 기존 소스 바인딩을 즉시 덮어쓰지 않고, 기존 제작 책임에서 요청형 취득/플랫폼 검증을 수행한다.
   const planOriginalAcquisition=(family,roles,reason='',previousAssetId='')=>{
     if(!id)return false;
-    const externalCandidates=externalSourceCandidatesFor(family,roles);
+    // 같은 family의 다른 몬스터/장비를 정확한 역할의 확보 원본인 것처럼 선택하지 않는다.
+    // 가족 단위 최초 수급은 기존 source inspection 정책을 유지한다.
+    const missingRole=reason==='CURRENT_GAME_MISSING_ROLE_CC0_SOURCE'?clean(roles[0]):'';
+    const externalCandidates=externalSourceCandidatesFor(family,roles).filter(row=>
+      !missingRole||row.matchedRoles.includes(missingRole));
     if(!externalCandidates.length)return false;
     if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
           action:'ACQUIRE_ADAPT',assetId:null,family,
+          requestedRole:missingRole||null,
           reason:reason||'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
           replacesCandidateAssetId:clean(previousAssetId)||null,
           gameSourceComparisonRequired:true,
@@ -1667,8 +1683,48 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         });
     return true;
   };
+  // [게임별 역할 수급] 같은 자산군이 쓰인다고 다른 적·장비·기능 역할까지 충족됐다고 보지 않는다.
+  // 소스 바인딩을 실제 제작 또는 런타임 PASS로 승격하지 않고 부족한 역할만 재사용/수급 대상으로 만든다.
+  const roleGaps=[];
   for(const family of requiredFamilies){
     const usedCount=currentFamilyCounts.get(family)||0;
+    const requestedRoles=requestedRolesByFamily.get(family)||[];
+    const coveredRoles=currentRolesByFamily.get(family)||new Set();
+    const missingRoles=requestedRoles.filter(role=>role!=='generic'&&!coveredRoles.has(role));
+    const needsNativeRoleInspection=usedCount>0&&requestedRoles.length===1
+      &&unclassifiedNativeByFamily.get(family)===true;
+    if(missingRoles.length)roleGaps.push(Object.freeze({
+      family,requestedRoles:freezeList(requestedRoles),coveredRoles:freezeList([...coveredRoles].sort()),
+      missingRoles:freezeList(missingRoles),nativeRoleInspectionPending:needsNativeRoleInspection,
+      sourceConnectionIsNotRuntimeProof:true
+    }));
+    if(usedCount&&missingRoles.length&&!needsNativeRoleInspection){
+      for(const role of missingRoles){
+        // 기존 회사 에셋 중 정확히 일치하는 역할을 먼저 비교하며 타 종족 치환은 금지한다.
+        let reusable=null;
+        // 기존 원장 단일 순회에서 미리 구축한 family/role 색인만 읽는다.
+        for(const asset of reusableByFamilyRole.get(family)?.get(role)||[]){
+          if(currentAssetIds.has(clean(asset.id)))continue;
+          if(betterReusable(asset,reusable))reusable=asset;
+        }
+        if(reusable){
+          pushAction({
+            action:'ADAPT',assetId:clean(reusable.id),family,requestedRole:role,
+            reason:'CURRENT_GAME_MISSING_ROLE_REUSE',
+            roleEvidence:roleEvidenceById.get(clean(reusable.id)),
+            gameSourceComparisonRequired:true,
+            currentGameBalanceAndSavePreserved:true,runtimeVerificationGranted:false
+          });
+        }else if(!planOriginalAcquisition(family,[role],'CURRENT_GAME_MISSING_ROLE_CC0_SOURCE','')){
+          pushAction({
+            action:'HOLD',assetId:null,family,requestedRole:role,
+            reason:'CURRENT_GAME_MISSING_ROLE_UNRESOLVED',
+            roleEvidence:freeze({requestedRoles:freezeList([role]),matchedRoles:freezeList([]),verifiedRoleMatch:false}),
+            gameSourceComparisonRequired:true,runtimeVerificationGranted:false
+          });
+        }
+      }
+    }
     if(usedCount){
       // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
       // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
@@ -1677,7 +1733,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const currentIsDownloadedOriginal=acquiredOriginal(currentAsset);
       const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
-      if(!currentIsDownloadedOriginal){
+      if(!currentIsDownloadedOriginal&&!missingRoles.length){
         planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
       }
       // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
@@ -1773,6 +1829,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     intendedOnly:intendedOnlyCount,
     requiredFamilies:Object.freeze(requiredFamilies),
     families:Object.freeze(families),
+    roleGaps:Object.freeze(roleGaps),
+    missingRoleCount:roleGaps.reduce((sum,row)=>sum+row.missingRoles.length,0),
+    existingGameRoleCoverageIndependentByFamily:true,
+    missingRolesNeverClaimRuntimeVerified:true,
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
@@ -1932,7 +1992,12 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         for(const match of pathUsageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           if(webConsumer){
             const before=pathUsageSource.slice(Math.max(0,match.index-120),match.index);
-            if(!/\b(?:src|href|poster|url|load|loadAsync|fetch|import|texture|textures|tex|sprite|sprites|image|images|img|icon|icons|model|models|frame|frames|asset|assets|glb|surfaceTexture|background|font|audio|sound|effect|vfx)\b/i.test(before))continue;
+            // 파일 테이블 별칭은 실제 로더 순회가 있어야만 소스 사용으로 인정한다.
+            // 목록 선언 하나만으로 미사용 에셋을 게임 연결 완료로 계산하지 않는다.
+            const loadedFileTable=/\b(?:const|let)\s+files\s*=\s*\{[^{}]{0,120}$/i.test(before)
+              &&/\bObject\.entries\(files\)/.test(pathUsageSource)
+              &&/\.loadAsync\s*\(/.test(pathUsageSource);
+            if(!loadedFileTable&&!/\b(?:src|href|poster|url|load|loadAsync|fetch|import|texture|textures|tex|sprite|sprites|image|images|img|icon|icons|model|models|frame|frames|asset|assets|glb|surfaceTexture|background|font|audio|sound|effect|vfx)\b/i.test(before))continue;
           }
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }
@@ -2140,7 +2205,8 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       relationGames.add(gameId);
     }
     for(const gameId of previousDynamicByAsset.get(clean(asset.id))||[]){
-      if(currentBoundGames.has(gameId))continue;
+      // 이번에 검사하지 않은 게임은 오래된 연결로 판정하거나 삭제하지 않는다.
+      if(!consumerSummaryByGameId.has(gameId)||currentBoundGames.has(gameId))continue;
       relations.push(Object.freeze({
         assetId:clean(asset.id),gameId,family,classification:'STALE_SOURCE_BINDING',
         mode:'STALE_SOURCE_BINDING',bindingMode:'STALE_SOURCE_BINDING',
@@ -2444,7 +2510,29 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     scanScope:consumerGameScope?'REQUESTED_GAME_IDS':'ALL_ELIGIBLE_GAMES',
     requestedGameIds:freezeList(consumerGameScope?[...consumerGameScope].sort():[])
   });
-  // source-bound 소비자는 현재 소스의 동적 overlay다. canonical library version/fingerprint는 바꾸지 않는다.
+  // [중앙 실제 사용처 자동 갱신] 소스 연결은 실행검증이나 원본/파생본 교체를 뜻하지 않는다.
+  // 게임별 한방패치는 해당 게임의 바인딩만 갱신하고 다른 게임의 확인된 연결을 보존한다.
+  if(!consumerGameScope)next.assets=consumerSync.registry.assets;
+  else{
+    const scannedGameIds=new Set(sourceConsumerSync.gameSummaries.map(game=>game.gameId));
+    const scopedAssets=new Map(consumerSync.registry.assets.map(asset=>[clean(asset.id),asset]));
+    for(const asset of next.assets){
+      const oldBindings=(asset.sourceConsumerBindings||[]).filter(binding=>!scannedGameIds.has(binding.gameId));
+      const newBindings=(scopedAssets.get(clean(asset.id))?.sourceConsumerBindings||[]);
+      const combined=[...oldBindings,...newBindings].sort((a,b)=>
+        a.gameId.localeCompare(b.gameId)||a.mode.localeCompare(b.mode));
+      if(combined.length){
+        asset.sourceConsumerBindings=combined;
+        asset.sourceBoundConsumerGameIds=unique(combined.map(row=>row.gameId)).sort();
+        asset.sourceConsumerState=combined.some(row=>row.runtimeVerified===true)
+          ?'RUNTIME_VERIFIED_CONSUMER':'ACTUAL_SOURCE_BOUND';
+      }else if(scannedGameIds.size){
+        delete asset.sourceConsumerBindings;
+        delete asset.sourceBoundConsumerGameIds;
+        delete asset.sourceConsumerState;
+      }
+    }
+  }
   const qualityInputs=new Map();
   const planningAssets=next.assets.map(asset=>{
     const evidenceRef=clean(asset.internalAuditEvidenceRef);
@@ -2724,7 +2812,16 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     'internalAssetStandard',
     'npcRoleProduction'
   ];
-  const catalogAssetsChanged=beforePracticeRemoval!==next.assets.length||organizationAssetsChanged||syncRows.some(row=>row.changed===true);
+  const consumerFields=['sourceBoundConsumerGameIds','sourceConsumerBindings','sourceConsumerState'];
+  const previousAssets=new Map((original.assets||[]).map(asset=>[clean(asset.id),asset]));
+  // [변경 영향] 바인딩·근거가 실제로 달라졌을 때만 assets 버전을 갱신한다.
+  // 불변 조회나 선택적 게임 스캔은 파일 쓰기·버전 증가를 일으키지 않는다.
+  const consumerBindingsChanged=next.assets.some(asset=>{
+    const previous=previousAssets.get(clean(asset.id))||{};
+    return consumerFields.some(field=>JSON.stringify(previous[field]??null)!==JSON.stringify(asset[field]??null));
+  });
+  const catalogAssetsChanged=beforePracticeRemoval!==next.assets.length||organizationAssetsChanged||syncRows.some(row=>row.changed===true)
+    ||consumerBindingsChanged;
   const changedSections=mutableSections.filter(key=>
     key==='assets'
       ?catalogAssetsChanged
