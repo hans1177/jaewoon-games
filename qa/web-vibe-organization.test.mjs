@@ -52,11 +52,17 @@ test('WEB queue rejects all native, forged identity and path escape entries',()=
   }
   assert.throws(()=>ingestWebVibeTask({task:{...task,platform:'unity'},queue:q,catalog:f.catalog,status:f.status,repoRoot:f.root}));
 });
-test('WEB workflow never enters the native Vibe2 queue/worker and does not invent deployment success',()=>{
-  const bridge=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
-  assert.match(bridge,/WEB_VIBE_BRANCH: web-vibe-control/);
-  assert.match(bridge,/\.web-vibe\/queue\.json/);
-  assert.match(bridge,/tools\/web-vibe-organization\.mjs/);
-  assert.doesNotMatch(bridge,/vibe2-continuous-core\.yml|vibe2-unreal-core|\.vibe2\/queue\.json|storage-unpack|storage-pack|jaewoon-unity/);
-  assert.match(bridge,/WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED/);
+test('local WEB queue is independent while GitHub runs cloud development as before',()=>{
+  const workflow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  const local=workflow.slice(workflow.indexOf('  bridge:'),workflow.indexOf('  github-cloud:'));
+  const cloud=workflow.slice(workflow.indexOf('  github-cloud:'));
+  assert.ok(workflow.includes('WEB_VIBE_BRANCH: web-vibe-control'));
+  assert.ok(local.includes('.web-vibe/queue.json'));
+  assert.ok(local.includes('tools/web-vibe-organization.mjs'));
+  assert.ok(local.includes('WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED'));
+  assert.ok(!local.includes('vibe2-continuous-core.yml'));
+  assert.ok(!local.includes('.vibe2/queue.json'));
+  assert.ok(cloud.includes('VIBE2_BRANCH: vibe2-unreal-core'));
+  assert.ok(cloud.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert.ok(!cloud.includes('.web-vibe/queue.json'));
 });

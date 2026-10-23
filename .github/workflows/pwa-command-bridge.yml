@@ -27,21 +27,23 @@ permissions:
 concurrency:
   # Every explicitly submitted owner task must retain its own queued run.
   # Periodic PWA polling keeps its original single-run coalescing boundary.
-  # Queue writes use the existing exact-task dedupe and optimistic branch-push retries.
+  # Cloud PWA and local WEB Vibe keep independent state and identities.
   group: ${{ (github.event_name == 'repository_dispatch' || github.event_name == 'issue_comment') && format('pwa-command-bridge-owner-{0}', github.run_id) || 'pwa-command-bridge' }}
   cancel-in-progress: false
 
 env:
   COMPANY_BRIDGE_URL: https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-bridge
   WEB_VIBE_BRANCH: web-vibe-control
+  # Github cloud development has its own original queue and worker route.
 
 jobs:
   bridge:
-    # Web owner instructions use only the cloud Web source route. No Unity/Roblox runner is dispatched.
-    # Keep the existing owner identity checks even when the local PC is unavailable.
+    # Local WEB Vibe uses its own queue and never dispatches native/cloud worker jobs.
+    # Keep exact owner identity checks; this independent local route does not require cloud Vibe2.
     if: >-
-      github.event_name != 'issue_comment' ||
-      (github.repository == 'hans1177/jaewoon-games' &&
+      github.event_name == 'repository_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+       github.repository == 'hans1177/jaewoon-games' &&
        github.actor == 'hans1177' &&
        github.event.sender.login == 'hans1177' &&
        github.event.comment.user.login == 'hans1177' &&
@@ -62,58 +64,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Validate PWA bridge contract
+      - name: Validate local WEB-only bridge contract
         run: |
           set -euo pipefail
           node --check tools/pwa-command-vibe2-task.mjs
           node --test qa/pwa-command-vibe2-task.test.mjs qa/web-vibe-organization.test.mjs
-
-      - name: Get short-lived GitHub OIDC token
-        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
-        shell: bash
-        run: |
-          set -euo pipefail
-          sep='?'
-          [[ "$ACTIONS_ID_TOKEN_REQUEST_URL" == *'?'* ]] && sep='&'
-          token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}${sep}audience=jaewoon-company" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>process.stdout.write(JSON.parse(s).value||''))")"
-          test -n "$token"
-          echo "::add-mask::$token"
-          echo "COMPANY_OIDC_TOKEN=$token" >> "$GITHUB_ENV"
-
-      - name: Sync independent WEB Vibe task states to PWA chat
-        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch origin "$WEB_VIBE_BRANCH" --quiet
-          git show "origin/$WEB_VIBE_BRANCH:.web-vibe/queue.json" > /tmp/web-vibe-queue.json
-          node tools/web-vibe-organization.mjs sync --queue=/tmp/web-vibe-queue.json --output=/tmp/pwa-sync.json
-          curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
-            -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
-            -H 'Content-Type: application/json' \
-            --data-binary @/tmp/pwa-sync.json > /tmp/pwa-sync-result.json
-          cat /tmp/pwa-sync-result.json
-
-      - name: Claim next PWA owner instruction
-        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
-        id: next
-        shell: bash
-        run: |
-          set -euo pipefail
-          printf '{"action":"next"}\n' > /tmp/pwa-next-request.json
-          curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
-            -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
-            -H 'Content-Type: application/json' \
-            --data-binary @/tmp/pwa-next-request.json > /tmp/pwa-next.json
-          node <<'NODE'
-          const fs=require('fs');
-          const data=JSON.parse(fs.readFileSync('/tmp/pwa-next.json','utf8'));
-          if(data.ok!==true)throw new Error(data.error||'PWA bridge returned failure');
-          const out=process.env.GITHUB_OUTPUT;
-          fs.appendFileSync(out,`has_work=${data.task?'true':'false'}\n`);
-          fs.appendFileSync(out,`task_id=${data.task?.id||''}\n`);
-          console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
-          NODE
 
       - name: Receive GitHub-authenticated local web owner directive
         if: github.event_name == 'repository_dispatch' || github.event_name == 'issue_comment'
@@ -134,10 +89,10 @@ jobs:
           NODE
 
       - name: Add owner instruction to independent WEB Vibe queue
-        if: steps.next.outputs.has_work == 'true' || steps.local.outputs.has_work == 'true'
+        if: steps.local.outputs.has_work == 'true'
         id: ingest
         env:
-          TASK_ID: ${{ steps.next.outputs.task_id || steps.local.outputs.task_id }}
+          TASK_ID: ${{ steps.local.outputs.task_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -198,3 +153,147 @@ jobs:
           echo 'WEB_VIBE_ENGINE=WEB_VIBE_1'
           echo 'WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED'
           echo 'WEB_VIBE_PUBLICATION=NOT_VERIFIED'
+
+  github-cloud:
+    # Web owner instructions use only the cloud Web source route. No Unity/Roblox runner is dispatched.
+    # Keep the existing owner identity checks even when the local PC is unavailable.
+    if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
+    env:
+      VIBE2_BRANCH: vibe2-unreal-core
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate GitHub cloud PWA bridge contract
+        run: |
+          set -euo pipefail
+          node --check tools/pwa-command-vibe2-task.mjs
+          node --test qa/pwa-command-vibe2-task.test.mjs
+
+      - name: Get short-lived GitHub OIDC token
+        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sep='?'
+          [[ "$ACTIONS_ID_TOKEN_REQUEST_URL" == *'?'* ]] && sep='&'
+          token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}${sep}audience=jaewoon-company" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>process.stdout.write(JSON.parse(s).value||''))")"
+          test -n "$token"
+          echo "::add-mask::$token"
+          echo "COMPANY_OIDC_TOKEN=$token" >> "$GITHUB_ENV"
+
+      - name: Sync existing Vibe2 task states to PWA chat
+        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$VIBE2_BRANCH" --quiet
+          git show "origin/$VIBE2_BRANCH:.vibe2/queue.json" > /tmp/vibe2-queue.json || printf '{"version":3,"tasks":[]}\n' > /tmp/vibe2-queue.json
+          node tools/pwa-command-vibe2-task.mjs sync --queue=/tmp/vibe2-queue.json --output=/tmp/pwa-sync.json
+          curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
+            -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
+            -H 'Content-Type: application/json' \
+            --data-binary @/tmp/pwa-sync.json > /tmp/pwa-sync-result.json
+          cat /tmp/pwa-sync-result.json
+
+      - name: Claim next PWA owner instruction
+        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
+        id: next
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '{"action":"next"}\n' > /tmp/pwa-next-request.json
+          curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
+            -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
+            -H 'Content-Type: application/json' \
+            --data-binary @/tmp/pwa-next-request.json > /tmp/pwa-next.json
+          node <<'NODE'
+          const fs=require('fs');
+          const data=JSON.parse(fs.readFileSync('/tmp/pwa-next.json','utf8'));
+          if(data.ok!==true)throw new Error(data.error||'PWA bridge returned failure');
+          const out=process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(out,`has_work=${data.task?'true':'false'}\n`);
+          fs.appendFileSync(out,`task_id=${data.task?.id||''}\n`);
+          console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
+          NODE
+
+      - name: Add owner instruction to Vibe2 control queue
+        if: steps.next.outputs.has_work == 'true'
+        id: ingest
+        env:
+          TASK_ID: ${{ steps.next.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-pwa-vibe-bridge'
+          git config user.email 'pwa-vibe-bridge@users.noreply.github.com'
+          success=0
+          for attempt in 1 2 3; do
+            git fetch origin "$VIBE2_BRANCH" main --quiet
+            work="/tmp/pwa-vibe2-${GITHUB_RUN_ID}-${attempt}"
+            rm -rf "$work"
+            git worktree prune
+            git worktree add --detach "$work" "origin/$VIBE2_BRANCH" >/dev/null
+            node tools/vibe2-queue-control.mjs storage-unpack --queue="$work/.vibe2/queue.json"
+            if ! node "$GITHUB_WORKSPACE/tools/pwa-command-vibe2-task.mjs" ingest \
+              --task=/tmp/pwa-next.json \
+              --queue="$work/.vibe2/queue.json" \
+              --catalog="$GITHUB_WORKSPACE/game-catalog.json" \
+              --status="$GITHUB_WORKSPACE/company-status.json" \
+              --root="$GITHUB_WORKSPACE" \
+              --output="$work/.vibe2/queue.json"; then
+              git worktree remove --force "$work" >/dev/null 2>&1 || true
+              break
+            fi
+            cd "$work"
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
+            git add .vibe2/queue.json
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
+            if git diff --cached --quiet; then
+              success=1
+            else
+              git commit -m "vibe2: enqueue PWA owner directive ${TASK_ID} [skip ci]"
+              if git push origin "HEAD:$VIBE2_BRANCH"; then success=1; fi
+            fi
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force "$work" >/dev/null 2>&1 || true
+            [ "$success" = 1 ] && break
+            sleep $((attempt * 2))
+          done
+          if [ "$success" != 1 ]; then
+            if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ] || [ "$GITHUB_EVENT_NAME" = 'issue_comment' ]; then
+              echo 'LOCAL_WEB_OWNER_DIRECTIVE_QUEUE_INGEST=FAIL' >&2
+              exit 1
+            fi
+            printf '{"action":"sync","updates":[{"taskId":"%s","status":"needs_input","blocker":"Vibe2 큐 연결 실패. 다음 브리지 실행에서 다시 확인 필요."}]}\n' "$TASK_ID" > /tmp/pwa-ingest-fail.json
+            curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
+              -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
+              -H 'Content-Type: application/json' \
+              --data-binary @/tmp/pwa-ingest-fail.json || true
+            exit 1
+          fi
+          echo 'queued=true' >> "$GITHUB_OUTPUT"
+          echo 'PWA_VIBE_QUEUE_WRITE=PASS'
+
+      - name: Start owner development directly in existing Vibe2 worker
+        if: steps.ingest.outputs.queued == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Owner ingress bypasses the periodic auto-planner, not source/security/release guards.
+          # The existing main deployment publishes first and validates the public route afterwards.
+          gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary
+          echo 'PWA_OWNER_GAME_DIRECT_DISPATCH=PASS'
+          echo 'PWA_OWNER_POST_PUBLISH_QA=EXISTING_MAIN_RELEASE_PIPELINE'
