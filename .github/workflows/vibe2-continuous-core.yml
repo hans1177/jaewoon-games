@@ -1179,9 +1179,12 @@ jobs:
                 echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_ACTIVE_OR_UNKNOWN=$superseded_run_id"
                 continue
               fi
-              result_artifacts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || true)"
-              if [ "$result_artifacts" != '0' ]; then
-                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_RESULT_OR_UNKNOWN=$superseded_run_id:${result_artifacts:-UNKNOWN}"
+              if ! result_artifacts="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/artifacts?per_page=100" --jq '.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-"))) | .name' 2>/dev/null)"; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_RESULT_OR_UNKNOWN=$superseded_run_id:PROBE_FAILED"
+                continue
+              fi
+              if [ -n "$result_artifacts" ]; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_RESULT_OR_UNKNOWN=$superseded_run_id:IMMUTABLE_RESULTS_PRESENT"
                 continue
               fi
               if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/cancel" >/dev/null 2>&1; then
