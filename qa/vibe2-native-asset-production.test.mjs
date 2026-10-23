@@ -5336,3 +5336,43 @@ test('registered CC0 native sources retain verifiable official rights URLs and h
   }
   assert.ok(registry.version>=141);
 });
+
+// [게임별 역할별 수급 회귀] 한 종류의 몬스터를 사용해도 다른 종류의 요구가 충족된 것은 아니다.
+test('active game missing individual creature roles reuses matching CC0 and sources only remaining gaps',()=>{
+ const wolf={id:'company-wolf',family:'CREATURE',role:'wolf',license:'CC0-1.0',
+  platform:'SHARED_MASTER',path:'assets/shared/forest/wolf.glb',sourceHash:'a'.repeat(64),
+  status:'REPO_ASSET',consumerGameIds:['forest-demo'],productionVerified:false};
+ const spider={id:'company-spider',family:'CREATURE',role:'spider',license:'CC0-1.0',
+  platform:'SHARED_MASTER',path:'assets/shared/forest/spider.glb',sourceHash:'b'.repeat(64),
+  status:'REPO_ASSET',consumerGameIds:[],productionVerified:false};
+ const dragon={id:'cc0-dragon-original',name:'Dragon Model',category:'CREATURE',
+  status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0-1.0',
+  sourceUrl:'https://kenney.nl/assets/dragon',licenseEvidenceUrl:'https://kenney.nl/assets/dragon',
+  verifiedAt:'2026-10-23',platformTargets:['WEB'],automaticAcquisitionWhenSelected:true,
+  commercialUseAllowed:true,derivativesAllowed:true,capabilities:['dragon','glb']};
+ const inputs={gameId:'forest-demo',target:'web',request:'wolf spider dragon',
+  requirements:[{family:'CREATURE',role:'wolf'},{family:'CREATURE',role:'spider'},{family:'CREATURE',role:'dragon'}]};
+ const result=buildAssetSupplyDecisionSummary({...inputs,
+  registry:{assets:[wolf,spider],externalSources:[dragon]}});
+ assert.equal(result.currentConsumers,1);
+ assert.equal(result.missingRoleCount,2);
+ assert.deepEqual(result.roleGaps[0].missingRoles,['spider','dragon']);
+ const spiderAction=result.nextActions.find(row=>row.reason==='CURRENT_GAME_MISSING_ROLE_REUSE');
+ assert.equal(spiderAction.assetId,spider.id);
+ assert.equal(spiderAction.requestedRole,'spider');
+ assert.equal(spiderAction.action,'ADAPT');
+ assert.equal(spiderAction.assetization.productionVerified,false);
+ const dragonAction=result.nextActions.find(row=>row.reason==='CURRENT_GAME_MISSING_ROLE_CC0_SOURCE');
+ assert.equal(dragonAction.action,'ACQUIRE_ADAPT');
+ assert.equal(dragonAction.externalAcquisition.sourceId,dragon.id);
+ assert.equal(dragonAction.externalAcquisition.onDemandOnly,true);
+ assert.equal(result.runtimeVerificationGranted,false);
+ assert.equal(result.productionVerificationGranted,false);
+ const blocked=buildAssetSupplyDecisionSummary({...inputs,
+  registry:{assets:[wolf,spider],externalSources:[{...dragon,license:'CC-BY'}]}});
+ assert.equal(blocked.selectedOnDemandExternalGapCount,0);
+ assert.ok(blocked.nextActions.some(row=>row.action==='HOLD'
+  &&row.requestedRole==='dragon'&&row.reason==='CURRENT_GAME_MISSING_ROLE_UNRESOLVED'));
+ assert.ok(blocked.nextActions.some(row=>row.requestedRole==='spider'
+  &&row.reason==='CURRENT_GAME_MISSING_ROLE_REUSE'));
+});
