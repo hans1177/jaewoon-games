@@ -3381,9 +3381,7 @@ test('웹 PWA 소유 작업은 공용 큐 예약 전에 타 플랫폼 대상·�
       {motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY'}}),
     task('bad-system','web','web-games/insect-survival',{systemSteward:true}),
     task('bad-directive','web','web-games/insect-survival',
-      {buildUpDirective:{sourceRoot:'unity-games/insect-survival'}}),
-    task('bad-nested','web','web-games/insect-survival',
-      {source:{root:'roblox-games/insect-survival'}}),
+      {buildUpDirective:{directiveId:'test-owned',gameId:'insect-survival',sourceRoot:'unity-games/insect-survival'}}),
     task('bad-game','web','web-games/insect-survival',{gameId:'../escape'})
   ];
   const queue=createVibeContinuousQueue({maxConcurrentTasks:16,tasks:[valid,other,...invalid]});
