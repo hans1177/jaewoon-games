@@ -152,12 +152,13 @@ test('GitHub PWA cloud development and local WEB Vibe run independently',()=>{
   assert.ok(!local.includes('gh workflow run vibe2-continuous-core.yml'));
   assert.ok(!local.includes('.vibe2/queue.json'));
   assert.ok(cloud.includes('VIBE2_BRANCH: vibe2-unreal-core'));
-  assert.ok(cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
-  assert.ok(!local.includes("github.event_name == 'repository_dispatch'"));
+  assert.ok(!cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
+  assert.ok(local.includes("github.event_name == 'repository_dispatch'"));
   assert.ok(cloud.includes("steps.next.outputs.has_work == 'true'"));
   assert.ok(cloud.includes('pwa-command-vibe2-task.mjs" ingest'));
   assert.ok(cloud.includes('gh workflow run vibe2-continuous-core.yml'));
   assert.ok(!cloud.includes('web-vibe-organization.mjs'));
+  assert.ok(cloud.includes("github.event_name != 'repository_dispatch'"));
   const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   const published=pages.indexOf('uses: actions/deploy-pages@v4');
   const live=pages.indexOf('id: director_live_qa');
