@@ -52,6 +52,28 @@ jobs:
             git ls-tree -r --name-only "$AFTER_SHA" -- web-games/ > /tmp/web-edits.txt
           fi
           echo "WEB_ONLY_CHANGED_GAME_FILE_COUNT=$(wc -l < /tmp/web-edits.txt)"
+          # GitHub recognizes pushed/merged local source edits from paths and SHA-256,
+          # without asking any model or native developer to generate further code.
+          : > /tmp/web-changed-content-sha256.txt
+          while IFS= read -r file; do
+            case "$file" in web-games/*) ;; *) echo 'WEB_EDIT_PATH_NOT_WEB' >&2; exit 1 ;; esac
+            if [ -f "$file" ]; then
+              digest="$(sha256sum -- "$file" | cut -d ' ' -f1)"
+            else
+              digest="DELETED"
+            fi
+            printf '%s  %s\n' "$digest" "$file" >> /tmp/web-changed-content-sha256.txt
+          done < /tmp/web-edits.txt
+          echo 'WEB_CHANGED_CONTENT_SHA256_BEGIN'
+          cat /tmp/web-changed-content-sha256.txt
+          echo 'WEB_CHANGED_CONTENT_SHA256_END'
+          {
+            echo '### GitHub recognized WEB source changes'
+            echo 'No code generation or native development was dispatched.'
+            echo '\`\`\`text'
+            cat /tmp/web-changed-content-sha256.txt
+            echo '\`\`\`'
+          } >> "$GITHUB_STEP_SUMMARY"
           # An observed WEB source delta cannot enqueue or dispatch Roblox/Unity work.
           echo 'WEB_EDIT_NATIVE_QUEUE_MUTATION=DENIED'
           echo 'WEB_EDIT_ROBLOX_DISPATCH=DENIED'
