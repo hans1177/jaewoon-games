@@ -62482,10 +62482,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-23T15:00:50.573Z",
+      "updatedAt": "2026-10-23T15:08:38.795Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -63005,20 +63005,635 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-23T15:08:38.795Z",
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-23T14:57:31.304Z",
+        "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
+        "artifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
+            "artifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "gemini-3.5-flash-lite",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All required build evidence parameters indicate successful validation and package passing."
+          }
+        ],
+        "blockers": [],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
+      "robloxFoundationF0Evidence": {
+        "version": 5,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-23T14:57:32.062Z",
+        "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
+        "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
+        "artifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
+        "rebuiltArtifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
+        "artifactRunId": 39967271719,
+        "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
+        "assetSelectionFingerprint": "5817bc182e594ee461261cacbc0339d7faaf0d6c8d953330a307b917d042adbb",
+        "observedAssetSelectionFingerprint": "5817bc182e594ee461261cacbc0339d7faaf0d6c8d953330a307b917d042adbb",
+        "assetLibraryVersion": 141,
+        "observedAssetLibraryVersion": 141,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "EQUIPMENT",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "EQUIPMENT": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.",
+              "capabilities": [
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "색채의 연쇄",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "단서 조합 × 증언과 합의된 현실",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "공간 상태 변환 × 테세우스의 배와 정체성",
+              "capabilities": [
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": false,
+              "signalCount": 0,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": false,
+              "signalCount": 2,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 4,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "1f65c2c37233f614e7eb4f91d8d94c9b54fb4f06c9b7badaa6136ac626680eae",
+          "antiSkeletonPassed": false,
+          "designGenre": "Puzzle",
+          "sourceGenre": "Puzzle",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 5,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-23T14:57:32.062Z",
+        "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
+        "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
+        "artifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
+        "rebuiltArtifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
+        "artifactRunId": 39967271719,
+        "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
+        "assetSelectionFingerprint": "5817bc182e594ee461261cacbc0339d7faaf0d6c8d953330a307b917d042adbb",
+        "observedAssetSelectionFingerprint": "5817bc182e594ee461261cacbc0339d7faaf0d6c8d953330a307b917d042adbb",
+        "assetLibraryVersion": 141,
+        "observedAssetLibraryVersion": 141,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "EQUIPMENT",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "EQUIPMENT": false,
+            "PROGRESSION": false,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "단서 조합: 관찰한 단서의 순서와 의미를 조합하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "공간 상태 변환: 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.",
+              "capabilities": [
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "단서 조합로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "색채의 연쇄",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "단서 조합 × 증언과 합의된 현실",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "공간 상태 변환 × 테세우스의 배와 정체성",
+              "capabilities": [
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": false,
+              "signalCount": 0,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": false,
+              "signalCount": 2,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 4,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "1f65c2c37233f614e7eb4f91d8d94c9b54fb4f06c9b7badaa6136ac626680eae",
+          "antiSkeletonPassed": false,
+          "designGenre": "Puzzle",
+          "sourceGenre": "Puzzle",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -63041,10 +63656,10 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "robloxBuildArtifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
+      "robloxBuildPassedAt": "2026-10-23T15:08:38.795Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -63052,16 +63667,16 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "28df0322a89a0b0d2a00f09b0d4a9009b379ea82",
+      "robloxQualityBuildUpSourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
       "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-puzzle-chromatic-cascade",
-        "sourceRevision": "28df0322a89a0b0d2a00f09b0d4a9009b379ea82",
+        "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:8797015a5fc1df86e64b0bd966c6d17b7afbb7434d6a652859114703f9718596",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39957901022,
-        "testedAt": "2026-10-23T14:08:27.571Z",
+        "workflowRunId": 39967271719,
+        "testedAt": "2026-10-23T15:08:38.795Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -65892,7 +66507,7 @@
       "robloxPublicRelease": false,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "dbfd7acb1da30e46653cf1efc7d30c3b57113e7a",
         "newSourceRevision": "dbfd7acb1da30e46653cf1efc7d30c3b57113e7a",
@@ -85795,7 +86410,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-23T15:08:28.669Z",
+  "updatedAt": "2026-10-23T15:08:38.795Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -85862,5 +86477,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
