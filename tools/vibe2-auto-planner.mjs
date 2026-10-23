@@ -4391,7 +4391,7 @@ export function enqueueOwnerRobloxOnePatch({queue={},catalog={},request={},repoR
   if(!game||canonicalRoot!==sourceRoot||clean(game.lifecycleState).toUpperCase()==='REMOVED')
     fail('CATALOG_ROBLOX_SOURCE_REQUIRED');
   const relative=file.startsWith(sourceRoot+'/')?file.slice(sourceRoot.length+1):file;
-  if(!/^(?:client|server|shared)\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*\.(?:luau|lua)$/.test(relative))
+  if(!/^(?:client|server|shared)\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*\.(?:luau|lua)$/.test(relative))
     fail('NON_ROBLOX_SOURCE_FORBIDDEN');
   const repository=fs.realpathSync(repoRoot);
   const robloxRoot=fs.realpathSync(path.join(repository,'roblox-games'));
