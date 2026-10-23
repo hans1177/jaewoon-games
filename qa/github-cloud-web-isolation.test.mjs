@@ -10,7 +10,8 @@ test('original PWA polling retains its existing cloud queue while local chat use
   assert.ok(cloud.includes("if: github.event_name != 'issue_comment'"));
   assert.ok(!cloud.includes("if [ \"$GITHUB_EVENT_NAME\" = 'repository_dispatch' ]"));
   assert.ok(!cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
-  assert.ok(cloud.includes('validateLocalWebOwnerEvent'));
+  assert.ok(!cloud.includes('validateLocalWebOwnerEvent'));
+  assert.ok(local.includes('validateLocalWebOwnerEvent'));
   assert.ok(cloud.includes('runs-on: ubuntu-latest'));
   assert.ok(cloud.includes('VIBE2_BRANCH: vibe2-unreal-core'));
   assert.ok(cloud.includes('origin/$VIBE2_BRANCH:.vibe2/queue.json'));
