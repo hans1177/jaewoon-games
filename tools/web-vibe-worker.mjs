@@ -117,7 +117,7 @@ function verifiedLocalMain(){
   if(run('git',['rev-parse','HEAD'])!==run('git',['rev-parse','origin/main']))
     fail('WEB_VIBE_MAIN_MUST_BE_FAST_FORWARDED_FIRST');
 }
-async function propose(task,source,fetchImpl=fetch){
+async function propose(task,source,fetchImpl=fetch,previousVerified=[]){
   const excerpt=source.original.slice(0,13500);
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),95000);
   try{
@@ -126,7 +126,11 @@ async function propose(task,source,fetchImpl=fetch){
       body:JSON.stringify({model:MODEL,stream:false,format:'json',options:{temperature:0,num_ctx:8192},
         messages:[
           {role:'system',content:'You are the independent WEB-only coding assistant. Inspect this specific web game file. If no change needed, respond JSON with skip:true and reason; otherwise return one unique bounded oldText/newText replacement for this file. Respond JSON with oldText,newText,reason, or skip:true. Never modify saves, security, deployment, tokens, or unrelated functionality. Do not use commands or tools.'},
-          {role:'user',content:'Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,2000)+'\nExisting source excerpt:\n'+excerpt}
+          {role:'user',content:'Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,2000)+
+            '\nPrior same-game independently merged owner patches (context only; recheck current source):\n'+
+            previousVerified.map(row=>row.id+': '+clean(row.goal).slice(0,300)).join('\n').slice(0,1300)+
+            '\nContinue from current game source and preserve existing mechanics/saves. Do not reset prior build-up or invent verified outcomes.'+
+            '\nExisting source excerpt:\n'+excerpt}
         ]})});
     if(!response.ok)fail('WEB_VIBE_LOCAL_MODEL_HTTP_'+response.status);
     const data=await response.json();
@@ -181,9 +185,15 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
   if(!args.task)fail('WEB_VIBE_TASK_ID_REQUIRED');
   const task=chooseWebVibeTask(state.queue,args.task);
   const sources=resolveWebVibeSources(task.gameId,{files:args.all?'*':args.files||'index.html'});
+  const prior=(task.ownerPatchLineage?.verifiedPredecessors||[])
+    .map(id=>state.queue.tasks.find(row=>row.id===id))
+    .filter(row=>row&&row.status==='merged'&&row.gameId===task.gameId
+      &&row.target==='web'&&row.sourceRoot===task.sourceRoot);
+  if(prior.length!==(task.ownerPatchLineage?.verifiedPredecessors||[]).length)
+    fail('WEB_VIBE_BUILD_UP_HISTORY_NOT_VERIFIED');
   const changed=[];
   for(const source of sources){
-    const edit=await propose(task,source,fetchImpl);
+    const edit=await propose(task,source,fetchImpl,prior);
     if(edit)changed.push({source,edit});
   }
   if(!changed.length)fail('WEB_VIBE_NO_ACTUAL_SOURCE_DELTA');

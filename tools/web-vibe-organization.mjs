@@ -1,4 +1,5 @@
-// WEB_VIBE_1: independent WEB-only owner queue, never backed by Vibe2 global queue.
+// 파일명: tools/web-vibe-organization.mjs
+// WEB_VIBE_1 웹조직 단독 큐. 검증된 같은 게임 이력만 다음 한방패치에 연결.
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -21,6 +22,12 @@ export function assertWebVibeTask(task){
      (task.responsibleFiles||[]).some(f=>!String(f).replaceAll('\\','/').startsWith(root+'/'))||
      (task.evidence||[]).some(e=>/^native-development-enabled|^unity-runner/i.test(clean(e))))
     throw new Error('WEB_VIBE_NATIVE_OR_INVALID_TASK_REJECTED');
+  const lineage=task?.ownerPatchLineage;
+  if(lineage&&(lineage.gameId!==game||lineage.platform!=='WEB'
+    ||lineage.sourceRoot!==root||lineage.authority!=='SAME_GAME_VERIFIED_MERGE_ONLY'
+    ||!Array.isArray(lineage.verifiedPredecessors)||lineage.verifiedPredecessors.length>4
+    ||lineage.verifiedPredecessors.some(id=>!idPattern.test(clean(id))||id===task.id)))
+    throw new Error('WEB_VIBE_LINEAGE_INVALID');
   return task;
 }
 export function assertWebVibeQueue(input){
@@ -28,22 +35,35 @@ export function assertWebVibeQueue(input){
      input.organization!=='WEB'||input.engine!==WEB_VIBE_ENGINE||
      input.platform!=='web'||!Array.isArray(input.tasks)||
      input.tasks.length>5000)throw new Error('WEB_VIBE_QUEUE_OWNERSHIP_INVALID');
-  const seen=new Set();
+  const seen=new Map();
   for(const task of input.tasks){
     assertWebVibeTask(task);
     if(seen.has(task.id))throw new Error('WEB_VIBE_DUPLICATE_TASK_ID');
-    seen.add(task.id);
+    for(const id of task.ownerPatchLineage?.verifiedPredecessors||[]){
+      const previous=seen.get(id);
+      if(!previous||previous.status!=='merged'||previous.gameId!==task.gameId
+        ||previous.sourceRoot!==task.sourceRoot)
+        throw new Error('WEB_VIBE_UNVERIFIED_OR_FOREIGN_LINEAGE');
+    }
+    seen.set(task.id,task);
   }
   return input;
 }
 export function ingestWebVibeTask({task,queue,catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
   const validated=assertWebVibeQueue(queue);
   const old=buildPwaVibeTask(task,{catalog,status,repoRoot,filesystem});
+  const verified=validated.tasks.filter(row=>row.gameId===old.gameId
+    &&row.target==='web'&&row.sourceRoot===old.sourceRoot&&row.status==='merged')
+    .slice(-4).map(row=>row.id);
   const next=assertWebVibeTask({
     id:old.id,gameId:old.gameId,target:'web',sourceRoot:old.sourceRoot,
     goal:clean(task.body),responsibleFiles:[],priority:'owner-immediate',status:'queued',
     ownerDirective:true,
-    evidence:['web-vibe-independent:v1','owner-source-authenticated','qa-required-before-pr-merge']
+    ...(verified.length?{ownerPatchLineage:{gameId:old.gameId,platform:'WEB',
+      sourceRoot:old.sourceRoot,authority:'SAME_GAME_VERIFIED_MERGE_ONLY',
+      verifiedPredecessors:verified}}:{}),
+    evidence:['web-vibe-independent:v1','owner-source-authenticated','qa-required-before-pr-merge',
+      ...(verified.length?['web-onepatch-build-up-carry:verified-only']:[])]
   });
   const current=validated.tasks.find(item=>item.id===next.id);
   if(current){

@@ -83,3 +83,12 @@ test('WEB onepatch requires explicit owner scope, real changes, and retains cano
   assert.match(pages,/actions\/deploy-pages@v4/);
   assert.match(pages,/POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
 });
+
+test('WEB-only next development receives verified past patches as context, not deployment proof',()=>{
+ const source=fs.readFileSync('tools/web-vibe-worker.mjs','utf8');
+ assert.match(source,/prior=\(task\.ownerPatchLineage\?\.verifiedPredecessors/);
+ assert.match(source,/WEB_VIBE_BUILD_UP_HISTORY_NOT_VERIFIED/);
+ assert.match(source,/Continue from current game source and preserve existing mechanics\/saves/);
+ assert.match(source,/previousVerified\.map/);
+ assert.doesNotMatch(source,/roblox-games\/|vibe2-unreal-core|Cloudflare/i);
+});

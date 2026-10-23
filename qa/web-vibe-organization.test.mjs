@@ -66,3 +66,23 @@ test('local WEB queue is independent while GitHub runs cloud development as befo
   assert.ok(cloud.includes('gh workflow run vibe2-continuous-core.yml'));
   assert.ok(!cloud.includes('.web-vibe/queue.json'));
 });
+
+test('WEB build-up carries only same-game merged owner changes without delaying new instructions',t=>{
+  const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
+  const first={id:uuid,game_id:'insect-survival',platform:'web',body:'기존 몬스터 공격 수정'};
+  const q=ingestWebVibeTask({task:first,queue:emptyWebVibeQueue(),catalog:f.catalog,status:f.status,repoRoot:f.root});
+  const second={...first,id:'22222222-3333-4444-8555-666666666666',body:'새 UI 요청'};
+  const ongoing=ingestWebVibeTask({task:second,queue:q,catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(ongoing.tasks[1].status,'queued');
+  assert.equal(ongoing.tasks[1].ownerPatchLineage,undefined,'queued is not a verified predecessor');
+  const verified={...q,tasks:[{...q.tasks[0],status:'merged'}]};
+  const continued=ingestWebVibeTask({task:second,queue:verified,catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.deepEqual(continued.tasks[1].ownerPatchLineage.verifiedPredecessors,[q.tasks[0].id]);
+  assert.equal(continued.tasks[1].priority,'owner-immediate');
+  assert.ok(continued.tasks[1].evidence.includes('web-onepatch-build-up-carry:verified-only'));
+  assert.throws(()=>assertWebVibeQueue({...q,tasks:[
+    q.tasks[0],{...continued.tasks[1],status:'queued'}
+  ]}),/WEB_VIBE_UNVERIFIED_OR_FOREIGN_LINEAGE/);
+  const foreign={...q.tasks[0],id:'pwa-99999999-aaaa-4bbb-8ccc-222222222222',gameId:'other',sourceRoot:'web-games/other',status:'merged'};
+  assert.throws(()=>assertWebVibeQueue({...q,tasks:[foreign,continued.tasks[1]]}),/WEB_VIBE_UNVERIFIED_OR_FOREIGN_LINEAGE/);
+});
