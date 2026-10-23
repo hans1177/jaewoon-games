@@ -9213,7 +9213,7 @@ test('no-model source-grounded new quest recipe enemy and region records preserv
     {...plans[0],record:{...plans[0].record,id:'q1'}},
     {...plans[0],record:{...plans[0].record,script:'unsafe'}},
     {...plans[0],record:{...plans[0].record,title:'<img>'}},
-    {...plans[0],record:{...plans[0].record,objective:'기존 진행'}}
+    {...plans[0],record:{...plans[0].record,title:'원본',objective:'기존 진행'}}
   ]){
     const candidate=deterministicWebInputCandidate({order:{...work,selectedTask:{contentAdditions:[mutation]}},
       sourceRoot,responsibleFiles:['index.html']});
