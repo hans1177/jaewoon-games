@@ -146,7 +146,7 @@ test('owner ingress queues to separate WEB Vibe only, publication QA remains unc
   assert.doesNotMatch(cloud,/needs: local-advisory|needs\.local-advisory/);
   assert.match(cloud,/github\.event\.comment\.author_association == 'OWNER'/);
   assert.match(cloud,/validateLocalWebOwnerEvent/);
-  assert.match(cloud,/WEB_VIBE_BRANCH: web-vibe-control/);
+  assert.match(bridge,/WEB_VIBE_BRANCH: web-vibe-control/);
   assert.match(cloud,/tools\/web-vibe-organization\.mjs/);
   assert.match(cloud,/WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED/);
   assert.doesNotMatch(cloud,/vibe2-continuous-core\.yml|\.vibe2\/queue\.json/);
