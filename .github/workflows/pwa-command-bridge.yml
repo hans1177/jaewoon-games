@@ -41,7 +41,6 @@ jobs:
     # Local WEB Vibe uses its own queue and never dispatches native/cloud worker jobs.
     # Keep exact owner identity checks; this independent local route does not require cloud Vibe2.
     if: >-
-      github.event_name == 'repository_dispatch' ||
       (github.event_name == 'issue_comment' &&
        github.repository == 'hans1177/jaewoon-games' &&
        github.actor == 'hans1177' &&
@@ -71,7 +70,7 @@ jobs:
           node --test qa/pwa-command-vibe2-task.test.mjs qa/web-vibe-organization.test.mjs
 
       - name: Receive GitHub-authenticated local web owner directive
-        if: github.event_name == 'repository_dispatch' || github.event_name == 'issue_comment'
+        if: github.event_name == 'issue_comment'
         id: local
         shell: bash
         run: |
@@ -157,7 +156,7 @@ jobs:
   github-cloud:
     # Web owner instructions use only the cloud Web source route. No Unity/Roblox runner is dispatched.
     # Keep the existing owner identity checks even when the local PC is unavailable.
-    if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
+    if: github.event_name != 'issue_comment'
     env:
       VIBE2_BRANCH: vibe2-unreal-core
     runs-on: ubuntu-latest
@@ -206,18 +205,34 @@ jobs:
             --data-binary @/tmp/pwa-sync.json > /tmp/pwa-sync-result.json
           cat /tmp/pwa-sync-result.json
 
-      - name: Claim next PWA owner instruction
-        if: github.event_name != 'repository_dispatch' && github.event_name != 'issue_comment'
+      - name: Accept owner WEB dispatch or claim next PWA instruction
         id: next
         shell: bash
         run: |
           set -euo pipefail
-          printf '{"action":"next"}\n' > /tmp/pwa-next-request.json
-          curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
-            -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
-            -H 'Content-Type: application/json' \
-            --data-binary @/tmp/pwa-next-request.json > /tmp/pwa-next.json
-          node <<'NODE'
+          if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ]; then
+            # The owner PC does not execute this job; GitHub authenticates the
+            # event and the existing owner validator enforces WEB-only scope.
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {validateLocalWebOwnerEvent} from './tools/pwa-command-vibe2-task.mjs';
+          const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
+          const task=validateLocalWebOwnerEvent(event,{
+            actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY
+          });
+          fs.writeFileSync('/tmp/pwa-next.json',JSON.stringify({task})+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,
+            'has_work=true\n'+'task_id='+task.id+'\n');
+          console.log('OWNER_WEB_CLOUD_INGEST=AUTHORIZED');
+          NODE
+          else
+            # Existing PWA polling and OIDC endpoint are unchanged.
+            printf '{"action":"next"}\n' > /tmp/pwa-next-request.json
+            curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
+              -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
+              -H 'Content-Type: application/json' \
+              --data-binary @/tmp/pwa-next-request.json > /tmp/pwa-next.json
+            node <<'NODE'
           const fs=require('fs');
           const data=JSON.parse(fs.readFileSync('/tmp/pwa-next.json','utf8'));
           if(data.ok!==true)throw new Error(data.error||'PWA bridge returned failure');
@@ -226,6 +241,7 @@ jobs:
           fs.appendFileSync(out,`task_id=${data.task?.id||''}\n`);
           console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
           NODE
+          fi
 
       - name: Add owner instruction to Vibe2 control queue
         if: steps.next.outputs.has_work == 'true'
