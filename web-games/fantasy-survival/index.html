@@ -293,6 +293,8 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
  body[data-hud-hand="left"] .actions{left:max(8px,env(safe-area-inset-left));right:auto}
 }
 @media(prefers-reduced-motion:reduce){.actions>button,.heroPortrait{transition:none}}
+/* 모바일 조작: 전용 공격 버튼 대신 실제 세계 화면을 탭한다. */
+.actions>#attack{display:none!important}
 </style>
 <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head>
@@ -4238,7 +4240,8 @@ function handleWorldTap(e){
     if(dist(wx,wy,STORY_LAB_2.corpse.x,STORY_LAB_2.corpse.y)<75){inspectLabCorpse();return}
    }
  }
- lastWorldTap={target:null,at:0}
+ lastWorldTap={target:null,at:0};
+ if(!isCreative())attack();
 }
 function monsterTargetForIronSpirit(e){
   let best=null,bestD=e.type.detect||860;
@@ -6685,7 +6688,7 @@ function draw(){
  // 메인 화면: 실제 3D가 준비된 경우에만 미니맵 UI를 갱신한다.
  if(world3d?.isActive()){drawMiniMap(now);return}
 }
-function syncRuntimeMeta(){const root=document.body,p=state.player,c=state.camera;if(!root||!p)return;root.dataset.playerX=Number(p.x||0).toFixed(2);root.dataset.playerY=Number(p.y||0).toFixed(2);root.dataset.cameraX=Number(c?.x||0).toFixed(2);root.dataset.cameraY=Number(c?.y||0).toFixed(2);root.dataset.area=String(state.area||'surface');root.dataset.motionState=(state.keys.size||Math.hypot(state.stick.x,state.stick.y)>.01)?'move':'idle';root.dataset.autoGather=state.gathering.auto?'on':'off';root.dataset.autoGatherTarget=state.gathering.target?.kind||'';root.dataset.audioState=!music.enabled?'muted':music.ctx?.state==='running'?'running':music.ctx?.state==='suspended'?'suspended':'idle'}
+function syncRuntimeMeta(){const root=document.body,p=state.player,c=state.camera;if(!root||!p)return;root.dataset.playerX=Number(p.x||0).toFixed(2);root.dataset.playerY=Number(p.y||0).toFixed(2);root.dataset.playerAttackAt=Number(p.attackAt||0).toFixed(0);root.dataset.cameraX=Number(c?.x||0).toFixed(2);root.dataset.cameraY=Number(c?.y||0).toFixed(2);root.dataset.area=String(state.area||'surface');root.dataset.motionState=(state.keys.size||Math.hypot(state.stick.x,state.stick.y)>.01)?'move':'idle';root.dataset.autoGather=state.gathering.auto?'on':'off';root.dataset.autoGatherTarget=state.gathering.target?.kind||'';root.dataset.audioState=!music.enabled?'muted':music.ctx?.state==='running'?'running':music.ctx?.state==='suspended'?'suspended':'idle'}
 function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.min(mobileCanvas?1.5:2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;
  if(gameStarted){
   // 3D 확인 전 시뮬레이션을 진행하지 않아 보이지 않는 전투를 막는다.
@@ -6695,6 +6698,7 @@ function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.mi
     world3d.frame(state,regionAt);
     document.body.dataset.spatialDimension=world3d.isActive()?'3d':('3d-wait-'+world3d.getFallbackReason());
     document.body.dataset.nativeMonsterCoverage=world3d.getUnmappedVisibleMonsterIds().length?'incomplete':'currently-mapped';
+    document.body.dataset.nativeMissingMonsterIds=world3d.getUnmappedVisibleMonsterIds().join(',');
     const nativeDraw=world3d.getRenderStats();
     document.body.dataset.nativeDrawCalls=String(nativeDraw.drawCalls);
     document.body.dataset.nativeTriangles=String(nativeDraw.triangles);
@@ -6838,17 +6842,20 @@ canvas.addEventListener('pointerdown',e=>{if(!gameStarted)return;
  }
  if(state.blueprint||state.creativePlacing){handleWorldTap(e);return}const point=worldPointerCoords(e),wx=point.x,wy=point.y;if(startCommunicationRepairHold(e,wx,wy))return;if(startCompanionSwitchHold(e,wx,wy))return;
  // 몬스터 터치는 손가락을 뗄 때 확정한다. 스와이프 중 실수 공격 방지.
- if(!isCreative()&&combatTapTarget(wx,wy)){
+ // 건축물 길게 누르기(3초)는 계속 pointerdown에서 시작한다.
+ const hit=playerBuildingAt(wx,wy);if(hit&&hit.type!=='wall'&&hit.type!=='door'&&!combatTapTarget(wx,wy)){demolishHold=setTimeout(()=>{demolishHold=null;demolishBuilding(hit)},3000)}
+ if(!isCreative()){
   if(pendingCombatTap)return;
   pendingCombatTap={pointerId:e.pointerId,x:e.clientX,y:e.clientY,at:performance.now(),cancelled:false};
   try{canvas.setPointerCapture(e.pointerId)}catch{}
   return
  }
- const hit=playerBuildingAt(wx,wy);if(hit&&hit.type!=='wall'&&hit.type!=='door'){demolishHold=setTimeout(()=>{demolishHold=null;demolishBuilding(hit)},3000)}handleWorldTap(e)});
+ if(isCreative())handleWorldTap(e)});
 canvas.addEventListener('pointerup',e=>{
  if(pendingCombatTap&&pendingCombatTap.pointerId===e.pointerId){
   const press=pendingCombatTap;pendingCombatTap=null;
   if(isCombatTapGesture(press,e,performance.now()))handleWorldTap(e);
+  if(demolishHold){clearTimeout(demolishHold);demolishHold=null}
   return
  }
  if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId){
