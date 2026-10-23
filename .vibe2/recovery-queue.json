@@ -202808,7 +202808,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-23T14:40:25.262Z"
+      "updatedAt": "2026-10-23T14:46:59.305Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203029,7 +203029,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-23T14:40:25.299Z"
+      "updatedAt": "2026-10-23T14:46:59.333Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237750,7 +237750,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-23T14:40:25.401Z"
+      "updatedAt": "2026-10-23T14:46:59.428Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238567,7 +238567,8 @@
         "actions-run:39968538101",
         "system-ai-handoff-to-reservation:system-ai:39969905786:1",
         "actions-run:39969905786",
-        "system-ai-handoff-to-reservation:system-ai:39971180949:1"
+        "system-ai-handoff-to-reservation:system-ai:39971180949:1",
+        "actions-run:39971180949"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238585,7 +238586,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-23T14:40:25.478Z"
+      "updatedAt": "2026-10-23T14:46:59.511Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -239439,7 +239440,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-23T14:40:25.359Z"
+      "updatedAt": "2026-10-23T14:46:59.403Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -240250,7 +240251,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-23T14:40:25.318Z"
+      "updatedAt": "2026-10-23T14:46:59.370Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -241519,7 +241520,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-23T14:40:25.432Z"
+      "updatedAt": "2026-10-23T14:46:59.457Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -242400,7 +242401,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-23T14:40:25.455Z"
+      "updatedAt": "2026-10-23T14:46:59.483Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
@@ -242695,6 +242696,68 @@
       "maxRetries": null,
       "createdAt": "2026-10-22T04:36:43.448Z",
       "updatedAt": "2026-10-22T04:36:47.602Z"
+    },
+    {
+      "id": "recovery-1f282cdc54c2a587fa47",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/magic-forest-pages.yml:e74cda339809ab3ed0165ea38f3f9aefe5d42cef:fantasy-survival",
+      "gameId": "fantasy-survival",
+      "responsibleFiles": [
+        ".github/workflows/magic-forest-pages.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/magic-forest-pages.yml",
+        "web-games/fantasy-survival"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage UNKNOWN for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_UNKNOWN",
+      "failureSignature": "WORKFLOW_FAILED_UNKNOWN",
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "checkpoint": "e74cda339809ab3ed0165ea38f3f9aefe5d42cef",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "e74cda339809ab3ed0165ea38f3f9aefe5d42cef",
+      "evidence": [
+        "deployment-failure-run:39971600398:1",
+        "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:e74cda339809ab3ed0165ea38f3f9aefe5d42cef",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:UNKNOWN",
+        "deployment-failed-step:UNKNOWN",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/39971600398",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-10-23T14:46:58.985Z",
+      "updatedAt": "2026-10-23T14:47:02.060Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-10-23T14:47:02.060Z"
+      ]
     }
   ]
 }

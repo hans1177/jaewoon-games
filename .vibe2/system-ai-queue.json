@@ -160221,6 +160221,114 @@
       "impactComponents": null,
       "createdAt": "2026-10-21T15:47:49.217Z",
       "updatedAt": "2026-10-21T15:47:49.217Z"
+    },
+    {
+      "id": "recovery-recovery-1f282cdc54c2a587fa47",
+      "status": "queued",
+      "priority": "critical",
+      "department": "recovery",
+      "taskType": "bottleneck-repair",
+      "gameId": "fantasy-survival",
+      "goal": "Analyze the exact failed WEB deployment stage UNKNOWN for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "responsibleFiles": [
+        ".github/workflows/magic-forest-pages.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/magic-forest-pages.yml",
+        "web-games/fantasy-survival"
+      ],
+      "failureStage": "DEPLOYMENT_WEB_UNKNOWN",
+      "failureSignature": "WORKFLOW_FAILED_UNKNOWN",
+      "relatedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:e74cda339809ab3ed0165ea38f3f9aefe5d42cef:fantasy-survival"
+      ],
+      "blockedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:e74cda339809ab3ed0165ea38f3f9aefe5d42cef:fantasy-survival"
+      ],
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "recurrenceCount": 1,
+      "repairMode": "FOCUSED_REPAIR",
+      "userAssistanceRequired": false,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "e74cda339809ab3ed0165ea38f3f9aefe5d42cef",
+      "gameRepairContract": {
+        "version": 1,
+        "mode": "FOCUSED_REPAIR",
+        "prePatchReproductionRequired": true,
+        "causalResponsibleSystemRequired": true,
+        "compareLastKnownGoodFirstBrokenCurrentRequired": false,
+        "originalScenarioReplayRequired": true,
+        "invariantValidationRequired": true,
+        "saveMigrationValidationRequired": false,
+        "multiplayerLifecycleValidationRequired": false,
+        "multiplayerUserAssistanceRequired": false,
+        "multiplayerMinimumAutomatedClients": 0,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "repeatedSameApproachWithoutNewCausalEvidenceForbidden": false
+      },
+      "acceptanceCriteria": [
+        "repair only assigned responsible files",
+        "reproduce the exact failure before patch or preserve existing verified reproduction evidence",
+        "identify the causal responsible system before widening scope",
+        "produce a real responsible-source mutation before rerunning the same failed signature",
+        "unchanged-source revalidation is forbidden",
+        "rerun the original player-visible failure scenario after source mutation",
+        "validate affected game-state invariants",
+        "run impact-scoped regression",
+        "full regression fan-in remains required before acceptance",
+        "preserve verified checkpoint and gameplay semantics",
+        "no central policy write",
+        "no self acceptance"
+      ],
+      "verificationCommands": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "deployment-failure-run:39971600398:1",
+        "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:e74cda339809ab3ed0165ea38f3f9aefe5d42cef",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:UNKNOWN",
+        "deployment-failed-step:UNKNOWN",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/39971600398",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED",
+        "recovery-queue:recovery-1f282cdc54c2a587fa47",
+        "recovery-exact-stage:DEPLOYMENT_WEB_UNKNOWN",
+        "system-ai-scoped-game-repair:NO",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "learning-route:existing-vibe-learning-motor",
+        "primary-ai-collaboration-task:recovery-recovery-1f282cdc54c2a587fa47"
+      ],
+      "supervisorReviewRequired": true,
+      "workerSelfAcceptance": false,
+      "learningCandidate": true,
+      "createdAt": "2026-10-23T14:47:02.060Z",
+      "updatedAt": "2026-10-23T14:47:02.060Z"
     }
   ]
 }
