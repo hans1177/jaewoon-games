@@ -6,8 +6,12 @@ owner's PC, Ollama and local WEB Vibe are offline.
 ## GitHub development (restored)
 
 - In `.github/workflows/pwa-command-bridge.yml`, the `github-cloud` job
-  polls the existing PWA service and submits owner WEB requests to the
-  existing `vibe2-unreal-core` GitHub control queue.
+  polls the existing PWA service **and receives authenticated local chat
+  WEB development dispatches** into the existing `vibe2-unreal-core` queue.
+- Once GitHub accepts an instruction, the owner PC and Ollama may be
+  powered off. The GitHub worker continues the task independently.
+  Uncommitted files existing only on the owner PC are not uploaded and
+  cannot be continued while that PC is off.
 - `tools/pwa-command-vibe2-task.mjs` and the Vibe2 execution guards
   restrict these WEB owner requests to `web-games/<gameId>`.
 - GitHub's `vibe2-continuous-core.yml` runs the existing cloud workflow
@@ -19,8 +23,10 @@ owner's PC, Ollama and local WEB Vibe are offline.
 
 ## Separate local WEB Vibe (optional)
 
-- Local `/develop` messages enter only `web-vibe-control` and its
-  `.web-vibe/queue.json` through the **`bridge`** job.
+- Local chat `/develop` dispatches to the existing GitHub cloud queue
+  and does not depend on PC uptime after it has been accepted.
+- Owner issue comments using `/vibe-local-web` still enter the optional
+  `web-vibe-control` `.web-vibe/queue.json` via the **`bridge`** job.
 - `WEB_VIBE_1` is independent of the cloud queue and native worker.
 - The optional local `tools/web-vibe-worker.mjs` can use a dedicated
   Ollama server at `127.0.0.1:11435` and private
