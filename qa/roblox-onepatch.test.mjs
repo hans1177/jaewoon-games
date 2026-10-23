@@ -199,3 +199,49 @@ test('Owner Roblox onepatch work order keeps unlimited source responsibility and
   assert.match(f9,/publish_stage=final/);
   assert.match(promote,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
 });
+
+// 로블조직 기존 빌드업 내 수시 한방패치: 파일 충돌만 직렬화, 이력은 다음 개발로 연결.
+test('running BUILD_UP with disjoint responsibility admits immediate owner patch without F-stage wait',t=>{
+  const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
+  const running={id:'f6-world-motion',gameId:'demo',target:'roblox',sourceRoot:'roblox-games/demo',
+    status:'running',goal:'기존 F6 단계',
+    responsibleFiles:['roblox-games/demo/server/Enemy.server.luau'],
+    buildUpDirectiveId:'existing-f6',buildUpGeneration:6,evidence:['verified-f5-evidence']};
+  const result=enqueueOwnerRobloxOnePatch({queue:{tasks:[running]},catalog:f.catalog,
+    request:f.request,repoRoot:f.root,policy});
+  assert.equal(result.added,true);
+  assert.equal(result.resume,'RUNNING_BUILD_UP_DISJOINT_IMMEDIATE');
+  assert.deepEqual(result.queue.tasks[1].dependencies,[]);
+  assert.equal(result.queue.tasks[0].status,'running');
+  assert.equal(result.queue.tasks[1].buildUpOnePatchLineage.directiveId,'existing-f6');
+  assert.equal(result.queue.tasks[1].buildUpOnePatchLineage.generation,6);
+  assert.ok(result.queue.tasks[1].evidence.includes('owner-onepatch-disjoint-source-start-now'));
+  assert.deepEqual(result.queue.tasks[0].evidence,['verified-f5-evidence']);
+});
+test('running BUILD_UP serializes only overlapping and shared responsibilities',t=>{
+  const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
+  const row=file=>({id:'running-'+file.split('/').at(-1),gameId:'demo',target:'roblox',
+    sourceRoot:'roblox-games/demo',status:'running',
+    responsibleFiles:[file],buildUpDirectiveId:'current-f7'});
+  const same=row('roblox-games/demo/client/Game.client.luau');
+  const unrelated=row('roblox-games/demo/server/NPC.server.luau');
+  const result=enqueueOwnerRobloxOnePatch({queue:{tasks:[same,unrelated]},
+    catalog:f.catalog,request:f.request,repoRoot:f.root,policy});
+  assert.deepEqual(result.queue.tasks[2].dependencies,[same.id]);
+  assert.equal(result.resume,'RUNNING_BUILD_UP_SOURCE_COLLISION');
+  assert.equal(result.queue.tasks[2].buildUpOnePatchLineage.previousEvidencePreserved,true);
+  const shared=path.join(f.root,'roblox-games/demo/shared/GameConfig.luau');
+  fs.mkdirSync(path.dirname(shared),{recursive:true});fs.writeFileSync(shared,'return {}');
+  const patch=enqueueOwnerRobloxOnePatch({queue:{tasks:[same,unrelated]},catalog:f.catalog,
+    request:{...f.request,file:'shared/GameConfig.luau',requestId:'123457'},
+    repoRoot:f.root,policy});
+  assert.deepEqual(new Set(patch.queue.tasks[2].dependencies),new Set([same.id,unrelated.id]));
+});
+test('next autonomous Roblox BUILD_UP carries verified owner patch history, never unverified results',()=>{
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  assert.match(planner,/build-up-owner-onepatch-carried:/);
+  assert.match(planner,/\\[PREVIOUS_VERIFIED_OWNER_ONEPATCH\\]/);
+  assert.match(planner,/clean\(row.status\)\.toLowerCase\(\)==='verified'/);
+  assert.match(planner,/source-recheck-required/);
+  assert.doesNotMatch(planner,/Cloudflare/i);
+});
