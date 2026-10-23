@@ -233,14 +233,19 @@ jobs:
               echo 'VIBE2_AUTO_MAIN_WAKE_DEFERRED=OWNER_PAGES_PUBLICATION_PRIORITY'
             elif [[ "$queued_count" =~ ^[0-9]+$ && "$pending_count" =~ ^[0-9]+$ ]] && \
                  [ "$((queued_count+pending_count))" -ge 48 ]; then
-              proceed=false
-              # A lightweight owner-focused lifecycle repair may checkpoint
-              # already-authorized cancelled tasks without dispatching game workers.
-              # Retain the global backlog gate for the expensive reserve path.
-              if [[ "${GITHUB_EVENT_NAME:-}" == 'push' && "${GITHUB_REF_NAME:-}" == 'main' && "$GITHUB_SHA" == "$latest_main" ]]; then
-                focus_reconcile=true
+              # [기존 GAME_PRIMARY 작업 배정] 검사·배포 런 대기량은 신규 자율 확장
+              # 신호이지 이미 등록된 게임 작업의 예약 차단 근거가 아니다.
+              # 기존 예약기에서 빈 슬롯/충돌/중복을 확인하고 실제 워커만 배정한다.
+              # 비주력 자율 레인은 이전 보류 정책과 원인 복구를 유지한다.
+              if [[ "${VIBE2_EXECUTION_LANE:-game-primary}" == 'game-primary' ]]; then
+                echo 'VIBE2_AUTO_MAIN_WAKE_BACKLOG=EXISTING_GAME_PRIMARY_RESERVE_ALLOWED'
+              else
+                proceed=false
+                if [[ "${GITHUB_EVENT_NAME:-}" == 'push' && "${GITHUB_REF_NAME:-}" == 'main' && "$GITHUB_SHA" == "$latest_main" ]]; then
+                  focus_reconcile=true
+                fi
+                echo 'VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG'
               fi
-              echo 'VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG'
             else
               echo 'VIBE2_AUTO_MAIN_WAKE_ADMITTED=YES'
             fi
