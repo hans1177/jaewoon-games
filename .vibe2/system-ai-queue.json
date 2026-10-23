@@ -147536,7 +147536,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -147643,12 +147643,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:39952714465:1",
+      "reservedAt": "2026-10-23T12:27:13.850Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -148443,14 +148443,15 @@
         "system-ai-applied-answer-sha256:fa1e7dc42cb72af5109233fc4a0e0f53b99b794632746cc2d57ca8d6af438588",
         "repair-strategy-fingerprint:5a5cf0e46b033ff28b03bf396cc9feca9f3061dbc6f6e19a92319ab924222fcd",
         "failed-strategy-fingerprint:5a5cf0e46b033ff28b03bf396cc9feca9f3061dbc6f6e19a92319ab924222fcd",
-        "model-output-sha256:c5bd712130b97e32d6bd406e1655803448010d656d3215176662f5cc7145da3f"
+        "model-output-sha256:c5bd712130b97e32d6bd406e1655803448010d656d3215176662f5cc7145da3f",
+        "system-ai-handoff-to-reservation:system-ai:39952714465:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 26,
-        "recurrenceCount": 194,
+        "recurrenceCount": 195,
         "dependencyCentrality": 26,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -148458,7 +148459,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-23T12:18:42.357Z"
+      "updatedAt": "2026-10-23T12:27:13.850Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
