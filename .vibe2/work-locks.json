@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1a63x0f",
+      "worker": "vibe2",
+      "taskId": "insect-survival-existing-web-assessment-v1",
+      "gameId": "insect-survival",
+      "files": [
+        "web-games/insect-survival/index.html"
+      ],
+      "baseSha": "e314cb3b26b553007c8b29a73b81e7ec069c0483",
+      "runId": "39904422475",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-23T05:19:41.461Z",
+      "expiresAt": "2026-10-23T06:04:41.461Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:insect-survival-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
