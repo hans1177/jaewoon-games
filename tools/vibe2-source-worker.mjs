@@ -1577,6 +1577,45 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   return null;
 }
 
+// 기존 게임의 정확히 재현된 자동저장 타이머 수명 문제를 외부 모델 없이 고친다.
+// 부작용이 불명확한 루프·여러 타이머·일반 앱 코드에는 확대 적용하지 않는다.
+export function deterministicWebAutosaveLifecycleCandidate({order={},sourceRoot='',responsibleFiles=[]}={}){
+  if(clean(order.target).toLowerCase()!=='web'||!sourceRoot||worldLobbySourceWorkRequired(order))return null;
+  const goal=[order.goal,order.selectedTask?.goal,order.selectedTask?.id].map(clean).join(' ');
+  if(!/existing-web-assessment|INTERVAL_CLEANUP_RISK|자동저장.*(?:타이머|해제)|autosave.*(?:timer|cleanup)/i.test(goal))return null;
+  const original='setInterval(()=>{if(!state.dead)save(false)},20000);';
+  const replacement=[
+    'let autosaveInterval=setInterval(()=>{if(!state.dead)save(false)},20000);',
+    "addEventListener('pagehide',()=>{",
+    '  if(autosaveInterval!==null){clearInterval(autosaveInterval);autosaveInterval=null;}',
+    '});',
+    "addEventListener('pageshow',event=>{",
+    '  if(event.persisted&&autosaveInterval===null){',
+    '    autosaveInterval=setInterval(()=>{if(!state.dead)save(false)},20000);',
+    '  }',
+    '});'
+  ].join('\n');
+  let root;
+  try{root=fs.realpathSync(sourceRoot);}catch{return null;}
+  for(const relative of unique(responsibleFiles)){
+    if(!/^[a-zA-Z0-9._/-]+\.html?$/i.test(relative)||path.isAbsolute(relative)||relative.split('/').includes('..'))continue;
+    const file=path.resolve(root,relative);
+    if(!fs.existsSync(file)||!fs.statSync(file).isFile()||!fs.realpathSync(file).startsWith(root+path.sep))continue;
+    const source=fs.readFileSync(file,'utf8');
+    if(source.split(original).length!==2||!/(?:^|\n)\s*let\s+state\b/.test(source)||! /function\s+save\s*\(/.test(source))continue;
+    if(source.includes('autosaveInterval')||source.includes("addEventListener('pagehide'")||source.includes("addEventListener('pageshow'"))continue;
+    if((source.match(/setInterval\s*\(/g)||[]).length!==1||/\bclearInterval\s*\(/.test(source))continue;
+    return{
+      summary:'Vibe2 independent source-grounded autosave lifecycle repair',
+      expectedEffect:'Release the existing autosave interval on pagehide and resume only when restored from bfcache',
+      edits:[{path:relative,find:original,replace:replacement}],
+      newFiles:[],replaceFiles:[],tests:[],
+      deterministicWebAutosaveLifecycle:true
+    };
+  }
+  return null;
+}
+
 export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){
   if(worldLobbySourceWorkRequired(order))return null;
   const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
@@ -7434,6 +7473,23 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_WEB_INPUT=CANDIDATE_VALIDATED');
     }catch(error){
       console.log('VIBE2_DETERMINISTIC_WEB_INPUT=REJECTED:'+generationFailureClass(error));
+    }
+  }
+  const offlineAutosave=!generated&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true
+    ?deterministicWebAutosaveLifecycleCandidate({order,sourceRoot,responsibleFiles}):null;
+  if(offlineAutosave){
+    try{
+      const candidate=normalizeCandidate(offlineAutosave,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
+      applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      const candidateValidation=candidateValidator(candidate);
+      generated={candidate,candidateValidation,generation:{
+        attempts:1,recoveryUsed:false,deterministicWebAutosaveLifecycle:true,
+        mode:'DETERMINISTIC_WEB_AUTOSAVE_LIFECYCLE',maxPredict:0,timeoutMs:0,contextWindow:0,
+        temperature:0,completionMode:'DETERMINISTIC_WEB_AUTOSAVE_LIFECYCLE'
+      }};
+      console.log('VIBE2_DETERMINISTIC_WEB_AUTOSAVE_LIFECYCLE=PASS:'+candidate.edits[0]?.path);
+    }catch(error){
+      console.log('VIBE2_DETERMINISTIC_WEB_AUTOSAVE_LIFECYCLE=REJECTED:'+generationFailureClass(error));
     }
   }
   const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;

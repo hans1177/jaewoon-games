@@ -9082,3 +9082,77 @@ test('independent authoring key checks occur only at the actual optional model r
   assert.ok(worker.indexOf('if(webInput){')<worker.indexOf('generated=await generateCandidateWithRecovery({prompt',worker.indexOf('if(webInput){')));
   assert.match(worker,/if\(!key\)throw Object.assign\(new Error\('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'/);
 });
+
+// 외부 API 없이 Vibe가 게임별 실제 타이머 수명 병목을 수정하고 중복 복구를 막는다.
+import { deterministicWebAutosaveLifecycleCandidate } from '../tools/vibe2-source-worker.mjs';
+
+test('Vibe offline Web autosave repair edits existing game code and survives bfcache restoration without Gemini',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const original='setInterval(()=>{if(!state.dead)save(false)},20000);';
+  const source='<script>\nlet state={dead:false};let saves=0;function save(){saves++;}\n'+original+'\n</script>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const order={target:'web',goal:'기존 웹게임 자동저장 타이머 해제',selectedTask:{id:'demo-existing-web-assessment-v1'}};
+  const prior=process.env.GEMINI_API_KEY;delete process.env.GEMINI_API_KEY;
+  t.after(()=>{if(prior===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=prior;});
+  const patch=deterministicWebAutosaveLifecycleCandidate({order,sourceRoot,responsibleFiles:['index.html']});
+  assert.ok(patch);
+  assert.equal(patch.deterministicWebAutosaveLifecycle,true);
+  const docs=new Map([['index.html',source]]);
+  applyExactEdits('',patch.edits,{documents:docs});
+  const updated=docs.get('index.html');
+  const listeners=new Map(),timers=new Map(),cleared=[];
+  let sequence=0;
+  const sandbox={
+    setInterval:(fn,ms)=>{const id=++sequence;timers.set(id,{fn,ms});return id;},
+    clearInterval:id=>{cleared.push(id);timers.delete(id);},
+    addEventListener:(type,fn)=>listeners.set(type,fn)
+  };
+  runInNewContext(updated.match(/<script>([\s\S]*?)<\/script>/)[1],sandbox);
+  assert.equal(timers.size,1);
+  const first=[...timers.keys()][0];
+  listeners.get('pagehide')();
+  assert.deepEqual(cleared,[first]);
+  assert.equal(timers.size,0);
+  listeners.get('pageshow')({persisted:false});
+  assert.equal(timers.size,0);
+  listeners.get('pageshow')({persisted:true});
+  assert.equal(timers.size,1);
+  listeners.get('pageshow')({persisted:true});
+  assert.equal(timers.size,1,'do not duplicate autosave after bfcache restore');
+  const second=[...timers.values()][0];
+  assert.equal(second.ms,20000);
+  second.fn();
+  assert.equal(runInNewContext('saves',sandbox),1);
+  write(path.join(sourceRoot,'index.html'),updated);
+  assert.equal(deterministicWebAutosaveLifecycleCandidate({order,sourceRoot,responsibleFiles:['index.html']}),null);
+  assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),updated);
+});
+
+test('Vibe offline Web autosave recipe fails closed for ambiguous or unrelated games',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const original='setInterval(()=>{if(!state.dead)save(false)},20000);';
+  const base='let state={dead:false};function save(){};'+original;
+  const order={target:'web',selectedTask:{id:'demo-existing-web-assessment-v1'}};
+  for(const body of [base+'\n'+original,base+'\nsetInterval(()=>{},1000);',base+'\nclearInterval(1);',base+'\nwindow.addEventListener(\'pagehide\',()=>{});']){
+    write(path.join(sourceRoot,'index.html'),'<script>\n'+body+'</script>');
+    assert.equal(deterministicWebAutosaveLifecycleCandidate({order,sourceRoot,responsibleFiles:['index.html']}),null);
+  }
+  write(path.join(sourceRoot,'index.html'),'<script>\nlet state={dead:false};function save(){};'+original+'</script>');
+  assert.equal(deterministicWebAutosaveLifecycleCandidate({order:{target:'roblox',selectedTask:{id:'demo-existing-web-assessment-v1'}},sourceRoot,responsibleFiles:['index.html']}),null);
+  assert.equal(deterministicWebAutosaveLifecycleCandidate({order,sourceRoot,responsibleFiles:['../other.html']}),null);
+});
+
+test('Vibe offline autosave source coding runs before any external model request',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const a=worker.indexOf('const offlineAutosave=!generated&&!allowFullRewrite');
+  const b=worker.indexOf('generated=await generateCandidateWithRecovery({prompt',a);
+  assert.ok(a>0&&b>a);
+  assert.match(worker,/VIBE2_DETERMINISTIC_WEB_AUTOSAVE_LIFECYCLE=PASS/);
+  const game=fs.readFileSync('web-games/insect-survival/index.html','utf8');
+  assert.match(game,/addEventListener\('pagehide'/);
+  assert.match(game,/addEventListener\('pageshow'/);
+  assert.equal((game.match(/autosaveInterval=setInterval\(/g)||[]).length,2);
+});
+
