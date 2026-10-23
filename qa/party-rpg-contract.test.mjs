@@ -67,3 +67,21 @@ test("판매상점과 AI 5분 행동 순환 계약", () => {
   assert.ok(!kill.includes("aiShop("));
   assert.ok(kill.includes("addMaterial(receiver,state.zone)"));
 });
+
+test("파티 RPG 실존 CC0 3D 원본을 로드하고 미검증 적은 원본 2D를 유지함",()=>{
+ const paths=[...html.matchAll(/['"]((?:\.\.\/)+assets\/[^'"]+\.glb)['"]/g)].map(m=>m[1]);
+ const expected=["Barbarian.glb","Knight.glb","Mage.glb","Rogue.glb","Rogue_Hooded.glb"];
+ assert.equal(paths.length,expected.length,"invalid or imaginary 3D model requests");
+ assert.deepEqual(paths.map(x=>x.split("/").at(-1)).sort(),expected.sort());
+ for(const relative of paths){
+  assert.match(relative,/^\.\.\/\.\.\/assets\/roblox\/actors\/sources\/kaykit-adventurers\/[^/]+\.glb$/);
+  const file=new URL("../web-games/party-rpg/"+relative,import.meta.url);
+  assert.equal(fs.existsSync(file),true,"GLB not found "+relative);
+  assert.ok(fs.statSync(file).size>100_000,"GLB source truncated "+relative);
+ }
+ const license=fs.readFileSync(new URL("../assets/roblox/actors/sources/kaykit-adventurers/LICENSE.txt",import.meta.url),"utf8");
+ assert.match(license,/Creative Commons Zero, CC0/);
+ assert.match(html,/name\.charCodeAt\(i\)/,"AI identity must not change as X moves");
+ assert.match(html,/return null;\s*}\s*window\.vibe3dCanRender/s,"no wrong-species 3D substitution");
+ assert.match(html,/if\(window\.vibe3dCanRender&&window\.vibe3dCanRender\('enemy',e\)\)return/,"preserve original enemy canvas rendering");
+});
