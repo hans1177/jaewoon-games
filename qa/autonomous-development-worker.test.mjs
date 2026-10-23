@@ -249,3 +249,45 @@ test('autonomous development routes through existing Vibe company bridge before 
   assert.equal(core.routing.completedArtbookLocked,true);
   assert.ok(Array.isArray(core.executionQa));
 });
+
+test('one patch can edit many related code UI and asset-link files without arbitrary count cap',async()=>{
+  setup();
+  try{
+    const rows=Array.from({length:12},(_,i)=>({path:`part-${i}.js`,content:`export const updated${i} = true;\\n`}));
+    const candidate=parseModelCandidate(JSON.stringify({summary:'connected feature',files:rows}));
+    assert.equal(candidate.files.length,12);
+    const evidence=await generateAutonomousCandidate({gameId:'TEST',sourcePath:fixture,goal:'related feature repair',
+      candidateId:'TEST-multifile',candidatePath:`${candidateRoot}/TEST-multifile`,
+      evidencePath:`${evidenceRoot}/TEST-multifile.json`,
+      modelResponse:JSON.stringify({summary:'connected feature',files:rows}),sourceCommit:'abc'});
+    assert.equal(evidence.changedFiles.length,12);
+    assert.deepEqual(evidence.changedFiles.sort(),rows.map(r=>r.path).sort());
+    assert.equal(evidence.candidateOnly,true);
+    assert.equal(fs.existsSync(path.join(fixture,'part-0.js')),false,'original source is preserved');
+  }finally{cleanup();}
+});
+
+test('ten exact edits in one patch preserve exact anchors and do not truncate later files',async()=>{
+  setup();
+  try{
+    const edits=Array.from({length:10},(_,i)=>({path:'app.js',find:`console.log('base');`,replace:`console.log('fixed-${i}');`}));
+    // Each edit applies to the previous state; a ten-step chain must retain the last operation.
+    for(let i=1;i<edits.length;i++)edits[i].find=edits[i-1].replace;
+    const evidence=await generateAutonomousCandidate({gameId:'TEST',sourcePath:fixture,goal:'atomic multi-step repair',
+      candidateId:'TEST-many-edits',candidatePath:`${candidateRoot}/TEST-many-edits`,
+      evidencePath:`${evidenceRoot}/TEST-many-edits.json`,modelResponse:JSON.stringify({summary:'multi',edits})});
+    assert.equal(evidence.editCount,10);
+    assert.deepEqual(evidence.changedFiles,['app.js']);
+    assert.match(fs.readFileSync(path.join(candidateRoot,'TEST-many-edits','app.js'),'utf8'),/fixed-9/);
+  }finally{cleanup();}
+});
+
+test('no-op file replacement does not count as completed work or produce a false QA PASS',async()=>{
+  setup();
+  try{
+    await assert.rejects(generateAutonomousCandidate({gameId:'TEST',sourcePath:fixture,goal:'must really change',
+      candidateId:'TEST-noop',candidatePath:`${candidateRoot}/TEST-noop`,
+      evidencePath:`${evidenceRoot}/TEST-noop.json`,
+      modelResponse:JSON.stringify({summary:'no change',files:[{path:'app.js',content:fs.readFileSync(path.join(fixture,'app.js'),'utf8')}]})}),/후보 변경 없음/);
+  }finally{cleanup();}
+});
