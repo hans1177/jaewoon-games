@@ -27,6 +27,7 @@ import { buildInterfaceBlueprintContract, INTERFACE_EXTERNAL_ALGORITHMS } from '
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
 import { synchronizeSourceBoundAssetConsumers } from './vibe2-asset-production-plan.mjs';
+import {resolveOwnerRobloxOnePatchFiles,mergeOwnerRobloxPatchIntoExistingBuildUp} from './vibe2-roblox-onepatch-scope.mjs';
 import { detectRobloxStudioAssetSystems, robloxStudioAssetDetectionSourceFromRoot, robloxStudioAssetFamilyBoundInText } from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -4374,7 +4375,7 @@ export function selectBuildUpDirectivePersistence(directives=[]){
 export function enqueueOwnerRobloxOnePatch({queue={},catalog={},request={},repoRoot=process.cwd(),policy={}}={}){
   const fail=reason=>{throw new Error('ROBLOX_ONEPATCH_'+reason);};
   const gameId=clean(request.gameId),goal=clean(request.goal),runId=clean(request.requestId);
-  const file=posix(request.file);
+  const file=request.files??request.file;
   if(!/^[a-z0-9][a-z0-9-]{1,63}$/.test(gameId))fail('INVALID_GAME_ID');
   if(!/^[0-9]{1,20}$/.test(runId))fail('INVALID_REQUEST_ID');
   if(!goal||goal.length>2000||/[\x00-\x08\x0b-\x1f]/.test(goal))fail('INVALID_GOAL');
@@ -4390,48 +4391,50 @@ export function enqueueOwnerRobloxOnePatch({queue={},catalog={},request={},repoR
     game?.canonical?.sources?.roblox?.projectPath).replaceAll('\\','/').replace(/^\/+|\/+$/g,'');
   if(!game||canonicalRoot!==sourceRoot||clean(game.lifecycleState).toUpperCase()==='REMOVED')
     fail('CATALOG_ROBLOX_SOURCE_REQUIRED');
-  const relative=file.startsWith(sourceRoot+'/')?file.slice(sourceRoot.length+1):file;
-  if(!/^(?:client|server|shared)\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*\.(?:luau|lua)$/.test(relative))
-    fail('NON_ROBLOX_SOURCE_FORBIDDEN');
-  const repository=fs.realpathSync(repoRoot);
-  const robloxRoot=fs.realpathSync(path.join(repository,'roblox-games'));
-  const exactRoot=fs.realpathSync(path.join(repository,sourceRoot));
-  const exactFile=fs.realpathSync(path.join(repository,sourceRoot,relative));
-  if(!robloxRoot.startsWith(repository+path.sep)||
-      !exactRoot.startsWith(robloxRoot+path.sep)||
-      !exactFile.startsWith(exactRoot+path.sep)||
-      !fs.statSync(exactFile).isFile())fail('SOURCE_ESCAPE_OR_MISSING');
-  const taskId='owner-roblox-onepatch-'+runId,expectedFile=sourceRoot+'/'+relative;
+  // No artificial file count limit. Includes real in-game graphics, motion and UI assets.
+  const files=resolveOwnerRobloxOnePatchFiles({repoRoot,sourceRoot,file});
+  const taskId='owner-roblox-onepatch-'+runId;
   const initial=createVibeContinuousQueue(queue);
   const previous=initial.tasks.find(row=>row.id===taskId);
   if(previous){
     if(previous.gameId!==gameId||previous.target!=='roblox'||
-        previous.responsibleFiles?.length!==1||previous.responsibleFiles[0]!==expectedFile||
+        JSON.stringify([...previous.responsibleFiles].sort())!==JSON.stringify(files)||
         !previous.goal?.includes('요청: '+goal))
       fail('REQUEST_COLLISION');
     return {queue:initial,taskId,added:false};
   }
+  const alreadyMerged=initial.tasks.find(row=>(row.evidence||[]).includes('owner-request-instance:'+taskId));
+  if(alreadyMerged){
+    if(alreadyMerged.gameId!==gameId||!alreadyMerged.goal.includes('요청: '+goal)||
+        !files.every(file=>alreadyMerged.responsibleFiles.includes(file)))fail('REQUEST_COLLISION');
+    return {queue:initial,taskId:alreadyMerged.id,added:false,merged:true,resume:'ALREADY_MERGED'};
+  }
   const task={
     id:taskId,gameId,target:'roblox',department:'development',type:'implementation',
     goal:'[OWNER_ROBLOX_ONEPATCH]\n요청: '+goal+
-      '\n현재 책임 Luau 파일의 기존 함수를 먼저 읽고 그 구조 안에서 직접 수정한다.'+
+      '\n요청 영향 분석 후 client/server/shared/에셋 연결·그래픽·모션·UI의 실제 책임 소스를 함께 수정한다. 파일 수는 제한하지 않는다.'+
+      '\n기존 빌드업 중에는 단계·검증 증거를 보존하고 변경 영향 단계부터 계속한다. 내용 해시가 정확히 같은 유효 검사는 재사용한다.'+
+      '\n반복 실패 시 같은 부분에 임시 패치를 쌓지 말고 기존 책임 함수의 원인을 직접 수정한다.'+
       '\n기존 규칙·세이브·수치·서버 권위·모바일 입력을 보존한다. 명시적으로 요청하지 않은 변경은 금지한다.'+
       '\n그래픽·모션·UI 요청은 먼저 기존 Roblox CC0 원본 장부와 14종 공용 라이브러리, 게임별 실제 적용 경로를 모두 감사한다.'+
       '\n외부 자산은 확인된 CC0만, 소스 SHA와 게임별 Roblox Universe Use 권한 검증 후 기존 Vibe2 자산/출시 경로로 연결한다.'+
       '\n단순 원본 등록과 실제 화면 반영은 구별하며 해당 게임의 모바일·모션·품질 증거 없이 적용 완료라고 주장하지 않는다.'+
       '\n기존 F0~F9/보안/런타임/출시 검증을 유지한다. 검증 전 PASS 또는 배포 성공이라고 주장하지 않는다.',
-    sourceRoot,responsibleFiles:[expectedFile],dependencies:[],priority:'owner-immediate',
+    sourceRoot,responsibleFiles:files,dependencies:[],priority:'owner-immediate',
     releaseState:clean(game.homepageCategory)||'development-confirmed',
     status:'queued',retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,
     ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,speculativeEligible:false,estimatedRisk:'medium',
     executionLane:'GAME_PRIMARY',
     evidence:['roblox-organization:github-only','owner-roblox-onepatch:workflow-dispatch',
-      'owner-request-instance:'+taskId,'scope-only:'+expectedFile,
+      'owner-request-instance:'+taskId,...files.map(file=>'scope-only:'+file),
+      'owner-onepatch-no-file-count-limit','owner-onepatch-unchanged-qa-cache-exact-hash',
+      'owner-onepatch-publish-exact-f9-verified-artifact',
       'existing-canonical-vibe2-queue','existing-f0-f9-qa-required']
   };
-  return {queue:createVibeContinuousQueue({tasks:[...initial.tasks,task],
-    maxConcurrentTasks:initial.maxConcurrentTasks}),taskId,added:true};
+  const attached=mergeOwnerRobloxPatchIntoExistingBuildUp({queue:initial,gameId,task,requestId:taskId});
+  return {...attached,queue:createVibeContinuousQueue({...attached.queue,
+    maxConcurrentTasks:initial.maxConcurrentTasks})};
 }
 
 export function runVibe2AutoPlanner({
@@ -4468,7 +4471,7 @@ export function runVibe2AutoPlanner({
       throw new Error('ROBLOX_ONEPATCH_CENTRAL_POLICY_UNVERIFIED');
     const owned=enqueueOwnerRobloxOnePatch({queue:result.queue,request:ownerRobloxPatch,
       catalog:readJson(catalogFile,{}),repoRoot,policy:docs[0]});
-    result={...result,queue:owned.queue,ownerRobloxPatch:{taskId:owned.taskId,added:owned.added}};
+    result={...result,queue:owned.queue,ownerRobloxPatch:{taskId:owned.taskId,added:owned.added,merged:owned.merged===true,resume:owned.resume||null}};
   }
   const normalizedBefore=createVibeContinuousQueue(queueBefore);
   const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
@@ -4522,6 +4525,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   }else{
   const onePatchKeys=['VIBE2_ROBLOX_ONEPATCH_GAME','VIBE2_ROBLOX_ONEPATCH_FILE','VIBE2_ROBLOX_ONEPATCH_GOAL'];
   const onePatchInput=onePatchKeys.map(key=>clean(process.env[key]));
+  if(onePatchInput[0]&&onePatchInput[2]&&!onePatchInput[1])onePatchInput[1]='*';
   const onePatchRequested=onePatchInput.some(Boolean);
   if(onePatchRequested&&(onePatchInput.some(value=>!value)||
       process.env.GITHUB_EVENT_NAME!=='workflow_dispatch'||
@@ -4532,7 +4536,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=runVibe2AutoPlanner({ownerRobloxPatch:onePatchRequested?
     {gameId:onePatchInput[0],file:onePatchInput[1],goal:onePatchInput[2],
       requestId:clean(process.env.GITHUB_RUN_ID)}:null,statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',developmentQueueFile:clean(args['development-queue']),queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),historicalRegistryFile:clean(args['historical-registry']),robloxDistillationFile:clean(args['roblox-distillation']),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
-  if(result.ownerRobloxPatch)console.log('ROBLOX_ONEPATCH_CANONICAL_QUEUE='+result.ownerRobloxPatch.taskId+':'+(result.ownerRobloxPatch.added?'QUEUED':'ALREADY_QUEUED'));
+  if(result.ownerRobloxPatch){
+    console.log('ROBLOX_ONEPATCH_CANONICAL_QUEUE='+result.ownerRobloxPatch.taskId+':'+(result.ownerRobloxPatch.added?'QUEUED':result.ownerRobloxPatch.merged?'MERGED':'ALREADY_QUEUED'));
+    console.log('ROBLOX_ONEPATCH_BUILD_UP_RESUME='+String(result.ownerRobloxPatch.resume||'NONE'));
+    console.log('ROBLOX_ONEPATCH_QA_REUSE=EXACT_CONTENT_HASH_ONLY');
+    console.log('ROBLOX_ONEPATCH_PUBLISH=EXACT_F9_ARTIFACT_AFTER_PASS');
+  }
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
