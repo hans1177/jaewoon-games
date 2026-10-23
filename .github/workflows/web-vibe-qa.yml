@@ -10,6 +10,7 @@ on:
       - 'tools/web-vibe-worker.mjs'
       - 'tools/vibe2-local-web-chat.mjs'
       - 'qa/web-vibe-organization.test.mjs'
+      - 'qa/github-cloud-web-isolation.test.mjs'
       - 'qa/web-vibe-worker.test.mjs'
       - 'qa/pwa-command-vibe2-task.test.mjs'
       - 'qa/vibe2-local-web-chat.test.mjs'
@@ -22,6 +23,7 @@ on:
       - 'tools/web-vibe-worker.mjs'
       - 'tools/vibe2-local-web-chat.mjs'
       - 'qa/web-vibe-organization.test.mjs'
+      - 'qa/github-cloud-web-isolation.test.mjs'
       - 'qa/web-vibe-worker.test.mjs'
 
 permissions:
@@ -50,10 +52,5 @@ jobs:
           set -euo pipefail
           node --test qa/web-vibe-organization.test.mjs qa/web-vibe-worker.test.mjs
           node --test qa/pwa-command-vibe2-task.test.mjs qa/vibe2-local-web-chat.test.mjs
-      - name: Assert WEB Vibe cannot dispatch shared native engine
-        run: |
-          set -euo pipefail
-          ! grep -Eq 'vibe2-unreal-core|vibe2-continuous-core\.yml|\.vibe2/queue\.json|jaewoon-unity' .github/workflows/pwa-command-bridge.yml
-          grep -q 'WEB_VIBE_BRANCH: web-vibe-control' .github/workflows/pwa-command-bridge.yml
-          grep -q 'WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED' .github/workflows/pwa-command-bridge.yml
-          echo WEB_VIBE_ORGANIZATION_ISOLATION=PASS
+      - name: Ensure local and GitHub cloud development paths stay separate
+        run: node --test qa/github-cloud-web-isolation.test.mjs

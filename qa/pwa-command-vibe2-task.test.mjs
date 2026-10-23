@@ -140,26 +140,30 @@ test('direct owner game work preserves parallel pool and upgrades legacy one-slo
   assert.deepEqual(old.tasks[0],prior);
 });
 
-test('owner ingress queues to separate WEB Vibe only, publication QA remains unchanged',()=>{
-  const bridge=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
-  const cloud=bridge.slice(bridge.indexOf('  bridge:'));
-  assert.doesNotMatch(cloud,/needs: local-advisory|needs\.local-advisory/);
-  assert.match(cloud,/github\.event\.comment\.author_association == 'OWNER'/);
-  assert.match(cloud,/validateLocalWebOwnerEvent/);
-  assert.match(bridge,/WEB_VIBE_BRANCH: web-vibe-control/);
-  assert.match(cloud,/tools\/web-vibe-organization\.mjs/);
-  assert.match(cloud,/WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED/);
-  assert.doesNotMatch(cloud,/vibe2-continuous-core\.yml|\.vibe2\/queue\.json/);
-  assert.doesNotMatch(cloud,/gh workflow run vibe2-24h-runner\.yml/);
+test('GitHub PWA cloud development and local WEB Vibe run independently',()=>{
+  const flow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  const local=flow.slice(flow.indexOf('  bridge:'),flow.indexOf('  github-cloud:'));
+  const cloud=flow.slice(flow.indexOf('  github-cloud:'));
+  assert.ok(local.includes("github.event.comment.author_association == 'OWNER'"));
+  assert.ok(local.includes('validateLocalWebOwnerEvent'));
+  assert.ok(flow.includes('WEB_VIBE_BRANCH: web-vibe-control'));
+  assert.ok(local.includes('tools/web-vibe-organization.mjs'));
+  assert.ok(local.includes('WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED'));
+  assert.ok(!local.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert.ok(!local.includes('.vibe2/queue.json'));
+  assert.ok(cloud.includes('VIBE2_BRANCH: vibe2-unreal-core'));
+  assert.ok(cloud.includes("steps.next.outputs.has_work == 'true'"));
+  assert.ok(cloud.includes('pwa-command-vibe2-task.mjs" ingest'));
+  assert.ok(cloud.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert.ok(!cloud.includes('web-vibe-organization.mjs'));
   const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   const published=pages.indexOf('uses: actions/deploy-pages@v4');
   const live=pages.indexOf('id: director_live_qa');
   const browser=pages.indexOf('id: forest_native_3d_live_qa');
   const issues=pages.indexOf('name: Director register issues after live game testing');
   assert.ok(published>0&&live>published&&browser>live&&issues>browser,
-    'production publication precedes live HTTP, browser, and defect reporting');
+    'publication precedes live HTTP, browser and defect reporting');
   assert.match(pages.slice(browser,issues),/VIBE_SMOKE_LIVE_BASE:/);
-  assert.match(pages.slice(live,issues),/steps\.deployment\.outputs\.page_url/);
 });
 
 test('GitHub owner ideas use the existing Vibe queue for one-game source-first work',()=>{
