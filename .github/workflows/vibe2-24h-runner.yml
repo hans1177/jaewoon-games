@@ -121,7 +121,7 @@ jobs:
     concurrency:
       group: vibe2-24h-plan-control-v1
       cancel-in-progress: false
-    timeout-minutes: 8
+    timeout-minutes: 15
     outputs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}
       wave_ready: ${{ steps.queue_state.outputs.wave_ready }}
@@ -394,7 +394,11 @@ jobs:
           git config user.email 'vibe2-planner@users.noreply.github.com'
 
           attempt=0
-          # 동일 main SHA에서 통과한 비변경 원본 QA는 낙관적 control push 충돌 재시도 때 재사용한다.
+          # One latest-main source snapshot per plan ingress; every optimistic retry
+          # replays decisions against the newest canonical control queue, NOT a
+          # different moving main source. New main pushes launch their own planner.
+          # Preserve the exact-SHA QA evidence and all existing fail-closed gates.
+          plan_main_sha=''
           validated_main_sha=''
           echo 'VIBE2_AUTOPLAN_OPTIMISTIC_RETRY_POLICY=UNTIL_JOB_TIMEOUT'
           while true; do
@@ -402,10 +406,32 @@ jobs:
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt"
             git fetch origin '+refs/heads/main:refs/remotes/origin/main' '+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core' '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' --depth=2 --no-tags --quiet
             git fetch origin '+refs/heads/vibe2-learning-runtime:refs/remotes/origin/vibe2-learning-runtime' --depth=2 --no-tags --quiet || true
+            if [ -z "$plan_main_sha" ]; then
+              plan_main_sha="$(git rev-parse origin/main)"
+              test "$plan_main_sha" != ''
+              echo "VIBE2_AUTOPLAN_MAIN_SNAPSHOT=PINNED_AT_INGRESS:$plan_main_sha"
+            else
+              # Never reuse old machine authority after a protected contract change.
+              # A new main-triggered cycle must verify the changed policy/code.
+              if ! git diff --quiet "$plan_main_sha" origin/main -- \
+                  company-learning/platform-release-roadmap.json \
+                  company-learning/company-log-map.json \
+                  company-learning/company-architecture-map.json \
+                  company-learning/security-immune-system.json \
+                  tools/company-constitution-enforcer.mjs \
+                  tools/main-write-guard.mjs \
+                  tools/vibe2-auto-planner.mjs \
+                  tools/vibe2-queue-control.mjs \
+                  .github/workflows/vibe2-24h-runner.yml; then
+                echo 'VIBE2_AUTOPLAN_PINNED_AUTHORITY_DRIFT=BLOCKED_NEW_MAIN_CYCLE_REQUIRED' >&2
+                exit 1
+              fi
+              echo "VIBE2_AUTOPLAN_MAIN_SNAPSHOT=REUSED_ON_CONTROL_RETRY:$plan_main_sha"
+            fi
             git reset --hard origin/vibe2-unreal-core
             rm -rf /tmp/vibe2-main
             git worktree prune
-            git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+            git worktree add --detach /tmp/vibe2-main "$plan_main_sha" >/dev/null
             # Verify current main policy exists; do not leak the production policy env into isolated QA fixtures.
             test -s /tmp/vibe2-main/company-learning/platform-release-roadmap.json
             # [설계 원본] 버전 고정된 company-runtime 아트북을 기존 main 작업 공간에 읽기 전용으로 적재한다.
