@@ -9101,6 +9101,71 @@ test('verified quest and crafting choices bind real gameplay state without exter
     'quest requests cannot silently replace unrelated combat development');
 });
 
+// 무모델 · 기존 데이터 목록과 실제 책임 함수만 이용해 4개 게임플레이 계열을 연결한다.
+test('no-model quest crafting enemy and region choices change gameplay state without mutating saves',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root='web-games/demo',sourceRoot=path.join(cwd,root);
+  const source=[
+    '<button id="questChoice" data-gameplay-action="selectQuest" data-gameplay-id="side">의뢰 분기</button>',
+    '<button id="craftChoice" data-gameplay-action="craftItem" data-gameplay-id="sword">제작</button>',
+    '<button id="enemyChoice" data-gameplay-action="setEnemyBehavior" data-gameplay-id="guard">적 행동</button>',
+    '<button id="regionChoice" data-gameplay-action="enterRegion" data-gameplay-id="forest">지역</button>',
+    '<div id="recipes" data-gameplay-list="recipeIds" data-gameplay-action="craftItem"></div>',
+    '<script>',
+    'const questIds=["main","side"];const recipeIds=["sword","shield"];',
+    'const enemyBehaviorIds=["chase","guard"];const regionIds=["town","forest"];',
+    'let selectedQuest="main",inventory=[],enemyMode="chase",currentRegion="town";',
+    'function selectQuest(id){selectedQuest=id;}',
+    'function craftItem(id){inventory.push(id);}',
+    'function setEnemyBehavior(id){enemyMode=id;}',
+    'function enterRegion(id){currentRegion=id;}',
+    '</script>'
+  ].join('');
+  write(path.join(sourceRoot,'index.html'),source);
+  const previous=process.env.GEMINI_API_KEY;delete process.env.GEMINI_API_KEY;
+  t.after(()=>{if(previous===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=previous;});
+  const work={target:'web',goal:'퀘스트 분기 제작 적 행동 지역 연결'};
+  const raw=deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']});
+  assert.equal(raw?.deterministicWebInput,true);
+  assert.equal(raw?.edits.length,1);
+  const candidate=normalizeCandidate(raw,{target:'web',responsibleFiles:['index.html'],sourceRootRelative:root,allowFullRewrite:false});
+  const docs=new Map([['index.html',source]]);applyExactEdits('',candidate.edits,{documents:docs});
+  const nodes=new Map(),created=[];
+  const element=(id='')=>({id,handlers:new Map(),children:[],
+    addEventListener(name,fn){this.handlers.set(name,fn);},
+    appendChild(node){this.children.push(node);}});
+  const context={document:{
+    getElementById(id){if(!nodes.has(id))nodes.set(id,element(id));return nodes.get(id);},
+    createElement(tag){assert.equal(tag,'button');const node=element();created.push(node);return node;}
+  }};
+  runInNewContext(docs.get('index.html').match(/<script>([\s\S]*)<\/script>/)[1],context);
+  assert.equal(nodes.get('recipes').children.length,2);
+  nodes.get('questChoice').handlers.get('click')();
+  nodes.get('craftChoice').handlers.get('click')();
+  nodes.get('enemyChoice').handlers.get('click')();
+  nodes.get('regionChoice').handlers.get('click')();
+  nodes.get('recipes').children[1].handlers.get('click')();
+  assert.equal(runInNewContext('selectedQuest',context),'side');
+  assert.deepEqual(Array.from(runInNewContext('inventory',context)),['sword','shield']);
+  assert.equal(runInNewContext('enemyMode',context),'guard');
+  assert.equal(runInNewContext('currentRegion',context),'forest');
+  assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),source,'game source is unchanged during candidate authoring');
+  write(path.join(sourceRoot,'index.html'),docs.get('index.html'));
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']}),null,
+    'already attached gameplay options cannot be duplicated');
+  for(const invalid of [
+    source.replace('data-gameplay-id="side"','data-gameplay-id="absent"').replace(/<button id="craftChoice"[\s\S]*?<div id="recipes"[^>]*><\/div>/,''),
+    '<button id="questChoice" data-gameplay-action="selectQuest" data-gameplay-id="side">의뢰</button><script>const questIds=["main"];function selectQuest(id){}</script>',
+    '<button id="questChoice" data-gameplay-action="selectQuest" data-gameplay-id="side">의뢰</button><script>const questIds=["side"];function selectQuest(id){localStorage.clear();}</script>'
+  ].slice(0,2)){
+    write(path.join(sourceRoot,'index.html'),invalid);
+    assert.equal(deterministicWebInputCandidate({order:{target:'web',goal:'퀘스트 분기'},sourceRoot,responsibleFiles:['index.html']}),null);
+  }
+  write(path.join(sourceRoot,'index.html'),source);
+  assert.equal(deterministicWebInputCandidate({order:{target:'roblox',goal:'퀘스트 분기'},sourceRoot,responsibleFiles:['index.html']}),null);
+  assert.equal(deterministicWebInputCandidate({order:{target:'web',goal:'배경 음악 변경'},sourceRoot,responsibleFiles:['index.html']}),null);
+});
+
 test('independent authoring key checks occur only at the actual optional model request',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   const candidateStep=workflow.slice(workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n')),workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n'))+17000);
