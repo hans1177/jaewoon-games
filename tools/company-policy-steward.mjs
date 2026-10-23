@@ -45,7 +45,7 @@ function assertCompanionDocuments(log,architecture,security){
 
 // 순수 해석기. 작업 큐는 이미 읽은 roadmap 객체만 전달하므로 파일 I/O나 추가 게이트가 없다.
 // 날짜가 더 이른 동일 영역 사용자 지시는 폐기하지만, 서로 다른 영역의 보안/QA 규칙은 폐기하지 않는다.
-export function resolveActiveOwnerPolicy(policy={}, {allowMissing=false}={}){
+export function resolveActiveOwnerPolicy(policy={}, {allowMissing=false,repository=process.env.GITHUB_REPOSITORY||''}={}){
   if(!object(policy))throw new Error('POLICY_STEWARD_CANONICAL_POLICY_INVALID');
   const candidates=[];
   for(const [key,value] of Object.entries(policy)){
@@ -83,6 +83,20 @@ export function resolveActiveOwnerPolicy(policy={}, {allowMissing=false}={}){
     active.some(p=>held.includes(p)))
     throw new Error('POLICY_STEWARD_OWNER_SCOPE_INVALID');
 
+  // 조직별 독립 운영: 현재 저장소의 중앙정책만 해당 플랫폼 작업을 허용한다.
+  const binding=newest.value.repository;
+  if(binding){
+    const roots={ROBLOX:'roblox-games/',WEB:'web-games/'};
+    if(!object(binding)||!/^[-A-Za-z0-9_.]+\/[-A-Za-z0-9_.]+$/.test(binding.fullName||'')
+      ||!roots[binding.platform]||binding.sourceRoot!==roots[binding.platform]
+      ||active.length!==1||active[0]!==binding.platform
+      ||binding.independentVibe!==true||binding.homepageOnly!==true
+      ||['sharedQueue','sharedRuntime','sharedLearning','sharedCredentials'].some(key=>binding[key]!==false))
+      throw new Error('POLICY_STEWARD_REPOSITORY_SCOPE_INVALID');
+    if(clean(repository)&&clean(repository).toLowerCase()!==binding.fullName.toLowerCase())
+      throw new Error('POLICY_STEWARD_REPOSITORY_MISMATCH');
+  }
+
   const raw=object(policy.developmentAccess)?policy.developmentAccess:{};
   const effectiveDevelopmentAccess={...raw};
   for(const p of active)effectiveDevelopmentAccess[p]='ALWAYS_ALLOWED';
@@ -92,7 +106,7 @@ export function resolveActiveOwnerPolicy(policy={}, {allowMissing=false}={}){
   return{
     status:'ACTIVE',latestOwnerSection:newest.key,
     ownerDirective:newest.value.authority,
-    activeTargets:[...active],ownerHeldTargets:[...held],
+    activeTargets:[...active],ownerHeldTargets:[...held],repository:binding?{...binding}:null,
     effectiveDevelopmentAccess,staleLegacyPolicyFields,
     retiredOwnerSections:candidates.filter(item=>item.date<newest.date).map(item=>item.key),
     retiredOwnerAuthorities:candidates.filter(item=>item.date<newest.date).map(item=>item.value.authority)
