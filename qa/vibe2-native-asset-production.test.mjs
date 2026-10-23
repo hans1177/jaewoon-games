@@ -5317,3 +5317,22 @@ test('CC0 adaptation never promotes unpinned or unlicensed provenance to usable 
   assert.equal(get('native-transfer').nativePlatformReauthoringRequired,true);
   assert.ok([get('no-hash'),get('no-rights-url'),get('native-transfer')].every(x=>!x.productionVerified&&!x.gameApplied));
 });
+
+
+// [CC0 권리 증거 회귀] 원장 표기만으로 사용 완료를 허용하지 않으며 비검증 원본은 계속 차단한다.
+test('registered CC0 native sources retain verifiable official rights URLs and hashes before adaptation handoff',()=>{
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const eligible=registry.assets.filter(asset=>asset.corruptSource!==true);
+  const blocked=registry.assets.filter(asset=>asset.corruptSource===true);
+  assert.ok(eligible.length>=106);
+  for(const asset of eligible){
+    assert.match(asset.license,/^CC0(?:-1\.0)?$/);
+    assert.match(asset.sourceUrl||'',/^https:\/\//);
+    assert.match(asset.licenseEvidenceUrl||'',/^https:\/\//);
+    assert.match(asset.editableSourceHash||asset.sourceHash||asset.sourceSha256||asset.masterGlbHash||asset.masterGlbSha256||'',/^[a-f0-9]{64}$/i);
+  }
+  for(const asset of blocked){
+    assert.equal(Boolean(asset.licenseEvidenceUrl),false,'do not falsely validate stale source '+asset.id);
+  }
+  assert.ok(registry.version>=141);
+});
