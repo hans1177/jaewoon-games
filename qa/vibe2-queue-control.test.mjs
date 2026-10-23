@@ -3407,3 +3407,32 @@ test('PWA UUID로 위장한 로블록스 개발 작업도 웹 예약 제한을 �
   assert.ok(result.blocked.some(row=>row.task.id===forged.id&&
     row.reasons.includes('web-owner-native-platform-forbidden')));
 });
+
+// 웹조직 6게임 집중은 예약 순서만 조정하며 16 웹게임 목표와 개발 능력은 보존한다.
+test('game-primary focuses six active Web games while preserving sixteen distinct slots and the shared capacity',()=>{
+  const task=(gameId,phase,status='queued')=>({
+    id:`focus-web-${gameId}-${phase}`,gameId,target:'web',
+    department:'development',type:'implementation',status,
+    priority:'normal',releaseState:'development-confirmed',goal:'웹게임 실제 기능 수정',
+    sourceRoot:`web-games/${gameId}`,
+    responsibleFiles:[`web-games/${gameId}/${phase}.mjs`]
+  });
+  const active=Array.from({length:6},(_,i)=>task(`focus-${i}`,'running','running'));
+  const newGames=Array.from({length:10},(_,i)=>task(`new-${i}`,'initial'));
+  const unfocusedFollowups=Array.from({length:10},(_,i)=>task(`new-${i}`,'followup'));
+  const focusedFollowups=Array.from({length:6},(_,i)=>task(`focus-${i}`,'followup'));
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:64,tasks:[
+    ...active,...newGames,...unfocusedFollowups,...focusedFollowups
+  ]});
+  const selection=selectVibeQueueBatch(queue,{
+    maxConcurrentTasks:18,lane:'game-primary',webGameFlowTarget:16
+  });
+  assert.equal(queue.maxConcurrentTasks,64,'기존 최대 개발 능력을 줄이면 안 된다');
+  assert.equal(selection.selected.length,12,'실행 중 6개를 포함해 18개 슬롯을 초과하지 않는다');
+  assert.equal(selection.webGameFlow.activeGameIds.length,16,'기존 16종 웹게임 목표를 유지한다');
+  assert.equal(selection.webGameFlow.shortfall,0);
+  assert.ok(selection.selected.some(item=>item.id.endsWith('-followup')&&item.gameId.startsWith('focus-')),
+    '동일 우선순위라면 진행 중인 6개 웹게임의 후속 개발을 먼저 배정한다');
+  assert.equal(queue.tasks.filter(item=>item.status==='queued').length,26,
+    '대기 작업은 삭제하거나 완료 처리하지 않는다');
+});

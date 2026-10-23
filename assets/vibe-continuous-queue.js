@@ -709,6 +709,20 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const platformRows=Object.fromEntries(Object.keys(weights).map((name)=>[
     name,candidates.filter((row)=>platform(row.task)===name)
   ]));
+  // 웹조직 집중 개발: 실행 중인 웹게임과 사용자 지시를 먼저 고려해 최대 6개를
+  // 같은 우선순위 내부에서 재사용한다. 기존 16게임 목표·64개 개발 슬롯은 줄이지 않는다.
+  const webFocusRows=[...running,...(platformRows.web||[]).map(row=>row.task)]
+    .filter(task=>platform(task)==='web'&&clean(task.gameId));
+  webFocusRows.sort((a,b)=>
+    Number(b.ownerDirective===true)-Number(a.ownerDirective===true)
+    ||Number(b.status==='running')-Number(a.status==='running')
+    ||scoreTask(b,0)-scoreTask(a,0)
+    ||clean(a.gameId).localeCompare(clean(b.gameId)));
+  const webFocusGameIds=new Set();
+  if(laneMode==='game-primary')for(const task of webFocusRows){
+    if(webFocusGameIds.size>=6)break;
+    webFocusGameIds.add(clean(task.gameId));
+  }
   // 오너 직접 작업(2) > 정확한 집중 게임 작업(1) > 일반 개발(0) 순서.
   // 집중 대상을 우대하되 더 높은 오너 직접 지시는 침범하지 않는다.
   const strictOwnerRank=(task)=>task.ownerDirective===true?2:task.ownerFocusedCaretaker===true?1:0;
@@ -749,7 +763,10 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     for(const tier of tiers){
       const groups=[...tier.platforms].map(([name,items])=>({
         name,
-        rows:items.sort((a,b)=>b.score-a.score||a.task.id.localeCompare(b.task.id)),
+        rows:items.sort((a,b)=>
+          b.score-a.score
+          +(name==='web'?12*(Number(webFocusGameIds.has(clean(b.task.gameId)))-Number(webFocusGameIds.has(clean(a.task.gameId)))):0)
+          ||a.task.id.localeCompare(b.task.id)),
         cursor:0
       }));
       let left=groups.reduce((sum,group)=>sum+group.rows.length,0);
