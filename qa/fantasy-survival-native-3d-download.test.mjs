@@ -452,3 +452,29 @@ test('loading and errors never invoke a 2D gameplay renderer',()=>{
  assert.match(moduleSource,/if\(document\.hidden\)/);
  assert.match(moduleSource,/stableQualityWindows>=3/);
 });
+
+
+test('mobile native renderer does not drop visible monsters at a hidden cap',()=>{
+ const source=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+ const html=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
+ assert.match(source,/const cameraFrustum=new THREE.Frustum\(\)/);
+ assert.match(source,/cameraFrustum\.intersectsSphere\(creatureBounds\)/);
+ assert.match(source,/cameraFrustum\.setFromProjectionMatrix\(cameraProjection\)/);
+ assert.doesNotMatch(source,/displayed>=\(mobileBudget\?12:22\)/);
+ assert.match(source,/missingVisibleMonsterIds\.add/);
+ assert.match(html,/dataset\.nativeMissingMonsterIds=world3d\.getUnmappedVisibleMonsterIds\(\)\.join/);
+ assert.match(html,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+
+test('mobile game world taps use existing attack mechanics',()=>{
+ const html=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
+ assert.ok(html.includes('.actions>#attack{display:none!important}'));
+ assert.ok(html.includes('root.dataset.playerAttackAt=Number(p.attackAt||0).toFixed(0)'));
+ assert.ok(html.includes('if(!isCreative())attack();'));
+ assert.ok(html.includes('if(!isCreative()){'));
+ assert.ok(html.includes('if(pendingCombatTap)return;'));
+ assert.ok(html.includes('if(isCombatTapGesture(press,e,performance.now()))handleWorldTap(e)'));
+ assert.ok(html.includes('if(isCreative())handleWorldTap(e)'));
+ assert.ok(html.includes("SAVE_KEY='jaewoon_fantasy_survival_v1'"));
+});
