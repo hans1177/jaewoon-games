@@ -1,3 +1,4 @@
+// 파일명: qa/game-development-qa-runner.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -81,4 +82,13 @@ test('merge readiness requires actual executed QA and never trusts pending or em
   assert.equal(pending.pass,true,'legacy discovery behavior is unchanged');
   assert.equal(pending.mergeReady,false);
   assert.deepEqual(pending.failureGroups,[{signature:'PENDING_EXECUTION',count:1,gameIds:['pending']}]);
+});
+
+test('PR game scope uses the true head commit, not synthetic merge containing other games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/game-development-sync.yml','utf8');
+  assert.ok(workflow.includes('PR_HEAD: ${{ github.event.pull_request.head.sha }}'));
+  assert.ok(workflow.includes('head="$PR_HEAD"'));
+  assert.ok(workflow.includes('git diff --name-only "$base" "$head"'));
+  assert.ok(workflow.includes('GAME_QA_PR_HEAD_REQUIRED'));
+  assert.ok(!workflow.includes('git diff --name-only "$base" HEAD > /tmp/changed-game-files.txt'));
 });

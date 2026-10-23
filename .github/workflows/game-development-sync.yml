@@ -73,6 +73,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
           PUSH_BASE: ${{ github.event.before }}
         shell: bash
         run: |
@@ -89,7 +90,15 @@ jobs:
           fi
           if [ -n "$base" ]; then
             git cat-file -e "$base^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base"
-            git diff --name-only "$base" HEAD > /tmp/changed-game-files.txt
+            head=HEAD
+            if [ "$EVENT_NAME" = pull_request ]; then
+              # PR의 자동 생성 merge SHA는 다른 게임의 최근 main 변경을 섞을 수 있다.
+              # 실제 PR head만 비교해 변경한 게임의 QA를 정확히 실행한다.
+              if [ -z "$PR_HEAD" ]; then echo 'GAME_QA_PR_HEAD_REQUIRED' >&2; exit 1; fi
+              git cat-file -e "$PR_HEAD^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PR_HEAD"
+              head="$PR_HEAD"
+            fi
+            git diff --name-only "$base" "$head" > /tmp/changed-game-files.txt
           fi
           echo "GAME_QA_CHANGED_FILES=$(wc -l < /tmp/changed-game-files.txt)"
       - name: Run only game-relevant QA

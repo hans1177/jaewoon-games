@@ -352,6 +352,20 @@ try{
       href:location.href
     }))()`);
 
+    if(gameId==='party-rpg'){
+      // [실제 게임 연결] 등록만 된 CC0가 아니라 로더가 읽은 늑대 모델을 확인한다.
+      currentPhase='PARTY_RPG_CC0_WOLF_NATIVE_RUNTIME';
+      let evidence=null;
+      for(let attempt=0;attempt<48;attempt++){
+        evidence=await cdp.evaluate('window.vibe3dDiagnostics||null');
+        if(evidence?.loaded?.includes('wolf'))break;
+        await delay(250);
+      }
+      assert.ok(evidence?.loaded?.includes('wolf'),
+        'party-rpg: registered CC0 wolf FBX must load as a real native 3D model: '+JSON.stringify(evidence));
+      assert.ok(evidence?.missing?.includes('guardian'),
+        'party-rpg: unverified replacement roles must remain explicitly missing');
+    }
     currentPhase='ASSERT';
     const missing=local404.slice(missingStart).filter(item=>item!=='/favicon.ico');
     const exceptions=cdp.exceptions.filter(error=>
