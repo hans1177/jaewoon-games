@@ -9181,7 +9181,7 @@ test('no-model source-grounded new quest recipe enemy and region records preserv
   ])+';').join('');
   const methods=list.map(([catalog,,, ,method])=>
     'function '+method+'(id){const row='+catalog+'.find(x=>x.id===id);if(row)chosen.push(row.id);}').join('');
-  const source='<script>'+initial+'const literal="  const source='<script>'+initial+'let chosen=[];'+methods+'</script>';";let chosen=[];'+methods+'</script>';
+  const source='<script>'+initial+'const literal="$&";let chosen=[];'+methods+'</script>';
   write(path.join(sourceRoot,'index.html'),source);
   const plans=list.map(([,family,from,id])=>({
     family,referenceId:from,record:{id,title:'새로운 진행',objective:'다음 단서',reward:10,damage:2}
