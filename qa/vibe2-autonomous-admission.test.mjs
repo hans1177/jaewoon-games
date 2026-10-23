@@ -67,7 +67,7 @@ test('core cron and main-push auto-only reserve yields; explicit manual and owne
   assert.match(core,/VIBE2_AUTO_MAIN_WAKE_BACKLOG=EXISTING_GAME_PRIMARY_RESERVE_ALLOWED/);
   const gate=core.slice(core.indexOf('if [[ "$owner_publish"'),core.indexOf('echo "proceed=$proceed"'));
   assert.ok(gate.includes('VIBE2_EXECUTION_LANE:-game-primary'));
-  assert.ok(gate.includes("if [[ \"${VIBE2_EXECUTION_LANE:-game-primary}\" == 'game-primary' ]]"));
+  assert.ok(gate.includes("if [[ \"${VIBE2_EXECUTION_LANE:-game-primary}\" == 'game-primary' || \"${VIBE2_EXECUTION_LANE:-game-primary}\" == 'asset-development' ]]"));
   assert.match(gate,/proceed=false/);
   assert.match(core,/\[\[ "\$\{GITHUB_EVENT_NAME:-\}" == 'schedule' \]\]/);
   assert.match(core,/\[\[ "\$\{GITHUB_REF_NAME:-\}" == 'main' \]\]/);
