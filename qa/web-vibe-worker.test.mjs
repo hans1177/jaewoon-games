@@ -106,9 +106,9 @@ test('GitHub-hosted WEB_VIBE_1 rejects spoofed identity and requires independent
     {...context,GITHUB_ACTOR:'someone-else'},
     {...context,GITHUB_REPOSITORY:'other/team'},
     {...context,GITHUB_EVENT_NAME:'pull_request'},
-    {...context,GITHUB_REF:'refs/heads/feature'},
-    {...context,GEMINI_API_KEY:''}
+    {...context,GITHUB_REF:'refs/heads/feature'}
   ])assert.throws(()=>assertWebVibeWorkerEnvironment({token,cloud:true,environment:env}));
+  assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,environment:{...context,GEMINI_API_KEY:''}}).githubHosted,true);
   assert.throws(()=>assertWebVibeWorkerEnvironment({token:'',cloud:true,environment:context}));
 });
 test('existing cloud free-model response is bounded by same WEB source and save invariants',async()=>{
@@ -143,4 +143,20 @@ test('WEB cloud patch uses stable owner task branch and review checkpoint instea
  assert.match(source,/WEB_VIBE_REVIEW_QUEUE_STALE/);
  assert.match(source,/web-vibe-pr-created:needs-independent-qa-and-owner-merge/);
  assert.match(source,/merged:false,deployed:false/);
+});
+
+test('WEB onepatch uses existing gameplay function without model key and rejects unsupported keyless tasks',async()=>{
+  const game='<html><body><button id="attackButton" data-gameplay-action="attack">공격</button>'
+    +'<script>let attacks=0;function attack(){attacks+=1;}</script>'
+    +'<section>Existing gameplay and mobile game controls remain unchanged for all players.</section></body></html>';
+  const task={gameId:'demo',goal:'모바일 공격 버튼 터치 연결'};
+  const edit=await proposeWebVibeChange(task,{relative:'web-games/demo/index.html',original:game},
+    {cloud:true,apiKey:'',geminiImpl:async()=>{throw Error('unexpected model call');}});
+  assert.equal(edit.deterministicWebInput,true);
+  assert.match(edit.updated,/addEventListener\("click", attack\)/);
+  assert.match(edit.updated,/let attacks=0/);
+  assert.match(edit.updated,/Existing gameplay/);
+  await assert.rejects(()=>proposeWebVibeChange({...task,goal:'보스 전투 로직 전체 작성'},
+    {relative:'web-games/demo/index.html',original:'<html><script>function dodge(){}</script></html>'},
+    {cloud:true,apiKey:'',geminiImpl:async()=>{throw Error('model called');}}),/WEB_VIBE_FREE_MODEL_KEY_MISSING/);
 });
