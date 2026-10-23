@@ -3707,6 +3707,51 @@ function internalAssetPlatformApplicationMode(asset={},target=''){
   if(['ROBLOX','UNITY','WEB'].includes(resolved))return'NATIVE_REAUTHOR_BASE';
   return'NOT_SUPPORTED';
 }
+// All 12 existing library families can derive a small, role-matched CC0 variant.
+// This is a native asset handoff, NOT proof that a binary was modified or game-linked.
+const CC0_LIGHT_ADAPTATION_BY_FAMILY=Object.freeze({
+  CHARACTER:['RIG_OR_RETARGET_EXISTING_MOTION','PROPORTION_AND_EQUIPMENT_FIT','MATERIAL_STYLE_MATCH'],
+  CREATURE:['SPECIES_SILHOUETTE_AND_SCALE','EXISTING_RIG_MOTION_BIND','MATERIAL_STYLE_MATCH'],
+  BUILDING:['SCALE_DOOR_SOCKET_ALIGNMENT','MATERIAL_STYLE_MATCH','COLLISION_AND_NAVMESH_RECHECK'],
+  ENVIRONMENT:['SCALE_AND_ORIENTATION','MATERIAL_AND_LIGHTING_STYLE_MATCH','LOD_AND_MOBILE_BUDGET'],
+  WEAPON:['GRIP_SOCKET_ALIGNMENT','MATERIAL_STYLE_MATCH','HIT_FEEDBACK_VISUAL_ONLY'],
+  SKILL:['EFFECT_TIMING_ALIGNMENT','COLOR_AND_INTENSITY_STYLE_MATCH','MOBILE_EFFECT_BUDGET'],
+  MATERIAL:['TILING_AND_UV_ALIGNMENT','PALETTE_AND_ROUGHNESS_MATCH','PLATFORM_SHADER_CONVERSION'],
+  AUDIO:['GAIN_AND_TRIM_NONDESTRUCTIVE','LOOP_CROSSFADE_WHEN_APPLICABLE','PLATFORM_ENCODING_AND_LEVEL_CHECK'],
+  VFX:['SCALE_AND_TIMING','PALETTE_AND_LAYER_MATCH','MOBILE_PARTICLE_BUDGET'],
+  UI:['SIZE_AND_SAFE_AREA','COLOR_AND_TYPOGRAPHY_MATCH','TOUCH_HIT_TARGET_CHECK'],
+  MOTION:['RIG_RETARGETING_WHEN_COMPATIBLE','TIMING_AND_FOOT_CONTACT','TRANSITION_CONTINUITY'],
+  PROP:['SCALE_AND_SOCKET_ALIGNMENT','MATERIAL_STYLE_MATCH','COLLISION_AND_INTERACTION_VISUAL_CHECK']
+});
+function cc0LightAdaptationFor(asset={},family='',applicationMode='',target='',sourcePath='',sourceHash=''){
+  const sha=/^[a-f0-9]{64}$/i.test(clean(sourceHash));
+  const isSource=Boolean(clean(sourcePath));
+  const rightsUrl=clean(asset?.licenseEvidenceUrl||asset?.licenseSourceUrl||asset?.licenseEvidence);
+  const sourceUrl=clean(asset?.sourceUrl||asset?.originalSourceUrl);
+  const sourceState=!isSource?'SOURCE_PATH_MISSING':!sha?'SOURCE_SHA256_REVERIFY_REQUIRED'
+    :!rightsUrl||!sourceUrl?'RIGHTS_EVIDENCE_REVERIFY_REQUIRED':'DERIVATIVE_INPUT_CANDIDATE';
+  return freeze({
+    eligibleCC0Original:true,
+    licensedModificationAllowed:true,
+    sourceOriginalImmutable:true,
+    sourcePath:isSource?clean(sourcePath):null,
+    sourceHash:sha?clean(sourceHash):null,
+    sourceState,
+    transforms:freezeList(CC0_LIGHT_ADAPTATION_BY_FAMILY[family]||[]),
+    styleSpecificSelectionRequired:true,
+    existingGameSystemCompatibilityRequired:true,
+    actualSourceBytesSha256Required:true,
+    targetPlatform:clean(target).toUpperCase(),
+    nativePlatformReauthoringRequired:applicationMode==='NATIVE_REAUTHOR_BASE',
+    gameSourceBindingAndRuntimeQaRequired:true,
+    realDerivedFileCreated:false,
+    gameBindingVerified:false,
+    productionVerified:false,
+    gameApplied:false,
+    changeMustBeRealNotMetadataOnly:true,
+    unverifiedAssetsNeverCountAsFinished:true
+  });
+}
 export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target='',gameId='',baseMaterialLoadout={}}={}){
   const resolved=clean(target).toLowerCase();
   const required=['roblox','unity','web'].includes(resolved);
@@ -3749,6 +3794,11 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
         fileRoles:freeze(Object.fromEntries(Object.entries(asset?.fileRoles||{}).map(([role,files])=>[role,freezeList(files)]))),
         companyCommonBase:asset?.companyCommonBase===true,
         verifiedCompanyReusable:asset?.verifiedCompanyReusable===true,
+        cc0LightAdaptation:cc0LightAdaptationFor(
+          asset,family,applicationMode,resolved,
+          clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath||asset?.path),
+          clean(asset?.editableSourceHash||asset?.sourceHash||asset?.sourceSha256||asset?.masterGlbHash||asset?.masterGlbSha256)
+        ),
         roleCompatibility:'EVALUATE_AGAINST_EXISTING_GAME_SYSTEM',
         gameplayAuthority:false
       });
@@ -3769,14 +3819,14 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
   const baseMaterialAtomCount=Object.values(baseMaterialFamilies).reduce((sum,rows)=>sum+rows.length,0);
   const candidateCountsByFamily=Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[family,familyCandidates[family].length]));
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify({
-    version:2,gameId:clean(gameId),target:resolved,libraryVersion:Number(companyRegistry?.version||0),
+    version:3,gameId:clean(gameId),target:resolved,libraryVersion:Number(companyRegistry?.version||0),
     baseMaterialFamilies:Object.fromEntries(Object.entries(baseMaterialFamilies).map(([family,rows])=>[family,[...rows].sort()])),
     candidates:Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[
-      family,familyCandidates[family].map(row=>[row.assetId,row.sourcePackId,row.applicationMode,row.path,[...row.sourceFiles],[...row.nativeArtifacts],row.fileRoles,row.masterSourcePath,row.sourceHash,row.artifactHash,row.platformVariants]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
+      family,familyCandidates[family].map(row=>[row.assetId,row.sourcePackId,row.applicationMode,row.path,[...row.sourceFiles],[...row.nativeArtifacts],row.fileRoles,row.masterSourcePath,row.sourceHash,row.artifactHash,row.platformVariants,row.cc0LightAdaptation]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
     ]))
   })).digest('hex');
   return freeze({
-    version:2,
+    version:3,
     required,
     authority:'company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract',
     gameId:clean(gameId)||null,
@@ -3803,6 +3853,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     spatialFamiliesRequire3dGeometrySource:true,
     crossGameAndGenreReuseUnrestricted:true,
     crossPlatformReuseRequiresNativeReauthoring:true,
+    verifiedCC0OriginalsCanBeNonDestructivelyAdapted:true,
+    allLibraryFamiliesLightAdaptationCovered:true,
+    cc0LightAdaptationFamilies:freezeList(Object.keys(CC0_LIGHT_ADAPTATION_BY_FAMILY)),
+    actualDerivedBytesAndGameRuntimeBindingMandatory:true,
     auditScoreIsUsageGate:false,
     lowScoreCompatibleAssetUseAllowed:true,
     baseMaterialAtomCount,
@@ -3828,6 +3882,9 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
       primitivePlainFallbackCannotPass:true,
       directCrossPlatformBinaryReuseForbidden:true,
       platformNativeAdaptationRequired:true,
+      cc0OriginalsCanBeLightlyAdaptedAfterRightsAndSourceVerification:true,
+      derivativeNeverModifiesOriginal:true,
+      adaptationIsNotSuccessfulUntilRealGameSourceAndRuntimeBinding:true,
       reuseAndCompositionBeforeNewAuthoring:true
     })
   });
