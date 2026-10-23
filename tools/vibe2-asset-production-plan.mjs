@@ -1981,7 +1981,12 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         for(const match of pathUsageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           if(webConsumer){
             const before=pathUsageSource.slice(Math.max(0,match.index-120),match.index);
-            if(!/\b(?:src|href|poster|url|load|loadAsync|fetch|import|texture|textures|tex|sprite|sprites|image|images|img|icon|icons|model|models|frame|frames|asset|assets|glb|surfaceTexture|background|font|audio|sound|effect|vfx)\b/i.test(before))continue;
+            // 파일 테이블 별칭은 실제 로더 순회가 있어야만 소스 사용으로 인정한다.
+            // 목록 선언 하나만으로 미사용 에셋을 게임 연결 완료로 계산하지 않는다.
+            const loadedFileTable=/\b(?:const|let)\s+files\s*=\s*\{[^{}]{0,120}$/i.test(before)
+              &&/\bObject\.entries\(files\)/.test(pathUsageSource)
+              &&/\.loadAsync\s*\(/.test(pathUsageSource);
+            if(!loadedFileTable&&!/\b(?:src|href|poster|url|load|loadAsync|fetch|import|texture|textures|tex|sprite|sprites|image|images|img|icon|icons|model|models|frame|frames|asset|assets|glb|surfaceTexture|background|font|audio|sound|effect|vfx)\b/i.test(before))continue;
           }
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }
