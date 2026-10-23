@@ -22,7 +22,7 @@ const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
 const freeze = (value) => Object.freeze(value);
 const freezeList = (values = []) => freeze([...new Set((values || []).map(clean).filter(Boolean))]);
-const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.rbxm', '.glb', '.gltf', '.fbx', '.png', '.webp', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
+const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.rbxm', '.rbxmx', '.glb', '.gltf', '.fbx', '.png', '.webp', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 
