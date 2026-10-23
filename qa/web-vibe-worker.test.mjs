@@ -148,7 +148,7 @@ test('WEB cloud patch uses stable owner task branch and review checkpoint instea
 test('WEB onepatch uses existing gameplay function without model key and rejects unsupported keyless tasks',async()=>{
   const game='<html><body><button id="attackButton" data-gameplay-action="attack">공격</button>'
     +'<script>let attacks=0;function attack(){attacks+=1;}</script>'
-    +'<section>Existing gameplay and mobile game controls remain unchanged for all players.</section></body></html>';
+    +'<section>'+('Existing gameplay and mobile game controls remain unchanged for all players. ').repeat(10)+'</section></body></html>';
   const task={gameId:'demo',goal:'모바일 공격 버튼 터치 연결'};
   const edit=await proposeWebVibeChange(task,{relative:'web-games/demo/index.html',original:game},
     {cloud:true,apiKey:'',geminiImpl:async()=>{throw Error('unexpected model call');}});
