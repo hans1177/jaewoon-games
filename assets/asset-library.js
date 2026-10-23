@@ -232,16 +232,19 @@ async function choose(row,force=false){
  const bindings=(row.asset?.sourceConsumerBindings||[]).flatMap(item=>
   (item.evidenceFiles||[]).map(file=>item.gameId+' → '+file));
  const boundInfo=bound.length?'코드 연결: '+bound.join(', '):'코드 연결: 확인된 기록 없음';
- const bindingInfo=bindings.length?'실제 연결 근거: '+bindings.join(' / '):'';
+ const bindingInfo=bindings.length?'실제 연결 근거: '+bindings.slice(0,6).join(' / ')+(bindings.length>6?' 외 '+(bindings.length-6)+'건':''):'';
  const verifiedBound=(row.asset?.sourceConsumerBindings||[]).some(item=>item.runtimeVerified===true);
  const verificationInfo=verifiedBound?'해당 연결의 실행검증 근거 표시 있음':'연결만으로 실행검증을 인정하지 않음';
+ const stages=['등록: 원장 항목','호환: 게임별 별도 검사',
+  bound.length?'코드 적용: 소스 연결 확인':'코드 적용: 미확인',
+  verifiedBound?'게임 실행검증: 기록 있음':'게임 실행검증: 미확인'].join(' / ');
  const sourcePath=String(row.asset?.sourcePath||row.asset?.path||'').trim();
  const sharedSource=sourcePath?(registry?.assets||[]).filter(asset=>String(asset?.sourcePath||asset?.path||'').trim()===sourcePath).length:0;
  const sourceInfo=sourcePath?'원본 경로: '+sourcePath:'원본 경로: 미기재';
  const sharedInfo=sharedSource>1?'동일 경로 등록 '+sharedSource+'개 · 실제 중복 여부는 별도 확인 필요':'';
  const sourceVersion=row.asset?.sourceRevision||row.asset?.version?'자산 버전: '+(row.asset.sourceRevision||row.asset.version):'';
  const registryVersion=registry?.version?'등록부 버전: '+registry.version:'';
- $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=(kind==='all'||kind==='native')?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,consumers,boundInfo,bindingInfo,verificationInfo,sourceInfo,sharedInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
+ $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=(kind==='all'||kind==='native')?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,stages,consumers,boundInfo,bindingInfo,verificationInfo,sourceInfo,sharedInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
  $('assetType').textContent=kind==='all'?(categoryLabels[category]||category).toUpperCase():kind==='monster'?'MONSTER STUDIO':kind==='common'?'COMMON CHARACTER MOTION':'WORLD LIBRARY';
  $('assetCanvas').hidden=true;$('assetImage').hidden=true;$('motionControls').hidden=true;$('playbackControls').hidden=true;$('inspectionMetrics').hidden=true;
  $('meshControls').hidden=true;$('meshWireframe').checked=false;
