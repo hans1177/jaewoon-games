@@ -35,9 +35,15 @@ test('폐기된 웹 경로는 계획에서 제외하고 정상 웹게임은 계�
   assert.equal(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'),true);
 });
 
-test('backlog defer performs only owner-authorized lifecycle checkpoint before expensive workers',()=>{
+test('backlog preserves existing game-primary reservation and confines focused recovery to deferred lanes',()=>{
   const workflow=fs.readFileSync(path.join(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
   assert.match(workflow,/VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG/);
+  assert.match(workflow,/VIBE2_AUTO_MAIN_WAKE_BACKLOG=EXISTING_GAME_PRIMARY_RESERVE_ALLOWED/);
+  const wakeGate=workflow.split('# Only cron/main-push automatic reserve wakes')[1]?.split('echo "proceed=$proceed"')[0];
+  assert.ok(wakeGate);
+  assert.ok(wakeGate.includes("if [[ \"\u0024{VIBE2_EXECUTION_LANE:-game-primary}\" == 'game-primary' ]]"));
+  assert.ok(wakeGate.indexOf('OWNER_PAGES_PUBLICATION_PRIORITY')<wakeGate.indexOf('EXISTING_GAME_PRIMARY_RESERVE_ALLOWED'));
+  assert.match(wakeGate,/EXISTING_GAME_PRIMARY_RESERVE_ALLOWED[\s\S]*?else[\s\S]*?proceed=false/);
   assert.match(workflow,/focus_reconcile=true/);
   assert.match(workflow,/focus_reconcile=\$focus_reconcile/);
   assert.match(workflow,/name: Checkout Vibe2 control line\n\s+if: steps\.main_wake\.outputs\.proceed == 'true' \|\| steps\.main_wake\.outputs\.focus_reconcile == 'true'/);
