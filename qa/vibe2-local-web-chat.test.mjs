@@ -206,31 +206,15 @@ test('remote owner receipt calls only local Ollama, preserves original instructi
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('local receiver authenticates owner while direct cloud game work never waits for advisory',()=>{
+test('웹 작업은 유니티 전용 로컬 실행기를 깨우지 않고 인증된 클라우드 경로로 접수된다',()=>{
   const workflow=fs.readFileSync(path.join(ROOT,'.github/workflows/pwa-command-bridge.yml'),'utf8');
-  const local=workflow.slice(workflow.indexOf('  local-advisory:'),workflow.indexOf('  bridge:'));
-  assert.doesNotMatch(local,/needs:|runs-on: ubuntu/);
-  assert.match(local,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
-  assert.match(local,/contents: read/);assert.match(local,/persist-credentials: false/);
-  assert.match(local,/--receive-owner-comment/);
-  assert.match(local,/shell: cmd/);assert.match(local,/if errorlevel 1 exit \/b 1/);
-  assert.doesNotMatch(local,/ExecutionPolicy|Set-ExecutionPolicy|shell: powershell/);
-  const expression=/if: >-\n([\s\S]+?)\n    runs-on:/.exec(local)[1].trim();
-  const admits=new Function('github','startsWith','return ('+expression+');');
-  const github={event_name:'issue_comment',repository:'hans1177/jaewoon-games',actor:'hans1177',
-    event:{action:'created',sender:{login:'hans1177'},comment:{body:'/vibe-local-web {}',author_association:'OWNER',user:{login:'hans1177',type:'User'}}}};
-  const check=g=>admits(g,(value,prefix)=>String(value).startsWith(prefix));
-  assert.equal(check(github),true);
-  for(const change of [g=>g.actor='attacker',g=>g.repository='fork/repo',g=>g.event.action='edited',
-    g=>g.event.sender.login='attacker',g=>g.event.comment.user.login='attacker',g=>g.event.comment.user.type='Bot',
-    g=>g.event.comment.author_association='COLLABORATOR',g=>g.event.comment.body='ordinary comment',g=>g.event_name='push']){
-    const rejected=structuredClone(github);change(rejected);assert.equal(check(rejected),false);
-  }
+  assert.doesNotMatch(workflow,/  local-advisory:|jaewoon-unity|runs-on: \\[self-hosted/);
   const bridge=workflow.slice(workflow.indexOf('  bridge:'));
-  assert.doesNotMatch(bridge,/needs: local-advisory|needs\.local-advisory/);
+  assert.match(bridge,/runs-on: ubuntu-latest/);
+  assert.doesNotMatch(bridge,/needs: local-advisory|needs\\.local-advisory/);
   assert.match(bridge,/github.event_name != 'issue_comment'/);
   assert.match(bridge,/github.event.comment.author_association == 'OWNER'/);
   assert.match(bridge,/github.event.comment.user.type == 'User'/);
   assert.match(bridge,/validateLocalWebOwnerEvent/);
-  assert.match(bridge,/gh workflow run vibe2-continuous-core\.yml/);
+  assert.match(bridge,/gh workflow run vibe2-continuous-core\\.yml/);
 });

@@ -10,6 +10,13 @@ const UUID='11111111-2222-4333-8444-555555555555';
 function fixture(){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'pwa-vibe-'));
   fs.mkdirSync(path.join(root,'web-games','insect-survival'),{recursive:true});
+  fs.writeFileSync(path.join(root,'web-games','insect-survival','index.html'),'<html>web game</html>');
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    webDevelopmentOrganization:{enabled:true,target:'WEB',webSourceRoot:'web-games/',
+      nativeDevelopmentDispatchDenied:true,nativeCodeWriteDenied:true,
+      sharedAssetLibraryReadOnly:true,homepageDevelopmentCommandDenied:true}
+  }));
   fs.mkdirSync(path.join(root,'unity-games','daechung-rpg'),{recursive:true});
   const catalog={games:[
     {id:'insect-survival',name:'곤충 생존기',webPath:'/web-games/insect-survival/',homepageCategory:'development-confirmed'},
@@ -24,6 +31,8 @@ test('PWA owner 지시는 Web Vibe2 최우선 작업으로 변환된다',()=>{
   const result=ingestPwaTask({task:{id:UUID,game_id:'insect-survival',body:'거미 공격 모션 확인하고 수정해',kind:'directive',priority:'urgent'},queue:{version:3,tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
   const task=result.tasks[0];
   assert.equal(task.target,'web');
+  assert.equal(task.sourceRoot,'web-games/insect-survival');
+  assert.ok(task.evidence.includes('web-organization-boundary:v1'));
   assert.equal(task.priority,'owner-immediate');
   assert.equal(task.ownerDirective,true);
   assert.equal(task.requiresOwnerDecision,false);
@@ -35,6 +44,7 @@ test('유니티 소스는 개발 금지하며 웹 소스만 기존 GitHub 게임
   const f=fixture();
   assert.throws(()=>ingestPwaTask({task:{id:UUID,game_id:'daechung-rpg',body:'이동 모션 수정',kind:'feedback'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root}),/웹게임 소스가 없어 작업을 접수할 수 없음/);
   fs.mkdirSync(path.join(f.root,'web-games','daechung-rpg'),{recursive:true});
+  fs.writeFileSync(path.join(f.root,'web-games','daechung-rpg','index.html'),'<html>web game</html>');
   const result=ingestPwaTask({task:{id:UUID,game_id:'daechung-rpg',body:'웹 이동 모션 수정',kind:'feedback'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
   assert.equal(result.tasks[0].target,'web');
   assert.equal(result.tasks[0].releaseState,'release-confirmed');
@@ -81,6 +91,7 @@ test('GitHub authenticated owner event accepts only exact existing-web directive
 test('explicit web directive is restricted to WEB even when Unity project exists',()=>{
   const f=fixture();
   fs.mkdirSync(path.join(f.root,'web-games','daechung-rpg'),{recursive:true});
+  fs.writeFileSync(path.join(f.root,'web-games','daechung-rpg','index.html'),'<html>web game</html>');
   const result=ingestPwaTask({
     task:{id:UUID,game_id:'daechung-rpg',body:'웹 HUD 개선',platform:'web'},
     queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root
@@ -176,4 +187,21 @@ test('GitHub owner ideas use the existing Vibe queue for one-game source-first w
  assert.match(row.goal,/독립 QA/);
  assert.ok(row.evidence.includes('verified-qa-required'));
  assert.ok(result.maxConcurrentTasks>1,'must reuse existing parallel owner queue');
+});
+
+test('웹 조직은 잘못된 원본 경로·빈 게임·정책 오류를 거부한다',()=>{
+  const f=fixture(),task={id:UUID,game_id:'insect-survival',body:'조작 수정',platform:'web'};
+  const ingest=catalog=>ingestPwaTask({task,queue:{tasks:[]},catalog,status:f.status,repoRoot:f.root});
+  const original=f.catalog.games[0];
+  assert.throws(()=>ingest({games:[{...original,webPath:'/roblox-games/insect-survival/'}]}),/WEB_ORG_WEB_SOURCE_MISMATCH/);
+  assert.throws(()=>ingest({games:[{...original,webPath:'/web-games/daechung-rpg/'}]}),/WEB_ORG_WEB_SOURCE_MISMATCH/);
+  assert.throws(()=>ingestPwaTask({task:{...task,platform:'unity'},queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root}),/명시적 플랫폼 요청은 웹만 지원/);
+  fs.unlinkSync(path.join(f.root,'web-games','insect-survival','index.html'));
+  assert.throws(()=>ingest(f.catalog),/웹게임 소스가 없어/);
+  fs.writeFileSync(path.join(f.root,'web-games','insect-survival','index.html'),'<html>web game</html>');
+  const policyPath=path.join(f.root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.webDevelopmentOrganization.nativeCodeWriteDenied=false;
+  fs.writeFileSync(policyPath,JSON.stringify(policy));
+  assert.throws(()=>ingest(f.catalog),/WEB_ORG_CENTRAL_BOUNDARY_NOT_VERIFIED/);
 });
