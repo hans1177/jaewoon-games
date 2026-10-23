@@ -174,7 +174,7 @@ const RETRY_OBSERVATION_CHUNK_BYTES=1600;
 const COMPACT_DIRECTIVE_LINE_BYTES=1800;
 
 const TARGET_EXTENSIONS=Object.freeze({
-  roblox:new Set(['.luau','.lua','.json']),
+  roblox:new Set(['.luau','.lua','.json','.svg','.toml']),
   web:new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg']),
   unity:new Set(['.cs','.asmdef','.json','.uxml','.uss','.unity','.prefab','.asset']),
   unreal:new Set(['.h','.hpp','.cpp','.cc','.cxx','.cs','.ini','.uproject','.uplugin','.json']),
