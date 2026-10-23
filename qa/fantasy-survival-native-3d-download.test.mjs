@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../assets/vibe-motion-director.js';
@@ -104,7 +105,7 @@ test('original source materials and Diablo-II-style native camera are bound to g
  // No assistant-made meshes or fabricated material palette are permitted in the
  // final visible 3D game: all floor triangles must be from original floor_base.obj.
  assert.match(source,/models\.get\('floor_base'\)/);
- assert.match(source,/sourceFloor\.clone\(\)/);
+ assert.match(source,/new THREE\.InstancedMesh\(sourceFloor\.geometry,sourceFloor\.material,49\)/);
  assert.match(source,/Original CC0 MTL diffuse missing/);
  assert.doesNotMatch(source,/new THREE\.PlaneGeometry\(/);
  assert.doesNotMatch(source,/const PALETTE\s*=/);
@@ -222,7 +223,7 @@ test('CC0 five-choice 3D player customizer is source-bound and does not rewrite 
  assert.match(index,/id="avatarPanel"/);
  assert.match(index,/AVATAR_SAVE_KEY='jaewoon_fantasy_survival_avatar_v1'/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
- assert.match(index,/module\.createWorld3d\(document\.getElementById\('world3d'\),avatarAppearance\)/);
+ assert.match(index,/module\.createWorld3d\(document\.getElementById\('world3d'\),avatarAppearance,state\)/);
  assert.match(moduleSource,/async function setAvatarAppearance\(requested\)/);
  assert.match(moduleSource,/getAvatarAppearance:\(\)=>\(\{\.\.\.selectedAppearance\}\)/);
  assert.match(moduleSource,/productionReady:false/);
@@ -342,7 +343,7 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
  assert.match(moduleSource,/child\.userData\.worldPoint=\{x:e\.x,y:e\.y\}/);
  assert.match(moduleSource,/interactables\.push\(child\)/);
- assert.match(moduleSource,/undeadProxySourceLoaded:!!undeadSource/);
+ assert.match(moduleSource,/get undeadProxySourceLoaded\(\)\{return !!undeadSource\}/);
  assert.match(moduleSource,/productionReady:false/);
  assert.match(index,/wastelandMummy:\{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30/);
 });
@@ -366,4 +367,88 @@ test('CC0 action profile selects exact source clips and leaves combat authority 
  assert.match(moduleSource,/clip\.name===clipName/);
  assert.match(moduleSource,/THREE\.LoopOnce/);
  assert.match(moduleSource,/attackAt!==lastHeroAttackAt/);
+});
+
+// 회귀: 실제 동기화 함수를 실행해 모바일 군집의 2D 복귀 재발을 막는다.
+test('mapped crowds remain native 3D without losing visible enemies',()=>{
+ const body=moduleSource.split('function synchronizeNativeCreatures(state,px,py,stamp){')[1]
+  ?.split('\n  if(hero)scene.add(hero.avatar);')[0];
+ assert.ok(body,'native creature synchronization missing');
+ const actors=new Map(),missing=new Set(),interactables=[];
+ const source={model:{},clips:[],height:1,floor:0};
+ const vector=()=>({set(){}});
+ class Group{constructor(){this.position=vector();this.rotation={};this.userData={}}add(){}}
+ const sync=new Function('mobileBudget','qualityFactor','missingVisibleMonsterIds',
+  'NATIVE_CREATURE_BY_ID','nativeCreatureSources','undeadSource','nativeCreatureActors',
+  'cloneAnimatedRig','THREE','scene','interactables','performance','SCALE',
+  'cameraFrustum','creatureBounds',
+  'return function synchronizeNativeCreatures(state,px,py,stamp){'+body)(
+   true,1,missing,new Map([['shadowwolf','wolf.fbx']]),new Map([['wolf.fbx',source]]),
+   null,actors,()=>({scale:{setScalar(){}},position:{},traverse(fn){fn({isMesh:true,userData:{}})}}),
+   {Group}, {add(){},remove(){}},interactables,{now:()=>1000},1/48,
+   {intersectsSphere:bounds=>bounds.center.x<100},
+   {center:{x:0,set(x){this.x=x}}}
+  );
+ const state={area:'surface',enemies:Array.from({length:24},(_,i)=>({
+  id:'wolf-'+i,type:{id:'shadowwolf',r:19},area:'surface',x:i,y:0,hp:95
+ }))};
+ const before=JSON.stringify(state);
+ assert.equal(sync(state,0,0,1),false,'mapped crowd must not request 2D fallback');
+ assert.equal(actors.size,24,'visible actors cannot be dropped at the former mobile cap');
+ assert.equal(interactables.length,24,'every visible enemy must remain tappable');
+ assert.equal(missing.size,0);
+ assert.equal(JSON.stringify(state),before,'rendering must not mutate gameplay state');
+ state.enemies=[{id:'missing',type:{id:'unknown'},area:'surface',x:1,y:0,hp:10}];
+ assert.equal(sync(state,0,0,2),true,'a genuinely missing threat must still be reported');
+ assert.deepEqual([...missing],['unknown']);
+ assert.equal(actors.size,0,'departed crowd must release its actor instances');
+});
+
+// 압축: 내려받은 원본과 해제 후 바이트가 같아야 리그·모션 보존으로 인정한다.
+test('game-specific compressed assets preserve original bytes and source hashes',()=>{
+ const entry=ledger.entries.find(e=>e.id==='fantasy-survival-lossless-transfer-v1');
+ assert.equal(entry.license,'CC0-1.0');
+ for(const field of ledger.policy.requiredFields)assert.ok(field in entry,'license provenance field missing: '+field);
+ for(const file of entry.evidence.files){
+  const bytes=fs.readFileSync(file.path);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),file.sha256);
+  assert.ok(bytes.length<file.sourceBytes*.4,'compressed payload must be smaller');
+  if(file.sourcePath){
+   const original=fs.readFileSync(file.sourcePath);
+   assert.equal(createHash('sha256').update(original).digest('hex'),file.sourceSha256);
+   assert.deepEqual(gunzipSync(bytes),original,'rig/clip bytes changed');
+  }else{
+   const packed=JSON.parse(gunzipSync(bytes));
+   for(const parent of file.sources){
+    const name=parent.path.split('/').at(-1),[kind,ext]=name.split('.');
+    const original=fs.readFileSync(parent.path);
+    assert.equal(createHash('sha256').update(original).digest('hex'),parent.sha256);
+    assert.equal(packed[kind][ext],original.toString('utf8'));
+   }
+  }
+ }
+ assert.match(moduleSource,/parseAsync\(bytes/);
+ assert.match(moduleSource,/mergeVertices\(geometry,1e-6\)/);
+});
+
+test('streaming is nearest-first bounded and never requests the full species library at startup',()=>{
+ assert.doesNotMatch(moduleSource,/Object\.keys\(NATIVE_CREATURE_MODELS\)\.map/);
+ assert.match(moduleSource,/distance>1200/);
+ assert.match(moduleSource,/loadingCreatureCount>=\(mobileBudget\?2:4\)/);
+ assert.match(moduleSource,/failed\.attempts>=3/);
+ assert.match(moduleSource,/sampleNow-failed\.at<10000/);
+ assert.match(moduleSource,/if\(disposed\)\{/);
+ assert.match(moduleSource,/worldPoints\?\.\[hit\.instanceId\]/);
+});
+
+test('loading and errors never invoke a 2D gameplay renderer',()=>{
+ const draw=index.split('function draw(){')[1]?.split('function syncRuntimeMeta()')[0];
+ assert.ok(draw);
+ assert.doesNotMatch(draw,/drawBackground|drawCreature|drawPlayer|drawCave|drawUnderwater/);
+ assert.match(index,/if\(ready\)\{update\(dt,now\);syncRuntimeMeta\(\);draw\(\)\}/);
+ assert.match(index,/nativeStatus\.hidden=ready/);
+ assert.match(index,/nativeRetry\.addEventListener\('click'/);
+ assert.doesNotMatch(index,/3d-fallback-/);
+ assert.match(moduleSource,/if\(document\.hidden\)/);
+ assert.match(moduleSource,/stableQualityWindows>=3/);
 });

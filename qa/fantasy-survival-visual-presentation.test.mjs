@@ -394,7 +394,7 @@ test('world tree inner room is reachable from original world tree without resizi
   assert.match(functionBody('handleWorldTap'),/worldtree-inner-door/);
   assert.match(functionBody('handleWorldTap'),/worldtree-inner-exit/);
   assert.match(functionBody('drawWorldTreeInterior'),/Living|나이테|발광/);
-  assert.match(functionBody('draw'),/drawWorldTreeInterior/);
+  assert.doesNotMatch(functionBody('draw'),/drawWorldTreeInterior/); // 오너 지시: 2D 대체 화면 금지
   assert.match(functionBody('update'),/WORLD_TREE_INTERIOR\.w-85/);
   assert.match(source,/s\.area==='worldtreeinside'\?'worldtreeinside'/);
   assert.match(source,/jaewoon_fantasy_survival_v1/);
@@ -440,7 +440,7 @@ test('world tree chamber art and cellar entrance are bound to the existing tap a
   assert.match(inside,/floor\.addColorStop\(0,'#617756'\)/);
   assert.match(inside,/수액 정원/);
   assert.match(inside,/세계수 지하 · 두 번 눌러 내려가기/);
-  assert.match(functionBody('draw'),/drawWorldTreeInterior\(cx,cy/);
+  assert.doesNotMatch(functionBody('draw'),/drawWorldTreeInterior\(cx,cy/);
 });
 
 test('underground entrance and exit round-trip preserve the previous outdoor passage and saved world tree destination',()=>{
@@ -499,7 +499,7 @@ test('goblin outpost entrance is on the western world tree field and marked on m
  assert.ok(match,'전초기지 입구 좌표가 있어야 함');
  const x=Number(match[1]),y=Number(match[2]);
  assert.ok(x>=6180&&x<9000&&y>=9150&&y<=10000,'세계수 서쪽 지상에 있어야 함');
- assert.match(functionBody('draw'),/drawGoblinOutpostEntrance\(cx,cy\)/);
+ assert.doesNotMatch(functionBody('draw'),/drawGoblinOutpostEntrance\(cx,cy\)/);
  assert.match(functionBody('drawGoblinOutpostEntrance'),/fillText\('고블린 전초기지'/);
  assert.match(functionBody('drawMap'),/GOBLIN_OUTPOST_ENTRANCE\.x\*sx/);
  assert.match(functionBody('drawMiniMap'),/landmark\(GOBLIN_OUTPOST_ENTRANCE\.x,GOBLIN_OUTPOST_ENTRANCE\.y/);
