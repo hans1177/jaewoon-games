@@ -9089,7 +9089,7 @@ test('verified quest and crafting choices bind real gameplay state without exter
   const documents=new Map([['index.html',source]]);
   applyExactEdits('',candidate.edits,{documents});
   const events=new Map(),context={document:{getElementById:id=>({addEventListener:(name,fn)=>events.set(id+':'+name,fn)})}};
-  runInNewContext(documents.get('index.html').match(/<script>([\\s\\S]*)<\\/script>/)[1],context);
+  runInNewContext(documents.get('index.html').match(/<script>([\s\S]*)<\/script>/)[1],context);
   assert.equal(events.size,2);
   events.get('quests:click')();
   events.get('crafting:click')();
