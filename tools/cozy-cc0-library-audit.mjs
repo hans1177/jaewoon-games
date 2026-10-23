@@ -19,6 +19,23 @@ const EXPECTED_UNIVERSE='10767445741';
 const okId=v=>/^[1-9][0-9]*$/.test(String(v));
 const isCC0=v=>/^CC0(?:-1\.0)?$/.test(String(v||''));
 const getJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+function scanSources(folder){
+  const totals={directories:0,files:0,nativeModels:0,originalArchives:0};
+  function walk(current){
+    if(!fs.statSync(current,{throwIfNoEntry:false})?.isDirectory())return;
+    totals.directories++;
+    for(const d of fs.readdirSync(current,{withFileTypes:true})){
+      const full=path.join(current,d.name);
+      if(d.isDirectory())walk(full);
+      else if(d.isFile()){
+        totals.files++;
+        if(/\.(?:glb|gltf|fbx|obj|blend)$/i.test(d.name))totals.nativeModels++;
+        if(/\.(?:zip|7z|tar|gz)$/i.test(d.name))totals.originalArchives++;
+      }
+    }
+  }
+  walk(folder);return totals;
+}
 function gitBlob(p,root){
   const str=execFileSync('git',['ls-tree','HEAD','--',p],{cwd:root,encoding:'utf8'}).trim();
   const match=/^100644 blob ([0-9a-f]{40})\t/.exec(str);
@@ -30,10 +47,21 @@ export function auditCozyCC0({root=process.cwd()}={}){
   const original=fs.readFileSync(path.join(root,'roblox-games/cozy-island/shared/CozyCC0Library.luau'),'utf8');
   const report={gameId:'cozy-island',universeId:EXPECTED_UNIVERSE,originalLibraries:FAMILIES.length,
     libraryFamilies:{},externalRecords:(registry.registeredAssets||[]).length,licenseLedgerEntries:(ledger.entries||[]).length,
+    originalSourceInventory:{},licensedPbrAvailable:false,
     acceptedCC0Models:[],blockedAssets:[],sourceDigestsVerified:0};
   if(registry.rules?.requireSourceDigestForReuse!==true||
     registry.rules?.requireUniverseGrantForEachGame!==true||
     registry.rules?.neverAssumeCrossUniversePermissions!==true)throw Error('CC0_LIBRARY_POLICY_MISSING');
+  for(const rootPath of ['assets/roblox/actors/sources','assets/external','assets/shared']){
+    report.originalSourceInventory[rootPath]=scanSources(path.join(root,rootPath));
+  }
+  const ambientLicense=fs.readFileSync(path.join(root,'assets/roblox/common-materials-v1/LICENSE.txt'),'utf8');
+  if(!/ambientCG/.test(ambientLicense)||!/CC0 1\.0/.test(ambientLicense))throw Error('PBR_MATERIAL_CC0_LICENSE_MISSING');
+  const project=getJson(path.join(root,'roblox-games/cozy-island/default.project.json'));
+  const materialVariants=Object.values(project.tree?.MaterialService||{}).filter(v=>v?.$className==='MaterialVariant');
+  if(materialVariants.length<15)throw Error('CC0_MATERIAL_VARIANTS_NOT_IN_ROJO_BUILD');
+  report.licensedPbrAvailable=true;
+  report.licensedPbrVariantCount=materialVariants.length;
   for(const family of FAMILIES){
     const folder=path.join(root,'assets/roblox',family);
     if(!fs.statSync(folder,{throwIfNoEntry:false})?.isDirectory())throw Error('ROBLOX_LIBRARY_FAMILY_MISSING:'+family);
@@ -105,6 +133,8 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===path.resolve(process.argv[1
   fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');
   console.log('COZY_CC0_LIBRARY_FAMILY_AUDIT=PASS:'+Object.keys(result.libraryFamilies).length);
   console.log('COZY_CC0_LICENSE_ENTRIES='+result.licenseLedgerEntries);
+  console.log('COZY_CC0_PBR_VARIANTS='+result.licensedPbrVariantCount);
+  console.log('COZY_CC0_ORIGINAL_MODELS_IN_INVENTORY='+Object.values(result.originalSourceInventory).reduce((n,x)=>n+x.nativeModels,0));
   console.log('COZY_CC0_REGISTRY_SCANNED='+result.externalRecords);
   console.log('COZY_CC0_UNVERIFIED_ASSETS_BLOCKED='+result.blockedAssets.length);
   console.log('COZY_CC0_SOURCE_DIGEST_VERIFIED='+result.sourceDigestsVerified);
