@@ -280,10 +280,6 @@ jobs:
             sleep $((attempt * 2))
           done
           if [ "$success" != 1 ]; then
-            if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ] || [ "$GITHUB_EVENT_NAME" = 'issue_comment' ]; then
-              echo 'LOCAL_WEB_OWNER_DIRECTIVE_QUEUE_INGEST=FAIL' >&2
-              exit 1
-            fi
             printf '{"action":"sync","updates":[{"taskId":"%s","status":"needs_input","blocker":"Vibe2 큐 연결 실패. 다음 브리지 실행에서 다시 확인 필요."}]}\n' "$TASK_ID" > /tmp/pwa-ingest-fail.json
             curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
               -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
