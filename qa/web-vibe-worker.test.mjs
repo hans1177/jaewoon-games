@@ -160,3 +160,30 @@ test('WEB onepatch uses existing gameplay function without model key and rejects
     {relative:'web-games/demo/index.html',original:'<html><script>function dodge(){}</script></html>'},
     {cloud:true,apiKey:'',geminiImpl:async()=>{throw Error('model called');}}),/WEB_VIBE_FREE_MODEL_KEY_MISSING/);
 });
+
+test('existing exorcist office extends native mission and investigation contracts without altering saves or combat',()=>{
+  const source=fs.readFileSync('web-games/exorcist-office/index.html','utf8');
+  const missionsText=source.match(/const MISSIONS=(\[[\s\S]*?\]);\s*const INVESTIGATIONS=/)?.[1];
+  const investigationsText=source.match(/const INVESTIGATIONS=(\{[\s\S]*?\});\s*const OFFICE_UPGRADES=/)?.[1];
+  assert.ok(missionsText&&investigationsText);
+  const missions=Function('return '+missionsText)();
+  const investigations=Function('return '+investigationsText)();
+  assert.equal(missions.filter(m=>m.id==='m10').length,1);
+  assert.ok(missions.some(m=>m.id==='m9'&&m.ghost==='pack'&&m.reward===2600));
+  const mission=missions.find(m=>m.id==='m10');
+  assert.equal(mission.level,3);
+  assert.equal(mission.reward,2600,'new variant reuses established enemy reward tier');
+  assert.equal(mission.ghost,'pack','reuses existing enemy mechanics');
+  const scenario=investigations.m10;
+  assert.equal(scenario.tasks.length,8);
+  assert.equal(scenario.clueHints.length,5);
+  for(let i=0;i<scenario.tasks.length;i++){
+    for(const prior of scenario.tasks[i].requiresTasks||[])assert.ok(Number.isInteger(prior)&&prior>=0&&prior<i);
+    for(const hint of scenario.tasks[i].requiresClues||[])assert.ok(Number.isInteger(hint)&&hint>=0&&hint<scenario.clueHints.length);
+  }
+  assert.match(source,/INVESTIGATIONS\[m\.id\]/);
+  assert.match(source,/function updateInvestigation\(/);
+  assert.match(source,/for\(const m of MISSIONS\)/);
+  assert.match(source,/localStorage\.setItem\(SAVE_KEY,JSON\.stringify\(save\)\)/);
+  assert.match(source,/function defaultSave\(\)/);
+});
