@@ -42,6 +42,11 @@ jobs:
     # WEB_VIBE_1 owner ingress. Native/Roblox queue and workers stay separate.
     # Keep exact owner identity checks; this independent local route does not require cloud Vibe2.
     if: >-
+      (github.event_name == 'repository_dispatch' &&
+       github.event.action == 'vibe-local-web-owner-directive' &&
+       github.repository == 'hans1177/jaewoon-games' &&
+       github.actor == 'hans1177' &&
+       github.event.sender.login == 'hans1177') ||
       (github.event_name == 'issue_comment' &&
        github.repository == 'hans1177/jaewoon-games' &&
        github.actor == 'hans1177' &&
@@ -74,8 +79,8 @@ jobs:
           node --check tools/pwa-command-vibe2-task.mjs
           node --test qa/pwa-command-vibe2-task.test.mjs qa/web-vibe-organization.test.mjs
 
-      - name: Receive GitHub-authenticated local web owner directive
-        if: github.event_name == 'issue_comment'
+      - name: Receive GitHub-authenticated WEB-only owner directive
+        if: github.event_name == 'issue_comment' || github.event_name == 'repository_dispatch'
         id: local
         shell: bash
         run: |
@@ -159,9 +164,9 @@ jobs:
           echo 'WEB_VIBE_PUBLICATION=NOT_VERIFIED'
 
   github-cloud:
-    # Web owner instructions use only the cloud Web source route. No Unity/Roblox runner is dispatched.
-    # Keep the existing owner identity checks even when the local PC is unavailable.
-    if: github.event_name != 'issue_comment'
+    # Original PWA polling stays in the existing cloud lane. Local WEB chat
+    # and owner comments now execute only through independent WEB_VIBE_1.
+    if: github.event_name != 'issue_comment' && github.event_name != 'repository_dispatch'
     env:
       VIBE2_BRANCH: vibe2-unreal-core
     runs-on: ubuntu-latest
@@ -326,7 +331,7 @@ jobs:
       contents: read
     needs: bridge
     if: >-
-      github.event_name == 'issue_comment' &&
+      (github.event_name == 'issue_comment' || github.event_name == 'repository_dispatch') &&
       needs.bridge.result == 'success' &&
       needs.bridge.outputs.queued == 'true'
     runs-on: ubuntu-latest
