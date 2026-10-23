@@ -1156,15 +1156,44 @@ jobs:
               --no-result-runs="$no_result_fanin_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
           fi
           if [ -n "$superseded_queued_reservation_runs" ]; then
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-reservation-runs \
-              --queue="$control_root/.vibe2/queue.json" \
-              --runs="$superseded_queued_reservation_runs" | tee /tmp/vibe2-superseded-reservation-recovery.log
+            # Cancellation is asynchronous: a queued matrix worker can still start after
+            # the cancel request. NEVER clear its canonical reservation beforehand.
+            # Only the independently confirmed 'completed' probe above may requeue it
+            # on a later pass. Worker sync stays fail-closed and artifact waits survive.
             IFS=',' read -r -a superseded_cancel_ids <<< "$superseded_queued_reservation_runs"
             for superseded_run_id in "${superseded_cancel_ids[@]}"; do
               [ -n "$superseded_run_id" ] || continue
-              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/cancel" >/dev/null 2>&1 || true
-              echo "VIBE2_SUPERSEDED_QUEUED_RUN_CANCEL_REQUESTED=$superseded_run_id"
+              latest_run_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id" --jq '.status' 2>/dev/null || true)"
+              case "$latest_run_status" in
+                queued|pending|requested|in_progress) ;;
+                *) echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_UNVERIFIED_STATUS=$superseded_run_id:${latest_run_status:-UNKNOWN}"; continue ;;
+              esac
+              # Recheck immediately before cancellation: never interrupt active
+              # workers or any run that has produced immutable result artifacts.
+              if ! superseded_jobs="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/jobs?per_page=100" --jq '.jobs[] | select(.name | test("(^| / )worker \\(")) | .status' 2>/dev/null)"; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_JOB_PROBE_UNKNOWN=$superseded_run_id"
+                continue
+              fi
+              # Cancel only if EVERY matrix worker is still waiting; all pages are checked.
+              if [ -z "$superseded_jobs" ] || ! grep -Eq '^(queued|pending|requested)$' <<< "$superseded_jobs" || grep -Evq '^(queued|pending|requested)$' <<< "$superseded_jobs"; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_ACTIVE_OR_UNKNOWN=$superseded_run_id"
+                continue
+              fi
+              if ! result_artifacts="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/artifacts?per_page=100" --jq '.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-"))) | .name' 2>/dev/null)"; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_RESULT_OR_UNKNOWN=$superseded_run_id:PROBE_FAILED"
+                continue
+              fi
+              if [ -n "$result_artifacts" ]; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_RESULT_OR_UNKNOWN=$superseded_run_id:IMMUTABLE_RESULTS_PRESENT"
+                continue
+              fi
+              if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/cancel" >/dev/null 2>&1; then
+                echo "VIBE2_SUPERSEDED_QUEUED_RUN_CANCEL_REQUESTED=$superseded_run_id"
+              else
+                echo "VIBE2_SUPERSEDED_CANCEL_REQUEST_FAILED=$superseded_run_id"
+              fi
             done
+            echo 'VIBE2_SUPERSEDED_QUEUED_RESERVATION_REQUEUE=DEFERRED_UNTIL_RUN_COMPLETED'
           fi
 
           rm -f /tmp/vibe2-early-review-run /tmp/vibe2-early-review-candidates.txt
