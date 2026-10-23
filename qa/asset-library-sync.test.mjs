@@ -1,7 +1,11 @@
+// 파일명: qa/asset-library-sync.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import os from 'node:os';
+import path from 'node:path';
+import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 
 test('asset homepage automatically publishes new entries, preserves selection, excludes retired previews and recovers from outage',async()=>{
  const elements=new Map(),intervals=[],listeners={},requests=[];
@@ -683,4 +687,52 @@ test('complete native-first gallery distinguishes registered assets, material at
  assert.match(code,/제작 레시피|공용 모션 제작 레시피/);
  assert.match(html,/실행 검증은 서로 다른 상태/);
  assert.ok(registry.assets.some(row=>row.productionVerified===false));
+});
+
+test('canonical library sync persists only real game-source consumer evidence and cleans stale bindings',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-real-consumers-'));
+ try{
+  const assetPath=path.join(root,'assets','shared','wolf.fbx');
+  const webDir=path.join(root,'web-games','demo');
+  fs.mkdirSync(path.dirname(assetPath),{recursive:true});
+  fs.mkdirSync(webDir,{recursive:true});
+  fs.writeFileSync(assetPath,'verified fixture bytes');
+  const webFile=path.join(webDir,'index.html');
+  fs.writeFileSync(webFile,'<script>const assets={wolf:"../../assets/shared/wolf.fbx"};loader.loadAsync(assets.wolf);</script>');
+  fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
+   games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]
+  }));
+  const original={version:1,assets:[{
+   id:'wolf',family:'CREATURE',path:'assets/shared/wolf.fbx',license:'CC0-1.0',
+   productionVerified:false,runtimeVerificationState:'PENDING',consumerGameIds:['historical']
+  }],externalSources:[]};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(original));
+  const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(first.persisted,true,first.persistError||'source-backed registry not persisted');
+  const saved=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.deepEqual(saved.assets[0].sourceBoundConsumerGameIds,['demo']);
+  assert.deepEqual(saved.assets[0].consumerGameIds,['historical'],'declaration retained without fake runtime use');
+  assert.equal(saved.assets[0].sourceConsumerBindings[0].evidenceFiles[0],'web-games/demo/index.html');
+  assert.equal(saved.assets[0].sourceConsumerBindings[0].runtimeVerified,false);
+  assert.equal(saved.assets[0].productionVerified,false);
+  const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(second.changed,false,'identical code evidence must not churn library versions');
+  fs.writeFileSync(webFile,'<script>const unused=1;</script>');
+  const removed=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+  assert.equal(removed.persisted,true,removed.persistError||'stale source binding failed to clear');
+  const latest=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  assert.equal(latest.assets[0].sourceBoundConsumerGameIds,undefined);
+  assert.equal(latest.assets[0].sourceConsumerBindings,undefined);
+  assert.deepEqual(latest.assets[0].consumerGameIds,['historical']);
+  assert.ok(removed.sourceConsumerRelations.some(row=>row.classification==='STALE_SOURCE_BINDING'));
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('asset gallery separates source connections, historical declarations, and runtime proof',()=>{
+ const source=fs.readFileSync('assets/asset-library.js','utf8');
+ assert.match(source,/sourceBoundConsumerGameIds/);
+ assert.match(source,/sourceConsumerBindings/);
+ assert.match(source,/실제 연결 근거:/);
+ assert.match(source,/연결만으로 실행검증을 인정하지 않음/);
+ assert.match(source,/실제 연결 미확인/);
 });
