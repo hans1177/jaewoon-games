@@ -60,7 +60,9 @@ test('core cron and main-push auto-only reserve yields; explicit manual and owne
   assert.match(core,/\[\[ "\$\{GITHUB_EVENT_NAME:-\}" == 'schedule' \]\]/);
   assert.match(core,/\[\[ "\$\{GITHUB_REF_NAME:-\}" == 'main' \]\]/);
   assert.match(core,/echo "proceed=\$proceed" >> "\$GITHUB_OUTPUT"/);
-  assert.match(bridge,/gh workflow run vibe2-continuous-core\.yml/);
+  assert.match(bridge,/WEB_VIBE_BRANCH: web-vibe-control/);
+  assert.match(bridge,/tools\/web-vibe-organization\.mjs/);
+  assert.doesNotMatch(bridge,/gh workflow run vibe2-continuous-core\.yml|vibe2-unreal-core/);
   assert.match(core,/workflow_dispatch:/);
   assert.match(core,/github\.event\.action == 'vibe2-neuron-complete'/);
 });
