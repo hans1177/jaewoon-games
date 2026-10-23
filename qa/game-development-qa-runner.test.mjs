@@ -90,5 +90,11 @@ test('PR game scope uses the true head commit, not synthetic merge containing ot
   assert.ok(workflow.includes('head="$PR_HEAD"'));
   assert.ok(workflow.includes('git diff --name-only "$base" "$head"'));
   assert.ok(workflow.includes('GAME_QA_PR_HEAD_REQUIRED'));
+  assert.ok(workflow.includes("GH_TOKEN: ${{ github.token }}"));
+  assert.ok(workflow.includes("compare/$base...$head"));
+  assert.ok(workflow.includes("merge_base_commit.sha"));
+  assert.ok(workflow.includes('base="$common_base"'),'base must use PR common ancestor not moving main tip');
+  assert.ok(workflow.includes('GAME_QA_PR_MERGE_BASE_UNKNOWN'),'no silent QA skip on unavailable merge base');
+  assert.ok(workflow.indexOf('base="$common_base"')<workflow.indexOf('git diff --name-only "$base" "$head"'));
   assert.ok(!workflow.includes('git diff --name-only "$base" HEAD > /tmp/changed-game-files.txt'));
 });
