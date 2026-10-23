@@ -9072,6 +9072,35 @@ test('independent authoring refuses ambiguous controls and preserves responsible
   assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['other.html']}),null);
 });
 
+test('verified quest and crafting choices bind real gameplay state without external AI',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root='web-games/demo',sourceRoot=path.join(cwd,root);
+  const source='<button id="quests" data-gameplay-action="openQuestLog">의뢰</button>'
+    +'<button id="crafting" data-gameplay-action="openCrafting">제작</button>'
+    +'<script>let questOpened=0;let craftingOpened=0;'
+    +'function openQuestLog(){questOpened+=1;}'
+    +'function openCrafting(){craftingOpened+=1;}</script>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const order={target:'web',goal:'퀘스트와 제작 선택지를 실제 행동에 연결'};
+  const result=deterministicWebInputCandidate({order,sourceRoot,responsibleFiles:['index.html']});
+  assert.equal(result?.deterministicWebInput,true);
+  assert.equal(result?.edits.length,1);
+  const candidate=normalizeCandidate(result,{target:'web',responsibleFiles:['index.html'],sourceRootRelative:root,allowFullRewrite:false});
+  const documents=new Map([['index.html',source]]);
+  applyExactEdits('',candidate.edits,{documents});
+  const events=new Map(),context={document:{getElementById:id=>({addEventListener:(name,fn)=>events.set(id+':'+name,fn)})}};
+  runInNewContext(documents.get('index.html').match(/<script>([\s\S]*)<\/script>/)[1],context);
+  assert.equal(events.size,2);
+  events.get('quests:click')();
+  events.get('crafting:click')();
+  assert.equal(runInNewContext('questOpened',context),1);
+  assert.equal(runInNewContext('craftingOpened',context),1);
+  assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),source);
+  write(path.join(sourceRoot,'index.html'),'<button id="strike" data-gameplay-action="attack">공격</button><script>function attack(){return 1;}</script>');
+  assert.equal(deterministicWebInputCandidate({order:{target:'web',goal:'퀘스트 선택지만 연결'},sourceRoot,responsibleFiles:['index.html']}),null,
+    'quest requests cannot silently replace unrelated combat development');
+});
+
 test('independent authoring key checks occur only at the actual optional model request',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   const candidateStep=workflow.slice(workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n')),workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n'))+17000);

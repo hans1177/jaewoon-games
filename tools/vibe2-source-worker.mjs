@@ -1508,7 +1508,15 @@ export function robloxDeterministicPresentationEligible(order={}){
 export function deterministicWebInputCandidate({order={},sourceRoot='',responsibleFiles=[],patternLibrary=null}={}){
   if(clean(order.target).toLowerCase()!=='web'||worldLobbySourceWorkRequired(order)||!sourceRoot)return null;
   const intent=[order.goal,order.selectedTask?.goal,order.selectedTask?.description,order.selectedTask?.title].map(clean).join(' ');
-  if(!/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent))return null;
+  // 기존 코드의 플레이 동작만 연결한다. 시스템별 요청은 관련 없는 행동을 제외한다.
+  const generalInputIntent=/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent);
+  const gameplayFamilies=[
+    {requested:/combat|battle|attack|전투|공격|회피|사냥/i,action:/^(?:attack|dodge|interact|gather)$/},
+    {requested:/quest|mission|퀘스트|의뢰/i,action:/quest|mission/i},
+    {requested:/craft|forge|제작|대장간/i,action:/craft|recipe|forge/i},
+    {requested:/region|area|dungeon|map|지역|던전|지도/i,action:/region|area|dungeon|map/i}
+  ].filter(group=>group.requested.test(intent));
+  if(!generalInputIntent&&!gameplayFamilies.length)return null;
   // 기존 학습 라이브러리의 검증된 식별자만 실행 레시피로 사용한다. 임의 코드는 실행하지 않는다.
   let library=patternLibrary;
   if(!library){try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{patterns:[]});}catch{library={patterns:[]};}}
@@ -1550,12 +1558,13 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
       const ids=attrs.filter(row=>row[1].toLowerCase()==='id'),actions=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
       if(ids.length!==1||actions.length!==1)continue;
       const id=ids[0][3],action=actions[0][3];
-      const builtInAction=/^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting)$/.test(action);
+      const builtInAction=/^(?:attack|interact|gather|eat|rest|jump|dodge|openInventory|openMap|openCrafting|openQuestLog|openQuestBoard|openRegionMap|openDungeonMap)$/.test(action);
       const learnedPatternId=learnedActions.get(action);
       // HTML element IDs may contain hyphens even though JavaScript function identifiers may not.
       // IDs are used solely as JSON-escaped getElementById string literals, never as executable code.
       if(!/^[A-Za-z_$][\w$-]{0,79}$/.test(id)||! /^[A-Za-z_$][\w$]{0,39}$/.test(action)||
         (!builtInAction&&!learnedPatternId))continue;
+      if(!generalInputIntent&&!gameplayFamilies.some(group=>group.action.test(action)))continue;
       if(idCounts.get(id)!==1)continue;
       // 이미 ID/동작을 참조하는 연결이 있으면 중복 호출 가능성이 있으므로 생성하지 않는다.
       if(code.includes('"'+id+'"')||code.includes("'"+id+"'")||code.includes('`'+id+'`')||/\b(?:onclick|onpointerdown|ontouchstart)\b/.test(code))continue;
