@@ -26,9 +26,9 @@ test('Vibe2 coerces CC0 originals through entire source+license+model+PBR librar
 test('Only verified CC0 actors replace Cozy village/raider visuals, originals and save flow are preserved',()=>{
   assert.match(source,/require\(Shared:WaitForChild\("CozyCC0Library"\)\)/);
   assert.match(source,/require\(Shared:WaitForChild\("RobloxCommonMaterials"\)\)/);
-  assert.match(source,/local licensedId=CC0\.Npc\[name\]/);
+  assert.match(source,/local licenseAsset=CC0\.Npc\[name\]/);
   assert.match(source,/local selected=isRaider and \{id=CC0\.Raider\[/);
-  assert.match(source,/task\.spawn\(applyCC0Appearance,r,licensedId/);
+  assert.match(source,/task\.spawn\(applyCC0Appearance,r,licenseAsset/);
   assert.match(source,/task\.spawn\(applyCC0Appearance,r,selected\.id/);
   assert.match(source,/Materials\.ApplyAuthoredSurface\(x,"COZY"\)/);
   assert.match(source,/if child~=group and child:IsA\("BasePart"\)then child\.Transparency=1 end/);
