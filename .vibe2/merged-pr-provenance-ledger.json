@@ -83708,11 +83708,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a69e0f06b186537ad25ab224",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9404",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2d40b8119ff8f1aec5409b3f4e751b929e4029c4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9404,
+        "baseBranch": "main",
+        "headBranch": "fix/forest-3d-loading",
+        "baseSha": "2d40b8119ff8f1aec5409b3f4e751b929e4029c4",
+        "headSha": "8e1d2b17e90b6475b461837f12cc88114505d766",
+        "mergeCommitSha": "04d08299795a04cc20e4258e9561cf8478bbeea2",
+        "mergedAt": "2026-10-23T03:34:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "94a1b991a2707655dcfe9c90fc014f18e6bc08ab13d4f0e4a98219961ad3cd55",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/forest-3d-loading",
+        "candidateSha": "8e1d2b17e90b6475b461837f12cc88114505d766"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 472,
+        "deletedLineCount": 100,
+        "changedFiles": [
+          "assets/asset-license-ledger.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/fantasy-survival-visual-presentation.test.mjs",
+          "web-games/fantasy-survival/barbarian.glb.gz",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/knight.glb.gz",
+          "web-games/fantasy-survival/mage.glb.gz",
+          "web-games/fantasy-survival/models.json.gz",
+          "web-games/fantasy-survival/rogue-hooded.glb.gz",
+          "web-games/fantasy-survival/rogue.glb.gz",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/asset-license-ledger.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/fantasy-survival-visual-presentation.test.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9404",
+        "merge-commit:04d08299795a04cc20e4258e9561cf8478bbeea2",
+        "base-main:2d40b8119ff8f1aec5409b3f4e751b929e4029c4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 661
+    "total": 662
   }
 }
