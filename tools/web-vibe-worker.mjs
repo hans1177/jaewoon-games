@@ -140,7 +140,7 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
   const user='Game '+task.gameId+'; file: '+source.relative+'; owner request: '+task.goal.slice(0,2000)
     +'\nPrior independently merged patches for this same WEB game (context only; recheck latest source):\n'
     +previousVerified.map(row=>row.id+': '+clean(row.goal).slice(0,300)).join('\n').slice(0,1300)
-    +'\nContinue current build-up without resetting previous progress. Preserve saves and mechanics.'
+    +'\nContinue from current game source and preserve existing mechanics/saves. Do not reset previous build-up progress.'
     +'\nExisting exact source excerpt:\n'+excerpt;
   let answer='';
   if(cloud){
