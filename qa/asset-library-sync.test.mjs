@@ -765,6 +765,8 @@ test('game scoped consumer refresh preserves evidence for unaffected games',()=>
   const latest=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
   assert.deepEqual(latest.assets[0].sourceBoundConsumerGameIds,['b'],'unaffected game connection retained');
   assert.deepEqual(latest.assets[0].sourceConsumerBindings.map(x=>x.gameId),['b']);
+  assert.equal(scoped.sourceConsumerRelations.some(row=>row.gameId==='b'
+    &&row.classification==='STALE_SOURCE_BINDING'),false,'unscanned game must not be reported stale');
   assert.equal(latest.assets[0].productionVerified,false);
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
