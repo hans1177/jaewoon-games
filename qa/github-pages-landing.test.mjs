@@ -22,8 +22,16 @@ test('OWNER LOCK: every main merge triggers the existing Pages publisher without
   assert.match(publishHeader,/needs: deploy/);
   assert.match(publishHeader,/if: github\.event_name != 'pull_request'/);
   assert.doesNotMatch(publishHeader,/needs: \[|success\(\)|result ==|approval|qa_pass/i);
-  assert.match(workflow,/group: magic-forest-pages-\$\{\{ github\.event_name == 'pull_request'/);
-  assert.match(workflow,/cancel-in-progress: false/);
+  assert.doesNotMatch(workflow.split('jobs:')[0],/^concurrency:/m,
+    'slow post-publication browser QA must never retain the global Pages publication lock');
+  assert.match(publishHeader,/group: magic-forest-pages-main-publish/);
+  assert.match(publishHeader,/cancel-in-progress: false/);
+  assert.match(workflow,/id: latest_main/);
+  assert.match(workflow,/if: steps.latest_main.outputs.publish == 'true'/);
+  assert.match(workflow,/id: live_revision/);
+  assert.match(workflow,/post-publication-3d-smoke:/);
+  assert.match(workflow,/PAGES_SMOKE_EXACT_SHA=PASS|POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
+  assert.match(workflow,/name: Register post-publication WebGL smoke failure/);
   const assemble=workflow.indexOf('      - name: Assemble existing canonical homepage for automatic static publication');
   const prCheck=workflow.indexOf('      - name: Verify every published game route and the canonical official homepage');
   const publication=workflow.indexOf('      - name: Publish gh-pages without force or deleting earlier games');

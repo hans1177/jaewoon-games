@@ -20,10 +20,7 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  # PR preview validation must not occupy the live main deployment queue.
-  group: magic-forest-pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'main' }}
-  cancel-in-progress: false
+# Publication serialization is scoped only to publish-pages; postpublish smoke runs independently.
 
 jobs:
   deploy:
@@ -525,6 +522,11 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    concurrency:
+      group: magic-forest-pages-main-publish
+      cancel-in-progress: false
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       contents: read
       pages: write
@@ -534,14 +536,29 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Admit only latest canonical main SHA
+        id: latest_main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)"
+          if [ "$latest" = "$GITHUB_SHA" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "STALE_PAGES_REVISION_SKIPPED=$GITHUB_SHA CURRENT_MAIN=$latest"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Deploy GitHub Pages explicitly instead of relying on a GITHUB_TOKEN push
+        if: steps.latest_main.outputs.publish == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
 
       # Director checks public games only AFTER publication; not a release gate.
       - name: Verify live GitHub Pages source and game routes
         id: director_live_qa
-        if: github.event_name != 'pull_request'
+        if: steps.latest_main.outputs.publish == 'true'
         continue-on-error: true
         shell: bash
         run: |
@@ -614,34 +631,9 @@ jobs:
           echo "OFFICIAL_HOMEPAGE_URL=https://hans1177.github.io/jaewoon-games/"
 
 
-      # OWNER: Publish first. Runtime 3D smoke tests only the public, exact published URL.
-      # Never block or roll back the GitHub Pages release because a browser/CDN/mobile test fails.
-      - name: Checkout smoke script only after live publication
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          sparse-checkout: |
-            qa/vibe-browser-smoke.mjs
-      - name: Configure post-publication Chromium
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Validate live published 3D model and game controls
-        id: forest_native_3d_live_qa
-        continue-on-error: true
-        env:
-          VIBE_SMOKE_LIVE_BASE: ${{ steps.deployment.outputs.page_url }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts playwright@1.56.1
-          # The existing smoke launches headless Chromium without a browser channel.
-          npx playwright install --with-deps --only-shell chromium
-          node qa/vibe-browser-smoke.mjs
-
       # Report post-publication defects using the existing public-release workflow.
       - name: Director register issues after live game testing
-        if: ${{ github.event_name != 'pull_request' && (steps.director_live_qa.outcome == 'failure' || steps.forest_native_3d_live_qa.outcome == 'failure') }}
+        if: ${{ github.event_name != 'pull_request' && steps.director_live_qa.outcome == 'failure' }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -661,7 +653,7 @@ jobs:
             echo "- 소스 커밋: \`$GITHUB_SHA\`"
             echo "- 배포된 홈페이지: https://hans1177.github.io/jaewoon-games/"
             echo "- 검증 실행: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-            echo "- 실제 마력숲 3D 검증 결과: ${{ steps.forest_native_3d_live_qa.outcome }}"
+            echo "- 실제 마력숲 3D 검사는 별도 비차단 사후검증 잡으로 유지"
             echo "- 원본 페이지 경로 검증 결과: ${{ steps.director_live_qa.outcome }}"
             echo "- 시점: GitHub Pages 배포 이후 (배포 차단 조건 아님)"
             echo
@@ -677,3 +669,78 @@ jobs:
           } > "$body"
           gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$body"
           echo 'DIRECTOR_POST_DEPLOY_ISSUE=CREATED'
+
+  post-publication-3d-smoke:
+    needs: publish-pages
+    if: github.event_name != 'pull_request' && needs.publish-pages.outputs.page_url != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Bind browser QA to exact live published revision
+        id: live_revision
+        env:
+          PAGES_BASE: ${{ needs.publish-pages.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="${PAGES_BASE%/}/web-games/publish-manifest.json"
+          actual="$(curl -fsSL --retry 2 --max-time 15 "$url" | node -e "let t='';process.stdin.on('data',d=>t+=d);process.stdin.on('end',()=>{try{let j=JSON.parse(t);if(!/^[a-f0-9]{40}$/.test(j.sourceSha||''))process.exit(1);process.stdout.write(j.sourceSha)}catch{process.exit(1)}})")"
+          if [ "$actual" != "$GITHUB_SHA" ]; then
+            echo "POST_PUBLISH_SMOKE_SUPERSEDED_BY=$actual"
+            echo "exact=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "POST_PUBLISH_SMOKE_EXACT_SHA=PASS"
+            echo "exact=true" >> "$GITHUB_OUTPUT"
+          fi
+      # OWNER: Publish first. Runtime 3D smoke tests only the public, exact published URL.
+      # Never block or roll back the GitHub Pages release because a browser/CDN/mobile test fails.
+      - name: Checkout smoke script only after live publication
+        if: steps.live_revision.outputs.exact == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            qa/vibe-browser-smoke.mjs
+      - name: Configure post-publication Chromium
+        if: steps.live_revision.outputs.exact == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate live published 3D model and game controls
+        if: steps.live_revision.outputs.exact == 'true'
+        id: forest_native_3d_live_qa
+        continue-on-error: true
+        env:
+          VIBE_SMOKE_LIVE_BASE: ${{ needs.publish-pages.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          # The existing smoke launches headless Chromium without a browser channel.
+          npx playwright install --with-deps --only-shell chromium
+          node qa/vibe-browser-smoke.mjs
+      - name: Register post-publication WebGL smoke failure
+        if: ${{ steps.live_revision.outputs.exact == 'true' && steps.forest_native_3d_live_qa.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="[총괄 사후검증] GitHub Pages 3D 조작 오류 ${GITHUB_SHA:0:12}"
+          if gh issue list --repo "$GITHUB_REPOSITORY" --state all --limit 200 --json title --jq '.[].title' | grep -Fxq "$title"; then
+            echo "POST_PUBLISH_SMOKE_ISSUE=ALREADY_REGISTERED"
+            exit 0
+          fi
+          {
+            echo '## GitHub Pages 공개판 WebGL 조작 사후검증 실패'
+            echo "- 소스 커밋: $GITHUB_SHA"
+            echo "- 공개 홈페이지: https://hans1177.github.io/jaewoon-games/"
+            echo "- 검증 실행: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "- 3D 검증 결과: ${{ steps.forest_native_3d_live_qa.outcome }}"
+            echo '- 기존 게임 소스/저장 데이터와 배포는 보존. 확인된 실패만 별도 교정.'
+          } > "$RUNNER_TEMP/forest-pages-3d-smoke-issue.md"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$RUNNER_TEMP/forest-pages-3d-smoke-issue.md"
+          echo "POST_PUBLISH_SMOKE_ISSUE=CREATED"
