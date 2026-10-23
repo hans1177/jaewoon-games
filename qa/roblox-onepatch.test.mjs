@@ -106,3 +106,16 @@ test('Onepatch automatically follows the existing verified Roblox source-to-serv
   assert.match(release,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
   assert.doesNotMatch(core,/ROBLOX_OPEN_CLOUD_API_KEY:.*VIBE2_ROBLOX_ONEPATCH_GAME/);
 });
+
+test('Roblox onepatch engine requires CC0 graphics and motion license, source SHA, universe grant and runtime evidence',t=>{
+  const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
+  const item=enqueueOwnerRobloxOnePatch({queue:{tasks:[]},catalog:f.catalog,
+    request:f.request,repoRoot:f.root,policy}).queue.tasks[0];
+  assert.match(item.goal,/14종 공용 라이브러리/);
+  assert.match(item.goal,/CC0/);
+  assert.match(item.goal,/소스 SHA/);
+  assert.match(item.goal,/Universe Use 권한/);
+  assert.match(item.goal,/실제 화면 반영/);
+  assert.equal(item.responsibleFiles.length,1);
+  assert.ok(item.evidence.includes('existing-canonical-vibe2-queue'));
+});
