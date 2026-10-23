@@ -293,6 +293,24 @@ test('stateless fan-in refills plus asset and recovery reserves avoid full globa
   assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
 });
 
+test('superseded queued worker reservations are not requeued until GitHub confirms the run completed',()=>{
+  const start=workflow.indexOf('          if [ -n "$superseded_queued_reservation_runs" ]; then');
+  const end=workflow.indexOf('          rm -f /tmp/vibe2-early-review-run',start);
+  assert.ok(start>=0&&end>start,'must locate existing superseded reservation recovery block');
+  const candidate=workflow.slice(start,end);
+  assert.doesNotMatch(candidate,/recover-reservation-runs/,'never release a reservation while its worker run can still start');
+  assert.match(candidate,/VIBE2_SUPERSEDED_QUEUED_RESERVATION_REQUEUE=DEFERRED_UNTIL_RUN_COMPLETED/);
+  assert.match(candidate,/gh api --paginate.*\/jobs\?per_page=100/,'probe all matrix workers, not the first 100');
+  assert.match(candidate,/VIBE2_SUPERSEDED_CANCEL_SKIPPED_ACTIVE_OR_UNKNOWN/);
+  assert.match(candidate,/VIBE2_SUPERSEDED_CANCEL_SKIPPED_RESULT_OR_UNKNOWN/);
+  assert.match(candidate,/VIBE2_SUPERSEDED_CANCEL_REQUEST_FAILED/);
+  assert.match(candidate,/gh api --method POST.*\/cancel/);
+  const completed=workflow.indexOf("          if [ -n \"$completed_reservation_runs\" ]; then",start-1700);
+  assert.ok(completed>0&&completed<start,'only the terminal probe can release stale reservations');
+  assert.match(workflow.slice(completed,start),/recover-completed-reservations/);
+  assert.match(workflow.slice(start,end),/latest_run_status/,'recheck run status immediately before cancellation');
+});
+
 test('game-primary BUILD_UP workers have a 60 minute maximum budget with immediate early completion',()=>{
   assert.equal(runtime.continuous.maxWorkMinutes,22);
   assert.equal(runtime.continuous.gamePrimaryMaxWorkMinutes,60);
