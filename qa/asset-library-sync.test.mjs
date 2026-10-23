@@ -747,7 +747,7 @@ test('game scoped consumer refresh preserves evidence for unaffected games',()=>
    const folder=path.join(root,'web-games',id);
    fs.mkdirSync(folder,{recursive:true});
    fs.writeFileSync(path.join(folder,'index.html'),
-    '<script>const files={wolf:"../../assets/shared/wolf.fbx"};loader.loadAsync(files.wolf)</script>');
+    '<script>const files={wolf:"../../assets/shared/wolf.fbx"};Promise.all(Object.entries(files).map(([name,url])=>loader.loadAsync(url)))</script>');
   }
   fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({
    games:['a','b'].map(id=>({id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))
@@ -766,5 +766,30 @@ test('game scoped consumer refresh preserves evidence for unaffected games',()=>
   assert.deepEqual(latest.assets[0].sourceBoundConsumerGameIds,['b'],'unaffected game connection retained');
   assert.deepEqual(latest.assets[0].sourceConsumerBindings.map(x=>x.gameId),['b']);
   assert.equal(latest.assets[0].productionVerified,false);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('web source consumer recognizes loaded model file tables but rejects mere catalogs',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-loaded-files-'));
+ try{
+  const model=path.join(root,'assets','shared','wolf.fbx');
+  const gameDir=path.join(root,'web-games','party-rpg');
+  fs.mkdirSync(path.dirname(model),{recursive:true});
+  fs.mkdirSync(gameDir,{recursive:true});
+  fs.writeFileSync(model,'model native bytes');
+  const entry=path.join(gameDir,'index.html');
+  const registry={assets:[{id:'wolf',family:'CREATURE',license:'CC0',
+    path:'assets/shared/wolf.fbx',productionVerified:false}]};
+  const gameCatalog={games:[{id:'party-rpg',lifecycleState:'ACTIVE',
+    productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  fs.writeFileSync(entry,
+   '<script>const files={wolf:"../../assets/shared/wolf.fbx"};Promise.all(Object.entries(files).map(([id,url])=>loader.loadAsync(url)))</script>');
+  const used=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['party-rpg']});
+  assert.deepEqual(used.sourceConsumerRegistry.assets[0].sourceBoundConsumerGameIds,['party-rpg']);
+  assert.equal(used.sourceConsumerBindings[0].evidenceFiles[0],'web-games/party-rpg/index.html');
+  assert.equal(used.sourceConsumerBindings[0].runtimeVerified,false);
+  fs.writeFileSync(entry,'<script>const files={wolf:"../../assets/shared/wolf.fbx"};</script>');
+  const unused=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['party-rpg']});
+  assert.equal(unused.sourceConsumerBindings.length,0,'unconsumed file table is not an applied asset');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
