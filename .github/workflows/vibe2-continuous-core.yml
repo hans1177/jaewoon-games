@@ -1170,9 +1170,13 @@ jobs:
               esac
               # Recheck immediately before cancellation: never interrupt active
               # workers or any run that has produced immutable result artifacts.
-              superseded_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/jobs?per_page=100" --jq '[.jobs[] | select((.status=="queued" or .status=="pending" or .status=="requested") and (.name | test("(^| / )worker \\(")))] | length as $queued | [.jobs[] | select(.status=="in_progress" and (.name | test("(^| / )worker \\(")))] | length as $active | "\\($queued):\\($active)"' 2>/dev/null || true)"
-              if [[ ! "$superseded_jobs" =~ ^[1-9][0-9]*:0$ ]]; then
-                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_ACTIVE_OR_UNKNOWN=$superseded_run_id:${superseded_jobs:-UNKNOWN}"
+              if ! superseded_jobs="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/jobs?per_page=100" --jq '.jobs[] | select(.name | test("(^| / )worker \\(")) | .status' 2>/dev/null)"; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_JOB_PROBE_UNKNOWN=$superseded_run_id"
+                continue
+              fi
+              # Cancel only if EVERY matrix worker is still waiting; all pages are checked.
+              if [ -z "$superseded_jobs" ] || ! grep -Eq '^(queued|pending|requested)$' <<< "$superseded_jobs" || grep -Evq '^(queued|pending|requested)$' <<< "$superseded_jobs"; then
+                echo "VIBE2_SUPERSEDED_CANCEL_SKIPPED_ACTIVE_OR_UNKNOWN=$superseded_run_id"
                 continue
               fi
               result_artifacts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$superseded_run_id/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length' 2>/dev/null || true)"
