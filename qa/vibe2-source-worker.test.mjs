@@ -9166,6 +9166,45 @@ test('no-model quest crafting enemy and region choices change gameplay state wit
   assert.equal(deterministicWebInputCandidate({order:{target:'web',goal:'배경 음악 변경'},sourceRoot,responsibleFiles:['index.html']}),null);
 });
 
+
+test('no-model connected quest routes add distinct playable source records without changing saves or balance',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root='web-games/demo',sourceRoot=path.join(cwd,root);
+  const original=[
+    '<html><body><script>',
+    'const questIds=["main","side"],recipeIds=["sword","shield"],enemyBehaviorIds=["chase","guard"],regionIds=["town","forest"];',
+    'const questRoutes=[{"id":"base","questId":"main","regionId":"town","enemyBehaviorId":"chase","recipeId":"sword","nextRegionId":"forest"}];',
+    'const saveKey="demo-v1";const health=100;',
+    'function selectQuest(id){} function enterRegion(id){} function setEnemyBehavior(id){} function craftItem(id){}',
+    'function startQuestRoute(id){const route=questRoutes.find(x=>x.id===id);selectQuest(route.questId);enterRegion(route.regionId);setEnemyBehavior(route.enemyBehaviorId);craftItem(route.recipeId);enterRegion(route.nextRegionId);}',
+    'function renderRoutes(){return questRoutes.map(route=>({name:route.id,launch:()=>startQuestRoute(route.id)}));}',
+    '</script></body></html>'
+  ].join('');
+  write(path.join(sourceRoot,'index.html'),original);
+  const args={order:{target:'web',goal:'연결된 퀘스트 콘텐츠 확장'},sourceRoot,responsibleFiles:['index.html']};
+  const produced=deterministicWebInputCandidate(args);
+  assert.equal(produced?.deterministicWebContent,true);
+  const docs=new Map([['index.html',original]]);
+  applyExactEdits('',produced.edits,{documents:docs});
+  const next=docs.get('index.html');
+  assert.equal(next.includes('const saveKey="demo-v1";const health=100;'),true);
+  assert.equal(next.includes('"id":"base"'),true);
+  const context={};
+  runInNewContext(next.match(/<script>([\s\S]*?)<\/script>/)[1],context);
+  const routes=runInNewContext('questRoutes',context);
+  assert.equal(routes.length,2);
+  assert.notEqual(routes[1].id,routes[0].id);
+  assert.ok(['questId','regionId','enemyBehaviorId','recipeId','nextRegionId'].filter(k=>routes[0][k]!==routes[1][k]).length>=2);
+  assert.equal(runInNewContext('renderRoutes().length',context),2,'existing game renderer exposes newly authored route');
+  assert.equal(deterministicWebInputCandidate({...args,sourceRoot}),produced===null?null:produced,'unchanged source yields the same deterministic candidate');
+  write(path.join(sourceRoot,'index.html'),next);
+  assert.equal(deterministicWebInputCandidate(args),null,'already generated route is not duplicated without a new valid choice');
+  const unsafe=original.replace('const questRoutes=[','const questRoutes=[{"id":"bonus","questId":"main","regionId":"town","enemyBehaviorId":"chase","recipeId":"sword","nextRegionId":"forest","reward":500},');
+  write(path.join(sourceRoot,'index.html'),unsafe);
+  assert.equal(deterministicWebInputCandidate(args),null,'unrecognized reward schema fails closed');
+  assert.equal(deterministicWebInputCandidate({...args,order:{target:'roblox',goal:'콘텐츠 확장'}}),null);
+});
+
 test('independent authoring key checks occur only at the actual optional model request',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   const candidateStep=workflow.slice(workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n')),workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n'))+17000);
