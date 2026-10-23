@@ -213,10 +213,12 @@ test('running BUILD_UP with disjoint responsibility admits immediate owner patch
   assert.equal(result.resume,'RUNNING_BUILD_UP_DISJOINT_IMMEDIATE');
   assert.deepEqual(result.queue.tasks[1].dependencies,[]);
   assert.equal(result.queue.tasks[0].status,'running');
-  assert.equal(result.queue.tasks[1].buildUpOnePatchLineage.directiveId,'existing-f6');
-  assert.equal(result.queue.tasks[1].buildUpOnePatchLineage.generation,6);
+  assert.equal(result.queue.tasks[1].buildUpDirectiveId,'existing-f6');
+  assert.equal(result.queue.tasks[1].buildUpGeneration,6);
+  assert.equal(result.queue.tasks[1].buildUpStatus,'ONEPATCH_IN_CURRENT_BUILD_UP');
   assert.ok(result.queue.tasks[1].evidence.includes('owner-onepatch-disjoint-source-start-now'));
   assert.deepEqual(result.queue.tasks[0].evidence,['verified-f5-evidence']);
+  assert.ok(result.queue.tasks[1].evidence.includes('owner-onepatch-parent-task:f6-world-motion'));
 });
 test('running BUILD_UP serializes only overlapping and shared responsibilities',t=>{
   const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
@@ -229,7 +231,7 @@ test('running BUILD_UP serializes only overlapping and shared responsibilities',
     catalog:f.catalog,request:f.request,repoRoot:f.root,policy});
   assert.deepEqual(result.queue.tasks[2].dependencies,[same.id]);
   assert.equal(result.resume,'RUNNING_BUILD_UP_SOURCE_COLLISION');
-  assert.equal(result.queue.tasks[2].buildUpOnePatchLineage.previousEvidencePreserved,true);
+  assert.ok(result.queue.tasks[2].evidence.includes('owner-onepatch-parent-directive:current-f7'));
   const shared=path.join(f.root,'roblox-games/demo/shared/GameConfig.luau');
   fs.mkdirSync(path.dirname(shared),{recursive:true});fs.writeFileSync(shared,'return {}');
   const patch=enqueueOwnerRobloxOnePatch({queue:{tasks:[same,unrelated]},catalog:f.catalog,
