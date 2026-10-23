@@ -213,7 +213,7 @@ test('웹 작업은 유니티 전용 로컬 실행기를 깨우지 않고 인증
   const bridge=workflow.slice(workflow.indexOf('  bridge:'),workflow.indexOf('  github-cloud:'));
   assert.match(bridge,/runs-on: ubuntu-latest/);
   assert.doesNotMatch(bridge,/needs: local-advisory|needs\.local-advisory/);
-  assert.match(bridge,/github.event_name != 'issue_comment'/);
+  assert.match(bridge,/github.event_name == 'issue_comment'/);
   assert.match(bridge,/github.event.comment.author_association == 'OWNER'/);
   assert.match(bridge,/github.event.comment.user.type == 'User'/);
   assert.match(bridge,/validateLocalWebOwnerEvent/);
