@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/pwa-command-bridge.yml'
       - 'tools/pwa-command-vibe2-task.mjs'
+      - 'tools/web-vibe-worker.mjs'
       - 'qa/pwa-command-vibe2-task.test.mjs'
       - 'command.html'
       - 'manifest.webmanifest'
@@ -21,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
   actions: write
   id-token: write
 
@@ -38,7 +40,7 @@ env:
 
 jobs:
   bridge:
-    # Local WEB Vibe uses its own queue and never dispatches native/cloud worker jobs.
+    # WEB_VIBE_1 owner ingress. Native/Roblox queue and workers stay separate.
     # Keep exact owner identity checks; this independent local route does not require cloud Vibe2.
     if: >-
       (github.event_name == 'issue_comment' &&
@@ -51,6 +53,10 @@ jobs:
        startsWith(github.event.comment.body, '/vibe-local-web '))
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    outputs:
+      task_id: ${{ steps.local.outputs.task_id }}
+      files: ${{ steps.local.outputs.files }}
+      queued: ${{ steps.ingest.outputs.queued }}
     steps:
       - name: Checkout latest main
         uses: actions/checkout@v4
@@ -83,7 +89,7 @@ jobs:
             actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY
           });
           fs.writeFileSync('/tmp/pwa-next.json',JSON.stringify({task})+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'has_work=true\n'+'task_id='+task.id+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'has_work=true\n'+'task_id='+task.id+'\n'+'files='+task.files+'\n');
           console.log('LOCAL_WEB_OWNER_DIRECTIVE=AUTHORIZED');
           NODE
 
@@ -313,3 +319,54 @@ jobs:
           gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary
           echo 'PWA_OWNER_GAME_DIRECT_DISPATCH=PASS'
           echo 'PWA_OWNER_POST_PUBLISH_QA=EXISTING_MAIN_RELEASE_PIPELINE'
+
+
+  web-cloud-onepatch:
+    # Run WEB_VIBE_1 on GitHub with existing WEB-only queue; no native task dispatch.
+    needs: bridge
+    if: >-
+      github.event_name == 'issue_comment' &&
+      needs.bridge.result == 'success' &&
+      needs.bridge.outputs.queued == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    concurrency:
+      group: web-vibe-onepatch-${{ needs.bridge.outputs.task_id }}
+      cancel-in-progress: false
+    env:
+      WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      WEB_OWNER_TASK_ID: ${{ needs.bridge.outputs.task_id }}
+      WEB_OWNER_FILES: ${{ needs.bridge.outputs.files }}
+    steps:
+      - name: Checkout latest main for independent WEB Vibe
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify WEB-only source and existing model gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$WEB_VIBE_GH_TOKEN" || { echo 'WEB_VIBE_GITHUB_DEDICATED_PAT_REQUIRED' >&2; exit 1; }
+          test -n "$GEMINI_API_KEY" || { echo 'WEB_VIBE_GITHUB_FREE_MODEL_SECRET_REQUIRED' >&2; exit 1; }
+          node --check tools/web-vibe-worker.mjs
+          node --check tools/web-vibe-organization.mjs
+          node --test qa/web-vibe-worker.test.mjs qa/web-vibe-organization.test.mjs qa/pwa-command-vibe2-task.test.mjs
+      - name: Run existing WEB_VIBE_1 patch on GitHub and create reviewable PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$WEB_OWNER_TASK_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$ ]] || exit 1
+          if [ "$WEB_OWNER_FILES" = '*' ]; then
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" --all --cloud --apply --pr
+          else
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" "--files=$WEB_OWNER_FILES" --cloud --apply --pr
+          fi
+          echo 'WEB_VIBE_CLOUD_PR_CREATED=YES'
+          echo 'WEB_VIBE_CLOUD_MERGE_AND_PUBLICATION=NOT_VERIFIED'

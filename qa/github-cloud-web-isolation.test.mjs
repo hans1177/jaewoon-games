@@ -6,7 +6,7 @@ test('GitHub PWA owner work uses original cloud queue without local PC or Ollama
   const source=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   const localStart=source.indexOf('  bridge:'),cloudStart=source.indexOf('  github-cloud:');
   assert.ok(localStart>0&&cloudStart>localStart);
-  const local=source.slice(localStart,cloudStart),cloud=source.slice(cloudStart);
+  const local=source.slice(localStart,cloudStart),cloud=source.slice(cloudStart,source.indexOf('  web-cloud-onepatch:'));
   assert.ok(cloud.includes("if: github.event_name != 'issue_comment'"));
   assert.ok(cloud.includes("if [ \"$GITHUB_EVENT_NAME\" = 'repository_dispatch' ]"));
   assert.ok(cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
@@ -31,7 +31,7 @@ test('GitHub PWA owner work uses original cloud queue without local PC or Ollama
 test('local-only issue comment remains independent while authenticated dispatch runs in the cloud',()=>{
   const source=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   const local=source.slice(source.indexOf('  bridge:'),source.indexOf('  github-cloud:'));
-  const cloud=source.slice(source.indexOf('  github-cloud:'));
+  const cloud=source.slice(source.indexOf('  github-cloud:'),source.indexOf('  web-cloud-onepatch:'));
   assert.ok(cloud.includes("steps.next.outputs.has_work == 'true'"));
   assert.ok(!cloud.includes('steps.local.outputs'));
   assert.ok(local.includes("steps.local.outputs.has_work == 'true'"));
@@ -39,4 +39,25 @@ test('local-only issue comment remains independent while authenticated dispatch 
   const native=fs.readFileSync('.github/workflows/company-owner-web-edit-propagation.yml','utf8');
   assert.ok(!native.includes('gh workflow run company-development-roblox-runtime.yml'));
   assert.ok(!native.includes('gh workflow run company-development-unity-runtime.yml'));
+});
+
+
+test('Github-hosted WEB_VIBE_1 onepatch uses its own queue and existing bridge, not native workers',()=>{
+  const yml=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  const worker=fs.readFileSync('tools/web-vibe-worker.mjs','utf8');
+  const cloud=yml.slice(yml.indexOf('  web-cloud-onepatch:'));
+  assert.ok(cloud.startsWith('  web-cloud-onepatch:'));
+  assert.match(cloud,/needs: bridge/);
+  assert.match(cloud,/github.event_name == 'issue_comment'/);
+  assert.match(cloud,/WEB_VIBE_GH_TOKEN: \$\{\{ secrets.WEB_VIBE_GH_TOKEN \}\}/);
+  assert.match(cloud,/GEMINI_API_KEY: \$\{\{ secrets.GEMINI_API_KEY \}\}/);
+  assert.match(cloud,/web-vibe-worker.mjs/);
+  assert.match(cloud,/--cloud --apply --pr/);
+  assert.match(cloud,/persist-credentials: false/);
+  assert.doesNotMatch(cloud,/vibe2-unreal-core|roblox-games\/|unity-games\/|gh workflow run|cloudflare/i);
+  assert.match(worker,/GITHUB_EVENT_NAME!=='issue_comment'/);
+  assert.match(worker,/GITHUB_REPOSITORY!==REPO/);
+  assert.match(worker,/WEB_VIBE_DEDICATED_TOKEN_REQUIRED/);
+  assert.match(worker,/requestGeminiFreePair/);
+  assert.doesNotMatch(cloud,/OLLAMA_HOST|11435|WEB_VIBE_EXECUTION=DEDICATED_LOCAL_ENGINE_REQUIRED/);
 });
