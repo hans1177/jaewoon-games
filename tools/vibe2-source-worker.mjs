@@ -1510,6 +1510,7 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   const intent=[order.goal,order.selectedTask?.goal,order.selectedTask?.description,order.selectedTask?.title].map(clean).join(' ');
   // 기존 코드의 플레이 동작만 연결한다. 시스템별 요청은 관련 없는 행동을 제외한다.
   const generalInputIntent=/mobile|touch|input|button|모바일|터치|입력|버튼/i.test(intent);
+  const connectedIntent=/connected|content|bundle|progression|expansion|퀘스트.*지역|콘텐츠|연결된|동선|확장/i.test(intent);
   const gameplayFamilies=[
     {requested:/combat|battle|attack|enemy|전투|공격|회피|사냥|적 행동/i,action:/^(?:attack|dodge|interact|gather|setEnemyBehavior|chooseEnemyAction)$/},
     {requested:/quest|mission|퀘스트|의뢰/i,action:/quest|mission/i},
@@ -1522,8 +1523,8 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
     {requested:/craft|forge|제작|대장간/i,action:/^(?:craft|craftItem)$/,catalog:'recipeIds'},
     {requested:/combat|battle|enemy|전투|적 행동/i,action:/^(?:setEnemyBehavior|chooseEnemyAction)$/,catalog:'enemyBehaviorIds'},
     {requested:/region|area|dungeon|map|지역|던전|지도/i,action:/^(?:enterRegion|travelToRegion|enterDungeon)$/,catalog:'regionIds'}
-  ].filter(family=>family.requested.test(intent));
-  if(!generalInputIntent&&!gameplayFamilies.length)return null;
+  ].filter(family=>connectedIntent||family.requested.test(intent));
+  if(!generalInputIntent&&!gameplayFamilies.length&&!connectedIntent)return null;
   // 기존 학습 라이브러리의 검증된 식별자만 실행 레시피로 사용한다. 임의 코드는 실행하지 않는다.
   let library=patternLibrary;
   if(!library){try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{patterns:[]});}catch{library={patterns:[]};}}
@@ -1633,6 +1634,69 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
         'choiceButton.type="button";choiceButton.textContent=choiceId;'+
         'choiceButton.addEventListener("click",()=>'+action+'(choiceId));'+
         'document.getElementById('+JSON.stringify(id)+').appendChild(choiceButton); }');
+    }
+
+    // [콘텐츠 생성] 기존 게임의 경로 실행기와 검증된 4종 데이터만 사용한다.
+    // 새로운 경제 보상/능력치/저장 키를 생성하지 않고 플레이 가능한 복합 경로만 추가한다.
+    if(connectedIntent&&['questIds','recipeIds','enemyBehaviorIds','regionIds'].every(key=>
+      (declaredChoices.get(key)||[]).length>=2)){
+      const declarations=[...code.matchAll(/\bconst\s+questRoutes\s*=\s*(\[[^\r\n]*?\])\s*;?/g)];
+      const routeFn=functions.find(fn=>fn.name==='startQuestRoute');
+      const visibleRouteList=/\bquestRoutes\s*\.\s*(?:map|forEach)\s*\(|\bfor\s*\(\s*const\s+\w+\s+of\s+questRoutes\s*\)/.test(code);
+      const requiredFields=['id','questId','regionId','enemyBehaviorId','recipeId','nextRegionId'];
+      const routeCode=clean(routeFn?.code);
+      const realRouteHandler=routeFn&&/\bquestRoutes\s*\.\s*find\s*\(/.test(routeCode)
+        &&['questId','regionId','enemyBehaviorId','recipeId','nextRegionId'].every(field=>
+          routeCode.includes('.'+field))
+        &&['selectQuest','enterRegion','setEnemyBehavior','craftItem'].every(action=>
+          new RegExp('\\b'+action+'\\s*\\(').test(routeCode));
+      if(declarations.length===1&&visibleRouteList&&realRouteHandler){
+        let routes=null;
+        try{routes=JSON.parse(declarations[0][1]);}catch{}
+        const validRoute=row=>row&&typeof row==='object'&&!Array.isArray(row)
+          &&Object.keys(row).sort().join(',')===requiredFields.slice().sort().join(',')
+          &&requiredFields.every(field=>typeof row[field]==='string'&&/^[A-Za-z0-9_-]{1,48}$/.test(row[field]))
+          &&declaredChoices.get('questIds').includes(row.questId)
+          &&declaredChoices.get('recipeIds').includes(row.recipeId)
+          &&declaredChoices.get('enemyBehaviorIds').includes(row.enemyBehaviorId)
+          &&declaredChoices.get('regionIds').includes(row.regionId)
+          &&declaredChoices.get('regionIds').includes(row.nextRegionId)
+          &&row.regionId!==row.nextRegionId;
+        if(Array.isArray(routes)&&routes.length>=1&&routes.length<24&&routes.every(validRoute)
+          &&new Set(routes.map(row=>row.id)).size===routes.length){
+          let addition=null;
+          for(const questId of declaredChoices.get('questIds')){
+            if(addition)break;
+            for(const regionId of declaredChoices.get('regionIds')){
+              if(addition)break;
+              const nextRegionId=declaredChoices.get('regionIds').find(id=>id!==regionId);
+              for(const enemyBehaviorId of declaredChoices.get('enemyBehaviorIds')){
+                if(addition)break;
+                for(const recipeId of declaredChoices.get('recipeIds')){
+                  const id='route_'+declaredChoices.get('questIds').indexOf(questId)+'_'
+                    +declaredChoices.get('regionIds').indexOf(regionId)+'_'
+                    +declaredChoices.get('enemyBehaviorIds').indexOf(enemyBehaviorId)+'_'
+                    +declaredChoices.get('recipeIds').indexOf(recipeId);
+                  const row={id,questId,regionId,enemyBehaviorId,recipeId,nextRegionId};
+                  // 기존 경로를 이름만 바꾸는 반복은 콘텐츠 생성으로 인정하지 않는다.
+                  if(routes.some(old=>old.id===id))continue;
+                  if(routes.some(old=>requiredFields.slice(1).filter(k=>old[k]!==row[k]).length<2))continue;
+                  addition=row;break;
+                }
+              }
+            }
+          }
+          if(addition){
+            const oldText=declarations[0][0];
+            const replacement=oldText.replace(declarations[0][1],JSON.stringify([...routes,addition]));
+            return{summary:'Vibe2 existing-game connected quest route expansion',
+              expectedEffect:'Add a distinct region-to-quest-to-encounter-to-craft progression route via existing game functions',
+              edits:[{path:relative,find:oldText,replace:replacement}],
+              newFiles:[],replaceFiles:[],tests:[],deterministicWebContent:true,
+              generatedRouteId:addition.id};
+          }
+        }
+      }
     }
     if(!bindings.length)continue;
     const replacement=script[0].replace(/<\/script\s*>$/i,'\n'+bindings.join('\n')+'\n</script>');
