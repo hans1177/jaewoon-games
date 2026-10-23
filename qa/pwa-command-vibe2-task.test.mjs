@@ -161,11 +161,17 @@ test('GitHub PWA cloud development and local WEB Vibe run independently',()=>{
   const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   const published=pages.indexOf('uses: actions/deploy-pages@v4');
   const live=pages.indexOf('id: director_live_qa');
+  const routeIssue=pages.indexOf('name: Director register issues after live game testing');
+  const postJob=pages.indexOf('  post-publication-3d-smoke:');
   const browser=pages.indexOf('id: forest_native_3d_live_qa');
-  const issues=pages.indexOf('name: Director register issues after live game testing');
-  assert.ok(published>0&&live>published&&browser>live&&issues>browser,
-    'publication precedes live HTTP, browser and defect reporting');
-  assert.match(pages.slice(browser,issues),/VIBE_SMOKE_LIVE_BASE:/);
+  const browserIssue=pages.indexOf('name: Register post-publication WebGL smoke failure');
+  assert.ok(published>0&&live>published&&routeIssue>live&&postJob>routeIssue
+    &&browser>postJob&&browserIssue>browser,
+    'Pages publication must precede route and independent 3D browser defect reporting');
+  assert.match(pages.slice(postJob,browser),/needs: publish-pages/);
+  assert.match(pages.slice(postJob,browser),/POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
+  assert.match(pages.slice(browser,browserIssue),/VIBE_SMOKE_LIVE_BASE:/);
+  assert.match(pages.slice(browserIssue),/gh issue create/);
 });
 
 test('GitHub owner ideas use the existing Vibe queue for one-game source-first work',()=>{

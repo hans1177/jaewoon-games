@@ -5,16 +5,15 @@ import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { applyExactEdits, boundedLargeExcerpt, normalizeExactEdits, MAX_EDIT_OPS } from './autonomous-safe-edit.mjs';
+import { applyExactEdits, boundedLargeExcerpt, normalizeExactEdits } from './autonomous-safe-edit.mjs';
 import { buildRuleCandidate } from './autonomous-rule-patcher.mjs';
 
 const DEFAULT_MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
-const MAX_CONTEXT_FILES=8;
 const MAX_CONTEXT_BYTES=48_000;
 const MAX_FULL_CONTEXT_FILE_BYTES=24_000;
 const FEEDBACK_DIR='.autonomous/browser-failures';
-const MAX_OUTPUT_FILES=4;
-const MAX_CHANGED_FILES=4;
+// Null signals there is no arbitrary file-count ceiling; byte budgets remain enforced.
+const MAX_OUTPUT_FILES=null;
 const MAX_FILE_BYTES=240000;
 const MAX_TOTAL_OUTPUT_BYTES=600000;
 const MODEL_TIMEOUT_MS=Number(process.env.AUTONOMOUS_MODEL_TIMEOUT_MS||360000);
@@ -37,8 +36,8 @@ const CANDIDATE_SCHEMA={
   type:'object',required:['summary','expectedEffect','tests'],additionalProperties:false,
   properties:{
     summary:{type:'string'},expectedEffect:{type:'string'},tests:{type:'array',items:{type:'string'},maxItems:6},
-    files:{type:'array',maxItems:MAX_OUTPUT_FILES,items:{type:'object',required:['path','content'],additionalProperties:false,properties:{path:{type:'string'},content:{type:'string'}}}},
-    edits:{type:'array',maxItems:MAX_EDIT_OPS,items:{type:'object',required:['path','find','replace'],additionalProperties:false,properties:{path:{type:'string'},find:{type:'string'},replace:{type:'string'}}}}
+    files:{type:'array',items:{type:'object',required:['path','content'],additionalProperties:false,properties:{path:{type:'string'},content:{type:'string'}}}},
+    edits:{type:'array',items:{type:'object',required:['path','find','replace'],additionalProperties:false,properties:{path:{type:'string'},find:{type:'string'},replace:{type:'string'}}}}
   }
 };
 
@@ -80,7 +79,6 @@ function listTextFiles(root){
   const walk=current=>{
     const entries=fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name));
     for(const entry of entries){
-      if(rows.length>=80)return;
       if(entry.name.startsWith('.git')||entry.name==='node_modules')continue;
       const full=path.join(current,entry.name);
       if(entry.isDirectory())walk(full);
@@ -114,7 +112,7 @@ export function readContext(sourcePath,{preferredFiles=[],diagnostic=null}={}){
   let used=0;const files=[];const preferred=new Set(preferredFiles.map(posix)),diagnosticFile=posix(diagnostic?.file||diagnostic?.path||'');
   const rows=listTextFiles(sourcePath).sort((a,b)=>Number(preferred.has(b.relative))-Number(preferred.has(a.relative))||Number(b.relative===diagnosticFile)-Number(a.relative===diagnosticFile)||a.relative.localeCompare(b.relative));
   for(const row of rows){
-    if(files.length>=MAX_CONTEXT_FILES||used>=MAX_CONTEXT_BYTES)break;
+    if(used>=MAX_CONTEXT_BYTES)break;
     const full=fs.readFileSync(row.full,'utf8'),focused=row.relative===diagnosticFile?focusedExcerpt(full,{needle:diagnostic?.needle,line:diagnostic?.line}):null;
     const base=focused??(row.size<=MAX_FULL_CONTEXT_FILE_BYTES?full:boundedLargeExcerpt(full).content);
     const perFileLimit=preferred.has(row.relative)||row.relative===diagnosticFile?MAX_FULL_CONTEXT_FILE_BYTES:12_000;
@@ -186,7 +184,7 @@ export function normalizeModelCandidateShape(input){
 }
 export function parseModelCandidate(raw){
   const extracted=extractBalancedJson(raw),shaped=normalizeModelCandidateShape(extracted.value),parsed=shaped.normalized,repairs=[...(extracted.repair?[extracted.repair]:[]),...shaped.repairs];const rawFiles=Array.isArray(parsed.files)?parsed.files:[],rawEdits=Array.isArray(parsed.edits)?parsed.edits:[];if((rawFiles.length?1:0)+(rawEdits.length?1:0)!==1)throw new Error('후보는 files 또는 edits 중 정확히 하나를 사용해야 함');
-  const files=[];let total=0;const seen=new Set();if(rawFiles.length){if(rawFiles.length>MAX_OUTPUT_FILES)throw new Error(`후보 files는 최대 ${MAX_OUTPUT_FILES}개여야 함`);for(const item of rawFiles){const relative=assertRelativeOutputPath(item?.path);if(seen.has(relative))throw new Error(`후보 파일 중복: ${relative}`);seen.add(relative);const content=String(item?.content??''),fileBytes=Buffer.byteLength(content);if(fileBytes===0||fileBytes>MAX_FILE_BYTES)throw new Error(`후보 파일 크기 오류: ${relative}`);total+=fileBytes;if(total>MAX_TOTAL_OUTPUT_BYTES)throw new Error('후보 총 출력 크기 초과');files.push({path:relative,content,bytes:fileBytes});}}
+  const files=[];let total=0;const seen=new Set();if(rawFiles.length){for(const item of rawFiles){const relative=assertRelativeOutputPath(item?.path);if(seen.has(relative))throw new Error(`후보 파일 중복: ${relative}`);seen.add(relative);const content=String(item?.content??''),fileBytes=Buffer.byteLength(content);if(fileBytes===0||fileBytes>MAX_FILE_BYTES)throw new Error(`후보 파일 크기 오류: ${relative}`);total+=fileBytes;if(total>MAX_TOTAL_OUTPUT_BYTES)throw new Error('후보 총 출력 크기 초과');files.push({path:relative,content,bytes:fileBytes});}}
   const edits=rawEdits.length?normalizeExactEdits(rawEdits,assertRelativeOutputPath):[];return {summary:clean(parsed.summary)||'local-ai candidate',expectedEffect:clean(parsed.expectedEffect),tests:Array.isArray(parsed.tests)?parsed.tests.map(clean).filter(Boolean).slice(0,8):[],files,edits,mode:files.length?'FULL_FILES':'EXACT_EDITS',normalization:{applied:repairs.length>0,repairs}};
 }
 export function validateCandidateAgainstSource(sourcePath,candidate,{allowSaveKeyChange=false}={}){const violations=[];for(const file of candidate.files||[]){const sourceFile=path.join(sourcePath,file.path);if(exists(sourceFile)&&fs.statSync(sourceFile).isFile()&&!allowSaveKeyChange){const before=extractStorageKeys(fs.readFileSync(sourceFile,'utf8')),after=extractStorageKeys(file.content);if(JSON.stringify(before)!==JSON.stringify(after))violations.push({path:file.path,reason:'SAVE_KEY_CHANGE',before,after});}}return {pass:violations.length===0,violations};}
@@ -214,7 +212,13 @@ function syntaxCheck(candidatePath,changedPaths){const checks=[];for(const relat
 export function classifyGenerationFailure(error){const msg=clean(error?.message||error);if(/명확한 변경|변경 파일 수|변경 없음|비어 있음/.test(msg))return 'NO_CHANGE';if(/JSON|형식|정확히 하나/.test(msg))return 'OUTPUT_FORMAT';if(/저장키|보호검증/.test(msg))return 'PROTECTED_VALUE';if(/find|대상 없음/.test(msg))return 'EDIT_APPLY';if(/문법검증/.test(msg))return 'SYNTAX';if(/시간 초과|GEMINI_|EXTERNAL_|MODEL_TIMEOUT/.test(msg))return 'MODEL_RUNTIME';return 'OTHER';}
 function materializeCandidate({sourcePath,candidatePath,raw,allowSaveKeyChange=false}){
   const candidate=parseModelCandidate(raw),preValidation=validateCandidateAgainstSource(sourcePath,candidate,{allowSaveKeyChange});if(!preValidation.pass)throw new Error(`후보 보호검증 실패: ${preValidation.violations.map(v=>`${v.path}:${v.reason}`).join(',')}`);
-  copySource(sourcePath,candidatePath);for(const file of candidate.files){const target=path.join(candidatePath,file.path);ensureDir(target);fs.writeFileSync(target,file.content,'utf8');}const editPaths=candidate.edits.length?applyExactEdits(candidatePath,candidate.edits):[],changedPaths=uniq([...candidate.files.map(x=>x.path),...editPaths]);if(changedPaths.length<1||changedPaths.length>MAX_CHANGED_FILES)throw new Error(`변경 파일 수는 1~${MAX_CHANGED_FILES}개여야 함`);
+  copySource(sourcePath,candidatePath);for(const file of candidate.files){const target=path.join(candidatePath,file.path);ensureDir(target);fs.writeFileSync(target,file.content,'utf8');}const editPaths=candidate.edits.length?applyExactEdits(candidatePath,candidate.edits):[];let changedPaths=uniq([...candidate.files.map(x=>x.path),...editPaths]);// A submitted file is NOT a change unless its actual bytes differ from the current source.
+  const actualChangedPaths=changedPaths.filter(relative=>{
+    const before=path.join(sourcePath,relative),after=path.join(candidatePath,relative);
+    return !exists(before)||!fs.readFileSync(before).equals(fs.readFileSync(after));
+  });
+  if(!actualChangedPaths.length)throw new Error('후보 변경 없음: 실제 소스 차이 없음');
+  changedPaths=actualChangedPaths;
   const postValidation=validateChangedTree(sourcePath,candidatePath,changedPaths,{allowSaveKeyChange});if(!postValidation.pass)throw new Error(`후보 저장키 검증 실패: ${postValidation.violations.map(v=>`${v.path}:${v.reason}`).join(',')}`);const syntax=syntaxCheck(candidatePath,changedPaths);if(syntax.some(check=>check.status!=='PASS'))throw new Error(`후보 문법검증 실패: ${syntax.filter(x=>x.status!=='PASS').map(x=>x.name).join(',')}`);return {candidate,changedPaths,syntax};
 }
 

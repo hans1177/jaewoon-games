@@ -4,7 +4,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-export const MAX_EDIT_OPS=6;
+// Edit count is unbounded; aggregate bytes and exact-anchor safety still apply.
+export const MAX_EDIT_OPS=null;
+export const MAX_TOTAL_EDIT_BYTES=600000;
 export const MAX_FIND_BYTES=16000;
 export const MAX_REPLACE_BYTES=32000;
 export const LARGE_CONTEXT_CHUNK_BYTES=60000;
@@ -29,7 +31,7 @@ export function boundedLargeExcerpt(text,chunkBytes=LARGE_CONTEXT_CHUNK_BYTES){
 
 export function normalizeExactEdits(raw=[],assertPath=v=>posix(v)){
   if(!Array.isArray(raw))throw new Error('edits는 배열이어야 함');
-  if(raw.length>MAX_EDIT_OPS)throw new Error(`edits는 최대 ${MAX_EDIT_OPS}개`);
+  let totalBytes=0;
   return raw.map((item,index)=>{
     const relative=assertPath(item?.path);
     const find=String(item?.find??'');
@@ -38,6 +40,8 @@ export function normalizeExactEdits(raw=[],assertPath=v=>posix(v)){
     if(find===replace)throw new Error(`edit ${index+1}: 변경 없음`);
     if(bytes(find)>MAX_FIND_BYTES)throw new Error(`edit ${index+1}: find 너무 큼`);
     if(bytes(replace)>MAX_REPLACE_BYTES)throw new Error(`edit ${index+1}: replace 너무 큼`);
+    totalBytes+=bytes(find)+bytes(replace);
+    if(totalBytes>MAX_TOTAL_EDIT_BYTES)throw new Error('edits 총 바이트 제한 초과');
     return {path:relative,find,replace};
   });
 }
