@@ -244,6 +244,10 @@ test('Roblox bootstrap static gate rejects placeholders and missing server bound
   assert.equal(bad.pass,false);
   assert.ok(bad.blockers.includes('SERVER_PLACEHOLDER_FORBIDDEN'));
   assert.ok(bad.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
+  const missing=validateRobloxBootstrap({sharedConfig:shared,serverCode:'',clientCode:client,baseline});
+  assert.equal(missing.pass,false);
+  assert.ok(missing.blockers.includes('SERVER_SOURCE_TOO_SMALL'));
+  assert.ok(missing.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
 });
 
 test('Roblox scope classifier includes genre-specific native handler modes',()=>{
@@ -1442,6 +1446,20 @@ test('existing asset rebind migrates removed studioUi consumers and remains idem
   const fresh=bind('local C=require(script.Parent.GameConfig)\nlocal gui=Instance.new("Frame")\n');
   assert.match(fresh,/table\.concat\(studioAssetFamily\("UI"\), ","\)/);
   assert.doesNotMatch(fresh,/\bstudioUi\b/);
+  const imported=[
+    'local C=require(script.Parent.GameConfig)',
+    'local function attach(template)',
+    '  if not template:IsA("ScreenGui") then return end',
+    '  local imported = template:Clone()',
+    '  imported.Parent = player:WaitForChild("PlayerGui")',
+    'end',''
+  ].join('\n');
+  const importedBound=bind(imported);
+  assert.match(importedBound,/imported:SetAttribute\("StudioAssetBindingVersion"/);
+  assert.match(importedBound,/imported.Parent = player:WaitForChild\("PlayerGui"\)/);
+  assert.doesNotMatch(importedBound,/Instance\.new\(/,'imported art must not acquire synthetic decoration');
+  assert.equal(bind(importedBound),importedBound);
+  assert.throws(()=>bind('local C=require(script.Parent.GameConfig)\nlocal object=template:Clone()\n'),/VISIBLE_TARGET_REQUIRED/);
   const horror=fs.readFileSync(new URL('../roblox-games/horror-escape-room/client/Game.client.luau',import.meta.url),'utf8');
   assert.match(horror,/chaseTint:SetAttribute\("StudioAssetAtoms", table\.concat\(studioAssetFamily\("UI"\), ","\)\)/);
   assert.doesNotMatch(horror,/table\.concat\(studioUi\s*,/);

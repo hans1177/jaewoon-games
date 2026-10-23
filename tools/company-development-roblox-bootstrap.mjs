@@ -999,12 +999,16 @@ function bindExistingClientStudioAssets(source='',familyStatus={}){
   const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output);
   const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
   if(studioUiVisualMissing||studioUiTraceMissing){
-    const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
+    // Imported ScreenGui keeps its licensed visuals; only bind selection metadata.
+    const importedMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([A-Za-z_][A-Za-z0-9_]*):Clone\(\)/);
+    const importedGui=importedMatch&&new RegExp('\\b'+importedMatch[2]+':IsA\\(\\s*["\']ScreenGui["\']\\s*\\)').test(output.slice(0,importedMatch.index));
+    const nativeFrame=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
+    const frameMatch=nativeFrame||(importedGui?importedMatch:null);
     if(!frameMatch)throw new Error('EXISTING_STUDIO_ASSET_VISIBLE_TARGET_REQUIRED');
     const frameVar=frameMatch[1];
     let frameInsertAt=(frameMatch.index||0)+frameMatch[0].length;
     if(output[frameInsertAt]===';')frameInsertAt++;
-    const visual=studioUiVisualMissing?`
+    const visual=studioUiVisualMissing&&nativeFrame?`
 if hasStudioAssetAtom("UI", "FRAME_PANEL") then
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
@@ -1635,7 +1639,9 @@ async function main(){
     const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,studioMaterialRepair,learning:existingLearning});
     const staticContract=validateRobloxBootstrap({
       sharedConfig:fs.readFileSync(path.join(outputRoot,'shared','GameConfig.luau'),'utf8'),
-      serverCode:fs.readFileSync(path.join(outputRoot,'server','Game.server.luau'),'utf8'),
+      // Missing authority source is a repair gap, never an IO crash or a static PASS.
+      serverCode:fs.existsSync(path.join(outputRoot,'server','Game.server.luau'))
+        ?fs.readFileSync(path.join(outputRoot,'server','Game.server.luau'),'utf8'):'',
       clientCode:fs.readFileSync(path.join(outputRoot,'client','Game.client.luau'),'utf8'),
       baseline,
     });
