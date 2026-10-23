@@ -855,7 +855,15 @@ load();
 buildWorld();
 updateHud();
 toast('나뭇가지·조약돌·섬유를 모아 장비와 제작대를 만들어');
-setInterval(()=>{if(!state.dead)save(false)},20000);
+let autosaveInterval=setInterval(()=>{if(!state.dead)save(false)},20000);
+window.addEventListener('pagehide',()=>{
+  if(autosaveInterval!==null){clearInterval(autosaveInterval);autosaveInterval=null;}
+});
+window.addEventListener('pageshow',event=>{
+  if(event.persisted&&autosaveInterval===null){
+    autosaveInterval=setInterval(()=>{if(!state.dead)save(false)},20000);
+  }
+});
 function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 })();
