@@ -442,7 +442,7 @@ function syncResourceGpuInstances(nodes){
   }
   for(const [key,entry] of entries){
    let batch=resourceGpuMeshes.get(key);
-   const capacity=Math.max(128,nodes.length*2);
+   const capacity=Math.max(128,entry.parts.length*2);
    if(!batch||batch.instanceMatrix.count<entry.parts.length){
     const replacement=new THREE.InstancedMesh(entry.geometry,entry.material,capacity);
     replacement.userData.cc0ResourceInstance=true;
