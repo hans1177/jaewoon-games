@@ -12,7 +12,7 @@ test('new automatic waves give priority to queued owner publication without canc
     });
     assert.equal(result.allowed,false,status);
     assert.equal(result.reason,'OWNER_PUBLICATION_PRIORITY',status);
-    assert.equal(result.existingQueueDispatchAllowed,false,'owner priority must be preserved');
+    assert.equal(result.existingQueueDispatchAllowed,true,'unrelated existing games must continue despite owner publication');
     assert.equal(result.existingWorkCancelled,false);
     assert.equal(result.ownerDirectWorkAllowed,true);
     assert.equal(result.finalQaPreserved,true);
@@ -46,7 +46,8 @@ test('24h scheduler stops only new fanout; recovery, owner-direct and finished Q
   assert.match(main,/admitted=\$admitted/);
   assert.match(main,/if: steps\.auto_admission\.outputs\.dispatch_admitted == 'true'/);
   assert.match(main,/dispatch_admitted=true/);
-  assert.match(main,/dispatch_admitted=false/);
+  assert.doesNotMatch(main,/dispatch_admitted=false/);
+  assert.match(main,/reason=OWNER_PUBLICATION_PRIORITY/);
   assert.ok(main.includes('echo "dispatch_admitted=$dispatch_admitted" >> "$GITHUB_OUTPUT"'));
   assert.match(main,/VIBE2_EXISTING_QUEUE_DISPATCH_ADMITTED=/);
   assert.match(main,/needs\.plan\.outputs\.autonomy_admitted == 'true' && needs\.plan\.outputs\.game_refill_ready/);

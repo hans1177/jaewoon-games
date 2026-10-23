@@ -9166,6 +9166,72 @@ test('no-model quest crafting enemy and region choices change gameplay state wit
   assert.equal(deterministicWebInputCandidate({order:{target:'web',goal:'배경 음악 변경'},sourceRoot,responsibleFiles:['index.html']}),null);
 });
 
+// 콘텐츠 4종은 실제 원본 배열과 함수 소비자, 스키마, 보상 불변성을 만족해야만 후보가 된다.
+test('no-model source-grounded new quest recipe enemy and region records preserve existing balance and saves',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root='web-games/demo',sourceRoot=path.join(cwd,root);
+  const list=[
+    ['questData','quest','q1','q2','selectQuest'],
+    ['recipeData','craft','c1','c2','craftItem'],
+    ['enemyBehaviorData','enemy','e1','e2','setEnemyBehavior'],
+    ['regionData','region','r1','r2','enterRegion']
+  ];
+  const initial=list.map(([catalog,,from])=>'const '+catalog+'='+JSON.stringify([
+    {id:from,title:'원본',objective:'기존 진행',reward:10,damage:2}
+  ])+';').join('');
+  const methods=list.map(([catalog,,, ,method])=>
+    'function '+method+'(id){const row='+catalog+'.find(x=>x.id===id);if(row)chosen.push(row.id);}').join('');
+  const source='<script>'+initial+'const literal="$&";let chosen=[];'+methods+'</script>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const plans=list.map(([,family,from,id])=>({
+    family,referenceId:from,record:{id,title:'새로운 진행',objective:'다음 단서',reward:10,damage:2}
+  }));
+  const work={target:'web',goal:'퀘스트 제작 적 행동 지역 콘텐츠 확장',selectedTask:{contentAdditions:plans}};
+  const key=process.env.GEMINI_API_KEY;delete process.env.GEMINI_API_KEY;
+  t.after(()=>{if(key===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=key;});
+  const raw=deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']});
+  assert.equal(raw?.deterministicWebContent,true);
+  const normalized=normalizeCandidate(raw,{target:'web',responsibleFiles:['index.html'],sourceRootRelative:root,allowFullRewrite:false});
+  const docs=new Map([['index.html',source]]);applyExactEdits('',normalized.edits,{documents:docs});
+  const context={};runInNewContext(docs.get('index.html').match(/<script>([\s\S]*)<\/script>/)[1],context);
+  assert.equal(runInNewContext('literal',context),'  const context={};runInNewContext(docs.get('index.html').match(/<script>([\s\S]*)<\/script>/)[1],context);','existing JS literal remains intact');
+  for(const [catalog,,from,id,method] of list){
+    const data=Array.from(runInNewContext(catalog,context));
+    assert.equal(data.length,2);
+    assert.equal(data[0].id,from,'existing source record preserved');
+    assert.equal(data[0].reward,10);
+    assert.equal(data[1].damage,2);
+    runInNewContext(method+'('+JSON.stringify(id)+')',context);
+  }
+  assert.deepEqual(Array.from(runInNewContext('chosen',context)),['q2','c2','e2','r2']);
+  assert.equal(fs.readFileSync(path.join(sourceRoot,'index.html'),'utf8'),source,'candidate does not write game files');
+  const prebound=source.replace('<script>','<script>document.addEventListener("click",()=>{});');
+  write(path.join(sourceRoot,'index.html'),prebound);
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']})?.deterministicWebContent,true,
+    'existing click handlers cannot suppress independent content development');
+  write(path.join(sourceRoot,'index.html'),docs.get('index.html'));
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['index.html']}),null,'idempotent: duplicate content rejected');
+  write(path.join(sourceRoot,'index.html'),source);
+  for(const mutation of [
+    {...plans[0],record:{...plans[0].record,reward:11}},
+    {...plans[0],record:{...plans[0].record,damage:3}},
+    {...plans[0],record:{...plans[0].record,id:'q1'}},
+    {...plans[0],record:{...plans[0].record,script:'unsafe'}},
+    {...plans[0],record:{...plans[0].record,title:'<img>'}},
+    {...plans[0],record:{...plans[0].record,title:'원본',objective:'기존 진행'}}
+  ]){
+    const candidate=deterministicWebInputCandidate({order:{...work,selectedTask:{contentAdditions:[mutation]}},
+      sourceRoot,responsibleFiles:['index.html']});
+    assert.equal(candidate,null,'reject unsafe, duplicate or no-op content');
+  }
+  assert.equal(deterministicWebInputCandidate({order:{...work,target:'roblox'},sourceRoot,responsibleFiles:['index.html']}),null);
+  assert.equal(deterministicWebInputCandidate({order:work,sourceRoot,responsibleFiles:['../index.html']}),null);
+  const withoutConsumer=source.replace('const row=questData.find(x=>x.id===id)','const row=null');
+  write(path.join(sourceRoot,'index.html'),withoutConsumer);
+  assert.equal(deterministicWebInputCandidate({order:{...work,selectedTask:{contentAdditions:[plans[0]]}},sourceRoot,responsibleFiles:['index.html']}),null,
+    'catalog without gameplay consumer is not actionable');
+});
+
 test('independent authoring key checks occur only at the actual optional model request',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   const candidateStep=workflow.slice(workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n')),workflow.lastIndexOf('      - name:',workflow.indexOf('        id: candidate\n'))+17000);
