@@ -1667,8 +1667,47 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         });
     return true;
   };
+  // [게임별 역할 수급] 같은 자산군이 쓰인다고 다른 적·장비·기능 역할까지 충족됐다고 보지 않는다.
+  // 소스 바인딩을 실제 제작 또는 런타임 PASS로 승격하지 않고 부족한 역할만 재사용/수급 대상으로 만든다.
+  const roleGaps=[];
   for(const family of requiredFamilies){
     const usedCount=currentFamilyCounts.get(family)||0;
+    const requestedRoles=requestedRolesByFamily.get(family)||[];
+    const currentFamilyAssets=currentAssets.filter(asset=>clean(asset.family||asset.category).toUpperCase()===family);
+    const coveredRoles=new Set(currentFamilyAssets.flatMap(asset=>
+      roleEvidenceById.get(clean(asset.id))?.matchedRoles||[]));
+    const missingRoles=requestedRoles.filter(role=>!coveredRoles.has(role));
+    if(missingRoles.length)roleGaps.push(Object.freeze({
+      family,requestedRoles:freezeList(requestedRoles),coveredRoles:freezeList([...coveredRoles].sort()),
+      missingRoles:freezeList(missingRoles),sourceConnectionIsNotRuntimeProof:true
+    }));
+    if(usedCount&&missingRoles.length){
+      for(const role of missingRoles){
+        // 기존 회사 에셋 중 정확히 일치하는 역할을 먼저 비교하며 타 종족 치환은 금지한다.
+        const reusable=assets.filter(asset=>
+          clean(asset.family||asset.category).toUpperCase()===family
+          &&!currentAssetIds.has(clean(asset.id))
+          &&assetSupplyCandidateAllowed(asset,target)
+          &&(roleEvidenceById.get(clean(asset.id))?.matchedRoles||[]).includes(role)
+        ).sort(compareReusable)[0];
+        if(reusable){
+          pushAction({
+            action:'ADAPT',assetId:clean(reusable.id),family,requestedRole:role,
+            reason:'CURRENT_GAME_MISSING_ROLE_REUSE',
+            roleEvidence:roleEvidenceById.get(clean(reusable.id)),
+            gameSourceComparisonRequired:true,
+            currentGameBalanceAndSavePreserved:true,runtimeVerificationGranted:false
+          });
+        }else if(!planOriginalAcquisition(family,[role],'CURRENT_GAME_MISSING_ROLE_CC0_SOURCE','')){
+          pushAction({
+            action:'HOLD',assetId:null,family,requestedRole:role,
+            reason:'CURRENT_GAME_MISSING_ROLE_UNRESOLVED',
+            roleEvidence:freeze({requestedRoles:freezeList([role]),matchedRoles:freezeList([]),verifiedRoleMatch:false}),
+            gameSourceComparisonRequired:true,runtimeVerificationGranted:false
+          });
+        }
+      }
+    }
     if(usedCount){
       // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
       // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
@@ -1677,7 +1716,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const currentIsDownloadedOriginal=acquiredOriginal(currentAsset);
       const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
-      if(!currentIsDownloadedOriginal){
+      if(!currentIsDownloadedOriginal&&!missingRoles.length){
         planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
       }
       // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
@@ -1773,6 +1812,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     intendedOnly:intendedOnlyCount,
     requiredFamilies:Object.freeze(requiredFamilies),
     families:Object.freeze(families),
+    roleGaps:Object.freeze(roleGaps),
+    missingRoleCount:roleGaps.reduce((sum,row)=>sum+row.missingRoles.length,0),
+    existingGameRoleCoverageIndependentByFamily:true,
+    missingRolesNeverClaimRuntimeVerified:true,
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
