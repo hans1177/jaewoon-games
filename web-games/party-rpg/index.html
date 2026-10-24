@@ -20,6 +20,19 @@
 @media(max-height:550px) and (min-width:701px){#introMenu{grid-template-columns:1fr 250px;gap:30px;padding:10px 25px}.introCopy h1{font-size:40px;margin:12px 0}.introCopy p{font-size:12px;margin:8px 0}.titleLine{margin:12px 0}.introMenuButtons{margin:15px 0 5px}#introPortrait{max-width:240px}#partyCards{bottom:68px}.partyCard{width:56px}.partyRole{display:none}#partyInspect{bottom:170px}#objective{top:88px;max-width:250px;font-size:10px}#cameraTools{top:88px}#combatLog{display:none}.creatorLayout{grid-template-columns:190px 1fr;gap:20px}.dialoguePortrait{max-width:200px}.dialogueLayout{grid-template-columns:200px 1fr;gap:25px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
+/* GRIM CRPG: iron, ash, canvas, parchment; narrow square edges instead of playful cards. */
+:root{--gold:#a99878;--bright:#d4ccb7;--edge:#625e50;--ink:#171b1c;--paper:#c8c3b7;--muted:#8f9391}
+#start{background:radial-gradient(ellipse at 23% 44%,#49443b6b,transparent 51%),linear-gradient(125deg,#101517f5,#282b2de8 55%,#101417f5)}
+.panel,.card{background:linear-gradient(145deg,#303232f4,#171b1dfb);border-color:#636358;box-shadow:0 10px 35px #000b,inset 0 0 0 1px #ffffff07}
+.menuBtn,.row button,#startBtn,.goldButton{border:1px solid #68665a;border-radius:0;background:linear-gradient(170deg,#46453e,#262a29);color:#d0c7b0;text-shadow:0 1px 1px #000;box-shadow:inset 0 1px #ffffff15,0 2px 6px #0008}
+.menuBtn:hover,.row button:hover{background:linear-gradient(#545248,#303331)}
+.portrait{filter:saturate(.54) contrast(1.12) brightness(.84);border:2px solid #55554b;border-radius:0}
+#hud .panel,#objective,#combatLog{background:linear-gradient(140deg,#202629ee,#131718f0);border:1px solid #5b625b;color:#caccc1}
+.eyebrow{color:#b2a58e}.gold{color:#b1a083}
+.dialogueLayout blockquote{border-left:2px solid #777666;color:#d1c7af;background:#202526a8}
+.journalEntry{background:linear-gradient(145deg,#2a3031,#1e2424);border:1px solid #565e5a;box-shadow:inset 0 1px #ffffff09}
+@media(max-width:700px){#start{background:linear-gradient(140deg,#141a1b,#22282a)}}
+
 </style>
 </head>
 <body>
