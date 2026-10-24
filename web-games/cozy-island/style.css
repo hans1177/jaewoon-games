@@ -300,3 +300,34 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 @media(max-width:420px){.system-dialog{max-height:86dvh}.system-body{max-height:58dvh;padding:9px}
  .system-tabs button{font-size:9px;padding:9px 0}.ks-action{font-size:10px;padding:9px 6px}
  .build-status{font-size:10px;bottom:calc(env(safe-area-inset-bottom) + 91px)}}
+
+
+/* 포근섬 RTS: 건설 트리·시스템 홈·모바일 조작을 기존 패널에서 직접 정리 */
+.realm-tech-tree{margin:12px 0;padding:10px;background:#dfd4b9;border:1px solid #b9a179;border-radius:9px}
+.realm-tech-tree h3{margin:0 0 7px;font-size:15px}
+.realm-tech-step{display:flex;justify-content:space-between;align-items:center;gap:10px;
+ padding:9px 6px;border-top:1px solid #baaa8d;font-size:12px}
+.realm-tech-step small{max-width:62%;text-align:right;line-height:1.45}
+.realm-tech-step.unlocked{color:#355d36}
+.realm-tech-step.locked{color:#776a59}
+.ks-navigation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:2px 0 12px}
+.ks-navigation .ks-action{margin:0;width:100%;min-height:46px;white-space:normal;line-height:1.25}
+@media(max-width:600px){
+ .hud{left:6px;right:6px;gap:5px}
+ .hud-main{min-width:0;max-width:68vw;overflow:hidden;text-overflow:ellipsis}
+ .hud-main.right{max-width:30vw;flex-shrink:0}
+ .panel{width:min(98vw,480px);max-height:84dvh}
+ .panel-body{max-height:calc(84dvh - 63px);padding-bottom:max(18px,env(safe-area-inset-bottom))}
+ .realm-build-card button,.choice,.ks-action{min-height:44px}
+ .realm-build-card{content-visibility:auto;contain-intrinsic-size:140px}
+ .realm-tech-step{flex-wrap:wrap}
+ .realm-tech-step small{max-width:100%}
+ .camera-zoom button{min-width:44px;min-height:44px}
+ .controls{padding:0 max(5px,env(safe-area-inset-left))}
+}
+@media(max-width:360px){
+ .strategy-button small{font-size:8px}
+ .strategy-bar{gap:2px;padding:3px}
+ .ks-navigation{grid-template-columns:1fr}
+ .ks-navigation .ks-action{min-height:44px}
+}

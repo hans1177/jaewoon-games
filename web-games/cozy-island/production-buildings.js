@@ -333,9 +333,36 @@ export const ECONOMY_BUILDINGS=Object.freeze([
  {id:'market',name:'시장',icon:'⚖️',group:'town',wood:7,stone:2,gold:0,jobs:0,out:null,amount:0,desc:'상품 매입과 판매',max:2,x:900,y:830},
  {id:'fletcher',name:'활 제작소',icon:'🏹',group:'military',wood:8,stone:3,gold:0,jobs:1,input:'wood',need:3,out:'bows',amount:2,desc:'나무 3 → 활 2',max:4,x:1310,y:945},
  {id:'smith',name:'대장간',icon:'⚒️',group:'military',wood:9,stone:7,gold:10,jobs:2,input:'iron',need:2,out:'swords',amount:2,desc:'철 2 → 검 2',max:3,x:1190,y:1110},
- {id:'armory',name:'무기고',icon:'🛡️',group:'military',wood:8,stone:8,gold:0,jobs:0,out:null,amount:0,desc:'무장 창고와 병력 보급',max:2,x:700,y:1120}
+ {id:'armory',name:'무기고',icon:'🛡️',group:'military',wood:8,stone:8,gold:0,jobs:0,out:null,amount:0,desc:'무장 창고와 병력 보급',max:2,x:700,y:1120},
+ {id:'knightHall',name:'기사단 회관',icon:'⚜️',group:'military',wood:15,stone:12,gold:36,jobs:0,out:null,amount:0,desc:'랜덤 기사 후보 영입·스킬 육성',max:1,x:990,y:395},
+ {id:'prison',name:'감옥',icon:'🔒',group:'military',wood:12,stone:15,gold:18,jobs:0,out:null,amount:0,desc:'포로 억류·교환·몸값 협상, 기본 4명 수용',max:1,x:1100,y:500}
 ]);
 const ECONOMY_BY_ID=new Map(ECONOMY_BUILDINGS.map(def=>[def.id,def]));
+// 개발 트리: 생산 시설의 실물 건설과 강화로 고급 병과·공성·함정을 해금한다.
+// 소유한 기존 유닛과 기존 설치물은 연구 조건이 달라져도 삭제하지 않는다.
+export const ECONOMY_TECH_TREE=Object.freeze({
+ spearman:[['lumber',2]],
+ crossbow:[['fletcher',1],['iron',1]],
+ shield:[['smith',1],['armory',1]],
+ knight:[['smith',2],['armory',1],['hovel',2],['knightHall',1]],
+ sapper:[['quarry',2],['smith',1]],
+ ram:[['lumber',2],['stockpile',2],['armory',1]],
+ trebuchet:[['quarry',2],['smith',2],['iron',1]],
+ siegeTower:[['lumber',3],['armory',2],['stockpile',2]],
+ net:[['fletcher',1]],
+ log:[['lumber',2]],
+ barrel:[['winery',1],['smith',1]]
+});
+export function economyTechStatus(state,id){
+ const requirements=ECONOMY_TECH_TREE[id]||[];
+ const e=getEconomy(state);
+ const missing=requirements.map(([name,level])=>{
+  const def=ECONOMY_BY_ID.get(name),building=e?.buildings?.[name];
+  return building?.count&&building.level>=level?null:(def?.name||name)+' '+level+'단계';
+ }).filter(Boolean);
+ return {unlocked:missing.length===0,requirements,missing};
+}
+
 const ECONOMY_STEP=6;
 export function getEconomy(state){
  if(!state||typeof state!=='object')return null;

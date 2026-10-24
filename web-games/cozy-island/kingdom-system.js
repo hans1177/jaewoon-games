@@ -7,48 +7,69 @@ const AUDIO='jaewoon-cozy:audio-settings',get=(q)=>body.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const btn=(act,label,disabled=false)=>'<button type="button" class="ks-action" data-action="'+act+'" '+(disabled?'disabled':'')+'>'+label+'</button>';
 let section='save';
-let settings={volume:.26,track:0,voice:true};
+let settings={volume:.34,track:0,voice:true};
 try{Object.assign(settings,JSON.parse(localStorage.getItem(AUDIO)||'{}'))}catch{}
-const tracks=['🏞️ 왕국의 아침','🌾 황금 들판','🌲 숲의 노래','🌙 고요한 성채'];
-const melodies=[
- [60,64,67,64,62,65,69,65,60,64,67,72,69,65,62,60],
- [57,60,64,67,64,60,59,62,57,64,69,67,65,62,60,57],
- [62,65,69,72,69,65,64,67,62,65,67,69,67,65,62,60],
- [55,59,62,64,62,59,57,60,55,59,62,67,62,60,59,55]
+settings.track=Math.max(0,Math.min(3,Math.floor(Number(settings.track)||0)));
+settings.volume=Math.max(0,Math.min(1,Number(settings.volume)||0));
+// 음향: 4개의 독립 화성 진행·하프 아르페지오·저음·대선율을 합성한다.
+const tracks=['🏰 성채의 새벽','🌾 행군의 노래','🍇 황금빛 저녁','⚔️ 왕국의 서약'];
+const songs=[
+ {bpm:84,keys:[48,45,41,43],mel:[72,74,76,79,76,74,72,69,72,74,76,74,69,67,69,72]},
+ {bpm:106,keys:[50,45,46,48],mel:[74,77,79,81,79,77,76,74,72,74,77,79,81,77,76,74]},
+ {bpm:76,keys:[57,53,55,52],mel:[81,79,76,77,79,81,84,81,79,77,76,74,76,77,74,72]},
+ {bpm:98,keys:[50,46,43,45],mel:[74,77,79,81,79,77,74,72,86,84,81,79,77,79,81,74]}
 ];
-let audioCtx,master,music=false,index=0,musicLoop,warUntil=0;
+let audioCtx,master,music=false,index=0,musicLoop,warUntil=0,nextBeatAt=0;
 function audioReady(){
  const C=window.AudioContext||window.webkitAudioContext;if(!C)return false;
  if(!audioCtx){
-   audioCtx=new C();master=audioCtx.createGain();
-   master.gain.value=settings.volume*.4;master.connect(audioCtx.destination);
+   audioCtx=new C();
+   const compressor=audioCtx.createDynamicsCompressor();
+   compressor.threshold.value=-19;compressor.ratio.value=3;
+   master=audioCtx.createGain();master.gain.value=settings.volume*.52;
+   master.connect(compressor);compressor.connect(audioCtx.destination);
  }
  audioCtx.resume().catch(()=>{});return true;
 }
 const hz=n=>440*2**((n-69)/12);
-function tone(midi,now,dur=.74,type='sine',volume=.065){
- if(!audioCtx||audioCtx.state!=='running')return;
- const osc=audioCtx.createOscillator(),env=audioCtx.createGain();osc.type=type;
- osc.frequency.value=hz(midi);env.gain.setValueAtTime(.0001,now);
- env.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),now+.05);
+function tone(midi,now,dur=.7,type='sine',volume=.06){
+ if(!Number.isFinite(midi)||!audioCtx||audioCtx.state!=='running')return;
+ const osc=audioCtx.createOscillator(),env=audioCtx.createGain(),filter=audioCtx.createBiquadFilter();
+ osc.type=type;osc.frequency.setValueAtTime(hz(midi),now);
+ filter.type='lowpass';filter.frequency.value=type==='triangle'?1800:2600;
+ env.gain.setValueAtTime(.0001,now);
+ env.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),now+.035);
+ env.gain.exponentialRampToValueAtTime(Math.max(.0001,volume*.35),now+dur*.6);
  env.gain.exponentialRampToValueAtTime(.0001,now+dur);
- osc.connect(env);env.connect(master);osc.start(now);osc.stop(now+dur+.03);
+ osc.connect(filter);filter.connect(env);env.connect(master);osc.start(now);osc.stop(now+dur+.04);
 }
 function drum(now){
  if(!audioCtx||audioCtx.state!=='running')return;
- const osc=audioCtx.createOscillator(),env=audioCtx.createGain();
- osc.type='sine';osc.frequency.setValueAtTime(115,now);
- osc.frequency.exponentialRampToValueAtTime(44,now+.28);
- env.gain.setValueAtTime(.22,now);env.gain.exponentialRampToValueAtTime(.0001,now+.37);
- osc.connect(env);env.connect(master);osc.start(now);osc.stop(now+.39);
+ const osc=audioCtx.createOscillator(),env=audioCtx.createGain();osc.type='sine';
+ osc.frequency.setValueAtTime(105,now);osc.frequency.exponentialRampToValueAtTime(45,now+.24);
+ env.gain.setValueAtTime(.16,now);env.gain.exponentialRampToValueAtTime(.0001,now+.32);
+ osc.connect(env);env.connect(master);osc.start(now);osc.stop(now+.34);
 }
 function beat(){
  if(!music||!audioCtx||audioCtx.state!=='running')return;
- const now=audioCtx.currentTime+.05,melody=melodies[settings.track]||melodies[0];
- tone(melody[index%16],now,.8);
- if(index%4===0){tone(melody[0]-12,now,2.7,'triangle',.025);tone(melody[2]-12,now,2.7,'triangle',.02)}
- if(Date.now()<warUntil){drum(now);if(index%2===0)drum(now+.34)}
- index++;
+ const song=songs[settings.track]||songs[0],stepDur=30/song.bpm;
+ if(!nextBeatAt||nextBeatAt<audioCtx.currentTime-.35)nextBeatAt=audioCtx.currentTime+.05;
+ let scheduled=0;
+ while(nextBeatAt<audioCtx.currentTime+.48&&scheduled++<5){
+   const step=index%64,bar=Math.floor(step/16),tick=step%16;
+   const root=song.keys[bar],chord=[root,root+4+(bar===2?1:0),root+7,root+12];
+   if(tick%8===0){
+     for(const note of chord.slice(1))tone(note+12,nextBeatAt,stepDur*7,'sine',.012);
+     tone(root-12,nextBeatAt,stepDur*6,'triangle',.06);
+   }
+   if(tick%4===0&&tick%8!==0)tone(root-12,nextBeatAt,stepDur*3,'triangle',.039);
+   if(step%2===0){
+     tone(song.mel[(step/2)%16],nextBeatAt,stepDur*1.85,'sine',.047);
+     tone(chord[(tick/2)%4]+24,nextBeatAt,stepDur*.9,'triangle',.018);
+   }
+   if(Date.now()<warUntil&&tick%4===0)drum(nextBeatAt);
+   nextBeatAt+=stepDur;index++;
+ }
 }
 function saveAudio(){
  if(master)master.gain.setTargetAtTime(settings.volume*.4,audioCtx.currentTime,.08);
@@ -86,7 +107,7 @@ function loadSlot(n){
  location.reload();
 }
 function savePanel(){
- return '<p class="ks-note">자동저장이 켜져 있습니다. 수동 저장 슬롯 3개는 별도 보관되며 불러올 때 해당 저장으로 복귀합니다.</p>'+
+ return '<div class="ks-navigation">'+btn('resume','▶ 계속하기')+btn('home','🏠 게임 목록')+btn('restart','↻ 새 게임')+'</div><p class="ks-note">자동저장이 켜져 있습니다. 수동 저장 슬롯 3개는 별도 보관되며 불러올 때 해당 저장으로 복귀합니다.</p>'+
  [1,2,3].map(n=>{
   const slot=getSlot(n);
   return '<div class="ks-row"><div><b>왕국 저장 '+n+'</b><small>'+esc(slot?new Date(slot.at).toLocaleString('ko-KR'):'저장 없음')+'</small></div>'+
@@ -105,15 +126,35 @@ function mapPanel(){
  realms.map((r,i)=>'<div class="ks-row"><div><b>'+r.name+'</b><small>'+r.where+'</small></div>'+btn('focus:'+i,'🗺️ 보기')+'</div>').join('');
 }
 function diplomacyPanel(){
- return '<p class="ks-note">동맹 체결에는 금화 80. AI 동맹은 우리 성을 공격하지 않고 8초마다 자원·세금을 지원합니다. 동맹은 언제든 해제할 수 있습니다.</p>'+
+ const court=game.getCourt?.()||{prisoners:[],heldByRivals:[],reputation:0};
+ return '<p class="ks-note">동맹 체결 금화 80 · AI 왕국과 포로 교환·몸값 요구·교섭 거부 가능. 적대 영주는 자금·군사력·신뢰에 따라 제안을 거절할 수 있습니다.</p>'+
  game.getLords().map(l=>{
   const allied=game.state.strongholdDiplomacy?.[l.id]==='ally';
-  return '<div class="ks-row"><div><b>'+esc(l.name)+'</b><small>'+esc(l.region)+' · '+(l.defeated?'함락':allied?'동맹':'적대')+'</small></div>'+
-  btn('diplomacy:'+l.id+':'+(allied?'hostile':'ally'),allied?'⚔️ 해제':'🤝 체결',l.defeated||(!allied&&game.state.coins<80))+'</div>';
- }).join('');
+  const mine=court.prisoners.filter(p=>p.lordId===l.id),
+        theirs=court.heldByRivals.filter(p=>p.lordId===l.id);
+  return '<div class="ks-row"><div><b>'+esc(l.name)+'</b><small>'+esc(l.region)+' · '+
+  (l.defeated?'함락':allied?'동맹':'적대')+' · 억류 '+mine.length+' · 우리 포로 '+theirs.length+
+  '</small></div>'+
+  btn('diplomacy:'+l.id+':'+(allied?'hostile':'ally'),allied?'⚔️ 해제':'🤝 체결',
+    l.defeated||(!allied&&game.state.coins<80))+'</div>'+
+  mine.map(p=>'<div class="ks-prison-row"><b>🔒 '+esc(p.heroName)+' · '+esc(l.name)+'</b>'+
+    btn('prison:demand:'+p.id,'💰 몸값 요구')+
+    btn('prison:exchange:'+p.id,'🤝 교환')+
+    btn('prison:release:'+p.id,'🕊️ 석방')+
+    btn('prison:execute:'+p.id,'⚔️ 처형')+'</div>').join('')+
+  theirs.map(p=>'<div class="ks-prison-row"><b>⚠️ '+esc(p.heroName)+
+    ' · 몸값 '+p.price+'금화'+(p.refused?' · 이전 요구 거부':'')+'</b>'+
+    btn('prison:pay:'+p.id,'💰 지불',game.state.coins<p.price)+
+    btn('prison:refuse:'+p.id,'⛔ 거부')+
+    btn('prison:exchange:'+p.id,'🤝 교환 요청')+'</div>').join('');
+ }).join('')+
+ '<p class="ks-note">⚖️ 왕국 신뢰 '+court.reputation+' · 포로 '+court.prisoners.length+'/'+
+ (game.courtCapacity?.()||0)+'명 · 최근 교섭 기록은 감옥에서 확인.</p>'+
+ '<div class="ks-navigation">'+btn('open-knights','⚜️ 기사단 회관')+
+ btn('open-prison','🔒 감옥 관리')+'</div>';
 }
 function soundPanel(){
- return '<p class="ks-note">라이선스 문제 없는 자체 합성 BGM 4곡. 전투 시 북소리·고동음이 커지고 이벤트 음성 안내가 재생됩니다. 최초 재생은 버튼으로 시작합니다.</p>'+
+ return '<p class="ks-note">중세 화음·하프·저음·선율이 겹치는 자체 합성 BGM 4곡. 전투 시 북소리와 이벤트 음성이 재생됩니다. 최초 재생은 버튼으로 시작합니다.</p>'+
  '<div class="ks-row"><b>🎵 배경음악</b>'+btn(music?'music-off':'music-on',music?'⏹ 끄기':'▶ 재생')+'</div>'+
  '<label class="ks-field">음악 곡 선택<select id="ks-track">'+tracks.map((x,i)=>'<option value="'+i+'" '+(settings.track===i?'selected':'')+'>'+x+'</option>').join('')+'</select></label>'+
  '<label class="ks-field">음량 '+Math.round(settings.volume*100)+'%<input type="range" id="ks-volume" min="0" max="100" value="'+Math.round(settings.volume*100)+'"></label>'+
@@ -215,7 +256,7 @@ document.querySelector('#systemCommand')?.addEventListener('click',()=>{section=
 document.querySelector('#systemClose')?.addEventListener('click',()=>dialog.close());
 tabs.addEventListener('click',e=>{const t=e.target.closest('[data-tab]');if(t){section=t.dataset.tab;render()}});
 body.addEventListener('change',e=>{
- if(e.target.id==='ks-track'){settings.track=Number(e.target.value)||0;index=0;saveAudio()}
+ if(e.target.id==='ks-track'){settings.track=Number(e.target.value)||0;index=0;nextBeatAt=0;saveAudio();beat()}
 });
 body.addEventListener('input',e=>{
  if(e.target.id==='ks-volume'){
@@ -227,7 +268,14 @@ body.addEventListener('click',async e=>{
  const target=e.target.closest('[data-action]');if(!target)return;
  const [action,id,opt]=target.dataset.action.split(':');
  try{
-  if(action==='save'){saveSlot(id);render()}
+  if(action==='resume'){dialog.close()}
+  else if(action==='home'){game.save();location.assign(new URL('../../',location.href).href)}
+  else if(action==='restart'){
+    if(confirm('자동저장을 초기화하고 새 왕국을 시작할까요? 수동 저장 3칸은 남습니다.')){
+      sessionStorage.setItem('cozy-island:new-game','1');location.reload();
+    }
+  }
+  else if(action==='save'){saveSlot(id);render()}
   else if(action==='load'){
    if(!getSlot(id))return;
    if(confirm('이 슬롯을 불러오면 현재 자동저장을 덮어씁니다. 계속할까요?'))loadSlot(id);
@@ -235,10 +283,16 @@ body.addEventListener('click',async e=>{
   else if(action==='quick'){game.save();note('자동 저장 완료')}
   else if(action==='focus'){const r=realms[Number(id)];if(r){game.center(r.x,r.y);dialog.close()}}
   else if(action==='diplomacy'){if(game.diplomacy(id,opt))render();else note('외교 조건이 부족합니다')}
-  else if(action==='music-on'){
-   if(audioReady()){music=true;if(!musicLoop)musicLoop=setInterval(beat,750);beat();render()}
+  else if(action==='prison'){
+    const result=game.prisonAction?.(id,opt)||{ok:false,message:'감옥 기능 없음'};
+    render();note(result.message);
   }
-  else if(action==='music-off'){music=false;render()}
+  else if(action==='open-knights'){dialog.close();game.openKnightHall?.()}
+  else if(action==='open-prison'){dialog.close();game.openPrison?.()}
+  else if(action==='music-on'){
+   if(audioReady()){music=true;nextBeatAt=0;if(!musicLoop)musicLoop=setInterval(beat,180);beat();render()}
+  }
+  else if(action==='music-off'){music=false;nextBeatAt=0;render()}
   else if(action==='voice'){settings.voice=!settings.voice;saveAudio();render()}
   else if(action==='drum'){if(audioReady()){drum(audioCtx.currentTime+.02);drum(audioCtx.currentTime+.4)}}
   else if(action==='host'){await makeInvite()}
