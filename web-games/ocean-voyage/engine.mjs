@@ -568,6 +568,7 @@ export function boardEnemy(state){
  const offense=Math.round((7+ship.crew*.15)*(1+assignedPower(s,'gunnery','gunnery')/250+(s.job==='privateer'?.28:0)));
  const casualties=Math.max(1,Math.round(2+defenders*.07-(s.job==='surgeon'?2:0)));
  ship.crew=Math.max(1,ship.crew-casualties);enemy.crew=Math.max(0,defenders-offense);ship.boardingCooldown=10;
+ s.combatFx={serial:++s.fxSerial,type:'boarding',from:{x:ship.x,z:ship.z},to:{x:enemy.x,z:enemy.z},damage:offense,enemy:false};
  if(enemy.crew===0){
   enemy.hull=0;s.coins+=400+enemy.id*120;s.victories++;s.fame+=8;s.xp+=60;s.score+=250;s.navalCombat=null;
   note(s,(enemy.name||'적선')+' 나포 완료 · 선원 '+casualties+'명 손실');return success(s,'백병전 승리! 상대 함선을 제압했어.');
