@@ -186,9 +186,21 @@ runtime.bindTouchButton(ui.catch,catchFish);
 runtime.bindTouchButton(ui.cancelFishing,stopFishing);
 window.addEventListener('resize',()=>renderer.resize());
 window.addEventListener('jaewoon:pause',e=>{if(e.detail.paused)pressed.clear()});
-let pointerGesture=null;
+// 모바일: 두 손가락 확대/축소 시 건설/선택 터치를 억제한다.
+let pointerGesture=null,pinchDistance=0,pinchActive=false;
+const touchPoints=new Map();
 canvas.addEventListener('pointerdown',e=>{
   if(e.pointerType==='mouse'&&e.button!==0)return;
+  if(e.pointerType==='touch'){
+    touchPoints.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(touchPoints.size>=2){
+      const pts=[...touchPoints.values()];
+      pinchDistance=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+      pinchActive=true;pointerGesture=null;
+      canvas.setPointerCapture?.(e.pointerId);return;
+    }
+  }
+  if(pinchActive)return;
   pointerGesture={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};
   if(game.buildingPlacement?.id==='fort:wall'){
     const start=snapFort(renderer.screenToWorld(game,e.clientX,e.clientY));
@@ -200,7 +212,15 @@ canvas.addEventListener('pointerdown',e=>{
   canvas.setPointerCapture?.(e.pointerId);
 });
 canvas.addEventListener('pointermove',e=>{
-  if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
+  if(touchPoints.has(e.pointerId)){
+    touchPoints.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(touchPoints.size>=2){
+      const p=[...touchPoints.values()],d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+      if(pinchDistance>8&&d>8)renderer.changeZoom(Math.max(.88,Math.min(1.12,d/pinchDistance)));
+      pinchDistance=d;game.siegeOverview=true;return;
+    }
+  }
+  if(pinchActive||!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture,dx=e.clientX-g.x,dy=e.clientY-g.y;
   if(game.buildingPlacement){
     game.buildingPlacement.at=snapFort(renderer.screenToWorld(game,e.clientX,e.clientY));
@@ -212,8 +232,18 @@ canvas.addEventListener('pointermove',e=>{
   }
   g.x=e.clientX;g.y=e.clientY;
 });
-canvas.addEventListener('pointercancel',()=>{pointerGesture=null;if(game.buildingPlacement?.id==='fort:wall')game.buildingPlacement.startAt=null;updateBuildStatus()});
+canvas.addEventListener('pointercancel',e=>{
+  touchPoints.delete(e.pointerId);pointerGesture=null;
+  if(!touchPoints.size){pinchActive=false;pinchDistance=0;}
+  if(game.buildingPlacement?.id==='fort:wall')game.buildingPlacement.startAt=null;
+  updateBuildStatus();
+});
 canvas.addEventListener('pointerup',e=>{
+  touchPoints.delete(e.pointerId);
+  if(pinchActive){
+    if(!touchPoints.size){pinchActive=false;pinchDistance=0;}
+    pointerGesture=null;return;
+  }
   if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture;pointerGesture=null;
   if((g.moved&&!game.buildingPlacement)||ui.panel.open||ui.fishing.open||runtime.paused)return;
@@ -750,7 +780,7 @@ function updateCameraControl(dt){
   renderer.panCamera(-dx*480*dt,-dy*480*dt);
 }
 function updateHint(){
-  ui.hint.textContent=raidActive?'공성전 진행 · 병영과 성채에서 전술 명령':'드래그: 이동 · 부지 터치: 건설 · 공성: 출전';
+  ui.hint.textContent=raidActive?'공성전 진행 · 병영과 성채에서 전술 명령':'건물 터치: 강화 · 드래그: 이동 · 두 손가락: 확대';
 }
 function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open&&!state.keepDestroyed){updateCameraControl(dt);advanceClock(dt);updateRaid(dt);updateOffensive(dt);if(!raidActive&&!game.offensiveTarget){updatePeaceAllies(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
