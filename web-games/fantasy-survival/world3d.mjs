@@ -35,8 +35,8 @@ const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.g
 // 종·외형이 가까운 CC0 원본만 시각적으로 연결하며 게임 ID/전투/드롭은 바꾸지 않는다.
 const NATIVE_CREATURE_MODELS=Object.freeze({
   'wolf.fbx':['shadowwolf','shadowwolfleader','firewolf','polarwolf','thornhound','ironhidehound'],
-  'monster-41.obj':['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','crystalguardian'],
-  'tree.fbx':['worldtreegolem'],
+  'monster-41.obj':['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','crystalguardian','jungleGuardian'],
+  'tree.fbx':['worldtreegolem','swampArrowTower'],
   'greendemon.fbx':['goblin','goblinCrossbow','goblinHeavy','goblinGeneral','crystalgoblin','flowergoblin'],
   'hog.glb':['mossboar','crystalboar','crystalboarjunior'],
   'deer.fbx':['foreststag','sapdeer','crystaldeer'],
@@ -47,16 +47,18 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
   'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb'],
   'monster-35.obj':['rootsovereign'],
-  'caterpillar.glb':['giantburrower'], 'monster-31.obj':['sandwalker'],
-  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake'],
+  'caterpillar.glb':['giantburrower'], 'monster-31.obj':['sandwalker','mudwalker'],
+  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc'],
   'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
-  'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish'],
+  'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish','shark'],
   'monster-47.obj':['giantSquid'], 'monster-21.obj':['giantleech'],
   'monster-17.obj':['deepAngler'], 'monkey.glb':['gorilla'],
   'tiger.glb':['jungletiger','jungletigerleader'],
   'yeti.fbx':['yetileader','yeticub','froststalker'], 'cat.glb':['polarfox'],
   'bee.fbx':['giantbee'], 'monster-15.obj':['thornmantis'],
-  'monster-53.obj':['giantspider','giantspiderling']
+  'monster-53.obj':['giantspider','giantspiderling','giantVenomScorpion'],
+  // 원시인: 기존 CC0 인간형 3D 리그를 공유한다. 전투/능력은 변경하지 않는다.
+  'barbarian.glb':['primitiveSpearman','primitiveArcher','swampPrimitiveSpearman','swampPrimitiveArcher','swampPrimitiveGuard']
 });
 const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
   .flatMap(([source,ids])=>ids.map(id=>[id,source])));
@@ -224,13 +226,21 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(disposed||nativeCreatureSources.has(file)||creatureRequests.has(file))return;
     creatureRequests.set(file,true);loadingCreatureCount++;
     try{
-      const url=file==='skeleton-warrior.glb'?UNDEAD_URL:new URL(file,CREATURE_SOURCE);
+      const url=file==='skeleton-warrior.glb'?UNDEAD_URL:
+        file==='barbarian.glb'?new URL('../../assets/roblox/actors/native/barbarian.glb',import.meta.url):new URL(file,CREATURE_SOURCE);
       let model,clips=[];
       if(file.endsWith('.fbx')){
         model=await new FBXLoader().setResourcePath(CREATURE_SOURCE.href).loadAsync(url.href);
         clips=model.animations||[];
       }else if(file.endsWith('.glb')){
-        const gltf=await new GLTFLoader().loadAsync(url.href);
+        let gltf;
+        if(file==='barbarian.glb'&&typeof DecompressionStream==='function'){
+          // 기존 압축 리그를 전송해 모바일 네트워크의 초기 부하를 줄인다.
+          const packed=await fetch(new URL('./barbarian.glb.gz',import.meta.url),{cache:'force-cache'});
+          if(!packed.ok)throw new Error('Original CC0 barbarian model unavailable: '+packed.status);
+          const bytes=await new Response(packed.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+          gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',url).href);
+        }else gltf=await new GLTFLoader().loadAsync(url.href);
         model=gltf.scene;clips=gltf.animations||[];
       }else{
         const texture=await new THREE.TextureLoader().loadAsync(new URL(file.replace('.obj','.png'),CREATURE_SOURCE).href);
@@ -269,7 +279,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(let i=0;i<ordered.length;i+=limit)await Promise.all(ordered.slice(i,i+limit).map(loadCreatureSource));
   })();
   let models;
-  try{[models]=await Promise.all([modelsPromise,heroPromise,creaturesPromise])}
+  // 모델이 모두 끝날 때까지 월드 시작을 묶어 두지 않는다.
+  // 몹은 가까운 종부터 비동기로 로드하고, 미표시 전투는 기존 안전 게이트가 멈춘다.
+  try{[models]=await Promise.all([modelsPromise,heroPromise])}
   catch(error){
     disposed=true;heroLoadVersion++;
     for(const source of nativeCreatureSources.values())source.model.traverse(child=>{
