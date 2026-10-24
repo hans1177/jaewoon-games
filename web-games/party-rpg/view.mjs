@@ -34,7 +34,7 @@ export class PartyView{
  }
  resize(){
   this.width=Math.max(1,innerWidth);this.height=Math.max(1,innerHeight);if(!this.gl)return;
-  this.mobile=navigator.maxTouchPoints>0||this.width<900;this.gl.setPixelRatio(Math.min(devicePixelRatio||1,this.mobile?1.15:1.5)*this.quality);this.gl.setSize(this.width,this.height,false);
+  this.mobile=navigator.maxTouchPoints>0||this.width<900;this.gl.setPixelRatio(Math.min(devicePixelRatio||1,this.mobile?Math.min(1.05,this.width<460?.9:1):1.45)*this.quality);this.gl.setSize(this.width,this.height,false);
   const span=this.height/(this.mobile?40:45);this.camera.left=-span*this.width/this.height/2;this.camera.right=-this.camera.left;this.camera.top=span/2;this.camera.bottom=-span/2;this.camera.updateProjectionMatrix();
  }
  direction(x,y){const length=Math.min(1,Math.hypot(x,y)),a=Math.cos(this.yaw)*x+Math.sin(this.yaw)*y/Math.sin(this.pitch),b=-Math.sin(this.yaw)*x+Math.cos(this.yaw)*y/Math.sin(this.pitch),d=Math.hypot(a,b)||1;return{x:a/d*length,y:b/d*length};}
@@ -112,7 +112,7 @@ buildWorld(live){
  floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
  const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
  const grove=[],high=[],crooked=[],rocks=[],pebbles=[],fences=[];
- const count=this.mobile?65:115;
+ const count=this.mobile?48:115;
  for(let i=0;i<count;i++){
   const x=65+random(i+1)*(live.worldW-130),y=65+random(i+202)*(live.worldH-130);
   if(dungeon){if(i%3===0)rocks.push([x,y,.6+random(i+35)*.75,random(i+48)*6]);continue;}
@@ -214,13 +214,13 @@ buildWorld(live){
  animate(entry,moving,combat,dt){let term=combat?.visualUntil>performance.now()?'attack':moving?'walk':'idle';const names=[...entry.actions.keys()];const choose=term==='attack'?names.find(n=>/attack|spell|shoot|punch|bite|headbutt/i.test(n)&&!/idle/i.test(n)):names.find(n=>new RegExp(term,'i').test(n));const name=choose||names.find(n=>/idle/i.test(n))||names[0];if(name&&entry.action!==name){const next=entry.actions.get(name);const previous=entry.actions.get(entry.action);next.reset().setEffectiveWeight(1).play();if(previous)next.crossFadeFrom(previous,.16,true);entry.action=name;}entry.mixer.update(dt);}
  removeActor(key,entry){this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
  render(live){
-  if(!this.ready)return;const started=performance.now(),now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
+  if(!this.ready)return;const started=performance.now();if(this.mobile&&this.lastRenderedAt&&started-this.lastRenderedAt<30)return;this.lastRenderedAt=started;const now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
   const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision;
   if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
   const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
   const visible=[['player',live.p,'player']];for(const a of live.state.ai)if(live.dungeon?a.party:a.party||a.zone===live.state.zone)visible.push(['ai',a,a.id]);
-  const enemies=live.enemies.filter(e=>!e.dead).sort((a,b)=>(a.x-live.p.x)**2+(a.y-live.p.y)**2-(b.x-live.p.x)**2-(b.y-live.p.y)**2).slice(0,this.mobile?24:44);for(const e of enemies)visible.push(['enemy',e,'enemy'+e.id]);
+  const enemies=live.enemies.filter(e=>!e.dead).sort((a,b)=>(a.x-live.p.x)**2+(a.y-live.p.y)**2-(b.x-live.p.x)**2-(b.y-live.p.y)**2).slice(0,this.mobile?16:44);for(const e of enemies)visible.push(['enemy',e,'enemy'+e.id]);
   const used=new Set();for(const [kind,obj,key] of visible){used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,moving=Math.hypot(dx,dy)>.08;entry.lastX=obj.x;entry.lastY=obj.y;entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.root.userData.live={kind,obj,key};if(moving){const target=Math.atan2(dx,dy),difference=Math.atan2(Math.sin(target-entry.model.rotation.y),Math.cos(target-entry.model.rotation.y));entry.model.rotation.y+=difference*(1-Math.exp(-dt*14));}entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];this.animate(entry,moving,live.combat?.(obj),dt);}
   for(const [key,entry] of this.actors)if(!used.has(key))this.removeActor(key,entry);
   this.marker.visible=!!this.destination;if(this.destination)this.marker.position.set(this.destination.x*SCALE,.06,this.destination.y*SCALE);
