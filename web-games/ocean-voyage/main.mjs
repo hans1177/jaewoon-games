@@ -81,7 +81,7 @@ function drawChart(world=false){
   const known=state.discovered.includes(p.id);
   ctx.fillStyle=known?'#ffe2a3':'#91a3a6';ctx.strokeStyle='#3e3930';ctx.lineWidth=2;
   ctx.beginPath();ctx.arc(px,py,known?5:3,0,Math.PI*2);ctx.fill();ctx.stroke();
-  if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#fff0c8';ctx.fillText(p.name,px+7,py-6);}
+  if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#fff0c8';ctx.fillText(p.name,px+7,py-6);const eventGoods=GOODS.find(g=>marketQuote(state,p.id,g.id).event);if(eventGoods){ctx.font='bold 10px system-ui';ctx.fillStyle='#f3ad86';ctx.fillText('⚑ '+marketQuote(state,p.id,eventGoods.id).event,px+7,py+8);}}
  }
  for(const m of state.merchants||[]){
   if(state.crewRoster.includes(m.id))continue;
