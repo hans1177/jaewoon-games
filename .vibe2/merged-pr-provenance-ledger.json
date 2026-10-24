@@ -92940,11 +92940,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_983806d8b02179f3fb7fcaaa",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9820",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b85d206868770a2f81d0b6f9daead302fadd5570",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9820,
+        "baseBranch": "main",
+        "headBranch": "fix/cozy-mobile-legacy-interaction-20261024",
+        "baseSha": "b85d206868770a2f81d0b6f9daead302fadd5570",
+        "headSha": "261edafd36b67c2d0ea964b1c2d3d40dfa804801",
+        "mergeCommitSha": "7ca6f9729ba5f2ac4824c3204c08b6a1ffb942e1",
+        "mergedAt": "2026-10-24T10:17:21Z",
+        "authorLogin": "hans1177",
+        "titleHash": "873b92908f1a258a830560922b4feff5920815326d85a34e9400a8d1d2598c09",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/cozy-mobile-legacy-interaction-20261024",
+        "candidateSha": "261edafd36b67c2d0ea964b1c2d3d40dfa804801"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 23,
+        "deletedLineCount": 10,
+        "changedFiles": [
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9820",
+        "merge-commit:7ca6f9729ba5f2ac4824c3204c08b6a1ffb942e1",
+        "base-main:b85d206868770a2f81d0b6f9daead302fadd5570"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 729
+    "total": 730
   }
 }
