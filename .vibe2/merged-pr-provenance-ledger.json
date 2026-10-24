@@ -90249,11 +90249,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_7c1d7bbe5b582d5a7624be59",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9697",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a5780cf2fab42c2dccf2260a1420d0940a5d19c0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9697,
+        "baseBranch": "main",
+        "headBranch": "fix/windows-pc-cpu-training-resume-20261024",
+        "baseSha": "a5780cf2fab42c2dccf2260a1420d0940a5d19c0",
+        "headSha": "62214d147b9bebb7fa3e4cc78a8bc767760b7745",
+        "mergeCommitSha": "63fa1c15c6417d01a4209f12b7a49b912f154bab",
+        "mergedAt": "2026-10-24T03:28:47Z",
+        "authorLogin": "hans1177",
+        "titleHash": "77b47ec6612ad7bea7b0dd327a7ba53bd672a882dd9b3d20f4f7d192dbdfefa1",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/windows-pc-cpu-training-resume-20261024",
+        "candidateSha": "62214d147b9bebb7fa3e4cc78a8bc767760b7745"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 180,
+        "deletedLineCount": 45,
+        "changedFiles": [
+          ".github/workflows/vibe2-practice-cpu-fallback.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/vibe2-licensed-reference-learning.test.mjs",
+          "qa/vibe2-practice-weight-learning.test.mjs",
+          "qa/vibe2-train-encoding.test.py",
+          "tools/vibe2-train.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-practice-cpu-fallback.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/vibe2-licensed-reference-learning.test.mjs",
+          "qa/vibe2-practice-weight-learning.test.mjs",
+          "qa/vibe2-train-encoding.test.py",
+          "tools/vibe2-train.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9697",
+        "merge-commit:63fa1c15c6417d01a4209f12b7a49b912f154bab",
+        "base-main:a5780cf2fab42c2dccf2260a1420d0940a5d19c0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 708
+    "total": 709
   }
 }
