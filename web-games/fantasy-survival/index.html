@@ -7288,9 +7288,12 @@ function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.mi
   else{
    const reason=world3d?.getFallbackReason()||'',loading=world3dPending&&!world3d||Number(world3d?.getRenderStats().loadingModels)>0;
    nativeRetry.hidden=loading;
+   const missing=world3d?.getUnmappedVisibleMonsterIds()||[];
+   const missingNames=[...new Set((state.enemies||[]).filter(e=>e?.area===state.area&&e.hp>0&&missing.includes(e.type?.id))
+     .map(e=>e.type?.name||e.type?.id))].slice(0,3);
    nativeStatusText.textContent=loading?'주변 3D 모델을 불러오는 중이야.':
     reason==='region-3d-not-yet-mapped'?'이 구역의 3D 지형은 아직 준비되지 않았어.':
-    reason==='unmapped-threat'?'주변 생물의 3D 모델을 자동으로 불러오는 중이야. 계속 실패하면 다시 불러오기를 눌러 줘.':'3D 화면을 준비하지 못했어. 다시 불러오기를 눌러 줘.';
+    reason==='unmapped-threat'?'주변 생물의 3D 모델 확인 중: '+(missingNames.join(' · ')||'원본 확인 필요')+'. 다시 불러오기로 실패한 모델만 재시도할 수 있어.':'3D 화면을 준비하지 못했어. 다시 불러오기를 눌러 줘.';
   }
  }
  requestAnimationFrame(loop)
@@ -7522,7 +7525,13 @@ document.getElementById('avatarApply').addEventListener('click',async()=>{
 });
 document.getElementById('startNormal').addEventListener('click',()=>beginGame('normal'));
 document.getElementById('startCreative').addEventListener('click',()=>beginGame('creative'));
-nativeRetry.addEventListener('click',()=>{world3d?.dispose();world3d=null;world3dPending=false;startNativePreview3d()});
+nativeRetry.addEventListener('click',()=>{
+ if(world3d?.getFallbackReason()==='unmapped-threat'&&world3d.retryMissingCreatures(state)){
+  nativeRetry.hidden=true;nativeStatusText.textContent='실패한 주변 생물 3D 모델만 다시 불러오는 중이야.';
+  return;
+ }
+ world3d?.dispose();world3d=null;world3dPending=false;startNativePreview3d()
+});
 document.getElementById('nativeTitle').addEventListener('click',()=>document.getElementById('toTitle').click());
 document.getElementById('toTitle').addEventListener('click',()=>{saveGame(false);location.reload()});
 document.getElementById('creativeSpawn').addEventListener('click',spawnCreativeMonsters);
