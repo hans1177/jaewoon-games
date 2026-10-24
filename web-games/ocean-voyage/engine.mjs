@@ -78,7 +78,10 @@ export const CREW=Object.freeze([
  {id:'diego',name:'디에고 알바레스',nation:'스페인',role:'조선사',port:'sun',portrait:22,story:'세비야에서 대형 범선을 수리하던 선박 기술자.'},
  {id:'matteo',name:'마테오 페라로',nation:'제노바',role:'조선사',port:'genoa',portrait:4,story:'사라진 설계도와 아버지의 명예를 되찾으려 한다.'},
  {id:'lucas',name:'루카스 판데르',nation:'네덜란드',role:'교역상',port:'jade',portrait:14,story:'위조된 환어음을 추적하는 젊은 상인.'},
- {id:'nikos',name:'니코스 알렉시우',nation:'그리스',role:'탐험가',port:'athens',portrait:22,story:'별자리와 해안 바람으로 옛 항로를 복원한다.'}
+ {id:'nikos',name:'니코스 알렉시우',nation:'그리스',role:'탐험가',port:'athens',portrait:22,story:'별자리와 해안 바람으로 옛 항로를 복원한다.'},
+ {id:'lorenzo',name:'로렌초 발디',nation:'제노바',role:'교역상',port:'genoa',portrait:7,story:'잃어버린 조선소 계약서를 추적하는 청년.'},
+ {id:'marten',name:'마르턴 펠트',nation:'네덜란드',role:'회계사',port:'jade',portrait:13,story:'위조된 교역 환어음을 바로잡으려 한다.'},
+ {id:'etienne',name:'에티엔 르루',nation:'프랑스',role:'연안 항해사',port:'storm',portrait:21,story:'사라진 우편선을 찾아 해협을 횡단한다.'}
 ]);
 export const EQUIPMENT=Object.freeze([
  {id:'telescope',name:'황동 망원경',group:'항해 장비',description:'먼 항해의 길잡이'},
@@ -589,6 +592,7 @@ export function callAlliance(state){if(!state.alliance)return fail(state,'왕궁
 export const CREW_STATS=Object.freeze({
  eleanor:{navigation:76,trade:42,gunnery:55,scholarship:67,medicine:35},samira:{navigation:60,trade:45,gunnery:32,scholarship:91,medicine:62},amani:{navigation:68,trade:90,gunnery:43,scholarship:50,medicine:45},arjun:{navigation:91,trade:61,gunnery:39,scholarship:75,medicine:42},rin:{navigation:72,trade:45,gunnery:86,scholarship:55,medicine:38},
  matteo:{navigation:78,trade:52,gunnery:55,scholarship:79,medicine:36},lucas:{navigation:69,trade:94,gunnery:39,scholarship:65,medicine:43},nikos:{navigation:88,trade:39,gunnery:45,scholarship:91,medicine:51},
+ lorenzo:{navigation:74,trade:84,gunnery:39,scholarship:66,medicine:31},marten:{navigation:62,trade:97,gunnery:36,scholarship:82,medicine:37},etienne:{navigation:91,trade:55,gunnery:73,scholarship:69,medicine:44},
  florence:{navigation:64,trade:70,gunnery:32,scholarship:98,medicine:88},greta:{navigation:72,trade:98,gunnery:39,scholarship:75,medicine:50},
  thomas:{navigation:88,trade:38,gunnery:45,scholarship:72,medicine:31},isabel:{navigation:52,trade:94,gunnery:28,scholarship:56,medicine:44},willem:{navigation:58,trade:41,gunnery:95,scholarship:39,medicine:30},freya:{navigation:82,trade:40,gunnery:35,scholarship:93,medicine:77},diego:{navigation:73,trade:62,gunnery:65,scholarship:44,medicine:58}
 });
