@@ -115,7 +115,8 @@ test('original source materials and Diablo-II-style native camera are bound to g
  assert.doesNotMatch(source,/new THREE\.BoxGeometry\(/);
  assert.doesNotMatch(source,/new THREE\.SphereGeometry\(/);
  assert.match(source,/new THREE\.OrthographicCamera/);
- assert.match(source,/camera\.position\.set\(centerX\+10\.5,17,centerY\+13\)/);
+ assert.match(source,/camera\.position\.set\(trackedCameraX\+10\.5,17,trackedCameraY\+13\)/);
+  assert.match(source,/trackedCameraX=hardCameraReset\?centerX:/);
  assert.match(source,/name\+'\.obj'/);
  assert.match(source,/name\+'\.mtl'/);
  assert.match(source,/materialText\.match/);
@@ -439,19 +440,26 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
  let clones=0;
  const material={uuid:'existing-wolf-material',clone(){clones++;return {color:{lerp(){}}}}};
  const source={model:{},clips:[],height:1,floor:0};
- const vector=()=>({set(){}});
+ const vector=()=>({
+    x:0,y:0,z:0,
+    set(x,y=0,z=0){this.x=x;this.y=y;this.z=z;return this},
+    distanceToSquared(v){return (this.x-v.x)**2+(this.y-v.y)**2+(this.z-v.z)**2},
+    lerp(v,alpha){this.x+=(v.x-this.x)*alpha;this.y+=(v.y-this.y)*alpha;
+      this.z+=(v.z-this.z)*alpha;return this}
+  });
  class Group{constructor(){this.position=vector();this.rotation={};this.userData={}}add(){}}
  const sync=new Function('mobileBudget','qualityFactor','missingVisibleMonsterIds',
   'NATIVE_CREATURE_BY_ID','nativeCreatureSources','undeadSource','nativeCreatureActors',
   'nativeSpeciesMaterials','cloneAnimatedRig','THREE','scene','interactables','performance','SCALE',
-  'cameraFrustum','creatureBounds',
+  'cameraFrustum','creatureBounds','actorVisualTarget','cameraMotionAlpha',
   'return function synchronizeNativeCreatures(state,px,py,stamp){'+body)(
    true,.58,missing,new Map([['shadowwolf','wolf.fbx']]),new Map([['wolf.fbx',source]]),
    null,actors,speciesMaterials,()=>({scale:{setScalar(){}},position:{},
      traverse(fn){fn({isMesh:true,material,userData:{}})}}),
    {Group,Color:class{constructor(){} }}, {add(){},remove(){}},interactables,{now:()=>1000},1/48,
    {intersectsSphere:bounds=>bounds.center.x<100},
-   {center:{x:0,set(x){this.x=x}}}
+   {center:{x:0,set(x){this.x=x}}},
+   vector(),.4
   );
  const state={area:'surface',enemies:Array.from({length:24},(_,i)=>({
   id:'wolf-'+i,type:{id:'shadowwolf',r:19},area:'surface',x:i,y:0,hp:95
@@ -613,8 +621,8 @@ test('all existing native biome environments show distinct authored palette and 
  assert.match(moduleSource,/const kind=sceneryChoices\[seed%sceneryChoices\.length\]/);
  assert.match(moduleSource,/pixelCell=floor\(vMagicForestGround\.xz\*5\.0\)/);
   assert.match(moduleSource,/biomeTiles\.setColorAt\(tileIndex,floorTint\.setHex\(tileStyle\.floor\)/);
- assert.match(moduleSource,/scene\\.fog\\.far=weatherVisualEffects/);
- assert.match(moduleSource,/for\\(const mark of regionScene\\?\\.landmarks\\|\\|\\[\\]\\)/);
+ assert.match(moduleSource,/scene\.fog\.far=weatherVisualEffects/);
+ assert.match(moduleSource,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
 });
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
   assert.match(moduleSource,/const moving=moveDelta>\.08&&poseElapsed>0&&poseElapsed<420/);
