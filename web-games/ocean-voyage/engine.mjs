@@ -276,7 +276,7 @@ export function trade(state,portId,goodId,amount,mode){
  const p=canDock(state),good=GOODS.find(g=>g.id===goodId),qty=Number(amount);
  if(!p||p.id!==portId||!good||!Number.isSafeInteger(qty)||qty<=0||qty>999||!['buy','sell'].includes(mode))return fail(state,'항구에 정박하고 교역 수량을 확인해.');
  const quote=marketQuote(state,portId,goodId),owned=state.cargo[goodId]||0;
- const price=mode==='buy'?quote.buy:quote.sell;
+ const price=mode==='buy'?(state.job==='broker'?Math.max(1,Math.ceil(quote.buy*.97)):quote.buy):quote.sell;
  if(mode==='buy'){
   if(quote.kind==='미취급')return fail(state,'이 도시에서는 해당 물품을 판매하지 않아. 생산지나 수입항을 찾아가.');
   if(quote.stock<qty)return fail(state,'항구 재고가 부족해. 남은 수량 '+quote.stock+'개 · 다음 게임 날짜에 일부 보충돼.');
@@ -608,7 +608,13 @@ export const JOBS=Object.freeze([
  {id:'merchant',name:'교역상',need:60,description:'탐험 보급 구입 비용 감소'},
  {id:'navigator',name:'항해사',need:90,description:'선원 구조 이벤트의 추가 보상'},
  {id:'scholar',name:'박물학자',need:120,description:'발견 보고 학술 명성 +10'},
- {id:'naval',name:'해군 장교',need:160,description:'왕실 임무 수주 자격'}
+ {id:'naval',name:'해군 장교',need:160,description:'왕실 임무 수주 자격'},
+ {id:'privateer',name:'사략선장',need:200,description:'접현 공격력 +28%'},
+ {id:'surgeon',name:'선의',need:160,description:'백병전에서 아군 선원 손실 감소'},
+ {id:'archaeologist',name:'고고학자',need:180,description:'육지 유적 탐험 행동력 +2'},
+ {id:'cartographer',name:'해도 제작자',need:130,description:'해양 유적 발견 보고 명성 추가'},
+ {id:'shipwright',name:'조선 기술자',need:110,description:'수리 목재의 선체 회복량 증가'},
+ {id:'broker',name:'상단 중개인',need:150,description:'대량 교역에도 소규모 추가 할인'}
 ]);
 export const SHIP_TYPES=Object.freeze([
  {id:'caravel',name:'캐러벨',cost:0,cargo:42,hull:100,sail:1,description:'삼각돛 탐험선 · 기존 시작 선박'},
@@ -677,7 +683,7 @@ export function startExpedition(state,id){
  const site=SITES.find(x=>x.id===id);if(!site||canDock(state)?.id!==site.port)return fail(state,'발견지 인근 항구에 정박해야 해.');
  if(state.discoveries.includes(id))return fail(state,'이미 조사한 유적이야.');
  if(state.ship.provisions<6)return fail(state,'탐험 식량 6이 필요해.');
- const s=copy(state);s.ship.provisions-=6;s.expedition={id,step:0,energy:(s.job==='adventurer'?8:6)+(assignedPower(s,'navigator','scholarship')>=70?1:0)+(s.ship.gear.figurehead==='owl'?1:0),notes:[]};if(!s.clearedCamps.includes(id))s.landBattle=createLandBattle(s,site);return success(s,site.name+' 육지 탐험 시작');
+ const s=copy(state);s.ship.provisions-=6;s.expedition={id,step:0,energy:(s.job==='adventurer'||s.job==='archaeologist'?8:6)+(assignedPower(s,'navigator','scholarship')>=70?1:0)+(s.ship.gear.figurehead==='owl'?1:0),notes:[]};if(!s.clearedCamps.includes(id))s.landBattle=createLandBattle(s,site);return success(s,site.name+' 육지 탐험 시작');
 }
 export function exploreChoice(state,choice){
  if(state.landBattle)return fail(state,'먼저 입구 전투를 마치고 조사해.');
@@ -690,7 +696,7 @@ export function exploreChoice(state,choice){
 }
 export function reportDiscoveries(state){
  if(!canDock(state)||!portHasFacility(canDock(state).id,'quests'))return fail(state,'탐험가 사무실이 있는 항구에서 보고해.');const ids=state.discoveries.filter(id=>!state.reported.includes(id));if(!ids.length)return fail(state,'새로 보고할 발견물이 없어.');
- const s=copy(state);let reward=0;for(const id of ids){const site=SITES.find(x=>x.id===id);if(!site)continue;reward+=site.reward;s.reported.push(id);s.fame+=20+(s.job==='scholar'?10:0);}s.coins+=reward;return success(s,ids.length+'건 보고 완료 · '+reward+' G');
+ const s=copy(state);let reward=0;for(const id of ids){const site=SITES.find(x=>x.id===id);if(!site)continue;reward+=site.reward;s.reported.push(id);s.fame+=20+(s.job==='scholar'?10:0)+(s.job==='cartographer'?5:0);}s.coins+=reward;return success(s,ids.length+'건 보고 완료 · '+reward+' G');
 }
 export function officeProgress(s,q){return q.type==='ports'?s.discovered.filter(id=>!['alexandria','zanzibar','goa','nagasaki'].includes(id)).length:q.type==='report'?s.reported.length:q.type==='battle'?s.victories:s.crewRoster.length;}
 export function officeContract(state,id){
@@ -751,7 +757,7 @@ export const CONSUMABLES=Object.freeze([
  {id:'rations',name:'비상 식량',cost:90,description:'식량 20 회복 · 최대 140'}
 ]);
 export function buyConsumable(state,id){const c=CONSUMABLES.find(c=>c.id===id);if(!c||!canDock(state))return fail(state,'항구 보급소에서 구입해.');const cost=state.job==='merchant'?Math.ceil(c.cost*.9):c.cost;if(state.coins<cost)return fail(state,'보급품 구입 금화가 부족해.');const qty=id==='ammo'?10:1;if(state.supplies[id]+qty>999)return fail(state,'보급품 보유 한도야.');const s=copy(state);s.coins-=cost;s.supplies[id]+=qty;return success(s,c.name+' 보급 완료');}
-export function useConsumable(state,id){if(id==='ammo')return fail(state,'포탄은 포격할 때 사용돼.');if(!CONSUMABLES.some(c=>c.id===id)||state.supplies[id]<1)return fail(state,'사용할 소모품이 없어.');if(state.supplyCooldown>0&&!canDock(state))return fail(state,'소모품 사용 준비 중이야.');if(id==='repair'&&state.ship.hull>=state.ship.maxHull)return fail(state,'선체가 온전해.');if(id==='medicine'&&state.ship.crew>=state.ship.maxCrew)return fail(state,'선원이 최대 인원이야.');if(id==='rations'&&state.ship.provisions>=140)return fail(state,'식량이 가득해.');const s=copy(state);s.supplies[id]--;s.supplyCooldown=4;if(id==='repair')s.ship.hull=Math.min(s.ship.maxHull,s.ship.hull+25);if(id==='medicine')s.ship.crew=Math.min(s.ship.maxCrew,s.ship.crew+8+Math.floor(assignedPower(s,'doctor','medicine')/25)+(s.ship.gear.figurehead==='mermaid'?4:0));if(id==='rations')s.ship.provisions=Math.min(140,s.ship.provisions+20);if(id==='smoke')for(const e of s.pirates)if(dist(e,s.ship)<45)e.cooldown=Math.max(18,e.cooldown);return success(s,CONSUMABLES.find(c=>c.id===id).name+' 사용 완료');}
+export function useConsumable(state,id){if(id==='ammo')return fail(state,'포탄은 포격할 때 사용돼.');if(!CONSUMABLES.some(c=>c.id===id)||state.supplies[id]<1)return fail(state,'사용할 소모품이 없어.');if(state.supplyCooldown>0&&!canDock(state))return fail(state,'소모품 사용 준비 중이야.');if(id==='repair'&&state.ship.hull>=state.ship.maxHull)return fail(state,'선체가 온전해.');if(id==='medicine'&&state.ship.crew>=state.ship.maxCrew)return fail(state,'선원이 최대 인원이야.');if(id==='rations'&&state.ship.provisions>=140)return fail(state,'식량이 가득해.');const s=copy(state);s.supplies[id]--;s.supplyCooldown=4;if(id==='repair')s.ship.hull=Math.min(s.ship.maxHull,s.ship.hull+25+(s.job==='shipwright'?8:0));if(id==='medicine')s.ship.crew=Math.min(s.ship.maxCrew,s.ship.crew+8+Math.floor(assignedPower(s,'doctor','medicine')/25)+(s.ship.gear.figurehead==='mermaid'?4:0));if(id==='rations')s.ship.provisions=Math.min(140,s.ship.provisions+20);if(id==='smoke')for(const e of s.pirates)if(dist(e,s.ship)<45)e.cooldown=Math.max(18,e.cooldown);return success(s,CONSUMABLES.find(c=>c.id===id).name+' 사용 완료');}
 export function declareHostility(state,faction){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'왕궁·총독부가 있는 항구에서 외교 방침을 정해.');if(!['이베리아 왕실','프랑스 항구동맹'].includes(faction))return fail(state,'현재 유럽의 두 순찰 세력만 외교 대상이야.');const s=copy(state);s.diplomacy[faction]=-30;if(s.alliance===faction)s.alliance=null;return success(s,faction+'에 적대 선언. 해당 국가 순찰함이 공격해.');}
 export function negotiatePeace(state,faction){if(!canDock(state)||!portHasFacility(canDock(state).id,'palace')||!(state.diplomacy[faction]<0))return fail(state,'왕궁·총독부에서 현재 적대 중인 국가를 확인해.');if(state.coins<500)return fail(state,'휴전 교섭금 500 G가 필요해.');const s=copy(state);s.coins-=500;s.diplomacy[faction]=0;return success(s,faction+'과 휴전했어.');}
 
