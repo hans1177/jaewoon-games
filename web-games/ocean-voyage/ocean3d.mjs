@@ -1,6 +1,6 @@
 // 파일명: ocean3d.mjs · 기존 장면 책임 파일을 픽셀 해도·항구·시설 렌더러로 교체
 // 임포트: 실제 해안선과 게임 규칙 공유. 저장·경제 규칙은 엔진이 담당한다.
-import {PORTS,SHIP_TYPES,portStatus,SITES,CREW} from './engine.mjs';
+import {PORTS,SHIP_TYPES,PORT_SCENES,portStatus,SITES,CREW} from './engine.mjs';
 import {COUNTRIES} from './assets/countries.mjs';
 import {LAND} from './assets/world.mjs';
 const C={sea:'#22566c',deep:'#173e55',shore:'#dbc899',land:'#768564',dark:'#283f3c',gold:'#f0d398',wood:'#583c30',roof:'#954f42'};
