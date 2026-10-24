@@ -315,9 +315,21 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     worldtree:{floor:0x335039,sky:0x203e2d},flowerfield:{floor:0x668551,sky:0x586b50},
     giantgarden:{floor:0x625071,sky:0x4a3d55},desert:{floor:0xb38c55,sky:0xa38259}
   });
+  // 바닥: 원본 CC0 모델의 실제 크기(10 x 8)로 놓고 둥근 모서리의 틈을 같은 메시로 연결한다.
+  sourceFloor.geometry.computeBoundingBox();
+  const floorBounds=sourceFloor.geometry.boundingBox;
+  const floorPitchX=floorBounds.max.x-floorBounds.min.x;
+  const floorPitchZ=floorBounds.max.z-floorBounds.min.z;
+  if(!(floorPitchX>0&&floorPitchZ>0))throw new Error('Original CC0 floor dimensions invalid');
+  const floorCenterX=(floorBounds.min.x+floorBounds.max.x)/2;
+  const floorCenterZ=(floorBounds.min.z+floorBounds.max.z)/2;
+  const floorSurfaceY=.015-floorBounds.max.y;
   const biomeTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,49);
   biomeTiles.receiveShadow=true;biomeTiles.frustumCulled=false;scene.add(biomeTiles);
+  const floorSeamTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,36);
+  floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
   const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
+  const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
   const resourceBatches=new Map();
   let currentBiome='forest';
   const raycaster=new THREE.Raycaster();
