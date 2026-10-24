@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-10-12",
+  "recordedAt": "2026-10-24",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -1179,6 +1179,160 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "DRAFT_PR_CANDIDATE_PARTIAL_3D_MOBILE_BROWSER_QA_VERIFIED;LOCAL_SYNC_UNTESTED_ON_OWNER_MACHINE;NO_MAIN_MERGE_OR_MODEL_PROMOTION"
+    },
+    {
+      "id": "assistant_magic_forest_pixel_source_review_20261024",
+      "actionType": "SOURCE_REVIEW",
+      "problem": "Current original 3D floor_base tiles expose tint borders and creature materials use smooth rendering; user requires sharp pixel art without changing saves or game rules.",
+      "decision": "Preserve existing 3D WebGL renderer and all CC0 native geometry, gameplay ownership and save compatibility; use inline shader/material changes in world3d.mjs.",
+      "change": "Inspected main central policy, gameplay renderer, original source geometry and source QA tests.",
+      "evidence": [
+        "source-main:web-games/fantasy-survival/world3d.mjs",
+        "policy:company-learning/platform-release-roadmap.json#webRuntimeStartabilityContract",
+        "qa:qa/fantasy-survival-native-3d-download.test.mjs"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_pixel_source_patch_20261024",
+      "actionType": "SOURCE_CHANGE",
+      "problem": "Visible ground seams, uniformly rendered monster motion, sparse biome detail and high-resolution smooth 3D rendering.",
+      "decision": "Prepare candidate on isolated branch; direct main game source writes forbidden.",
+      "change": "Native 3D nearest pixel textures, quantized shaders, world-coordinate ground flecks, floor tile overlaps, biome-specific licensed instanced scenery and creature family motion.",
+      "evidence": [
+        "pull-request:https://github.com/hans1177/jaewoon-games/pull/9853",
+        "candidate-commit:c82f757831f0e59ffec3ed16d9d3cde8bad1c128",
+        "source:web-games/fantasy-survival/world3d.mjs"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_pixel_qa_pending_20261024",
+      "actionType": "QA_OR_REGRESSION_RESULT",
+      "problem": "Source parsing and static invariants alone cannot establish mobile runtime or native shader success.",
+      "decision": "Keep candidate unpromoted until independent QA and mobile WebGL visual verification.",
+      "change": "Verified syntax via normalized ESM parser, native floor mesh binding and absence of localStorage write in renderer; initial Vibe2 QA and sync queued.",
+      "evidence": [
+        "qa:V8-ESM-normalized-JS-syntax:PASS",
+        "qa:source-invariant-original-floor-mesh:PASS",
+        "qa:source-no-localstorage-write:PASS",
+        "actions-run:40090732976:QUEUED_UNVERIFIED",
+        "actions-run:40090732981:QUEUED_UNVERIFIED",
+        "qa:physical-mobile-browser:NOT_RUN",
+        "qa:public-deployment:NOT_VERIFIED"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_pixel_promotion_hold_20261024",
+      "actionType": "RELEASE_OR_PROMOTION_DECISION",
+      "problem": "User requested single-pass main deployment, but central pipeline forbids assistant direct-main source write and QA authority bypass.",
+      "decision": "Open PR and preserve production main. No merge, publish, F0-F9 pass or game release claim.",
+      "change": "PR 9853 open against main pending authorized supervised promotion and native runtime QA.",
+      "evidence": [
+        "pull-request:https://github.com/hans1177/jaewoon-games/pull/9853",
+        "policy:company-learning/platform-release-roadmap.json#supervisedWebGameProduction.promotionContract",
+        "policy:company-learning/platform-release-roadmap.json#vibeExecutionLaneContract.gamePrimary"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_visual_teleport_stabilization_20261024",
+      "actionType": "SOURCE_CHANGE",
+      "problem": "Native renderer used instant camera/model coordinates and repeated polygon floor overlap; visible jumps during movement or combat and seams could result.",
+      "decision": "Modify existing responsible world3d renderer. Smooth camera/player/monster presentation while preserving authoritative positions and synchronizing on area/large jumps; do not create helper renderer or rewrite gameplay.",
+      "change": "Added cameraMotionAlpha and native actor interpolations, adjusted seams, preserved picking/game collision and game state.",
+      "evidence": [
+        "candidate-commit:85ef55180bf4ce255614b8d396e45d34fe80c0aa",
+        "source:web-games/fantasy-survival/world3d.mjs"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_pixel_qa_regression_20261024",
+      "actionType": "QA_OR_REGRESSION_RESULT",
+      "problem": "Prior PR candidate failed native QA owing to historical malformed regex and assumptions outdated after rendering changes; mobile gameplay QA still fails separate behaviors.",
+      "decision": "Fix malformed regex and update only affected native renderer assertions; do not suppress remaining auto combat/quest map source failures.",
+      "change": "Updated existing native 3D and mobile regression tests; dynamic extraction of 24-enemy simulation passed in V8, all original gameplay state remains unmodified.",
+      "evidence": [
+        "candidate-commit:ea626f7bb31e4a94f9efdfdb6c71f84dab62ef92",
+        "qa:V8-extracted-native-crowd-sim:PASS",
+        "qa:V8-mob-motion-and-region-static-regression:PASS",
+        "actions-run:40093279330:GAME_SCOPED_QA_FAILED",
+        "failure:quest-compass-map-input-and-auto-combat-selection-baseline-index-source",
+        "failure:low-quality-mobile-test-index-area-mapping-needs-reconciliation",
+        "qa:physical-mobile:NOT_RUN"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_integrated_promotion_hold_20261024",
+      "actionType": "SUPERVISOR_PASS_REVISE_DROP",
+      "problem": "User requires integrated one-shot verified main deployment; candidate source only fixes visual snapping, full live gameplay teleport/auto attack root remains unverified.",
+      "decision": "REVISE. Preserve candidate and main. Follow Rule 1 recovery/re-plan; no PASS, main merge or production claim.",
+      "change": "Updated PR 9853 scope and evidence, requires source-level index.html movement/attack inspection via authorized canonical existing Vibe tooling and independent QA.",
+      "evidence": [
+        "pull-request:https://github.com/hans1177/jaewoon-games/pull/9853",
+        "actions-run:40093279330:FAIL",
+        "policy:company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule1"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
     }
   ]
 }
