@@ -55,3 +55,33 @@ function audioSettings(){
 }
 function message(s){const p=document.createElement('p');p.className='ks-note';p.textContent=s;body.prepend(p)}
 function slot(n){try{return JSON.parse(localStorage.getItem(SAVE+n)||'null')}catch{return null}}
+
+const locations=[
+ ['내 왕국 · 푸른 평야',1010,1090],['철혈 영주 · 붉은 협곡',4550,850],
+ ['석벽 영주 · 설산',4520,-2750],['황금 영주 · 황금 초원',-2450,-2650]
+];
+function render(){
+ tabs.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('selected',x.dataset.tab===(section==='save'?'game':section)));
+ if(section==='save'){
+  body.innerHTML='<p class="ks-note">게임은 자동 저장됩니다. 별도 수동 슬롯 3개를 지원합니다.</p>'+
+   [1,2,3].map(n=>{
+    const s=slot(n);
+    return '<div class="ks-row"><div><b>저장 슬롯 '+n+'</b><small>'+
+     (s?.at?new Date(s.at).toLocaleString('ko-KR'):'비어 있음')+'</small></div>'+
+     button('save:'+n,'💾 저장')+button('load:'+n,'📂 불러오기',!s)+'</div>';
+   }).join('')+button('now','✔ 자동 저장')+
+   '<p class="ks-note">저장 데이터는 현재 브라우저에만 보관됩니다.</p>';
+ }
+ if(section==='map'){
+  body.innerHTML='<p class="ks-note">네 왕국은 서로 수천 칸 떨어져 있으며 초원·협곡·설산·황금 고원으로 나뉩니다.</p>'+
+   '<div class="ks-mini-map"><span>🟡 황금</span><span>⚪ 석벽</span><span>🟢 내 성</span><span>🔴 철혈</span></div>'+
+   locations.map(([name],i)=>'<div class="ks-row"><b>'+name+'</b>'+button('goto:'+i,'🗺️ 보기')+'</div>').join('');
+ }
+ if(section==='diplomacy'){
+  body.innerHTML='<p class="ks-note">AI 영주와 동맹을 맺으면 침공하지 않고 자원을 지원합니다. 체결 비용은 금화 80입니다.</p>'+
+   api.getLords().map(p=>{
+    const ally=api.state.strongholdDiplomacy?.[p.id]==='ally';
+    return '<div class="ks-row"><div><b>'+p.name+'</b><small>'+p.region+' · '+(p.defeated?'점령':ally?'동맹':'적대')+'</small></div>'+
+     button('ally:'+p.id+':'+(ally?'hostile':'ally'),ally?'⚔️ 파기':'🤝 동맹',p.defeated||(!ally&&api.state.coins<80))+'</div>';
+   }).join('');
+ }
