@@ -90973,11 +90973,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0ef375b154896240a20f61b0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9727",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6f67933b33a8708b8526e480c4e30fbb9b9ad072",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9727,
+        "baseBranch": "main",
+        "headBranch": "fix/magic-forest-visible-creature-pages-20261024",
+        "baseSha": "6f67933b33a8708b8526e480c4e30fbb9b9ad072",
+        "headSha": "8dd44f0df5dd6550f0148deaf3402d4d54916db0",
+        "mergeCommitSha": "048bd6136649e1d4e6065a8d648291d923ac6767",
+        "mergedAt": "2026-10-24T05:13:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "77e20bd0722b1ec064abfd46ca6442af3246e4c96f42310ca83110fbcb93055c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/magic-forest-visible-creature-pages-20261024",
+        "candidateSha": "8dd44f0df5dd6550f0148deaf3402d4d54916db0"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 42,
+        "deletedLineCount": 26,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9727",
+        "merge-commit:048bd6136649e1d4e6065a8d648291d923ac6767",
+        "base-main:6f67933b33a8708b8526e480c4e30fbb9b9ad072"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 714
+    "total": 715
   }
 }
