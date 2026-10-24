@@ -544,7 +544,7 @@ function bagMenu(){
 function equipDrop(id){var d=DROPS[id];if(!d||state.player.drops.indexOf(id)<0)return;if(d.kind==="weapon"){state.player.specialWeapon=id;state.player.weapon=null;}else{state.player.specialArmor=id;state.player.armor=null;}save();toast(d.name+" 장착");}
 
 function goZone(i){
- if(dungeon)return;sound.effect("story");state.zone=Math.max(0,Math.min(ZONES.length-1,i));p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});moveTarget=null;if(view)view.center();if(state.zone>0)spawnFieldBatch();storyVisit(state.zone);save();
+ if(dungeon)return;sound.effect("story");state.zone=Math.max(0,Math.min(ZONES.length-1,i));tacticalTargetId=null;contactTriggered=false;p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});moveTarget=null;if(view)view.center();if(state.zone>0)spawnFieldBatch();storyVisit(state.zone);save();
 }
 function spawnFieldBatch(){
  if(state.zone===0||dungeon)return;var z=ZONES[state.zone];
@@ -556,7 +556,7 @@ function aliveEnemies(){return enemies.filter(function(e){return !e.dead&&e.hp>0
 
 function startDungeon(i){
  if(partyCount()<1){toast("AI 유저를 최소 1명 파티에 초대해야 해.");return;}var d=DUNGEONS[i];if(!d)return;closeModal();
- dungeon={index:i,def:d,room:0,complete:false,door:false,portal:false,contrib:{player:0},pendingDrops:[],rewarded:false};
+ tacticalTargetId=null;contactTriggered=false;dungeon={index:i,def:d,room:0,complete:false,door:false,portal:false,contrib:{player:0},pendingDrops:[],rewarded:false};
  partyMembers().forEach(function(a){dungeon.contrib[a.id]=0;a.zone=100+i;a.hp=a.maxHp;});
  state.zone=0;p.x=150;p.y=310;enemies=[];worldW=980;worldH=620;spawnDungeonRoom();
 }
@@ -565,7 +565,7 @@ function spawnDungeonRoom(){
  if(dungeon.room<d.rooms.length){var count=d.rooms[dungeon.room];for(var i=0;i<count;i++){var elite=Math.random()<0.18;spawnEnemy(d.mob,d.mobHp+dungeon.room*22,d.mobAtk+dungeon.room*3,0,0,elite,false,420+(i%3)*120,205+Math.floor(i/3)*150);}}
  else spawnEnemy(d.boss,d.bossHp,d.bossAtk,0,0,false,true,720,310);
 }
-function advanceDungeon(){if(!dungeon||dungeon.complete||!dungeon.door)return;dungeon.room++;spawnDungeonRoom();toast("다음 방");}
+function advanceDungeon(){if(!dungeon||dungeon.complete||!dungeon.door)return;tacticalTargetId=null;contactTriggered=false;dungeon.room++;spawnDungeonRoom();toast("다음 방");}
 function completeDungeon(){
  if(!dungeon||dungeon.rewarded)return;dungeon.complete=true;dungeon.portal=true;dungeon.rewarded=true;storyClear(dungeon.index);
  var keysC=Object.keys(dungeon.contrib),maxC=Math.max.apply(null,keysC.map(function(k){return dungeon.contrib[k];}).concat([1])),rewardLines=[];
@@ -619,7 +619,21 @@ function updateEnemies(dt){
  partyMembers().forEach(function(a){if(a.hp<=0){a.hp=a.maxHp*.45;a.x=p.x-50;a.y=p.y+65;}});
  state.ai.forEach(function(a){if(!a.party&&a.hp<=0){a.hp=a.maxHp;setAIRoutine(a,"town");}});
 }
-function updatePartyAI(dt){partyMembers().forEach(function(a,k){a.zone=dungeon?100+dungeon.index:state.zone;var r=role(a),t=nearestEnemy(a.x,a.y,Math.max(200,r.range+60));a.sim-=dt;if(t){var dx=t.x-a.x,dy=t.y-a.y,d=Math.hypot(dx,dy);if(d>r.range*.9){a.x+=dx/(d||1)*145*dt;a.y+=dy/(d||1)*145*dt;}if(d<=r.range&&a.sim<=0){a.sim=r.rate;damageEnemy(t,aiAtk(a)+die(6),a.id);}}else{var dx=p.x-48-(k%2)*32-a.x,dy=p.y+50+k*28-a.y,d=Math.hypot(dx,dy);if(d>20){a.x+=dx/(d||1)*165*dt;a.y+=dy/(d||1)*165*dt;}}});}
+function updatePartyAI(dt){
+ partyMembers().forEach(function(a,k){
+  a.zone=dungeon?100+dungeon.index:state.zone;var r=role(a),mode=state.tactics.mode;
+  var range=mode==='hold'?r.range+22:mode==='focus'?Math.max(320,r.range+180):Math.max(200,r.range+60);
+  var t=orderedEnemy(a.x,a.y,range);a.sim-=dt;
+  if(t){
+   var dx=t.x-a.x,dy=t.y-a.y,d=Math.hypot(dx,dy);
+   if(d>r.range*.9&&mode!=='hold'){a.x+=dx/(d||1)*145*dt;a.y+=dy/(d||1)*145*dt;}
+   if(d<=r.range&&a.sim<=0){a.sim=r.rate;damageEnemy(t,aiAtk(a)+die(6),a.id);}
+  }else if(mode!=='hold'){
+   var spot=formationSpot(a,k),dx=spot.x-a.x,dy=spot.y-a.y,d=Math.hypot(dx,dy);
+   if(d>22){a.x+=dx/(d||1)*165*dt;a.y+=dy/(d||1)*165*dt;}
+  }
+ });
+}
 function bestZoneForAI(a){var idx=1;for(var i=1;i<ZONES.length;i++)if(a.level>=ZONES[i].lv)idx=i;return idx;}
 function updateAIRoutines(dt){
  state.ai.forEach(function(a){
@@ -716,7 +730,7 @@ function interact(){
  else if(currentInteract.kind==='sell')sellMenu();else shopMenu(currentInteract.kind);
 }
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
-function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){view.selection=hit.key;moveTarget={x:hit.obj.x,y:hit.obj.y};return;}var point=view.screenToWorld(clientX,clientY);if(point){moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
+function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
 function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
@@ -744,8 +758,8 @@ function endPointer(e){var q=pointers.get(e.pointerId);pointers.delete(e.pointer
 canvas.addEventListener('pointerup',endPointer);canvas.addEventListener('pointercancel',endPointer);canvas.addEventListener('wheel',function(e){e.preventDefault();view.changeZoom(Math.exp(-e.deltaY*.001));},{passive:false});
 document.getElementById('zoomIn').onclick=()=>view.changeZoom(1.15);document.getElementById('zoomOut').onclick=()=>view.changeZoom(1/1.15);document.getElementById('rotateView').onclick=()=>view.rotate();document.getElementById('centerView').onclick=()=>view.center();
 function togglePause(){tacticalPaused=!tacticalPaused;document.getElementById('pauseBtn').textContent=tacticalPaused?'전투 재개':'일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed',String(tacticalPaused));}
-document.getElementById('pauseBtn').onclick=togglePause;document.getElementById('autoBtn').onclick=function(){autoSkills=!autoSkills;this.textContent='자동 기술 '+(autoSkills?'켬':'끔');this.setAttribute('aria-pressed',String(autoSkills));};document.getElementById('journalBtn').onclick=storyJournal;document.getElementById('classSelect').value=state.player.classId;
-addEventListener('keydown',function(e){if(e.code==='Space'&&e.target===document.body&&!modalOpen&&gameStarted){e.preventDefault();togglePause();}});addEventListener('blur',function(){keys={};joy.x=joy.y=0;pointers.clear();gesture=false;});document.addEventListener('visibilitychange',function(){sound.visibility(document.hidden);});
+document.getElementById('pauseBtn').onclick=togglePause;document.getElementById('tacticsBtn').onclick=tacticsMenu;document.getElementById('autoBtn').onclick=function(){autoSkills=!autoSkills;this.textContent='자동 기술 '+(autoSkills?'켬':'끔');this.setAttribute('aria-pressed',String(autoSkills));};document.getElementById('journalBtn').onclick=storyJournal;document.getElementById('classSelect').value=state.player.classId;
+addEventListener('keydown',function(e){if(e.code==='KeyT'&&!modalOpen&&gameStarted){e.preventDefault();tacticsMenu();}if(e.code==='Space'&&e.target===document.body&&!modalOpen&&gameStarted){e.preventDefault();togglePause();}});addEventListener('blur',function(){keys={};joy.x=joy.y=0;pointers.clear();gesture=false;});document.addEventListener('visibilitychange',function(){sound.visibility(document.hidden);});
 var joyBase=document.getElementById("joystick"),knob=document.getElementById("knob"),joyId=null;
 function joyMove(e){var r=joyBase.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,d=Math.hypot(dx,dy)||1,k=Math.min(1,max/d);dx*=k;dy*=k;joy.x=dx/max;joy.y=dy/max;knob.style.transform="translate("+dx+"px,"+dy+"px)";}
 joyBase.addEventListener("pointerdown",function(e){joyId=e.pointerId;joyBase.setPointerCapture(e.pointerId);joyMove(e);});
