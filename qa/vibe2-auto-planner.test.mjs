@@ -1670,6 +1670,12 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.ok(third.minimumCrossSystemConnections>first.minimumCrossSystemConnections);
   assert.equal(sixth.tier,'COMPOUND_DETAIL_EVOLUTION');
   assert.ok(sixth.detailDepthLevel>third.detailDepthLevel);
+  assert.equal(first.visualIteration.startsAt,'F0_EXISTING_SOURCE_BIND');
+  assert.equal(first.visualIteration.pixelArtOnlyIfGameStyleRequires,true);
+  assert.equal(first.visualIteration.preserveGameplaySaveAuthority,true);
+  assert.ok(sixth.visualIteration.activeAxes.length>first.visualIteration.activeAxes.length);
+  assert.equal(sixth.visualIteration.namedAxesCompletedDoesNotStop,true);
+  assert.ok(resolveBuildUpIterationExpectation({repoRoot:root,cycle:30,focusPillar:'PRESENTATION'}).visualIteration.depthLevel>sixth.visualIteration.depthLevel);
   assert.equal(sixth.midLateEndgameOrReplayDepthRequired,true);
   assert.equal(sixth.secondOrderDetailRequired,true);
   assert.ok(sixth.activeDetailDimensions.length>first.activeDetailDimensions.length);
