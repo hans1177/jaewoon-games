@@ -39,6 +39,19 @@ export class IslandRendererV3 {
       this.scene3.add(new THREE.HemisphereLight(0xfff7e2,0x366c7d,2.15));
       const sun=new THREE.DirectionalLight(0xfff0d8,2.0);sun.position.set(-18,56,32);
       this.scene3.add(sun);
+      // 메인: 저폴리 성채는 기존 렌더 장면·재질을 공유하며 저장·게임 상태와 독립된다.
+      this.fortGeometry={
+        box:new THREE.BoxGeometry(1,1,1),
+        roof:new THREE.ConeGeometry(1,1,4),
+        tower:new THREE.CylinderGeometry(1,1,1,6)
+      };
+      const paint=color=>new THREE.MeshLambertMaterial({color,flatShading:true});
+      this.fortMaterial={
+        stone:paint(0xb5b0a3),stoneBright:paint(0xd8cfb8),
+        timber:paint(0x886244),darkWood:paint(0x523a30),
+        tile:paint(0x9c5947),cloth:paint(0x587f68),
+        banner:paint(0xb54e42),road:paint(0xada18d)
+      };
       const ground=(w,d,x,y,color,elevation)=>{
         const mesh=new THREE.Mesh(new THREE.BoxGeometry(w*SC,.45,d*SC),
           new THREE.MeshLambertMaterial({color}));
@@ -104,7 +117,87 @@ export class IslandRendererV3 {
     }
   }
   make3d(kind,height){
-    const group=new THREE.Group(),original=this.models3d.get(kind);
+    const group=new THREE.Group();
+    // 메인: 스트롱홀드식 저폴리 건축은 기존 Three.js 장면에서만 그린다.
+    // 공용 기본 메쉬/재질을 재사용하고 경제·충돌·전투·저장 값에는 관여하지 않는다.
+    if(kind.startsWith('fort-')){
+      const {box,roof,tower}=this.fortGeometry;
+      const m=this.fortMaterial;
+      const part=(geometry,material,x,y,z,sx,sy,sz,rotation=0)=>{
+        const mesh=new THREE.Mesh(geometry,material);
+        mesh.position.set(x,y,z);
+        mesh.scale.set(sx,sy,sz);
+        mesh.rotation.y=rotation;
+        group.add(mesh);
+      };
+      if(kind==='fort-road'){
+        part(box,m.road,0,.015,0,2.1,.035,2.05);
+        part(box,m.stoneBright,-.82,.036,-.8,.31,.013,.23);
+        part(box,m.stoneBright,.75,.036,.7,.27,.013,.34);
+      }else if(kind==='fort-wall'){
+        part(box,m.stone,0,height*.43,0,3.08,height*.86,.4);
+        part(box,m.stoneBright,0,height*.87,0,3.14,.16,.46);
+        for(let i=-2;i<=2;i++)part(box,m.stoneBright,i*.65,height*.99,0,.35,height*.24,.48);
+      }else if(kind==='fort-watchtower'){
+        part(tower,m.stone,0,height*.43,0,.83,height*.86,.83);
+        part(tower,m.stoneBright,0,height*.87,0,1.03,.24,1.03);
+        for(let i=0;i<6;i++){
+          const a=i*Math.PI/3;
+          part(box,m.stoneBright,Math.cos(a)*.83,height*.98,Math.sin(a)*.83,.33,.45,.34,a);
+        }
+        part(box,m.banner,.08,height+1.02,0,.055,1.72,.055);
+        part(box,m.banner,.43,height+1.56,0,.7,.37,.055);
+      }else if(kind==='fort-gatehouse'){
+        for(const x of [-1.3,1.3]){
+          part(box,m.stone,x,height*.37,0,.78,height*.74,1.25);
+          part(box,m.stoneBright,x,height*.78,0,1.03,.24,1.45);
+          part(roof,m.tile,x,height*.97,0,.89,.78,.92,Math.PI/4);
+        }
+        part(box,m.stone,0,height*.73,0,2.5,.5,.95);
+        for(let i=-2;i<=2;i++)part(box,m.stoneBright,i*.54,height*.96,0,.29,.35,1.03);
+        part(box,m.darkWood,-.92,height*.27,.51,.1,height*.53,.08);
+        part(box,m.darkWood,.92,height*.27,.51,.1,height*.53,.08);
+      }else if(kind==='fort-keep'){
+        const body=height*.82;
+        part(box,m.stone,0,body*.5,0,3.2,body,3.0);
+        part(box,m.stoneBright,0,body+.12,0,3.4,.27,3.2);
+        for(const x of [-1.46,1.46])for(const z of [-1.35,1.35]){
+          part(box,m.stoneBright,x,body+.34,z,.45,.5,.46);
+        }
+        part(box,m.darkWood,0,.58,1.52,.7,1.14,.11);
+        for(const x of [-.88,.88]){
+          part(box,m.darkWood,x,body*.62,1.55,.19,.42,.07);
+          part(box,m.darkWood,x,body*.62,-1.55,.19,.42,.07);
+        }
+        part(box,m.banner,0,height+.27,0,.055,.92,.055);
+        part(box,m.banner,.46,height+.45,0,.86,.28,.065);
+      }else if(kind==='fort-cottage'||kind==='fort-barracks'||kind==='fort-workshop'){
+        const large=kind==='fort-barracks',work=kind==='fort-workshop';
+        const w=large?3.4:work?2.7:3.0;
+        const depth=large?2.8:2.4,body=height*.58;
+        part(box,large?m.stone:m.timber,0,body*.5,0,w,body,depth);
+        for(const x of [-w*.38,w*.38]){
+          part(box,m.darkWood,x,body*.5,depth*.5+.04,.14,body,.13);
+        }
+        part(box,m.darkWood,0,.48,depth*.5+.07,.58,.96,.09);
+        part(roof,large?m.cloth:m.tile,0,body+height*.19,0,
+          w*.8,height*.38,depth*.89,Math.PI/4);
+        if(work){
+          part(box,m.timber,1.0,.42,1.5,.8,.84,.72);
+          part(box,m.darkWood,1.0,.89,1.5,.93,.15,.83);
+        }
+      }else if(kind==='fort-market'){
+        part(box,m.timber,0,.12,0,3.1,.22,2.4);
+        for(const x of [-1.35,1.35])for(const z of [-.98,.98]){
+          part(box,m.darkWood,x,height*.4,z,.16,height*.8,.16);
+        }
+        part(roof,m.cloth,0,height*.86,0,2.33,.8,1.85,Math.PI/4);
+        part(box,m.timber,-.63,.39,.16,.85,.57,.67);
+        part(box,m.stoneBright,.65,.44,-.35,.64,.69,.62);
+      }
+      return group;
+    }
+    const original=this.models3d.get(kind);
     if(original){
       const model=['hero','npc','soldier','enemy'].includes(kind)?cloneRig(original):original.clone(true);
       const box=new THREE.Box3().setFromObject(model);
@@ -136,7 +229,7 @@ export class IslandRendererV3 {
       const player=game.player,visibleIds=new Set();
       const nearby=(x,y)=>Math.abs(x-player.x)<this.width+160&&
         Math.abs(y-player.y)<this.height+170;
-      const put=(id,kind,x,y,height=2)=>{
+      const put=(id,kind,x,y,height=2,rotation=0)=>{
         if(!Number.isFinite(x)||!Number.isFinite(y)||!nearby(x,y))return;
         visibleIds.add(id);
         const loaded=this.models3d.has(kind);
@@ -147,6 +240,7 @@ export class IslandRendererV3 {
         if(!item){const mesh=this.make3d(kind,height);
           this.scene3.add(mesh);item={mesh,kind,loaded};this.instances3d.set(id,item)}
         item.mesh.position.set(x*SC,.03,y*SC);
+        item.mesh.rotation.y=rotation;
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
       const jungle=!!game.state.southernJungle?.unlocked||game.world.h>1200;
@@ -165,22 +259,44 @@ export class IslandRendererV3 {
         const kind=n.kind==='tree'?'tree':n.kind==='rock'?'stone':'flower';
         put('resource:'+n.id,kind,n.x,n.y,kind==='tree'?3.2:1.1);
       }
-      put('home','house',765,350,4.8);
-      put('market','house',game.workerShop.x,game.workerShop.y,3.0);
+      put('home','fort-cottage',765,350,4.8);
+      put('market','fort-market',game.workerShop.x,game.workerShop.y,3.0);
       const production=game.state.productionBuildings||{},village=game.state.villageDevelopment||{};
-      put('lumber',production.lumberBuilt?'house':'package',245,850,production.lumberBuilt?2.9:1.0);
-      put('mine',production.mineBuilt?'house':'stone',785,965,production.mineBuilt?2.9:1.2);
-      if(village.defenseTowerBuilt)put('defense-tower','gate',400,1090,3.9);
-      if(village.townHallBuilt)put('townhall','house',1010,1090,5.4);
+      put('lumber',production.lumberBuilt?'fort-workshop':'package',245,850,production.lumberBuilt?2.9:1.0);
+      put('mine',production.mineBuilt?'fort-workshop':'stone',785,965,production.mineBuilt?2.9:1.2);
+      if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9);
+      if(village.townHallBuilt)put('townhall','fort-keep',1010,1090,5.4);
+      // 메인: 기존 건설 해금 상태에만 따라 성벽·성문·망루가 나타난다.
+      // 새 건설 가격·충돌 박스·세이브 키·공격 판정은 만들지 않는다.
+      if(village.townHallBuilt){
+        for(let i=0;i<8;i++){
+          if(i===3||i===4)continue; // 북쪽 중앙 출입로
+          put('fort-north:'+i,'fort-wall',384+i*113,210,2.0);
+        }
+        put('fort-north-gate','fort-gatehouse',780,210,3.25);
+        for(let i=0;i<5;i++){
+          put('fort-west:'+i,'fort-wall',250,310+i*113,2.0,Math.PI/2);
+          if(i!==2)put('fort-east:'+i,'fort-wall',1310,310+i*113,2.0,Math.PI/2);
+        }
+        put('fort-east-gate','fort-gatehouse',1310,600,3.25,Math.PI/2);
+        put('fort-south-west','fort-wall',580,1030,2.0);
+        put('fort-south-mid','fort-wall',740,1030,2.0);
+      }
+      if(village.defenseTowerBuilt&&village.townHallBuilt){
+        put('fort-corner-nw','fort-watchtower',250,210,3.8);
+        put('fort-corner-ne','fort-watchtower',1310,210,3.8);
+      }
+      // 성곽 안 길은 시각 요소뿐이며 기존 이동·상호작용 좌표는 그대로 사용.
+      for(let i=0;i<7;i++)put('fort-road:'+i,'fort-road',755,465+i*72,.05);
       if(game.state.seedDepot?.built)put('seed-depot','package',835,505,1.3);
       if(game.state.smithy)put('smithy','bench',790,1080,2.1);
       if(game.state.darknessFlameV19?.blackMineBuilt)put('black-mine','house',-880,690,3.6);
       if(game.state.abyssCaveV23?.researchLabBuilt)put('research-lab','house',-690,420,4);
-      put('barracks',game.state.barracksBuilt?'house':'package',
+      put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
       put('ship','bench',775,760,1.4);put('fishing','bench',520,430,1.4);
-      if(!game.state.expanded)put('east-gate','gate',1325,600,3.0);
-      if(jungle)put('jungle-gate','gate',2170,1080,3.0);
+      if(!game.state.expanded)put('east-gate','fort-gatehouse',1325,600,3.0);
+      if(jungle)put('jungle-gate','fort-gatehouse',2170,1080,3.0);
       for(let i=0;i<game.state.plots.length;i++){
         const crop=game.state.plots[i];
         put('plot:'+i,crop.state==='growing'?'crop':'stone',
@@ -227,7 +343,7 @@ export class IslandRendererV3 {
         crystals.forEach(([x,y],i)=>put('abyss-crystal:'+i,'stone',x,y,1.5));
       }
       // 기존 라이브러리 울타리는 3D 환경 장식 전용이다. 충돌과 이동 제한을 바꾸지 않는다.
-      for(let i=0;i<5;i++){
+      if(!village.townHallBuilt)for(let i=0;i<5;i++){
         put('fence:'+i,'fence',1150+i*38,185,1.1);
       }
       put('player','hero',player.x,player.y,1.9);
