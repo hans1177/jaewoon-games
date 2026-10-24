@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand} from '../web-games/ocean-voyage/engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -37,6 +37,34 @@ test('trade preserves economy, cargo capacity and port boundaries',()=>{
  assert.equal(trade(s,'dawn','grain',1,'sell').ok,false);
  assert.ok(cargoWeight(purchased.state)>0);
  const away=newGame();away.ship.x=55;assert.equal(trade(away,'dawn','grain',1,'buy').ok,false);
+});
+test('each European market has limited regional stock and real sale pressure',()=>{
+ const s=newGame(),p='dawn',g='grain',other='porcelain';
+ assert.equal(Object.keys(PORT_MARKETS).length,PORTS.length);
+ assert.ok(marketBaseStock('dawn',g)>0);
+ assert.equal(marketBaseStock('dawn',other),0);
+ assert.equal(trade(s,p,other,1,'buy').ok,false);
+ const initial=marketQuote(s,p,g),buy=trade(s,p,g,5,'buy');
+ assert.equal(buy.ok,true);
+ assert.equal(initial.stock-buy.state.economy[p].stock[g],5);
+ assert.ok(marketQuote(buy.state,p,g).buy>initial.buy);
+ const sold=trade(buy.state,p,g,2,'sell');
+ assert.equal(sold.ok,true);assert.equal(sold.state.economy[p].stock[g],initial.stock-3);
+ assert.equal(trade(s,p,g,60,'buy').ok,false);
+ assert.deepEqual(restoreGame(serializeGame(sold.state)).economy,sold.state.economy);
+});
+test('economic ticks, merchant disruption and price shocks stay bounded',()=>{
+ let s=newGame();s.coins=50000;
+ s=trade(s,'dawn','wood',12,'buy').state;
+ assert.equal(s.marketShocks.dawn.kind,'품귀');
+ const expensive=marketQuote(s,'dawn','wood').buy;
+ for(let n=0;n<10;n++){s.day++;advancePortEconomy(s);}
+ assert.equal(s.marketShocks.dawn,undefined);
+ assert.equal(s.economy.dawn.history.wood.length,7);
+ assert.ok(marketQuote(s,'dawn','wood').buy<expensive);
+ assert.ok(PORTS.some(p=>GOODS.some(g=>marketEvent({...s,day:4},p.id,g.id,4))));
+ assert.ok(Object.values(s.economy).every(c=>Object.values(c.history).every(h=>h.length<=7)));
+ assert.deepEqual(restoreGame(serializeGame(s)),s);
 });
 test('dock upgrades are paid, non-destructive and fleet bounded',()=>{
  const s=newGame();
@@ -113,7 +141,7 @@ test('European story starts London with captain and event-recruited companions',
  assert.equal(PORTS[1].name,'플리머스');
  assert.equal(canDock(s).name,'런던');
  assert.equal(s.captain,'엘리너 그레이');
- assert.deepEqual(s.crewRoster,['eleanor']);assert.equal(CAPTAINS.length,5);
+ assert.deepEqual(s.crewRoster,['eleanor']);assert.equal(CAPTAINS.length,8);
  assert.equal(s.equipment.telescope,1);
  assert.ok(CREW.length>=6);
  assert.ok(EQUIPMENT.length>=5);
