@@ -144,22 +144,22 @@ test('native scene drives the default surface display but is not falsely product
  assert.match(moduleSource,/Float32BufferAttribute/);
  assert.match(moduleSource,/computeVertexNormals/);
  assert.match(moduleSource,/raycaster\.intersectObjects/);
- assert.match(moduleSource,/function frame\(state,regionAt\)/);
- assert.match(moduleSource,/if\(state\.area!=='surface'/);
+ assert.match(moduleSource,/function frame\(state,regionAt,regionScene=null\)/);
+ assert.match(moduleSource,/const isInterior=state\.area!=='surface'/);
  assert.match(index,/data-spatial-dimension="3d-loading"/);
  assert.match(index,/id="world3d"/);
  assert.doesNotMatch(index,/loadForest3DCandidate|id="nativeForest3d"/);
  assert.match(index,/if\(world3d\?\.isActive\(\)\)\{drawMiniMap\(now\);return\}/);
  assert.match(index,/data-gameplay-3d-surface="native-world"/);
  assert.doesNotMatch(index,/get\('preview3d'\)==='1'/);
- assert.match(index,/world3d\.frame\(state,regionAt\)/);
+ assert.match(index,/world3d\.frame\(state,regionAt,NATIVE_SCENE_LANDMARKS\[state\.area\]\)/);
  assert.match(index,/world3d\?\.pick\(e\.clientX,e\.clientY\)/);
  assert.match(index,/world3d\)world3d\.dispose\(\)/);
 });
 
 test('3D preview reads existing biome classifier and saved construction state, never regenerates the map',()=>{
- assert.match(index,/world3d\.frame\(state,regionAt\)/);
- assert.match(moduleSource,/function frame\(state,regionAt\)/);
+ assert.match(index,/world3d\.frame\(state,regionAt,NATIVE_SCENE_LANDMARKS\[state\.area\]\)/);
+ assert.match(moduleSource,/function frame\(state,regionAt,regionScene=null\)/);
  assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
  assert.match(moduleSource,/tile\.position\.set\(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ\)/);
  assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
