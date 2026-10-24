@@ -5738,6 +5738,13 @@ test('active web games repeat verified source development; failed generations re
   const item=(id,status)=>({id,gameId:project.gameId,target:'web',department:'development',
     type:'implementation',status,sourceRoot:project.projectPath,responsibleFiles:[project.projectPath+'/game-v3.js'],
     blocker:status==='failed'?'MOBILE_SAVE_REGRESSION':null});
+  const legacyFailure=findWebRecurringBuildUpTask(project,root,{tasks:[{
+    id:'cozy-loop-existing-web-assessment-v1',gameId:id,target:'web',
+    department:'development',type:'implementation',status:'failed',
+    blocker:'INITIAL_WEB_RUNTIME_FAILURE',sourceRoot:project.projectPath
+  }]});
+  assert.match(legacyFailure.goal,/WEB_CAUSAL_REPAIR/);
+  assert.match(legacyFailure.goal,/INITIAL_WEB_RUNTIME_FAILURE/);
   const first=findWebRecurringBuildUpTask(project,root,{tasks:[]});
   assert.equal(first.id,id+'-web-autonomous-build-up-v1');
   assert.deepEqual(first.responsibleFiles,[project.projectPath+'/game-v3.js']);
@@ -5756,7 +5763,7 @@ test('active web games repeat verified source development; failed generations re
   assert.match(repaired.goal,/MOBILE_SAVE_REGRESSION/);
   assert.equal(repaired.priority,'high');
   const afterRepair=findWebRecurringBuildUpTask(project,root,{tasks:[
-    item(first.id,'verified'),item(second.id,'failed'),item(repaired.id,'verified')
+    item(first.id,'verified'),item(second.id,'failed'),{...item(repaired.id,'verified'),goal:repaired.goal}
   ]});
   assert.equal(afterRepair.id,id+'-web-autonomous-build-up-v4');
   assert.match(afterRepair.goal,/PROGRESSION/);
