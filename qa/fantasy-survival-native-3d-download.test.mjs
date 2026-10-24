@@ -507,7 +507,7 @@ test('all authored biomes use original instanced scenery without changing intera
 test('fast loading streams CC0 scenery after first frame and renders authored region coordinates',()=>{
  assert.match(moduleSource,/new Set\(\['floor_base','tree','tree_large','foliage_A','cobblestones'\]\)/);
  assert.match(moduleSource,/if\(!extraModelsStarted\)/);
- assert.match(moduleSource,/stagedModels\.loadRemaining\(\)/);
+ assert.match(moduleSource,/stagedModels\.loadRemaining\(priorityModels\)/);
  assert.match(moduleSource,/const isInterior=state\.area!=='surface'/);
  assert.match(moduleSource,/regionScene\?\.landmarks/);
  assert.match(index,/rel="modulepreload" href="\.\/world3d\.mjs"/);
