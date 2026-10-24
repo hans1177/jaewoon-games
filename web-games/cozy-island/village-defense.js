@@ -68,6 +68,11 @@ function ensureVillage(state) {
   fort.siegeDefeats=Math.max(0,Math.floor(Number(fort.siegeDefeats)||0));
   if(!Number.isFinite(fort.keepHp))fort.keepHp=KEEP_HP;
   fort.keepHp=Math.max(0,Math.min(KEEP_HP,fort.keepHp));
+  // 스트롱홀드식 성채 운영: 기존 세이브를 유지하며 보급·사기·명예와 방어 명령만 확장.
+  if(!['hold','volley','counter'].includes(fort.defenseOrder))fort.defenseOrder='hold';
+  fort.morale=Math.max(0,Math.min(100,Number.isFinite(fort.morale)?fort.morale:65));
+  fort.honor=Math.max(0,Math.min(999,Math.floor(Number(fort.honor)||0)));
+  fort.supplyClock=Math.max(0,Number(fort.supplyClock)||0);
   state.villageDevelopment=village;
   return village;
 }
@@ -198,8 +203,10 @@ function runTower(dt) {
     return;
   }
   towerTimer += dt;
-  if (towerTimer < TOWER_COOLDOWN) return;
-  towerTimer %= TOWER_COOLDOWN;
+  const fort=village.fortification;
+  const cooldown=fort?.defenseOrder==='volley'?TOWER_COOLDOWN*.7:TOWER_COOLDOWN;
+  if (towerTimer < cooldown) return;
+  towerTimer %= cooldown;
   let target = null;
   let best = TOWER_RANGE;
   for (const enemy of livingRaidEnemies()) {
@@ -210,7 +217,7 @@ function runTower(dt) {
     }
   }
   if (!target) return;
-  target.hp -= TOWER_DAMAGE;
+  target.hp -= TOWER_DAMAGE*(fort?.defenseOrder==='volley'?1.35:1);
   towerShot = { x1: TOWER.x, y1: TOWER.y - 55, x2: target.x, y2: target.y, until: performance.now() + 180 };
 }
 
@@ -290,6 +297,12 @@ function renderCastle(){
   html+='<p class="panel-note">성채 체력 '+Math.ceil(fort.keepHp)+'/'+KEEP_HP+
     ' · 방어 승리 '+fort.siegeVictories+'회 · 함락 '+fort.siegeDefeats+'회</p>';
   if(built&&fort.keepHp<KEEP_HP)html+=button('siege:keep','성채 수리','나무 4 · 돌 6');
+  html+='<h3>🎯 부대 진형 · 성채 사기 · 보급</h3>';
+  html+='<p class="panel-note">사기 '+Math.floor(fort.morale)+'/100 · 명예 '+fort.honor+' · 식량 '+Math.floor(Number(state.inventory?.food)||0)+' · 현재 명령 '+({hold:'성벽 사수',volley:'일제 사격',counter:'근접 반격'})[fort.defenseOrder]+'. 공성전 중 25초마다 식량 2개를 보급해 사기를 유지해.</p>';
+  html+=button('order:hold','🛡️ 성벽 사수 · 기본 진형','','');
+  html+=button('order:volley','🏹 일제 사격 · 궁수/방어탑 집중','','');
+  html+=button('order:counter','⚔️ 근접 반격 · 검병 공격 강화','','');
+  html+=button('siege:rally','🚩 명예로 수비대 재집결','명예 10',fort.honor<10||!currentGame.raidActive);
   html+='<h3>🌊 해자 · 도개교</h3>';
   if(built){
     html+=button('fort:moat','해자 건설 · 공성군 이동 속도 절반',
@@ -336,6 +349,10 @@ function manageCastle(action){
   const game=currentGame,state=game?.state;if(!state)return;
   const village=ensureVillage(state),fort=village.fortification,inv=state.inventory||{};
   const parts=action.split(':'),op=parts[0],id=Number(parts[1]);
+  if(op==='order'){
+    const order=parts[1];if(!['hold','volley','counter'].includes(order))return;
+    fort.defenseOrder=order;saveState();renderCastle();toast('🛡️ 수비 진형 변경');return;
+  }
   if(op==='fort'){
     if(!village.townHallBuilt)return toast('마을회관부터 건설해');
     if(parts[1]==='moat'){
@@ -360,6 +377,12 @@ function manageCastle(action){
     if(command==='auto'){
       if(!SIEGE_MODES.includes(parts[2]))return;
       fort.siegeAuto=parts[2];saveState();renderCastle();return;
+    }
+    if(command==='rally'){
+      if(fort.honor<10||!game.raidActive)return;
+      fort.honor-=10;fort.morale=Math.min(100,fort.morale+22);
+      for(const unit of game.allies||[])if(unit.hp>0)unit.hp=Math.min(unit.maxHp||100,unit.hp+22);
+      saveState();renderCastle();toast('🚩 수비대 재집결! 사기 회복');return;
     }
     if(command==='start'){
       if(!village.townHallBuilt||game.raidActive)return toast('마을회관을 짓고 습격이 아닐 때 시작할 수 있어');
@@ -451,6 +474,16 @@ function runFortification(dt){
     fortSaveCarry=0;return;
   }
   let damaged=false;
+  if(game.grandSiege){
+    fort.supplyClock+=dt;
+    if(fort.supplyClock>=25){
+      fort.supplyClock%=25;
+      const inv=game.state.inventory||{};
+      if((inv.food||0)>=2){inv.food-=2;fort.morale=Math.min(100,fort.morale+4)}
+      else{fort.morale=Math.max(0,fort.morale-13);toast('⚠️ 식량 부족 · 수비대 사기 하락')}
+      damaged=true;
+    }
+  }else fort.supplyClock=0;
   const enemies=livingRaidEnemies(),now=performance.now();
   for(const enemy of enemies){
     if(enemy._fortSlowUntil&&now>=enemy._fortSlowUntil){
@@ -460,31 +493,50 @@ function runFortification(dt){
     if(enemy._fortBurnUntil&&now<enemy._fortBurnUntil){
       enemy.hp-=6*dt;damaged=true;
     }
+    // 후방 투석기: 성문/성벽을 먼 거리에서 포격하며 탄약은 실제로 감소한다.
+    if(game.grandSiege&&enemy.kind==='trebuchet'&&enemy.ammo>0&&enemy.x<1960){
+      enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
+      if(enemy._fortSiegeTimer>=enemy.siegeCooldown){
+        enemy._fortSiegeTimer%=enemy.siegeCooldown;
+        const key=['gate','north','south'][Math.floor((8-enemy.ammo)%3)];
+        fort.walls[key]=Math.max(0,fort.walls[key]-enemy.siegeDamage);
+        enemy.ammo--;damaged=true;
+      }
+    }
     // 성문/방벽 충돌: 구조물 HP가 있을 동안 공성 병력을 실제로 저지한다.
     // 해자는 후속 적군 이동을 늦추며, 도개교가 내려오면 성문 방향 진입이 가능하다.
     if(enemy._grandSiege)enemy._siegeMoatFactor=fort.moatBuilt&&enemy.x>1390&&
       enemy.x<1590&&enemy.y>280&&enemy.y<970?.5:1;
-    if(enemy.hp>0&&enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
+    if(enemy.hp>0&&!enemy._fortClimbed&&enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
       const lane=enemy._siegeLane??enemy.y,key=lane<520?'north':lane>730?'south':'gate';
       if(fort.walls[key]>0&&(key!=='gate'||fort.drawbridgeClosed)){
         enemy.x=Math.max(enemy.x,1350);
-        enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
-        const attackEvery=Number(enemy.siegeCooldown)||1.2;
-        if(enemy._fortSiegeTimer>=attackEvery){
-          enemy._fortSiegeTimer%=attackEvery;
-          const damage=Math.max(10,Number(enemy.siegeDamage)||Number(enemy.attack)||
-            Number(enemy.cannonDamage)||Number(enemy.berserkerDamage)||10);
-          fort.walls[key]=Math.max(0,fort.walls[key]-damage);
-          damaged=true;
+        // 사다리 보병/공성탑은 벽 체력을 무시하는 대신 일정 시간 등반해야 한다.
+        if(enemy.kind==='ladder'||enemy.kind==='siegeTower'){
+          enemy._fortClimbTimer=(enemy._fortClimbTimer||0)+dt;
+          if(enemy._fortClimbTimer>=(enemy.kind==='siegeTower'?5.5:3.7)){
+            enemy._fortClimbed=true;enemy.x=1285;damaged=true;
+          }
+        }else if(['ram','sapper','trebuchet'].includes(enemy.kind)){
+          enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
+          const attackEvery=Number(enemy.siegeCooldown)||1.2;
+          if(enemy._fortSiegeTimer>=attackEvery){
+            enemy._fortSiegeTimer%=attackEvery;
+            const damage=Math.max(10,Number(enemy.siegeDamage)||10);
+            fort.walls[key]=Math.max(0,fort.walls[key]-damage);
+            damaged=true;
+          }
         }
       }
     }
+    // 돌파·등반한 유닛이 성채에 도달하면 병종에 상관없이 내성을 깎는다.
     // 성벽 안으로 진입한 공성 병기가 성채를 파괴하면 대공성전 패배 처리.
     if(game.grandSiege&&enemy._grandSiege&&enemy.hp>0&&enemy.x<1160&&enemy.y>890){
       enemy._fortKeepTimer=(enemy._fortKeepTimer||0)+dt;
       if(enemy._fortKeepTimer>=1){
         enemy._fortKeepTimer%=1;
         fort.keepHp=Math.max(0,fort.keepHp-Math.max(8,Number(enemy.siegeDamage)||12));
+        fort.morale=Math.max(0,fort.morale-0.4);
         damaged=true;
         if(fort.keepHp===0&&!game.siegeSurrendered){
           game.siegeSurrendered=true;fort.siegeDefeats++;
