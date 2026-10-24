@@ -750,9 +750,9 @@ function updateInteractions(){
    });
   }
   if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
- }else if(state.zone>0){
+ }else if(!dungeon&&state.zone>0){
    var site=pendingEvidence();if(site&&Math.hypot(site.x-p.x,site.y-p.y)<95){currentInteract={kind:'evidence',name:'사건 조사 · '+INCIDENTS[state.zone-1].name};prompt.textContent='사건 조사 · 증거 수집';prompt.classList.add('on');return;}
-  }else if(state.zone===0){
+  }else if(!dungeon&&state.zone===0){
   var objs=[{x:390,y:300,name:'무기상점',kind:'weapon'},{x:1010,y:300,name:'방어구상점',kind:'armor'},{x:700,y:300,name:'회복의 샘',kind:'heal'},{x:700,y:690,name:'판매상점',kind:'sell'},{x:COUNCIL_LOCATION.x,y:COUNCIL_LOCATION.y,name:'북문 사건 조사단',kind:'council'}],best=null,bd=90*90;
   objs.forEach(function(o){var d=(o.x-p.x)**2+(o.y-p.y)**2;if(d<bd){bd=d;best=o;}});
   if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
