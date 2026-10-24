@@ -177,7 +177,7 @@ test('repeated main pushes never abort active package, and coalesce only superse
   mk(103,'pending'),      // completed staging, waiting for release: must survive.
   mk(104,'queued',newest),// latest build never discarded.
   {...mk(105,'queued'),head_repository:{full_name:'foreign/fork'}},
-  mk(106,'queued')        // diverged ancestry must not be cancelled.
+  mk(106,'queued','c'.repeat(40)) // diverged ancestry must not be cancelled.
  ];
  const removed=[];
  const exec=(command,args)=>{
@@ -187,7 +187,7 @@ test('repeated main pushes never abort active package, and coalesce only superse
   if(route.endsWith('/commits/main'))return JSON.stringify({sha:newest});
   if(route.includes('event=pull_request'))return JSON.stringify({workflow_runs:[]});
   if(route.includes('event=push'))return JSON.stringify({workflow_runs:runs});
-  if(route.includes('/compare/'))return JSON.stringify({status:route.includes('106')?'diverged':'ahead',total_commits:1});
+  if(route.includes('/compare/'))return JSON.stringify({status:route.includes('c'.repeat(40))?'diverged':'ahead',total_commits:1});
   if(route.endsWith('/jobs?per_page=100')){
    const id=Number(route.split('/').at(-2));
    return JSON.stringify({jobs:id===101?[{name:'deploy',status:'in_progress'}]:id===103?[{name:'deploy',status:'completed'}]:[]});
