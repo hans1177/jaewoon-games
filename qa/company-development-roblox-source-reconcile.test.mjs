@@ -974,6 +974,12 @@ test('existing simple-rpg imported ScreenGui studio binding is repeatable and fa
     assert.throws(()=>applyRobloxStudioAssetBindingToExistingSource({
       root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning
     }),/EXISTING_STUDIO_ASSET_VISIBLE_TARGET_REQUIRED/,'unverified imported UI cannot satisfy the binding gate');
+    fs.writeFileSync(clientFile,'-- StudioAssetImportedUiBinding\\n'+original);
+    applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning
+    });
+    assert.match(fs.readFileSync(clientFile,'utf8'),/imported:SetAttribute\\("StudioAssetImportedUiBinding", "FRAME_PANEL"\\)/,
+      'comment-only binding markers must not bypass the actual imported UI bind');
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
