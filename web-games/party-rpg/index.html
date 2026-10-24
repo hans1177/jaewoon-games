@@ -843,23 +843,23 @@ function eventSceneData(key){
  }else if(kind==='act2'&&ACT2_SITES[n]){
   var trace=ACT2_SITES[n];title='2막 · '+trace.name;mood=['','field','forest','cave','desert','snow','abyss'][n];focus=trace;
   var f=state.story.choices.fort==='witness'?'공개된 증언이 이곳에도 전해졌다.':'보호하던 증인 중 누군가 이곳으로 왔다.';
-  beats=[beat('되돌아온 흔적','2막 · '+zone.name,trace.lead+' '+f,'“이 흔적을 따라오던 자들이 다가오고 있어.”',state.player.portraitId),beat('동행 중인 사람들','2막 · 복병을 앞두고','사건의 기록을 빼앗으려는 무리가 나타난다. 파티를 정비하고 교전에 대비한다.','“이번에도 이름을 빼앗기지 않아.”',0)];
+  beats=[beat('되돌아온 흔적','2막 · '+zone.name,trace.lead+' '+f,'“이 흔적을 따라오던 자들이 다가오고 있어.”',state.player.portraitId),beat(partyCount()?partyMembers()[0].name:'현장 기록','2막 · 복병을 앞두고','사건의 기록을 빼앗으려는 무리가 나타난다. 교전에 대비해야 한다.','“저쪽에서 다가온다. 대비해.”',partyCount()?portraitIndex(partyMembers()[0]):state.player.portraitId)];
  }else if((kind==='act2clear'||kind==='battleclear')&&incident){
   var cleared=kind==='act2clear',trace=ACT2_SITES[n];title=(cleared?'2막':'1막')+' · '+(cleared?trace.name:incident.name)+' 조사 완료';focus=cleared?trace:EVIDENCE_SITES[n];mood=['','field','forest','cave','desert','snow','abyss'][n];
   var resolution=cleared?'교전을 끝내고 숨겨진 기록을 확보했다. 이 기록은 다음 지역으로 이어진다.':(state.story.cases[n]?.path==='truth'?incident.truth:incident.guard);
-  beats=[beat(incident.person,cleared?'2막 · 되찾은 단서':'1막 · 증거를 지킨 사람들',resolution,'“한 사람의 이름이 다시 지워지기 전에 다음 길을 찾아야 해.”',Math.max(0,state.ai.findIndex(a=>a.name===incident.person)))];
+  beats=[beat(person?.party?person.name:'조사 기록',cleared?'2막 · 되찾은 단서':'1막 · 증거를 지킨 사람들',resolution,'“다음 지역의 단서가 남았다.”',person?.party?portraitIndex(person):state.player.portraitId)];
  }
  if(kind==='council'){
   title='북문 조사단 · 첫 기록';focus=COUNCIL_LOCATION;
   beats=[beat('루카','마을 · 첫 번째 회의','북문에서 돌아오지 못한 병사들의 이름표가 낡은 탁자 위에 놓여 있다.','“그날 밤 관문에서 무슨 일이 있었는지 끝까지 밝히겠어.”',0),beat('미나','마을 · 사라진 이름','미나가 봉랍 묻은 지도를 펼친다. 이름을 공개하는 일과 사람을 지키는 일은 항상 같지 않다.','“누구의 이야기를 먼저 들을지 네가 결정해.”',1)];
  }else if((kind==='evidence'||kind==='case')&&incident){
   mood=['','field','forest','cave','desert','snow','abyss'][n];title=incident.name;focus=site;
-  if(kind==='evidence')beats=[beat('발견한 흔적',zone.name+' · 사건 현장',site.trace+'. 손길이 닿자 오래 묻혀 있던 글씨가 보인다.','“진실은 잊혀도 흔적은 사라지지 않는다.”',state.player.portraitId),beat(incident.person,'증언 · '+incident.name,incident.lead,'“공개할지 보호할지, 먼저 이야기를 들어 줘.”',person?portraitIndex(person):0)];
-  else {let r=state.story.cases[n];if(!r)return null;beats=[beat(incident.person,r.failed?'설득 실패 · 남은 길':r.path==='truth'?'공개된 진실':'지켜진 증인',r.path==='truth'?incident.truth:incident.guard,r.failed?'“말하지 못했지만 아직 끝난 건 아니야.”':r.path==='truth'?'“이 기록을 지켜 줘.”':'“이름을 지킨 선택을 기억할게.”',person?portraitIndex(person):0)];}
+  if(kind==='evidence')beats=[beat('발견한 흔적',zone.name+' · 사건 현장',site.trace+'. 손길이 닿자 오래 묻혀 있던 글씨가 보인다.','“진실은 잊혀도 흔적은 사라지지 않는다.”',state.player.portraitId),beat(person?.party?person.name:'현장에 남은 증언','기록 · '+incident.name,incident.lead,person?.party?'“어떻게 기록할지 결정하자.”':'“장부에는 당시 증인의 목소리가 그대로 남아 있다.”',person?.party?portraitIndex(person):state.player.portraitId)];
+  else {let r=state.story.cases[n];if(!r)return null;beats=[beat(person?.party?person.name:'사건 기록',r.failed?'설득 실패 · 기록으로 남김':r.path==='truth'?'공개된 진실':'지켜진 증인',r.path==='truth'?incident.truth:incident.guard,r.failed?'“설득에는 실패했다. 장부에 그대로 적는다.”':r.path==='truth'?'“증언이 공개되었다.”':'“증인의 위치를 숨겼다.”',person?.party?portraitIndex(person):state.player.portraitId)];}
  }else if(kind==='companion'){
   person=state.ai.find(a=>a.id===raw);if(!person)return null;
   n=portraitIndex(person);title=person.name+' · 잊힌 고백';focus={x:person.x,y:person.y};
-  beats=[beat(person.name,'동료 · '+role(person).name,COMPANION_SECRETS[n],'“내가 말하지 못한 일도 같이 짊어져 줄래?”',n),beat(person.name,'동료 · 개인 의뢰','진실을 밝힐 수도, 위험한 증언을 보호할 수도 있다. 어떤 길을 걸을지는 함께 정해야 한다.','“내가 길을 잃으면 네가 이름을 불러 줘.”',n)];
+  beats=[beat(person.name,'동료 · '+COMPANION_VOICES[n].trait,COMPANION_SECRETS[n],'“'+COMPANION_VOICES[n].talk+'”',n),beat(person.name,'개인 의뢰 · '+role(person).name,COMPANION_VOICES[n].lead,'“확인할 건 직접 확인해.”',n)];
  }else if((kind==='boss'||kind==='victory')&&DUNGEONS[n]){
   mood='dungeon';title=DUNGEONS[n].name+(kind==='boss'?' · 마지막 방':' · 전투 이후');focus={x:720,y:310};
   const threat=['낡은 수비대의 깃발 아래서 추방당한 자들이 검을 빼든다.','제단의 봉인이 갈라지고 오래된 맹약을 지킨 수호자가 모습을 드러낸다.','왕좌 앞에 선 왕은 괴물로 몰린 이들의 이름을 하나씩 읽고 있다.'][n];
@@ -870,6 +870,16 @@ function eventSceneData(key){
   title={fort:'요새 · 포로의 증언',temple:'신전 · 맹약의 원문',ending:'왕좌 · 마지막 이름'}[raw];if(!title)return null;mood=raw==='ending'?'abyss':'town';
   let outcomes={fort:{witness:'포로의 이름이 광장에서 울려 퍼진다. 루카는 오래 숨겨 둔 보고서를 내려놓는다.',refuge:'미나는 포로들에게 숨을 곳을 마련한다. 증언은 미뤄지지만 사람들은 살아남는다.'},temple:{reveal:'지워진 장부가 광장에 펼쳐지고 사람들은 그 대가를 알게 된다.',prepare:'돌아올 사람을 위한 잠자리가 준비되고 마을의 창문에 불이 켜진다.'},ending:{release:'사라진 길이 지도에 되돌아오고 오랜 풍년의 마법은 끝난다.',keeper:'경계에 등불이 켜지고 두 도시 사이의 이름들이 다시 이어진다.'}};
   beats=[beat('너의 결정',title,outcomes[raw][choice],'“이 선택의 결과를 끝까지 마주해야 해.”',state.player.portraitId),beat('남겨진 사람들','이후의 기록','여정 기록과 동료 대화에는 이 결정이 남는다. 선택을 되돌릴 수 없지만 남은 길은 계속 이어진다.','“우리가 잊은 사람들을 다시 부르자.”',1)];
+ }else if((kind==='recruitLead'||kind==='recruitClue'||kind==='recruit')&&state.ai.some(a=>a.id===raw)){
+  person=state.ai.find(a=>a.id===raw);
+  var i=portraitIndex(person),voice=COMPANION_VOICES[i],arc=RECRUIT_ARCS[i];
+  title=person.name+' · '+arc.title;mood=arc.zone===0?'town':['','field','forest','cave','desert','snow','abyss'][arc.zone];
+  focus=arc.site;
+  if(kind==='recruitLead')beats=[beat('새로 만난 사람',person.name+' · '+voice.trait,voice.talk,'“'+voice.lead+'”',i),
+    beat(person.name,'개인 서브퀘스트 · '+arc.title,'단서 위치: '+ZONES[arc.zone].name+'. 찾았다고 바로 영입하는 건 아니야. 먼저 이 사람의 사정을 알아야 해.','“해 볼 거면 끝까지 확인해.”',i)];
+  else if(kind==='recruitClue')beats=[beat('사건 단서','개인 서브퀘스트 · '+arc.title,arc.title+'의 흔적을 발견했다. '+COMPANION_SECRETS[i],'“찾던 단서가 맞아. 이제 얘기할 준비가 됐어.”',state.player.portraitId)];
+  else beats=[beat(person.name,'영입 · '+voice.trait,voice.lead,'“'+voice.join+'”',i),
+    beat(person.name,'파티 합류 · '+role(person).name,'이제 이 인물의 전투 기술과 개인 의뢰를 함께 진행할 수 있어.','“'+voice.talk+'”',i)];
  }else if(kind==='sigil'&&DUNGEONS[n]&&['trap','door'].includes(arg)){
   mood='dungeon';title=arg==='trap'?'룬 함정의 숨겨진 인장':'석문의 오래된 기록';focus=arg==='trap'?{x:310,y:405}:{x:825,y:445};
   let matches=Object.keys(state.story.checks).filter(s=>s.startsWith(n+':')&&s.endsWith(':'+arg));let r=state.story.checks[matches[matches.length-1]];if(!r)return null;
