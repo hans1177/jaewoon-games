@@ -76,7 +76,7 @@ export function newGame(captainId="eleanor"){
   version:1,day:1,elapsed:0,coins:3400,discovered:[hero.port],visits:{[hero.port]:1},homePort:hero.port,captain:hero.name,crewRoster:[hero.id],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
   ship:{x:home.x,z:home.z+2,heading:0,velocity:0,rudder:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0,cannonType:'bronze',armor:0,holdLevel:0,rudderLevel:0,hullLevel:0},
   fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
-  route:[],destination:null,pirates:[
+  route:[],destination:null,exploreTarget:null,autoMode:null,pirates:[
    {id:1,x:-75.0,z:-576.0,heading:1.7,hull:62,maxHull:62,cooldown:4},
    {id:2,x:-129.0,z:-450.0,heading:1.4,hull:76,maxHull:76,cooldown:7},
    {id:3,x:144.0,z:-474.0,heading:1.3,hull:94,maxHull:94,cooldown:10},
@@ -105,6 +105,7 @@ export function restoreGame(raw){
   s.heroChosen=Boolean(s.heroChosen);s.captainId=CAPTAINS.some(c=>c.id===s.captainId)?s.captainId:'eleanor';
   for(const field of ['discoveries','reported','completedStories','completedOffice','treasureClues','clearedCamps'])s[field]=Array.isArray(s[field])?[...new Set(s[field].filter(v=>typeof v==='string'))].slice(0,100):[];
   s.officeQuests=Array.isArray(s.officeQuests)?s.officeQuests.filter(q=>OFFICE_QUESTS.some(o=>o.id===q)).slice(0,4):[];
+  s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
   s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;
   s.event=s.event&&SEA_EVENTS.some(e=>e.id===s.event.id)?s.event:null;
   s.expedition=s.expedition&&SITES.some(e=>e.id===s.expedition.id)?s.expedition:null;
@@ -245,10 +246,10 @@ export function navigationRoute(from,to,segment=false){
 }
 export function setDestination(state,id){
  const p=portById(id);if(!p)return state;
- const s=copy(state);s.destination=id;s.route=navigationRoute(s.ship,p);if(!s.route.length){note(s,"항로를 찾지 못했어. 해안에서 조금 떨어져 다시 설정해.");s.destination=null;return s;}
- note(s,'자동항해 시작: '+p.name);return s;
+ const s=copy(state);s.destination=id;s.route=navigationRoute(s.ship,p);s.exploreTarget=null;s.autoMode='known';const known=new Set(s.charted),unknown=s.route.findIndex(v=>!known.has(Math.floor(v.x/24)+':'+Math.floor(v.z/24)));if(unknown>=0){s.route=s.route.slice(0,unknown);s.exploreTarget=id;s.autoMode='frontier';}if(!s.route.length){note(s,s.autoMode==='frontier'?'여기부터 미개척 해역이야. 조타 스틱으로 먼저 탐색해.':'항로를 찾지 못했어. 해안에서 조금 떨어져 다시 설정해.');s.destination=null;return s;}
+ note(s,(s.autoMode==='frontier'?'밝혀진 해역 끝까지 이동: ':'개척 항로 자동항해: ')+p.name);return s;
 }
-export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];return s;}
+export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];s.exploreTarget=null;s.autoMode=null;return s;}
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 export function stepSea(state,input={},seconds=.05){
  if(state.event||state.landBattle)return state;
@@ -259,7 +260,7 @@ export function stepSea(state,input={},seconds=.05){
  let turn=clamp(Number(input.turn)||0,-1,1),throttle=clamp(Number(input.throttle)||0,-1,1);
  if(s.route.length&&input.manual!==true){
   const target=s.route[0],d=dist(ship,target);
-  if(d<.001){s.route.shift();if(!s.route.length){s.destination=null;ship.velocity=0;note(s,'항로 목적지 근처에 도착했어.');}}
+  if(d<.001){s.route.shift();if(!s.route.length){s.destination=null;ship.velocity=0;note(s,s.autoMode==='frontier'?'미개척 해역의 경계야. 조타 스틱으로 새로운 항로를 열어.':'개척 항로 목적지에 도착했어.');s.autoMode=null;}}
   if(s.route.length){
    const r=s.route[0],desired=Math.atan2(r.x-ship.x,r.z-ship.z);
    turn=clamp(wrap(desired-ship.heading)*1.8,-1,1);
@@ -274,7 +275,7 @@ export function stepSea(state,input={},seconds=.05){
  if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}else{ship.velocity=0;if(s.destination){s.route=[];s.destination=null;note(s,'얕은 해안이야. 해도에서 해상 항로를 다시 설정해.');}}
  ship.cooldown=Math.max(0,ship.cooldown-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
  s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
- if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=24){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
+ if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
   s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-(assignedPower(s,'quartermaster','trade')>=75?1:2));
   if(ship.provisions===0){ship.hull=Math.max(1,ship.hull-4);ship.crew=Math.max(1,ship.crew-1);note(s,'식량 부족으로 선원과 선체가 약해졌어.');}
@@ -284,7 +285,7 @@ export function stepSea(state,input={},seconds=.05){
    s.discovered.push(p.id);s.score+=100;note(s,'신항구 발견: '+p.name+' (+탐험점수)');
   }
   if(dist(ship,p)<PORT_RADIUS&&!s.visits[p.id]){
-   s.visits[p.id]=1;note(s,p.name+' 첫 입항');
+   s.visits[p.id]=1;if(s.exploreTarget===p.id)s.exploreTarget=null;note(s,p.name+' 첫 입항');
   }
  }
  for(const enemy of s.pirates){
@@ -373,6 +374,8 @@ export const SEA_EVENTS=Object.freeze([
  {id:'market',title:'돌아오는 상선의 소식',text:'맞은편 상선이 항구 시세를 알려주겠대. 선원이 얕은 물길의 소문도 덧붙여.',options:['정보를 교환한다 · 교역 안내','연락을 마치고 항해한다']},
  {id:'dolphin',title:'돌고래가 이끄는 물길',text:'뱃머리에 돌고래 무리가 붙었어. 지친 선원들이 잠시 웃음을 되찾아.',options:['풍경을 기록한다 · 탐험 경험','선원과 식사를 나눈다 · 식량 2, 명성']},
  {id:'wreck',title:'암초 곁의 떠다니는 상자',text:'물에 젖은 상자에서 황동 장식이 반짝여. 끌어올리려면 작은 배를 내려야 해.',options:['선체 3을 감수하고 인양 · 금화','위치를 기록하고 지나간다 · 경험']},
+ {id:'letter',title:'밀봉된 표류 편지',text:'젖지 않은 밀랍 봉투에 침몰선의 방위가 적혀 있어. 무시할까, 해도에 옮길까?',options:['편지의 해도 단서를 기록한다','편지를 다음 항구로 운반한다']},
+ {id:'inspection',title:'국가 순찰대의 검문',text:'순찰함이 통행 기록을 확인하려고 다가와. 정직하게 항해 기록을 보여주면 신뢰를 얻을 수 있어.',options:['기록을 제시한다 · 신뢰','안전한 물길로 우회한다 · 식량 1']},
  {id:'privateer',title:'밀약 상단의 추격선',text:'이야기의 증거를 쫓는 사략선이 항구 밖에서 기다려. 왕실 정규 함대가 아닌 무장 상단이야.',options:['출항해 전투를 준비한다','왕궁에 증거를 남기고 출항한다']},
  {id:'fog',title:'안개 속 종소리',text:'해도에는 없는 종소리가 들려. 낡은 부표에는 최근 배가 지나간 흔적이 있어.',options:['관측 기록을 남긴다 · 경험','등화를 밝히고 안전 통과 · 식량 1']}
 ]);
@@ -408,7 +411,8 @@ export function startExpedition(state,id){
 export function exploreChoice(state,choice){
  if(state.landBattle)return fail(state,'먼저 입구 전투를 마치고 조사해.');
  const ex=state.expedition,site=SITES.find(x=>x.id===ex?.id);if(!site||![0,1].includes(choice))return fail(state,'진행 중인 탐험을 확인해.');
- const s=copy(state),e=s.expedition,correct=site.answers[e.step]===choice;e.energy-=correct?1:2;e.notes.push(correct?'단서를 정확히 해석했어.':'우회로를 조사하느라 행동력이 더 들었어.');e.step++;
+ if(ex.event)return fail(state,'먼저 현장의 사건을 해결해.');
+ const s=copy(state),e=s.expedition,correct=site.answers[e.step]===choice;e.energy-=correct?1:2;e.notes.push(correct?'단서를 정확히 해석했어.':'우회로를 조사하느라 행동력이 더 들었어.');e.step++;if(e.step===2&&!e.eventResolved)e.event=LAND_EVENTS[(SITES.indexOf(site)+Math.floor(s.day/3))%LAND_EVENTS.length].id;
  if(e.energy<0){s.expedition=null;return success(s,'보급 부족으로 안전 귀환했어. 식량을 챙겨 다시 조사하자.');}
  if(e.step>=3){s.discoveries.push(site.id);s.equipment[site.id]=1;s.xp+=70;s.score+=180;s.expedition=null;return success(s,site.relic+' 발견! 탐험가 사무실에서 보고 보상을 받아.');}
  return success(s,e.notes.at(-1));
@@ -442,6 +446,8 @@ export function resolveSeaEvent(state,choice){
  if(e.id==='dolphin'){if(choice===0)s.xp+=20;else{if(!food(2))return fail(state,'식량 2가 필요해.');s.fame+=5;}message='잔잔한 물길에서 항해를 기록했어.';}
  if(e.id==='wreck'){if(choice===0){s.ship.hull=Math.max(1,s.ship.hull-3);s.coins+=90+s.eventSerial%5*20;message='표류 화물을 인양했어. 선체 3 손상, 금화 획득.';}else{s.xp+=15;message='위험 지점을 해도에 표시했어.';}}
  if(e.id==='fog'){if(choice===0)s.xp+=22;else{if(!food(1))return fail(state,'등화 유지에 식량 1이 필요해.');s.xp+=8;}message='안개를 벗어났어. 관측 기록을 남겼어.';}
+ if(e.id==='letter'){const clue=TREASURES.find(t=>!s.treasureClues.includes(t.id));if(choice===0&&clue){s.treasureClues.push(clue.id);message='표류 편지에서 '+clue.name+' 위치를 해도에 기록했어.';}else{s.xp+=15;message='편지를 안전하게 보관하고 항해 기록을 남겼어.';}}
+ if(e.id==='inspection'){if(choice===0){const owner=nearestPort(s).port.faction;s.reputation[owner]=(s.reputation[owner]||0)+4;message=owner+' 검문 통과 · 국가 신뢰 +4';}else{if(!food(1))return fail(state,'우회에 식량 1이 필요해.');message='검문 항로를 피해 안전하게 우회했어.';}}
  if(e.id==='privateer'){s.fame+=choice===1?4:0;message='사략선이 해도에 표시됐어. 측면 포격, 수리재와 연막으로 대응해.';}
  s.event=null;return success(s,message);
 }
@@ -580,3 +586,10 @@ export const PERSONAL_SKILLS=Object.freeze({
  freya:{name:'별의 좌표',kind:'weak',multiplier:1.3,description:'측량으로 정확한 약점 표시 · 집중 8'},
  diego:{name:'임시 방벽',kind:'barrier',description:'목재 방벽으로 이번 적 차례의 일행 피해 감소 · 집중 8'}
 });
+
+export const LAND_EVENTS=Object.freeze([
+ {id:'injured',title:'부상당한 조사대',text:'갈라진 회랑에서 부상당한 조사대가 구조를 기다리고 있어.',options:['의약품 1로 치료한다 · 명성·경험','안전한 퇴로를 알려주고 이동한다']},
+ {id:'tide',title:'밀려드는 조수',text:'돌계단 아래에서 물이 차오르고 있어. 조사 시간을 조정해야 해.',options:['식량 2로 썰물을 기다린다 · 경험','높은 길로 우회한다 · 행동력 1 소모']},
+ {id:'mural',title:'지워지는 벽화',text:'습기를 머금은 벽화에 고대 선박의 도면이 드러났어.',options:['행동력 1로 세밀하게 기록한다 · 경험·명성','현장을 보존하고 다음 방으로 간다']}
+]);
+export function resolveLandEvent(state,choice){const ex=state.expedition,event=LAND_EVENTS.find(e=>e.id===ex?.event);if(!event||![0,1].includes(choice))return fail(state,'진행 중인 현장 사건을 확인해.');const s=copy(state),e=s.expedition;if(event.id==='injured'&&choice===0){if(s.supplies.medicine<1)return fail(state,'치료에 의약품 1이 필요해. 다른 선택도 가능해.');s.supplies.medicine--;s.fame+=6;s.xp+=20;e.energy++;}if(event.id==='tide'){if(choice===0){if(s.ship.provisions<2)return fail(state,'기다리려면 식량 2가 필요해.');s.ship.provisions-=2;s.xp+=12;}else e.energy=Math.max(0,e.energy-1);}if(event.id==='mural'&&choice===0){if(e.energy<1)return fail(state,'기록할 행동력이 부족해. 현장을 보존하고 이동해.');e.energy--;s.xp+=18;s.fame+=3;}e.event=null;e.eventResolved=true;return success(s,event.title+' 사건을 마무리했어.');}

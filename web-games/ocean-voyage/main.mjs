@@ -1,6 +1,6 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon} from './engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -31,7 +31,7 @@ function summary(){
  $('hull').textContent=fmt(state.ship.hull/state.ship.maxHull*100)+'%';
  $('supplies').textContent=state.ship.provisions+' / '+state.ship.crew;
  const closest=nearestPort(state),location=canDock(state);
- $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:'');
+ $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:state.exploreTarget?' · 직접 탐색 → '+port(state.exploreTarget).name:'');
  $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;if(enemy)$('battleStatus').textContent=(enemy.name||'해적선')+' · 적 선체 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · 포탄 '+state.supplies.ammo;$('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
@@ -54,10 +54,10 @@ $('depart').addEventListener('click',depart);$('townJournal').addEventListener('
 function travelCard(p){
  const reached=state.discovered.includes(p.id);
  const d=Math.round(Math.hypot(state.ship.x-p.x,state.ship.z-p.z));
- return '<div class="row"><div class="desc"><strong>'+(reached?'⚓ ':'◈ ')+escapeHtml(p.name)+'</strong><small>'+escapeHtml(p.region)+' · '+(reached?'발견':'미발견')+' · '+d+'해리</small></div><button class="action sub" data-route="'+p.id+'">항로 설정</button></div>';
+ return '<div class="row"><div class="desc"><strong>'+(reached?'⚓ ':'◈ ')+escapeHtml(p.name)+'</strong><small>'+escapeHtml(p.region)+' · '+(reached?'발견':'미발견')+' · '+d+'해리</small></div><button class="action sub" data-route="'+p.id+'">'+(reached?'개척 항로 자동항해':'미개척 경계까지')+'</button></div>';
 }
 function chart(){
- return '<p class="info">실제 지형 해도야. 1차 유럽 항구 13곳이 연결돼. 어두운 미개척 해역은 직접 지나가면 영구적으로 밝혀져. 다른 대륙은 주인공 출신 배경이며 상세 플레이는 추후 확장돼. 자동항해는 육지를 피해 가며, 먼 항로는 2·4배속을 사용할 수 있어. 긴 항로에는 보급이 필요해.</p><canvas id="chartMap" width="640" height="400" aria-label="실제 유럽 및 세계 해안선"></canvas><div class="stack"><button class="action sub" data-map="europe">유럽·국가 지도</button><button class="action sub" data-map="world">세계 위치 보기</button></div><h3>보물 수색</h3>'+TREASURES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+(!state.treasureClues.includes(t.id)?'선술집에서 해도 단서를 구해.':t.clue)+'</p><button class="action" data-search="'+t.id+'" '+(!state.treasureClues.includes(t.id)||state.treasures.includes(t.id)?'disabled':'')+'>'+ (state.treasures.includes(t.id)?'발견 완료':'이 위치에서 수색')+'</button></div>').join('')+'<button class="action sub" data-action="cancel">항로 취소</button>'+PORTS.map(travelCard).join('');
+ return '<p class="info">개척 해역은 자동항해하고, 미개척 구간은 직접 조타해. 미개척 목적지는 밝혀진 바다의 끝에서 자동으로 멈춰. 실제 지형 해도야. 1차 유럽 항구 13곳이 연결돼. 어두운 미개척 해역은 직접 지나가면 영구적으로 밝혀져. 다른 대륙은 주인공 출신 배경이며 상세 플레이는 추후 확장돼. 자동항해는 육지를 피해 가며, 먼 항로는 2·4배속을 사용할 수 있어. 긴 항로에는 보급이 필요해.</p><canvas id="chartMap" width="640" height="400" aria-label="실제 유럽 및 세계 해안선"></canvas><div class="stack"><button class="action sub" data-map="europe">유럽·국가 지도</button><button class="action sub" data-map="world">세계 위치 보기</button></div><h3>보물 수색</h3>'+TREASURES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+(!state.treasureClues.includes(t.id)?'선술집에서 해도 단서를 구해.':t.clue)+'</p><button class="action" data-search="'+t.id+'" '+(!state.treasureClues.includes(t.id)||state.treasures.includes(t.id)?'disabled':'')+'>'+ (state.treasures.includes(t.id)?'발견 완료':'이 위치에서 수색')+'</button></div>').join('')+'<button class="action sub" data-action="cancel">항로 취소</button>'+PORTS.map(travelCard).join('');
 }
 function drawChart(world=false){const c=$('chartMap');if(!c)return;const ctx=c.getContext('2d'),cx=world?300:75,cz=world?-210:-550,scale=world?.22:1.1;drawGeography(ctx,640,400,cx,cz,scale);drawFog(ctx,640,400,cx,cz,scale,state.charted);const x=v=>320+(v-cx)*scale,y=v=>200+(v-cz)*scale;ctx.font='bold 13px sans-serif';for(const p of PORTS){ctx.fillStyle=state.discovered.includes(p.id)?'#ffd994':'#a5b8ac';ctx.fillRect(x(p.x)-3,y(p.z)-3,6,6);ctx.fillStyle=state.discovered.includes(p.id)?'#fff3c9':'#7e8c98';ctx.fillText(p.name,x(p.x)+5,y(p.z)-5);}ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x(state.ship.x),y(state.ship.z),4,0,Math.PI*2);ctx.fill();for(const t of TREASURES.filter(t=>state.treasureClues.includes(t.id)&&!state.treasures.includes(t.id))){ctx.fillStyle='#f0a276';ctx.fillText('×',x(t.x),y(t.z));}}
 
@@ -98,9 +98,10 @@ function transportQuests(){
  '<h3>세력 신뢰</h3>'+Object.entries(state.reputation).map(([name,value])=>'<div class="row"><strong>'+escapeHtml(name)+'</strong><span>'+fmt(value)+'</span></div>').join('');
 }
 function quests(){
- const ex=state.expedition,site=SITES.find(t=>t.id===ex?.id),home=canDock(state);
+ const ex=state.expedition,site=SITES.find(t=>t.id===ex?.id),home=canDock(state),encounter=LAND_EVENTS.find(e=>e.id===ex?.event);
  return '<h3>탐험가 사무실</h3><p class="info">유적을 직접 조사하고 발견물을 보고해. 보고한 유물은 도감에 남고 왕궁 명성과 주인공 이야기에도 연결돼.</p><button class="action" data-action="report">미보고 발견물 '+state.discoveries.filter(x=>!state.reported.includes(x)).length+'건 보고</button>'+
- (site?'<div class="scene-card"><h3>'+site.name+' · 조사 '+(ex.step+1)+'/3</h3><p>'+site.lore+'</p><p>행동력 '+ex.energy+' · '+(ex.notes.at(-1)||'단서를 관찰하고 다음 행동을 골라.')+'</p><button class="action" data-explore="0">'+site.choices[ex.step]+'</button><button class="action sub" data-explore="1">'+['다른 조사 방법을 택한다','동료와 현장을 재검토한다','반대 방향에서 기록을 맞춘다'][ex.step]+'</button></div>':'')+
+ (encounter?'<div class="scene-card"><h3>'+encounter.title+'</h3><p>'+encounter.text+'</p>'+encounter.options.map((t,i)=>'<button class="action" data-site-event="'+i+'">'+t+'</button>').join('')+'</div>':'')+
+ (site&&!encounter?'<div class="scene-card"><h3>'+site.name+' · 조사 '+(ex.step+1)+'/3</h3><p>'+site.lore+'</p><p>행동력 '+ex.energy+' · '+(ex.notes.at(-1)||'단서를 관찰하고 다음 행동을 골라.')+'</p><button class="action" data-explore="0">'+site.choices[ex.step]+'</button><button class="action sub" data-explore="1">'+['다른 조사 방법을 택한다','동료와 현장을 재검토한다','반대 방향에서 기록을 맞춘다'][ex.step]+'</button></div>':'')+
  '<h3>육지 탐험지</h3>'+SITES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+port(t.port).name+' · '+t.kind+'</p><p class="info">'+t.lore+'</p><button class="action" data-site="'+t.id+'" '+(home?.id!==t.port||state.discoveries.includes(t.id)||ex?'disabled':'')+'>'+(state.discoveries.includes(t.id)?t.relic+' 발견':'식량 6 · 상륙 조사')+'</button> <button class="action sub" data-route="'+t.port+'">항구로 항해</button></div>').join('')+
  '<h3>사무실 의뢰</h3>'+OFFICE_QUESTS.map(q=>'<div class="scene-card"><strong>'+q.name+'</strong><p>'+q.text+' · '+officeProgress(state,q)+' / '+q.need+' · '+q.reward+' G</p><button class="action" data-office="'+q.id+'" '+(!home||state.completedOffice.includes(q.id)?'disabled':'')+'>'+(state.completedOffice.includes(q.id)?'완료':state.officeQuests.includes(q.id)?'보상 수령':'수주')+'</button></div>').join('')+transportQuests();
 }
@@ -177,9 +178,10 @@ $('close').addEventListener('click',leaveFacility);
 $('dock').addEventListener('click',()=>{if(canDock(state))enterTown();});
 $('fire').addEventListener('click',()=>apply(fireCannons(state)));
 view.body.addEventListener('click',e=>{
- const b=e.target.closest('[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy],[data-invest],[data-talk],[data-target],[data-land],[data-cannon]');
+ const b=e.target.closest('[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy],[data-invest],[data-talk],[data-target],[data-land],[data-cannon],[data-site-event]');
  if(!b)return;
  if(b.dataset.panelOpen){openFacility(b.dataset.panelOpen);return;}
+ if(b.dataset.siteEvent!==undefined){apply(resolveLandEvent(state,Number(b.dataset.siteEvent)));return;}
  if(b.dataset.cannon){apply(buyCannon(state,b.dataset.cannon));return;}
  if(b.dataset.target!==undefined){battleTarget=Number(b.dataset.target);renderPanel();return;}
  if(b.dataset.land){apply(landAction(state,b.dataset.land,battleTarget));return;}
@@ -197,7 +199,7 @@ view.body.addEventListener('click',e=>{
  if(b.dataset.clue){apply(takeTreasureClue(state,b.dataset.clue));return;}
  if(b.dataset.search){apply(searchTreasure(state,b.dataset.search));return;}
  if(b.dataset.recruit){apply(recruitCompanion(state,b.dataset.recruit));return;}
- if(b.dataset.route){state=setDestination(state,b.dataset.route);save();scene.setState(state);summary();depart();note(state.destination?port(b.dataset.route).name+'까지 자동항해 시작':state.log.at(-1));return;}
+ if(b.dataset.route){state=setDestination(state,b.dataset.route);save();scene.setState(state);summary();depart();note(state.log.at(-1));return;}
  if(b.dataset.trade){apply(trade(state,canDock(state)?.id,b.dataset.good,Number(b.dataset.count),b.dataset.trade));return;}
  if(b.dataset.upgrade){apply(buyUpgrade(state,b.dataset.upgrade));return;}
  switch(b.dataset.action){
