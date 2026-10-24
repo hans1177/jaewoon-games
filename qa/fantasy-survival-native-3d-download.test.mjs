@@ -425,7 +425,7 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
   'nativeSpeciesMaterials','cloneAnimatedRig','THREE','scene','interactables','performance','SCALE',
   'cameraFrustum','creatureBounds',
   'return function synchronizeNativeCreatures(state,px,py,stamp){'+body)(
-   true,1,missing,new Map([['shadowwolf','wolf.fbx']]),new Map([['wolf.fbx',source]]),
+   true,.58,missing,new Map([['shadowwolf','wolf.fbx']]),new Map([['wolf.fbx',source]]),
    null,actors,speciesMaterials,()=>({scale:{setScalar(){}},position:{},
      traverse(fn){fn({isMesh:true,material,userData:{}})}}),
    {Group,Color:class{constructor(){} }}, {add(){},remove(){}},interactables,{now:()=>1000},1/48,
@@ -442,8 +442,13 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
  assert.equal(clones,1,'the same monster species must share exactly one tinted material');
  assert.equal(missing.size,0);
  assert.equal(JSON.stringify(state),before,'rendering must not mutate gameplay state');
+ // 모바일 낮은 화질에서도 화면 안의 원거리 몹은 생략하지 않는다.
+ state.enemies=[{id:'far-visible',type:{id:'shadowwolf',r:19},area:'surface',x:1100,y:0,hp:95}];
+ assert.equal(sync(state,0,0,2),false,'low quality must not hide a visible distant enemy');
+ assert.equal(actors.size,1,'a visible monster must retain its 3D actor at 1100 world units');
+ assert.equal(missing.size,0);
  state.enemies=[{id:'missing',type:{id:'unknown'},area:'surface',x:600,y:0,hp:10}];
- assert.equal(sync(state,0,0,2),true,'an on-screen distant missing enemy must block native gameplay too');
+ assert.equal(sync(state,0,0,3),true,'an on-screen distant missing enemy must block native gameplay too');
  assert.deepEqual([...missing],['unknown']);
  assert.equal(actors.size,0,'departed crowd must release its actor instances');
 });
@@ -479,6 +484,11 @@ test('streaming is nearest-first bounded and never requests the full species lib
  assert.doesNotMatch(moduleSource,/Object\.keys\(NATIVE_CREATURE_MODELS\)\.map/);
  assert.match(moduleSource,/distance>1200/);
  assert.match(moduleSource,/loadingCreatureCount>=\(mobileBudget\?2:4\)/);
+ const renderer=moduleSource.split('function synchronizeNativeCreatures(state,px,py,stamp){')[1]?.split('  if(hero)scene.add(hero.avatar);')[0]||'';
+ assert.doesNotMatch(renderer,/near\*qualityFactor|distance>Math\.max\(430/,'GPU quality scaling must not cull visible monsters');
+ const streaming=moduleSource.split('cameraFrustum.setFromProjectionMatrix(cameraProjection);')[1]?.split(' const classify=')[0]||'';
+ assert.match(streaming,/if\(distance>1200\)/,'distant visible species should be considered during streaming');
+ assert.match(streaming,/cameraFrustum\.intersectsSphere\(creatureBounds\)/,'distant offscreen species should be filtered before loading');
  assert.doesNotMatch(moduleSource,/failed\.attempts>=3/);
  assert.match(moduleSource,/sampleNow-failed\.at<retryDelay/);
  assert.match(moduleSource,/if\(disposed\)\{/);
