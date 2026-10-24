@@ -638,7 +638,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     if(!state.player){lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='player-model-unavailable';return}
     const interiorBiome={
-      underwater:'giantlake',underground:'canyon',worldtreeinside:'worldtree',questcave:'swamp',
+      underwater:'giantlake','underwater-dungeon':'giantlake',underground:'canyon',worldtreeinside:'worldtree',questcave:'swamp',
       storylab1:'crystal',storylab2:'crystal',jungletemple:'jungle',
       'jungletemple-upper':'jungle','jungletemple-lower':'swamp','jungletemple-secret':'jungle',
       'goblinoutpost-1':'forest','goblinoutpost-2':'forest','goblinoutpost-3':'swamp','goblinoutpost-4':'canyon'
@@ -692,6 +692,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     currentBiome=BIOME_STYLE[zone]?zone:'forest';
     scene.background.set(BIOME_STYLE[currentBiome].sky);
     scene.fog.color.set(BIOME_STYLE[currentBiome].sky);
+    if(state.area==='underwater'||state.area==='underwater-dungeon'){
+      const deep=state.area==='underwater-dungeon'||py>=3600;
+      scene.background.setHex(deep?0x0b2b38:0x185569);
+      scene.fog.color.setHex(deep?0x0b2b38:0x185569);
+    }
     const weatherKind=String(state.weather?.kind||'clear');
     if(weatherKind!==observedWeather){
       observedWeather=weatherKind;
@@ -700,6 +705,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       scene.fog.far=weatherVisualEffects.includes('layered-haze')?46:
         weatherVisualEffects.includes('wind-drift')?63:90;
       sun.intensity=weatherVisualEffects.includes('surface-wetness')?1.55:2;
+    }
+    if(state.area==='underwater'||state.area==='underwater-dungeon'){
+      scene.fog.far=state.area==='underwater-dungeon'?34:py>=3600?44:62;
+      sun.intensity=state.area==='underwater-dungeon'?.85:1.2;
     }
     // Atmosphere and foliage changes are Vibe presentation only. The existing biome
     // classifier, collision, damage, spawn and player movement remain authoritative.

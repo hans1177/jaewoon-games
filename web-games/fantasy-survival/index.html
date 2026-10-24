@@ -563,6 +563,13 @@ const UNDERWATER={w:36000,h:8000,entry:{x:18000,y:220},exitY:65};
 const DEEP_SEA={x:0,y:3600,w:36000,h:4400};
 const DEEP_CORAL_FOREST={x:18000,y:3600,w:18000,h:4400};
 const NORMAL_DEEP_MAX_Y=6200;
+// 마력숲 수중 던전: 수중에서 진입, 기존 산소·전투·보상 수치를 사용.
+const UNDERWATER_DUNGEON={w:3000,h:1800,gate:{x:18500,y:620},entry:{x:220,y:900},exit:{x:115,y:900},
+ rooms:[
+  {name:'수중 유적',x:820,y:540,model:'house',chest:{x:1000,y:650},material:'ironOre',count:4},
+  {name:'침몰선',x:1700,y:1160,model:'house',chest:{x:1870,y:1260},material:'sharkSkin',count:1},
+  {name:'수중 동굴',x:2520,y:540,model:'gate_single',chest:{x:2720,y:660},material:'crystalShard',count:1}
+]};
 const VOLCANO_POLY=[{x:2400,y:2000},{x:14400,y:2000},{x:14400,y:5200},{x:2400,y:5200}];
 const COLOSSEUM={x:6800,y:2120,w:3600,h:900},CONSTRUCTION={x:6800,y:4380,w:3600,h:700},WASTELAND={x:2580,y:2180,w:3800,h:2820},VOLCANO_CORE={x:7200,y:3120,w:2800,h:1100};
 const OASIS={x:4300,y:3650,r:470},LAB={x:8600,y:2900},LAB_RECORDER={x:8600,y:2845},CONSTRUCTION_DIARY={x:8600,y:4710};
@@ -605,7 +612,19 @@ const NATIVE_SCENE_LANDMARKS=Object.freeze({
   {id:'boss-altar',model:'bench_A',...BOSS_ALTAR,scale:2}
  ]},
  underwater:{landmarks:[
-  {id:'lake-surface',model:'gate_single',x:UNDERWATER.entry.x,y:UNDERWATER.exitY+40,scale:2}
+  {id:'lake-surface',model:'gate_single',x:UNDERWATER.entry.x,y:UNDERWATER.exitY+40,scale:2},
+  {id:'dungeon-entrance',model:'gate_single',...UNDERWATER_DUNGEON.gate,scale:3}
+ ]},
+ 'underwater-dungeon':{landmarks:[
+  {id:'dungeon-exit',model:'gate_single',...UNDERWATER_DUNGEON.exit,scale:3},
+  ...UNDERWATER_DUNGEON.rooms.flatMap((r,i)=>[
+   {id:'room-'+i,model:r.model,x:r.x,y:r.y,scale:3},
+   {id:'treasure-'+i,model:'package',...r.chest,scale:1.6}
+  ]),
+  ...[400,1200,2100,2750].flatMap((x,i)=>[
+   {id:'north-rock-'+i,model:'cobblestones',x,y:90,scale:3},
+   {id:'south-rock-'+i,model:'cobblestones',x,y:1710,scale:3}
+  ])
  ]},
  questcave:{landmarks:[
   {id:'quest-exit',model:'gate_single',...QUEST_CAVE.exit,scale:2},
@@ -1030,7 +1049,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderWeb','giantSpiderFang','mantisBlade','sporeSac','toxicMycelium','swampCore','fearBearHide','fearBearClaw','sunstoneOre','crystalShard'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,sandSlowUntil:0,attackBlockedUntil:0,scorpionBurrowPoisonUntil:0,scorpionBurrowPoisonNext:0,scorpionStingPoisonExpiries:[],scorpionStingPoisonNext:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,toxicFurnace:null,ironBench:null,goldBench:null,jungleBench:null,sunstoneBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],swampOutpostChestOpened:false,goblinOutpost:{floor:0,wave:0,cleared:[false,false,false,false],chestOpened:false,spawned:{}},goblinOutpostReturnPos:null,respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],sunstones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],mummyGases:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},toxicSmelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,desert:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},caveReturnArea:'surface',rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,giantCrocEggTaken:false,incubation:{eggPlaced:false,eggType:null,hatchAt:0},pet:{hatched:false,wolfHatched:false,crocHatched:false,form:'wolf',alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,sandSlowUntil:0,attackBlockedUntil:0,scorpionBurrowPoisonUntil:0,scorpionBurrowPoisonNext:0,scorpionStingPoisonExpiries:[],scorpionStingPoisonNext:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,toxicFurnace:null,ironBench:null,goldBench:null,jungleBench:null,sunstoneBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],swampOutpostChestOpened:false,goblinOutpost:{floor:0,wave:0,cleared:[false,false,false,false],chestOpened:false,spawned:{}},goblinOutpostReturnPos:null,underwaterDungeonChests:[false,false,false],underwaterDungeonReturnPos:null,underwaterDungeonStarted:false,respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],sunstones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],mummyGases:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},toxicSmelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,desert:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},caveReturnArea:'surface',rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,giantCrocEggTaken:false,incubation:{eggPlaced:false,eggType:null,hatchAt:0},pet:{hatched:false,wolfHatched:false,crocHatched:false,form:'wolf',alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
 // 메인: 일반/크리에이티브 저장은 기존 저장 키를 보존하며 독립적으로 관리한다.
 const CREATIVE_SAVE_KEY=SAVE_KEY+'_creative';let gameStarted=false;
 state.player.rootedUntil=0;state.mode='normal';state.creativeSpawners=[];state.creativePlacing=false;state.creativeSpawnerId=null;state.creativeSelectedId=null;
@@ -1924,9 +1943,9 @@ function updateHud(){
  ui.hpfill.style.width=100*p.hp/p.maxHp+'%';ui.hptext.textContent=Math.ceil(p.hp)+'/'+p.maxHp;
  ui.foodfill.style.width=clamp(p.hunger,0,100)+'%';ui.foodtext.textContent=Math.ceil(p.hunger)+'/100';
  const equippedWeapon=item(p.weapon),equippedArrow=p.arrowType&&item(p.arrowType);ui.weapon.textContent=nameOf(p.weapon,'맨손')+(equippedWeapon?.ranged==='bow'&&equippedArrow?' · '+equippedArrow.name+' ×'+invCount(p.arrowType):'');ui.tool.textContent=nameOf(p.tool);ui.armor.textContent=nameOf(p.armor);
- const z=state.area==='underwater'?'underwater':state.area==='worldtreeinside'?'worldtreeinside':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':state.area==='jungletemple'?'jungletemple':state.area==='jungletemple-upper'?'jungletemple-upper':state.area==='jungletemple-lower'?'jungletemple-lower':state.area==='jungletemple-secret'?'jungletemple-secret':regionAt(p.x,p.y);
- let zoneName=z==='underwater'?'거대 호수 수중':z==='worldtreeinside'?'세계수 내부':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='jungletemple'?'밀림 신전':z==='jungletemple-upper'?'밀림 신전 위층':z==='jungletemple-lower'?'밀림 신전 지하':z==='jungletemple-secret'?'밀림 신전 비밀공간':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='swamp'?'늪지대':z==='desert'?'황야 사막':z==='snow'?'설원':z==='giantgarden'?'거대화원':z==='flowerfield'?'꽃밭 지역':'마력숲';
- if(z==='underwater')zoneName+=' · 산소 '+(item(p.armor)?.underwaterBreath?'∞':Math.ceil(Math.max(0,p.oxygen||0)/1000)+'초');
+ const z=state.area==='underwater-dungeon'?'underwater-dungeon':state.area==='underwater'?'underwater':state.area==='worldtreeinside'?'worldtreeinside':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':state.area==='jungletemple'?'jungletemple':state.area==='jungletemple-upper'?'jungletemple-upper':state.area==='jungletemple-lower'?'jungletemple-lower':state.area==='jungletemple-secret'?'jungletemple-secret':regionAt(p.x,p.y);
+ let zoneName=z==='underwater-dungeon'?'수중 던전':z==='underwater'?'거대 호수 수중':z==='worldtreeinside'?'세계수 내부':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='jungletemple'?'밀림 신전':z==='jungletemple-upper'?'밀림 신전 위층':z==='jungletemple-lower'?'밀림 신전 지하':z==='jungletemple-secret'?'밀림 신전 비밀공간':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='swamp'?'늪지대':z==='desert'?'황야 사막':z==='snow'?'설원':z==='giantgarden'?'거대화원':z==='flowerfield'?'꽃밭 지역':'마력숲';
+ if(z==='underwater'||z==='underwater-dungeon')zoneName+=' · 산소 '+(item(p.armor)?.underwaterBreath?'∞':Math.ceil(Math.max(0,p.oxygen||0)/1000)+'초');
  if(z==='snow')zoneName+=' · 추위 '+(item(p.armor)?.coldImmune?'면역':Math.floor(p.cold||0)+'/100');
  ui.zone.textContent=zoneName;
  document.getElementById('rotateBlueprint')?.classList.toggle('on',!!state.blueprint);document.getElementById('buildBlueprint')?.classList.toggle('on',!!state.blueprint);syncOptionsUi();
@@ -1950,7 +1969,7 @@ function nearStructure(s,range=155){return state.area==='surface'&&!!s&&dist(sta
 function nearJungleBench(){return nearStructure(state.jungleBench)}function nearSunstoneBench(){return nearStructure(state.sunstoneBench)}function nearAnvil(){return nearStructure(state.blacksmithAnvil,175)}function nearFurnace(){return nearStructure(state.furnace,175)}function nearCookingStation(){return nearStructure(state.cookingStation,175)}
 function recalcPlayerMaxHp(){const p=state.player;p.maxHp=100+effectiveStat(p.armor,'maxHp')+effectiveStat(p.weapon,'maxHp');p.hp=Math.min(p.hp,p.maxHp)}
 function underwaterOxygenCapacity(){const armor=item(state.player.armor);if(armor?.underwaterBreath)return Infinity;return Math.max(40000,Number(armor?.underwaterBreathMs)||40000)}
-function setArmor(id){const p=state.player;p.armor=id;recalcPlayerMaxHp();if(state.area==='underwater'){const cap=underwaterOxygenCapacity();if(Number.isFinite(cap)){p.oxygen=cap;p.oxygenEndsAt=performance.now()+cap}else{p.oxygen=40000;p.oxygenEndsAt=0}}}
+function setArmor(id){const p=state.player;p.armor=id;recalcPlayerMaxHp();if(state.area==='underwater'||state.area==='underwater-dungeon'){const cap=underwaterOxygenCapacity();if(Number.isFinite(cap)){p.oxygen=cap;p.oxygenEndsAt=performance.now()+cap}else{p.oxygen=40000;p.oxygenEndsAt=0}}}
 function setWeapon(id){const p=state.player;if(id&&isTwoHandedWeapon(id)&&p.torchEquipped&&!petAlive()){p.torchEquipped=false;showNotice('양손무기를 들어 횃불을 내렸어')}p.weapon=id;recalcPlayerMaxHp()}
 function toggleTorch(){
  const p=state.player;if(!p.torch||p.torchDurability<=0){showNotice('사용 가능한 횃불이 없어');return}
@@ -2159,7 +2178,7 @@ function craftItem(id){
  const r=item(id);if(!r)return
  const craftMode=recipeCraftMode(r);
  if(!isCreative()&&r.id==='portal'&&!portalHandUnlocked()){showNotice('독점석 제작대를 먼저 만들어야 포탈을 맨손으로 만들 수 있어');return}
- if(state.area==='underwater'&&r.kind==='structure'){showNotice('물속에서는 건축할 수 없어');return}
+ if((state.area==='underwater'||state.area==='underwater-dungeon')&&r.kind==='structure'){showNotice('물속에서는 건축할 수 없어');return}
  if(!isCreative()&&craftMode==='bench'&&!nearBench()){showNotice('제작대 가까이 가야 해');return}
  if(!isCreative()&&craftMode==='ironbench'&&!nearIronBench()){showNotice('철 제작대 가까이 가야 해');return}
  if(!isCreative()&&craftMode==='goldbench'&&!nearGoldBench()){showNotice('금 제작대 가까이 가야 해');return}
@@ -2396,7 +2415,18 @@ function mapTerrainColorAt(x,y){
  return r==='worldtree'?'#173d24':r==='canyon'?'#523824':r==='crystal'?'#392c5c':'#1d392b'
 }
 function drawLakeMap(mc){
- const m=mc.getContext('2d'),sx=mc.width/UNDERWATER.w,sy=mc.height/UNDERWATER.h;
+ const m=mc.getContext('2d');
+ if(state.area==='underwater-dungeon'){
+  const d=UNDERWATER_DUNGEON,sx=mc.width/d.w,sy=mc.height/d.h;
+  m.fillStyle='#091e29';m.fillRect(0,0,mc.width,mc.height);m.strokeStyle='#51939b';m.lineWidth=2;m.strokeRect(2,2,mc.width-4,mc.height-4);
+  m.font='bold 10px system-ui';m.textAlign='center';
+  for(let i=0;i<d.rooms.length;i++){
+   const r=d.rooms[i];m.fillStyle=state.underwaterDungeonChests[i]?'#7d8990':'#dec481';
+   m.beginPath();m.arc(r.x*sx,r.y*sy,5,0,Math.PI*2);m.fill();m.fillStyle='#e0f2f5';m.fillText(r.name,r.x*sx,r.y*sy-12)
+  }
+  m.fillStyle='#fff';m.beginPath();m.arc(state.player.x*sx,state.player.y*sy,5,0,Math.PI*2);m.fill();return
+ }
+ const sx=mc.width/UNDERWATER.w,sy=mc.height/UNDERWATER.h;
  m.fillStyle='#03131d';m.fillRect(0,0,mc.width,mc.height);
  for(const key of Object.keys(state.underwaterExplored)){
   const [gx,gy]=key.split(',').map(Number),wx=gx*MAP_CELL,wy=gy*MAP_CELL,cx=wx+MAP_CELL/2,cy=wy+MAP_CELL/2;
@@ -2420,7 +2450,7 @@ function drawLakeMap(mc){
 }
 function drawMap(){
  const mc=document.getElementById('mapCanvas');if(!mc)return;
- if(state.area==='underwater'){drawLakeMap(mc);return}
+ if(state.area==='underwater'||state.area==='underwater-dungeon'){drawLakeMap(mc);return}
  const m=mc.getContext('2d'),sx=mc.width/WORLD.w,sy=mc.height/WORLD.h;
  m.fillStyle='#040806';m.fillRect(0,0,mc.width,mc.height);
  for(const key of Object.keys(state.explored)){
@@ -2466,7 +2496,7 @@ function drawMap(){
  const mapPlayerPos=state.area.startsWith('jungletemple')?JUNGLE_TEMPLE_ENTRANCE:state.player;m.fillStyle='#ffffff';m.beginPath();m.arc(mapPlayerPos.x*sx,mapPlayerPos.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){
- tabState();const title=state.area==='underwater'?'거대 호수 지도':'지도';
+ tabState();const title=state.area==='underwater-dungeon'?'수중 던전 지도':state.area==='underwater'?'거대 호수 지도':'지도';
  ui.sheetBody.innerHTML='<div class="info"><b>'+title+'</b><br>직접 가본 곳만 표시돼. 발견하지 않은 미니 바이옴은 지도에 나오지 않아. 핑은 10초에 1개씩 찍을 수 있어.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';
  drawMap();const mc=document.getElementById('mapCanvas');if(mc)mc.addEventListener('pointerdown',placeMapPing)
 }
@@ -2515,7 +2545,7 @@ function drawUnderwaterMiniMap(c,m,w,h,cx,cy,r,now){
 function drawMiniMap(now=performance.now()){
  if(now-miniMapDrawAt<180)return;miniMapDrawAt=now;
  const c=document.getElementById('miniMap');if(!c)return;const m=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,r=Math.min(w,h)/2-3;
- if(state.area==='underwater'){drawUnderwaterMiniMap(c,m,w,h,cx,cy,r,now);return}
+ if(state.area==='underwater'||state.area==='underwater-dungeon'){drawUnderwaterMiniMap(c,m,w,h,cx,cy,r,now);return}
  if(state.area==='worldtreeinside'){
    const p=state.player,miniScale=r/1500;
    m.clearRect(0,0,w,h);m.save();m.beginPath();m.arc(cx,cy,r,0,Math.PI*2);m.clip();
@@ -3389,7 +3419,7 @@ function updateDefenseTowers(now){
  }
 }
 function areaRaidBounds(area){
- if(area==='storylab1')return{w:STORY_LAB_1.w,h:STORY_LAB_1.h};if(area==='storylab2')return{w:STORY_LAB_2.w,h:STORY_LAB_2.h};if(area==='questcave')return{w:QUEST_CAVE.w,h:QUEST_CAVE.h};if(area==='underwater')return{w:UNDERWATER.w,h:UNDERWATER.h};
+ if(area==='storylab1')return{w:STORY_LAB_1.w,h:STORY_LAB_1.h};if(area==='storylab2')return{w:STORY_LAB_2.w,h:STORY_LAB_2.h};if(area==='questcave')return{w:QUEST_CAVE.w,h:QUEST_CAVE.h};if(area==='underwater')return{w:UNDERWATER.w,h:UNDERWATER.h};if(area==='underwater-dungeon')return{w:UNDERWATER_DUNGEON.w,h:UNDERWATER_DUNGEON.h};
  if(String(area).startsWith('jungletemple')){const r=jungleTempleSpec(area);if(r)return{w:r.w,h:r.h}}if(area==='underground')return{w:6000,h:4300};return{w:WORLD.w,h:WORLD.h}
 }
 function raidTargetCandidates(){
@@ -4184,6 +4214,39 @@ function leaveUnderwater(){
  state.area='surface';state.player.x=clamp(state.lakeReturnPos?.x||7200,35,WORLD.w-35);state.player.y=clamp(state.lakeReturnPos?.y||1650,GIANT_LAKE_WATER.y+GIANT_LAKE_WATER.h+55,1960);state.player.oxygen=40000;state.player.oxygenEndsAt=0;state.player.grabbedUntil=0;state.player.grabbedBy=null;state.dirty=true;updateHud();showNotice('거대 호수 지상으로 올라왔다')
 }
 
+// 수중 던전 입장과 복귀, 보물은 기존 월드 핸들러가 담당한다.
+function spawnUnderwaterDungeonEnemies(){
+ if(state.underwaterDungeonStarted||multiplayer.connected&&!multiIsHost())return;
+ state.underwaterDungeonStarted=true;
+ for(const [id,x,y] of [['shark',1430,700],['giantSquid',2190,1000],['deepAngler',2570,1310]]){
+  const e=spawnAt(creatures[id],x,y,null);
+  e.area='underwater-dungeon';e.noRespawn=true;state.enemies.push(e)
+ }
+}
+function enterUnderwaterDungeon(){
+ if(state.area!=='underwater')return;
+ const p=state.player,g=UNDERWATER_DUNGEON.gate;
+ if(dist(p.x,p.y,g.x,g.y)>225){showNotice('수중 던전 입구로 가까이 가');return}
+ state.underwaterDungeonReturnPos={x:p.x,y:p.y};
+ state.area='underwater-dungeon';p.x=UNDERWATER_DUNGEON.entry.x;p.y=UNDERWATER_DUNGEON.entry.y;
+ state.pet.targetId=null;spawnUnderwaterDungeonEnemies();state.dirty=true;
+ updateHud();saveGame(false);showNotice('수중 던전 · 수중 유적, 침몰선, 수중 동굴')
+}
+function leaveUnderwaterDungeon(){
+ if(state.area!=='underwater-dungeon')return;
+ const p=state.underwaterDungeonReturnPos||UNDERWATER_DUNGEON.gate;
+ state.area='underwater';state.player.x=clamp(p.x,24,UNDERWATER.w-24);state.player.y=clamp(p.y,120,NORMAL_DEEP_MAX_Y);
+ state.player.grabbedUntil=0;state.player.grabbedBy=null;state.dirty=true;
+ updateHud();saveGame(false);showNotice('거대 호수로 돌아왔어')
+}
+function openUnderwaterDungeonChest(i){
+ const r=UNDERWATER_DUNGEON.rooms[i];
+ if(!r||state.area!=='underwater-dungeon'||dist(state.player.x,state.player.y,r.chest.x,r.chest.y)>180){showNotice('상자 가까이 다가가');return}
+ if(state.underwaterDungeonChests[i]){showNotice('이미 연 상자야');return}
+ if(state.enemies.some(e=>e.hp>0&&e.area==='underwater-dungeon'&&dist(e.x,e.y,r.chest.x,r.chest.y)<280)){showNotice('수중 몬스터를 먼저 처치해');return}
+ state.underwaterDungeonChests[i]=true;addMaterial(r.material,r.count);
+ state.dirty=true;updateHud();saveGame(false);showNotice(r.name+' 보물 획득')
+}
 function spawnQuestCaveEnemies(){
  if(state.questCaveInit&&state.enemies.some(e=>e.area==='questcave'&&e.hp>0))return;
  state.questCaveInit=true;
@@ -4545,6 +4608,23 @@ function handleWorldTap(e){
  if(state.area==='jungletemple-secret'){
   if(dist(wx,wy,JUNGLE_TEMPLE_SECRET.return.x,JUNGLE_TEMPLE_SECRET.return.y)<95){doubleTapTarget('temple-secret-return',now,enterTempleUpper);return}
   if(dist(wx,wy,JUNGLE_TEMPLE_SECRET.chest.x,JUNGLE_TEMPLE_SECRET.chest.y)<100){doubleTapTarget('temple-secret-chest',now,openTempleSecretChest);return}
+ }
+ if(state.area==='underwater'&&dist(wx,wy,UNDERWATER_DUNGEON.gate.x,UNDERWATER_DUNGEON.gate.y)<110){
+  if(!doubleTapTarget('dungeon-gate',now,enterUnderwaterDungeon))showNotice('수중 던전 입구 · 한 번 더 눌러');
+  return
+ }
+ if(state.area==='underwater-dungeon'){
+  if(dist(wx,wy,UNDERWATER_DUNGEON.exit.x,UNDERWATER_DUNGEON.exit.y)<100){
+   if(!doubleTapTarget('dungeon-exit',now,leaveUnderwaterDungeon))showNotice('수중 출구 · 한 번 더 눌러');
+   return
+  }
+  for(let i=0;i<UNDERWATER_DUNGEON.rooms.length;i++){
+   const chest=UNDERWATER_DUNGEON.rooms[i].chest;
+   if(dist(wx,wy,chest.x,chest.y)<95){
+    if(!doubleTapTarget('dungeon-chest-'+i,now,()=>openUnderwaterDungeonChest(i)))showNotice('보물 상자 · 한 번 더 눌러');
+    return
+   }
+  }
  }
  if(state.area==='surface'&&pointInGiantLakeWater(wx,wy)&&regionAt(state.player.x,state.player.y)==='giantlake'&&dist(wx,wy,state.player.x,state.player.y)<320){
   if(!doubleTapTarget('giant-lake-water',now,enterUnderwater))showNotice('물을 한 번 더 눌러 잠수');return
@@ -5611,8 +5691,8 @@ function updateHazards(now){
   const gas=state.poisonStones.some(n=>!n.dead&&dist(p.x,p.y,n.x,n.y)<180);
   if(gas&&now>=(p.poisonGasNext||0)){p.poisonGasNext=now+1000;interruptAutoGather(now);p.hp=Math.max(0,p.hp-5);showNotice('독점석 독가스 · 5 피해');state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독점석 독가스로 쓰러졌다');return}}
  }
- if(state.area==='underwater'){
-  const oxygenCap=underwaterOxygenCapacity();
+ if(state.area==='underwater'||state.area==='underwater-dungeon'){
+   const oxygenCap=underwaterOxygenCapacity();
   if(!Number.isFinite(oxygenCap)){p.oxygen=40000;p.oxygenEndsAt=0}
   else{
    if(!p.oxygenEndsAt)p.oxygenEndsAt=now+Math.max(1000,Math.min(oxygenCap,p.oxygen||oxygenCap));
@@ -5651,12 +5731,13 @@ function update(dt,now){
   const flowerWebTrapped=updateFlowerWebTrap();
   if(m>.01&&!flowerWebTrapped&&now>=(p.stunnedUntil||0)&&now>=(p.rootedUntil||0)&&now>=(p.grabbedUntil||0)&&!(state.pet.mounted&&(state.pet.special||now<(state.pet.stunnedUntil||0)))){
     mx/=Math.max(1,m);my/=Math.max(1,m);
-    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(now<(p.sandSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='worldtreeinside'){p.x=clamp(p.x+mx*moveSpeed*dt,85,WORLD_TREE_INTERIOR.w-85);p.y=clamp(p.y+my*moveSpeed*dt,85,WORLD_TREE_INTERIOR.h-85)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){const nx=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24),deepLimit=nx>=DEEP_CORAL_FOREST.x?UNDERWATER.h-24:NORMAL_DEEP_MAX_Y;p.x=nx;p.y=clamp(p.y+my*moveSpeed*dt,24,deepLimit)}else if(state.area.startsWith('goblinoutpost-')){const room=goblinOutpostSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
+    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(now<(p.sandSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='worldtreeinside'){p.x=clamp(p.x+mx*moveSpeed*dt,85,WORLD_TREE_INTERIOR.w-85);p.y=clamp(p.y+my*moveSpeed*dt,85,WORLD_TREE_INTERIOR.h-85)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater-dungeon'){p.x=clamp(p.x+mx*moveSpeed*dt,30,UNDERWATER_DUNGEON.w-30);p.y=clamp(p.y+my*moveSpeed*dt,30,UNDERWATER_DUNGEON.h-30)}else if(state.area==='underwater'){const nx=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24),deepLimit=nx>=DEEP_CORAL_FOREST.x?UNDERWATER.h-24:NORMAL_DEEP_MAX_Y;p.x=nx;p.y=clamp(p.y+my*moveSpeed*dt,24,deepLimit)}else if(state.area.startsWith('goblinoutpost-')){const room=goblinOutpostSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
     else{const nx=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24),ny=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24);if(!pointInGiantLakeWater(nx,ny)&&!blockedByPlayerBuilding(nx,ny)){p.x=nx;p.y=ny}}
     p.faceX=mx;p.faceY=my
   }
   updateAnglerLure(dt,m,now);
   if(state.area==='underwater'&&p.y<=UNDERWATER.exitY){leaveUnderwater()}
+   if(state.area==='underwater-dungeon')spawnUnderwaterDungeonEnemies()
   if(state.area==='surface'){
     markExplored();discoverRegion();
     if(dist(p.x,p.y,TREE_HOLE.x,TREE_HOLE.y)<72){enterCave()}
@@ -5868,7 +5949,7 @@ function update(dt,now){
   musicTick();
   finishSmeltIfReady();
   if(ui.smeltPanel.classList.contains('open')){if(!nearStructure(state[ui.smeltStation],175))ui.smeltPanel.classList.remove('open');else updateSmeltUi()}
-  const goblinRoom=goblinOutpostSpec(state.area),templeRoom=jungleTempleSpec(state.area),camW=goblinRoom?goblinRoom.w:templeRoom?templeRoom.w:state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:state.area==='worldtreeinside'?WORLD_TREE_INTERIOR.w:WORLD.w,camH=goblinRoom?goblinRoom.h:templeRoom?templeRoom.h:state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:state.area==='worldtreeinside'?WORLD_TREE_INTERIOR.h:WORLD.h;
+  const goblinRoom=goblinOutpostSpec(state.area),templeRoom=jungleTempleSpec(state.area),camW=goblinRoom?goblinRoom.w:templeRoom?templeRoom.w:state.area==='underwater-dungeon'?UNDERWATER_DUNGEON.w:state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:state.area==='worldtreeinside'?WORLD_TREE_INTERIOR.w:WORLD.w,camH=goblinRoom?goblinRoom.h:templeRoom?templeRoom.h:state.area==='underwater-dungeon'?UNDERWATER_DUNGEON.h:state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:state.area==='worldtreeinside'?WORLD_TREE_INTERIOR.h:WORLD.h;
   updateCameraPresentation(p,dt,now,camW,camH);
   autosave+=dt;
   if(autosave>10&&state.dirty){autosave=0;saveGame(false)}
@@ -7117,7 +7198,7 @@ function saveGame(manual=true){
  if(!gameStarted)return;
  try{
    const p=state.player;
-   localStorage.setItem(isCreative()?CREATIVE_SAVE_KEY:SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,toxicFurnace:state.toxicFurnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,sunstoneBench:state.sunstoneBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,swampOutpostChestOpened:!!state.swampOutpostChestOpened,goblinOutpost:state.goblinOutpost,goblinOutpostReturnPos:state.goblinOutpostReturnPos,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,giantCrocEggTaken:state.giantCrocEggTaken,pet:state.pet,smelting:state.smelting,toxicSmelting:state.toxicSmelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,caveReturnArea:state.caveReturnArea,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},...(isCreative()?{creativeSpawners:state.creativeSpawners,creativeMonsters:state.enemies.filter(e=>e.creativeOwned&&e.hp>0).map(e=>({id:e.type.id,x:e.x,y:e.y,hp:e.hp,netId:e.netId,opponentId:e.creativeOpponentId||null,attackPlayer:!!e.creativeAttackPlayer}))}:{}),settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
+   localStorage.setItem(isCreative()?CREATIVE_SAVE_KEY:SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,toxicFurnace:state.toxicFurnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,sunstoneBench:state.sunstoneBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,swampOutpostChestOpened:!!state.swampOutpostChestOpened,goblinOutpost:state.goblinOutpost,goblinOutpostReturnPos:state.goblinOutpostReturnPos,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,giantCrocEggTaken:state.giantCrocEggTaken,pet:state.pet,smelting:state.smelting,toxicSmelting:state.toxicSmelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,underwaterDungeonChests:state.underwaterDungeonChests,underwaterDungeonReturnPos:state.underwaterDungeonReturnPos,area:state.area,surfacePos:state.surfacePos,caveReturnArea:state.caveReturnArea,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},...(isCreative()?{creativeSpawners:state.creativeSpawners,creativeMonsters:state.enemies.filter(e=>e.creativeOwned&&e.hp>0).map(e=>({id:e.type.id,x:e.x,y:e.y,hp:e.hp,netId:e.netId,opponentId:e.creativeOpponentId||null,attackPlayer:!!e.creativeAttackPlayer}))}:{}),settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -7162,11 +7243,11 @@ function loadGame(){
      state.explored[Math.floor(wx/MAP_CELL)+','+Math.floor(wy/MAP_CELL)]=1
    }
   }else state.explored={};
-  state.underwaterExplored=s.underwaterExplored&&typeof s.underwaterExplored==='object'?{...s.underwaterExplored}:{};
-  state.area=s.area==='underwater'?'underwater':s.area==='underground'?'underground':s.area==='worldtreeinside'?'worldtreeinside':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':s.area==='jungletemple'?'jungletemple':s.area==='jungletemple-upper'?'jungletemple-upper':s.area==='jungletemple-lower'?'jungletemple-lower':s.area==='jungletemple-secret'?'jungletemple-secret':'surface';if(version<43&&(state.area==='storylab1'||state.area==='storylab2')){p.x*=.4;p.y*=.4}state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
+  state.underwaterExplored=s.underwaterExplored&&typeof s.underwaterExplored==='object'?{...s.underwaterExplored}:{};state.underwaterDungeonChests=[0,1,2].map(i=>!!s.underwaterDungeonChests?.[i]);state.underwaterDungeonReturnPos=s.underwaterDungeonReturnPos&&Number.isFinite(Number(s.underwaterDungeonReturnPos.x))?{x:Number(s.underwaterDungeonReturnPos.x),y:Number(s.underwaterDungeonReturnPos.y)||UNDERWATER_DUNGEON.gate.y}:null;
+  state.area=s.area==='underwater-dungeon'?'underwater-dungeon':s.area==='underwater'?'underwater':s.area==='underground'?'underground':s.area==='worldtreeinside'?'worldtreeinside':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':s.area==='jungletemple'?'jungletemple':s.area==='jungletemple-upper'?'jungletemple-upper':s.area==='jungletemple-lower'?'jungletemple-lower':s.area==='jungletemple-secret'?'jungletemple-secret':'surface';if(version<43&&(state.area==='storylab1'||state.area==='storylab2')){p.x*=.4;p.y*=.4}state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
   state.caveReturnArea=s.caveReturnArea==='worldtreeinside'?'worldtreeinside':'surface';state.rootTaken=!!s.rootTaken;state.rootRespawnAt=Math.max(0,Number(s.rootRespawnAt)||0);state.lakeReturnPos=s.lakeReturnPos&&Number.isFinite(Number(s.lakeReturnPos.x))?{x:Number(s.lakeReturnPos.x),y:Number(s.lakeReturnPos.y)}:null;state.templeReturnPos=s.templeReturnPos&&Number.isFinite(Number(s.templeReturnPos.x))?{x:Number(s.templeReturnPos.x),y:Number(s.templeReturnPos.y)}:null;state.templeDiscovered=!!s.templeDiscovered||String(s.area||'').startsWith('jungletemple');state.flowerBuildingLoot=Array.isArray(s.flowerBuildingLoot)?[0,1,2,3].map(i=>!!s.flowerBuildingLoot[i]):[false,false,false,false];state.templeOfferingUsed=!!s.templeOfferingUsed;state.templeChestOpened=!!s.templeChestOpened;state.templeUpperSpawned=false;state.templeGuardianSpawned=false;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.achievements=s.achievements&&typeof s.achievements==='object'?{...s.achievements}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}if(version<61&&state.story.completed&&state.story.stage==='done'){state.story.completed=false;state.story.stage='post-crystal-continue'}state.questCaveInit=!!s.questCaveInit;
   const savedSettings=s.settings&&typeof s.settings==='object'?s.settings:{};state.settings.difficulty=DIFFICULTY_PROFILES[savedSettings.difficulty]?savedSettings.difficulty:'normal';state.gathering.auto=!!savedSettings.autoGather;music.enabled=savedSettings.bgmEnabled!==false;const savedVolume=Number(savedSettings.bgmVolume);setBgmVolume(Number.isFinite(savedVolume)?savedVolume:100);applyDifficultyToEnemies();syncOptionsUi();
-  if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='underwater'){state.pet.mounted=false;const cap=underwaterOxygenCapacity();p.oxygen=Number.isFinite(cap)?cap:40000;p.oxygenEndsAt=Number.isFinite(cap)?performance.now()+cap:0;}if(state.area==='storylab1'||state.area==='storylab2')state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.area==='jungletemple-upper')spawnTempleUpperEnemies();if(state.area==='jungletemple-lower')spawnTempleGuardian();if(state.area==='storylab2'&&!state.story.labBossDefeated)spawnStoryLabBoss();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);if(state.story.stage==='tiger-ambush'&&!state.story.tigerBossDefeated)spawnStoryTigerLeader();
+  if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='underwater'||state.area==='underwater-dungeon'){if(state.area==='underwater-dungeon'){p.x=clamp(p.x,30,UNDERWATER_DUNGEON.w-30);p.y=clamp(p.y,30,UNDERWATER_DUNGEON.h-30)}state.pet.mounted=false;const cap=underwaterOxygenCapacity();p.oxygen=Number.isFinite(cap)?cap:40000;p.oxygenEndsAt=Number.isFinite(cap)?performance.now()+cap:0;}if(state.area==='storylab1'||state.area==='storylab2')state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.area==='jungletemple-upper')spawnTempleUpperEnemies();if(state.area==='jungletemple-lower')spawnTempleGuardian();if(state.area==='storylab2'&&!state.story.labBossDefeated)spawnStoryLabBoss();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);if(state.story.stage==='tiger-ambush'&&!state.story.tigerBossDefeated)spawnStoryTigerLeader();
   if(state.bossSummoned&&!state.bossDefeated){const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false};state.enemies.push(boss)}
   if(isCreative()){
    state.creativeSpawners=Array.isArray(s.creativeSpawners)?s.creativeSpawners.filter(b=>b&&typeof b.id==='string'&&Number.isFinite(b.x)&&Number.isFinite(b.y)).slice(0,150):[];
