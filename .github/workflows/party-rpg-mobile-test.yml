@@ -48,6 +48,28 @@ jobs:
             await page.locator('#startBtn').click();
             await page.locator('#confirmHero').click();
             await page.locator('#introSkip').click();
+            // 실제 모바일 크기에서 지역 안내가 맵을 가리지 않아야 한다.
+            const hud=await page.evaluate(()=>{
+              const r=document.querySelector('#zone').getBoundingClientRect();
+              const s=window.partyRpgVibeState();
+              return {zoneWidth:r.width,zoneHeight:r.height,viewport:innerWidth,worldWidth:s.worldW};
+            });
+            if(hud.zoneWidth>150||hud.zoneHeight>90)throw new Error('OVERSIZED_TOWN_HUD '+JSON.stringify(hud));
+            if(hud.worldWidth!==2000)throw new Error('FIELD_NOT_EXPANDED '+JSON.stringify(hud));
+            await page.locator('#systemBtn').click();
+            await page.locator('#systemSave').click();
+            const savedFromMenu=await page.evaluate(()=>!!localStorage.getItem('party-rpg-v1'));
+            if(!savedFromMenu)throw new Error('SYSTEM_SAVE_FAILED');
+            await page.locator('#systemMap').click();
+            await page.locator('#mapCanvas').waitFor({timeout:10000});
+            const mapWidth=await page.locator('#mapCanvas').evaluate(el=>el.getBoundingClientRect().width);
+            if(mapWidth<250||mapWidth>hud.viewport)throw new Error('MOBILE_MAP_SIZE_INVALID '+mapWidth);
+            await page.locator('#mapCanvas').click({position:{x:mapWidth*.72,y:130}});
+            await page.locator('#systemBtn').click();
+            await page.locator('#systemHome').click();
+            if(!(await page.locator('#startBtn').isVisible()))throw new Error('SYSTEM_HOME_DID_NOT_SHOW_TITLE');
+            await page.locator('#startBtn').click();
+            if(await page.locator('#start').isVisible())throw new Error('SYSTEM_RESUME_FAILED');
             await page.evaluate(()=>{
               const s=window.partyRpgVibeState();
               s.p.x=844;s.p.y=487;
