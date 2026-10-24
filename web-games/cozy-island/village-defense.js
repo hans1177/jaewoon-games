@@ -125,25 +125,15 @@ function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+// 메인: 성채 메뉴는 기존 이벤트를 사용하고 플레이어 근접 건설 UI는 만들지 않는다.
 function setupBuildButton() {
-  if (document.querySelector('#villageBuildButton')) return;
-  const button = document.createElement('button');
-  button.id = 'villageBuildButton';
-  button.type = 'button';
-  button.style.cssText = 'position:absolute;left:50%;bottom:260px;transform:translateX(-50%);z-index:10;border:0;border-radius:14px;padding:10px 14px;background:rgba(255,255,255,.96);box-shadow:0 4px 14px rgba(31,69,57,.22);font-weight:900;color:#25423a;display:none;touch-action:manipulation;';
-  button.addEventListener('click', () => {
-    if (!currentGame) return;
-    if (button.dataset.kind === 'tower') buildTower();
-    if (button.dataset.kind === 'hall') buildTownHall();
-  });
+  if (document.querySelector('#castleManageButton')) return;
+  const button=document.createElement('button');
+  button.id='castleManageButton';
+  button.type='button';
+  button.hidden=true;
+  button.addEventListener('click',openCastle);
   document.querySelector('#app')?.appendChild(button);
-  if(!document.querySelector('#castleManageButton')){
-    const manage=document.createElement('button');
-    manage.id='castleManageButton';manage.type='button';manage.textContent='🏰 성채·무역';
-    manage.style.cssText='position:absolute;right:10px;top:max(106px,calc(env(safe-area-inset-top) + 98px));z-index:8;border:0;border-radius:12px;padding:9px 11px;background:rgba(255,250,224,.94);color:#274333;font-size:12px;font-weight:900;box-shadow:0 4px 14px #2345;touch-action:manipulation';
-    manage.addEventListener('click',openCastle);
-    document.querySelector('#app')?.appendChild(manage);
-  }
 }
 
 function updateBuildButton() {
@@ -449,7 +439,7 @@ function manageCastle(action){
   }
   if(op==='siege'){
     const command=parts[1];
-    if(command==='view'){game.siegeOverview=true;document.querySelector('#panel')?.close();document.querySelector('#centerCommand')?.click();return}
+    if(command==='view'){game.siegeOverview=true;document.querySelector('#panel')?.close();game.centerStrategyView?.();return}
     if(command==='auto'){
       if(!SIEGE_MODES.includes(parts[2]))return;
       fort.siegeAuto=parts[2];saveState();renderCastle();return;
@@ -831,4 +821,5 @@ function drawTownHall(ctx, built) {
 }
 
 // 전략 화면은 캐릭터 이동·근접 건설 버튼을 사용하지 않는다.
+setupBuildButton();
 setInterval(villageTick, 100);
