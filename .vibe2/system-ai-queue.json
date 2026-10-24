@@ -117384,7 +117384,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -117418,7 +117418,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 7,
-      "previousReservationId": "system-ai:40078436935:1",
+      "previousReservationId": "system-ai:40078917886:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -117426,12 +117426,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40078917886:1",
-      "reservedAt": "2026-10-24T08:43:12.690Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -117663,7 +117663,8 @@
         "actions-run:40078436935",
         "system-ai-impact-score:1442",
         "system-ai-blocked-task-count:25",
-        "system-ai-handoff-to-reservation:system-ai:40078917886:1"
+        "system-ai-handoff-to-reservation:system-ai:40078917886:1",
+        "actions-run:40078917886"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1442,
@@ -117678,7 +117679,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-24T08:43:12.690Z"
+      "updatedAt": "2026-10-24T08:47:11.379Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -151103,7 +151104,7 @@
     },
     {
       "id": "marketing-simple-rpg-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -151136,9 +151137,9 @@
       "recurrenceCount": 0,
       "failureStage": null,
       "failureSignature": null,
-      "failureClass": null,
+      "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 1,
-      "previousReservationId": "system-ai:39559580530:1",
+      "previousReservationId": "system-ai:40078917886:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -151146,12 +151147,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40078917886:1",
-      "reservedAt": "2026-10-24T08:43:12.690Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -151174,7 +151175,19 @@
         "system-ai-blocked-task-count:6",
         "system-ai-common-bottleneck:YES",
         "system-ai-representative-canary:stale-system-ai-reservation-reclaimed",
-        "system-ai-handoff-to-reservation:system-ai:40078917886:1"
+        "system-ai-handoff-to-reservation:system-ai:40078917886:1",
+        "actions-run:40078917886",
+        "preflight:success",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "system-ai-failure-class:RESERVATION_OR_LOCK_CONTENTION",
+        "system-ai-failure-route:RECLAIM_OR_RETRY_RESERVATION",
+        "system-ai-handoff-state:REQUEUE_NEW_WORKER"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 602,
@@ -151189,7 +151202,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-10T15:42:04.174Z",
-      "updatedAt": "2026-10-24T08:43:12.690Z"
+      "updatedAt": "2026-10-24T08:47:11.379Z"
     },
     {
       "id": "marketing-tower-choice-rpg-pre-release-v1",
