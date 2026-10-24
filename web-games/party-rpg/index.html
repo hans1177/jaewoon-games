@@ -951,6 +951,11 @@ function townCouncil(fromScene=false){
  openModal('북문 사건 조사단',h);modal.dataset.mode='dialogue';
  modalBody.querySelectorAll('[data-council]').forEach(function(btn){btn.onclick=function(){
   var key=btn.dataset.council,text=key==='luca'?(luca?(luca.path==='truth'?'루카: “그 문을 닫은 손은 내 것이었어. 네가 열어젖힌 증언을 끝까지 지켜야겠지.”':'루카: “네가 부하들의 유족을 지켰어. 아직 말하지 못할 이름도 있어.”'):'루카: “북문에 남은 군번표를 가져와. 그때 모두가 죽었다는 보고서부터 의심해야 해.”'):key==='mina'?(mina?(mina.path==='truth'?'미나: “아버지의 봉랍을 열었어. 누가 내 기억을 빼앗았는지는 모르겠지만 진실은 남았지.”':'미나: “기록을 감춘 게 아니라 사람을 지킨 거야. 하지만 언젠간 남은 글을 읽어야겠지.”'):'미나: “숲의 이름 없는 묘에는 아버지의 봉인이 있어. 누군가 기록을 두 번 고쳐 썼어.”'):'미나: “'+storyObjective()+'”';
+  // 조사단의 답변에도 루카의 책임감, 미나의 증거 중심 말투를 일관되게 적용한다.
+  if(key==='luca'||key==='mina'){
+   const member=state.ai[key==='luca'?0:1],path=(key==='luca'?luca:mina)?.path;
+   text+='\n'+member.name+': “'+companionResponse(member,path||'discovery')+'”';
+  }
   var panel=modalBody.querySelector('#councilResponse');if(!panel){panel=document.createElement('blockquote');panel.id='councilResponse';modalBody.querySelector('.dialogueText').append(panel);}panel.textContent=text;sound.effect('story');
  };});
  document.getElementById('councilJournal').onclick=storyJournal;
@@ -1068,9 +1073,9 @@ function storyJournal(){
  }
  h+='<h3>동료 서브 스토리 · 영입과 개인 의뢰</h3><p>사건을 해결할 때마다 인물이 새로 발견돼. 개인 단서를 조사한 뒤 영입 장면을 진행하면 동료가 돼. 이후에도 기존 개인 의뢰가 이어져.</p>';
  state.ai.filter(companionDiscovered).forEach(function(a){var index=portraitIndex(a),arc=RECRUIT_ARCS[index],stage=recruitStage(a),current=state.story.quests[a.id];
-  h+='<section class="journalEntry"><h3>'+escapeText(a.name)+' · '+escapeText(COMPANION_VOICES[index].trait)+'</h3><p>'+escapeText(COMPANION_VOICES[index].lead)+'</p><p class="gold">'+(stage==='joined'?'영입됨 · 개인 의뢰 진행 가능':stage==='ready'?'단서 확인 완료 · 영입 이벤트 가능':stage==='search'?'단서 탐색 · '+ZONES[arc.zone].name+' ('+arc.site.x+', '+arc.site.y+')':'새 인물 발견 · 서브퀘스트 시작 가능')+'</p><button class="menuBtn secondary" data-recruit-guide="'+a.id+'">인물 기록 / 진행</button></section>';
+  h+='<section class="journalEntry"><h3>'+escapeText(a.name)+' · '+escapeText(COMPANION_VOICES[index].trait)+'</h3><p>'+escapeText(COMPANION_VOICES[index].lead)+'</p><p class="note">중요한 가치: '+escapeText(companionPersonality(a).value)+'</p><p class="gold">'+(stage==='joined'?'영입됨 · 개인 의뢰 진행 가능':stage==='ready'?'단서 확인 완료 · 영입 이벤트 가능':stage==='search'?'단서 탐색 · '+ZONES[arc.zone].name+' ('+arc.site.x+', '+arc.site.y+')':'새 인물 발견 · 서브퀘스트 시작 가능')+'</p><button class="menuBtn secondary" data-recruit-guide="'+a.id+'">인물 기록 / 진행</button></section>';
  });
- h+='<h3>동료의 고백과 개인 의뢰</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id]){var q=s.quests[a.id];h+='<section class="journalEntry"><b>'+a.name+'</b><p>'+COMPANION_SECRETS[i]+'</p>';if(q)h+='<p class="gold">'+(q.path==='truth'?'잊힌 기록을 밝힌다':'증인을 안전하게 지킨다')+' · '+ZONES[q.zone].name+' · '+(q.complete?'완료':a.party?'이 동료와 함께 방문해야 해.':'동료로 데려가야 진행돼.')+'</p>';else h+='<p>동료 대화에서 사건의 진실을 선택할 수 있어.</p>';h+='</section>';}});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
+ h+='<h3>동료의 고백과 개인 의뢰</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id]){var q=s.quests[a.id];h+='<section class="journalEntry"><b>'+escapeText(a.name)+'</b><p>'+COMPANION_SECRETS[i]+'</p><p class="note">행동 습관: '+escapeText(companionPersonality(a).manner)+' · 약점: '+escapeText(companionPersonality(a).flaw)+'</p><blockquote>“'+escapeText(companionResponse(a,q?.path||'discovery'))+'”</blockquote>';if(q)h+='<p class="gold">'+(q.path==='truth'?'잊힌 기록을 밝힌다':'증인을 안전하게 지킨다')+' · '+ZONES[q.zone].name+' · '+(q.complete?'완료':a.party?'이 동료와 함께 방문해야 해.':'동료로 데려가야 진행돼.')+'</p>';else h+='<p>동료 대화에서 사건의 진실을 선택할 수 있어.</p>';h+='</section>';}});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
  h+='<section class="journalEntry"><h3>지난 장면</h3><p>중요한 조사와 동료 대화, 보스의 기억을 다시 볼 수 있어. 선택이나 보상은 반복되지 않아.</p><button class="menuBtn secondary" id="eventArchiveBtn">여정의 장면 돌아보기 ('+Object.values(s.scenes).filter(Boolean).length+')</button></section>';
   openModal('잊힌 길의 서약',h);document.getElementById('followQuest').onclick=followStoryNext;modalBody.querySelectorAll('[data-recruit-guide]').forEach(b=>b.onclick=()=>companionMenu(b.dataset.recruitGuide));document.getElementById('eventArchiveBtn').onclick=eventArchive;var opening=document.getElementById('act2Opening');if(opening)opening.onclick=function(){playEventScene('act2intro',storyJournal);};modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});modalBody.querySelectorAll('[data-case]').forEach(function(b){b.onclick=function(){incidentChoice(Number(b.dataset.case),b.dataset.method);};});
 }
@@ -1222,6 +1227,28 @@ function partyHud(){
 
 // 인물 · 직업과 능력치와 분리된 성격/영입 스토리
 const COMPANION_VOICES=[{"trait":"죄책감을 숨기는 전 수비대장","talk":"내가 문을 닫은 건 사실이야. 그래도 죽어야 했던 사람들이란 말은 하지 마.","lead":"군번표 세 개가 비었어. 내 명령서엔 여전히 세 명 모두 근무 중이라고 적혀 있고.","join":"내가 닫은 문이야. 이번엔 나도 끝까지 가겠어."},{"trait":"불안을 감추는 기록관","talk":"기록을 고치면 사람이 돌아올 수 있어. 대신 내 기억에서 누군가 사라져.","lead":"숲 묘의 봉랍 번호가 아버지 서류와 같아. 우연이라고 하기엔 너무 정확해.","join":"서류는 내가 볼게. 내가 뭘 잊더라도 넌 이 일을 적어 줘."},{"trait":"입을 닫은 정찰병","talk":"명령을 잘못 읽은 게 아니야. 읽고도 돌아섰어. 그게 더 나빠.","lead":"동굴의 두 번째 신호를 봐 줘. 내가 받은 명령과 달라.","join":"이번엔 후퇴 신호가 울려도 먼저 확인하겠어."},{"trait":"동료를 잃은 대장장이","talk":"내가 만든 갑옷을 입은 사람들이 누구에게 죽었는지 알아야 해.","lead":"저 요새 갑옷 안감의 문양, 내 대장간에서 쓰던 거야.","join":"칼은 내가 고쳐. 망설이는 건 네 몫이지만 등은 맡겨."},{"trait":"대가를 이미 치른 상인","talk":"계약서엔 내가 서명했어. 동생은 살았지. 날 기억하지 못할 뿐.","lead":"사막 장부의 도장이 내가 본 것과 같아. 동생을 살린 계약이 거기 있어.","join":"내가 팔아 버린 이름부터 되찾아야겠어. 같이 가."},{"trait":"현장을 우선하는 치료사","talk":"기도로 상처가 낫는다면 좋겠지. 지금은 깨끗한 물부터 필요해.","lead":"사라진 약품은 환자 명단과 같이 없어졌어. 누가 치료받았는지도 지운 거야.","join":"뒤에 쓰러진 사람이 생기면 내가 맡을게. 넌 앞을 봐."},{"trait":"기록을 증거로 삼는 회계사","talk":"죽은 사람에게 세금을 매겼다면 영수증이 있겠지. 범인은 거기 적혀 있어.","lead":"지워진 사람들에게서도 세금을 걷었어. 장부 두 권을 대조해야 해.","join":"돈의 흐름은 내가 쫓아갈게. 누군가는 살아서 증언해야 하니까."},{"trait":"별을 읽는 길잡이","talk":"하늘의 별은 안 지워졌어. 어머니가 그린 길도 그대로야.","lead":"별자리 가운데 빈 자리가 있어. 지도에는 사라진 길과 겹쳐.","join":"길은 찾아 줄게. 어머니가 틀렸다는 말은 끝에 가서 해."},{"trait":"적의 얼굴을 아는 용병","talk":"마왕의 전령이 내 목숨을 살렸어. 내가 먼저 칼을 들었는데도.","lead":"마계 신호에 우리가 쓰던 구조 암호가 섞여 있어. 적이 왜 그걸 알지?","join":"이번엔 상대 얼굴부터 보고 칼을 뽑겠어."},{"trait":"잊힌 노래를 기록하는 음유시인","talk":"가사를 바꿔도 멜로디는 남아. 그래서 아직 그 길을 노래할 수 있어.","lead":"마지막 절이 없어. 사라진 도시 이름을 부르는 부분만.","join":"살아 돌아오면 이 이야기를 노래로 남길게. 거짓말 없이."}];
+// 전투 직업과 독립된 동료 인물성/말투/상황별 선택 반응
+const COMPANION_PERSONALITIES=[{"name":"루카","manner":"군번표를 정렬하고 보고하듯 짧게 말한다","value":"책임과 안전","flaw":"문을 닫은 과거를 명령 탓으로 돌리고 싶다","truth":"보고서에 내 이름도 적어. 책임자 칸을 비울 수는 없어.","guard":"명부를 봉인하자. 가족부터 대피시킨다.","danger":"대열 유지. 후퇴할 사람부터 센다.","discovery":"군번 세 개가 비었다. 명령서가 조작됐어.","past":"명령은 받았지만 문을 닫은 손은 내 것이었어."},{"name":"미나","manner":"질문을 끊고 날짜와 필체를 확인한다","value":"진실과 증인 보호","flaw":"진실을 복원할수록 자기 기억이 사라진다","truth":"아니, 잠깐. 날짜부터 확인하자. 원본을 봐야 해.","guard":"서명은 가려. 사본은 남기고. 숨기는 것과 지우는 건 달라.","danger":"이 봉랍, 본 적 있어. 어디서 봤더라...","discovery":"이 필체는 두 번 고쳐 썼어. 누군가 같은 이름을 또 지웠어.","past":"내 기억은 자꾸 빈칸이 돼. 그래서 더 적어야 해."},{"name":"제이드","manner":"퇴로를 확인한 뒤 짧은 문장으로 답한다","value":"동료의 무사귀환","flaw":"동료를 버리고 철수한 자신을 용서하지 못한다","truth":"명령서 원본부터 확보해. 얘기는 그다음.","guard":"증인을 뒤로 보내. 앞은 내가 본다.","danger":"발소리 셋. 왼쪽으로.","discovery":"이 바람, 갈림길이 있다는 뜻이야.","past":"그때 난 돌아섰어. 이번엔 안 그래."},{"name":"토르","manner":"장갑을 고쳐 끼며 쇠붙이에 비유한다","value":"제작자의 책임","flaw":"자기 무기가 사람을 죽였다는 사실을 외면했다","truth":"망치 자국이 남았군. 만든 놈을 찾으면 돼.","guard":"증거를 감출 거면 단단한 곳에 숨겨.","danger":"손 떨리면 검 내려놔. 부러진다.","discovery":"쇠는 거짓말 안 해. 이 긁힌 자국 봐.","past":"내가 만든 갑옷이 저쪽에도 있었지. 못 본 척했어."},{"name":"리안","manner":"거래의 대가를 따지다가 가족 이야기엔 침묵한다","value":"동생과의 약속","flaw":"동생에게 자신이 존재하지 않는 사람이 됐다","truth":"원본을 내놔. 계약서에 누가 서명했는지 보자고.","guard":"숨겨 줘. 사람 목숨까지 가격을 매길 순 없잖아.","danger":"이번엔 완전히 손해야. 그래도 물러날 순 없지.","discovery":"상단의 인장이야. 내 동생 이름 옆에서도 봤어.","past":"동생은 날 모르는 손님 취급해. 그래도 살아 있어."},{"name":"세라","manner":"도구를 점검한 뒤 천천히 실용적으로 말한다","value":"살아 있는 사람의 치료","flaw":"희생을 신성한 의무로 오해했다","truth":"증언 전에 환자를 안전한 곳으로 옮길게.","guard":"잠깐. 저 사람 치료가 먼저야.","danger":"호흡이 얕아. 더 버티면 위험해.","discovery":"여기 누군가 쓰러진 흔적이 있어. 발 조심해.","past":"희생이 신성하다고 배웠어. 대신 아파 줄 수는 없는데."},{"name":"보린","manner":"항상 존댓말로 증거와 수치를 따진다","value":"시민의 법적 권리","flaw":"숫자 뒤의 고통을 가끔 놓친다","truth":"거래 번호를 공개하지요. 서명도 함께요.","guard":"증인 주소만 봉인하겠습니다. 장부는 보존해야지요.","danger":"잠시만요. 인원수가 한 명 모자랍니다.","discovery":"이중 장부군요. 숫자는 숨길 수 없습니다.","past":"계산은 틀리지 않았습니다. 판단이 틀렸지요."},{"name":"유나","manner":"별과 지도를 번갈아 보며 빠르게 말한다","value":"어머니의 별자리와 길 찾기","flaw":"믿고 싶은 길만 지도에 그리곤 한다","truth":"별자리와 대조하자! 지상 지도만 고쳐 쓴 거야.","guard":"돌아갈 길은 내가 그릴게. 먼저 안전한 곳으로!","danger":"우리가 길을 잃은 게 아냐. 지도가 틀렸어!","discovery":"북극성 위치가 맞아! 엄마가 그린 길이 여기야.","past":"엄마가 틀릴 수도 있다는 게 무서웠어."},{"name":"카일","manner":"빈정거리다가 위험할 땐 농담을 거둔다","value":"말보다 눈앞의 행동","flaw":"먼저 칼을 뽑고 나중에 후회한다","truth":"까발려야지. 도망갈 길도 뚫어 놓고.","guard":"증인부터 빼내. 죽으면 입도 못 열어.","danger":"젠장, 많네. 여기서는 내가 막는다.","discovery":"잠깐. 저놈들 우릴 치러 온 거 맞아?","past":"마왕의 전령을 죽일 뻔했지. 놈이 먼저 날 살렸는데."},{"name":"네오","manner":"손끝으로 박자를 세고 이름을 정확히 부른다","value":"잊힌 사람의 증언","flaw":"슬픔을 아름다운 이야기로 꾸밀까 두렵다","truth":"빠진 이름도 후렴에 남겨야 해. 사실 그대로.","guard":"그 사람 허락을 받자. 노래가 퍼지면 못 거둬.","danger":"한 박자만 버텨. 아직 끝난 게 아니야.","discovery":"방금 음절이 달랐어. 누군가 가사를 지웠어.","past":"멋진 결말을 쓰려다 살아 있는 사람을 지워 버릴 뻔했어."}];
+// 캐릭터별 어휘/태도/행동을 인물 ID에 고정, 기존 직업·퀘스트 상태와 별도 적용.
+function companionPersonality(a){return COMPANION_PERSONALITIES[portraitIndex(a)]||COMPANION_PERSONALITIES[0];}
+function companionResponse(a,topic){
+ const c=companionPersonality(a),story=state.story,q=story.quests[a.id];
+ if(topic==='past')return c.past;
+ if(topic==='truth')return c.truth;
+ if(topic==='guard')return c.guard;
+ if(topic==='danger')return c.danger;
+ if(topic==='discovery')return c.discovery;
+ if(q?.complete)return q.path==='truth'?c.truth:c.guard;
+ if(q)return q.path==='truth'?c.discovery:c.guard;
+ if(story.choices.ending)return c.past;
+ return c.discovery;
+}
+function companionContext(a){
+ const c=companionPersonality(a),q=state.story.quests[a.id];
+ const context=q?.complete?(q.path==='truth'?'증언을 공개한 뒤에도':'증인을 보호한 뒤에도'):
+  q?(q.path==='truth'?'공개 증언의 단서를 찾는 동안':'증인을 지키기 위해 움직이는 동안'):'대화하는 동안';
+ return context+' '+a.name+' · '+c.manner+'.';
+}
 const RECRUIT_ARCS=[{"gate":"intro","zone":0,"site":{"x":860,"y":575},"title":"북문에서 누락된 군번표"},{"gate":"visit1","zone":1,"site":{"x":820,"y":780},"title":"찢어진 장부"},{"gate":"case1","zone":1,"site":{"x":1090,"y":720},"title":"사라진 고갯길 발자국"},{"gate":"visit2","zone":2,"site":{"x":1370,"y":620},"title":"고향 문양의 쇳조각"},{"gate":"visit3","zone":3,"site":{"x":1030,"y":830},"title":"찢긴 계약서"},{"gate":"fort","zone":4,"site":{"x":1360,"y":880},"title":"분실된 약품 목록"},{"gate":"visit4","zone":4,"site":{"x":950,"y":690},"title":"두 번 적힌 세금"},{"gate":"visit5","zone":5,"site":{"x":1180,"y":820},"title":"눈 속의 별자리"},{"gate":"visit6","zone":6,"site":{"x":1150,"y":850},"title":"전령의 암호"},{"gate":"temple","zone":6,"site":{"x":1590,"y":770},"title":"노래의 마지막 구절"}];
 function companionDiscovered(a){
  if(!a)return false;
@@ -1297,8 +1324,8 @@ function companionMenu(selected){
  var known=state.ai.filter(companionDiscovered),chosen=known.find(a=>a.id===selected)||known[0];
  if(!chosen){openModal('동료를 찾는 중','<p>1막 서막을 마치면 첫 인물이 열려. 사건을 조사할수록 새로운 동료를 만날 수 있어.</p><button id="rosterJournal" class="menuBtn">여정 기록 보기</button>');document.getElementById('rosterJournal').onclick=storyJournal;return;}
  var index=portraitIndex(chosen),voice=COMPANION_VOICES[index],arc=RECRUIT_ARCS[index],stage=recruitStage(chosen),info=CLASS_INFO[chosen.classId],secret=state.story.companions[chosen.id];
- var list=known.map(function(a){return '<button class="rosterRow '+(a.id===chosen.id?'chosen':'')+'" data-companion="'+a.id+'">'+portraitMarkup(portraitIndex(a))+'<span><b>'+a.name+'</b><small>'+role(a).name+' · '+(a.party?'동행 중':ZONES[a.zone]?.name||'탐험 중')+'</small></span><i>'+(a.party?'동행':'')+'</i></button>';}).join('');
- var html='<div class="rosterLayout"><nav class="rosterList" aria-label="동료 목록">'+list+'</nav><article class="companionDetail">'+portraitMarkup(index,'companionPortrait')+'<span class="eyebrow">'+info.position+' · '+voice.trait+'</span><h2>'+chosen.name+' <small>'+role(chosen).name+'</small></h2><p>'+info.desc+'</p><div class="ruleStats"><span>레벨 <b>'+chosen.level+'</b></span><span>체력 <b>'+Math.ceil(chosen.hp)+' / '+chosen.maxHp+'</b></span><span>방어 등급 <b>'+ac(chosen)+'</b></span></div><h3>고유 전술</h3><p class="gold">'+info.skill+'</p><h3>'+(secret?'개인 기록':'영입 서브퀘스트')+'</h3><p>'+(secret?COMPANION_SECRETS[index]:voice.lead+' · '+arc.title+' ('+ZONES[arc.zone].name+')')+'</p><div class="companionButtons"><button class="menuBtn" id="recruitCompanion" '+(!chosen.party&&partyCount()>=3?'disabled':'')+'>'+(chosen.party?'파티에서 쉬게 한다':partyCount()>=3?'파티 정원 4명':stage==='new'?'개인 서브퀘스트 시작':stage==='search'?'단서 찾기':stage==='ready'?'영입 장면 보기':'동행을 요청한다')+'</button><button class="menuBtn secondary" id="talkCompanion">이야기를 나눈다</button><button class="menuBtn secondary" id="companionBag">장비 · 인벤토리</button><button class="menuBtn secondary" id="companionSkillBook">스킬북 · 자동 기술</button><button class="menuBtn secondary" id="companionAwakening">각성의 시련 · 전직</button><button class="textBtn" id="focusCompanion">카메라로 찾기</button></div></article></div>';
+ var list=known.map(function(a){return '<button class="rosterRow '+(a.id===chosen.id?'chosen':'')+'" data-companion="'+a.id+'">'+portraitMarkup(portraitIndex(a))+'<span><b>'+escapeText(a.name)+'</b><small>'+role(a).name+' · '+escapeText(COMPANION_VOICES[portraitIndex(a)].trait)+' · '+(a.party?'동행 중':ZONES[a.zone]?.name||'탐험 중')+'</small></span><i>'+(a.party?'동행':'')+'</i></button>';}).join('');
+ var html='<div class="rosterLayout"><nav class="rosterList" aria-label="동료 목록">'+list+'</nav><article class="companionDetail">'+portraitMarkup(index,'companionPortrait')+'<span class="eyebrow">'+info.position+' · '+voice.trait+'</span><h2>'+chosen.name+' <small>'+role(chosen).name+'</small></h2><p>'+info.desc+'</p><div class="ruleStats"><span>레벨 <b>'+chosen.level+'</b></span><span>체력 <b>'+Math.ceil(chosen.hp)+' / '+chosen.maxHp+'</b></span><span>방어 등급 <b>'+ac(chosen)+'</b></span></div><h3>성격 · 말투</h3><p>'+escapeText(companionContext(chosen))+'</p><p class="note">가장 중요하게 여기는 것: '+escapeText(companionPersonality(chosen).value)+(secret?' · 약점: '+escapeText(companionPersonality(chosen).flaw):'')+'</p><blockquote>“'+escapeText(companionResponse(chosen,'discovery'))+'”</blockquote><h3>고유 전술</h3><p class="gold">'+info.skill+'</p><h3>'+(secret?'개인 기록':'영입 서브퀘스트')+'</h3><p>'+(secret?COMPANION_SECRETS[index]:voice.lead+' · '+arc.title+' ('+ZONES[arc.zone].name+')')+'</p><div class="companionButtons"><button class="menuBtn" id="recruitCompanion" '+(!chosen.party&&partyCount()>=3?'disabled':'')+'>'+(chosen.party?'파티에서 쉬게 한다':partyCount()>=3?'파티 정원 4명':stage==='new'?'개인 서브퀘스트 시작':stage==='search'?'단서 찾기':stage==='ready'?'영입 장면 보기':'동행을 요청한다')+'</button><button class="menuBtn secondary" id="talkCompanion">이야기를 나눈다</button><button class="menuBtn secondary" id="companionBag">장비 · 인벤토리</button><button class="menuBtn secondary" id="companionSkillBook">스킬북 · 자동 기술</button><button class="menuBtn secondary" id="companionAwakening">각성의 시련 · 전직</button><button class="textBtn" id="focusCompanion">카메라로 찾기</button></div></article></div>';
  openModal('동료 · '+(partyCount()+1)+' / 4명',html);modal.dataset.mode='roster';modalBody.querySelectorAll('[data-companion]').forEach(function(b){b.onclick=function(){companionMenu(b.dataset.companion);};});document.getElementById('recruitCompanion').onclick=function(){requestCompanion(chosen);};document.getElementById('talkCompanion').onclick=function(){if(stage==='new'||stage==='search'){requestCompanion(chosen);return;}companionDialogue(chosen);};document.getElementById('companionBag').onclick=function(){bagMenu(chosen.id);};document.getElementById('companionSkillBook').onclick=function(){skillBookMenu(chosen.id);};document.getElementById('companionAwakening').onclick=function(){awakeningMenu(chosen.id);};document.getElementById('focusCompanion').onclick=function(){if(!chosen.party&&(dungeon||chosen.zone!==state.zone)){toast('현재 지역에 없는 동료야. '+(ZONES[chosen.zone]?.name||'다른 지역')+'에서 찾을 수 있어.');return;}closeModal();view.selection=chosen.id;view.center(chosen.id);};
 }
 // 능력 판정: d20 + 숙련 + 직업 능력 보정, 자연 1 실패 / 자연 20 성공.
@@ -1317,21 +1344,26 @@ function companionQuestChoice(a,path){
  state.story.quests[a.id]={path:chosen,zone:1+(index+(chosen==='guard'?2:0))%6,complete:false};
  save();toast(path==='truth'&&!result.success?'설득 실패 · 대신 증인을 보호하기로 했어.':'동료 개인 의뢰가 시작됐어.');companionDialogue(a);
 }
-function companionDialogue(a,fromScene=false){
+function companionDialogue(a,fromScene=false,topic=""){
  if(!fromScene&&state.story.companions[a.id]&&playEventScene('companion:'+a.id,()=>companionDialogue(a,true)))return;
  var idx=portraitIndex(a),voice=COMPANION_VOICES[idx],unlocked=!!state.story.companions[a.id],quest=state.story.quests[a.id],event=INCIDENTS.find(function(c){return c.person===a.name;}),eventZone=event?INCIDENTS.indexOf(event)+1:0,eventCase=eventZone?state.story.cases[eventZone]:null;
- var html='<div class="dialogueLayout">'+portraitMarkup(idx,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+role(a).name+' · '+CLASS_INFO[a.classId].title+'</span><h2>'+a.name+'</h2><p>'+(unlocked?COMPANION_SECRETS[idx]:voice.lead)+'</p><blockquote>'+(unlocked?voice.talk:voice.lead)+'</blockquote>';
+ var html='<div class="dialogueLayout">'+portraitMarkup(idx,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+role(a).name+' · '+CLASS_INFO[a.classId].title+'</span><h2>'+a.name+'</h2><p>'+(unlocked?COMPANION_SECRETS[idx]:voice.lead)+'</p><p class="note">'+escapeText(companionContext(a))+'</p><blockquote>“'+escapeText(unlocked?(topic?companionResponse(a,topic):voice.talk):voice.lead)+'”</blockquote>';
+ if(unlocked){
+  const personality=companionPersonality(a),topics=[['discovery','현장 단서'],['past','잊고 싶은 과거'],['truth','진실을 공개한다면'],['guard','증인을 보호한다면']];
+  html+='<h3>그 사람만의 대답</h3><p>가장 중시하는 것: '+escapeText(personality.value)+' · 지닌 약점: '+escapeText(personality.flaw)+'</p><div class="companionButtons">'+topics.map(([key,label])=>'<button class="menuBtn secondary" data-personality-topic="'+key+'" aria-pressed="'+(topic===key)+'">'+label+'</button>').join('')+'</div>';
+ }
  if(event&&unlocked)html+='<h3>사건 · '+event.name+'</h3><p>'+(eventCase?(eventCase.path==='truth'?event.truth:event.guard):state.story.visited[eventZone]?event.lead+' · 여정 기록에서 조사 방향을 정해 줘.':'아직 사건 현장을 조사하지 못했어.')+'</p>';
   if(unlocked&&!quest){
-  html+='<h3>동료 개인 의뢰</h3><p>진실을 밝혀 지워진 기록을 복원할지, 위험해진 증인을 안전하게 지킬지 선택해.</p>';
+  html+='<h3>동료 개인 의뢰</h3><p>진실을 공개하면 위험한 사람이 생기고, 증인을 먼저 지키면 책임자가 도망칠 시간도 생겨. '+escapeText(a.name)+'에게 무엇을 선택할지 직접 물어봐.</p>';
   html+='<button class="menuBtn" data-companion-choice="truth">설득 판정 · 진실을 밝히자</button>';
   html+='<button class="menuBtn secondary" data-companion-choice="guard">비밀을 지키고 증인을 보호하자</button>';
  }else if(quest){
-  html+='<h3>선택에 따른 의뢰</h3><p class="gold">'+(quest.path==='truth'?'지워진 이름의 증거를 찾는 길':'증인을 보호하고 피난처를 찾는 길')+' · '+ZONES[quest.zone].name+' · '+(quest.complete?'완료':'진행 중')+'</p><p>'+(quest.complete?(quest.path==='truth'?'동료는 사건 당시 자신이 무엇을 했고 누구를 잃었는지 기록했어. 공개를 선택한 이상 그 증언을 지키는 것도 함께 맡아야 해.':'동료는 증인을 안전하게 지키고 귀환을 약속했어.'):'이 동료와 함께 해당 지역을 탐험하면 이야기가 이어져.')+'</p>';
+  html+='<h3>선택에 따른 의뢰</h3><p class="gold">'+(quest.path==='truth'?'증언을 공개하는 길':'증인을 지키는 길')+' · '+ZONES[quest.zone].name+' · '+(quest.complete?'완료':'진행 중')+'</p><p>'+escapeText(quest.complete?companionResponse(a,quest.path):companionResponse(a,quest.path==='truth'?'discovery':'guard'))+'</p><p>'+(quest.complete?'기록은 남았어. 그 선택의 결과도 함께 안고 가야 해.':'이 동료와 함께 해당 지역을 탐험하면 사건의 결론이 열려.')+'</p>';
  }else html+='<p>파티에 합류하면 개인 의뢰가 열려.</p>';
  html+='<button class="menuBtn" id="dialogueReturn">동료 화면으로 돌아간다</button></div></div>';
  openModal(a.name+'와의 대화',html);modal.dataset.mode='dialogue';
  modalBody.querySelectorAll('[data-companion-choice]').forEach(function(b){b.onclick=function(){companionQuestChoice(a,b.dataset.companionChoice);};});
+ modalBody.querySelectorAll('[data-personality-topic]').forEach(function(b){b.onclick=function(){companionDialogue(a,true,b.dataset.personalityTopic);};});
  document.getElementById('dialogueReturn').onclick=function(){companionMenu(a.id);};
 }
 function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>실시간 디앤디식 판정 · 명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타. 동료와 함께 문 열기·함정 해제·설득 능력 판정도 할 수 있어.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="sheetSkills">스킬북 · 자동 기술 설정</button><button class="menuBtn secondary" id="sheetAwakening">각성의 시련 · 전직</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=function(){bagMenu('player');};document.getElementById('sheetSkills').onclick=function(){skillBookMenu('player');};document.getElementById('sheetAwakening').onclick=function(){awakeningMenu('player');};document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
@@ -1385,7 +1417,7 @@ function eventSceneData(key){
  }else if(kind==='companion'){
   person=state.ai.find(a=>a.id===raw);if(!person)return null;
   n=portraitIndex(person);title=person.name+' · 잊힌 고백';focus={x:person.x,y:person.y};
-  beats=[beat(person.name,'동료 · '+COMPANION_VOICES[n].trait,COMPANION_SECRETS[n],'“'+COMPANION_VOICES[n].talk+'”',n),beat(person.name,'개인 의뢰 · '+role(person).name,COMPANION_VOICES[n].lead,'“확인할 건 직접 확인해.”',n)];
+  beats=[beat(person.name,'동료 · '+COMPANION_VOICES[n].trait,COMPANION_SECRETS[n]+' '+companionPersonality(person).manner+'.','“'+COMPANION_VOICES[n].talk+'”',n),beat(person.name,'개인 의뢰 · '+role(person).name,COMPANION_VOICES[n].lead,'“'+companionResponse(person,'past')+'”',n)];
  }else if((kind==='boss'||kind==='victory')&&DUNGEONS[n]){
   mood='dungeon';title=DUNGEONS[n].name+(kind==='boss'?' · 마지막 방':' · 전투 이후');focus={x:720,y:310};
   const threat=["돌문 뒤에는 북문에서 사라진 군번표가 전리품처럼 걸려 있다. 지워진 병사들의 방패 아래에서 고블린 대장이 선다. 포로를 구하려면 이 방을 통과해야 한다.","제단 한가운데 풍년 계약서의 원본이 봉인돼 있다. 오래된 수호자는 문서의 인장을 공격하는 자에게만 칼을 든다. 그러나 문서를 가져오지 않고서는 누가 대가를 치렀는지 알 수 없다.","왕좌 주변 벽에는 지워진 이들의 이름이 끝도 없이 적혀 있다. 마왕은 그 이름을 지키며 성문을 닫고 있었다. 그의 군대가 널 적으로 보는 이유는 네가 가져온 마을의 인장 때문이다."][n];
@@ -1413,15 +1445,32 @@ function eventSceneData(key){
   var i=portraitIndex(person),voice=COMPANION_VOICES[i],arc=RECRUIT_ARCS[i];
   title=person.name+' · '+arc.title;mood=arc.zone===0?'town':['','field','forest','cave','desert','snow','abyss'][arc.zone];
   focus=arc.site;
-  if(kind==='recruitLead')beats=[beat('새로 만난 사람',person.name+' · '+voice.trait,voice.talk,'“'+voice.lead+'”',i),
-    beat(person.name,'개인 서브퀘스트 · '+arc.title,'단서 위치: '+ZONES[arc.zone].name+'. 찾았다고 바로 영입하는 건 아니야. 먼저 이 사람의 사정을 알아야 해.','“해 볼 거면 끝까지 확인해.”',i)];
-  else if(kind==='recruitClue')beats=[beat('사건 단서','개인 서브퀘스트 · '+arc.title,arc.title+'의 흔적을 찾았다. '+voice.lead+' 이제 이 물증을 직접 보여 주면 자신의 사정을 들려줄 것이다.','“찾던 단서가 맞아. 이제 얘기할 준비가 됐어.”',state.player.portraitId)];
+  const personality=companionPersonality(person);
+  if(kind==='recruitLead')beats=[beat(person.name,'첫 만남 · '+voice.trait,personality.manner+'. '+voice.talk,'“'+voice.lead+'”',i),
+    beat(person.name,'개인 의뢰 · '+arc.title,'필요한 증거는 '+ZONES[arc.zone].name+'에 있어. 말뿐인 약속은 필요 없어. 물증을 가져오면 내 이야기를 더 하겠어.','“'+personality.discovery+'”',i)];
+  else if(kind==='recruitClue')beats=[beat('사건 단서','개인 의뢰 · '+arc.title,arc.title+'의 흔적을 확인했다. '+personality.manner+'.','“'+personality.discovery+'”',i)];
   else beats=[beat(person.name,'영입 · '+voice.trait,voice.lead,'“'+voice.join+'”',i),
-    beat(person.name,'파티 합류 · '+role(person).name,'이제 이 인물의 전투 기술과 개인 의뢰를 함께 진행할 수 있어.','“'+voice.talk+'”',i)];
+    beat(person.name,'함께 걷는 이유',personality.manner+'. 이 사람은 '+personality.value+'을 중요하게 여긴다.','“'+personality.past+'”',i)];
  }else if(kind==='sigil'&&DUNGEONS[n]&&['trap','door'].includes(arg)){
   mood='dungeon';title=arg==='trap'?'룬 함정의 숨겨진 인장':'석문의 오래된 기록';focus=arg==='trap'?{x:310,y:405}:{x:825,y:445};
   let matches=Object.keys(state.story.checks).filter(s=>s.startsWith(n+':')&&s.endsWith(':'+arg));let r=state.story.checks[matches[matches.length-1]];if(!r)return null;
   beats=[beat(r.success?'열린 기록':'봉인된 흔적','능력 판정 · d20 '+r.roll,r.success?(arg==='trap'?'룬의 빛이 꺼지고 아래의 인장이 드러난다.':'석문이 열리자 잊힌 맹약의 문장이 나타난다.'):'봉인은 다시 굳게 닫힌다. 이 방에서는 다시 시도할 수 없다.',r.success?'“오래 묻힌 진실의 조각을 발견했다.”':'“다음 기록은 다른 곳에 남아 있을 거야.”',state.player.portraitId)];
+ }
+ // 동행 중인 인물은 같은 사건에도 서로 다른 말을 한다. 기존 이벤트/선택/보상 조건은 그대로 유지.
+ if(beats.length&&['evidence','case','boss','victory','choice','act2','act2clear','imperial','imperialClear'].includes(kind)){
+  let topic='discovery';
+  if(kind==='boss')topic='danger';
+  else if(kind==='case')topic=state.story.cases[n]?.path==='truth'?'truth':'guard';
+  else if(kind==='choice'){
+   const picked=state.story.choices[raw];
+   topic=['witness','reveal','release'].includes(picked)?'truth':'guard';
+  }else if(kind==='victory'||kind==='act2clear'||kind==='imperialClear')topic='past';
+  const participants=partyMembers().filter(a=>a.hp>0).slice(0,2);
+  participants.forEach(a=>{
+   const profile=companionPersonality(a),voice=COMPANION_VOICES[portraitIndex(a)];
+   const line=companionResponse(a,topic);
+   beats.push(beat(a.name,'동료의 반응 · '+voice.trait,profile.manner+'.','“'+line+'”',portraitIndex(a)));
+  });
  }
  return beats.length?{key,title,beats,mood,focus}:null;
 }
