@@ -25,7 +25,7 @@ test('mobile ARPG HUD preserves existing survival mechanics and only uses CSS ar
  for(const id of ['heroPortrait','hpfill','hptext','foodfill','foodtext','questText','weapon','tool','armor','zone','kills','save','resetSave','bestiary','achievements','multi','options','avatarOpen','toTitle']){
   assert.ok(hud.includes('id="'+id+'"'),'original survival HUD control missing: '+id);
  }
- for(const id of ['stick','knob','craft','inventory','map','gather','attack','petSpecial','dismount','buildBlueprint','sheet','sheetBody','smeltPanel','multiPanel','optionsPanel','avatarPanel']){
+ for(const id of ['stick','knob','craft','inventory','map','attack','petSpecial','dismount','buildBlueprint','sheet','sheetBody','smeltPanel','multiPanel','optionsPanel','avatarPanel']){
   assert.equal((index.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'duplicate or missing control: '+id);
  }
  assert.match(index,/id="heroPortrait"[\s\S]*?aria-label="캐릭터 장비와 가방 열기"/);
@@ -49,7 +49,7 @@ test('mobile ARPG HUD preserves existing survival mechanics and only uses CSS ar
   assert.ok(quick.includes('id="'+id+'"'),'utility control missing from quick-menu: '+id);
   assert.ok(!combat.includes('id="'+id+'"'),'utility button overlaps combat thumb area: '+id);
  }
- for(const id of ['gather','attack','buildBlueprint','petSpecial','dismount']){
+ for(const id of ['autoCombat','quickHeal','quickFood','attack','buildBlueprint','petSpecial','dismount']){
   assert.ok(combat.includes('id="'+id+'"'),'existing combat action missing: '+id);
  }
  // 왼손 모드, 접근성 버튼 크기, 임무 접기는 별도 저장 설정이다.
@@ -567,7 +567,8 @@ test('mobile native renderer does not drop visible monsters at a hidden cap',()=
 
 test('mobile game world taps use existing attack mechanics',()=>{
  const html=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
- assert.ok(html.includes('.actions>#attack{display:none!important}'));
+ assert.ok(!html.includes('.actions>#attack{display:none!important}'));
+ assert.ok(html.includes('id="autoCombat"'));
  assert.ok(html.includes('root.dataset.playerAttackAt=Number(p.attackAt||0).toFixed(0)'));
  assert.ok(html.includes('if(!isCreative())attack();'));
  assert.ok(html.includes('if(!isCreative()){'));

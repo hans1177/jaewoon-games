@@ -170,3 +170,105 @@ test('all inventory item types render committed CC0 image icons without changing
  assert.match(source,/else if\(r\)equipItem\(r\.id\)/);
  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
+
+// 지역 연결 회귀: 원본 입장 함수를 실행해 왕복·해금·산소·보상을 함께 확인한다.
+function regionRuntime(){
+ const body=name=>{const start=source.indexOf('function '+name+'('),end=source.indexOf('\nfunction ',start+10);assert.ok(start>=0,name);return source.slice(start,end)};
+ const state={area:'surface',player:{x:7200,y:1620,hp:100,oxygen:40000,root:0},pet:{mounted:false},story:{stage:'go-cave',labUnlocked:true,labBossDefeated:true},enemies:[],goblinOutpost:{floor:0,cleared:[true,true,true,true],spawned:{}},underwaterDungeonChests:[false,false,false],templeOfferingUsed:true};
+ const context=vm.createContext({state,performance:{now:()=>1000},Date,Math,Number,
+  clamp:(n,a,b)=>Math.max(a,Math.min(b,n)),dist:(x,y,a,b)=>Math.hypot(x-a,y-b),
+  regionAt:()=> 'giantlake',multiplayer:{connected:false},petAlive:()=>false,multiIsHost:()=>true,
+  showNotice:()=>{},updateHud:()=>{},saveGame:()=>{},dismountPet:()=>{},
+  underwaterOxygenCapacity:()=>40000,spawnUnderwaterDungeonEnemies:()=>{},spawnQuestCaveEnemies:()=>{},spawnStoryLabBoss:()=>{},spawnTempleUpperEnemies:()=>{},spawnTempleGuardian:()=>{},goblinOutpostAlive:()=>[],spawnGoblinOutpostWave:()=>{}});
+ const a=source.indexOf('const WORLD='),b=source.indexOf('// 3D 시각 지형 표식:',a);
+ vm.runInContext(source.slice(a,b),context);
+ for(const name of ['enterWorldTreeInterior','leaveWorldTreeInterior','enterCave','leaveCave','enterUnderwater','leaveUnderwater','enterUnderwaterDungeon','leaveUnderwaterDungeon','enterQuestCave','leaveQuestCave','enterStoryLab','leaveStoryLab','enterStoryLabFloor2','returnStoryLabFloor1','goblinOutpostArea','goblinOutpostFloor','enterGoblinOutpost','leaveGoblinOutpost','goGoblinOutpostFloor','enterJungleTemple','enterTempleUpper','enterTempleLower','enterTempleSecret','returnTempleLobby','leaveJungleTemple','regionPassages'])vm.runInContext(body(name),context);
+ return {state,context,passages:()=>vm.runInContext('regionPassages()',context),go(id){const row=this.passages().find(r=>r.id===id);assert.ok(row,'missing '+state.area+':'+id);state.player.x=row.x;state.player.y=row.y;row.action();return state.area}};
+}
+
+test('all authored interior passages round-trip through their original game functions',()=>{
+ const r=regionRuntime();
+ for(const [id,area] of [
+  ['giant-lake-water','underwater'],['dungeon-gate','underwater-dungeon'],['dungeon-exit','underwater'],['lake-surface','surface'],
+  ['worldtree-inner-door','worldtreeinside'],['worldtree-basement-entrance','underground'],['caveexit','worldtreeinside'],['worldtree-inner-exit','surface'],
+  ['wasteland-cave','questcave'],['quest-cave-exit','surface']
+ ])assert.equal(r.go(id),area,id);
+ r.state.story.stage='find-lab';
+ for(const [id,area] of [['story-lab-entry','storylab1'],['story-lab-ladder-up','storylab2'],['story-lab-ladder-down','storylab1'],['story-lab-exit','surface'],['goblin-outpost-entry','goblinoutpost-1']])assert.equal(r.go(id),area,id);
+ for(let floor=1;floor<4;floor++)assert.equal(r.go('goblin-up-'+floor),'goblinoutpost-'+(floor+1));
+ for(let floor=4;floor>1;floor--)assert.equal(r.go('goblin-down-'+floor),'goblinoutpost-'+(floor-1));
+ assert.equal(r.go('goblin-down-1'),'surface');
+ for(const [id,area] of [['jungle-temple-entry','jungletemple'],['temple-upper','jungletemple-upper'],['temple-secret','jungletemple-secret'],['temple-secret-return','jungletemple-upper'],['temple-upper-return','jungletemple'],['temple-lower','jungletemple-lower'],['temple-lower-return','jungletemple'],['temple-exit','surface']])assert.equal(r.go(id),area,id);
+ assert.deepEqual(r.state.underwaterDungeonChests,[false,false,false],'travel cannot award dungeon loot');
+ assert.equal(r.state.player.root,0,'travel cannot grant boss offerings');
+});
+
+test('travel UI keeps quest, floor-clear, offering and boss-exit gates and shared underwater oxygen',()=>{
+ const r=regionRuntime();
+ r.state.story.stage='find-survivor';assert.equal(r.go('wasteland-cave'),'surface');
+ r.state.story.labUnlocked=false;assert.equal(r.go('story-lab-entry'),'surface');
+ r.go('goblin-outpost-entry');r.state.goblinOutpost.cleared[0]=false;assert.equal(r.go('goblin-up-1'),'goblinoutpost-1');
+ r.state.area='jungletemple-upper';r.state.templeOfferingUsed=false;assert.equal(r.go('temple-secret'),'jungletemple-upper');
+ r.state.area='underground';r.state.bossSummoned=true;r.state.bossDefeated=false;assert.equal(r.go('caveexit'),'underground');
+ r.state.area='surface';r.go('giant-lake-water');assert.equal(r.state.player.oxygen,40000);const deadline=r.state.player.oxygenEndsAt;
+ r.go('dungeon-gate');assert.equal(r.state.player.oxygenEndsAt,deadline,'dungeon transition must not refresh oxygen');
+ r.go('dungeon-exit');assert.equal(r.state.player.oxygenEndsAt,deadline);
+});
+
+test('passage input is prioritized before pets and combat, uses proximity, and never teleports by map click',()=>{
+ const start=source.indexOf('function handleWorldTap('),end=source.indexOf('\nfunction ',start+20),tap=source.slice(start,end);
+ assert.ok(tap.indexOf('const passage=regionPassages()')<tap.indexOf('petAlive()'));
+ assert.ok(tap.indexOf('const passage=regionPassages()')<tap.indexOf('const visible=state.enemies'));
+ assert.match(tap,/passage\.range/);assert.match(tap,/doubleTapTarget\(passage\.id,now,passage\.action\)/);
+ assert.match(source,/id="regionTravel"[^>]*hidden/);assert.match(source,/e\.code==='KeyF'&&!e\.repeat/);
+ assert.match(source,/if\(!passage\|\|dist\(state\.player\.x,state\.player\.y,passage\.x,passage\.y\)>passage\.range\)/);
+});
+
+test('diagonal movement slides along shoreline without walking into lake water or buildings',()=>{
+ const start=source.indexOf('const nx=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24),ny=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24);',source.indexOf('// 해안·건물에 대각선'));
+ const end=source.indexOf('\n    }',start);assert.ok(start>=0&&end>start);
+ const move=new Function('p','mx','my','moveSpeed','dt','WORLD','clamp','pointInGiantLakeWater','blockedByPlayerBuilding',source.slice(start,end));
+ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+ const p={x:1000,y:1600};move(p,1,-1,185,.033,{w:72000,h:28800},clamp,(_x,y)=>y<1600,()=>false);
+ assert.ok(p.x>1000,'free horizontal axis remains movable');assert.equal(p.y,1600,'blocked water axis is preserved');
+ const wall={x:1000,y:1600};move(wall,1,1,185,.033,{w:72000,h:28800},clamp,()=>false,x=>x>1000);
+ assert.equal(wall.x,1000);assert.ok(wall.y>1600,'building collision only blocks the obstructed axis');
+});
+
+// 자동 조작은 선택만 수행한다. 실제 채집 보상과 공격 피해는 원본 책임 함수만 호출한다.
+test('always-on auto gathering skips unmineable nearby ore and keeps authoritative cadence',()=>{
+ const start=source.indexOf('function updateAutoGather('),end=source.indexOf('\nfunction ',start+20);
+ const state={area:'surface',player:{x:0,y:0},gathering:{auto:false,target:null,nextAt:0,blockedUntil:0}};
+ const ore={id:'ore',kind:'iron',x:5,y:0,hp:4},tree={id:'tree',kind:'tree',x:10,y:0,hp:4};let calls=[];
+ const context=vm.createContext({state,AUTO_GATHER_RANGE:110,AUTO_GATHER_INTERVAL_MS:500,resourceNodes:()=>[tree,ore],playerCombatActive:()=>false,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),gather:(target,silent)=>{assert.equal(silent,true);calls.push(target.id);if(target===ore)return false;target.hp--;return true}});
+ vm.runInContext(source.slice(start,end),context);vm.runInContext('updateAutoGather(1000)',context);
+ assert.equal(state.gathering.auto,true);assert.deepEqual(calls,['ore','tree']);assert.equal(state.gathering.target,tree);assert.equal(state.gathering.nextAt,1500);
+ vm.runInContext('updateAutoGather(1200)',context);assert.equal(calls.length,2,'no faster gathering through frame rate');
+ state.player.downedUntil=5000;vm.runInContext('updateAutoGather(1600)',context);assert.equal(calls.length,2,'downed players cannot gather');
+});
+
+test('automatic combat selects only reachable hostile targets and delegates attack, ammo and cooldown',()=>{
+ const start=source.indexOf('function updateAutoCombat('),end=source.indexOf('\nfunction ',start+20);
+ const enemy=(id,x,extra={})=>({netId:id,x,y:0,hp:100,area:'surface',type:{mood:'aggressive',r:20},...extra});
+ const state={area:'surface',player:{x:0,y:0,attackAt:0},pet:{mounted:false,attackAt:0},combat:{targetId:null},settings:{autoCombat:true},enemies:[]};let hits=[];
+ const nodes={hudGuide:{hidden:true},avatarPanel:{hidden:true},optionsPanel:{classList:{contains:()=>false}}};
+ const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentWeapon:()=>({range:80}),currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
+ vm.runInContext(source.slice(start,end),context);
+ state.enemies=[enemy('neutral',1,{type:{mood:'neutral',r:20},hostile:false}),enemy('other-area',5,{area:'underwater'}),enemy('burrowed',6,{type:{mood:'aggressive',r:20,burrower:true},emerged:false}),enemy('far',500),enemy('near',50)];
+ vm.runInContext('updateAutoCombat(1000)',context);assert.deepEqual(hits,['near']);assert.equal(state.combat.targetId,'near');
+ vm.runInContext('updateAutoCombat(1100)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,'near','target status stays stable during cooldown');
+ state.settings.autoCombat=false;vm.runInContext('updateAutoCombat(1500)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,null);
+ state.settings.autoCombat=true;state.player.downedUntil=5000;vm.runInContext('updateAutoCombat(1600)',context);assert.equal(hits.length,1);
+ state.player.downedUntil=0;context.isCreative=()=>true;state.enemies=[enemy('arena',50,{creativeOwned:true,creativeAttackPlayer:false})];vm.runInContext('updateAutoCombat(2000)',context);assert.equal(hits.length,1);
+ state.enemies[0].creativeAttackPlayer=true;vm.runInContext('updateAutoCombat(2100)',context);assert.deepEqual(hits,['near','arena']);
+});
+
+test('half-circle shortcuts are real existing actions and old saves cannot disable mandatory gathering',()=>{
+ for(const id of ['autoCombat','attack','petSpecial','quickHeal','quickFood','dismount'])assert.equal((source.match(new RegExp('id="'+id+'"','g'))||[]).length,1,id);
+ assert.doesNotMatch(source,/<button[^>]+id="gather"/);assert.doesNotMatch(source,/toggleAutoGather/);
+ assert.match(source,/state\.gathering\.auto=true;state\.settings\.autoCombat=savedSettings\.autoCombat!==false/);
+ assert.match(source,/autoGather:true,autoCombat:state\.settings\.autoCombat!==false/);
+ assert.match(source,/if\(selected\)useItem\(selected\)/);
+ assert.match(source,/--arc-x:44px;--arc-y:135px/);
+ assert.match(source,/body\[data-hud-hand="left"\] \.actions>button\{left:calc\(100% - var\(--arc-x\)/);
+});
