@@ -32,7 +32,7 @@ test('OWNER LOCK: every main merge triggers the existing Pages publisher without
   assert.match(workflow,/id: latest_main/);
   assert.match(publicationJob,/actions: write/,'stale Pages repair must dispatch through the same canonical workflow');
   assert.match(publicationJob,/PAGES_LATEST_MAIN_CANONICAL_REQUEUED/);
-  assert.match(publicationJob,/gh workflow run magic-forest-pages\.yml --ref main/);
+  assert.match(publicationJob,/gh workflow run magic-forest-pages\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
   assert.match(publicationJob,/head_sha=\$latest/);
   assert.match(publicationJob,/STALE_PAGES_REVISION_SKIPPED/);
   assert.match(workflow,/if: steps.latest_main.outputs.publish == 'true'/);

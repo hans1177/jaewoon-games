@@ -625,7 +625,7 @@ jobs:
               active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?head_sha=$latest&per_page=30" \
                 --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="requested" or .status=="pending")] | length')"
               if [ "$active" = "0" ]; then
-                gh workflow run magic-forest-pages.yml --ref main
+                gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
                 echo "PAGES_LATEST_MAIN_CANONICAL_REQUEUED=$latest"
               else
                 echo "PAGES_LATEST_MAIN_CANONICAL_ALREADY_RUNNING=$latest"
