@@ -138,7 +138,9 @@ async function loadSourceModels(){
     if(!response.ok)throw new Error('Compressed CC0 model pack unavailable: '+response.status);
     packedModels=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
   }
-  const results=await Promise.all(MODEL_NAMES.map(async name=>{
+  // 먼저 가까운 3D 배경에 필요한 5개 모델만 준비한다.
+  const required=new Set(['floor_base','tree','tree_large','foliage_A','cobblestones']);
+  const fetchSourceModel=async name=>{
     if(packedModels){
       const entry=packedModels[name];
       if(!entry?.obj||!entry?.mtl)throw new Error('Compressed CC0 model missing: '+name);
@@ -156,8 +158,16 @@ async function loadSourceModels(){
     if(!text.includes('v ')||!text.includes('f '))throw new Error('Invalid original 3D OBJ model: '+name);
     if(!materialText.includes('Kd '))throw new Error('Original 3D material diffuse missing: '+name);
     return [name,parseDownloadedObj(text,name,materialText)];
-  }));
-  return new Map(results);
+  };
+  const models=new Map(await Promise.all(MODEL_NAMES.filter(name=>required.has(name)).map(fetchSourceModel)));
+  return {models,loadRemaining:async()=>{
+    for(const name of MODEL_NAMES){
+      if(required.has(name))continue;
+      await new Promise(resolve=>setTimeout(resolve,0));
+      const [key,model]=await fetchSourceModel(name);
+      models.set(key,model);
+    }
+  }};
 }
 
 export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100},initialState=null){
@@ -281,13 +291,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(file)initialFiles.set(file,Math.min(initialFiles.get(file)??Infinity,distance));
   }
   const creaturesPromise=(async()=>{
-    const ordered=[...initialFiles].sort((a,b)=>a[1]-b[1]).map(([file])=>file),limit=mobileBudget?2:4;
+    const ordered=[...initialFiles].sort((a,b)=>a[1]-b[1]).map(([file])=>file),limit=mobileBudget?6:10;
     for(let i=0;i<ordered.length;i+=limit)await Promise.all(ordered.slice(i,i+limit).map(loadCreatureSource));
   })();
-  let models;
+  let models,stagedModels,extraModelsStarted=false;
   // 모델이 모두 끝날 때까지 월드 시작을 묶어 두지 않는다.
   // 몹은 가까운 종부터 비동기로 로드하고, 미표시 전투는 기존 안전 게이트가 멈춘다.
-  try{[models]=await Promise.all([modelsPromise,heroPromise])}
+  try{[stagedModels]=await Promise.all([modelsPromise,heroPromise]);models=stagedModels.models}
   catch(error){
     disposed=true;heroLoadVersion++;
     for(const source of nativeCreatureSources.values())source.model.traverse(child=>{
@@ -574,7 +584,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(count)interactables.push(batch.mesh);
     creatureBounds.radius=4;
   }
-  function frame(state,regionAt){
+  function frame(state,regionAt,regionScene=null){
     if(disposed)return;
     // Additional optimization: reduce active model range and GPU resolution only
     // when the actual frame rate remains low. Never change simulation tick or AI.
@@ -594,7 +604,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
-    if(state.area!=='surface'||!state.player){lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='region-3d-not-yet-mapped';return}
+    if(!state.player){lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='player-model-unavailable';return}
+    const interiorBiome={
+      underwater:'giantlake',underground:'canyon',worldtreeinside:'worldtree',questcave:'swamp',
+      storylab1:'crystal',storylab2:'crystal',jungletemple:'jungle',
+      'jungletemple-upper':'jungle','jungletemple-lower':'swamp','jungletemple-secret':'jungle',
+      'goblinoutpost-1':'forest','goblinoutpost-2':'forest','goblinoutpost-3':'swamp','goblinoutpost-4':'canyon'
+    };
+    const isInterior=state.area!=='surface';
+    if(isInterior&&!Object.hasOwn(interiorBiome,state.area)){canvas.hidden=true;active=false;fallbackReason='region-3d-not-yet-mapped';return}
     const p=state.player,px=Number(p.x)||0,py=Number(p.y)||0,centerX=px*SCALE,centerY=py*SCALE;
     const w=window.innerWidth,h=window.innerHeight;
     if(w!==lastW||h!==lastH){
@@ -616,7 +634,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // 로딩: 플레이어 근처를 우선하되, 넓은 화면에서 멀리 보이는 원본 몹도 빠짐없이 요청한다.
     // 카메라 갱신 뒤 시야를 판단하며 250ms/동시 요청 제한을 유지한다.
     if(sampleNow>=nextCreatureScan){
-      nextCreatureScan=sampleNow+250;
+      nextCreatureScan=sampleNow+100;
       const needed=new Map();
       for(const e of state.enemies||[]){
         if(!e||e.hp<=0||e.area!==state.area)continue;
@@ -633,12 +651,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         needed.set(file,Math.min(needed.get(file)??Infinity,distance));
       }
       for(const [file] of [...needed].sort((a,b)=>a[1]-b[1])){
-        if(loadingCreatureCount>=(mobileBudget?2:4))break;
+        if(loadingCreatureCount>=(mobileBudget?6:10))break;
         void loadCreatureSource(file);
       }
     }
      const classify=typeof regionAt==='function'?regionAt:()=> 'forest';
-    const zone=String(classify(px,py)||'forest');
+    const zone=isInterior?interiorBiome[state.area]:String(classify(px,py)||'forest');
     currentBiome=BIOME_STYLE[zone]?zone:'forest';
     scene.background.set(BIOME_STYLE[currentBiome].sky);
     scene.fog.color.set(BIOME_STYLE[currentBiome].sky);
@@ -660,7 +678,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
       // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
-      const tileZone=String(classify(gx/SCALE,gz/SCALE)||'forest');
+      const tileZone=isInterior?currentBiome:String(classify(gx/SCALE,gz/SCALE)||'forest');
       const tileStyle=BIOME_STYLE[tileZone]||BIOME_STYLE.forest;
       tile.position.set(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ);tile.updateMatrix();
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
@@ -668,7 +686,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       tileIndex++;
       if(tx<3&&tz<3){
         const seamX=gx+floorPitchX*.5,seamZ=gz+floorPitchZ*.5;
-        const seamZone=String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
+        const seamZone=isInterior?currentBiome:String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
         const seamStyle=BIOME_STYLE[seamZone]||BIOME_STYLE.forest;
         tile.position.set(seamX-floorCenterX,floorSurfaceY-.055,seamZ-floorCenterZ);
         tile.updateMatrix();
@@ -725,10 +743,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     synchronizeUndead(state,px,py,seen);
     const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
-    resources(state.trees,'tree',px,py,seen,1.28);
-    resources(state.swampTrees,'tree_large',px,py,seen,1.65);
-    resources(state.rocks,'cobblestones',px,py,seen,1.05);
-    resources(state.fibers,'foliage_A',px,py,seen,1.2);
+    if(!isInterior)resources(state.trees,'tree',px,py,seen,1.28);
+    if(!isInterior)resources(state.swampTrees,'tree_large',px,py,seen,1.65);
+    if(!isInterior)resources(state.rocks,'cobblestones',px,py,seen,1.05);
+    if(!isInterior)resources(state.fibers,'foliage_A',px,py,seen,1.2);
     // Exact category match: original Tiny Treats benches for actual player-owned
     // crafting workstations, positioned at their existing authoritative coordinates.
     for(const [key,workbench,modelName] of [
@@ -737,23 +755,28 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       ['goldBench',state.goldBench,'bench_B'],
       ['jungleBench',state.jungleBench,'bench_A']
     ]){
-      if(workbench&&Math.hypot(workbench.x-px,workbench.y-py)<1000)
+      if(!isInterior&&workbench&&Math.hypot(workbench.x-px,workbench.y-py)<1000)
         addVisibleEntity(key,modelName,workbench.x,workbench.y,1.7,seen);
     }
     for(const [i,wall] of (state.walls||[]).entries()){
-      if(Math.hypot(wall.x-px,wall.y-py)<1000)
+      if(!isInterior&&Math.hypot(wall.x-px,wall.y-py)<1000)
         addVisibleEntity('wall:'+(wall.id||i),'fence_straight',wall.x,wall.y,1.2,seen,wall.vertical?Math.PI/2:0);
     }
     // House construction: reuse existing saved door and chest world coordinates.
     // The downloaded CC0 gate and parcel are only species-level visual candidates, not finished QA.
     for(const [i,door] of (state.doors||[]).entries()){
-      if(Math.hypot(door.x-px,door.y-py)<1000)
+      if(!isInterior&&Math.hypot(door.x-px,door.y-py)<1000)
         addVisibleEntity('door:'+(door.id||i),'gate_single',door.x,door.y,1.2,seen,
           (door.vertical?Math.PI/2:0)+(door.open?Math.PI/2:0));
     }
     for(const [i,chest] of (state.chests||[]).entries()){
-      if(Math.hypot(chest.x-px,chest.y-py)<1000)
+      if(!isInterior&&Math.hypot(chest.x-px,chest.y-py)<1000)
         addVisibleEntity('chest:'+(chest.id||i),'package',chest.x,chest.y,1.05,seen);
+    }
+    // 해당 지역의 기존 출입구·제단·상자만 실제 저장 좌표에 표시하고 누르기 판정은 원본 게임에 맡긴다.
+    for(const mark of regionScene?.landmarks||[]){
+      if(!mark||Math.hypot(mark.x-px,mark.y-py)>950)continue;
+      addVisibleEntity('region:'+state.area+':'+mark.id,mark.model,mark.x,mark.y,mark.scale||1.4,seen);
     }
     // Reuse existing world entities. No synthetic monsters or substitute species.
     for(const [key,row] of entities)if(row.seen!==seen){scene.remove(row.model);entities.delete(key)}
@@ -764,6 +787,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     renderer.render(scene,camera);
     active=true;canvas.hidden=false;fallbackReason='';
+    if(!extraModelsStarted){
+      extraModelsStarted=true;
+      // 첫 WebGL 프레임 이후 멀리 있는 장식 메시를 단계적으로 파싱한다.
+      setTimeout(()=>{if(!disposed)void stagedModels.loadRemaining().catch(error=>
+        console.warn('CC0 optional scenery unavailable',error));},0);
+    }
   }
   function pick(clientX,clientY){
     if(!active||canvas.hidden||disposed)return null;
