@@ -11,7 +11,7 @@ export class PartyView{
  constructor(canvas,{onLoad=()=>{}}={}){
   this.canvas=canvas;this.models=new Map();this.actors=new Map();this.staticRoot=new THREE.Group();this.worldSignature='';this.assetRevision=0;
   this.targetYaw=Math.PI/4;this.yaw=this.targetYaw;this.pitch=.73;this.zoom=1;this.targetZoom=1;this.offset=new THREE.Vector2();this.focus=new THREE.Vector3();this.follow='player';this.selection='player';this.destination=null;
-  this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);this.hit=new THREE.Vector3();this.lastAt=0;this.frameCost=16;this.quality=1;this.qualityAt=0;this.labels=[];this.lastLabelsAt=0;this.ready=false;
+  this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);this.hit=new THREE.Vector3();this.lastAt=0;this.frameCost=16;this.quality=1;this.qualityAt=0;this.labels=[];this.lastLabelsAt=0;this.ready=false;this.worldMood=null;this.torchLights=[];this.torchFlames=[];this.climateParticles=null;this.weatherKind='clear';this.qualityPreset='auto';this.terrainTint=new THREE.Color();
   try{
    this.gl=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});this.gl.outputColorSpace=THREE.SRGBColorSpace;this.gl.toneMapping=THREE.ACESFilmicToneMapping;this.gl.toneMappingExposure=.83;this.gl.setClearColor(0x242a2a);this.gl.sortObjects=true;
    this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x49514f,12,58);this.scene.add(this.staticRoot);
@@ -57,8 +57,8 @@ groundMaterial(zone,dungeon){
  const key=dungeon?'dungeon':String(zone);
  if(this.groundMaterials.has(key))return this.groundMaterials.get(key);
  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
- const ctx=canvas.getContext('2d'),stone=dungeon||zone===0||zone===3||zone===6;
- const palette=dungeon?['#292c2b','#363735','#403f3b','#333637']:zone===0?['#474743','#535149','#3d403d','#565044']:zone===2?['#303a35','#354339','#44493d','#293832']:zone===4?['#665d50','#746954','#575249','#807663']:zone===5?['#667174','#747f7f','#536165','#8b9594']:['#3b433c','#4a5145','#353b35','#51544c'];
+ const ctx=canvas.getContext('2d'),stone=dungeon||zone===0||zone===3||zone===6||zone>=7;
+ const palette=dungeon?['#292c2b','#363735','#403f3b','#333637']:zone===0?['#474743','#535149','#3d403d','#565044']:zone===2?['#303a35','#354339','#44493d','#293832']:zone===4?['#665d50','#746954','#575249','#807663']:zone===5?['#667174','#747f7f','#536165','#8b9594']:zone===7?['#605145','#766352','#514940','#81674d']:zone===8?['#465351','#5b605b','#3c4c4a','#67736b']:zone===9?['#746853','#867760','#615949','#9a8560']:zone===10?['#5b5260','#736773','#4a4756','#80727e']:['#3b433c','#4a5145','#353b35','#51544c'];
  const random=n=>{const t=Math.sin(n*127.41+(zone+3)*64.7)*24316.379;return t-Math.floor(t);};
  ctx.fillStyle=palette[0];ctx.fillRect(0,0,256,256);
  if(stone){
@@ -109,7 +109,7 @@ groundMaterial(zone,dungeon){
  // 지형·배경: 기존 등록 CC0 3D 모델만 사용하며 전투 판정과 이동 충돌은 변경하지 않는다.
 buildWorld(live){
  this.staticRoot.traverse(o=>{if(o.userData.ownedGeometry)o.geometry.dispose();if(o.userData.ownedMaterial)o.material.dispose();if(o.isInstancedMesh)o.dispose();});
- this.staticRoot.clear();this.weather=null;
+ this.staticRoot.clear();this.weather=null;this.climateParticles=null;this.torchLights.length=0;this.torchFlames.length=0;
  const zone=live.state.zone,dungeon=!!live.dungeon,w=live.worldW*SCALE,h=live.worldH*SCALE;
  const mood=dungeon?{sky:0x1a2125,fog:0x29302f,far:55,light:0xeac48c,intensity:1.0}:[
   {sky:0x3c4548,fog:0x4e5653,far:76,light:0xffdaa3,intensity:1.75},
@@ -124,6 +124,7 @@ buildWorld(live){
   {sky:0x6e5941,fog:0x796952,far:65,light:0xeed1a3,intensity:1.58},
   {sky:0x524358,fog:0x655774,far:58,light:0xcdbfe7,intensity:1.19}
  ][zone]||{sky:0x68705f,fog:0x707761,far:70,light:0xffd6a6,intensity:1.5};
+ this.worldMood=mood;
  this.scene.background=new THREE.Color(mood.sky);
  this.scene.fog.color.setHex(mood.fog);this.scene.fog.near=13;this.scene.fog.far=mood.far;
  this.sun.color.setHex(mood.light);this.sun.intensity=mood.intensity*.75;
@@ -354,8 +355,9 @@ buildWorld(live){
  }
  render(live){
   if(!this.ready)return;const started=performance.now();if(this.mobile&&this.lastRenderedAt&&started-this.lastRenderedAt<30)return;this.lastRenderedAt=started;const now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
-  const choices=live.state.story?.choices||{};const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision+':'+(choices.fort||'')+':'+(choices.temple||'')+':'+(choices.ending||'');
+  const choices=live.state.story?.choices||{};const climate=live.environment||{minutes:720,weather:'clear',effects:true,quality:'auto'};const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision+':'+(choices.fort||'')+':'+(choices.temple||'')+':'+(choices.ending||'')+':'+(live.dungeon?'inside':climate.weather)+':'+climate.effects+':'+climate.quality;
   if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.clearEffects();this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
+  this.applyEnvironment(live,dt,now);
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
   const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);if(this.weather){this.weather.position.set(this.focus.x+Math.sin(now*.00045)*.24,0,this.focus.z);this.weather.rotation.y=Math.sin(now*.00018)*.08;}this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
   const activeMarker=live.evidence||live.council;this.evidenceBeacon.visible=!!activeMarker;
