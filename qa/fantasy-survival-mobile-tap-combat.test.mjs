@@ -322,7 +322,7 @@ test('low-quality mobile mode reduces GPU cost without deleting the original nat
  assert.match(native,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
  assert.match(native,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
  assert.match(native,/updateInteriorWalls\(isInterior\?regionScene:null/);
- assert.match(source,/underwater:'underwater'|'underwater-dungeon':'underwater-dungeon'/);
+ assert.match(source,/state\.area==='underwater'\|\|state\.area==='underwater-dungeon'/);
 });
 
 
