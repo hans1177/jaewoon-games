@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g46-f455ee96a1e0",
-  "directiveFingerprint": "f455ee96a1e0b79bd7574b0f160bf4ee98dc6876472b5e16803b49b46b52c0a5",
-  "previousDirectiveFingerprint": "cb260396d8cbf72ef6c2cb844491352a1bb28d2f035e46cf0a286bc9771c9d93",
-  "forbiddenRepeatFingerprint": "cb260396d8cbf72ef6c2cb844491352a1bb28d2f035e46cf0a286bc9771c9d93",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g48-a66074048643",
+  "directiveFingerprint": "a660740486434fbcf8bf4408e2baf9c53515a2f98ce4417d4c5cfd7eb82c1a76",
+  "previousDirectiveFingerprint": "3a1135d7336ace2b70895a5e214359cf019854300d6fd4952c307f27602fc27d",
+  "forbiddenRepeatFingerprint": "3a1135d7336ace2b70895a5e214359cf019854300d6fd4952c307f27602fc27d",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 46,
+  "generation": 48,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -4921,67 +4921,19 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 45,
-    "previousSourceTreeFingerprint": "02bc686380c5ac4f3972145fc4262b31c90cf975ef6db9a9fe4f15e3b9dde601",
+    "previousGeneration": 47,
+    "previousSourceTreeFingerprint": "970897671dcd8cde1535ffd916f576b950921e0b7d3e589528345116ad29426a",
     "currentSourceTreeFingerprint": "859725fac896c8137db053b7b7725a8ae8964fb33839932bf375dd2c23ca4474",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "b205da4c8a7824aefdf4e8b67aaa882a5cc5ecb4",
-      "artifactIdentity": null,
-      "runtimeVerified": false,
-      "productionVerified": false,
-      "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 39957901022,
-      "testedAt": "2026-10-23T13:51:00.354Z",
-      "repairSurfaces": [
-        "SOURCE_CONTRACT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CLIENT_MULTIPLAYER_SYNC_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-runtime-evidence-pending"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6128,7 +6080,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 353169,
+        "sourceBytes": 382528,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6161,12 +6113,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 4,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=2.",
+    "themeDepth": 6,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 4,
+        "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
@@ -6183,8 +6135,8 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6215,7 +6167,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 122,
+        "score": 86,
         "gapDomains": []
       },
       {
@@ -6330,11 +6282,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 46,
-    "previousGeneration": 45,
+    "generation": 48,
+    "previousGeneration": 47,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "859725fac896c8137db053b7b7725a8ae8964fb33839932bf375dd2c23ca4474",
-    "priorSourceFingerprint": "02bc686380c5ac4f3972145fc4262b31c90cf975ef6db9a9fe4f15e3b9dde601",
+    "priorSourceFingerprint": "970897671dcd8cde1535ffd916f576b950921e0b7d3e589528345116ad29426a",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -8134,7 +8086,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 47,
+    "nextGeneration": 49,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8196,5 +8148,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-23T13:47:13.464Z"
+  "generatedAt": "2026-10-24T08:01:03.482Z"
 }

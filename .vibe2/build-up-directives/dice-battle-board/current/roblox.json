@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "dice-battle-board-build-up-g11-da97c10b0c78",
-  "directiveFingerprint": "da97c10b0c78177dec5b4b5fd75ae5ca55f057250b3e2447137fac676dee1d6d",
-  "previousDirectiveFingerprint": "41e66755706ffc90763f78939417f47fff0d6f6b645d1991240439e743443b6b",
-  "forbiddenRepeatFingerprint": "41e66755706ffc90763f78939417f47fff0d6f6b645d1991240439e743443b6b",
+  "directiveId": "dice-battle-board-build-up-g13-7e6d53056089",
+  "directiveFingerprint": "7e6d5305608981845312b36d0efe1ed5c0aeff7321fcb79ad0e9cae3239914f9",
+  "previousDirectiveFingerprint": "eab057db30504cdd70fbb0f7d9264723ac69186229da301c3bbde2119a26725a",
+  "forbiddenRepeatFingerprint": "eab057db30504cdd70fbb0f7d9264723ac69186229da301c3bbde2119a26725a",
   "gameId": "dice-battle-board",
   "gameName": "주사위 전투 보드",
-  "generation": 11,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -4972,8 +4972,8 @@
   "previousVersionDelta": {
     "previousGoal": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "fd7a2e94d4ac4f5678e097f0c51b15b7d8434b191373f9218bb6b13d22e030c7",
     "currentSourceTreeFingerprint": "d62bdd10dadcfff7244876e62a6d76eb840c73705fa41bc52fd4488b00f7ea06",
     "sourceChanged": true,
     "verifiedEvolution": false
@@ -4981,11 +4981,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "982746b97515c851f3030a1e39614c858f21392c",
+      "sourceRevision": "a62d5bd50ae0b8546e0d50e6e67b6a5bde926261",
       "artifactIdentity": "sha256:e355a3def94d11e6e264c301ee66b0c7fd719c035814424181c6f2103081d2d2",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 39957901022,
-      "testedAt": "2026-10-23T14:08:27.571Z",
+      "workflowRunId": 40080071323,
+      "testedAt": "2026-10-24T09:22:46.349Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -5103,7 +5103,22 @@
     "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
     "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [
-      "roblox-runtime-evidence-pending"
+      "roblox-f0-gameplay-product-readiness-failed",
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6250,7 +6265,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 401013,
+        "sourceBytes": 430376,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6282,19 +6297,19 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 11,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=6.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 11
+        "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "PRESENTATION_WORLD_COHESION",
@@ -6307,7 +6322,9 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6318,12 +6335,11 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 1,
+      "distinctCovered": 2,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6331,7 +6347,6 @@
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6340,16 +6355,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 48,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -6381,16 +6386,26 @@
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 12,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -6456,11 +6471,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 11,
-    "previousGeneration": 10,
+    "generation": 13,
+    "previousGeneration": 12,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "d62bdd10dadcfff7244876e62a6d76eb840c73705fa41bc52fd4488b00f7ea06",
-    "priorSourceFingerprint": "98b127ccd12f0a460a19d820275c4ebe709080cb907c83ef031d7b9703170675",
+    "priorSourceFingerprint": "fd7a2e94d4ac4f5678e097f0c51b15b7d8434b191373f9218bb6b13d22e030c7",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -8277,7 +8292,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8339,5 +8354,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-23T13:47:16.192Z"
+  "generatedAt": "2026-10-24T09:31:50.163Z"
 }

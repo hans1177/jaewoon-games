@@ -4993,7 +4993,7 @@
     "blockers": [
       "roblox-runtime-evidence-pending"
     ],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -8099,9 +8099,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "체스 배틀. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 체스 배틀에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure requires source repair before another observation",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
@@ -8119,8 +8119,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",

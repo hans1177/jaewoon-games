@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g11-4d566d1a91e0",
-  "directiveFingerprint": "4d566d1a91e05a2261c328ac7bafb2046f9cc2d5158a8a069aa02d6dba26b351",
-  "previousDirectiveFingerprint": "c5858bc857c871e6ff4863dc34d2aafa5acf2c9d2b066c474fdb441bb0be6fd9",
-  "forbiddenRepeatFingerprint": "c5858bc857c871e6ff4863dc34d2aafa5acf2c9d2b066c474fdb441bb0be6fd9",
+  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g13-234a95b56517",
+  "directiveFingerprint": "234a95b56517e70939211f5f5f0089791d1a11e62dfb7c12ab2914d988e771ae",
+  "previousDirectiveFingerprint": "b5a0cf1214683f8bb629f6ecefec7e4ab6322cc2dd2574fa391f8e53df831802",
+  "forbiddenRepeatFingerprint": "b5a0cf1214683f8bb629f6ecefec7e4ab6322cc2dd2574fa391f8e53df831802",
   "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
   "gameName": "Harbor Days",
-  "generation": 11,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -4996,88 +4996,19 @@
   "previousVersionDelta": {
     "previousGoal": "Harbor Days. 서사시의 추방과 귀환·민속 금기와 전염 생존. Harbor Days에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "e328443e421ab20e5dc75ba57aa603defe840caf637647c9d97eed8f6d9987ad",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "b680fdbf8539b5acb70e8786482895e12c80e4a1a0d1bf0dba00a08cd64e32e4",
     "currentSourceTreeFingerprint": "64436eb366452247e7e25025ca53284006f02a7ead415a24019f6491fa5332b7",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "ad64556ea9f66a0b2137f9233ce6b8a07e602302",
-      "artifactIdentity": null,
-      "runtimeVerified": false,
-      "productionVerified": false,
-      "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 39955995061,
-      "testedAt": "2026-10-23T13:22:34.763Z",
-      "repairSurfaces": [
-        "SOURCE_CONTRACT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "CONFIG_POLICY_SOURCE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CLIENT_MULTIPLAYER_SYNC_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
-      "CONFIG_POLICY_SOURCE_REQUIRED",
-      "CONFIG_GENRE_PROFILE_REQUIRED",
-      "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-      "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-      "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
-      "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-      "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6224,7 +6155,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 340120,
+        "sourceBytes": 369478,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6256,19 +6187,19 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 11,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=6.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 11
+        "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "PRESENTATION_WORLD_COHESION",
@@ -6281,7 +6212,9 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6292,12 +6225,11 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 1,
+      "distinctCovered": 2,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6305,7 +6237,6 @@
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6314,16 +6245,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 56,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -6335,6 +6256,16 @@
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 24,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 20,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6358,13 +6289,13 @@
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -6430,11 +6361,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 11,
-    "previousGeneration": 10,
+    "generation": 13,
+    "previousGeneration": 12,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "64436eb366452247e7e25025ca53284006f02a7ead415a24019f6491fa5332b7",
-    "priorSourceFingerprint": "e328443e421ab20e5dc75ba57aa603defe840caf637647c9d97eed8f6d9987ad",
+    "priorSourceFingerprint": "b680fdbf8539b5acb70e8786482895e12c80e4a1a0d1bf0dba00a08cd64e32e4",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -7518,8 +7449,8 @@
     "responsibleSourceCandidates": [
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
@@ -7733,8 +7664,8 @@
     "responsibleFiles": [
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
@@ -7936,8 +7867,8 @@
     "files": [
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
@@ -8083,8 +8014,8 @@
     "plannedFiles": [
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
@@ -8220,7 +8151,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8282,5 +8213,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-23T13:47:14.920Z"
+  "generatedAt": "2026-10-24T08:01:04.367Z"
 }

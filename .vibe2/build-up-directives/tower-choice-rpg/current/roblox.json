@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "tower-choice-rpg-build-up-g13-64c4e24bd449",
-  "directiveFingerprint": "64c4e24bd449d627e002c4415706adf0db609007a75e459bb04d9468d0a726c5",
-  "previousDirectiveFingerprint": "403139674ba15d7922cfba596a684947cd663045056499268f8e5409a73adce8",
-  "forbiddenRepeatFingerprint": "403139674ba15d7922cfba596a684947cd663045056499268f8e5409a73adce8",
+  "directiveId": "tower-choice-rpg-build-up-g15-eb470ca27c4b",
+  "directiveFingerprint": "eb470ca27c4b919002ae9516460c6456cc09857ebdae0921320bb7f4a1aa775d",
+  "previousDirectiveFingerprint": "2c763ff62fe73795fbfb9476f89a1b3b9c9a83560f7b83bd03151765b9aac35b",
+  "forbiddenRepeatFingerprint": "2c763ff62fe73795fbfb9476f89a1b3b9c9a83560f7b83bd03151765b9aac35b",
   "gameId": "tower-choice-rpg",
   "gameName": "10층 탑 RPG",
-  "generation": 13,
+  "generation": 15,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -4989,8 +4989,8 @@
   "previousVersionDelta": {
     "previousGoal": "10층 탑 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 10층 탑 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "17e02a7e24c7b7fdad11dcec43785784a254369def5b536d2cd5ecedfc69e9b4",
+    "previousGeneration": 14,
+    "previousSourceTreeFingerprint": "8aa3b45a4bb299235dc082f90879ed55e002181d2027d0527c0ff95e470eccfb",
     "currentSourceTreeFingerprint": "31e4a9b96eda49de4eb8fc3b6d1c217233c3a6f17c17de1ef0634a4cff2169f0",
     "sourceChanged": true,
     "verifiedEvolution": false
@@ -4998,11 +4998,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "2ad4d21348cab5bbb75a29f3d3c498a52fa8c0a3",
+      "sourceRevision": "85dca39aaddc364fa3494ef8e1964522c9dedf50",
       "artifactIdentity": "sha256:c6719d980c4c020de48b32df54990defa3e428fd9f97284bde543b14b6897f65",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 39957901022,
-      "testedAt": "2026-10-23T14:08:27.571Z",
+      "workflowRunId": 40082320823,
+      "testedAt": "2026-10-24T10:10:14.300Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -5110,24 +5110,10 @@
         }
       ]
     },
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-f0-gameplay-product-readiness-failed",
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6274,7 +6260,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 399695,
+        "sourceBytes": 429133,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6307,13 +6293,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6332,7 +6318,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
@@ -6366,7 +6353,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
+        "score": 150,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6375,16 +6362,6 @@
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 24,
         "gapDomains": []
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 20,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6405,6 +6382,16 @@
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 14,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": -140,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       }
     ],
     "coherentContentBundle": [
@@ -6480,11 +6467,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 13,
-    "previousGeneration": 12,
+    "generation": 15,
+    "previousGeneration": 14,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "31e4a9b96eda49de4eb8fc3b6d1c217233c3a6f17c17de1ef0634a4cff2169f0",
-    "priorSourceFingerprint": "17e02a7e24c7b7fdad11dcec43785784a254369def5b536d2cd5ecedfc69e9b4",
+    "priorSourceFingerprint": "8aa3b45a4bb299235dc082f90879ed55e002181d2027d0527c0ff95e470eccfb",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -8245,8 +8232,8 @@
       "sourceTreeFingerprint": "31e4a9b96eda49de4eb8fc3b6d1c217233c3a6f17c17de1ef0634a4cff2169f0",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-static-revalidation-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8301,7 +8288,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 16,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8363,5 +8350,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-23T13:47:17.468Z"
+  "generatedAt": "2026-10-24T08:01:04.943Z"
 }

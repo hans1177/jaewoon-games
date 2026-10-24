@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "cozy-island-build-up-g1-0e4d7d321b1d",
-  "directiveFingerprint": "0e4d7d321b1dd21084e2bc9d8cca5168ba853c878e5a31cfb0abc13f40556b40",
+  "directiveId": "cozy-island-build-up-g1-67a1b6bea6b2",
+  "directiveFingerprint": "67a1b6bea6b2dd6927d69d7718d76e755cbeb98ad5f7d03b69011680815a21b8",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "cozy-island",
@@ -14,8 +14,51 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/cozy-island",
-  "sourceTreeFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+  "sourceTreeFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
   "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
+  "designSourceBuildUp": {
+    "version": 1,
+    "scope": "EXISTING_DESIGN_AND_GAME_BUILD_UP_ONLY",
+    "currentDesignFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
+    "previousDesignFingerprint": null,
+    "sameApprovedDesign": false,
+    "previousVerifiedOutcome": false,
+    "revisionRequiredForNewGameplay": false,
+    "nextDesignAction": "TRACE_CURRENT_APPROVED_DESIGN_TO_NATIVE_SOURCE",
+    "sourceAuthority": "LATEST_APPROVED_SAME_GAME_DESIGN_ONLY",
+    "referenceA": null,
+    "baselineB": null,
+    "benchmarkDimensions": [
+      "INPUT_AND_PRIMARY_ACTION",
+      "HUD_AND_MENU_FLOW",
+      "CAMERA_AND_FEEDBACK",
+      "COMBAT_OR_CORE_LOOP",
+      "WORLD_AND_LEVEL_PROGRESSION",
+      "EQUIPMENT_REWARDS_AND_GROWTH",
+      "ONBOARDING_AND_FIRST_SESSION",
+      "FAILURE_RETRY_SAVE_RECOVERY",
+      "MID_LATE_DEPTH"
+    ],
+    "loop": [
+      "REVIEW_GAME_AND_NAMED_REFERENCE_EVIDENCE",
+      "REVISE_MAIN_A_B_C_D_AT_DESIGN",
+      "STRICT_DESIGN_REVIEW",
+      "BIND_RULE_IDS_TO_EXISTING_RESPONSIBLE_SOURCE",
+      "BUILD_SOURCE",
+      "EXACT_BUILD_RUNTIME_QA",
+      "NEXT_DESIGN_REVISION_FROM_VERIFIED_GAPS"
+    ],
+    "provenanceRule": "NAMED_SOURCE_OBSERVED_MECHANICS_OR_UNVERIFIED; NEVER_COPY_DISTINCTIVE_UI_ART_CHAR_TEXT_CODE",
+    "confirmedRuntimePass": false,
+    "preserves": [
+      "OWNER_GAME_IDENTITY",
+      "CORE_RULES",
+      "BALANCE",
+      "ECONOMY",
+      "SAVE_KEYS_AND_MEANING",
+      "NETWORK_AUTHORITY"
+    ]
+  },
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -294,7 +337,7 @@
           "상대 기술과 팀 전술 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+        "sourceTreeFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -315,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "87c3e5cee40a9d4316efc1cb1e20f61f9d3a4bc58b8e5616cd8d925684ffc6df",
-    "sourceTreeFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+    "sourceTreeFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -709,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+    "sourceTreeFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4186,60 +4229,68 @@
       "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 1442,
-      "progression": 1395,
-      "ai": 277,
-      "save": 525,
+      "combat": 1633,
+      "progression": 1442,
+      "ai": 296,
+      "save": 558,
       "multiplayer": 0,
-      "animation": 27,
-      "motionStates": 1995,
+      "animation": 28,
+      "motionStates": 2101,
       "gameFeel": 0,
       "vfx": 0,
-      "camera": 5,
+      "camera": 29,
       "audio": 0,
-      "audioDynamics": 0,
-      "ui": 898,
-      "uiFlow": 380,
+      "audioDynamics": 1,
+      "ui": 1001,
+      "uiFlow": 412,
       "entryFlow": 0,
       "loadingFlow": 93,
-      "input": 30,
-      "map": 1056,
-      "landmark": 163,
-      "interaction": 117,
-      "inventory": 251,
+      "input": 42,
+      "map": 1195,
+      "landmark": 229,
+      "interaction": 138,
+      "inventory": 256,
       "equipment": 20,
       "settings": 0,
-      "feedback": 595,
-      "session": 124,
-      "content": 1623,
-      "choice": 766,
+      "feedback": 621,
+      "session": 128,
+      "content": 1856,
+      "choice": 814,
       "connection": 3,
-      "performance": 14,
-      "lighting": 27,
-      "primitive": 0,
+      "performance": 19,
+      "lighting": 38,
+      "primitive": 2,
       "todo": 0,
-      "errorRecovery": 68
+      "errorRecovery": 74
     },
     "topFiles": [
       {
         "file": "web-games/cozy-island/darkness-flame-v19.js",
-        "score": 379
+        "score": 380
+      },
+      {
+        "file": "web-games/cozy-island/village-defense.js",
+        "score": 288
       },
       {
         "file": "web-games/cozy-island/abyss-cave-v23.js",
         "score": 280
       },
       {
+        "file": "web-games/cozy-island/game-v3.js",
+        "score": 255
+      },
+      {
         "file": "web-games/cozy-island/game.js",
         "score": 220
       },
       {
-        "file": "web-games/cozy-island/game-v3.js",
-        "score": 218
-      },
-      {
         "file": "web-games/cozy-island/jungle-west-camp.js",
         "score": 196
+      },
+      {
+        "file": "web-games/cozy-island/render-v3.js",
+        "score": 165
       },
       {
         "file": "web-games/cozy-island/production-buildings.js",
@@ -4260,20 +4311,12 @@
       {
         "file": "web-games/cozy-island/farming-rules.js",
         "score": 126
-      },
-      {
-        "file": "web-games/cozy-island/world-upgrade.js",
-        "score": 97
-      },
-      {
-        "file": "web-games/cozy-island/farm-smithy.js",
-        "score": 91
       }
     ],
     "sourceAnchors": [
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 96,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "recruit",
         "context": "function recruit(kind){const max=kind==='archer'?ARCHER_MAX:SOLDIER_MAX,cost=kind==='archer'?20:10;if(countKind(kind)>=max){toast('최대 인원이야');return}if(state.inventory.food<cost){to",
@@ -4281,7 +4324,15 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 94,
+        "line": 180,
+        "kind": "FUNCTION",
+        "symbol": "renderWorkerShop",
+        "context": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
+        "score": 498
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 175,
         "kind": "FUNCTION",
         "symbol": "renderBarracks",
         "context": "function renderBarracks(){if(!state.barracksBuilt){ui.panelBody.innerHTML=`<p class=\"panel-note\">병영을 지으면 병사와 궁수를 모집할 수 있어.</p><button class=\"choice\" data-build><span>🏕️ 병영 건설</spa",
@@ -4289,15 +4340,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 92,
-        "kind": "FUNCTION",
-        "symbol": "talkTo",
-        "context": "function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class=\"choice\" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=",
-        "score": 474
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 93,
+        "line": 174,
         "kind": "FUNCTION",
         "symbol": "openBarracks",
         "context": "function openBarracks(){ui.panelTitle.textContent=state.barracksBuilt?'병영':'병영 건설';renderBarracks();ui.panel.showModal()}",
@@ -4305,15 +4348,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 100,
-        "kind": "FUNCTION",
-        "symbol": "buyWorker",
-        "context": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
-        "score": 458
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 101,
+        "line": 182,
         "kind": "FUNCTION",
         "symbol": "openDecor",
         "context": "function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.",
@@ -4321,15 +4356,15 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 91,
+        "line": 181,
         "kind": "FUNCTION",
-        "symbol": "collectNode",
-        "context": "function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){sta",
+        "symbol": "buyWorker",
+        "context": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
         "score": 442
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 97,
+        "line": 178,
         "kind": "FUNCTION",
         "symbol": "createUnit",
         "context": "function createUnit(kind,enemy,boss=false){const ar=kind==='archer',baseHp=ar?55:100,baseAtk=ar?25:10,hp=boss?baseHp*7:baseHp;return{id:unitId++,kind,enemy,boss,hp,maxHp:hp,attack:",
@@ -4337,7 +4372,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 95,
+        "line": 176,
         "kind": "FUNCTION",
         "symbol": "buildBarracks",
         "context": "function buildBarracks(){if(state.inventory.wood<5||state.inventory.stone<3){toast('재료가 부족해');return}state.inventory.wood-=5;state.inventory.stone-=3;state.barracksBuilt=true;saveS",
@@ -4345,7 +4380,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 98,
+        "line": 179,
         "kind": "FUNCTION",
         "symbol": "openWorkerShop",
         "context": "function openWorkerShop(){ui.panelTitle.textContent='노비 판매소';renderWorkerShop();ui.panel.showModal()}",
@@ -4353,63 +4388,39 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 99,
+        "line": 173,
         "kind": "FUNCTION",
-        "symbol": "renderWorkerShop",
-        "context": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
-        "score": 410
+        "symbol": "talkTo",
+        "context": "function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class=\"choice\" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=",
+        "score": 418
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 90,
+        "line": 184,
         "kind": "FUNCTION",
-        "symbol": "interact",
-        "context": "function interact(){if(runtime.paused||ui.panel.open||ui.fishing.open)return;const t=nearestInteraction();if(!t){toast('가까이 가서 행동해봐');return}const tool=TOOLS[selectedTool].id;if(t.",
-        "score": 370
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 102,
-        "kind": "FUNCTION",
-        "symbol": "shipGoods",
-        "context": "function shipGoods(){const i=state.inventory,earned=i.fish*12+i.flower*4+i.crop*18;if(!earned){toast('출하할 게 없어');return}i.fish=0;i.flower=0;i.crop=0;state.coins+=earned;saveSoon();",
-        "score": 362
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 89,
-        "kind": "FUNCTION",
-        "symbol": "interactionHint",
-        "context": "function interactionHint(t){if(!t)return raidActive?'습격 중! 병사들이 마을을 방어 중':'섬을 둘러봐';const tool=TOOLS[selectedTool].id;if(t.type==='node')return t.item.kind==='tree'?'행동: 나무 줍기':t.it",
+        "symbol": "updateCrops",
+        "context": "function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}",
         "score": 338
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 103,
+        "line": 183,
         "kind": "FUNCTION",
         "symbol": "usePlot",
         "context": "function usePlot(index,tool){const p=state.plots[index];if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.inventory.crop++;state.inventory.food+=10;save",
-        "score": 322
+        "score": 330
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 137,
+        "line": 172,
         "kind": "FUNCTION",
-        "symbol": "updateHUD",
-        "context": "function updateHUD(){const h=Math.floor(state.minutes/60),m=Math.floor(state.minutes%60),pm=h>=12,h12=((h+11)%12)+1;ui.day.textContent=`${state.day}일차`;ui.time.textContent=`${pm?'오",
+        "symbol": "collectNode",
+        "context": "function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){sta",
         "score": 314
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 86,
-        "kind": "FUNCTION",
-        "symbol": "countKind",
-        "context": "function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}",
-        "score": 298
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 111,
+        "line": 191,
         "kind": "FUNCTION",
         "symbol": "updateWorkers",
         "context": "function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer",
@@ -4417,51 +4428,11 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 136,
-        "kind": "FUNCTION",
-        "symbol": "seededWeather",
-        "context": "function seededWeather(day){return Math.abs(Math.sin(day*91.731)*10000)%1<.28?'비':'맑음'}",
-        "score": 290
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 104,
-        "kind": "FUNCTION",
-        "symbol": "updateCrops",
-        "context": "function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}",
-        "score": 274
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 88,
-        "kind": "FUNCTION",
-        "symbol": "nearestInteraction",
-        "context": "function nearestInteraction(){const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push(",
-        "score": 266
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 105,
+        "line": 185,
         "kind": "FUNCTION",
         "symbol": "expandIsland",
         "context": "function expandIsland(){if(state.coins<120){toast('120골드가 필요해');return}state.coins-=120;state.expanded=true;saveSoon();updateHUD();toast('🏝️ 동쪽 야생지대가 크게 열렸어!')}",
         "score": 266
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 138,
-        "kind": "FUNCTION",
-        "symbol": "canMoveTo",
-        "context": "function canMoveTo(x,y){const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return",
-        "score": 258
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 139,
-        "kind": "FUNCTION",
-        "symbol": "updateMovement",
-        "context": "function updateMovement(dt){let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);if(!dx&&!dy)return;const mag=Math.hypot",
-        "score": 258
       },
       {
         "file": "web-games/cozy-island/world-upgrade-v3.js",
@@ -4480,6 +4451,14 @@
         "score": 250
       },
       {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 129,
+        "kind": "FUNCTION",
+        "symbol": "countKind",
+        "context": "function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}",
+        "score": 226
+      },
+      {
         "file": "web-games/cozy-island/world-upgrade-v3.js",
         "line": 50,
         "kind": "FUNCTION",
@@ -4488,12 +4467,28 @@
         "score": 226
       },
       {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 128,
+        "kind": "FUNCTION",
+        "symbol": "openInventory",
+        "context": "function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class=\"inventory-grid\">${itemCard('🪵 나무',i.w",
+        "score": 218
+      },
+      {
         "file": "web-games/cozy-island/world-upgrade-v3.js",
         "line": 51,
         "kind": "FUNCTION",
         "symbol": "unlockJungle",
         "context": "function unlockJungle(){if(!currentGame?.state?.expanded)return toast('먼저 동쪽 지역을 열어야 해');const jungle=ensureState(currentGame.state);if(jungle.unlocked)return;if((Number(currentGam",
         "score": 218
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 189,
+        "kind": "FUNCTION",
+        "symbol": "stopFishing",
+        "context": "function stopFishing(){fishing=null;cancelAnimationFrame(fishingFrame);fishingFrame=0;if(ui.fishing.open)ui.fishing.close()}",
+        "score": 210
       },
       {
         "file": "web-games/cozy-island/world-upgrade-v3.js",
@@ -4528,20 +4523,20 @@
         "score": 202
       },
       {
-        "file": "web-games/cozy-island/render-v3.js",
-        "line": 43,
-        "kind": "METHOD",
-        "symbol": "drawBarracks",
-        "context": "drawBarracks(ctx,g){const{x,y}=g.barracks;if(!g.state.barracksBuilt){ctx.setLineDash([8,7]);ctx.strokeStyle='#6d725d';ctx.strokeRect(x-58,y-46,116,92);ctx.setLineDash([]);ctx.font=",
-        "score": 200
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 67,
+        "kind": "FUNCTION",
+        "symbol": "saveSoon",
+        "context": "function saveSoon(){state.army=allies.filter(u=>u.hp>0).map(u=>({kind:u.kind}));state.player={x:Math.round(player.x),y:Math.round(player.y)};runtime.queueSaveProgress(state)}",
+        "score": 186
       },
       {
-        "file": "web-games/cozy-island/render-v3.js",
-        "line": 44,
-        "kind": "METHOD",
-        "symbol": "drawWorkerShop",
-        "context": "drawWorkerShop(ctx,g){const{x,y}=g.workerShop;ctx.fillStyle='#b78458';ctx.fillRect(x-55,y-35,110,72);ctx.fillStyle='#7e6042';ctx.beginPath();ctx.moveTo(x-68,y-35);ctx.lineTo(x,y-78",
-        "score": 192
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 188,
+        "kind": "FUNCTION",
+        "symbol": "catchFish",
+        "context": "function catchFish(){if(!fishing)return;const ok=fishing.pos>=42&&fishing.pos<=62;stopFishing();if(ok){state.inventory.fish++;saveSoon();toast('🐟 물고기 +1')}else toast('놓쳤어')}",
+        "score": 170
       },
       {
         "file": "web-games/cozy-island/world-upgrade-v3.js",
@@ -4560,12 +4555,36 @@
         "score": 170
       },
       {
-        "file": "web-games/cozy-island/render-v3.js",
-        "line": 45,
-        "kind": "METHOD",
-        "symbol": "drawUnits",
-        "context": "drawUnits(ctx,g){for(const u of g.allies)this.drawUnit(ctx,u);for(const u of g.enemies)this.drawUnit(ctx,u);for(let i=0;i<g.state.workers;i++){const a=performance.now()/1000+i*2.1;",
-        "score": 160
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 68,
+        "kind": "FUNCTION",
+        "symbol": "toast",
+        "context": "function toast(msg){clearTimeout(toastTimer);ui.toast.textContent=msg;ui.toast.classList.add('show');toastTimer=setTimeout(()=>ui.toast.classList.remove('show'),1900)}",
+        "score": 162
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 69,
+        "kind": "FUNCTION",
+        "symbol": "itemCard",
+        "context": "function itemCard(n,c){return `<div class=\"item-card\">${n}<span>${Math.floor(Number(c)||0)}개</span></div>`}",
+        "score": 162
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 187,
+        "kind": "FUNCTION",
+        "symbol": "startFishing",
+        "context": "function startFishing(){if(fishing)return;fishing={pos:0,dir:1,speed:.7};pressed.clear();ui.fishing.showModal();const tick=()=>{if(!fishing)return;fishing.pos+=fishing.dir*fishing.",
+        "score": 154
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 339,
+        "kind": "FUNCTION",
+        "symbol": "updateHUD",
+        "context": "function updateHUD(){",
+        "score": 154
       },
       {
         "file": "web-games/cozy-island/north-region.js",
@@ -4592,14 +4611,6 @@
         "score": 154
       },
       {
-        "file": "web-games/cozy-island/render-v3.js",
-        "line": 42,
-        "kind": "METHOD",
-        "symbol": "drawFarm",
-        "context": "drawFarm(ctx,g){ctx.fillStyle='#b4875d';ctx.fillRect(910,350,260,190);g.state.plots.forEach((p,i)=>{const x=930+(i%3)*78,y=375+Math.floor(i/3)*78;ctx.fillStyle=p.watered?'#6b5549':",
-        "score": 152
-      },
-      {
         "file": "web-games/cozy-island/world-upgrade-v3.js",
         "line": 115,
         "kind": "FUNCTION",
@@ -4617,7 +4628,7 @@
       },
       {
         "file": "web-games/cozy-island/render-v3.js",
-        "line": 41,
+        "line": 783,
         "kind": "METHOD",
         "symbol": "drawHouse",
         "context": "drawHouse(ctx,g){ctx.fillStyle='#f5d9a8';ctx.fillRect(660,250,210,145);ctx.fillStyle='#d98265';ctx.beginPath();ctx.moveTo(635,270);ctx.lineTo(765,175);ctx.lineTo(895,270);ctx.close",
@@ -4648,12 +4659,44 @@
         "score": 138
       },
       {
+        "file": "web-games/cozy-island/render-v3.js",
+        "line": 784,
+        "kind": "METHOD",
+        "symbol": "drawFarm",
+        "context": "drawFarm(ctx,g){ctx.fillStyle='#b4875d';ctx.fillRect(910,350,260,190);g.state.plots.forEach((p,i)=>{const x=930+(i%3)*78,y=375+Math.floor(i/3)*78;ctx.fillStyle=p.watered?'#6b5549':",
+        "score": 136
+      },
+      {
+        "file": "web-games/cozy-island/render-v3.js",
+        "line": 785,
+        "kind": "METHOD",
+        "symbol": "drawBarracks",
+        "context": "drawBarracks(ctx,g){const{x,y}=g.barracks;if(!g.state.barracksBuilt){ctx.setLineDash([8,7]);ctx.strokeStyle='#6d725d';ctx.strokeRect(x-58,y-46,116,92);ctx.setLineDash([]);ctx.font=",
+        "score": 136
+      },
+      {
         "file": "web-games/cozy-island/world-upgrade-v3.js",
         "line": 35,
         "kind": "FUNCTION",
         "symbol": "save",
         "context": "function save(){if(currentGame?.state)activeRuntime?.queueSaveProgress(currentGame.state);}",
         "score": 130
+      },
+      {
+        "file": "web-games/cozy-island/bounty-tax-v6.js",
+        "line": 25,
+        "kind": "FUNCTION",
+        "symbol": "ensureState",
+        "context": "function ensureState(state) {",
+        "score": 122
+      },
+      {
+        "file": "web-games/cozy-island/class-upgrades-pirate-v12.js",
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "ensureState",
+        "context": "function ensureState(state) {",
+        "score": 122
       }
     ]
   },
@@ -5759,9 +5802,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독\", 현재 책임 소스는 web-games/cozy-island/game-v3.js::recruit, web-games/cozy-island/game-v3.js::renderBarracks, web-games/cozy-island/game-v3.js::talkTo, web-games/cozy-island/game-v3.js::openBarracks, web-games/cozy-island/game-v3.js::buyWorker, web-games/cozy-island/game-v3.js::openDecor, web-games/cozy-island/game-v3.js::collectNode, web-games/cozy-island/game-v3.js::createUnit이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독\", 현재 책임 소스는 web-games/cozy-island/game-v3.js::recruit, web-games/cozy-island/game-v3.js::renderWorkerShop, web-games/cozy-island/game-v3.js::renderBarracks, web-games/cozy-island/game-v3.js::openBarracks, web-games/cozy-island/game-v3.js::openDecor, web-games/cozy-island/game-v3.js::buyWorker, web-games/cozy-island/game-v3.js::createUnit, web-games/cozy-island/game-v3.js::buildBarracks이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/cozy-island/game-v3.js::recruit, web-games/cozy-island/game-v3.js::renderBarracks, web-games/cozy-island/game-v3.js::talkTo, web-games/cozy-island/game-v3.js::openBarracks, web-games/cozy-island/game-v3.js::buyWorker, web-games/cozy-island/game-v3.js::openDecor, web-games/cozy-island/game-v3.js::collectNode, web-games/cozy-island/game-v3.js::createUnit에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/cozy-island/game-v3.js::recruit, web-games/cozy-island/game-v3.js::renderWorkerShop, web-games/cozy-island/game-v3.js::renderBarracks, web-games/cozy-island/game-v3.js::openBarracks, web-games/cozy-island/game-v3.js::openDecor, web-games/cozy-island/game-v3.js::buyWorker, web-games/cozy-island/game-v3.js::createUnit, web-games/cozy-island/game-v3.js::buildBarracks에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "미지 공간과 지도 정보 수집 × 문화·언어와 번역가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"A 시작: RouteState·RiskState를 확인한 뒤 새 지역에서 지도 단서와 접근 가능 통로를 조사한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5816,8 +5859,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 540322,
-        "largestFileBytes": 38849,
+        "sourceBytes": 615155,
+        "largestFileBytes": 42619,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -6015,7 +6058,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+    "sourceFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -6035,7 +6078,7 @@
     "version": 1,
     "gameId": "cozy-island",
     "platform": "WEB",
-    "sourceTreeFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+    "sourceTreeFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6061,8 +6104,10 @@
       },
       {
         "id": "MATERIAL",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/render-v3.js"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6074,11 +6119,11 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/village-defense.js",
           "web-games/cozy-island/abyss-cave-v23.js",
-          "web-games/cozy-island/game.js",
           "web-games/cozy-island/game-v3.js",
-          "web-games/cozy-island/production-buildings.js",
-          "web-games/cozy-island/iron-lv3-spearman-v14.js"
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/production-buildings.js"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6101,11 +6146,11 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/village-defense.js",
           "web-games/cozy-island/abyss-cave-v23.js",
-          "web-games/cozy-island/game.js",
           "web-games/cozy-island/game-v3.js",
-          "web-games/cozy-island/jungle-west-camp.js",
-          "web-games/cozy-island/production-buildings.js"
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/jungle-west-camp.js"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -6118,9 +6163,62 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "web-games/cozy-island/darkness-flame-v19.js",
-          "web-games/cozy-island/economy-west-v2.js"
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/economy-west-v2.js",
+          "web-games/cozy-island/bounty-fix-v10.js",
+          "web-games/cozy-island/bounty-tax-v6.js",
+          "web-games/cozy-island/index.html"
         ],
         "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "BIOME",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/render-v3.js"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING",
+        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
+        "responsibleFiles": [],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "MOTION",
+        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
+        "responsibleFiles": [],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/abyss-cave-v23.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/jungle-west-camp.js"
+        ],
+        "requiredByDesign": true,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
         "implementationProven": false,
@@ -6130,9 +6228,11 @@
         "id": "INTERACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/cozy-island/game.js",
           "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
           "web-games/cozy-island/jungle-west-camp.js",
+          "web-games/cozy-island/iron-worker-v15.js",
+          "web-games/cozy-island/world-upgrade-v3.js",
           "web-games/cozy-island/world-upgrade.js"
         ],
         "requiredByDesign": false,
@@ -6145,7 +6245,222 @@
         "id": "SHOP",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/farming-rules.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/iron-layout-v16.js",
+          "web-games/cozy-island/iron-worker-pre-v15.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SAVE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/balance-reset.js",
+          "web-games/cozy-island/bounty-fix-v10.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "COMBAT",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/abyss-cave-v23.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/jungle-west-camp.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "REWARD",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/abyss-cave-v23.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/economy-west-v2.js",
+          "web-games/cozy-island/bounty-fix-v10.js",
+          "web-games/cozy-island/bounty-tax-v6.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/render.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "QUEST_DIALOGUE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/abyss-cave-v23.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/bounty-tax-v6.js",
+          "web-games/cozy-island/cozy-balance-v5.js"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFTING",
+        "state": "REVIEW_REQUIRED_NO_SOURCE",
+        "responsibleFiles": [],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ECONOMY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/cozy-balance-v5.js",
+          "web-games/cozy-island/index.html"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PROGRESSION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/iron-lv3-spearman-v14.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/levelup-button-v13.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/production-buildings.js",
           "web-games/cozy-island/farming-rules.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "WEATHER",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/render.js"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PHYSICS",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/jungle-movement-fix.js"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CAMERA",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/soldier-animation-v16.js"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "AUDIO",
+        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
+        "responsibleFiles": [],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX",
+        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
+        "responsibleFiles": [],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NETWORK",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/cozy-island/balance-resume-v20.js"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6157,52 +6472,137 @@
     "sourceFilesByRole": {
       "LOBBY": [],
       "CUSTOMIZATION": [],
-      "MATERIAL": [],
+      "MATERIAL": [
+        "web-games/cozy-island/render-v3.js"
+      ],
       "INVENTORY": [
         "web-games/cozy-island/darkness-flame-v19.js",
+        "web-games/cozy-island/village-defense.js",
         "web-games/cozy-island/abyss-cave-v23.js",
-        "web-games/cozy-island/game.js",
         "web-games/cozy-island/game-v3.js",
-        "web-games/cozy-island/production-buildings.js",
-        "web-games/cozy-island/iron-lv3-spearman-v14.js"
+        "web-games/cozy-island/game.js",
+        "web-games/cozy-island/production-buildings.js"
       ],
       "EQUIPMENT": [],
       "UI": [
         "web-games/cozy-island/darkness-flame-v19.js",
+        "web-games/cozy-island/village-defense.js",
         "web-games/cozy-island/abyss-cave-v23.js",
-        "web-games/cozy-island/game.js",
         "web-games/cozy-island/game-v3.js",
-        "web-games/cozy-island/jungle-west-camp.js",
-        "web-games/cozy-island/production-buildings.js"
+        "web-games/cozy-island/game.js",
+        "web-games/cozy-island/jungle-west-camp.js"
       ],
       "WORLD": [
         "web-games/cozy-island/darkness-flame-v19.js",
-        "web-games/cozy-island/economy-west-v2.js"
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/economy-west-v2.js",
+        "web-games/cozy-island/bounty-fix-v10.js",
+        "web-games/cozy-island/bounty-tax-v6.js",
+        "web-games/cozy-island/index.html"
+      ],
+      "BIOME": [
+        "web-games/cozy-island/render-v3.js"
+      ],
+      "HOUSING": [],
+      "MOTION": [],
+      "ACTION": [
+        "web-games/cozy-island/darkness-flame-v19.js",
+        "web-games/cozy-island/village-defense.js",
+        "web-games/cozy-island/abyss-cave-v23.js",
+        "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/game.js",
+        "web-games/cozy-island/jungle-west-camp.js"
+      ],
+      "NPC_AI": [
+        "web-games/cozy-island/village-defense.js",
+        "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/game.js",
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/render.js"
+      ],
+      "QUEST_DIALOGUE": [
+        "web-games/cozy-island/darkness-flame-v19.js",
+        "web-games/cozy-island/village-defense.js",
+        "web-games/cozy-island/abyss-cave-v23.js",
+        "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/bounty-tax-v6.js",
+        "web-games/cozy-island/cozy-balance-v5.js"
+      ],
+      "CRAFTING": [],
+      "ECONOMY": [
+        "web-games/cozy-island/village-defense.js",
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/cozy-balance-v5.js",
+        "web-games/cozy-island/index.html"
+      ],
+      "PROGRESSION": [
+        "web-games/cozy-island/darkness-flame-v19.js",
+        "web-games/cozy-island/iron-lv3-spearman-v14.js",
+        "web-games/cozy-island/index.html",
+        "web-games/cozy-island/levelup-button-v13.js"
+      ],
+      "FARMING": [
+        "web-games/cozy-island/village-defense.js",
+        "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/game.js",
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/production-buildings.js",
+        "web-games/cozy-island/farming-rules.js"
+      ],
+      "WEATHER": [
+        "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/game.js",
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/render.js"
+      ],
+      "PHYSICS": [
+        "web-games/cozy-island/jungle-movement-fix.js"
+      ],
+      "CAMERA": [
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/index.html",
+        "web-games/cozy-island/soldier-animation-v16.js"
+      ],
+      "AUDIO": [],
+      "SKILL_VFX": [],
+      "NETWORK": [
+        "web-games/cozy-island/balance-resume-v20.js"
       ],
       "INTERACTION": [
-        "web-games/cozy-island/game.js",
         "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/game.js",
         "web-games/cozy-island/jungle-west-camp.js",
+        "web-games/cozy-island/iron-worker-v15.js",
+        "web-games/cozy-island/world-upgrade-v3.js",
         "web-games/cozy-island/world-upgrade.js"
       ],
       "REWARD": [
         "web-games/cozy-island/abyss-cave-v23.js",
-        "web-games/cozy-island/game.js",
         "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/game.js",
         "web-games/cozy-island/economy-west-v2.js",
-        "web-games/cozy-island/world-upgrade.js"
+        "web-games/cozy-island/bounty-fix-v10.js",
+        "web-games/cozy-island/bounty-tax-v6.js"
       ],
-      "SAVE": [],
+      "SAVE": [
+        "web-games/cozy-island/balance-reset.js",
+        "web-games/cozy-island/bounty-fix-v10.js"
+      ],
       "COMBAT": [
         "web-games/cozy-island/darkness-flame-v19.js",
+        "web-games/cozy-island/village-defense.js",
         "web-games/cozy-island/abyss-cave-v23.js",
-        "web-games/cozy-island/game.js",
         "web-games/cozy-island/game-v3.js",
-        "web-games/cozy-island/jungle-west-camp.js",
-        "web-games/cozy-island/iron-lv3-spearman-v14.js"
+        "web-games/cozy-island/game.js",
+        "web-games/cozy-island/jungle-west-camp.js"
       ],
       "SHOP": [
-        "web-games/cozy-island/farming-rules.js"
+        "web-games/cozy-island/village-defense.js",
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/farming-rules.js",
+        "web-games/cozy-island/index.html",
+        "web-games/cozy-island/iron-layout-v16.js",
+        "web-games/cozy-island/iron-worker-pre-v15.js"
       ]
     },
     "uiModeSelection": {
@@ -6233,13 +6633,25 @@
       "nodesDiscoveredFromExactRuntime": false,
       "sourceFiles": [
         "web-games/cozy-island/darkness-flame-v19.js",
-        "web-games/cozy-island/economy-west-v2.js"
+        "web-games/cozy-island/render-v3.js",
+        "web-games/cozy-island/economy-west-v2.js",
+        "web-games/cozy-island/bounty-fix-v10.js",
+        "web-games/cozy-island/bounty-tax-v6.js",
+        "web-games/cozy-island/index.html"
       ],
+      "biomeSourceFiles": [
+        "web-games/cozy-island/render-v3.js"
+      ],
+      "housingSourceFiles": [],
+      "biomeNativeSceneBindingVerified": false,
+      "housingPlacementPersistenceVerified": false,
       "entryFiles": [],
       "interactionFiles": [
-        "web-games/cozy-island/game.js",
         "web-games/cozy-island/game-v3.js",
+        "web-games/cozy-island/game.js",
         "web-games/cozy-island/jungle-west-camp.js",
+        "web-games/cozy-island/iron-worker-v15.js",
+        "web-games/cozy-island/world-upgrade-v3.js",
         "web-games/cozy-island/world-upgrade.js"
       ],
       "edges": [],
@@ -6248,7 +6660,10 @@
         "PORTAL_OR_DOOR_SERVER_AUTHORITY",
         "RETURN_PATH",
         "BLOCKED_PATH",
-        "RESPAWN_ROUTE"
+        "RESPAWN_ROUTE",
+        "APPROVED_BIOME_TO_NATIVE_TERRAIN",
+        "REGION_NAVIGATION_AND_COLLISION",
+        "MOBILE_WORLD_STREAMING"
       ],
       "inaccessibleAreasNotInvented": true,
       "runtimeTraversalVerified": false
@@ -6261,10 +6676,10 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "web-games/cozy-island/abyss-cave-v23.js",
-            "web-games/cozy-island/game.js",
             "web-games/cozy-island/game-v3.js",
+            "web-games/cozy-island/game.js",
             "web-games/cozy-island/economy-west-v2.js",
-            "web-games/cozy-island/world-upgrade.js"
+            "web-games/cozy-island/bounty-fix-v10.js"
           ],
           "passed": false
         },
@@ -6273,10 +6688,10 @@
           "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
             "web-games/cozy-island/darkness-flame-v19.js",
+            "web-games/cozy-island/village-defense.js",
             "web-games/cozy-island/abyss-cave-v23.js",
-            "web-games/cozy-island/game.js",
             "web-games/cozy-island/game-v3.js",
-            "web-games/cozy-island/production-buildings.js"
+            "web-games/cozy-island/game.js"
           ],
           "passed": false
         },
@@ -6294,19 +6709,22 @@
         },
         {
           "id": "SAVE",
-          "state": "MISSING_SOURCE_EVIDENCE",
-          "responsibleFiles": [],
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "web-games/cozy-island/balance-reset.js",
+            "web-games/cozy-island/bounty-fix-v10.js"
+          ],
           "passed": false
         },
         {
           "id": "RECONNECT_RESTORE",
-          "state": "MISSING_SOURCE_EVIDENCE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
           "responsibleFiles": [
+            "web-games/cozy-island/balance-reset.js",
+            "web-games/cozy-island/bounty-fix-v10.js",
             "web-games/cozy-island/darkness-flame-v19.js",
-            "web-games/cozy-island/abyss-cave-v23.js",
-            "web-games/cozy-island/game.js",
-            "web-games/cozy-island/game-v3.js",
-            "web-games/cozy-island/production-buildings.js"
+            "web-games/cozy-island/village-defense.js",
+            "web-games/cozy-island/abyss-cave-v23.js"
           ],
           "passed": false
         }
@@ -6317,6 +6735,119 @@
       "runtimeVerified": false,
       "qaPassed": false
     },
+    "moduleConnections": [
+      {
+        "id": "WORLD_BIOME_WEATHER",
+        "roles": [
+          "WORLD",
+          "BIOME",
+          "WEATHER"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/economy-west-v2.js",
+          "web-games/cozy-island/bounty-fix-v10.js",
+          "web-games/cozy-island/bounty-tax-v6.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js"
+        ],
+        "checks": [
+          "NATIVE_TERRAIN_AND_REGION_GRAPH",
+          "APPROVED_WEATHER_STATE",
+          "MOBILE_STREAMING"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI_QUEST",
+        "roles": [
+          "NPC_AI",
+          "QUEST_DIALOGUE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/render.js",
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/abyss-cave-v23.js",
+          "web-games/cozy-island/bounty-tax-v6.js"
+        ],
+        "checks": [
+          "NPC_DECISION_TO_DIALOGUE_EVENT",
+          "QUEST_STATE_AND_SERVER_AUTHORITY"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFT_ECONOMY_INVENTORY",
+        "roles": [
+          "CRAFTING",
+          "ECONOMY",
+          "INVENTORY"
+        ],
+        "state": "MISSING_REQUIRED_SOURCE_REVIEW",
+        "missingRoles": [
+          "CRAFTING"
+        ],
+        "responsibleFiles": [
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/cozy-balance-v5.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/abyss-cave-v23.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js"
+        ],
+        "checks": [
+          "RECIPE_RESOURCE_CONSUMPTION",
+          "AUTHORITATIVE_CURRENCY_AND_ITEM_STATE",
+          "SAVE_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING_WORLD_WEATHER",
+        "roles": [
+          "FARMING",
+          "WORLD",
+          "WEATHER"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/cozy-island/village-defense.js",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/game.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/production-buildings.js",
+          "web-games/cozy-island/farming-rules.js",
+          "web-games/cozy-island/darkness-flame-v19.js",
+          "web-games/cozy-island/economy-west-v2.js"
+        ],
+        "checks": [
+          "APPROVED_CROP_REGION_AND_SEASON",
+          "HARVEST_STATE_AND_STORAGE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      }
+    ],
     "sharedAssetSelection": {
       "registry": "company-asset-library.json",
       "archives": "assets/asset-manifest.json#sharedOriginalArchives",
@@ -6335,7 +6866,8 @@
       "EXISTING_GAME_STATE",
       "REAL_EVENT_HANDLER",
       "SERVER_AUTHORITY_WHERE_APPLICABLE",
-      "NATIVE_PLATFORM_AND_MOBILE_QA"
+      "NATIVE_PLATFORM_AND_MOBILE_QA",
+      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT"
     ],
     "implementationProven": false,
     "runtimeVerified": false,
@@ -6396,7 +6928,7 @@
     "gameId": "cozy-island",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+    "sourceTreeFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6587,17 +7119,17 @@
     "responsibleSourceCandidates": [
       "web-games/cozy-island/index.html",
       "web-games/cozy-island/darkness-flame-v19.js",
+      "web-games/cozy-island/village-defense.js",
       "web-games/cozy-island/abyss-cave-v23.js",
-      "web-games/cozy-island/game.js",
       "web-games/cozy-island/game-v3.js",
+      "web-games/cozy-island/game.js",
       "web-games/cozy-island/jungle-west-camp.js",
+      "web-games/cozy-island/render-v3.js",
       "web-games/cozy-island/production-buildings.js",
       "web-games/cozy-island/iron-lv3-spearman-v14.js",
       "web-games/cozy-island/balance-resume-v20.js",
       "web-games/cozy-island/economy-west-v2.js",
-      "web-games/cozy-island/farming-rules.js",
-      "web-games/cozy-island/world-upgrade.js",
-      "web-games/cozy-island/farm-smithy.js"
+      "web-games/cozy-island/farming-rules.js"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -6752,7 +7284,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 96,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "recruit",
         "currentBehavior": "function recruit(kind){const max=kind==='archer'?ARCHER_MAX:SOLDIER_MAX,cost=kind==='archer'?20:10;if(countKind(kind)>=max){toast('최대 인원이야');return}if(state.inventory.food<cost){to",
@@ -6761,7 +7293,16 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 94,
+        "line": 180,
+        "kind": "FUNCTION",
+        "symbol": "renderWorkerShop",
+        "currentBehavior": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
+        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderWorkerShop의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 175,
         "kind": "FUNCTION",
         "symbol": "renderBarracks",
         "currentBehavior": "function renderBarracks(){if(!state.barracksBuilt){ui.panelBody.innerHTML=`<p class=\"panel-note\">병영을 지으면 병사와 궁수를 모집할 수 있어.</p><button class=\"choice\" data-build><span>🏕️ 병영 건설</spa",
@@ -6770,16 +7311,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 92,
-        "kind": "FUNCTION",
-        "symbol": "talkTo",
-        "currentBehavior": "function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class=\"choice\" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=",
-        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 talkTo의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 93,
+        "line": 174,
         "kind": "FUNCTION",
         "symbol": "openBarracks",
         "currentBehavior": "function openBarracks(){ui.panelTitle.textContent=state.barracksBuilt?'병영':'병영 건설';renderBarracks();ui.panel.showModal()}",
@@ -6788,16 +7320,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 100,
-        "kind": "FUNCTION",
-        "symbol": "buyWorker",
-        "currentBehavior": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
-        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyWorker의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 101,
+        "line": 182,
         "kind": "FUNCTION",
         "symbol": "openDecor",
         "currentBehavior": "function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.",
@@ -6806,20 +7329,29 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 91,
+        "line": 181,
         "kind": "FUNCTION",
-        "symbol": "collectNode",
-        "currentBehavior": "function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){sta",
-        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 collectNode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "symbol": "buyWorker",
+        "currentBehavior": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
+        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyWorker의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 97,
+        "line": 178,
         "kind": "FUNCTION",
         "symbol": "createUnit",
         "currentBehavior": "function createUnit(kind,enemy,boss=false){const ar=kind==='archer',baseHp=ar?55:100,baseAtk=ar?25:10,hp=boss?baseHp*7:baseHp;return{id:unitId++,kind,enemy,boss,hp,maxHp:hp,attack:",
         "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 createUnit의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 176,
+        "kind": "FUNCTION",
+        "symbol": "buildBarracks",
+        "currentBehavior": "function buildBarracks(){if(state.inventory.wood<5||state.inventory.stone<3){toast('재료가 부족해');return}state.inventory.wood-=5;state.inventory.stone-=3;state.barracksBuilt=true;saveS",
+        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buildBarracks의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -6832,13 +7364,13 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "symbol": "renderBarracks",
+        "symbol": "renderWorkerShop",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "symbol": "talkTo",
+        "symbol": "renderBarracks",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -6850,25 +7382,25 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "symbol": "buyWorker",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
         "symbol": "openDecor",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "symbol": "collectNode",
+        "symbol": "buyWorker",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
         "symbol": "createUnit",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "symbol": "buildBarracks",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -6946,22 +7478,22 @@
     "files": [
       "web-games/cozy-island/index.html",
       "web-games/cozy-island/darkness-flame-v19.js",
+      "web-games/cozy-island/village-defense.js",
       "web-games/cozy-island/abyss-cave-v23.js",
-      "web-games/cozy-island/game.js",
       "web-games/cozy-island/game-v3.js",
+      "web-games/cozy-island/game.js",
       "web-games/cozy-island/jungle-west-camp.js",
+      "web-games/cozy-island/render-v3.js",
       "web-games/cozy-island/production-buildings.js",
       "web-games/cozy-island/iron-lv3-spearman-v14.js",
       "web-games/cozy-island/balance-resume-v20.js",
       "web-games/cozy-island/economy-west-v2.js",
-      "web-games/cozy-island/farming-rules.js",
-      "web-games/cozy-island/world-upgrade.js",
-      "web-games/cozy-island/farm-smithy.js"
+      "web-games/cozy-island/farming-rules.js"
     ],
     "sourceAnchors": [
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 96,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "recruit",
         "context": "function recruit(kind){const max=kind==='archer'?ARCHER_MAX:SOLDIER_MAX,cost=kind==='archer'?20:10;if(countKind(kind)>=max){toast('최대 인원이야');return}if(state.inventory.food<cost){to",
@@ -6973,7 +7505,19 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 94,
+        "line": 180,
+        "kind": "FUNCTION",
+        "symbol": "renderWorkerShop",
+        "context": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
+        "score": 498,
+        "currentBehavior": "function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.wo",
+        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 renderWorkerShop의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/cozy-island/game-v3.js::renderWorkerShop이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 175,
         "kind": "FUNCTION",
         "symbol": "renderBarracks",
         "context": "function renderBarracks(){if(!state.barracksBuilt){ui.panelBody.innerHTML=`<p class=\"panel-note\">병영을 지으면 병사와 궁수를 모집할 수 있어.</p><button class=\"choice\" data-build><span>🏕️ 병영 건설</spa",
@@ -6985,19 +7529,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 92,
-        "kind": "FUNCTION",
-        "symbol": "talkTo",
-        "context": "function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class=\"choice\" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=",
-        "score": 474,
-        "currentBehavior": "function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class=\"choice\" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=",
-        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 talkTo의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/cozy-island/game-v3.js::talkTo이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 93,
+        "line": 174,
         "kind": "FUNCTION",
         "symbol": "openBarracks",
         "context": "function openBarracks(){ui.panelTitle.textContent=state.barracksBuilt?'병영':'병영 건설';renderBarracks();ui.panel.showModal()}",
@@ -7009,19 +7541,7 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 100,
-        "kind": "FUNCTION",
-        "symbol": "buyWorker",
-        "context": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
-        "score": 458,
-        "currentBehavior": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
-        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyWorker의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/cozy-island/game-v3.js::buyWorker이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/cozy-island/game-v3.js",
-        "line": 101,
+        "line": 182,
         "kind": "FUNCTION",
         "symbol": "openDecor",
         "context": "function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.",
@@ -7033,19 +7553,19 @@
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 91,
+        "line": 181,
         "kind": "FUNCTION",
-        "symbol": "collectNode",
-        "context": "function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){sta",
+        "symbol": "buyWorker",
+        "context": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
         "score": 442,
-        "currentBehavior": "function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){sta",
-        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 collectNode의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/cozy-island/game-v3.js::collectNode이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSo",
+        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buyWorker의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/cozy-island/game-v3.js::buyWorker이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "web-games/cozy-island/game-v3.js",
-        "line": 97,
+        "line": 178,
         "kind": "FUNCTION",
         "symbol": "createUnit",
         "context": "function createUnit(kind,enemy,boss=false){const ar=kind==='archer',baseHp=ar?55:100,baseAtk=ar?25:10,hp=boss?baseHp*7:baseHp;return{id:unitId++,kind,enemy,boss,hp,maxHp:hp,attack:",
@@ -7053,6 +7573,18 @@
         "currentBehavior": "function createUnit(kind,enemy,boss=false){const ar=kind==='archer',baseHp=ar?55:100,baseAtk=ar?25:10,hp=boss?baseHp*7:baseHp;return{id:unitId++,kind,enemy,boss,hp,maxHp:hp,attack:",
         "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 createUnit의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/cozy-island/game-v3.js::createUnit이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/cozy-island/game-v3.js",
+        "line": 176,
+        "kind": "FUNCTION",
+        "symbol": "buildBarracks",
+        "context": "function buildBarracks(){if(state.inventory.wood<5||state.inventory.stone<3){toast('재료가 부족해');return}state.inventory.wood-=5;state.inventory.stone-=3;state.barracksBuilt=true;saveS",
+        "score": 426,
+        "currentBehavior": "function buildBarracks(){if(state.inventory.wood<5||state.inventory.stone<3){toast('재료가 부족해');return}state.inventory.wood-=5;state.inventory.stone-=3;state.barracksBuilt=true;saveS",
+        "intendedBehavior": "CORE_FUN primary goal \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.의 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 buildBarracks의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독. MAIN은 A(미지 공간과 지도 정보 수집 × 문화·언어와 번역)와 독립적인 B(상대 기술과 팀 전술 대응 × 의례와 호혜 관계)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 탐험 × 보조 대전 슈팅 액션)의 판정 차이, @(문화·언어와 번역의 경로 해독)가 여는 새 WorldAccessState를 합성한 결과다.에서 문화·언어와 번역·의례와 호혜 관계 탐험×대전 슈팅 액션: 문화·언어와 번역의 경로 해독의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/cozy-island/game-v3.js::buildBarracks이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/cozy-island/game-v3.js에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7065,14 +7597,12 @@
     "platform": "WEB",
     "categories": [
       "GRAPHICS",
-      "MAP",
       "UI",
       "GAMEPLAY",
       "MULTIPLAYER_SERVER"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
       "REMOTE_AUTHORITY_AND_SYNC_QA",
@@ -7094,31 +7624,29 @@
     "plannedFiles": [
       "web-games/cozy-island/index.html",
       "web-games/cozy-island/darkness-flame-v19.js",
+      "web-games/cozy-island/village-defense.js",
       "web-games/cozy-island/abyss-cave-v23.js",
-      "web-games/cozy-island/game.js",
       "web-games/cozy-island/game-v3.js",
+      "web-games/cozy-island/game.js",
       "web-games/cozy-island/jungle-west-camp.js",
+      "web-games/cozy-island/render-v3.js",
       "web-games/cozy-island/production-buildings.js",
       "web-games/cozy-island/iron-lv3-spearman-v14.js",
       "web-games/cozy-island/balance-resume-v20.js",
       "web-games/cozy-island/economy-west-v2.js",
-      "web-games/cozy-island/farming-rules.js",
-      "web-games/cozy-island/world-upgrade.js",
-      "web-games/cozy-island/farm-smithy.js"
+      "web-games/cozy-island/farming-rules.js"
     ],
     "impact": {
       "version": 1,
       "platform": "WEB",
       "categories": [
         "GRAPHICS",
-        "MAP",
         "UI",
         "GAMEPLAY",
         "MULTIPLAYER_SERVER"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
-        "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "GAMEPLAY_STATE_DELTA_QA",
         "REMOTE_AUTHORITY_AND_SYNC_QA",
@@ -7142,7 +7670,6 @@
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
       "REMOTE_AUTHORITY_AND_SYNC_QA",
@@ -7166,7 +7693,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "796ef2dd07c16cec99a2675a5a627652592a42c2794e86d691a4274871423bbd",
+      "sourceTreeFingerprint": "5eceb8a587820d46cbce2efb643191517a4089ee875c79e6125f0f89afdde11a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7288,5 +7815,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-18T13:13:21.006Z"
+  "generatedAt": "2026-10-24T14:14:12.728Z"
 }

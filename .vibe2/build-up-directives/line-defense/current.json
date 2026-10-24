@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g42-a7b309a28323",
-  "directiveFingerprint": "a7b309a28323cae151bde1fbd012e8a32318c1fbb1d415b52efc83ba96379012",
-  "previousDirectiveFingerprint": "5a96281536fe091fbdb5c61ba6d667a90d3562842c3a77a0ddb498a1c1734482",
-  "forbiddenRepeatFingerprint": "5a96281536fe091fbdb5c61ba6d667a90d3562842c3a77a0ddb498a1c1734482",
+  "directiveId": "line-defense-build-up-g44-dc702aa92977",
+  "directiveFingerprint": "dc702aa9297706c1a49c9ee6b1276a2b9b34a1bc293b1175f0fc5d4712e004fb",
+  "previousDirectiveFingerprint": "3c4d85978d3171c915fc579727cfc4266a5fc0f7a67067d026a216ce4a7c3081",
+  "forbiddenRepeatFingerprint": "3c4d85978d3171c915fc579727cfc4266a5fc0f7a67067d026a216ce4a7c3081",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 42,
+  "generation": 44,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -4921,56 +4921,19 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 41,
-    "previousSourceTreeFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "previousGeneration": 43,
+    "previousSourceTreeFingerprint": "f8161c043e943bc9d13b7e2605a8617a6622b03553afa661ff7b90d8eb9cbde2",
     "currentSourceTreeFingerprint": "62ef1c7af037f668db0f6dc3f904d95d097d014f2db53277752900185a702838",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "b205da4c8a7824aefdf4e8b67aaa882a5cc5ecb4",
-      "artifactIdentity": null,
-      "runtimeVerified": false,
-      "productionVerified": false,
-      "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 39957901022,
-      "testedAt": "2026-10-23T13:51:00.354Z",
-      "repairSurfaces": [
-        "SOURCE_CONTRACT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        },
-        {
-          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-          "repairSurface": "SOURCE_CONTRACT",
-          "priority": "P0",
-          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
-          "observed": "{}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-static-revalidation-failed",
+    "failureSignature": "existing-source-verified-external-learning-required",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
-      "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
-      "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
-      "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
+      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6117,7 +6080,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 375775,
+        "sourceBytes": 405137,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6150,12 +6113,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 4,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=2.",
+    "themeDepth": 6,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 4,
+        "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
@@ -6172,8 +6135,8 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6204,7 +6167,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 122,
+        "score": 86,
         "gapDomains": []
       },
       {
@@ -6319,11 +6282,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 42,
-    "previousGeneration": 41,
+    "generation": 44,
+    "previousGeneration": 43,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
     "sourceFingerprint": "62ef1c7af037f668db0f6dc3f904d95d097d014f2db53277752900185a702838",
-    "priorSourceFingerprint": "a5c38bc768ac87e7a06589e83d370d97a1fc2b9c23697ecb5122ff99ded3e288",
+    "priorSourceFingerprint": "f8161c043e943bc9d13b7e2605a8617a6622b03553afa661ff7b90d8eb9cbde2",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -8086,7 +8049,7 @@
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-static-revalidation-failed"
+      "failureSignature": "existing-source-verified-external-learning-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8141,7 +8104,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 43,
+    "nextGeneration": 45,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8203,5 +8166,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-23T13:47:14.523Z"
+  "generatedAt": "2026-10-24T08:01:03.983Z"
 }

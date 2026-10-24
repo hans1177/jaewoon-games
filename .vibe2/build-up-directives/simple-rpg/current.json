@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "simple-rpg-build-up-g12-012237dd6bde",
-  "directiveFingerprint": "012237dd6bde90ffc9e2039fe8637c4b73ca903c9ec4080b72eb9169cc066141",
-  "previousDirectiveFingerprint": "c88c913f3f24ca7090fc777fbe5d9e84aadd6b32b48d499ed4d1298b8b9a7ab4",
-  "forbiddenRepeatFingerprint": "c88c913f3f24ca7090fc777fbe5d9e84aadd6b32b48d499ed4d1298b8b9a7ab4",
+  "directiveId": "simple-rpg-build-up-g13-db86b27a3d1d",
+  "directiveFingerprint": "db86b27a3d1d67b53456c6e58a33e7f1efd28f9557a81e04493eac19cb9486dc",
+  "previousDirectiveFingerprint": "012237dd6bde90ffc9e2039fe8637c4b73ca903c9ec4080b72eb9169cc066141",
+  "forbiddenRepeatFingerprint": "012237dd6bde90ffc9e2039fe8637c4b73ca903c9ec4080b72eb9169cc066141",
   "gameId": "simple-rpg",
   "gameName": "대충알피지",
-  "generation": 12,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/simple-rpg",
-  "sourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+  "sourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
   "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+        "sourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
-    "sourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+    "sourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -948,7 +948,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+    "sourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4530,19 +4530,20 @@
   "currentImplementationFindings": {
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=17",
+      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 508,
+      "combat": 506,
       "progression": 429,
       "ai": 157,
       "save": 173,
       "multiplayer": 32,
-      "animation": 82,
-      "motionStates": 671,
-      "gameFeel": 15,
-      "vfx": 14,
+      "animation": 86,
+      "motionStates": 686,
+      "gameFeel": 30,
+      "vfx": 27,
       "camera": 65,
       "audio": 1,
       "audioDynamics": 30,
@@ -4559,12 +4560,12 @@
       "settings": 3,
       "feedback": 232,
       "session": 40,
-      "content": 900,
+      "content": 905,
       "choice": 129,
       "connection": 7,
-      "performance": 40,
-      "lighting": 18,
-      "primitive": 2,
+      "performance": 44,
+      "lighting": 48,
+      "primitive": 13,
       "todo": 0,
       "errorRecovery": 42
     },
@@ -4579,7 +4580,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "score": 271
+        "score": 279
       },
       {
         "file": "roblox-games/simple-rpg/server/WeatherSystem.luau",
@@ -4717,7 +4718,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 594,
+        "line": 673,
         "kind": "FUNCTION",
         "symbol": "reportFoundation",
         "context": "local function reportFoundation(): ()",
@@ -4837,7 +4838,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 606,
+        "line": 685,
         "kind": "FUNCTION",
         "symbol": "syncAutoCombat",
         "context": "local function syncAutoCombat(): ()",
@@ -4901,7 +4902,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 323,
+        "line": 365,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
@@ -4965,7 +4966,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 363,
+        "line": 442,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -4973,7 +4974,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 412,
+        "line": 491,
         "kind": "FUNCTION",
         "symbol": "artPanel",
         "context": "local function artPanel(name: string, pos: UDim2, size: UDim2, isShown: boolean, parent: Instance): ImageLabel",
@@ -5008,9 +5009,9 @@
   "previousVersionDelta": {
     "previousGoal": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 11,
-    "previousSourceTreeFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
-    "currentSourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+    "currentSourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5018,9 +5019,9 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-source-drift:SERVER_PLACEHOLDER_FORBIDDEN|CLIENT_PLACEHOLDER_FORBIDDEN"
+      "roblox-source-bootstrap:source-generation-failed"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -5309,13 +5310,13 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
@@ -5329,18 +5330,18 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "TERRAIN",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "MATERIALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "PALETTE",
@@ -5897,8 +5898,8 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5906,8 +5907,8 @@
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5933,8 +5934,8 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5942,8 +5943,8 @@
     },
     {
       "domain": "TERRAIN",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5951,8 +5952,8 @@
     },
     {
       "domain": "MATERIALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -6086,6 +6087,31 @@
       "domain": "AUDIO_MUSIC_SFX",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CHARACTER_VISUALS",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "ENEMY_VISUALS",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     }
   ],
   "primaryFocus": "STABILITY",
@@ -6147,7 +6173,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 446188,
+        "sourceBytes": 449841,
         "largestFileBytes": 131032,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6180,8 +6206,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 1,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6189,7 +6215,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 1,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 2,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
       },
@@ -6205,6 +6231,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM"
       ],
       "requiredThemes": [
@@ -6238,8 +6265,15 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 22,
+        "score": 164,
         "gapDomains": []
+      },
+      {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 26,
+        "gapDomains": [
+          "ENEMY_VISUALS"
+        ]
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6262,14 +6296,14 @@
         "gapDomains": []
       },
       {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 14,
-        "gapDomains": []
-      },
-      {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": -18,
-        "gapDomains": []
+        "score": -130,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       }
     ],
     "coherentContentBundle": [
@@ -6345,11 +6379,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 12,
-    "previousGeneration": 11,
+    "generation": 13,
+    "previousGeneration": 12,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
-    "priorSourceFingerprint": "8096c6ffcce4303e41ea4678a1b7a0ee2c3ad5f21504cb75a7021577f37c3524",
+    "sourceFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
+    "priorSourceFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6368,7 +6402,7 @@
     "version": 1,
     "gameId": "simple-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+    "sourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7278,7 +7312,7 @@
       "identity": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.",
       "visualPurpose": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 플레이 판단과 작은 모험 RPG가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
       "distinctnessRule": "퀘스트와 인물 관계 × 서사시의 추방과 귀환와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
-      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE",
+      "placeholderDebt": "HIGH",
       "libraryRenewal": "기존 게임의 자산 적용 여부를 품질 합격으로 간주하지 않는다. 현재 화면의 캐릭터·몬스터·건물·가구·식생·음원·UI와 로비를 게임 설계 기준으로 다시 검토하고 낮은 품질 축은 교체한다. 품질 좋은 내부 범용 원본을 우선 선택해 원본을 보존하고 별도 플랫폼 파생본을 만든다. 공간 모델은 실제 메시·리그·재질·모션과 업로드 ID를 연결하고, 음원은 기존 오디오 처리 경로를 사용한다. 단순 부품 재조합만으로 최종 품질을 주장하지 않는다.",
       "lobbyRenewal": "로비가 있는 게임은 기존 진입·파티·상점·포탈 기능과 저장·서버 권한을 보존하면서 현재 게임 컨셉에 맞게 시야·동선·상호작용 구역·배경을 재구성한다. 로비가 없는 게임에 새 로비를 강제하지 않는다. 실제 전후 화면·모바일 조작·접지·실행 확인 후에만 품질 통과로 기록한다."
     },
@@ -7328,7 +7362,7 @@
     "gameId": "simple-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+    "sourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8067,21 +8101,33 @@
     "platform": "ROBLOX",
     "categories": [
       "GRAPHICS",
+      "MAP",
       "UI",
       "GAMEPLAY"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "VISUAL_BINDING_QA"
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
     "securityRelevant": false,
-    "openCloudWorldChecks": []
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ]
   },
   "preMutationDryRun": {
     "version": 1,
@@ -8107,21 +8153,33 @@
       "platform": "ROBLOX",
       "categories": [
         "GRAPHICS",
+        "MAP",
         "UI",
         "GAMEPLAY"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
+        "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "GAMEPLAY_STATE_DELTA_QA",
-        "VISUAL_BINDING_QA"
+        "VISUAL_BINDING_QA",
+        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
       "securityRelevant": false,
-      "openCloudWorldChecks": []
+      "openCloudWorldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "LANDMARK_AND_OBJECTIVE_COUNTS",
+        "WORLD_GEOMETRY",
+        "TERRAIN_BINDING",
+        "LIGHTING_ATMOSPHERE",
+        "STREAMING_CONFIGURATION"
+      ]
     },
     "protectedSemantics": [
       "CORE_RULES",
@@ -8134,14 +8192,25 @@
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "VISUAL_BINDING_QA"
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "openCloudWorldChecks": [],
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ],
     "sourceMutationPerformed": false,
     "newWorkflowOrQueueRequired": false,
     "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
@@ -8154,11 +8223,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "4ecbc44e42887f3e2603bf2885dc4e1a9045d5bd696a40f2058ca1ff63b8c439",
+      "sourceTreeFingerprint": "efd1e9f4c44efe1db2cc4ab06837b862b68d0223f974f39dc2612cb8fe95a4d0",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED"
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8213,7 +8282,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 13,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8275,5 +8344,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-21T22:56:01.605Z"
+  "generatedAt": "2026-10-23T17:50:11.209Z"
 }
