@@ -353,6 +353,69 @@ buildWorld(live){
   if(host.childElementCount>19)host.firstElementChild.remove();
   host.append(node);node.addEventListener('animationend',()=>node.remove(),{once:true});
  }
+ // 매 프레임 하늘·광원·지면 색만 갱신한다. 월드와 지형은 조건 변화 시에만 재생성.
+ applyEnvironment(live,dt,now){
+  const m=this.worldMood;if(!m)return;
+  const env=live.environment||{minutes:720,weather:'clear',effects:true,quality:'auto'},inside=!!live.dungeon;
+  const minute=env.minutes??720;
+  const daylight=inside?.12:Math.max(0,Math.sin((minute-360)/720*Math.PI));
+  const twilight=inside?0:Math.max(0,1-Math.min(Math.abs(minute-380),Math.abs(minute-1110))/115);
+  const darkness=inside?0:1-daylight;
+  const weather=inside?'interior':env.weather||'clear';
+  const fogBoost=weather==='fog'?.48:weather==='rain'?.19:weather==='snow'?.16:weather==='dust'?.27:weather==='ash'?.25:0;
+  const nightSky=new THREE.Color(0x111d32),baseSky=new THREE.Color(m.sky),warmSky=new THREE.Color(0xb47759);
+  const targetSky=baseSky.lerp(nightSky,darkness*.91).lerp(warmSky,twilight*.31);
+  const targetFog=new THREE.Color(m.fog).lerp(new THREE.Color(0x152033),darkness*.67).lerp(new THREE.Color(0x949b9b),fogBoost*.34);
+  const smoothing=1-Math.exp(-dt*2.8);
+  if(inside){this.scene.background.setHex(m.sky);this.scene.fog.color.setHex(m.fog);}else{
+   this.scene.background.lerp(targetSky,smoothing);
+   this.scene.fog.color.lerp(targetFog,smoothing);
+  }
+  const targetFar=m.far*(1-fogBoost)*(inside?1:(.83+.17*daylight));
+  this.scene.fog.far+=(targetFar-this.scene.fog.far)*smoothing;
+  this.scene.fog.near=inside?13:weather==='fog'?8:12;
+  const warm=new THREE.Color(0xffaf69),moon=new THREE.Color(0x91acd8);
+  const sunColor=new THREE.Color(m.light).lerp(moon,darkness*.64).lerp(warm,twilight*.44);
+  this.sun.color.lerp(sunColor,smoothing);
+  const sunTarget=inside?m.intensity*.75:m.intensity*(.14+.73*daylight)*(1-fogBoost*.40);
+  this.sun.intensity+=(sunTarget-this.sun.intensity)*smoothing;
+  this.sun.position.set(-23+Math.cos(minute/1440*Math.PI*2)*14,13+daylight*35,17+Math.sin(minute/1440*Math.PI*2)*14);
+  this.skyLight.color.lerp(new THREE.Color(0x9eaeb8).lerp(moon,darkness*.65),smoothing);
+  const hemi=inside?.45:(.19+.64*daylight)*(1-fogBoost*.28);
+  this.skyLight.intensity+=(hemi-this.skyLight.intensity)*smoothing;
+  const tone=inside?.68:(.44+.42*daylight)*(1-fogBoost*.16);
+  this.gl.toneMappingExposure+=(tone-this.gl.toneMappingExposure)*smoothing;
+  const terrain=this.groundMaterial(live.state.zone,inside);
+  const wet=weather==='rain'?.68:weather==='snow'?.84:1;
+  const floorTint=new THREE.Color(0xffffff).multiplyScalar((inside?1:.48+.52*daylight)*wet);
+  if(weather==='snow')floorTint.lerp(new THREE.Color(0xb5c5d0),.12);
+  terrain.color.lerp(floorTint,smoothing);
+  for(let i=0;i<this.torchLights.length;i++){
+   const flame=this.torchFlames[i],light=this.torchLights[i];
+   const alpha=inside?1:.18+.82*darkness;
+   const jitter=1+Math.sin(now*.015+i*2.41)*.10+Math.sin(now*.029+i)*.055;
+   light.intensity=alpha*jitter*(this.mobile?2.0:3.5);
+   if(flame){flame.scale.setScalar((.73+.34*alpha)*jitter);flame.material.opacity=.15+.82*alpha;}
+  }
+  const cloud=this.climateParticles;
+  if(cloud){
+   cloud.mesh.position.set(live.p.x*SCALE,0,live.p.y*SCALE);
+   const coords=cloud.position,kind=cloud.kind;
+   for(let i=0;i<cloud.count;i++){
+    let a=i*(kind==='rain'?6:3);
+    const speed=kind==='rain'?13:kind==='snow'?.85:kind==='ash'?.7:2.0;
+    let y=coords[a+1]-speed*dt;
+    if(y<.15){y+=kind==='rain'?8:6;coords[a]=(Math.sin((i+1)*217.13+now*.0001)*7.7);}
+    coords[a]+=(kind==='dust'?.9:kind==='ash'?.3:kind==='snow'?.10:.22)*dt;
+    if(coords[a]>9)coords[a]-=18;
+    coords[a+1]=y;
+    if(kind==='rain'){coords[a+3]=coords[a]+.13;coords[a+4]=y+.38;}
+    else coords[a+2]+=Math.sin(now*.00075+i)*dt*.15;
+   }
+   cloud.mesh.geometry.attributes.position.needsUpdate=true;
+  }
+  this.qualityPreset=env.quality||'auto';
+ }
  render(live){
   if(!this.ready)return;const started=performance.now();if(this.mobile&&this.lastRenderedAt&&started-this.lastRenderedAt<30)return;this.lastRenderedAt=started;const now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
   const choices=live.state.story?.choices||{};const climate=live.environment||{minutes:720,weather:'clear',effects:true,quality:'auto'};const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision+':'+(choices.fort||'')+':'+(choices.temple||'')+':'+(choices.ending||'')+':'+(live.dungeon?'inside':climate.weather)+':'+climate.effects+':'+climate.quality;
