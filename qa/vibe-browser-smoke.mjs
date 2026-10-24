@@ -292,10 +292,11 @@ try{
   assert.equal(castle.neighborGateAxis(gate,[
     gate,{kind:'wall',x:450,y:540,hp:140},{kind:'wall',x:450,y:720,hp:140}
   ]),'vertical','COZY_GATE_VERTICAL_ALIGNMENT');
-  const pathBefore=castle.findWorkerRoute({x:390,y:820},{x:245,y:850},[]);
-  const pathDetour=castle.findWorkerRoute({x:390,y:820},{x:245,y:850},
-    [{kind:'wall',x:270,y:810,hp:140}]);
-  assert.ok(pathBefore.length>0&&pathDetour.length>pathBefore.length,
+  const pathBefore=castle.findWorkerRoute({x:390,y:820},{x:785,y:965},[]);
+  const pathDetour=castle.findWorkerRoute({x:390,y:820},{x:785,y:965},
+    [{kind:'wall',x:450,y:810,hp:140}]);
+  assert.ok(pathBefore.length>0&&pathDetour.length>0&&
+     !pathDetour.some(p=>p.x===450&&p.y===810),
     'COZY_WORKER_PATH_DID_NOT_AVOID_WALL');
   assert.equal(castle.validateWallLayout([],[
     {kind:'wall',x:360,y:810,hp:140}
