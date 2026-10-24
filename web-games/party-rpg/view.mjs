@@ -17,7 +17,7 @@ export class PartyView{
    this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x49514f,12,58);this.scene.add(this.staticRoot);
    this.skyLight=new THREE.HemisphereLight(0xa0b0b6,0x252724,.81);this.scene.add(this.skyLight);this.sun=new THREE.DirectionalLight(0xbfc2bd,1.05);this.sun.position.set(-23,38,17);this.scene.add(this.sun);
    this.camera=new THREE.OrthographicCamera(-12,12,12,-12,.1,180);this.camera.position.set(45,45,45);this.camera.lookAt(0,0,0);
-   this.groundMaterials=new Map();this.effects=[];this.weather=null;this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
+   this.groundMaterials=new Map();this.effects=[];this.cameraImpact=0;this.weather=null;this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
    this.marker=new THREE.Mesh(this.ringGeometry,this.ringMaterials.select);this.marker.rotation.x=-Math.PI/2;this.marker.visible=false;this.scene.add(this.marker);
    // Low-poly stone clue marker: visible from the road without blocking combat.
    this.evidenceBeacon=new THREE.Group();
@@ -365,34 +365,85 @@ buildWorld(live){
  createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();}});root.add(model);if(kind!=='enemy')this.dressActor(root,role);
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
   const mixer=new THREE.AnimationMixer(model),actions=new Map();for(const clip of original.animations){const action=mixer.clipAction(clip);actions.set(clip.name,action);}
-  const result={root,model,ring,mixer,actions,action:null,role,lastX:obj.x,lastY:obj.y,height};this.scene.add(root);return result;
+  const result={root,model,ring,mixer,actions,action:null,role,kind,lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials:[]};model.traverse(p=>{if(!p.isMesh)return;for(const m of Array.isArray(p.material)?p.material:[p.material])if(m?.emissive)result.flashMaterials.push({material:m,red:m.emissive.r,green:m.emissive.g,blue:m.emissive.b});});this.scene.add(root);return result;
  }
- animate(entry,moving,combat,dt){let term=combat?.visualUntil>performance.now()?'attack':moving?'walk':'idle';const names=[...entry.actions.keys()];const choose=term==='attack'?names.find(n=>/attack|spell|shoot|punch|bite|headbutt/i.test(n)&&!/idle/i.test(n)):names.find(n=>new RegExp(term,'i').test(n));const name=choose||names.find(n=>/idle/i.test(n))||names[0];if(name&&entry.action!==name){const next=entry.actions.get(name);const previous=entry.actions.get(entry.action);next.reset().setEffectiveWeight(1).play();if(previous)next.crossFadeFrom(previous,.16,true);entry.action=name;}entry.mixer.update(dt);}
+ // 애니메이션: GLB 실제 걷기/공격 클립을 크로스페이드, 클립 없는 적도 관성·공격 반동·피격 경직 처리.
+ animate(entry,moving,combat,dt,now){
+  const attack=combat?.visualUntil>now,hit=entry.hitAt>0?Math.max(0,1-(now-entry.hitAt)/280):0;
+  const term=attack?'attack':moving?'walk':'idle',names=[...entry.actions.keys()];
+  const preferred=term==='attack'?names.find(n=>/attack|spell|shoot|punch|bite|headbutt|slash/i.test(n)&&!/idle/i.test(n)):names.find(n=>new RegExp(term,'i').test(n));
+  const fallback=names.find(n=>/idle/i.test(n))||names[0],name=preferred||fallback;
+  if(name&&entry.action!==name){
+   const next=entry.actions.get(name),previous=entry.actions.get(entry.action);
+   next.reset().setEffectiveWeight(1).play();if(previous)next.crossFadeFrom(previous,.20,true);entry.action=name;
+  }
+  if(entry.mixer)entry.mixer.update(dt);
+  const breath=Math.sin(now*.0025+entry.height)*.012;
+  const stride=moving?Math.sin(now*.013+entry.height*4)*.045:0;
+  const strike=attack?Math.sin((1-Math.min(1,(combat.visualUntil-now)/600))*Math.PI):0;
+  const angle=(moving?Math.sin(now*.01+entry.height)*.035:breath*.55)+strike*(entry.kind==='enemy'?.14:.10)-hit*.18;
+  entry.model.rotation.x+=(angle-entry.model.rotation.x)*(1-Math.exp(-dt*14));
+  entry.model.rotation.z+=((moving?Math.sin(now*.007+entry.height)*.04:breath)-entry.model.rotation.z)*(1-Math.exp(-dt*12));
+  entry.model.position.y+=(entry.modelRestY+stride+strike*.055+hit*.09-entry.model.position.y)*(1-Math.exp(-dt*17));
+  for(const f of entry.flashMaterials){
+   const glow=hit*(entry.kind==='enemy'?.7:.42);
+   f.material.emissive.setRGB(f.red+glow,f.green+glow*.4,f.blue+glow*.25);
+  }
+ }
+ // 실제 체력/충돌과 무관한 짧은 타격 반응. 렌더 대상에 없는 몬스터도 안전하다.
+ reactToHit(key,power=1){
+  const entry=this.actors.get(key);if(entry){entry.hitAt=performance.now();entry.hitPower=power;}
+  if(key==='player'||power>1)this.cameraImpact=Math.min(.12,this.cameraImpact+(power>1?.052:.025));
+ }
  removeActor(key,entry){this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
- // 간결한 직업별 주문·공격 시각효과, 실제 피해량 판정에는 개입하지 않는다.
+ // 직업·기술별 색, 궤적, 보호막, 투사체, 마법 파편을 조합한 경량 3D 이펙트.
+ // 게임 피해 판정과 분리하고 휴대폰은 효과/파편 개수를 제한한다.
  playSkillEffect(kind,sx,sy,tx=sx,ty=sy){
-  if(!this.ready||this.effects.length>=(this.mobile?9:18))return;
-  const colors={strike:0xc8b391,fighter:0xd8bd87,guard:0xc2d0d2,rogue:0xb6a0ad,cleric:0xdbce8e,wizard:0x769ac8,ranger:0xa3b18b};
-  const color=colors[kind]||colors.strike,group=new THREE.Group();
-  group.position.set(tx*SCALE,.13,ty*SCALE);
-  const material=()=>new THREE.MeshBasicMaterial({color,transparent:true,opacity:.74,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
-  const ring=new THREE.Mesh(new THREE.RingGeometry(kind==='wizard'?.15:.29,kind==='wizard'?.3:.38,24),material());
-  ring.rotation.x=-Math.PI/2;ring.position.y=.02;group.add(ring);
-  if(kind==='cleric'||kind==='guard'){
-   const halo=new THREE.Mesh(new THREE.TorusGeometry(.36,.035,5,18),material());halo.position.y=kind==='guard'?.95:1.45;group.add(halo);
-  }else{
-   const diff=new THREE.Vector3((sx-tx)*SCALE,0,(sy-ty)*SCALE),length=diff.length();
-   if(length>.07){
-    const beam=new THREE.Mesh(new THREE.CylinderGeometry(.026,.044,Math.min(length,5.2),6),material());
-    beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),diff.clone().normalize());
-    beam.position.copy(diff.multiplyScalar(.5)).add(new THREE.Vector3(0,.53,0));group.add(beam);
+  if(!this.ready||this.effects.length>=(this.mobile?11:24))return;
+  const type=String(kind),family=type.startsWith('fighter')?'fighter':type.startsWith('rogue')?'rogue':type.startsWith('cleric')?'cleric':type.startsWith('wizard')?'wizard':type.startsWith('ranger')?'ranger':type;
+  const colors={fighter:0xe0b56b,rogue:0xc48dbd,cleric:0xf4d898,wizard:0x82b4ff,ranger:0x96dba3,guard:0x91d5e6,strike:0xffd2a0};
+  const color=colors[family]||colors.strike,group=new THREE.Group();
+  const defense=/guard|wall|rally|shout|ward|veil|escape|evasion/.test(type);
+  const healing=/cleric_group|cleric_rescue/.test(type),slow=/smoke|frost|snare/.test(type);
+  const area=/cleave|purify|nova|chain|volley|flurry|strike/.test(type);
+  const arrow=family==='ranger',arcane=family==='wizard',holy=family==='cleric',shadow=family==='rogue';
+  const impact=defense||healing?{x:sx,y:sy}:{x:tx,y:ty};
+  group.position.set(impact.x*SCALE,.10,impact.y*SCALE);
+  const makeMaterial=(opacity=.85)=>new THREE.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
+  const attach=(geo,mat,x=0,y=0,z=0)=>{const mesh=new THREE.Mesh(geo,mat);mesh.position.set(x,y,z);mesh.userData.fade=mat.opacity;group.add(mesh);return mesh;};
+  const base=defense?.67:area?.82:.46;
+  const floor=attach(new THREE.RingGeometry(base*.7,base,24),makeMaterial(.82),0,.012,0);floor.rotation.x=-Math.PI/2;
+  if(defense||healing){
+   for(let i=0;i<(this.mobile?2:3);i++){
+    const halo=attach(new THREE.TorusGeometry(.48+i*.12,.03,5,22),makeMaterial(.74),0,.45+i*.35,0);
+    halo.rotation.set(Math.PI/3+i*.3,i*.68,0);
    }
-   if(kind==='wizard'||kind==='fighter'){
-    const arc=new THREE.Mesh(new THREE.TorusGeometry(kind==='wizard'?.44:.65,.045,5,22,Math.PI*1.3),material());
-    arc.rotation.x=kind==='wizard'?.3:1.2;arc.position.y=.52;group.add(arc);
+   if(holy||healing){
+    attach(new THREE.BoxGeometry(.085,.92,.08),makeMaterial(.9),0,1.24,0);
+    attach(new THREE.BoxGeometry(.52,.09,.08),makeMaterial(.9),0,1.42,0);
+   }
+  }else{
+   const diff=new THREE.Vector3((sx-impact.x)*SCALE,0,(sy-impact.y)*SCALE),distance=diff.length();
+   if(distance>.08){
+    const shaft=attach(new THREE.CylinderGeometry(arrow?.018:.036,arrow?.032:.060,Math.min(distance,7),6),makeMaterial(.9));
+    shaft.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),diff.clone().normalize());
+    shaft.position.copy(diff.multiplyScalar(.5)).add(new THREE.Vector3(0,.8,0));
+   }
+   if(arcane||shadow||area){
+    const arc=attach(new THREE.TorusGeometry(area?.68:.42,arcane?.06:.038,5,26,area?Math.PI*1.62:Math.PI*1.26),makeMaterial(.92),0,.63,0);
+    arc.rotation.set(shadow?1.34:arcane?.45:1.05,.22,.3);
    }
   }
-  this.scene.add(group);this.effects.push({group,born:performance.now(),duration:kind==='cleric'?800:kind==='guard'?850:540});
+  const shards=this.mobile?(area?5:3):(area?10:6),seed=type.length*2.29;
+  for(let i=0;i<shards;i++){
+   const angle=(i/shards)*Math.PI*2+seed,dist=.12+(i%3)*.15;
+   const spike=attach(new THREE.OctahedronGeometry((arrow?.055:.085)*(1+(i%2)*.4),0),makeMaterial(.72),Math.cos(angle)*dist,.32+(i%4)*.16,Math.sin(angle)*dist);
+   spike.userData.spark={x:Math.cos(angle)*(slow?.38:1.0),y:.45+(i%3)*.22,z:Math.sin(angle)*(slow?.38:1.0)};
+  }
+  if(arrow||slow){const tip=attach(new THREE.ConeGeometry(.13,.42,5),makeMaterial(.9),0,.72,0);tip.rotation.x=arrow?Math.PI/2:0;}
+  if(arcane){const core=attach(new THREE.IcosahedronGeometry(.19,0),makeMaterial(.96),0,.76,0);core.rotation.y=.2;}
+  if(holy){const disk=attach(new THREE.RingGeometry(.24,.29,16),makeMaterial(.9),0,1.32,0);disk.rotation.y=.5;}
+  this.scene.add(group);this.effects.push({group,born:performance.now(),duration:healing?920:defense?880:area?670:590,spin:(arcane?2.7:shadow?-2.3:1.3),area});
  }
  clearEffects(){
   for(const fx of this.effects){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}
@@ -479,21 +530,22 @@ buildWorld(live){
   if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.clearEffects();this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
   this.applyEnvironment(live,dt,now);
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
-  const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);if(this.weather){this.weather.position.set(this.focus.x+Math.sin(now*.00045)*.24,0,this.focus.z);this.weather.rotation.y=Math.sin(now*.00018)*.08;}this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
+  const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);if(this.cameraImpact>.001){this.camera.position.x+=Math.sin(now*.11)*this.cameraImpact;this.camera.position.y+=Math.cos(now*.14)*this.cameraImpact*.5;this.cameraImpact*=Math.exp(-dt*14);}else this.cameraImpact=0;if(this.weather){this.weather.position.set(this.focus.x+Math.sin(now*.00045)*.24,0,this.focus.z);this.weather.rotation.y=Math.sin(now*.00018)*.08;}this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
   const activeMarker=live.evidence||live.council;this.evidenceBeacon.visible=!!activeMarker;
   this.evidenceLabel.textContent=live.imperial?'◆ 제국 사건 조사':live.recruit?'◆ 동료 영입 단서':live.evidence?'◆ 조사할 단서':'◆ 북문 기록실';
   if(activeMarker){const site=activeMarker;this.evidenceBeacon.position.set(site.x*SCALE,.015,site.y*SCALE);this.evidenceBeacon.rotation.y=now*.00025;const v=new THREE.Vector3(site.x*SCALE,1.5,site.y*SCALE).project(this.camera);this.evidenceLabel.hidden=Math.abs(v.x)>.95||Math.abs(v.y)>.95;if(!this.evidenceLabel.hidden)this.evidenceLabel.style.transform='translate('+Math.round((v.x+1)*this.width/2)+'px,'+Math.round((1-v.y)*this.height/2)+'px)';}
   else this.evidenceLabel.hidden=true;
   const visible=[['player',live.p,'player']];for(const a of live.state.ai)if(live.dungeon?a.party:a.party||(a.zone===live.state.zone&&live.visibleCompanions?.includes(a.id)))visible.push(['ai',a,a.id]);
   const enemies=live.enemies.filter(e=>!e.dead).sort((a,b)=>(a.x-live.p.x)**2+(a.y-live.p.y)**2-(b.x-live.p.x)**2-(b.y-live.p.y)**2).slice(0,this.mobile?16:44);for(const e of enemies)visible.push(['enemy',e,'enemy'+e.id]);
-  const used=new Set();for(const [kind,obj,key] of visible){used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,moving=Math.hypot(dx,dy)>.08;entry.lastX=obj.x;entry.lastY=obj.y;entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);if(live.cinematic){const beat=live.cinematic.info?.beats?.[live.cinematic.step],reacting=beat&&(beat.speaker===obj.name||(kind==='enemy'&&live.cinematic.info.key.startsWith('boss:')&&obj.boss));entry.model.rotation.z=reacting?Math.sin(now*.004)*.035:0;if(reacting)entry.root.position.y+=.09+.045*Math.sin(now*.006);}else entry.model.rotation.z=0;entry.root.userData.live={kind,obj,key};if(moving){const target=Math.atan2(dx,dy),difference=Math.atan2(Math.sin(target-entry.model.rotation.y),Math.cos(target-entry.model.rotation.y));entry.model.rotation.y+=difference*(1-Math.exp(-dt*14));}entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];this.animate(entry,moving,live.combat?.(obj),dt);}
+  const used=new Set();for(const [kind,obj,key] of visible){used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,moving=Math.hypot(dx,dy)>.08;entry.lastX=obj.x;entry.lastY=obj.y;if(!entry.visualInitialized){entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.visualInitialized=true;}else entry.root.position.lerp(new THREE.Vector3(obj.x*SCALE,.015,obj.y*SCALE),1-Math.exp(-dt*(kind==='enemy'?19:24)));if(live.cinematic){const beat=live.cinematic.info?.beats?.[live.cinematic.step],reacting=beat&&(beat.speaker===obj.name||(kind==='enemy'&&live.cinematic.info.key.startsWith('boss:')&&obj.boss));entry.model.rotation.z=reacting?Math.sin(now*.004)*.035:0;if(reacting)entry.root.position.y+=.09+.045*Math.sin(now*.006);}else entry.model.rotation.z=0;entry.root.userData.live={kind,obj,key};if(moving){const target=Math.atan2(dx,dy),difference=Math.atan2(Math.sin(target-entry.model.rotation.y),Math.cos(target-entry.model.rotation.y));entry.model.rotation.y+=difference*(1-Math.exp(-dt*14));}entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];this.animate(entry,moving,live.combat?.(obj),dt,now);}
   for(const [key,entry] of this.actors)if(!used.has(key))this.removeActor(key,entry);
   this.marker.visible=!!this.destination;if(this.destination)this.marker.position.set(this.destination.x*SCALE,.06,this.destination.y*SCALE);
   for(let i=this.effects.length-1;i>=0;i--){
    const fx=this.effects[i],phase=(now-fx.born)/fx.duration;
    if(phase>=1){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});this.effects.splice(i,1);continue;}
-   fx.group.scale.setScalar(.7+phase*.85);fx.group.rotation.y+=dt*1.3;
-   fx.group.traverse(o=>{if(o.isMesh)o.material.opacity=.74*(1-phase);});
+   fx.group.scale.setScalar(.62+phase*(fx.area?1.38:1.05));fx.group.rotation.y+=dt*fx.spin;
+   fx.group.traverse(o=>{if(!o.isMesh)return;o.material.opacity=(o.userData.fade??.74)*Math.pow(1-phase,1.2);if(o.userData.spark){const v=o.userData.spark;o.position.x+=dt*v.x*1.15;o.position.y+=dt*v.y;o.position.z+=dt*v.z*1.15;}});
+
   }
   this.gl.render(this.scene,this.camera);this.frameCost=this.frameCost*.94+(performance.now()-started)*.06;
   if(now-this.qualityAt>2200){this.qualityAt=now;const q=this.frameCost>24?Math.max(.72,this.quality-.1):this.frameCost<13?Math.min(1,this.quality+.05):this.quality;if(Math.abs(q-this.quality)>.01){this.quality=q;this.resize();}}
