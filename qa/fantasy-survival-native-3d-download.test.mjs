@@ -281,6 +281,16 @@ test('downloaded KayKit knight is ledgered as preview only and source-bound to e
  assert.match(index,/data-spatial-dimension="3d-loading"/);
 });
 
+test('native creature source failures recover without permanent mobile loading lock',()=>{
+  assert.match(moduleSource,/const retryDelay=failed\\?Math\\.min\\(60000,5000\\*2\\*\\*Math\\.min\\(4,failed\\.attempts-1\\)\\):0/);
+  assert.doesNotMatch(moduleSource,/failed\\.attempts>=3/);
+  assert.match(moduleSource,/creatureFailures\\.delete\\(file\\)/);
+  assert.match(moduleSource,/nativeSpeciesMaterials=new Map\\(\\)/);
+  assert.match(moduleSource,/material\\.color\\.lerp\\(tint,\\.22\\)/);
+  assert.match(moduleSource,/for\\(const material of materials\\.values\\(\\)\\)material\\.dispose\\(\\)/);
+  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
 test('native 3D binds exact existing monster types and adapts GPU load without changing their combat',()=>{
  assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
  const original=ledger.entries.find(e=>e.id==='forest-cc0-originals-20261020');
