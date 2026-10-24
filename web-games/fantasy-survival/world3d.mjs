@@ -47,8 +47,8 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
   'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb'],
   'monster-35.obj':['rootsovereign'],
-  'caterpillar.glb':['giantburrower'], 'monster-31.obj':['sandwalker','mudwalker'],
-  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc'],
+  'caterpillar.glb':['giantburrower','crystallizard'], 'monster-31.obj':['sandwalker','mudwalker'],
+  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc','crystalbiter'],
   'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
   'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish','shark'],
   'monster-47.obj':['giantSquid'], 'monster-21.obj':['giantleech'],
@@ -434,6 +434,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const interactables=[];
   const undeadActors=new Map();
   const nativeCreatureActors=new Map();
+  const biterAcidActors=new Map();
+  const acidGeometry=new THREE.SphereGeometry(.19,10,8);
+  const acidMaterial=new THREE.MeshStandardMaterial({color:0x9cff6c,emissive:0x5ce22d,emissiveIntensity:1.25});
+  function updateBiterAcidMeshes(state,seen){
+    for(const q of state.projectiles||[]){
+      if(q.kind!=='biterAcid'||q.area!==state.area)continue;
+      const key=String(q.sourceId)+':'+String(q.createdAt)+':'+String(q.orbIndex);
+      let mesh=biterAcidActors.get(key);if(!mesh){mesh=new THREE.Mesh(acidGeometry,acidMaterial);scene.add(mesh);biterAcidActors.set(key,mesh)}
+      mesh.position.set(q.x*SCALE,.65,q.y*SCALE);mesh.userData.crystalSeen=seen;
+    }
+    for(const [key,mesh] of biterAcidActors){if(mesh.userData.crystalSeen===seen)continue;scene.remove(mesh);biterAcidActors.delete(key)}
+  }
   const cameraFrustum=new THREE.Frustum(),cameraProjection=new THREE.Matrix4();
   const creatureBounds=new THREE.Sphere(new THREE.Vector3(),4);
   const missingVisibleMonsterIds=new Set();
@@ -557,9 +569,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         nativeCreatureActors.set(key,actor);
       }
       actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      actor.anchor.visible=!(e.type?.id==='crystallizard'&&e.crystalHidden);
+      if(e.type?.id==='crystalbiter'&&performance.now()<(e.biterRestUntil||0)){
+        actor.anchor.rotation.z=.20;
+        actor.anchor.scale.y=.70;
+      }else{actor.anchor.rotation.z=0;actor.anchor.scale.y=1}
       actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
-      actor.model.traverse(child=>{
+      if(actor.anchor.visible)actor.model.traverse(child=>{
         if(!child.isMesh)return;
         child.userData.worldPoint={x:e.x,y:e.y};
         interactables.push(child);
@@ -858,6 +875,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     synchronizeUndead(state,px,py,seen);
     const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
+    updateBiterAcidMeshes(state,seen);
     // 다른 지역으로 이동하면 앞서 표시한 지상의 식물/광석 배치를 즉시 지운다.
     if(isInterior)for(const batch of resourceBatches.values())batch.mesh.count=0;
     if(!isInterior)resources(state.trees,'tree',px,py,seen,1.28);
@@ -934,6 +952,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     undeadActors.clear();
     for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
     nativeCreatureActors.clear();
+    for(const mesh of biterAcidActors.values())scene.remove(mesh);
+    biterAcidActors.clear();acidGeometry.dispose();acidMaterial.dispose();
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
