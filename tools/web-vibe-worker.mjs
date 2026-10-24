@@ -245,7 +245,10 @@ function createPr(task,changed,token,{cloud=false}={}){
   run('git',['add','--',...expected]);
   const staged=run('git',['diff','--cached','--name-only']).split(/\r?\n/).filter(Boolean).sort();
   if(!staged.length||JSON.stringify(staged)!==JSON.stringify(expected))fail('WEB_VIBE_UNEXPECTED_CHANGED_FILE');
-  run('git',['commit','-m','fix(web): dedicated Web Vibe candidate for '+task.gameId]);
+  // Use a scoped, fixed author identity on ephemeral Actions runners; no global Git configuration.
+  run('git',['-c','user.name=jaewoon-web-vibe-worker',
+    '-c','user.email=web-vibe-worker@users.noreply.github.com',
+    'commit','-m','fix(web): dedicated Web Vibe candidate for '+task.gameId]);
   // Drop all preconfigured Git credential helpers. Only the dedicated WEB token
   // is available to the fixed GitHub CLI helper for this scoped PR push.
   run('git',['-c','credential.helper=','-c','credential.helper=!gh auth git-credential',
