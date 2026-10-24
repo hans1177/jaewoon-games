@@ -663,3 +663,15 @@ test('backup homepage uses GitHub Pages as primary while preserving Cloudflare a
   assert.match(backup,/checkSource/);
   assert.doesNotMatch(backup,/Cloudflare가 주 홈페이지|주 홈페이지 · Cloudflare/);
 });
+
+// A source-only HTML/JS game must get its own block-avatar title after runtime admission.
+test('general web game title art runs after canonical runtime catalog reconciliation',()=>{
+  const reconciliation=workflow.indexOf('Prepare verified runtime status/catalog candidate');
+  const titles=workflow.indexOf('Auto-create game-specific block-avatar title images for web and Roblox');
+  const review=workflow.indexOf('Run homepage manager contract');
+  assert.ok(reconciliation>=0&&titles>reconciliation&&review>titles);
+  assert.match(workflow,/node tools\/homepage-manager\.mjs --sync-roblox-titles/);
+  const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
+  assert.match(manager,/scene==='SCHOOL'/);
+  assert.match(manager,/ROBLOX_BLOCK_AVATAR_V1/);
+});
