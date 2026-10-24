@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip} from '../web-games/ocean-voyage/engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -209,7 +209,7 @@ test('fog survives save copy and damaged export is rejected',()=>{
  assert.equal(canDock(s).id,'coral');assert.ok(s.charted.length>9);assert.deepEqual(importSave(exportSave(s)).charted,s.charted);assert.equal(importSave(exportSave(s)+'x'),null);
 });
 test('relic report reward is paid once and discovery stays in inventory',()=>{
- let s=newGame('amani');s=startExpedition(s,'roman').state;const site=SITES.find(t=>t.id==='roman');for(const choice of site.answers)s=exploreChoice(s,choice).state;
+ let s=newGame('amani');s.clearedCamps.push('roman');s=startExpedition(s,'roman').state;const site=SITES.find(t=>t.id==='roman');for(const choice of site.answers)s=exploreChoice(s,choice).state;
  const before=s.coins,r=reportDiscoveries(s);assert.equal(r.ok,true);assert.equal(r.state.coins,before+site.reward);assert.equal(reportDiscoveries(r.state).ok,false);assert.equal(r.state.equipment.roman,1);
 });
 test('companion scenes and objective precede recruitment; role assignment is unique and grows',()=>{
@@ -229,4 +229,18 @@ test('national ship traditions require local shipyard and have distinct cargo an
 
 test('sustained raids can change port control while preserving facilities and investments',()=>{
  let s=newGame();s.pirates=[];const owners=Object.fromEntries(PORTS.map(p=>[p.id,p.faction]));for(let day=1;day<=50;day++){s.day=day;s.elapsed=15.99;s=stepSea(s,{},.02);}assert.ok(PORTS.some(p=>portStatus(s,p.id).owner!==owners[p.id]));assert.equal(s.worldLog.length<=20,true);assert.equal(PORTS.length,13);
+});
+
+test('land battle alternates party and enemy turns and unlocks exploration without duplicate reward',()=>{
+ let s=newGame('amani');s=startExpedition(s,'roman').state;assert.equal(s.landBattle.phase,'player');assert.equal(exploreChoice(s,0).ok,false);assert.equal(fireCannons(s).ok,false);let guard=0;for(let i=0;i<50&&s.landBattle.phase!=='won';i++){if(s.landBattle.phase==='enemy')s=landEnemyTurn(s).state;else s=landAction(s,'attack',s.landBattle.enemies.findIndex(e=>e.hp>0)).state;guard++;}assert.ok(guard>0);assert.equal(s.landBattle.phase,'won');assert.ok(s.clearedCamps.includes('roman'));const before=s.coins;assert.equal(landAction(s,'attack',0).ok,false);s=finishLandBattle(s).state;assert.equal(s.landBattle,null);assert.equal(s.coins,before);assert.equal(exploreChoice(s,0).ok,true);
+});
+test('land battle retreat preserves crew, items and resumable save phase',()=>{
+ let s=newGame('samira');s=startExpedition(s,'lagoon').state;const saved=restoreGame(serializeGame(s));assert.equal(saved.landBattle.siteId,'lagoon');s=landAction(saved,'retreat').state;assert.equal(s.landBattle.phase,'retreated');assert.equal(s.expedition,null);assert.deepEqual(s.crewRoster,['samira']);s=finishLandBattle(s).state;assert.equal(s.landBattle,null);
+});
+
+test('cannon grades change range, reload and projectile identity without losing port count',()=>{
+ let s=newGame();s.coins=10000;const before=s.ship.cannons;s=buyCannon(s,'culverin').state;assert.equal(s.ship.cannons,before);s.pirates=[{id:1,x:s.ship.x+38,z:s.ship.z,hull:500,maxHull:500,cooldown:8}];const hit=fireCannons(s);assert.equal(hit.ok,true);assert.equal(hit.state.ship.cooldown,4.3);assert.equal(hit.state.combatFx.gun,'culverin');assert.equal(hit.state.combatFx.speed,200);s.ship.cannonType='bronze';assert.equal(fireCannons(s).ok,false);assert.equal(CANNON_TYPES.length,4);
+});
+test('personal skill names are distinct and land consumables are actually spent',()=>{
+ assert.equal(new Set(Object.values(PERSONAL_SKILLS).map(s=>s.name)).size,10);let s=startExpedition(newGame('samira'),'lagoon').state;s.landBattle.party[0].hp=15;const count=s.supplies.medicine;s=landAction(s,'medicine',0).state;assert.equal(s.supplies.medicine,count-1);assert.ok(s.landBattle.party[0].hp>15);let next=startExpedition(newGame('samira'),'lagoon').state;next.landBattle.party[0].focus=0;next=landAction(next,'rations',0).state;assert.equal(next.supplies.rations,2);assert.equal(next.landBattle.party[0].focus,12);
 });
