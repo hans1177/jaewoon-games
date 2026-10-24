@@ -436,10 +436,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(!kind||!nativeCreatureSources.has(kind)){
         if(e.type?.id!=='wastelandMummy'||!undeadSource){
           missingVisibleMonsterIds.add(e.type?.id||'unknown');
-          // Never let an invisible, original monster attack the player.
-          // 모델이 준비되지 않은 전투는 3D 준비 화면에서 대기한다.
-          // 화면을 2D 월드로 바꾸거나 보이지 않는 적과 전투하지 않는다.
-          if(Math.hypot(e.x-px,e.y-py)<430)unsafeUnmappedEncounter=true;
+          // 이미 카메라에 보이는 몹은 거리와 관계없이 실제 CC0 모델까지 준비된 뒤 그린다.
+          // 부분 렌더링으로 사라진 몹을 숨기지 않고 기존 3D 준비 상태를 유지한다.
+          // 전투·드롭·저장·위치 데이터와 3D 모델 로딩 우선순위는 그대로 둔다.
+          unsafeUnmappedEncounter=true;
         }
         continue;
       }
