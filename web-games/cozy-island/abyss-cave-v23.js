@@ -815,6 +815,7 @@ const originalDrawObjects = proto.drawObjects;
 
 proto.draw = function drawWithAbyssCave(game) {
   currentGame = game;
+  game.abyssEnemies=enemies; // 원본 심연 생물 목록 연결
   ensureState(game.state);
   applyProgress();
   handleRaidInterruption();
