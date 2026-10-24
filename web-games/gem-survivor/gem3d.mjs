@@ -1,6 +1,8 @@
+// 파일명: web-games/gem-survivor/gem3d.mjs · 보석 생존전 3D 렌더러
 // Gem Survivor WebGL 3D renderer. The original game's update() owns all HP,
 // collisions, gem prices, abilities, spawn schedules, and boss-victory authority.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import { OBJLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
 
 const SCALE=56, MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=260;
@@ -8,18 +10,6 @@ const mat=(hex,emissive=hex)=>new THREE.MeshStandardMaterial({
   color:hex,emissive,emissiveIntensity:.27,metalness:.12,roughness:.58
 });
 const SPECIES=['slime','bat','beetle','brute','hound','shaman','knight','boss'];
-const PALETTE={slime:'#62d995',bat:'#9d7cff',beetle:'#e6a65e',brute:'#73849a',
- hound:'#ff7b68',shaman:'#70d65d',knight:'#4fa7ff',boss:'#ef476f'};
-function makeSpeciesGeometry(kind){
-  if(kind==='slime')return new THREE.SphereGeometry(1,12,8);
-  if(kind==='bat')return new THREE.ConeGeometry(1,1.65,5);
-  if(kind==='beetle')return new THREE.DodecahedronGeometry(1,0);
-  if(kind==='brute')return new THREE.IcosahedronGeometry(1,1);
-  if(kind==='hound')return new THREE.CapsuleGeometry(.63,1.05,4,8);
-  if(kind==='shaman')return new THREE.ConeGeometry(1,2.3,7);
-  if(kind==='knight')return new THREE.OctahedronGeometry(1.1,1);
-  return new THREE.IcosahedronGeometry(1,2);
-}
 const vec=(x,y,z)=>new THREE.Vector3(x,y,z);
 export async function createGem3d({canvas}){
  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'});
@@ -28,10 +18,10 @@ export async function createGem3d({canvas}){
  renderer.setPixelRatio(Math.min(1.5,devicePixelRatio||1));
  const scene=new THREE.Scene();
  scene.background=new THREE.Color('#07101b');
- scene.fog=new THREE.Fog('#07101b',16,44);
+ scene.fog=new THREE.Fog('#07101b',45,110);
  scene.add(new THREE.HemisphereLight('#dcf9f3','#1a3e48',2.0));
  const sun=new THREE.DirectionalLight('#cffff6',2.25);sun.position.set(-5,12,4);scene.add(sun);
- const camera=new THREE.PerspectiveCamera(51,1,.06,100);
+ const camera=new THREE.OrthographicCamera(-5,5,7,-7,.06,180);
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
   new THREE.MeshStandardMaterial({color:'#14303c',roughness:1,metalness:.02,side:THREE.DoubleSide}));
  floor.rotation.x=-Math.PI/2;scene.add(floor);
@@ -62,17 +52,49 @@ export async function createGem3d({canvas}){
   scene.remove(mesh);scene.add(bigger);mesh.dispose?.();
   return bigger;
  }
- const enemyMeshes=new Map(SPECIES.map(kind=>{
-  const mesh=pool(makeSpeciesGeometry(kind),mat(PALETTE[kind]),MAX_EACH);
-  return [kind,mesh];
+ // 몬스터: 저장소 CC0 원본을 사용하고 기존 게임 판정은 그대로 유지한다.
+ const authoredIds=[7,15,17,18,21,26,31,35],objLoader=new OBJLoader(),textureLoader=new THREE.TextureLoader();
+ const enemyMeshes=new Map();
+ await Promise.all(SPECIES.map(async(kind,index)=>{
+  const id=authoredIds[index],base=new URL('../../assets/shared/forest/',import.meta.url);
+  const [object,texture]=await Promise.all([
+   objLoader.loadAsync(new URL('monster-'+id+'.obj',base).href),
+   textureLoader.loadAsync(new URL('monster-'+id+'.png',base).href)
+  ]);
+  texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.NearestFilter;
+  object.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(object),size=box.getSize(new THREE.Vector3());
+  const center=box.getCenter(new THREE.Vector3()),scale=2/Math.max(size.x,size.z,size.y*.7,.01);
+  const parts=[];
+  object.traverse(node=>{
+   if(!node.isMesh)return;
+   const geometry=node.geometry.clone().applyMatrix4(node.matrixWorld);
+   geometry.translate(-center.x,-box.min.y,-center.z);geometry.scale(scale,scale,scale);
+   if(!geometry.attributes.normal)geometry.computeVertexNormals();
+   parts.push(pool(geometry,new THREE.MeshStandardMaterial({map:texture,color:'#ffffff',roughness:.85}),MAX_EACH));
+  });
+  if(!parts.length)throw Error('GEM_MONSTER_ASSET_EMPTY:'+kind);
+  enemyMeshes.set(kind,parts);
  }));
+ const trails=pool(new THREE.CylinderGeometry(1,1,1,5),new THREE.MeshBasicMaterial({
+  color:'#b4f7ff',transparent:true,opacity:.35,depthWrite:false,blending:THREE.AdditiveBlending}),MAX_PROJECTILES);
+ const orbitTrails=pool(new THREE.TorusGeometry(1,.015,4,18,Math.PI*.5),new THREE.MeshBasicMaterial({color:'#96daff',transparent:true,opacity:.4,depthWrite:false,blending:THREE.AdditiveBlending}),5);
+ const bubbles=pool(new THREE.SphereGeometry(1,5,4),mat('#9bf26b'),168);
+ const halos=pool(new THREE.RingGeometry(.72,1,24),new THREE.MeshBasicMaterial({
+  color:'#f6c784',transparent:true,opacity:.55,side:THREE.DoubleSide,depthWrite:false}),24);
+ // 환경: 기존 CC0 돌길 원본을 작은 경로 표식으로 재사용한다.
+ const stone=await objLoader.loadAsync(new URL('../../assets/shared/homely-house/cobblestones.obj',import.meta.url).href);
+ const paths=[];stone.updateMatrixWorld(true);
+ stone.traverse(node=>{if(node.isMesh)paths.push(pool(node.geometry.clone().applyMatrix4(node.matrixWorld),
+  new THREE.MeshStandardMaterial({color:'#a3a58e',roughness:1}),160))});
+ let terrainStage='';
  let projectiles=pool(new THREE.OctahedronGeometry(1,0),mat('#e5ffff'),MAX_PROJECTILES);
  let gems=pool(crystalGeo,mat('#42ffd4'),MAX_GEMS);
  const particles=pool(new THREE.TetrahedronGeometry(1,0),mat('#ffffff'),MAX_PARTICLES);
  const blades=pool(new THREE.BoxGeometry(1,1,1),mat('#bddfff'),5);
  const pools=pool(new THREE.CylinderGeometry(1,1,.015,24),new THREE.MeshStandardMaterial({
   color:'#61d86a',emissive:'#256d31',emissiveIntensity:.25,transparent:true,opacity:.4,depthWrite:false}),28);
- const lightning=pool(new THREE.CylinderGeometry(.035,.035,1,6),mat('#a1f9ff'),24);
+ const lightning=pool(new THREE.CylinderGeometry(.025,.025,1,5),mat('#a1f9ff'),144);
  const player=new THREE.Group();scene.add(player);
  let model,modelRestY=0,clips=[],mixer=null,action=null,actionName='';
  try{
@@ -101,11 +123,9 @@ export async function createGem3d({canvas}){
  const tempColor=new THREE.Color(),axis=new THREE.Vector3(0,1,0);
  function resize(){
   width=Math.max(1,innerWidth);height=Math.max(1,innerHeight);
-  renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();
+  renderer.setSize(width,height,false);
   const w=width/SCALE,h=height/SCALE;
-  floor.position.set(w/2,-.035,h/2);floor.scale.set(w,h,1);
-  grid.position.set(w/2,.012,h/2);grid.scale.set(Math.max(w,h)/28,1,Math.max(w,h)/28);
-  crystals.position.set(w+.55,0,-2);
+  camera.left=-w/2;camera.right=w/2;camera.top=h/2;camera.bottom=-h/2;camera.updateProjectionMatrix();
  }
  const onResize=()=>resize(),onLoss=e=>{e.preventDefault();document.body.dataset.spatialDimension='3d-error'};
  addEventListener('resize',onResize);canvas.addEventListener('webglcontextlost',onLoss);
@@ -123,36 +143,81 @@ export async function createGem3d({canvas}){
   if(n&&inst.instanceColor)inst.instanceColor.needsUpdate=true;
   return items.length-n;
  }
+ function view(state,world){
+  const halfW=width/2,halfH=height*.6;
+  const cx=world.width>width?THREE.MathUtils.clamp(state.x,halfW,world.width-halfW):world.width/2;
+  const cy=world.height>halfH*2?THREE.MathUtils.clamp(state.y,halfH,world.height-halfH):world.height/2;
+  return {left:cx-halfW,right:cx+halfW,top:cy-halfH,bottom:cy+halfH,cx,cy};
+ }
  function render({player:state,enemies:enemyActors=[],projectiles:shots=[],gems:drops=[],
-    particles:sparks=[],poisonPools:poison=[],orbitBlades:orbit=[],effects:active=[]},now=0){
+    particles:sparks=[],poisonPools:poison=[],orbitBlades:orbit=[],effects:active=[],
+    world={width:width,height:height},stage={id:'cavern',floor:'#14303c',sky:'#07101b',accent:'#4fe6c4'}},now=0){
   if(!state||disposed)return;
   const dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;
+  if(terrainStage!==stage.id){
+   terrainStage=stage.id;scene.background.set(stage.sky);scene.fog.color.set(stage.sky);
+   floor.material.color.set(stage.floor);crystalMat.color.set(stage.accent);
+   floor.position.set(world.width/SCALE/2,-.035,world.height/SCALE/2);
+   floor.scale.set(world.width/SCALE,world.height/SCALE,1);
+   grid.position.set(world.width/SCALE/2,.012,world.height/SCALE/2);
+   grid.scale.set(world.width/SCALE/28,1,world.height/SCALE/28);
+   crystals.children.forEach((gem,i)=>{
+    const angle=i*Math.PI*2/12;
+    const radius=stage.id==='forge'?16:stage.id==='garden'?21:13;
+    gem.position.set(world.width/SCALE/2+Math.cos(angle)*radius,.5,world.height/SCALE/2+Math.sin(angle)*radius);
+    gem.scale.set(stage.id==='garden'?.5:.9,stage.id==='forge'?2.8:1.5,.8);
+   });
+   for(const path of paths){
+    path.material.color.set(stage.id==='forge'?'#a58a80':stage.id==='garden'?'#9eaa8c':'#668ba2');
+    for(let i=0;i<160;i++){
+     const t=i/159,angle=t*Math.PI*4;
+     const x=stage.id==='garden'?world.width/SCALE/2+Math.cos(angle)*(4+t*16):3+t*(world.width/SCALE-6);
+     const z=stage.id==='garden'?world.height/SCALE/2+Math.sin(angle)*(4+t*16):stage.id==='forge'?6+(i%4)*(world.height/SCALE-12)/3:world.height/SCALE/2+Math.sin(t*12)*6;
+     dummy.position.set(x,.015,z);dummy.rotation.set(0,i*.71,0);dummy.scale.setScalar(stage.id==='forge'?.7:1.1);
+     dummy.updateMatrix();path.setMatrixAt(i,dummy.matrix);
+    }
+    path.count=160;path.instanceMatrix.needsUpdate=true;
+   }
+  }
   const px=state.x/SCALE,pz=state.y/SCALE,dx=px-prevX,dz=pz-prevZ;
   player.position.set(px,state.inv>0?.07:0,pz);
   const walking=Number.isFinite(dx)&&Math.hypot(dx,dz)>.002;
   if(walking)player.rotation.y=Math.atan2(dx,dz);
   prevX=px;prevZ=pz;
-  animate(shots.some(b=>b.kind==='basic')?'attack':walking?'walk':'idle');
+  animate(walking?'walk':shots.some(b=>b.kind==='basic')?'attack':'idle');
   mixer?.update(dt);
   model.position.y=modelRestY+(!mixer&&walking?Math.sin(now*.016)*.025:0);
   const buckets=new Map(SPECIES.map(type=>[type,[]]));
-  for(const e of enemyActors){const kind=buckets.has(e.type)?e.type:'slime';buckets.get(kind).push(e)}
+  const visible=view(state,world);
+  for(const e of enemyActors){
+   if(e.x<visible.left-100||e.x>visible.right+100||e.y<visible.top-100||e.y>visible.bottom+100)continue;
+   const kind=buckets.has(e.type)?e.type:'slime';buckets.get(kind).push(e);
+  }
   let clipped=0;
   for(const [kind,list] of buckets){
-   const grown=growPool(enemyMeshes.get(kind),list.length);
-   enemyMeshes.set(kind,grown);
-   clipped+=write(grown,list,grown.instanceMatrix.count,(e,i,d)=>{
-    const radius=Math.max(.18,e.r/SCALE);
-    d.position.set(e.x/SCALE,radius*1.08+(e.hit>0?.1:0),e.y/SCALE);
-    d.scale.set(radius,kind==='boss'?radius*2.5:radius*1.6,radius);
-    d.rotation.y=now*.0007+i*.23;
-   });
+   const parts=enemyMeshes.get(kind);
+   for(let part=0;part<parts.length;part++){
+    const grown=growPool(parts[part],list.length);parts[part]=grown;
+    clipped+=write(grown,list,grown.instanceMatrix.count,(e,i,d)=>{
+     const radius=Math.max(.18,e.r/SCALE),phase=now*.006*e.speed/72+i*1.7;
+     d.position.set(e.x/SCALE,.02+(kind==='bat'?.45+Math.sin(phase)*.12:Math.abs(Math.sin(phase))*.035),e.y/SCALE);
+     d.scale.setScalar(radius);d.rotation.y=Math.atan2(state.x-e.x,state.y-e.y);
+     d.rotation.z=kind==='bat'?Math.sin(phase)*.15:Math.sin(phase)*.045;
+     if(e.hit>0)d.scale.multiplyScalar(1.06);
+    });
+   }
   }
   projectiles=growPool(projectiles,shots.length);
   clipped+=write(projectiles,shots,projectiles.instanceMatrix.count,(p,i,d)=>{
    const r=Math.max(.045,p.r/SCALE);
    d.position.set(p.x/SCALE,r*2+.13,p.y/SCALE);
-   d.scale.set(r,p.kind==='arrow'?r*3:r,r);d.rotation.y=Math.atan2(p.vx||0,p.vy||0);
+   d.scale.set(r,r,p.kind==='arrow'?r*4:r*2);d.rotation.y=Math.atan2(p.vx||0,p.vy||0);
+  });
+  write(trails,shots,MAX_PROJECTILES,(p,i,d)=>{
+   const velocity=Math.hypot(p.vx,p.vy),length=Math.min(.7,velocity/SCALE*.045);
+   const direction=vec(p.vx,0,p.vy).normalize();
+   d.position.set(p.x/SCALE-direction.x*length*.5,.2,p.y/SCALE-direction.z*length*.5);
+   d.scale.set(.025,length,.025);d.quaternion.setFromUnitVectors(axis,direction);
   });
   gems=growPool(gems,drops.length);
   clipped+=write(gems,drops,gems.instanceMatrix.count,(g,i,d)=>{
@@ -161,33 +226,54 @@ export async function createGem3d({canvas}){
   });
   clipped+=write(particles,sparks,MAX_PARTICLES,(p,i,d)=>{
    const r=Math.max(.025,p.r/SCALE);
-   d.position.set(p.x/SCALE,.09,p.y/SCALE);d.scale.setScalar(r);
+   d.position.set(p.x/SCALE,.08+(1-p.life/(p.max||.5))*.45,p.y/SCALE);
+   d.scale.setScalar(r*Math.max(.1,p.life/(p.max||.5)));d.rotation.set(now*.009+i,i,now*.005);
   });
   clipped+=write(pools,poison,28,(p,i,d)=>{
    const r=Math.max(.2,p.r/SCALE);d.position.set(p.x/SCALE,.055,p.y/SCALE);
-   d.scale.set(r,1,r);
+   d.scale.set(r*(1+Math.sin(now*.008)*.025),1,r*(1+Math.sin(now*.008)*.025));
+  });
+  const droplets=poison.flatMap(p=>Array.from({length:6},(_,i)=>({x:p.x+Math.cos(i*1.047+now*.001)*p.r*.65,y:p.y+Math.sin(i*1.047+now*.001)*p.r*.65,i})));
+  write(bubbles,droplets,168,(p,i,d)=>{
+   const phase=(now*.0015+p.i*.17)%1;d.position.set(p.x/SCALE,.05+phase*.4,p.y/SCALE);d.scale.setScalar(.035*(1-phase));
+  });
+  write(orbitTrails,orbit,5,(p,i,d)=>{
+   const radius=Math.hypot(p.x-state.x,p.y-state.y)/SCALE;
+   d.position.set(state.x/SCALE,.45,state.y/SCALE);d.rotation.set(-Math.PI/2,0,-Math.atan2(p.y-state.y,p.x-state.x));d.scale.setScalar(radius);
   });
   clipped+=write(blades,orbit,5,(p,i,d)=>{
    d.position.set(p.x/SCALE,.45,p.y/SCALE);d.scale.set(.55,.07,.14);
    d.rotation.y=now*.008+i*.4;
   });
-  const strikes=active.filter(x=>x.kind==='lightning');
-  clipped+=write(lightning,strikes,24,(fx,i,d)=>{
-   const start=vec(fx.x1/SCALE,.7,fx.y1/SCALE);
-   const end=vec(fx.x2/SCALE,.7,fx.y2/SCALE);
-   const delta=end.clone().sub(start),length=Math.max(.01,delta.length());
+  const strikes=[];
+  for(const fx of active.filter(x=>x.kind==='lightning')){
+   let x=fx.x1,y=fx.y1;
+   for(let segment=1;segment<=6;segment++){
+    const t=segment/6,bend=segment===6?0:Math.sin(now*.07+segment*13)*12;
+    const nx=fx.x1+(fx.x2-fx.x1)*t+bend,ny=fx.y1+(fx.y2-fx.y1)*t-bend;
+    strikes.push({x1:x,y1:y,x2:nx,y2:ny});x=nx;y=ny;
+   }
+  }
+  write(lightning,strikes,144,(fx,i,d)=>{
+   const start=vec(fx.x1/SCALE,.45,fx.y1/SCALE),end=vec(fx.x2/SCALE,.45,fx.y2/SCALE);
+   const delta=end.sub(start),length=Math.max(.01,delta.length());
    d.position.copy(start).addScaledVector(delta,.5);d.scale.set(1,length,1);
    d.quaternion.setFromUnitVectors(axis,delta.normalize());
   });
+  const rings=enemyActors.filter(e=>e.boss&&e.charge<.7).map(e=>({x:e.x,y:e.y,r:e.r/SCALE*(1.3+(.7-e.charge)*1.4)}));
+  for(const fx of active)if(fx.kind==='death')rings.push({x:fx.x,y:fx.y,r:fx.r/SCALE*(1+(1-fx.life/fx.max)*2)});
+  write(halos,rings,24,(e,i,d)=>{
+   d.position.set(e.x/SCALE,.035,e.y/SCALE);d.rotation.x=-Math.PI/2;d.scale.setScalar(e.r);
+  });
   canvas.dataset.unrenderedEntities=String(clipped);
-  canvas.dataset.fallbackEnemyAssets=String(enemyActors.length);
+  canvas.dataset.fallbackEnemyAssets='0';
+  canvas.dataset.playerX=String(state.x);canvas.dataset.playerY=String(state.y);
+  canvas.dataset.authoredMonsterKinds=String(enemyMeshes.size);
+  canvas.dataset.stage=stage.id;canvas.dataset.worldWidth=String(world.width);canvas.dataset.worldHeight=String(world.height);
   canvas.dataset.nativeHeroArt='knight.glb';
-  document.body.dataset.nativeArtCoverage='incomplete';
-  const w=width/SCALE,h=height/SCALE;
-  const distance=Math.max(h/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))),
-     w/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect));
-  camera.position.set(w/2,distance*1.18+2,h/2+distance*.25);
-  camera.lookAt(w/2,0,h/2);
+  document.body.dataset.nativeArtCoverage='authored-static-monsters';
+  const bounds=view(state,world),cx=bounds.cx/SCALE,cz=bounds.cy/SCALE;
+  camera.position.set(cx,25,cz+Math.sqrt(275));camera.lookAt(cx,0,cz);
   renderer.render(scene,camera);
   canvas.dataset.renderedFrame='true';
   document.body.dataset.spatialDimension='3d';
@@ -199,5 +285,5 @@ export async function createGem3d({canvas}){
    o.geometry?.dispose?.();if(o.material){for(const m of Array.isArray(o.material)?o.material:[o.material])m?.dispose?.();}
   });renderer.dispose();
  }
- return {render,resize,dispose};
+ return {render,resize,dispose,view};
 }
