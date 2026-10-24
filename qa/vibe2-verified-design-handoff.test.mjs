@@ -47,3 +47,40 @@ test('no active development-confirmed seed creates no fabricated promotion or re
   assert.equal(result.pass,true);
   assert.deepEqual(result.verified,[]);
 });
+
+test('Vibe planner continues verified same-revision games without admitting unverified siblings',()=>{
+  const invalid={...seed,gameId:'unverified-game'};
+  const queue={items:[item,{...item,gameId:'unverified-game',minimumDesignContract:{pass:false,source:SOURCE}}]};
+  const files={'game-seed-state.json':{seeds:[seed,invalid]},'development-queue.json':queue,[SOURCE]:design};
+  const readJsonAt=path=>{if(!(path in files))throw Error('missing '+path);return files[path];};
+  const strict=verifyVibeDesignHandoff({runtimeSha:SHA,roadmap:ROADMAP,readJsonAt,verifyDesign:()=>({pass:true})});
+  assert.equal(strict.pass,false);
+  const isolated=verifyVibeDesignHandoff({runtimeSha:SHA,roadmap:ROADMAP,readJsonAt,
+    verifyDesign:()=>({pass:true}),isolateIneligibleGames:true});
+  assert.equal(isolated.pass,true);
+  assert.equal(isolated.continuationScope,'VERIFIED_GAMES_ONLY');
+  assert.deepEqual(isolated.verified.map(x=>x.gameId),['accepted-game']);
+  assert.deepEqual(isolated.quarantinedGames,['unverified-game']);
+  assert.deepEqual(isolated.failures,['unverified-game:MINIMUM_DESIGN_SOURCE_NOT_VERIFIED']);
+  assert.ok(isolated.verified.every(x=>x.releasePassClaimed===false&&x.strictQaPassClaimed===false));
+});
+test('isolated admission still fails closed without verified games or with global uncertainty',()=>{
+  const failingItem={...item,minimumDesignContract:{pass:false,source:SOURCE}};
+  const readInvalid=path=>{
+    if(path==='game-seed-state.json')return{seeds:[seed]};
+    if(path==='development-queue.json')return{items:[failingItem]};
+    throw Error('unverified design must not be read');
+  };
+  const noVerified=verifyVibeDesignHandoff({runtimeSha:SHA,roadmap:ROADMAP,readJsonAt:readInvalid,isolateIneligibleGames:true});
+  assert.equal(noVerified.pass,false);
+  assert.deepEqual(noVerified.verified,[]);
+  const badPolicy=verifyVibeDesignHandoff({runtimeSha:SHA,roadmap:{...ROADMAP,authority:'UNKNOWN'},
+    readJsonAt:readInvalid,isolateIneligibleGames:true});
+  assert.equal(badPolicy.pass,false);
+  const malformed=verifyVibeDesignHandoff({runtimeSha:SHA,roadmap:ROADMAP,
+    readJsonAt:path=>path==='game-seed-state.json'?{seeds:[seed,{...seed,gameId:'../../../bad'}]}:
+      path==='development-queue.json'?{items:[item]}:design,
+    verifyDesign:()=>({pass:true}),isolateIneligibleGames:true});
+  assert.equal(malformed.pass,false);
+  assert.match(malformed.failures.join(','),/ACTIVE_GAME_ID_INVALID/);
+});

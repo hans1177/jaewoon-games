@@ -11,7 +11,7 @@ const clean=value=>String(value??'').trim();
 const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 const designPath=(value,gameId)=>new RegExp('^design/'+gameId+'/[0-9]{4}-[0-9]{2}-[0-9]{2}/design-revised\\.json$').test(clean(value));
 
-export function verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt,verifyDesign=evaluateMinimumDesignContract}={}){
+export function verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt,verifyDesign=evaluateMinimumDesignContract,isolateIneligibleGames=false}={}){
   const failures=[],verified=[];
   if(!sha40(runtimeSha))failures.push('RUNTIME_SHA_INVALID');
   const method=roadmap?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod;
@@ -55,7 +55,19 @@ export function verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt,verifyDes
     const designSha256=createHash('sha256').update(JSON.stringify(record)).digest('hex');
     verified.push(Object.freeze({gameId:id,designSource:source,designSha256,contractPass:true,strictQaPassClaimed:false,releasePassClaimed:false}));
   }
-  return Object.freeze({pass:failures.length===0,runtimeSha,verified:Object.freeze(verified),failures:Object.freeze(failures)});
+  // The production promotion gate stays strict by default. Only the ongoing Vibe
+  // planner may proceed with independently verified same-revision games while
+  // unverified sibling games remain quarantined. A malformed global source,
+  // policy, schema, or game identity always blocks the entire intake.
+  const scopedFailures=failures.filter(value=>/^[a-z0-9][a-z0-9-]*:(?:RUNTIME_PROMOTION_QUEUE_BINDING_MISSING_OR_DUPLICATED|MINIMUM_DESIGN_SOURCE_NOT_VERIFIED|ROBLOX_ONLY_HANDOFF_BINDING_INVALID|AUTHORED_DESIGN_MISSING_AT_RUNTIME_SHA|AUTHORED_DESIGN_GAME_ID_MISMATCH|DESIGN_CONTRACT_VERIFICATION_ERROR|DESIGN_CONTRACT_NOT_PASSED)$/.test(value));
+  const scopedContinuation=isolateIneligibleGames===true&&verified.length>0
+    &&scopedFailures.length===failures.length;
+  return Object.freeze({
+    pass:failures.length===0||scopedContinuation,
+    runtimeSha,verified:Object.freeze(verified),failures:Object.freeze(failures),
+    continuationScope:scopedContinuation&&failures.length>0?'VERIFIED_GAMES_ONLY':'STRICT',
+    quarantinedGames:Object.freeze(scopedFailures.map(value=>value.split(':')[0]))
+  });
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -67,11 +79,14 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     if(!/^[a-z0-9][a-z0-9._/-]*$/.test(relative)||relative.includes('..'))throw new Error('VIBE_DESIGN_UNSAFE_PATH');
     return JSON.parse(execFileSync('git',['show',runtimeSha+':'+relative],{encoding:'utf8',maxBuffer:48*1024*1024}));
   };
-  const result=verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt});
+  const isolateIneligibleGames=process.argv.includes('--isolate-ineligible-games');
+  const result=verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt,isolateIneligibleGames});
   console.log('VIBE2_VERIFIED_DESIGN_RUNTIME_SHA='+runtimeSha);
   console.log('VIBE2_VERIFIED_DESIGN_COUNT='+result.verified.length);
   console.log('VIBE2_VERIFIED_DESIGN_GAME_IDS='+(result.verified.map(x=>x.gameId).join(',')||'NONE'));
   console.log('VIBE2_VERIFIED_DESIGN_INTAKE='+(result.pass?'PASS':'BLOCKED'));
+  console.log('VIBE2_VERIFIED_DESIGN_CONTINUATION_SCOPE='+(result.continuationScope||'STRICT'));
+  console.log('VIBE2_VERIFIED_DESIGN_QUARANTINED_COUNT='+(result.quarantinedGames?.length||0));
   for(const issue of result.failures)console.error('VIBE2_VERIFIED_DESIGN_BLOCKER='+issue);
   if(!result.pass)process.exitCode=1;
 }
