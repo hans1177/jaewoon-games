@@ -239,6 +239,14 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
  #nextQuest{left:calc(50% - 110px);bottom:85px;width:220px;max-height:38px;padding:2px 5px}
  #nextQuest b{display:none}#nextQuest span{font-size:9px;-webkit-line-clamp:2}
 }
+
+/* 인물 퀘스트는 기존 UI와 지도에 표시, 가까워지면 터치로 즉시 조사한다. */
+#prompt.on{pointer-events:auto;cursor:pointer;border-color:#ecd6a0;box-shadow:0 0 12px #d5bc7545;animation:hintPulse 1.5s ease-in-out infinite}
+#prompt:focus-visible{outline:3px solid #efcb77}
+.mapMarker.recruit{color:#f4c976}
+@keyframes hintPulse{50%{box-shadow:0 0 25px #d5bc7588}}
+@media(max-width:700px){#prompt.on{left:50%;bottom:calc(315px + env(safe-area-inset-bottom));max-width:75vw;font-size:11px;white-space:normal;text-align:center;padding:7px 12px}}
+@media(prefers-reduced-motion:reduce){#prompt.on{animation:none}}
 </style>
 </head>
 <body>
@@ -585,7 +593,13 @@ function incidentChoice(zone,path){
 function storyNext(){
  var s=state.story;
  if(!s.intro)return{label:'서막을 읽고 다음 여정을 시작해.',zone:0};
- if(!partyCount())return{label:'동료 메뉴에서 첫 동료를 초대해. 최대 4명 파티야.',zone:0,recruit:true};
+ if(!partyCount()){
+  var a=state.ai.find(companionDiscovered);
+  if(!a)return{label:'첫 인물을 만나려면 서막부터 진행해.',zone:0,journal:true};
+  var stage=recruitStage(a),arc=RECRUIT_ARCS[portraitIndex(a)];
+  return stage==='search'?{label:a.name+' 서브퀘스트 · '+arc.title+' 조사',zone:arc.zone,site:arc.site}:
+  {label:a.name+' · '+(stage==='ready'?'영입 이벤트 진행':'개인 서브퀘스트 시작'),zone:arc.zone,recruit:true};
+ }
  if(!s.choices.ending){
   for(var z=1;z<=6;z++){
    if(s.battles[z]==='pending')return{label:ZONES[z].name+' · 현장 복병을 물리쳐.',zone:z,site:EVIDENCE_SITES[z]};
@@ -637,9 +651,13 @@ function storyJournal(){
    h+='<section class="journalEntry"><span class="eyebrow">2막 · '+ZONES[z].name+'</span><h3>'+info.name+'</h3><p>'+(complete||available?info.lead:'이전 지역의 단서를 조사해야 열려.')+'</p><p class="gold">'+(complete?'조사와 전투 완료':available?'좌표 '+info.x+' / '+info.y+' · 조사 가능':'다음 지역에서 개방')+'</p></section>';});
   if(!act2NextZone())h+='<p class="gold">2막의 여섯 지역 단서를 확보했어. 그 뒤의 이야기는 다음 막으로 계속돼.</p>';
  }
+ h+='<h3>동료 서브 스토리 · 영입과 개인 의뢰</h3><p>사건을 해결할 때마다 인물이 새로 발견돼. 개인 단서를 조사한 뒤 영입 장면을 진행하면 동료가 돼. 이후에도 기존 개인 의뢰가 이어져.</p>';
+ state.ai.filter(companionDiscovered).forEach(function(a){var index=portraitIndex(a),arc=RECRUIT_ARCS[index],stage=recruitStage(a),current=state.story.quests[a.id];
+  h+='<section class="journalEntry"><h3>'+escapeText(a.name)+' · '+escapeText(COMPANION_VOICES[index].trait)+'</h3><p>'+escapeText(COMPANION_VOICES[index].lead)+'</p><p class="gold">'+(stage==='joined'?'영입됨 · 개인 의뢰 진행 가능':stage==='ready'?'단서 확인 완료 · 영입 이벤트 가능':stage==='search'?'단서 탐색 · '+ZONES[arc.zone].name+' ('+arc.site.x+', '+arc.site.y+')':'새 인물 발견 · 서브퀘스트 시작 가능')+'</p><button class="menuBtn secondary" data-recruit-guide="'+a.id+'">인물 기록 / 진행</button></section>';
+ });
  h+='<h3>동료의 고백과 개인 의뢰</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id]){var q=s.quests[a.id];h+='<section class="journalEntry"><b>'+a.name+'</b><p>'+COMPANION_SECRETS[i]+'</p>';if(q)h+='<p class="gold">'+(q.path==='truth'?'잊힌 기록을 밝힌다':'증인을 안전하게 지킨다')+' · '+ZONES[q.zone].name+' · '+(q.complete?'완료':a.party?'이 동료와 함께 방문해야 해.':'동료로 데려가야 진행돼.')+'</p>';else h+='<p>동료 대화에서 사건의 진실을 선택할 수 있어.</p>';h+='</section>';}});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
  h+='<section class="journalEntry"><h3>지난 장면</h3><p>중요한 조사와 동료 대화, 보스의 기억을 다시 볼 수 있어. 선택이나 보상은 반복되지 않아.</p><button class="menuBtn secondary" id="eventArchiveBtn">여정의 장면 돌아보기 ('+Object.values(s.scenes).filter(Boolean).length+')</button></section>';
-  openModal('잊힌 길의 서약',h);document.getElementById('followQuest').onclick=followStoryNext;document.getElementById('eventArchiveBtn').onclick=eventArchive;var opening=document.getElementById('act2Opening');if(opening)opening.onclick=function(){playEventScene('act2intro',storyJournal);};modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});modalBody.querySelectorAll('[data-case]').forEach(function(b){b.onclick=function(){incidentChoice(Number(b.dataset.case),b.dataset.method);};});
+  openModal('잊힌 길의 서약',h);document.getElementById('followQuest').onclick=followStoryNext;modalBody.querySelectorAll('[data-recruit-guide]').forEach(b=>b.onclick=()=>companionMenu(b.dataset.recruitGuide));document.getElementById('eventArchiveBtn').onclick=eventArchive;var opening=document.getElementById('act2Opening');if(opening)opening.onclick=function(){playEventScene('act2intro',storyJournal);};modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});modalBody.querySelectorAll('[data-case]').forEach(function(b){b.onclick=function(){incidentChoice(Number(b.dataset.case),b.dataset.method);};});
 }
 
 // D20-inspired real-time rules; not a claim of full tabletop rules compatibility.
@@ -965,6 +983,7 @@ function worldMap(){
  state.zone===0?[{x:390,y:300,name:'무기',type:'shop'},{x:1010,y:300,name:'방어구',type:'shop'},{x:700,y:300,name:'회복의 샘',type:'shop'},{x:700,y:690,name:'상점',type:'shop'},{x:844,y:487,name:'북문 기록실',type:'clue'}]:
  [{...(EVIDENCE_SITES[state.zone]||{x:700,y:500}),name:INCIDENTS[state.zone-1].name,type:'clue'}];
  var storySpot=pendingStoryEncounter();if(storySpot)spots.push({x:storySpot.site.x,y:storySpot.site.y,name:(storySpot.phase==='act2'?'2막 · ':'1막 · ')+storySpot.name,type:'clue'});
+ var side=pendingRecruitQuest();if(side){var arc=RECRUIT_ARCS[portraitIndex(side)];spots.push({x:arc.site.x,y:arc.site.y,name:side.name+' 영입 단서 · '+arc.title,type:'recruit'});}
  var markers=spots.map(o=>'<span class="mapMarker '+o.type+'" style="left:'+(o.x/worldW*100)+'%;top:'+(o.y/worldH*100)+'%" title="'+escapeText(o.name)+'"><b>◆</b><small>'+escapeText(o.name)+'</small></span>').join('');
  var target=moveTarget?'<span class="mapMarker route" style="left:'+(moveTarget.x/worldW*100)+'%;top:'+(moveTarget.y/worldH*100)+'%" title="이동 목표">◎</span>':'';
  var html='<p class="note">화면을 눌러 이동할 위치를 지정해. 표시는 이동 목표일 뿐 순간이동이 아니야.</p>';
@@ -1182,6 +1201,7 @@ function updatePlayer(dt){
 }
 function updateInteractions(){
  currentInteract=null;
+ var recruit=pendingRecruitQuest(),rpos=recruit?RECRUIT_ARCS[portraitIndex(recruit)].site:null;
  if(dungeon&&!dungeon.complete){
   var puzzle=dungeon.roomPuzzle,best=null,bd=85*85;
   if(puzzle){
@@ -1193,9 +1213,11 @@ function updateInteractions(){
   }
   if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
  }else if(!dungeon&&state.zone>0){
+   if(recruit&&Math.hypot(rpos.x-p.x,rpos.y-p.y)<110){currentInteract={kind:'recruitQuest',name:RECRUIT_ARCS[portraitIndex(recruit)].title};prompt.textContent='◆ '+recruit.name+' 개인 단서 조사 · 누르면 진행';prompt.classList.add('on');return;}
    var encounter=pendingStoryEncounter();if(encounter&&Math.hypot(encounter.site.x-p.x,encounter.site.y-p.y)<120){currentInteract={kind:'storyEncounter',name:encounter.name};prompt.textContent=(encounter.phase==='act2'?'2막 · ':'1막 · ')+encounter.name+' · 교전';prompt.classList.add('on');return;}var site=pendingEvidence();if(site&&Math.hypot(site.x-p.x,site.y-p.y)<95){currentInteract={kind:'evidence',name:'사건 조사 · '+INCIDENTS[state.zone-1].name};prompt.textContent='사건 조사 · 증거 수집';prompt.classList.add('on');return;}
   }else if(!dungeon&&state.zone===0){
   var objs=[{x:390,y:300,name:'무기상점',kind:'weapon'},{x:1010,y:300,name:'방어구상점',kind:'armor'},{x:700,y:300,name:'회복의 샘',kind:'heal'},{x:700,y:690,name:'판매상점',kind:'sell'},{x:COUNCIL_LOCATION.x,y:COUNCIL_LOCATION.y,name:'북문 사건 조사단',kind:'council'}],best=null,bd=90*90;
+  if(recruit)objs.push({x:rpos.x,y:rpos.y,name:recruit.name+' 개인 단서',kind:'recruitQuest'});
   objs.forEach(function(o){var d=(o.x-p.x)**2+(o.y-p.y)**2;if(d<bd){bd=d;best=o;}});
   if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
  }
@@ -1206,6 +1228,7 @@ function interact(){
  if(!currentInteract){toast('상호작용할 대상이 없어.');return;}sound.effect('interact');
  if(currentInteract.kind==='evidence'){inspectEvidence();return;}
  if(currentInteract.kind==='storyEncounter'){inspectAct2();return;}
+ if(currentInteract.kind==='recruitQuest'){completeRecruitQuest();return;}
  if(dungeon&&(currentInteract.kind==='trap'||currentInteract.kind==='door')){
   var kind=currentInteract.kind,puzzle=dungeon.roomPuzzle;if(!puzzle)return;
   var test=checkAbility(kind,12+dungeon.index*2);
@@ -1221,15 +1244,16 @@ function interact(){
  else if(currentInteract.kind==='sell')sellMenu();else shopMenu(currentInteract.kind);
 }
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
-function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))return;view.selection=best.id;if(Math.hypot(best.x-p.x,best.y-p.y)>140){moveTarget={x:best.x,y:best.y};toast(best.name+' 가까이 가면 말을 걸 수 있어.');}else companionMenu(best.id);return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var storySite=pendingStoryEncounter();if(storySite&&Math.hypot(point.x-storySite.site.x,point.y-storySite.site.y)<75){if(Math.hypot(p.x-storySite.site.x,p.y-storySite.site.y)<120){inspectAct2();return;}moveTarget={x:storySite.site.x,y:storySite.site.y};toast('사건 현장으로 이동');return;}var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
+function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))return;view.selection=best.id;if(Math.hypot(best.x-p.x,best.y-p.y)>140){moveTarget={x:best.x,y:best.y};toast(best.name+' 가까이 가면 말을 걸 수 있어.');}else companionMenu(best.id);return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var side=pendingRecruitQuest(),sideSite=side?RECRUIT_ARCS[portraitIndex(side)].site:null;if(sideSite&&Math.hypot(point.x-sideSite.x,point.y-sideSite.y)<80){if(Math.hypot(p.x-sideSite.x,p.y-sideSite.y)<115){completeRecruitQuest();return;}moveTarget={x:sideSite.x,y:sideSite.y};toast('영입 단서로 이동해.');return;}var storySite=pendingStoryEncounter();if(storySite&&Math.hypot(point.x-storySite.site.x,point.y-storySite.site.y)<75){if(Math.hypot(p.x-storySite.site.x,p.y-storySite.site.y)<120){inspectAct2();return;}moveTarget={x:storySite.site.x,y:storySite.site.y};toast('사건 현장으로 이동');return;}var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
-function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat,cinematic:activeEventScene,evidence:pendingEvidence()||pendingStoryEncounter()?.site,council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
+function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter();view.render({p,state,enemies,dungeon,worldW,worldH,combat,cinematic:activeEventScene,evidence:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site,recruit:!!side,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
 function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})));}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
 
 document.getElementById("attackBtn").onclick=attackPlayer;
 document.getElementById("skillBtn").onclick=useClassSkill;
 document.getElementById("interactBtn").onclick=interact;
+prompt.setAttribute('role','button');prompt.setAttribute('tabindex','0');prompt.onclick=interact;prompt.onkeydown=function(e){if(e.code==='Enter'||e.code==='Space'){e.preventDefault();interact();}};
 document.getElementById("mapBtn").onclick=worldMap;
 document.getElementById("systemBtn").onclick=systemMenu;
 document.getElementById("bagBtn").onclick=bagMenu;
