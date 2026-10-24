@@ -52,8 +52,12 @@ def parse_args():
     parser.add_argument(
         "--final-eval-only",
         action="store_true",
-        help="Skip duplicate epoch evaluation/checkpointing and run one unchanged final evaluation.",
+        help="Skip repeated epoch evaluation; ordinary jobs also skip intermediate checkpoints.",
     )
+    parser.add_argument("--cpu-practice-recovery", action="store_true",
+                        help="Enable periodic durable CPU practice checkpoints on trusted Windows workers.")
+    parser.add_argument("--resume-checkpoint", action="store_true",
+                        help="Resume only an exact-input verified CPU practice checkpoint.")
     return parser.parse_args()
 
 
@@ -210,6 +214,53 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
             raise RuntimeError("mixed task type reached task-specific trainer")
 
 
+def cpu_practice_identity(args, manifest):
+    # Bind checkpoints to the original practice-only dataset and exact model/optimizer settings.
+    fields = {
+        "trainSha256": manifest.get("trainSha256"),
+        "evalSha256": manifest.get("evalSha256"),
+        "baseModel": args.base_model, "adapterVersion": args.adapter_version,
+        "taskType": args.task_type, "method": args.method,
+        "seed": args.seed, "epochs": args.epochs, "learningRate": args.learning_rate,
+        "maxLength": args.max_length, "batchSize": args.batch_size, "gradAccum": args.grad_accum,
+    }
+    if not all(isinstance(fields[key], str) and len(fields[key]) == 64
+               and all(c in "0123456789abcdefABCDEF" for c in fields[key])
+               for key in ("trainSha256", "evalSha256")):
+        raise RuntimeError("CPU practice checkpoint identity requires exact dataset SHA256")
+    return hashlib.sha256(json.dumps(fields, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def validated_cpu_practice_checkpoint(output, identity, resume):
+    root = Path(output)
+    checkpoint_root = root / "checkpoints"
+    marker = root / ".cpu-practice-recovery.json"
+    if not resume:
+        if marker.exists() or checkpoint_root.exists():
+            raise RuntimeError("CPU practice recovery directory is not fresh")
+        marker.write_text(json.dumps({"version": 1, "identitySha256": identity}), encoding="utf-8")
+        return None
+    if not marker.is_file():
+        raise RuntimeError("CPU practice recovery identity marker missing")
+    data = json.loads(marker.read_text(encoding="utf-8"))
+    if data != {"version": 1, "identitySha256": identity}:
+        raise RuntimeError("CPU practice recovery exact-input mismatch")
+    candidates = []
+    if checkpoint_root.exists():
+        for entry in checkpoint_root.iterdir():
+            if not entry.is_dir() or not entry.name.startswith("checkpoint-"):
+                continue
+            step = entry.name.split("checkpoint-", 1)[1]
+            if not step.isdecimal() or int(step) == 0:
+                continue
+            # Hugging Face Trainer must have written its full state and optimizer.
+            if (entry / "trainer_state.json").is_file() and (entry / "optimizer.pt").is_file():
+                candidates.append((int(step), entry))
+    if not candidates:
+        raise RuntimeError("CPU practice recovery has no complete Trainer checkpoint")
+    return str(max(candidates)[1])
+
+
 def main():
     args = parse_args()
     os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
@@ -238,6 +289,10 @@ def main():
         and manifest.get("authority") == "PRACTICE_ONLY"
         and manifest.get("practiceOnly") is True
     )
+    if (args.cpu_practice_recovery or args.resume_checkpoint) and not cpu_practice_no_recompute:
+        raise RuntimeError("CPU checkpoint recovery is restricted to verified practice-only CPU training")
+    if args.resume_checkpoint and not args.cpu_practice_recovery:
+        raise RuntimeError("CPU resume requires checkpoint recovery mode")
     tokenizer = AutoTokenizer.from_pretrained(args.base_model, trust_remote_code=True)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -309,16 +364,23 @@ def main():
     eval_dataset = JsonlDataset(eval_rows)
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
+    resume_path = None
+    if args.cpu_practice_recovery:
+        identity = cpu_practice_identity(args, manifest)
+        resume_path = validated_cpu_practice_checkpoint(output, identity, args.resume_checkpoint)
+        print("CPU_PRACTICE_CHECKPOINT=" + (resume_path or "FRESH"))
     training_args = TrainingArguments(
         output_dir=str(output / "checkpoints"), num_train_epochs=args.epochs, learning_rate=args.learning_rate,
         per_device_train_batch_size=args.batch_size, per_device_eval_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum, logging_steps=5,
-        eval_strategy="no" if args.final_eval_only else "epoch", save_strategy="no" if args.final_eval_only else "epoch",
+        eval_strategy="no" if args.final_eval_only else "epoch",
+        save_strategy="steps" if args.cpu_practice_recovery else ("no" if args.final_eval_only else "epoch"),
+        save_steps=16, save_total_limit=2,
         report_to=[], seed=args.seed, data_seed=args.seed,
         bf16=use_cuda and torch.cuda.is_bf16_supported(), fp16=use_cuda and not torch.cuda.is_bf16_supported(), remove_unused_columns=False,
     )
     trainer = DifficultyCurriculumTrainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, data_collator=Collator())
-    train_result = trainer.train()
+    train_result = trainer.train(resume_from_checkpoint=resume_path) if resume_path else trainer.train()
     eval_result = trainer.evaluate()
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
     if not all(value == value and abs(value) != float("inf") for value in losses):
