@@ -2344,6 +2344,16 @@ function drawMap(){
  }
  multiplayer.pings=multiplayer.pings.filter(p=>p.expiresAt>Date.now());
  for(const p of multiplayer.pings){if((p.area||'surface')!=='surface')continue;const x=p.x*sx,y=p.y*sy;m.strokeStyle='#ffd85a';m.lineWidth=2;m.beginPath();m.arc(x,y,7,0,Math.PI*2);m.stroke();m.beginPath();m.moveTo(x-10,y);m.lineTo(x+10,y);m.moveTo(x,y-10);m.lineTo(x,y+10);m.stroke()}
+ // 지도: 기존 발견 영역과 핑을 보존하고 현재 목적지 방향의 직선 기준선만 추가한다.
+ const guidance=questGuideData();
+ if(state.area==='surface'&&guidance?.area==='surface'&&Number.isFinite(guidance.x)&&Number.isFinite(guidance.y)){
+  const p=state.player,tx=guidance.x*sx,ty=guidance.y*sy;
+  m.save();m.setLineDash([4,5]);m.lineWidth=1.5;m.strokeStyle='#f6d17e';
+  m.beginPath();m.moveTo(p.x*sx,p.y*sy);m.lineTo(tx,ty);m.stroke();m.setLineDash([]);
+  m.fillStyle='#f6d17e';m.strokeStyle='#30281a';m.lineWidth=1.5;
+  m.beginPath();m.moveTo(tx,ty-8);m.lineTo(tx+7,ty);m.lineTo(tx,ty+8);m.lineTo(tx-7,ty);m.closePath();m.fill();m.stroke();
+  m.restore();
+ }
  const mapPlayerPos=state.area.startsWith('jungletemple')?JUNGLE_TEMPLE_ENTRANCE:state.player;m.fillStyle='#ffffff';m.beginPath();m.arc(mapPlayerPos.x*sx,mapPlayerPos.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){
@@ -2687,11 +2697,11 @@ function questGuideData(){
  // 지역 밖 목적지를 지시하기 전 실제 동굴 출구·연구소 계단으로 안내한다.
  if(area==='questcave'&&next.area!=='questcave')return point('동굴 출구','questcave',QUEST_CAVE.exit.x,QUEST_CAVE.exit.y,'동굴을 나온 뒤 '+next.name+'(으)로 이동해.');
  if(area==='storylab2'&&next.area!=='storylab2')return point('연구소 1층 계단','storylab2',STORY_LAB_2.ladder.x,STORY_LAB_2.ladder.y,'계단으로 내려간 뒤 '+next.name+'(으)로 가.');
+ if(area==='storylab1'&&next.area==='storylab2')return point('연구소 2층 계단','storylab1',STORY_LAB_1.ladder.x,STORY_LAB_1.ladder.y,'1층 미로를 지나 계단으로 2층에 올라가.');
  if(area==='storylab1'&&next.area!=='storylab1')return point('연구소 출구','storylab1',STORY_LAB_1.exit.x,STORY_LAB_1.exit.y,'연구소 밖으로 나온 뒤 '+next.name+'(으)로 가.');
  if(area==='surface'&&next.area==='questcave')return point('황무지 동굴 입구','surface',WASTELAND_CAVE.x,WASTELAND_CAVE.y,'동굴에 진입한 뒤 안쪽의 무전기 부품을 찾아.');
  if(area==='surface'&&['storylab1','storylab2'].includes(next.area))return point('연구소 입구','surface',LAB_STORY_ENTRANCE.x,LAB_STORY_ENTRANCE.y,'연구소에 들어간 뒤 '+next.name+'(으)로 이동해.');
- if(area==='storylab1'&&next.area==='storylab2')return point('연구소 2층 계단','storylab1',STORY_LAB_1.ladder.x,STORY_LAB_1.ladder.y,'1층 미로를 지나 계단으로 2층에 올라가.');
- if(area!=='next'&&area!=='surface'&&area!==next.area)return{name:'지상으로 이동',area:null,x:null,y:null,hint:'먼저 현재 지역의 출입구로 나가서 지상에 돌아와.'};
+ if(area!=='surface'&&area!==next.area)return{name:'지상으로 이동',area:null,x:null,y:null,hint:'먼저 현재 지역의 출입구로 나가서 지상에 돌아와.'};
  return next;
 }
 let questGuideUpdateAt=0;
