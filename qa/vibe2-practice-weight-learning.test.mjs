@@ -95,3 +95,21 @@ test('real implementation targets join the existing practice dataset without hid
 test('answer supervision keeps complete code targets at the CPU token budget',()=>{
   execFileSync(process.platform==='win32'?'python':'python3',['qa/vibe2-train-encoding.test.py'],{stdio:'pipe'});
 });
+
+test('hourly Windows CPU practice coalesces duplicate queue wakes and resumes only complete exact-input checkpoints',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-practice-cpu-fallback.yml','utf8');
+  const trainer=fs.readFileSync('tools/vibe2-train.py','utf8');
+  assert.match(workflow,/group: vibe2-unity-practice-cpu-.*schedule.*hourly/);
+  assert.match(workflow,/queue: single/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
+  assert.match(workflow,/--cpu-practice-recovery/);
+  assert.match(workflow,/--resume-checkpoint/);
+  assert.match(workflow,/WINDOWS_CPU_PRACTICE_RESUME=VERIFIED_CHECKPOINT/);
+  assert.match(workflow,/CPU practice LoRA training failed without verified checkpoint/);
+  assert.match(trainer,/CPU practice recovery is restricted to verified practice-only CPU training/);
+  assert.match(trainer,/save_strategy="steps" if args.cpu_practice_recovery/);
+  assert.match(trainer,/save_steps=16, save_total_limit=2/);
+  assert.match(trainer,/validated_cpu_practice_checkpoint\(output, identity, args.resume_checkpoint\)/);
+  assert.match(trainer,/trainer.train\(resume_from_checkpoint=resume_path\)/);
+});
