@@ -90377,11 +90377,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1d95b859ece77c63a793e02d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9706",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "63fa1c15c6417d01a4209f12b7a49b912f154bab",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9706,
+        "baseBranch": "main",
+        "headBranch": "fix/windows-pc-3-readonly-qa-lanes-20261024",
+        "baseSha": "63fa1c15c6417d01a4209f12b7a49b912f154bab",
+        "headSha": "59de9cb628fbd6e77b52ee38cd27bb2044f046d0",
+        "mergeCommitSha": "8e54f04144b1bdd97e86a0a4ac4d5f34242e8521",
+        "mergedAt": "2026-10-24T03:46:16Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b441ebe5da35a9663896e319b53ba03865eec1dce9d24b251dd7cebafe588ad5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/windows-pc-3-readonly-qa-lanes-20261024",
+        "candidateSha": "59de9cb628fbd6e77b52ee38cd27bb2044f046d0"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 200,
+        "deletedLineCount": 108,
+        "changedFiles": [
+          ".github/workflows/unity-local-runner-heartbeat.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/vibe2-practice-weight-learning.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/unity-local-runner-heartbeat.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/vibe2-practice-weight-learning.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9706",
+        "merge-commit:8e54f04144b1bdd97e86a0a4ac4d5f34242e8521",
+        "base-main:63fa1c15c6417d01a4209f12b7a49b912f154bab"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 709
+    "total": 710
   }
 }
