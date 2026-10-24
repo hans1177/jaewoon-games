@@ -206,7 +206,7 @@ jobs:
           const result=ingestOwnerWebGameIds(catalog,[],{filesystem:fs});
           if(result.added.length||result.updated.length||result.disabled.length){
             normalizeCatalog(catalog);
-            fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\\n');
+            fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
           }
           console.log('GENERAL_WEB_DESIGN_INTAKE_ADDED='+result.added.join(','));
           console.log('GENERAL_WEB_DESIGN_INTAKE_UPDATED='+result.updated.join(','));
