@@ -30,7 +30,8 @@
     </section>
 
     <div id="raidText" class="raid-status">⏱️ 습격 2:00</div>
-    <div id="hint" class="hint">지도를 드래그하고 건물과 자원을 터치해</div>
+    <div id="economyText" class="realm-economy" aria-label="영지 자원">🪵 0 · 🪨 0 · 🍖 0</div>
+    <div id="hint" class="hint">드래그: 이동 · 건물: 관리</div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <div class="camera-zoom" aria-label="전장 확대 축소">
       <button id="zoomIn" type="button" aria-label="카메라 확대">＋</button>
@@ -39,18 +40,18 @@
 
     <section class="controls" aria-label="조작 버튼">
       <nav class="strategy-bar" aria-label="영지 관리와 전술 명령">
-        <button id="castleCommand" class="strategy-button" type="button">🏰<small>성채</small></button>
+        <button id="castleCommand" class="strategy-button" type="button">🏗️<small>건설</small></button>
         <button id="barracksCommand" class="strategy-button" type="button">⚔️<small>병영</small></button>
-        <button id="workersCommand" class="strategy-button" type="button">👷<small>일꾼</small></button>
-        <button id="fishingCommand" class="strategy-button" type="button">🎣<small>낚시</small></button>
-        <button id="tradeCommand" class="strategy-button" type="button" aria-label="상선 무역과 경제 관리">⚖️<small>무역</small></button>
-        <button id="centerCommand" class="strategy-button" type="button">🗺️<small>전장</small></button>
+        <button id="workersCommand" class="strategy-button" type="button">👷<small>생산</small></button>
+        <button id="fishingCommand" class="strategy-button" type="button">🏹<small>공성</small></button>
+        <button id="tradeCommand" class="strategy-button" type="button" aria-label="상선 무역과 경제 관리">⚖️<small>시장</small></button>
+        <button id="centerCommand" class="strategy-button" type="button">🗺️<small>지도</small></button>
       </nav>
     </section>
 
     <dialog id="panel" class="panel">
       <div class="panel-head">
-        <h2 id="panelTitle">가방</h2>
+        <h2 id="panelTitle">영지 자원</h2>
         <button id="panelClose" type="button" aria-label="닫기">×</button>
       </div>
       <div id="panelBody" class="panel-body"></div>
