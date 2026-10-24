@@ -141,7 +141,7 @@ const copy=s=>structuredClone(s);
 export function newGame(captainId="eleanor"){
  const hero=CAPTAINS.find(c=>c.id===captainId)||CAPTAINS[0],home=PORTS.find(p=>p.id===hero.port);
  return {
-  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,scene:null,eventClock:0,eventSerial:0,merchants:merchantRoster(),economy:newPortEconomy(),marketShocks:{},speed:1,autoCombat:true,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
+  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,scene:null,eventClock:0,eventSerial:0,navalCombat:null,navalEscapeCooldown:0,merchants:merchantRoster(),economy:newPortEconomy(),marketShocks:{},speed:1,autoCombat:true,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
   version:1,day:1,elapsed:0,coins:3400,discovered:[hero.port],visits:{[hero.port]:1},homePort:hero.port,captain:hero.name,crewRoster:[hero.id],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
   ship:{x:home.x,z:home.z+2,heading:0,velocity:0,rudder:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0,gear:{sail:'standard',figurehead:'none'},regionalMods:[],cannonType:'bronze',armor:0,holdLevel:0,rudderLevel:0,hullLevel:0},
   fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
@@ -186,6 +186,9 @@ export function restoreGame(raw){
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
   s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;s.autoCombat=obj.autoCombat!==false;
   s.event=s.event&&(SEA_EVENTS.some(e=>e.id===s.event.id)||(s.event.id==='merchant_meeting'&&MERCHANT_CAPTAINS.some(c=>c.id===s.event.merchantId)))?s.event:null;
+  const c=obj.navalCombat;
+  s.navalCombat=c&&Number.isFinite(c.x)&&Number.isFinite(c.z)&&s.pirates.some(p=>p.id===c.enemyId&&p.hull>0)?{enemyId:c.enemyId,x:clamp(c.x,-WORLD_LIMIT,WORLD_LIMIT),z:clamp(c.z,-1020,900),radius:36}:null;
+  s.navalEscapeCooldown=clamp(Number(obj.navalEscapeCooldown)||0,0,20);
    s.scene=s.scene&&(s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)||s.scene.kind==='merchant'&&MERCHANT_CAPTAINS.some(c=>c.id===s.scene.merchantId))?s.scene:null;
    const ships=Array.isArray(obj.merchants)?obj.merchants:[];
    s.merchants=merchantRoster().map(base=>{const old=ships.find(x=>x?.id===base.id);return old?{...base,from:PORTS.some(p=>p.id===old.from)?old.from:base.from,to:PORTS.some(p=>p.id===old.to)?old.to:base.to,progress:clamp(Number(old.progress)||0,0,1),coins:clamp(Number(old.coins)||0,0,1e8),cargo:GOODS.some(g=>g.id===old.cargo)?old.cargo:base.cargo,count:clamp(Math.floor(Number(old.count)||0),0,12),voyages:clamp(Math.floor(Number(old.voyages)||0),0,1e7),met:clamp(Math.floor(Number(old.met)||0),0,100),lastMeetingDay:Number.isFinite(old.lastMeetingDay)?old.lastMeetingDay:-10,lastProfit:clamp(Math.floor(Number(old.lastProfit)||0),-1e6,1e6)}:base;});
@@ -493,7 +496,7 @@ export function stepSea(state,input={},seconds=.05){
   }
  }
  advanceMerchantFleet(s,dt);
- ship.cooldown=Math.max(0,ship.cooldown-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
+ ship.cooldown=Math.max(0,ship.cooldown-dt);ship.boardingCooldown=Math.max(0,(ship.boardingCooldown||0)-dt);s.navalEscapeCooldown=Math.max(0,(s.navalEscapeCooldown||0)-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
  s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
  if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
@@ -507,6 +510,18 @@ export function stepSea(state,input={},seconds=.05){
   if(dist(ship,p)<PORT_RADIUS&&!s.visits[p.id]){
    s.visits[p.id]=1;if(s.exploreTarget===p.id)s.exploreTarget=null;note(s,p.name+' 첫 입항');
   }
+ }
+ // 전투 시작점 반경 36 밖으로 직접 항해하면 즉시 도주할 수 있다.
+ if(s.navalCombat){
+  const opponent=s.pirates.find(p=>p.id===s.navalCombat.enemyId&&p.hull>0);
+  if(!opponent){s.navalCombat=null;note(s,'해전 종료 · 상대 함대를 제압했어.');}
+  else if(Math.hypot(ship.x-s.navalCombat.x,ship.z-s.navalCombat.z)>36){
+   s.navalCombat=null;s.navalEscapeCooldown=18;note(s,'전투 해역을 벗어나 도주 성공 · 잠시 추격을 피할 수 있어.');
+  }
+ }
+ if(!s.navalCombat&&s.navalEscapeCooldown<=0&&!canDock(s)){
+  const enemy=s.pirates.filter(p=>p.hull>0&&(!p.neutral||s.diplomacy[p.faction]<0)&&dist(ship,p)<=22).sort((a,b)=>dist(ship,a)-dist(ship,b))[0];
+  if(enemy){s.navalCombat={enemyId:enemy.id,x:ship.x,z:ship.z,radius:36};note(s,(enemy.name||'해적선')+'과 해전 시작 · 포격·접현·퇴각 가능');}
  }
  for(const enemy of s.pirates){
   if(enemy.hull<=0||enemy.neutral&&!(s.diplomacy[enemy.faction]<0))continue;
@@ -534,6 +549,26 @@ export function stepSea(state,input={},seconds=.05){
   }
  }
  return s;
+}
+// 포격과 구분된 근접 백병전: 직접 접현 시 선원 수로 결판을 내고 손실이 저장된다.
+export function boardEnemy(state){
+ const clash=state.navalCombat,target=state.pirates.find(e=>e.id===clash?.enemyId&&e.hull>0);
+ if(!target)return fail(state,'해상전 상대가 없어. 먼저 적선과 전투를 시작해.');
+ if(state.scene||state.event||state.landBattle)return fail(state,'현재 사건을 먼저 해결해.');
+ if(dist(state.ship,target)>7)return fail(state,'거리 7 이내로 접근해야 백병전을 시작할 수 있어.');
+ if(state.ship.crew<6)return fail(state,'백병전은 선원 6명 이상 필요해.');
+ if((state.ship.boardingCooldown||0)>0)return fail(state,'접현 준비 중이야.');
+ const s=copy(state),ship=s.ship,enemy=s.pirates.find(e=>e.id===target.id);
+ const defenders=Math.max(1,enemy.crew??Math.round(enemy.maxHull*.32));
+ const offense=Math.round((7+ship.crew*.15)*(1+assignedPower(s,'gunnery','gunnery')/250+(s.job==='privateer'?.28:0)));
+ const casualties=Math.max(1,Math.round(2+defenders*.07-(s.job==='surgeon'?2:0)));
+ ship.crew=Math.max(1,ship.crew-casualties);enemy.crew=Math.max(0,defenders-offense);ship.boardingCooldown=10;
+ if(enemy.crew===0){
+  enemy.hull=0;s.coins+=400+enemy.id*120;s.victories++;s.fame+=8;s.xp+=60;s.score+=250;s.navalCombat=null;
+  note(s,(enemy.name||'적선')+' 나포 완료 · 선원 '+casualties+'명 손실');return success(s,'백병전 승리! 상대 함선을 제압했어.');
+ }
+ ship.hull=Math.max(1,ship.hull-2);note(s,'백병전 · 적 선원 '+offense+'명 감소 / 아군 '+casualties+'명 손실');
+ return success(s,'접현 성공 · 적 선원 '+enemy.crew+'명 남음');
 }
 export function fireCannons(state,targetId=null){
  if(state.landBattle)return fail(state,'먼저 육지 전투를 마치고 출항해.');
