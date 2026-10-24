@@ -1,4 +1,5 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
+import { snapFort,wallLine,applyGateAxes,validateWallLayout } from './castle-layout.js';
 import { IslandRendererV3 } from './render-v3.js';
 import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction, ECONOMY_BUILDINGS, getEconomy, economyStaff, constructEconomyBuilding, upgradeEconomyBuilding, setEconomyPolicy } from './production-buildings.js';
 
@@ -72,6 +73,7 @@ function ensureVillage(state) {
     &&Number.isFinite(x.x)&&Number.isFinite(x.y)).map(x=>({...x,
       hp:Math.max(0,Number(x.hp)||0),maxHp:Math.max(1,Number(x.maxHp)||FORT_BUILDINGS.find(d=>d.id===x.kind).hp)
     }));
+  applyGateAxes(fort.structures);
   if(!Number.isInteger(fort.wallTier)||fort.wallTier<1||fort.wallTier>3)fort.wallTier=1;
   if(!fort.walls||typeof fort.walls!=='object')fort.walls={};
   for(const key of FORT_KEYS)if(!Number.isFinite(fort.walls[key]))
@@ -335,22 +337,64 @@ const BUILD_GROUPS=[
  ['town','🏘️ 도시'],['military','⚔️ 군수'],['defense','🏰 성벽·함정']
 ];
 let activeBuildGroup='industry';
-function buildFortAt(kind,site){
- const state=currentGame?.state,def=FORT_BUILDINGS.find(x=>x.id===kind);
- if(!state||!site||!def)return false;
- const f=ensureVillage(state).fortification,x=Math.round(site.x/90)*90,y=Math.round(site.y/90)*90;
- if(f.structures.length>=120){toast('방어시설 120개가 최대야');return false}
- if(x<130||x>2240||y<80||y>1510){toast('아군 영지에만 건설할 수 있어');return false}
- if(f.structures.some(p=>p.hp>0&&Math.hypot(p.x-x,p.y-y)<75)||Math.hypot(x-1010,y-1090)<135){
-   toast('시설이 겹쳐서 건설할 수 없어');return false;
- }
- if(!canPay(def.wood,def.stone)){toast('나무 '+def.wood+' · 돌 '+def.stone+' 필요');return false}
- spend(def.wood,def.stone);
- f.structures.push({kind,x,y,hp:def.hp,maxHp:def.hp});
- saveState();toast(def.icon+' '+def.name+' 설치 완료');return true;
+// 전략 건설: 성벽 연속 선택 · 성문 자동 정렬 · 보급/인부 이동로 검증.
+function fortBuildingSites(state){
+ const b=state.economyV4?.buildings||{};
+ return Object.values(b).flatMap(p=>(p?.sites||[]).filter(q=>Number.isFinite(q.x)&&Number.isFinite(q.y)));
 }
-window.addEventListener('cozy:construct-fort',event=>{
- if(event.detail)event.detail.success=buildFortAt(event.detail.id,event.detail.at);
+function fortCandidate(kind,site,axis='auto'){
+ const p=snapFort(site),d=FORT_BUILDINGS.find(t=>t.id===kind);if(!d)return null;
+ return {kind,x:p.x,y:p.y,hp:d.hp,maxHp:d.hp,
+         ...(kind==='gate'?{axis:axis==='vertical'?'manual-vertical':axis==='horizontal'?'manual-horizontal':'horizontal',open:true}:{})};
+}
+function fortBuildGroup(kind,locations,axis='auto'){
+ const state=currentGame?.state,def=FORT_BUILDINGS.find(t=>t.id===kind);
+ if(!state||!def||!Array.isArray(locations)||!locations.length)return {ok:false,reason:'배치할 위치가 없어'};
+ const fort=ensureVillage(state).fortification,existing=fort.structures||[];
+ const next=[],used=new Set(existing.filter(x=>x.hp>0).map(x=>x.x+','+x.y));
+ for(const at of locations.slice(0,35)){
+   const p=fortCandidate(kind,at,axis);if(!p)continue;
+   const key=p.x+','+p.y;
+   if(used.has(key)){
+     if(kind==='wall'&&existing.some(x=>x.hp>0&&x.kind==='wall'&&x.x===p.x&&x.y===p.y))continue;
+     return {ok:false,reason:'기존 건물·성문과 겹친 구간이 있어'};
+   }
+   used.add(key);next.push(p);
+ }
+ if(!next.length)return {ok:false,reason:'새 성벽 구간이 없어'};
+ if(existing.length+next.length>120)return {ok:false,reason:'방어시설 한도 120채'};
+ const verified=validateWallLayout(existing,next,fortBuildingSites(state));
+ if(!verified.ok)return verified;
+ const wood=next.length*def.wood,stone=next.length*def.stone;
+ if(!canPay(wood,stone))return {ok:false,reason:'건설 자원 부족 · 나무 '+wood+' 돌 '+stone};
+ spend(wood,stone);existing.push(...next);applyGateAxes(existing);saveState();
+ toast(def.icon+' '+def.name+' '+next.length+'칸 건설 완료');
+ return {ok:true,count:next.length};
+}
+window.addEventListener('cozy:construct-fort',e=>{
+ if(!e.detail)return;
+ const result=fortBuildGroup(e.detail.id,[e.detail.at],e.detail.axis);
+ e.detail.success=result.ok;
+ if(!result.ok)toast(result.reason);
+});
+window.addEventListener('cozy:construct-wall-line',e=>{
+ if(!e.detail)return;
+ const result=fortBuildGroup('wall',wallLine(e.detail.start,e.detail.end,35));
+ e.detail.success=result.ok;e.detail.count=result.count||0;
+ if(!result.ok)toast(result.reason);
+});
+window.addEventListener('cozy:preview-wall-line',e=>{
+ if(!e.detail||!currentGame)return;
+ const points=wallLine(e.detail.start,e.detail.end,35);
+ const fort=ensureVillage(currentGame.state).fortification;
+ const existing=fort.structures;
+ const additions=points.filter(p=>!existing.some(t=>t.hp>0&&t.x===p.x&&t.y===p.y));
+ const valid=validateWallLayout(existing,additions.map(p=>fortCandidate('wall',p)),fortBuildingSites(currentGame.state));
+ const inv=currentGame.state.inventory||{};
+ e.detail.points=points;e.detail.count=additions.length;
+ e.detail.wood=additions.length;e.detail.stone=additions.length*3;
+ e.detail.ok=valid.ok&&(Number(inv.wood)||0)>=e.detail.wood&&(Number(inv.stone)||0)>=e.detail.stone;
+ e.detail.reason=valid.reason;
 });
 function renderConstruction(group=activeBuildGroup){
  const state=currentGame?.state;if(!state)return;
@@ -363,7 +407,7 @@ function renderConstruction(group=activeBuildGroup){
  let html='<div class="realm-overview"><div><strong>👷 '+assigned+'/'+capacity+'</strong><small>자동 배치 일꾼</small></div><div><strong>🪵 '+format(inv.wood)+'</strong><small>목재</small></div><div><strong>🪨 '+format(inv.stone)+'</strong><small>석재</small></div><div><strong>🪙 '+format(state.coins)+'</strong><small>금화</small></div></div>';
  html+='<div class="realm-tabs" role="group" aria-label="건설 종류">'+tabs+'</div>';
  if(group==='defense'){
-   html+='<p class="realm-help">시설 선택 → 지도에 배치. 설치된 벽과 함정은 적에게 실제 피해를 받고 막아낸다.</p>';
+   html+='<p class="realm-help">성벽 드래그: 시작점부터 끝점까지 자동 연속 건설(최대 35칸). 성문은 인접 성벽에 맞춰 방향을 잡고 인부 길을 막는 배치는 거부합니다.</p>';
    html+='<div class="realm-build-grid">'+FORT_BUILDINGS.map(d=>
      '<article class="realm-build-card"><div class="realm-build-title"><span class="realm-icon">'+d.icon+'</span><div><b>'+d.name+'</b><small>'+d.desc+'</small></div><strong>HP '+d.hp+'</strong></div>'+
      '<div class="realm-build-meta"><span>🪵 '+d.wood+'</span><span>🪨 '+d.stone+'</span><span>건설 '+fort.structures.filter(p=>p.kind===d.id&&p.hp>0).length+'</span></div>'+
