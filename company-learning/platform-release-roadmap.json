@@ -7564,7 +7564,9 @@
       "changeType": "OWNER_REQUESTED_CHATGPT_ONE_SHOT_GAME_EDIT_EXECUTION_PREFERENCE",
       "existingF0F9AndReleaseGatesUnchanged": true,
       "existingConstitutionalRule1Unchanged": true,
-      "noNewPipeline": true
+      "noNewPipeline": true,
+      "cloudflareExplicitlyExcluded": true,
+      "gameIdeaRequiresActualSourceChange": true
     },
     "fastDevelopmentSourceAssetReuse20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20_FAST_DEVELOPMENT", "scope": "EXISTING_GITHUB_PAGES_ASSET_PREPARATION", "cacheKey": "EXACT_ASSET_TREE_GIT_SHA", "fallbackReuse": "CURRENT_GIT_BLOB_HASH_VERIFIED_BYTES_ONLY", "missingOrChangedAssetsOnlyRestored": true, "postRestoreBlobVerificationRequired": true, "cacheFailureFallsBackToCanonicalGit": true, "cacheSavesMainOnly": true, "publicationTriggerSequenceAndSafetyChecksPreserved": true, "actualSpeedupRequiresRuntimeMeasurements": true, "newPipeline": false},
     "ownerGitHubPagesPermanentRemoval20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","publisher":"tools/github-pages-landing.mjs","retainedOutputPrunedByExplicitCatalogRemovalOnly":true,"activeGameAndSharedFilesPreserved":true,"newWorkflowOrPipeline":false},
@@ -28728,7 +28730,7 @@
       "labelKo": "바이브 한방패치",
       "authority": "OWNER_DIRECTIVE_2026-10-24",
       "status": "OWNER_DIRECT_LOCKED",
-      "scope": "EXPLICIT_OWNER_REQUESTS_FOR_EXISTING_GAME_CODE_CHANGES",
+      "scope": "OWNER_GAME_IDEA_AND_DIRECT_GAME_SOURCE_EDIT_REQUESTS",
       "priority": "OWNER_DIRECT_GAME_CHANGE_FIRST_WITHIN_EXISTING_CANONICAL_GATES",
       "executionOrder": [
         "LOAD_AND_VALIDATE_LATEST_MAIN_CANONICAL_DOCUMENTS_AND_FINAL_LOCK",
@@ -28736,7 +28738,7 @@
         "IMPLEMENT_OWNER_SPECIFIED_CHANGE_DIRECTLY_IN_RESPONSIBLE_GAME_FUNCTIONS",
         "RUN_REQUIRED_IMPACT_SCOPED_PRE_MERGE_SOURCE_SECURITY_AND_BUILD_CHECKS",
         "MERGE_APPROVED_CHANGE_TO_MAIN_VIA_EXISTING_GITHUB_FLOW",
-        "TRIGGER_EXISTING_PLATFORM_PREVIEW_OR_WEB_AUTODEPLOY_AS_ALLOWED",
+        "PUBLISH_ONLY_THROUGH_EXPLICIT_OWNER_AUTHORIZED_EXISTING_GAME_ROUTE_EXCLUDING_CLOUDFLARE",
         "POST_DEPLOY_CHECK_RUNTIME_MOBILE_INPUT_LINKS_LOADING_SAVE_AND_REGRESSION",
         "REPORT_ACTUAL_MAIN_SHA_DEPLOYMENT_TARGET_AND_VERIFIED_OR_UNVERIFIED_OUTCOME"
       ],
@@ -28753,7 +28755,9 @@
         "avoidUnnecessaryCodeDumps": true,
         "conciseOutcomeOnly": true,
         "preferExistingFunctionsToWrappers": true,
-        "duplicatePipelinesForbidden": true
+        "duplicatePipelinesForbidden": true,
+        "ideasMustResultInRealExistingGameSourceChangeWhenRequested": true,
+        "documentationOnlyNotGameIdeaCompletion": true
       },
       "preservation": {
         "existingGameplayAndSaveDataFirst": true,
@@ -28765,11 +28769,13 @@
       "deployment": {
         "repository": "hans1177/jaewoon-games",
         "branch": "main",
-        "webSite": "https://jaewoon-games.pages.dev",
-        "webPath": "EXISTING_CLOUDFLARE_PAGES_AUTODEPLOY_ONLY",
+        "webSite": null,
+        "webPath": "NO_DEFAULT_WEB_DEPLOYMENT_TARGET",
         "otherPlatform": "EXISTING_CANONICAL_PLATFORM_PUBLISH_ROUTE_ONLY",
         "postDeploymentValidationRequired": true,
-        "unverifiedDeploymentMayNotBeClaimedSuccessful": true
+        "unverifiedDeploymentMayNotBeClaimedSuccessful": true,
+        "cloudflareDeploymentAllowed": false,
+        "unknownPublishTarget": "DO_NOT_DEPLOY_OR_INVENT_TARGET"
       },
       "hardBoundaries": {
         "existingF0F9SequenceUnchanged": true,
@@ -28784,7 +28790,8 @@
         "mainCommitProofRequired": true,
         "actualDeploymentProofRequiredWhenDeployRequested": true,
         "runtimeProofRequiredWhenAvailable": true,
-        "unverifiedStatusMustBeReported": true
+        "unverifiedStatusMustBeReported": true,
+        "ideaApplicationRequiresActualGameCodeDiff": true
       }
     },
     "status": "FIXED_CURRENT_SYSTEM",
