@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-k0p0fr",
+      "worker": "vibe2",
+      "taskId": "egg-heist-studio-evolution-roblox-usability-v3",
+      "gameId": "egg-heist",
+      "files": [
+        "roblox-games/egg-heist/client/Game.client.luau",
+        "roblox-games/egg-heist/shared/GameConfig.luau",
+        "roblox-games/egg-heist/server/Game.server.luau",
+        "roblox-games/egg-heist/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "0502debbece89893ee7569d493ba4c9979e83e85",
+      "runId": "40050356372",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-24T01:58:48.967Z",
+      "expiresAt": "2026-10-24T02:43:48.967Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:egg-heist-studio-evolution-roblox-usability-v3"
+      ]
+    }
+  ]
 }
