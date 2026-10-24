@@ -661,7 +661,7 @@ export class IslandRendererV3 {
         }
         item.lastX=x;item.lastY=y;
         item.mesh.position.set(x*SC,.03,y*SC);
-        item.mesh.rotation.y=0;
+        item.mesh.rotation.y=kind==='fort-wall-side'?0:rotation;
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
       // 외곽 사막은 기본적으로 보여 주되 기존 유료 확장 지역의 해금 판정은 유지한다.
@@ -771,8 +771,10 @@ export class IslandRendererV3 {
         const section=fort.structures[i];if(section.hp<=0)continue;
         const look={wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
           spikes:'fence',oil:'package',pit:'stone'}[section.kind]||'fort-site';
+        const vertical=section.axis==='vertical'||section.axis==='manual-vertical';
         put('custom-fort:'+i,look,section.x,section.y,
-          section.kind==='tower'?4:section.kind==='gate'?3.6:section.kind==='wall'?2.5:1.1);
+          section.kind==='tower'?4:section.kind==='gate'?3.6:section.kind==='wall'?2.5:1.1,
+          vertical?Math.PI/2:0);
       }
       // 소유한 경제 건물: 실제 건설 위치와 레벨에 맞춰 입체 중세 건물을 렌더링한다.
       const economy=game.state.economyV4?.buildings||{};
@@ -796,19 +798,35 @@ export class IslandRendererV3 {
         }
       }
       if(game.buildingPlacement?.at){
-        const g=game.buildingPlacement;
-        const preview=g.id.startsWith('fort:')?({
+        const build=game.buildingPlacement;
+        const previews=build.id==='fort:wall'?(build.preview?.length?build.preview:[build.at]):[build.at];
+        const kind=build.id.startsWith('fort:')?({
            wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
            spikes:'fence',oil:'package',pit:'stone'
-         }[g.id.slice(5)]||'fort-site'):(appearance[g.id]||'fort-site');
-        put('construction-preview',preview,g.at.x,g.at.y,3.05);
-        const ghost=this.instances3d.get('construction-preview');
-        if(ghost&&!ghost.previewReady){
-          ghost.mesh.traverse(part=>{if(!part.isMesh)return;
-            part.material=part.material.clone();part.material.transparent=true;
-            part.material.opacity=.55;part.material.depthWrite=false;
-          });
-          ghost.previewReady=true;
+         }[build.id.slice(5)]||'fort-site'):(appearance[build.id]||'fort-site');
+        for(let i=0;i<Math.min(35,previews.length);i++){
+          const p=previews[i],vertical=build.id==='fort:gate'&&build.axis==='vertical';
+          const key='construction-preview:'+i;
+          put(key,kind,p.x,p.y,kind==='fort-gatehouse'?3.6:kind==='fort-wall'?2.5:3.05,
+              vertical?Math.PI/2:0);
+          const ghost=this.instances3d.get(key);
+          if(ghost){
+            if(!ghost.previewReady){
+              ghost.mesh.traverse(part=>{
+                if(!part.isMesh)return;
+                part.material=part.material.clone();
+                part.material.transparent=true;part.material.opacity=.52;part.material.depthWrite=false;
+              });
+              ghost.previewReady=true;
+            }
+            if(ghost.valid!==!!build.previewValid){
+              ghost.valid=!!build.previewValid;
+              ghost.mesh.traverse(part=>{
+                if(part.isMesh&&part.material?.color)part.material.color.setHex(
+                  build.previewValid===false?0xc96460:0x83c596);
+              });
+            }
+          }
         }
       }
       // 적 영주는 자기 마을회관·성벽·탑·주민 건물이 있는 독립 요새를 가진다.
