@@ -24,7 +24,7 @@ test('tapping a visible enemy fires only when target is attackable and within we
   const end=source.indexOf("\n if(state.area==='surface'){",start);
   assert.ok(start>=0&&end>start,'live handleWorldTap enemy branch must exist');
   const tap=new Function('visible','dist','wx','wy','now','state','doubleTapTarget',
-   'unlockBestiary','tapArrowAimTarget','currentWeapon','showNotice','attack',source.slice(start,end));
+   'unlockBestiary','tapArrowAimTarget','currentWeapon','currentRange','showNotice','attack',source.slice(start,end));
   const cases=[
     {name:'in range',x:40,range:120,attacks:1,aim:1},
     {name:'out of range',x:200,range:80,attacks:0,aim:0},
@@ -38,7 +38,7 @@ test('tapping a visible enemy fires only when target is attackable and within we
     const state={player:{x:0,y:0,faceX:0,faceY:0}};
     let attacks=0,aim=0;
     tap([enemy],(x,y,xx,yy)=>Math.hypot(x-xx,y-yy),c.x,0,1000,state,
-      ()=>false,()=>{},()=>{aim++},()=>c.range===null?null:{range:c.range},
+      ()=>false,()=>{},()=>{aim++},()=>c.range===null?null:{range:c.range},()=>c.range||0,
       ()=>{},target=>{assert.equal(target,enemy);attacks++});
     assert.equal(attacks,c.attacks,c.name);
     assert.equal(aim,c.aim,c.name+' should preserve ranged tap-aim bounds');
@@ -323,4 +323,52 @@ test('low-quality mobile mode reduces GPU cost without deleting the original nat
  assert.match(native,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
  assert.match(native,/updateInteriorWalls\(isInterior\?regionScene:null/);
  assert.match(source,/underwater:'underwater','underwater-dungeon':'underwater-dungeon'/);
+});
+
+
+test('mage has 405 range but knights keep their equipped weapon reach and cooldown',()=>{
+ const a=source.indexOf('function currentRange(){'),b=source.indexOf('function currentCooldown(){',a);
+ assert.ok(a>0&&b>a);
+ const ctx={avatarAppearance:{model:'mage'},currentWeapon:()=>({id:'stone-sword',range:75,cooldown:380})};
+ const range=new Function('avatarAppearance','currentWeapon',source.slice(a,b)+';return currentRange;')(ctx.avatarAppearance,ctx.currentWeapon);
+ assert.equal(range(),405);
+ ctx.avatarAppearance.model='knight';assert.equal(range(),75);
+ ctx.avatarAppearance.model='rogue';assert.equal(range(),75);
+ assert.match(source,/function currentCooldown\(\)\{return currentWeapon\(\)\?\.cooldown\|\|380\}/);
+ assert.match(source,/kind:'mageBolt'/);
+ assert.match(source,/damage:currentDamage\(\),weaponId:w.id/);
+ assert.match(source,/projectile.visualOnly=true/);
+ assert.match(source,/multiSend\('attack'/);
+ assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+test('mage default attack launches a real moving magic bolt and uses existing weapon damage',()=>{
+ const a=source.indexOf('function attack(selectedTapTarget=null){'),b=source.indexOf('\nfunction ',a+20);
+ assert.ok(a>0&&b>a);
+ const weapon={id:'stone-sword',range:75,cooldown:380,power:18};
+ const enemy={netId:'e1',x:280,y:0,hp:100,area:'surface',type:{r:20,mood:'aggressive',name:'시험 몬스터'}};
+ const state={area:'surface',player:{x:0,y:0,hp:100,maxHp:100,weapon:'stone-sword',armor:null,attackAt:0,faceX:1,faceY:0},enemies:[enemy],projectiles:[]};
+ const music={enabled:false,combatUntil:0},multiplayer={connected:false,playerId:'solo'};
+ const args={state,music,multiplayer,avatarAppearance:{model:'mage'},performance:{now:()=>1000},
+  currentWeapon:()=>weapon,currentCooldown:()=>380,currentRange:()=>405,currentDamage:()=>18,
+  petMountedAttack:()=>false,interruptAutoGather:()=>{},showNotice:()=>{},dist:(a,b,c,d)=>Math.hypot(a-c,b-d),
+  playGameSfx:()=>{},playCombatAudio:()=>{},item:()=>null,ensureMusicStarted:()=>{},syncCombatMusic:()=>{},desiredMusicTheme:()=>{},updateHud:()=>{},
+  saveGame:()=>{},Math};
+ const fire=new Function(...Object.keys(args),source.slice(a,b)+';return attack;')(...Object.values(args));
+ fire(enemy);
+ assert.equal(state.player.attackAt,1000);
+ assert.equal(enemy.hp,100,'no instant hit at casting time');
+ assert.equal(state.projectiles.length,1);
+ assert.equal(state.projectiles[0].kind,'mageBolt');
+ assert.equal(state.projectiles[0].damage,18);
+ assert.ok(state.projectiles[0].vx>0);
+ assert.equal(state.projectiles[0].targetId,'e1');
+ const next=source.indexOf('function updateProjectiles(dt,now){'),end=source.indexOf('\nfunction ',next+20);
+ const hits=new Function('state','performance','multiplayer','multiIsHost','WORLD','dist','item','enemyIncomingDamage','engagePet','Math',
+  source.slice(next,end)+';return updateProjectiles;')(state,{now:()=>1500},multiplayer,()=>true,{w:35000,h:11000},
+  (a,b,c,d)=>Math.hypot(a-c,b-d),id=>id===weapon.id?weapon:null,(e,d)=>d,()=>{},Math);
+ hits(.5,1500);
+ assert.equal(enemy.hp,82,'damage belongs to existing weapon power');
+ assert.equal(state.projectiles.length,0,'projectile consumed exactly once');
+ assert.equal(state.player.weapon,'stone-sword','equipment unchanged');
 });
