@@ -11,7 +11,7 @@ const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
 test('gem survivor uses actual 3D renderer, authored model, bounded native geometry',()=>{
  assert.ok(script,'gameplay module must exist');
  assert.match(html,/data-render-target="webgl-3d"/);
- assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs'/);
+ assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs\?v=20261024-world-2'/);
  assert.doesNotMatch(script,/\bgetContext\s*\(\s*['"]2d['"]/);
  assert.doesNotMatch(script,/\bctx\./);
  assert.match(native,/new THREE\.WebGLRenderer\(/);
@@ -75,7 +75,7 @@ function harness(){
   performance:{now:()=>0},requestAnimationFrame(fn){callback=fn},
   addEventListener:(type,fn)=>events.set(type,fn),
   createGem3d:()=>Promise.resolve({resize(){},view(p){return {left:p.x-195,right:p.x+195,top:p.y-456,bottom:p.y+456}},render(state){renders++;snapshot={x:state.player.x,y:state.player.y,world:state.world,stage:state.stage.id,hp:state.player.hp}}})};
- const code=script.replace(/^\s*import\s*\{createGem3d\}\s*from\s*'\.\/gem3d\.mjs';\s*/,'');
+ const code=script.replace(/^\s*import\s*\{createGem3d\}\s*from\s*'\.\/gem3d\.mjs\?v=20261024-world-2';\s*/,'');
  assert.doesNotMatch(code,/^\s*import\s/m);
  const context=vm.createContext(sandbox);
  vm.runInContext(code,context,{timeout:1000});
