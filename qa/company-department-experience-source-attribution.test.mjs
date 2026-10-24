@@ -42,7 +42,8 @@ test('workflow fetches verified SHA and parent rather than trusting shallow late
   assert.match(workflow,/fetch-depth: 1/);
   assert.match(workflow,/sparse-checkout:/);
   assert.match(workflow,/--base main/);
-  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
+  assert.match(workflow,/gh pr create/);
+  assert.match(workflow,/--head "\$branch"/);
 });
 test('Vibe QA merge commit credits actual first-parent web game change once',t=>{
   const dir=fixture(t);
