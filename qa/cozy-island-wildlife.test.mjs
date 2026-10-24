@@ -154,17 +154,17 @@ test('포근섬 모바일 스피드패치의 3D 픽셀 재질·기존 에셋·�
   for(const material of ['stone','wood','roof','sand','grass','jungle','snow',
     'ash','cave','road','water','foliage','crops','clay','iron','hide'])
     assert.ok(renderer.includes("'"+material+"'"), '3D pixel material missing: '+material);
-  assert.match(renderer,/new THREE.MeshStandardMaterial\\(\\{[\\s\\S]*?map:this.pixelTextures\\[nativeSurfaces\\[kind\\]\\|\\|'stone'\\]/);
+  assert.match(renderer,/new THREE.MeshStandardMaterial\(\{[\s\S]*?map:this.pixelTextures\[nativeSurfaces\[kind\]\|\|'stone'\]/);
   for(const id of ['castleCommand','barracksCommand','workersCommand',
     'fishingCommand','tradeCommand','centerCommand'])
-    assert.match(html,new RegExp('id="'+id+'"[^>]*>\\\\s*<svg class="pixel-icon"'),
+    assert.match(html,new RegExp('id="'+id+'"[^>]*>\\s*<svg class="pixel-icon"'),
       'native pixel command missing '+id);
-  assert.match(css,/\\.strategy-button \\.pixel-icon/);
+  assert.match(css,/\.strategy-button \.pixel-icon/);
   assert.match(css,/shape-rendering:crispEdges/);
-  assert.match(css,/\\.camera-zoom button \\{[^}]*width:44px/);
-  assert.match(game,/function updateMovement\\(dt\\)/);
+  assert.match(css,/\.camera-zoom button \{[^}]*width:44px/);
+  assert.match(game,/function updateMovement\(dt\)/);
   assert.match(game,/const screenX=dx,screenY=dy/);
-  assert.match(game,/runtime\\.loadProgress\\(DEFAULT_STATE\\)/);
-  assert.match(game,/runtime\\.queueSaveProgress\\(state\\)/);
-  assert.doesNotMatch(renderer,/localStorage\\.|state\\.inventory\\s*=|state\\.coins\\s*[-+]=/);
+  assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
+  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
+  assert.doesNotMatch(renderer,/localStorage\.|state\.inventory\s*=|state\.coins\s*[-+]=/);
 });
