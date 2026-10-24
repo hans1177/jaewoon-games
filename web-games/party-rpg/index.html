@@ -247,10 +247,29 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
 @keyframes hintPulse{50%{box-shadow:0 0 25px #d5bc7588}}
 @media(max-width:700px){#prompt.on{left:50%;bottom:calc(315px + env(safe-area-inset-bottom));max-width:75vw;font-size:11px;white-space:normal;text-align:center;padding:7px 12px}}
 @media(prefers-reduced-motion:reduce){#prompt.on{animation:none}}
+/* 중세 필사본 스타일의 시각·날씨 패널. 기존 지역 HUD의 폭을 늘리지 않는다. */
+#timeWeather{position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:21;display:flex;flex-direction:column;align-items:center;min-width:158px;max-width:min(220px,40vw);gap:2px;pointer-events:none;padding:6px 12px;border:1px solid #9c8051a5;border-radius:3px;background:linear-gradient(125deg,#1f211fed,#473a2bdc,#1c1f20f0);box-shadow:inset 0 0 0 1px #231c19,0 4px 15px #070b0b80;color:#f1e0b8;font-family:Georgia,'Batang',serif;text-align:center;text-shadow:0 1px 3px #000}
+#timeWeather:before,#timeWeather:after{content:'❖';position:absolute;top:12px;font-size:11px;color:#bc965b}
+#timeWeather:before{left:5px}#timeWeather:after{right:5px}
+#timeOfDay{font-size:11px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+#weatherOfDay{font-size:10px;color:#d2c1a7;white-space:nowrap}
+body[data-time-phase=night] #timeWeather{background:linear-gradient(130deg,#101a28f0,#26263ade,#111821ef);border-color:#7488a08c}
+body[data-time-phase=dawn] #timeWeather,body[data-time-phase=dusk] #timeWeather{border-color:#e7a16b;background:linear-gradient(135deg,#35251eea,#553527dc,#241d20ea)}
+#atmosphere{pointer-events:none}
+body[data-time-phase=night] #atmosphere:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 48% 35%,transparent 32%,#07132328 100%);mix-blend-mode:multiply}
+body[data-time-phase=dusk] #atmosphere:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(150deg,#e8953310,transparent 44%,#281e3217)}
+body[data-weather=rain] #atmosphere{box-shadow:inset 0 0 120px #43586816}
+body[data-weather=fog] #atmosphere{box-shadow:inset 0 0 130px #aeb9aa16}
+body[data-time-phase=night] #zone{border-color:#6e7f9b}
+body[data-time-phase=dusk] #zone{border-color:#ca9155}
+@media(max-width:700px){#timeWeather{top:calc(82px + env(safe-area-inset-top));min-width:112px;width:max-content;padding:3px 10px;max-width:145px;box-shadow:0 2px 7px #0008}#timeOfDay{font-size:9px}#weatherOfDay{font-size:9px}#timeWeather:before,#timeWeather:after{top:7px;font-size:8px}}
+@media(max-width:480px){#timeWeather{top:calc(90px + env(safe-area-inset-top));left:58%;}}
+@media(max-height:500px) and (orientation:landscape){#timeWeather{top:calc(44px + env(safe-area-inset-top));padding:2px 7px}}
 </style>
 </head>
 <body>
 <canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="combatFeedback" aria-hidden="true"></div><div id="atmosphere" aria-hidden="true"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="tacticsBtn" type="button" aria-label="파티 대형과 전투 지시">전술</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="autoBtn" aria-pressed="true">자동 기술</button><button id="skillBtn" type="button" aria-label="현재 직업 기술 사용">직업 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button><button id="systemBtn" type="button">설정 ⚙</button></div><div id="nextQuest" role="status" aria-live="off"><b>다음 여정</b><span id="nextQuestText">이야기 확인 중</span></div><button id="partyInspect">선택한 인물 보기</button>
+<div id="timeWeather" role="status" aria-live="off"><span id="timeOfDay">1일째 · 오전 8:00</span><span id="weatherOfDay">☀ 맑음</span></div>
 <div id="hud">
   <div id="stats" class="panel">
     <div id="statsTop">
@@ -391,6 +410,34 @@ function load(){
  s.zone=0;s.x=700;s.y=520;return s;
 }
 var state=load();
+// 세계의 시계는 실제 기기 시계가 아니라 게임 시간. 과거 저장도 마을·기존 장비 그대로 복원.
+if(!state.environment||typeof state.environment!=='object'||Array.isArray(state.environment))state.environment={};
+var environment=state.environment;
+environment.minutes=Number.isFinite(Number(environment.minutes))?((Number(environment.minutes)%1440+1440)%1440):510;
+environment.day=Number.isInteger(environment.day)&&environment.day>0?Math.min(environment.day,999999):1;
+environment.running=environment.running!==false;
+environment.effects=environment.effects!==false;
+environment.quality=['auto','low','high'].includes(environment.quality)?environment.quality:'auto';
+function gameWeather(zone=state.zone){
+ if(dungeon)return 'interior';
+ var block=Math.floor(environment.minutes/360),seed=Math.sin((environment.day*59+zone*113+block*73)*12.9898)*43758.5453,value=seed-Math.floor(seed);
+ if(zone===5)return value<.62?'snow':value<.87?'fog':'clear';
+ if(zone===4)return value<.35?'dust':value<.57?'fog':'clear';
+ if(zone===6)return value<.56?'ash':value<.76?'fog':'clear';
+ if(zone===3||zone===8)return value<.46?'fog':value<.77?'rain':'clear';
+ if(zone===2)return value<.40?'fog':value<.78?'rain':'clear';
+ return value<.31?'rain':value<.46?'fog':'clear';
+}
+function gameEnvironment(){
+ const minutes=environment.minutes,hour=Math.floor(minutes/60),part=hour<5?'night':hour<8?'dawn':hour<17?'day':hour<20?'dusk':'night';
+ return {hour,minute:Math.floor(minutes%60),day:environment.day,minutes,phase:part,weather:gameWeather(),effects:environment.effects,quality:environment.quality};
+}
+function advanceEnvironment(dt){
+ if(!environment.running||dungeon)return;
+ environment.minutes+=dt*1.5; // 현실 16분이 게임 하루. 메뉴/전투 일시정지 시 정지.
+ if(environment.minutes>=1440){environment.minutes-=1440;environment.day++;}
+}
+
 var classIds=["fighter","rogue","cleric","wizard","ranger"];if(!classIds.includes(state.player.classId))state.player.classId="fighter";state.ai.forEach(function(a,i){if(!classIds.includes(a.classId))a.classId=classIds[i%5];});
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}}
 function xpNeed(lv){return 90+lv*70;}
@@ -1056,6 +1103,12 @@ function resize(){W=innerWidth;H=innerHeight;view.resize();}
 addEventListener("resize",resize);resize();
 function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("on");clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("on");},1900);}
 function updateHud(){
+ var climate=gameEnvironment(),h=climate.hour,minutes=String(climate.minute).padStart(2,'0');
+ var parts={night:'밤',dawn:'새벽',day:'낮',dusk:'저녁'};
+ var descriptions={clear:'맑음',rain:'비',snow:'눈',fog:'안개',dust:'모래바람',ash:'잿가루',interior:'실내'};
+ document.getElementById('timeOfDay').textContent='제국력 '+climate.day+'일 · '+parts[climate.phase]+' '+h+':'+minutes;
+ document.getElementById('weatherOfDay').textContent=(climate.weather==='clear'?'☀':climate.weather==='rain'?'☂':climate.weather==='snow'?'❄':climate.weather==='fog'?'☁':climate.weather==='dust'?'≈':climate.weather==='ash'?'✧':'♜')+' '+descriptions[climate.weather];
+ document.body.dataset.timePhase=climate.phase;document.body.dataset.weather=climate.weather;
  document.body.dataset.scene=dungeon?'dungeon':String(state.zone);
  var skillButton=document.getElementById('skillBtn'),info=CLASS_INFO[state.player.classId]||CLASS_INFO.fighter,remaining=Math.max(0,Math.ceil(combat(state.player).skillAt-battleTime));
  skillButton.textContent=remaining?'기술 '+remaining+'초':(CLASSES[state.player.classId]||CLASSES.fighter).name+' 기술';
@@ -1077,12 +1130,20 @@ function systemMenu(){
  html+='<button class="menuBtn" id="systemSave">지금 저장하기</button>';
  html+='<button class="menuBtn secondary" id="systemMap">큰 지도 열기</button>';
  html+='<button class="menuBtn secondary" id="systemTravel">지역 / 던전 이동</button>';
+ html+='<h3>시간·날씨·그래픽</h3>';
+ html+='<p class="note">실제 시각과 무관한 게임 속 하루(현실 약 16분). 낮·저녁·밤과 지역별 비, 안개, 눈, 잿가루가 자연스럽게 바뀌어. 저장 후에도 시간이 유지돼.</p>';
+ html+='<button class="menuBtn secondary" id="systemClock">'+(environment.running?'시간 흐름: 진행 중 · 누르면 정지':'시간 흐름: 정지됨 · 누르면 재개')+'</button>';
+ html+='<button class="menuBtn secondary" id="systemWeatherFx">'+(environment.effects?'날씨 입자 효과: 켜짐':'날씨 입자 효과: 꺼짐')+'</button>';
+ html+='<button class="menuBtn secondary" id="systemQuality">그래픽 품질: '+({auto:'자동',low:'절전',high:'고급'}[environment.quality])+'</button>';
  html+='<button class="menuBtn secondary" id="systemHome">저장하고 시작 화면으로</button>';
  html+='<p class="note">홈으로 돌아가도 아이템·레벨·선택·동료 기록은 삭제되지 않아. 새로고침하면 기존 규칙대로 마을에서 시작해.</p>';
  openModal('게임 시스템',html);
  document.getElementById('systemSave').onclick=function(){save();toast('진행 데이터를 저장했어.');};
  document.getElementById('systemMap').onclick=worldMap;
  document.getElementById('systemTravel').onclick=travelMenu;
+ document.getElementById('systemClock').onclick=function(){environment.running=!environment.running;save();systemMenu();};
+ document.getElementById('systemWeatherFx').onclick=function(){environment.effects=!environment.effects;save();view.worldSignature='';systemMenu();};
+ document.getElementById('systemQuality').onclick=function(){const all=['auto','low','high'];environment.quality=all[(all.indexOf(environment.quality)+1)%all.length];save();view.worldSignature='';view.resize();systemMenu();};
  document.getElementById('systemHome').onclick=function(){
   save();activeEventScene=null;introStep=-1;modal.hidden=true;modalOpen=false;gameStarted=false;tacticalPaused=false;contactTriggered=false;keys={};joy.x=joy.y=0;moveTarget=null;
   document.getElementById('pauseBtn').textContent='일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed','false');
@@ -1361,9 +1422,9 @@ function interact(){
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
 function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))return;view.selection=best.id;if(Math.hypot(best.x-p.x,best.y-p.y)>140){moveTarget={x:best.x,y:best.y};toast(best.name+' 가까이 가면 말을 걸 수 있어.');}else companionMenu(best.id);return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var crime=imperialCaseAtLocation();if(crime&&Math.hypot(point.x-crime.x,point.y-crime.y)<86){if(Math.hypot(p.x-crime.x,p.y-crime.y)<125){imperialCaseInvestigate();return;}moveTarget={x:crime.x,y:crime.y};toast('사건 현장으로 이동해.');return;}var side=pendingRecruitQuest(),sideSite=side?RECRUIT_ARCS[portraitIndex(side)].site:null;if(sideSite&&Math.hypot(point.x-sideSite.x,point.y-sideSite.y)<80){if(Math.hypot(p.x-sideSite.x,p.y-sideSite.y)<115){completeRecruitQuest();return;}moveTarget={x:sideSite.x,y:sideSite.y};toast('영입 단서로 이동해.');return;}var storySite=pendingStoryEncounter();if(storySite&&Math.hypot(point.x-storySite.site.x,point.y-storySite.site.y)<75){if(Math.hypot(p.x-storySite.site.x,p.y-storySite.site.y)<120){inspectAct2();return;}moveTarget={x:storySite.site.x,y:storySite.site.y};toast('사건 현장으로 이동');return;}var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
-function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW,worldH,combat,cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site,recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
+function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW,worldH,combat,environment:gameEnvironment(),cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site,recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
-function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})));}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
+function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})),gameEnvironment());}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
 
 document.getElementById("attackBtn").onclick=attackPlayer;
 document.getElementById("skillBtn").onclick=useClassSkill;
@@ -1399,7 +1460,7 @@ joyBase.addEventListener("pointermove",function(e){if(e.pointerId===joyId)joyMov
 function joyEnd(e){if(e.pointerId!==joyId)return;joyId=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
 joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointercancel",joyEnd);
 addEventListener('keydown',function(e){if(!modalOpen)return;if(activeEventScene&&(e.code==='Enter'||e.code==='Space')){e.preventDefault();nextEventScene();return;}if(e.code==='Escape'){closeModal();return;}if(e.code==='Tab'){var nodes=[...modal.querySelectorAll('button:not(:disabled),a[href],input,select,[tabindex="0"]')].filter(function(n){return n.getClientRects().length;});var first=nodes[0],lastNode=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();lastNode.focus();}else if(!e.shiftKey&&document.activeElement===lastNode){e.preventDefault();first.focus();}}});
-window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,view,combat,storyObjective,tacticalPaused,worldW,worldH,gameStarted});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
+window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,view,combat,storyObjective,tacticalPaused,worldW,worldH,gameStarted,gameEnvironment});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
 </body>

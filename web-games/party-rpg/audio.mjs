@@ -12,7 +12,7 @@ const THEMES=[
 export class PartyAudio{
  constructor(){
   this.ctx=null;this.master=null;this.music=null;this.fx=null;this.nextBeat=0;this.beat=0;
-  this.zone=0;this.dungeon=false;this.fighting=false;this.lastStep=0;this.lastHit=0;
+  this.zone=0;this.dungeon=false;this.fighting=false;this.lastStep=0;this.lastHit=0;this.lastAmbient=-10;
   try{this.muted=localStorage.getItem('party-rpg-audio-v1')==='off';}catch{this.muted=false;}
  }
  start(){
@@ -58,7 +58,7 @@ export class PartyAudio{
   src.connect(filter);filter.connect(gain);gain.connect(this.fx);
   src.start(time);src.stop(time+seconds+.01);src.onended=()=>{src.disconnect();filter.disconnect();gain.disconnect();};
  }
- update(zone,dungeon,fighting){
+ update(zone,dungeon,fighting,climate=null){
   if(!this.ctx||this.muted||this.ctx.state!=='running')return;
   const c=this.ctx,z=dungeon?6:Math.min(6,Math.max(0,zone)),theme=THEMES[z];
   if(z!==this.zone||!!dungeon!==this.dungeon||!!fighting!==this.fighting){
@@ -82,6 +82,16 @@ export class PartyAudio{
    }
    if(fighting&&n%2===1)this.tone(root*1.01,t,pace*.48,.047,'sawtooth',this.music,210);
    this.nextBeat+=pace;
+  }
+  // 중세 야외 환경 소리는 기존 합성 오디오를 사용하며 묵음 설정을 공유.
+  if(!dungeon&&!fighting&&now-this.lastAmbient>6.5){
+   const weather=climate?.weather||'clear',hour=climate?.hour??12;
+   this.lastAmbient=now;
+   if(weather==='rain'){this.noiseHit(now,.3,.027,960);this.noiseHit(now+.20,.24,.019,1340);}
+   else if(weather==='dust'||weather==='snow'){this.noiseHit(now,.32,.021,weather==='snow'?320:220);}
+   else if(weather==='ash'||weather==='fog'){this.tone(126,now,.62,.014,'sine',this.fx,270);}
+   else if(hour>=20||hour<5){this.tone(510,now,.25,.026,'sine',this.fx,940);this.tone(403,now+.23,.30,.018,'sine',this.fx,760);}
+   else if(zone===1||zone===2){this.tone(840,now,.12,.020,'sine',this.fx,1200);this.tone(1040,now+.13,.10,.014,'sine',this.fx,1450);}
   }
  }
  step(surface){
