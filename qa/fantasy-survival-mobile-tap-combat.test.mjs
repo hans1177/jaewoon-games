@@ -92,3 +92,57 @@ test('Diablo-style character panel preserves original game data and inventory ac
  assert.match(source,/reason==='unmapped-threat'\?'주변 생물의 3D 모델을 자동으로/);
  assert.doesNotMatch(inventory,/localStorage\.setItem|sessionStorage\.setItem|p\.inventory\[/);
 });
+
+test('quest stage navigation uses original waypoints without modifying progression or save',()=>{
+ const raw=source.split('function questGuideData(){')[1]?.split('\nlet questGuideUpdateAt=')[0];
+ assert.ok(raw,'native quest guide must resolve original story stages');
+ const fixed={SURVIVOR:{x:16200,y:520},WASTELAND_CAVE:{x:2730,y:3600},
+  QUEST_CAVE:{radio:{x:4700,y:1500},exit:{x:420,y:1500}},
+  LAB_STORY_ENTRANCE:{x:6320,y:9650},
+  STORY_LAB_1:{ladder:{x:2320,y:128},exit:{x:88,y:1168}},
+  STORY_LAB_2:{ladder:{x:168,y:680},boss:{x:1260,y:680},sensor:{x:2264,y:488},report:{x:2264,y:880}},
+  CRYSTAL_HEART:{x:16200,y:6000},FINAL_RADIO_PART:{x:32400,y:10080},
+  COMM_DEVICE:{x:18560,y:1900}};
+ const state={area:'surface',player:{x:9000,y:6000},enemies:[],
+  story:{stage:'find-survivor',completed:false,treated:false}};
+ const guide=new Function('state',...Object.keys(fixed),'invCount','questObjective',
+  'return function questGuideData(){'+raw)(state,...Object.values(fixed),()=>1,()=> '기존 임무');
+ const check=(stage,area,name,x,y)=>{
+  state.story.stage=stage;state.area=area;
+  const before=JSON.stringify(state),result=guide();
+  assert.equal(result?.name,name,stage+' / '+area);
+  if(x!==null){assert.equal(result?.x,x);assert.equal(result?.y,y);}
+  assert.equal(JSON.stringify(state),before,'navigation must not mutate existing game state');
+ };
+ check('find-survivor','surface','부상당한 생존자',16200,520);
+ check('find-radio','surface','황무지 동굴 입구',2730,3600);
+ check('find-radio','questcave','동굴 끝 무전기 부품',4700,1500);
+ check('return-survivor','questcave','동굴 출구',420,1500);
+ check('return-survivor','surface','생존자에게 부품 전달',16200,520);
+ check('lab-floor2','surface','연구소 입구',6320,9650);
+ check('lab-floor2','storylab1','연구소 2층 계단',2320,128);
+ check('lab-floor2','storylab2','수정 화염골렘',1260,680);
+ check('lab-loot','storylab2','부품센서',2264,488);
+ state.story.sensorTaken=true;
+ check('lab-loot','storylab2','연구 보고서',2264,880);
+ check('return-survivor-lab','storylab2','연구소 1층 계단',168,680);
+ check('return-survivor-lab','storylab1','연구소 출구',88,1168);
+ check('touch-crystal','surface','수정 지대 큰 수정',16200,6000);
+ check('find-final-radio-part','surface','거대화원 중앙',32400,10080);
+ check('repair-comm-device','surface','밀림 통신장치',18560,1900);
+ check('wait-radio-repair','surface','무전기 수리 대기',null,null);
+ state.story.stage='done';assert.equal(guide(),null,'completed story must hide the navigation');
+ assert.doesNotMatch(raw,/state\.player\.(?:x|y)\s*=|state\.story\.stage\s*=|saveGame\(/);
+});
+test('quest compass and map stay integrated with existing mobile controls',()=>{
+ for(const id of ['questNav','questNavOpen','questNavArrow','questNavDistance','questNavDetails','questNavTitle','questNavHint','questNavMap']){
+  assert.equal((source.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'duplicate or missing guide control: '+id);
+ }
+ assert.match(source,/\.questNav\[hidden\]/);
+ assert.match(source,/function updateQuestGuide\(now=performance\.now\(\)\)/);
+ assert.match(source,/updateQuestGuide\(now\);draw\(\)/);
+ assert.match(source,/getElementById\('questNavMap'\)\.addEventListener\('click',\(\)=>ui\.mapBtn\.click\(\)\)/);
+ assert.match(source,/const guidance=questGuideData\(\)/);
+ assert.match(source,/m\.setLineDash\(\[4,5\]\)/);
+ assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
