@@ -125,7 +125,7 @@ let peer,channel,role='',peerMode='duel',invite='',reply='',connection='연결 �
 const duel={mine:600,other:600,guards:0,archers:0,defending:false};
 const clean=n=>Math.max(0,Math.min(600,Math.floor(Number(n)||0)));
 function send(data){if(channel?.readyState==='open')channel.send(JSON.stringify({v:1,...data}))}
-function liveUpdate(){if(dialog.open&&section==='multi')render()}
+function liveUpdate(){if(dialog.open&&section==='multiplayer')render()}
 function closePeer(){
  try{channel?.close()}catch{}
  try{peer?.close()}catch{}
