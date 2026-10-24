@@ -544,7 +544,108 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const moving=moveDelta>.08&&poseElapsed>0&&poseElapsed<420;
       const attacking=poseNow-(Number(e.attackAt)||0)<430;
       actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
-      // 게임 판정을 바꾸지 않는 시각 모션: 비행, 중량급, 일반 몹을 구분한다.
+      actor.anchor.position.y=moving?.045*Math.sin(poseNow/95):0;
+      actor.anchor.rotation.x=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
+      const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
+      const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
+        ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
+      if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
+        actor.action?.fadeOut(.09);
+        actor.action=actor.mixer.clipAction(clip).reset();
+        actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
+        actor.action.clampWhenFinished=attacking;
+        actor.action.fadeIn(.09).play();actor.clipName=clip.name;
+        if(attacking)actor.lastAttackStamp=e.attackAt;
+      }
+      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
+      const now=performance.now();
+      if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
+        actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+        actor.lastFrame=now;
+      }
+      actor.seen=stamp;
+    }
+    for(const [key,actor] of undeadActors){
+      if(actor.seen===stamp)continue;
+      actor.mixer?.stopAllAction();
+      scene.remove(actor.anchor);
+      undeadActors.delete(key);
+    }
+  }
+  // The native rigs follow the *existing* monster coordinates, direction and actions.
+  // No new spawn/damage/loot logic is allowed in the rendering layer.
+  function synchronizeNativeCreatures(state,px,py,stamp){
+    // 모바일 화질 축소는 해상도와 그림자만 조절하고, 시야 안의 몹은 제거하지 않는다.
+    missingVisibleMonsterIds.clear();
+    let unsafeUnmappedEncounter=false;
+    for(const e of state.enemies||[]){
+      if(!e||e.hp<=0||e.area!==state.area)continue;
+      // 성능: 화면 밖 개체만 제외한다. 화면 안 개체 수로 2D 복귀를 결정하지 않는다.
+      creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
+      if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
+      const kind=NATIVE_CREATURE_BY_ID.get(e.type?.id);
+      if(!kind||!nativeCreatureSources.has(kind)){
+        if(e.type?.id!=='wastelandMummy'||!undeadSource){
+          missingVisibleMonsterIds.add(e.type?.id||'unknown');
+          // 화면 안의 모든 적이 원본 3D 모델로 표시된 뒤 게임을 시작한다.
+          // 근거리만 차단하면 보이는 원거리 적이 투명해진 채 게임이 진행된다.
+          // 기존 근접 종 로딩 우선순위와 전투/드롭/저장은 그대로 보존한다.
+          unsafeUnmappedEncounter=true;
+        }
+        continue;
+      }
+      // 표시: 실제 위협 개체는 고정 개수 제한으로 생략하지 않는다.
+      // 거리는 기존 범위로 제한하고 화면 밖 메시의 제외는 Three.js가 처리한다.
+      const key=String(e.netId||e.id||e.type.id+':'+e.x+':'+e.y);
+      let actor=nativeCreatureActors.get(key);
+      if(!actor){
+        const source=nativeCreatureSources.get(kind);
+        const model=cloneAnimatedRig(source.model),scale=Math.max(.72,Math.min(3.8,
+          (Number(e.type?.r)||20)*SCALE*2.2))/source.height;
+        // 동일 CC0 원본을 재사용하되 기존 몹 정의 색상만 약하게 반영한다.
+        // 지오메트리·리그·텍스처와 게임의 HP/공격/드롭/저장값은 그대로 둔다.
+        const speciesId=e.type.id;
+        let materials=nativeSpeciesMaterials.get(speciesId);
+        if(!materials){materials=new Map();nativeSpeciesMaterials.set(speciesId,materials)}
+        const tint=new THREE.Color(e.type.color||'#ffffff');
+        model.traverse(child=>{
+          if(!child.isMesh||!child.material)return;
+          const tintMaterial=original=>{
+            if(!original)return original;
+            let material=materials.get(original.uuid);
+            if(!material){
+              material=original.clone();
+              if(material.color)material.color.lerp(tint,.22);
+              materials.set(original.uuid,material);
+            }
+            return material;
+          };
+          child.material=Array.isArray(child.material)
+            ?child.material.map(tintMaterial):tintMaterial(child.material);
+        });
+        model.scale.setScalar(scale);
+        model.position.y=-source.floor*scale;
+        const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
+        const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
+        actor={anchor,model,mixer,clips:source.clips,clipName:'',action:null,baseScale:scale,
+          lastFrame:performance.now(),seen:0};
+        nativeCreatureActors.set(key,actor);
+      }
+      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      actor.model.traverse(child=>{
+        if(!child.isMesh)return;
+        child.userData.worldPoint={x:e.x,y:e.y};
+        interactables.push(child);
+      });
+      // 몬스터 실제 이동량을 쓰므로 벽에 걸렸을 때 이동 애니메이션이 계속 나오지 않는다.
+      const poseNow=performance.now(),moveDelta=Math.hypot(e.x-(actor.lastX??e.x),e.y-(actor.lastY??e.y));
+      const poseElapsed=poseNow-(actor.lastPoseAt||poseNow);
+      const moving=moveDelta>.08&&poseElapsed>0&&poseElapsed<420;
+      const attacking=poseNow-(Number(e.attackAt)||0)<430;
+      actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
+      // 종별 비행, 중량, 이동, 타격 반응은 시각효과로만 적용한다.
       const species=String(e.type?.id||'');
       const hit=poseNow<(Number(e.hitAt)||0);
       const flying=/bee|bat|fairy|heron|spirit|pheasant/i.test(species);
