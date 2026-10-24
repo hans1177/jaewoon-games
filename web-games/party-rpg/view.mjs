@@ -50,7 +50,7 @@ groundMaterial(zone,dungeon){
  if(this.groundMaterials.has(key))return this.groundMaterials.get(key);
  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
  const ctx=canvas.getContext('2d'),stone=dungeon||zone===0||zone===3||zone===6;
- const palette=dungeon?['#393a36','#44443f','#525049','#5c554b']:zone===0?['#6b6657','#79715b','#827a67','#594e40']:zone===2?['#334c36','#455d3b','#5c693e','#344d32']:zone===4?['#a18a60','#b39c70','#887553','#bcaa7d']:zone===5?['#9aa9a7','#b7c2b7','#798b8a','#c8c8b7']:['#526040','#667249','#454f33','#757451'];
+ const palette=dungeon?['#292c2b','#363735','#403f3b','#333637']:zone===0?['#474743','#535149','#3d403d','#565044']:zone===2?['#303a35','#354339','#44493d','#293832']:zone===4?['#665d50','#746954','#575249','#807663']:zone===5?['#667174','#747f7f','#536165','#8b9594']:['#3b433c','#4a5145','#353b35','#51544c'];
  const random=n=>{const t=Math.sin(n*127.41+(zone+3)*64.7)*24316.379;return t-Math.floor(t);};
  ctx.fillStyle=palette[0];ctx.fillRect(0,0,256,256);
  if(stone){
