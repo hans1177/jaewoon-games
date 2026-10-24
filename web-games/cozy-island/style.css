@@ -36,7 +36,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .panel-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; background: #fbfff9; }
 .panel-head h2 { margin: 0; font-size: 20px; }
 .panel-head button { width: 36px; height: 36px; border: 0; border-radius: 12px; background: #eaf4ec; font-size: 24px; }
-.panel-body { padding: 4px 18px 20px; overflow: auto; }
+.panel-body { padding: 4px 18px 20px; max-height: min(calc(72vh - 68px), 530px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .inventory-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
 .item-card { padding: 12px; border-radius: 15px; background: #edf7ef; font-weight: 800; }
 .item-card span { display: block; margin-top: 4px; font-size: 20px; }
