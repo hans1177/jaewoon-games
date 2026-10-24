@@ -29,6 +29,9 @@ const TRAP_TYPES={
  barrel:{name:'폭발 항아리',wood:6,stone:6,damage:75,charges:2}
 };
 const GUARD_SITES=[{name:'동쪽 성문',x:1285,y:608},{name:'북쪽 성벽',x:790,y:235}];
+const RAID_TIME_OPTIONS=[60,120,180,300,600];
+const SIEGE_MODES=['off','third','always'];
+const KEEP_HP=900;
 let fortSaveCarry=0;
 
 
@@ -52,6 +55,14 @@ function ensureVillage(state) {
   if(!Array.isArray(fort.guardPosts)||fort.guardPosts.length!==GUARD_SITES.length)
     fort.guardPosts=Array.from({length:GUARD_SITES.length},(_,i)=>fort.guardPosts?.[i]||null);
   if(!Number.isFinite(fort.traderClock)||fort.traderClock<0)fort.traderClock=0;
+  // 기존 2분 습격과 저장 구조를 유지하며 새 옵션을 선택한 경우에만 시간을 바꾼다.
+  if(!RAID_TIME_OPTIONS.includes(fort.raidIntervalSec))fort.raidIntervalSec=120;
+  if(!SIEGE_MODES.includes(fort.siegeAuto))fort.siegeAuto='off';
+  fort.siegeRequested=fort.siegeRequested===true;
+  fort.siegeVictories=Math.max(0,Math.floor(Number(fort.siegeVictories)||0));
+  fort.siegeDefeats=Math.max(0,Math.floor(Number(fort.siegeDefeats)||0));
+  if(!Number.isFinite(fort.keepHp))fort.keepHp=KEEP_HP;
+  fort.keepHp=Math.max(0,Math.min(KEEP_HP,fort.keepHp));
   state.villageDevelopment=village;
   return village;
 }
@@ -261,6 +272,19 @@ function renderCastle(){
       '나무 2 · 돌 3',fort.walls[key]>=WALL_BASE[key]+(tier-1)*180);
     html+='<p class="panel-note">적이 성문과 동쪽 성벽을 부수면 돌입해. 파괴된 구간은 수리해야 다시 막을 수 있어.</p>';
   }
+  html+='<h3>⏱️ 습격 시간 · 대공성전 설정</h3>';
+  html+='<p class="panel-note">습격 주기 '+(fort.raidIntervalSec/60)+'분 · 원본 2분 기본값 유지. 대공성전은 6차 공세, 총 186명 출진, 공성추·공성탑·공병이 포함돼.</p>';
+  for(const sec of RAID_TIME_OPTIONS)
+    html+=button('timer:'+sec,(sec/60)+'분 간격',sec===fort.raidIntervalSec?'선택됨':'',sec===fort.raidIntervalSec);
+  html+='<p class="panel-note">대공성전 자동 발생: '+({off:'끄기',third:'3번째마다',always:'매 습격'})[fort.siegeAuto]+'</p>';
+  html+=button('siege:auto:off','대공성전 자동 발생 끄기');
+  html+=button('siege:auto:third','3번째 습격마다 대공성전');
+  html+=button('siege:auto:always','매 습격을 대공성전으로');
+  html+=button('siege:start','대공성전 지금 시작',currentGame.raidActive?'습격 중':'',!built||currentGame.raidActive);
+  html+=button('siege:view',currentGame.siegeOverview?'내 캐릭터 시야로 돌아가기':'성채 전체 전장 시야');
+  html+='<p class="panel-note">성채 체력 '+Math.ceil(fort.keepHp)+'/'+KEEP_HP+
+    ' · 방어 승리 '+fort.siegeVictories+'회 · 함락 '+fort.siegeDefeats+'회</p>';
+  if(built&&fort.keepHp<KEEP_HP)html+=button('siege:keep','성채 수리','나무 4 · 돌 6');
   html+='<h3>🛡️ 성벽 주둔 병력</h3><p class="panel-note">'+postStatus+'</p>';
   if(built&&state.barracksBuilt)for(let i=0;i<GUARD_SITES.length;i++){
     html+=button('guard:'+i+':archer',GUARD_SITES[i].name+' 궁수 배치','','');
@@ -300,6 +324,33 @@ function manageCastle(action){
   const game=currentGame,state=game?.state;if(!state)return;
   const village=ensureVillage(state),fort=village.fortification,inv=state.inventory||{};
   const parts=action.split(':'),op=parts[0],id=Number(parts[1]);
+  if(op==='timer'){
+    const sec=Number(parts[1]);if(!RAID_TIME_OPTIONS.includes(sec))return;
+    fort.raidIntervalSec=sec;
+    // 타이머는 다음 습격에 즉시 반영되며 기존 진행 시간을 초기화하지 않는다.
+    saveState();renderCastle();toast('⏱️ 습격 간격 '+(sec/60)+'분');return;
+  }
+  if(op==='siege'){
+    const command=parts[1];
+    if(command==='view'){game.siegeOverview=!game.siegeOverview;renderCastle();return}
+    if(command==='auto'){
+      if(!SIEGE_MODES.includes(parts[2]))return;
+      fort.siegeAuto=parts[2];saveState();renderCastle();return;
+    }
+    if(command==='start'){
+      if(!village.townHallBuilt||game.raidActive)return toast('마을회관을 짓고 습격이 아닐 때 시작할 수 있어');
+      fort.siegeRequested=true;saveState();
+      document.querySelector('#panel')?.close();
+      toast('🚩 대공성전 출진 명령!');return;
+    }
+    if(command==='keep'){
+      if(fort.keepHp>=KEEP_HP)return;
+      if(!canPay(4,6))return toast('성채 수리 재료 부족');
+      spend(4,6);fort.keepHp=Math.min(KEEP_HP,fort.keepHp+300);
+      saveState();renderCastle();return;
+    }
+    return;
+  }
   if(op==='worker'){
     if(parts[1]==='farm')returnWorkerToFarm();
     else assignWorker(parts[1]);
@@ -373,32 +424,49 @@ function runFortification(dt){
   fort.traderClock=(fort.traderClock+dt)%180;
   applyGuardPosts();
   if(!village.townHallBuilt||!game.raidActive){
-    fortSaveCarry=0;
-    return;
+    fortSaveCarry=0;return;
   }
   let damaged=false;
-  const enemies=livingRaidEnemies();
+  const enemies=livingRaidEnemies(),now=performance.now();
   for(const enemy of enemies){
-    if(enemy._fortSlowUntil&&performance.now()>=enemy._fortSlowUntil){
+    if(enemy._fortSlowUntil&&now>=enemy._fortSlowUntil){
       if(Number.isFinite(enemy._fortOriginalSpeed))enemy.speed=enemy._fortOriginalSpeed;
       delete enemy._fortOriginalSpeed;delete enemy._fortSlowUntil;
     }
-    if(enemy._fortBurnUntil&&performance.now()<enemy._fortBurnUntil){
+    if(enemy._fortBurnUntil&&now<enemy._fortBurnUntil){
       enemy.hp-=6*dt;damaged=true;
     }
-    if(enemy.x<1390&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
-      const key=enemy.y<520?'north':enemy.y>730?'south':'gate';
+    // 성문/방벽 충돌: 구조물 HP가 있을 동안 공성 병력을 실제로 저지한다.
+    if(enemy.hp>0&&enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
+      const lane=enemy._siegeLane??enemy.y,key=lane<520?'north':lane>730?'south':'gate';
       if(fort.walls[key]>0){
         enemy.x=Math.max(enemy.x,1350);
         enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
-        if(enemy._fortSiegeTimer>=1.2){
-          enemy._fortSiegeTimer%=1.2;
-          fort.walls[key]=Math.max(0,fort.walls[key]-Math.max(10,Number(enemy.attack)||Number(enemy.cannonDamage)||Number(enemy.berserkerDamage)||10));
+        const attackEvery=Number(enemy.siegeCooldown)||1.2;
+        if(enemy._fortSiegeTimer>=attackEvery){
+          enemy._fortSiegeTimer%=attackEvery;
+          const damage=Math.max(10,Number(enemy.siegeDamage)||Number(enemy.attack)||
+            Number(enemy.cannonDamage)||Number(enemy.berserkerDamage)||10);
+          fort.walls[key]=Math.max(0,fort.walls[key]-damage);
           damaged=true;
         }
       }
     }
+    // 성벽 안으로 진입한 공성 병기가 성채를 파괴하면 대공성전 패배 처리.
+    if(game.grandSiege&&enemy._grandSiege&&enemy.hp>0&&enemy.x<1160&&enemy.y>890){
+      enemy._fortKeepTimer=(enemy._fortKeepTimer||0)+dt;
+      if(enemy._fortKeepTimer>=1){
+        enemy._fortKeepTimer%=1;
+        fort.keepHp=Math.max(0,fort.keepHp-Math.max(8,Number(enemy.siegeDamage)||12));
+        damaged=true;
+        if(fort.keepHp===0&&!game.siegeSurrendered){
+          game.siegeSurrendered=true;fort.siegeDefeats++;
+          toast('🏚️ 공성군이 성채를 함락했어');
+        }
+      }
+    }
   }
+  // 함정 사용 횟수는 유한하며, 여러 적에게 같은 발동 피해를 중복 계산하지 않는다.
   for(let i=0;i<fort.traps.length;i++){
     const t=fort.traps[i],site=TRAP_SITES[i];if(!t||t.charges<=0)continue;
     t.cooldown=Math.max(0,(Number(t.cooldown)||0)-dt);
@@ -408,17 +476,23 @@ function runFortification(dt){
     const def=TRAP_TYPES[t.type];if(!def)continue;
     t.charges--;t.cooldown=t.type==='barrel'?3:1.5;
     enemy.hp-=def.damage;
-    if(t.type==='barrel')for(const other of enemies)if(other!==enemy&&other.hp>0&&distance(other,site)<115)other.hp-=Math.floor(def.damage*.55);
+    if(t.type==='barrel')for(const other of enemies)
+      if(other!==enemy&&other.hp>0&&distance(other,site)<115)other.hp-=Math.floor(def.damage*.55);
     if(t.type==='log')enemy.x+=85;
     if(t.type==='pit'||t.type==='net'){
       if(!enemy._fortSlowUntil)enemy._fortOriginalSpeed=Number(enemy.speed)||0;
       enemy.speed=Math.min(Number(enemy.speed)||0,t.type==='net'?0:(Number(enemy._fortOriginalSpeed)||0)*.35);
-      enemy._fortSlowUntil=performance.now()+(t.type==='net'?1800:2600);
+      enemy._fortSlowUntil=now+(t.type==='net'?1800:2600);
     }
-    if(t.type==='oil')enemy._fortBurnUntil=performance.now()+2600;
+    if(t.type==='oil')enemy._fortBurnUntil=now+2600;
     damaged=true;
   }
-  if(damaged){fortSaveCarry+=dt;if(fortSaveCarry>2){fortSaveCarry=0;saveState();}}
+  // 손상 발생 후 2초마다 모아서 저장하여 프레임별 DB/로컬스토리지 갱신 폭증을 막는다.
+  if(damaged)fortSaveCarry=Math.max(.001,fortSaveCarry);
+  if(fortSaveCarry>0){
+    fortSaveCarry+=dt;
+    if(fortSaveCarry>=2){fortSaveCarry=0;saveState();}
+  }
 }
 
 function bindMovement() {
