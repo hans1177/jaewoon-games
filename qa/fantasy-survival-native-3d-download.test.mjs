@@ -28,8 +28,20 @@ test('mobile ARPG HUD preserves existing survival mechanics and only uses CSS ar
  for(const id of ['stick','knob','craft','inventory','map','gather','attack','petSpecial','dismount','buildBlueprint','sheet','sheetBody','smeltPanel','multiPanel','optionsPanel','avatarPanel']){
   assert.equal((index.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'duplicate or missing control: '+id);
  }
- assert.match(index,/id="heroPortrait"[\s\S]*?aria-label="3D 캐릭터 꾸미기"/);
- assert.match(index,/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+ // 현재 본편은 초상화→꾸미기, 장비창 개편안은 초상화→인벤토리다.
+ // 두 배치 모두 실제 메뉴 연결을 검증하며, 중복 이벤트 연결은 허용하지 않는다.
+ const portraitInventory=/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openInventory\)/.test(index);
+ if(portraitInventory){
+  assert.match(index,/id="heroPortrait"[\s\S]*?aria-label="캐릭터 장비와 가방 열기"/);
+  assert.match(index,/document\.getElementById\('avatarOpen'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+  assert.match(index,/function renderInventory\(\)/);
+  assert.match(index,/class="arpgInventory"/);
+  assert.doesNotMatch(index,/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+ }else{
+  assert.match(index,/id="heroPortrait"[\s\S]*?aria-label="3D 캐릭터 꾸미기"/);
+  assert.match(index,/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+  assert.doesNotMatch(index,/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openInventory\)/);
+ }
  const ui=index.split('/* 마력숲 모바일 액션 RPG:')[1]?.split('</style>')[0]||'';
  assert.match(ui,/\.actions>#attack/);
  assert.match(ui,/\.sheetHead/);
