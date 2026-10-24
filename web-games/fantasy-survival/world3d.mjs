@@ -300,7 +300,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       }
       const box=new THREE.Box3().setFromObject(model);
       if(box.isEmpty())throw new Error('Missing downloaded creature mesh');
-      model.traverse(child=>{if(child.isMesh){child.castShadow=true;child.receiveShadow=true}});
+      model.traverse(child=>{
+        if(!child.isMesh)return;
+        child.castShadow=!mobileBudget;child.receiveShadow=!mobileBudget;
+        // 종별 원본 메시/리그는 보존하고 표면을 가까운 픽셀로 렌더한다.
+        for(const mat of (Array.isArray(child.material)?child.material:[child.material])){
+          if(!mat)continue;
+          if(mat.map){mat.map.magFilter=THREE.NearestFilter;mat.map.minFilter=THREE.NearestMipmapNearestFilter;mat.map.needsUpdate=true}
+          if('flatShading' in mat){mat.flatShading=true;mat.needsUpdate=true}
+        }
+      });
       if(disposed){
         model.traverse(child=>{if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}});
         return;
@@ -355,11 +364,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     hero?.model.traverse(child=>{if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}});
     throw error;
   }
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
+  // 픽셀 출력. 원래 3D 지형, 종별 몹, 이동/전투 규칙은 유지한다.
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:mobileBudget?'low-power':'default'});
+  canvas.style.imageRendering='pixelated';
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.18;
   // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*(mobileBudget?.82:1));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1)*(mobileBudget?.62:.68));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -395,20 +406,36 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     underwater:{floor:0x146381,sky:0x185569},'underwater-dungeon':{floor:0x214d60,sky:0x0b2b38},
     water:{floor:0x127faf,sky:0x366677},lava:{floor:0xcf4229,sky:0x392f35}
   });
-  // 바닥: 원본 CC0 모델의 실제 크기(10 x 8)로 놓고 둥근 모서리의 틈을 같은 메시로 연결한다.
+  // 한 장의 연속 지면. 기존 지역 색상 판정은 그대로 이용하고 바닥 이음새만 제거한다.
   sourceFloor.geometry.computeBoundingBox();
-  const floorBounds=sourceFloor.geometry.boundingBox;
-  const floorPitchX=floorBounds.max.x-floorBounds.min.x;
-  const floorPitchZ=floorBounds.max.z-floorBounds.min.z;
+  const bounds=sourceFloor.geometry.boundingBox;
+  const floorPitchX=bounds.max.x-bounds.min.x,floorPitchZ=bounds.max.z-bounds.min.z;
   if(!(floorPitchX>0&&floorPitchZ>0))throw new Error('Original CC0 floor dimensions invalid');
-  const floorCenterX=(floorBounds.min.x+floorBounds.max.x)/2;
-  const floorCenterZ=(floorBounds.min.z+floorBounds.max.z)/2;
-  const floorSurfaceY=.015-floorBounds.max.y;
-  const biomeTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,49);
-  biomeTiles.receiveShadow=true;biomeTiles.frustumCulled=false;scene.add(biomeTiles);
-  const floorSeamTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,36);
-  floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
-  const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
+  const tileCanvas=document.createElement('canvas');tileCanvas.width=64;tileCanvas.height=64;
+  const brush=tileCanvas.getContext('2d');
+  brush.fillStyle='#ededdf';brush.fillRect(0,0,64,64);
+  let seed=20261024;
+  for(let i=0;i<850;i++){
+    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+    const tint=(seed>>>13)&3;
+    brush.fillStyle=['#ddddce','#f7f7e8','#ced2c2','#e4e7d7'][tint];
+    brush.fillRect(seed&63,(seed>>>6)&63,tint===2?2:1,tint===3?2:1);
+  }
+  const groundTexture=new THREE.CanvasTexture(tileCanvas);
+  groundTexture.colorSpace=THREE.SRGBColorSpace;
+  groundTexture.wrapS=groundTexture.wrapT=THREE.RepeatWrapping;
+  groundTexture.magFilter=THREE.NearestFilter;
+  groundTexture.minFilter=THREE.NearestMipmapNearestFilter;
+  groundTexture.repeat.set(16,16);
+  const groundGeometry=new THREE.PlaneGeometry(128,128,64,64);
+  groundGeometry.rotateX(-Math.PI/2);
+  const groundPositions=groundGeometry.getAttribute('position');
+  const groundColors=new THREE.BufferAttribute(new Float32Array(groundPositions.count*3),3);
+  groundGeometry.setAttribute('color',groundColors);
+  const groundMaterial=new THREE.MeshBasicMaterial({map:groundTexture,vertexColors:true,side:THREE.DoubleSide});
+  const seamlessGround=new THREE.Mesh(groundGeometry,groundMaterial);
+  seamlessGround.frustumCulled=false;scene.add(seamlessGround);
+  const resourceTransform=new THREE.Object3D();
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
@@ -422,13 +449,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
   const SCENERY_KIND=Object.freeze({
-    forest:['tree','foliage_A'],jungle:['tree_large','foliage_B'],swamp:['foliage_A','tree'],
-    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
-    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','foliage_B'],
-    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_B'],
-    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree'],
-    desert:['cobblestones','foliage_A'],
-    underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
+    forest:['tree','foliage_A','foliage_B','tree_large'],jungle:['tree_large','foliage_B','tree','foliage_A'],swamp:['foliage_A','tree','cobblestones','foliage_B'],
+    snow:['tree_large','cobblestones','tree','foliage_A'],canyon:['cobblestones','foliage_A','fence_straight'],
+    volcano:['cobblestones','fence_straight','foliage_B'],crystal:['cobblestones','foliage_B','fence_straight'],
+    giantlake:['foliage_A','foliage_B','cobblestones'],worldtree:['tree_large','foliage_B','tree','foliage_A'],
+    flowerfield:['foliage_A','foliage_B','tree'],giantgarden:['foliage_B','tree','tree_large'],
+    desert:['cobblestones','foliage_A','fence_straight'],
+    underwater:['foliage_B','cobblestones','foliage_A'],'underwater-dungeon':['cobblestones','fence_straight','foliage_B']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
@@ -477,7 +504,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const creatureBounds=new THREE.Sphere(new THREE.Vector3(),4);
   const missingVisibleMonsterIds=new Set();
   let fallbackReason='';
-  let qualityFactor=mobileBudget?.82:1,framesInWindow=0,fpsWindowStart=0,stableQualityWindows=0,measuredFps=0;
+  let qualityFactor=mobileBudget?.62:.68,framesInWindow=0,fpsWindowStart=0,stableQualityWindows=0,measuredFps=0;
   function synchronizeUndead(state,px,py,stamp){
     if(!undeadSource)return;
     const candidates=(state.enemies||[]).filter(e=>e?.type?.id==='wastelandMummy'&&e.hp>0&&e.area===state.area
@@ -517,109 +544,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const moving=moveDelta>.08&&poseElapsed>0&&poseElapsed<420;
       const attacking=poseNow-(Number(e.attackAt)||0)<430;
       actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
-      actor.anchor.position.y=moving?.045*Math.sin(poseNow/95):0;
-      actor.anchor.rotation.x=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
-      const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
-      const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
-        ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
-      if(actor.mixer&&clip&&(clip.name!==actor.clipName||attacking&&actor.lastAttackStamp!==e.attackAt)){
-        actor.action?.fadeOut(.09);
-        actor.action=actor.mixer.clipAction(clip).reset();
-        actor.action.setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat,attacking?1:Infinity);
-        actor.action.clampWhenFinished=attacking;
-        actor.action.fadeIn(.09).play();actor.clipName=clip.name;
-        if(attacking)actor.lastAttackStamp=e.attackAt;
-      }
-      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
-      const now=performance.now();
-      if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
-        actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
-        actor.lastFrame=now;
-      }
-      actor.seen=stamp;
-    }
-    for(const [key,actor] of undeadActors){
-      if(actor.seen===stamp)continue;
-      actor.mixer?.stopAllAction();
-      scene.remove(actor.anchor);
-      undeadActors.delete(key);
-    }
-  }
-  // The native rigs follow the *existing* monster coordinates, direction and actions.
-  // No new spawn/damage/loot logic is allowed in the rendering layer.
-  function synchronizeNativeCreatures(state,px,py,stamp){
-    // 모바일 화질 축소는 해상도와 그림자만 조절하고, 시야 안의 몹은 제거하지 않는다.
-    missingVisibleMonsterIds.clear();
-    let unsafeUnmappedEncounter=false;
-    for(const e of state.enemies||[]){
-      if(!e||e.hp<=0||e.area!==state.area)continue;
-      // 성능: 화면 밖 개체만 제외한다. 화면 안 개체 수로 2D 복귀를 결정하지 않는다.
-      creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
-      if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
-      const kind=NATIVE_CREATURE_BY_ID.get(e.type?.id);
-      if(!kind||!nativeCreatureSources.has(kind)){
-        if(e.type?.id!=='wastelandMummy'||!undeadSource){
-          missingVisibleMonsterIds.add(e.type?.id||'unknown');
-          // 화면 안의 모든 적이 원본 3D 모델로 표시된 뒤 게임을 시작한다.
-          // 근거리만 차단하면 보이는 원거리 적이 투명해진 채 게임이 진행된다.
-          // 기존 근접 종 로딩 우선순위와 전투/드롭/저장은 그대로 보존한다.
-          unsafeUnmappedEncounter=true;
-        }
-        continue;
-      }
-      // 표시: 실제 위협 개체는 고정 개수 제한으로 생략하지 않는다.
-      // 거리는 기존 범위로 제한하고 화면 밖 메시의 제외는 Three.js가 처리한다.
-      const key=String(e.netId||e.id||e.type.id+':'+e.x+':'+e.y);
-      let actor=nativeCreatureActors.get(key);
-      if(!actor){
-        const source=nativeCreatureSources.get(kind);
-        const model=cloneAnimatedRig(source.model),scale=Math.max(.72,Math.min(3.8,
-          (Number(e.type?.r)||20)*SCALE*2.2))/source.height;
-        // 동일 CC0 원본을 재사용하되 기존 몹 정의 색상만 약하게 반영한다.
-        // 지오메트리·리그·텍스처와 게임의 HP/공격/드롭/저장값은 그대로 둔다.
-        const speciesId=e.type.id;
-        let materials=nativeSpeciesMaterials.get(speciesId);
-        if(!materials){materials=new Map();nativeSpeciesMaterials.set(speciesId,materials)}
-        const tint=new THREE.Color(e.type.color||'#ffffff');
-        model.traverse(child=>{
-          if(!child.isMesh||!child.material)return;
-          const tintMaterial=original=>{
-            if(!original)return original;
-            let material=materials.get(original.uuid);
-            if(!material){
-              material=original.clone();
-              if(material.color)material.color.lerp(tint,.22);
-              materials.set(original.uuid,material);
-            }
-            return material;
-          };
-          child.material=Array.isArray(child.material)
-            ?child.material.map(tintMaterial):tintMaterial(child.material);
-        });
-        model.scale.setScalar(scale);
-        model.position.y=-source.floor*scale;
-        const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
-        const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
-        actor={anchor,model,mixer,clips:source.clips,clipName:'',action:null,
-          lastFrame:performance.now(),seen:0};
-        nativeCreatureActors.set(key,actor);
-      }
-      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
-      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
-      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
-      actor.model.traverse(child=>{
-        if(!child.isMesh)return;
-        child.userData.worldPoint={x:e.x,y:e.y};
-        interactables.push(child);
-      });
-      // 몬스터 실제 이동량을 쓰므로 벽에 걸렸을 때 이동 애니메이션이 계속 나오지 않는다.
-      const poseNow=performance.now(),moveDelta=Math.hypot(e.x-(actor.lastX??e.x),e.y-(actor.lastY??e.y));
-      const poseElapsed=poseNow-(actor.lastPoseAt||poseNow);
-      const moving=moveDelta>.08&&poseElapsed>0&&poseElapsed<420;
-      const attacking=poseNow-(Number(e.attackAt)||0)<430;
-      actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
-      actor.anchor.position.y=moving?.04*Math.sin(poseNow/110):0;
-      actor.anchor.rotation.x=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
+      // 게임 판정을 바꾸지 않는 시각 모션: 비행, 중량급, 일반 몹을 구분한다.
+      const species=String(e.type?.id||'');
+      const hit=poseNow<(Number(e.hitAt)||0);
+      const flying=/bee|bat|fairy|heron|spirit|pheasant/i.test(species);
+      const heavy=/golem|bear|guardian|ibex|boss|sovereign/i.test(species);
+      const phase=poseNow/(heavy?205:flying?105:135)+(species.length%9);
+      actor.anchor.position.y=flying?.13+Math.sin(phase)*.09:moving?Math.abs(Math.sin(phase))*(heavy?.035:.075):0;
+      actor.anchor.rotation.x=hit?.18:attacking?-.2:0;
+      actor.anchor.rotation.z=attacking?Math.sin((poseNow-(Number(e.attackAt)||0))/110)*.16:
+        moving?Math.sin(phase)*(heavy?.018:.045):0;
+      actor.model.scale.y=actor.baseScale*(hit?.86:attacking?.91:moving?1+Math.sin(phase)*.028:1);
+      actor.model.scale.z=actor.baseScale*(attacking?1.14:hit?1.06:1);
       const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
         ||actor.clips.find(c=>/idle|walk/i.test(c.name));
@@ -718,12 +654,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(sampleNow-fpsWindowStart>=2400){
       const fps=framesInWindow*1000/(sampleNow-fpsWindowStart);measuredFps=fps;
       stableQualityWindows=fps>48?stableQualityWindows+1:0;
-      const next=fps<26?Math.max(mobileBudget?.48:.58,qualityFactor-.13):
-        stableQualityWindows>=3?Math.min(mobileBudget?.82:1,qualityFactor+.06):qualityFactor;
+      const next=fps<26?Math.max(mobileBudget?.43:.48,qualityFactor-.06):
+        stableQualityWindows>=3?Math.min(mobileBudget?.62:.68,qualityFactor+.03):qualityFactor;
       if(Math.abs(next-qualityFactor)>.01){
         qualityFactor=next;stableQualityWindows=0;
         renderer.shadowMap.enabled=!mobileBudget&&qualityFactor>=.8;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*qualityFactor);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1)*qualityFactor);
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
@@ -803,78 +739,56 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       scene.fog.far=state.area==='underwater-dungeon'?34:py>=3600?44:62;
       sun.intensity=state.area==='underwater-dungeon'?.85:1.2;
     }
-    // Atmosphere and foliage changes are Vibe presentation only. The existing biome
-    // classifier, collision, damage, spawn and player movement remain authoritative.
+    // 실제 regionAt과 지형 표면을 직접 샘플링하여 한 장의 바닥 정점 색으로 사용한다.
     const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
-    // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
     if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea||models.size!==lastSceneryModelCount){
-      let tileIndex=0,seamTileIndex=0;
+      const groundX=centerTileX*floorPitchX,groundZ=centerTileY*floorPitchZ;
+      seamlessGround.position.set(groundX,.015,groundZ);
+      groundTexture.offset.set((groundX-64)/8,(-groundZ-64)/8);
+      const surfaces=regionScene?.surfaces||[];
+      for(let i=0;i<groundPositions.count;i++){
+        const wx=groundX+groundPositions.getX(i),wz=groundZ+groundPositions.getZ(i),x=wx/SCALE,z=wz/SCALE;
+        const biome=isInterior?currentBiome:String(classify(x,z)||'forest');
+        const surface=surfaces.find(v=>v.kind==='water'&&x>=v.x&&x<=v.x+v.w&&z>=v.y&&z<=v.y+v.h
+          ||v.kind==='waterCircles'&&v.pools?.some(p=>Math.hypot(x-p.x,z-p.y)<=p.r)
+          ||v.kind==='lava'&&v.pools?.some(p=>Math.hypot(x-p.x,z-p.y)<=p.r));
+        const palette=surface?BIOME_STYLE[surface.kind==='lava'?'lava':'water']:BIOME_STYLE[biome]||BIOME_STYLE.forest;
+        const hash=(Math.imul(Math.round(wx*12),73856093)^Math.imul(Math.round(wz*12),19349663))>>>0;
+        floorTint.setHex(palette.floor).multiplyScalar(.94+hash%9*.01).lerp(floorNeutral,.04);
+        groundColors.setXYZ(i,floorTint.r,floorTint.g,floorTint.b);
+      }
+      groundColors.needsUpdate=true;
       for(const batch of sceneryBatches.values())batch.count=0;
-    for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
-      const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
-      // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
-      const tileZone=isInterior?currentBiome:String(classify(gx/SCALE,gz/SCALE)||'forest');
-      const surface=(regionScene?.surfaces||[]).find(s=>s.kind==='water'&&gx/SCALE>=s.x&&gx/SCALE<=s.x+s.w&&gz/SCALE>=s.y&&gz/SCALE<=s.y+s.h
-        ||s.kind==='waterCircles'&&s.pools?.some(p=>Math.hypot(gx/SCALE-p.x,gz/SCALE-p.y)<=p.r)
-        ||s.kind==='lava'&&s.pools?.some(p=>Math.hypot(gx/SCALE-p.x,gz/SCALE-p.y)<=p.r));
-      const tileStyle=surface?BIOME_STYLE[surface.kind==='lava'?'lava':'water']:BIOME_STYLE[tileZone]||BIOME_STYLE.forest;
-      tile.position.set(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ);tile.updateMatrix();
-      biomeTiles.setMatrixAt(tileIndex,tile.matrix);
-      // 흰색 혼합을 줄여 설원·화산·수정 지대와 숲의 색채가 뚜렷하게 구분되도록 한다.
-      const tileSeed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(.91+tileSeed%17*.01).lerp(floorNeutral,.12));
-      tileIndex++;
-      // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
-      if(tx!==0||tz!==0){
+      for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
+        if(!tx&&!tz)continue;
+        const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
+        const biome=isInterior?currentBiome:String(classify(gx/SCALE,gz/SCALE)||'forest');
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-        if(mobileBudget?hash%5===0:hash%3!==0){
-          // 지역별로 서로 다른 원본 배경 메시를 섞어 같은 나무/바위 반복을 줄인다.
-          const sceneryChoices=SCENERY_KIND[tileZone]||SCENERY_KIND.forest;
-          const kind=sceneryChoices[hash%sceneryChoices.length];
-          let batch=sceneryBatches.get(kind);
-          if(!batch&&models.has(kind)){
-            const original=models.get(kind);
-            const mesh=new THREE.InstancedMesh(original.geometry,original.material,49);
-            mesh.count=0;mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;
-            scene.add(mesh);batch={mesh,count:0};sceneryBatches.set(kind,batch);
-          }
-          if(batch){
-            const xOffset=(((hash>>>4)%5)-2)*floorPitchX*.12;
-            const zOffset=(((hash>>>7)%5)-2)*floorPitchZ*.12;
-            resourceTransform.position.set(gx+xOffset,0,gz+zOffset);
-            resourceTransform.rotation.y=(hash%8)*(Math.PI/4);
-            resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
-            resourceTransform.updateMatrix();
-            batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
-            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
-            batch.count++;
-          }
+        if(mobileBudget?hash%3===0:hash%4!==0)continue;
+        const choices=SCENERY_KIND[biome]||SCENERY_KIND.forest,kind=choices[(hash>>>3)%choices.length];
+        let batch=sceneryBatches.get(kind);
+        if(!batch&&models.has(kind)){
+          const model=models.get(kind);
+          const mesh=new THREE.InstancedMesh(model.geometry,model.material,49);
+          mesh.count=0;mesh.castShadow=false;mesh.receiveShadow=false;mesh.frustumCulled=false;
+          scene.add(mesh);batch={mesh,count:0};sceneryBatches.set(kind,batch);
         }
+        if(!batch)continue;
+        resourceTransform.position.set(gx+(((hash>>>6)%7)-3)*floorPitchX*.12,0,gz+(((hash>>>9)%7)-3)*floorPitchZ*.12);
+        resourceTransform.rotation.y=(hash%16)*(Math.PI/8);
+        resourceTransform.scale.setScalar(.35+((hash>>>12)%7)*.055);
+        resourceTransform.updateMatrix();
+        batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
+        const palette=BIOME_STYLE[biome]||BIOME_STYLE.forest;
+        batch.mesh.setColorAt(batch.count,floorTint.setHex(palette.floor).lerp(floorNeutral,.4));
+        batch.count++;
       }
-      if(tx<3&&tz<3){
-        const seamX=gx+floorPitchX*.5,seamZ=gz+floorPitchZ*.5;
-        const seamZone=isInterior?currentBiome:String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
-        const surface=(regionScene?.surfaces||[]).find(s=>s.kind==='water'&&seamX/SCALE>=s.x&&seamX/SCALE<=s.x+s.w&&seamZ/SCALE>=s.y&&seamZ/SCALE<=s.y+s.h
-          ||s.kind==='waterCircles'&&s.pools?.some(p=>Math.hypot(seamX/SCALE-p.x,seamZ/SCALE-p.y)<=p.r)
-          ||s.kind==='lava'&&s.pools?.some(p=>Math.hypot(seamX/SCALE-p.x,seamZ/SCALE-p.y)<=p.r));
-        const seamStyle=surface?BIOME_STYLE[surface.kind==='lava'?'lava':'water']:BIOME_STYLE[seamZone]||BIOME_STYLE.forest;
-        tile.position.set(seamX-floorCenterX,floorSurfaceY-.055,seamZ-floorCenterZ);
-        tile.updateMatrix();
-        floorSeamTiles.setMatrixAt(seamTileIndex,tile.matrix);
-        floorSeamTiles.setColorAt(seamTileIndex,floorTint.setHex(seamStyle.floor).lerp(floorNeutral,.12));
-        seamTileIndex++;
+      for(const batch of sceneryBatches.values()){
+        batch.mesh.count=batch.count;
+        batch.mesh.instanceMatrix.needsUpdate=true;
+        if(batch.mesh.instanceColor)batch.mesh.instanceColor.needsUpdate=true;
+        batch.mesh.boundingSphere=null;
       }
-    }
-    biomeTiles.instanceMatrix.needsUpdate=true;
-    biomeTiles.instanceColor.needsUpdate=true;
-    floorSeamTiles.instanceMatrix.needsUpdate=true;
-    floorSeamTiles.instanceColor.needsUpdate=true;
-    for(const batch of sceneryBatches.values()){
-      batch.mesh.count=batch.count;
-      batch.mesh.instanceMatrix.needsUpdate=true;
-      if(batch.mesh.instanceColor)batch.mesh.instanceColor.needsUpdate=true;
-      batch.mesh.boundingSphere=null;
-    }
       lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;lastFloorArea=state.area;
       lastSceneryModelCount=models.size;
     }
@@ -1036,8 +950,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       o.geometry?.dispose();
       for(const m of (Array.isArray(o.material)?o.material:[o.material]))m?.dispose();
     });
-    scene.remove(biomeTiles);biomeTiles.dispose();
-    scene.remove(floorSeamTiles);floorSeamTiles.dispose();
+    scene.remove(seamlessGround);groundGeometry.dispose();groundMaterial.dispose();groundTexture.dispose();
     for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
     resourceBatches.clear();
     for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
