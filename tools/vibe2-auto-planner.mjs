@@ -2659,8 +2659,13 @@ export function findWebRecurringBuildUpTask(project,repoRoot,queue){
  if(prev&&!['verified','done','completed','failed','error','rejected'].includes(last))return null;
  const version=prev?Number(prev.id.slice(prefix.length))+1:1;
  if(!Number.isSafeInteger(version)||version<1)return null;
- const failed=['failed','error','rejected'].includes(last);
- const passed=history.filter(t=>['verified','done','completed'].includes(clean(t.status).toLowerCase())).length;
+ const previousFailed=['failed','error','rejected'].includes(last);
+ const pendingFailure=!prev?(queue.tasks||[]).filter(t=>clean(t.gameId)===project.gameId
+   &&clean(t.target).toLowerCase()==='web'&&isDevelopmentImplementation(t)
+   &&['failed','error','rejected'].includes(clean(t.status).toLowerCase())).at(-1):null;
+ const failed=previousFailed||Boolean(pendingFailure),cause=previousFailed?prev:pendingFailure;
+ const passed=history.filter(t=>['verified','done','completed'].includes(clean(t.status).toLowerCase())
+   &&!clean(t.goal).includes('[WEB_CAUSAL_REPAIR]')).length;
  const domains=[
   ['CORE_FUN','핵심 조작→행동→결과의 재미와 적 대응을 기존 게임 규칙 안에서 강화한다.'],
   ['PROGRESSION','현재 존재하는 경제·성장·퀘스트·연구 중 막힌 해금·보상 연결을 실제 구현한다.'],
@@ -2673,13 +2678,13 @@ export function findWebRecurringBuildUpTask(project,repoRoot,queue){
  const owner=['game-v3.js','game.js','main.js','script.js','app.js','index.js','index.html']
    .map(name=>root+'/'+name).find(file=>fs.existsSync(sourceFile(repoRoot,file)))||root+'/index.html';
  const goal=failed
-   ?'[WEB_CAUSAL_REPAIR] '+project.gameId+' 이전 '+prev.id+' 실패 원인과 정확한 QA 근거를 조사하고 같은 책임 함수에서 수정해 동일 검증을 재실행한다: '+[prev.blocker,prev.lastOutcome].map(clean).filter(Boolean).join(' | ').slice(0,300)
+   ?'[WEB_CAUSAL_REPAIR] '+project.gameId+' 이전 '+cause.id+' 실패 원인과 정확한 QA 근거를 조사하고 같은 책임 함수에서 수정해 동일 검증을 재실행한다: '+[cause.blocker,cause.lastOutcome].map(clean).filter(Boolean).join(' | ').slice(0,300)
    :'[WEB_AUTONOMOUS_BUILD_UP] '+project.gameId+' 세대 '+version+' / '+focus+'\n'+idea+
      '\n검증된 전 세대·현재 소스·승인 설계·실제 플레이 문제를 비교해 한 가지 일관된 게임 기능 아이디어를 선택하고 기존 함수에 실제 구현한다. 문서·라벨·검증 버튼만 변경해 완료 처리하지 않는다. 기존 게임 정체성·밸런스·성벽/경제/동맹 같은 핵심 기능·저장 키와 저장 의미를 임의로 변경하지 않는다. 승인 근거 없는 신규 밸런스 변경은 금지한다. 해당 게임의 기존 BUILD_UP→F0~F9 후보·모바일 브라우저·저장·회귀·정확한 소스 revision 검증 후에만 다음 세대로 이어간다. 새 큐·워크플로·래퍼·우회 배포를 만들지 않는다.';
  let out=task(prefix+version,project,goal,[owner],failed?'high':'normal','medium',[
    'web-autonomous-recurring-build-up:v1','web-recurring-focus:'+focus,
    'web-loop:EXISTING_BUILD_UP_F0_F9','real-source-diff-required','preserve-existing-save-and-rules',
-   ...(failed?['failed-generation-repair:'+prev.id]:[])
+   ...(failed?['failed-generation-repair:'+cause.id]:[])
  ]);
  return attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
 }
@@ -4367,7 +4372,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     .sort((a,b)=>{
       const count=id=>(queue.tasks||[]).filter(t=>clean(t.gameId)===id
         &&/web-autonomous-build-up-v\d+$/.test(clean(t.id))
-        &&['verified','done','completed'].includes(clean(t.status).toLowerCase())).length;
+        &&['verified','done','completed'].includes(clean(t.status).toLowerCase())
+        &&!clean(t.goal).includes('[WEB_CAUSAL_REPAIR]')).length;
       return count(a.gameId)-count(b.gameId)||projectSort(a,b);
     }).map(project=>({project,webSeed:true,distinctSeed:false,focusedSeed:false})):[]),
     ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true,focusedSeed:false})):[]),
