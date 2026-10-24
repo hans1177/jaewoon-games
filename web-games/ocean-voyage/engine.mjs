@@ -52,6 +52,17 @@ export const GOODS=Object.freeze([
   {id:'porcelain',name:'도자기',base:340,weight:1,ports:['nagasaki']}
 ]);
 
+// 항구 사이를 실제로 이동하는 독립 교역 선장
+export const MERCHANT_CAPTAINS=Object.freeze([
+ {id:'lorenzo',name:'로렌초 발디',port:'genoa',ports:['genoa','marseille'],goods:['glass','wine'],portrait:7,story:'숨겨진 조선소 계약서를 추적하는 제노바 교역상.'},
+ {id:'marten',name:'마르턴 펠트',port:'jade',ports:['jade','dawn'],goods:['tea','wool'],portrait:13,story:'위조된 환어음을 조사하는 네덜란드 회계사.'},
+ {id:'etienne',name:'에티엔 르루',port:'storm',ports:['storm','coral'],goods:['wine','wool'],portrait:21,story:'폭풍에 실종된 친구의 우편선을 추적하는 해협 선장.'}
+]);
+export function merchantPosition(m){
+ const a=portById(m.from),b=portById(m.to),t=clamp(Number(m.progress)||0,0,1);
+ return a&&b?{x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,heading:Math.atan2(b.x-a.x,b.z-a.z)}:{x:0,z:0,heading:0};
+}
+export const merchantRoster=()=>MERCHANT_CAPTAINS.map((c,i)=>({id:c.id,from:c.ports[0],to:c.ports[1],progress:.08+i*.12,coins:1700,cargo:c.goods[0],count:4,voyages:0,met:0,lastMeetingDay:-10,lastProfit:0}));
 export const CREW=Object.freeze([
  {id:'eleanor',name:'엘리너 그레이',nation:'영국',role:'선장',port:'dawn',portrait:1,story:'런던 해군사관학교 출신. 잃어버린 항로를 되찾으려 한다.'},
  {id:'samira',name:'사미라 알자흐라',nation:'알렉산드리아',role:'학자',port:'alexandria',portrait:11,story:'스승의 별 관측록을 추적하는 학자.'},
