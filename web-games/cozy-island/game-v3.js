@@ -777,9 +777,9 @@ function renderWar(){
    if(!lord||state.strongholdDiplomacy?.[lord.id]==='ally'||!state.barracksBuilt||!army.length||offensiveTarget)return;
    offensiveTarget=lord.id;game.offensiveTarget=lord.id;
    fieldEnemies=Array.from({length:Math.min(5,Math.max(2,Math.ceil(lord.troops/5)))},(_,i)=>{
-     const u=createUnit(i%2?'archer':'soldier',true);
+     const u=createUnit(i===0&&lord.troops>=6?'knight':i%2?'archer':'soldier',true);
      u.x=lord.x-130+i*22;u.y=lord.y-90+(i%3)*35;u.hp=u.maxHp=40+10*(lord.focus==='defense');
-     u.attack=6;u.range=i%2?170:60;return u;
+     u.attack=u.kind==='knight'?11:6;u.range=u.kind==='knight'?73:i%2?170:60;u._lordId=lord.id;return u;
    });
    game.fieldEnemies=fieldEnemies;
    for(const u of army)u._expedition=true;
@@ -804,7 +804,11 @@ function updateOffensive(dt){
  for(const enemy of fieldEnemies.filter(u=>u.hp>0)){
    const t=nearestLiving(enemy,fighters);if(!t)continue;
    const distance=Math.hypot(enemy.x-t.x,enemy.y-t.y);
-   if(distance<enemy.range){enemy.cool-=dt;if(enemy.cool<=0){t.hp-=enemy.attack;enemy.cool=1.25}}
+   if(distance<enemy.range){enemy.cool-=dt;if(enemy.cool<=0){
+     const guarded=t.guardUntil>Date.now()||(t.kind==='knight'&&t.trait==='guardian');
+     t.hp-=enemy.attack*(guarded?.78:1);enemy.cool=1.25;
+     if(t.hp<=0&&t.kind==='knight')rivalCapture(t,lord.id);
+   }}
  }
  for(const unit of fighters){
    if(unit.hp<=0)continue;
@@ -812,7 +816,13 @@ function updateOffensive(dt){
    const distDef=defender?Math.hypot(unit.x-defender.x,unit.y-defender.y):Infinity;
    if(defender&&distDef<330){
      if(distDef>unit.range)moveToward(unit,defender.x,defender.y,dt);
-     else{unit.cool-=dt;if(unit.cool<=0){defender.hp-=unit.attack;unit.cool=unit.rate||.85}}
+     else{unit.cool-=dt;if(unit.cool<=0){
+       const charged=unit.trait==='charge'&&unit.skillBuffUntil>Date.now()?1.65:1;
+       defender.hp-=unit.attack*charged;unit.cool=unit.rate||.85;
+       if(unit.kind==='knight')gainKnightXp(unit,8);
+       if(defender.kind==='knight'&&defender.hp<=defender.maxHp*.22&&Math.random()<.62)
+         takePrisoner(defender,lord.id);
+     }}
      continue;
    }
    const dst=Math.hypot(unit.x-lord.x,unit.y-lord.y),reach=unit.range>220?unit.range:unit.kind==='archer'?230:95;
@@ -821,11 +831,15 @@ function updateOffensive(dt){
      unit.cool-=dt;
      if(unit.cool<=0){
        const wallHit=lord.wallHp>0;
-       const amount=wallHit&&unit.siegeDamage?unit.siegeDamage:unit.attack*(unit.kind==='archer'?.85:1);
+       const siegeBoost=unit.siegeBoostUntil>Date.now()?1.55:1;
+       const charged=unit.trait==='charge'&&unit.skillBuffUntil>Date.now()?1.65:1;
+       const amount=wallHit&&unit.siegeDamage?unit.siegeDamage*siegeBoost:
+        unit.attack*(unit.kind==='archer'?.85:1)*charged;
        if(unit.kind!=='trebuchet'||unit.ammo>0){
          if(wallHit)lord.wallHp=Math.max(0,lord.wallHp-amount);
          else lord.hp=Math.max(0,lord.hp-amount);
          if(unit.kind==='trebuchet')unit.ammo--;
+         if(unit.kind==='knight')gainKnightXp(unit,5);
        }
        unit.cool=unit.rate||.75;
      }
@@ -890,10 +904,10 @@ function startRaid(attacker=null){
   // 적 영주 출병: 해당 영주의 인구와 생산량으로 병력을 편성한다.
   if(attacker){
     const size=Math.min(18,Math.max(3,Math.floor(attacker.troops)));
-    for(let i=0;i<size;i++){const u=createUnit(i%4===0?'archer':'soldier',true);
+    for(let i=0;i<size;i++){const u=createUnit(i===0&&size>=8?'knight':i%4===0?'archer':'soldier',true);
       u.x=attacker.x+(i%5)*28;u.y=attacker.y+(i%4)*24;
       u.speed=Math.max(u.speed,165); // 적 영주 성에서 실제 진군
-    u._lordRaid=true;u._siegeLane=u.y<520?440:u.y>730?800:610;
+    u._lordId=attacker.id;u._lordRaid=true;u._siegeLane=u.y<520?440:u.y>730?800:610;
     u.siegeDamage=12+(attacker.focus==='rush'?8:0);u.siegeCooldown=1.4;
     enemies.push(u)}
     attacker.troops=Math.max(0,attacker.troops-size);attacker.food=Math.max(0,attacker.food-size*2);
@@ -943,7 +957,18 @@ function spawnSiegeWave(){
   game.enemies=enemies;
   toast(`🏹 대공성전 ${grandSiege.wave}/${SIEGE_WAVE_SIZES.length}차 공세 · 적군 ${n}명 증원`);
 }
-function updateRaidCombat(dt){for(const u of allies)updateCombatUnit(u,enemies,dt,false);for(const u of enemies)updateCombatUnit(u,allies,dt,true);allies=allies.filter(u=>u.hp>0);enemies=enemies.filter(u=>u.hp>0);game.allies=allies;game.enemies=enemies;saveArmyIfChanged()}
+function updateRaidCombat(dt){
+ for(const u of allies)updateCombatUnit(u,enemies,dt,false);
+ for(const u of enemies)updateCombatUnit(u,allies,dt,true);
+ for(const unit of enemies)if(unit.kind==='knight'&&unit._lordId&&unit.hp>0&&
+     unit.hp<=unit.maxHp*.22&&Math.random()<.6)takePrisoner(unit,unit._lordId);
+ for(const unit of allies)if(unit.kind==='knight'&&unit.hp<=0&&!unit._captured){
+   const captor=enemies.find(x=>x.hp>0&&x._lordId);
+   if(captor)rivalCapture(unit,captor._lordId);
+ }
+ allies=allies.filter(u=>u.hp>0);enemies=enemies.filter(u=>u.hp>0);
+ game.allies=allies;game.enemies=enemies;saveArmyIfChanged();
+}
 function updateCombatUnit(u,targets,dt,hostile){
   u.cool=Math.max(0,u.cool-dt);
   // 메인: 기존 공격력·사거리·재장전 간격은 유지하고 주둔 병사의 이동만 고정한다.
@@ -977,7 +1002,11 @@ function updateCombatUnit(u,targets,dt,hostile){
     const order=fort?.defenseOrder||'hold',morale=fort?.morale??65;
     const bonus=!hostile&&game.grandSiege?
       (0.85+morale/400)*(order==='volley'&&u.kind==='archer'?1.45:order==='counter'&&u.kind!=='archer'?1.4:1):1;
-    t.hp-=u.attack*bonus;u.cool=u.rate||.85
+    const charged=u.trait==='charge'&&u.skillBuffUntil>Date.now()?1.65:1;
+    const guarded=t.guardUntil>Date.now()||(t.kind==='knight'&&t.trait==='guardian');
+    t.hp-=u.attack*bonus*charged*(guarded?.78:1);
+    if(u.kind==='knight'&&!u.enemy)gainKnightXp(u,7);
+    u.cool=u.rate||.85
   }
 }
 function nearestLiving(u,arr){let b=null,bd=1e9;for(const t of arr){if(t.hp<=0)continue;const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;b=t}}return b}
@@ -1031,7 +1060,13 @@ function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));last
 allies=state.army.map(x=>createUnit(x.kind,false,false,x));game.allies=allies;
 getEnemyLords();
 window.cozyRTS={
- state,getLords:getEnemyLords,unitTypes:RTS_UNIT_TYPES,save:()=>{saveSoon();runtime.flushSaveProgress(state)},
+ state,getLords:getEnemyLords,unitTypes:RTS_UNIT_TYPES,
+ getCourt:()=>JSON.parse(JSON.stringify(getCourt())),courtCapacity,
+ knightOffers:()=>({...getCourt().candidate}),
+ hireKnight,knightSkill,prisonAction,
+ openKnightHall:()=>{if(ui.panel.open)ui.panel.close();openKnightHall()},
+ openPrison:()=>{if(ui.panel.open)ui.panel.close();openPrison()},
+ save:()=>{saveSoon();runtime.flushSaveProgress(state)},
  diplomacy(id,mode){
    const lord=getEnemyLords().find(l=>l.id===id);
    if(!lord||lord.defeated||!['ally','hostile'].includes(mode))return false;
