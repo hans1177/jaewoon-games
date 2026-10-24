@@ -13,15 +13,22 @@ export function observedHostedRunnerJobs(payload={}){
   // Query GitHub Actions job lists for live workflow runs; workflow-run totals
   // are NOT concurrent runner job totals. Unknown probes must not fake spare slots.
   const groups=Array.isArray(payload.runs)?payload.runs:[];
-  let observedJobs=0,reportedRuns=0,allObserved=true;
+  const currentRunId=clean(payload.currentRunId);
+  let observedJobs=0,reportedRuns=0,allObserved=true,reserveJobObserved=false;
   for(const group of groups){
     if(lower(group?.status)!=='in_progress')continue;
     reportedRuns++;
     if(!Array.isArray(group.jobs)){allObserved=false;continue;}
-    observedJobs+=group.jobs.filter(job=>lower(job.status)==='in_progress'
-      &&!(job.labels||[]).some(label=>lower(label)==='self-hosted')).length;
+    const hosted=group.jobs.filter(job=>lower(job.status)==='in_progress'
+      &&!(job.labels||[]).some(label=>lower(label)==='self-hosted'));
+    observedJobs+=hosted.length;
+    // A queued worker cannot start until this exact reserve job finishes.
+    // Prove our own hosted job is already counted before using its future release.
+    if(currentRunId&&clean(group.id)===currentRunId
+      &&hosted.some(job=>clean(job.name)==='reserve'))reserveJobObserved=true;
   }
   return {known:allObserved,observedJobs:allObserved?observedJobs:null,
+    reserveJobObserved:allObserved&&reserveJobObserved,
     observedRuns:reportedRuns,scope:'CURRENT_REPOSITORY_ONLY',
     note:'Job counts from other repositories or billing accounts are not available here'};
 }
