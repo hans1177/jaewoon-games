@@ -64,7 +64,10 @@ export const CREW=Object.freeze([
  {id:'isabel',name:'이사벨 두아르테',nation:'포르투갈',role:'교역사',port:'gold',portrait:11,story:'리스본의 향신료 교역과 계약에 정통한 상인.'},
  {id:'willem',name:'빌럼 판다이크',nation:'네덜란드',role:'포술장',port:'jade',portrait:14,story:'북해의 함포를 다뤄온 항해자.'},
  {id:'freya',name:'프레야 린드',nation:'북유럽',role:'측량사',port:'north',portrait:19,story:'해도와 별자리를 읽는 탐험가.'},
- {id:'diego',name:'디에고 알바레스',nation:'스페인',role:'조선사',port:'sun',portrait:22,story:'세비야에서 대형 범선을 수리하던 선박 기술자.'}
+ {id:'diego',name:'디에고 알바레스',nation:'스페인',role:'조선사',port:'sun',portrait:22,story:'세비야에서 대형 범선을 수리하던 선박 기술자.'},
+ {id:'matteo',name:'마테오 페라로',nation:'제노바',role:'조선사',port:'genoa',portrait:4,story:'사라진 설계도와 아버지의 명예를 되찾으려 한다.'},
+ {id:'lucas',name:'루카스 판데르',nation:'네덜란드',role:'교역상',port:'jade',portrait:14,story:'위조된 환어음을 추적하는 젊은 상인.'},
+ {id:'nikos',name:'니코스 알렉시우',nation:'그리스',role:'탐험가',port:'athens',portrait:22,story:'별자리와 해안 바람으로 옛 항로를 복원한다.'}
 ]);
 export const EQUIPMENT=Object.freeze([
  {id:'telescope',name:'황동 망원경',group:'항해 장비',description:'먼 항해의 길잡이'},
@@ -383,7 +386,10 @@ export const CAPTAINS=Object.freeze([
  {id:'samira',name:'사미라 알자흐라',region:'중동',nation:'알렉산드리아',origin:'알렉산드리아',port:'venice',job:'scholar',face:1,goal:'흩어진 별의 관측록을 모아 사라진 도서관을 찾는다.',intro:'스승이 남긴 관측록에는 별자리 대신 서양 항구의 좌표가 적혀 있다. 지식을 독점하려는 후원자를 피해 출항한다.',chapters:[['venice','유리 속의 별자리','베네치아의 유리공이 보관한 관측 렌즈를 조사한다.'],['genoa','스승의 가명','제노바에서 스승이 다른 이름으로 남긴 서신을 찾는다.'],['athens','불타지 않은 기록','아테네의 고대 유적을 조사하고 관측록을 복원한다.']]},
  {id:'amani',name:'아마니 음완가',region:'아프리카',nation:'스와힐리 해안',origin:'잔지바르',port:'gold',job:'merchant',face:2,goal:'빼앗긴 상선을 되찾고 고향의 독립 교역망을 세운다.',intro:'상단의 부채 장부가 조작되어 가족의 배가 압류됐다. 북쪽 시장의 증인을 찾아 불공정한 계약을 뒤집으려 한다.',chapters:[['gold','봉인 없는 계약서','리스본에서 상단의 위조 계약서를 대조한다.'],['jade','세 개의 거래 장부','암스테르담 교역소에서 거래 기록을 남긴다.'],['dawn','함대의 이름','런던 왕궁에 증거를 제출하고 독립 상단의 권리를 얻는다.']]},
  {id:'arjun',name:'아르준 라오',region:'인도',nation:'인도 서해안',origin:'고아',port:'marseille',job:'navigator',face:3,goal:'계절풍 해도를 완성하고 실종된 누나를 찾는다.',intro:'누나가 마지막으로 남긴 것은 절반짜리 계절풍 해도였다. 서쪽 항구의 선박 등록부가 유일한 단서다.',chapters:[['marseille','푸른 실의 매듭','마르세유 선술집에서 누나의 교역 표식을 추적한다.'],['coral','돌아오지 않은 우편선','플리머스에서 우편선의 항해 기록을 회수한다.'],['north','북해의 편지','에든버러에서 누나의 편지를 열고 다음 항해를 준비한다.']]},
- {id:'rin',name:'하야세 린',region:'동아시아',nation:'일본 규슈',origin:'나가사키',port:'sun',job:'naval',face:4,goal:'도난당한 가문의 항해 인장을 되찾는다.',intro:'가문의 인장이 찍힌 가짜 통행증이 서쪽 바다에서 발견됐다. 범인을 쫓는 항해가 여러 왕실의 밀약과 얽힌다.',chapters:[['sun','붉은 밀랍의 통행증','세비야에서 위조 통행증의 주인을 찾는다.'],['genoa','가면 경매의 초대장','제노바에서 인장을 거래한 중개인을 추적한다.'],['venice','파도 위의 증언','베네치아에서 해적의 증언과 발견 기록을 제출한다.']]}
+ {id:'rin',name:'하야세 린',region:'동아시아',nation:'일본 규슈',origin:'나가사키',port:'sun',job:'naval',face:4,goal:'도난당한 가문의 항해 인장을 되찾는다.',intro:'가문의 인장이 찍힌 가짜 통행증이 서쪽 바다에서 발견됐다. 범인을 쫓는 항해가 여러 왕실의 밀약과 얽힌다.',chapters:[['sun','붉은 밀랍의 통행증','세비야에서 위조 통행증의 주인을 찾는다.'],['genoa','가면 경매의 초대장','제노바에서 인장을 거래한 중개인을 추적한다.'],['venice','파도 위의 증언','베네치아에서 해적의 증언과 발견 기록을 제출한다.']]},
+ {id:'matteo',name:'마테오 페라로',region:'유럽',nation:'제노바 공화국',port:'genoa',job:'navigator',maleFace:0,goal:'사라진 범선 설계도와 아버지의 누명을 되찾는다.',intro:'제노바의 조선소에서 사라진 대양선 도면. 아버지는 실종되고 누군가 똑같은 설계의 배를 팔고 있다.',chapters:[['genoa','봉인된 설계도','조선소의 불탄 장부에서 도면에 찍힌 인장을 찾는다.'],['marseille','바뀐 선박 이름','마르세유에서 가명으로 등록한 시험선의 항적을 추적한다.'],['venice','베네치아의 마지막 증인','베네치아에서 설계도를 빼돌린 상단의 증언을 확보한다.']]},
+ {id:'lucas',name:'루카스 판데르',region:'유럽',nation:'네덜란드',port:'jade',job:'merchant',maleFace:2,goal:'조작된 교역 장부를 찾아 무너진 상단을 재건한다.',intro:'운하 창고에서 발견한 두 장의 서로 다른 장부. 가족의 무역회사는 누군가가 만든 가짜 부채로 사라졌다.',chapters:[['jade','암스테르담의 두 장부','운하 거래소에서 누락된 인수증을 찾는다.'],['amber','호박 상인의 증언','함부르크에서 위조 환어음을 발행한 상인을 추적한다.'],['dawn','왕실에 도착한 계산서','런던에서 부채 조작의 증거를 공증한다.']]},
+ {id:'nikos',name:'니코스 알렉시우',region:'유럽',nation:'그리스',port:'athens',job:'adventurer',maleFace:4,goal:'별과 바람에 기록된 고대 항로를 다시 찾아낸다.',intro:'어릴 적 들은 바다의 노래에는 별자리보다 정확한 항해 방위가 담겨 있었다. 스승은 그 노래가 금지된 해도라고 말했다.',chapters:[['athens','바람의 돌기둥','아테네 유적에 적힌 바람의 방향을 읽는다.'],['venice','도망친 필사자','베네치아 서고에서 사라진 천문 표를 추적한다.'],['genoa','북쪽을 가리키는 노래','제노바에서 항해 서약을 마치고 해도를 완성한다.']]}
 ]);
 export const JOBS=Object.freeze([
  {id:'adventurer',name:'탐험가',need:0,description:'유적 조사에 필요한 행동력 +2'},
@@ -571,6 +577,7 @@ export function callAlliance(state){if(!state.alliance)return fail(state,'왕궁
 // 동료 배치: 승선 후 얻은 경험으로 성장하며 동일 동료 중복 배치를 막는다.
 export const CREW_STATS=Object.freeze({
  eleanor:{navigation:76,trade:42,gunnery:55,scholarship:67,medicine:35},samira:{navigation:60,trade:45,gunnery:32,scholarship:91,medicine:62},amani:{navigation:68,trade:90,gunnery:43,scholarship:50,medicine:45},arjun:{navigation:91,trade:61,gunnery:39,scholarship:75,medicine:42},rin:{navigation:72,trade:45,gunnery:86,scholarship:55,medicine:38},
+ matteo:{navigation:78,trade:52,gunnery:55,scholarship:79,medicine:36},lucas:{navigation:69,trade:94,gunnery:39,scholarship:65,medicine:43},nikos:{navigation:88,trade:39,gunnery:45,scholarship:91,medicine:51},
  florence:{navigation:64,trade:70,gunnery:32,scholarship:98,medicine:88},greta:{navigation:72,trade:98,gunnery:39,scholarship:75,medicine:50},
  thomas:{navigation:88,trade:38,gunnery:45,scholarship:72,medicine:31},isabel:{navigation:52,trade:94,gunnery:28,scholarship:56,medicine:44},willem:{navigation:58,trade:41,gunnery:95,scholarship:39,medicine:30},freya:{navigation:82,trade:40,gunnery:35,scholarship:93,medicine:77},diego:{navigation:73,trade:62,gunnery:65,scholarship:44,medicine:58}
 });
