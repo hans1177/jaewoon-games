@@ -7414,7 +7414,7 @@ document.getElementById('regionTravel').addEventListener('click',()=>{
  if(!passage||dist(state.player.x,state.player.y,passage.x,passage.y)>passage.range){showNotice('입구 가까이 가야 이동할 수 있어');return}
  const from=state.area;passage.action();lastWorldTap={target:null,at:0};
  if(state.area!==from){updateHud();saveGame(false)}
- questGuideUpdateAt=0;updateQuestGuide(performance.now()+380);
+ questGuideUpdateAt=-Infinity;updateQuestGuide();
 });
 document.getElementById('questNavMap').addEventListener('click',()=>ui.mapBtn.click());
 document.getElementById('miniMapWrap').addEventListener('click',()=>ui.mapBtn.click());
