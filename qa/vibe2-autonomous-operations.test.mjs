@@ -16,6 +16,28 @@ const task=(id,extra={})=>({id,gameId:'cozy-island',target:'web',department:'dev
   type:'implementation',status:'queued',goal:'fix gameplay',responsibleFiles:['game.js'],
   ownerDirective:false,evidence:[],...extra});
 
+test('hosted reserve handoff requires exact in-progress job and complete snapshot',()=>{
+  const runs=[{id:42,status:'in_progress',jobs:[
+    {name:'reserve',status:'in_progress',labels:['ubuntu-slim']},
+    {name:'worker',status:'in_progress',labels:['ubuntu-latest']}
+  ]}];
+  const exact=observedHostedRunnerJobs({runs,currentRunId:'42'});
+  assert.equal(exact.known,true);
+  assert.equal(exact.observedJobs,2);
+  assert.equal(exact.reserveJobObserved,true);
+  assert.equal(observedHostedRunnerJobs({runs,currentRunId:'43'}).reserveJobObserved,false);
+  assert.equal(observedHostedRunnerJobs({runs:[{id:42,status:'in_progress',jobs:[
+    {name:'reserve',status:'queued',labels:['ubuntu-slim']}
+  ]}],currentRunId:'42'}).reserveJobObserved,false);
+  assert.equal(observedHostedRunnerJobs({runs:[{id:42,status:'in_progress',jobs:[
+    {name:'reserve',status:'in_progress',labels:['self-hosted']}
+  ]}],currentRunId:'42'}).reserveJobObserved,false);
+  const partial=observedHostedRunnerJobs({runs:[...runs,{id:43,status:'in_progress'}],currentRunId:'42'});
+  assert.equal(partial.known,false);
+  assert.equal(partial.observedJobs,null);
+  assert.equal(partial.reserveJobObserved,false);
+});
+
 test('actual GitHub hosted jobs count, not workflow run count, and unknown probe is never fabricated',()=>{
   const x=observedHostedRunnerJobs({runs:[
     {status:'in_progress',jobs:[{status:'in_progress',labels:['ubuntu-latest']},
