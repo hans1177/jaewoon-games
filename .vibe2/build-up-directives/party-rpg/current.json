@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "party-rpg-build-up-g12-d3501b1e86c3",
-  "directiveFingerprint": "d3501b1e86c3789149ee19252ca174adaa2a678f56e5a39721ece99fdc9ec407",
-  "previousDirectiveFingerprint": "e39b6f272edf74dda3445f8c8397bae9587319a2be5cd66f797059a72c149592",
-  "forbiddenRepeatFingerprint": "e39b6f272edf74dda3445f8c8397bae9587319a2be5cd66f797059a72c149592",
+  "directiveId": "party-rpg-build-up-g13-98655ee68669",
+  "directiveFingerprint": "98655ee6866922263e3c706bae972efc39bef9b7cd73de9a1969974e21cbec1b",
+  "previousDirectiveFingerprint": "d3501b1e86c3789149ee19252ca174adaa2a678f56e5a39721ece99fdc9ec407",
+  "forbiddenRepeatFingerprint": "d3501b1e86c3789149ee19252ca174adaa2a678f56e5a39721ece99fdc9ec407",
   "gameId": "party-rpg",
   "gameName": "파티 RPG",
-  "generation": 12,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/party-rpg",
-  "sourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+  "sourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
   "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+        "sourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
-    "sourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+    "sourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+    "sourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4509,7 +4509,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 546,
+      "progression": 521,
       "ai": 62,
       "save": 117,
       "multiplayer": 43,
@@ -4519,22 +4519,22 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 30,
+      "audioDynamics": 28,
       "ui": 898,
       "uiFlow": 1145,
-      "entryFlow": 18,
+      "entryFlow": 16,
       "loadingFlow": 0,
       "input": 155,
-      "map": 290,
+      "map": 292,
       "landmark": 36,
       "interaction": 286,
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
       "feedback": 171,
-      "session": 29,
-      "content": 502,
-      "choice": 1656,
+      "session": 31,
+      "content": 504,
+      "choice": 1658,
       "connection": 9,
       "performance": 34,
       "lighting": 64,
@@ -4549,7 +4549,7 @@
       },
       {
         "file": "roblox-games/party-rpg/shared/GameConfig.luau",
-        "score": 507
+        "score": 487
       },
       {
         "file": "roblox-games/party-rpg/server/Game.server.luau",
@@ -4557,7 +4557,7 @@
       },
       {
         "file": "roblox-games/party-rpg/client/Game.client.luau",
-        "score": 164
+        "score": 163
       },
       {
         "file": "roblox-games/party-rpg/shared/RobloxCommonMaterials.luau",
@@ -4962,9 +4962,9 @@
   "previousVersionDelta": {
     "previousGoal": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 11,
-    "previousSourceTreeFingerprint": "ea78b8f695e21ff59213207dc9649d2f4d678c98a657351b3c8dbc1bf265df92",
-    "currentSourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+    "currentSourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6121,7 +6121,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 429628,
+        "sourceBytes": 429530,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6153,14 +6153,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 12,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=6.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6179,7 +6179,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6190,12 +6191,11 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 1,
+      "distinctCovered": 2,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6203,7 +6203,6 @@
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6212,16 +6211,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 30,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -6253,16 +6242,26 @@
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 12,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -6328,11 +6327,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 12,
-    "previousGeneration": 11,
+    "generation": 13,
+    "previousGeneration": 12,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
-    "priorSourceFingerprint": "ea78b8f695e21ff59213207dc9649d2f4d678c98a657351b3c8dbc1bf265df92",
+    "sourceFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
+    "priorSourceFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6351,7 +6350,7 @@
     "version": 1,
     "gameId": "party-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+    "sourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7256,7 +7255,7 @@
     "gameId": "party-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+    "sourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8090,7 +8089,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "d11b0bbb2f50b1fb846f88c464dbd2649dfb5b1977c211e4b28ae0af17e75c0b",
+      "sourceTreeFingerprint": "8acb91bf5aeddbc1b2072c6dc3a658e93c3a488ecdd69b1c4e0aaa77237382bc",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8149,7 +8148,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 13,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8211,5 +8210,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T14:14:16.349Z"
+  "generatedAt": "2026-10-24T20:44:56.744Z"
 }

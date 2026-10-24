@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "chess-battle-build-up-g9-78e527e1ab56",
-  "directiveFingerprint": "78e527e1ab56a1ff7afc935068e6d3a91d5f4168241d031c5a611fa837fb69f5",
-  "previousDirectiveFingerprint": "2fdedbb823ae3768e4ac64abfc9f06ec6c1da40b17bbd4c1ab8af94ba2a63174",
-  "forbiddenRepeatFingerprint": "2fdedbb823ae3768e4ac64abfc9f06ec6c1da40b17bbd4c1ab8af94ba2a63174",
+  "directiveId": "chess-battle-build-up-g10-3489115ae72c",
+  "directiveFingerprint": "3489115ae72c3aae10265aa6adaab3e8ce7d22f32d1a83ac6b3795a1ced6625f",
+  "previousDirectiveFingerprint": "78e527e1ab56a1ff7afc935068e6d3a91d5f4168241d031c5a611fa837fb69f5",
+  "forbiddenRepeatFingerprint": "78e527e1ab56a1ff7afc935068e6d3a91d5f4168241d031c5a611fa837fb69f5",
   "gameId": "chess-battle",
   "gameName": "체스 배틀",
-  "generation": 9,
+  "generation": 10,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/chess-battle",
-  "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+  "sourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
   "designFingerprint": "a47a667da35e7a9a399240e997599a9cea928163ad17c8dde801a2b1a1f0af0a",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+        "sourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "a47a667da35e7a9a399240e997599a9cea928163ad17c8dde801a2b1a1f0af0a",
-    "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+    "sourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+    "sourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4526,7 +4526,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 525,
+      "progression": 521,
       "ai": 62,
       "save": 117,
       "multiplayer": 43,
@@ -4536,22 +4536,22 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 30,
+      "audioDynamics": 28,
       "ui": 898,
       "uiFlow": 1149,
-      "entryFlow": 18,
+      "entryFlow": 16,
       "loadingFlow": 0,
       "input": 155,
-      "map": 290,
+      "map": 292,
       "landmark": 36,
       "interaction": 286,
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
       "feedback": 170,
-      "session": 29,
-      "content": 502,
-      "choice": 1656,
+      "session": 31,
+      "content": 504,
+      "choice": 1658,
       "connection": 9,
       "performance": 34,
       "lighting": 64,
@@ -4979,9 +4979,9 @@
   "previousVersionDelta": {
     "previousGoal": "체스 배틀. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 체스 배틀에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 8,
-    "previousSourceTreeFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
-    "currentSourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+    "previousGeneration": 9,
+    "previousSourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+    "currentSourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -4989,11 +4989,11 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-studio-asset-binding-required",
+    "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-runtime-evidence-pending"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
     ],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -6138,7 +6138,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 400955,
+        "sourceBytes": 430336,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6171,8 +6171,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6182,9 +6182,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6228,7 +6229,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 92,
+        "score": 74,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6342,11 +6343,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 9,
-    "previousGeneration": 8,
+    "generation": 10,
+    "previousGeneration": 9,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
-    "priorSourceFingerprint": "cf160a328ea435d59422af8dacbe75c65cb4db7d35fe79466b81c767e8d0ca39",
+    "sourceFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
+    "priorSourceFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6365,7 +6366,7 @@
     "version": 1,
     "gameId": "chess-battle",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+    "sourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7270,7 +7271,7 @@
     "gameId": "chess-battle",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+    "sourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8099,16 +8100,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "체스 배틀. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 체스 배틀에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5b628f352658da78c40ebfbc919cba1e697f7650e154dfe36968c62d7f2202e8",
+      "sourceTreeFingerprint": "f0f2934c95ba8e4c56b3a1fc6b9656d70561bf3c2259883b9785af48547b3779",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-studio-asset-binding-required"
+      "failureSignature": "existing-source-static-revalidation-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8119,8 +8120,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8163,7 +8164,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 10,
+    "nextGeneration": 11,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8225,5 +8226,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-23T13:47:15.806Z"
+  "generatedAt": "2026-10-24T20:44:55.026Z"
 }
