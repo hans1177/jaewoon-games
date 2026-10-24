@@ -436,10 +436,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(!kind||!nativeCreatureSources.has(kind)){
         if(e.type?.id!=='wastelandMummy'||!undeadSource){
           missingVisibleMonsterIds.add(e.type?.id||'unknown');
-          // Never let an invisible, original monster attack the player.
-          // 모델이 준비되지 않은 전투는 3D 준비 화면에서 대기한다.
-          // 화면을 2D 월드로 바꾸거나 보이지 않는 적과 전투하지 않는다.
-          if(Math.hypot(e.x-px,e.y-py)<430)unsafeUnmappedEncounter=true;
+          // 화면 안의 모든 적이 원본 3D 모델로 표시된 뒤 게임을 시작한다.
+          // 근거리만 차단하면 보이는 원거리 적이 투명해진 채 게임이 진행된다.
+          // 기존 근접 종 로딩 우선순위와 전투/드롭/저장은 그대로 보존한다.
+          unsafeUnmappedEncounter=true;
         }
         continue;
       }

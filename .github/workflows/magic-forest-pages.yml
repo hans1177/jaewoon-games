@@ -500,19 +500,32 @@ jobs:
           git -C "$site" config user.email "pages@users.noreply.github.com"
           test -s "$site/index.html"
           test -f "$site/tier.html"
-          # Preserve remaining games; the same canonical publisher removes owner-deleted paths only.
-          rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
-          PAGES_RETAINED_SITE="$site" node --input-type=module - <<'NODE'
+          # gh-pages 공유 브랜치에서만 재시도. 게임 빌드와 검사 파이프라인은 병렬 유지.
+          pushed=false
+          for attempt in 1 2 3 4; do
+            if [ "$attempt" -gt 1 ]; then
+              git -C "$site" fetch --quiet --depth=1 origin gh-pages
+              git -C "$site" reset --quiet --hard FETCH_HEAD
+            fi
+            # Preserve remaining games; the same canonical publisher removes owner-deleted paths only.
+            rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
+            PAGES_RETAINED_SITE="$site" node --input-type=module - <<'NODE'
           import {writePagesLanding} from './tools/github-pages-landing.mjs';
           writePagesLanding({site:process.env.PAGES_RETAINED_SITE});
           NODE
-          test -s "$site/index.html"
-          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$site/index.html"
-          git -C "$site" add --all
-          if ! git -C "$site" diff --cached --quiet; then
-            git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
-            git -C "$site" push origin HEAD:gh-pages
-          fi
+            test -s "$site/index.html"
+            grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$site/index.html"
+            git -C "$site" add --all
+            if ! git -C "$site" diff --cached --quiet; then
+              git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
+            fi
+            if git -C "$site" push origin HEAD:gh-pages; then
+              pushed=true
+              break
+            fi
+            echo "PAGES_ATOMIC_PUSH_CONFLICT_RETRY=$attempt"
+          done
+          test "$pushed" = true || { echo 'PAGES_ATOMIC_PUSH_CONFLICT_EXHAUSTED' >&2; exit 1; }
           published="$(git ls-remote --exit-code origin refs/heads/gh-pages | cut -f1)"
           test "$published" = "$(git -C "$site" rev-parse HEAD)"
           echo "WEB_PAGES_PUBLISHED_COMMIT=$published"
@@ -781,7 +794,6 @@ jobs:
       - name: Validate live published 3D model and game controls
         if: steps.live_revision.outputs.exact == 'true'
         id: forest_native_3d_live_qa
-        continue-on-error: true
         env:
           VIBE_SMOKE_LIVE_BASE: ${{ needs.publish-pages.outputs.page_url }}
         shell: bash
@@ -792,7 +804,7 @@ jobs:
           npx playwright install --with-deps --only-shell chromium
           node qa/vibe-browser-smoke.mjs
       - name: Register post-publication WebGL smoke failure
-        if: ${{ steps.live_revision.outputs.exact == 'true' && steps.forest_native_3d_live_qa.outcome == 'failure' }}
+        if: ${{ always() && steps.live_revision.outputs.exact == 'true' && steps.forest_native_3d_live_qa.outcome == 'failure' }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash

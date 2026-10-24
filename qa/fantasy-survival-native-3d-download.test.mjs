@@ -442,8 +442,8 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
  assert.equal(clones,1,'the same monster species must share exactly one tinted material');
  assert.equal(missing.size,0);
  assert.equal(JSON.stringify(state),before,'rendering must not mutate gameplay state');
- state.enemies=[{id:'missing',type:{id:'unknown'},area:'surface',x:1,y:0,hp:10}];
- assert.equal(sync(state,0,0,2),true,'a genuinely missing threat must still be reported');
+ state.enemies=[{id:'missing',type:{id:'unknown'},area:'surface',x:600,y:0,hp:10}];
+ assert.equal(sync(state,0,0,2),true,'an on-screen distant missing enemy must block native gameplay too');
  assert.deepEqual([...missing],['unknown']);
  assert.equal(actors.size,0,'departed crowd must release its actor instances');
 });
