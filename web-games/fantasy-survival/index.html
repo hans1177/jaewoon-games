@@ -2642,6 +2642,82 @@ function renderBestiary(){
  ui.sheetBody.querySelectorAll('.bookTabs button').forEach(b=>b.addEventListener('click',()=>{state.bookCategory=b.dataset.cat;renderBestiary()}))
 }
 function openBestiary(){state.panelMode='bestiary';ui.sheet.classList.add('open');renderBestiary()}
+// 메인 · 퀘스트 길안내: 기존 스토리 진행도와 게임 내부 상호작용 지점만 읽는다.
+function questGuideData(){
+ const q=state.story,stage=q?.stage||'',area=state.area;
+ if(!q||q.completed||stage==='done')return null;
+ const point=(name,where,x,y,hint)=>({name,area:where,x,y,hint});
+ const survivor=(name,hint)=>point(name,'surface',SURVIVOR.x,SURVIVOR.y,hint);
+ let next;
+ switch(stage){
+ case 'find-survivor':
+ case 'talk':next=survivor('부상당한 생존자',!q.treated?(invCount('bandage')+invCount('good-bandage')>0?'생존자에게 다가가 두 번 눌러 붕대로 치료해.':'붕대나 좋은 붕대를 준비해서 생존자를 치료해.'):'생존자에게 말을 걸어 다음 단서를 들어.');break;
+ case 'go-cave':next=point('황무지 서쪽 동굴','surface',WASTELAND_CAVE.x,WASTELAND_CAVE.y,'화산 황무지의 동굴 입구를 두 번 눌러 들어가. 횃불이 유용해.');break;
+ case 'find-radio':next=point('동굴 끝 무전기 부품','questcave',QUEST_CAVE.radio.x,QUEST_CAVE.radio.y,'동굴 끝의 무전기 부품을 획득해.');break;
+ case 'return-survivor':
+ case 'sensor-briefing':
+ case 'sensor-choice':next=survivor('생존자에게 부품 전달','무전기 부품을 갖고 생존자에게 돌아가서 대화해.');break;
+ case 'find-lab':next=point('연구소 입구','surface',LAB_STORY_ENTRANCE.x,LAB_STORY_ENTRANCE.y,'세계수 서쪽의 연구소 문으로 들어가. 탈것에서 내려야 해.');break;
+ case 'lab-maze':next=point('연구소 1층 계단','storylab1',STORY_LAB_1.ladder.x,STORY_LAB_1.ladder.y,'미로의 벽을 돌아 2층으로 올라가는 계단을 찾아.');break;
+ case 'lab-floor2':next=point('수정 화염골렘','storylab2',STORY_LAB_2.boss.x,STORY_LAB_2.boss.y,'2층 수정 화염골렘을 처치하면 셔터가 열려.');break;
+ case 'lab-loot':next=point(q.sensorTaken?'연구 보고서':'부품센서','storylab2',q.sensorTaken?STORY_LAB_2.report.x:STORY_LAB_2.sensor.x,q.sensorTaken?STORY_LAB_2.report.y:STORY_LAB_2.sensor.y,'셔터 안쪽에서 부품센서와 연구 보고서를 모두 챙겨.');break;
+ case 'return-survivor-lab':
+ case 'crystal-report':next=survivor('생존자에게 연구 결과 전달','부품센서와 보고서를 생존자에게 가져가.');break;
+ case 'ask-crystal':next=survivor('생존자와 다시 대화','생존자에게 큰 수정에 대해 더 물어봐.');break;
+ case 'touch-crystal':next=point('수정 지대 큰 수정','surface',CRYSTAL_HEART.x,CRYSTAL_HEART.y,'수정 지대 중앙의 큰 수정을 두 번 눌러 만져봐.');break;
+ case 'return-after-crystal':
+ case 'post-crystal-continue':next=survivor('생존자에게 조사 보고','큰 수정 조사 결과를 생존자에게 알려줘.');break;
+ case 'find-final-radio-part':next=point('거대화원 중앙','surface',FINAL_RADIO_PART.x,FINAL_RADIO_PART.y,'거대화원 중앙의 마지막 무전기 부품을 두 번 눌러 얻어.');break;
+ case 'return-final-radio-part':next=survivor('마지막 부품 전달','마지막 무전기 부품을 생존자에게 가져가.');break;
+ case 'wait-radio-repair':{
+  const seconds=Math.max(0,Math.ceil(((Number(q.radioRepairReadyAt)||Date.now())-Date.now())/1000));
+  return{name:'무전기 수리 대기',area:null,x:null,y:null,hint:seconds?'수리 완료까지 약 '+Math.ceil(seconds/60)+'분 남았어. 주변을 탐험하면서 기다려.':'수리 진행 상태를 확인해. 다음 임무가 생기면 길을 표시할게.'};
+ }
+ case 'return-radio-repair':next=survivor('생존자에게 수리 확인','수리가 끝난 무전기를 확인하러 생존자에게 돌아가.');break;
+ case 'repair-comm-device':next=point('밀림 통신장치','surface',COMM_DEVICE.x,COMM_DEVICE.y,'밀림 서쪽 통신장치에서 금 곡괭이로 5초간 꾹 눌러 수리해.');break;
+ case 'radio-contact':next=point('수리한 통신장치','surface',COMM_DEVICE.x,COMM_DEVICE.y,'통신장치를 두 번 눌러 무전 신호를 확인해.');break;
+ case 'tiger-ambush':{
+  const tiger=state.enemies.find(e=>e.hp>0&&e.area===area&&e.type?.tigerLeader);
+  return tiger?point('밀림 호랑이 우두머리',area,tiger.x,tiger.y,'밀림 호랑이 우두머리를 처치해야 무전을 이어갈 수 있어.')
+   :{name:'밀림 호랑이 우두머리',area:null,x:null,y:null,hint:'통신장치 주변에 등장한 호랑이 우두머리를 찾아 처치해.'};
+ }
+ case 'radio-final':next=point('통신장치 마지막 신호','surface',COMM_DEVICE.x,COMM_DEVICE.y,'통신장치로 돌아가 마지막 무전 신호를 확인해.');break;
+ default:return{name:'현재 임무',area:null,x:null,y:null,hint:questObjective()||'다음 단서를 찾아봐.'};
+ }
+ // 지역 밖 목적지를 지시하기 전 실제 동굴 출구·연구소 계단으로 안내한다.
+ if(area==='questcave'&&next.area!=='questcave')return point('동굴 출구','questcave',QUEST_CAVE.exit.x,QUEST_CAVE.exit.y,'동굴을 나온 뒤 '+next.name+'(으)로 이동해.');
+ if(area==='storylab2'&&next.area!=='storylab2')return point('연구소 1층 계단','storylab2',STORY_LAB_2.ladder.x,STORY_LAB_2.ladder.y,'계단으로 내려간 뒤 '+next.name+'(으)로 가.');
+ if(area==='storylab1'&&next.area!=='storylab1')return point('연구소 출구','storylab1',STORY_LAB_1.exit.x,STORY_LAB_1.exit.y,'연구소 밖으로 나온 뒤 '+next.name+'(으)로 가.');
+ if(area==='surface'&&next.area==='questcave')return point('황무지 동굴 입구','surface',WASTELAND_CAVE.x,WASTELAND_CAVE.y,'동굴에 진입한 뒤 안쪽의 무전기 부품을 찾아.');
+ if(area==='surface'&&['storylab1','storylab2'].includes(next.area))return point('연구소 입구','surface',LAB_STORY_ENTRANCE.x,LAB_STORY_ENTRANCE.y,'연구소에 들어간 뒤 '+next.name+'(으)로 이동해.');
+ if(area==='storylab1'&&next.area==='storylab2')return point('연구소 2층 계단','storylab1',STORY_LAB_1.ladder.x,STORY_LAB_1.ladder.y,'1층 미로를 지나 계단으로 2층에 올라가.');
+ if(area!=='next'&&area!=='surface'&&area!==next.area)return{name:'지상으로 이동',area:null,x:null,y:null,hint:'먼저 현재 지역의 출입구로 나가서 지상에 돌아와.'};
+ return next;
+}
+let questGuideUpdateAt=0;
+function updateQuestGuide(now=performance.now()){
+ if(now-questGuideUpdateAt<380)return;
+ questGuideUpdateAt=now;
+ const root=document.getElementById('questNav'),button=document.getElementById('questNavOpen');
+ const arrow=document.getElementById('questNavArrow'),distance=document.getElementById('questNavDistance');
+ const title=document.getElementById('questNavTitle'),hint=document.getElementById('questNavHint');
+ const map=document.getElementById('questNavMap'),target=questGuideData();
+ root.hidden=!target;
+ if(!target){document.body.dataset.questGuideTarget='';return}
+ title.textContent=target.name;
+ hint.textContent=target.hint;
+ const px=Number(state.player.x)||0,py=Number(state.player.y)||0;
+ const valid=target.area===state.area&&Number.isFinite(target.x)&&Number.isFinite(target.y);
+ const steps=valid?Math.hypot(target.x-px,target.y-py):null;
+ arrow.hidden=!valid;
+ arrow.style.transform='rotate('+(valid?Math.atan2(target.x-px,py-target.y)*180/Math.PI:0).toFixed(1)+'deg)';
+ distance.textContent=valid?(steps<=80?'목표 근처 · 상호작용 확인':target.name+' · 직선 '+Math.ceil(steps)+' 거리'):target.name+' · 다음 행동 확인';
+ map.hidden=!(valid&&state.area==='surface');
+ root.dataset.questStage=state.story.stage||'';
+ document.body.dataset.questGuideTarget=valid?target.name:'';
+ button.setAttribute('aria-label',distance.textContent+' · 길안내 펼치기');
+}
+
 function questObjective(){
  const q=state.story;
  if(q.completed)return'';
@@ -6900,7 +6976,7 @@ function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.mi
   }
   const ready=!!world3d?.isActive();
   document.body.dataset.nativeBlocked=ready?'false':'true';nativeStatus.hidden=ready;
-  if(ready){update(dt,now);syncRuntimeMeta();draw()}
+  if(ready){update(dt,now);syncRuntimeMeta();updateQuestGuide(now);draw()}
   else{
    const reason=world3d?.getFallbackReason()||'',loading=world3dPending&&!world3d||Number(world3d?.getRenderStats().loadingModels)>0;
    nativeRetry.hidden=loading;
@@ -7081,6 +7157,12 @@ document.getElementById('hudHandedness').addEventListener('change',e=>changeHudU
 document.getElementById('hudSize').addEventListener('change',e=>changeHudUi('size',e.target.value));
 document.getElementById('hudQuestMode').addEventListener('click',()=>changeHudUi('quest',hudUi.quest==='expanded'?'compact':'expanded'));
 document.getElementById('questToggle').addEventListener('click',()=>changeHudUi('quest',hudUi.quest==='expanded'?'compact':'expanded'));
+document.getElementById('questNavOpen').addEventListener('click',()=>{
+ const button=document.getElementById('questNavOpen'),details=document.getElementById('questNavDetails');
+ const expanded=button.getAttribute('aria-expanded')!=='true';
+ button.setAttribute('aria-expanded',String(expanded));details.hidden=!expanded;
+});
+document.getElementById('questNavMap').addEventListener('click',()=>ui.mapBtn.click());
 document.getElementById('miniMapWrap').addEventListener('click',()=>ui.mapBtn.click());
 document.getElementById('miniMapWrap').addEventListener('keydown',event=>{
  if(event.key==='Enter'||event.key===' '){event.preventDefault();ui.mapBtn.click()}
