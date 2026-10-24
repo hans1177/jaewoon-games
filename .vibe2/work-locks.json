@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-vrsmu3",
+      "worker": "vibe2",
+      "taskId": "territory-war-web-startup-spatial-repair-v1",
+      "gameId": "territory-war",
+      "files": [
+        "web-games/territory-war/index.html"
+      ],
+      "baseSha": "62a4c056166d7f5dd3ec9ad8a9f9ac1dddf6e157",
+      "runId": "40135809187",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-24T22:14:14.728Z",
+      "expiresAt": "2026-10-24T22:59:14.728Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:territory-war-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
