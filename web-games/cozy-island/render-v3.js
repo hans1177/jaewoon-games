@@ -135,7 +135,11 @@ export class IslandRendererV3 {
         block(.35,.36,.3,w/2,y,z,'stone');
       }
     };
-    if(kind==='keep'){
+    if(kind==='beacon'){
+      block(.14,2,.14,0,1.35,0,'wood');
+      const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.8,0),FORT_MATS.flag);
+      gem.position.y=2.7;group.add(gem);
+    }else if(kind==='keep'){
       block(4.4,.55,3.4,0,.28,0,'shade');
       block(3.4,2.95,2.65,0,1.9,0,'stone');
       block(1.45,1.4,1.2,0,4,0,'shade');
@@ -346,6 +350,8 @@ export class IslandRendererV3 {
       for(let i=0;i<5;i++){
         put('fence:'+i,'fence',1150+i*38,185,1.1);
       }
+      if(game.estateTarget)
+        put('estate-waypoint','fort:beacon',game.estateTarget.x,game.estateTarget.y,1.8);
       put('player','hero',player.x,player.y,1.9);
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
         this.scene3.remove(item.mesh);this.instances3d.delete(id);
