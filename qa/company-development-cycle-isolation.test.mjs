@@ -173,18 +173,18 @@ test('superseded exact-game Roblox plan reuses a live current-main run without t
   const end=workflow.indexOf('      - name: Bind Roblox source-plan contract fingerprint',marker);
   const block=workflow.slice(marker,end);
   assert.ok(marker>0&&end>marker);
-  assert.match(block,/runs\\?head_sha=\\$current_main&per_page=100/);
+  assert.ok(block.includes('runs?head_sha=$current_main&per_page=100'));
   assert.match(block,/ROBLOX_EXACT_CONTRACT_DEDUPE_INCOMPLETE_FAIL_CLOSED/);
   assert.match(block,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_DEDUPE=UNKNOWN_FAIL_CLOSED/);
   assert.match(block,/DEDUPED_CURRENT_MAIN_GAME:/);
   assert.match(block,/const title='Roblox runtime · '/);
-  assert.match(block,/String\\(run.head_sha\\|\\|''\\)===head/);
+  assert.ok(block.includes("String(run.head_sha||'')===head"));
   const probe=block.indexOf('active_same_game="$(REQUESTED_GAME_ID=');
   const dispatch=block.indexOf('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"');
   assert.ok(probe>=0&&dispatch>probe);
   // Execute the workflow's exact inline decision with a synthetic GitHub API
   // result so a different game, old SHA, completed run or missing page cannot masquerade as a current owner.
-  const code=block.split("node <<'NODE'\\n")[1]?.split('\\n          NODE')[0];
+  const code=block.split("node <<'NODE'"+String.fromCharCode(10))[1]?.split(String.fromCharCode(10)+'          NODE')[0];
   assert.ok(code,'exact inline node probe must exist');
   const vm=require('node:vm');
   const current='b'.repeat(40),other='a'.repeat(40);
