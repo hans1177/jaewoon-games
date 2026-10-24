@@ -401,6 +401,13 @@ export class IslandRendererV3 {
         this.models3d.set(kind,{...spec,...animated,texture});
       }catch(error){console.warn('포근섬 중세 픽셀 자산 로딩 실패: '+kind,error);}
     }));
+    // 아군 신규 병종의 구별 가능한 실루엣. 기존 텍스처 로더의 캐시를 재사용한다.
+    for(const role of ['archer','spearman','crossbow','shield','knight','sapper']){
+      const kind='ally-'+role,texture=new THREE.CanvasTexture(this.paintPixelSprite(kind));
+      texture.magFilter=texture.minFilter=THREE.NearestFilter;
+      texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;
+      this.models3d.set(kind,{texture});
+    }
   }
   // 그래픽: 전투·저장 값에 관여하지 않는 신규 야생동물·공성기·자원 픽셀 아트.
   paintPixelSprite(kind){
@@ -416,7 +423,31 @@ export class IslandRendererV3 {
       const poly=(points,color)=>{c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();};
       const line=(x,y,x2,y2,color,width=1)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.stroke();};
       const stride=moving?[0,3,-2][frame%3]:0;
-      if(siege){
+      if(kind.startsWith('ally-')){
+        const role=kind.slice(5),palette={
+          archer:['#496a48','#bd9468'],spearman:['#677b68','#e2cc91'],
+          crossbow:['#48627b','#c8ac7e'],shield:['#5c6f83','#b7b4a2'],
+          knight:['#695d73','#e3c8a0'],sapper:['#725c42','#d8c393']
+        }[role]||['#62725a','#bea680'];
+        // 얼굴·투구·갑옷을 따로 그리고 병종마다 손에 쥔 장비를 분명히 보여준다.
+        rect(19,52,9,11,'#343b38');rect(36,52,9,11,'#343b38');
+        rect(18,28,28,27,palette[0]);rect(22,14,21,18,palette[1]);
+        rect(18,10,29,9,'#555a54');rect(25,24,4,3,'#292a28');rect(39,24,4,3,'#292a28');
+        rect(14,33,8,19,palette[1]);rect(44,33,8,19,palette[1]);
+        if(role==='spearman'){line(53,6,53,61,'#a7a79b',3);
+          poly([[53,2],[48,12],[58,12]],'#d3d8cc');}
+        if(role==='archer'){line(52,18,60,48,'#976a41',3);
+          line(52,18,59,48,'#d6c49c');line(59,28,39,28,'#e2d0a3',2);}
+        if(role==='crossbow'){rect(45,34,17,5,'#80623c');
+          line(49,23,59,42,'#c9c3a4',2);line(59,24,49,43,'#c9c3a4',2);}
+        if(role==='shield'){poly([[13,28],[34,25],[31,54],[18,60],[12,47]],'#adb8c0');
+          line(18,32,28,50,'#667587',3);}
+        if(role==='knight'){rect(15,47,38,14,'#66564a');rect(52,42,9,11,'#66564a');
+          rect(12,57,7,7,'#342c26');rect(45,57,7,7,'#342c26');
+          line(48,18,53,56,'#d1c7a9',3);}
+        if(role==='sapper'){line(50,21,55,55,'#986d42',3);
+          rect(39,16,25,7,'#646d75');}
+      }else if(siege){
         const wheel=(x,y)=>{rect(x-5,y-7,10,14,'#352a1e');rect(x-3,y-5,6,10,'#8d6943');line(x-3,y,x+3,y,'#c49b5b');line(x,y-5,x,y+5,'#493623');};
         const beam=(x,y,w,h)=>{rect(x,y,w,h,'#3c2d20');rect(x+1,y+1,w-2,h-2,'#8c693f');line(x+2,y+1,x+w-2,y+1,'#c09a62');};
         poly([[13,72],[58,53],[86,67],[42,88]],'#302b22');
@@ -1094,8 +1125,8 @@ export class IslandRendererV3 {
         const kind=unit.kind==='ram'?'fort-ram':
           unit.kind==='trebuchet'?'fort-trebuchet':
           unit.kind==='siegeTower'?'fort-siege-tower':
-          unit.kind==='knight'?'hero':
-          ['crossbow','sapper'].includes(unit.kind)?'npc':'soldier';
+          ['archer','spearman','crossbow','shield','knight','sapper'].includes(unit.kind)?
+            'ally-'+unit.kind:'soldier';
         put('ally:'+unit.id,kind,unit.x,unit.y,
           unit.kind==='siegeTower'?4.7:unit.kind==='trebuchet'?3.5:unit.kind==='ram'?3.3:1.9);
       }
