@@ -1,3 +1,5 @@
+# 파일명: .github/workflows/party-rpg-mobile-test.yml
+# 대상: 기존 순수 웹 파티 RPG · 실제 모바일 시작/이벤트씬/저장 브라우저 스모크
 name: Party RPG mobile browser smoke test
 on:
   push:
@@ -16,25 +18,64 @@ jobs:
           node-version: '22'
       - run: npm install --no-save playwright
       - run: npx playwright install --with-deps chromium
-      - name: Verify game loads on emulated Android browser
+      - name: Verify Party RPG startup, event scenes and save on mobile
         run: |
-          ln -s "$PWD" /tmp/jaewoon-games\n          (cd /tmp && python3 -m http.server 8765) &
+          ln -s "$PWD" /tmp/jaewoon-games
+          (cd /tmp && python3 -m http.server 8765 > /tmp/party-rpg-http.log 2>&1) &
           node --input-type=module <<'JS'
           import { chromium, devices } from 'playwright';
-          const browser = await chromium.launch({headless:true});
-          const context = await browser.newContext({...devices['Pixel 7'], baseURL:'http://127.0.0.1:8765'});
-          const page = await context.newPage();
-          const errors=[];
-          page.on('pageerror',e=>errors.push(e.message));
-          page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
-          await page.goto('/jaewoon-games/web-games/party-rpg/',{waitUntil:'domcontentloaded'});
-          await page.waitForTimeout(12000);
-          await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
-          console.log('3D overlay:',await page.locator('#vibe3d').count());
-          console.log('Errors:',errors);
-          if(errors.length)throw new Error(errors.join('\n'));
-          if(await page.locator('#vibe3d').count()===0)throw new Error('3D renderer not created');
-          await browser.close();
+          const browser = await chromium.launch({
+            headless:true,
+            args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader']
+          });
+          try {
+            const context = await browser.newContext({
+              ...devices['Pixel 7'],
+              baseURL:'http://127.0.0.1:8765'
+            });
+            const page = await context.newPage();
+            const errors = [];
+            page.on('pageerror',error=>errors.push(error.message));
+            page.on('response',response=>{
+              if(response.status()>=400 && response.url().includes('/web-games/party-rpg/')){
+                errors.push(response.status()+' '+response.url());
+              }
+            });
+            await page.goto('/jaewoon-games/web-games/party-rpg/',{waitUntil:'domcontentloaded'});
+            await page.waitForFunction(()=>typeof window.partyRpgVibeState==='function',null,{timeout:25000});
+            const ready=await page.evaluate(()=>window.partyRpgVibeState().view.ready);
+            if(!ready)throw new Error('PARTY_RPG_THREE_RENDERER_NOT_READY');
+            await page.locator('#startBtn').click();
+            await page.locator('#confirmHero').click();
+            await page.locator('#introSkip').click();
+            await page.evaluate(()=>{
+              const s=window.partyRpgVibeState();
+              s.p.x=844;s.p.y=487;
+            });
+            await page.waitForTimeout(500);
+            await page.locator('#interactBtn').click();
+            await page.locator('#modal[data-mode="event"] #eventNext').waitFor({timeout:10000});
+            await page.locator('#eventNext').click();
+            await page.locator('#eventSkip').click();
+            await page.locator('#councilJournal').waitFor({timeout:10000});
+            await page.locator('#councilJournal').click();
+            await page.locator('#eventArchiveBtn').click();
+            await page.locator('[data-replay="council"]').click();
+            await page.locator('#eventSkip').click();
+            await page.locator('#archiveBack').waitFor({timeout:10000});
+            const persisted=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state;
+              const saved=JSON.parse(localStorage.getItem('party-rpg-v1')||'null');
+              return !!s.story.scenes.council&&!!saved?.story?.scenes?.council;
+            });
+            if(!persisted)throw new Error('PARTY_RPG_SCENE_SAVE_NOT_PERSISTED');
+            await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
+            if(errors.length)throw new Error('PARTY_RPG_BROWSER_ERRORS: '+errors.join(' | '));
+            console.log('PARTY_RPG_MOBILE_EVENT_AND_SAVE=PASS');
+            await context.close();
+          } finally {
+            await browser.close();
+          }
           JS
       - uses: actions/upload-artifact@v4
         if: always()
