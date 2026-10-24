@@ -196,6 +196,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const modelsPromise=loadSourceModels();
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
   let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroAttackAt=0,lastHeroFrame=0;
+  // 무기 연격은 시각 연출만 변경하며 기존 공격력·속도·판정·세이브를 변경하지 않는다.
+  let presentedAttackAt=0,attackMotionIndex=0;
   let scene=null,disposed=false,heroLoadVersion=0;
   let selectedAppearance=null;
   async function setAvatarAppearance(requested){
@@ -355,11 +357,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     hero?.model.traverse(child=>{if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}});
     throw error;
   }
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'default'});
+  // 픽셀 스타일: GPU 3D 깊이·충돌은 유지하고 가장자리 보간만 비활성화한다.
+  canvas.style.imageRendering='pixelated';
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.18;
   // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*(mobileBudget?.82:1));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.85:1.1)*(mobileBudget?.85:.92));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -420,14 +424,19 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const sporeMaterial=new THREE.MeshBasicMaterial({color:0xc291df,depthWrite:false});
   const sunOrbMaterial=new THREE.MeshBasicMaterial({color:0xffdf83,depthWrite:false});
   const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
+  // 재사용하는 단일 연격 궤적. 히트 판정은 원래 게임 공격 함수만 수행한다.
+  const attackArcGeometry=new THREE.TorusGeometry(.85,.035,4,16,Math.PI*.9);
+  const attackArcMaterial=new THREE.MeshBasicMaterial({color:0xc7eeff,transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide});
+  const attackArc=new THREE.Mesh(attackArcGeometry,attackArcMaterial);
+  attackArc.visible=false;scene.add(attackArc);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
   const SCENERY_KIND=Object.freeze({
-    forest:['tree','foliage_A'],jungle:['tree_large','foliage_B'],swamp:['foliage_A','tree'],
-    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
-    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','foliage_B'],
-    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_B'],
-    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree'],
-    desert:['cobblestones','foliage_A'],
+    forest:['tree','foliage_A','foliage_B'],jungle:['tree_large','foliage_B','tree'],swamp:['foliage_A','tree','cobblestones'],
+    snow:['tree_large','cobblestones','foliage_A'],canyon:['cobblestones','foliage_A','fence_straight'],
+    volcano:['cobblestones','fence_straight','foliage_A'],crystal:['cobblestones','foliage_B','tree'],
+    giantlake:['foliage_A','foliage_B','cobblestones'],worldtree:['tree_large','foliage_B','tree'],
+    flowerfield:['foliage_A','foliage_B','tree'],giantgarden:['foliage_B','tree','tree_large'],
+    desert:['cobblestones','foliage_A','fence_straight'],
     underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
@@ -727,7 +736,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
-    if(!state.player){lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='player-model-unavailable';return}
+    if(!state.player){attackArc.visible=false;lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='player-model-unavailable';return}
     const interiorBiome={
       underwater:'underwater','underwater-dungeon':'underwater-dungeon',underground:'canyon',worldtreeinside:'worldtree',questcave:'swamp',
       storylab1:'crystal',storylab2:'crystal',jungletemple:'jungle',
@@ -827,7 +836,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-        if(mobileBudget?hash%5===0:hash%3!==0){
+        if(mobileBudget?hash%4===0:hash%3!==0){
           // 지역별로 서로 다른 원본 배경 메시를 섞어 같은 나무/바위 반복을 줄인다.
           const sceneryChoices=SCENERY_KIND[tileZone]||SCENERY_KIND.forest;
           const kind=sceneryChoices[hash%sceneryChoices.length];
@@ -843,7 +852,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             const zOffset=(((hash>>>7)%5)-2)*floorPitchZ*.12;
             resourceTransform.position.set(gx+xOffset,0,gz+zOffset);
             resourceTransform.rotation.y=(hash%8)*(Math.PI/4);
-            resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
+            // 큰 나무와 낮은 초목의 픽셀 실루엣을 지역별로 구분한다.
+            const heightScale=kind==='tree_large'?1.05:kind==='tree'?.78:kind==='cobblestones'?.38:.47;
+            resourceTransform.scale.setScalar(heightScale*(.82+((hash>>>10)%5)*.085));
             resourceTransform.updateMatrix();
             batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
             batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
@@ -900,9 +911,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const pose=attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
       // 기사 찌르기 / 전사 내려찍기 / 도적 빠른 베기 / 법사 시전의 시각 연출만 다르게 한다.
       const avatarStyle=selectedAppearance?.model||'knight';
-      const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
-      hero.avatar.rotation.z=avatarStyle==='barbarian'?-.11*attackPhase:avatarStyle.startsWith('rogue')?.08*attackPhase:avatarStyle==='mage'?.025*attackPhase:.045*attackPhase;
-      hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:avatarStyle==='barbarian'?.06*attackPhase:0;
+      const strikeAt=Number(p.attackAt)||0;
+      if(strikeAt>0&&strikeAt!==presentedAttackAt){presentedAttackAt=strikeAt;attackMotionIndex=(attackMotionIndex+1)%3}
+      const attacking=attackingAge>=0&&attackingAge<440;
+      const attackPhase=attacking?Math.sin(Math.PI*attackingAge/440):0;
+      const weaponName=String(p.weapon||'').toLowerCase(),isRanged=/bow|arrow|spore|staff|wand/.test(weaponName)||avatarStyle==='mage';
+      const heavy=/axe|hammer|club|mace|pick/.test(weaponName)||avatarStyle==='barbarian';
+      const thrust=/spear|dagger|rapier/.test(weaponName)||attackMotionIndex===2;
+      const direction=attackMotionIndex===1?-1:1;
+      // 연속 공격: 좌베기→우베기→찌르기/내려찍기. 무기마다 같은 3D 리그를 다르게 연출한다.
+      hero.avatar.rotation.y+=(isRanged?.04:thrust?.10:.20)*direction*attackPhase;
+      hero.avatar.rotation.z=(isRanged?.025:heavy?.16:thrust?.035:.10)*direction*attackPhase;
+      hero.avatar.rotation.x=(heavy?-.18:thrust?.12:.045)*attackPhase;
+      hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:heavy?.07*attackPhase:0;
+      attackArc.visible=attacking&&!isRanged&&attackPhase>.06;
+      if(attackArc.visible){
+        attackArc.position.set(centerX,1.18+(heavy?.19:0)+attackPhase*.08,centerY);
+        attackArc.rotation.set(heavy?-.48:thrust?-.14:.06,hero.avatar.rotation.y+Math.PI*.18,direction*(attackMotionIndex===2?.35:-.22));
+        attackArc.scale.setScalar((heavy?1.2:thrust?.73:1)*(.6+attackPhase*.5));
+        attackArcMaterial.color.setHex(heavy?0xffc88d:thrust?0xa7e5ff:0xd4f7cf);
+        attackArcMaterial.opacity=.12+.55*attackPhase;
+      }
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
       const desired=heroClips.find(clip=>clip.name===clipName);
@@ -1020,6 +1049,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     undeadActors.clear();
     for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
     nativeCreatureActors.clear();
+    scene.remove(attackArc);attackArcGeometry.dispose();attackArcMaterial.dispose();
     for(const mesh of mageBoltEffects)scene.remove(mesh);
     mageBoltEffects.length=0;mageBoltGeometry.dispose();mageBoltMaterial.dispose();
     arrowGeometry.dispose();arrowMaterial.dispose();sporeMaterial.dispose();sunOrbMaterial.dispose();
