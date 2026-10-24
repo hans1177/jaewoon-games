@@ -25,10 +25,33 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .joystick-ring { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.46); border: 3px solid rgba(255,255,255,.72); box-shadow: inset 0 0 0 12px rgba(37,66,58,.05), 0 6px 18px rgba(28,67,56,.2); backdrop-filter: blur(5px); }
 .joystick-knob { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; border-radius: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,.94); border: 3px solid #d8f0e2; box-shadow: 0 5px 14px rgba(28,67,56,.28); pointer-events: none; transition: transform .04s linear; }
 .joystick-knob::after { content: ''; position: absolute; inset: 19px; border-radius: 50%; background: #72aa8d; opacity: .8; }
-.strategy-bar { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; width:min(48vw,207px); padding:7px; border:2px solid rgba(223,193,122,.74); border-radius:16px; background:rgba(31,42,39,.85); box-shadow:0 6px 22px #102b25a6; backdrop-filter:blur(5px); pointer-events:auto; }
-.strategy-button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-height:56px; border:1px solid #9b8964; border-radius:10px; background:linear-gradient(#726952,#484e42); color:#fff2ce; font-size:22px; font-weight:850; text-shadow:0 1px #18251c; }
-.strategy-button small { font-size:10px; white-space:nowrap; }
-.strategy-button:active { background:#9c8154; transform:scale(.97); }
+.strategy-bar {
+  position:relative; flex:0 0 210px; width:210px; height:275px; margin:0;
+  border:0; background:none; box-shadow:none; pointer-events:none;
+  touch-action:none; user-select:none;
+}
+.strategy-bar::before {
+  content:""; position:absolute; inset:5px 0 5px 28px; border-radius:70% 8% 8% 70%;
+  border:2px solid rgba(195,170,112,.5);
+  background:radial-gradient(ellipse at 100% 50%,rgba(29,43,34,.76),rgba(29,43,34,.4) 60%,transparent 78%);
+  pointer-events:none;
+}
+.strategy-button {
+  position:absolute; width:56px; height:56px; min-height:0; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:0;
+  border:2px solid #b8a471; border-radius:50%;
+  background:linear-gradient(145deg,#7c7358,#343f34); color:#fff2ce;
+  box-shadow:0 4px 11px #102b25a6; font-size:22px; font-weight:850;
+  text-shadow:0 1px #18251c; pointer-events:auto; touch-action:manipulation;
+}
+.strategy-button small { font-size:9px; line-height:12px; white-space:nowrap; }
+.strategy-button:active { background:#a1854f; transform:scale(.96); }
+#castleCommand { top:0; right:0; }
+#barracksCommand { top:36px; right:56px; }
+#workersCommand { top:81px; right:102px; }
+#tradeCommand { top:138px; right:102px; }
+#fishingCommand { top:183px; right:56px; }
+#centerCommand { top:219px; right:0; }
 .camera-zoom { position:absolute; right:max(12px,env(safe-area-inset-right)); top:max(66px,calc(env(safe-area-inset-top) + 56px)); z-index:5; display:flex; gap:7px; }
 .camera-zoom button { width:40px; height:40px; border:1px solid #b5a47c; border-radius:10px; background:rgba(35,48,39,.9); color:#fff0c6; font-size:25px; font-weight:900; box-shadow:0 3px 12px #23372d66; }
 #castleManageButton { display:none!important; }
@@ -46,6 +69,12 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .choice { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: 14px; padding: 12px 14px; background: #edf7ef; text-align: left; font-weight: 800; }
 .choice:disabled { opacity: .45; }
 .choice b { color: var(--green-dark); }
+.market-item { margin:10px 0; padding:10px; border:1px solid #c9d7c3; border-radius:13px; background:#f2f8ee; }
+.market-item strong { display:block; margin:0 0 9px; font-size:14px; }
+.market-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+.market-actions .choice { padding:10px 8px; flex-wrap:wrap; font-size:12px; }
+.market-actions .choice b { white-space:nowrap; }
+
 .wide-button { width: 100%; border: 0; border-radius: 14px; padding: 13px 15px; background: var(--green); color: white; font-weight: 900; }
 .link-button { width: 100%; border: 0; padding: 12px; background: transparent; color: #648077; }
 .fishing-panel { padding: 20px; text-align: center; }
@@ -88,7 +117,14 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 @media (max-width:420px) {
   .controls { padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right)); }
   .joystick { width: min(118px, 30vw); height: min(118px, 30vw); }
-  .strategy-bar { width:min(49vw,191px); gap:4px; padding:5px; }
-  .strategy-button { min-height:51px; font-size:20px; }
+  .strategy-bar { flex-basis:178px; width:178px; height:236px; }
+  .strategy-bar::before { inset:4px 0 4px 20px; }
+  .strategy-button { width:50px; height:50px; font-size:19px; }
   .strategy-button small { font-size:9px; }
+  #castleCommand { top:0; right:0; }
+  #barracksCommand { top:31px; right:44px; }
+  #workersCommand { top:69px; right:84px; }
+  #tradeCommand { top:118px; right:84px; }
+  #fishingCommand { top:158px; right:44px; }
+  #centerCommand { top:186px; right:0; }
 }

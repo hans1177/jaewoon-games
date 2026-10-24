@@ -35,6 +35,15 @@ const GUARD_SITES=[
 const RAID_TIME_OPTIONS=[60,120,180,300,600];
 const SIEGE_MODES=['off','third','always'];
 const KEEP_HP=900;
+// 상선 시장: 구매/판매 가격과 수요 변동은 기존 성채 저장 데이터에서 관리한다.
+const MARKET_GOODS=[
+  {id:'wood',name:'🪵 나무',amount:4,buy:20,sell:14},
+  {id:'stone',name:'🪨 돌',amount:3,buy:24,sell:16},
+  {id:'food',name:'🍖 식량',amount:12,buy:25,sell:17},
+  {id:'fish',name:'🐟 물고기',amount:1,buy:22,sell:14},
+  {id:'crop',name:'🥕 농작물',amount:1,buy:31,sell:20},
+  {id:'flower',name:'🌼 꽃',amount:1,buy:8,sell:4}
+];
 let fortSaveCarry=0;
 
 
@@ -73,6 +82,12 @@ function ensureVillage(state) {
   fort.morale=Math.max(0,Math.min(100,Number.isFinite(fort.morale)?fort.morale:65));
   fort.honor=Math.max(0,Math.min(999,Math.floor(Number(fort.honor)||0)));
   fort.supplyClock=Math.max(0,Number(fort.supplyClock)||0);
+  if(!fort.marketPressure||typeof fort.marketPressure!=='object'||Array.isArray(fort.marketPressure))
+    fort.marketPressure={};
+  for(const item of MARKET_GOODS){
+    const n=Number(fort.marketPressure[item.id]);
+    fort.marketPressure[item.id]=Number.isFinite(n)?Math.max(-.2,Math.min(.2,n)):0;
+  }
   state.villageDevelopment=village;
   return village;
 }
@@ -252,6 +267,48 @@ function patchPanels() {
 }
 
 
+// 같은 상선 시장을 전략 패널과 성채 관리 패널에서 재사용한다.
+function marketQuote(fort,day,item,type){
+  const idx=MARKET_GOODS.indexOf(item);
+  const trend=Math.sin(Number(day||1)*.87+idx*1.57)*.16;
+  const pressure=Number(fort.marketPressure?.[item.id])||0;
+  return Math.max(1,Math.round((type==='buy'?item.buy:item.sell)*(1+trend+pressure)));
+}
+function marketContent(state,fort){
+  const trader=fort.traderClock%180<75;
+  const balance=Math.floor(Number(state.coins)||0);
+  const stock=state.inventory||{};
+  let html='<p class="panel-note">'+(trader?'⚓ 상선 입항 중 · 거래 가능':'🌊 상선 항해 중 · '+Math.ceil(180-fort.traderClock%180)+'초 뒤 입항')+
+    ' · 현재 자금 '+balance+'골드 · 자원별 가격은 수요와 날짜에 따라 변해.</p>';
+  html+='<div class="inventory-grid"><div class="item-card">🪙 보유 골드<span>'+balance+'</span></div>'+
+    '<div class="item-card">📦 거래 품목<span>'+MARKET_GOODS.length+'종</span></div></div>';
+  for(const item of MARKET_GOODS){
+    const count=Math.max(0,Math.floor(Number(stock[item.id])||0));
+    const buy=marketQuote(fort,state.day,item,'buy');
+    const sell=marketQuote(fort,state.day,item,'sell');
+    html+='<div class="market-item"><strong>'+item.name+' · '+count+'개 보유</strong><div class="market-actions">'+
+      '<button type="button" class="choice" data-castle="trade:buy:'+item.id+'" '+(!trader||balance<buy?'disabled':'')+'><span>구매 '+item.amount+'개</span><b>-'+buy+'골드</b></button>'+
+      '<button type="button" class="choice" data-castle="trade:sell:'+item.id+'" '+(!trader||count<item.amount?'disabled':'')+'><span>판매 '+item.amount+'개</span><b>+'+sell+'골드</b></button></div></div>';
+  }
+  html+='<button type="button" class="wide-button" data-castle="trade:all" '+(!trader?'disabled':'')+'>🚢 생산품 일괄 판매 (물고기 · 농작물 · 꽃)</button>';
+  html+='<p class="panel-note">벌목·광산·농장 생산 → 창고 → 상선 무역 → 성벽·병력 투자. 건설용 나무·돌·식량은 일괄 판매에서 제외돼.</p>';
+  return html;
+}
+function openTrade(){
+  if(!currentGame||document.querySelector('dialog[open]'))return;
+  document.querySelector('#panelTitle').textContent='⚓ 무역 · 경제';
+  renderTrade();
+  document.querySelector('#panel').showModal();
+}
+function renderTrade(){
+  if(!currentGame)return;
+  const state=currentGame.state,fort=ensureVillage(state).fortification;
+  const body=document.querySelector('#panelBody');
+  body.innerHTML=marketContent(state,fort);
+  body.querySelectorAll('[data-castle]').forEach(button=>button.addEventListener('click',()=>manageCastle(button.dataset.castle)));
+}
+window.addEventListener('cozy:open-trade',openTrade);
+
 /* 메인: 기존 성채 관리 패널 - 병력 배치, 성벽 강화/수리, 함정, 주민 전직, 상선 거래 */
 function openCastle(){
   if(!currentGame||document.querySelector('dialog[open]'))return;
@@ -331,16 +388,7 @@ function renderCastle(){
   html+=button('worker:lumber','농장 → 벌목장','주민 1명',!production.lumberBuilt||!!production.lumberWorker);
   html+=button('worker:mine','농장 → 광산','주민 1명',!production.mineBuilt||!!production.mineWorker);
   html+=button('worker:farm','작업장 → 농장','되돌리기',!production.lumberWorker&&!production.mineWorker);
-  html+='<h3>⚓ 상선 무역</h3><p class="panel-note">'+(trader?'상선 정박 중 · 거래 가능':'상선 항해 중 · '+Math.ceil(180-fort.traderClock%180)+'초 후 도착')+'</p>';
-  if(trader){
-    html+=button('trade:wood','나무 4개 구매','20골드');
-    html+=button('trade:stone','돌 3개 구매','24골드');
-    html+=button('trade:food','식량 12개 구매','25골드');
-    html+=button('trade:sellwood','나무 4개 판매','14골드 획득');
-    html+=button('trade:sellstone','돌 3개 판매','16골드 획득');
-    html+=button('trade:fish','물고기 1개 판매','14골드 획득');
-    html+=button('trade:crop','농작물 1개 판매','20골드 획득');
-  }
+  html+='<h3>⚓ 상선 무역 · 실시간 시장</h3>'+marketContent(state,fort);
   html+='<h3>🏘️ 왕국 성장</h3><p class="panel-note">기존 마을회관 성장과 연결해 성벽·성채 외형이 강화돼. 건설·공성·생산·무역은 같은 저장 데이터를 사용해.</p>';
   document.querySelector('#panelBody').innerHTML=html;
   document.querySelector('#panelBody').querySelectorAll('[data-castle]').forEach(b=>b.addEventListener('click',()=>manageCastle(b.dataset.castle)));
@@ -404,17 +452,46 @@ function manageCastle(action){
     renderCastle();return;
   }
   if(op==='trade'){
-    if(fort.traderClock%180>=75)return toast('상선이 출항했어');
-    const offers={
-      wood:{cost:20,item:'wood',amount:4},stone:{cost:24,item:'stone',amount:3},
-      food:{cost:25,item:'food',amount:12},
-      sellwood:{item:'wood',amount:4,gold:14},sellstone:{item:'stone',amount:3,gold:16},
-      fish:{item:'fish',amount:1,gold:14},crop:{item:'crop',amount:1,gold:20}
-    };
-    const t=offers[parts[1]];if(!t)return;
-    if(t.cost){if(state.coins<t.cost)return toast('골드가 부족해');state.coins-=t.cost;inv[t.item]=(Number(inv[t.item])||0)+t.amount;}
-    else{if((Number(inv[t.item])||0)<t.amount)return toast('판매할 물품이 부족해');inv[t.item]-=t.amount;state.coins+=t.gold;}
-    saveState();toast('⚓ 상선 거래 완료');renderCastle();return;
+    if(fort.traderClock%180>=75)return toast('상선이 항해 중이야. 입항 후 거래 가능해');
+    const buy=parts[1]==='buy'||['wood','stone','food'].includes(parts[1]);
+    const all=parts[1]==='all';
+    const selling=parts[1]==='sell'||parts[1]?.startsWith('sell')||['fish','crop'].includes(parts[1]);
+    const key=parts.length>2?parts[2]:parts[1]?.startsWith('sell')?parts[1].slice(4):parts[1];
+    let earned=0,spent=0;
+    if(all){
+      for(const item of MARKET_GOODS){
+        if(!['fish','crop','flower'].includes(item.id))continue;
+        const owned=Math.max(0,Math.floor(Number(inv[item.id])||0));
+        const n=Math.floor(owned/item.amount);
+        if(!n)continue;
+        inv[item.id]-=n*item.amount;
+        earned+=n*marketQuote(fort,state.day,item,'sell');
+        fort.marketPressure[item.id]=Math.max(-.2,fort.marketPressure[item.id]-.03);
+      }
+      if(!earned)return toast('판매 가능한 생산품이 없어');
+      state.coins+=earned;
+    }else{
+      const item=MARKET_GOODS.find(x=>x.id===key);
+      if(!item||(!buy&&!selling))return;
+      const quote=marketQuote(fort,state.day,item,buy?'buy':'sell');
+      if(buy){
+        if(state.coins<quote)return toast('골드가 부족해');
+        state.coins-=quote;
+        inv[key]=(Number(inv[key])||0)+item.amount;
+        spent=quote;
+      }else{
+        if((Number(inv[key])||0)<item.amount)return toast('판매할 자원이 부족해');
+        inv[key]-=item.amount;
+        state.coins+=quote;
+        earned=quote;
+      }
+      fort.marketPressure[key]=Math.max(-.2,Math.min(.2,fort.marketPressure[key]+(buy?.035:-.035)));
+    }
+    saveState();
+    toast('⚓ 거래 완료 · '+(earned?'+'+earned:'-'+spent)+'골드');
+    if(document.querySelector('#panelTitle')?.textContent==='⚓ 무역 · 경제')renderTrade();
+    else renderCastle();
+    return;
   }
   if(!village.townHallBuilt)return toast('마을회관을 먼저 건설해');
   if(op==='upgrade'){
