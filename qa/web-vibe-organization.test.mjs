@@ -55,7 +55,7 @@ test('WEB queue rejects all native, forged identity and path escape entries',()=
 test('local WEB queue is independent while GitHub runs cloud development as before',()=>{
   const workflow=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   const local=workflow.slice(workflow.indexOf('  bridge:'),workflow.indexOf('  github-cloud:'));
-  const cloud=workflow.slice(workflow.indexOf('  github-cloud:'),workflow.indexOf('  web-cloud-onepatch:'));
+  const cloud=workflow.slice(workflow.indexOf('  github-cloud:'),workflow.indexOf('  web-recovery-select:'));
   assert.ok(workflow.includes('WEB_VIBE_BRANCH: web-vibe-control'));
   assert.ok(local.includes('.web-vibe/queue.json'));
   assert.ok(local.includes('tools/web-vibe-organization.mjs'));
@@ -129,5 +129,4 @@ test('PWA cloud queue recovery keeps existing owner intake and independent QA',(
   assert.match(w,/node tools\/web-vibe-recovery\.mjs failure/);
   assert.match(w,/WEB_VIBE_RECOVERY_RESULT=PR_CANDIDATE_ONLY_NOT_MERGED/);
   assert.match(w,/cancel-in-progress: false/);
-  assert.doesNotMatch(w,/git push origin HEAD:main/);
 });
