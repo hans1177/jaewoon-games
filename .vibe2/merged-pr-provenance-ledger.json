@@ -96015,11 +96015,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_825a2f7e884b732ac5123372",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9996",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "0227b96dab78d6e59d67b2840ccc6570409c9f87",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9996,
+        "baseBranch": "main",
+        "headBranch": "owner/cozy-four-realms-system-audio-20261025",
+        "baseSha": "0227b96dab78d6e59d67b2840ccc6570409c9f87",
+        "headSha": "6bdd0dd267b7fe926ce718c8dd58f434f6daa39b",
+        "mergeCommitSha": "530868b3d76bb35e06da0198cef24923718d3a7b",
+        "mergedAt": "2026-10-24T17:46:07Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3e3ff73d4762cd839e98608ef536670d611b358f03c1c58db6136969e1061812",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/cozy-four-realms-system-audio-20261025",
+        "candidateSha": "6bdd0dd267b7fe926ce718c8dd58f434f6daa39b"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 395,
+        "deletedLineCount": 255,
+        "changedFiles": [
+          "web-games/cozy-island/STRONGHOLD_MASTER_PLAN.md",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/kingdom-system.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css"
+        ],
+        "codingRelevantFiles": [
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/kingdom-system.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9996",
+        "merge-commit:530868b3d76bb35e06da0198cef24923718d3a7b",
+        "base-main:0227b96dab78d6e59d67b2840ccc6570409c9f87"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 753
+    "total": 754
   }
 }
