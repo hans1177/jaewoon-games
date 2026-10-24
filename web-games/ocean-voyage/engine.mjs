@@ -502,7 +502,7 @@ export function stepSea(state,input={},seconds=.05){
  advanceMerchantFleet(s,dt);
  ship.cooldown=Math.max(0,ship.cooldown-dt);ship.boardingCooldown=Math.max(0,(ship.boardingCooldown||0)-dt);s.navalEscapeCooldown=Math.max(0,(s.navalEscapeCooldown||0)-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
  s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
- if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
+ if(Math.abs(ship.velocity)>.5&&!s.navalCombat){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
   s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-dailyProvisions(s));
   if(ship.provisions>0&&ship.provisions<10&&s.day-(s.lastFoodWarningDay||0)>=3){s.lastFoodWarningDay=s.day;note(s,'식량 부족 경고 · 근처 항구에서 보급하거나 비상 식량을 사용해.');}
@@ -728,7 +728,7 @@ export function reportDiscoveries(state){
  for(const id of seaIds){const landmark=SEA_LANDMARKS.find(x=>x.id===id);if(!landmark)continue;reward+=landmark.reward;s.seaReported.push(id);s.fame+=15+(s.job==='cartographer'?10:0);}
  s.coins+=reward;return success(s,ids.length+seaIds.length+'건 발견 보고 완료 · '+reward+' G');
 }
-export function officeProgress(s,q){return q.type==='ports'?s.discovered.filter(id=>!['alexandria','zanzibar','goa','nagasaki'].includes(id)).length:q.type==='report'?s.reported.length:q.type==='battle'?s.victories:s.crewRoster.length;}
+export function officeProgress(s,q){return q.type==='ports'?s.discovered.filter(id=>!['alexandria','zanzibar','goa','nagasaki'].includes(id)).length:q.type==='report'?s.reported.length+(s.seaReported?.length||0):q.type==='battle'?s.victories:s.crewRoster.length;}
 export function officeContract(state,id){
  const q=OFFICE_QUESTS.find(x=>x.id===id);if(!q||!canDock(state)||!portHasFacility(canDock(state).id,'quests'))return fail(state,'탐험가 사무실이 있는 항구에서 의뢰를 받아.');if(state.completedOffice.includes(id))return fail(state,'이미 끝낸 의뢰야.');
  if(id==='escort'&&state.job!=='naval'&&state.rank<1)return fail(state,'해군 장교 또는 왕실 작위 1단계가 필요해.');
