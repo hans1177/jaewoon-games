@@ -16,7 +16,7 @@ const list=value=>[...new Set((Array.isArray(value)?value:[]).map(clean).filter(
 const numericRank=(table,key,fallback=999)=>Number.isFinite(Number(table?.[key]))?Number(table[key]):fallback;
 const LEGACY_DEVELOPMENT_FREEZE_FIELDS=Object.freeze(['newFeatureExpansionFrozen']);
 
-const platformLabel=platform=>platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'';
+const platformLabel=platform=>platform==='WEB'?'웹':platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'';
 function autoClassificationPolicy(){
   try{
     const roadmap=ROADMAP_PATH?JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8')):{};
@@ -335,15 +335,19 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
         const prior=clean(existing.ownerWebSourceRevision);
         existing.webPath=canonicalRoot+'/'+id;
         existing.hasWebArchive=true;
-        existing.homepageWebPlayable=false;
-        existing.ownerWebSourceState='WEB_SOURCE_DEVELOPMENT_PENDING_QA';
+        // 기존 3D 확인 소스가 동일하면 홈페이지 플레이 버전은 계속 유지한다.
+        const verifiedUnchanged=prior===revision
+          &&existing.ownerWebSourceState==='WEB_F9_RUNTIME_VERIFIED'
+          &&existing.homepageWebPlayable===true;
+        existing.homepageWebPlayable=verifiedUnchanged;
+        existing.ownerWebSourceState=verifiedUnchanged?'WEB_F9_RUNTIME_VERIFIED':'WEB_SOURCE_DEVELOPMENT_PENDING_QA';
         existing.ownerDirectWebUpload=true;
         existing.ownerWebIntakeEngine='HTML_CSS_JAVASCRIPT';
         existing.web3dRedevelopmentRequired=true;
         existing.ownerWebSourceRevision=revision;
         existing.ownerWebEntryFile=entry;
         if(prior!==revision)existing.webDevelopmentResetRequired=true;
-        if(existing.homepageDisplayMode==='WEB_PUBLISHED')existing.homepageDisplayMode='';
+        if(!verifiedUnchanged&&existing.homepageDisplayMode==='WEB_PUBLISHED')existing.homepageDisplayMode='';
         updated.push(id);
       }else{
         catalog.games.push({
@@ -422,6 +426,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
 export function normalizePlatform(value){
   const raw=clean(value).toUpperCase().replace(/[\s-]+/g,'_');
   if(raw==='ROBLOX')return 'ROBLOX';
+  if(['WEB','GENERAL_WEB','HTML_JS_WEBGL'].includes(raw))return 'WEB';
   if(['UNITY','UNITY_ANDROID','ANDROID_MOBILE'].includes(raw))return 'UNITY';
   if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(raw))return 'FORTNITE_UEFN';
   return '';
