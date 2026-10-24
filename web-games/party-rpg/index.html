@@ -337,6 +337,23 @@ function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에
 function storyReady(key){var s=state.story;return key==='fort'?s.cleared[0]&&s.visited[1]&&s.visited[2]:key==='temple'?s.choices.fort&&s.cleared[1]&&s.visited[3]&&s.visited[4]:key==='ending'?s.choices.temple&&s.cleared[2]&&s.visited[5]&&s.visited[6]:false;}
 function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();storyJournal();}
 
+
+const COUNCIL_LOCATION={x:844,y:487};
+function townCouncil(){
+ var cases=state.story.cases,exposed=Object.values(cases).filter(function(q){return q.path==='truth';}).length,protectedCount=Object.values(cases).filter(function(q){return q.path==='guard';}).length;
+ var luca=cases[1],mina=cases[2],report=Object.keys(cases).length,trust=protectedCount>exposed?'그들은 네가 증인을 먼저 지킨 사실을 믿기 시작했다.':exposed>protectedCount?'의회는 네 증언을 두려워하지만, 지워진 이름의 진실을 더는 부인하지 못한다.':'기록관과 수비대는 아직 서로의 책임을 묻고 있다.';
+ var h='<div class="dialogueLayout">'+portraitMarkup(0,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">마을 · 북문 사건 조사단</span><h2>루카와 미나의 기록실</h2><p>마을의 기록관 겸 야전회의. 모닥불 곁에는 지워진 북문 지도와 실종자의 이름표가 펼쳐져 있다.</p>';
+ h+='<blockquote>'+trust+'</blockquote><p>확보된 사건 기록 '+report+'/6 · 공개 증언 '+exposed+' · 보호한 증인 '+protectedCount+'</p><h3>기록관에게 묻는다</h3>';
+ h+='<button class="menuBtn" data-council="luca">루카 · 마지막 관문과 실종 수비대</button><button class="menuBtn secondary" data-council="mina">미나 · 삭제된 이름과 기록관</button>';
+ h+='<button class="menuBtn secondary" data-council="trail">다음 단서의 위치를 묻는다</button><button class="menuBtn secondary" id="councilJournal">사건 수첩 펼치기</button></div></div>';
+ openModal('북문 사건 조사단',h);modal.dataset.mode='dialogue';
+ modalBody.querySelectorAll('[data-council]').forEach(function(btn){btn.onclick=function(){
+  var key=btn.dataset.council,text=key==='luca'?(luca?(luca.path==='truth'?'루카: “그 문을 닫은 손은 내 것이었어. 네가 열어젖힌 증언을 끝까지 지켜야겠지.”':'루카: “네가 부하들의 유족을 지켰어. 아직 말하지 못할 이름도 있어.”'):'루카: “북문에 남은 군번표를 가져와. 그때 모두가 죽었다는 보고서부터 의심해야 해.”'):key==='mina'?(mina?(mina.path==='truth'?'미나: “아버지의 봉랍을 열었어. 누가 내 기억을 빼앗았는지는 모르겠지만 진실은 남았지.”':'미나: “기록을 감춘 게 아니라 사람을 지킨 거야. 하지만 언젠간 남은 글을 읽어야겠지.”'):'미나: “숲의 이름 없는 묘에는 아버지의 봉인이 있어. 누군가 기록을 두 번 고쳐 썼어.”'):'미나: “'+storyObjective()+'”';
+  var panel=modalBody.querySelector('#councilResponse');if(!panel){panel=document.createElement('blockquote');panel.id='councilResponse';modalBody.querySelector('.dialogueText').append(panel);}panel.textContent=text;sound.effect('story');
+ };});
+ document.getElementById('councilJournal').onclick=storyJournal;
+}
+
 const EVIDENCE_SITES={
  1:{x:925,y:315,trace:'북문으로 이어졌던 수레바퀴 자국과 수비대 군번표'},
  2:{x:1025,y:640,trace:'기록관의 인장이 찍힌 이름 없는 무덤'},
@@ -736,7 +753,7 @@ function updateInteractions(){
  }else if(state.zone>0){
    var site=pendingEvidence();if(site&&Math.hypot(site.x-p.x,site.y-p.y)<95){currentInteract={kind:'evidence',name:'사건 조사 · '+INCIDENTS[state.zone-1].name};prompt.textContent='사건 조사 · 증거 수집';prompt.classList.add('on');return;}
   }else if(state.zone===0){
-  var objs=[{x:390,y:300,name:'무기상점',kind:'weapon'},{x:1010,y:300,name:'방어구상점',kind:'armor'},{x:700,y:300,name:'회복의 샘',kind:'heal'},{x:700,y:690,name:'판매상점',kind:'sell'}],best=null,bd=75*75;
+  var objs=[{x:390,y:300,name:'무기상점',kind:'weapon'},{x:1010,y:300,name:'방어구상점',kind:'armor'},{x:700,y:300,name:'회복의 샘',kind:'heal'},{x:700,y:690,name:'판매상점',kind:'sell'},{x:COUNCIL_LOCATION.x,y:COUNCIL_LOCATION.y,name:'북문 사건 조사단',kind:'council'}],best=null,bd=90*90;
   objs.forEach(function(o){var d=(o.x-p.x)**2+(o.y-p.y)**2;if(d<bd){bd=d;best=o;}});
   if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
  }
@@ -756,13 +773,14 @@ function interact(){
   save();toast(test.success?(kind==='trap'?'함정 해제 성공 · 사라진 인장 발견':'문 열기 성공 · 숨겨진 기록 발견'):'판정 실패 · 이 방에서는 다시 시도할 수 없어.');
   updateInteractions();return;
  }
+ if(currentInteract.kind==='council'){townCouncil();return;}
  if(currentInteract.kind==='heal'){state.player.hp=state.player.maxHp;partyMembers().forEach(function(a){a.hp=a.maxHp;});toast('모두 회복했어.');save();}
  else if(currentInteract.kind==='sell')sellMenu();else shopMenu(currentInteract.kind);
 }
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
 function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
-function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat,evidence:pendingEvidence()});}
+function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat,evidence:pendingEvidence(),council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
 function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})));}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
 
