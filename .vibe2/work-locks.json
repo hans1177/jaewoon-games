@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-3yl1v8",
+      "worker": "vibe2",
+      "taskId": "line-defense-existing-web-assessment-v1",
+      "gameId": "line-defense",
+      "files": [
+        "web-games/line-defense/index.html"
+      ],
+      "baseSha": "7335b6f503e905875c25b6f98c0fd4652a3945ba",
+      "runId": "40098209542",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-24T13:50:35.746Z",
+      "expiresAt": "2026-10-24T14:35:35.746Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
