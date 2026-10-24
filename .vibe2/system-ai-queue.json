@@ -117330,7 +117330,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -117372,12 +117372,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40066013948:1",
+      "reservedAt": "2026-10-24T05:24:51.659Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -117582,7 +117582,8 @@
         "system-ai-handoff-to-reservation:system-ai:40063211807:1",
         "actions-run:40063211807",
         "system-ai-handoff-to-reservation:system-ai:40064027221:1",
-        "actions-run:40064027221"
+        "actions-run:40064027221",
+        "system-ai-handoff-to-reservation:system-ai:40066013948:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1252,
@@ -117597,7 +117598,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-24T05:06:20.162Z"
+      "updatedAt": "2026-10-24T05:24:51.659Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -147994,7 +147995,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -148101,12 +148102,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40066013948:1",
+      "reservedAt": "2026-10-24T05:24:51.659Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -149108,14 +149109,15 @@
         "system-ai-handoff-to-reservation:system-ai:40065050416:1",
         "actions-run:40065050416",
         "system-ai-handoff-to-reservation:system-ai:40065472792:1",
-        "actions-run:40065472792"
+        "actions-run:40065472792",
+        "system-ai-handoff-to-reservation:system-ai:40066013948:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 26,
-        "recurrenceCount": 294,
+        "recurrenceCount": 295,
         "dependencyCentrality": 26,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -149123,7 +149125,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-24T05:22:23.686Z"
+      "updatedAt": "2026-10-24T05:24:51.659Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
