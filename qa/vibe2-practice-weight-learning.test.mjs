@@ -131,6 +131,14 @@ test('Windows PC executor provides exactly three independent read-only Web Roblo
   assert.match(wf,/steps\.pc_roblox\.outcome/);
   assert.match(wf,/steps\.pc_assets\.outcome/);
   assert.match(wf,/PC_RUNNER_THREE_LANES_NOT_ALL_VERIFIED/);
+  // The Windows self-hosted runner uses Restricted script policy. Every
+  // PowerShell stage must use the proven process-scoped runner invocation.
+  const pcBlocks=wf.split(/(?=      - name: PC (?:WEB source|ROBLOX source|common asset)|      - name: Preserve three independently)/).slice(1);
+  assert.equal(pcBlocks.length,4);
+  for(const block of pcBlocks){
+    assert.match(block,/shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "\. '\{0\}'"/);
+    assert.doesNotMatch(block,/shell: powershell\s*\n/);
+  }
   assert.match(wf,/PC_RUNNER_SCOPE=SUPPLEMENTAL_READ_ONLY_NOT_F0_F9/);
   assert.match(wf,/cancel-in-progress: false/);
   assert.doesNotMatch(wf,/schedule:|cron:|continue-on-error: true/);
