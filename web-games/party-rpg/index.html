@@ -222,10 +222,20 @@ var COMPANION_SECRETS=[
  '카일은 마왕의 전령을 살려 준 적이 있다. 그 전령은 그를 원수 대신 옛 친구라고 불렀다.',
  '네오는 기억을 담는 노래를 만든다. 잃어버린 이름을 모두 부를 때까지 노래의 끝을 쓰지 않겠다고 한다.'
 ];
+
+var INCIDENTS=[
+ {name:'북문에 남은 군번',person:'루카',lead:'봉인된 북문에서 전사자 명부를 발견했다. 살아 돌아온 자의 칸에는 주인공의 서명이 있다.',a:'루카를 추궁해 명부의 마지막 밤을 밝힌다',b:'루카의 부하 가족을 먼저 보호한다',truth:'루카는 명령받은 봉인을 지켰고, 구조 요청을 들었으나 문을 열지 못했다.',guard:'실종 수비대의 가족들은 네가 신원을 숨긴 덕분에 보복을 피했다.'},
+ {name:'이름 없는 무덤',person:'미나',lead:'숲의 비석 아래에는 기록관의 봉랍이 묻혀 있다. 미나의 아버지는 잊힌 사람들을 직접 지웠다.',a:'미나에게 금지된 기록의 진실을 공개하게 한다',b:'미나가 잃어버릴 기억을 먼저 지킨다',truth:'미나는 기록의 주인을 밝히고 자기 어린 시절의 마지막 여름을 잊었다.',guard:'기록은 숨겨졌지만 미나는 아버지가 남긴 열쇠를 네게 맡겼다.'},
+ {name:'동굴의 두 번째 목소리',person:'제이드',lead:'되돌아오는 메아리는 죽은 정찰병의 신호다. 제이드는 생존 증인을 버리고 도망쳤다.',a:'제이드가 생존자의 마지막 증언을 기록하게 한다',b:'남은 정찰대원을 위해 봉인을 다시 덮는다',truth:'제이드는 함께 도망칠 수 있었다는 사실을 인정했다.',guard:'제이드는 살아남은 병사를 구했지만 명예 회복을 포기했다.'},
+ {name:'사막의 공물 장부',person:'리안',lead:'장부에는 비 한 번의 대가로 바쳐진 어린아이들의 이름이 적혀 있다.',a:'지배층의 공모를 공개한다',b:'팔린 이름을 가족에게 먼저 돌려준다',truth:'마을의 풍년은 주민들의 기억과 맞바뀌었다. 귀족이 그 거래를 승인했다.',guard:'리안의 동생은 이름을 되찾았으나 그를 여전히 알아보지 못했다.'},
+ {name:'눈 아래 봉인된 맹세',person:'세라',lead:'신전의 옛 축복문에는 수호자 한 명을 매 세대 남겨야 한다는 조항이 있다.',a:'세라와 함께 맹약을 파기할 근거를 찾는다',b:'봉인의 후계자와 협상할 길을 마련한다',truth:'성직자들은 맹약을 축복이 아니라 경고로 기록했다.',guard:'세라는 의식의 문구를 보관하고 희생을 줄일 방법을 찾았다.'},
+ {name:'사라진 도시의 살아 있는 재판',person:'보린',lead:'괴물로 몰린 주민들이 그곳에서 지금도 재판을 기다리고 있다.',a:'살아남은 시민들의 증언을 모두 읽는다',b:'보복을 피하도록 증인의 신원을 감춘다',truth:'왕은 도시를 파괴하지 않았다. 이름을 지운 자들로부터 지키고 있었다.',guard:'보린은 첫 귀환자의 증언을 보호하며 전쟁을 피할 시간을 벌었다.'}
+];
+
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=2;s.intro=!!s.intro;for(var key of ["quests","checks"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
+ s.version=3;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
 }
 function storyVisit(zone){
  if(zone<1||zone>6)return;
