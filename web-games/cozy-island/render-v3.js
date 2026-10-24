@@ -295,7 +295,7 @@ export class IslandRendererV3 {
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
       put('ship','bench',775,760,1.4);put('fishing','bench',520,430,1.4);
-      if(!game.state.expanded)put('east-gate','fort-gatehouse',1325,600,3.0);
+      if(!game.state.expanded&&!village.townHallBuilt)put('east-gate','fort-gatehouse',1325,600,3.0);
       if(jungle)put('jungle-gate','fort-gatehouse',2170,1080,3.0);
       for(let i=0;i<game.state.plots.length;i++){
         const crop=game.state.plots[i];
