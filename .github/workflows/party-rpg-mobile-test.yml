@@ -100,6 +100,23 @@ jobs:
               return {joined:a.ai.find(v=>v.id==='ai0')?.party,stage:a.story.recruits.ai0?.step};
             });
             if(!team.joined||team.stage!=='joined')throw new Error('RECRUIT_EVENT_DID_NOT_JOIN '+JSON.stringify(team));
+            // 동료의 말투는 캐릭터별로 고정, 질문별 답변은 실제 모바일 터치로 구별한다.
+            if(!(await page.locator('.companionDetail').getByText('성격 · 말투').count()))
+              throw new Error('COMPANION_PERSONALITY_PROFILE_NOT_DISPLAYED');
+            await page.locator('#talkCompanion').click();
+            if(await page.locator('#modal[data-mode="event"] #eventSkip').count())
+              await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            if((await page.locator('[data-personality-topic]').count())!==4)
+              throw new Error('COMPANION_DIALOGUE_TOPICS_MISSING');
+            await page.locator('[data-personality-topic="truth"]').click();
+            const truthLine=await page.locator('.dialogueText blockquote').first().textContent();
+            await page.locator('[data-personality-topic="guard"]').click();
+            const guardLine=await page.locator('.dialogueText blockquote').first().textContent();
+            await page.locator('[data-personality-topic="past"]').click();
+            const pastLine=await page.locator('.dialogueText blockquote').first().textContent();
+            if(!truthLine||!guardLine||!pastLine||truthLine===guardLine||truthLine===pastLine||guardLine===pastLine)
+              throw new Error('CHARACTER_DISTINCT_TOPIC_DIALOGUES_NOT_RENDERED '+JSON.stringify({truthLine,guardLine,pastLine}));
+            await page.locator('#dialogueReturn').click();
             await page.locator('#modalClose').click();
             // 파티 공용 소모품, 동료별 장비, 실제 소유권 전달을 모바일 탭으로 검증한다.
             await page.locator('#bagBtn').click();
