@@ -48,6 +48,32 @@ jobs:
             await page.locator('#startBtn').click();
             await page.locator('#confirmHero').click();
             await page.locator('#introSkip').click();
+            // 첫 시작 시 한 명만 소개되고 영입은 반드시 서브퀘·이벤트를 거친다.
+            await page.locator('#rosterBtn').click();
+            const visibleCount=await page.locator('.rosterRow').count();
+            if(visibleCount!==1)throw new Error('RECRUIT_DISCOVERY_NOT_STAGED '+visibleCount);
+            await page.locator('#recruitCompanion').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const started=await page.evaluate(()=>window.partyRpgVibeState().state.story.recruits.ai0?.step);
+            if(started!=='search')throw new Error('RECRUIT_SIDE_QUEST_NOT_STARTED '+started);
+            await page.locator('#modalClose').click();
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              game.p.x=860;game.p.y=575;
+            });
+            await page.locator('#prompt.on').waitFor({timeout:12000});
+            await page.locator('#prompt').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const questReady=await page.evaluate(()=>window.partyRpgVibeState().state.story.recruits.ai0?.step);
+            if(questReady!=='ready')throw new Error('RECRUIT_CLUE_NOT_FOUND '+questReady);
+            await page.locator('#recruitCompanion').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const team=await page.evaluate(()=>{
+              const a=window.partyRpgVibeState().state;
+              return {joined:a.ai.find(v=>v.id==='ai0')?.party,stage:a.story.recruits.ai0?.step};
+            });
+            if(!team.joined||team.stage!=='joined')throw new Error('RECRUIT_EVENT_DID_NOT_JOIN '+JSON.stringify(team));
+            await page.locator('#modalClose').click();
             // 실제 모바일 크기에서 지역 안내가 맵을 가리지 않아야 한다.
             const hud=await page.evaluate(()=>{
               const r=document.querySelector('#zone').getBoundingClientRect();
@@ -93,7 +119,7 @@ jobs:
             if(!persisted)throw new Error('PARTY_RPG_SCENE_SAVE_NOT_PERSISTED');
             await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
             if(errors.length)throw new Error('PARTY_RPG_BROWSER_ERRORS: '+errors.join(' | '));
-            console.log('PARTY_RPG_MOBILE_EVENT_AND_SAVE=PASS');
+            console.log('PARTY_RPG_MOBILE_EVENT_RECRUIT_AND_SAVE=PASS');
             await context.close();
           } finally {
             await browser.close();
