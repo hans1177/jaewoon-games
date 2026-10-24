@@ -422,7 +422,7 @@ buildWorld(live){
   const nightSky=new THREE.Color(0x111d32),baseSky=new THREE.Color(m.sky),warmSky=new THREE.Color(0xb47759);
   const targetSky=baseSky.lerp(nightSky,darkness*.91).lerp(warmSky,twilight*.31);
   const targetFog=new THREE.Color(m.fog).lerp(new THREE.Color(0x152033),darkness*.67).lerp(new THREE.Color(0x949b9b),fogBoost*.34);
-  const smoothing=1-Math.exp(-dt*2.8);
+  const smoothing=1-Math.exp(-dt*6.2);
   if(inside){this.scene.background.setHex(m.sky);this.scene.fog.color.setHex(m.fog);}else{
    this.scene.background.lerp(targetSky,smoothing);
    this.scene.fog.color.lerp(targetFog,smoothing);
