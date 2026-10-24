@@ -403,7 +403,22 @@ var SKILL_BOOKS=[
  {id:"wizard_ward",job:"wizard",name:"비전 보호막",price:300,level:4,desc:"위험할 때 보호막 · 22초"},
  {id:"wizard_bolt",job:"wizard",name:"유성의 파편",price:780,level:9,desc:"단일 표적 마법 · 22초"},
  {id:"ranger_evasion",job:"ranger",name:"바람 걸음",price:300,level:4,desc:"위험할 때 보호 태세 · 22초"},
- {id:"ranger_hunt",job:"ranger",name:"추적자의 일격",price:780,level:9,desc:"표적에게 추가 사격 · 22초"}
+ {id:"ranger_hunt",job:"ranger",name:"추적자의 일격",price:780,level:9,desc:"표적에게 추가 사격 · 22초"},
+ {id:"fighter_rally",job:"fighter",name:"전열 집결",price:420,level:6,desc:"가까운 동료 보호 · 26초"},
+ {id:"fighter_cleave",job:"fighter",name:"가로베기",price:1020,level:14,desc:"근접 적 2명 공격 · 25초"},
+ {id:"fighter_shout",job:"fighter",name:"불굴의 외침",price:1500,level:19,desc:"아군 4명 보호 · 30초"},
+ {id:"rogue_smoke",job:"rogue",name:"연막살포",price:420,level:6,desc:"적 2명 둔화 · 26초"},
+ {id:"rogue_flurry",job:"rogue",name:"연속 난도질",price:1020,level:14,desc:"단일 적 2회 공격 · 25초"},
+ {id:"rogue_escape",job:"rogue",name:"흐릿한 그림자",price:1500,level:19,desc:"위험할 때 긴 보호막 · 30초"},
+ {id:"cleric_ward",job:"cleric",name:"수호의 축성",price:420,level:6,desc:"부상 아군 보호 · 26초"},
+ {id:"cleric_purify",job:"cleric",name:"정화의 파문",price:1020,level:14,desc:"최대 3명 신성 공격 · 25초"},
+ {id:"cleric_rescue",job:"cleric",name:"위급 치유",price:1500,level:19,desc:"부상 아군 즉시 회복 · 30초"},
+ {id:"wizard_frost",job:"wizard",name:"서리 구속",price:420,level:6,desc:"적 2명 둔화 · 26초"},
+ {id:"wizard_nova",job:"wizard",name:"비전 폭풍",price:1020,level:14,desc:"최대 3명 광역 공격 · 25초"},
+ {id:"wizard_chain",job:"wizard",name:"연쇄 번개",price:1500,level:19,desc:"적 2명 번개 공격 · 30초"},
+ {id:"ranger_snare",job:"ranger",name:"덫 화살",price:420,level:6,desc:"표적 둔화 · 26초"},
+ {id:"ranger_volley",job:"ranger",name:"화살 비",price:1020,level:14,desc:"최대 3명 연속 화살 · 25초"},
+ {id:"ranger_aim",job:"ranger",name:"정밀 관통",price:1500,level:19,desc:"유리한 명중 추가 공격 · 30초"}
 ];
 var GEAR_FAMILIES={sword:"검",axe:"도끼",dagger:"단검",mace:"철퇴",staff:"지팡이",bow:"활",cloth:"천옷",leather:"가죽",mail:"중갑"};
 var MATERIALS={
@@ -474,6 +489,10 @@ function load(){
   u.masteries={};Object.keys(GEAR_FAMILIES).forEach(k=>{const n=Number(prior[k]);u.masteries[k]=Number.isFinite(n)?Math.min(9999,Math.max(0,Math.floor(n))):0;});
   const learned=u.learnedSkills&&typeof u.learnedSkills==="object"&&!Array.isArray(u.learnedSkills)?u.learnedSkills:{};
   u.learnedSkills={};SKILL_BOOKS.forEach(book=>{if(learned[book.id]===true)u.learnedSkills[book.id]=true;});
+  const settings=u.skillSelection&&typeof u.skillSelection==="object"&&!Array.isArray(u.skillSelection)?u.skillSelection:{};
+  u.skillSelection={base:settings.base!==false};SKILL_BOOKS.forEach(book=>{u.skillSelection[book.id]=settings[book.id]!==false;});
+  const priorOrder=Array.isArray(u.skillOrder)?u.skillOrder.filter(id=>SKILL_BOOKS.some(book=>book.id===id)):[];
+  u.skillOrder=[...new Set([...priorOrder,...SKILL_BOOKS.map(book=>book.id)])];
  }
  normalizeProgress(s.player);
  s.ai.forEach(function(a){
@@ -988,7 +1007,7 @@ function tacticsMenu(){
  document.getElementById('clearFocus').onclick=function(){tacticalTargetId=null;tacticsMenu();};
 }
 
-function combat(o){var s=battleState.get(o);if(!s){s={skillAt:0,bookAt:0,shieldUntil:0,slowUntil:0,visualUntil:0,target:null};battleState.set(o,s);}return s;}
+function combat(o){var s=battleState.get(o);if(!s){s={skillAt:0,bookAt:0,bookCooldowns:{},shieldUntil:0,slowUntil:0,visualUntil:0,target:null,hitAt:0,hitPower:0};battleState.set(o,s);}return s;}
 function role(u){return CLASSES[u.classId]||CLASSES.fighter;}
 function proficiency(u){return Math.min(6,2+Math.floor((u.level-1)/4));}
 function ac(u){return 10+Math.min(10,Math.floor((u===state.player?playerArmorDef():aiArmorDef(u))/3))+Math.floor(role(u).save/2)+(combat(u).shieldUntil>battleTime?2:0);}
@@ -1001,23 +1020,54 @@ function autoSkill(u,pos,id,manual=false){
  if(u.hp<=0)return;
  var c=combat(u),r=role(u),t=orderedEnemy(pos.x,pos.y,Math.max(130,r.range));
  var allies=[{u:state.player,pos:p}].concat(partyMembers().map(a=>({u:a,pos:a})));
- // 기본 기술의 타이밍은 유지하고 배운 서책만 별도 재사용 대기시간으로 발동.
+ // 캐릭터별 활성화 기술과 우선순위, 스킬별 독립 재사용 대기시간.
  if(c.bookAt<=battleTime){
-  for(const book of SKILL_BOOKS.filter(b=>b.job===u.classId&&u.learnedSkills?.[b.id])){
-   var fired=false,low=allies.filter(a=>a.u.hp>0&&a.u.hp<a.u.maxHp*.6&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<350).sort((a,b)=>a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp);
-   if(["fighter_wall","rogue_veil","wizard_ward","ranger_evasion"].includes(book.id)&&u.hp<u.maxHp*.65){
-    c.shieldUntil=Math.max(c.shieldUntil,battleTime+5);view.playSkillEffect('guard',pos.x,pos.y);fired=true;
-   }else if(book.id==="cleric_group"&&low.length){
-    low.slice(0,2).forEach(a=>{a.u.hp=Math.min(a.u.maxHp,a.u.hp+Math.max(1,Math.round(a.u.maxHp*.13)));view.playSkillEffect('cleric',pos.x,pos.y,a.pos.x,a.pos.y);});
-    sound.effect('heal');fired=true;
-   }else if(t&&Math.hypot(t.x-pos.x,t.y-pos.y)<=r.range&&["fighter_strike","rogue_pierce","cleric_light","wizard_bolt","ranger_hunt"].includes(book.id)){
-    fired=damageEnemy(t,Math.max(3,Math.round((u===state.player?playerAtk():aiAtk(u))*.4)),id,{spell:book.id==="wizard_bolt"||book.id==="cleric_light"});
-    view.playSkillEffect(u.classId==='wizard'?'wizard':u.classId==='cleric'?'cleric':u.classId,pos.x,pos.y,t.x,t.y);
+  const available=SKILL_BOOKS.filter(book=>book.job===u.classId&&u.learnedSkills?.[book.id]&&u.skillSelection?.[book.id]!==false)
+   .sort((a,b)=>(u.skillOrder?.indexOf(a.id)??999)-(u.skillOrder?.indexOf(b.id)??999));
+  const low=allies.filter(a=>a.u.hp>0&&a.u.hp<a.u.maxHp*.7&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<350).sort((a,b)=>a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp);
+  const opponents=enemies.filter(e=>!e.dead&&Math.hypot(e.x-pos.x,e.y-pos.y)<Math.max(150,r.range));
+  const power=u===state.player?playerAtk():aiAtk(u);
+  for(const book of available){
+   if((c.bookCooldowns[book.id]||0)>battleTime)continue;
+   let fired=false;
+   const shield=()=>{c.shieldUntil=Math.max(c.shieldUntil,battleTime+(book.id==='rogue_escape'?8:5));fired=true;};
+   if(['fighter_wall','rogue_veil','wizard_ward','ranger_evasion','rogue_escape'].includes(book.id)&&u.hp<u.maxHp*.65)shield();
+   else if(book.id==='cleric_group'&&low.length){
+    low.slice(0,2).forEach(a=>{a.u.hp=Math.min(a.u.maxHp,a.u.hp+Math.max(1,Math.round(a.u.maxHp*.13)));});
+    fired=true;sound.effect('heal');
+   }else if(book.id==='cleric_rescue'&&low.some(a=>a.u.hp<a.u.maxHp*.5)){
+    const ally=low[0];ally.u.hp=Math.min(ally.u.maxHp,ally.u.hp+Math.max(1,Math.round(ally.u.maxHp*.3)));fired=true;sound.effect('heal');
+   }else if(['fighter_rally','fighter_shout','cleric_ward'].includes(book.id)){
+    const safe=book.id==='cleric_ward'?low.slice(0,1):allies.filter(a=>a.u.hp>0&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<350&&a.u.hp<a.u.maxHp*.85);
+    if(safe.length){safe.slice(0,book.id==='fighter_rally'?3:4).forEach(a=>{combat(a.u).shieldUntil=Math.max(combat(a.u).shieldUntil,battleTime+5);});fired=true;}
+   }else if(['rogue_smoke','wizard_frost','ranger_snare'].includes(book.id)){
+    const targets=book.id==='ranger_snare'?(t?[t]:[]):opponents.slice(0,2);
+    if(targets.length){targets.forEach(e=>{combat(e).slowUntil=Math.max(combat(e).slowUntil,battleTime+4);});fired=true;}
+   }else if(t&&Math.hypot(t.x-pos.x,t.y-pos.y)<=r.range){
+    if(['fighter_strike','rogue_pierce','cleric_light','wizard_bolt','ranger_hunt','ranger_aim'].includes(book.id)){
+     fired=damageEnemy(t,Math.max(3,Math.round(power*.4)),id,{spell:['wizard_bolt','cleric_light'].includes(book.id),advantage:book.id==='ranger_aim'});
+    }else if(['fighter_cleave','cleric_purify','wizard_nova','wizard_chain','ranger_volley'].includes(book.id)){
+     const count=['fighter_cleave','wizard_chain'].includes(book.id)?2:3;
+     const targets=opponents.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<125).slice(0,count);
+     if(targets.length>=(book.id==='fighter_cleave'?2:1)){
+      targets.forEach(e=>damageEnemy(e,Math.max(2,Math.round(power*.32)),id,{spell:['cleric_purify','wizard_nova','wizard_chain'].includes(book.id)}));fired=true;
+     }
+    }else if(book.id==='rogue_flurry'){
+     for(let i=0;i<2&&!t.dead;i++)damageEnemy(t,Math.max(2,Math.round(power*.28)),id);
+     fired=true;
+    }
    }
-   if(fired){c.bookAt=battleTime+22;c.visualUntil=performance.now()+500;battleLog((u.name||'주인공')+' · '+book.name+' 자동 발동');break;}
+   if(fired){
+    c.bookAt=battleTime+3;
+    c.bookCooldowns[book.id]=battleTime+(book.level>=19?30:book.level>=14?25:book.level>=6?26:22);
+    c.visualUntil=performance.now()+560;
+    battleLog((u.name||'주인공')+' · '+book.name+' 자동 발동');
+    view.playSkillEffect(book.id,pos.x,pos.y,t?.x??pos.x,t?.y??pos.y);
+    break;
+   }
   }
  }
- if(c.skillAt>battleTime)return;
+ if(c.skillAt>battleTime||(!manual&&u.skillSelection?.base===false))return;
  if(u.classId==='cleric'){var low=allies.filter(function(a){return a.u.hp<a.u.maxHp*.55&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<360;}).sort(function(a,b){return a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp;})[0];if(low){low.u.hp=Math.min(low.u.maxHp,low.u.hp+Math.round(low.u.maxHp*.22)+r.mod);c.skillAt=battleTime+10;c.visualUntil=performance.now()+600;battleLog((u===state.player?'나':u.name)+' · 치유의 기도');sound.effect('heal');view.playSkillEffect('cleric',pos.x,pos.y,low.pos.x,low.pos.y);return;}}
  if(!t)return;var power=u===state.player?playerAtk():aiAtk(u);
  if(u.classId==='fighter'&&u.hp<u.maxHp*.45){c.shieldUntil=battleTime+4;c.skillAt=battleTime+12;battleLog('수호 자세 · AC +2');view.playSkillEffect('guard',pos.x,pos.y);return;}
