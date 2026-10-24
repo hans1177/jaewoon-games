@@ -86,7 +86,7 @@ jobs:
       - name: PC WEB source and owner-scope regression
         id: pc_web
         if: ${{ !cancelled() }}
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           node --test qa/web-vibe-worker.test.mjs qa/vibe2-web-experience-ingest.test.mjs
@@ -96,7 +96,7 @@ jobs:
       - name: PC ROBLOX source and game-readiness regression
         id: pc_roblox
         if: ${{ !cancelled() }}
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           node --test qa/company-development-roblox-gameplay-product-readiness.test.mjs
@@ -106,7 +106,7 @@ jobs:
       - name: PC common asset quality regression
         id: pc_assets
         if: ${{ !cancelled() }}
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           node --test qa/common-asset-quality-cleanup.test.mjs
@@ -115,7 +115,7 @@ jobs:
 
       - name: Preserve three independently verified PC QA outcomes
         if: ${{ !cancelled() }}
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $ErrorActionPreference = 'Stop'
           $web = '${{ steps.pc_web.outcome }}'
