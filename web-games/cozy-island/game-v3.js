@@ -81,7 +81,7 @@ runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButto
 runtime.bindTouchButton(ui.barracks,openBarracks);
 runtime.bindTouchButton(ui.workers,openWorkerShop);
 runtime.bindTouchButton(ui.fishingCommand,startFishing);
-runtime.bindTouchButton(ui.shipping,shipGoods);
+runtime.bindTouchButton(ui.trade,()=>window.dispatchEvent(new Event('cozy:open-trade')));
 runtime.bindTouchButton(ui.center,()=>{game.siegeOverview=true;renderer.centerCamera();toast('🏰 성채 전장 전체 보기')});
 runtime.bindTouchButton(ui.zoomIn,()=>{game.siegeOverview=true;renderer.changeZoom(1.2)});
 runtime.bindTouchButton(ui.zoomOut,()=>{game.siegeOverview=true;renderer.changeZoom(1/1.2)});
