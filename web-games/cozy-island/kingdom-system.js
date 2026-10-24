@@ -85,3 +85,25 @@ function render(){
      button('ally:'+p.id+':'+(ally?'hostile':'ally'),ally?'⚔️ 파기':'🤝 동맹',p.defeated||(!ally&&api.state.coins<80))+'</div>';
    }).join('');
  }
+ if(section==='sound'){
+  body.innerHTML='<p class="ks-note">자체 합성한 잔잔한 BGM 4곡. 전투 시 북소리·고동음과 한국어 이벤트 음성을 재생합니다.</p>'+
+   button(music?'stop':'play',music?'⏹ 음악 정지':'▶ 음악 재생')+
+   '<label class="ks-field">재생곡<select id="ks-track">'+songNames.map((name,i)=>'<option value="'+i+'" '+(config.track===i?'selected':'')+'>'+name+'</option>').join('')+'</select></label>'+
+   '<label class="ks-field">음량 <output>'+Math.round(config.volume*100)+'%</output><input id="ks-volume" type="range" min="0" max="100" value="'+Math.round(config.volume*100)+'"></label>'+
+   button('voice',config.voice?'🔊 이벤트 음성 켜짐':'🔇 이벤트 음성 꺼짐')+button('drum','🥁 북소리 듣기');
+ }
+ if(section==='multiplayer')renderMultiplayer();
+}
+document.querySelector('#systemCommand')?.addEventListener('click',()=>{section='save';render();dialog.showModal()});
+document.querySelector('#systemClose')?.addEventListener('click',()=>dialog.close());
+tabs?.addEventListener('click',e=>{
+ const t=e.target.closest('[data-tab]')?.dataset.tab;
+ if(t){section=t==='game'?'save':t;render()}
+});
+body.addEventListener('input',e=>{
+ if(e.target.id==='ks-track'){config.track=Number(e.target.value)||0;beatIndex=0;audioSettings()}
+ if(e.target.id==='ks-volume'){
+  config.volume=Math.max(0,Math.min(1,Number(e.target.value)/100));
+  body.querySelector('output').textContent=Math.round(config.volume*100)+'%';audioSettings();
+ }
+});
