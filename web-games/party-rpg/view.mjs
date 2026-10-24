@@ -11,7 +11,7 @@ export class PartyView{
  constructor(canvas,{onLoad=()=>{}}={}){
   this.canvas=canvas;this.models=new Map();this.actors=new Map();this.staticRoot=new THREE.Group();this.worldSignature='';this.assetRevision=0;
   this.targetYaw=Math.PI/4;this.yaw=this.targetYaw;this.pitch=.73;this.zoom=1;this.targetZoom=1;this.offset=new THREE.Vector2();this.focus=new THREE.Vector3();this.follow='player';this.selection='player';this.destination=null;
-  this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);this.hit=new THREE.Vector3();this.lastAt=0;this.frameCost=16;this.quality=1;this.qualityAt=0;this.labels=[];this.lastLabelsAt=0;this.ready=false;this.worldMood=null;this.torchLights=[];this.torchFlames=[];this.climateParticles=null;this.weatherKind='clear';this.qualityPreset='auto';this.terrainTint=new THREE.Color();
+  this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);this.hit=new THREE.Vector3();this.lastAt=0;this.frameCost=16;this.quality=1;this.qualityAt=0;this.labels=[];this.lastLabelsAt=0;this.ready=false;this.worldMood=null;this.torchLights=[];this.torchFlames=[];this.climateParticles=null;this.weatherKind='clear';this.qualityPreset='auto';this.banners=[];this.terrainTint=new THREE.Color();
   try{
    this.gl=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});this.gl.outputColorSpace=THREE.SRGBColorSpace;this.gl.toneMapping=THREE.ACESFilmicToneMapping;this.gl.toneMappingExposure=.83;this.gl.setClearColor(0x242a2a);this.gl.sortObjects=true;
    this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x49514f,12,58);this.scene.add(this.staticRoot);
@@ -42,7 +42,7 @@ export class PartyView{
  }
  resize(){
   this.width=Math.max(1,innerWidth);this.height=Math.max(1,innerHeight);if(!this.gl)return;
-  this.mobile=navigator.maxTouchPoints>0||this.width<900;this.gl.setPixelRatio(Math.min(devicePixelRatio||1,this.mobile?Math.min(1.05,this.width<460?.9:1):1.45)*this.quality);this.gl.setSize(this.width,this.height,false);
+  this.mobile=navigator.maxTouchPoints>0||this.width<900;this.gl.setPixelRatio(Math.min(devicePixelRatio||1,this.qualityPreset==='low'?(this.mobile?.7:.88):this.qualityPreset==='high'?(this.mobile?1.15:1.65):(this.mobile?Math.min(1.05,this.width<460?.9:1):1.45))*this.quality);this.gl.setSize(this.width,this.height,false);
   const span=this.height/(this.mobile?40:45);this.camera.left=-span*this.width/this.height/2;this.camera.right=-this.camera.left;this.camera.top=span/2;this.camera.bottom=-span/2;this.camera.updateProjectionMatrix();
  }
  direction(x,y){const length=Math.min(1,Math.hypot(x,y)),a=Math.cos(this.yaw)*x+Math.sin(this.yaw)*y/Math.sin(this.pitch),b=-Math.sin(this.yaw)*x+Math.cos(this.yaw)*y/Math.sin(this.pitch),d=Math.hypot(a,b)||1;return{x:a/d*length,y:b/d*length};}
@@ -109,7 +109,7 @@ groundMaterial(zone,dungeon){
  // 지형·배경: 기존 등록 CC0 3D 모델만 사용하며 전투 판정과 이동 충돌은 변경하지 않는다.
 buildWorld(live){
  this.staticRoot.traverse(o=>{if(o.userData.ownedGeometry)o.geometry.dispose();if(o.userData.ownedMaterial)o.material.dispose();if(o.isInstancedMesh)o.dispose();});
- this.staticRoot.clear();this.weather=null;this.climateParticles=null;this.torchLights.length=0;this.torchFlames.length=0;
+ this.staticRoot.clear();this.weather=null;this.climateParticles=null;this.torchLights.length=0;this.torchFlames.length=0;this.banners.length=0;
  const zone=live.state.zone,dungeon=!!live.dungeon,w=live.worldW*SCALE,h=live.worldH*SCALE;
  const mood=dungeon?{sky:0x1a2125,fog:0x29302f,far:55,light:0xeac48c,intensity:1.0}:[
   {sky:0x3c4548,fog:0x4e5653,far:76,light:0xffdaa3,intensity:1.75},
@@ -286,6 +286,26 @@ buildWorld(live){
   }
   puddles.instanceMatrix.needsUpdate=true;puddles.userData.ownedGeometry=true;puddles.userData.ownedMaterial=true;this.staticRoot.add(puddles);
  }
+ // 문장과 행정 깃발. 유니티/외부 다운로드 없이 기하체를 조합해 중세 도시의 실루엣을 강화한다.
+ if(!dungeon&&(zone===0||zone>=7)){
+  const spots=zone===0?[[215,150],[1185,150],[235,775],[1165,775],[700,900]]:
+    zone===7?[[640,290],[1120,290],[640,660],[1120,660]]:
+    zone===8?[[365,350],[1000,350],[1370,350]]:
+    zone===9?[[460,390],[1030,390],[660,830]]:
+    [[430,360],[850,360],[1270,360]];
+  for(let i=0;i<spots.length;i++){
+   const [x,y]=spots[i],post=new THREE.Mesh(new THREE.CylinderGeometry(.032,.038,3.55,6),new THREE.MeshStandardMaterial({color:0x66584b,roughness:.86,metalness:.18}));
+   post.position.set(x*SCALE,1.8,y*SCALE);post.userData.ownedGeometry=true;post.userData.ownedMaterial=true;this.staticRoot.add(post);
+   const banner=new THREE.Group();banner.position.set(x*SCALE,2.55,y*SCALE);banner.rotation.y=(i%2)*Math.PI*.5;
+   const fabric=new THREE.Mesh(new THREE.PlaneGeometry(.66,1.35,1,2),new THREE.MeshStandardMaterial({color:zone===0?0x743a38:zone===8?0x386069:zone===10?0x5a426f:0x795133,roughness:.99,side:THREE.DoubleSide}));
+   fabric.position.x=.39;fabric.position.y=-.42;fabric.userData.ownedGeometry=true;fabric.userData.ownedMaterial=true;banner.add(fabric);
+   const trim=new THREE.Mesh(new THREE.PlaneGeometry(.56,.12),new THREE.MeshBasicMaterial({color:0xc8a56d,side:THREE.DoubleSide}));
+   trim.position.set(.39,.135,.011);trim.userData.ownedGeometry=true;trim.userData.ownedMaterial=true;banner.add(trim);
+   const crest=new THREE.Mesh(new THREE.CircleGeometry(.14,8),new THREE.MeshBasicMaterial({color:0xe4bb78,side:THREE.DoubleSide}));
+   crest.position.set(.39,-.39,.015);crest.userData.ownedGeometry=true;crest.userData.ownedMaterial=true;banner.add(crest);
+   this.staticRoot.add(banner);this.banners.push(banner);
+  }
+ }
  // 한 번 생성한 점군으로 먼지·눈·반딧불의 미세한 이동을 표현한다.
  const vertices=[],particleCount=this.mobile?42:95;
  for(let j=0;j<particleCount;j++)vertices.push((random(j+827)-.5)*32,.7+random(j+422)*4,(random(j+1274)-.5)*28);
@@ -450,7 +470,8 @@ buildWorld(live){
    }
    cloud.mesh.geometry.attributes.position.needsUpdate=true;
   }
-  this.qualityPreset=env.quality||'auto';
+  if(this.qualityPreset!==(env.quality||'auto')){this.qualityPreset=env.quality||'auto';this.resize();}
+  for(let i=0;i<this.banners.length;i++){const banner=this.banners[i];banner.rotation.z=Math.sin(now*.0012+i*1.7)*(weather==='dust'||weather==='rain'?.08:.035);}
  }
  render(live){
   if(!this.ready)return;const started=performance.now();if(this.mobile&&this.lastRenderedAt&&started-this.lastRenderedAt<30)return;this.lastRenderedAt=started;const now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
