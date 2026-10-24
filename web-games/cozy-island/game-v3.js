@@ -351,10 +351,16 @@ function updateHUD(){
   }
 }
 function canMoveTo(x,y){const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
+// 메인: 조이스틱/키보드 화면 방향과 45도 쿼터뷰 카메라를 일치시킨다.
+// 터치 자동이동은 이미 월드좌표이므로 재회전하지 않는다. 기존 속도·충돌·저장은 그대로다.
 function updateMovement(dt){
   let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);
-  if(dx||dy)moveTarget=null;
-  else if(moveTarget){
+  if(dx||dy){
+    moveTarget=null;
+    const screenX=dx,screenY=dy;
+    dx=screenX*.73+screenY*.68;
+    dy=-screenX*.68+screenY*.73;
+  }else if(moveTarget){
     dx=moveTarget.x-player.x;dy=moveTarget.y-player.y;
     if(Math.hypot(dx,dy)<57){moveTarget=null;return}
   }else return;
