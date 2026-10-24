@@ -53,6 +53,21 @@ test('포근섬 웹게임 3D는 기존 좌표·원본 에셋·터치 입력·저
     'actor:knight.glb','actor:barbarian.glb','actor:skeleton-warrior.glb']){
     assert.ok(renderer.includes(token),'CC0 source missing '+token);
   }
+  // 기존 전 지역 데이터를 자체 몬스터/전투 구조로 덮어쓰지 않고 읽기 전용 연결.
+  for(const label of ['this.north3','this.west3','this.volcano3','this.cave3',
+    'this.jungleWest3','production.lumberBuilt','production.mineBuilt',
+    'village.defenseTowerBuilt','village.townHallBuilt',
+    'game.northernMobs','game.volcanoEnemies','game.abyssEnemies',
+    'game.jungleCampEnemies','game.westBoss','black-ore:','abyss-crystal:'])
+    assert.ok(renderer.includes(label),'3D authored world segment missing '+label);
+  for(const [file,field] of [
+    ['north-region.js','game.northernMobs = mobs'],
+    ['darkness-flame-v19.js','game.volcanoEnemies=regionEnemies'],
+    ['abyss-cave-v23.js','game.abyssEnemies=enemies'],
+    ['jungle-west-camp.js','game.jungleCampEnemies=enemies'],
+    ['economy-west-v2.js','game.westBoss=westBoss']
+  ])assert.ok(read('web-games/cozy-island/'+file).includes(field),
+    'canonical 3D binding missing: '+file);
   assert.match(world,/currentGame\.boars=boars/);
   assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
   assert.match(game,/runtime\.queueSaveProgress\(state\)/);
