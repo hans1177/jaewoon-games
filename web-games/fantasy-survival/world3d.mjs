@@ -330,6 +330,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
   const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
+  let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null;
   const resourceBatches=new Map();
   let currentBiome='forest';
   let lastHeroPoseX=null,lastHeroPoseY=null,lastHeroPoseAt=0;
@@ -606,8 +607,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     // Atmosphere and foliage changes are Vibe presentation only. The existing biome
     // classifier, collision, damage, spawn and player movement remain authoritative.
-    let tileIndex=0,seamTileIndex=0;
     const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
+    // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
+    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier){
+      let tileIndex=0,seamTileIndex=0;
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
       // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
@@ -632,6 +635,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     biomeTiles.instanceColor.needsUpdate=true;
     floorSeamTiles.instanceMatrix.needsUpdate=true;
     floorSeamTiles.instanceColor.needsUpdate=true;
+      lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;
+    }
     interactables.length=0;
     const seen=state.last||Date.now();
     if(hero){
