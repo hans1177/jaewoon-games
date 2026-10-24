@@ -20,6 +20,19 @@
 @media(max-height:550px) and (min-width:701px){#introMenu{grid-template-columns:1fr 250px;gap:30px;padding:10px 25px}.introCopy h1{font-size:40px;margin:12px 0}.introCopy p{font-size:12px;margin:8px 0}.titleLine{margin:12px 0}.introMenuButtons{margin:15px 0 5px}#introPortrait{max-width:240px}#partyCards{bottom:68px}.partyCard{width:56px}.partyRole{display:none}#partyInspect{bottom:170px}#objective{top:88px;max-width:250px;font-size:10px}#cameraTools{top:88px}#combatLog{display:none}.creatorLayout{grid-template-columns:190px 1fr;gap:20px}.dialoguePortrait{max-width:200px}.dialogueLayout{grid-template-columns:200px 1fr;gap:25px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
+/* GRIM CRPG: iron, ash, canvas, parchment; narrow square edges instead of playful cards. */
+:root{--gold:#a99878;--bright:#d4ccb7;--edge:#625e50;--ink:#171b1c;--paper:#c8c3b7;--muted:#8f9391}
+#start{background:radial-gradient(ellipse at 23% 44%,#49443b6b,transparent 51%),linear-gradient(125deg,#101517f5,#282b2de8 55%,#101417f5)}
+.panel,.card{background:linear-gradient(145deg,#303232f4,#171b1dfb);border-color:#636358;box-shadow:0 10px 35px #000b,inset 0 0 0 1px #ffffff07}
+.menuBtn,.row button,#startBtn,.goldButton{border:1px solid #68665a;border-radius:0;background:linear-gradient(170deg,#46453e,#262a29);color:#d0c7b0;text-shadow:0 1px 1px #000;box-shadow:inset 0 1px #ffffff15,0 2px 6px #0008}
+.menuBtn:hover,.row button:hover{background:linear-gradient(#545248,#303331)}
+.portrait{filter:saturate(.54) contrast(1.12) brightness(.84);border:2px solid #55554b;border-radius:0}
+#hud .panel,#objective,#combatLog{background:linear-gradient(140deg,#202629ee,#131718f0);border:1px solid #5b625b;color:#caccc1}
+.eyebrow{color:#b2a58e}.gold{color:#b1a083}
+.dialogueLayout blockquote{border-left:2px solid #777666;color:#d1c7af;background:#202526a8}
+.journalEntry{background:linear-gradient(145deg,#2a3031,#1e2424);border:1px solid #565e5a;box-shadow:inset 0 1px #ffffff09}
+@media(max-width:700px){#start{background:linear-gradient(140deg,#141a1b,#22282a)}}
+
 </style>
 </head>
 <body>
@@ -209,10 +222,20 @@ var COMPANION_SECRETS=[
  '카일은 마왕의 전령을 살려 준 적이 있다. 그 전령은 그를 원수 대신 옛 친구라고 불렀다.',
  '네오는 기억을 담는 노래를 만든다. 잃어버린 이름을 모두 부를 때까지 노래의 끝을 쓰지 않겠다고 한다.'
 ];
+
+var INCIDENTS=[
+ {name:'북문에 남은 군번',person:'루카',lead:'봉인된 북문에서 전사자 명부를 발견했다. 살아 돌아온 자의 칸에는 주인공의 서명이 있다.',a:'루카를 추궁해 명부의 마지막 밤을 밝힌다',b:'루카의 부하 가족을 먼저 보호한다',truth:'루카는 명령받은 봉인을 지켰고, 구조 요청을 들었으나 문을 열지 못했다.',guard:'실종 수비대의 가족들은 네가 신원을 숨긴 덕분에 보복을 피했다.'},
+ {name:'이름 없는 무덤',person:'미나',lead:'숲의 비석 아래에는 기록관의 봉랍이 묻혀 있다. 미나의 아버지는 잊힌 사람들을 직접 지웠다.',a:'미나에게 금지된 기록의 진실을 공개하게 한다',b:'미나가 잃어버릴 기억을 먼저 지킨다',truth:'미나는 기록의 주인을 밝히고 자기 어린 시절의 마지막 여름을 잊었다.',guard:'기록은 숨겨졌지만 미나는 아버지가 남긴 열쇠를 네게 맡겼다.'},
+ {name:'동굴의 두 번째 목소리',person:'제이드',lead:'되돌아오는 메아리는 죽은 정찰병의 신호다. 제이드는 생존 증인을 버리고 도망쳤다.',a:'제이드가 생존자의 마지막 증언을 기록하게 한다',b:'남은 정찰대원을 위해 봉인을 다시 덮는다',truth:'제이드는 함께 도망칠 수 있었다는 사실을 인정했다.',guard:'제이드는 살아남은 병사를 구했지만 명예 회복을 포기했다.'},
+ {name:'사막의 공물 장부',person:'리안',lead:'장부에는 비 한 번의 대가로 바쳐진 어린아이들의 이름이 적혀 있다.',a:'지배층의 공모를 공개한다',b:'팔린 이름을 가족에게 먼저 돌려준다',truth:'마을의 풍년은 주민들의 기억과 맞바뀌었다. 귀족이 그 거래를 승인했다.',guard:'리안의 동생은 이름을 되찾았으나 그를 여전히 알아보지 못했다.'},
+ {name:'눈 아래 봉인된 맹세',person:'세라',lead:'신전의 옛 축복문에는 수호자 한 명을 매 세대 남겨야 한다는 조항이 있다.',a:'세라와 함께 맹약을 파기할 근거를 찾는다',b:'봉인의 후계자와 협상할 길을 마련한다',truth:'성직자들은 맹약을 축복이 아니라 경고로 기록했다.',guard:'세라는 의식의 문구를 보관하고 희생을 줄일 방법을 찾았다.'},
+ {name:'사라진 도시의 살아 있는 재판',person:'보린',lead:'괴물로 몰린 주민들이 그곳에서 지금도 재판을 기다리고 있다.',a:'살아남은 시민들의 증언을 모두 읽는다',b:'보복을 피하도록 증인의 신원을 감춘다',truth:'왕은 도시를 파괴하지 않았다. 이름을 지운 자들로부터 지키고 있었다.',guard:'보린은 첫 귀환자의 증언을 보호하며 전쟁을 피할 시간을 벌었다.'}
+];
+
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=2;s.intro=!!s.intro;for(var key of ["quests","checks"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
+ s.version=3;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
 }
 function storyVisit(zone){
  if(zone<1||zone>6)return;
@@ -230,15 +253,28 @@ function storyClear(index){state.story.cleared[index]=true;save();}
 function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';return '맹약은 끝났어. 동료들과 남은 길을 자유롭게 탐험해.';}
 function storyReady(key){var s=state.story;return key==='fort'?s.cleared[0]&&s.visited[1]&&s.visited[2]:key==='temple'?s.choices.fort&&s.cleared[1]&&s.visited[3]&&s.visited[4]:key==='ending'?s.choices.temple&&s.cleared[2]&&s.visited[5]&&s.visited[6]:false;}
 function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();storyJournal();}
+function incidentChoice(zone,path){
+ if(!state.story.visited[zone]||state.story.cases[zone]||!INCIDENTS[zone-1]||!['truth','guard'].includes(path))return;
+ var test=path==='truth'?checkAbility('persuade',11+zone):{success:true,roll:null,total:null};
+ var result=path==='truth'&&test.success?'truth':'guard';
+ state.story.cases[zone]={path:result,requested:path,roll:test.roll,total:test.total,failed:path==='truth'&&!test.success};
+ save();battleLog(INCIDENTS[zone-1].person+' · '+(result==='truth'?'증언 기록':'증인 보호'));storyJournal();
+}
 function storyJournal(){
  var s=state.story,h='<p class="gold">잊힌 길의 서약 · 오리지널 캠페인</p><p>'+storyObjective()+'</p>';
  h+='<p>전투는 실시간이고 일시정지할 수 있어. 능력 판정은 d20을 사용하며 여정은 자동 저장돼.</p><h3>서막 · 지도가 잊은 마을</h3><p>장례식 날, 마을의 지도에서 길 하나가 사라졌다. 아무도 그 길을 기억하지 못했다. 너의 주머니에서 발견된 편지에는 단 한 문장만 적혀 있었다. “나를 찾지 마. 내 이름을 찾아 줘.” 편지에는 네 필체로 서명이 되어 있었다.</p>';
  STORY_NOTES.forEach(function(n,i){h+='<section class="journalEntry"><h3>'+(i+1)+'. '+n[0]+'</h3><p>'+(s.visited[i+1]?n[1]:'아직 발견하지 못한 기록 · '+ZONES[i+1].name)+'</p></section>';});
+ h+='<h3>사건 수첩 · 증인의 진실과 대가</h3><p>증거를 발견하면 해당 사건을 조사할 수 있어. 증언은 위험을 부르고, 보호는 진실을 가릴 수 있어.</p>';
+ INCIDENTS.forEach(function(c,i){var z=i+1,re=s.cases[z],seen=!!s.visited[z];h+='<section class="journalEntry"><span class="eyebrow">사건 '+z+' · '+c.person+'</span><h3>'+c.name+'</h3><p>'+(seen?c.lead:'미확인 · '+ZONES[z].name+'에서 조사 가능')+'</p>';
+ if(seen&&re)h+='<blockquote>'+(re.path==='truth'?c.truth:c.guard)+'</blockquote><p class="gold">'+(re.failed?'설득 실패 · 증인 보호로 전환':'기록 완료 · '+(re.path==='truth'?'진실 공개':'증인 보호'))+'</p>';
+ else if(seen)h+='<button class="menuBtn" data-case="'+z+'" data-method="truth">[설득 d20] '+c.a+'</button><button class="menuBtn secondary" data-case="'+z+'" data-method="guard">'+c.b+'</button>';
+ h+='</section>';});
  var options=[['fort','요새 · 포로의 증언','요새의 적들은 마을에서 추방된 사람들이었다. 루카는 포로를 광장에 세워 증언하게 하자고 한다. 미나는 먼저 안전한 은신처가 필요하다고 말한다.',['witness','증언을 공개한다'],['refuge','포로를 먼저 보호한다']],['temple','신전 · 풍년의 대가','신전의 문서에는 마을과 지워진 도시가 하나였다고 적혀 있었다. 진실을 즉시 알릴까, 돌아올 사람들의 거처부터 마련할까?',['reveal','마을에 진실을 알린다'],['prepare','귀환할 이들을 준비한다']],['ending','왕좌 · 마지막 이름','왕은 칼을 내려놓았다. “나는 괴물을 막는 자가 아니다. 너희가 잊은 이들을 기억하는 자다.” 맹약을 끊으면 도시가 돌아오고 마을의 풍년은 끝난다. 맹약을 새로 쓰면 이름은 돌아오지만 누군가는 경계에 남아야 한다.',['release','맹약을 끊고 모두 돌려보낸다'],['keeper','경계의 수호자로 남는다']]];
  options.forEach(function(o){h+='<section class="journalEntry"><h3>'+o[1]+'</h3>';if(storyReady(o[0])){h+='<p>'+o[2]+'</p>';if(s.choices[o[0]]){var selected=o.slice(3).find(function(v){return v[0]===s.choices[o[0]];});h+='<p class="gold">선택: '+(selected?selected[1]:'기록됨')+'</p>';}else o.slice(3).forEach(function(v){h+='<button class="menuBtn" data-story="'+o[0]+'" data-value="'+v[0]+'">'+v[1]+'</button>';});}else h+='<p>이전 장의 선택과 해당 지역 조사·던전 클리어 후 열려.</p>';h+='</section>';});
  if(s.choices.ending){h+='<h3>종장 · '+(s.choices.ending==='release'?'모두의 아침':'경계에 켜진 등불')+'</h3><p>'+(s.choices.ending==='release'?'풍년은 끝났다. 돌아온 이들은 빈 밭을 함께 갈았다. 마을의 지도에는 길이 다시 네 개가 되었다. 너의 편지는 더 이상 사라지지 않았다.':'너는 경계에 등불을 걸었다. 사람들은 두 도시를 오가며, 떠나는 이의 이름을 소리 내어 불렀다. 누군가 너를 잊을 때마다 동료들이 등불 곁으로 돌아왔다.')+'</p><p>'+(s.choices.fort==='witness'?'광장의 증언은 잊힌 사람들의 권리를 되찾는 첫 기록이 되었다.':'네가 마련한 은신처는 두 도시를 잇는 첫 여관이 되었다.')+' '+(s.choices.temple==='reveal'?'진실을 들은 마을은 오랜 논쟁 끝에 새 약속을 적었다.':'미리 마련한 집들에는 돌아온 가족의 불빛이 하나씩 켜졌다.')+'</p>';}
- h+='<h3>동료의 고백과 개인 의뢰</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id]){var q=s.quests[a.id];h+='<section class="journalEntry"><b>'+a.name+'</b><p>'+COMPANION_SECRETS[i]+'</p>';if(q)h+='<p class="gold">'+(q.path==='truth'?'잊힌 기록을 밝힌다':'증인을 안전하게 지킨다')+' · '+ZONES[q.zone].name+' · '+(q.complete?'완료':a.party?'이 동료와 함께 방문해야 해.':'동료로 데려가야 진행돼.')+'</p>';else h+='<p>동료 대화에서 사건의 진실을 선택할 수 있어.</p>';h+='</section>';}});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
- openModal('잊힌 길의 서약',h);modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});
+ if(s.choices.ending){var testimony=Object.keys(s.cases).filter(function(k){return s.cases[k].path==='truth';}).length,protectedPeople=Object.keys(s.cases).filter(function(k){return s.cases[k].path==='guard';}).length;h+='<section class="journalEntry"><h3>종장 · 누구의 이름이 남았는가</h3><p>공개된 증언 '+testimony+'건, 보호된 증인 '+protectedPeople+'명. '+(testimony>=protectedPeople?'마을의 의회는 지워진 이름을 다시 읽기 시작했으나, 봉인을 지켰던 이들과 격렬하게 충돌했다.':'귀환한 이들의 거처는 안전했지만, 진실을 요구하는 유족들은 장부 공개를 기다리고 있다.')+'</p></section>';}
+  h+='<h3>동료의 고백과 개인 의뢰</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id]){var q=s.quests[a.id];h+='<section class="journalEntry"><b>'+a.name+'</b><p>'+COMPANION_SECRETS[i]+'</p>';if(q)h+='<p class="gold">'+(q.path==='truth'?'잊힌 기록을 밝힌다':'증인을 안전하게 지킨다')+' · '+ZONES[q.zone].name+' · '+(q.complete?'완료':a.party?'이 동료와 함께 방문해야 해.':'동료로 데려가야 진행돼.')+'</p>';else h+='<p>동료 대화에서 사건의 진실을 선택할 수 있어.</p>';h+='</section>';}});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
+ openModal('잊힌 길의 서약',h);modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});modalBody.querySelectorAll('[data-case]').forEach(function(b){b.onclick=function(){incidentChoice(Number(b.dataset.case),b.dataset.method);};});
 }
 
 // D20-inspired real-time rules; not a claim of full tabletop rules compatibility.
@@ -291,8 +327,10 @@ function confirmCharacter(){var name=document.getElementById('heroName').value.t
 function beginAdventure(){if(!state.player.identityCreated){showCreator();return;}gameStarted=true;document.getElementById('start').hidden=true;keys={};joy.x=joy.y=0;document.getElementById("partyCards").replaceChildren();uiPartyNodes.clear();partyHud();save();if(!state.story.intro)showIntro(0);}
 function showIntro(step){
  introStep=step;var scenes=[{portrait:state.player.portraitId,speaker:'지도가 잊은 마을',chapter:'서막 · 첫 번째 편지',text:'장례식이 끝난 저녁, 지도에서 북쪽 길이 사라졌다. 마을 사람들은 그런 길은 처음부터 없었다고 했다. 너의 주머니에는 낡은 편지 한 장이 남아 있었다.',quote:'나를 찾지 마. 내 이름을 찾아 줘.'},{portrait:0,speaker:'루카 · 관문의 수비대장',chapter:'서막 · 기억하는 사람',text:'“그 길에서 마지막으로 돌아온 건 너야.” 루카는 닳은 인장을 내밀었다. 그도 잃어버린 사람들을 찾고 있었다. 열 명의 동료 가운데 누구와 길을 걸을지는 네가 결정해야 했다.',quote:'혼자라면 길을 찾겠지. 함께라면 돌아올 수 있어.'},{portrait:1,speaker:'미나 · 기록관의 딸',chapter:'서막 · 잊힌 길의 서약',text:'“초원의 이정표부터 확인해. 숲의 묘지에도 같은 인장이 있어.” 미나는 지도의 빈 곳에 작은 점을 찍었다. 너는 편지를 접었다. 서명은 분명 네 필체였다.',quote:'지워진 것은 길일까, 우리가 기억하던 진실일까.'}];
+ scenes.splice(1,0,{portrait:0,speaker:'북쪽 관문의 마지막 밤',chapter:'서막 · 피 묻은 군번표',text:'비에 잠긴 관문 앞에 죽은 병사들의 신발이 한 줄로 놓여 있다. 루카는 문을 닫았던 자의 이름을 아직 말하지 못한다. 성벽에 남은 긁힌 자국은 문 바깥에서가 아니라 안쪽에서 시작되었다.',quote:'“문 너머의 사람들을 버린 자는 누구인가.”'});
+ scenes.push({portrait:1,speaker:'기록관의 봉인',chapter:'서막 · 미나의 거짓말',text:'미나는 지도가 비어 있던 자리에 붉은 잉크를 떨어뜨린다. 그날 밤 기록관의 불은 꺼지지 않았다. 사라진 이름 중 첫 번째는 네 것이었다. 미나는 그 문서를 읽은 적이 없다고 말하지만, 손은 떨리고 있었다.',quote:'“기억을 돌려놓는다면 누군가는 다시 희생돼.”'});
  var scene=scenes[step];if(!scene){state.story.intro=true;introStep=-1;save();closeModal();toast('동료 메뉴에서 함께할 일행을 골라.');return;}
- openModal('잊힌 길의 서약','<div class="dialogueLayout">'+portraitMarkup(scene.portrait,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+scene.chapter+'</span><h2>'+scene.speaker+'</h2><p>'+scene.text+'</p><blockquote>'+scene.quote+'</blockquote><div class="dialogueFooter"><span>'+(step+1)+' / 3</span><button class="menuBtn" id="introNext">'+(step===2?'여정을 시작한다':'계속 읽는다')+'</button></div><button class="textBtn" id="introSkip">서막 건너뛰기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('introNext').onclick=function(){showIntro(step+1);};document.getElementById('introSkip').onclick=function(){showIntro(3);};
+ openModal('잊힌 길의 서약','<div class="dialogueLayout">'+portraitMarkup(scene.portrait,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+scene.chapter+'</span><h2>'+scene.speaker+'</h2><p>'+scene.text+'</p><blockquote>'+scene.quote+'</blockquote><div class="dialogueFooter"><span>'+(step+1)+' / 3</span><button class="menuBtn" id="introNext">'+(step===scenes.length-1?'여정을 시작한다':'계속 읽는다')+'</button></div><button class="textBtn" id="introSkip">서막 건너뛰기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('introNext').onclick=function(){showIntro(step+1);};document.getElementById('introSkip').onclick=function(){showIntro(scenes.length);};
 }
 function companionMenu(selected){
  var chosen=state.ai.find(function(a){return a.id===selected;})||state.ai[0];var index=portraitIndex(chosen),info=CLASS_INFO[chosen.classId],secret=state.story.companions[chosen.id];
@@ -317,9 +355,10 @@ function companionQuestChoice(a,path){
  save();toast(path==='truth'&&!result.success?'설득 실패 · 대신 증인을 보호하기로 했어.':'동료 개인 의뢰가 시작됐어.');companionDialogue(a);
 }
 function companionDialogue(a){
- var idx=portraitIndex(a),unlocked=!!state.story.companions[a.id],quest=state.story.quests[a.id];
+ var idx=portraitIndex(a),unlocked=!!state.story.companions[a.id],quest=state.story.quests[a.id],event=INCIDENTS.find(function(c){return c.person===a.name;}),eventZone=event?INCIDENTS.indexOf(event)+1:0,eventCase=eventZone?state.story.cases[eventZone]:null;
  var html='<div class="dialogueLayout">'+portraitMarkup(idx,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+role(a).name+' · '+CLASS_INFO[a.classId].title+'</span><h2>'+a.name+'</h2><p>'+(unlocked?COMPANION_SECRETS[idx]:'“이 길을 혼자 걸을 생각이야? 함께라면 서로의 빈 곳을 채울 수 있을 거야.”')+'</p><blockquote>'+(unlocked?'“내 이야기를 기억해 줘. 나도 네 이름을 잊지 않을게.”':'“어디로 가든, 먼저 서로를 믿는 것부터 시작하자.”')+'</blockquote>';
- if(unlocked&&!quest){
+ if(event&&unlocked)html+='<h3>사건 · '+event.name+'</h3><p>'+(eventCase?(eventCase.path==='truth'?event.truth:event.guard):state.story.visited[eventZone]?event.lead+' · 여정 기록에서 조사 방향을 정해 줘.':'아직 사건 현장을 조사하지 못했어.')+'</p>';
+  if(unlocked&&!quest){
   html+='<h3>동료 개인 의뢰</h3><p>진실을 밝혀 지워진 기록을 복원할지, 위험해진 증인을 안전하게 지킬지 선택해.</p>';
   html+='<button class="menuBtn" data-companion-choice="truth">설득 판정 · 진실을 밝히자</button>';
   html+='<button class="menuBtn secondary" data-companion-choice="guard">비밀을 지키고 증인을 보호하자</button>';
