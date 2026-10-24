@@ -336,7 +336,7 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
  assert.match(moduleSource,/getRenderStats:/);
  assert.match(moduleSource,/renderer\.info\.render\.triangles/);
  assert.match(index,/dataset\.nativeTriangles=String\(nativeDraw\.triangles\)/);
- assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,1\.5\)\*qualityFactor\)/);
+ assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,mobileBudget\?\.9:1\.5\)\*qualityFactor\)/);
  assert.match(index,/MAGIC_FOREST_NATIVE_3D_FRAME_FAILED/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
  assert.match(moduleSource,/productionReady:false/);
@@ -508,7 +508,7 @@ test('all authored biomes use original instanced scenery without changing intera
  for(const biome of biomes)assert.ok(mapping.includes(biome+':'),'unmapped biome: '+biome);
  for(const token of [
    'new THREE.InstancedMesh(original.geometry,original.material,49)',
-   'const kind=SCENERY_KIND[tileZone]',
+   'const sceneryChoices=SCENERY_KIND[tileZone]',
    'let batch=sceneryBatches.get(kind)',
    'if(!batch&&models.has(kind))',
    'models.size!==lastSceneryModelCount',
@@ -593,4 +593,37 @@ test('mobile game world taps use existing attack mechanics',()=>{
  assert.ok(html.includes('if(isCombatTapGesture(press,e,performance.now()))handleWorldTap(e)'));
  assert.ok(html.includes('if(isCreative())handleWorldTap(e)'));
  assert.ok(html.includes("SAVE_KEY='jaewoon_fantasy_survival_v1'"));
+});
+
+
+test('all existing native biome environments show distinct authored palette and mixed original CC0 scene models',()=>{
+ const a=moduleSource.indexOf('const BIOME_STYLE=Object.freeze({'),b=moduleSource.indexOf('});',a);
+ assert.ok(a>0&&b>a);
+ const styles=new Function(moduleSource.slice(a,b+3)+';return BIOME_STYLE;')();
+ for(const [first,second] of [['snow','volcano'],['jungle','canyon'],['crystal','forest'],['underwater','desert']]){
+  assert.notEqual(styles[first].floor,styles[second].floor,first);
+  assert.notEqual(styles[first].sky,styles[second].sky,first);
+ }
+ const m=moduleSource.indexOf('const SCENERY_KIND=Object.freeze({'),n=moduleSource.indexOf('});',m);
+ const kinds=new Function(moduleSource.slice(m,n+3)+';return SCENERY_KIND;')();
+ for(const name of ['forest','jungle','swamp','snow','volcano','crystal','desert','underwater','underwater-dungeon']){
+  assert.equal(kinds[name].length,2,name);
+ }
+ assert.match(moduleSource,/const kind=sceneryChoices\\[hash%sceneryChoices\\.length\\]/);
+ assert.match(moduleSource,/tileSeed%17\\*\\.01/);
+ assert.match(moduleSource,/scene\\.fog\\.far=weatherVisualEffects/);
+ assert.match(moduleSource,/for\\(const mark of regionScene\\?\\.landmarks\\|\\|\\[\\]\\)/);
+});
+test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
+ assert.match(moduleSource,/const moving=moveDelta>\\.08&&poseElapsed>0&&poseElapsed<420/);
+ assert.match(moduleSource,/actor\\.lastAttackStamp!==e\\.attackAt/);
+ assert.match(moduleSource,/setLoop\\(attacking\\?THREE\\.LoopOnce:THREE\\.LoopRepeat/);
+ assert.match(moduleSource,/actor\\.anchor\\.position\\.set\\(e\\.x\\*SCALE,0,e\\.y\\*SCALE\\)/);
+ assert.match(moduleSource,/selectedAppearance\\?\\.model==='mage'\\?\\.43/);
+ assert.match(moduleSource,/bolt\\.kind==='mageBolt'/);
+ assert.match(moduleSource,/bolt\\.kind==='playerArrow'/);
+ assert.match(moduleSource,/bolt\\.kind==='sporeOrb'/);
+ assert.match(moduleSource,/bolt\\.kind==='sunOrb'/);
+ assert.match(moduleSource,/mageBoltGeometry\\.dispose\\(\\)/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
