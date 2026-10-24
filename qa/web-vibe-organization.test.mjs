@@ -86,3 +86,48 @@ test('WEB build-up carries only same-game merged owner changes without delaying 
   const foreign={...q.tasks[0],id:'pwa-99999999-aaaa-4bbb-8ccc-222222222222',gameId:'other',sourceRoot:'web-games/other',status:'merged'};
   assert.throws(()=>assertWebVibeQueue({...q,tasks:[foreign,continued.tasks[1]]}),/WEB_VIBE_UNVERIFIED_OR_FOREIGN_LINEAGE/);
 });
+
+test('WEB_VIBE watchdog selects one authenticated queued task with bounded retry and exact file scope',async()=>{
+  const {selectWebVibeRecoveryTask,recordWebVibeRecoveryFailure}=await import('../tools/web-vibe-recovery.mjs');
+  const q=emptyWebVibeQueue();
+  const task={
+    id:'pwa-11111111-2222-4333-8444-555555555555',
+    gameId:'insect-survival',sourceRoot:'web-games/insect-survival',target:'web',
+    sourceFiles:'index.html,client/game.js',status:'queued',goal:'improve input',
+    ownerDirective:true,evidence:['owner-source-authenticated','qa-required-before-pr-merge']
+  };
+  const state={...q,tasks:[task]};
+  const selected=selectWebVibeRecoveryTask(state,{now:'2026-10-24T01:00:00Z'});
+  assert.equal(selected.files,'index.html,client/game.js');
+  assert.equal(selected.gameId,'insect-survival');
+  const first=recordWebVibeRecoveryFailure(state,task.id,{now:'2026-10-24T01:00:00Z'});
+  assert.equal(first.attempts,1);
+  assert.equal(first.queue.tasks[0].status,'queued');
+  assert.equal(selectWebVibeRecoveryTask(first.queue,{now:'2026-10-24T01:20:00Z'}),null);
+  assert.ok(selectWebVibeRecoveryTask(first.queue,{now:'2026-10-24T01:31:00Z'}));
+  const twice=recordWebVibeRecoveryFailure(first.queue,task.id,{now:'2026-10-24T02:00:00Z'});
+  const last=recordWebVibeRecoveryFailure(twice.queue,task.id,{now:'2026-10-24T03:00:00Z'});
+  assert.equal(last.exhausted,true);
+  assert.equal(last.queue.tasks[0].status,'blocked');
+  assert.equal(selectWebVibeRecoveryTask(last.queue,{now:'2026-10-24T04:00:00Z'}),null);
+  assert.equal(last.queue.tasks[0].ownerDirective,true);
+  assert.equal(last.queue.tasks[0].goal,task.goal);
+  assert.equal(selectWebVibeRecoveryTask({...state,tasks:[{...task,status:'review'}]}),null);
+  assert.equal(selectWebVibeRecoveryTask({...state,tasks:[{...task,ownerDirective:false}]}),null);
+  assert.equal(selectWebVibeRecoveryTask({...state,tasks:[{...task,evidence:[]}]}),null);
+  assert.equal(selectWebVibeRecoveryTask({...state,tasks:[{...task,sourceFiles:undefined}]}).files,'*');
+});
+test('PWA cloud queue recovery keeps existing owner intake and independent QA',()=>{
+  const w=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  assert.match(w,/web-recovery-select:/);
+  assert.match(w,/github.event_name == 'schedule' \|\| github.event_name == 'workflow_dispatch'/);
+  assert.match(w,/node tools\/web-vibe-recovery\.mjs select/);
+  assert.match(w,/web-recovery-onepatch:[\s\S]*?group: web-vibe-onepatch-\$\{\{ needs.web-recovery-select.outputs.task_id \}\}/);
+  assert.match(w,/company-constitution-enforcer\.mjs --phase=worker-before-source-write/);
+  assert.match(w,/node --test qa\/web-vibe-worker\.test\.mjs/);
+  assert.match(w,/node tools\/web-vibe-worker\.mjs "--task=pwa-\$WEB_OWNER_TASK_ID"/);
+  assert.match(w,/node tools\/web-vibe-recovery\.mjs failure/);
+  assert.match(w,/WEB_VIBE_RECOVERY_RESULT=PR_CANDIDATE_ONLY_NOT_MERGED/);
+  assert.match(w,/cancel-in-progress: false/);
+  assert.doesNotMatch(w,/git push origin HEAD:main/);
+});
