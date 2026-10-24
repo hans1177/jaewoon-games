@@ -432,6 +432,60 @@ function gameEnvironment(){
  const minutes=environment.minutes,hour=Math.floor(minutes/60),part=hour<5?'night':hour<8?'dawn':hour<17?'day':hour<20?'dusk':'night';
  return {hour,minute:Math.floor(minutes%60),day:environment.day,minutes,phase:part,weather:gameWeather(),effects:environment.effects,quality:environment.quality};
 }
+if(!state.exploration||typeof state.exploration!=='object'||Array.isArray(state.exploration))state.exploration={};
+if(!state.exploration.discovered||typeof state.exploration.discovered!=='object'||Array.isArray(state.exploration.discovered))state.exploration.discovered={};
+if(!state.exploration.camps||typeof state.exploration.camps!=='object'||Array.isArray(state.exploration.camps))state.exploration.camps={};
+// 구역마다 발견하는 실물 기록. 재방문해도 보상은 한 번만 준다.
+const FIELD_LANDMARKS=[{"id":"relic_1_1","zone":1,"x":500,"y":980,"name":"빗물에 잠긴 군번표","text":"같은 병사가 서로 다른 연도에 두 번 징집되었다. 누군가 병역 기록으로 시민을 복제했다."},{"id":"relic_1_2","zone":1,"x":1660,"y":340,"name":"이름 없는 검문소","text":"돌로 긁어 지운 가족 이름 아래 ‘통행료는 기억 한 조각’이라고 쓰여 있다."},{"id":"relic_2_1","zone":2,"x":400,"y":1050,"name":"속이 빈 사냥꾼의 나무","text":"움푹 팬 줄기에 아이들 이름이 거꾸로 새겨져 있다. 실종자들은 숲 안에서 길을 잃은 게 아니다."},{"id":"relic_2_2","zone":2,"x":1680,"y":330,"name":"흑색 실이 묶인 우물","text":"우물 속에 비친 모습에는 한 사람이 더 서 있다. 그 사람의 눈만 물 위에 남는다."},{"id":"relic_3_1","zone":3,"x":470,"y":1000,"name":"석공의 숨겨진 일지","text":"채석장 인부가 돌을 캐다 어른의 치아가 박힌 기둥을 발견했다. 작업반 전체가 다음 날부터 다른 언어를 썼다."},{"id":"relic_3_2","zone":3,"x":1680,"y":280,"name":"무너진 세금 계산대","text":"여기서 죽은 사람들의 이름으로 통행세가 계속 걷히고 있다."},{"id":"relic_4_1","zone":4,"x":430,"y":1050,"name":"붉은 모래의 유리병","text":"유리병 안에 붉은 모래 대신 편지가 들어 있다. 보내는 사람은 아직 태어나지 않았다."},{"id":"relic_4_2","zone":4,"x":1710,"y":340,"name":"소금 묻은 월계관","text":"사막 상인들이 왕관에 소금을 뿌린 이유는 부정한 황제를 다시 깨우지 않기 위해서였다."},{"id":"relic_5_1","zone":5,"x":470,"y":1020,"name":"설원에 남은 따뜻한 발자국","text":"여섯 걸음만 녹지 않았다. 마지막 발자국은 얼음 밑을 향한다."},{"id":"relic_5_2","zone":5,"x":1660,"y":310,"name":"붉은 인장이 찍힌 설계도","text":"제국의 수로가 얼어붙은 땅까지 뻗어 있었다는 도면. 오늘날의 왕국은 모두 그 위에 세워졌다."},{"id":"relic_6_1","zone":6,"x":445,"y":1030,"name":"지워진 원정대의 기념비","text":"흔적을 따라가자 사라진 도시를 멸망시킨 것은 마물 군대가 아니라 시민 명부라는 기록이 드러난다."},{"id":"relic_6_2","zone":6,"x":1675,"y":345,"name":"거꾸로 매달린 종","text":"종을 울린 자에게 죄를 묻지 않고, 종소리를 들은 자에게 죄를 씌운 재판 기록."},{"id":"relic_7_1","zone":7,"x":460,"y":1010,"name":"사라진 관중의 좌석","text":"한 경기의 관중 전원이 판결문에는 살인 공범으로 기록되어 있다. 증인의 이름은 모두 같은 사람이다."},{"id":"relic_7_2","zone":7,"x":1800,"y":390,"name":"검투사 노예의 청동 팔찌","text":"청동 팔찌 안쪽에는 주인을 바꿀 수 없다는 법 대신 주인의 기억을 지워야 한다는 법이 쓰여 있다."},{"id":"relic_8_1","zone":8,"x":480,"y":1040,"name":"배수구의 작은 제단","text":"제물은 은화가 아니라 사망 신고서였다. 신을 달래는 의식은 통계에서 시민을 지우는 작업이었다."},{"id":"relic_8_2","zone":8,"x":1820,"y":380,"name":"백 번째 목소리의 비문","text":"시신 없는 묘비. 그 아래 누군가의 증언이 끊어진 문장으로 반복된다."},{"id":"relic_9_1","zone":9,"x":470,"y":1060,"name":"황금 정원의 조각상","text":"대리석 표면에 돌이 되기 전 쓴 유언이 새겨져 있다. 그녀의 허락 없는 구원은 또 다른 계약이다."},{"id":"relic_9_2","zone":9,"x":1820,"y":360,"name":"위조된 혈통 명부","text":"황실의 혈통은 피가 아니라 상속 가능한 기억의 소유권으로 결정되었다."},{"id":"relic_10_1","zone":10,"x":460,"y":1025,"name":"신탁 장치의 빈 축","text":"신탁의 ‘신성한 구름’은 수천 장의 투표권을 태우며 발생한 연기였다."},{"id":"relic_10_2","zone":10,"x":1830,"y":370,"name":"일곱 번째 언덕의 실험실","text":"실험 기록 끝에는 명백한 질문 하나가 남았다. 기억을 지우기 전에 사람에게 동의를 물었는가?"}];
+function nearbyLandmark(){
+ if(dungeon||state.zone<1)return null;
+ return FIELD_LANDMARKS.filter(l=>l.zone===state.zone&&!state.exploration.discovered[l.id])
+  .sort((a,b)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(p.x-b.x,p.y-b.y))[0]||null;
+}
+function recordLandmark(l){
+ if(!l||dungeon||state.zone!==l.zone||state.exploration.discovered[l.id])return;
+ if(Math.hypot(p.x-l.x,p.y-l.y)>125){moveTarget={x:l.x,y:l.y};toast('유적 기록을 살피려면 더 가까이 가야 해.');return;}
+ state.exploration.discovered[l.id]={day:environment.day,zone:l.zone};
+ const reward=Math.max(12,Math.round(ZONES[l.zone].lv*4+12));
+ state.player.gold+=reward;gainXpUnit(state.player,reward,true);save();
+ sound.effect('story');
+ openModal('숨겨진 기록 · '+l.name,'<p class="gold">'+escapeText(ZONES[l.zone].name)+' · 발견 기록 '+Object.keys(state.exploration.discovered).length+' / '+FIELD_LANDMARKS.length+'</p><p>'+escapeText(l.text)+'</p><p class="gold">탐색 보상: '+reward+'G / 경험치 '+reward+'</p><p class="note">여정 기록에 영구 보관했어. 다른 지역의 기록과 함께 조사하면 옛 제국의 진상을 더 알 수 있어.</p><button class="menuBtn" id="landmarkJournal">탐험 수첩 보기</button>');
+ document.getElementById('landmarkJournal').onclick=storyJournal;
+}
+function explorationJournal(){
+ let h='<h3>탐험 수첩 · 사라진 제국의 유산</h3><p>각 필드에서 직접 다가가 기록을 발견할 수 있어. 발견 즉시 경험치와 금화를 받으며 같은 기록의 보상은 다시 받지 않아.</p>';
+ h+='<p class="gold">현재 발견 '+Object.keys(state.exploration.discovered).length+' / '+FIELD_LANDMARKS.length+'</p>';
+ FIELD_LANDMARKS.forEach(l=>{
+  const done=!!state.exploration.discovered[l.id];
+  h+='<section class="journalEntry"><span class="eyebrow">'+escapeText(ZONES[l.zone].name)+' · '+(done?'발견 완료':'미발견')+'</span><h3>'+(done?escapeText(l.name):'이름을 알 수 없는 유물')+'</h3><p>'+(done?escapeText(l.text):'미발견 기록 · '+escapeText(ZONES[l.zone].name)+'의 큰 지도에서 물음표 표식 확인')+'</p></section>';
+ });
+ return h;
+}
+function campMenu(){
+ if(dungeon||state.zone===0){toast('야영은 마을 밖 필드에서만 가능해.');return;}
+ const cost=12+Math.min(30,Math.round(ZONES[state.zone].lv*.8)),k=environment.day+':'+state.zone,already=!!state.exploration.camps[k];
+ const unsafe=enemies.some(e=>!e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<260)||!!storyBattle||!!imperialBattle;
+ const weather=gameEnvironment().weather;
+ let msg='<p>짐승과 추격자를 피한 안전한 자리에서 천막을 치고 동료와 잠시 쉰다. 기존 장비나 물품을 소비하지 않고 식량 구입 비용만 지불한다.</p>';
+ msg+='<p class="gold">지역 '+escapeText(ZONES[state.zone].name)+' · 야영 식량 '+cost+'G · 2시간 경과 · 파티 체력 최대치의 35% 회복</p>';
+ msg+='<p>날씨: '+({rain:'빗방울이 모닥불을 적신다.',snow:'강풍을 막기 위해 천막을 촘촘히 세운다.',fog:'안개 때문에 감시초소를 높여야 한다.',dust:'모래바람이 불어 잠자리가 불편하다.',ash:'재가 떨어져 야영지를 덮는다.',clear:'별과 모닥불 아래에서 동료들이 몸을 푼다.',interior:'안전한 실내'}[weather])+'</p>';
+ if(already)msg+='<p class="note">이 지역에서는 오늘 이미 야영했어. 게임 날짜가 바뀌면 다시 할 수 있어.</p>';
+ if(unsafe)msg+='<p class="note">근처에 적이 있거나 사건 교전 중이어서 야영할 수 없어.</p>';
+ if(state.player.gold<cost)msg+='<p class="note">식량비가 부족해.</p>';
+ msg+='<button class="menuBtn" id="campRest" '+(already||unsafe||state.player.gold<cost?'disabled':'')+'>야영하고 회복하기</button>';
+ msg+='<button class="menuBtn secondary" id="campBack">돌아가기</button>';
+ openModal('야영 · 행군 보급',msg);
+ document.getElementById('campBack').onclick=systemMenu;
+ document.getElementById('campRest').onclick=()=>{
+  if(state.exploration.camps[k]||dungeon||state.zone===0||state.player.gold<cost||enemies.some(e=>!e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<260)||storyBattle||imperialBattle){toast('야영 가능한 상태가 아니야.');campMenu();return;}
+  state.player.gold-=cost;
+  for(const unit of [state.player,...partyMembers()])unit.hp=Math.min(unit.maxHp,unit.hp+Math.max(1,Math.round(unit.maxHp*.35)));
+  state.exploration.camps[k]=true;environment.minutes+=120;
+  if(environment.minutes>=1440){environment.minutes-=1440;environment.day++;}
+  save();closeModal();sound.effect('heal');toast('야영 완료 · 파티 회복 / 2시간 경과');
+ };
+}
+
 function advanceEnvironment(dt){
  if(!environment.running||dungeon)return;
  environment.minutes+=dt*1.5; // 현실 16분이 게임 하루. 메뉴/전투 일시정지 시 정지.
