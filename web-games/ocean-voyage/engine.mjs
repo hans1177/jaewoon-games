@@ -52,6 +52,23 @@ export const GOODS=Object.freeze([
   {id:'porcelain',name:'도자기',base:340,weight:1,ports:['nagasaki']}
 ]);
 
+// 항구별 공급·수요 정책: 대항해식 지역 명산과 수입품 배치. 기존 교역품 ID를 그대로 사용한다.
+export const PORT_MARKETS=Object.freeze({
+ dawn:{produces:['grain','wood','wool'],imports:['spice','tea','silk'],demand:['spice','tea','glass']},
+ coral:{produces:['grain','wood','wool'],imports:['wine','ore'],demand:['wine','spice','glass']},
+ north:{produces:['wood','wool','ore'],imports:['grain','wine'],demand:['spice','silk','grain']},
+ gold:{produces:['wine','spice'],imports:['ore','wood','silk'],demand:['wool','tea','glass']},
+ jade:{produces:['grain','wool','tea'],imports:['glass','spice','silk'],demand:['wine','ore','amber']},
+ storm:{produces:['wood','grain'],imports:['wine','ore'],demand:['spice','wool','silk']},
+ amber:{produces:['amber','grain','wood'],imports:['wool','wine'],demand:['glass','spice','tea']},
+ sun:{produces:['wine','ore','grain'],imports:['spice','silk'],demand:['wood','wool','tea']},
+ marseille:{produces:['wine','grain','silk'],imports:['ore','glass'],demand:['wool','tea','spice']},
+ genoa:{produces:['glass','silk'],imports:['wine','ore','wood'],demand:['grain','wool','amber']},
+ venice:{produces:['glass','silk','spice'],imports:['grain','wood'],demand:['wool','amber','tea']},
+ athens:{produces:['grain','ore'],imports:['wine','silk'],demand:['wood','glass','tea']},
+ copenhagen:{produces:['amber','wood','wool'],imports:['grain','ore'],demand:['wine','spice','silk']}
+});
+export const TRADE_GROUPS=Object.freeze({grain:'식료',wood:'원자재',spice:'향신료',silk:'직물',ore:'광석',tea:'차',wine:'주류',wool:'직물',glass:'공예품',amber:'보석',cotton:'직물',ivorycraft:'공예품',porcelain:'공예품'});
 // 항구 사이를 실제로 이동하는 독립 교역 선장
 export const MERCHANT_CAPTAINS=Object.freeze([
  {id:'lorenzo',name:'로렌초 발디',port:'genoa',ports:['genoa','marseille'],goods:['glass','wine'],portrait:7,story:'숨겨진 조선소 계약서를 추적하는 제노바 교역상.'},
