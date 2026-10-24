@@ -3,8 +3,8 @@
   "gameId": "moon-ruins",
   "date": "2026-10-24",
   "seedId": "AUTO-MISSING-DESIGN-MOON-RUINS",
-  "fingerprint": "80f77e176639cb3205d8ad499147815392510f77e0ea3299fd2273ca372dfa23",
-  "policyDigest": "38df549955799c6c30f34509856c897a09f9950e47162a2a78db9b87ff526a40",
+  "fingerprint": "7925b5f46e03fd75fdb9ec8d9da3137d5b97d841081344ca41745d768688de07",
+  "policyDigest": "622649807c4fdec5c64d1bf74b9baaf1b5063f7c6e7cd041a74001a58fefc1e7",
   "engineDigest": "4103d218e83e2d86483fc004fcf1ded074a08467cf846e10cbc1ab9a45ab5964",
   "ownerDesignEventId": null,
   "designTopicMode": null,
@@ -680,21 +680,21 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-23T15:20:33.777Z",
-  "updatedAt": "2026-10-24T12:53:50.475Z",
+  "createdAt": "2026-10-24T13:32:54.621Z",
+  "updatedAt": "2026-10-24T13:32:54.692Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 141,
-    "sha256": "b0650ea1b2feb2e2e2d22bc1181a67ba56f5d4ec52a67665a93aebc18d0988d0",
-    "inventoryCount": 110,
+    "version": 142,
+    "sha256": "bf5b8d72489af3dce47907adafad82e975e0969d762e5d7c3eb8fa2b516dd9f3",
+    "inventoryCount": 160,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 110,
-        "eligibleAssetCount": 106,
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -709,12 +709,17 @@
           "WEAPON"
         ],
         "availableRoles": {
-          "AUDIO": [],
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
           "BUILDING": [
+            "DOOR",
             "FENCE",
             "GATE",
             "GROUND_TILE",
-            "HOUSE"
+            "HOUSE",
+            "WALL"
           ],
           "CHARACTER": [],
           "CREATURE": [],
@@ -725,15 +730,48 @@
           ],
           "MOTION": [],
           "PROP": [
+            "APPLE",
+            "BANANA",
             "BENCH",
+            "BOOKCASE",
+            "BOOKS",
             "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
             "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
             "LETTER",
+            "LIGHT",
             "MAILBOX",
-            "PACKAGE"
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
           ],
           "SKILL": [],
-          "UI": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
           "VFX": [],
           "WEAPON": []
         },
@@ -852,13 +890,21 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
             }
           },
           {
@@ -886,8 +932,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 110,
-        "eligibleAssetCount": 106,
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -902,12 +948,17 @@
           "WEAPON"
         ],
         "availableRoles": {
-          "AUDIO": [],
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
           "BUILDING": [
+            "DOOR",
             "FENCE",
             "GATE",
             "GROUND_TILE",
-            "HOUSE"
+            "HOUSE",
+            "WALL"
           ],
           "CHARACTER": [],
           "CREATURE": [],
@@ -918,15 +969,48 @@
           ],
           "MOTION": [],
           "PROP": [
+            "APPLE",
+            "BANANA",
             "BENCH",
+            "BOOKCASE",
+            "BOOKS",
             "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
             "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
             "LETTER",
+            "LIGHT",
             "MAILBOX",
-            "PACKAGE"
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
           ],
           "SKILL": [],
-          "UI": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
           "VFX": [],
           "WEAPON": []
         },
@@ -1045,13 +1129,21 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
             }
           },
           {
@@ -1079,8 +1171,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 110,
-        "eligibleAssetCount": 106,
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1095,12 +1187,17 @@
           "WEAPON"
         ],
         "availableRoles": {
-          "AUDIO": [],
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
           "BUILDING": [
+            "DOOR",
             "FENCE",
             "GATE",
             "GROUND_TILE",
-            "HOUSE"
+            "HOUSE",
+            "WALL"
           ],
           "CHARACTER": [],
           "CREATURE": [],
@@ -1111,15 +1208,48 @@
           ],
           "MOTION": [],
           "PROP": [
+            "APPLE",
+            "BANANA",
             "BENCH",
+            "BOOKCASE",
+            "BOOKS",
             "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
             "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
             "LETTER",
+            "LIGHT",
             "MAILBOX",
-            "PACKAGE"
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
           ],
           "SKILL": [],
-          "UI": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
           "VFX": [],
           "WEAPON": []
         },
@@ -1238,13 +1368,21 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "tycoon-arrowBlue_left",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
             }
           },
           {
@@ -1514,6 +1652,31 @@
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "tycoon-arrowBlue_left": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "role": "CONTROL_ICON",
+        "sourcePath": "assets/shared/tycoon/arrowBlue_left.png",
+        "platform": "SHARED_UI",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "UNVERIFIED",
         "productionVerified": false
       }
     }
