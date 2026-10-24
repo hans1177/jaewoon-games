@@ -266,6 +266,7 @@ body[data-time-phase=dusk] #zone{border-color:#ca9155}
 @media(max-width:480px){#timeWeather{top:calc(90px + env(safe-area-inset-top));left:58%;}}
 @media(max-height:500px) and (orientation:landscape){#timeWeather{top:calc(44px + env(safe-area-inset-top));padding:2px 7px}}
 .mapMarker.landmark{border-color:#cda96a;color:#ffe5a0}.mapMarker.landmark b{font-size:17px}.mapMarker.landmark small{max-width:120px}.journalEntry .note{line-height:1.65}
+.inventoryTabs{display:flex;gap:5px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:thin}.inventoryTabs button{min-height:48px;min-width:90px;flex:0 0 auto;padding:6px 9px;background:#29251f;border:1px solid #806b47;color:#e1d1aa}.inventoryTabs button.chosen{border-color:#f1c778;color:#f7dc9d}.inventorySummary{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:3px 0 12px;padding:12px;border:1px solid #907c5555;background:#141a17bb}.inventorySummary .portrait{width:56px;height:56px}.inventorySummary div{flex:1;min-width:125px}.inventorySummary small{display:block;color:#c8b796;font-size:11px}.inventorySection{border-top:1px solid #846d494a;margin:17px 0 0;padding-top:7px}.inventorySection h3{margin:6px 0 10px}.inventoryActions{display:flex;gap:5px;justify-content:end;flex-wrap:wrap}.inventoryActions button{min-width:55px;min-height:40px;font-size:11px;padding:6px 9px}.inventoryItem{min-width:0}.inventoryItem b{overflow-wrap:anywhere}.inventoryEmpty{font-size:12px;color:#b7a98f;padding:10px}.inventorySection .row{align-items:flex-start}@media(max-width:390px){.inventoryTabs button{min-width:73px;font-size:11px;padding:5px}.inventorySection .row{padding:9px 4px}.inventoryActions button{min-width:48px;padding:6px}.inventorySummary{padding:8px}}
 </style>
 </head>
 <body>
@@ -293,7 +294,7 @@ body[data-time-phase=dusk] #zone{border-color:#ca9155}
   <button class="act primary" id="attackBtn">공격</button>
   <button class="act gold" id="interactBtn">상호작용</button>
   <button class="act blue" id="mapBtn">큰 지도</button>
-  <button class="act" id="bagBtn">장비</button>
+  <button class="act" id="bagBtn" aria-label="공용 소모품과 파티 인벤토리">가방</button>
 </div>
 <div id="toast"></div>
 <div id="modal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
@@ -373,6 +374,13 @@ var DROPS={
  demon_sword:{id:"demon_sword",name:"마왕의 대검",kind:"weapon",power:88,from:"마왕 성"},
  demon_plate:{id:"demon_plate",name:"심연 갑주",kind:"armor",def:35,from:"마왕 성"}
 };
+// 소모품: 기존 전투 계수와 드롭률은 그대로 두고 상점 구매 후 직접 사용한다.
+var SUPPLIES=[
+ {id:"bandage",name:"붕대",price:24,heal:28,desc:"출혈을 막아 체력 28 회복"},
+ {id:"potion",name:"회복 물약",price:80,heal:75,desc:"체력 75 회복"},
+ {id:"greater_potion",name:"상급 회복 물약",price:200,heal:180,desc:"체력 180 회복"},
+ {id:"revive",name:"구호 성수",price:260,revive:true,desc:"쓰러진 인물의 최대 체력 35%로 회복"}
+];
 var DUNGEONS=[
  {name:"고블린 요새",lv:4,rooms:[3,3,4],baseGold:320,baseXp:420,mob:"요새 고블린",boss:"고블린 대장",mobHp:145,mobAtk:19,bossHp:720,bossAtk:36,drops:["goblin_blade","goblin_mail"]},
  {name:"고대 신전",lv:11,rooms:[2,3,2,3],baseGold:760,baseXp:920,mob:"유적 수호병",boss:"고대 수호자",mobHp:300,mobAtk:36,bossHp:1500,bossAtk:65,drops:["temple_staff","temple_robe"]},
@@ -381,10 +389,11 @@ var DUNGEONS=[
 var AI_NAMES=["루카","미나","제이드","토르","리안","세라","보린","유나","카일","네오"];
 var defaultState={
  player:{level:1,xp:0,gold:80,maxHp:110,hp:110,baseAtk:12,weapon:null,armor:null,specialWeapon:null,specialArmor:null,ownedWeapons:[],ownedArmors:[],drops:[],materials:{}},
+ supplies:{},
  ai:[],zone:0,x:700,y:520
 };
 function makeAI(i){
- return {id:"ai"+i,name:AI_NAMES[i],level:1,xp:0,gold:30+i*7,weapon:null,armor:null,specialWeapon:null,specialArmor:null,zone:1,x:520+(i%5)*85,y:380+Math.floor(i/5)*100,hp:90,maxHp:90,baseAtk:10,party:false,sim:Math.random()*2,materials:{},routine:"hunt",routineTime:120,roamX:700,roamY:520,shopStep:"sell",shopCooldown:0};
+ return {id:"ai"+i,name:AI_NAMES[i],level:1,xp:0,gold:30+i*7,weapon:null,armor:null,specialWeapon:null,specialArmor:null,zone:1,x:520+(i%5)*85,y:380+Math.floor(i/5)*100,hp:90,maxHp:90,baseAtk:10,ownedWeapons:[],ownedArmors:[],drops:[],party:false,sim:Math.random()*2,materials:{},routine:"hunt",routineTime:120,roamX:700,roamY:520,shopStep:"sell",shopCooldown:0};
 }
 function load(){
  var v=null;try{v=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){}
@@ -402,8 +411,17 @@ function load(){
  s.player.ownedArmors=Array.isArray(s.player.ownedArmors)?s.player.ownedArmors:[];
  s.player.drops=Array.isArray(s.player.drops)?s.player.drops:[];
  s.player.materials=s.player.materials&&typeof s.player.materials==="object"?s.player.materials:{};
+ // 세이브 호환: 예전 보유 무기는 그대로 두고 새 소모품 수량만 보정한다.
+ var previousSupplies=s.supplies&&typeof s.supplies==="object"&&!Array.isArray(s.supplies)?s.supplies:{};
+ s.supplies={};SUPPLIES.forEach(function(it){var n=Number(previousSupplies[it.id]);s.supplies[it.id]=Number.isFinite(n)?Math.min(99,Math.max(0,Math.floor(n))):0;});
  s.ai.forEach(function(a){
   a.materials=a.materials&&typeof a.materials==="object"?a.materials:{};
+  a.ownedWeapons=Array.isArray(a.ownedWeapons)?a.ownedWeapons.filter(id=>WEAPONS.some(it=>it.id===id)):[];
+  a.ownedArmors=Array.isArray(a.ownedArmors)?a.ownedArmors.filter(id=>ARMORS.some(it=>it.id===id)):[];
+  if(a.weapon&&WEAPONS.some(it=>it.id===a.weapon)&&!a.ownedWeapons.includes(a.weapon))a.ownedWeapons.push(a.weapon);
+  if(a.armor&&ARMORS.some(it=>it.id===a.armor)&&!a.ownedArmors.includes(a.armor))a.ownedArmors.push(a.armor);
+  a.drops=Array.isArray(a.drops)?a.drops.filter(id=>!!DROPS[id]):[];
+  for(const id of [a.specialWeapon,a.specialArmor])if(DROPS[id]&&!a.drops.includes(id))a.drops.push(id);
   if(!["hunt","town","shop"].includes(a.routine)){a.routine="hunt";a.routineTime=120;}
   a.routineTime=Number.isFinite(Number(a.routineTime))?Math.max(0,Number(a.routineTime)):120;
   if(a.routine==="hunt"&&a.zone===0)a.zone=1;
@@ -1011,8 +1029,8 @@ function companionMenu(selected){
  if(!chosen){openModal('동료를 찾는 중','<p>1막 서막을 마치면 첫 인물이 열려. 사건을 조사할수록 새로운 동료를 만날 수 있어.</p><button id="rosterJournal" class="menuBtn">여정 기록 보기</button>');document.getElementById('rosterJournal').onclick=storyJournal;return;}
  var index=portraitIndex(chosen),voice=COMPANION_VOICES[index],arc=RECRUIT_ARCS[index],stage=recruitStage(chosen),info=CLASS_INFO[chosen.classId],secret=state.story.companions[chosen.id];
  var list=known.map(function(a){return '<button class="rosterRow '+(a.id===chosen.id?'chosen':'')+'" data-companion="'+a.id+'">'+portraitMarkup(portraitIndex(a))+'<span><b>'+a.name+'</b><small>'+role(a).name+' · '+(a.party?'동행 중':ZONES[a.zone]?.name||'탐험 중')+'</small></span><i>'+(a.party?'동행':'')+'</i></button>';}).join('');
- var html='<div class="rosterLayout"><nav class="rosterList" aria-label="동료 목록">'+list+'</nav><article class="companionDetail">'+portraitMarkup(index,'companionPortrait')+'<span class="eyebrow">'+info.position+' · '+voice.trait+'</span><h2>'+chosen.name+' <small>'+role(chosen).name+'</small></h2><p>'+info.desc+'</p><div class="ruleStats"><span>레벨 <b>'+chosen.level+'</b></span><span>체력 <b>'+Math.ceil(chosen.hp)+' / '+chosen.maxHp+'</b></span><span>방어 등급 <b>'+ac(chosen)+'</b></span></div><h3>고유 전술</h3><p class="gold">'+info.skill+'</p><h3>'+(secret?'개인 기록':'영입 서브퀘스트')+'</h3><p>'+(secret?COMPANION_SECRETS[index]:voice.lead+' · '+arc.title+' ('+ZONES[arc.zone].name+')')+'</p><div class="companionButtons"><button class="menuBtn" id="recruitCompanion" '+(!chosen.party&&partyCount()>=3?'disabled':'')+'>'+(chosen.party?'파티에서 쉬게 한다':partyCount()>=3?'파티 정원 4명':stage==='new'?'개인 서브퀘스트 시작':stage==='search'?'단서 찾기':stage==='ready'?'영입 장면 보기':'동행을 요청한다')+'</button><button class="menuBtn secondary" id="talkCompanion">이야기를 나눈다</button><button class="textBtn" id="focusCompanion">카메라로 찾기</button></div></article></div>';
- openModal('동료 · '+(partyCount()+1)+' / 4명',html);modal.dataset.mode='roster';modalBody.querySelectorAll('[data-companion]').forEach(function(b){b.onclick=function(){companionMenu(b.dataset.companion);};});document.getElementById('recruitCompanion').onclick=function(){requestCompanion(chosen);};document.getElementById('talkCompanion').onclick=function(){if(stage==='new'||stage==='search'){requestCompanion(chosen);return;}companionDialogue(chosen);};document.getElementById('focusCompanion').onclick=function(){if(!chosen.party&&(dungeon||chosen.zone!==state.zone)){toast('현재 지역에 없는 동료야. '+(ZONES[chosen.zone]?.name||'다른 지역')+'에서 찾을 수 있어.');return;}closeModal();view.selection=chosen.id;view.center(chosen.id);};
+ var html='<div class="rosterLayout"><nav class="rosterList" aria-label="동료 목록">'+list+'</nav><article class="companionDetail">'+portraitMarkup(index,'companionPortrait')+'<span class="eyebrow">'+info.position+' · '+voice.trait+'</span><h2>'+chosen.name+' <small>'+role(chosen).name+'</small></h2><p>'+info.desc+'</p><div class="ruleStats"><span>레벨 <b>'+chosen.level+'</b></span><span>체력 <b>'+Math.ceil(chosen.hp)+' / '+chosen.maxHp+'</b></span><span>방어 등급 <b>'+ac(chosen)+'</b></span></div><h3>고유 전술</h3><p class="gold">'+info.skill+'</p><h3>'+(secret?'개인 기록':'영입 서브퀘스트')+'</h3><p>'+(secret?COMPANION_SECRETS[index]:voice.lead+' · '+arc.title+' ('+ZONES[arc.zone].name+')')+'</p><div class="companionButtons"><button class="menuBtn" id="recruitCompanion" '+(!chosen.party&&partyCount()>=3?'disabled':'')+'>'+(chosen.party?'파티에서 쉬게 한다':partyCount()>=3?'파티 정원 4명':stage==='new'?'개인 서브퀘스트 시작':stage==='search'?'단서 찾기':stage==='ready'?'영입 장면 보기':'동행을 요청한다')+'</button><button class="menuBtn secondary" id="talkCompanion">이야기를 나눈다</button><button class="menuBtn secondary" id="companionBag">장비 · 인벤토리</button><button class="textBtn" id="focusCompanion">카메라로 찾기</button></div></article></div>';
+ openModal('동료 · '+(partyCount()+1)+' / 4명',html);modal.dataset.mode='roster';modalBody.querySelectorAll('[data-companion]').forEach(function(b){b.onclick=function(){companionMenu(b.dataset.companion);};});document.getElementById('recruitCompanion').onclick=function(){requestCompanion(chosen);};document.getElementById('talkCompanion').onclick=function(){if(stage==='new'||stage==='search'){requestCompanion(chosen);return;}companionDialogue(chosen);};document.getElementById('companionBag').onclick=function(){bagMenu(chosen.id);};document.getElementById('focusCompanion').onclick=function(){if(!chosen.party&&(dungeon||chosen.zone!==state.zone)){toast('현재 지역에 없는 동료야. '+(ZONES[chosen.zone]?.name||'다른 지역')+'에서 찾을 수 있어.');return;}closeModal();view.selection=chosen.id;view.center(chosen.id);};
 }
 // 능력 판정: d20 + 숙련 + 직업 능력 보정, 자연 1 실패 / 자연 20 성공.
 function checkAbility(kind,dc){
@@ -1047,7 +1065,7 @@ function companionDialogue(a,fromScene=false){
  modalBody.querySelectorAll('[data-companion-choice]').forEach(function(b){b.onclick=function(){companionQuestChoice(a,b.dataset.companionChoice);};});
  document.getElementById('dialogueReturn').onclick=function(){companionMenu(a.id);};
 }
-function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>실시간 디앤디식 판정 · 명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타. 동료와 함께 문 열기·함정 해제·설득 능력 판정도 할 수 있어.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=bagMenu;document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
+function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>실시간 디앤디식 판정 · 명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타. 동료와 함께 문 열기·함정 해제·설득 능력 판정도 할 수 있어.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=function(){bagMenu('player');};document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
 
 storyInit();
 
@@ -1249,42 +1267,115 @@ function travelMenu(){
  modalBody.querySelectorAll("[data-zone]").forEach(function(b){b.onclick=function(){goZone(Number(b.dataset.zone));closeModal();};});
  modalBody.querySelectorAll("[data-dungeon]").forEach(function(b){b.onclick=function(){startDungeon(Number(b.dataset.dungeon));};});
 }
-function shopMenu(kind){
- var items=kind==="weapon"?WEAPONS:ARMORS,owned=kind==="weapon"?state.player.ownedWeapons:state.player.ownedArmors;
- var html=items.map(function(it){var has=owned.indexOf(it.id)>=0,equipped=kind==="weapon"?state.player.weapon===it.id&&!state.player.specialWeapon:state.player.armor===it.id&&!state.player.specialArmor,stat=kind==="weapon"?"공격 +"+it.power:"방어 +"+it.def;return '<div class="row"><div><b>'+it.name+(equipped?' <span class="tag good">장착</span>':'')+'</b><small>'+stat+' · '+it.price+'G</small></div><button class="buy" data-buy="'+it.id+'">'+(has?"장착":"구매")+'</button></div>';}).join("");
- openModal(kind==="weapon"?"무기 상점":"방어구 상점",html);
- modalBody.querySelectorAll("[data-buy]").forEach(function(b){b.onclick=function(){buyOrEquip(kind,b.dataset.buy);shopMenu(kind);};});
+// 상점: 원래 주인공 보유 장비 의미를 유지하며 파티 동료는 자신의 장비 목록만 소유한다.
+function shopMenu(kind,selectedId){
+ var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;
+ if(!u){toast('동행 중인 동료만 장비를 구매할 수 있어.');return;}
+ var isWeapon=kind==="weapon",items=isWeapon?WEAPONS:ARMORS,owned=isWeapon?u.ownedWeapons:u.ownedArmors;
+ var html='<p class="note">'+escapeText(u.name||'주인공')+'의 '+(isWeapon?'무기':'방어구')+' · 구매 비용은 파티 금고에서 지불해. 보유한 장비는 추가 비용 없이 교체할 수 있어. · '+Math.floor(state.player.gold)+'G</p>';
+ html+=items.map(function(it){var has=owned.includes(it.id),equipped=isWeapon?u.weapon===it.id&&!u.specialWeapon:u.armor===it.id&&!u.specialArmor,stat=isWeapon?'공격 +'+it.power:'방어 +'+it.def;return '<div class="row"><div class="inventoryItem"><b>'+it.name+(equipped?' <span class="tag good">장착</span>':'')+'</b><small>'+stat+' · '+it.price+'G</small></div><div class="inventoryActions"><button data-buy="'+it.id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착 중':has?'장착':'구매')+'</button></div></div>';}).join('');
+ html+='<button class="menuBtn secondary" id="backToBag">인벤토리로 돌아가기</button>';
+ openModal(isWeapon?'무기 상점':'방어구 상점',html);
+ modalBody.querySelectorAll('[data-buy]').forEach(function(b){b.onclick=function(){if(buyOrEquip(kind,b.dataset.buy,u===state.player?'player':u.id))shopMenu(kind,u===state.player?'player':u.id);};});
+ document.getElementById('backToBag').onclick=function(){bagMenu(u===state.player?'player':u.id);};
 }
-function buyOrEquip(kind,id){
- var arr=kind==="weapon"?WEAPONS:ARMORS,owned=kind==="weapon"?state.player.ownedWeapons:state.player.ownedArmors,it=arr.find(function(x){return x.id===id;});if(!it)return;
- if(owned.indexOf(id)<0){if(state.player.gold<it.price){toast("골드가 부족해.");return;}state.player.gold-=it.price;owned.push(id);}
- if(kind==="weapon"){state.player.weapon=id;state.player.specialWeapon=null;}else{state.player.armor=id;state.player.specialArmor=null;}save();toast(it.name+" 장착");
+function buyOrEquip(kind,id,selectedId){
+ var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;if(!u)return false;
+ var isWeapon=kind==="weapon",arr=isWeapon?WEAPONS:ARMORS,owned=isWeapon?u.ownedWeapons:u.ownedArmors,it=arr.find(x=>x.id===id);if(!it)return false;
+ if(!owned.includes(id)){if(state.player.gold<it.price){toast('골드가 부족해.');return false;}state.player.gold-=it.price;owned.push(id);}
+ if(isWeapon){u.weapon=id;u.specialWeapon=null;}else{u.armor=id;u.specialArmor=null;}
+ save();updateHud();toast(escapeText(u.name||'주인공')+' · '+it.name+' 장착');return true;
 }
 function sellMenu(){
- var total=0,html="<b>일반 몬스터 전리품 판매</b>";
+ var total=0,html='<b>일반 몬스터 전리품 판매</b>';
  Object.keys(MATERIALS).forEach(function(k){
   var mat=MATERIALS[k],count=Math.max(0,Number(state.player.materials[mat.id])||0),value=count*mat.price;total+=value;
   html+='<div class="row"><div><b>'+mat.name+'</b><small>'+count+'개 · 개당 '+mat.price+'G</small></div><span>'+value+'G</span></div>';
  });
- html+='<button class="menuBtn" id="sellAllBtn">전부 판매 · '+total+'G</button><div class="note">던전 전용 무기/방어구는 판매하지 않아.</div>';
- openModal("판매상점",html);
- var b=document.getElementById("sellAllBtn");if(b)b.onclick=function(){var earned=sellMaterials(state.player);save();toast(earned>0?earned+"G 판매 완료":"팔 전리품이 없어.");sellMenu();};
+ html+='<button class="menuBtn" id="sellAllBtn">전부 판매 · '+total+'G</button><button class="menuBtn secondary" id="supplyShop">치유·구호 소모품 구매</button><div class="note">던전 전용 무기/방어구는 판매하지 않아.</div>';
+ openModal('판매상점',html);
+ document.getElementById('sellAllBtn').onclick=function(){var earned=sellMaterials(state.player);save();toast(earned>0?earned+'G 판매 완료':'팔 전리품이 없어.');sellMenu();};
+ document.getElementById('supplyShop').onclick=supplyShop;
 }
-function bagMenu(){
- var normalWeapon=(WEAPONS.find(function(x){return x.id===state.player.weapon;})||{name:"맨손"}).name;
- var normalArmor=(ARMORS.find(function(x){return x.id===state.player.armor;})||{name:"없음"}).name;
- var html="<b>상점 장비</b>";
- html+='<div class="row"><div><b>무기</b><small>'+(state.player.specialWeapon?DROPS[state.player.specialWeapon].name:normalWeapon)+'</small></div><button data-shop="weapon">무기상점</button></div>';
- html+='<div class="row"><div><b>방어구</b><small>'+(state.player.specialArmor?DROPS[state.player.specialArmor].name:normalArmor)+'</small></div><button data-shop="armor">방어구상점</button></div>';
- html+="<hr style='border-color:#ffffff20;margin:13px 0'><b>던전 전용 전리품</b>";
- if(!state.player.drops.length)html+="<div class='note'>아직 없음. 던전 몬스터/보스가 낮은 확률로 드롭해.</div>";
- state.player.drops.forEach(function(id){var d=DROPS[id],eq=d.kind==="weapon"?state.player.specialWeapon===id:state.player.specialArmor===id;html+='<div class="row"><div><b>'+d.name+(eq?' <span class="tag good">장착</span>':'')+'</b><small>'+d.from+' · '+(d.kind==="weapon"?"공격 +"+d.power:"방어 +"+d.def)+'</small></div><button data-drop="'+id+'">장착</button></div>';});
- openModal("장비",html);
- modalBody.querySelectorAll("[data-shop]").forEach(function(b){b.onclick=function(){shopMenu(b.dataset.shop);};});
- modalBody.querySelectorAll("[data-drop]").forEach(function(b){b.onclick=function(){equipDrop(b.dataset.drop);bagMenu();};});
+// 상점 구매는 공용 소모품 수량 한도와 금화 잔액을 검증한다.
+function supplyShop(){
+ var html='<p class="note">파티 공용 가방 · 최대 99개씩 보관 · 잔액 '+Math.floor(state.player.gold)+'G</p>';
+ html+=SUPPLIES.map(function(it){var count=state.supplies[it.id]||0;return '<div class="row"><div class="inventoryItem"><b>'+it.name+' <span class="tag">'+count+'개</span></b><small>'+it.desc+' · '+it.price+'G</small></div><div class="inventoryActions"><button data-supply-buy="'+it.id+'" '+(count>=99?'disabled':'')+'>구매</button></div></div>';}).join('');
+ html+='<button class="menuBtn secondary" id="supplyBack">가방으로 돌아가기</button>';
+ openModal('소모품 상점',html);
+ modalBody.querySelectorAll('[data-supply-buy]').forEach(function(b){b.onclick=function(){var it=SUPPLIES.find(x=>x.id===b.dataset.supplyBuy);if(!it)return;if(state.supplies[it.id]>=99){toast('소지 한도에 도달했어.');return;}if(state.player.gold<it.price){toast('골드가 부족해.');return;}state.player.gold-=it.price;state.supplies[it.id]++;save();updateHud();supplyShop();};});
+ document.getElementById('supplyBack').onclick=function(){bagMenu('player');};
 }
-function equipDrop(id){var d=DROPS[id];if(!d||state.player.drops.indexOf(id)<0)return;if(d.kind==="weapon"){state.player.specialWeapon=id;state.player.weapon=null;}else{state.player.specialArmor=id;state.player.armor=null;}save();toast(d.name+" 장착");}
-
+// 소모품은 선택한 파티원의 체력 상태가 적합할 때만 소모한다.
+function useSupply(id,selectedId){
+ var it=SUPPLIES.find(x=>x.id===id),u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;
+ if(!it||!u||!Number.isInteger(state.supplies[id])||state.supplies[id]<=0)return;
+ if(it.revive){if(u.hp>0){toast('쓰러진 인물에게만 사용할 수 있어.');return;}u.hp=Math.max(1,Math.round(u.maxHp*.35));}
+ else{if(u.hp<=0){toast('쓰러진 인물에게는 구호 성수가 필요해.');return;}if(u.hp>=u.maxHp){toast('이미 체력이 가득 차 있어.');return;}u.hp=Math.min(u.maxHp,u.hp+it.heal);}
+ state.supplies[id]--;save();updateHud();partyHud();sound.effect('heal');bagMenu(selectedId);toast((u.name||'주인공')+' · '+it.name+' 사용');
+}
+// 장비창: 주인공과 동행 중인 동료는 소모품을 공유하고 장비/전리품은 각자 소유한다.
+function bagMenu(selectedId){
+ var person=typeof selectedId==='string'&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&companionDiscovered(a)):null;
+ var u=person||state.player,id=person?person.id:'player',usable=!person||person.party;
+ var options=[{id:'player',unit:state.player}].concat(partyMembers().map(a=>({id:a.id,unit:a})));
+ if(person&&!person.party)options.push({id:person.id,unit:person});
+ var tabs='<nav class="inventoryTabs" aria-label="캐릭터별 인벤토리">'+options.map(x=>'<button type="button" data-bag-person="'+x.id+'" class="'+(x.id===id?'chosen':'')+'" aria-pressed="'+(x.id===id)+'">'+escapeText(x.unit.name||'주인공')+'</button>').join('')+'</nav>';
+ var weapon=(u.specialWeapon&&DROPS[u.specialWeapon])?DROPS[u.specialWeapon].name:(WEAPONS.find(x=>x.id===u.weapon)||{name:'맨손'}).name;
+ var armor=(u.specialArmor&&DROPS[u.specialArmor])?DROPS[u.specialArmor].name:(ARMORS.find(x=>x.id===u.armor)||{name:'없음'}).name;
+ var attack=u===state.player?playerAtk():aiAtk(u),def=u===state.player?playerArmorDef():aiArmorDef(u);
+ var html=tabs+'<div class="inventorySummary">'+portraitMarkup(portraitIndex(u))+'<div><b>'+escapeText(u.name||'주인공')+' · Lv.'+u.level+' · '+role(u).name+'</b><small>HP '+Math.ceil(u.hp)+' / '+u.maxHp+' · 공격 '+attack+' · 방어 '+def+'</small><small>'+(usable?'파티 동행 · 장비 교체 및 아이템 사용 가능':'비동행 동료 · 소유 장비 보기')+'</small></div></div>';
+ html+='<section class="inventorySection"><h3>착용 장비</h3><div class="row"><div class="inventoryItem"><b>무기</b><small>'+weapon+'</small></div><div class="inventoryActions"><button data-shop="weapon" '+(usable?'':'disabled')+'>장비 선택</button><button data-empty="weapon" '+(!usable||(!u.weapon&&!u.specialWeapon)?'disabled':'')+'>해제</button></div></div>';
+ html+='<div class="row"><div class="inventoryItem"><b>방어구</b><small>'+armor+'</small></div><div class="inventoryActions"><button data-shop="armor" '+(usable?'':'disabled')+'>장비 선택</button><button data-empty="armor" '+(!usable||(!u.armor&&!u.specialArmor)?'disabled':'')+'>해제</button></div></div></section>';
+ html+='<section class="inventorySection"><h3>소유한 일반 장비</h3>';
+ var ownedList=[...u.ownedWeapons.map(w=>({kind:'weapon',item:WEAPONS.find(it=>it.id===w)})),...u.ownedArmors.map(a=>({kind:'armor',item:ARMORS.find(it=>it.id===a)}))].filter(x=>x.item);
+ html+=ownedList.length?ownedList.map(x=>'<div class="row"><div class="inventoryItem"><b>'+x.item.name+'</b><small>'+(x.kind==='weapon'?'무기 · 공격 +'+x.item.power:'방어구 · 방어 +'+x.item.def)+'</small></div><div class="inventoryActions"><button data-owned-kind="'+x.kind+'" data-owned-id="'+x.item.id+'" '+(!usable?'disabled':'')+'>장착</button></div></div>').join(''):'<p class="inventoryEmpty">아직 구입한 일반 장비가 없어.</p>';
+ html+='</section><section class="inventorySection"><h3>던전 전용 전리품 · 장비</h3>';
+ var drops=Array.isArray(u.drops)?u.drops.filter(item=>DROPS[item]):[];
+ html+=drops.length?drops.map(item=>{var d=DROPS[item],eq=d.kind==='weapon'?u.specialWeapon===item:u.specialArmor===item;return '<div class="row"><div class="inventoryItem"><b>'+d.name+(eq?' <span class="tag good">착용 중</span>':'')+'</b><small>'+d.from+' · '+(d.kind==='weapon'?'공격 +'+d.power:'방어 +'+d.def)+'</small></div><div class="inventoryActions"><button data-drop="'+item+'" '+(!usable||eq?'disabled':'')+'>장착</button><button data-transfer="'+item+'" '+(!usable?'disabled':'')+'>동료에게 전달</button></div></div>';}).join(''):'<p class="inventoryEmpty">던전에서 아직 고유 장비를 얻지 못했어.</p>';
+ html+='</section><section class="inventorySection"><h3>파티 공용 소모품</h3>';
+ html+=SUPPLIES.map(it=>'<div class="row"><div class="inventoryItem"><b>'+it.name+' <span class="tag">'+state.supplies[it.id]+'개</span></b><small>'+it.desc+'</small></div><div class="inventoryActions"><button data-use="'+it.id+'" '+(!usable||!state.supplies[it.id]?'disabled':'')+'>사용</button></div></div>').join('');
+ html+='<button class="menuBtn secondary" id="inventorySupplyShop">소모품 구매</button></section>';
+ html+='<section class="inventorySection"><h3>전리품 · 재료</h3>';
+ var mats=Object.values(MATERIALS).filter(it=>(Number(u.materials?.[it.id])||0)>0);
+ html+=mats.length?mats.map(it=>'<div class="row"><div class="inventoryItem"><b>'+it.name+'</b><small>'+Math.floor(u.materials[it.id])+'개 · 판매 가치 '+it.price+'G / 개</small></div></div>').join(''):'<p class="inventoryEmpty">아직 전리품이 없어.</p>';
+ html+='<p class="note">재료 판매는 기존 상점 규칙을 사용해. 동료의 자동 사냥/구매와 이전 세이브는 그대로 유지돼.</p></section>';
+ openModal('파티 인벤토리',html);
+ modalBody.querySelectorAll('[data-bag-person]').forEach(b=>b.onclick=function(){bagMenu(b.dataset.bagPerson);});
+ modalBody.querySelectorAll('[data-shop]').forEach(b=>b.onclick=function(){shopMenu(b.dataset.shop,id);});
+ modalBody.querySelectorAll('[data-owned-id]').forEach(b=>b.onclick=function(){if(buyOrEquip(b.dataset.ownedKind,b.dataset.ownedId,id))bagMenu(id);});
+ modalBody.querySelectorAll('[data-drop]').forEach(b=>b.onclick=function(){equipDrop(b.dataset.drop,id);bagMenu(id);});
+ modalBody.querySelectorAll('[data-transfer]').forEach(b=>b.onclick=function(){transferDrop(id,b.dataset.transfer);});
+ modalBody.querySelectorAll('[data-empty]').forEach(b=>b.onclick=function(){if(!usable)return;var isWeapon=b.dataset.empty==='weapon';if(isWeapon){u.weapon=null;u.specialWeapon=null;}else{u.armor=null;u.specialArmor=null;}save();updateHud();bagMenu(id);});
+ modalBody.querySelectorAll('[data-use]').forEach(b=>b.onclick=function(){useSupply(b.dataset.use,id);});
+ document.getElementById('inventorySupplyShop').onclick=supplyShop;
+}
+function equipDrop(item,selectedId){
+ var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player,d=DROPS[item];
+ if(!u||!d||!Array.isArray(u.drops)||!u.drops.includes(item))return;
+ if(d.kind==='weapon'){u.specialWeapon=item;u.weapon=null;}else{u.specialArmor=item;u.armor=null;}
+ save();updateHud();toast(d.name+' 장착');
+}
+// 소유권 전달은 실제 소지 목록에서 제거 후 목적지에 넣어 복제를 막는다.
+function transferDrop(ownerId,item){
+ var owner=ownerId==='player'?state.player:state.ai.find(a=>a.id===ownerId&&a.party);
+ if(!owner||!Array.isArray(owner.drops)||!owner.drops.includes(item)||!DROPS[item])return;
+ var targets=[{id:'player',u:state.player},...partyMembers().map(a=>({id:a.id,u:a}))].filter(x=>x.u!==owner);
+ if(!targets.length){toast('전달할 파티원이 없어.');return;}
+ var html='<p>'+DROPS[item].name+' · 장비를 받을 동행인을 선택해. 소유권이 이동하고 기존 착용 장비는 해제돼.</p>';
+ html+=targets.map(t=>'<div class="row"><b>'+escapeText(t.u.name||'주인공')+'</b><div class="inventoryActions"><button data-receiver="'+t.id+'" '+(t.u.drops.includes(item)?'disabled':'')+'>'+(t.u.drops.includes(item)?'이미 보유':'전달')+'</button></div></div>').join('');
+ html+='<button class="menuBtn secondary" id="cancelTransfer">돌아가기</button>';
+ openModal('던전 장비 전달',html);
+ modalBody.querySelectorAll('[data-receiver]').forEach(b=>b.onclick=function(){
+  var target=b.dataset.receiver==='player'?state.player:state.ai.find(a=>a.id===b.dataset.receiver&&a.party);
+  if(!target||target===owner||target.drops.includes(item)||!owner.drops.includes(item))return;
+  owner.drops.splice(owner.drops.indexOf(item),1);target.drops.push(item);
+  if(owner.specialWeapon===item)owner.specialWeapon=null;
+  if(owner.specialArmor===item)owner.specialArmor=null;
+  save();updateHud();toast(DROPS[item].name+' 전달 완료');bagMenu(b.dataset.receiver);
+ });
+ document.getElementById('cancelTransfer').onclick=function(){bagMenu(ownerId);};
+}
 function goZone(i){
  if(dungeon)return;if(i>=7&&!imperialUnlocked()){toast('2막의 여섯 단서를 모으면 제국 유적이 열려.');return;}if(imperialBattle){const c=state.story.imperialCases[imperialBattle.id];if(c&&c.status==='fighting')c.status='pending';imperialBattle=null;}if(storyBattle&&storyBattle.phase==='act1'&&state.story.battles[storyBattle.zone]==='active')state.story.battles[storyBattle.zone]='pending';storyBattle=null;sound.effect("story");state.zone=Math.max(0,Math.min(ZONES.length-1,i));tacticalTargetId=null;contactTriggered=false;p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});moveTarget=null;if(view)view.center();if(state.zone>0)spawnFieldBatch();storyVisit(state.zone);save();
 }
@@ -1313,7 +1404,7 @@ function completeDungeon(){
  var keysC=Object.keys(dungeon.contrib),maxC=Math.max.apply(null,keysC.map(function(k){return dungeon.contrib[k];}).concat([1])),rewardLines=[];
  keysC.forEach(function(k){var c=dungeon.contrib[k],factor=.25+.95*(c/maxC),g=Math.round(dungeon.def.baseGold*factor),x=Math.round(dungeon.def.baseXp*factor);if(k==="player"){state.player.gold+=g;gainXpUnit(state.player,x,true);rewardLines.push("내 보상: "+g+"G · 경험치 "+x+" · 기여도 "+Math.round(c));}else{var a=state.ai.find(function(v){return v.id===k;});if(a){a.gold+=g;gainXpUnit(a,x,false);}}});
  var got=[];
- dungeon.pendingDrops.forEach(function(r){if(r.owner==="player"&&state.player.drops.indexOf(r.item)<0){state.player.drops.push(r.item);got.push(DROPS[r.item].name);}else if(r.owner!=="player"){var a=state.ai.find(function(v){return v.id===r.owner;}),it=DROPS[r.item];if(a&&it){if(it.kind==="weapon")a.specialWeapon=it.id;else a.specialArmor=it.id;}}});
+ dungeon.pendingDrops.forEach(function(r){if(r.owner==="player"&&state.player.drops.indexOf(r.item)<0){state.player.drops.push(r.item);got.push(DROPS[r.item].name);}else if(r.owner!=="player"){var a=state.ai.find(function(v){return v.id===r.owner;}),it=DROPS[r.item];if(a&&it){if(!a.drops.includes(it.id))a.drops.push(it.id);if(it.kind==="weapon")a.specialWeapon=it.id;else a.specialArmor=it.id;}}});
  save();
  var rewardHtml='<p><b>'+dungeon.def.name+' 클리어!</b></p><p>'+rewardLines.join("<br>")+'</p>'+(got.length?'<p class="gold">획득 전리품: '+got.join(", ")+'</p>':'<p>이번에는 전용 장비 드롭 없음.</p>')+'<p class="note">보스 처치 시점에 보상이 지급됐어. 빛에 닿으면 마을로 귀환해.</p>';
  if(playEventScene('victory:'+dungeon.index,()=>openModal('던전 클리어',rewardHtml)))return;
@@ -1348,8 +1439,8 @@ function buyAIUpgrade(a,choice){
  var it=choice.item;
  if(a.gold<it.price){setAIRoutine(a,"hunt");return false;}
  a.gold-=it.price;
- if(choice.kind==="weapon"){a.weapon=it.id;a.specialWeapon=null;}
- else{a.armor=it.id;a.specialArmor=null;}
+ if(choice.kind==="weapon"){if(!a.ownedWeapons.includes(it.id))a.ownedWeapons.push(it.id);a.weapon=it.id;a.specialWeapon=null;}
+ else{if(!a.ownedArmors.includes(it.id))a.ownedArmors.push(it.id);a.armor=it.id;a.specialArmor=null;}
  a.shopCooldown=7;return true;
 }
 function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=orderedEnemy(p.x,p.y,r.range);if(!target){if(automatic!==true)toast("공격 범위에 적이 없어.");return;}p.attackCd=r.rate;sound.effect('attack');combat(p).visualUntil=performance.now()+450;if(damageEnemy(target,playerAtk()+die(6),"player"))view.playSkillEffect("strike",p.x,p.y,target.x,target.y);}
@@ -1499,7 +1590,7 @@ document.getElementById("interactBtn").onclick=interact;
 prompt.setAttribute('role','button');prompt.setAttribute('tabindex','0');prompt.onclick=interact;prompt.onkeydown=function(e){if(e.code==='Enter'||e.code==='Space'){e.preventDefault();interact();}};
 document.getElementById("mapBtn").onclick=worldMap;
 document.getElementById("systemBtn").onclick=systemMenu;
-document.getElementById("bagBtn").onclick=bagMenu;
+document.getElementById("bagBtn").onclick=function(){bagMenu("player");};
 document.getElementById("startBtn").onclick=beginAdventure;
 document.getElementById("createBtn").onclick=showCreator;
 document.getElementById("creatorBack").onclick=function(){document.getElementById("creator").hidden=true;document.getElementById("introMenu").hidden=false;};
