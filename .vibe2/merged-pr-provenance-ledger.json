@@ -93060,11 +93060,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_769fdf3e1071ad45cbf91d95",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9824",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ff5400a22b20a1c5c6d6acb1f276150c419df2ef",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9824,
+        "baseBranch": "main",
+        "headBranch": "fix/cozy-trade-economy-20261024",
+        "baseSha": "ff5400a22b20a1c5c6d6acb1f276150c419df2ef",
+        "headSha": "2da081ea661284dffdaa06b2cd3df28c1153af47",
+        "mergeCommitSha": "30e13ac4fae9fadec1f4ea781636e15eb7252e6b",
+        "mergedAt": "2026-10-24T10:25:06Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7010d836a9c4722966509386a48c30cad84e9ee26d45e7d6e64399bade0a1d10",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/cozy-trade-economy-20261024",
+        "candidateSha": "2da081ea661284dffdaa06b2cd3df28c1153af47"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 120,
+        "deletedLineCount": 24,
+        "changedFiles": [
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9824",
+        "merge-commit:30e13ac4fae9fadec1f4ea781636e15eb7252e6b",
+        "base-main:ff5400a22b20a1c5c6d6acb1f276150c419df2ef"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 730
+    "total": 731
   }
 }
