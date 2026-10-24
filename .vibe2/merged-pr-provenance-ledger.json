@@ -93792,11 +93792,155 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b7d0c4238650c35a0aa983b9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9862",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "995c74fcab9c48e1e5544fc3ef9559eb6723e3a8",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9862,
+        "baseBranch": "main",
+        "headBranch": "owner/vibe-one-shot-policy-20261024",
+        "baseSha": "995c74fcab9c48e1e5544fc3ef9559eb6723e3a8",
+        "headSha": "193afa6dc5a26e165171b5e73d1bde537c242b66",
+        "mergeCommitSha": "e93146a6956f66f190d9747e2e124c6560eed144",
+        "mergedAt": "2026-10-24T12:35:57Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1dd67b81bcc6d4017f66189e08a827ace0bcba07900cfcddf89b703dda71adce",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/vibe-one-shot-policy-20261024",
+        "candidateSha": "193afa6dc5a26e165171b5e73d1bde537c242b66"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 488,
+        "deletedLineCount": 382,
+        "changedFiles": [
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/roblox-source-bootstrap.json",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9862",
+        "merge-commit:e93146a6956f66f190d9747e2e124c6560eed144",
+        "base-main:995c74fcab9c48e1e5544fc3ef9559eb6723e3a8"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 736
+    "total": 737
   }
 }
