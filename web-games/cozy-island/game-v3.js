@@ -159,7 +159,11 @@ function normalizeState(raw){
     raidTimer:Math.max(0,Math.min(RAID_INTERVAL,Number(r.raidTimer)||0)),
     player:{...base.player,...(r.player||{})},decor:Array.isArray(r.decor)?r.decor.slice(0,3):[]};
 }
-function saveSoon(){state.army=allies.filter(u=>u.hp>0).map(u=>({kind:u.kind}));state.player={x:Math.round(player.x),y:Math.round(player.y)};runtime.queueSaveProgress(state)}
+function saveSoon(){
+ state.army=allies.filter(u=>u.hp>0).map(u=>u.kind==='knight'?
+  {kind:u.kind,heroName:u.heroName,trait:u.trait,level:u.level,xp:u.xp,hp:u.hp,skillReadyAt:u.skillReadyAt||0}:
+  {kind:u.kind});
+ state.player={x:Math.round(player.x),y:Math.round(player.y)};runtime.queueSaveProgress(state)}
 function toast(msg){clearTimeout(toastTimer);ui.toast.textContent=msg;ui.toast.classList.add('show');toastTimer=setTimeout(()=>ui.toast.classList.remove('show'),1900)}
 function itemCard(n,c){return `<div class="item-card">${n}<span>${Math.floor(Number(c)||0)}개</span></div>`}
 function dist(x,y){return Math.hypot(player.x-x,player.y-y)}
@@ -351,6 +355,16 @@ function openBuilding(id){
  ui.panelBody.querySelector('[data-building-upgrade]')?.addEventListener('click',()=>{
   if(upgradeEconomyBuilding(id)){updateHUD();openBuildingContentRefresh(id);}
  });
+ if(id==='knightHall'){
+  const button=document.createElement('button');button.className='choice';
+  button.textContent='⚜️ 기사 후보·육성·스킬';button.addEventListener('click',()=>{ui.panel.close();openKnightHall()});
+  ui.panelBody.append(button);
+ }
+ if(id==='prison'){
+  const button=document.createElement('button');button.className='choice';
+  button.textContent='🔒 감옥 · 포로 관리';button.addEventListener('click',()=>{ui.panel.close();openPrison()});
+  ui.panelBody.append(button);
+ }
  ui.panelBody.querySelector('[data-building-list]')?.addEventListener('click',()=>{
    ui.panel.close();window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:def.group}}));
  });
@@ -369,7 +383,7 @@ function renderBarracks(){
  ui.panelBody.innerHTML='<p class="panel-note">병사 '+allies.filter(u=>u.hp>0).length+
   '명 · 식량 '+Math.floor(inv.food||0)+' · 철 '+Math.floor(inv.iron||0)+
   ' · 공성 장비는 적 성벽에 추가 피해를 줍니다.</p>'+
-  '<div class="realm-build-grid">'+Object.entries(RTS_UNIT_TYPES).map(([id,d])=>{
+  '<div class="realm-build-grid">'+Object.entries(RTS_UNIT_TYPES).filter(([id])=>id!=='knight').map(([id,d])=>{
    const tech=economyTechStatus(state,id),n=countKind(id),cost=['식량 '+d.food,
     ...(d.wood?['나무 '+d.wood]:[]),...(d.stone?['돌 '+d.stone]:[]),
     ...(d.iron?['철 '+d.iron]:[]),...(d.coins?['금화 '+d.coins]:[])].join(' · ');
@@ -382,7 +396,8 @@ function renderBarracks(){
     '</small></div><strong>'+n+'/'+d.max+'</strong></div><div class="realm-build-actions">'+
     '<button class="choice" data-rec="'+id+'" '+(!affordable||n>=d.max||!tech.unlocked?'disabled':'')+
     '>'+(tech.unlocked?'모집 · '+cost:'🔒 '+tech.missing.join(' + ')+' 필요')+'</button></div></article>';
-  }).join('')+'</div>';
+  }).join('')+'</div><button class="choice" data-knight-hall>⚜️ 기사단 회관에서 랜덤 기사 영입 · 별도 육성</button>';
+ ui.panelBody.querySelector('[data-knight-hall]')?.addEventListener('click',()=>{ui.panel.close();openKnightHall()});
  ui.panelBody.querySelectorAll('[data-rec]').forEach(b=>b.addEventListener('click',()=>recruit(b.dataset.rec)));
 }
 function buildBarracks(){
@@ -391,7 +406,7 @@ function buildBarracks(){
  saveSoon();ui.panel.close();toast('🏕️ 병영 완성');
 }
 function recruit(kind){
- const d=RTS_UNIT_TYPES[kind];if(!d)return;
+ const d=RTS_UNIT_TYPES[kind];if(!d||kind==='knight')return;
  const tech=economyTechStatus(state,kind);if(!tech.unlocked)return toast('🔒 해금 조건: '+tech.missing.join(' · '));
  if(countKind(kind)>=d.max){toast('이 병종 최대 인원에 도달했어');return}
  const inv=state.inventory;
@@ -403,14 +418,242 @@ function recruit(kind){
  allies.push(createUnit(kind,false));game.allies=allies;
  saveSoon();renderBarracks();toast(d.icon+' '+d.name+' 합류');
 }
-function createUnit(kind,enemy,boss=false){
- const def=RTS_UNIT_TYPES[kind]||RTS_UNIT_TYPES.soldier,hp=boss?def.hp*7:def.hp;
- return{id:unitId++,kind,enemy,boss,hp,maxHp:hp,
-  attack:boss?def.attack*3:def.attack,range:def.range,speed:def.speed,
-  siegeDamage:def.siegeDamage||0,ammo:def.ammo||0,rate:def.rate,
+function createUnit(kind,enemy,boss=false,saved=null){
+ const def=RTS_UNIT_TYPES[kind]||RTS_UNIT_TYPES.soldier;
+ const level=kind==='knight'&&!enemy?Math.max(1,Math.min(10,Math.floor(Number(saved?.level)||1))):1;
+ const maxHp=(boss?def.hp*7:def.hp)+(kind==='knight'&&!enemy?(level-1)*20:0);
+ const hp=kind==='knight'&&!enemy&&Number.isFinite(saved?.hp)?
+  Math.max(1,Math.min(maxHp,saved.hp)):maxHp;
+ return{id:unitId++,kind,enemy,boss,hp,maxHp,level,
+  ...(kind==='knight'&&!enemy?{
+   heroName:typeof saved?.heroName==='string'?saved.heroName:'방랑 기사',
+   trait:['charge','guardian','medic','siege'].includes(saved?.trait)?saved.trait:'guardian',
+   xp:Math.max(0,Math.min(5000,Number(saved?.xp)||0)),
+   skillReadyAt:Math.max(0,Number(saved?.skillReadyAt)||0)}:{}),
+  attack:(boss?def.attack*3:def.attack)+(kind==='knight'&&!enemy?(level-1)*3:0),
+  range:def.range,speed:def.speed,siegeDamage:def.siegeDamage||0,ammo:def.ammo||0,rate:def.rate,
   cool:Math.random()*.5,wander:0,vx:0,vy:0,
   x:enemy?1490+Math.random()*60:barracks.x+(Math.random()-.5)*70,
   y:enemy?550+Math.random()*180:barracks.y+60+Math.random()*60};
+}
+
+// 기사단·감옥: 경제 레벨과 연결된 왕국 내 영속 외교 상태.
+const KNIGHT_TRAITS=Object.freeze({
+ charge:{name:'돌격',desc:'순간 전투력·이동 속도 상승'},
+ guardian:{name:'수호',desc:'자기와 주변 아군의 피해 감소'},
+ medic:{name:'구호',desc:'주변 아군 체력 회복'},
+ siege:{name:'공성 지휘',desc:'공성 병기의 성벽 피해 상승'}
+});
+const KNIGHT_NAMES=['레오나르','에린','루시안','세리나','발트','아델','카이런','리안','오르딘','엘리제','카렌','로웬'];
+function getCourt(){
+ if(!state.knightCourtV1||typeof state.knightCourtV1!=='object')state.knightCourtV1={};
+ const c=state.knightCourtV1;
+ if(!Array.isArray(c.prisoners))c.prisoners=[];
+ if(!Array.isArray(c.heldByRivals))c.heldByRivals=[];
+ if(!Array.isArray(c.history))c.history=[];
+ c.prisoners=c.prisoners.filter(p=>p&&typeof p.id==='string').slice(0,8);
+ c.heldByRivals=c.heldByRivals.filter(p=>p&&typeof p.id==='string').slice(0,8);
+ c.history=c.history.slice(-20);
+ c.reputation=Math.max(-100,Math.min(100,Number(c.reputation)||0));
+ c.nextId=Math.max(1,Math.floor(Number(c.nextId)||1));
+ return c;
+}
+function courtCapacity(){
+ const building=getEconomy(state).buildings.prison;
+ return building?.count?4+Math.max(0,(building.level||1)-1)*2:0;
+}
+function courtLog(message){
+ const c=getCourt();c.history.push({day:state.day,text:message});c.history=c.history.slice(-20);
+}
+function rollKnightCandidate(){
+ const c=getCourt();
+ const trait=Object.keys(KNIGHT_TRAITS)[Math.floor(Math.random()*4)];
+ const heroName=KNIGHT_NAMES[Math.floor(Math.random()*KNIGHT_NAMES.length)];
+ c.candidate={heroName,trait,quality:1+Math.floor(Math.random()*3)};
+ saveSoon();return c.candidate;
+}
+function hireKnight(){
+ const tech=economyTechStatus(state,'knight');
+ if(!tech.unlocked)return {ok:false,message:'필요 건물: '+tech.missing.join(' · ')};
+ const d=RTS_UNIT_TYPES.knight,inv=state.inventory;
+ if(countKind('knight')>=d.max)return {ok:false,message:'기사단 수용 한도'};
+ for(const key of ['food','iron'])if((Number(inv[key])||0)<(d[key]||0))
+  return {ok:false,message:key+' 부족'};
+ if(state.coins<d.coins)return {ok:false,message:'영입 금화 부족'};
+ const offer=getCourt().candidate||rollKnightCandidate();
+ inv.food-=d.food;inv.iron-=d.iron;state.coins-=d.coins;
+ const level=1,bonus=(offer.quality-1)*8;
+ const unit=createUnit('knight',false,false,{heroName:offer.heroName,trait:offer.trait,level,xp:0});
+ unit.maxHp+=bonus;unit.hp+=bonus;
+ allies.push(unit);game.allies=allies;
+ getCourt().candidate=null;
+ courtLog(offer.heroName+' 기사 영입 ('+KNIGHT_TRAITS[offer.trait].name+')');
+ saveSoon();return {ok:true,message:offer.heroName+' 영입 완료'};
+}
+function gainKnightXp(unit,amount){
+ if(unit.kind!=='knight'||unit.enemy||unit.hp<=0)return;
+ unit.xp=Math.min(5000,(unit.xp||0)+amount);
+ if(unit.level<10&&unit.xp>=unit.level*35){
+  unit.xp-=unit.level*35;unit.level++;unit.maxHp+=20;unit.hp+=20;unit.attack+=3;
+  toast('⚜️ '+unit.heroName+' '+unit.level+'레벨! 체력·공격 강화');
+  saveSoon();
+ }
+}
+function knightSkill(unitId){
+ const u=allies.find(x=>x.id===Number(unitId)&&x.kind==='knight'&&x.hp>0);
+ if(!u)return {ok:false,message:'출전 중인 기사가 없어'};
+ const now=Date.now();if(u.skillReadyAt>now)return {ok:false,message:'재사용까지 '+Math.ceil((u.skillReadyAt-now)/1000)+'초'};
+ const nearby=allies.filter(x=>x.hp>0&&Math.hypot(x.x-u.x,x.y-u.y)<195);
+ if(u.trait==='medic'){
+  for(const ally of nearby)ally.hp=Math.min(ally.maxHp,ally.hp+30+u.level*11);
+ }else if(u.trait==='guardian'){
+  u.skillBuffUntil=now+11000;
+  for(const ally of nearby)ally.guardUntil=now+11000;
+ }else if(u.trait==='charge'){
+  u.skillBuffUntil=now+10000;
+ }else if(u.trait==='siege'){
+  for(const ally of nearby)if(ally.siegeDamage)ally.siegeBoostUntil=now+14000;
+ }
+ u.skillReadyAt=now+30000;gainKnightXp(u,6);saveSoon();
+ return {ok:true,message:u.heroName+' · '+KNIGHT_TRAITS[u.trait].name+' 발동'};
+}
+function openKnightHall(){
+ const c=getCourt(),tech=economyTechStatus(state,'knight');
+ ui.panelTitle.textContent='⚜️ 기사단 회관';
+ const building=getEconomy(state).buildings.knightHall;
+ const offer=c.candidate||((building?.count&&tech.unlocked)?rollKnightCandidate():null);
+ ui.panelBody.innerHTML='<p class="panel-note">'+
+ (tech.unlocked?'각 기사는 이름·고유 전술·경험치를 갖고 성장합니다. 영입 후보는 무작위로 나타납니다.':
+ '잠금: '+tech.missing.join(' · '))+'</p>'+
+ (offer?'<article class="realm-build-card"><b>'+offer.heroName+' · '+KNIGHT_TRAITS[offer.trait].name+
+ '</b><p>'+KNIGHT_TRAITS[offer.trait].desc+'</p><small>소질 '+['','보통','우수','정예'][offer.quality]+'</small>'+
+ '<button class="choice" data-hire>⚜️ 고용 · 식량32 철4 금화18</button>'+
+ '<button class="choice" data-reroll>🔄 후보 다시 찾기 · 금화 10</button></article>':'')+
+ '<h3>출전 기사단</h3>'+
+ allies.filter(x=>x.kind==='knight'&&x.hp>0).map(u=>
+ '<article class="realm-build-card"><b>'+u.heroName+' · Lv.'+u.level+'</b>'+
+ '<p>'+KNIGHT_TRAITS[u.trait]?.name+' · 경험치 '+Math.floor(u.xp)+'/'+(u.level*35)+
+ ' · 체력 '+Math.ceil(u.hp)+'/'+u.maxHp+'</p>'+
+ '<button class="choice" data-skill="'+u.id+'">✨ 스킬 발동'+
+ (u.skillReadyAt>Date.now()?' ('+Math.ceil((u.skillReadyAt-Date.now())/1000)+'초 대기)':'')+
+ '</button></article>').join('')+
+ '<button class="choice" data-court-prison>🔒 감옥·포로 관리</button>';
+ ui.panel.showModal();
+ ui.panelBody.querySelector('[data-hire]')?.addEventListener('click',()=>{
+  const r=hireKnight();toast(r.message);ui.panel.close();openKnightHall();
+ });
+ ui.panelBody.querySelector('[data-reroll]')?.addEventListener('click',()=>{
+  if(state.coins<10)return toast('금화 10 필요');
+  state.coins-=10;getCourt().candidate=null;rollKnightCandidate();
+  ui.panel.close();openKnightHall();
+ });
+ ui.panelBody.querySelectorAll('[data-skill]').forEach(b=>b.addEventListener('click',()=>{
+  const r=knightSkill(b.dataset.skill);toast(r.message);ui.panel.close();openKnightHall();
+ }));
+ ui.panelBody.querySelector('[data-court-prison]')?.addEventListener('click',()=>{ui.panel.close();openPrison()});
+}
+function takePrisoner(enemy,lordId){
+ const c=getCourt(),lord=getEnemyLords().find(l=>l.id===lordId);
+ if(!lord||lord.defeated||!courtCapacity()||c.prisoners.length>=courtCapacity())return false;
+ if(enemy._captured)return false;enemy._captured=true;enemy.hp=0;
+ const heroName=KNIGHT_NAMES[(c.nextId+4)%KNIGHT_NAMES.length];
+ c.prisoners.push({id:'p'+c.nextId++,lordId,heroName,level:1+Math.floor(Math.random()*3),
+  day:state.day,lastOfferDay:-1});
+ courtLog(lord.name+'의 기사 '+heroName+' 포획');
+ toast('🔒 '+heroName+' 기사 투항 · 감옥으로 이송');
+ saveSoon();return true;
+}
+function rivalCapture(unit,lordId){
+ if(unit.kind!=='knight'||unit.enemy||unit._captured)return;
+ const lord=getEnemyLords().find(l=>l.id===lordId);if(!lord||lord.defeated)return;
+ const c=getCourt();if(c.heldByRivals.length>=8)return;
+ unit._captured=true;unit.hp=0;
+ c.heldByRivals.push({id:'h'+c.nextId++,lordId,
+  heroName:unit.heroName,trait:unit.trait,level:unit.level,xp:unit.xp,
+  price:45+unit.level*23,day:state.day,refused:false});
+ courtLog(lord.name+'에게 '+unit.heroName+' 기사 포로로 붙잡힘');
+ toast('⚠️ '+unit.heroName+' 기사가 포로가 됐어');
+ saveSoon();
+}
+function freeKnight(record){
+ const restored=createUnit('knight',false,false,record);
+ allies.push(restored);game.allies=allies;
+}
+function prisonAction(action,id,lordId=''){
+ const c=getCourt(),p=c.prisoners.find(x=>x.id===id),held=c.heldByRivals.find(x=>x.id===id);
+ const lord=getEnemyLords().find(x=>x.id===(lordId||p?.lordId||held?.lordId));
+ const exchangeHeld=c.heldByRivals.find(x=>x.lordId===lord?.id);
+ const exchangePrisoner=c.prisoners.find(x=>x.lordId===lord?.id);
+ if(action==='release'&&p){
+  c.prisoners=c.prisoners.filter(x=>x!==p);c.reputation=Math.min(100,c.reputation+6);
+  courtLog(p.heroName+' 포로 석방');saveSoon();return {ok:true,message:p.heroName+' 석방 · 신뢰 상승'};
+ }
+ if(action==='execute'&&p){
+  c.prisoners=c.prisoners.filter(x=>x!==p);c.reputation=Math.max(-100,c.reputation-14);
+  if(lord&&state.strongholdDiplomacy?.[lord.id]==='ally')state.strongholdDiplomacy[lord.id]='hostile';
+  courtLog(p.heroName+' 포로 처형 · 외교 신뢰 하락');saveSoon();
+  return {ok:true,message:'처형 명령 · 외교 신뢰 -14'};
+ }
+ if(action==='exchange'&&lord&&exchangeHeld&&exchangePrisoner){
+  c.prisoners=c.prisoners.filter(x=>x!==exchangePrisoner);
+  c.heldByRivals=c.heldByRivals.filter(x=>x!==exchangeHeld);
+  freeKnight(exchangeHeld);c.reputation=Math.min(100,c.reputation+4);
+  courtLog(lord.name+'과 '+exchangePrisoner.heroName+'/'+exchangeHeld.heroName+' 포로 교환');saveSoon();
+  return {ok:true,message:'🤝 포로 교환 성립 · '+exchangeHeld.heroName+' 귀환'};
+ }
+ if(action==='demand'&&p&&lord){
+  if(p.lastOfferDay===state.day)return {ok:false,message:'오늘은 이미 몸값 협상을 진행했어'};
+  p.lastOfferDay=state.day;
+  const price=42+p.level*18;
+  const accept=lord.coins>=price &&
+    (state.strongholdDiplomacy?.[lord.id]==='ally'||lord.focus==='trade'||
+      (c.reputation>=-10&&lord.focus==='defense'&&lord.troops>=6));
+  if(!accept){courtLog(lord.name+'이 '+p.heroName+' 몸값 '+price+' 제안을 거절함');saveSoon();
+    return {ok:false,message:lord.name+'이 몸값 '+price+' 제안을 거부했어'};}
+  lord.coins-=price;state.coins+=price;c.prisoners=c.prisoners.filter(x=>x!==p);
+  courtLog(lord.name+'이 몸값 '+price+' 지불 · '+p.heroName+' 석방');saveSoon();
+  return {ok:true,message:'💰 몸값 '+price+'금화 수령 · 포로 석방'};
+ }
+ if(action==='pay'&&held&&lord){
+  if(state.coins<held.price)return {ok:false,message:'몸값 '+held.price+'금화 부족'};
+  state.coins-=held.price;lord.coins=(lord.coins||0)+held.price;
+  c.heldByRivals=c.heldByRivals.filter(x=>x!==held);freeKnight(held);
+  courtLog(held.heroName+' 기사 몸값 '+held.price+' 지불 후 귀환');saveSoon();
+  return {ok:true,message:held.heroName+' 기사 몸값 지불 · 귀환'};
+ }
+ if(action==='refuse'&&held){
+  held.refused=true;courtLog(held.heroName+' 포로 몸값 지급 거부');saveSoon();
+  return {ok:true,message:'몸값 요구 거부 · 포로는 계속 억류돼'};
+ }
+ return {ok:false,message:'해당 교섭 조건이 맞지 않아'};
+}
+function openPrison(){
+ const c=getCourt(),cap=courtCapacity();
+ ui.panelTitle.textContent='🔒 포로 감옥 · 외교';
+ ui.panelBody.innerHTML='<p class="panel-note">수용 '+c.prisoners.length+'/'+cap+
+ ' · 명성 '+c.reputation+' · 교환에는 같은 영주가 잡은 우리 기사가 필요해.</p>'+
+ (cap?'':'<p class="panel-note">감옥을 건설해야 포로를 수용할 수 있습니다.</p>')+
+ '<h3>억류한 적 기사</h3>'+
+ c.prisoners.map(p=>'<article class="realm-build-card"><b>'+p.heroName+' · '+getEnemyLords().find(l=>l.id===p.lordId)?.name+'</b>'+
+ '<p>Lv.'+p.level+' · 제시 몸값 '+(42+p.level*18)+'금화</p>'+
+ '<div class="ks-buttons"><button class="choice" data-prison="demand:'+p.id+'">💰 몸값 요구</button>'+
+ '<button class="choice" data-prison="exchange:'+p.id+'">🤝 교환</button>'+
+ '<button class="choice" data-prison="release:'+p.id+'">🕊️ 석방</button>'+
+ '<button class="choice" data-prison="execute:'+p.id+'">⚔️ 처형</button></div></article>').join('')+
+ '<h3>다른 영주에게 잡힌 우리 기사</h3>'+
+ c.heldByRivals.map(p=>'<article class="realm-build-card"><b>'+p.heroName+'</b>'+
+ '<p>몸값 '+p.price+'금화 · '+getEnemyLords().find(l=>l.id===p.lordId)?.name+'</p>'+
+ '<button class="choice" data-prison="pay:'+p.id+'">💰 몸값 지불</button>'+
+ '<button class="choice" data-prison="refuse:'+p.id+'">⛔ 요구 거절</button>'+
+ '<button class="choice" data-prison="exchange:'+p.id+'">🤝 교환 제안</button></article>').join('')+
+ '<h3>최근 포로 기록</h3><p class="panel-note">'+
+ c.history.slice(-4).map(x=>x.text).join(' · ')+'</p>';
+ ui.panel.showModal();
+ ui.panelBody.querySelectorAll('[data-prison]').forEach(button=>button.addEventListener('click',()=>{
+  const [action,id]=button.dataset.prison.split(':');
+  const result=prisonAction(action,id);
+  toast(result.message);ui.panel.close();openPrison();
+ }));
 }
 function openWorkerShop(){window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}}))}
 function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.workerFeedTimer));ui.panelBody.innerHTML=`<p class="panel-note">노비는 자동 물주기·수확·나무/돌 채집을 해. 1분마다 작업물을 인벤토리로 줘.</p><div class="inventory-grid">${itemCard('🧑‍🌾 노비',state.workers)}${itemCard('⏱️ 지급',delivery)}${itemCard('🍖 급식까지',feed)}${itemCard('🪵 보관',s.wood)}${itemCard('🪨 보관',s.stone)}${itemCard('🍖 보관',s.food)}${itemCard('🥕 보관',s.crop)}</div><button class="choice" data-worker ${state.workers>=WORKER_MAX?'disabled':''}><span>🧑‍🌾 노비 구매 (${state.workers}/${WORKER_MAX})</span><b>${WORKER_PRICE}골드</b></button><p class="panel-note">3분마다 노비 1명당 식량 10을 먹어. 먹일 식량이 부족한 노비는 굶어 죽어.</p>`;ui.panelBody.querySelector('[data-worker]')?.addEventListener('click',buyWorker)}
@@ -785,7 +1028,7 @@ function updateHint(){
 }
 function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open&&!state.keepDestroyed){updateCameraControl(dt);advanceClock(dt);updateRaid(dt);updateOffensive(dt);if(!raidActive&&!game.offensiveTarget){updatePeaceAllies(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
-allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;
+allies=state.army.map(x=>createUnit(x.kind,false,false,x));game.allies=allies;
 getEnemyLords();
 window.cozyRTS={
  state,getLords:getEnemyLords,unitTypes:RTS_UNIT_TYPES,save:()=>{saveSoon();runtime.flushSaveProgress(state)},
