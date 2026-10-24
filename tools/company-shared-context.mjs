@@ -1,3 +1,4 @@
+// 파일명: tools/company-shared-context.mjs
 // Retained four-document compatibility. Integrity is not policy authority.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -159,6 +160,7 @@ export function compileCentralArchitectureProjection(policy={}) {
   const contract={
     sourceOfTruth:canonical,
     authorityOrder:['OWNER_CANONICAL_RULES','CANONICAL_ROADMAP','EXISTING_GAME_EXECUTION'],
+    ownerOneShotPatch:policy?.fixedAutonomousDevelopmentOperatingContract?.ownerRequestedVibeOneShotPatch??null,
     nativeFoundation,
     implementationOwnership:lifecycle?.primaryAiOrchestration?.internalVibeAiCollaboration?.capabilityGrowthRoleLock??null,
     machineProjectionSynchronization:documentation?.machineProjectionSynchronization??null,

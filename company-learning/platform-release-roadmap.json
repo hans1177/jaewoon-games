@@ -1,5 +1,5 @@
 {
-  "version": 592,
+  "version": 593,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -7555,7 +7555,7 @@
       "postMultiverse": "OWNER_DEFINED_FUTURE_HORIZON_NOT_YET_SPECIFIED"
     }
   },
-    "changeRecord": {
+  "changeRecord": {
     "ownerVibeOneShotPatch20261024": {
       "authority": "OWNER_DIRECTIVE_2026-10-24",
       "policyNumber": 1,
@@ -7574,12 +7574,59 @@
         "existingF0F9AndRelevantSecurityReleaseProofPreserved": true
       }
     },
-    "fastDevelopmentSourceAssetReuse20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20_FAST_DEVELOPMENT", "scope": "EXISTING_GITHUB_PAGES_ASSET_PREPARATION", "cacheKey": "EXACT_ASSET_TREE_GIT_SHA", "fallbackReuse": "CURRENT_GIT_BLOB_HASH_VERIFIED_BYTES_ONLY", "missingOrChangedAssetsOnlyRestored": true, "postRestoreBlobVerificationRequired": true, "cacheFailureFallsBackToCanonicalGit": true, "cacheSavesMainOnly": true, "publicationTriggerSequenceAndSafetyChecksPreserved": true, "actualSpeedupRequiresRuntimeMeasurements": true, "newPipeline": false},
-    "ownerGitHubPagesPermanentRemoval20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","publisher":"tools/github-pages-landing.mjs","retainedOutputPrunedByExplicitCatalogRemovalOnly":true,"activeGameAndSharedFilesPreserved":true,"newWorkflowOrPipeline":false},
-    "ownerStoppedGamesPermanentRemoval20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "gameIds": ["ant-simulator", "crystal-defense"], "ownerGameStopMeansPermanentRemoval": true, "sourceDeletionRequired": true, "automaticReentryForbidden": true, "lockedSequenceChanged": false},
-    "ownerCC0ActiveGameReplacement20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "requestKo": "게임 제작은 검증된 CC0 원본을 수정해 사용. 개발 중 게임의 자체 제작 저품질 에셋은 대체 검증 후 영구 삭제. 개발하지 않는 게임 및 해당 게임이 사용하는 공유 파일은 교체·삭제하지 않는다.", "rule": "ownerCanonicalRules.rule5", "lockedSequenceChanged": false, "assetMigrationStatus": "PENDING_EXACT_ACTIVE_GAME_REPLACEMENT_AND_RUNTIME_EVIDENCE"},
-    "ownerWebDeployThenValidate20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","requestKo":"중앙 정책: 무조건 배포 후 검증","scope":"EXISTING_ORDINARY_WEB_STATIC_MAIN_PUBLICATION","sameRevisionPublicVerificationRequired":true,"existingF0F9InternalOrderChanged":false,"productionReadinessClaimUnchanged":true},
-    "ownerReferenceGameAndExistingSystems20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","A":"NAMED_REPRESENTATIVE_SIMILAR_GAME_SYSTEM","B":"EXISTING_GAME_SYSTEM_BASELINE","CDDelvePreserved":true,"lockedSequenceChanged":false},
+    "fastDevelopmentSourceAssetReuse20261020": {
+      "authority": "OWNER_DIRECTIVE_2026-10-20_FAST_DEVELOPMENT",
+      "scope": "EXISTING_GITHUB_PAGES_ASSET_PREPARATION",
+      "cacheKey": "EXACT_ASSET_TREE_GIT_SHA",
+      "fallbackReuse": "CURRENT_GIT_BLOB_HASH_VERIFIED_BYTES_ONLY",
+      "missingOrChangedAssetsOnlyRestored": true,
+      "postRestoreBlobVerificationRequired": true,
+      "cacheFailureFallsBackToCanonicalGit": true,
+      "cacheSavesMainOnly": true,
+      "publicationTriggerSequenceAndSafetyChecksPreserved": true,
+      "actualSpeedupRequiresRuntimeMeasurements": true,
+      "newPipeline": false
+    },
+    "ownerGitHubPagesPermanentRemoval20261020": {
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
+      "publisher": "tools/github-pages-landing.mjs",
+      "retainedOutputPrunedByExplicitCatalogRemovalOnly": true,
+      "activeGameAndSharedFilesPreserved": true,
+      "newWorkflowOrPipeline": false
+    },
+    "ownerStoppedGamesPermanentRemoval20261020": {
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
+      "gameIds": [
+        "ant-simulator",
+        "crystal-defense"
+      ],
+      "ownerGameStopMeansPermanentRemoval": true,
+      "sourceDeletionRequired": true,
+      "automaticReentryForbidden": true,
+      "lockedSequenceChanged": false
+    },
+    "ownerCC0ActiveGameReplacement20261020": {
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
+      "requestKo": "게임 제작은 검증된 CC0 원본을 수정해 사용. 개발 중 게임의 자체 제작 저품질 에셋은 대체 검증 후 영구 삭제. 개발하지 않는 게임 및 해당 게임이 사용하는 공유 파일은 교체·삭제하지 않는다.",
+      "rule": "ownerCanonicalRules.rule5",
+      "lockedSequenceChanged": false,
+      "assetMigrationStatus": "PENDING_EXACT_ACTIVE_GAME_REPLACEMENT_AND_RUNTIME_EVIDENCE"
+    },
+    "ownerWebDeployThenValidate20261020": {
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
+      "requestKo": "중앙 정책: 무조건 배포 후 검증",
+      "scope": "EXISTING_ORDINARY_WEB_STATIC_MAIN_PUBLICATION",
+      "sameRevisionPublicVerificationRequired": true,
+      "existingF0F9InternalOrderChanged": false,
+      "productionReadinessClaimUnchanged": true
+    },
+    "ownerReferenceGameAndExistingSystems20261020": {
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
+      "A": "NAMED_REPRESENTATIVE_SIMILAR_GAME_SYSTEM",
+      "B": "EXISTING_GAME_SYSTEM_BASELINE",
+      "CDDelvePreserved": true,
+      "lockedSequenceChanged": false
+    },
     "ownerEveryGameF9Publish20261018": {
       "authority": "OWNER_DIRECT",
       "status": "ACTIVE",
@@ -9154,7 +9201,15 @@
       "existingOtherPlatformAssetsPreserved": true,
       "existingQueueAndWorkersOnly": true
     },
-    "ownerBasicDesignMethod20261012": {"authority":"OWNER_DIRECTIVE_2026-10-12","status":"OWNER_APPROVED_DOCUMENTATION_ONLY","scope":"DOCUMENTATION_ONLY","source":"continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod","implementationStatus":"NOT_IMPLEMENTED","summaryKo":"A 중심·B 보조·C 작품 장르·D 소분류 창작·@ 무한 파고들기, 분류표와 기존 기본 플로어 안의 설계 방법 공식화","codeWorkflowRuntimeDeploymentChanged":false}
+    "ownerBasicDesignMethod20261012": {
+      "authority": "OWNER_DIRECTIVE_2026-10-12",
+      "status": "OWNER_APPROVED_DOCUMENTATION_ONLY",
+      "scope": "DOCUMENTATION_ONLY",
+      "source": "continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "summaryKo": "A 중심·B 보조·C 작품 장르·D 소분류 창작·@ 무한 파고들기, 분류표와 기존 기본 플로어 안의 설계 방법 공식화",
+      "codeWorkflowRuntimeDeploymentChanged": false
+    }
   },
   "vibeExecutionLaneContract": {
     "version": 3,
@@ -22755,6 +22810,12 @@
           "operator": "FILE_CONTAINS",
           "file": ".github/workflows/vibe2-continuous-core.yml",
           "expected": "VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}"
+        },
+        {
+          "code": "OWNER_ONEPATCH_REPOSITORY_AGENT_INSTRUCTION",
+          "operator": "FILE_CONTAINS",
+          "file": "AGENTS.md",
+          "expected": "직접 수정 → main 자동 병합 → 즉시 배포 → 배포 후 검증"
         }
       ],
       "singlePreWorkValidationPerExactWorkUnit": true,
@@ -26210,7 +26271,10 @@
       "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB",
       "status": "ACTIVE",
-      "activeTargets": ["ROBLOX", "WEB"],
+      "activeTargets": [
+        "ROBLOX",
+        "WEB"
+      ],
       "ownerHeldTargets": [
         "UNITY_WEB",
         "UNITY_ANDROID",
@@ -26406,7 +26470,31 @@
     "unityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR"
   },
   "webRuntimeStartabilityContract": {
-    "publicationOrder": {"version":1,"authority":"OWNER_DIRECTIVE_2026-10-20","scope":"ALL_MAIN_MERGED_ORDINARY_WEB_GAMES_AND_CENTRAL_POLICY_CHANGES","sequence":["MERGE_AUTHORIZED_SOURCE_TO_MAIN","PUBLISH_EXACT_MAIN_VIA_EXISTING_GITHUB_PAGES","VERIFY_PUBLIC_DEPLOYED_SAME_REVISION","RECORD_FAILURE_AND_REPAIR_REDEPLOY"],"existingWorkflow":".github/workflows/magic-forest-pages.yml","trigger":"EVERY_MAIN_PUSH_WITHOUT_PATH_FILTER","publicationMustBeAttempted":true,"qaScoreOrF0F9MayBlockStaticPublication":false,"directorOrHomepageApprovalMayBlockPublication":false,"postDeploymentVerificationRequired":true,"verificationMustMatchPublishedSourceShaAndGameTree":true,"failedOrUnverifiedRuntimeMayBeReportedPass":false,"deploymentImpliesProductionReady":false,"existingF0F9DefinitionsAndInternalOrderPreserved":true,"failureAction":"EXISTING_DIRECTOR_ISSUE_AND_CAUSAL_REPAIR_REDEPLOY","rawFailedStepMustRemainVisible":true,"newOrShadowDeploymentPipelineForbidden":true,"scopeExcludesNativePlatformCanonicalPublication":true},
+    "publicationOrder": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
+      "scope": "ALL_MAIN_MERGED_ORDINARY_WEB_GAMES_AND_CENTRAL_POLICY_CHANGES",
+      "sequence": [
+        "MERGE_AUTHORIZED_SOURCE_TO_MAIN",
+        "PUBLISH_EXACT_MAIN_VIA_EXISTING_GITHUB_PAGES",
+        "VERIFY_PUBLIC_DEPLOYED_SAME_REVISION",
+        "RECORD_FAILURE_AND_REPAIR_REDEPLOY"
+      ],
+      "existingWorkflow": ".github/workflows/magic-forest-pages.yml",
+      "trigger": "EVERY_MAIN_PUSH_WITHOUT_PATH_FILTER",
+      "publicationMustBeAttempted": true,
+      "qaScoreOrF0F9MayBlockStaticPublication": false,
+      "directorOrHomepageApprovalMayBlockPublication": false,
+      "postDeploymentVerificationRequired": true,
+      "verificationMustMatchPublishedSourceShaAndGameTree": true,
+      "failedOrUnverifiedRuntimeMayBeReportedPass": false,
+      "deploymentImpliesProductionReady": false,
+      "existingF0F9DefinitionsAndInternalOrderPreserved": true,
+      "failureAction": "EXISTING_DIRECTOR_ISSUE_AND_CAUSAL_REPAIR_REDEPLOY",
+      "rawFailedStepMustRemainVisible": true,
+      "newOrShadowDeploymentPipelineForbidden": true,
+      "scopeExcludesNativePlatformCanonicalPublication": true
+    },
     "version": 2,
     "finalGameplayDimension": "3D",
     "preferredOrdinaryWeb3dEngine": "PLAYCANVAS",
@@ -28169,7 +28257,2022 @@
           "tools/vibe2-artbook-story-core.mjs"
         ],
         "documentation": "company-learning/game-design-grammar.md",
-        "ownerBasicDesignMethod": {"version": 2, "authority": "OWNER_DIRECTIVE_2026-10-20", "status": "OWNER_APPROVED_CODE_IMPLEMENTED_RUNTIME_UNVERIFIED", "implementationStatus": "CODE_IMPLEMENTED_RUNTIME_UNVERIFIED", "documentation": "company-learning/game-design-grammar.md", "purposeKo": "A 대표 참고게임의 유사 시스템·B 기존 게임 시스템·C 작품 장르·D 창작·@ 파고들기를 공식화한다. 장르·소재 분류와 시스템의 출처를 구분한다.", "precedenceKo": "새 설계 생성기·스키마·심사기는 이 절을 따른다. 상위의 이전 문법·동등 소재·C 소재 두 개 요구는 이전 접수의 호환 기록이며 기존 점수는 새 문법 충족 증거가 아니다.", "formula": "MAIN = A + B + C + D + @", "roles": {"MAIN": {"meaningKo": "연결된 최종 게임 정체성: 플레이어 역할·반복 목적·경험."}, "A": {"gameGenreLevel": "REPRESENTATIVE", "gameRole": "PRIMARY", "materialLevel": "BROAD", "meaningKo": "대표 참고 게임의 유사 시스템. 예: 디아블로의 전투·장비 선택 구조. 참고 게임 이름과 채택할 시스템·플레이어 선택을 명시한다.", "systemSourceRole": "REPRESENTATIVE_SIMILAR_GAME_REFERENCE"}, "B": {"gameGenreLevel": "DETAILED", "gameRole": "SUPPORTING", "materialLevel": "MIDDLE", "meaningKo": "수정 대상 기존 게임의 실제 시스템. 원본 출처·규칙·상태·플레이어 선택을 기록하고 A와 결합한다. 기존 시스템을 새 B로 대체하지 않는다.", "systemSourceRole": "EXISTING_GAME_SYSTEM_BASELINE"}, "C": {"genreDomain": "LITERARY_AND_CINEMATIC", "genreCount": 2, "roles": ["PRIMARY", "SECONDARY"], "meaningKo": "소설·영화식 주 장르 + 보조 장르. 게임 장르를 다시 고르는 단계가 아니다."}, "D": {"inputs": ["C_PRIMARY_GENRE", "C_SECONDARY_GENRE", "SPECIFIC_SOURCE_MATERIAL"], "materialLevel": "SPECIFIC", "generationLimit": null, "meaningKo": "C의 두 장르와 소분류 소재로 존재·장소·사건·문화·규칙을 창작하고 A·B 플레이에 연결한다."}, "AT": {"symbol": "@", "basis": "D", "generationLimit": null, "meaningKo": "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다. @는 C의 작품 주·보조 장르와 D의 창작 세계·존재·장소·사건·문화·규칙에서 나온 연관 콘텐츠를 A의 참고 시스템과 B의 기존 시스템에 복합적으로 연결해 새로 창작한다.", "initialDiscoveryExamplesMinimum": 4, "primaryPurposeKo": "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다."}}, "classificationRulesKo": ["게임 장르와 창작 소재는 별도 분류다. 스포츠는 양쪽에 존재할 수 있다.", "A는 대표 참고 게임의 유사 시스템이고 B는 기존 게임의 실제 시스템이다. 게임 장르는 두 시스템의 분류 정보이며 A에 참고 게임 이름을 명시한다.", "A에서 채택할 구조와 B에서 보존할 실제 시스템을 구분하고 두 시스템의 상호작용을 설계한다.", "채집·제작·공격·회피는 내부 기능이며 대표 장르를 대체하지 않는다.", "소재 대·중·소는 넓은 분야→구체 분야→존재·장소·물건·문화·사건·현상·원리의 탐색 깊이다.", "A·B 소재는 같은 계통일 필요 없다. 다른 계통이면 각각의 분류 경로와 연결 이유를 적는다.", "집단 신뢰 같은 추상어만으로 창작 완료를 주장하지 않는다. 복선·반전은 기법이며 구체 대상과 지속 규칙을 작성한다.", "소분류 예시는 모든 중분류에 공통으로 속하지 않는다. 실제 선택의 정확한 출처 경로를 기록한다.", "분류표는 확장 가능한 초기 기준이다. 총개수 상한과 고정 후보 조합으로 창작을 대체하지 않는다.", "기존 게임을 기본설계할 때 B의 중심은 원본의 실제 시스템이다. 기존 규칙·진행·저장·밸런스를 임의 교체하지 않으며 A·C·D·@는 새로운 아이디어의 결합에 사용한다."], "gameGenreClassification": [{"representative": "액션", "detailed": ["플랫폼 액션", "액션 어드벤처", "잠입 액션", "격투", "핵앤슬래시"]}, {"representative": "슈팅", "detailed": ["일인칭 슈팅", "삼인칭 슈팅", "탄막", "전술 슈팅", "루트 슈터"]}, {"representative": "역할수행", "detailed": ["액션 역할수행", "턴제 역할수행", "전술 역할수행", "온라인 역할수행", "던전 탐험"]}, {"representative": "어드벤처", "detailed": ["탐정 추리", "포인트 앤 클릭", "탈출", "비주얼 노벨", "탐험 어드벤처"]}, {"representative": "전략", "detailed": ["실시간 전략", "턴제 전략", "타워 디펜스", "자동 전투", "대전형 공성"]}, {"representative": "시뮬레이션", "detailed": ["생활", "농장", "도시 건설", "경영", "공장 자동화", "차량 운전"]}, {"representative": "생존", "detailed": ["생존 제작", "기지 방어", "오픈월드 생존", "재난 생존", "생존 공포"]}, {"representative": "퍼즐", "detailed": ["논리 퍼즐", "물리 퍼즐", "공간 퍼즐", "매치 퍼즐", "협력 퍼즐"]}, {"representative": "스포츠", "detailed": ["축구", "야구", "농구", "골프", "낚시", "익스트림 스포츠"]}, {"representative": "레이싱", "detailed": ["아케이드 레이싱", "운전 시뮬레이션", "카트", "전투 레이싱", "오프로드"]}, {"representative": "리듬", "detailed": ["노트 입력", "댄스", "악기 연주", "리듬 액션"]}, {"representative": "카드·보드", "detailed": ["수집형 카드", "덱 구축", "주사위", "체스형 전술", "보드게임"]}, {"representative": "파티", "detailed": ["미니게임 모음", "술래잡기", "사회적 추리", "협력 파티"]}, {"representative": "방치·증분", "detailed": ["클릭 성장", "자동 전투 성장", "생산 증분", "수집 성장"]}], "materialClassification": [{"broad": "신화", "middle": ["한국 신화", "그리스 신화", "북유럽 신화", "이집트 신화", "메소포타미아 신화", "인도 신화", "중국 신화", "일본 신화", "마야 신화", "아프리카 신화", "오세아니아 신화", "중앙아시아 신화", "북아메리카 신화", "남아메리카 신화"], "specificExamples": ["저승사자", "망자 명부", "세계수", "신탁", "신의 금기"], "specificMaterials": [{"middle": "한국 신화", "name": "망자 명부", "feature": "이름과 생사의 경계", "action": "잘못 등록된 이름의 주인을 찾아 돌려준다", "condition": "이름의 주인과 인도할 대상이 일치함", "consequence": "거주자와 망자의 통행 자격이 분리된다", "risk": "남의 이름을 쓰면 다른 존재가 대신 인도된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "그리스 신화", "name": "신탁", "feature": "예언과 행동의 충돌", "action": "신탁을 공개하거나 숨겨 인물의 선택을 비교한다", "condition": "예언을 들은 인물이 행동을 바꿈", "consequence": "목표 달성의 원인과 방해자가 달라진다", "risk": "예언을 피하려는 선택이 오히려 실현시킨다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "북유럽 신화", "name": "세계수", "feature": "서로 다른 세계의 연결", "action": "손상된 뿌리를 돌보거나 다른 세계의 길을 연다", "condition": "뿌리와 연결된 세계의 상태가 안정됨", "consequence": "세계 사이 이동과 지원 경로가 바뀐다", "risk": "한 세계를 구하면 다른 가지의 접근이 막힌다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "이집트 신화", "name": "심판의 저울", "feature": "행위와 책임의 심판", "action": "남긴 행위의 증거를 제시하거나 책임을 나눈다", "condition": "증거와 주장한 책임이 일치함", "consequence": "심판받는 인물의 다음 임무가 달라진다", "risk": "거짓 책임 전가가 동료의 출입을 막는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "메소포타미아 신화", "name": "지하세계의 문", "feature": "통과와 대가", "action": "문을 지날 때 포기할 권한을 선택한다", "condition": "요구된 대가가 실제로 지불됨", "consequence": "깊은 영역의 진입과 귀환 조건이 달라진다", "risk": "귀환에 필요한 권한까지 잃을 수 있다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "인도 신화", "name": "변신의 시험", "feature": "겉모습과 역할의 차이", "action": "변신한 존재의 행동으로 정체를 판단한다", "condition": "모습 대신 행동의 일관성을 확인함", "consequence": "믿을 동료와 부탁의 순서가 달라진다", "risk": "외형만 믿으면 엉뚱한 존재를 돕는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "중국 신화", "name": "치수의 둑", "feature": "물길과 공동체", "action": "막힌 물길을 나누거나 마을의 둑을 보수한다", "condition": "상류와 하류의 흐름이 함께 확보됨", "consequence": "이동 통로와 거주 가능한 땅이 바뀐다", "risk": "한쪽 물길만 막으면 다른 거점이 침수된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "일본 신화", "name": "경계의 문", "feature": "안과 밖의 구분", "action": "경계 안의 존재에게 출입 조건을 확인한다", "condition": "약속한 경계 규칙을 지킴", "consequence": "숨겨진 장소의 교류가 열린다", "risk": "약속을 어기면 돌아갈 문을 찾기 어렵다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "마야 신화", "name": "공놀이의 시험", "feature": "경기와 세계의 질서", "action": "상대의 규칙을 읽고 공을 보낼 경로를 택한다", "condition": "선언된 경기 조건을 만족함", "consequence": "시험 통과자와 세계의 연결이 달라진다", "risk": "상대가 제시한 함정 규칙에 걸릴 수 있다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "아프리카 신화", "name": "물의 정령", "feature": "물과 존재의 관계", "action": "물가의 부탁을 듣고 이용할 물길을 정한다", "condition": "약속한 물의 이용 조건을 지킴", "consequence": "물길의 교류와 주민의 협력이 달라진다", "risk": "약속 없는 독점이 다른 존재와 충돌한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "오세아니아 신화", "name": "섬 사이의 전승", "feature": "바다와 이어지는 이야기", "action": "서로 다른 섬의 전승을 비교하며 항로를 찾는다", "condition": "전승과 직접 관찰한 항로가 연결됨", "consequence": "방문할 섬과 동행할 인물이 달라진다", "risk": "이야기만 믿으면 바뀐 항로를 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "중앙아시아 신화", "name": "변신하는 안내자", "feature": "안내와 정체의 변화", "action": "안내자의 말과 이동 흔적을 비교한다", "condition": "안내가 실제 장소와 일치함", "consequence": "따를 안내자와 우회 경로가 달라진다", "risk": "겉모습의 친숙함만으로 신뢰하면 길을 잃는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "북아메리카 신화", "name": "동물의 전승", "feature": "인간과 동물의 관계", "action": "동물의 행동과 전승의 약속을 비교한다", "condition": "현재 행동과 약속의 조건을 확인함", "consequence": "동물과 공간을 공유하는 방법이 달라진다", "risk": "전승을 모든 공동체의 사실로 일반화하면 오해가 생긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "남아메리카 신화", "name": "산의 수호 존재", "feature": "장소와 보호의 약속", "action": "산길의 이용과 보호할 장소를 정한다", "condition": "방문 목적과 보호 약속이 맞음", "consequence": "산길과 공동체의 교류가 달라진다", "risk": "보호를 무시한 접근이 갈등을 만든다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "한국 신화", "name": "저승사자", "feature": "망자의 인도", "action": "인도할 대상과 돌아갈 존재를 구분한다", "condition": "대상의 생사와 부탁을 확인함", "consequence": "머물 존재와 넘어갈 경계가 달라진다", "risk": "대상을 잘못 구분하면 다른 존재가 떠난다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "그리스 신화", "name": "신의 금기", "feature": "명령과 금지된 행동", "action": "금기의 이유를 조사하거나 약속을 지킨다", "condition": "금지의 대상과 적용 범위를 확인함", "consequence": "신과 인물의 협력 조건이 달라진다", "risk": "이유를 모른 채 어기면 약속한 지원을 잃는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "역사", "middle": ["한국사", "동아시아사", "유럽사", "서아시아사", "아프리카사", "남아시아사", "동남아시아사", "아메리카사", "오세아니아사"], "specificExamples": ["보부상", "객주", "장시", "수도교", "항해 일지"], "specificMaterials": [{"middle": "한국사", "name": "객주", "feature": "거래 중개와 신뢰", "action": "물품을 맡기거나 거래 상대를 직접 확인한다", "condition": "인수자와 약속한 물품이 일치함", "consequence": "교역 거점의 거래와 보관 선택이 열린다", "risk": "중개를 건너뛰면 분쟁 책임을 직접 진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "동아시아사", "name": "역참", "feature": "이동과 전달", "action": "경유지를 정하고 전달할 소식을 나눈다", "condition": "경유지의 연결과 전달 대상이 확인됨", "consequence": "먼 지역의 지원과 정보 도착 순서가 바뀐다", "risk": "끊어진 구간에서 연락이 늦어진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "유럽사", "name": "수도교", "feature": "물의 공급과 도시 유지", "action": "수로의 누수 구간을 찾아 분배를 조정한다", "condition": "공급원과 수요 지역이 연결됨", "consequence": "시설 가동과 거주 구역의 접근이 바뀐다", "risk": "우선 공급에서 밀린 구역이 협력을 거부한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "서아시아사", "name": "대상 숙영지", "feature": "장거리 교역의 쉼터", "action": "호송과 휴식 장소를 선택한다", "condition": "길의 위험과 다음 보급지가 확인됨", "consequence": "교역로의 안전과 동행 상대가 달라진다", "risk": "안전한 쉼터만 고르면 거래 기회를 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "아프리카사", "name": "교역 시장", "feature": "물품과 문화의 교류", "action": "서로 다른 상인의 요구를 중개한다", "condition": "서로 원하는 교환 대상이 확보됨", "consequence": "시장과 주변 거점의 협력이 열린다", "risk": "한 거래를 독점하면 다른 상인의 공급이 끊긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "남아시아사", "name": "관개 수로", "feature": "물의 분배와 공동 이용", "action": "밭과 거점에 물을 나누는 순서를 정한다", "condition": "서로 연결된 수로의 흐름이 유지됨", "consequence": "작업 장소와 주민의 협력 조건이 바뀐다", "risk": "상류의 독점이 하류의 반발을 부른다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "동남아시아사", "name": "항구 창고", "feature": "운송과 임시 보관", "action": "선박의 하역 순서와 보관 장소를 정한다", "condition": "물품의 목적지와 출항 순서가 확인됨", "consequence": "항로와 거래 일정의 선택이 바뀐다", "risk": "보관을 늘리면 다른 선박의 작업이 지연된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "아메리카사", "name": "공동 경작지", "feature": "노동과 공동 분배", "action": "일할 구역과 수확을 나눌 대상을 정한다", "condition": "공동 작업의 약속이 지켜짐", "consequence": "정착지의 지원과 다음 작업이 열린다", "risk": "기여와 분배가 어긋나면 협동이 끊긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "오세아니아사", "name": "섬 교역로", "feature": "섬 사이 이동과 교환", "action": "교환 대상과 경유할 섬을 정한다", "condition": "항로와 서로 필요한 물품이 확인됨", "consequence": "동행과 다음 거래가 달라진다", "risk": "한 항로만 의존하면 다른 섬의 공급을 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "한국사", "name": "보부상", "feature": "이동하며 이루어지는 거래", "action": "다음 장터와 운반할 물품을 정한다", "condition": "장터의 수요와 이동 경로가 확인됨", "consequence": "교역 동선과 얻을 물품이 달라진다", "risk": "먼 장터를 택하면 돌아올 거래를 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "한국사", "name": "장시", "feature": "만남과 교환의 장소", "action": "찾을 상인과 거래 순서를 정한다", "condition": "거래 장소와 상대의 필요가 확인됨", "consequence": "물품 교환과 인물의 만남이 달라진다", "risk": "한 거래에 몰리면 다른 상인의 부탁이 남는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "유럽사", "name": "항해 일지", "feature": "관측과 항로의 축적", "action": "지난 관측과 현재 바다의 상태를 대조한다", "condition": "다른 관측에서도 항로가 성립함", "consequence": "안전한 항해와 탐사 목적지가 달라진다", "risk": "옛 관측을 그대로 믿으면 변한 위험을 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "전쟁·군사", "middle": ["공성전", "해전", "보급전", "기동전", "정보전", "방어전"], "specificExamples": ["성문", "공성탑", "함선", "보급로", "암호문"], "specificMaterials": [{"middle": "공성전", "name": "공성탑", "feature": "높이와 접근 경로", "action": "탑을 이동시키거나 성문을 우회한다", "condition": "이동로가 확보되고 방어 위치를 확인함", "consequence": "성벽의 공격과 진입 방향이 바뀐다", "risk": "느린 이동 중 측면이 노출된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "해전", "name": "함선", "feature": "수면 이동과 방향", "action": "바람과 상대 위치에 맞춰 항로를 바꾼다", "condition": "항로와 공격 방향을 함께 확보함", "consequence": "교전 거리와 탈출 경로가 달라진다", "risk": "추격을 택하면 귀환 항로가 불리해진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "보급전", "name": "보급로", "feature": "연결된 운송의 의존", "action": "호송로를 보호하거나 새 보급 지점을 만든다", "condition": "출발지부터 수요 지점까지 연결됨", "consequence": "사용 가능한 작전과 지원 범위가 바뀐다", "risk": "노출된 보급로가 상대의 목표가 된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "기동전", "name": "우회로", "feature": "위치 전환과 속도", "action": "정면을 지키거나 옆길로 병력을 이동한다", "condition": "상대 관측과 이동 가능 지형을 확인함", "consequence": "주도권과 합류 위치가 달라진다", "risk": "부대를 나누면 서로 지원하기 어렵다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "정보전", "name": "암호문", "feature": "정보의 은폐와 해석", "action": "전달 경로와 해독 단서를 비교한다", "condition": "독립된 단서가 같은 의미를 지지함", "consequence": "다음 대응과 기만 경로를 선택한다", "risk": "잘못 해독하면 상대의 유인에 걸린다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "방어전", "name": "방어선", "feature": "통로와 보호 범위", "action": "빈틈을 메우거나 한 통로를 의도적으로 연다", "condition": "상대 접근 방향을 관찰함", "consequence": "막을 대상과 유도할 경로가 달라진다", "risk": "한곳에 집중하면 다른 통로가 비게 된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "공성전", "name": "성문", "feature": "출입과 경계의 통제", "action": "문을 열 시점과 통과할 대상을 정한다", "condition": "경계 안팎의 대상이 확인됨", "consequence": "방어와 이동 가능한 경로가 달라진다", "risk": "지원군을 들이는 틈에 상대도 접근한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "스포츠", "middle": ["축구", "야구", "농구", "골프", "격투 스포츠", "육상", "수상 스포츠", "동계 스포츠"], "specificExamples": ["골키퍼", "도루", "체급", "릴레이", "경기 판정"], "specificMaterials": [{"middle": "축구", "name": "골키퍼", "feature": "골문과 수비 위치", "action": "공의 진행과 상대의 시선을 읽고 위치를 잡는다", "condition": "슛 방향과 수비 범위가 확인됨", "consequence": "막기와 역습의 출발 위치가 달라진다", "risk": "성급히 나오면 골문이 비게 된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "야구", "name": "도루", "feature": "진루와 타이밍", "action": "송구와 주자의 출발 시점을 비교한다", "condition": "투수와 수비의 대응을 읽음", "consequence": "진루와 수비 우선순위가 달라진다", "risk": "무리한 출발이 아웃으로 이어진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "농구", "name": "패스 공간", "feature": "위치와 팀 연결", "action": "수비가 비운 공간으로 이동하거나 공을 전달한다", "condition": "받을 동료와 전달 경로가 확보됨", "consequence": "슛과 다음 패스 선택이 열린다", "risk": "좁은 공간의 패스는 가로채일 수 있다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "골프", "name": "그린 경사", "feature": "지형과 굴림", "action": "경사를 읽고 공을 보낼 방향을 택한다", "condition": "거리와 지형 변화를 함께 확인함", "consequence": "다음 타구 위치와 우회 선택이 달라진다", "risk": "직선 거리만 보면 장애물에 갇힌다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "격투 스포츠", "name": "체급", "feature": "대결 조건과 상대 차이", "action": "대결 조건을 확인하고 거리와 기술을 고른다", "condition": "상대의 유효 범위와 규칙을 파악함", "consequence": "견제와 접근 전략이 달라진다", "risk": "유리한 거리 밖에서는 반격에 노출된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "육상", "name": "릴레이", "feature": "순서와 인계", "action": "달릴 순서와 인계 지점을 조정한다", "condition": "주자 사이의 인계 조건이 충족됨", "consequence": "다음 주자의 출발과 팀 전략이 바뀐다", "risk": "인계가 어긋나면 흐름이 끊긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "수상 스포츠", "name": "수로 표지", "feature": "물길과 방향", "action": "흐름을 읽고 통과할 표지 순서를 택한다", "condition": "표지와 이동 가능한 물길을 확인함", "consequence": "추월과 안전 경로가 달라진다", "risk": "급한 흐름은 회복할 여지를 줄인다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "동계 스포츠", "name": "빙판 마찰", "feature": "표면과 제동", "action": "얼음 상태에 맞춰 회전과 제동을 고른다", "condition": "표면 변화와 정지 공간을 확인함", "consequence": "통과 속도와 우회 경로가 달라진다", "risk": "늦은 제동이 코스 이탈로 이어진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "축구", "name": "경기 판정", "feature": "행동과 경기 규칙의 적용", "action": "선수의 행동을 장면과 규칙에 대조한다", "condition": "행동의 위치와 선행 상황이 확인됨", "consequence": "다음 경기 진행과 선수의 대응이 달라진다", "risk": "일부 장면만 보면 다른 행동을 잘못 판정한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "자연·생태", "middle": ["곤충 생태", "균류 생태", "식물 생태", "심해 생태", "산호초 생태", "숲 생태", "사막 생태", "극지 생태", "조류 생태", "포유류 생태", "담수 생태", "습지 생태", "초원 생태"], "specificExamples": ["개미 군체", "기생 생물", "발광 생물", "균사망", "식충식물"], "specificMaterials": [{"middle": "곤충 생태", "name": "개미 군체", "feature": "개체와 군체의 협동", "action": "먹이 흔적을 옮기거나 이동 행렬을 우회한다", "condition": "먹이와 군체 통로의 연결을 확인함", "consequence": "군체의 이동과 자원 접근이 달라진다", "risk": "군체 통로를 건드리면 위협이 모인다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "균류 생태", "name": "균사망", "feature": "연결과 분해", "action": "분해할 자원과 연결할 지점을 선택한다", "condition": "분해 대상과 연결된 지점을 확인함", "consequence": "자원 회수와 다른 장소의 상태가 바뀐다", "risk": "한 지점의 손상이 연결된 구간에 번진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "식물 생태", "name": "식충식물", "feature": "유인과 포획", "action": "유인물을 두거나 포획 범위를 우회한다", "condition": "유인과 포획 조건이 맞음", "consequence": "접근 경로와 주변 생물의 이동이 달라진다", "risk": "유인물을 잘못 놓으면 동료의 길도 위험해진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "심해 생태", "name": "발광 생물", "feature": "어둠 속 빛과 신호", "action": "빛을 따라가거나 가려 주변 반응을 비교한다", "condition": "빛의 위치와 반응하는 대상을 확인함", "consequence": "숨은 길과 접근하는 상대를 구분한다", "risk": "빛을 켜면 다른 위협에게도 노출된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "산호초 생태", "name": "산호 군락", "feature": "서식 공간과 의존", "action": "서식 공간을 보호하거나 통과 경로를 바꾼다", "condition": "주변 생물의 이용 공간을 확인함", "consequence": "먹이와 은신처의 접근 조건이 달라진다", "risk": "빠른 통과를 위해 공간을 훼손하면 생물이 떠난다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "숲 생태", "name": "수관", "feature": "그늘과 수직 공간", "action": "수관 아래와 위의 이동 길을 비교한다", "condition": "빛과 연결된 가지의 위치를 확인함", "consequence": "은폐와 채집 경로가 달라진다", "risk": "높은 경로는 귀환할 발판이 적다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "사막 생태", "name": "물 저장 식물", "feature": "건조와 수분의 보존", "action": "그늘을 확보하거나 채취 시점을 늦춘다", "condition": "수분 상태와 회복 가능한 지점을 확인함", "consequence": "휴식과 이동의 지속 조건이 달라진다", "risk": "과도한 채취는 다음 귀환의 보급을 줄인다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "극지 생태", "name": "얼음 경계", "feature": "얼음과 활동 공간의 변화", "action": "얼음의 연결을 읽고 이동 시점을 택한다", "condition": "건널 구간과 돌아올 경로를 확인함", "consequence": "접근 가능한 서식 공간이 달라진다", "risk": "얼음 변화로 귀환 경로가 끊길 수 있다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "조류 생태", "name": "둥지", "feature": "번식 장소와 보호", "action": "둥지에서 떨어진 길을 택하거나 접근을 제한한다", "condition": "새의 활동과 보호 범위를 확인함", "consequence": "통과 경로와 생물의 활동이 달라진다", "risk": "둥지 주변의 작업이 경계 행동을 부른다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "포유류 생태", "name": "무리", "feature": "개체와 집단 행동", "action": "개체의 위치와 무리의 이동을 비교한다", "condition": "무리의 활동과 이동 범위를 확인함", "consequence": "추적과 우회할 경로가 달라진다", "risk": "한 개체만 쫓으면 무리의 반응을 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "담수 생태", "name": "여울", "feature": "흐름과 작은 서식 공간", "action": "물 흐름을 유지하거나 건널 위치를 바꾼다", "condition": "서식 공간과 물길의 연결이 유지됨", "consequence": "생물의 이동과 채집 위치가 달라진다", "risk": "흐름을 막으면 연결된 공간이 달라진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "습지 생태", "name": "범람원", "feature": "물높이와 육지의 전환", "action": "수위에 따라 이동과 작업 시점을 바꾼다", "condition": "잠길 구역과 마른 길을 확인함", "consequence": "방문할 공간과 자원의 접근이 달라진다", "risk": "수위가 변하면 이전 귀환로를 쓸 수 없다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "초원 생태", "name": "방목 흔적", "feature": "먹이와 이동의 순환", "action": "먹이 흔적과 무리의 이동을 비교한다", "condition": "쉬어야 할 장소와 새 먹이 공간이 확인됨", "consequence": "추적과 자원 이용 장소가 달라진다", "risk": "한곳을 계속 이용하면 다음 자원이 부족해진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "곤충 생태", "name": "기생 생물", "feature": "숙주와 다른 생물의 의존", "action": "숙주의 변화와 함께 붙어 있는 생물을 관찰한다", "condition": "숙주와 의존 생물의 관계가 확인됨", "consequence": "접촉을 피할 대상과 관찰할 장소가 달라진다", "risk": "숙주의 변화만 보면 위험의 원인을 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "과학·기술", "middle": ["천문학", "물리학", "화학", "유전학", "지질학", "로봇공학", "인공지능", "에너지 기술", "기상·기후", "수학", "해양학", "정보·통신", "심리·인지"], "specificExamples": ["쌍성", "촉매", "유전자 변이", "자율 로봇", "지층"], "specificMaterials": [{"middle": "천문학", "name": "쌍성", "feature": "두 천체의 상대 운동", "action": "서로 다른 관측 위치의 빛을 비교한다", "condition": "두 천체의 위치 차이를 확인함", "consequence": "관측 시점과 항로의 선택이 달라진다", "risk": "한 번의 관측만 믿으면 주기를 잘못 읽는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "물리학", "name": "진자", "feature": "운동과 주기", "action": "밀어 주는 시점을 바꾸거나 움직임을 기다린다", "condition": "주기와 접촉 시점을 확인함", "consequence": "장치의 통과와 작동 순서가 달라진다", "risk": "잘못된 시점의 힘이 흔들림을 키운다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "화학", "name": "촉매", "feature": "반응 조건과 경로", "action": "반응물을 분리하거나 촉매의 접촉을 바꾼다", "condition": "반응물과 조건이 함께 준비됨", "consequence": "제작과 처리의 순서가 달라진다", "risk": "잘못 섞으면 원하는 반응을 얻지 못한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "유전학", "name": "유전자 변이", "feature": "형질 차이와 유전", "action": "환경이 다른 개체의 특성을 비교한다", "condition": "관찰한 차이를 환경 변화와 구분함", "consequence": "사용할 특성과 다음 관찰 대상이 달라진다", "risk": "한 특성의 이점이 다른 조건에서는 약점이 된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "지질학", "name": "지층", "feature": "쌓임과 상대 순서", "action": "지층의 경계와 끊어진 흔적을 조사한다", "condition": "서로 이어지는 층의 순서를 확인함", "consequence": "안전한 굴착과 숨은 통로를 선택한다", "risk": "불안정한 층을 건드리면 통로가 무너진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "로봇공학", "name": "자율 로봇", "feature": "감지와 행동 제어", "action": "감지 범위와 작업 경로를 조정한다", "condition": "작업 대상과 장애물이 구분됨", "consequence": "작업 분담과 접근 경로가 달라진다", "risk": "감지 사각에서 잘못된 작업을 할 수 있다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "인공지능", "name": "분류 모델", "feature": "관측과 판단의 불확실성", "action": "서로 다른 사례로 판단을 시험한다", "condition": "독립된 사례의 오판을 확인함", "consequence": "자동 판단을 맡길 작업과 직접 할 작업이 나뉜다", "risk": "편향된 사례만 쓰면 낯선 대상에서 실패한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "에너지 기술", "name": "축전 장치", "feature": "저장과 공급의 시차", "action": "사용할 시설과 충전 시점을 나눈다", "condition": "공급과 수요의 차이를 확인함", "consequence": "시설 가동 순서와 이동 지원이 달라진다", "risk": "한 시설에 공급을 몰면 다른 시설이 멈춘다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "기상·기후", "name": "비구름", "feature": "날씨와 물의 이동", "action": "구름의 움직임과 지형을 비교한다", "condition": "강수와 피할 장소를 확인함", "consequence": "이동 시점과 사용할 통로가 달라진다", "risk": "현재 날씨만 보고 떠나면 귀환이 어려워진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "수학", "name": "대칭", "feature": "변환과 유지되는 관계", "action": "형태를 회전하거나 뒤집어 연결을 시험한다", "condition": "변환 후에도 같은 관계가 유지됨", "consequence": "배치와 통과 가능한 조합이 달라진다", "risk": "겉모양의 유사함만 믿으면 연결이 끊긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "해양학", "name": "해류", "feature": "흐름과 물의 순환", "action": "흐름의 방향을 읽고 출발 지점을 바꾼다", "condition": "현재 흐름과 목적지의 관계를 확인함", "consequence": "항로와 도착 가능한 장소가 달라진다", "risk": "빠른 흐름을 타면 되돌아오기 어렵다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "정보·통신", "name": "중계기", "feature": "연결과 전달 범위", "action": "중계 위치와 전달할 신호를 바꾼다", "condition": "중계 지점 사이 연결이 확보됨", "consequence": "협동과 원격 작업 범위가 달라진다", "risk": "한 중계기의 장애가 다른 작업을 끊는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "심리·인지", "name": "주의 전환", "feature": "관찰과 놓치는 정보", "action": "보는 대상과 확인 순서를 바꾼다", "condition": "서로 다른 관찰에서 빠진 정보를 확인함", "consequence": "탐색과 판단 우선순위가 달라진다", "risk": "한 대상에 집중하면 주변 위험을 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "사회·문화", "middle": ["가족·친족", "법·재판", "장례 문화", "축제 문화", "성인식", "유목 문화", "해양 문화", "언어·소통", "도시·공동체", "공동체 규범"], "specificExamples": ["장례 행렬", "가면 의식", "친족 규칙", "증인", "추방 의식"], "specificMaterials": [{"middle": "가족·친족", "name": "친족 규칙", "feature": "관계와 책임", "action": "서로 다른 부탁의 책임자를 확인한다", "condition": "관계와 실제 책임이 구분됨", "consequence": "돌봄과 협력의 대상이 달라진다", "risk": "한 관계만 우선하면 다른 협력이 끊긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "법·재판", "name": "증인", "feature": "증언과 판정", "action": "증언의 차이를 현장 흔적과 대조한다", "condition": "증언과 관찰이 같은 사건을 가리킴", "consequence": "책임과 출입 권한의 판정이 달라진다", "risk": "확인 없이 믿으면 다른 인물이 책임을 진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "장례 문화", "name": "장례 행렬", "feature": "애도와 공동 이동", "action": "행렬의 경로와 참여할 역할을 정한다", "condition": "참여자의 부탁과 통과 장소를 확인함", "consequence": "공동체의 관계와 길의 이용이 달라진다", "risk": "급한 이동이 애도의 약속과 충돌한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "축제 문화", "name": "가면 의식", "feature": "역할과 일시적 전환", "action": "가면의 역할을 맡거나 본래 신분을 드러낸다", "condition": "의식의 역할과 행동 조건이 맞음", "consequence": "평소 닫힌 교류와 부탁이 열린다", "risk": "역할과 실제 책임을 혼동하면 갈등이 생긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "성인식", "name": "통과 의례", "feature": "지위와 책임의 변화", "action": "시험의 과제를 해결하거나 책임을 나눈다", "condition": "과제의 목적과 공동체의 인정 조건을 확인함", "consequence": "새 역할과 수행할 일이 열린다", "risk": "결과만 얻으려 하면 신뢰를 얻지 못한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "유목 문화", "name": "이동 야영지", "feature": "거처와 이동의 조정", "action": "물과 먹이 상태에 맞춰 야영지를 옮긴다", "condition": "다음 거처와 이동 경로가 확보됨", "consequence": "물품 운송과 동행 선택이 달라진다", "risk": "늦은 이동은 자원 부족을 키운다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "해양 문화", "name": "공동 항로", "feature": "바다와 협동 이동", "action": "다른 배와 항로 정보를 나눈다", "condition": "관측한 위험과 합류 지점이 확인됨", "consequence": "안전한 항해와 협력 대상이 달라진다", "risk": "정보를 독점하면 다른 배의 지원을 받기 어렵다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "언어·소통", "name": "의미의 차이", "feature": "표현과 해석", "action": "서로 다른 인물의 표현을 상황과 대조한다", "condition": "같은 표현의 의도가 확인됨", "consequence": "협상과 다음 부탁이 달라진다", "risk": "표현만 반복하면 오해가 깊어진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "도시·공동체", "name": "공유 공간", "feature": "개인 이용과 공동 접근", "action": "이용 시간과 통과 동선을 나눈다", "condition": "각 이용자의 필요와 통로가 확인됨", "consequence": "시설 이용과 주민의 이동이 달라진다", "risk": "독점된 공간이 다른 활동을 막는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "공동체 규범", "name": "추방 의식", "feature": "소속과 경계의 변경", "action": "공동체의 규칙과 남길 책임을 비교한다", "condition": "규칙을 적용받는 대상과 이유가 확인됨", "consequence": "거주 권한과 다른 공동체의 협력이 달라진다", "risk": "복귀 조건 없는 배제는 후속 갈등을 만든다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "경제·산업", "middle": ["상업·교역", "금융", "물류", "광업", "농업", "제조업"], "specificExamples": ["담보", "객주 거래", "운송망", "갱도", "물물교환"], "specificMaterials": [{"middle": "상업·교역", "name": "물물교환", "feature": "서로 다른 수요의 연결", "action": "직접 교환하거나 여러 거래를 중개한다", "condition": "각 상대의 요구가 맞물림", "consequence": "얻을 물품과 교역 경로가 달라진다", "risk": "한 교환을 택하면 다른 요구를 충족하기 어렵다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "금융", "name": "담보", "feature": "현재 자산과 미래 책임", "action": "담보를 제공하거나 거래 규모를 줄인다", "condition": "약속을 이행할 자산이 확보됨", "consequence": "가능한 투자와 위험 부담이 달라진다", "risk": "약속을 못 지키면 담보를 잃는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "물류", "name": "운송망", "feature": "출발과 도착의 연결", "action": "분배 지점과 운송 순서를 바꾼다", "condition": "출발지와 도착지 사이 연결이 유지됨", "consequence": "공급 가능한 시설과 작업이 달라진다", "risk": "한 구간의 정체가 다른 작업을 늦춘다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "광업", "name": "갱도", "feature": "굴착과 지지", "action": "지지 구조를 확보하거나 다른 층을 판다", "condition": "지층과 귀환 통로가 확인됨", "consequence": "채굴 대상과 깊이가 달라진다", "risk": "지지 없이 굴착하면 퇴로가 막힌다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "농업", "name": "윤작", "feature": "재배 순서와 땅의 상태", "action": "다음 작물을 바꾸거나 땅을 쉬게 한다", "condition": "이전 재배와 현재 토양 상태를 확인함", "consequence": "생산 계획과 사용할 자원이 달라진다", "risk": "당장의 수확만 택하면 다음 재배가 불리해진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "제조업", "name": "조립 공정", "feature": "순서와 부품 의존", "action": "공정 순서와 부품 공급을 조정한다", "condition": "앞 공정의 출력이 다음 요구를 충족함", "consequence": "만들 수 있는 물품과 작업 배치가 달라진다", "risk": "한 공정의 병목이 전체 생산을 막는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "상업·교역", "name": "객주 거래", "feature": "중개와 인수의 책임", "action": "중개자와 물품의 인수 조건을 합의한다", "condition": "약속한 물품과 인수자가 일치함", "consequence": "거래의 안전과 맡길 물품이 달라진다", "risk": "책임을 확인하지 않으면 분쟁 해결이 늦어진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "종교·신앙", "middle": ["불교 전통", "기독교 전통", "이슬람 전통", "힌두교 전통", "무속 신앙", "조상 신앙", "자연 숭배"], "specificExamples": ["굿", "신당", "제사", "순례 의식", "성물"], "specificMaterials": [{"middle": "불교 전통", "name": "순례 길", "feature": "이동과 자기 성찰", "action": "길에서 만난 부탁과 수행 목표를 비교한다", "condition": "다른 존재의 요구와 자신의 목적을 확인함", "consequence": "도울 대상과 다음 방문지가 달라진다", "risk": "목표만 서두르면 수행의 약속을 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "기독교 전통", "name": "구호 공동체", "feature": "돌봄과 공동 책임", "action": "부족한 물품과 돌봄 역할을 나눈다", "condition": "도움이 필요한 대상이 확인됨", "consequence": "공동체의 지원과 다음 책임이 달라진다", "risk": "한 대상만 도우면 다른 요청이 남는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "이슬람 전통", "name": "공동 나눔", "feature": "기여와 공동체의 돌봄", "action": "기여할 자원과 도울 대상을 정한다", "condition": "기여와 실제 필요가 연결됨", "consequence": "공동체의 상호 지원이 달라진다", "risk": "보여 주기 위한 기여는 필요한 곳에 닿지 않는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "힌두교 전통", "name": "의무의 갈등", "feature": "서로 다른 역할의 책임", "action": "역할의 부탁을 비교하고 이행 순서를 고른다", "condition": "누구에게 어떤 책임이 있는지 확인함", "consequence": "관계와 다음 역할이 달라진다", "risk": "한 의무를 지키면 다른 의무가 늦어진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "무속 신앙", "name": "신당", "feature": "장소와 의례의 관계", "action": "장소의 부탁과 의례에 쓸 대상을 확인한다", "condition": "의례의 대상과 약속이 맞음", "consequence": "장소의 교류와 주민의 행동이 달라진다", "risk": "겉모양만 따라 하면 갈등의 원인이 남는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "조상 신앙", "name": "제사", "feature": "기억과 가족의 관계", "action": "기억할 사건과 모일 사람을 정한다", "condition": "서로 다른 가족의 기억을 확인함", "consequence": "화해와 다음 가족 부탁이 달라진다", "risk": "한 사람의 기억만 인정하면 갈등이 깊어진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "자연 숭배", "name": "신성한 숲", "feature": "장소에 대한 금기", "action": "숲의 이용 범위와 지킬 약속을 고른다", "condition": "이용 조건과 공동체의 약속을 확인함", "consequence": "채집과 방문 가능한 구역이 달라진다", "risk": "금기를 어기면 공동체의 협력이 사라진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "무속 신앙", "name": "굿", "feature": "의례와 공동체의 부탁", "action": "의례의 대상과 참여자의 부탁을 조율한다", "condition": "참여자가 원하는 해결과 역할이 확인됨", "consequence": "공동체의 관계와 다음 부탁이 달라진다", "risk": "서로 다른 부탁을 하나로 취급하면 갈등이 남는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "불교 전통", "name": "순례 의식", "feature": "방문과 수행의 약속", "action": "방문 순서와 이행할 약속을 정한다", "condition": "방문의 목적과 약속한 행동이 맞음", "consequence": "다음 수행 장소와 만날 인물이 달라진다", "risk": "방문만 끝내면 약속한 책임이 남는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "기독교 전통", "name": "성물", "feature": "물건과 신앙 공동체의 의미", "action": "성물의 보관과 사용할 상황을 합의한다", "condition": "물건의 의미와 공동체의 약속을 확인함", "consequence": "공동체의 신뢰와 접근 권한이 달라진다", "risk": "물건의 소유를 신뢰 전체로 착각하면 갈등이 생긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "철학·사상", "middle": ["윤리학", "존재론", "인식론", "정치철학", "유가", "도가", "실존주의", "공리주의"], "specificExamples": ["책임의 충돌", "존재의 동일성", "증언의 신뢰", "선택의 책임"], "specificMaterials": [{"middle": "윤리학", "name": "책임의 충돌", "feature": "양립하기 어려운 의무", "action": "피해와 책임을 비교해 행동을 고른다", "condition": "각 선택의 영향을 받을 대상이 확인됨", "consequence": "감당할 책임과 후속 부탁이 달라진다", "risk": "한쪽의 손실을 숨기면 이후 갈등이 커진다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "존재론", "name": "존재의 동일성", "feature": "변화와 정체성", "action": "바뀐 부분과 유지된 관계를 비교한다", "condition": "동일성의 기준을 직접 정함", "consequence": "대상의 권한과 교체 방식이 달라진다", "risk": "기준을 바꾸면 이전 약속과 충돌한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "인식론", "name": "증언의 신뢰", "feature": "믿음과 근거", "action": "증언을 독립된 관찰로 확인한다", "condition": "근거가 주장을 지지함", "consequence": "믿을 정보와 다음 조사가 달라진다", "risk": "같은 출처의 반복은 독립된 증거가 아니다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "정치철학", "name": "권한 위임", "feature": "권력과 책임", "action": "결정 권한과 감시 역할을 나눈다", "condition": "권한과 책임의 범위가 합의됨", "consequence": "공동 결정과 자원 분배가 달라진다", "risk": "감시 없는 위임이 다른 구성원의 선택을 막는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "유가", "name": "역할의 예", "feature": "관계와 적절한 행동", "action": "서로 다른 역할의 부탁을 조정한다", "condition": "역할과 관계의 책임을 확인함", "consequence": "관계의 신뢰와 다음 협력이 달라진다", "risk": "형식만 지키면 실제 필요를 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "도가", "name": "무위의 선택", "feature": "간섭과 자연스러운 변화", "action": "직접 개입하거나 흐름을 기다려 비교한다", "condition": "개입 전후의 변화를 관찰함", "consequence": "불필요한 작업과 열리는 경로가 달라진다", "risk": "모든 문제를 기다림만으로 해결할 수는 없다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "실존주의", "name": "선택의 책임", "feature": "선택과 자기 규정", "action": "정해진 역할을 따르거나 다른 행동을 택한다", "condition": "자신이 선택한 이유와 결과를 인정함", "consequence": "인물의 관계와 이후 목표가 달라진다", "risk": "선택을 남의 탓으로 돌리면 신뢰를 잃는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "공리주의", "name": "결과의 비교", "feature": "영향과 전체 이익", "action": "여러 대상의 이익과 손실을 비교한다", "condition": "영향을 받는 범위가 확인됨", "consequence": "지원 우선순위와 후속 책임이 달라진다", "risk": "소수의 손실을 무시하면 협력이 끊긴다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "예술", "middle": ["음악", "회화", "조각", "건축", "무용", "연극", "공예", "사진"], "specificExamples": ["합주", "가면극", "미로 건축", "원근 표현", "도자기"], "specificMaterials": [{"middle": "음악", "name": "합주", "feature": "서로 다른 소리의 맞물림", "action": "연주 순서와 서로 들을 대상을 바꾼다", "condition": "각 소리의 시작과 반복이 맞음", "consequence": "공동 연주와 주변 반응이 달라진다", "risk": "한 소리만 크게 내면 다른 신호를 놓친다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "회화", "name": "원근 표현", "feature": "시점과 보이는 관계", "action": "다른 위치에서 그림의 연결을 비교한다", "condition": "관찰 위치에 따른 차이를 확인함", "consequence": "숨은 형태와 통과 방향이 드러난다", "risk": "한 시점만 믿으면 거리를 잘못 읽는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "조각", "name": "지지 구조", "feature": "형태와 무게의 관계", "action": "받칠 위치를 바꾸거나 일부를 덜어 낸다", "condition": "무게와 지지점이 안정됨", "consequence": "형태의 접근과 활용이 달라진다", "risk": "잘못된 제거가 전체 균형을 무너뜨린다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "건축", "name": "미로 건축", "feature": "공간과 이동의 관계", "action": "벽과 출입구의 연결을 바꾼다", "condition": "시작과 목적지의 통로가 이어짐", "consequence": "방문 순서와 우회 경로가 달라진다", "risk": "쉬운 통로가 다른 방의 접근을 막을 수 있다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "무용", "name": "군무", "feature": "몸짓과 공동 움직임", "action": "동작과 위치를 맞추거나 흐름을 뒤집는다", "condition": "다른 참여자의 이동을 읽음", "consequence": "합류 위치와 열린 공간이 달라진다", "risk": "서로 다른 동작이 충돌을 만든다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "연극", "name": "가면극", "feature": "역할과 관객의 해석", "action": "역할을 바꾸거나 숨긴 사실을 드러낸다", "condition": "행동과 말의 차이가 관객에게 전달됨", "consequence": "인물의 관계와 다음 장면이 달라진다", "risk": "배역의 말이 실제 약속으로 오해된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "공예", "name": "도자기", "feature": "재료와 제작 과정", "action": "성형과 건조의 순서를 조정한다", "condition": "재료 상태가 다음 작업을 허용함", "consequence": "만들 형태와 사용할 물품이 달라진다", "risk": "급한 작업은 형태를 유지하기 어렵다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "사진", "name": "노출", "feature": "빛과 남는 이미지", "action": "빛과 촬영 위치를 바꿔 같은 대상을 찍는다", "condition": "빛과 관찰 위치의 차이를 확인함", "consequence": "보이지 않던 흔적과 정보가 드러난다", "risk": "밝은 부분만 맞추면 어두운 단서를 잃는다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}, {"broad": "일상·직업", "middle": ["요리", "의료", "수사", "교육", "운송", "장인 기술"], "specificExamples": ["발효", "응급 처치", "지문", "견습", "도구 수리"], "specificMaterials": [{"middle": "요리", "name": "발효", "feature": "시간과 재료 상태", "action": "재료를 나누고 상태에 맞춰 처리한다", "condition": "시간에 따른 변화와 조건을 확인함", "consequence": "쓸 수 있는 재료와 다음 조리가 달라진다", "risk": "조건을 무시하면 원하는 재료를 얻지 못한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "의료", "name": "응급 처치", "feature": "위급함과 우선순위", "action": "위험을 확인하고 도움의 순서를 정한다", "condition": "대상의 상태와 사용할 지원이 확인됨", "consequence": "구조와 이동 가능한 대상이 달라진다", "risk": "원인을 확인하지 않은 처치는 상황을 악화시킨다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "수사", "name": "지문", "feature": "흔적과 대상의 연결", "action": "현장 흔적을 다른 증거와 대조한다", "condition": "독립된 흔적이 같은 대상을 가리킴", "consequence": "조사 대상과 사건의 순서가 달라진다", "risk": "단일 흔적만으로 결론 내리면 오판한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "교육", "name": "견습", "feature": "시범과 반복 학습", "action": "시범을 관찰하고 다른 조건에서 시험한다", "condition": "학습한 행동을 새 상황에 적용함", "consequence": "맡을 작업과 다음 과제가 달라진다", "risk": "동작만 외우면 조건이 바뀔 때 실패한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "운송", "name": "도구 수송", "feature": "적재와 이동", "action": "짐을 나누거나 통과 경로를 바꾼다", "condition": "짐의 조건과 통로가 맞음", "consequence": "운송 대상과 왕복 동선이 달라진다", "risk": "과한 적재가 귀환과 도움을 어렵게 한다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}, {"middle": "장인 기술", "name": "도구 수리", "feature": "손상과 기능", "action": "손상 부위를 찾아 수리하거나 부품을 바꾼다", "condition": "손상 원인과 부품의 역할을 확인함", "consequence": "복구된 작업과 사용 방식이 달라진다", "risk": "겉만 고치면 같은 손상이 반복된다", "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"}]}], "historyExpansion": {"selectionAxesKo": ["지역·문화권", "시대·문명", "역사 분야"], "regionsKo": ["한국", "동아시아", "유럽", "서아시아", "아프리카", "남아시아", "동남아시아", "아메리카"], "erasAndCivilizationsKo": ["고조선", "삼국", "발해", "고려", "조선", "개항기", "중국 왕조", "일본 전국시대", "몽골 제국", "그리스·로마", "중세", "르네상스", "대항해시대", "산업혁명", "메소포타미아", "페르시아", "이슬람 문명", "오스만 제국", "말리 제국", "인더스 문명", "마우리아 제국", "무굴 제국", "크메르 제국", "마야", "아즈텍", "잉카"], "fieldsKo": ["정치사", "전쟁사", "교역사", "항해사", "도시사", "생활사", "기술사", "의학사", "법제사", "이주사"], "ruleKo": "지역·시대·분야를 실제로 성립하는 관계로 조합한다. 모든 조합을 역사 사실로 취급하지 않는다.", "exampleKo": "역사→조선 교역사→보부상·장시·객주"}, "creativeGenreExamplesKo": ["미스터리", "코미디", "공포", "스릴러", "판타지", "공상과학", "모험", "드라마", "로맨스", "비극", "풍자", "무협"], "basicDesignMethodKo": ["A에 대표 참고 게임 이름·유사 시스템·플레이어 선택과 채택 이유를 명시한다.", "B에 기존 게임의 실제 시스템·원본 출처·상태·보존할 규칙을 명시한다. 새 게임이라 기존 시스템이 없으면 신규 기본설계임을 명확히 한다.", "A 행동→B 조건 변화→B 결과→A 다음 선택의 반복 흐름을 구체화한다.", "C의 작품 주·보조 장르와 경험·정보·갈등·선택의 차이를 작성한다.", "D의 소분류 경로와 C 두 장르로 세계·사건·규칙을 창작한다.", "@는 D 기반 단서→실험→발견→새 선택→다음 의문을 상한 없이 연결한다.", "MAIN은 A의 참고 시스템과 B의 기존 시스템에 C·D·@의 새 창작이 연결된 최종 정체성이다.", "MAIN·A·B·C·각 D·각 @에 육하원칙과 결과·실패·취소·복구를 작성한다."], "sixWOneHKo": {"who": "실제 행동 주체·역할·관계·선택 책임", "when": "실행 시점과 명확한 선행조건", "where": "구체적인 장소와 접근·이동·복귀 맥락", "what": "대상·목표·플레이어 선택", "how": "입력→판정→반응→상태 변화", "why": "목적·욕망·갈등·원인과 다음 행동의 이유", "result": "성공 출력·다음 선택·실패 및 취소 복구"}, "verificationBoundary": {"documentationApprovalIsRuntimePass": false, "legacy99CandidatesProveHierarchy": false, "generatorChanged": false, "schemaChanged": false, "scorerChanged": false, "gameSourceChanged": false, "saveChanged": false, "workflowChanged": false, "deploymentRequested": false, "existingCanonicalPipelineOnly": true, "existingScoresAreNotNewGrammarEvidence": true, "followupKo": "기존 실행기·스키마·심사기를 수정하고 새 설계·런타임으로 검증하기 전에는 구현·통과·배포 완료로 보고하지 않는다."}, "basicFloorIntegration": {"status": "CODE_IMPLEMENTED_RUNTIME_UNVERIFIED", "placementKo": "기존 기본 플로어의 기본설계 단계 내부", "stepsKo": ["분류 선택", "여러 창작 후보 비교", "A 참고 시스템·B 기존 시스템 결합과 보존 검증", "C 작품 장르 두 개 결합", "D 세계·존재·사건·규칙 창작", "@ 파고들기 생성", "육하원칙·인과·모순 검수", "상세설계 인계"], "ideaMethodKo": ["분류 이름을 결과로 제출하지 않고 소재의 핵심 특징을 플레이 규칙으로 변환한다.", "소재의 원리를 이전·역전·대가·상속·숨김·재해석해 서로 다른 창작 후보를 만든다.", "후보를 중심 플레이 적합성·보조 역할·인과·의외성·구현 가능성으로 비교한다.", "한 장면 퀘스트가 아닌 반복 플레이·지역·인물·경제·성장에 지속되는 정체성 규칙을 선택한다.", "자체 검토에서 추상적인 부분은 해당 항목을 다시 구체화하고 기존 흐름으로 상세설계에 전달한다.", "A 채택 요소·B 보존 요소·새 상호작용을 구분한 서로 다른 후보 두 개 이상을 비교한다.", "각 후보의 새 선택·실패·취소·복구와 기존 저장·밸런스 영향 및 실제 검증 장면을 작성한다."], "newStageWorkflowOrQueueRequired": false, "lockedFlowSequenceChanged": false}, "materialHierarchyVersion": 2, "specificMaterialRulesKo": ["specificMaterials는 중분류별 정확한 소분류 경로다.", "feature는 소재의 핵심 개념이며 action·condition·consequence·risk는 게임용 창작 해석이다. 실제 역사·생물의 고정 규칙이나 현재 게임 수치라고 주장하지 않는다.", "소분류 후보는 추가할 수 있으며 총개수 제한을 두지 않는다. 각 새 후보는 정확한 중분류·특징·행동·조건·결과·위험과 연결한다.", "넓은 지역 신화를 단일 전승으로 취급하지 않는다. 특정 공동체·인물·의례를 상세설계에 쓰면 출처와 맥락을 추가 검증한다."], "materialReferenceSources": ["https://collections.si.edu/search/results.htm?q=%22Creation--Mythology%22", "https://naturalhistory.si.edu/research/anthropology/collections-overview", "https://oceanexplorer.noaa.gov/ocean-fact/bioluminescence/"], "contentDepthContract": {"basis": "C_AND_D_RELATED_CONTENT_WITH_A_PRIMARY_AND_B_SUPPORTING_GAME_GENRES", "rulesKo": ["@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다.", "관찰·가설·실험·발견·숙련·조합·재해석·재방문은 콘텐츠 연구·창작·개발을 위한 과정이다. 연구 과정과 결과 자체도 해당 게임의 중심·보조 장르에 맞는 복합 콘텐츠로 구성한다.", "연구 결과는 새로운 행동·관계·현상·존재·장소·사건·문화·규칙·조합으로 이어지고 다시 다음 연구와 콘텐츠 개발의 대상이 된다. 연구 버튼·수치 상승·기능 해금만으로 주된 목적을 충족했다고 인정하지 않는다.", "@는 C의 작품 주·보조 장르와 D의 창작 세계·존재·장소·사건·문화·규칙에서 나온 연관 콘텐츠를 A의 참고 시스템과 B의 기존 시스템에 복합적으로 연결해 새로 창작한다.", "C는 갈등·경험·정보·해석을 만들고 D는 구체 대상과 세계의 지속 규칙을 만든다. @는 그 관계에서 새로운 행동·관계·현상·조합·사건·결과를 파생하며 다시 C·D 및 A·B의 다음 선택에 영향을 준다.", "단서는 이야기의 단서뿐 아니라 적 패턴·현상·입력 반응·배치·자원 흐름·상호작용의 차이도 포함한다.", "실험은 전투·조작·배치·제작·운영·조합 등 해당 장르의 실제 플레이로 구성한다.", "단서→실험→발견→새 선택→다음 의문은 플레이의 인과 연결이다. 모든 사례를 조사 퀘스트·기록 장치·경로 해금으로 만들지 않는다.", "각 사례에 D 출처, 관찰한 차이, 실제 입력과 조건, 성공·실패·취소·복구, 달라지는 행동과 결과를 작성한다.", "초기 서로 다른 사례 최소 4개는 출발점이며 총개수 상한은 없다. 이름·번호·수치만 바꾼 반복은 새 사례가 아니다.", "장르별 예시는 탐색 범위이며 고정 창작 답안·필수 기능 목록·장르별 고정 결과로 사용하지 않는다.", "기본설계는 표준 문법의 A·B·C·D·@를 연결해 MAIN을 도출한다. 확정한 MAIN과 중심·보조 장르에 맞춰 상세설계를 작성하며 기존 게임 제목·내용을 새 정체성의 기준으로 삼지 않는다.", "장르별 숙련 기능이나 콘텐츠 목록을 채우는 것만으로 @를 작성했다고 인정하지 않는다. C·D와의 인과 연결, 중심·보조 게임 장르의 복합적인 실제 플레이, 이전 사례와 다른 창작 결과를 설명해야 한다."], "genreExamplesKo": {"액션·슈팅": ["적 패턴·타이밍·약점", "무기 운용·연계·대응"], "역할수행": ["빌드·장비 조합", "인물 관계·선택의 후속 결과"], "어드벤처": ["숨은 장소·사건 재해석", "복수 해결법·재방문 변화"], "전략": ["배치·상성·자원 운용", "기만·상대 전술 대응"], "시뮬레이션": ["생산 연결·시설·동선", "주민 행동·운영 최적화"], "생존": ["생태 관계·제작 조합", "위험 활용·거점·탐험 전략"], "퍼즐": ["규칙 조합·숨은 조건", "복수 해법·고급 응용"], "스포츠·레이싱": ["기술 숙련·코스 공략", "상대 읽기·팀·장비 전략"], "리듬": ["박자 해석·입력 기술", "패턴 숙련·표현·변주"], "카드·보드": ["덱·말 조합·수 읽기", "연계·상대 전략 역이용"], "파티": ["역할 조합·협동 방식", "심리전·라운드별 대응"], "방치·증분": ["투자 순서·생산 조합", "자동화·성장 전환 전략"]}, "examplesAreRequiredFeatures": false, "examplesArePresetCreativeAnswers": false, "initialDistinctExamplesMinimum": 4, "generationLimit": null, "documentationIsImplementationEvidence": false, "primaryPurposeKo": "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다."}, "existingGameSystemReference": {"role": "B_EXISTING_GAME_SYSTEMS", "scope": "EXISTING_GAME_DESIGN_ONLY", "existingSystemIsSupportingOnly": false, "existingTitleWorldMaterialAndGenreMayNotFixOtherAxes": true, "legacyASystemReferenceMigratesToBForStandardGrammar": true, "existingGameSourceSaveBalanceAndNetworkAuthorityPreserved": true, "ownerDirective": "2026-10-20", "bCoreSystemGeneratedByGrammar": false, "existingSystemMayReplaceBCore": true, "newGameWithoutBaselineMustBeExplicit": true}, "representativeGameExamples": [{"gameGenre": "액션", "name": "젤다의 전설", "systemFamily": "탐험 중 적 패턴과 도구를 조합하는 전투", "playerChoice": "상대의 빈틈과 주변 도구를 보고 접근·회피·공격 순서를 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "슈팅", "name": "둠", "systemFamily": "이동과 사격을 결합한 적 대응", "playerChoice": "공간과 적 위치를 보고 이동 경로와 사격 대상을 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "역할수행", "name": "디아블로", "systemFamily": "전투와 획득 장비의 조합 운용", "playerChoice": "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "어드벤처", "name": "젤다의 전설", "systemFamily": "도구와 환경을 활용하는 탐험", "playerChoice": "환경의 반응과 도구의 특성을 비교해 새로운 접근 경로를 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "전략", "name": "스타크래프트", "systemFamily": "자원 생산과 부대 구성의 상호작용", "playerChoice": "자원 상황과 상대 부대에 따라 생산 순서와 병력 구성을 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "시뮬레이션", "name": "심시티", "systemFamily": "도시 시설과 자원 흐름의 운영", "playerChoice": "시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "생존", "name": "마인크래프트", "systemFamily": "채집·제작·거점 준비와 탐험", "playerChoice": "현재 자원과 위험을 비교해 도구 제작과 다음 탐험 범위를 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "퍼즐", "name": "포털", "systemFamily": "공간 연결과 장치 반응의 문제 해결", "playerChoice": "공간의 연결과 장치의 반응을 확인해 해결 순서를 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "스포츠", "name": "피파", "systemFamily": "공간과 동료 위치를 활용하는 경기", "playerChoice": "공간과 동료의 움직임을 보고 패스·돌파·슈팅을 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "레이싱", "name": "마리오 카트", "systemFamily": "코스 주행과 상황별 자원 운용", "playerChoice": "코스의 위험과 상대 위치를 보고 주행 경로와 자원 사용 시점을 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "리듬", "name": "댄스 댄스 레볼루션", "systemFamily": "박자 신호와 입력 타이밍의 대응", "playerChoice": "연속 박자와 다음 신호를 보고 입력과 동작의 타이밍을 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "카드·보드", "name": "슬레이 더 스파이어", "systemFamily": "덱 구성과 전투 중 카드 선택", "playerChoice": "상대의 다음 행동과 보유 카드를 보고 사용 순서와 덱 구성을 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "파티", "name": "마리오 파티", "systemFamily": "라운드별 목표와 짧은 규칙의 전환", "playerChoice": "현재 라운드 목표와 상대 행동을 보고 역할과 대응을 선택한다", "source": "중앙 기본설계 참고게임 예시"}, {"gameGenre": "방치·증분", "name": "쿠키 클리커", "systemFamily": "생산 누적과 재투자 순서의 선택", "playerChoice": "현재 생산량과 투자 비용을 비교해 다음 생산 확장을 선택한다", "source": "중앙 기본설계 참고게임 예시"}], "referenceExamplesAreExhaustive": false}
+        "ownerBasicDesignMethod": {
+          "version": 2,
+          "authority": "OWNER_DIRECTIVE_2026-10-20",
+          "status": "OWNER_APPROVED_CODE_IMPLEMENTED_RUNTIME_UNVERIFIED",
+          "implementationStatus": "CODE_IMPLEMENTED_RUNTIME_UNVERIFIED",
+          "documentation": "company-learning/game-design-grammar.md",
+          "purposeKo": "A 대표 참고게임의 유사 시스템·B 기존 게임 시스템·C 작품 장르·D 창작·@ 파고들기를 공식화한다. 장르·소재 분류와 시스템의 출처를 구분한다.",
+          "precedenceKo": "새 설계 생성기·스키마·심사기는 이 절을 따른다. 상위의 이전 문법·동등 소재·C 소재 두 개 요구는 이전 접수의 호환 기록이며 기존 점수는 새 문법 충족 증거가 아니다.",
+          "formula": "MAIN = A + B + C + D + @",
+          "roles": {
+            "MAIN": {
+              "meaningKo": "연결된 최종 게임 정체성: 플레이어 역할·반복 목적·경험."
+            },
+            "A": {
+              "gameGenreLevel": "REPRESENTATIVE",
+              "gameRole": "PRIMARY",
+              "materialLevel": "BROAD",
+              "meaningKo": "대표 참고 게임의 유사 시스템. 예: 디아블로의 전투·장비 선택 구조. 참고 게임 이름과 채택할 시스템·플레이어 선택을 명시한다.",
+              "systemSourceRole": "REPRESENTATIVE_SIMILAR_GAME_REFERENCE"
+            },
+            "B": {
+              "gameGenreLevel": "DETAILED",
+              "gameRole": "SUPPORTING",
+              "materialLevel": "MIDDLE",
+              "meaningKo": "수정 대상 기존 게임의 실제 시스템. 원본 출처·규칙·상태·플레이어 선택을 기록하고 A와 결합한다. 기존 시스템을 새 B로 대체하지 않는다.",
+              "systemSourceRole": "EXISTING_GAME_SYSTEM_BASELINE"
+            },
+            "C": {
+              "genreDomain": "LITERARY_AND_CINEMATIC",
+              "genreCount": 2,
+              "roles": [
+                "PRIMARY",
+                "SECONDARY"
+              ],
+              "meaningKo": "소설·영화식 주 장르 + 보조 장르. 게임 장르를 다시 고르는 단계가 아니다."
+            },
+            "D": {
+              "inputs": [
+                "C_PRIMARY_GENRE",
+                "C_SECONDARY_GENRE",
+                "SPECIFIC_SOURCE_MATERIAL"
+              ],
+              "materialLevel": "SPECIFIC",
+              "generationLimit": null,
+              "meaningKo": "C의 두 장르와 소분류 소재로 존재·장소·사건·문화·규칙을 창작하고 A·B 플레이에 연결한다."
+            },
+            "AT": {
+              "symbol": "@",
+              "basis": "D",
+              "generationLimit": null,
+              "meaningKo": "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다. @는 C의 작품 주·보조 장르와 D의 창작 세계·존재·장소·사건·문화·규칙에서 나온 연관 콘텐츠를 A의 참고 시스템과 B의 기존 시스템에 복합적으로 연결해 새로 창작한다.",
+              "initialDiscoveryExamplesMinimum": 4,
+              "primaryPurposeKo": "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다."
+            }
+          },
+          "classificationRulesKo": [
+            "게임 장르와 창작 소재는 별도 분류다. 스포츠는 양쪽에 존재할 수 있다.",
+            "A는 대표 참고 게임의 유사 시스템이고 B는 기존 게임의 실제 시스템이다. 게임 장르는 두 시스템의 분류 정보이며 A에 참고 게임 이름을 명시한다.",
+            "A에서 채택할 구조와 B에서 보존할 실제 시스템을 구분하고 두 시스템의 상호작용을 설계한다.",
+            "채집·제작·공격·회피는 내부 기능이며 대표 장르를 대체하지 않는다.",
+            "소재 대·중·소는 넓은 분야→구체 분야→존재·장소·물건·문화·사건·현상·원리의 탐색 깊이다.",
+            "A·B 소재는 같은 계통일 필요 없다. 다른 계통이면 각각의 분류 경로와 연결 이유를 적는다.",
+            "집단 신뢰 같은 추상어만으로 창작 완료를 주장하지 않는다. 복선·반전은 기법이며 구체 대상과 지속 규칙을 작성한다.",
+            "소분류 예시는 모든 중분류에 공통으로 속하지 않는다. 실제 선택의 정확한 출처 경로를 기록한다.",
+            "분류표는 확장 가능한 초기 기준이다. 총개수 상한과 고정 후보 조합으로 창작을 대체하지 않는다.",
+            "기존 게임을 기본설계할 때 B의 중심은 원본의 실제 시스템이다. 기존 규칙·진행·저장·밸런스를 임의 교체하지 않으며 A·C·D·@는 새로운 아이디어의 결합에 사용한다."
+          ],
+          "gameGenreClassification": [
+            {
+              "representative": "액션",
+              "detailed": [
+                "플랫폼 액션",
+                "액션 어드벤처",
+                "잠입 액션",
+                "격투",
+                "핵앤슬래시"
+              ]
+            },
+            {
+              "representative": "슈팅",
+              "detailed": [
+                "일인칭 슈팅",
+                "삼인칭 슈팅",
+                "탄막",
+                "전술 슈팅",
+                "루트 슈터"
+              ]
+            },
+            {
+              "representative": "역할수행",
+              "detailed": [
+                "액션 역할수행",
+                "턴제 역할수행",
+                "전술 역할수행",
+                "온라인 역할수행",
+                "던전 탐험"
+              ]
+            },
+            {
+              "representative": "어드벤처",
+              "detailed": [
+                "탐정 추리",
+                "포인트 앤 클릭",
+                "탈출",
+                "비주얼 노벨",
+                "탐험 어드벤처"
+              ]
+            },
+            {
+              "representative": "전략",
+              "detailed": [
+                "실시간 전략",
+                "턴제 전략",
+                "타워 디펜스",
+                "자동 전투",
+                "대전형 공성"
+              ]
+            },
+            {
+              "representative": "시뮬레이션",
+              "detailed": [
+                "생활",
+                "농장",
+                "도시 건설",
+                "경영",
+                "공장 자동화",
+                "차량 운전"
+              ]
+            },
+            {
+              "representative": "생존",
+              "detailed": [
+                "생존 제작",
+                "기지 방어",
+                "오픈월드 생존",
+                "재난 생존",
+                "생존 공포"
+              ]
+            },
+            {
+              "representative": "퍼즐",
+              "detailed": [
+                "논리 퍼즐",
+                "물리 퍼즐",
+                "공간 퍼즐",
+                "매치 퍼즐",
+                "협력 퍼즐"
+              ]
+            },
+            {
+              "representative": "스포츠",
+              "detailed": [
+                "축구",
+                "야구",
+                "농구",
+                "골프",
+                "낚시",
+                "익스트림 스포츠"
+              ]
+            },
+            {
+              "representative": "레이싱",
+              "detailed": [
+                "아케이드 레이싱",
+                "운전 시뮬레이션",
+                "카트",
+                "전투 레이싱",
+                "오프로드"
+              ]
+            },
+            {
+              "representative": "리듬",
+              "detailed": [
+                "노트 입력",
+                "댄스",
+                "악기 연주",
+                "리듬 액션"
+              ]
+            },
+            {
+              "representative": "카드·보드",
+              "detailed": [
+                "수집형 카드",
+                "덱 구축",
+                "주사위",
+                "체스형 전술",
+                "보드게임"
+              ]
+            },
+            {
+              "representative": "파티",
+              "detailed": [
+                "미니게임 모음",
+                "술래잡기",
+                "사회적 추리",
+                "협력 파티"
+              ]
+            },
+            {
+              "representative": "방치·증분",
+              "detailed": [
+                "클릭 성장",
+                "자동 전투 성장",
+                "생산 증분",
+                "수집 성장"
+              ]
+            }
+          ],
+          "materialClassification": [
+            {
+              "broad": "신화",
+              "middle": [
+                "한국 신화",
+                "그리스 신화",
+                "북유럽 신화",
+                "이집트 신화",
+                "메소포타미아 신화",
+                "인도 신화",
+                "중국 신화",
+                "일본 신화",
+                "마야 신화",
+                "아프리카 신화",
+                "오세아니아 신화",
+                "중앙아시아 신화",
+                "북아메리카 신화",
+                "남아메리카 신화"
+              ],
+              "specificExamples": [
+                "저승사자",
+                "망자 명부",
+                "세계수",
+                "신탁",
+                "신의 금기"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "한국 신화",
+                  "name": "망자 명부",
+                  "feature": "이름과 생사의 경계",
+                  "action": "잘못 등록된 이름의 주인을 찾아 돌려준다",
+                  "condition": "이름의 주인과 인도할 대상이 일치함",
+                  "consequence": "거주자와 망자의 통행 자격이 분리된다",
+                  "risk": "남의 이름을 쓰면 다른 존재가 대신 인도된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "그리스 신화",
+                  "name": "신탁",
+                  "feature": "예언과 행동의 충돌",
+                  "action": "신탁을 공개하거나 숨겨 인물의 선택을 비교한다",
+                  "condition": "예언을 들은 인물이 행동을 바꿈",
+                  "consequence": "목표 달성의 원인과 방해자가 달라진다",
+                  "risk": "예언을 피하려는 선택이 오히려 실현시킨다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "북유럽 신화",
+                  "name": "세계수",
+                  "feature": "서로 다른 세계의 연결",
+                  "action": "손상된 뿌리를 돌보거나 다른 세계의 길을 연다",
+                  "condition": "뿌리와 연결된 세계의 상태가 안정됨",
+                  "consequence": "세계 사이 이동과 지원 경로가 바뀐다",
+                  "risk": "한 세계를 구하면 다른 가지의 접근이 막힌다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "이집트 신화",
+                  "name": "심판의 저울",
+                  "feature": "행위와 책임의 심판",
+                  "action": "남긴 행위의 증거를 제시하거나 책임을 나눈다",
+                  "condition": "증거와 주장한 책임이 일치함",
+                  "consequence": "심판받는 인물의 다음 임무가 달라진다",
+                  "risk": "거짓 책임 전가가 동료의 출입을 막는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "메소포타미아 신화",
+                  "name": "지하세계의 문",
+                  "feature": "통과와 대가",
+                  "action": "문을 지날 때 포기할 권한을 선택한다",
+                  "condition": "요구된 대가가 실제로 지불됨",
+                  "consequence": "깊은 영역의 진입과 귀환 조건이 달라진다",
+                  "risk": "귀환에 필요한 권한까지 잃을 수 있다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "인도 신화",
+                  "name": "변신의 시험",
+                  "feature": "겉모습과 역할의 차이",
+                  "action": "변신한 존재의 행동으로 정체를 판단한다",
+                  "condition": "모습 대신 행동의 일관성을 확인함",
+                  "consequence": "믿을 동료와 부탁의 순서가 달라진다",
+                  "risk": "외형만 믿으면 엉뚱한 존재를 돕는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "중국 신화",
+                  "name": "치수의 둑",
+                  "feature": "물길과 공동체",
+                  "action": "막힌 물길을 나누거나 마을의 둑을 보수한다",
+                  "condition": "상류와 하류의 흐름이 함께 확보됨",
+                  "consequence": "이동 통로와 거주 가능한 땅이 바뀐다",
+                  "risk": "한쪽 물길만 막으면 다른 거점이 침수된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "일본 신화",
+                  "name": "경계의 문",
+                  "feature": "안과 밖의 구분",
+                  "action": "경계 안의 존재에게 출입 조건을 확인한다",
+                  "condition": "약속한 경계 규칙을 지킴",
+                  "consequence": "숨겨진 장소의 교류가 열린다",
+                  "risk": "약속을 어기면 돌아갈 문을 찾기 어렵다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "마야 신화",
+                  "name": "공놀이의 시험",
+                  "feature": "경기와 세계의 질서",
+                  "action": "상대의 규칙을 읽고 공을 보낼 경로를 택한다",
+                  "condition": "선언된 경기 조건을 만족함",
+                  "consequence": "시험 통과자와 세계의 연결이 달라진다",
+                  "risk": "상대가 제시한 함정 규칙에 걸릴 수 있다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "아프리카 신화",
+                  "name": "물의 정령",
+                  "feature": "물과 존재의 관계",
+                  "action": "물가의 부탁을 듣고 이용할 물길을 정한다",
+                  "condition": "약속한 물의 이용 조건을 지킴",
+                  "consequence": "물길의 교류와 주민의 협력이 달라진다",
+                  "risk": "약속 없는 독점이 다른 존재와 충돌한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "오세아니아 신화",
+                  "name": "섬 사이의 전승",
+                  "feature": "바다와 이어지는 이야기",
+                  "action": "서로 다른 섬의 전승을 비교하며 항로를 찾는다",
+                  "condition": "전승과 직접 관찰한 항로가 연결됨",
+                  "consequence": "방문할 섬과 동행할 인물이 달라진다",
+                  "risk": "이야기만 믿으면 바뀐 항로를 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "중앙아시아 신화",
+                  "name": "변신하는 안내자",
+                  "feature": "안내와 정체의 변화",
+                  "action": "안내자의 말과 이동 흔적을 비교한다",
+                  "condition": "안내가 실제 장소와 일치함",
+                  "consequence": "따를 안내자와 우회 경로가 달라진다",
+                  "risk": "겉모습의 친숙함만으로 신뢰하면 길을 잃는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "북아메리카 신화",
+                  "name": "동물의 전승",
+                  "feature": "인간과 동물의 관계",
+                  "action": "동물의 행동과 전승의 약속을 비교한다",
+                  "condition": "현재 행동과 약속의 조건을 확인함",
+                  "consequence": "동물과 공간을 공유하는 방법이 달라진다",
+                  "risk": "전승을 모든 공동체의 사실로 일반화하면 오해가 생긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "남아메리카 신화",
+                  "name": "산의 수호 존재",
+                  "feature": "장소와 보호의 약속",
+                  "action": "산길의 이용과 보호할 장소를 정한다",
+                  "condition": "방문 목적과 보호 약속이 맞음",
+                  "consequence": "산길과 공동체의 교류가 달라진다",
+                  "risk": "보호를 무시한 접근이 갈등을 만든다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "한국 신화",
+                  "name": "저승사자",
+                  "feature": "망자의 인도",
+                  "action": "인도할 대상과 돌아갈 존재를 구분한다",
+                  "condition": "대상의 생사와 부탁을 확인함",
+                  "consequence": "머물 존재와 넘어갈 경계가 달라진다",
+                  "risk": "대상을 잘못 구분하면 다른 존재가 떠난다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "그리스 신화",
+                  "name": "신의 금기",
+                  "feature": "명령과 금지된 행동",
+                  "action": "금기의 이유를 조사하거나 약속을 지킨다",
+                  "condition": "금지의 대상과 적용 범위를 확인함",
+                  "consequence": "신과 인물의 협력 조건이 달라진다",
+                  "risk": "이유를 모른 채 어기면 약속한 지원을 잃는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "역사",
+              "middle": [
+                "한국사",
+                "동아시아사",
+                "유럽사",
+                "서아시아사",
+                "아프리카사",
+                "남아시아사",
+                "동남아시아사",
+                "아메리카사",
+                "오세아니아사"
+              ],
+              "specificExamples": [
+                "보부상",
+                "객주",
+                "장시",
+                "수도교",
+                "항해 일지"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "한국사",
+                  "name": "객주",
+                  "feature": "거래 중개와 신뢰",
+                  "action": "물품을 맡기거나 거래 상대를 직접 확인한다",
+                  "condition": "인수자와 약속한 물품이 일치함",
+                  "consequence": "교역 거점의 거래와 보관 선택이 열린다",
+                  "risk": "중개를 건너뛰면 분쟁 책임을 직접 진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "동아시아사",
+                  "name": "역참",
+                  "feature": "이동과 전달",
+                  "action": "경유지를 정하고 전달할 소식을 나눈다",
+                  "condition": "경유지의 연결과 전달 대상이 확인됨",
+                  "consequence": "먼 지역의 지원과 정보 도착 순서가 바뀐다",
+                  "risk": "끊어진 구간에서 연락이 늦어진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "유럽사",
+                  "name": "수도교",
+                  "feature": "물의 공급과 도시 유지",
+                  "action": "수로의 누수 구간을 찾아 분배를 조정한다",
+                  "condition": "공급원과 수요 지역이 연결됨",
+                  "consequence": "시설 가동과 거주 구역의 접근이 바뀐다",
+                  "risk": "우선 공급에서 밀린 구역이 협력을 거부한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "서아시아사",
+                  "name": "대상 숙영지",
+                  "feature": "장거리 교역의 쉼터",
+                  "action": "호송과 휴식 장소를 선택한다",
+                  "condition": "길의 위험과 다음 보급지가 확인됨",
+                  "consequence": "교역로의 안전과 동행 상대가 달라진다",
+                  "risk": "안전한 쉼터만 고르면 거래 기회를 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "아프리카사",
+                  "name": "교역 시장",
+                  "feature": "물품과 문화의 교류",
+                  "action": "서로 다른 상인의 요구를 중개한다",
+                  "condition": "서로 원하는 교환 대상이 확보됨",
+                  "consequence": "시장과 주변 거점의 협력이 열린다",
+                  "risk": "한 거래를 독점하면 다른 상인의 공급이 끊긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "남아시아사",
+                  "name": "관개 수로",
+                  "feature": "물의 분배와 공동 이용",
+                  "action": "밭과 거점에 물을 나누는 순서를 정한다",
+                  "condition": "서로 연결된 수로의 흐름이 유지됨",
+                  "consequence": "작업 장소와 주민의 협력 조건이 바뀐다",
+                  "risk": "상류의 독점이 하류의 반발을 부른다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "동남아시아사",
+                  "name": "항구 창고",
+                  "feature": "운송과 임시 보관",
+                  "action": "선박의 하역 순서와 보관 장소를 정한다",
+                  "condition": "물품의 목적지와 출항 순서가 확인됨",
+                  "consequence": "항로와 거래 일정의 선택이 바뀐다",
+                  "risk": "보관을 늘리면 다른 선박의 작업이 지연된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "아메리카사",
+                  "name": "공동 경작지",
+                  "feature": "노동과 공동 분배",
+                  "action": "일할 구역과 수확을 나눌 대상을 정한다",
+                  "condition": "공동 작업의 약속이 지켜짐",
+                  "consequence": "정착지의 지원과 다음 작업이 열린다",
+                  "risk": "기여와 분배가 어긋나면 협동이 끊긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "오세아니아사",
+                  "name": "섬 교역로",
+                  "feature": "섬 사이 이동과 교환",
+                  "action": "교환 대상과 경유할 섬을 정한다",
+                  "condition": "항로와 서로 필요한 물품이 확인됨",
+                  "consequence": "동행과 다음 거래가 달라진다",
+                  "risk": "한 항로만 의존하면 다른 섬의 공급을 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "한국사",
+                  "name": "보부상",
+                  "feature": "이동하며 이루어지는 거래",
+                  "action": "다음 장터와 운반할 물품을 정한다",
+                  "condition": "장터의 수요와 이동 경로가 확인됨",
+                  "consequence": "교역 동선과 얻을 물품이 달라진다",
+                  "risk": "먼 장터를 택하면 돌아올 거래를 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "한국사",
+                  "name": "장시",
+                  "feature": "만남과 교환의 장소",
+                  "action": "찾을 상인과 거래 순서를 정한다",
+                  "condition": "거래 장소와 상대의 필요가 확인됨",
+                  "consequence": "물품 교환과 인물의 만남이 달라진다",
+                  "risk": "한 거래에 몰리면 다른 상인의 부탁이 남는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "유럽사",
+                  "name": "항해 일지",
+                  "feature": "관측과 항로의 축적",
+                  "action": "지난 관측과 현재 바다의 상태를 대조한다",
+                  "condition": "다른 관측에서도 항로가 성립함",
+                  "consequence": "안전한 항해와 탐사 목적지가 달라진다",
+                  "risk": "옛 관측을 그대로 믿으면 변한 위험을 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "전쟁·군사",
+              "middle": [
+                "공성전",
+                "해전",
+                "보급전",
+                "기동전",
+                "정보전",
+                "방어전"
+              ],
+              "specificExamples": [
+                "성문",
+                "공성탑",
+                "함선",
+                "보급로",
+                "암호문"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "공성전",
+                  "name": "공성탑",
+                  "feature": "높이와 접근 경로",
+                  "action": "탑을 이동시키거나 성문을 우회한다",
+                  "condition": "이동로가 확보되고 방어 위치를 확인함",
+                  "consequence": "성벽의 공격과 진입 방향이 바뀐다",
+                  "risk": "느린 이동 중 측면이 노출된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "해전",
+                  "name": "함선",
+                  "feature": "수면 이동과 방향",
+                  "action": "바람과 상대 위치에 맞춰 항로를 바꾼다",
+                  "condition": "항로와 공격 방향을 함께 확보함",
+                  "consequence": "교전 거리와 탈출 경로가 달라진다",
+                  "risk": "추격을 택하면 귀환 항로가 불리해진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "보급전",
+                  "name": "보급로",
+                  "feature": "연결된 운송의 의존",
+                  "action": "호송로를 보호하거나 새 보급 지점을 만든다",
+                  "condition": "출발지부터 수요 지점까지 연결됨",
+                  "consequence": "사용 가능한 작전과 지원 범위가 바뀐다",
+                  "risk": "노출된 보급로가 상대의 목표가 된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "기동전",
+                  "name": "우회로",
+                  "feature": "위치 전환과 속도",
+                  "action": "정면을 지키거나 옆길로 병력을 이동한다",
+                  "condition": "상대 관측과 이동 가능 지형을 확인함",
+                  "consequence": "주도권과 합류 위치가 달라진다",
+                  "risk": "부대를 나누면 서로 지원하기 어렵다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "정보전",
+                  "name": "암호문",
+                  "feature": "정보의 은폐와 해석",
+                  "action": "전달 경로와 해독 단서를 비교한다",
+                  "condition": "독립된 단서가 같은 의미를 지지함",
+                  "consequence": "다음 대응과 기만 경로를 선택한다",
+                  "risk": "잘못 해독하면 상대의 유인에 걸린다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "방어전",
+                  "name": "방어선",
+                  "feature": "통로와 보호 범위",
+                  "action": "빈틈을 메우거나 한 통로를 의도적으로 연다",
+                  "condition": "상대 접근 방향을 관찰함",
+                  "consequence": "막을 대상과 유도할 경로가 달라진다",
+                  "risk": "한곳에 집중하면 다른 통로가 비게 된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "공성전",
+                  "name": "성문",
+                  "feature": "출입과 경계의 통제",
+                  "action": "문을 열 시점과 통과할 대상을 정한다",
+                  "condition": "경계 안팎의 대상이 확인됨",
+                  "consequence": "방어와 이동 가능한 경로가 달라진다",
+                  "risk": "지원군을 들이는 틈에 상대도 접근한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "스포츠",
+              "middle": [
+                "축구",
+                "야구",
+                "농구",
+                "골프",
+                "격투 스포츠",
+                "육상",
+                "수상 스포츠",
+                "동계 스포츠"
+              ],
+              "specificExamples": [
+                "골키퍼",
+                "도루",
+                "체급",
+                "릴레이",
+                "경기 판정"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "축구",
+                  "name": "골키퍼",
+                  "feature": "골문과 수비 위치",
+                  "action": "공의 진행과 상대의 시선을 읽고 위치를 잡는다",
+                  "condition": "슛 방향과 수비 범위가 확인됨",
+                  "consequence": "막기와 역습의 출발 위치가 달라진다",
+                  "risk": "성급히 나오면 골문이 비게 된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "야구",
+                  "name": "도루",
+                  "feature": "진루와 타이밍",
+                  "action": "송구와 주자의 출발 시점을 비교한다",
+                  "condition": "투수와 수비의 대응을 읽음",
+                  "consequence": "진루와 수비 우선순위가 달라진다",
+                  "risk": "무리한 출발이 아웃으로 이어진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "농구",
+                  "name": "패스 공간",
+                  "feature": "위치와 팀 연결",
+                  "action": "수비가 비운 공간으로 이동하거나 공을 전달한다",
+                  "condition": "받을 동료와 전달 경로가 확보됨",
+                  "consequence": "슛과 다음 패스 선택이 열린다",
+                  "risk": "좁은 공간의 패스는 가로채일 수 있다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "골프",
+                  "name": "그린 경사",
+                  "feature": "지형과 굴림",
+                  "action": "경사를 읽고 공을 보낼 방향을 택한다",
+                  "condition": "거리와 지형 변화를 함께 확인함",
+                  "consequence": "다음 타구 위치와 우회 선택이 달라진다",
+                  "risk": "직선 거리만 보면 장애물에 갇힌다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "격투 스포츠",
+                  "name": "체급",
+                  "feature": "대결 조건과 상대 차이",
+                  "action": "대결 조건을 확인하고 거리와 기술을 고른다",
+                  "condition": "상대의 유효 범위와 규칙을 파악함",
+                  "consequence": "견제와 접근 전략이 달라진다",
+                  "risk": "유리한 거리 밖에서는 반격에 노출된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "육상",
+                  "name": "릴레이",
+                  "feature": "순서와 인계",
+                  "action": "달릴 순서와 인계 지점을 조정한다",
+                  "condition": "주자 사이의 인계 조건이 충족됨",
+                  "consequence": "다음 주자의 출발과 팀 전략이 바뀐다",
+                  "risk": "인계가 어긋나면 흐름이 끊긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "수상 스포츠",
+                  "name": "수로 표지",
+                  "feature": "물길과 방향",
+                  "action": "흐름을 읽고 통과할 표지 순서를 택한다",
+                  "condition": "표지와 이동 가능한 물길을 확인함",
+                  "consequence": "추월과 안전 경로가 달라진다",
+                  "risk": "급한 흐름은 회복할 여지를 줄인다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "동계 스포츠",
+                  "name": "빙판 마찰",
+                  "feature": "표면과 제동",
+                  "action": "얼음 상태에 맞춰 회전과 제동을 고른다",
+                  "condition": "표면 변화와 정지 공간을 확인함",
+                  "consequence": "통과 속도와 우회 경로가 달라진다",
+                  "risk": "늦은 제동이 코스 이탈로 이어진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "축구",
+                  "name": "경기 판정",
+                  "feature": "행동과 경기 규칙의 적용",
+                  "action": "선수의 행동을 장면과 규칙에 대조한다",
+                  "condition": "행동의 위치와 선행 상황이 확인됨",
+                  "consequence": "다음 경기 진행과 선수의 대응이 달라진다",
+                  "risk": "일부 장면만 보면 다른 행동을 잘못 판정한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "자연·생태",
+              "middle": [
+                "곤충 생태",
+                "균류 생태",
+                "식물 생태",
+                "심해 생태",
+                "산호초 생태",
+                "숲 생태",
+                "사막 생태",
+                "극지 생태",
+                "조류 생태",
+                "포유류 생태",
+                "담수 생태",
+                "습지 생태",
+                "초원 생태"
+              ],
+              "specificExamples": [
+                "개미 군체",
+                "기생 생물",
+                "발광 생물",
+                "균사망",
+                "식충식물"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "곤충 생태",
+                  "name": "개미 군체",
+                  "feature": "개체와 군체의 협동",
+                  "action": "먹이 흔적을 옮기거나 이동 행렬을 우회한다",
+                  "condition": "먹이와 군체 통로의 연결을 확인함",
+                  "consequence": "군체의 이동과 자원 접근이 달라진다",
+                  "risk": "군체 통로를 건드리면 위협이 모인다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "균류 생태",
+                  "name": "균사망",
+                  "feature": "연결과 분해",
+                  "action": "분해할 자원과 연결할 지점을 선택한다",
+                  "condition": "분해 대상과 연결된 지점을 확인함",
+                  "consequence": "자원 회수와 다른 장소의 상태가 바뀐다",
+                  "risk": "한 지점의 손상이 연결된 구간에 번진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "식물 생태",
+                  "name": "식충식물",
+                  "feature": "유인과 포획",
+                  "action": "유인물을 두거나 포획 범위를 우회한다",
+                  "condition": "유인과 포획 조건이 맞음",
+                  "consequence": "접근 경로와 주변 생물의 이동이 달라진다",
+                  "risk": "유인물을 잘못 놓으면 동료의 길도 위험해진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "심해 생태",
+                  "name": "발광 생물",
+                  "feature": "어둠 속 빛과 신호",
+                  "action": "빛을 따라가거나 가려 주변 반응을 비교한다",
+                  "condition": "빛의 위치와 반응하는 대상을 확인함",
+                  "consequence": "숨은 길과 접근하는 상대를 구분한다",
+                  "risk": "빛을 켜면 다른 위협에게도 노출된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "산호초 생태",
+                  "name": "산호 군락",
+                  "feature": "서식 공간과 의존",
+                  "action": "서식 공간을 보호하거나 통과 경로를 바꾼다",
+                  "condition": "주변 생물의 이용 공간을 확인함",
+                  "consequence": "먹이와 은신처의 접근 조건이 달라진다",
+                  "risk": "빠른 통과를 위해 공간을 훼손하면 생물이 떠난다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "숲 생태",
+                  "name": "수관",
+                  "feature": "그늘과 수직 공간",
+                  "action": "수관 아래와 위의 이동 길을 비교한다",
+                  "condition": "빛과 연결된 가지의 위치를 확인함",
+                  "consequence": "은폐와 채집 경로가 달라진다",
+                  "risk": "높은 경로는 귀환할 발판이 적다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "사막 생태",
+                  "name": "물 저장 식물",
+                  "feature": "건조와 수분의 보존",
+                  "action": "그늘을 확보하거나 채취 시점을 늦춘다",
+                  "condition": "수분 상태와 회복 가능한 지점을 확인함",
+                  "consequence": "휴식과 이동의 지속 조건이 달라진다",
+                  "risk": "과도한 채취는 다음 귀환의 보급을 줄인다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "극지 생태",
+                  "name": "얼음 경계",
+                  "feature": "얼음과 활동 공간의 변화",
+                  "action": "얼음의 연결을 읽고 이동 시점을 택한다",
+                  "condition": "건널 구간과 돌아올 경로를 확인함",
+                  "consequence": "접근 가능한 서식 공간이 달라진다",
+                  "risk": "얼음 변화로 귀환 경로가 끊길 수 있다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "조류 생태",
+                  "name": "둥지",
+                  "feature": "번식 장소와 보호",
+                  "action": "둥지에서 떨어진 길을 택하거나 접근을 제한한다",
+                  "condition": "새의 활동과 보호 범위를 확인함",
+                  "consequence": "통과 경로와 생물의 활동이 달라진다",
+                  "risk": "둥지 주변의 작업이 경계 행동을 부른다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "포유류 생태",
+                  "name": "무리",
+                  "feature": "개체와 집단 행동",
+                  "action": "개체의 위치와 무리의 이동을 비교한다",
+                  "condition": "무리의 활동과 이동 범위를 확인함",
+                  "consequence": "추적과 우회할 경로가 달라진다",
+                  "risk": "한 개체만 쫓으면 무리의 반응을 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "담수 생태",
+                  "name": "여울",
+                  "feature": "흐름과 작은 서식 공간",
+                  "action": "물 흐름을 유지하거나 건널 위치를 바꾼다",
+                  "condition": "서식 공간과 물길의 연결이 유지됨",
+                  "consequence": "생물의 이동과 채집 위치가 달라진다",
+                  "risk": "흐름을 막으면 연결된 공간이 달라진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "습지 생태",
+                  "name": "범람원",
+                  "feature": "물높이와 육지의 전환",
+                  "action": "수위에 따라 이동과 작업 시점을 바꾼다",
+                  "condition": "잠길 구역과 마른 길을 확인함",
+                  "consequence": "방문할 공간과 자원의 접근이 달라진다",
+                  "risk": "수위가 변하면 이전 귀환로를 쓸 수 없다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "초원 생태",
+                  "name": "방목 흔적",
+                  "feature": "먹이와 이동의 순환",
+                  "action": "먹이 흔적과 무리의 이동을 비교한다",
+                  "condition": "쉬어야 할 장소와 새 먹이 공간이 확인됨",
+                  "consequence": "추적과 자원 이용 장소가 달라진다",
+                  "risk": "한곳을 계속 이용하면 다음 자원이 부족해진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "곤충 생태",
+                  "name": "기생 생물",
+                  "feature": "숙주와 다른 생물의 의존",
+                  "action": "숙주의 변화와 함께 붙어 있는 생물을 관찰한다",
+                  "condition": "숙주와 의존 생물의 관계가 확인됨",
+                  "consequence": "접촉을 피할 대상과 관찰할 장소가 달라진다",
+                  "risk": "숙주의 변화만 보면 위험의 원인을 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "과학·기술",
+              "middle": [
+                "천문학",
+                "물리학",
+                "화학",
+                "유전학",
+                "지질학",
+                "로봇공학",
+                "인공지능",
+                "에너지 기술",
+                "기상·기후",
+                "수학",
+                "해양학",
+                "정보·통신",
+                "심리·인지"
+              ],
+              "specificExamples": [
+                "쌍성",
+                "촉매",
+                "유전자 변이",
+                "자율 로봇",
+                "지층"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "천문학",
+                  "name": "쌍성",
+                  "feature": "두 천체의 상대 운동",
+                  "action": "서로 다른 관측 위치의 빛을 비교한다",
+                  "condition": "두 천체의 위치 차이를 확인함",
+                  "consequence": "관측 시점과 항로의 선택이 달라진다",
+                  "risk": "한 번의 관측만 믿으면 주기를 잘못 읽는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "물리학",
+                  "name": "진자",
+                  "feature": "운동과 주기",
+                  "action": "밀어 주는 시점을 바꾸거나 움직임을 기다린다",
+                  "condition": "주기와 접촉 시점을 확인함",
+                  "consequence": "장치의 통과와 작동 순서가 달라진다",
+                  "risk": "잘못된 시점의 힘이 흔들림을 키운다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "화학",
+                  "name": "촉매",
+                  "feature": "반응 조건과 경로",
+                  "action": "반응물을 분리하거나 촉매의 접촉을 바꾼다",
+                  "condition": "반응물과 조건이 함께 준비됨",
+                  "consequence": "제작과 처리의 순서가 달라진다",
+                  "risk": "잘못 섞으면 원하는 반응을 얻지 못한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "유전학",
+                  "name": "유전자 변이",
+                  "feature": "형질 차이와 유전",
+                  "action": "환경이 다른 개체의 특성을 비교한다",
+                  "condition": "관찰한 차이를 환경 변화와 구분함",
+                  "consequence": "사용할 특성과 다음 관찰 대상이 달라진다",
+                  "risk": "한 특성의 이점이 다른 조건에서는 약점이 된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "지질학",
+                  "name": "지층",
+                  "feature": "쌓임과 상대 순서",
+                  "action": "지층의 경계와 끊어진 흔적을 조사한다",
+                  "condition": "서로 이어지는 층의 순서를 확인함",
+                  "consequence": "안전한 굴착과 숨은 통로를 선택한다",
+                  "risk": "불안정한 층을 건드리면 통로가 무너진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "로봇공학",
+                  "name": "자율 로봇",
+                  "feature": "감지와 행동 제어",
+                  "action": "감지 범위와 작업 경로를 조정한다",
+                  "condition": "작업 대상과 장애물이 구분됨",
+                  "consequence": "작업 분담과 접근 경로가 달라진다",
+                  "risk": "감지 사각에서 잘못된 작업을 할 수 있다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "인공지능",
+                  "name": "분류 모델",
+                  "feature": "관측과 판단의 불확실성",
+                  "action": "서로 다른 사례로 판단을 시험한다",
+                  "condition": "독립된 사례의 오판을 확인함",
+                  "consequence": "자동 판단을 맡길 작업과 직접 할 작업이 나뉜다",
+                  "risk": "편향된 사례만 쓰면 낯선 대상에서 실패한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "에너지 기술",
+                  "name": "축전 장치",
+                  "feature": "저장과 공급의 시차",
+                  "action": "사용할 시설과 충전 시점을 나눈다",
+                  "condition": "공급과 수요의 차이를 확인함",
+                  "consequence": "시설 가동 순서와 이동 지원이 달라진다",
+                  "risk": "한 시설에 공급을 몰면 다른 시설이 멈춘다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "기상·기후",
+                  "name": "비구름",
+                  "feature": "날씨와 물의 이동",
+                  "action": "구름의 움직임과 지형을 비교한다",
+                  "condition": "강수와 피할 장소를 확인함",
+                  "consequence": "이동 시점과 사용할 통로가 달라진다",
+                  "risk": "현재 날씨만 보고 떠나면 귀환이 어려워진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "수학",
+                  "name": "대칭",
+                  "feature": "변환과 유지되는 관계",
+                  "action": "형태를 회전하거나 뒤집어 연결을 시험한다",
+                  "condition": "변환 후에도 같은 관계가 유지됨",
+                  "consequence": "배치와 통과 가능한 조합이 달라진다",
+                  "risk": "겉모양의 유사함만 믿으면 연결이 끊긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "해양학",
+                  "name": "해류",
+                  "feature": "흐름과 물의 순환",
+                  "action": "흐름의 방향을 읽고 출발 지점을 바꾼다",
+                  "condition": "현재 흐름과 목적지의 관계를 확인함",
+                  "consequence": "항로와 도착 가능한 장소가 달라진다",
+                  "risk": "빠른 흐름을 타면 되돌아오기 어렵다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "정보·통신",
+                  "name": "중계기",
+                  "feature": "연결과 전달 범위",
+                  "action": "중계 위치와 전달할 신호를 바꾼다",
+                  "condition": "중계 지점 사이 연결이 확보됨",
+                  "consequence": "협동과 원격 작업 범위가 달라진다",
+                  "risk": "한 중계기의 장애가 다른 작업을 끊는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "심리·인지",
+                  "name": "주의 전환",
+                  "feature": "관찰과 놓치는 정보",
+                  "action": "보는 대상과 확인 순서를 바꾼다",
+                  "condition": "서로 다른 관찰에서 빠진 정보를 확인함",
+                  "consequence": "탐색과 판단 우선순위가 달라진다",
+                  "risk": "한 대상에 집중하면 주변 위험을 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "사회·문화",
+              "middle": [
+                "가족·친족",
+                "법·재판",
+                "장례 문화",
+                "축제 문화",
+                "성인식",
+                "유목 문화",
+                "해양 문화",
+                "언어·소통",
+                "도시·공동체",
+                "공동체 규범"
+              ],
+              "specificExamples": [
+                "장례 행렬",
+                "가면 의식",
+                "친족 규칙",
+                "증인",
+                "추방 의식"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "가족·친족",
+                  "name": "친족 규칙",
+                  "feature": "관계와 책임",
+                  "action": "서로 다른 부탁의 책임자를 확인한다",
+                  "condition": "관계와 실제 책임이 구분됨",
+                  "consequence": "돌봄과 협력의 대상이 달라진다",
+                  "risk": "한 관계만 우선하면 다른 협력이 끊긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "법·재판",
+                  "name": "증인",
+                  "feature": "증언과 판정",
+                  "action": "증언의 차이를 현장 흔적과 대조한다",
+                  "condition": "증언과 관찰이 같은 사건을 가리킴",
+                  "consequence": "책임과 출입 권한의 판정이 달라진다",
+                  "risk": "확인 없이 믿으면 다른 인물이 책임을 진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "장례 문화",
+                  "name": "장례 행렬",
+                  "feature": "애도와 공동 이동",
+                  "action": "행렬의 경로와 참여할 역할을 정한다",
+                  "condition": "참여자의 부탁과 통과 장소를 확인함",
+                  "consequence": "공동체의 관계와 길의 이용이 달라진다",
+                  "risk": "급한 이동이 애도의 약속과 충돌한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "축제 문화",
+                  "name": "가면 의식",
+                  "feature": "역할과 일시적 전환",
+                  "action": "가면의 역할을 맡거나 본래 신분을 드러낸다",
+                  "condition": "의식의 역할과 행동 조건이 맞음",
+                  "consequence": "평소 닫힌 교류와 부탁이 열린다",
+                  "risk": "역할과 실제 책임을 혼동하면 갈등이 생긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "성인식",
+                  "name": "통과 의례",
+                  "feature": "지위와 책임의 변화",
+                  "action": "시험의 과제를 해결하거나 책임을 나눈다",
+                  "condition": "과제의 목적과 공동체의 인정 조건을 확인함",
+                  "consequence": "새 역할과 수행할 일이 열린다",
+                  "risk": "결과만 얻으려 하면 신뢰를 얻지 못한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "유목 문화",
+                  "name": "이동 야영지",
+                  "feature": "거처와 이동의 조정",
+                  "action": "물과 먹이 상태에 맞춰 야영지를 옮긴다",
+                  "condition": "다음 거처와 이동 경로가 확보됨",
+                  "consequence": "물품 운송과 동행 선택이 달라진다",
+                  "risk": "늦은 이동은 자원 부족을 키운다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "해양 문화",
+                  "name": "공동 항로",
+                  "feature": "바다와 협동 이동",
+                  "action": "다른 배와 항로 정보를 나눈다",
+                  "condition": "관측한 위험과 합류 지점이 확인됨",
+                  "consequence": "안전한 항해와 협력 대상이 달라진다",
+                  "risk": "정보를 독점하면 다른 배의 지원을 받기 어렵다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "언어·소통",
+                  "name": "의미의 차이",
+                  "feature": "표현과 해석",
+                  "action": "서로 다른 인물의 표현을 상황과 대조한다",
+                  "condition": "같은 표현의 의도가 확인됨",
+                  "consequence": "협상과 다음 부탁이 달라진다",
+                  "risk": "표현만 반복하면 오해가 깊어진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "도시·공동체",
+                  "name": "공유 공간",
+                  "feature": "개인 이용과 공동 접근",
+                  "action": "이용 시간과 통과 동선을 나눈다",
+                  "condition": "각 이용자의 필요와 통로가 확인됨",
+                  "consequence": "시설 이용과 주민의 이동이 달라진다",
+                  "risk": "독점된 공간이 다른 활동을 막는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "공동체 규범",
+                  "name": "추방 의식",
+                  "feature": "소속과 경계의 변경",
+                  "action": "공동체의 규칙과 남길 책임을 비교한다",
+                  "condition": "규칙을 적용받는 대상과 이유가 확인됨",
+                  "consequence": "거주 권한과 다른 공동체의 협력이 달라진다",
+                  "risk": "복귀 조건 없는 배제는 후속 갈등을 만든다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "경제·산업",
+              "middle": [
+                "상업·교역",
+                "금융",
+                "물류",
+                "광업",
+                "농업",
+                "제조업"
+              ],
+              "specificExamples": [
+                "담보",
+                "객주 거래",
+                "운송망",
+                "갱도",
+                "물물교환"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "상업·교역",
+                  "name": "물물교환",
+                  "feature": "서로 다른 수요의 연결",
+                  "action": "직접 교환하거나 여러 거래를 중개한다",
+                  "condition": "각 상대의 요구가 맞물림",
+                  "consequence": "얻을 물품과 교역 경로가 달라진다",
+                  "risk": "한 교환을 택하면 다른 요구를 충족하기 어렵다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "금융",
+                  "name": "담보",
+                  "feature": "현재 자산과 미래 책임",
+                  "action": "담보를 제공하거나 거래 규모를 줄인다",
+                  "condition": "약속을 이행할 자산이 확보됨",
+                  "consequence": "가능한 투자와 위험 부담이 달라진다",
+                  "risk": "약속을 못 지키면 담보를 잃는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "물류",
+                  "name": "운송망",
+                  "feature": "출발과 도착의 연결",
+                  "action": "분배 지점과 운송 순서를 바꾼다",
+                  "condition": "출발지와 도착지 사이 연결이 유지됨",
+                  "consequence": "공급 가능한 시설과 작업이 달라진다",
+                  "risk": "한 구간의 정체가 다른 작업을 늦춘다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "광업",
+                  "name": "갱도",
+                  "feature": "굴착과 지지",
+                  "action": "지지 구조를 확보하거나 다른 층을 판다",
+                  "condition": "지층과 귀환 통로가 확인됨",
+                  "consequence": "채굴 대상과 깊이가 달라진다",
+                  "risk": "지지 없이 굴착하면 퇴로가 막힌다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "농업",
+                  "name": "윤작",
+                  "feature": "재배 순서와 땅의 상태",
+                  "action": "다음 작물을 바꾸거나 땅을 쉬게 한다",
+                  "condition": "이전 재배와 현재 토양 상태를 확인함",
+                  "consequence": "생산 계획과 사용할 자원이 달라진다",
+                  "risk": "당장의 수확만 택하면 다음 재배가 불리해진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "제조업",
+                  "name": "조립 공정",
+                  "feature": "순서와 부품 의존",
+                  "action": "공정 순서와 부품 공급을 조정한다",
+                  "condition": "앞 공정의 출력이 다음 요구를 충족함",
+                  "consequence": "만들 수 있는 물품과 작업 배치가 달라진다",
+                  "risk": "한 공정의 병목이 전체 생산을 막는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "상업·교역",
+                  "name": "객주 거래",
+                  "feature": "중개와 인수의 책임",
+                  "action": "중개자와 물품의 인수 조건을 합의한다",
+                  "condition": "약속한 물품과 인수자가 일치함",
+                  "consequence": "거래의 안전과 맡길 물품이 달라진다",
+                  "risk": "책임을 확인하지 않으면 분쟁 해결이 늦어진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "종교·신앙",
+              "middle": [
+                "불교 전통",
+                "기독교 전통",
+                "이슬람 전통",
+                "힌두교 전통",
+                "무속 신앙",
+                "조상 신앙",
+                "자연 숭배"
+              ],
+              "specificExamples": [
+                "굿",
+                "신당",
+                "제사",
+                "순례 의식",
+                "성물"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "불교 전통",
+                  "name": "순례 길",
+                  "feature": "이동과 자기 성찰",
+                  "action": "길에서 만난 부탁과 수행 목표를 비교한다",
+                  "condition": "다른 존재의 요구와 자신의 목적을 확인함",
+                  "consequence": "도울 대상과 다음 방문지가 달라진다",
+                  "risk": "목표만 서두르면 수행의 약속을 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "기독교 전통",
+                  "name": "구호 공동체",
+                  "feature": "돌봄과 공동 책임",
+                  "action": "부족한 물품과 돌봄 역할을 나눈다",
+                  "condition": "도움이 필요한 대상이 확인됨",
+                  "consequence": "공동체의 지원과 다음 책임이 달라진다",
+                  "risk": "한 대상만 도우면 다른 요청이 남는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "이슬람 전통",
+                  "name": "공동 나눔",
+                  "feature": "기여와 공동체의 돌봄",
+                  "action": "기여할 자원과 도울 대상을 정한다",
+                  "condition": "기여와 실제 필요가 연결됨",
+                  "consequence": "공동체의 상호 지원이 달라진다",
+                  "risk": "보여 주기 위한 기여는 필요한 곳에 닿지 않는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "힌두교 전통",
+                  "name": "의무의 갈등",
+                  "feature": "서로 다른 역할의 책임",
+                  "action": "역할의 부탁을 비교하고 이행 순서를 고른다",
+                  "condition": "누구에게 어떤 책임이 있는지 확인함",
+                  "consequence": "관계와 다음 역할이 달라진다",
+                  "risk": "한 의무를 지키면 다른 의무가 늦어진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "무속 신앙",
+                  "name": "신당",
+                  "feature": "장소와 의례의 관계",
+                  "action": "장소의 부탁과 의례에 쓸 대상을 확인한다",
+                  "condition": "의례의 대상과 약속이 맞음",
+                  "consequence": "장소의 교류와 주민의 행동이 달라진다",
+                  "risk": "겉모양만 따라 하면 갈등의 원인이 남는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "조상 신앙",
+                  "name": "제사",
+                  "feature": "기억과 가족의 관계",
+                  "action": "기억할 사건과 모일 사람을 정한다",
+                  "condition": "서로 다른 가족의 기억을 확인함",
+                  "consequence": "화해와 다음 가족 부탁이 달라진다",
+                  "risk": "한 사람의 기억만 인정하면 갈등이 깊어진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "자연 숭배",
+                  "name": "신성한 숲",
+                  "feature": "장소에 대한 금기",
+                  "action": "숲의 이용 범위와 지킬 약속을 고른다",
+                  "condition": "이용 조건과 공동체의 약속을 확인함",
+                  "consequence": "채집과 방문 가능한 구역이 달라진다",
+                  "risk": "금기를 어기면 공동체의 협력이 사라진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "무속 신앙",
+                  "name": "굿",
+                  "feature": "의례와 공동체의 부탁",
+                  "action": "의례의 대상과 참여자의 부탁을 조율한다",
+                  "condition": "참여자가 원하는 해결과 역할이 확인됨",
+                  "consequence": "공동체의 관계와 다음 부탁이 달라진다",
+                  "risk": "서로 다른 부탁을 하나로 취급하면 갈등이 남는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "불교 전통",
+                  "name": "순례 의식",
+                  "feature": "방문과 수행의 약속",
+                  "action": "방문 순서와 이행할 약속을 정한다",
+                  "condition": "방문의 목적과 약속한 행동이 맞음",
+                  "consequence": "다음 수행 장소와 만날 인물이 달라진다",
+                  "risk": "방문만 끝내면 약속한 책임이 남는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "기독교 전통",
+                  "name": "성물",
+                  "feature": "물건과 신앙 공동체의 의미",
+                  "action": "성물의 보관과 사용할 상황을 합의한다",
+                  "condition": "물건의 의미와 공동체의 약속을 확인함",
+                  "consequence": "공동체의 신뢰와 접근 권한이 달라진다",
+                  "risk": "물건의 소유를 신뢰 전체로 착각하면 갈등이 생긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "철학·사상",
+              "middle": [
+                "윤리학",
+                "존재론",
+                "인식론",
+                "정치철학",
+                "유가",
+                "도가",
+                "실존주의",
+                "공리주의"
+              ],
+              "specificExamples": [
+                "책임의 충돌",
+                "존재의 동일성",
+                "증언의 신뢰",
+                "선택의 책임"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "윤리학",
+                  "name": "책임의 충돌",
+                  "feature": "양립하기 어려운 의무",
+                  "action": "피해와 책임을 비교해 행동을 고른다",
+                  "condition": "각 선택의 영향을 받을 대상이 확인됨",
+                  "consequence": "감당할 책임과 후속 부탁이 달라진다",
+                  "risk": "한쪽의 손실을 숨기면 이후 갈등이 커진다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "존재론",
+                  "name": "존재의 동일성",
+                  "feature": "변화와 정체성",
+                  "action": "바뀐 부분과 유지된 관계를 비교한다",
+                  "condition": "동일성의 기준을 직접 정함",
+                  "consequence": "대상의 권한과 교체 방식이 달라진다",
+                  "risk": "기준을 바꾸면 이전 약속과 충돌한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "인식론",
+                  "name": "증언의 신뢰",
+                  "feature": "믿음과 근거",
+                  "action": "증언을 독립된 관찰로 확인한다",
+                  "condition": "근거가 주장을 지지함",
+                  "consequence": "믿을 정보와 다음 조사가 달라진다",
+                  "risk": "같은 출처의 반복은 독립된 증거가 아니다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "정치철학",
+                  "name": "권한 위임",
+                  "feature": "권력과 책임",
+                  "action": "결정 권한과 감시 역할을 나눈다",
+                  "condition": "권한과 책임의 범위가 합의됨",
+                  "consequence": "공동 결정과 자원 분배가 달라진다",
+                  "risk": "감시 없는 위임이 다른 구성원의 선택을 막는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "유가",
+                  "name": "역할의 예",
+                  "feature": "관계와 적절한 행동",
+                  "action": "서로 다른 역할의 부탁을 조정한다",
+                  "condition": "역할과 관계의 책임을 확인함",
+                  "consequence": "관계의 신뢰와 다음 협력이 달라진다",
+                  "risk": "형식만 지키면 실제 필요를 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "도가",
+                  "name": "무위의 선택",
+                  "feature": "간섭과 자연스러운 변화",
+                  "action": "직접 개입하거나 흐름을 기다려 비교한다",
+                  "condition": "개입 전후의 변화를 관찰함",
+                  "consequence": "불필요한 작업과 열리는 경로가 달라진다",
+                  "risk": "모든 문제를 기다림만으로 해결할 수는 없다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "실존주의",
+                  "name": "선택의 책임",
+                  "feature": "선택과 자기 규정",
+                  "action": "정해진 역할을 따르거나 다른 행동을 택한다",
+                  "condition": "자신이 선택한 이유와 결과를 인정함",
+                  "consequence": "인물의 관계와 이후 목표가 달라진다",
+                  "risk": "선택을 남의 탓으로 돌리면 신뢰를 잃는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "공리주의",
+                  "name": "결과의 비교",
+                  "feature": "영향과 전체 이익",
+                  "action": "여러 대상의 이익과 손실을 비교한다",
+                  "condition": "영향을 받는 범위가 확인됨",
+                  "consequence": "지원 우선순위와 후속 책임이 달라진다",
+                  "risk": "소수의 손실을 무시하면 협력이 끊긴다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "예술",
+              "middle": [
+                "음악",
+                "회화",
+                "조각",
+                "건축",
+                "무용",
+                "연극",
+                "공예",
+                "사진"
+              ],
+              "specificExamples": [
+                "합주",
+                "가면극",
+                "미로 건축",
+                "원근 표현",
+                "도자기"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "음악",
+                  "name": "합주",
+                  "feature": "서로 다른 소리의 맞물림",
+                  "action": "연주 순서와 서로 들을 대상을 바꾼다",
+                  "condition": "각 소리의 시작과 반복이 맞음",
+                  "consequence": "공동 연주와 주변 반응이 달라진다",
+                  "risk": "한 소리만 크게 내면 다른 신호를 놓친다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "회화",
+                  "name": "원근 표현",
+                  "feature": "시점과 보이는 관계",
+                  "action": "다른 위치에서 그림의 연결을 비교한다",
+                  "condition": "관찰 위치에 따른 차이를 확인함",
+                  "consequence": "숨은 형태와 통과 방향이 드러난다",
+                  "risk": "한 시점만 믿으면 거리를 잘못 읽는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "조각",
+                  "name": "지지 구조",
+                  "feature": "형태와 무게의 관계",
+                  "action": "받칠 위치를 바꾸거나 일부를 덜어 낸다",
+                  "condition": "무게와 지지점이 안정됨",
+                  "consequence": "형태의 접근과 활용이 달라진다",
+                  "risk": "잘못된 제거가 전체 균형을 무너뜨린다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "건축",
+                  "name": "미로 건축",
+                  "feature": "공간과 이동의 관계",
+                  "action": "벽과 출입구의 연결을 바꾼다",
+                  "condition": "시작과 목적지의 통로가 이어짐",
+                  "consequence": "방문 순서와 우회 경로가 달라진다",
+                  "risk": "쉬운 통로가 다른 방의 접근을 막을 수 있다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "무용",
+                  "name": "군무",
+                  "feature": "몸짓과 공동 움직임",
+                  "action": "동작과 위치를 맞추거나 흐름을 뒤집는다",
+                  "condition": "다른 참여자의 이동을 읽음",
+                  "consequence": "합류 위치와 열린 공간이 달라진다",
+                  "risk": "서로 다른 동작이 충돌을 만든다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "연극",
+                  "name": "가면극",
+                  "feature": "역할과 관객의 해석",
+                  "action": "역할을 바꾸거나 숨긴 사실을 드러낸다",
+                  "condition": "행동과 말의 차이가 관객에게 전달됨",
+                  "consequence": "인물의 관계와 다음 장면이 달라진다",
+                  "risk": "배역의 말이 실제 약속으로 오해된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "공예",
+                  "name": "도자기",
+                  "feature": "재료와 제작 과정",
+                  "action": "성형과 건조의 순서를 조정한다",
+                  "condition": "재료 상태가 다음 작업을 허용함",
+                  "consequence": "만들 형태와 사용할 물품이 달라진다",
+                  "risk": "급한 작업은 형태를 유지하기 어렵다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "사진",
+                  "name": "노출",
+                  "feature": "빛과 남는 이미지",
+                  "action": "빛과 촬영 위치를 바꿔 같은 대상을 찍는다",
+                  "condition": "빛과 관찰 위치의 차이를 확인함",
+                  "consequence": "보이지 않던 흔적과 정보가 드러난다",
+                  "risk": "밝은 부분만 맞추면 어두운 단서를 잃는다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            },
+            {
+              "broad": "일상·직업",
+              "middle": [
+                "요리",
+                "의료",
+                "수사",
+                "교육",
+                "운송",
+                "장인 기술"
+              ],
+              "specificExamples": [
+                "발효",
+                "응급 처치",
+                "지문",
+                "견습",
+                "도구 수리"
+              ],
+              "specificMaterials": [
+                {
+                  "middle": "요리",
+                  "name": "발효",
+                  "feature": "시간과 재료 상태",
+                  "action": "재료를 나누고 상태에 맞춰 처리한다",
+                  "condition": "시간에 따른 변화와 조건을 확인함",
+                  "consequence": "쓸 수 있는 재료와 다음 조리가 달라진다",
+                  "risk": "조건을 무시하면 원하는 재료를 얻지 못한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "의료",
+                  "name": "응급 처치",
+                  "feature": "위급함과 우선순위",
+                  "action": "위험을 확인하고 도움의 순서를 정한다",
+                  "condition": "대상의 상태와 사용할 지원이 확인됨",
+                  "consequence": "구조와 이동 가능한 대상이 달라진다",
+                  "risk": "원인을 확인하지 않은 처치는 상황을 악화시킨다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "수사",
+                  "name": "지문",
+                  "feature": "흔적과 대상의 연결",
+                  "action": "현장 흔적을 다른 증거와 대조한다",
+                  "condition": "독립된 흔적이 같은 대상을 가리킴",
+                  "consequence": "조사 대상과 사건의 순서가 달라진다",
+                  "risk": "단일 흔적만으로 결론 내리면 오판한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "교육",
+                  "name": "견습",
+                  "feature": "시범과 반복 학습",
+                  "action": "시범을 관찰하고 다른 조건에서 시험한다",
+                  "condition": "학습한 행동을 새 상황에 적용함",
+                  "consequence": "맡을 작업과 다음 과제가 달라진다",
+                  "risk": "동작만 외우면 조건이 바뀔 때 실패한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "운송",
+                  "name": "도구 수송",
+                  "feature": "적재와 이동",
+                  "action": "짐을 나누거나 통과 경로를 바꾼다",
+                  "condition": "짐의 조건과 통로가 맞음",
+                  "consequence": "운송 대상과 왕복 동선이 달라진다",
+                  "risk": "과한 적재가 귀환과 도움을 어렵게 한다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                },
+                {
+                  "middle": "장인 기술",
+                  "name": "도구 수리",
+                  "feature": "손상과 기능",
+                  "action": "손상 부위를 찾아 수리하거나 부품을 바꾼다",
+                  "condition": "손상 원인과 부품의 역할을 확인함",
+                  "consequence": "복구된 작업과 사용 방식이 달라진다",
+                  "risk": "겉만 고치면 같은 손상이 반복된다",
+                  "interpretation": "CREATIVE_ADAPTATION_NOT_HISTORICAL_OR_SCIENTIFIC_ASSERTION"
+                }
+              ]
+            }
+          ],
+          "historyExpansion": {
+            "selectionAxesKo": [
+              "지역·문화권",
+              "시대·문명",
+              "역사 분야"
+            ],
+            "regionsKo": [
+              "한국",
+              "동아시아",
+              "유럽",
+              "서아시아",
+              "아프리카",
+              "남아시아",
+              "동남아시아",
+              "아메리카"
+            ],
+            "erasAndCivilizationsKo": [
+              "고조선",
+              "삼국",
+              "발해",
+              "고려",
+              "조선",
+              "개항기",
+              "중국 왕조",
+              "일본 전국시대",
+              "몽골 제국",
+              "그리스·로마",
+              "중세",
+              "르네상스",
+              "대항해시대",
+              "산업혁명",
+              "메소포타미아",
+              "페르시아",
+              "이슬람 문명",
+              "오스만 제국",
+              "말리 제국",
+              "인더스 문명",
+              "마우리아 제국",
+              "무굴 제국",
+              "크메르 제국",
+              "마야",
+              "아즈텍",
+              "잉카"
+            ],
+            "fieldsKo": [
+              "정치사",
+              "전쟁사",
+              "교역사",
+              "항해사",
+              "도시사",
+              "생활사",
+              "기술사",
+              "의학사",
+              "법제사",
+              "이주사"
+            ],
+            "ruleKo": "지역·시대·분야를 실제로 성립하는 관계로 조합한다. 모든 조합을 역사 사실로 취급하지 않는다.",
+            "exampleKo": "역사→조선 교역사→보부상·장시·객주"
+          },
+          "creativeGenreExamplesKo": [
+            "미스터리",
+            "코미디",
+            "공포",
+            "스릴러",
+            "판타지",
+            "공상과학",
+            "모험",
+            "드라마",
+            "로맨스",
+            "비극",
+            "풍자",
+            "무협"
+          ],
+          "basicDesignMethodKo": [
+            "A에 대표 참고 게임 이름·유사 시스템·플레이어 선택과 채택 이유를 명시한다.",
+            "B에 기존 게임의 실제 시스템·원본 출처·상태·보존할 규칙을 명시한다. 새 게임이라 기존 시스템이 없으면 신규 기본설계임을 명확히 한다.",
+            "A 행동→B 조건 변화→B 결과→A 다음 선택의 반복 흐름을 구체화한다.",
+            "C의 작품 주·보조 장르와 경험·정보·갈등·선택의 차이를 작성한다.",
+            "D의 소분류 경로와 C 두 장르로 세계·사건·규칙을 창작한다.",
+            "@는 D 기반 단서→실험→발견→새 선택→다음 의문을 상한 없이 연결한다.",
+            "MAIN은 A의 참고 시스템과 B의 기존 시스템에 C·D·@의 새 창작이 연결된 최종 정체성이다.",
+            "MAIN·A·B·C·각 D·각 @에 육하원칙과 결과·실패·취소·복구를 작성한다."
+          ],
+          "sixWOneHKo": {
+            "who": "실제 행동 주체·역할·관계·선택 책임",
+            "when": "실행 시점과 명확한 선행조건",
+            "where": "구체적인 장소와 접근·이동·복귀 맥락",
+            "what": "대상·목표·플레이어 선택",
+            "how": "입력→판정→반응→상태 변화",
+            "why": "목적·욕망·갈등·원인과 다음 행동의 이유",
+            "result": "성공 출력·다음 선택·실패 및 취소 복구"
+          },
+          "verificationBoundary": {
+            "documentationApprovalIsRuntimePass": false,
+            "legacy99CandidatesProveHierarchy": false,
+            "generatorChanged": false,
+            "schemaChanged": false,
+            "scorerChanged": false,
+            "gameSourceChanged": false,
+            "saveChanged": false,
+            "workflowChanged": false,
+            "deploymentRequested": false,
+            "existingCanonicalPipelineOnly": true,
+            "existingScoresAreNotNewGrammarEvidence": true,
+            "followupKo": "기존 실행기·스키마·심사기를 수정하고 새 설계·런타임으로 검증하기 전에는 구현·통과·배포 완료로 보고하지 않는다."
+          },
+          "basicFloorIntegration": {
+            "status": "CODE_IMPLEMENTED_RUNTIME_UNVERIFIED",
+            "placementKo": "기존 기본 플로어의 기본설계 단계 내부",
+            "stepsKo": [
+              "분류 선택",
+              "여러 창작 후보 비교",
+              "A 참고 시스템·B 기존 시스템 결합과 보존 검증",
+              "C 작품 장르 두 개 결합",
+              "D 세계·존재·사건·규칙 창작",
+              "@ 파고들기 생성",
+              "육하원칙·인과·모순 검수",
+              "상세설계 인계"
+            ],
+            "ideaMethodKo": [
+              "분류 이름을 결과로 제출하지 않고 소재의 핵심 특징을 플레이 규칙으로 변환한다.",
+              "소재의 원리를 이전·역전·대가·상속·숨김·재해석해 서로 다른 창작 후보를 만든다.",
+              "후보를 중심 플레이 적합성·보조 역할·인과·의외성·구현 가능성으로 비교한다.",
+              "한 장면 퀘스트가 아닌 반복 플레이·지역·인물·경제·성장에 지속되는 정체성 규칙을 선택한다.",
+              "자체 검토에서 추상적인 부분은 해당 항목을 다시 구체화하고 기존 흐름으로 상세설계에 전달한다.",
+              "A 채택 요소·B 보존 요소·새 상호작용을 구분한 서로 다른 후보 두 개 이상을 비교한다.",
+              "각 후보의 새 선택·실패·취소·복구와 기존 저장·밸런스 영향 및 실제 검증 장면을 작성한다."
+            ],
+            "newStageWorkflowOrQueueRequired": false,
+            "lockedFlowSequenceChanged": false
+          },
+          "materialHierarchyVersion": 2,
+          "specificMaterialRulesKo": [
+            "specificMaterials는 중분류별 정확한 소분류 경로다.",
+            "feature는 소재의 핵심 개념이며 action·condition·consequence·risk는 게임용 창작 해석이다. 실제 역사·생물의 고정 규칙이나 현재 게임 수치라고 주장하지 않는다.",
+            "소분류 후보는 추가할 수 있으며 총개수 제한을 두지 않는다. 각 새 후보는 정확한 중분류·특징·행동·조건·결과·위험과 연결한다.",
+            "넓은 지역 신화를 단일 전승으로 취급하지 않는다. 특정 공동체·인물·의례를 상세설계에 쓰면 출처와 맥락을 추가 검증한다."
+          ],
+          "materialReferenceSources": [
+            "https://collections.si.edu/search/results.htm?q=%22Creation--Mythology%22",
+            "https://naturalhistory.si.edu/research/anthropology/collections-overview",
+            "https://oceanexplorer.noaa.gov/ocean-fact/bioluminescence/"
+          ],
+          "contentDepthContract": {
+            "basis": "C_AND_D_RELATED_CONTENT_WITH_A_PRIMARY_AND_B_SUPPORTING_GAME_GENRES",
+            "rulesKo": [
+              "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다.",
+              "관찰·가설·실험·발견·숙련·조합·재해석·재방문은 콘텐츠 연구·창작·개발을 위한 과정이다. 연구 과정과 결과 자체도 해당 게임의 중심·보조 장르에 맞는 복합 콘텐츠로 구성한다.",
+              "연구 결과는 새로운 행동·관계·현상·존재·장소·사건·문화·규칙·조합으로 이어지고 다시 다음 연구와 콘텐츠 개발의 대상이 된다. 연구 버튼·수치 상승·기능 해금만으로 주된 목적을 충족했다고 인정하지 않는다.",
+              "@는 C의 작품 주·보조 장르와 D의 창작 세계·존재·장소·사건·문화·규칙에서 나온 연관 콘텐츠를 A의 참고 시스템과 B의 기존 시스템에 복합적으로 연결해 새로 창작한다.",
+              "C는 갈등·경험·정보·해석을 만들고 D는 구체 대상과 세계의 지속 규칙을 만든다. @는 그 관계에서 새로운 행동·관계·현상·조합·사건·결과를 파생하며 다시 C·D 및 A·B의 다음 선택에 영향을 준다.",
+              "단서는 이야기의 단서뿐 아니라 적 패턴·현상·입력 반응·배치·자원 흐름·상호작용의 차이도 포함한다.",
+              "실험은 전투·조작·배치·제작·운영·조합 등 해당 장르의 실제 플레이로 구성한다.",
+              "단서→실험→발견→새 선택→다음 의문은 플레이의 인과 연결이다. 모든 사례를 조사 퀘스트·기록 장치·경로 해금으로 만들지 않는다.",
+              "각 사례에 D 출처, 관찰한 차이, 실제 입력과 조건, 성공·실패·취소·복구, 달라지는 행동과 결과를 작성한다.",
+              "초기 서로 다른 사례 최소 4개는 출발점이며 총개수 상한은 없다. 이름·번호·수치만 바꾼 반복은 새 사례가 아니다.",
+              "장르별 예시는 탐색 범위이며 고정 창작 답안·필수 기능 목록·장르별 고정 결과로 사용하지 않는다.",
+              "기본설계는 표준 문법의 A·B·C·D·@를 연결해 MAIN을 도출한다. 확정한 MAIN과 중심·보조 장르에 맞춰 상세설계를 작성하며 기존 게임 제목·내용을 새 정체성의 기준으로 삼지 않는다.",
+              "장르별 숙련 기능이나 콘텐츠 목록을 채우는 것만으로 @를 작성했다고 인정하지 않는다. C·D와의 인과 연결, 중심·보조 게임 장르의 복합적인 실제 플레이, 이전 사례와 다른 창작 결과를 설명해야 한다."
+            ],
+            "genreExamplesKo": {
+              "액션·슈팅": [
+                "적 패턴·타이밍·약점",
+                "무기 운용·연계·대응"
+              ],
+              "역할수행": [
+                "빌드·장비 조합",
+                "인물 관계·선택의 후속 결과"
+              ],
+              "어드벤처": [
+                "숨은 장소·사건 재해석",
+                "복수 해결법·재방문 변화"
+              ],
+              "전략": [
+                "배치·상성·자원 운용",
+                "기만·상대 전술 대응"
+              ],
+              "시뮬레이션": [
+                "생산 연결·시설·동선",
+                "주민 행동·운영 최적화"
+              ],
+              "생존": [
+                "생태 관계·제작 조합",
+                "위험 활용·거점·탐험 전략"
+              ],
+              "퍼즐": [
+                "규칙 조합·숨은 조건",
+                "복수 해법·고급 응용"
+              ],
+              "스포츠·레이싱": [
+                "기술 숙련·코스 공략",
+                "상대 읽기·팀·장비 전략"
+              ],
+              "리듬": [
+                "박자 해석·입력 기술",
+                "패턴 숙련·표현·변주"
+              ],
+              "카드·보드": [
+                "덱·말 조합·수 읽기",
+                "연계·상대 전략 역이용"
+              ],
+              "파티": [
+                "역할 조합·협동 방식",
+                "심리전·라운드별 대응"
+              ],
+              "방치·증분": [
+                "투자 순서·생산 조합",
+                "자동화·성장 전환 전략"
+              ]
+            },
+            "examplesAreRequiredFeatures": false,
+            "examplesArePresetCreativeAnswers": false,
+            "initialDistinctExamplesMinimum": 4,
+            "generationLimit": null,
+            "documentationIsImplementationEvidence": false,
+            "primaryPurposeKo": "@의 주된 목적은 C·D에 연관된 콘텐츠를 깊이 파고들어 연구하고, 그 연구를 바탕으로 새로운 콘텐츠를 창작·개발하는 것이다."
+          },
+          "existingGameSystemReference": {
+            "role": "B_EXISTING_GAME_SYSTEMS",
+            "scope": "EXISTING_GAME_DESIGN_ONLY",
+            "existingSystemIsSupportingOnly": false,
+            "existingTitleWorldMaterialAndGenreMayNotFixOtherAxes": true,
+            "legacyASystemReferenceMigratesToBForStandardGrammar": true,
+            "existingGameSourceSaveBalanceAndNetworkAuthorityPreserved": true,
+            "ownerDirective": "2026-10-20",
+            "bCoreSystemGeneratedByGrammar": false,
+            "existingSystemMayReplaceBCore": true,
+            "newGameWithoutBaselineMustBeExplicit": true
+          },
+          "representativeGameExamples": [
+            {
+              "gameGenre": "액션",
+              "name": "젤다의 전설",
+              "systemFamily": "탐험 중 적 패턴과 도구를 조합하는 전투",
+              "playerChoice": "상대의 빈틈과 주변 도구를 보고 접근·회피·공격 순서를 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "슈팅",
+              "name": "둠",
+              "systemFamily": "이동과 사격을 결합한 적 대응",
+              "playerChoice": "공간과 적 위치를 보고 이동 경로와 사격 대상을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "역할수행",
+              "name": "디아블로",
+              "systemFamily": "전투와 획득 장비의 조합 운용",
+              "playerChoice": "적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "어드벤처",
+              "name": "젤다의 전설",
+              "systemFamily": "도구와 환경을 활용하는 탐험",
+              "playerChoice": "환경의 반응과 도구의 특성을 비교해 새로운 접근 경로를 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "전략",
+              "name": "스타크래프트",
+              "systemFamily": "자원 생산과 부대 구성의 상호작용",
+              "playerChoice": "자원 상황과 상대 부대에 따라 생산 순서와 병력 구성을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "시뮬레이션",
+              "name": "심시티",
+              "systemFamily": "도시 시설과 자원 흐름의 운영",
+              "playerChoice": "시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "생존",
+              "name": "마인크래프트",
+              "systemFamily": "채집·제작·거점 준비와 탐험",
+              "playerChoice": "현재 자원과 위험을 비교해 도구 제작과 다음 탐험 범위를 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "퍼즐",
+              "name": "포털",
+              "systemFamily": "공간 연결과 장치 반응의 문제 해결",
+              "playerChoice": "공간의 연결과 장치의 반응을 확인해 해결 순서를 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "스포츠",
+              "name": "피파",
+              "systemFamily": "공간과 동료 위치를 활용하는 경기",
+              "playerChoice": "공간과 동료의 움직임을 보고 패스·돌파·슈팅을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "레이싱",
+              "name": "마리오 카트",
+              "systemFamily": "코스 주행과 상황별 자원 운용",
+              "playerChoice": "코스의 위험과 상대 위치를 보고 주행 경로와 자원 사용 시점을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "리듬",
+              "name": "댄스 댄스 레볼루션",
+              "systemFamily": "박자 신호와 입력 타이밍의 대응",
+              "playerChoice": "연속 박자와 다음 신호를 보고 입력과 동작의 타이밍을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "카드·보드",
+              "name": "슬레이 더 스파이어",
+              "systemFamily": "덱 구성과 전투 중 카드 선택",
+              "playerChoice": "상대의 다음 행동과 보유 카드를 보고 사용 순서와 덱 구성을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "파티",
+              "name": "마리오 파티",
+              "systemFamily": "라운드별 목표와 짧은 규칙의 전환",
+              "playerChoice": "현재 라운드 목표와 상대 행동을 보고 역할과 대응을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            },
+            {
+              "gameGenre": "방치·증분",
+              "name": "쿠키 클리커",
+              "systemFamily": "생산 누적과 재투자 순서의 선택",
+              "playerChoice": "현재 생산량과 투자 비용을 비교해 다음 생산 확장을 선택한다",
+              "source": "중앙 기본설계 참고게임 예시"
+            }
+          ],
+          "referenceExamplesAreExhaustive": false
+        }
       }
     }
   },
@@ -28731,21 +30834,21 @@
   "fixedAutonomousDevelopmentOperatingContract": {
     "version": 2,
     "ownerRequestedVibeOneShotPatch": {
-      "version": 1,
+      "version": 2,
       "number": 1,
       "labelKo": "바이브 한방패치",
       "authority": "OWNER_DIRECTIVE_2026-10-24",
       "status": "OWNER_DIRECT_LOCKED",
       "scope": "OWNER_GAME_IDEA_AND_DIRECT_GAME_SOURCE_EDIT_REQUESTS",
-      "priority": "OWNER_DIRECT_GAME_CHANGE_FIRST_WITHIN_EXISTING_CANONICAL_GATES",
+      "priority": "OWNER_DIRECT_CODING_AUTOMATIC_MAIN_MERGE_DEPLOY_THEN_VERIFY",
       "executionOrder": [
         "LOAD_AND_VALIDATE_LATEST_MAIN_CANONICAL_DOCUMENTS_AND_FINAL_LOCK",
         "READ_LATEST_MAIN_EXISTING_GAME_SOURCE_AND_CANONICAL_PIPELINE",
         "IMPLEMENT_OWNER_SPECIFIED_CHANGE_DIRECTLY_IN_RESPONSIBLE_GAME_FUNCTIONS",
-        "RUN_REQUIRED_IMPACT_SCOPED_PRE_MERGE_SOURCE_SECURITY_AND_BUILD_CHECKS",
-        "MERGE_APPROVED_CHANGE_TO_MAIN_VIA_EXISTING_GITHUB_FLOW",
-        "PUBLISH_ONLY_THROUGH_EXPLICIT_OWNER_AUTHORIZED_EXISTING_GAME_ROUTE_EXCLUDING_CLOUDFLARE",
-        "POST_DEPLOY_CHECK_RUNTIME_MOBILE_INPUT_LINKS_LOADING_SAVE_AND_REGRESSION",
+        "AUTOMATICALLY_MERGE_OWNER_AUTHORIZED_CHANGE_TO_MAIN",
+        "PUBLISH_EXACT_MAIN_THROUGH_EXISTING_OWNER_AUTHORIZED_ROUTE_EXCLUDING_CLOUDFLARE",
+        "POST_DEPLOY_VERIFY_EXACT_REVISION_RUNTIME_MOBILE_INPUT_LINKS_LOADING_SAVE_AND_REGRESSION",
+        "REPAIR_RESPONSIBLE_SOURCE_REDEPLOY_AND_REVERIFY_ON_FAILURE",
         "REPORT_ACTUAL_MAIN_SHA_DEPLOYMENT_TARGET_AND_VERIFIED_OR_UNVERIFIED_OUTCOME"
       ],
       "chatExecution": {
@@ -28763,7 +30866,10 @@
         "preferExistingFunctionsToWrappers": true,
         "duplicatePipelinesForbidden": true,
         "ideasMustResultInRealExistingGameSourceChangeWhenRequested": true,
-        "documentationOnlyNotGameIdeaCompletion": true
+        "documentationOnlyNotGameIdeaCompletion": true,
+        "automaticMainMergeRequired": true,
+        "mergeOnlyIsNotCompletion": true,
+        "delegateOwnerRequestedCodingToAutonomousQueueForbidden": true
       },
       "preservation": {
         "existingGameplayAndSaveDataFirst": true,
@@ -28775,22 +30881,24 @@
       "deployment": {
         "repository": "hans1177/jaewoon-games",
         "branch": "main",
-        "webSite": null,
-        "webPath": "NO_DEFAULT_WEB_DEPLOYMENT_TARGET",
+        "webSite": "https://hans1177.github.io/jaewoon-games/",
+        "webPath": "web-games/<gameId>/",
         "otherPlatform": "EXISTING_CANONICAL_PLATFORM_PUBLISH_ROUTE_ONLY",
         "postDeploymentValidationRequired": true,
         "unverifiedDeploymentMayNotBeClaimedSuccessful": true,
         "cloudflareDeploymentAllowed": false,
-        "unknownPublishTarget": "DO_NOT_DEPLOY_OR_INVENT_TARGET"
+        "unknownPublishTarget": "DO_NOT_DEPLOY_OR_INVENT_TARGET",
+        "existingWebWorkflow": ".github/workflows/magic-forest-pages.yml"
       },
       "hardBoundaries": {
         "existingF0F9SequenceUnchanged": true,
-        "existingPrePublicationSecurityAndReleaseGatesUnchanged": true,
         "privateRuntimeCandidateStageAllowedOnlyWhereCurrentPipelineAlreadySupportsIt": true,
         "noPublicReleaseBypass": true,
         "noAutomatedSequenceUnlock": true,
         "noSourceOrRuntimeWriteWhenCentralPreflightFails": true,
-        "doNotConfuseUserPatchPolicyOneWithExistingConstitutionalRuleOne": true
+        "doNotConfuseUserPatchPolicyOneWithExistingConstitutionalRuleOne": true,
+        "nativePlatformCanonicalPublicationGatesUnchanged": true,
+        "credentialsAuthorizationAndSaveCompatibilityPreserved": true
       },
       "completion": {
         "mainCommitProofRequired": true,
@@ -28816,7 +30924,19 @@
         "preserveExistingRelevantSecuritySaveAndPublicReleaseHardGates": true,
         "preserveExistingF0F9Sequence": true,
         "doNotCreateShadowWorkflow": true
-      }
+      },
+      "verificationTiming": "POST_DEPLOYMENT",
+      "ordinaryWebPreDeploymentQaGate": false,
+      "centralPolicyReadAndCredentialSafetyStillRequired": true,
+      "successorDevelopment": {
+        "source": "LATEST_MAIN_AFTER_OWNER_PATCH",
+        "existingF0F9DefinitionsPreserved": true,
+        "resumeAffectedStageWithoutReset": true,
+        "staleSourceMayNotOverwriteOwnerPatch": true,
+        "newQueueOrPipelineForbidden": true,
+        "latestOwnerRequirementsMustCarryIntoExistingBuildUp": true
+      },
+      "repositoryAgentInstruction": "AGENTS.md"
     },
     "status": "FIXED_CURRENT_SYSTEM",
     "purpose": "KEEP_THE_EXISTING_PER_GAME_VIBE_DEVELOPMENT_LOOP_RUNNING_AUTONOMOUSLY_WITHOUT_OWNER_OR_CHATGPT_AS_NORMAL_EXECUTION_DEPENDENCIES",
@@ -29428,7 +31548,10 @@
     "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB",
     "status": "ACTIVE",
-    "activeTargets": ["ROBLOX", "WEB"],
+    "activeTargets": [
+      "ROBLOX",
+      "WEB"
+    ],
     "ownerHeldTargets": [
       "UNITY_WEB",
       "UNITY_ANDROID",
