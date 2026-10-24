@@ -45,7 +45,7 @@ const npcs=[
 ];
 const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId,siegeOverview:true};
 const ui={
-  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),trade:qs('#tradeCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
+  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),shipping:qs('#shippingCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
 function qs(s){return document.querySelector(s)}
 function normalizeState(raw){
@@ -81,7 +81,7 @@ runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButto
 runtime.bindTouchButton(ui.barracks,openBarracks);
 runtime.bindTouchButton(ui.workers,openWorkerShop);
 runtime.bindTouchButton(ui.fishingCommand,startFishing);
-runtime.bindTouchButton(ui.trade,()=>window.dispatchEvent(new Event('cozy:open-trade')));
+runtime.bindTouchButton(ui.shipping,shipGoods);
 runtime.bindTouchButton(ui.center,()=>{game.siegeOverview=true;renderer.centerCamera();toast('🏰 성채 전장 전체 보기')});
 runtime.bindTouchButton(ui.zoomIn,()=>{game.siegeOverview=true;renderer.changeZoom(1.2)});
 runtime.bindTouchButton(ui.zoomOut,()=>{game.siegeOverview=true;renderer.changeZoom(1/1.2)});
