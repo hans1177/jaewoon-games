@@ -9,7 +9,7 @@ export const ECONOMY_3D_LOOK=Object.freeze({
  dairy:'fort-dairy',wheat:'fort-wheat',vineyard:'fort-vineyard',winery:'fort-winery',
  hops:'fort-hops',brewery:'fort-brewery',tavern:'fort-tavern',hovel:'fort-hovel',
  well:'fort-well',market:'fort-market',fletcher:'fort-fletcher',
- smith:'fort-smith',armory:'fort-armory'
+ smith:'fort-smith',armory:'fort-armory',knightHall:'fort-knight-hall',prison:'fort-prison'
 });
 const SC=1/36;
 // 카메라: 45도 방위·30도 고도의 2:1 등각 투영. 게임 좌표는 그대로 유지한다.
@@ -558,6 +558,38 @@ export class IslandRendererV3 {
         box(.38,.065,.38,Math.round((x+z)*100)%3===0?'stone':'wall',x,.035,z);
       return g;
     }
+    // 기사단 회관: 훈련마당·왕실 깃발·검상, 감옥: 철창과 감시탑을 3D로 구분한다.
+    if(kind==='fort-knight-hall'){
+      box(4.3,.2,3.65,'earth',0,.08,0);
+      box(3.3,2.2,2.4,'wall',0,1.13,-.53);
+      for(const side of [-1,1]){
+        const part=box(2,.17,2.73,'roof',side*.91,2.4,-.53);
+        part.rotation.z=side*.57;
+      }
+      for(const x of [-1.45,1.45])cyl(.29,2.2,'stone',x,1.2,.46);
+      box(1.17,1.35,.1,'dark',0,.76,.72);
+      box(1.2,.16,.32,'metal',-.98,1.2,1.52);
+      box(.18,1.32,.15,'metal',-.98,1.8,1.52);
+      for(let i=0;i<3;i++)box(.14,1.1,.12,'metal',-.67+i*.29,.66,1.58);
+      banner(1.87,3.05,-.82);banner(-1.9,2.85,-.82);
+      box(1.8,.13,.85,'wood',1.2,.22,1.46);
+      return g;
+    }
+    if(kind==='fort-prison'){
+      box(4.2,.22,3.4,'earth',0,.09,0);
+      box(3.65,2.34,2.8,'stone',0,1.2,-.1);
+      box(3.92,.31,3.1,'dark',0,2.42,-.1);
+      for(const x of [-1.4,-.47,.47,1.4]){
+        box(.15,1.15,.16,'metal',x,1.22,1.39);
+        box(.16,.13,.22,'metal',x,1.75,1.42);
+      }
+      box(1.12,1.69,.16,'dark',0,.93,1.34);
+      for(const x of [-.35,0,.35])box(.12,1.49,.12,'metal',x,.94,1.47);
+      box(1.1,3.1,1.06,'stone',1.41,1.65,-1.14);
+      box(1.3,.21,1.27,'dark',1.41,3.29,-1.14);
+      for(const z of [-.85,-.48])box(.56,.41,.12,'metal',1.41,2.41,z);
+      return g;
+    }
     if(kind==='fort-site'){
       box(3.5,.16,3,'earth',0,.07,0);
       for(let i=0;i<7;i++)box(.46,.22,.4,i%2?'stone':'wall',-1.4+(i%4)*.82,.23,-.95+Math.floor(i/4)*1.8);
@@ -798,7 +830,7 @@ export class IslandRendererV3 {
     return g;
   }
   make3d(kind,height){
-    if(['fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind))return this.makeFort3d(kind,height);
+    if(['fort-knight-hall','fort-prison','fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind))return this.makeFort3d(kind,height);
     const group=new THREE.Group(),asset=this.models3d.get(kind);
     if(!asset)return group;
     const texture=asset.texture.clone();texture.needsUpdate=true;
