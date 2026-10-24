@@ -416,7 +416,7 @@ var camera={x:0,y:0},worldW=2000,worldH=1300;
 var p={x:state.x,y:state.y,r:18,speed:180,attackCd:0,hitFlash:0};
 var enemies=[],nextEnemyId=1,keys={},joy={x:0,y:0},last=performance.now();
 var toastTimer=0,modalOpen=false,currentInteract=null,fieldSpawnTimer=0,dungeon=null,gameStarted=false,saveTick=0;
-var clickMemory={id:null,count:0,t:0};
+// 동료 3회 터치 자동 영입은 삭제. 직접 선택 후 개인 이벤트로만 영입한다.
 var lvText=document.getElementById("lvText"),hpText=document.getElementById("hpText"),atkText=document.getElementById("atkText"),defText=document.getElementById("defText"),goldText=document.getElementById("goldText"),partyText=document.getElementById("partyText"),hpFill=document.getElementById("hpFill"),xpFill=document.getElementById("xpFill"),zoneName=document.getElementById("zoneName"),zoneSub=document.getElementById("zoneSub"),objective=document.getElementById("objective"),prompt=document.getElementById("prompt");
 var modal=document.getElementById("modal"),modalTitle=document.getElementById("modalTitle"),modalBody=document.getElementById("modalBody");
 
@@ -592,29 +592,28 @@ function incidentChoice(zone,path){
 /* 여정 기록 바로 아래의 다음 목적지 안내. 파티 전술과 저장 진행을 변경하지 않는다. */
 function storyNext(){
  var s=state.story;
- if(!s.intro)return{label:'서막을 읽고 다음 여정을 시작해.',zone:0};
+ if(!s.intro)return{label:'서막을 읽고 여정을 시작해.',zone:0};
  if(!partyCount()){
   var a=state.ai.find(companionDiscovered);
-  if(!a)return{label:'첫 인물을 만나려면 서막부터 진행해.',zone:0,journal:true};
+  if(!a)return{label:'서막을 마치고 첫 인물과 만나.',zone:0,journal:true};
   var stage=recruitStage(a),arc=RECRUIT_ARCS[portraitIndex(a)];
   return stage==='search'?{label:a.name+' 서브퀘스트 · '+arc.title+' 조사',zone:arc.zone,site:arc.site}:
-  {label:a.name+' · '+(stage==='ready'?'영입 이벤트 진행':'개인 서브퀘스트 시작'),zone:arc.zone,recruit:true};
+   {label:a.name+' · '+(stage==='ready'?'영입 이벤트 진행':'개인 서브퀘스트 시작'),zone:arc.zone,recruit:true};
  }
  if(!s.choices.ending){
-  for(var z=1;z<=6;z++){
-   if(s.battles[z]==='pending')return{label:ZONES[z].name+' · 현장 복병을 물리쳐.',zone:z,site:EVIDENCE_SITES[z]};
-   if(!s.visited[z])return{label:ZONES[z].name+' · 새로운 단서를 조사해.',zone:z,site:EVIDENCE_SITES[z]};
-   if(!s.cases[z])return{label:ZONES[z].name+' · 사건 석판의 증언을 결정해.',zone:z,site:EVIDENCE_SITES[z]};
+  var chapters=[{from:1,to:2,boss:0,choice:'fort',title:'고블린 요새'},{from:3,to:4,boss:1,choice:'temple',title:'고대 신전'},{from:5,to:6,boss:2,choice:'ending',title:'마왕 성'}];
+  for(var chapter of chapters){
+   for(var z=chapter.from;z<=chapter.to;z++){
+    if(s.battles[z]==='pending'||s.battles[z]==='active')return{label:ZONES[z].name+' · 사건 복병을 물리쳐.',zone:z,site:EVIDENCE_SITES[z]};
+    if(!s.visited[z]||!s.cases[z])return{label:ZONES[z].name+' · 석판 조사와 증언 기록',zone:z,site:EVIDENCE_SITES[z]};
+   }
+   if(!s.cleared[chapter.boss])return{label:chapter.title+'의 보스를 처치하고 기록을 찾아.',zone:0,dungeon:chapter.boss};
+   if(!s.choices[chapter.choice])return{label:'여정 기록에서 '+chapter.title+'의 선택을 결정해.',zone:0,journal:true};
   }
-  if(!s.cleared[0])return{label:'고블린 요새 보스를 처치해.',zone:0,dungeon:0};
-  if(!s.choices.fort)return{label:'여정 기록에서 요새 포로의 운명을 결정해.',zone:0,journal:true};
-  if(!s.cleared[1])return{label:'고대 신전의 맹약 기록을 회수해.',zone:0,dungeon:1};
-  if(!s.choices.temple)return{label:'여정 기록에서 신전의 진실을 결정해.',zone:0,journal:true};
-  if(!s.cleared[2])return{label:'마왕 성의 왕좌를 조사해.',zone:0,dungeon:2};
-  return{label:'여정 기록에서 왕좌의 선택을 마쳐 2막을 열어.',zone:0,journal:true};
  }
- var next=act2NextZone();
- return next?{label:'2막 · '+ZONES[next].name+'에서 '+ACT2_SITES[next].name+' 조사',zone:next,site:ACT2_SITES[next]}:{label:'2막의 여섯 현장 조사 완료 · 북문 기록실에서 다음 막을 준비해.',zone:0,site:COUNCIL_LOCATION};
+ var z=act2NextZone();
+ return z?{label:'2막 · '+ZONES[z].name+' · '+ACT2_SITES[z].name+' 조사',zone:z,site:ACT2_SITES[z]}:
+  {label:'2막 여섯 단서 확보 · 북문 기록실로 돌아가.',zone:0,site:COUNCIL_LOCATION};
 }
 function followStoryNext(){
  var next=storyNext();
