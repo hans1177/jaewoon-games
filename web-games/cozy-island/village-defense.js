@@ -1,6 +1,6 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
-import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction } from './production-buildings.js';
+import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction, ECONOMY_BUILDINGS, getEconomy, economyStaff, constructEconomyBuilding, upgradeEconomyBuilding, setEconomyPolicy } from './production-buildings.js';
 
 const TOWER = { x: 400, y: 1090, wood: 6, stone: 5, radius: 115 };
 const TOWN_HALL = { x: 1010, y: 1090, wood: 12, stone: 10, radius: 125 };
@@ -304,7 +304,7 @@ window.addEventListener('cozy:open-trade',openTrade);
 function openCastle(){
   if(!currentGame||document.querySelector('dialog[open]'))return;
   document.querySelector('#panelTitle').textContent='성채 · 병력 · 무역 관리';
-  renderCastle();
+  renderConstruction('industry');
   document.querySelector('#panel').showModal();
 }
 // 공성 명령은 별도 캐릭터 조작이 아니라 기존 성채 전술 메뉴로 진입한다.
@@ -316,6 +316,77 @@ function openSiege(){
   if(button)body.scrollTop=Math.max(0,button.offsetTop-170);
 }
 window.addEventListener('cozy:open-siege',openSiege);
+// 영주 건설 메뉴: 상용 RTS의 건물 카테고리/비용/작업자/생산 카드.
+const BUILD_GROUPS=[
+ ['industry','🪓 자원'],['food','🌾 식량'],['wine','🍷 양조'],
+ ['town','🏘️ 도시'],['military','⚔️ 군수'],['defense','🏰 성벽·함정']
+];
+let activeBuildGroup='industry';
+function renderConstruction(group=activeBuildGroup){
+ const state=currentGame?.state;if(!state)return;
+ const e=getEconomy(state);activeBuildGroup=group;
+ const {capacity,assigned,staff}=economyStaff(state);
+ const inv=state.inventory||{},body=document.querySelector('#panelBody');
+ document.querySelector('#panelTitle').textContent='🏰 왕국 건설·경제';
+ const format=(n)=>Math.max(0,Math.floor(Number(n)||0));
+ const tabs=BUILD_GROUPS.map(([id,name])=>'<button class="realm-tab '+(group===id?'selected':'')+'" type="button" data-realm-tab="'+id+'">'+name+'</button>').join('');
+ let html='<div class="realm-overview"><div><strong>👷 '+assigned+'/'+capacity+'</strong><small>자동 배치 일꾼</small></div><div><strong>🪵 '+format(inv.wood)+'</strong><small>목재</small></div><div><strong>🪨 '+format(inv.stone)+'</strong><small>석재</small></div><div><strong>🪙 '+format(state.coins)+'</strong><small>금화</small></div></div>';
+ html+='<div class="realm-tabs" role="group" aria-label="건설 종류">'+tabs+'</div>';
+ if(group==='defense'){
+   html+='<p class="realm-help">성벽·성문·망루·함정·해자: 비용을 내고 방어선을 강화하거나 원하는 위치의 건설 부지를 선택하세요.</p>';
+   html+='<button class="realm-main-command" type="button" data-realm-legacy>🏰 성벽 · 함정 · 대공성전 관리 열기</button>';
+   html+='<button class="realm-main-command" type="button" data-realm-barracks>⚔️ 병영 모집과 주둔 명령</button>';
+ }else{
+   const list=ECONOMY_BUILDINGS.filter(d=>d.group===group);
+   html+='<p class="realm-help">건물을 고른 다음 지도의 땅을 누르면 건설합니다. 일꾼은 남는 인구에서 자동 배치되고 산출물은 창고에 바로 적립됩니다.</p>';
+   html+='<div class="realm-build-grid">'+list.map(d=>{
+     const entry=e.buildings[d.id]||{count:0,level:1},n=entry.count||0;
+     const affordable=(Number(inv.wood)||0)>=d.wood&&(Number(inv.stone)||0)>=d.stone&&(Number(state.coins)||0)>=d.gold;
+     const cost=['🪵 '+d.wood,'🪨 '+d.stone,...(d.gold?['🪙 '+d.gold]:[])].join(' · ');
+     const product=d.out?d.out+' +'+d.amount*(entry.level||1)+'/주기':'영지 기능';
+     const buildable=n<d.max&&affordable;
+     return '<article class="realm-build-card"><div class="realm-build-title"><span class="realm-icon">'+d.icon+'</span><div><b>'+d.name+'</b><small>'+d.desc+'</small></div><strong>'+n+'/'+d.max+'</strong></div>'+
+       '<div class="realm-build-meta"><span>👷 '+d.jobs+'명/채</span><span>'+product+'</span><span>Lv.'+(n?entry.level:0)+'/3</span></div>'+
+       '<div class="realm-build-actions"><button type="button" data-build-economy="'+d.id+'" '+(buildable?'':'disabled')+'>'+ (n>=d.max?'최대 건설':affordable?'🏗️ 건설':'자원 부족')+'</button>'+
+       '<button type="button" class="upgrade" data-upgrade-economy="'+d.id+'" '+(!n||entry.level>=3?'disabled':'')+'>⬆️ 강화</button></div>'+
+       '<div class="realm-build-cost">'+cost+' · '+(staff[d.id]||0)+'채 가동</div></article>';
+   }).join('')+'</div>';
+ }
+ html+='<div class="realm-policy"><h3>📜 영지 운영 정책</h3><p>주민 만족도 '+Math.floor(e.satisfaction)+'/100 · 생산한 자원은 실시간 창고로 입고</p>';
+ for(const [key,title,values] of [
+   ['ration','🍞 식량 배급',[['low','절약'],['normal','보통'],['high','풍족']]],
+   ['tax','💰 세금',[['low','면세'],['normal','보통'],['high','높음']]],
+   ['autoTrade','⚖️ 자동 판매',[['off','끄기'],['wood','남는 나무'],['stone','남는 돌']]]
+ ]){
+   html+='<div class="realm-policy-row"><span>'+title+'</span><div>'+values.map(([v,t])=>'<button type="button" class="'+(e.policy[key]===v?'selected':'')+'" data-realm-policy="'+key+':'+v+'">'+t+'</button>').join('')+'</div></div>';
+ }
+ html+='</div><button type="button" class="realm-legacy-entry" data-realm-legacy>🏰 기존 성채 상세 관리 · 성벽 수리·함정·병력 배치</button>';
+ body.innerHTML=html;
+ body.querySelectorAll('[data-realm-tab]').forEach(b=>b.addEventListener('click',()=>renderConstruction(b.dataset.realmTab)));
+ body.querySelectorAll('[data-build-economy]').forEach(b=>b.addEventListener('click',()=>{
+   const id=b.dataset.buildEconomy;document.querySelector('#panel')?.close();
+   window.dispatchEvent(new CustomEvent('cozy:place-building',{detail:{id}}));
+ }));
+ body.querySelectorAll('[data-upgrade-economy]').forEach(b=>b.addEventListener('click',()=>{
+   upgradeEconomyBuilding(b.dataset.upgradeEconomy);renderConstruction(activeBuildGroup);
+ }));
+ body.querySelectorAll('[data-realm-policy]').forEach(b=>b.addEventListener('click',()=>{
+   const [id,value]=b.dataset.realmPolicy.split(':');
+   setEconomyPolicy(id,value);renderConstruction(activeBuildGroup);
+ }));
+ body.querySelectorAll('[data-realm-legacy]').forEach(b=>b.addEventListener('click',()=>{
+   document.querySelector('#panelTitle').textContent='성채 · 병력 · 무역 관리';renderCastle();
+ }));
+ body.querySelectorAll('[data-realm-barracks]').forEach(b=>b.addEventListener('click',()=>{
+   document.querySelector('#panel')?.close();document.querySelector('#barracksCommand')?.click();
+ }));
+}
+window.addEventListener('cozy:open-construction',e=>{
+ if(!currentGame||document.querySelector('dialog[open]'))return;
+ renderConstruction(e.detail?.group||'industry');
+ document.querySelector('#panel')?.showModal();
+});
+
 function renderCastle(){
   const state=currentGame?.state;
   if(!state)return;
