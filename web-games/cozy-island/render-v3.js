@@ -24,6 +24,7 @@ export class IslandRendererV3 {
     // 실제 월드는 WebGL 3D만 표시하며 2D로 되돌아가지 않는다.
     this.ctx = canvas.getContext('2d', { alpha: true });
     this.models3d=new Map();this.instances3d=new Map();this.native3d=false;
+    this.viewFocus={x:1050,y:635};this.viewZoom=null;
     this.init3d();this.resize();
   }
   // 3D 메인: 원본 섬·야생지대·정글 좌표와 저장/전투 책임을 유지한다.
@@ -232,8 +233,8 @@ export class IslandRendererV3 {
     try{
       const player=game.player,visibleIds=new Set();
       // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
-      const focus=game.siegeOverview?{x:1135,y:630}:player;
-      const zoom=game.siegeOverview?(this.width<600?.36:.52):(this.width<600?.68:.82);
+      const focus=game.siegeOverview?this.viewFocus:player;
+      const zoom=game.siegeOverview?(this.viewZoom??this.defaultStrategyZoom()):(this.width<600?.68:.82);
       if(this.camera3.zoom!==zoom){this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix()}
       const nearby=(x,y)=>Math.abs(x-focus.x)<this.width/(2*zoom)+200&&
         Math.abs(y-focus.y)<this.height/(2*zoom)+420;
@@ -409,8 +410,8 @@ export class IslandRendererV3 {
       }
       // 메인: 스트롱홀드식 성채 시야. 남쪽에서 비스듬히 내려다보고 이동 방향은 유지한다.
       const focusX=focus.x*SC,focusZ=focus.y*SC;
-      this.camera3.position.set(focusX,game.siegeOverview?48:34,
-        focusZ+(game.siegeOverview?52:36));
+      this.camera3.position.set(focusX,game.siegeOverview?68:34,
+        focusZ+(game.siegeOverview?64:36));
       this.camera3.lookAt(focusX,0,focusZ);
       const hour=game.state.minutes/60;
       this.scene3.background.setHex(hour<6||hour>20?0x365372:0x86cce0);
@@ -442,6 +443,17 @@ export class IslandRendererV3 {
       this.camera3.updateProjectionMatrix();
     }
   }
+  defaultStrategyZoom(){return Math.max(.21,Math.min(.58,this.width/1500,this.height/1450))}
+  panCamera(dx,dy){
+    const zoom=this.viewZoom??this.defaultStrategyZoom();
+    this.viewFocus.x=Math.max(140,Math.min(7500,this.viewFocus.x-dx/zoom));
+    this.viewFocus.y=Math.max(-1100,Math.min(2600,this.viewFocus.y-dy/(zoom*.7)));
+  }
+  changeZoom(factor){
+    const current=this.viewZoom??this.defaultStrategyZoom();
+    this.viewZoom=Math.max(.19,Math.min(1.15,current*factor));
+  }
+  centerCamera(){this.viewFocus={x:1050,y:635};this.viewZoom=null}
   camera(game) { return { x: game.player.x - this.width/2, y: game.player.y - this.height/2 }; }
   screenToWorld(game, sx, sy) {
     if(!this.native3d){const c=this.camera(game);return {x:sx+c.x,y:sy+c.y}}
