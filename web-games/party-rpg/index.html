@@ -1064,7 +1064,8 @@ function autoSkill(u,pos,id,manual=false){
  var allies=[{u:state.player,pos:p}].concat(partyMembers().map(a=>({u:a,pos:a})));
  // 캐릭터별 활성화 기술과 우선순위, 스킬별 독립 재사용 대기시간.
  if(c.bookAt<=battleTime){
-  const available=SKILL_BOOKS.filter(book=>book.job===u.classId&&u.learnedSkills?.[book.id]&&u.skillSelection?.[book.id]!==false)
+  const path=u.awakenings?.[u.classId];
+  const available=SKILL_BOOKS.filter(book=>book.job===u.classId&&u.learnedSkills?.[book.id]&&u.skillSelection?.[book.id]!==false&&(!book.advance||(path?.phase==="awakened"&&path.branch===book.advance)))
    .sort((a,b)=>(u.skillOrder?.indexOf(a.id)??999)-(u.skillOrder?.indexOf(b.id)??999));
   const low=allies.filter(a=>a.u.hp>0&&a.u.hp<a.u.maxHp*.7&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<350).sort((a,b)=>a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp);
   const opponents=enemies.filter(e=>!e.dead&&Math.hypot(e.x-pos.x,e.y-pos.y)<Math.max(150,r.range));
@@ -1073,7 +1074,26 @@ function autoSkill(u,pos,id,manual=false){
    if((c.bookCooldowns[book.id]||0)>battleTime)continue;
    let fired=false;
    const shield=()=>{c.shieldUntil=Math.max(c.shieldUntil,battleTime+(book.id==='rogue_escape'?8:5));fired=true;};
-   if(['fighter_wall','rogue_veil','wizard_ward','ranger_evasion','rogue_escape'].includes(book.id)&&u.hp<u.maxHp*.65)shield();
+   if(book.advance&&book.effect){
+    if(book.effect==="barrier"){
+     const target=allies.filter(a=>a.u.hp>0&&a.u.hp<a.u.maxHp*.8&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<350).sort((a,b)=>a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp)[0];
+     if(target){combat(target.u).shieldUntil=Math.max(combat(target.u).shieldUntil,battleTime+5);fired=true;}
+    }else if(book.effect==="heal"){
+     if(low.length){const target=low[0];target.u.hp=Math.min(target.u.maxHp,target.u.hp+Math.max(1,Math.round(target.u.maxHp*.16)));fired=true;sound.effect("heal");}
+    }else if(book.effect==="slow"){
+     const targets=opponents.slice(0,2);
+     if(targets.length){targets.forEach(e=>{combat(e).slowUntil=Math.max(combat(e).slowUntil,battleTime+4);});fired=true;}
+    }else if(t&&Math.hypot(t.x-pos.x,t.y-pos.y)<=r.range){
+     if(book.effect==="strike")fired=damageEnemy(t,Math.max(3,Math.round(power*.4)),id,{spell:u.classId==="wizard"||u.classId==="cleric"});
+     else if(book.effect==="double"){
+      for(let i=0;i<2&&!t.dead;i++)damageEnemy(t,Math.max(2,Math.round(power*.27)),id);
+      fired=true;
+     }else if(book.effect==="sweep"){
+      const nearby=opponents.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<130).slice(0,2);
+      if(nearby.length){nearby.forEach(e=>damageEnemy(e,Math.max(2,Math.round(power*.28)),id,{spell:u.classId==="wizard"||u.classId==="cleric"}));fired=true;}
+     }
+    }
+   }else if(['fighter_wall','rogue_veil','wizard_ward','ranger_evasion','rogue_escape'].includes(book.id)&&u.hp<u.maxHp*.65)shield();
    else if(book.id==='cleric_group'&&low.length){
     low.slice(0,2).forEach(a=>{a.u.hp=Math.min(a.u.maxHp,a.u.hp+Math.max(1,Math.round(a.u.maxHp*.13)));});
     fired=true;sound.effect('heal');
