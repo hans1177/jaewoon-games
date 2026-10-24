@@ -23,7 +23,7 @@ if (ledger.history.some((event) => event.sourceCommit === sourceCommit)) {
 // first-parent changes of that exact verified SHA, not the latest checkout.
 const sourceParent = execFileSync('git', ['rev-parse', sourceCommit + '^1'], {encoding:'utf8'}).trim();
 if (!/^[a-f0-9]{40}$/i.test(sourceParent)) throw new Error('verified source first parent unavailable');
-const changed = execFileSync('git', ['diff', '--name-only', sourceParent, sourceCommit, '--'], { encoding: 'utf8' })
+const changed = execFileSync('git', ['diff', '--no-renames', '--name-only', sourceParent, sourceCommit, '--'], { encoding: 'utf8' })
   .split(/\r?\n/)
   .map((value) => value.trim())
   .filter(Boolean)
