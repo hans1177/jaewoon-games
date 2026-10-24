@@ -78,8 +78,13 @@ export class IslandRendererV3 {
           model=(await new GLTFLoader().loadAsync(url.href)).scene;
         }else if(path.startsWith('forest:')){
           const url=new URL('../../assets/shared/forest/'+path.slice(7),import.meta.url);
-          model=path.endsWith('.fbx')?await new FBXLoader().loadAsync(url.href):
-            (await new GLTFLoader().loadAsync(url.href)).scene;
+          if(path.endsWith('.fbx'))model=await new FBXLoader().loadAsync(url.href);
+          else if(path.endsWith('.obj')){
+            model=await new OBJLoader().loadAsync(url.href);
+            const palette={snake:0x6c9b69,spider:0x78666b,golem:0x9b9998};
+            model.traverse(part=>{if(part.isMesh)part.material=new THREE.MeshStandardMaterial({
+              color:palette[kind]||0x9c9b95,roughness:1})});
+          }else model=(await new GLTFLoader().loadAsync(url.href)).scene;
         }else{
           const url=new URL('../../assets/shared/'+path,import.meta.url);
           model=await new OBJLoader().loadAsync(url.href);
