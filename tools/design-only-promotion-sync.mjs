@@ -207,6 +207,76 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
   removeLegacyWebAdmissionFields(item);
   return item;
 }
+// Scoped WEB admission uses the same minimum-design, queue, Vibe and F0-F9 machinery.
+// It does not publish a prototype or start the owner-held Unity engine.
+function syncReadyGeneralWebMirrors({seed,design,portfolio,catalog,queue,stamp}){
+  const gameId=clean(seed.gameId),root='web-games/'+gameId;
+  const sourceFile=root+'/index.html';
+  if(!fs.existsSync(sourceFile))throw new Error('GENERAL_WEB_SOURCE_NOT_PRESENT:'+gameId);
+  const minimum={version:1,pass:true,source:design.file,date:design.date};
+  const wasConfirmed=clean(seed.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED';
+  let project=(portfolio.projects||[]).find(row=>clean(row?.slug)===gameId);
+  let game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
+  let item=(queue.items||[]).find(row=>clean(row?.gameId)===gameId);
+  if(!game||game.ownerWebIntakeEngine!=='HTML_CSS_JAVASCRIPT'||game.web3dRedevelopmentRequired!==true)
+    throw new Error('GENERAL_WEB_CANONICAL_SOURCE_BINDING_MISSING:'+gameId);
+  const before=[seed,project,game,item].map(row=>JSON.stringify(row));
+  const sourcePaths={WEB:root};
+  Object.assign(seed,{
+    productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_GENERAL_WEB_DESIGN_READY',
+    selectedPlatform:'WEB',concurrentTargetPlatforms:['WEB'],platformExecutionMode:'GENERAL_WEB_ONLY_OWNER_ACTIVE',
+    lifecycleState:'DEVELOPMENT_CONFIRMED',minimumDesignContract:minimum,
+    platformDesignProfiles:{WEB:{source:design.file,jsonPointer:'/content/webCanonicalDesign'}},
+    promotion:{from:wasConfirmed?'DEVELOPMENT_CONFIRMED':'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',
+      reason:'MINIMUM_GENERAL_WEB_DESIGN_READY',requestedPlatform:'WEB',concurrentTargetPlatforms:['WEB'],
+      targetSourcePaths:sourcePaths,designBaselineSource:design.file,designDate:design.date,
+      strictDesignReviewRequiredForAdmission:false,strictDesignReviewContinuesInParallel:true,
+      promotedAt:seed?.promotion?.promotedAt||stamp}
+  });
+  if(!project){project={id:'SEED-'+(seed.seedId||gameId),slug:gameId,name:seed.gameName||gameId,protectedValues:['core-loop','design-baseline','save-meaning']};portfolio.projects.push(project);}
+  Object.assign(project,{
+    productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_GENERAL_WEB_DESIGN_READY',
+    profileStatus:'DEVELOPMENT_CONFIRMED',mode:'GENERAL_WEB_3D_AUTONOMOUS',targetEngine:'web',
+    selectedPlatform:'WEB',concurrentTargetPlatforms:['WEB'],targetSourcePaths:sourcePaths,
+    sourcePath:root,productionSourcePath:root,designBaselineSource:design.file,platformDesignProfiles:seed.platformDesignProfiles,
+    approvedDesignScopeMustBeFullyImplemented:true,strictDesignScoreRequiredForAdmission:false,
+    strictDesignReviewRunsInParallel:true
+  });
+  Object.assign(game,{
+    productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_GENERAL_WEB_DESIGN_READY',
+    homepageCategory:'development-confirmed',selectedPlatform:'WEB',concurrentTargetPlatforms:['WEB'],
+    productionTarget:'WEB',targetSourcePaths:sourcePaths,
+    homepageOfficialCard:false,homepageTestCandidate:false,
+    homepageStage:'개발확정 · 일반 웹 3D F0~F9 자동개발',
+    homepageRecentWork:'설계 검증 → HTML·JavaScript·WebGL 3D 원본 개발',
+    hasWebArchive:true,webPath:root,
+    homepageWebPlayable:game.homepageWebPlayable===true&&game.ownerWebSourceState==='WEB_F9_RUNTIME_VERIFIED'
+  });
+  if(!item){item={};queue.items.push(item);}
+  const sameDesign=item.minimumDesignContract?.pass===true&&clean(item.minimumDesignContract.source)===design.file;
+  Object.assign(item,{
+    gameId,seedId:item.seedId||seed.seedId||null,gameName:item.gameName||seed.gameName||gameId,
+    productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_GENERAL_WEB_DESIGN_READY',
+    status:clean(item.status).toUpperCase()==='DISABLED'?'ACTIVE':(item.status||'ACTIVE'),
+    selectedPlatform:'WEB',targetPlatform:'WEB',concurrentTargetPlatforms:['WEB'],
+    platformExecutionMode:'GENERAL_WEB_ONLY_OWNER_ACTIVE',bidirectionalAutoPair:false,requestEitherStartsBoth:false,
+    targetSourcePaths:sourcePaths,targetSourcePath:root,sourcePath:root,designBaselineSource:design.file,designDate:design.date,
+    minimumDesignContract:{...minimum,commonCoreReady:true,platformProfiles:{WEB:true}},
+    platformDesignProfiles:seed.platformDesignProfiles,
+    web3dRedevelopmentRequired:true,ownerWebIntakeEngine:'HTML_CSS_JAVASCRIPT',
+    ownerWebSourceRevision:clean(game.ownerWebSourceRevision),
+    artbookTiming:'PARALLEL_GENERAL_WEB_PRESENTATION_SUPPORT',
+    internalReleaseTarget:{WEB:'GITHUB_PAGES_EXACT_F9_VERIFIED_WEB_RUNTIME'},
+    externalReleasePolicy:'WEB_EXACT_F9_QA_AND_PUBLICATION',
+    currentStep:sameDesign&&item.currentStep?item.currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+    canonicalState:sameDesign&&item.canonicalState?item.canonicalState:'PENDING_WEB_3D_SOURCE_BIND',
+    enqueuedAt:item.enqueuedAt||stamp
+  });
+  removeLegacyWebAdmissionFields(item);
+  for(const [index,row]of [seed,project,game,item].entries())if(JSON.stringify(row)!==before[index])row.updatedAt=stamp;
+  return wasConfirmed?'reconciled':'promoted';
+}
+
 function demoteStaleAdmission({seed,queue,portfolio,catalog,gameId,reason,stamp}){
   queue.items=(queue.items||[]).filter(row=>clean(row?.gameId)!==gameId);
   seed.productionClass='DESIGN_ONLY';
@@ -406,7 +476,16 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       continue;
     }
 
-    const outcome=syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry,stamp});
+    // WEB is an independent general-browser engine, never a Roblox or Unity alias.
+    const generalWebSeed=clean(seed.INITIAL_TARGET_PLATFORM).toUpperCase()==='WEB'
+      &&catalogGame?.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'
+      &&catalogGame?.web3dRedevelopmentRequired===true;
+    if(generalWebSeed&&!fs.existsSync(p('web-games',gameId,'index.html'))){
+      skipped.push({gameId,reason:'GENERAL_WEB_SOURCE_NOT_READY'});continue;
+    }
+    const outcome=generalWebSeed
+      ?syncReadyGeneralWebMirrors({seed,design,portfolio,catalog,queue,stamp})
+      :syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry,stamp});
     if(outcome==='promoted')promoted.push(gameId); else reconciled.push(gameId);
   }
 
