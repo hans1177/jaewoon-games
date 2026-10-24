@@ -161,7 +161,7 @@ test('3D preview reads existing biome classifier and saved construction state, n
  assert.match(index,/world3d\.frame\(state,regionAt\)/);
  assert.match(moduleSource,/function frame\(state,regionAt\)/);
  assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
- assert.match(moduleSource,/tile\.position\.set\(gx,\.015,gz\)/);
+ assert.match(moduleSource,/tile\.position\.set\(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ\)/);
  assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
@@ -172,6 +172,34 @@ test('3D preview reads existing biome classifier and saved construction state, n
 });
 
 
+// [바닥·모션 회귀] 원본 3D 자산, 지역 연결, 움직임 판정과 렌더링 책임 분리를 확인한다.
+test('native forest ground has no 10x10 pitch mismatch and all rounded corners are covered by source mesh',()=>{
+ const model=fs.readFileSync(home+'floor_base.obj','utf8');
+ const vertices=[...model.matchAll(/^v\s+([\d.-]+)\s+([\d.-]+)\s+([\d.-]+)/gm)]
+   .map(match=>match.slice(1,4).map(Number));
+ assert.ok(vertices.length>90);
+ const width=Math.max(...vertices.map(p=>p[0]))-Math.min(...vertices.map(p=>p[0]));
+ const depth=Math.max(...vertices.map(p=>p[2]))-Math.min(...vertices.map(p=>p[2]));
+ assert.equal(width,10);assert.equal(depth,8,'source floor is not square');
+ assert.match(moduleSource,/sourceFloor\.geometry\.computeBoundingBox\(\)/);
+ assert.match(moduleSource,/const floorPitchZ=floorBounds\.max\.z-floorBounds\.min\.z/);
+ assert.match(moduleSource,/Math\.round\(centerY\/floorPitchZ\)/);
+ assert.match(moduleSource,/new THREE\.InstancedMesh\(sourceFloor\.geometry,sourceFloor\.material,36\)/);
+ assert.match(moduleSource,/floorSeamTiles\.setMatrixAt\(seamTileIndex,tile\.matrix\)/);
+ assert.match(moduleSource,/floorSeamTiles\.instanceColor\.needsUpdate=true/);
+ assert.match(moduleSource,/centerTileX!==lastFloorGridX\|\|centerTileY!==lastFloorGridZ/);
+ assert.match(moduleSource,/scene\.remove\(floorSeamTiles\);floorSeamTiles\.dispose\(\)/);
+ assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+});
+test('native forest movement clips are faster without changing gameplay-owned world movement or combat rules',()=>{
+ assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
+ assert.match(moduleSource,/heroAction\.setDuration\(\.28\)/);
+ assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(pose==='move'\?1\.3:1\)/);
+ assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(attacking\?1\.35:moving\?1\.25:1\)/);
+ assert.match(moduleSource,/heroMixer\.update\(Math\.min\(\.12,/);
+ assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
 test('native preview consumes existing environment, character identity and motion directors instead of duplicating behavior',()=>{
  const plants=createVibeEnvironmentVariation({seed:20261020,count:16,mobile:true});
  assert.equal(plants.items.length,16);
@@ -242,7 +270,9 @@ test('downloaded KayKit knight is ledgered as preview only and source-bound to e
  assert.equal(actor.productionVerified,false);
  assert.match(moduleSource,/HERO_URL.*knight\.glb/);
  assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
- assert.match(moduleSource,/state\.keys\?\.size/);
+ // 발 모션은 눌린 키가 아니라 실제 게임 좌표 변화를 따르도록 검사한다.
+ assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
+ assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
  assert.match(moduleSource,/state\.weather\?\.kind/);
  assert.match(moduleSource,/getAvatarRecipe:\(\)=>avatarRecipe/);
  assert.match(index,/type="importmap"/);

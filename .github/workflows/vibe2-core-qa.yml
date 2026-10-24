@@ -374,6 +374,11 @@ jobs:
           node --test qa/jaewoon-motion-engine.test.cjs
           # New independent ocean game: real CC0 GLB, game logic, saves, mobile entry contract
           node --test qa/ocean-voyage.test.mjs
+          # 마력숲 바닥·모션 변경은 기존 코어 QA 안에서 원본 OBJ/저장/3D 회귀를 검사한다.
+          if [[ "${VIBE2_BROWSER_CHANGED_GAMES}" == "ALL" || ",${VIBE2_BROWSER_CHANGED_GAMES}," == *",fantasy-survival,"* ]]; then
+            node --check web-games/fantasy-survival/world3d.mjs
+            node --test qa/fantasy-survival-native-3d-download.test.mjs
+          fi
           node --check assets/vibe-engine-adapter.js
           node --check assets/vibe-workbench.js
           node --check assets/vibe-core-runtime.js

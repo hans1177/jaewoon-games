@@ -315,11 +315,25 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     worldtree:{floor:0x335039,sky:0x203e2d},flowerfield:{floor:0x668551,sky:0x586b50},
     giantgarden:{floor:0x625071,sky:0x4a3d55},desert:{floor:0xb38c55,sky:0xa38259}
   });
+  // 바닥: 원본 CC0 모델의 실제 크기(10 x 8)로 놓고 둥근 모서리의 틈을 같은 메시로 연결한다.
+  sourceFloor.geometry.computeBoundingBox();
+  const floorBounds=sourceFloor.geometry.boundingBox;
+  const floorPitchX=floorBounds.max.x-floorBounds.min.x;
+  const floorPitchZ=floorBounds.max.z-floorBounds.min.z;
+  if(!(floorPitchX>0&&floorPitchZ>0))throw new Error('Original CC0 floor dimensions invalid');
+  const floorCenterX=(floorBounds.min.x+floorBounds.max.x)/2;
+  const floorCenterZ=(floorBounds.min.z+floorBounds.max.z)/2;
+  const floorSurfaceY=.015-floorBounds.max.y;
   const biomeTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,49);
   biomeTiles.receiveShadow=true;biomeTiles.frustumCulled=false;scene.add(biomeTiles);
+  const floorSeamTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,36);
+  floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
   const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
+  const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
+  let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null;
   const resourceBatches=new Map();
   let currentBiome='forest';
+  let lastHeroPoseX=null,lastHeroPoseY=null,lastHeroPoseAt=0;
   const raycaster=new THREE.Raycaster();
   const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
   const entities=new Map();
@@ -370,10 +384,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
         ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
       if(actor.mixer&&clip&&clip.name!==actor.clipName){
-        if(actor.action)actor.action.fadeOut(.12);
-        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.12).play();
+        if(actor.action)actor.action.fadeOut(.08);
+        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.08).play();
         actor.clipName=clip.name;
       }
+      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
@@ -440,10 +455,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
         ||actor.clips.find(c=>/idle|walk/i.test(c.name));
       if(actor.mixer&&clip&&clip.name!==actor.clipName){
-        actor.action?.fadeOut(.12);
-        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.12).play();
+        actor.action?.fadeOut(.08);
+        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.08).play();
         actor.clipName=clip.name;
       }
+      if(actor.action)actor.action.setEffectiveTimeScale(attacking?1.35:moving?1.25:1);
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
@@ -539,7 +555,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
-    if(state.area!=='surface'||!state.player){canvas.hidden=true;active=false;fallbackReason='region-3d-not-yet-mapped';return}
+    if(state.area!=='surface'||!state.player){lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='region-3d-not-yet-mapped';return}
     const p=state.player,px=Number(p.x)||0,py=Number(p.y)||0,centerX=px*SCALE,centerY=py*SCALE;
     if(sampleNow>=nextCreatureScan){
       nextCreatureScan=sampleNow+250;
@@ -591,18 +607,36 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     // Atmosphere and foliage changes are Vibe presentation only. The existing biome
     // classifier, collision, damage, spawn and player movement remain authoritative.
-    let tileIndex=0;
-    const centerTileX=Math.round(centerX/10),centerTileY=Math.round(centerY/10);
+    const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
+    // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
+    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier){
+      let tileIndex=0,seamTileIndex=0;
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
-
-      const gx=(centerTileX+tx)*10,gz=(centerTileY+tz)*10;
-      // The original floor_base geometry is in world XZ and already has depth.
-      // Biome conditions are expressed through existing game light/fog; do not
-      // generate palette-filled 2D floor planes or replacement materials.
-      tile.position.set(gx,.015,gz);tile.updateMatrix();
-      biomeTiles.setMatrixAt(tileIndex++,tile.matrix);
+      const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
+      // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
+      const tileZone=String(classify(gx/SCALE,gz/SCALE)||'forest');
+      const tileStyle=BIOME_STYLE[tileZone]||BIOME_STYLE.forest;
+      tile.position.set(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ);tile.updateMatrix();
+      biomeTiles.setMatrixAt(tileIndex,tile.matrix);
+      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.48));
+      tileIndex++;
+      if(tx<3&&tz<3){
+        const seamX=gx+floorPitchX*.5,seamZ=gz+floorPitchZ*.5;
+        const seamZone=String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
+        const seamStyle=BIOME_STYLE[seamZone]||BIOME_STYLE.forest;
+        tile.position.set(seamX-floorCenterX,floorSurfaceY-.055,seamZ-floorCenterZ);
+        tile.updateMatrix();
+        floorSeamTiles.setMatrixAt(seamTileIndex,tile.matrix);
+        floorSeamTiles.setColorAt(seamTileIndex,floorTint.setHex(seamStyle.floor).lerp(floorNeutral,.48));
+        seamTileIndex++;
+      }
     }
     biomeTiles.instanceMatrix.needsUpdate=true;
+    biomeTiles.instanceColor.needsUpdate=true;
+    floorSeamTiles.instanceMatrix.needsUpdate=true;
+    floorSeamTiles.instanceColor.needsUpdate=true;
+      lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;
+    }
     interactables.length=0;
     const seen=state.last||Date.now();
     if(hero){
@@ -616,7 +650,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:family});
       }
       const now=performance.now();
-      const moving=(state.keys?.size||0)>0||Math.hypot(Number(state.stick?.x)||0,Number(state.stick?.y)||0)>.16;
+      // 이동 좌표가 변할 때만 발 동작을 재생해 벽을 밀 때 문워크하지 않는다.
+      const poseElapsed=now-lastHeroPoseAt;
+      const moveDelta=lastHeroPoseX===null?0:Math.hypot(px-lastHeroPoseX,py-lastHeroPoseY);
+      const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>.06;
+      lastHeroPoseX=px;lastHeroPoseY=py;lastHeroPoseAt=now;
       const pose=now-(Number(p.attackAt)||0)<330?'attack':moving?'move':'idle';
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
@@ -624,19 +662,20 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const nextName=desired?.name||'';
       const attackAt=Number(p.attackAt)||0;
       if(heroMixer&&(nextName!==heroActionName||(pose==='attack'&&attackAt!==lastHeroAttackAt))){
-        if(heroAction)heroAction.fadeOut(.15);
+        if(heroAction)heroAction.fadeOut(.09);
         heroAction=desired?heroMixer.clipAction(desired):null;
         if(heroAction){
           heroAction.reset().setLoop(pose==='attack'?THREE.LoopOnce:THREE.LoopRepeat,pose==='attack'?1:Infinity);
           heroAction.clampWhenFinished=pose==='attack';
-          heroAction.setEffectiveTimeScale(1);
-          if(pose==='attack')heroAction.setDuration(.33);
-          heroAction.fadeIn(.15).play();
+          // 시각 모션만 가속. 캐릭터 이동속도와 전투 판정은 변경하지 않는다.
+          if(pose==='attack')heroAction.setDuration(.28);
+          else heroAction.setEffectiveTimeScale(pose==='move'?1.3:1);
+          heroAction.fadeIn(.09).play();
         }
         heroActionName=nextName;
         if(pose==='attack')lastHeroAttackAt=attackAt;
       }
-      if(heroMixer){heroMixer.update(Math.min(.05,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
+      if(heroMixer){heroMixer.update(Math.min(.12,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
     }
     synchronizeUndead(state,px,py,seen);
     const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
@@ -710,6 +749,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       for(const m of (Array.isArray(o.material)?o.material:[o.material]))m?.dispose();
     });
     scene.remove(biomeTiles);biomeTiles.dispose();
+    scene.remove(floorSeamTiles);floorSeamTiles.dispose();
     for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
     resourceBatches.clear();
     // Source floor geometry/material are disposed once by the source model pool.
