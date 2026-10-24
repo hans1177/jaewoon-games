@@ -319,13 +319,28 @@ try{
      const bar=button.closest('.strategy-bar'),rect=button.getBoundingClientRect();
      const target=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
      return !!bar&&bar.closest('.controls')!==null
-      &&getComputedStyle(bar).pointerEvents==='auto'
+      &&getComputedStyle(button).pointerEvents==='auto'
       &&(target===button||button.contains(target));
     });
     assert.equal(controlsHit,true,view.name+': COZY_STRATEGY_POINTER_BLOCKED');
     await cozy.locator('#castleCommand').click();
     assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
      view.name+': COZY_CASTLE_COMMAND_FAILED');
+    await cozy.locator('#panelClose').click();
+    const arc=await cozy.locator('.strategy-bar').evaluate(bar=>{
+      const first=bar.querySelector('#castleCommand').getBoundingClientRect();
+      const middle=bar.querySelector('#tradeCommand').getBoundingClientRect();
+      const last=bar.querySelector('#centerCommand').getBoundingClientRect();
+      return middle.left<first.left&&middle.left<last.left&&middle.top>first.top&&last.top>middle.top;
+    });
+    assert.equal(arc,true,view.name+': COZY_RADIAL_MENU_NOT_SEMICIRCLE');
+    await cozy.locator('#tradeCommand').click();
+    assert.equal(await cozy.locator('#panelTitle').textContent(),'⚖️ 무역 · 경제',
+     view.name+': COZY_TRADE_MARKET_NOT_OPEN');
+    assert.equal(await cozy.locator('[data-castle="trade:wood"]').count(),1,
+     view.name+': COZY_MARKET_BUY_MISSING');
+    assert.equal(await cozy.locator('[data-castle="trade:shipment"]').count(),1,
+     view.name+': COZY_MARKET_SHIPPING_MISSING');
     await cozy.locator('#panelClose').click();
     assert.equal(await cozy.locator('#actionButton').evaluate(el=>el.hidden),true,
      view.name+': COZY_OLD_ACTION_BUTTON_VISIBLE');
