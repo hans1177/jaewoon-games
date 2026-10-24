@@ -17,17 +17,17 @@ test("파티 RPG 핵심 계약", () => {
   assert.equal((ai.match(/"/g) || []).length / 2, 10);
 
   const weapons = block("var WEAPONS=[", "];\nvar ARMORS");
-  const armors = block("var ARMORS=[", "];\nvar MATERIALS");
+  const armors = block("var ARMORS=[", "];\n// 장신구");
   const dungeons = block("var DUNGEONS=[", "];\nvar AI_NAMES");
 
-  assert.equal((weapons.match(/id:"/g) || []).length, 5);
-  assert.equal((armors.match(/id:"/g) || []).length, 4);
+  assert.equal((weapons.match(/id:"/g) || []).length, 20);
+  assert.equal((armors.match(/id:"/g) || []).length, 14);
   assert.equal((dungeons.match(/baseGold:/g) || []).length, 3);
 
   assert.ok(html.includes('rooms:[3,3,4]'));
   assert.ok(html.includes('rooms:[2,3,2,3]'));
   assert.ok(html.includes('rooms:[2,2,2,2,2]'));
-  assert.ok(html.includes("else spawnEnemy(d.boss"));
+  assert.ok(html.includes("else{spawnEnemy(d.boss"));
   assert.ok(html.includes("dungeon.door=true"));
   assert.ok(html.includes("dungeon.contrib"));
   assert.ok(html.includes("rollDungeonDrop"));
@@ -39,7 +39,7 @@ test("파티 RPG 핵심 계약", () => {
 });
 
 test("판매상점과 AI 5분 행동 순환 계약", () => {
-  assert.ok(html.includes('name:"판매상점",kind:"sell"'));
+  assert.ok(html.includes("name:'판매상점',kind:'sell'"));
   assert.ok(html.includes('function sellMaterials(unit)'));
   assert.ok(html.includes('function sellMenu()'));
   assert.ok(html.includes('materials:{}'));
@@ -66,4 +66,18 @@ test("판매상점과 AI 5분 행동 순환 계약", () => {
   const kill = block("function killEnemy(e,killer){", "function nextAIUpgrade");
   assert.ok(!kill.includes("aiShop("));
   assert.ok(kill.includes("addMaterial(receiver,state.zone)"));
+});
+
+test("각성 계열 및 스킬북 보존", () => {
+ const advances=block("var ADVANCEMENTS={", "};\nvar SKILL_BOOKS");
+ const books=block("var SKILL_BOOKS=[", "];\nvar GEAR_FAMILIES");
+ assert.equal((advances.match(/branches:\[/g)||[]).length,5);
+ assert.equal((advances.match(/second:"/g)||[]).length,10);
+ assert.equal((books.match(/id:"/g)||[]).length,45);
+ assert.equal((books.match(/advance:"/g)||[]).length,20);
+ assert.ok(html.includes("function awakeningMenu("));
+ assert.ok(html.includes("recordAwakeningTrial();"));
+ assert.ok(html.includes("u.awakenings={}"));
+ assert.ok(html.includes("미구현 단계"));
+ assert.ok(html.includes('SAVE_KEY="party-rpg-v1"'));
 });

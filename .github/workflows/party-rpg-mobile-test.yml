@@ -200,6 +200,46 @@ jobs:
             });
             if(equipStatus.ring!=='ring_guard'||equipStatus.weapon!=='veteran_axe'||equipStatus.mastery<24)
               throw new Error('CLASS_EQUIPMENT_AND_MASTERY_RESTRICTIONS_FAILED '+JSON.stringify(equipStatus));
+            // 각성의 시련: 레벨 해금, 캐릭터별 진행, 분기 선택, 전용 스킬 습득 및 2차 잠금.
+            await page.locator('#inventoryAwakening').click();
+            if(!(await page.locator('#awakeningStart').isEnabled()))throw new Error('AWAKENING_LEVEL_10_GATE_NOT_OPEN');
+            if(!(await page.getByText('미구현',{exact:false}).count()))throw new Error('SECOND_ADVANCEMENT_PLACEHOLDER_MISSING');
+            await page.locator('#awakeningStart').click();
+            const initialTrial=await page.evaluate(()=>window.partyRpgVibeState().state.player.awakenings.fighter);
+            if(initialTrial.phase!=='trial'||initialTrial.kills!==0)throw new Error('AWAKENING_TRIAL_NOT_STARTED '+JSON.stringify(initialTrial));
+            // 퀘스트 처치 연결은 기존 killEnemy 책임 함수에 있으며, 여기서는 완료 후 전직 UI를 검증한다.
+            await page.evaluate(()=>{
+              const q=window.partyRpgVibeState().state.player.awakenings.fighter;
+              q.kills=3;q.phase='ready';
+            });
+            await page.locator('#awakeningBack').click();
+            await page.locator('#openAwakening').click();
+            await page.locator('[data-awaken="fighter_guardian"]').click();
+            const choice=await page.evaluate(()=>{
+              const state=window.partyRpgVibeState().state,saved=JSON.parse(localStorage.getItem('party-rpg-v1'));
+              const user=state.player;
+              return {phase:user.awakenings.fighter.phase,branch:user.awakenings.fighter.branch,
+                skill:user.learnedSkills.fighter_guardian_awakening,
+                savedBranch:saved.player.awakenings.fighter.branch,
+                other:saved.ai.find(x=>x.id==='ai0')?.awakenings?.fighter?.branch};
+            });
+            if(choice.phase!=='awakened'||choice.branch!=='fighter_guardian'||!choice.skill
+              ||choice.savedBranch!=='fighter_guardian'||choice.other)
+              throw new Error('FIRST_ADVANCEMENT_CHOICE_AND_SAVE_INVALID '+JSON.stringify(choice));
+            if(!(await page.locator('[data-awaken="fighter_berserker"]').isDisabled()))
+              throw new Error('MULTIPLE_FIRST_ADVANCEMENT_BRANCHES_ALLOWED');
+            await page.locator('#awakeningBack').click();
+            if(await page.locator('[data-learn="fighter_berserker_master"]').count())
+              throw new Error('WRONG_ADVANCEMENT_SKILL_BOOK_EXPOSED');
+            await page.locator('[data-learn="fighter_guardian_master"]').click();
+            const newSkill=await page.evaluate(()=>{
+              const state=window.partyRpgVibeState().state;
+              return state.player.learnedSkills.fighter_guardian_master
+                && JSON.parse(localStorage.getItem('party-rpg-v1')).player.learnedSkills.fighter_guardian_master;
+            });
+            if(!newSkill)throw new Error('ADVANCED_SKILL_BOOK_LEARNING_NOT_PERSISTED');
+            await page.locator('#bookBack').click();
+            console.log('PARTY_RPG_FIRST_ADVANCEMENT_BRANCH_SKILL_BOOK_SAVE_AND_LOCKED_SECOND=PASS');
             await page.locator('#modalClose').click();
             console.log('PARTY_RPG_PIXEL_MOTION_SKILL_FX_CLASS_EQUIPMENT_AND_SKILL_BOOK=PASS');
             // 실제 모바일 크기에서 지역 안내가 맵을 가리지 않아야 한다.
