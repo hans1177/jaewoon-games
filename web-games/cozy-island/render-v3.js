@@ -13,7 +13,9 @@ const MODELS=Object.freeze({
  bench:'homely-house/bench_A.obj',fence:'homely-house/fence_straight.obj',
  gate:'homely-house/gate_single.obj',package:'homely-house/package.obj',
  hero:'actor:knight.glb',npc:'actor:rogue.glb',soldier:'actor:barbarian.glb',
- enemy:'actor:skeleton-warrior.glb',wolf:'forest:wolf.fbx',boar:'forest:hog.glb'
+ enemy:'actor:skeleton-warrior.glb',wolf:'forest:wolf.fbx',boar:'forest:hog.glb',
+ snake:'forest:monster-26.obj',spider:'forest:monster-53.obj',bat:'forest:bat.fbx',
+ golem:'forest:monster-41.obj',wizard:'actor:mage.glb'
 });
 export class IslandRendererV3 {
   constructor(canvas) {
@@ -48,6 +50,14 @@ export class IslandRendererV3 {
       this.eastGrass3=ground(1380,850,2100,595,0x82be7c,-.39);
       this.jungle3=ground(1460,1020,2120,1550,0xeacf8c,-.7);
       this.jungleGrass3=ground(1360,880,2120,1560,0x589267,-.39);
+      // 북쪽·서쪽·화산·심연동굴·정글 서쪽은 기존 좌표와 해금 조건 그대로 사용한다.
+      this.north3=ground(1380,965,2115,-350,0xf3f0e2,-.7);
+      this.northGrass3=ground(1300,860,2115,-350,0xa6c4aa,-.4);
+      this.west3=ground(3015,890,-1342,595,0xe2cc9e,-.7);
+      this.westGrass3=ground(2920,790,-1342,595,0x8baf78,-.4);
+      this.volcano3=ground(1560,1040,3540,-300,0x846964,-.57);
+      this.cave3=ground(3100,1040,6100,-300,0x414958,-.6);
+      this.jungleWest3=ground(1185,830,892,1610,0x528e5d,-.39);
       const lake=new THREE.Mesh(new THREE.CircleGeometry(1,48),
         new THREE.MeshStandardMaterial({color:0x55b8d0,roughness:.5}));
       lake.rotation.x=-Math.PI/2;lake.scale.set(150*SC,112*SC,1);
@@ -130,6 +140,15 @@ export class IslandRendererV3 {
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
       this.jungle3.visible=this.jungleGrass3.visible=game.world.h>1200;
+      const north=!!game.state.northernRegion?.unlocked;
+      const west=!!game.state.cozyExpansionV4?.west?.unlocked;
+      const volcano=!!game.state.villageExpansionV14?.townHallLv3&&north;
+      const cave=!!game.state.abyssCaveV23?.inside||!!game.state.darknessFlameV19?.townHallLv4;
+      this.north3.visible=this.northGrass3.visible=north;
+      this.west3.visible=this.westGrass3.visible=west;
+      this.volcano3.visible=volcano;
+      this.cave3.visible=cave;
+      this.jungleWest3.visible=!!game.state.jungleWestCamp?.unlocked;
       for(const n of game.nodes){
         if(n.lockedByExpansion&&!game.state.expanded||n.readyAt>game.timeNow)continue;
         const kind=n.kind==='tree'?'tree':n.kind==='rock'?'stone':'flower';
@@ -137,6 +156,15 @@ export class IslandRendererV3 {
       }
       put('home','house',765,350,4.8);
       put('market','house',game.workerShop.x,game.workerShop.y,3.0);
+      const production=game.state.productionBuildings||{},village=game.state.villageDevelopment||{};
+      put('lumber',production.lumberBuilt?'house':'package',245,850,production.lumberBuilt?2.9:1.0);
+      put('mine',production.mineBuilt?'house':'stone',785,965,production.mineBuilt?2.9:1.2);
+      if(village.defenseTowerBuilt)put('defense-tower','gate',400,1090,3.9);
+      if(village.townHallBuilt)put('townhall','house',1010,1090,5.4);
+      if(game.state.seedDepot?.built)put('seed-depot','package',835,505,1.3);
+      if(game.state.smithy)put('smithy','bench',790,1080,2.1);
+      if(game.state.darknessFlameV19?.blackMineBuilt)put('black-mine','house',-880,690,3.6);
+      if(game.state.abyssCaveV23?.researchLabBuilt)put('research-lab','house',-690,420,4);
       put('barracks',game.state.barracksBuilt?'house':'package',
         game.barracks.x,game.barracks.y,3);
       put('ship','bench',775,760,1.4);put('fishing','bench',520,430,1.4);
@@ -160,6 +188,16 @@ export class IslandRendererV3 {
         put('wolf:'+wolf.id,'wolf',wolf.x,wolf.y,wolf.boss?2.8:1.6);
       if(game.world.h>1200)for(const boar of game.boars||[])if(boar.alive)
         put('boar:'+boar.id,'boar',boar.x,boar.y,1.75);
+      if(north)for(const animal of game.northernMobs||[])if(animal.alive)
+        put('north:'+animal.id,animal.type==='wolf'?'wolf':'snake',animal.x,animal.y,1.7);
+      if(volcano)for(const enemy of game.volcanoEnemies||[])if(enemy.alive)
+        put('volcano:'+enemy.id,'enemy',enemy.x,enemy.y,enemy.boss?2.7:2);
+      if(cave)for(const enemy of game.abyssEnemies||[])if(enemy.alive)
+        put('abyss:'+enemy.id,enemy.kind==='caveSpider'?'spider':
+          enemy.kind==='abyssBat'?'bat':enemy.kind==='abyssWizard'?'wizard':'golem',
+          enemy.x,enemy.y,enemy.boss?3:2);
+      if(game.state.jungleWestCamp?.unlocked)for(const enemy of game.jungleCampEnemies||[])
+        if(enemy.alive)put('jungle-camp:'+enemy.id,'enemy',enemy.x,enemy.y,2);
       // 기존 라이브러리 울타리는 3D 환경 장식 전용이다. 충돌과 이동 제한을 바꾸지 않는다.
       for(let i=0;i<5;i++){
         put('fence:'+i,'fence',1150+i*38,185,1.1);
