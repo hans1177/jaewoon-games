@@ -21,7 +21,7 @@ function save(){
 }
 const scene=createOceanView($('sea'),{
  onReady(){ready=true;scene.setState(state);if(state.heroChosen){if(state.landBattle)enterBattle();view.loading.classList.add('hide');note('항구 아이콘을 누르면 항로를 정할 수 있어. 입항 후에는 마을을 걸으며 시설을 골라.');}else showCaptains();},
- onBuilding(id){openFacility(id);},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
+ onBuilding(id){openFacility(id);},onMerchant(id){apply(hailMerchant(state,id));},onMap(){gotoPanel('chart');},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
  onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}
 });
 $('start').addEventListener('click',()=>{if(ready)showCaptains();});
