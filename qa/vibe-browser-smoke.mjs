@@ -274,8 +274,8 @@ try{
    }finally{await game.close()}
   }
  }
- // Post-publication first-play, touch controls, and save/reload for owner-focused Cozy Island.
- // Browser checks run only against the exact published Pages revision verified above.
+ // 포근섬: 기존 캐릭터 조작이 아닌 스트롱홀드 전략 화면과 공개판 저장을 확인한다.
+ // 동일 게시 소스 SHA, 데스크톱/모바일 WebGL, 성채/병영/무역, 카메라 입력, 영지 저장 검증.
  if(liveBase){
   const requiredRevision=String(process.env.GITHUB_SHA||'').trim();
   assert.match(requiredRevision,/^[0-9a-f]{40}$/i,'COZY_ISLAND_DEPLOY_REVISION_REQUIRED');
@@ -294,8 +294,7 @@ try{
     const response=await cozy.goto(liveBase+'web-games/cozy-island/',
       {waitUntil:'domcontentloaded',timeout:30000});
     assert.ok(response?.ok(),view.name+': COZY_ISLAND_ROUTE_NOT_LIVE');
-    // 3D 화면은 실제 WebGL 캔버스에 그리고 입력용 2D 버퍼는 비표시 1×1로 유지한다.
-    await cozy.waitForFunction(()=>{
+    const rendererReady=()=>{
      const input=document.querySelector('#game');
      const canvas=document.querySelector('#island3d');
      const status=document.querySelector('#webglStatus');
@@ -305,97 +304,87 @@ try{
        && getComputedStyle(input).opacity==='0'
        && canvas.width>250&&canvas.height>250
        && !!gl&&gl.getParameter(gl.VIEWPORT)[2]>250;
-    },null,{timeout:20000});
+    };
+    await cozy.waitForFunction(rendererReady,null,{timeout:25000});
     assert.equal(await cozy.locator('#island3d').evaluate(c=>!!c.getContext('webgl2')),true,
      view.name+': COZY_ISLAND_3D_RENDERER_NOT_READY');
+    assert.equal(await cozy.locator('#joystick,#levelUpButtonV13,#toolButton').count(),0,
+     view.name+': COZY_LEGACY_CHARACTER_UI_PRESENT');
+    assert.equal(await cozy.locator('#actionButton').evaluate(el=>el.hidden),true,
+     view.name+': COZY_OLD_ACTION_BUTTON_VISIBLE');
     await cozy.locator('#inventoryButton').click();
-    assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
-     view.name+': COZY_ISLAND_INVENTORY_FAILED');
+    assert.equal(await cozy.locator('#panelTitle').textContent(),'가방',
+     view.name+': COZY_RESOURCE_PANEL_FAILED');
     await cozy.locator('#panelClose').click();
-    // 전략 버튼 클릭과 레거시 지역 입력의 비표시 여부를 확인.
-    assert.equal(await cozy.locator('#toolButton').count(),0,
-     view.name+': COZY_OLD_HAND_BUTTON_VISIBLE');
+    await cozy.locator('#helpCommand').click();
+    assert.equal(await cozy.locator('#panelTitle').textContent(),'영지 운영 안내',
+     view.name+': COZY_STRATEGY_HELP_FAILED');
+    await cozy.locator('#panelClose').click();
     const controlsHit=await cozy.locator('#castleCommand').evaluate(button=>{
      const bar=button.closest('.strategy-bar'),rect=button.getBoundingClientRect();
      const target=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
      return !!bar&&bar.closest('.controls')!==null
-      &&getComputedStyle(button).pointerEvents==='auto'
+      &&getComputedStyle(button).pointerEvents!=='none'
       &&(target===button||button.contains(target));
     });
     assert.equal(controlsHit,true,view.name+': COZY_STRATEGY_POINTER_BLOCKED');
-    await cozy.locator('#castleCommand').click();
-    assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
-     view.name+': COZY_CASTLE_COMMAND_FAILED');
-    await cozy.locator('#panelClose').click();
-    const arc=await cozy.locator('.strategy-bar').evaluate(bar=>{
+    const row=await cozy.locator('.strategy-bar').evaluate(bar=>{
      const first=bar.querySelector('#castleCommand').getBoundingClientRect();
-     const mid=bar.querySelector('#tradeCommand').getBoundingClientRect();
      const last=bar.querySelector('#centerCommand').getBoundingClientRect();
-     return mid.left<first.left&&mid.left<last.left&&mid.top>first.top&&last.top>mid.top;
+     return getComputedStyle(bar).display==='grid'
+      &&first.left<last.left&&Math.abs(first.top-last.top)<12;
     });
-    assert.equal(arc,true,view.name+': COZY_RADIAL_MENU_NOT_SEMICIRCLE');
-    // 전략 메뉴의 무역 버튼이 경제 패널을 직접 열고 실제 자원 거래를 반영한다.
-    assert.equal(await cozy.locator('#tradeCommand').textContent().then(t=>t.includes('무역')),true,
-     view.name+': COZY_TRADE_BUTTON_MISSING');
+    assert.equal(row,true,view.name+': COZY_STRATEGY_COMMAND_BAR_NOT_HORIZONTAL');
+    await cozy.locator('#castleCommand').click();
+    assert.equal(await cozy.locator('#panelTitle').textContent(),'성채 · 병력 · 무역 관리',
+     view.name+': COZY_CASTLE_COMMAND_FAILED');
+    for(const type of ['hall','tower','lumber','mine'])
+     assert.equal(await cozy.locator('[data-castle="build:'+type+'"]').count(),1,
+      view.name+': COZY_BUILD_OPTION_MISSING_'+type);
+    await cozy.locator('#panelClose').click();
+    await cozy.locator('#barracksCommand').click();
+    assert.ok((await cozy.locator('#panelTitle').textContent()).startsWith('병영'),
+     view.name+': COZY_BARRACKS_COMMAND_FAILED');
+    await cozy.locator('#panelClose').click();
     await cozy.locator('#tradeCommand').click();
     assert.equal(await cozy.locator('#panelTitle').textContent(),'⚓ 무역 · 경제',
-     view.name+': COZY_TRADE_PANEL_NOT_OPEN');
+     view.name+': COZY_TRADE_PANEL_FAILED');
     assert.equal(await cozy.locator('.market-item').count(),6,
-     view.name+': COZY_TRADE_MARKET_ITEMS_MISSING');
+     view.name+': COZY_TRADE_GOODS_MISSING');
     const goldBefore=Number(await cozy.locator('#coinText').textContent());
     await cozy.locator('[data-castle="trade:buy:wood"]').click();
     await cozy.waitForFunction(gold=>Number(document.querySelector('#coinText').textContent)<gold,
-     goldBefore,{timeout:4000});
-    await cozy.locator('#panelClose').click();
-    assert.equal(await cozy.locator('#actionButton').evaluate(el=>el.hidden),true,
-     view.name+': COZY_OLD_ACTION_BUTTON_VISIBLE');
-    assert.equal(await cozy.locator('#zoomIn').isVisible(),true,
-     view.name+': COZY_STRATEGY_ZOOM_MISSING');
-    if(view.mobile){
-     const bounds=await cozy.locator('#joystick').boundingBox();
-     assert.ok(bounds,view.name+': COZY_ISLAND_JOYSTICK_NOT_VISIBLE');
-     const cdp=await cozy.context().newCDPSession(cozy);
-     try{
-      await cdp.send('Input.dispatchTouchEvent',{
-       type:'touchStart',
-       touchPoints:[{x:bounds.x+bounds.width/2+30,y:bounds.y+bounds.height/2}]
-      });
-      await cozy.waitForTimeout(750);
-     }finally{
-      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-      await cdp.detach();
-     }
-    }else{
-     await cozy.keyboard.down('d');
-     await cozy.waitForTimeout(750);
-     await cozy.keyboard.up('d');
-    }
-    await cozy.waitForFunction(()=>{
-     try{return Number(JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')||'null')?.progress?.player?.x)>760}
+     goldBefore,{timeout:10000});
+    const coinsAfter=Number(await cozy.locator('#coinText').textContent());
+    assert.ok(coinsAfter<goldBefore,view.name+': COZY_TRADE_NOT_APPLIED');
+    await cozy.waitForFunction(expected=>{
+     try{return Number(JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')||'null')?.progress?.coins)===expected}
      catch{return false}
-    },null,{timeout:10000});
-    const savedX=await cozy.evaluate(()=>JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')).progress.player.x);
+    },coinsAfter,{timeout:10000});
+    await cozy.locator('#panelClose').click();
+    assert.equal(await cozy.locator('#zoomIn').isVisible(),true,
+     view.name+': COZY_ZOOM_CONTROL_MISSING');
+    await cozy.locator('#zoomIn').click();
+    await cozy.locator('#zoomOut').click();
+    await cozy.locator('#centerCommand').click();
+    const bounds=await cozy.locator('#game').boundingBox();
+    assert.ok(bounds,view.name+': COZY_MAP_INPUT_SURFACE_MISSING');
+    // 같은 지도 입력 표면에서 마우스/터치 이동으로 전략 카메라가 입력을 받는지 확인.
+    const cx=bounds.x+bounds.width*.48,cy=bounds.y+bounds.height*.48;
+    await cozy.mouse.move(cx,cy);
+    await cozy.mouse.down();
+    await cozy.mouse.move(cx+62,cy+45,{steps:5});
+    await cozy.mouse.up();
     await cozy.reload({waitUntil:'domcontentloaded',timeout:30000});
-    // 3D 화면은 실제 WebGL 캔버스에 그리고 입력용 2D 버퍼는 비표시 1×1로 유지한다.
-    await cozy.waitForFunction(()=>{
-     const input=document.querySelector('#game');
-     const canvas=document.querySelector('#island3d');
-     const status=document.querySelector('#webglStatus');
-     if(!input||!canvas||!status||!status.hidden)return false;
-     const gl=canvas.getContext('webgl2');
-     return input.width===1&&input.height===1
-       && getComputedStyle(input).opacity==='0'
-       && canvas.width>250&&canvas.height>250
-       && !!gl&&gl.getParameter(gl.VIEWPORT)[2]>250;
-    },null,{timeout:20000});
-    await cozy.waitForTimeout(1400);
-    const restoredX=await cozy.evaluate(()=>Number(
-     JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')||'null')?.progress?.player?.x));
-    assert.ok(Number.isFinite(restoredX)&&restoredX>=savedX-10,
-     view.name+': COZY_ISLAND_SAVE_RELOAD_FAILED');
+    await cozy.waitForFunction(rendererReady,null,{timeout:25000});
+    await cozy.waitForFunction(expected=>
+      Number(document.querySelector('#coinText')?.textContent)===expected,
+      coinsAfter,{timeout:10000});
+    assert.equal(await cozy.locator('#joystick,#levelUpButtonV13').count(),0,
+     view.name+': COZY_LEGACY_UI_RETURNED_AFTER_RELOAD');
     assert.deepEqual(errors,[],view.name+': COZY_ISLAND_UNCAUGHT_PAGE_ERRORS');
-    console.log('COZY_ISLAND_POST_DEPLOY_PLAY_SAVE=PASS '+view.name+' '+JSON.stringify({
-     sourceSha:requiredRevision,savedX,restoredX
+    console.log('COZY_ISLAND_STRATEGY_POST_DEPLOY=PASS '+view.name+' '+JSON.stringify({
+     sourceSha:requiredRevision,coinsBefore:goldBefore,coinsAfter
     }));
    }finally{await cozy.close()}
   }
