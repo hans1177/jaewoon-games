@@ -202822,7 +202822,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-24T08:41:05.016Z"
+      "updatedAt": "2026-10-24T08:42:54.528Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203043,7 +203043,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-24T08:41:05.051Z"
+      "updatedAt": "2026-10-24T08:42:54.555Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237853,7 +237853,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-24T08:41:05.147Z"
+      "updatedAt": "2026-10-24T08:42:54.648Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -238046,9 +238046,9 @@
       "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
       "failureSignature": "source-mutation-required-before-revalidation",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-24T08:33:08.533Z",
+      "checkpoint": "2026-10-24T08:41:22.137Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-24T08:33:08.533Z",
+      "sourceMutationBaseline": "2026-10-24T08:41:22.137Z",
       "evidence": [
         "deployment-failure-run:39125330568:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -238950,7 +238950,8 @@
         "system-ai-handoff-to-reservation:system-ai:40077248279:1",
         "actions-run:40077248279",
         "system-ai-handoff-to-reservation:system-ai:40078291410:1",
-        "actions-run:40078291410"
+        "actions-run:40078291410",
+        "system-ai-handoff-to-reservation:system-ai:40078890472:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -238968,7 +238969,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-24T08:41:05.233Z"
+      "updatedAt": "2026-10-24T08:42:54.732Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -238986,9 +238987,9 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-24T08:33:08.533Z",
+      "checkpoint": "2026-10-24T08:41:22.137Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-24T08:33:08.533Z",
+      "sourceMutationBaseline": "2026-10-24T08:41:22.137Z",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -240033,7 +240034,8 @@
         "failed-strategy-fingerprint:09443c5c3e6bf62b2dba6cc5cdd2a3255cff09e4513435687e60cf1d01502851",
         "model-output-sha256:2bbf9ab3c7420a539be5df0a57f65887efb164ce8d938e7ee34e4619a07467e5",
         "system-ai-handoff-to-reservation:system-ai:40078291410:1",
-        "actions-run:40078291410"
+        "actions-run:40078291410",
+        "system-ai-handoff-to-reservation:system-ai:40078890472:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -240051,7 +240053,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-24T08:41:05.106Z"
+      "updatedAt": "2026-10-24T08:42:54.610Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -240168,9 +240170,9 @@
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-24T08:33:08.533Z",
+      "checkpoint": "2026-10-24T08:41:22.137Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-24T08:33:08.533Z",
+      "sourceMutationBaseline": "2026-10-24T08:41:22.137Z",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -240974,7 +240976,8 @@
         "system-ai-handoff-to-reservation:system-ai:40077248279:1",
         "actions-run:40077248279",
         "system-ai-handoff-to-reservation:system-ai:40078291410:1",
-        "actions-run:40078291410"
+        "actions-run:40078291410",
+        "system-ai-handoff-to-reservation:system-ai:40078890472:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -240992,7 +240995,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-24T08:41:05.070Z"
+      "updatedAt": "2026-10-24T08:42:54.573Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -242141,9 +242144,9 @@
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-24T08:33:08.533Z",
+      "checkpoint": "2026-10-24T08:41:22.137Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-24T08:33:08.533Z",
+      "sourceMutationBaseline": "2026-10-24T08:41:22.137Z",
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -242273,7 +242276,8 @@
         "actions-run:40076965679",
         "system-ai-impact-score:1381",
         "system-ai-handoff-to-reservation:system-ai:40078291410:1",
-        "actions-run:40078291410"
+        "actions-run:40078291410",
+        "system-ai-handoff-to-reservation:system-ai:40078890472:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -242291,7 +242295,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-24T08:41:05.181Z"
+      "updatedAt": "2026-10-24T08:42:54.683Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -243313,7 +243317,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-24T08:41:05.202Z"
+      "updatedAt": "2026-10-24T08:42:54.706Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
