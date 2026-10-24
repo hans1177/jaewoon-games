@@ -423,6 +423,10 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
 @media(prefers-reduced-motion:reduce){.questNavArrow{transition:none}}
 
 /* 지역 이동: 기존 입장 함수와 연결되는 모바일 근접 조작 */
+.regionExitList{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin:10px 0;max-height:min(30dvh,240px);overflow:auto}
+.regionExitList button{min-height:44px;border:1px solid #aa946a;border-radius:8px;background:#233e34;color:#f9e5b8;font-weight:700;padding:7px;font-size:12px;touch-action:manipulation;text-align:left}
+.regionExitList button[aria-pressed="true"]{border-color:#f1df87;background:#365b40}
+.arpgDetails .mat .arpgIcon{display:inline-block;width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:5px}
 .regionTravel[hidden]{display:none!important}
 .regionTravel{position:absolute;z-index:18;left:50%;bottom:max(322px,calc(env(safe-area-inset-bottom) + 314px));transform:translateX(-50%);width:min(238px,calc(100vw - 28px));min-height:48px;padding:10px 14px;border:1px solid #cbb77b;border-radius:12px;background:#152b25f2;color:#fff0c2;font-weight:800;box-shadow:0 4px 18px #0008;touch-action:manipulation}
 body:has(#optionsPanel.open) .regionTravel,body:has(#multiPanel.open) .regionTravel,body:has(#smeltPanel.open) .regionTravel,body:has(#questNavDetails:not([hidden])) .regionTravel,body:has(#sheet.open) .regionTravel,body:has(#hudGuide:not([hidden])) .regionTravel,body:has(#avatarPanel:not([hidden])) .regionTravel,body[data-native-blocked="true"] .regionTravel{visibility:hidden;pointer-events:none}
@@ -2540,6 +2544,26 @@ function drawLakeMap(mc){
 function drawMap(){
  const mc=document.getElementById('mapCanvas');if(!mc)return;
  if(state.area==='underwater'||state.area==='underwater-dungeon'){drawLakeMap(mc);return}
+ // 지상이 아닌 실제 방/던전 지도는 지상 월드를 그리지 않고 기존 룸 랜드마크와 출입구를 표시한다.
+ if(state.area!=='surface'){
+  const m=mc.getContext('2d'),sceneData=NATIVE_SCENE_LANDMARKS[state.area]||{};
+  const marks=sceneData.landmarks||[],passages=regionPassages(),bounds=sceneData.bounds||{};
+  const mapW=Math.max((bounds.x||0)+(bounds.w||0)+110,state.player.x+100,...marks.map(mark=>mark.x+100));
+  const mapH=Math.max((bounds.y||0)+(bounds.h||0)+110,state.player.y+100,...marks.map(mark=>mark.y+100));
+  const sx=mc.width/Math.max(1,mapW),sy=mc.height/Math.max(1,mapH);
+  m.fillStyle='#112a2b';m.fillRect(0,0,mc.width,mc.height);
+  m.strokeStyle='#6e8875';m.lineWidth=2;m.strokeRect(1,1,mc.width-2,mc.height-2);
+  for(const mark of marks){if(!Number.isFinite(mark.x)||!Number.isFinite(mark.y))continue;
+   m.fillStyle=mark.model==='package'?'#c9ad73':'#6f948c';
+   m.fillRect(mark.x*sx-3,mark.y*sy-3,6,6);
+  }
+  for(const passage of passages){
+   const x=passage.x*sx,y=passage.y*sy;m.fillStyle='#f5dd87';m.beginPath();m.arc(x,y,5,0,Math.PI*2);m.fill();
+   m.textAlign='center';m.font='bold 9px system-ui';m.fillText(passage.name,x,Math.max(10,y-8));
+  }
+  const p=state.player;m.fillStyle='#fff';m.beginPath();m.arc(p.x*sx,p.y*sy,5,0,Math.PI*2);m.fill();
+  return;
+ }
  const m=mc.getContext('2d'),sx=mc.width/WORLD.w,sy=mc.height/WORLD.h;
  m.fillStyle='#040806';m.fillRect(0,0,mc.width,mc.height);
  for(const key of Object.keys(state.explored)){
@@ -2573,7 +2597,8 @@ function drawMap(){
  multiplayer.pings=multiplayer.pings.filter(p=>p.expiresAt>Date.now());
  for(const p of multiplayer.pings){if((p.area||'surface')!=='surface')continue;const x=p.x*sx,y=p.y*sy;m.strokeStyle='#ffd85a';m.lineWidth=2;m.beginPath();m.arc(x,y,7,0,Math.PI*2);m.stroke();m.beginPath();m.moveTo(x-10,y);m.lineTo(x+10,y);m.moveTo(x,y-10);m.lineTo(x,y+10);m.stroke()}
  // 지도: 기존 발견 영역과 핑을 보존하고 현재 목적지 방향의 직선 기준선만 추가한다.
- const guidance=questGuideData();
+ const chosen=regionPassages().find(row=>row.id===regionTravelGuideId);
+ const guidance=chosen?{...chosen,area:state.area}:questGuideData();
  if(state.area==='surface'&&guidance?.area==='surface'&&Number.isFinite(guidance.x)&&Number.isFinite(guidance.y)){
   const p=state.player,tx=guidance.x*sx,ty=guidance.y*sy;
   m.save();m.setLineDash([4,5]);m.lineWidth=1.5;m.strokeStyle='#f6d17e';
@@ -2585,9 +2610,22 @@ function drawMap(){
  const mapPlayerPos=state.area.startsWith('jungletemple')?JUNGLE_TEMPLE_ENTRANCE:state.player;m.fillStyle='#ffffff';m.beginPath();m.arc(mapPlayerPos.x*sx,mapPlayerPos.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){
- tabState();const title=state.area==='underwater-dungeon'?'수중 던전 지도':state.area==='underwater'?'거대 호수 지도':'지도';
- ui.sheetBody.innerHTML='<div class="info"><b>'+title+'</b><br>직접 가본 곳만 표시돼. 발견하지 않은 미니 바이옴은 지도에 나오지 않아. 핑은 10초에 1개씩 찍을 수 있어.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';
- drawMap();const mc=document.getElementById('mapCanvas');if(mc)mc.addEventListener('pointerdown',placeMapPing)
+ tabState();
+ const title=state.area==='underwater-dungeon'?'수중 던전 지도':state.area==='underwater'?'거대 호수 지도':state.area==='surface'?'탐험 지도':'지역 지도';
+ const passages=regionPassages().slice().sort((a,b)=>dist(state.player.x,state.player.y,a.x,a.y)-dist(state.player.x,state.player.y,b.x,b.y));
+ ui.sheetBody.innerHTML='<div class="info"><b>'+title+'</b><br>방향 안내는 실제 이동을 돕고 순간 이동이나 잠금 해제는 하지 않아. 지상은 탐험한 지형만 표시돼.</div>'
+  +'<canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>'
+  +'<div class="info">지역 출입구 · 눌러서 방향 안내</div><nav class="regionExitList" aria-label="지역 출입구 길안내">'
+  +passages.map(row=>'<button type="button" data-region-guide="'+row.id+'" aria-pressed="'+String(regionTravelGuideId===row.id)+'">'
+    +row.name+' · '+Math.ceil(dist(state.player.x,state.player.y,row.x,row.y))+' 거리</button>').join('')+'</nav>';
+ drawMap();
+ const mc=document.getElementById('mapCanvas');
+ if(mc&&(state.area==='surface'||state.area==='underwater'))mc.addEventListener('pointerdown',placeMapPing);
+ ui.sheetBody.querySelectorAll('[data-region-guide]').forEach(button=>button.addEventListener('click',()=>{
+  regionTravelGuideId=regionTravelGuideId===button.dataset.regionGuide?'':button.dataset.regionGuide;
+  closeSheet();questGuideUpdateAt=-Infinity;updateQuestGuide();
+  showNotice(regionTravelGuideId?'입구 길안내 시작 · 직접 걸어서 이동해':'퀘스트 길안내로 복귀');
+ }));
 }
 
 function placeMapPing(e){
