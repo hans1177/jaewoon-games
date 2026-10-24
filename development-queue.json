@@ -31262,9 +31262,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:41:18.880Z",
-      "updatedAt": "2026-10-24T02:13:00.667Z",
+      "updatedAt": "2026-10-24T02:37:52.170Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -31274,7 +31274,7 @@
         "capturedAt": "2026-10-12T02:42:23.098Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-23T17:00:42.637Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-24T02:37:52.170Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -31323,7 +31323,7 @@
       "routingBlockers": [
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
-      "robloxSourceCommit": "3607228cac85e4fbcc120700a0c2f5f3bb0df87c",
+      "robloxSourceCommit": "86ffa27256e3f221cfe90f0fe05affbd7d639e31",
       "robloxSourceBootstrapPassedAt": "2026-10-23T13:02:00.587Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -31829,12 +31829,12 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "3607228cac85e4fbcc120700a0c2f5f3bb0df87c",
+      "robloxQualityBuildUpSourceRevision": "86ffa27256e3f221cfe90f0fe05affbd7d639e31",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "exorcist-office",
-        "sourceRevision": "3607228cac85e4fbcc120700a0c2f5f3bb0df87c",
+        "sourceRevision": "86ffa27256e3f221cfe90f0fe05affbd7d639e31",
         "sourceTreeSha": "af96560e8bddaf65a9f76f60462a284c42fb190a",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -31846,7 +31846,7 @@
         },
         "assetRepairContext": {
           "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
-          "baselineFingerprint": "57f4cd3f3c2c5e43519cc417551f18d36cf130cdf3f74533edb83be8e45f6e85",
+          "baselineFingerprint": "f0f803779eaec37290c4ef09fb4dc455b293abc16390ee214c7b59214fade338",
           "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
         "qualityFailureKinds": [
@@ -31863,8 +31863,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39983588586,
-        "testedAt": "2026-10-23T17:00:42.637Z"
+        "workflowRunId": 40052673284,
+        "testedAt": "2026-10-24T02:37:52.170Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -92906,7 +92906,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-24T02:36:14.945Z",
+  "updatedAt": "2026-10-24T02:37:52.170Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
