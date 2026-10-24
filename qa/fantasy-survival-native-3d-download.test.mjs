@@ -270,7 +270,9 @@ test('downloaded KayKit knight is ledgered as preview only and source-bound to e
  assert.equal(actor.productionVerified,false);
  assert.match(moduleSource,/HERO_URL.*knight\.glb/);
  assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
- assert.match(moduleSource,/state\.keys\?\.size/);
+ // 발 모션은 눌린 키가 아니라 실제 게임 좌표 변화를 따르도록 검사한다.
+ assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
+ assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
  assert.match(moduleSource,/state\.weather\?\.kind/);
  assert.match(moduleSource,/getAvatarRecipe:\(\)=>avatarRecipe/);
  assert.match(index,/type="importmap"/);
