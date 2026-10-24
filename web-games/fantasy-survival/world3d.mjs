@@ -736,11 +736,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       observedWeather=weatherKind;
       const weatherPlan=createVibeWeatherInteractionProfile({weather:weatherKind,intensity:.5,mobile:mobileBudget});
       weatherVisualEffects=weatherPlan.effects;
+      scene.fog.far=weatherVisualEffects.includes('layered-haze')?46:
+        weatherVisualEffects.includes('wind-drift')?63:90;
+      sun.intensity=weatherVisualEffects.includes('surface-wetness')?1.55:2;
     }
-    // 지역 이동 시 수중 안개/조명이 지상에 남지 않게 프레임 기준으로 복원한다.
-    scene.fog.far=weatherVisualEffects.includes('layered-haze')?46:
-      weatherVisualEffects.includes('wind-drift')?63:90;
-    sun.intensity=weatherVisualEffects.includes('surface-wetness')?1.55:2;
     if(state.area==='underwater'||state.area==='underwater-dungeon'){
       scene.fog.far=state.area==='underwater-dungeon'?34:py>=3600?44:62;
       sun.intensity=state.area==='underwater-dungeon'?.85:1.2;
