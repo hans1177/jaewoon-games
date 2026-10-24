@@ -134,7 +134,7 @@ function interactionHint(t){
   if(t.type==='node')return '근처 자원 자동 채집 중';
   if(t.type==='npc')return t.item.name+' · 터치해서 대화';
   if(t.type==='house')return '집 터치 · 꾸미기';
-  if(t.type==='ship')return '출하 가능 · 아래 출하 메뉴';
+  if(t.type==='ship')return '무역 · 상선 매매와 생산품 출하';
   if(t.type==='barracks')return '병영 · 병력 관리';
   if(t.type==='workerShop')return '일꾼 작업장 · 관리';
   if(t.type==='fish')return '연못 터치 · 낚시';
@@ -154,7 +154,7 @@ function activateInteraction(t){
     if(t.item.readyAt<=Date.now())collectNode(t.item);
   }else if(t.type==='npc')talkTo(t.item);
   else if(t.type==='house')openDecor();
-  else if(t.type==='ship')shipGoods();
+  else if(t.type==='ship')ui.trade?.click();
   else if(t.type==='barracks')openBarracks();
   else if(t.type==='workerShop')openWorkerShop();
   else if(t.type==='fish')startFishing();
@@ -180,7 +180,6 @@ function openWorkerShop(){ui.panelTitle.textContent='노비 판매소';renderWor
 function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.workerFeedTimer));ui.panelBody.innerHTML=`<p class="panel-note">노비는 자동 물주기·수확·나무/돌 채집을 해. 1분마다 작업물을 인벤토리로 줘.</p><div class="inventory-grid">${itemCard('🧑‍🌾 노비',state.workers)}${itemCard('⏱️ 지급',delivery)}${itemCard('🍖 급식까지',feed)}${itemCard('🪵 보관',s.wood)}${itemCard('🪨 보관',s.stone)}${itemCard('🍖 보관',s.food)}${itemCard('🥕 보관',s.crop)}</div><button class="choice" data-worker ${state.workers>=WORKER_MAX?'disabled':''}><span>🧑‍🌾 노비 구매 (${state.workers}/${WORKER_MAX})</span><b>${WORKER_PRICE}골드</b></button><p class="panel-note">3분마다 노비 1명당 식량 10을 먹어. 먹일 식량이 부족한 노비는 굶어 죽어.</p>`;ui.panelBody.querySelector('[data-worker]')?.addEventListener('click',buyWorker)}
 function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSoon();updateHUD();renderWorkerShop();toast('🧑‍🌾 노비가 일을 시작했어')}
 function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.innerHTML=`<div class="choice-grid">${opts.map(o=>`<button class="choice" data-dec="${o.id}" ${state.decor.includes(o.id)?'disabled':''}><span>${o.i} ${o.n}</span><b>${state.decor.includes(o.id)?'배치됨':o.c+'골드'}</b></button>`).join('')}</div>`;ui.panel.showModal();ui.panelBody.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click',()=>{const o=opts.find(x=>x.id===b.dataset.dec);if(!o||state.coins<o.c)return toast('골드가 부족해');state.coins-=o.c;state.decor.push(o.id);saveSoon();updateHUD();ui.panel.close();toast('꾸미기 완료')}))}
-function shipGoods(){const i=state.inventory,earned=i.fish*12+i.flower*4+i.crop*18;if(!earned){toast('출하할 게 없어');return}i.fish=0;i.flower=0;i.crop=0;state.coins+=earned;saveSoon();updateHUD();toast(`🪙 +${earned}`)}
 function usePlot(index,tool){const p=state.plots[index];if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.inventory.crop++;state.inventory.food+=10;saveSoon();toast('🥕 농작물 +1 · 🍖 식량 +10');return}if(p.state==='empty'){if(tool!=='seed')return toast('씨앗을 선택해');if(state.inventory.seeds<=0)return toast('씨앗이 없어');state.inventory.seeds--;p.state='growing';p.watered=false;p.wateredAt=0;p.ready=false;saveSoon();toast('🌱 씨앗을 심었어');return}if(!p.watered){if(tool!=='water')return toast('물뿌리개를 선택해');p.watered=true;p.wateredAt=Date.now();saveSoon();toast('💧 물을 줬어 · 20초');return}toast('🌱 자라는 중')}
 function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}
 function expandIsland(){if(state.coins<120){toast('120골드가 필요해');return}state.coins-=120;state.expanded=true;saveSoon();updateHUD();toast('🏝️ 동쪽 야생지대가 크게 열렸어!')}
