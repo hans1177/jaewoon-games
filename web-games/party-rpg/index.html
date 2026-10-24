@@ -152,6 +152,38 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
  #joystick{width:80px;height:80px}#knob{left:20px;top:20px;width:36px;height:36px}
  #actions{grid-template-columns:50px 50px;gap:3px}.act{min-height:35px}#prompt{bottom:116px}
 }
+
+/* 중간 이벤트씬 · 기존 대화창을 확장해 사건·인물·던전 장면을 모바일에서 읽기 쉽게 표시한다. */
+#modal[data-mode="event"]{background:radial-gradient(ellipse at center,#070b0cb2,#030508ef);backdrop-filter:blur(1px)}
+#modal[data-mode="event"] .card{width:min(95vw,790px);max-height:min(91dvh,760px);overflow:hidden;border:1px solid #918069;background:#101617;box-shadow:0 20px 80px #000e}
+#modal[data-mode="event"] .body{padding:0;max-height:calc(91dvh - 55px);overflow:auto;overscroll-behavior:contain}
+#modal[data-mode="event"] .head{background:#171d20;border-bottom:1px solid #7c786e}
+.eventScene{overflow:hidden;background:#171d20}
+.eventVista{position:relative;min-height:185px;display:flex;flex-direction:column;justify-content:flex-end;padding:26px 30px 22px;border-bottom:1px solid #786d58;overflow:hidden;background:radial-gradient(ellipse at 70% 30%,#b7a27a38,transparent 60%),linear-gradient(115deg,#293134,#141d23)}
+.eventVista:before,.eventVista:after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.34}
+.eventVista:before{background:repeating-linear-gradient(110deg,transparent 0 27px,#eee9de0b 28px,transparent 30px);animation:eventMist 9s linear infinite}
+.eventVista:after{inset:18% 0 0;background:linear-gradient(4deg,#090f18a6 0 36%,transparent 37%);clip-path:polygon(0 64%,10% 43%,19% 62%,26% 28%,33% 67%,44% 34%,56% 56%,69% 15%,81% 54%,90% 30%,100% 60%,100% 100%,0 100%)}
+.eventScene[data-mood="forest"] .eventVista{background:radial-gradient(ellipse at 60% 16%,#738c6a45,transparent 60%),linear-gradient(#203b32,#101b1a)}
+.eventScene[data-mood="field"] .eventVista{background:radial-gradient(ellipse at 70% 12%,#cbb88155,transparent 50%),linear-gradient(#44594c,#1b2e2a)}
+.eventScene[data-mood="cave"] .eventVista,.eventScene[data-mood="dungeon"] .eventVista{background:radial-gradient(ellipse at 61% 30%,#a98b5447,transparent 45%),linear-gradient(110deg,#303334,#101518)}
+.eventScene[data-mood="desert"] .eventVista{background:radial-gradient(ellipse at 72% 5%,#d5ba764d,transparent 54%),linear-gradient(#5f5244,#292d30)}
+.eventScene[data-mood="snow"] .eventVista{background:radial-gradient(ellipse at 65% 6%,#dae4e38a,transparent 52%),linear-gradient(#506875,#2a3944)}
+.eventScene[data-mood="abyss"] .eventVista{background:radial-gradient(ellipse at 62% 12%,#a7789455,transparent 55%),linear-gradient(#392635,#12141f)}
+.eventVista .eyebrow,.eventVista h2,.eventSigil{position:relative;z-index:2;text-shadow:0 3px 9px #000}
+.eventVista .eyebrow{font:11px Georgia,serif;letter-spacing:2px;color:#e1cdaa}
+.eventVista h2{margin:10px 0 0;color:#f0e5d1;font-size:clamp(22px,4.5vw,36px)}
+.eventSigil{position:absolute;right:36px;top:25px;font-size:44px;color:#d9c49d9a;animation:eventGlint 3s ease-in-out infinite}
+.eventDialogue{display:grid;grid-template-columns:128px minmax(0,1fr);gap:20px;padding:22px 28px}
+.eventPortrait{width:128px;height:128px;border:3px ridge #918066}
+.eventWords{min-width:0}.eventWords p{font-size:14px;line-height:1.75;margin:7px 0 14px}
+.eventWords blockquote{border-left:2px solid #998463;background:#8f83681c;padding:11px 13px;margin:0;color:#e5d8bc;line-height:1.6;font-size:15px}
+.eventControls{display:flex;align-items:center;gap:10px;padding:5px 28px 22px}
+.eventControls .menuBtn{margin:0;max-width:210px;flex:1}.eventControls .textBtn{margin-left:auto}
+.eventControls>span{color:#aa9b87;font-size:12px;min-width:45px}
+@keyframes eventMist{to{transform:translateX(65px)}}@keyframes eventGlint{50%{opacity:.35;transform:scale(.92)}}
+@media(max-width:700px){#modal[data-mode="event"]{padding:8px}#modal[data-mode="event"] .card{width:100%;max-height:94dvh}#modal[data-mode="event"] .body{max-height:calc(94dvh - 50px)}.eventVista{min-height:130px;padding:20px 16px 17px}.eventVista h2{font-size:23px}.eventVista .eyebrow{font-size:10px;letter-spacing:1px}.eventSigil{top:13px;right:18px;font-size:29px}.eventDialogue{grid-template-columns:76px minmax(0,1fr);gap:12px;padding:16px 14px}.eventPortrait{width:76px;height:76px}.eventWords p{font-size:12px;line-height:1.7}.eventWords blockquote{font-size:12px;padding:8px}.eventControls{padding:3px 12px max(12px,env(safe-area-inset-bottom));gap:6px}.eventControls .menuBtn{min-height:44px;font-size:12px}.eventControls .textBtn{font-size:11px;padding:8px}}
+@media(max-height:500px) and (orientation:landscape){.eventVista{min-height:70px;padding:6px 12px}.eventVista h2{font-size:18px;margin:3px 0}.eventDialogue{grid-template-columns:55px 1fr;padding:6px 12px;gap:10px}.eventPortrait{width:55px;height:55px}.eventWords p{margin:2px 0 5px;font-size:11px}.eventWords blockquote{font-size:11px}.eventControls{padding:3px 10px 8px}}
+@media(prefers-reduced-motion:reduce){.eventVista:before,.eventSigil{animation:none}}
 </style>
 </head>
 <body>
@@ -359,7 +391,7 @@ var INCIDENTS=[
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=3;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
+ s.version=4;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
 }
 function storyVisit(zone){
  if(zone<1||zone>6)return;
@@ -376,11 +408,12 @@ function storyRecruit(a){if(state.story.companions[a.id])return;state.story.comp
 function storyClear(index){state.story.cleared[index]=true;save();}
 function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';return '맹약은 끝났어. 동료들과 남은 길을 자유롭게 탐험해.';}
 function storyReady(key){var s=state.story;return key==='fort'?s.cleared[0]&&s.visited[1]&&s.visited[2]:key==='temple'?s.choices.fort&&s.cleared[1]&&s.visited[3]&&s.visited[4]:key==='ending'?s.choices.temple&&s.cleared[2]&&s.visited[5]&&s.visited[6]:false;}
-function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();storyJournal();}
+function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();if(playEventScene('choice:'+key,storyJournal))return;storyJournal();}
 
 
 const COUNCIL_LOCATION={x:844,y:487};
-function townCouncil(){
+function townCouncil(fromScene=false){
+ if(!fromScene&&playEventScene('council',()=>townCouncil(true)))return;
  var cases=state.story.cases,exposed=Object.values(cases).filter(function(q){return q.path==='truth';}).length,protectedCount=Object.values(cases).filter(function(q){return q.path==='guard';}).length;
  var luca=cases[1],mina=cases[2],report=Object.keys(cases).length,trust=protectedCount>exposed?'그들은 네가 증인을 먼저 지킨 사실을 믿기 시작했다.':exposed>protectedCount?'의회는 네 증언을 두려워하지만, 지워진 이름의 진실을 더는 부인하지 못한다.':'기록관과 수비대는 아직 서로의 책임을 묻고 있다.';
  var h='<div class="dialogueLayout">'+portraitMarkup(0,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">마을 · 북문 사건 조사단</span><h2>루카와 미나의 기록실</h2><p>마을의 기록관 겸 야전회의. 모닥불 곁에는 지워진 북문 지도와 실종자의 이름표가 펼쳐져 있다.</p>';
@@ -406,9 +439,10 @@ const EVIDENCE_SITES={
 function pendingEvidence(){
  return !dungeon&&state.zone>0&&state.zone<=6&&!state.story.cases[state.zone]?EVIDENCE_SITES[state.zone]:null;
 }
-function inspectEvidence(){
+function inspectEvidence(fromScene=false){
  var zone=state.zone,site=pendingEvidence(),c=INCIDENTS[zone-1];if(!site||!c)return;
  if(Math.hypot(p.x-site.x,p.y-site.y)>105){toast('현장에 더 가까이 다가가야 해.');moveTarget={x:site.x,y:site.y};return;}
+ if(!fromScene&&playEventScene('evidence:'+zone,()=>inspectEvidence(true)))return;
  var idx=state.ai.findIndex(function(a){return a.name===c.person;});
  var html='<div class="dialogueLayout">'+portraitMarkup(Math.max(0,idx),'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">현장 사건 · '+ZONES[zone].name+'</span><h2>'+c.name+'</h2><p>'+site.trace+'</p><p>'+c.lead+'</p><blockquote>“이 기록을 세상에 남기는 일은 누군가의 안전을 빼앗을 수도 있다.”</blockquote><h3>선택을 기록한다</h3>';
  html+='<button class="menuBtn" data-local-choice="truth">[설득 d20] '+c.a+'</button><button class="menuBtn secondary" data-local-choice="guard">'+c.b+'</button><button class="textBtn" id="evidenceLater">아직 결정하지 않는다</button></div></div>';
@@ -423,7 +457,7 @@ function incidentChoice(zone,path){
  var test=path==='truth'?checkAbility('persuade',11+zone):{success:true,roll:null,total:null};
  var result=path==='truth'&&test.success?'truth':'guard';
  state.story.cases[zone]={path:result,requested:path,roll:test.roll,total:test.total,failed:path==='truth'&&!test.success};
- save();battleLog(INCIDENTS[zone-1].person+' · '+(result==='truth'?'증언 기록':'증인 보호'));storyJournal();
+ save();battleLog(INCIDENTS[zone-1].person+' · '+(result==='truth'?'증언 기록':'증인 보호'));if(playEventScene('case:'+zone,storyJournal))return;storyJournal();
 }
 function storyJournal(){
  var s=state.story,h='<p class="gold">잊힌 길의 서약 · 오리지널 캠페인</p><p>'+storyObjective()+'</p>';
@@ -439,7 +473,8 @@ function storyJournal(){
  if(s.choices.ending){h+='<h3>종장 · '+(s.choices.ending==='release'?'모두의 아침':'경계에 켜진 등불')+'</h3><p>'+(s.choices.ending==='release'?'풍년은 끝났다. 돌아온 이들은 빈 밭을 함께 갈았다. 마을의 지도에는 길이 다시 네 개가 되었다. 너의 편지는 더 이상 사라지지 않았다.':'너는 경계에 등불을 걸었다. 사람들은 두 도시를 오가며, 떠나는 이의 이름을 소리 내어 불렀다. 누군가 너를 잊을 때마다 동료들이 등불 곁으로 돌아왔다.')+'</p><p>'+(s.choices.fort==='witness'?'광장의 증언은 잊힌 사람들의 권리를 되찾는 첫 기록이 되었다.':'네가 마련한 은신처는 두 도시를 잇는 첫 여관이 되었다.')+' '+(s.choices.temple==='reveal'?'진실을 들은 마을은 오랜 논쟁 끝에 새 약속을 적었다.':'미리 마련한 집들에는 돌아온 가족의 불빛이 하나씩 켜졌다.')+'</p>';}
  if(s.choices.ending){var testimony=Object.keys(s.cases).filter(function(k){return s.cases[k].path==='truth';}).length,protectedPeople=Object.keys(s.cases).filter(function(k){return s.cases[k].path==='guard';}).length;h+='<section class="journalEntry"><h3>종장 · 누구의 이름이 남았는가</h3><p>공개된 증언 '+testimony+'건, 보호된 증인 '+protectedPeople+'명. '+(testimony>=protectedPeople?'마을의 의회는 지워진 이름을 다시 읽기 시작했으나, 봉인을 지켰던 이들과 격렬하게 충돌했다.':'귀환한 이들의 거처는 안전했지만, 진실을 요구하는 유족들은 장부 공개를 기다리고 있다.')+'</p></section>';}
   h+='<h3>동료의 고백과 개인 의뢰</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id]){var q=s.quests[a.id];h+='<section class="journalEntry"><b>'+a.name+'</b><p>'+COMPANION_SECRETS[i]+'</p>';if(q)h+='<p class="gold">'+(q.path==='truth'?'잊힌 기록을 밝힌다':'증인을 안전하게 지킨다')+' · '+ZONES[q.zone].name+' · '+(q.complete?'완료':a.party?'이 동료와 함께 방문해야 해.':'동료로 데려가야 진행돼.')+'</p>';else h+='<p>동료 대화에서 사건의 진실을 선택할 수 있어.</p>';h+='</section>';}});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
- openModal('잊힌 길의 서약',h);modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});modalBody.querySelectorAll('[data-case]').forEach(function(b){b.onclick=function(){incidentChoice(Number(b.dataset.case),b.dataset.method);};});
+ h+='<section class="journalEntry"><h3>지난 장면</h3><p>중요한 조사와 동료 대화, 보스의 기억을 다시 볼 수 있어. 선택이나 보상은 반복되지 않아.</p><button class="menuBtn secondary" id="eventArchiveBtn">여정의 장면 돌아보기 ('+Object.values(s.scenes).filter(Boolean).length+')</button></section>';
+  openModal('잊힌 길의 서약',h);document.getElementById('eventArchiveBtn').onclick=eventArchive;modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});modalBody.querySelectorAll('[data-case]').forEach(function(b){b.onclick=function(){incidentChoice(Number(b.dataset.case),b.dataset.method);};});
 }
 
 // D20-inspired real-time rules; not a claim of full tabletop rules compatibility.
@@ -534,7 +569,7 @@ function showIntro(step){
  scenes.splice(1,0,{portrait:0,speaker:'북쪽 관문의 마지막 밤',chapter:'서막 · 피 묻은 군번표',text:'비에 잠긴 관문 앞에 죽은 병사들의 신발이 한 줄로 놓여 있다. 루카는 문을 닫았던 자의 이름을 아직 말하지 못한다. 성벽에 남은 긁힌 자국은 문 바깥에서가 아니라 안쪽에서 시작되었다.',quote:'“문 너머의 사람들을 버린 자는 누구인가.”'});
  scenes.push({portrait:1,speaker:'기록관의 봉인',chapter:'서막 · 미나의 거짓말',text:'미나는 지도가 비어 있던 자리에 붉은 잉크를 떨어뜨린다. 그날 밤 기록관의 불은 꺼지지 않았다. 사라진 이름 중 첫 번째는 네 것이었다. 미나는 그 문서를 읽은 적이 없다고 말하지만, 손은 떨리고 있었다.',quote:'“기억을 돌려놓는다면 누군가는 다시 희생돼.”'});
  var scene=scenes[step];if(!scene){state.story.intro=true;introStep=-1;save();closeModal();toast('동료 메뉴에서 함께할 일행을 골라.');return;}
- openModal('잊힌 길의 서약','<div class="dialogueLayout">'+portraitMarkup(scene.portrait,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+scene.chapter+'</span><h2>'+scene.speaker+'</h2><p>'+scene.text+'</p><blockquote>'+scene.quote+'</blockquote><div class="dialogueFooter"><span>'+(step+1)+' / 3</span><button class="menuBtn" id="introNext">'+(step===scenes.length-1?'여정을 시작한다':'계속 읽는다')+'</button></div><button class="textBtn" id="introSkip">서막 건너뛰기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('introNext').onclick=function(){showIntro(step+1);};document.getElementById('introSkip').onclick=function(){showIntro(scenes.length);};
+ openModal('잊힌 길의 서약','<div class="dialogueLayout">'+portraitMarkup(scene.portrait,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+scene.chapter+'</span><h2>'+scene.speaker+'</h2><p>'+scene.text+'</p><blockquote>'+scene.quote+'</blockquote><div class="dialogueFooter"><span>'+(step+1)+' / '+scenes.length+'</span><button class="menuBtn" id="introNext">'+(step===scenes.length-1?'여정을 시작한다':'계속 읽는다')+'</button></div><button class="textBtn" id="introSkip">서막 건너뛰기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('introNext').onclick=function(){showIntro(step+1);};document.getElementById('introSkip').onclick=function(){showIntro(scenes.length);};
 }
 function companionMenu(selected){
  var chosen=state.ai.find(function(a){return a.id===selected;})||state.ai[0];var index=portraitIndex(chosen),info=CLASS_INFO[chosen.classId],secret=state.story.companions[chosen.id];
@@ -558,7 +593,8 @@ function companionQuestChoice(a,path){
  state.story.quests[a.id]={path:chosen,zone:1+(index+(chosen==='guard'?2:0))%6,complete:false};
  save();toast(path==='truth'&&!result.success?'설득 실패 · 대신 증인을 보호하기로 했어.':'동료 개인 의뢰가 시작됐어.');companionDialogue(a);
 }
-function companionDialogue(a){
+function companionDialogue(a,fromScene=false){
+ if(!fromScene&&state.story.companions[a.id]&&playEventScene('companion:'+a.id,()=>companionDialogue(a,true)))return;
  var idx=portraitIndex(a),unlocked=!!state.story.companions[a.id],quest=state.story.quests[a.id],event=INCIDENTS.find(function(c){return c.person===a.name;}),eventZone=event?INCIDENTS.indexOf(event)+1:0,eventCase=eventZone?state.story.cases[eventZone]:null;
  var html='<div class="dialogueLayout">'+portraitMarkup(idx,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+role(a).name+' · '+CLASS_INFO[a.classId].title+'</span><h2>'+a.name+'</h2><p>'+(unlocked?COMPANION_SECRETS[idx]:'“이 길을 혼자 걸을 생각이야? 함께라면 서로의 빈 곳을 채울 수 있을 거야.”')+'</p><blockquote>'+(unlocked?'“내 이야기를 기억해 줘. 나도 네 이름을 잊지 않을게.”':'“어디로 가든, 먼저 서로를 믿는 것부터 시작하자.”')+'</blockquote>';
  if(event&&unlocked)html+='<h3>사건 · '+event.name+'</h3><p>'+(eventCase?(eventCase.path==='truth'?event.truth:event.guard):state.story.visited[eventZone]?event.lead+' · 여정 기록에서 조사 방향을 정해 줘.':'아직 사건 현장을 조사하지 못했어.')+'</p>';
@@ -578,6 +614,73 @@ function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록
 
 storyInit();
 
+// 메인: 중간 이벤트씬 · 기존 대화창/카메라를 이용해 판정과 보상을 변경하지 않는다.
+var activeEventScene=null;
+function eventSceneData(key){
+ var [kind,raw,arg]=key.split(':'),n=Number(raw),incident=INCIDENTS[n-1],zone=ZONES[n],site=EVIDENCE_SITES[n],person=incident&&state.ai.find(a=>a.name===incident.person);
+ var beats=[],focus=null,mood='town',title='';
+ var beat=(speaker,chapter,text,quote,portrait)=>({speaker,chapter,text,quote,portrait:portrait||0});
+ if(kind==='council'){
+  title='북문 조사단 · 첫 기록';focus=COUNCIL_LOCATION;
+  beats=[beat('루카','마을 · 첫 번째 회의','북문에서 돌아오지 못한 병사들의 이름표가 낡은 탁자 위에 놓여 있다.','“그날 밤 관문에서 무슨 일이 있었는지 끝까지 밝히겠어.”',0),beat('미나','마을 · 사라진 이름','미나가 봉랍 묻은 지도를 펼친다. 이름을 공개하는 일과 사람을 지키는 일은 항상 같지 않다.','“누구의 이야기를 먼저 들을지 네가 결정해.”',1)];
+ }else if((kind==='evidence'||kind==='case')&&incident){
+  mood=['','field','forest','cave','desert','snow','abyss'][n];title=incident.name;focus=site;
+  if(kind==='evidence')beats=[beat('발견한 흔적',zone.name+' · 사건 현장',site.trace+'. 손길이 닿자 오래 묻혀 있던 글씨가 보인다.','“진실은 잊혀도 흔적은 사라지지 않는다.”',state.player.portraitId),beat(incident.person,'증언 · '+incident.name,incident.lead,'“공개할지 보호할지, 먼저 이야기를 들어 줘.”',person?portraitIndex(person):0)];
+  else {let r=state.story.cases[n];if(!r)return null;beats=[beat(incident.person,r.failed?'설득 실패 · 남은 길':r.path==='truth'?'공개된 진실':'지켜진 증인',r.path==='truth'?incident.truth:incident.guard,r.failed?'“말하지 못했지만 아직 끝난 건 아니야.”':r.path==='truth'?'“이 기록을 지켜 줘.”':'“이름을 지킨 선택을 기억할게.”',person?portraitIndex(person):0)];}
+ }else if(kind==='companion'){
+  person=state.ai.find(a=>a.id===raw);if(!person)return null;
+  n=portraitIndex(person);title=person.name+' · 잊힌 고백';focus={x:person.x,y:person.y};
+  beats=[beat(person.name,'동료 · '+role(person).name,COMPANION_SECRETS[n],'“내가 말하지 못한 일도 같이 짊어져 줄래?”',n),beat(person.name,'동료 · 개인 의뢰','진실을 밝힐 수도, 위험한 증언을 보호할 수도 있다. 어떤 길을 걸을지는 함께 정해야 한다.','“내가 길을 잃으면 네가 이름을 불러 줘.”',n)];
+ }else if((kind==='boss'||kind==='victory')&&DUNGEONS[n]){
+  mood='dungeon';title=DUNGEONS[n].name+(kind==='boss'?' · 마지막 방':' · 전투 이후');focus={x:720,y:310};
+  const threat=['낡은 수비대의 깃발 아래서 추방당한 자들이 검을 빼든다.','제단의 봉인이 갈라지고 오래된 맹약을 지킨 수호자가 모습을 드러낸다.','왕좌 앞에 선 왕은 괴물로 몰린 이들의 이름을 하나씩 읽고 있다.'][n];
+  const aftermath=['포로의 명부에는 마을에서 지워진 사람들의 이름이 있다.','맹약의 원문은 축복이 아니라 경고였다.','왕좌는 비었지만 맹약의 결말은 아직 네 손에 남았다.'][n];
+  beats=kind==='boss'?[beat('봉인된 회랑','던전 · 마지막 문',threat,'“문 너머에는 우리가 잊은 이름이 있다.”',state.player.portraitId),beat(DUNGEONS[n].boss,'보스 조우 · 전술 준비','동료들은 서로의 이름을 부르고 전투 대형을 정비한다.','“이름을 지키려는 자는 누구인가.”',Math.min(9,6+n))]:[beat('전투의 잔향','던전 · 기록과 선택',aftermath,'“승리는 끝이 아니라 책임의 시작이다.”',state.player.portraitId)];
+ }else if(kind==='choice'){
+  let choice=state.story.choices[raw];if(!choice)return null;
+  title={fort:'요새 · 포로의 증언',temple:'신전 · 맹약의 원문',ending:'왕좌 · 마지막 이름'}[raw];if(!title)return null;mood=raw==='ending'?'abyss':'town';
+  let outcomes={fort:{witness:'포로의 이름이 광장에서 울려 퍼진다. 루카는 오래 숨겨 둔 보고서를 내려놓는다.',refuge:'미나는 포로들에게 숨을 곳을 마련한다. 증언은 미뤄지지만 사람들은 살아남는다.'},temple:{reveal:'지워진 장부가 광장에 펼쳐지고 사람들은 그 대가를 알게 된다.',prepare:'돌아올 사람을 위한 잠자리가 준비되고 마을의 창문에 불이 켜진다.'},ending:{release:'사라진 길이 지도에 되돌아오고 오랜 풍년의 마법은 끝난다.',keeper:'경계에 등불이 켜지고 두 도시 사이의 이름들이 다시 이어진다.'}};
+  beats=[beat('너의 결정',title,outcomes[raw][choice],'“이 선택의 결과를 끝까지 마주해야 해.”',state.player.portraitId),beat('남겨진 사람들','이후의 기록','여정 기록과 동료 대화에는 이 결정이 남는다. 선택을 되돌릴 수 없지만 남은 길은 계속 이어진다.','“우리가 잊은 사람들을 다시 부르자.”',1)];
+ }else if(kind==='sigil'&&DUNGEONS[n]&&['trap','door'].includes(arg)){
+  mood='dungeon';title=arg==='trap'?'룬 함정의 숨겨진 인장':'석문의 오래된 기록';focus=arg==='trap'?{x:310,y:405}:{x:825,y:445};
+  let matches=Object.keys(state.story.checks).filter(s=>s.startsWith(n+':')&&s.endsWith(':'+arg));let r=state.story.checks[matches[matches.length-1]];if(!r)return null;
+  beats=[beat(r.success?'열린 기록':'봉인된 흔적','능력 판정 · d20 '+r.roll,r.success?(arg==='trap'?'룬의 빛이 꺼지고 아래의 인장이 드러난다.':'석문이 열리자 잊힌 맹약의 문장이 나타난다.'):'봉인은 다시 굳게 닫힌다. 이 방에서는 다시 시도할 수 없다.',r.success?'“오래 묻힌 진실의 조각을 발견했다.”':'“다음 기록은 다른 곳에 남아 있을 거야.”',state.player.portraitId)];
+ }
+ return beats.length?{key,title,beats,mood,focus}:null;
+}
+function showEventScene(){
+ let run=activeEventScene;if(!run)return;let info=run.info,b=info.beats[run.step],last=run.step===info.beats.length-1;
+ let html='<div class="eventScene" data-mood="'+escapeText(info.mood)+'"><div class="eventVista"><span class="eyebrow">'+escapeText(b.chapter)+'</span><span class="eventSigil">✧</span><h2>'+escapeText(info.title)+'</h2></div><div class="eventDialogue">'+portraitMarkup(b.portrait,'eventPortrait')+'<div class="eventWords"><span class="eyebrow">'+escapeText(b.speaker)+'</span><p>'+escapeText(b.text)+'</p><blockquote>'+escapeText(b.quote)+'</blockquote></div></div><div class="eventControls"><span>'+(run.step+1)+' / '+info.beats.length+'</span><button class="menuBtn" id="eventNext">'+(last?'장면 마치기':'다음 장면')+'</button><button class="textBtn" id="eventSkip">건너뛰기</button></div></div>';
+ openModal(info.title,html);modal.dataset.mode='event';modalBody.scrollTop=0;
+ document.getElementById('eventNext').onclick=nextEventScene;document.getElementById('eventSkip').onclick=finishEventScene;
+}
+function playEventScene(key,done=null,replay=false){
+ if(activeEventScene||!gameStarted||(!replay&&state.story.scenes[key]))return false;
+ let info=eventSceneData(key);if(!info)return false;
+ activeEventScene={info,done,replay,step:0,snapshot:{follow:view.follow,x:view.offset.x,y:view.offset.y,zoom:view.targetZoom,selection:view.selection}};
+ if(info.focus){view.follow='player';view.offset.set(info.focus.x-p.x,info.focus.y-p.y);view.targetZoom=Math.max(1.14,Math.min(1.42,view.targetZoom*1.12));}
+ sound.effect('story');showEventScene();return true;
+}
+function nextEventScene(){
+ if(!activeEventScene)return;
+ if(++activeEventScene.step<activeEventScene.info.beats.length){sound.effect('ui');showEventScene();}else finishEventScene();
+}
+function finishEventScene(){
+ let run=activeEventScene;if(!run)return;activeEventScene=null;
+ let saved=run.snapshot;view.follow=saved.follow;view.offset.set(saved.x,saved.y);view.targetZoom=saved.zoom;view.selection=saved.selection;
+ if(!run.replay){state.story.scenes[run.info.key]=true;save();}
+ if(run.done)run.done();else closeModal();
+}
+function eventArchive(){
+ let memories=Object.keys(state.story.scenes).filter(k=>state.story.scenes[k]&&eventSceneData(k));
+ let html='<p>이전에 본 장면을 다시 볼 수 있어. 재생해도 판정, 보상과 선택은 반복되지 않아.</p>';
+ html+=memories.length?memories.map(k=>'<button class="menuBtn secondary" data-replay="'+escapeText(k)+'">'+escapeText(eventSceneData(k).title)+'</button>').join(''):'<p>아직 기록된 장면이 없어. 북문 기록실, 사건 석판, 동료 대화나 던전에 가 봐.</p>';
+ html+='<button class="textBtn" id="archiveBack">여정 기록으로 돌아가기</button>';
+ openModal('지난 장면 · 회상',html);
+ modalBody.querySelectorAll('[data-replay]').forEach(b=>b.onclick=()=>playEventScene(b.dataset.replay,eventArchive,true));
+ document.getElementById('archiveBack').onclick=storyJournal;
+}
+
 function resize(){W=innerWidth;H=innerHeight;view.resize();}
 addEventListener("resize",resize);resize();
 function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("on");clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("on");},1900);}
@@ -593,7 +696,7 @@ function updateHud(){
  else{var z=ZONES[state.zone];zoneName.textContent=z.name;zoneSub.textContent=z.sub;objective.textContent=state.zone===0?"동료 메뉴에서 일행을 구성해. 인물 초상화를 누르면 카메라가 따라가.":"엘리트 몬스터는 더 강하지만 경험치와 골드를 더 많이 줘.";}objective.textContent+=" · "+storyObjective();
 }
 function openModal(title,html){if(!modalOpen)lastModalFocus=document.activeElement;modal.dataset.mode="menu";modalTitle.textContent=title;modalBody.innerHTML=html;modal.hidden=false;modalOpen=true;keys={};joy.x=joy.y=0;document.getElementById("modalClose").focus();}
-function closeModal(){if(introStep>=0){state.story.intro=true;introStep=-1;save();}modal.hidden=true;modalOpen=false;keys={};if(lastModalFocus&&lastModalFocus.isConnected&&lastModalFocus.focus)lastModalFocus.focus();}
+function closeModal(){if(activeEventScene){finishEventScene();return;}if(introStep>=0){state.story.intro=true;introStep=-1;save();}modal.hidden=true;modalOpen=false;keys={};if(lastModalFocus&&lastModalFocus.isConnected&&lastModalFocus.focus)lastModalFocus.focus();}
 document.getElementById("modalClose").onclick=closeModal;
 
 function travelMenu(){
@@ -661,7 +764,7 @@ function startDungeon(i){
 function spawnDungeonRoom(){
  enemies=[];dungeon.door=false;dungeon.portal=false;dungeon.roomPuzzle={trapDone:false,trapAttempted:false,doorDone:false,doorAttempted:false};dungeon.hiddenOpen=false;p.x=145;p.y=310;partyMembers().forEach(function(a,k){a.x=p.x-36-k*24;a.y=p.y+40+(k%2)*26;});var d=dungeon.def;
  if(dungeon.room<d.rooms.length){var count=d.rooms[dungeon.room];for(var i=0;i<count;i++){var elite=Math.random()<0.18;spawnEnemy(d.mob,d.mobHp+dungeon.room*22,d.mobAtk+dungeon.room*3,0,0,elite,false,420+(i%3)*120,205+Math.floor(i/3)*150);}}
- else spawnEnemy(d.boss,d.bossHp,d.bossAtk,0,0,false,true,720,310);
+ else{spawnEnemy(d.boss,d.bossHp,d.bossAtk,0,0,false,true,720,310);playEventScene('boss:'+dungeon.index);}
 }
 function advanceDungeon(){if(!dungeon||dungeon.complete||!dungeon.door)return;tacticalTargetId=null;contactTriggered=false;dungeon.room++;spawnDungeonRoom();toast("다음 방");}
 function completeDungeon(){
@@ -671,7 +774,9 @@ function completeDungeon(){
  var got=[];
  dungeon.pendingDrops.forEach(function(r){if(r.owner==="player"&&state.player.drops.indexOf(r.item)<0){state.player.drops.push(r.item);got.push(DROPS[r.item].name);}else if(r.owner!=="player"){var a=state.ai.find(function(v){return v.id===r.owner;}),it=DROPS[r.item];if(a&&it){if(it.kind==="weapon")a.specialWeapon=it.id;else a.specialArmor=it.id;}}});
  save();
- openModal("던전 클리어",'<p><b>'+dungeon.def.name+' 클리어!</b></p><p>'+rewardLines.join("<br>")+'</p>'+(got.length?'<p class="gold">획득 전리품: '+got.join(", ")+'</p>':'<p>이번에는 전용 장비 드롭 없음.</p>')+'<p class="note">보스 처치 시점에 보상이 지급됐어. 빛에 닿으면 마을로 귀환해.</p>');
+ var rewardHtml='<p><b>'+dungeon.def.name+' 클리어!</b></p><p>'+rewardLines.join("<br>")+'</p>'+(got.length?'<p class="gold">획득 전리품: '+got.join(", ")+'</p>':'<p>이번에는 전용 장비 드롭 없음.</p>')+'<p class="note">보스 처치 시점에 보상이 지급됐어. 빛에 닿으면 마을로 귀환해.</p>';
+ if(playEventScene('victory:'+dungeon.index,()=>openModal('던전 클리어',rewardHtml)))return;
+ openModal('던전 클리어',rewardHtml);
 }
 function returnFromDungeon(){closeModal();dungeon=null;worldW=1400;worldH=900;state.zone=0;p.x=700;p.y=520;enemies=[];state.player.hp=state.player.maxHp;partyMembers().forEach(function(a,k){a.zone=0;a.x=p.x-60-k*36;a.y=p.y+65;a.hp=a.maxHp;});save();toast("마을로 귀환");}
 function rollDungeonDrop(enemy,killer){
@@ -824,8 +929,8 @@ function interact(){
   else{puzzle.doorAttempted=true;puzzle.doorDone=test.success;dungeon.hiddenOpen=test.success;}
   var key=dungeon.index+':'+dungeon.room+':'+kind;
   if(!state.story.checks[key])state.story.checks[key]={success:test.success,roll:test.roll,total:test.total};
-  save();toast(test.success?(kind==='trap'?'함정 해제 성공 · 사라진 인장 발견':'문 열기 성공 · 숨겨진 기록 발견'):'판정 실패 · 이 방에서는 다시 시도할 수 없어.');
-  updateInteractions();return;
+  save();var notice=test.success?(kind==='trap'?'함정 해제 성공 · 사라진 인장 발견':'문 열기 성공 · 숨겨진 기록 발견'):'판정 실패 · 이 방에서는 다시 시도할 수 없어.';
+  updateInteractions();if(playEventScene('sigil:'+dungeon.index+':'+kind,()=>toast(notice)))return;toast(notice);return;
  }
  if(currentInteract.kind==='council'){townCouncil();return;}
  if(currentInteract.kind==='heal'){state.player.hp=state.player.maxHp;partyMembers().forEach(function(a){a.hp=a.maxHp;});toast('모두 회복했어.');save();}
@@ -869,7 +974,7 @@ joyBase.addEventListener("pointerdown",function(e){joyId=e.pointerId;joyBase.set
 joyBase.addEventListener("pointermove",function(e){if(e.pointerId===joyId)joyMove(e);});
 function joyEnd(e){if(e.pointerId!==joyId)return;joyId=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
 joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointercancel",joyEnd);
-addEventListener('keydown',function(e){if(!modalOpen)return;if(e.code==='Escape'){closeModal();return;}if(e.code==='Tab'){var nodes=[...modal.querySelectorAll('button:not(:disabled),a[href],input,select,[tabindex="0"]')].filter(function(n){return n.getClientRects().length;});var first=nodes[0],lastNode=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();lastNode.focus();}else if(!e.shiftKey&&document.activeElement===lastNode){e.preventDefault();first.focus();}}});
+addEventListener('keydown',function(e){if(!modalOpen)return;if(activeEventScene&&(e.code==='Enter'||e.code==='Space')){e.preventDefault();nextEventScene();return;}if(e.code==='Escape'){closeModal();return;}if(e.code==='Tab'){var nodes=[...modal.querySelectorAll('button:not(:disabled),a[href],input,select,[tabindex="0"]')].filter(function(n){return n.getClientRects().length;});var first=nodes[0],lastNode=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();lastNode.focus();}else if(!e.shiftKey&&document.activeElement===lastNode){e.preventDefault();first.focus();}}});
 window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,view,combat,storyObjective,tacticalPaused});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
