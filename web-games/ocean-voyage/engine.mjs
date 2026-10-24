@@ -270,23 +270,26 @@ export function marketQuote(s,portId,goodId){
 }
 
 export function trade(state,portId,goodId,amount,mode){
- const s=copy(state),port=canDock(s),good=GOODS.find(g=>g.id===goodId);
- const qty=Number(amount);
- if(!port||port.id!==portId||!good||!Number.isSafeInteger(qty)||qty<=0||qty>999||!['buy','sell'].includes(mode))return {state,ok:false,message:'항구에 정박하고 수량을 확인해.'};
- const price=priceAt(portId,goodId,s.day,mode),count=s.cargo[goodId]||0;
+ const p=canDock(state),good=GOODS.find(g=>g.id===goodId),qty=Number(amount);
+ if(!p||p.id!==portId||!good||!Number.isSafeInteger(qty)||qty<=0||qty>999||!['buy','sell'].includes(mode))return fail(state,'항구에 정박하고 교역 수량을 확인해.');
+ const quote=marketQuote(state,portId,goodId),owned=state.cargo[goodId]||0;
+ const price=mode==='buy'?quote.buy:quote.sell;
  if(mode==='buy'){
-  if(price*qty>s.coins)return {state,ok:false,message:'금화가 부족해.'};
-  if(cargoWeight(s)+good.weight*qty>s.ship.cargoLimit*s.fleet)return {state,ok:false,message:'화물칸이 부족해.'};
-  s.coins-=price*qty;s.cargo[goodId]=count+qty;
- }else{
-  if(count<qty)return {state,ok:false,message:'판매할 물품이 부족해.'};
-  s.coins+=price*qty;s.cargo[goodId]=count-qty;
- }
- if(mode==='sell'){s.tradeLedger[port.id]=(s.tradeLedger[port.id]||0)+price*qty;s.xp+=qty*2;}
- s.reputation[port.faction]=(s.reputation[port.faction]||0)+qty;
- s.score+=qty;
- note(s,port.name+'에서 '+good.name+' '+qty+'개 '+(mode==='buy'?'구매':'판매')+' 완료');
- return {state:s,ok:true,message:good.name+' '+qty+'개 '+(mode==='buy'?'구매':'판매')+' 완료'};
+  if(quote.kind==='미취급')return fail(state,'이 도시에서는 해당 물품을 판매하지 않아. 생산지나 수입항을 찾아가.');
+  if(quote.stock<qty)return fail(state,'항구 재고가 부족해. 남은 수량 '+quote.stock+'개 · 다음 게임 날짜에 일부 보충돼.');
+  if(price*qty>state.coins)return fail(state,'금화가 부족해.');
+  if(cargoWeight(state)+good.weight*qty>state.ship.cargoLimit*state.fleet)return fail(state,'화물칸이 부족해.');
+ }else if(owned<qty)return fail(state,'판매할 물품이 부족해.');
+ const s=copy(state),book=s.economy[portId],sign=mode==='buy'?1:-1;
+ if(mode==='buy'){s.coins-=price*qty;s.cargo[goodId]=owned+qty;}
+ else{s.coins+=price*qty;s.cargo[goodId]=owned-qty;s.tradeLedger[p.id]=(s.tradeLedger[p.id]||0)+price*qty;s.xp+=qty*2;}
+ book.stock[goodId]=clamp(book.stock[goodId]-sign*qty,0,999);
+ book.pressure[goodId]=clamp((book.pressure[goodId]||0)+sign*qty*.65,-25,25);
+ // 대량거래도 즉시 재고와 시세에 반영, 사건은 2 게임일 후 자연 종료.
+ if(qty>=12){s.marketShocks[portId]={good:goodId,kind:mode==='buy'?'품귀':'폭락',until:s.day+2};s.worldLog.push('['+s.day+'일] '+p.name+' '+good.name+' '+(mode==='buy'?'품귀':'시세 폭락')+' · 대량 '+(mode==='buy'?'매수':'매각'));s.worldLog=s.worldLog.slice(-20);}
+ s.reputation[p.faction]=(s.reputation[p.faction]||0)+qty;s.score+=qty;
+ note(s,p.name+'에서 '+good.name+' '+qty+'개 '+(mode==='buy'?'구매':'판매')+' · '+price+' G/개');
+ return {state:s,ok:true,message:good.name+' '+qty+'개 '+(mode==='buy'?'구매':'판매')+' · '+(price*qty)+' G'};
 }
 export function buyUpgrade(state,kind){
  const p=canDock(state);if(!p)return {state,ok:false,message:'항구에서만 보급과 개조가 가능해.'};
