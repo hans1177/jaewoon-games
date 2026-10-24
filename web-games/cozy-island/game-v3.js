@@ -427,7 +427,7 @@ function createUnit(kind,enemy,boss=false,saved=null){
   Math.max(1,Math.min(maxHp,saved.hp)):maxHp;
  return{id:unitId++,kind,enemy,boss,hp,maxHp,level,quality,
   ...(kind==='knight'&&!enemy?{
-   heroName:typeof saved?.heroName==='string'?saved.heroName:'방랑 기사',
+   heroName:typeof saved?.heroName==='string'?saved.heroName.replace(/[<>"'`]/g,'').slice(0,32):'방랑 기사',
    trait:['charge','guardian','medic','siege'].includes(saved?.trait)?saved.trait:'guardian',
    xp:Math.max(0,Math.min(5000,Number(saved?.xp)||0)),
    skillReadyAt:Math.max(0,Number(saved?.skillReadyAt)||0)}:{}),
@@ -452,8 +452,12 @@ function getCourt(){
  if(!Array.isArray(c.prisoners))c.prisoners=[];
  if(!Array.isArray(c.heldByRivals))c.heldByRivals=[];
  if(!Array.isArray(c.history))c.history=[];
- c.prisoners=c.prisoners.filter(p=>p&&typeof p.id==='string').slice(0,8);
- c.heldByRivals=c.heldByRivals.filter(p=>p&&typeof p.id==='string').slice(0,8);
+ c.prisoners=c.prisoners.filter(p=>p&&typeof p.id==='string').slice(0,8).map(p=>({
+  ...p,heroName:String(p.heroName||'이름 없는 포로').replace(/[<>"'`]/g,'').slice(0,32)
+ }));
+ c.heldByRivals=c.heldByRivals.filter(p=>p&&typeof p.id==='string').slice(0,8).map(p=>({
+  ...p,heroName:String(p.heroName||'기사').replace(/[<>"'`]/g,'').slice(0,32)
+ }));
  c.history=c.history.slice(-20);
  c.reputation=Math.max(-100,Math.min(100,Number(c.reputation)||0));
  c.nextId=Math.max(1,Math.floor(Number(c.nextId)||1));
@@ -556,7 +560,7 @@ function openKnightHall(){
 function takePrisoner(enemy,lordId){
  const c=getCourt(),lord=getEnemyLords().find(l=>l.id===lordId);
  if(!lord||lord.defeated||!courtCapacity()||c.prisoners.length>=courtCapacity())return false;
- if(enemy._captured)return false;enemy._captured=true;enemy.hp=0;
+ if(enemy._captured||enemy.hp<=0)return false;enemy._captured=true;enemy.hp=0;
  const heroName=KNIGHT_NAMES[(c.nextId+4)%KNIGHT_NAMES.length];
  c.prisoners.push({id:'p'+c.nextId++,lordId,heroName,level:1+Math.floor(Math.random()*3),
   day:state.day,lastOfferDay:-1});
@@ -855,6 +859,12 @@ function updateOffensive(dt){
  allies=allies.filter(u=>u.hp>0);fieldEnemies=fieldEnemies.filter(u=>u.hp>0);game.fieldEnemies=fieldEnemies;game.allies=allies;
  if(lord.hp<=0){
    lord.hp=0;lord.defeated=true;offensiveTarget=null;game.offensiveTarget=null;fieldEnemies=[];
+   // 왕국 점령 시 해당 영주가 억류하던 우리 기사들은 감옥에서 구조한다.
+   const court=getCourt(),rescued=court.heldByRivals.filter(p=>p.lordId===lord.id);
+   for(const captive of rescued)freeKnight(captive);
+   court.heldByRivals=court.heldByRivals.filter(p=>p.lordId!==lord.id);
+   if(rescued.length){courtLog(lord.name+' 함락 · 아군 기사 '+rescued.length+'명 구조');
+     toast('⚜️ 포로 기사 '+rescued.length+'명 귀환');}
    for(const u of allies)delete u._expedition;
    state.coins+=120;state.inventory.wood+=20;state.inventory.stone+=16;saveSoon();
    const remaining=getEnemyLords().filter(l=>!l.defeated);
@@ -1024,7 +1034,7 @@ function moveToward(u,x,y,dt){
   const step=u._grandSiege?Math.min(d,speed*dt):speed*dt;
   u.x+=dx/d*step;u.y+=dy/d*step;
 }
-function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length){state.army=alive.map(u=>({kind:u.kind}));saveSoon()}}
+function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length)saveSoon()}
 
 function makeWolf(id,x,y){return{id,x,y,homeX:x,homeY:y,hp:200,maxHp:200,attack:10,speed:68,cool:0,alive:true,respawnAt:0,wander:0,vx:0,vy:0}}
 function commandWolfAt(sx,sy){if(!state.expanded||raidActive)return;const p=renderer.screenToWorld(game,sx,sy);let best=null,bd=46;for(const w of wolves){if(!w.alive)continue;const d=Math.hypot(w.x-p.x,w.y-p.y);if(d<bd){best=w;bd=d}}if(!best)return;selectedWolfId=best.id;game.selectedWolfId=best.id;toast(`🐺 늑대 지정! 병사 ${countKind('soldier')}명 출동`)}
