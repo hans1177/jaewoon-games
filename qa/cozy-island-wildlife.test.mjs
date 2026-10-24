@@ -139,3 +139,32 @@ test('포근섬 스트롱홀드식 저폴리 성채는 기존 WebGL 장면과 �
   assert.match(game,/runtime\.queueSaveProgress\(state\)/);
   assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=|state\.inventory\s*=/);
 });
+
+
+test('포근섬 모바일 스피드패치의 3D 픽셀 재질·기존 에셋·전술 UI 계약을 검증한다',()=>{
+  const renderer=read('web-games/cozy-island/render-v3.js');
+  const game=read('web-games/cozy-island/game-v3.js');
+  const html=read('web-games/cozy-island/index.html');
+  const css=read('web-games/cozy-island/style.css');
+  for(const token of ['new THREE.CanvasTexture(tile)', 'THREE.NearestFilter',
+    'THREE.RepeatWrapping', 'this.pixelTextures', 'this.fortMaterial',
+    'this.selection3', 'this.shadowMaterial', 'original.clone(true)',
+    'cloneRig(original)', 'this.gl.render(this.scene3,this.camera3)'])
+    assert.ok(renderer.includes(token), '3D pixel runtime missing: '+token);
+  for(const material of ['stone','wood','roof','sand','grass','jungle','snow',
+    'ash','cave','road','water','foliage','crops','clay','iron','hide'])
+    assert.ok(renderer.includes("'"+material+"'"), '3D pixel material missing: '+material);
+  assert.match(renderer,/new THREE.MeshStandardMaterial\\(\\{[\\s\\S]*?map:this.pixelTextures\\[nativeSurfaces\\[kind\\]\\|\\|'stone'\\]/);
+  for(const id of ['castleCommand','barracksCommand','workersCommand',
+    'fishingCommand','tradeCommand','centerCommand'])
+    assert.match(html,new RegExp('id="'+id+'"[^>]*>\\\\s*<svg class="pixel-icon"'),
+      'native pixel command missing '+id);
+  assert.match(css,/\\.strategy-button \\.pixel-icon/);
+  assert.match(css,/shape-rendering:crispEdges/);
+  assert.match(css,/\\.camera-zoom button \\{[^}]*width:44px/);
+  assert.match(game,/function updateMovement\\(dt\\)/);
+  assert.match(game,/const screenX=dx,screenY=dy/);
+  assert.match(game,/runtime\\.loadProgress\\(DEFAULT_STATE\\)/);
+  assert.match(game,/runtime\\.queueSaveProgress\\(state\\)/);
+  assert.doesNotMatch(renderer,/localStorage\\.|state\\.inventory\\s*=|state\\.coins\\s*[-+]=/);
+});
