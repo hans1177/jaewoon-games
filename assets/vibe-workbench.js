@@ -26,9 +26,9 @@ const TASK_WORDS={
   save:['저장','세이브','불러오기','진행도']
 };
 const QUALITY={
-  visual:['그래픽','비주얼','그림','에셋','배경','캐릭터','적 디자인','보스 디자인','UI','화면','퀄리티','못생','구려'],
-  animation:['애니','애니메이션','모션','움직임','동작','전환','프레임','피격 모션','공격 모션'],
-  vfx:['이펙트','효과','파티클','폭발','타격감','히트스톱','화면 흔들림','쉐이크'],
+  visual:['그래픽','픽셀','도트','타일','지형','렌더링','비주얼','그림','에셋','배경','캐릭터','적 디자인','보스 디자인','UI','화면','퀄리티','못생','구려'],
+  animation:['애니','애니메이션','모션','발 접지','걷기','회전','보간','무기 모션','움직임','동작','전환','프레임','피격 모션','공격 모션'],
+  vfx:['이펙트','잔상','충격파','궤적','타격 동기화','효과','파티클','폭발','타격감','히트스톱','화면 흔들림','쉐이크'],
   audio:['음악','소리','사운드','BGM','효과음','타격음','공격음','피격음'],
   gameplay:['재미','재미없','게임성','루프','콘텐츠','보스 패턴','긴장감','보상 구조','선택지'],
   ux:['불편','버튼','조작','화면 잘림','여백','레이아웃','가독성'],
@@ -99,8 +99,8 @@ function candidateFiles(target,systems,quality){
 }
 function qualitySteps(keys){
   const a=[];
-  if(keys.includes('visual'))a.push('그래픽 품질 진단 → 스타일 프로필 → 캐릭터/적/배경/UI 에셋 개선');
-  if(keys.includes('animation'))a.push('Motion Contract 확인 → idle/move/attack/hit/skill/death 모션 → 전환/블렌딩 → 판정/VFX/SFX 동기화 → Motion QA');
+  if(keys.includes('visual'))a.push('그래픽 품질 진단 → 지역별 타일/지형·실루엣·배경 스타일 → 실제 에셋 렌더링');
+  if(keys.includes('animation'))a.push('Motion Contract 확인 → 종별 idle/move/turn/attack/hit/death → 발 접지·회전 → 무기별 준비/적중/반동/복귀 → Motion QA');
   if(keys.includes('vfx'))a.push('타격/피격/폭발/스킬 VFX와 카메라 연출');
   if(keys.includes('audio'))a.push('BGM/SFX 연결과 모바일 용량/라이선스 확인');
   if(keys.includes('gameplay'))a.push('전투 루프/웨이브/보스/보상/선택 구조의 재미 진단');
@@ -113,8 +113,11 @@ function qualitySteps(keys){
 function editDirectives(request,target,systems,quality){
   const a=[];
   if(quality.includes('visual'))a.push('기존 렌더 책임부에서 스타일·실루엣·레이어·배경 표현을 개선하고 게임 수치는 유지');
+  if(quality.includes('visual')&&/픽셀|도트|타일|pixel|tile/i.test(request))a.push('픽셀 스타일인 게임만 타일 격자/최근접 필터/지역별 디테일/타일 경계를 기존 렌더 함수에서 직접 개선하고 새 렌더러를 만들지 않음');
   if(quality.includes('animation'))a.push('기존 캐릭터 상태 전환에 실제 모션을 연결하고 공격 판정·투사체 생성·VFX·SFX 타이밍을 Motion Contract와 동기화');
+  if(quality.includes('animation')&&/몬스터|몹|적|무기|액션|걷기|회전|모션|attack|weapon|monster/i.test(request))a.push('종별/무기별 이동·회전·발 접지·준비→적중→반동→복귀 모션을 실제 상태에 연결하고 기존 데미지/쿨다운 보존');
   if(quality.includes('vfx'))a.push('기존 피격/공격/사망 이벤트 지점에 VFX를 연결하되 실제 피해 계산은 변경하지 않음');
+  if(quality.includes('vfx')&&/타격|이펙트|잔상|충격파|궤적|vfx|hit|impact/i.test(request))a.push('기존 적중 이벤트에 무기별 잔상·피격 점멸·파티클·SFX·카메라 동기화, 모바일 버튼 가림 검사');
   if(quality.includes('audio'))a.push('기존 이벤트 지점에 BGM/SFX 재생을 연결하고 게임 규칙과 저장 데이터는 변경하지 않음');
   if(quality.includes('ux')||systems.includes('모바일 입력/레이아웃'))a.push('기존 입력 책임부와 UI를 직접 수정해 터치 영역·safe area·겹침·한손 조작을 개선');
   if(quality.includes('performance'))a.push('기존 업데이트/스폰/렌더 루프에서 중복 작업과 불필요한 할당을 줄이고 동작 결과는 유지');
@@ -181,8 +184,9 @@ export function createVibeEditBrief({request='',target='auto',gameId=null,files=
   if(!prompt)throw new Error('edit brief request required');
   const resolvedTarget=targetOf(prompt,target),systems=detectSystems(prompt),quality=detectQuality(prompt),paths=unique(files.map(f=>clean(typeof f==='string'?f:f?.path)));
   const engineAdapter=createVibeEngineAdapter({request:prompt,target:resolvedTarget,gameSlug:gameId||''});
+  const visualChecks=quality.includes('visual')?['동일 장면 전후 실화면 비교','지역 타일·실루엣·픽셀 격자(해당 스타일만)']:[],motionChecks=quality.includes('animation')?['종별 상태·발 접지·공격/적중/복귀 연속 프레임']:[],effectChecks=quality.includes('vfx')?['VFX/SFX/카메라 적중 동기화','모바일 UI 가림·FPS·메모리 예산']:[];
   const engineChecks=resolvedTarget==='roblox'?['Luau 소스/프로젝트 구조 확인','place package 확인','Roblox 런타임','독립 QA','회귀','exact revision 확인']:resolvedTarget==='unreal'?['Unreal C++ 컴파일','Blueprint/Animation Blueprint 참조','Map/Level 로드','Montage/State Machine/IK Rig/Retargeter/Control Rig','패키징/런타임 확인']:resolvedTarget==='unity'?['Unity 컴파일/씬 참조/Android 빌드 확인']:resolvedTarget==='godot'?['Godot 씬/스크립트 참조 확인']:['Web source 구조 확인','브라우저 런타임','모바일 레이아웃','터치 입력','회귀 확인'];
-  return Object.freeze({version:3,request:prompt,target:resolvedTarget,gameId:gameId?clean(gameId):null,responsibleFiles:Object.freeze(paths),engineAdapter,directives:Object.freeze(editDirectives(prompt,resolvedTarget,systems,quality)),protectedTargets:Object.freeze(PROTECTED.filter(x=>!prompt.includes(x))),requiredChecks:Object.freeze(unique(['변경 전 원본 일치','변경 diff 확인','보호 대상 값/키 변경 검사','문법/구조 QA','실행 회귀 QA','모바일 UI QA',...engineChecks,...engineAdapter.qa])),outputContract:Object.freeze({returnCompleteFiles:true,noWrapperPatch:true,noOverridePatch:true,checkpointBeforeWrite:true,atomicApply:true,rollbackOnFailure:true,sourceWriteAllowed:engineAdapter.mayWriteSource})});
+  return Object.freeze({version:3,request:prompt,target:resolvedTarget,gameId:gameId?clean(gameId):null,responsibleFiles:Object.freeze(paths),engineAdapter,directives:Object.freeze(editDirectives(prompt,resolvedTarget,systems,quality)),protectedTargets:Object.freeze(PROTECTED.filter(x=>!prompt.includes(x))),requiredChecks:Object.freeze(unique(['변경 전 원본 일치','변경 diff 확인','보호 대상 값/키 변경 검사','문법/구조 QA','실행 회귀 QA','모바일 UI QA',...engineChecks,...visualChecks,...motionChecks,...effectChecks,...engineAdapter.qa])),outputContract:Object.freeze({returnCompleteFiles:true,noWrapperPatch:true,noOverridePatch:true,checkpointBeforeWrite:true,atomicApply:true,rollbackOnFailure:true,sourceWriteAllowed:engineAdapter.mayWriteSource})});
 }
 
 export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file=null,knownBroken=false,artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef='',motionRepairWorkUnit=null}={}){
