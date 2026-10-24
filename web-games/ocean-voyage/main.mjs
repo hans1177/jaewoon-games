@@ -1,6 +1,6 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,PORT_SCENES,portHasFacility,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion} from './engine.mjs';
+import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -112,15 +112,33 @@ function portNpc(kind){
  const bx=personIndex%4*33.333,by=Math.floor(personIndex/4)*50;
  return '<div class="npc-dialog '+kind+'"><div class="npc-portrait" style="background-position:'+bx+'% '+by+'%" aria-hidden="true"></div><div><small>⚜ '+escapeHtml(p.name)+' · '+escapeHtml(profile.district)+'</small><strong>'+escapeHtml(info[0])+'</strong><p>“'+escapeHtml(info[1])+'”</p></div></div>';
 }
+// 교역소: 상품별 재고·현재 시세·7일 추세·수요/공급·지역 사건을 모바일에서 한눈에 확인한다.
 function market(){
  const p=canDock(state);
- if(!p)return '<p class="info">항구 근처에서 ⚓ 입항을 눌러 교역소를 열어. 물품은 항구별로 가격이 다르고 시간이 흐르면 변해.</p>'+travelCard(nearestPort(state).port);
- return portNpc('market')+'<h3>'+escapeHtml(p.name)+' 특산품: '+GOODS.filter(g=>g.ports?.includes(p.id)).map(g=>g.name).join(' · ')+'</h3><p class="info">'+escapeHtml(p.name)+' 시장 · 구매가는 판매가보다 높아. 항구를 오가며 시세 차익을 노려봐.</p>'+
- '<div class="kpi"><div>보유 금화<b>'+fmt(state.coins)+' G</b></div><div>화물 적재<b>'+cargoWeight(state)+' / '+(state.ship.cargoLimit*state.fleet)+'</b></div></div>'+
- GOODS.map(g=>'<div class="row"><div class="desc"><strong>'+(g.ports?.includes(p.id)?'특산 · ':'')+escapeHtml(g.name)+' <span style="color:var(--sub);font-size:11px">×'+(state.cargo[g.id]||0)+'</span></strong><small>매입 '+priceAt(p.id,g.id,state.day,'buy')+' G / 매각 '+priceAt(p.id,g.id,state.day,'sell')+' G · 최고 매각 '+bestSale(g.id)+'</small></div><div class="stack"><button class="action sub" data-trade="buy" data-good="'+g.id+'" data-count="1">+1</button><button class="action sub" data-trade="buy" data-good="'+g.id+'" data-count="5">+5</button><button class="action" data-trade="sell" data-good="'+g.id+'" data-count="1">-1</button><button class="action" data-trade="sell" data-good="'+g.id+'" data-count="5">-5</button></div></div>').join('');
+ if(!p)return '<p class="info">항구에서 입항하면 지역 특산품을 사고팔 수 있어.</p>'+travelCard(nearestPort(state).port);
+ const group=PORT_MARKETS[p.id],goods=[...GOODS.filter(g=>group.produces.includes(g.id)),...GOODS.filter(g=>group.imports.includes(g.id)),...GOODS.filter(g=>!group.produces.includes(g.id)&&!group.imports.includes(g.id)&&(state.cargo[g.id]||0)>0)];
+ const show=(g)=>{
+  const q=marketQuote(state,p.id,g.id),inventory=state.cargo[g.id]||0,canBuy=q.kind!=='미취급';
+  const trend=q.history.length>1?q.percent-q.history.at(-2):0,change=trend>1?'▲ '+trend+'%':trend< -1?'▼ '+Math.abs(trend)+'%':'― 안정';
+  const rates=q.history.slice(-7).concat(q.percent).slice(-7),lo=Math.min(40,...rates)-4,hi=Math.max(140,...rates)+4;
+  const points=rates.map((v,i)=>(i*94/Math.max(1,rates.length-1)).toFixed(1)+','+(25-(v-lo)/Math.max(1,hi-lo)*19).toFixed(1)).join(' ');
+  const priceStatus=q.percent<=90?'매입 유리':q.percent>=110?'매각 유리':'보통';
+  return '<div class="trade-item"><div class="trade-title"><strong>'+escapeHtml(g.name)+'</strong><span class="cargo-badge">'+q.kind+(q.demand?' · 수요 높음':'')+'</span></div>'+
+   '<div class="trade-rate"><b>'+q.percent+'%</b><span>'+priceStatus+' · '+change+(q.event?' · '+q.event:'')+'</span><svg viewBox="0 0 96 29" aria-label="최근 최대 7일 시세 추이" role="img"><polyline points="'+points+'" fill="none" stroke="#5f9f8c" stroke-width="2.5"/></svg></div>'+
+   '<small>매입 '+fmt(q.buy)+' G · 매각 '+fmt(q.sell)+' G · 재고 '+q.stock+' · 내 화물 '+inventory+'</small>'+
+   '<div class="trade-actions"><button class="action sub" data-trade="buy" data-good="'+g.id+'" data-count="1" '+(!canBuy||q.stock<1?'disabled':'')+'>매입 1</button><button class="action sub" data-trade="buy" data-good="'+g.id+'" data-count="5" '+(!canBuy||q.stock<5?'disabled':'')+'>매입 5</button><button class="action" data-trade="sell" data-good="'+g.id+'" data-count="1" '+(!inventory?'disabled':'')+'>매각 1</button><button class="action" data-trade="sell" data-good="'+g.id+'" data-count="5" '+(inventory<5?'disabled':'')+'>매각 5</button></div></div>';
+ };
+ return portNpc('market')+'<h3>'+escapeHtml(p.name)+' 교역소 · '+escapeHtml(PORT_SCENES[p.id].district)+'</h3>'+
+ '<p class="info">시세 기준 '+state.day+'일 · <b>게임 내 하루(16초)</b>마다 생산·수요에 따라 변동해. 주기적 폭등·유행·과잉은 2일 지속되고, 대량 거래하면 현지 가격이 변해.</p>'+
+ '<div class="kpi"><div>금화<b>'+fmt(state.coins)+' G</b></div><div>화물<b>'+cargoWeight(state)+' / '+state.ship.cargoLimit*state.fleet+'</b></div><div>시장 취급<b>'+goods.length+'종</b></div></div>'+
+ '<div class="trade-legend"><strong>지역 명산품</strong> '+group.produces.map(id=>escapeHtml(GOODS.find(g=>g.id===id).name)).join(' · ')+'</div>'+
+ '<p class="info">수입품 '+group.imports.map(id=>GOODS.find(g=>g.id===id).name).join(' · ')+' · 수요 높은 품목 '+group.demand.map(id=>GOODS.find(g=>g.id===id).name).join(' · ')+'</p>'+
+ goods.map(show).join('')+
+ '<h3>교역 항로 정보</h3><p class="info">실제 배에 실은 상품은 다른 항구에서 팔 수 있어. 예상 최고 매각가는 현재 공개된 해도 기준이야.</p>'+
+ GOODS.filter(g=>state.cargo[g.id]>0).map(g=>'<div class="row"><div class="desc"><strong>'+escapeHtml(g.name)+'</strong><small>'+bestSale(g.id)+'</small></div></div>').join('');
 }
 function consumables(buy){return CONSUMABLES.map(c=>'<div class="row"><div class="desc"><strong>'+c.name+' ×'+state.supplies[c.id]+'</strong><small>'+c.description+'</small></div><div class="stack">'+(buy?'<button class="action sub" data-buy-supply="'+c.id+'">'+(state.job==='merchant'?Math.ceil(c.cost*.9):c.cost)+' G 구매</button>':'')+(c.id!=='ammo'?'<button class="action" data-use-supply="'+c.id+'" '+(!state.supplies[c.id]?'disabled':'')+'>사용</button>':'')+'</div></div>').join('');}
-function bestSale(id){const best=PORTS.reduce((a,b)=>priceAt(a.id,id,state.day,'sell')>priceAt(b.id,id,state.day,'sell')?a:b);return escapeHtml(best.name)+' '+priceAt(best.id,id,state.day,'sell')+' G';}
+function bestSale(id){const places=PORTS.filter(p=>state.discovered.includes(p.id));if(!places.length)return '아직 알려진 항구 없음';const best=places.reduce((a,b)=>marketQuote(state,a.id,id).sell>marketQuote(state,b.id,id).sell?a:b);return escapeHtml(best.name)+' 예상 '+fmt(marketQuote(state,best.id,id).sell)+' G';}
 let fleetTab='ships';
 function fleet(){
  const p=canDock(state),s=state.ship,type=SHIP_TYPES.find(t=>t.id===state.shipType),gun=CANNON_TYPES.find(g=>g.id===s.cannonType)||CANNON_TYPES[0];
