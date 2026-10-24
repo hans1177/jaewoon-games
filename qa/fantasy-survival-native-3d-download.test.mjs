@@ -590,7 +590,7 @@ test('mobile game world taps use existing attack mechanics',()=>{
  assert.ok(html.includes('if(!isCreative())attack();'));
  assert.ok(html.includes('if(!isCreative()){'));
  assert.ok(html.includes('if(pendingCombatTap)return;'));
- assert.ok(html.includes('if(isCombatTapGesture(press,e,performance.now()))handleWorldTap(e)'));
+ assert.ok(html.includes('if(isCombatTapGesture(press,e,performance.now())){const point=worldPointerCoords(e);if(!maybeCrystalDashTripleTap(point,performance.now()))handleWorldTap(e)}'));
  assert.ok(html.includes('if(isCreative())handleWorldTap(e)'));
  assert.ok(html.includes("SAVE_KEY='jaewoon_fantasy_survival_v1'"));
 });
