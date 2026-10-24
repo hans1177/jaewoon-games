@@ -49,6 +49,20 @@
 .event-art .scene-caption{padding:9px;color:#fae8be;font:bold 12px system-ui;text-shadow:1px 2px #1a2633}
 #seaEvent article{overflow:hidden}
 @media(max-width:740px){#captainCards{grid-template-columns:1fr}.event-art{min-height:95px}.event-art .scene-portrait{height:95px;width:91px}#hail{font-size:11px}}
+/* 지역 교역: 손가락으로 누르기 쉬운 카드형 시세표 */
+.trade-item{margin:9px 0;padding:11px;border:1px solid #93784f;border-radius:7px;background:linear-gradient(115deg,#263f4d,#162d3b);box-shadow:0 3px 10px #07151e55}
+.trade-title{display:flex;align-items:center;justify-content:space-between;gap:7px;flex-wrap:wrap}
+.trade-title strong{color:#f6dfb0;font-size:15px}
+.trade-rate{display:grid;grid-template-columns:auto 1fr 94px;gap:8px;align-items:center;margin:5px 0}
+.trade-rate b{font-size:18px;color:#ead2a5}
+.trade-rate span{font-size:11px;color:#b8dbce}
+.trade-rate svg{width:94px;height:29px;background:#0f273288;border:1px solid #486679;border-radius:4px}
+.trade-item small{display:block;color:#deceb0;line-height:1.55;margin:6px 0}
+.trade-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:7px}
+.trade-actions button{min-width:0;min-height:42px;padding:6px 2px;font-size:12px}
+.trade-actions button:disabled{opacity:.37}
+.trade-legend{margin:9px 0;padding:9px;background:#b7a37b1c;border-left:3px solid #c0a16d;color:#efdbb8;line-height:1.55}
+@media(max-width:440px){.trade-rate{grid-template-columns:auto 1fr 72px}.trade-rate svg{width:72px}.trade-actions button{font-size:11px}.trade-item{padding:9px}.trade-item .cargo-badge{font-size:10px}}
 </style></head><body>
 <canvas id="sea" aria-label="실제 해안선을 사용하는 픽셀 항해 지도와 항구 마을"></canvas><div id="veil"></div>
 <header id="top"><div id="brand"><small>다섯 바다의 약속 · 1590</small><strong>푸른 항로</strong></div><div id="status"><span class="stat"><small>항해일</small><b id="day">1일</b></span><span class="stat"><small>금화</small><b id="gold">0</b></span><span class="stat"><small>선체</small><b id="hull">100%</b></span><span class="stat extra"><small>식량 / 선원</small><b id="supplies"></b></span></div></header>
