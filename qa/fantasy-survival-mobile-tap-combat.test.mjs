@@ -60,3 +60,20 @@ test('tap combat waits for touch release and rejects swipes or holds',()=>{
  assert.match(source,/if\(isCombatTapGesture\(press,e,performance\.now\(\)\)\)handleWorldTap\(e\)/);
  assert.match(source,/canvas\.setPointerCapture\(e\.pointerId\)/);
 });
+
+test('dark fantasy character and inventory layout retains real equipment actions and mobile boundaries',()=>{
+  assert.match(source,/class="arpgInventory"/);
+  assert.match(source,/class="arpgPaperdoll"/);
+  assert.match(source,/class="arpgBag"/);
+  assert.match(source,/class="arpgItemGrid"/);
+  assert.match(source,/\.sheet:has\(\.arpgInventory\)/);
+  assert.match(source,/@media\(max-width:720px\)\{\.sheet:has\(\.arpgInventory\)/);
+  assert.match(source,/getElementById\('heroPortrait'\)\.addEventListener\('click',openInventory\)/);
+  assert.match(source,/getElementById\('avatarOpen'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+  assert.match(source,/Math\.round\(effectiveStat\(p\.weapon,'power'\)\+effectiveStat\(p\.armor,'bonusDamage'\)\)/);
+  assert.match(source,/if\(r\?\.kind==='consumable'\)useItem\(r\.id\)/);
+  assert.match(source,/else if\(r\?\.kind==='seed'\)plantSeed\(r\.id\)/);
+  assert.match(source,/else if\(r\?\.kind==='ammo'\)selectArrow\(r\.id\)/);
+  assert.match(source,/else if\(r\)equipItem\(r\.id\)/);
+  assert.match(source,/const HUD_UI_SAVE_KEY='magic-forest-ui-v1'/);
+});
