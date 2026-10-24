@@ -47,7 +47,7 @@ const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wol
 game.screenToWorld=(sx,sy)=>renderer.screenToWorld(game,sx,sy);
 game.centerStrategyView=()=>{game.siegeOverview=true;renderer.centerCamera()};;
 const ui={
-  help:qs('#helpCommand'),day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),trade:qs('#tradeCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
+  help:qs('#helpCommand'),day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),economy:qs('#economyText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),trade:qs('#tradeCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
 function qs(s){return document.querySelector(s)}
 function normalizeState(raw){
@@ -83,7 +83,7 @@ runtime.bindTouchButton(ui.help,openGuide);
 runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButton')?.click());
 runtime.bindTouchButton(ui.barracks,openBarracks);
 runtime.bindTouchButton(ui.workers,openWorkerShop);
-runtime.bindTouchButton(ui.fishingCommand,startFishing);
+runtime.bindTouchButton(ui.fishingCommand,()=>window.dispatchEvent(new Event('cozy:open-siege')));
 runtime.bindTouchButton(ui.trade,()=>window.dispatchEvent(new Event('cozy:open-trade')));
 runtime.bindTouchButton(ui.center,()=>{game.siegeOverview=true;renderer.centerCamera();toast('🏰 성채 전장 전체 보기')});
 runtime.bindTouchButton(ui.zoomIn,()=>{game.siegeOverview=true;renderer.changeZoom(1.2)});
@@ -147,10 +147,11 @@ function openGuide(){
     const target=button.dataset.guide;ui.panel.close();
     if(target==='castle')document.querySelector('#castleManageButton')?.click();
     else if(target==='barracks')openBarracks();
+    else if(target==='fish')startFishing();
     else openWorkerShop();
   }));
 }
-function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p><p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. <a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>`;ui.panel.showModal()}
+function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='영지 자원';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p><p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. <a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>`;ui.panel.showModal()}
 function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}
 
 function nearestInteraction(at=player,radius=86){const dist=(x,y)=>Math.hypot(at.x-x,at.y-y);const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)},{type:'tower',d:dist(400,1090)},{type:'hall',d:dist(1010,1090)},{type:'lumber',d:dist(245,850)},{type:'mine',d:dist(785,965)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=radius?c[0]:null}
@@ -361,6 +362,7 @@ function updateHUD(){
   ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;
   ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';
   ui.coins.textContent=String(state.coins);
+  if(ui.economy)ui.economy.textContent=`🪵 ${Math.floor(state.inventory.wood)} · 🪨 ${Math.floor(state.inventory.stone)} · 🍖 ${Math.floor(state.inventory.food)} · ⚔️ ${allies.length}`;
   if(raidActive)ui.raid.textContent=grandSiege?
     `🏰 ${grandSiege.wave}/6차 · 적 ${enemies.length} · 성채 ${Math.ceil(getFort()?.keepHp??900)} · 사기 ${getFort()?.morale??65}`:
     `⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;
@@ -378,7 +380,7 @@ function updateCameraControl(dt){
   renderer.panCamera(-dx*480*dt,-dy*480*dt);
 }
 function updateHint(){
-  ui.hint.textContent=raidActive?'성채 수비 중 · 병력과 성벽 상황을 확인해':'지도 드래그 · 건물 터치 · 성채에서 건설/방어 관리';
+  ui.hint.textContent=raidActive?'공성전 진행 · 병영과 성채에서 전술 명령':'드래그: 이동 · 부지 터치: 건설 · 공성: 출전';
 }
 function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateCameraControl(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
