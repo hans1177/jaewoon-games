@@ -161,7 +161,7 @@ function normalizeState(raw){
 }
 function saveSoon(){
  state.army=allies.filter(u=>u.hp>0).map(u=>u.kind==='knight'?
-  {kind:u.kind,heroName:u.heroName,trait:u.trait,level:u.level,xp:u.xp,hp:u.hp,skillReadyAt:u.skillReadyAt||0}:
+  {kind:u.kind,heroName:u.heroName,trait:u.trait,quality:u.quality||1,level:u.level,xp:u.xp,hp:u.hp,skillReadyAt:u.skillReadyAt||0}:
   {kind:u.kind});
  state.player={x:Math.round(player.x),y:Math.round(player.y)};runtime.queueSaveProgress(state)}
 function toast(msg){clearTimeout(toastTimer);ui.toast.textContent=msg;ui.toast.classList.add('show');toastTimer=setTimeout(()=>ui.toast.classList.remove('show'),1900)}
@@ -421,10 +421,11 @@ function recruit(kind){
 function createUnit(kind,enemy,boss=false,saved=null){
  const def=RTS_UNIT_TYPES[kind]||RTS_UNIT_TYPES.soldier;
  const level=kind==='knight'&&!enemy?Math.max(1,Math.min(10,Math.floor(Number(saved?.level)||1))):1;
- const maxHp=(boss?def.hp*7:def.hp)+(kind==='knight'&&!enemy?(level-1)*20:0);
+ const quality=kind==='knight'&&!enemy?Math.max(1,Math.min(3,Math.floor(Number(saved?.quality)||1))):1;
+ const maxHp=(boss?def.hp*7:def.hp)+(kind==='knight'&&!enemy?(level-1)*20+(quality-1)*8:0);
  const hp=kind==='knight'&&!enemy&&Number.isFinite(saved?.hp)?
   Math.max(1,Math.min(maxHp,saved.hp)):maxHp;
- return{id:unitId++,kind,enemy,boss,hp,maxHp,level,
+ return{id:unitId++,kind,enemy,boss,hp,maxHp,level,quality,
   ...(kind==='knight'&&!enemy?{
    heroName:typeof saved?.heroName==='string'?saved.heroName:'방랑 기사',
    trait:['charge','guardian','medic','siege'].includes(saved?.trait)?saved.trait:'guardian',
@@ -475,6 +476,7 @@ function rollKnightCandidate(){
 function hireKnight(){
  const tech=economyTechStatus(state,'knight');
  if(!tech.unlocked)return {ok:false,message:'필요 건물: '+tech.missing.join(' · ')};
+ if(!state.barracksBuilt)return {ok:false,message:'먼저 병영을 건설해야 해'};
  const d=RTS_UNIT_TYPES.knight,inv=state.inventory;
  if(countKind('knight')>=d.max)return {ok:false,message:'기사단 수용 한도'};
  for(const key of ['food','iron'])if((Number(inv[key])||0)<(d[key]||0))
@@ -482,9 +484,8 @@ function hireKnight(){
  if(state.coins<d.coins)return {ok:false,message:'영입 금화 부족'};
  const offer=getCourt().candidate||rollKnightCandidate();
  inv.food-=d.food;inv.iron-=d.iron;state.coins-=d.coins;
- const level=1,bonus=(offer.quality-1)*8;
- const unit=createUnit('knight',false,false,{heroName:offer.heroName,trait:offer.trait,level,xp:0});
- unit.maxHp+=bonus;unit.hp+=bonus;
+ const level=1;
+ const unit=createUnit('knight',false,false,{heroName:offer.heroName,trait:offer.trait,level,xp:0,quality:offer.quality});
  allies.push(unit);game.allies=allies;
  getCourt().candidate=null;
  courtLog(offer.heroName+' 기사 영입 ('+KNIGHT_TRAITS[offer.trait].name+')');
@@ -569,7 +570,7 @@ function rivalCapture(unit,lordId){
  const c=getCourt();if(c.heldByRivals.length>=8)return;
  unit._captured=true;unit.hp=0;
  c.heldByRivals.push({id:'h'+c.nextId++,lordId,
-  heroName:unit.heroName,trait:unit.trait,level:unit.level,xp:unit.xp,
+  heroName:unit.heroName,trait:unit.trait,quality:unit.quality||1,level:unit.level,xp:unit.xp,
   price:45+unit.level*23,day:state.day,refused:false});
  courtLog(lord.name+'에게 '+unit.heroName+' 기사 포로로 붙잡힘');
  toast('⚠️ '+unit.heroName+' 기사가 포로가 됐어');
@@ -595,6 +596,12 @@ function prisonAction(action,id,lordId=''){
   return {ok:true,message:'처형 명령 · 외교 신뢰 -14'};
  }
  if(action==='exchange'&&lord&&exchangeHeld&&exchangePrisoner){
+  if(exchangePrisoner.lastOfferDay===state.day)return {ok:false,message:'오늘은 포로 교환을 다시 제안할 수 없어'};
+  if(lord.focus==='rush'&&state.strongholdDiplomacy?.[lord.id]!=='ally'&&c.reputation<0){
+   exchangePrisoner.lastOfferDay=state.day;
+   courtLog(lord.name+'이 포로 교환을 거부함');saveSoon();
+   return {ok:false,message:lord.name+'이 포로 교환을 거부했어 · 신뢰를 회복해'};
+  }
   c.prisoners=c.prisoners.filter(x=>x!==exchangePrisoner);
   c.heldByRivals=c.heldByRivals.filter(x=>x!==exchangeHeld);
   freeKnight(exchangeHeld);c.reputation=Math.min(100,c.reputation+4);
