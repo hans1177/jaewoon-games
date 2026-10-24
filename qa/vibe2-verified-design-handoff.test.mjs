@@ -42,6 +42,15 @@ test('owner-held Unity and noncanonical grammar cannot be silently admitted',()=
   assert.equal(verify({policy:{...ROADMAP,developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED'}}}).pass,false);
   assert.equal(verify({policy:{...ROADMAP,continuousGameplaySystemEvolutionContract:{gameIdentityConceptContract:{novelCausalGameGrammar:{ownerBasicDesignMethod:{formula:'MAIN × A × B × C + @'}}}}}}).pass,false);
 });
+test('verified general WEB design uses the same exact handoff without Unity',()=>{
+  const webItem={...item,selectedPlatform:'WEB',concurrentTargetPlatforms:['WEB'],
+    ownerWebIntakeEngine:'HTML_CSS_JAVASCRIPT',web3dRedevelopmentRequired:true,
+    platformDesignProfiles:{WEB:{source:SOURCE,jsonPointer:'/content/webCanonicalDesign'}}};
+  const result=verify({queue:{items:[webItem]}});
+  assert.equal(result.pass,true,result.failures.join(','));
+  assert.equal(result.verified[0].releasePassClaimed,false);
+  assert.equal(verify({queue:{items:[{...webItem,concurrentTargetPlatforms:['WEB','UNITY']}]}}).pass,false);
+});
 test('no active development-confirmed seed creates no fabricated promotion or release proof',()=>{
   const result=verify({seedState:{seeds:[{...seed,productionClass:'DESIGN_ONLY'}]},queue:{items:[]}});
   assert.equal(result.pass,true);
