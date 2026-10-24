@@ -38,11 +38,17 @@ export function verifyVibeDesignHandoff({runtimeSha,roadmap,readJsonAt,verifyDes
     if(item?.minimumDesignContract?.pass!==true||!designPath(source,id)||clean(item?.designBaselineSource)!==source){
       failures.push(id+':MINIMUM_DESIGN_SOURCE_NOT_VERIFIED');continue;
     }
-    if(clean(item?.selectedPlatform).toUpperCase()!=='ROBLOX'
-      ||(item.concurrentTargetPlatforms||[]).length!==1||item.concurrentTargetPlatforms[0]!=='ROBLOX'
-      ||clean(item?.platformDesignProfiles?.ROBLOX?.source)!==source
-      ||item?.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX'){
-      failures.push(id+':ROBLOX_ONLY_HANDOFF_BINDING_INVALID');continue;
+    // 일반 웹게임은 같은 설계→Vibe→F0~F9 흐름을 WEB 하나로 사용한다.
+    const platform=clean(item?.selectedPlatform).toUpperCase();
+    const sourceProfile=platform==='WEB'?item?.platformDesignProfiles?.WEB:item?.platformDesignProfiles?.ROBLOX;
+    const profilePointer=platform==='WEB'?'/content/webCanonicalDesign':'/content/platformProfiles/ROBLOX';
+    const modeOk=platform==='WEB'
+      ?item.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'&&item.web3dRedevelopmentRequired===true
+      :platform==='ROBLOX';
+    if(!modeOk||(item.concurrentTargetPlatforms||[]).length!==1
+      ||item.concurrentTargetPlatforms[0]!==platform
+      ||clean(sourceProfile?.source)!==source||sourceProfile?.jsonPointer!==profilePointer){
+      failures.push(id+':PLATFORM_HANDOFF_BINDING_INVALID');continue;
     }
     let record;
     try{record=readJsonAt(source);}
