@@ -228,9 +228,11 @@ async function captureReleaseMedia(planOnly=false,{titlesOnly=false}={}){
       }catch(error){console.log('HOMEPAGE_ROBLOX_TITLE_PENDING='+String(error.message).slice(0,180));}
     }
     let changed=false,generated=0,synced=0;
+    const ownerStopped=new Set(catalog.ownerStoppedGameIds||[]);
     for(const game of catalog.games||[]){
       const id=game.canonical?.identity?.gameId||game.id;
-      if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||['WITHDRAWN','ARCHIVED','DELETED'].includes(game.canonical?.lifecycle?.state||game.lifecycleState))continue;
+      if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||ownerStopped.has(id)||game.ownerDevelopmentStopped===true
+        ||['WITHDRAWN','ARCHIVED','DELETED','OWNER_STOPPED','STOPPED'].includes(game.canonical?.lifecycle?.state||game.lifecycleState))continue;
       const server=observed.get(id);
       const target=[...targets.values()].find(t=>t?.gameId===id);
       const previous=game.robloxThumbnail;
