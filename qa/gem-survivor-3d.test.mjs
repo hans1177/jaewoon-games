@@ -11,7 +11,7 @@ const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
 test('gem survivor uses actual 3D renderer, authored model, bounded native geometry',()=>{
  assert.ok(script,'gameplay module must exist');
  assert.match(html,/data-render-target="webgl-3d"/);
- assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs'/);
+ assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs\?v=20261024-world-2'/);
  assert.doesNotMatch(script,/\bgetContext\s*\(\s*['"]2d['"]/);
  assert.doesNotMatch(script,/\bctx\./);
  assert.match(native,/new THREE\.WebGLRenderer\(/);
@@ -28,7 +28,7 @@ test('gem survivor uses actual 3D renderer, authored model, bounded native geome
  assert.match(native,/scene\.remove\(mesh\);scene\.add\(bigger\)/);
  assert.ok(html.includes('"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"'));
 
- assert.match(native,/MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=260/);
+ assert.match(native,/MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=360/);
  assert.match(native,/nativeArtCoverage='authored-static-monsters'/);
  assert.match(native,/webglcontextlost/);
  assert.doesNotMatch(native,/localStorage|\.hp\s*[-+]?=/);
@@ -74,8 +74,8 @@ function harness(){
  const sandbox={document,window:{},innerWidth:390,innerHeight:760,devicePixelRatio:1,
   performance:{now:()=>0},requestAnimationFrame(fn){callback=fn},
   addEventListener:(type,fn)=>events.set(type,fn),
-  createGem3d:()=>Promise.resolve({resize(){},view(p){return {left:p.x-195,right:p.x+195,top:p.y-456,bottom:p.y+456}},render(state){renders++;snapshot={x:state.player.x,y:state.player.y,world:state.world,stage:state.stage.id,hp:state.player.hp}}})};
- const code=script.replace(/^\s*import\s*\{createGem3d\}\s*from\s*'\.\/gem3d\.mjs';\s*/,'');
+  createGem3d:()=>Promise.resolve({resize(){},view(p){return {left:p.x-195,right:p.x+195,top:p.y-456,bottom:p.y+456}},render(state){renders++;snapshot={x:state.player.x,y:state.player.y,world:state.world,stage:state.stage.id,hp:state.player.hp,enemies:state.enemies,projectiles:state.projectiles,particles:state.particles.length}}})};
+ const code=script.replace(/^\s*import\s*\{createGem3d\}\s*from\s*'\.\/gem3d\.mjs\?v=20261024-world-2';\s*/,'');
  assert.doesNotMatch(code,/^\s*import\s/m);
  const context=vm.createContext(sandbox);
  vm.runInContext(code,context,{timeout:1000});
@@ -120,7 +120,7 @@ test('stage selection and world movement survive resize and pause without viewpo
  game.node('startBtn').onclick();game.callback(33);
  assert.equal(game.snapshot.stage,'forge');
  assert.equal(game.snapshot.world.width,4200);assert.equal(game.snapshot.world.height,3200);
- assert.equal(game.snapshot.x,2100);assert.equal(game.snapshot.y,1600);
+ assert.equal(game.snapshot.x,2100);assert.equal(game.snapshot.y,1600);assert.equal(game.snapshot.hp,200);
  game.events.get('keydown')({key:'D',preventDefault(){}});game.callback(66);
  assert.ok(game.snapshot.x>2100,'uppercase keyboard movement uses existing player authority');
  game.events.get('keyup')({key:'D'});
@@ -140,4 +140,26 @@ test('every authored monster and environment dependency exists with retained CC0
  assert.ok(fs.existsSync('assets/shared/homely-house/cobblestones.obj'));
  assert.match(native,/new OBJLoader/);
  assert.match(native,/const visible=view\(state,world\)/);
+});
+
+test('owner survivability change doubles starting health while keeping damage and spawn rules',()=>{
+ assert.match(script,/const START_HP=200;/);assert.match(script,/const HURT_INV_SECONDS=\.85;/);
+ assert.match(script,/player\.hp-=amount;player\.inv=HURT_INV_SECONDS/);
+ assert.equal((script.match(/hp:START_HP,maxHp:START_HP/g)||[]).length,2);
+ assert.match(script,/Math\.max\(0,480-particles\.length\)/);
+ assert.match(native,/new THREE\.ShaderMaterial/);assert.match(native,/glows=pool\([\s\S]*?,256\)/);
+ assert.match(native,/healthFill\.scale\.x/);
+});
+
+test('contact damage respects longer protection and particle bursts remain bounded under many impacts',async()=>{
+ const game=harness();await new Promise(setImmediate);game.node('startBtn').onclick();game.callback(33);
+ const enemies=game.snapshot.enemies;enemies.length=0;
+ enemies.push({type:'slime',x:2100,y:1600,r:12,hp:1e9,maxHp:1e9,speed:0,damage:8,gems:1,hit:0,dot:0,dotTick:0,orbitHit:0});
+ game.callback(66);assert.equal(game.snapshot.hp,192);
+ for(let i=1;i<=20;i++)game.callback(66+i*33);
+ assert.equal(game.snapshot.hp,192,'repeat contact stays protected for 0.66 seconds');
+ for(let i=21;i<=27;i++)game.callback(66+i*33);
+ assert.equal(game.snapshot.hp,184,'contact resumes after the configured protection');
+ for(let i=0;i<500;i++)game.snapshot.projectiles.push({kind:'basic',x:2100,y:1600,vx:0,vy:0,r:4,damage:0,life:1,color:'#ffffff'});
+ game.callback(990);assert.ok(game.snapshot.particles<=480,'impact spam cannot grow particle storage without bound');
 });

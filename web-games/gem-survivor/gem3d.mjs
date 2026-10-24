@@ -5,7 +5,7 @@ import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three
 import { OBJLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
 
-const SCALE=56, MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=260;
+const SCALE=56, MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=360;
 const mat=(hex,emissive=hex)=>new THREE.MeshStandardMaterial({
   color:hex,emissive,emissiveIntensity:.27,metalness:.12,roughness:.58
 });
@@ -77,11 +77,11 @@ export async function createGem3d({canvas}){
   enemyMeshes.set(kind,parts);
  }));
  const trails=pool(new THREE.CylinderGeometry(1,1,1,5),new THREE.MeshBasicMaterial({
-  color:'#b4f7ff',transparent:true,opacity:.35,depthWrite:false,blending:THREE.AdditiveBlending}),MAX_PROJECTILES);
- const orbitTrails=pool(new THREE.TorusGeometry(1,.015,4,18,Math.PI*.5),new THREE.MeshBasicMaterial({color:'#96daff',transparent:true,opacity:.4,depthWrite:false,blending:THREE.AdditiveBlending}),5);
+  color:'#b4f7ff',transparent:true,opacity:.68,depthWrite:false,blending:THREE.AdditiveBlending}),MAX_PROJECTILES);
+ const orbitTrails=pool(new THREE.TorusGeometry(1,.035,4,24,Math.PI*.5),new THREE.MeshBasicMaterial({color:'#96daff',transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending}),5);
  const bubbles=pool(new THREE.SphereGeometry(1,5,4),mat('#9bf26b'),168);
  const halos=pool(new THREE.RingGeometry(.72,1,24),new THREE.MeshBasicMaterial({
-  color:'#f6c784',transparent:true,opacity:.55,side:THREE.DoubleSide,depthWrite:false}),24);
+  color:'#ffffff',transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}),64);
  // 환경: 기존 CC0 돌길 원본을 작은 경로 표식으로 재사용한다.
  const stone=await objLoader.loadAsync(new URL('../../assets/shared/homely-house/cobblestones.obj',import.meta.url).href);
  const paths=[];stone.updateMatrixWorld(true);
@@ -89,12 +89,32 @@ export async function createGem3d({canvas}){
   new THREE.MeshStandardMaterial({color:'#a3a58e',roughness:1}),160))});
  let terrainStage='';
  let projectiles=pool(new THREE.OctahedronGeometry(1,0),mat('#e5ffff'),MAX_PROJECTILES);
- let gems=pool(crystalGeo,mat('#42ffd4'),MAX_GEMS);
+ let gems=pool(crystalGeo,new THREE.MeshBasicMaterial({color:'#72ffde'}),MAX_GEMS);
  const particles=pool(new THREE.TetrahedronGeometry(1,0),mat('#ffffff'),MAX_PARTICLES);
- const blades=pool(new THREE.BoxGeometry(1,1,1),mat('#bddfff'),5);
+ const blades=pool(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:'#e3fcff'}),5);
  const pools=pool(new THREE.CylinderGeometry(1,1,.015,24),new THREE.MeshStandardMaterial({
   color:'#61d86a',emissive:'#256d31',emissiveIntensity:.25,transparent:true,opacity:.4,depthWrite:false}),28);
  const lightning=pool(new THREE.CylinderGeometry(.025,.025,1,5),mat('#a1f9ff'),144);
+ // 효과: 인스턴스 색과 방사형 감쇠를 사용해 외부 후처리 없이 발광을 표현한다.
+ const glowMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,
+  blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
+  vertexShader:`varying vec2 vUv;varying vec3 vColor;
+   void main(){vUv=uv;vColor=vec3(1.);
+   #ifdef USE_INSTANCING_COLOR
+   vColor=instanceColor;
+   #endif
+   vec4 point=vec4(position,1.);
+   #ifdef USE_INSTANCING
+   point=instanceMatrix*point;
+   #endif
+   gl_Position=projectionMatrix*modelViewMatrix*point;}`,
+  fragmentShader:`varying vec2 vUv;varying vec3 vColor;
+   void main(){float glow=pow(max(0.,1.-length(vUv-.5)*2.),2.);
+   gl_FragColor=vec4(vColor*1.4,glow*.8);}`});
+ const glows=pool(new THREE.PlaneGeometry(1,1),glowMaterial,256);
+ const healthBack=new THREE.Mesh(new THREE.PlaneGeometry(1.65,.16),new THREE.MeshBasicMaterial({color:'#121725',depthTest:false}));
+ const healthFill=new THREE.Mesh(new THREE.PlaneGeometry(1.55,.1),new THREE.MeshBasicMaterial({color:'#5cff9c',depthTest:false}));
+ healthBack.renderOrder=10;healthFill.renderOrder=11;scene.add(healthBack,healthFill);
  const player=new THREE.Group();scene.add(player);
  let model,modelRestY=0,clips=[],mixer=null,action=null,actionName='';
  try{
@@ -214,7 +234,7 @@ export async function createGem3d({canvas}){
    d.scale.set(r,r,p.kind==='arrow'?r*4:r*2);d.rotation.y=Math.atan2(p.vx||0,p.vy||0);
   });
   write(trails,shots,MAX_PROJECTILES,(p,i,d)=>{
-   const velocity=Math.hypot(p.vx,p.vy),length=Math.min(.7,velocity/SCALE*.045);
+   const velocity=Math.hypot(p.vx,p.vy),length=Math.min(1.7,velocity/SCALE*.09);
    const direction=vec(p.vx,0,p.vy).normalize();
    d.position.set(p.x/SCALE-direction.x*length*.5,.2,p.y/SCALE-direction.z*length*.5);
    d.scale.set(.025,length,.025);d.quaternion.setFromUnitVectors(axis,direction);
@@ -260,20 +280,35 @@ export async function createGem3d({canvas}){
    d.position.copy(start).addScaledVector(delta,.5);d.scale.set(1,length,1);
    d.quaternion.setFromUnitVectors(axis,delta.normalize());
   });
-  const rings=enemyActors.filter(e=>e.boss&&e.charge<.7).map(e=>({x:e.x,y:e.y,r:e.r/SCALE*(1.3+(.7-e.charge)*1.4)}));
-  for(const fx of active)if(fx.kind==='death')rings.push({x:fx.x,y:fx.y,r:fx.r/SCALE*(1+(1-fx.life/fx.max)*2)});
-  write(halos,rings,24,(e,i,d)=>{
+  const rings=enemyActors.filter(e=>e.boss&&e.charge<.7).map(e=>({x:e.x,y:e.y,r:e.r/SCALE*(1.3+(.7-e.charge)*1.4),color:'#ff4965'}));
+  for(const fx of active)if(fx.kind==='death'||fx.kind==='impact')rings.push({x:fx.x,y:fx.y,r:fx.r/SCALE*(1+(1-fx.life/fx.max)*(fx.kind==='death'?3:1.5)),color:fx.color});
+  for(const p of poison)rings.push({x:p.x,y:p.y,r:p.r/SCALE*(.85+Math.sin(now*.008)*.12),color:'#a6ff63'});
+  write(halos,rings,64,(e,i,d)=>{
    d.position.set(e.x/SCALE,.035,e.y/SCALE);d.rotation.x=-Math.PI/2;d.scale.setScalar(e.r);
   });
+  const flashes=[{x:state.x,y:state.y,r:1.4,color:state.inv>0?'#ffbca3':'#55d5ff'}];
+  for(const fx of active){
+   if(fx.kind==='lightning')flashes.push({x:fx.x2,y:fx.y2,r:2.1,color:'#a0dcff'});
+   else flashes.push({x:fx.x,y:fx.y,r:Math.max(.25,fx.r/SCALE*4*fx.life/fx.max),color:fx.color||'#bdfdff'});
+  }
+  for(const p of shots.slice(0,100))flashes.push({x:p.x,y:p.y,r:p.kind==='potion'?.7:.55,color:p.color});
+  for(const g of drops.slice(0,50))flashes.push({x:g.x,y:g.y,r:.6,color:'#58ffd3'});
+  for(const p of orbit)flashes.push({x:p.x,y:p.y,r:.85,color:'#b2dfff'});
+  write(glows,flashes,256,(fx,i,d)=>{d.position.set(fx.x/SCALE,.06,fx.y/SCALE);d.rotation.x=-Math.PI/2;d.scale.setScalar(fx.r)});
   canvas.dataset.unrenderedEntities=String(clipped);
   canvas.dataset.fallbackEnemyAssets='0';
-  canvas.dataset.playerX=String(state.x);canvas.dataset.playerY=String(state.y);
+  canvas.dataset.playerX=String(state.x);canvas.dataset.playerY=String(state.y);canvas.dataset.playerHp=String(state.hp);
+  canvas.dataset.glowInstances=String(glows.count);canvas.dataset.particleInstances=String(particles.count);
   canvas.dataset.authoredMonsterKinds=String(enemyMeshes.size);
   canvas.dataset.stage=stage.id;canvas.dataset.worldWidth=String(world.width);canvas.dataset.worldHeight=String(world.height);
   canvas.dataset.nativeHeroArt='knight.glb';
   document.body.dataset.nativeArtCoverage='authored-static-monsters';
   const bounds=view(state,world),cx=bounds.cx/SCALE,cz=bounds.cy/SCALE;
   camera.position.set(cx,25,cz+Math.sqrt(275));camera.lookAt(cx,0,cz);
+  const health=THREE.MathUtils.clamp(state.hp/state.maxHp,0,1);
+  healthBack.position.set(px,2.05,pz);healthBack.quaternion.copy(camera.quaternion);
+  healthFill.position.set(px-.775+health*.775,2.06,pz+.01);healthFill.quaternion.copy(camera.quaternion);
+  healthFill.scale.x=Math.max(.001,health);healthFill.material.color.set(health<.3?'#ff626c':health<.6?'#ffcc69':'#5cff9c');
   renderer.render(scene,camera);
   canvas.dataset.renderedFrame='true';
   document.body.dataset.spatialDimension='3d';

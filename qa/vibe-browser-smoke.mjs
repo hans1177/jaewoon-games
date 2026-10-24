@@ -47,20 +47,25 @@ try{
    const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1100,height:720},isMobile:mobile,hasTouch:mobile});
    const gem=await context.newPage(),gemErrors=[];
    gem.on('pageerror',e=>gemErrors.push(e.message));
+   gem.on('console',msg=>{if(msg.type()==='error'&&/THREE|shader|WebGL/i.test(msg.text()))gemErrors.push(msg.text())});
    try{
     for(const stage of ['cavern','garden','forge']){
      const route=await gem.goto(liveBase+'web-games/gem-survivor/',{waitUntil:'domcontentloaded'});
      assert.ok(route?.ok(),'GEM_ROUTE_HTTP');
      await gem.locator('#startBtn').waitFor({state:'visible'});
      await gem.waitForFunction(()=>!document.getElementById('startBtn').disabled,null,{timeout:60000});
-     await gem.locator('[data-stage="'+stage+'"]').click();
-     assert.equal(await gem.locator('[data-stage="'+stage+'"]').getAttribute('aria-pressed'),'true');
+     await gem.locator('button[data-stage="'+stage+'"]').click();
+     assert.equal(await gem.locator('button[data-stage="'+stage+'"]').getAttribute('aria-pressed'),'true');
      await gem.locator('#startBtn').click();
      await gem.waitForFunction(id=>document.getElementById('game').dataset.stage===id,stage);
      const canvas=gem.locator('#game');
      assert.equal(await canvas.getAttribute('data-world-width'),'4200');
      assert.equal(await canvas.getAttribute('data-world-height'),'3200');
      assert.equal(await canvas.getAttribute('data-authored-monster-kinds'),'8');
+     assert.equal(await canvas.getAttribute('data-player-hp'),'200');
+     assert.ok(Number(await canvas.getAttribute('data-glow-instances'))>0);
+     assert.ok(Number(await canvas.getAttribute('data-glow-instances'))<=256);
+     assert.ok(Number(await canvas.getAttribute('data-particle-instances'))<=360);
      const first=Number(await canvas.getAttribute('data-player-x'));
      if(mobile){
       const bounds=await gem.locator('#joystick').boundingBox();
