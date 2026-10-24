@@ -372,6 +372,8 @@ jobs:
           set -euo pipefail
           node qa/external-mobile-free-game-playtest-workflow.test.mjs
           node --test qa/jaewoon-motion-engine.test.cjs
+          # 기존 코어 QA에서 바이브 조직 경험치의 검증 SHA/병합/부서 매핑을 회귀 검사한다.
+          node --test qa/company-department-experience-source-attribution.test.mjs
           # New independent ocean game: real CC0 GLB, game logic, saves, mobile entry contract
           node --test qa/ocean-voyage.test.mjs
           node --check assets/vibe-engine-adapter.js

@@ -26,9 +26,30 @@ jobs:
           ref: main
           fetch-depth: 1
           fetch-tags: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tools/award-department-experience.mjs
+            /department-experience.json
+            /assets/department-experience-state.js
 
       - name: Sync main
         run: git pull --ff-only origin main
+
+      - name: Fetch exact verified QA source and its first parent
+        env:
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]] || { echo 'DEPARTMENT_XP_SOURCE_SHA_INVALID' >&2; exit 1; }
+          # The shallow main checkout need not contain the verified older SHA.
+          # Fetch only the source commit and first parent; no full source/blob hydration.
+          git fetch --no-tags --filter=blob:none --depth=2 origin "$SOURCE_SHA"
+          git cat-file -e "${SOURCE_SHA}^{commit}"
+          git cat-file -e "${SOURCE_SHA}^1^{commit}"
+          test "$(git rev-parse "${SOURCE_SHA}^{commit}")" = "$SOURCE_SHA"
+          echo "DEPARTMENT_XP_VERIFIED_SOURCE_LOADED=$SOURCE_SHA"
 
       - name: Award verified department XP
         env:
