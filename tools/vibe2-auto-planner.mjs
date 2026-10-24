@@ -72,6 +72,20 @@ function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.
 const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'company-learning/platform-release-roadmap.json').trim();
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const COMPANY_ASSET_LIBRARY_PATH='company-asset-library.json';
+// 파일명: tools/vibe2-auto-planner.mjs · F0부터 반복되는 표현 품질 상세 렌즈
+// 기존 F0~F9 및 BUILD_UP/REPAIR 사이클만 사용한다. 새 단계·큐·독립 렌더러는 만들지 않는다.
+const VISUAL_ITERATION_AXES=Object.freeze([
+ 'STYLE_LOCK_AND_LICENSED_RENDER_BINDING',
+ 'REGIONAL_BACKGROUND_TILE_VARIATION_AND_LANDMARKS',
+ 'PIXEL_GRID_AND_NEAREST_FILTER_ONLY_WHEN_PIXEL_STYLE',
+ 'CREATURE_SILHOUETTE_EQUIPMENT_AND_WEAPON_IDENTITY',
+ 'IDLE_WALK_RUN_BLEND_FOOT_CONTACT_AND_TURN',
+ 'ATTACK_WINDUP_CONTACT_RECOIL_RECOVERY',
+ 'HIT_TRAILS_PARTICLES_AUDIO_CAMERA_IMPACT_SYNC',
+ 'LIGHTING_MATERIAL_WEATHER_AND_SPATIAL_DEPTH',
+ 'TOUCH_CAMERA_FRAME_MEMORY_AND_EFFECT_BUDGET',
+ 'EXACT_SCENE_BEFORE_AFTER_VISUAL_SAVE_REGRESSION'
+]);
 const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
   status:'ACTIVE',
   growth:Object.freeze({
@@ -198,6 +212,8 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     :0;
   const minimumConnectedImprovements=Math.max(baseMinimumConnectedImprovements,sourceCompositionConnectedFloor);
   const repair=clean(phase).toUpperCase()==='REPAIR';
+  const activeVisualAxes=VISUAL_ITERATION_AXES.slice(0,Math.min(VISUAL_ITERATION_AXES.length,level+1));
+  const visualFocus=VISUAL_ITERATION_AXES[(level-1)%VISUAL_ITERATION_AXES.length];
   return Object.freeze({
     version:1,
     policySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
@@ -218,6 +234,13 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     minimumActiveSourceCompositionDimensions,
     activeSourceCompositionDimensions:Object.freeze([...activeSourceCompositionDimensions]),
     sourceCompositionDepthUnbounded:true,
+    visualIteration:Object.freeze({
+      version:1, startsAt:'F0_EXISTING_SOURCE_BIND', continuesThrough:'F9_AND_VERIFIED_NEXT_BUILD_UP',
+      depthLevel:expectationMetric(growth?.detailDepthLevel,level,fallbackGrowth.detailDepthLevel),
+      currentFocus:visualFocus,activeAxes:Object.freeze([...activeVisualAxes]),
+      namedAxesCompletedDoesNotStop:true,pixelArtOnlyIfGameStyleRequires:true,
+      preserveGameplaySaveAuthority:true,runtimeProofUsesExistingStage:true
+    }),
     assetLibraryPresent:assetLibrarySnapshot.present,
     assetLibraryPath:assetLibrarySnapshot.path,
     assetLibraryVersion:assetLibrarySnapshot.version,
@@ -259,6 +282,7 @@ function buildUpIterationExpectationPrompt(expectation={}){
 이 반복의 품질 기준은 이전 verified baseline보다 낮아질 수 없다. 실패 수리는 같은 기대치 레벨을 유지하고, 성공한 반복만 다음 기대치를 올린다. 새 workflow/stage/queue/worker를 만들지 말고 기존 BUILD_UP 책임 작업 안에서 충족한다. 내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다. Studio/실런타임 증거는 기존 canonical 단계가 원래 요구하는 경우에만 별도로 사용한다.
 최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 연결형 콘텐츠 묶음 ${expectation.minimumConnectedContentBundles}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 같은 QA/체크 재통과만 반복하거나 이름/색/수치 복제·마커/문서만 추가한 변경은 성장으로 계산하지 않는다.
 디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
+표현 품질 제작: F0에서 실제 대상 플랫폼의 그래픽/움직임 기반을 만들고, 기존 F0~F9 이후 검증된 빌드를 시작점으로 다음 BUILD_UP을 반복한다. visual-depth=${expectation.visualIteration?.depthLevel}; focus=${expectation.visualIteration?.currentFocus}; active=${(expectation.visualIteration?.activeAxes||[]).join('|')}. 매 반복의 약한 실측 표현 축만 기존 책임 함수에서 개선하며 이전 PASS 품질을 떨어뜨리지 않는다. 픽셀은 승인된 픽셀 스타일에만 그리드·nearest·지역 타일 변화를, 3D는 맞는 원본 리그·메시·재질/조명을 개선한다. 몹 종별 idle/move/turn, 무기별 windup/impact/recoil/recovery, 적중 이벤트 한 번에 동기화된 VFX/SFX/카메라, 모바일 터치·프레임/메모리·실측 동일 장면 전후 비교를 확인한다. 값·저장·드롭·판정·권한 변경은 금지하며 별도 QA 단계/파이프라인은 추가하지 않는다.
 소스 구성 성장: depth=${expectation.sourceCompositionDepthLevel}; 최소 ${(expectation.activeSourceCompositionDimensions||[]).length}/${expectation.minimumActiveSourceCompositionDimensions}개 축을 실제 책임 소스에서 연결한다. 활성 축=${(expectation.activeSourceCompositionDimensions||[]).join(' | ')||'CORE_LOOP_ORCHESTRATION'}. 내부 자산 라이브러리=${expectation.assetLibraryPresent?`v${expectation.assetLibraryVersion}, assets=${expectation.assetLibraryAssetCount}, families=${expectation.assetLibraryFamilyCount}`:'NOT_OBSERVED'}. 적용 가능한 고급 자산·UI·모션·VFX·컷신·인트로·로딩·메뉴 표현이 생기면 실제 전투/AI/월드 상태/퀘스트/보상/세션 전환/중후반 콘텐츠 흐름과 소스에서 연결한다. 자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면 source evolution으로 계산하지 않는다. 모든 축 활성화 이후에도 sourceCompositionDepth는 계속 상승하며, 비적용 축은 이유가 있어야 한다.
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
@@ -3294,6 +3318,7 @@ ${expectationInstruction}
     designIsImplementationCeiling:false,
     expectationPolicySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
     qualityExpectation:iterationExpectation,
+    visualIteration:iterationExpectation.visualIteration,
     requiredConnectedImprovements:{min:iterationExpectation.minimumConnectedImprovements,max:null},
     requiredMeaningfulDistinctAxes:{min:iterationExpectation.minimumMeaningfulDistinctAxes,max:null},
     requiredCrossSystemConnections:{min:iterationExpectation.minimumCrossSystemConnections,max:null},
