@@ -179,16 +179,16 @@ function ownerWebTitle(filesystem,indexFile,fallback){
 export function inspectGeneralWebGameSource({filesystem=fs,dir='',entryFile='index.html'}={}){
   let html='';
   try{html=filesystem.readFileSync(dir+'/'+entryFile,'utf8');}catch{return{recognized:false,reasons:['ENTRY_MISSING']};}
-  const files=[...html.matchAll(/<script\\b[^>]*src=["']([^"']+)["']/gi)]
-    .map(m=>m[1].split(/[?#]/)[0]).filter(file=>/^(?:\\.\\/)?[a-z0-9_./-]+\\.m?js$/i.test(file)&&!file.includes('..')&&!file.startsWith('/'))
+  const files=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)]
+    .map(m=>m[1].split(/[?#]/)[0]).filter(file=>/^(?:\.\/)?[a-z0-9_./-]+\.m?js$/i.test(file)&&!file.includes('..')&&!file.startsWith('/'))
     .slice(0,12);
   let source=html.slice(0,192000);
-  for(const file of files){try{source+='\\n'+filesystem.readFileSync(dir+'/'+file.replace(/^\\.\\//,''),'utf8').slice(0,128000);}catch{}}
-  const runtime=/(?:requestAnimationFrame|setInterval|setTimeout)\\s*\\(/.test(source);
-  const input=/(?:addEventListener\\s*\\(\\s*['"`](?:key|pointer|touch|mouse|click)|\\.on(?:click|keydown|pointerdown|touchstart)\\s*=|<button\\b|<input\\b)/i.test(source);
-  const world=/(?:<canvas\\b|\\.getContext\\s*\\(|createElement\\s*\\(\\s*['"`]canvas|class(?:room)?|학교|교실|수업|player|character|enemy|monster|health|score|inventory|shop|quest|money|coins|gameState|gameLoop|draw|render)/i.test(source);
-  const state=/(?:\\b(?:let|const|var)\\s+\\w+\\s*=|\\bfunction\\s+\\w+\\s*\\(|=>\\s*\\{|\\bclass\\s+\\w+)/.test(source);
-  const meaningfulLogic=/(?:\\b(?:update|render|tick|loop|draw|spawn|attack|move|advance|nextDay|nextLesson|startClass|buy|earn|saveGame|loadGame)\\s*\\(|(?:classroom|player|score|money|coins|level|students|studentsState|health|gameState)\\s*(?:\\.|\\[|[+\\-*/]?=))/i.test(source);
+  for(const file of files){try{source+='\n'+filesystem.readFileSync(dir+'/'+file.replace(/^\.\//,''),'utf8').slice(0,128000);}catch{}}
+  const runtime=/(?:requestAnimationFrame|setInterval|setTimeout)\s*\(/.test(source);
+  const input=/(?:addEventListener\s*\(\s*['"`](?:key|pointer|touch|mouse|click)|\.on(?:click|keydown|pointerdown|touchstart)\s*=|<button\b|<input\b)/i.test(source);
+  const world=/(?:<canvas\b|\.getContext\s*\(|createElement\s*\(\s*['"`]canvas|class(?:room)?|학교|교실|수업|player|character|enemy|monster|health|score|inventory|shop|quest|money|coins|gameState|gameLoop|draw|render)/i.test(source);
+  const state=/(?:\b(?:let|const|var)\s+\w+\s*=|\bfunction\s+\w+\s*\(|=>\s*\{|\bclass\s+\w+)/.test(source);
+  const meaningfulLogic=/(?:\b(?:update|render|tick|loop|draw|spawn|attack|move|advance|nextDay|nextLesson|startClass|buy|earn|saveGame|loadGame)\s*\(|(?:classroom|player|score|money|coins|level|students|studentsState|health|gameState)\s*(?:\.|\[|[+\-*/]?=))/i.test(source);
   return {recognized:runtime&&input&&world&&state&&meaningfulLogic,
     engine:'HTML_CSS_JAVASCRIPT',signals:{runtime,input,world,state,meaningfulLogic}};
 }
