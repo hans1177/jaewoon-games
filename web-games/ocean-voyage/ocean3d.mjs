@@ -99,6 +99,13 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  }
 
  const places=[['market','교역소',.18,.35,'#9d6750'],['fleet','조선소',.77,.63,'#596f70'],['crew','선술집',.22,.60,'#ae7546'],['palace','왕궁 · 총독부',.72,.29,'#726b8d'],['quests','탐험가 사무실',.72,.47,'#497c72'],['jobs','직업 길드',.25,.79,'#74694a']];
+ // 도시마다 실제 입점 시설과 거리를 다르게 배치한다.
+ function cityPlaces(){
+  const current=PORTS.find(p=>Math.hypot(p.x-state.ship.x,p.z-state.ship.z)<5)||PORTS[0],profile=PORT_SCENES[current.id]||PORT_SCENES.dawn;
+  const facilities=places.filter(p=>profile.facilities.includes(p[0]));
+  if(profile.layout%2)facilities.reverse();
+  return facilities.map((p,i)=>[p[0],p[1],i%2?.74:.25,.27+Math.floor(i/2)*.24,p[4]]);
+ }
  function building(x,y,bw,bh,label,color){rect(x-3,y+bh-2,bw+6,6,'#493d2f');rect(x,y,bw,bh,'#d0b78b');rect(x-5,y-12,bw+10,14,color);rect(x+2,y-19,bw-4,9,color);rect(x+7,y+10,13,13,'#3e5960');rect(x+bw-20,y+10,13,13,'#3e5960');rect(x+bw/2-7,y+bh-23,14,23,'#634b36');rect(x+bw/2-2,y+bh-13,2,3,'#e7c27d');rect(x-8,y+bh+6,bw+16,20,'#332e28');text(label,x+bw/2,y+bh+20,11,'#f2d7a1','center');}
  function town(){
   if(townArt.complete&&townArt.naturalWidth){ctx.drawImage(townArt,0,75,w,h-75);
