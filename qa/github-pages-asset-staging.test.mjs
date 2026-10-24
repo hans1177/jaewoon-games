@@ -163,6 +163,44 @@ test('queued Pages pruning cancels only superseded same-owner PR runs',()=>{
  assert.deepEqual(cancelled,['repos/'+repo+'/actions/runs/1/cancel']);
 });
 
+test('repeated main pushes never abort active package, and coalesce only superseded idle jobs',()=>{
+ const header=workflow.split('  deploy:')[1].split('    steps:')[0];
+ assert.match(header,/cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+ const start=workflow.indexOf("          import {execFileSync} from 'node:child_process';");
+ const end=workflow.indexOf('          NODE',start);
+ const code=workflow.slice(start,end).replace(/          /g,'').replace(/import .*?;\n/,'');
+ const repo='hans1177/jaewoon-games',old='a'.repeat(40),newest='b'.repeat(40);
+ const mk=(id,status,sha=old)=>({id,event:'push',status,head_branch:'main',head_sha:sha,head_repository:{full_name:repo}});
+ const runs=[
+  mk(101,'in_progress'),  // active build has started staging: must survive.
+  mk(102,'queued'),       // superseded idle job: may be discarded.
+  mk(103,'pending'),      // completed staging, waiting for release: must survive.
+  mk(104,'queued',newest),// latest build never discarded.
+  {...mk(105,'queued'),head_repository:{full_name:'foreign/fork'}},
+  mk(106,'queued')        // diverged ancestry must not be cancelled.
+ ];
+ const removed=[];
+ const exec=(command,args)=>{
+  assert.equal(command,'gh');
+  const method=args[2],route=args[3];
+  if(method==='POST'){removed.push(route);return '';}
+  if(route.endsWith('/commits/main'))return JSON.stringify({sha:newest});
+  if(route.includes('event=pull_request'))return JSON.stringify({workflow_runs:[]});
+  if(route.includes('event=push'))return JSON.stringify({workflow_runs:runs});
+  if(route.includes('/compare/'))return JSON.stringify({status:route.includes('106')?'diverged':'ahead',total_commits:1});
+  if(route.endsWith('/jobs?per_page=100')){
+   const id=Number(route.split('/').at(-2));
+   return JSON.stringify({jobs:id===101?[{name:'deploy',status:'in_progress'}]:id===103?[{name:'deploy',status:'completed'}]:[]});
+  }
+  const id=Number(route.split('/').at(-1));
+  return JSON.stringify(runs.find(x=>x.id===id));
+ };
+ // Model a frequent change while a main build and a publish job are active.
+ new Function('execFileSync','process','console',code)(
+  exec,{env:{GITHUB_REPOSITORY:repo,GITHUB_RUN_ID:'999',GITHUB_SHA:newest}},{log(){}});
+ assert.deepEqual(removed,['repos/'+repo+'/actions/runs/102/cancel']);
+});
+
 test('publication lock ends after official deploy while existing route and browser QA run afterwards',()=>{
  const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
  const post=workflow.slice(workflow.indexOf('  post-publication-3d-smoke:'));
