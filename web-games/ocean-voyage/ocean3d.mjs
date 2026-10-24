@@ -1,6 +1,6 @@
 // 파일명: ocean3d.mjs · 기존 장면 책임 파일을 픽셀 해도·항구·시설 렌더러로 교체
 // 임포트: 실제 해안선과 게임 규칙 공유. 저장·경제 규칙은 엔진이 담당한다.
-import {PORTS,SHIP_TYPES,PORT_SCENES,portStatus,SITES,CREW} from './engine.mjs';
+import {PORTS,SHIP_TYPES,PORT_SCENES,MERCHANT_CAPTAINS,merchantPosition,portStatus,SITES,CREW} from './engine.mjs';
 import {COUNTRIES} from './assets/countries.mjs';
 import {LAND} from './assets/world.mjs';
 const C={sea:'#22566c',deep:'#173e55',shore:'#dbc899',land:'#768564',dark:'#283f3c',gold:'#f0d398',wood:'#583c30',roof:'#954f42'};
@@ -14,7 +14,7 @@ export function drawGeography(ctx,w,h,cx,cz,scale){
  if(scale>.5){ctx.font='bold '+(w<200?7:11)+'px system-ui';ctx.fillStyle='#f4e1ad';ctx.textAlign='center';for(const c of COUNTRIES){const x=w/2+(c.lon-cx)*scale,y=h/2+(c.z-cz)*scale;if(x>10&&x<w-10&&y>20&&y<h-20)ctx.fillText(c.name,x,y);}ctx.textAlign='left';}
 }
 export function drawFog(ctx,w,h,cx,cz,scale,charted){const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;ctx.fillStyle='#071a2deB';ctx.beginPath();for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++)if(!known.has(gx+':'+gz))ctx.rect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);ctx.fill();}
-export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{}}={}){
+export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{},onMerchant=()=>{}}={}){
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0;
@@ -82,6 +82,18 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    const enemy=p.neutral?'#9dc5cd':'#e5a28e';ship(x(p.x),z(p.z),p.heading,p.neutral?'cog':'galleon',!p.neutral,.7,p.neutral?4:10);
    const distance=Math.hypot(p.x-cx,p.z-cz);
    if(distance<45){const ex=x(p.x),ey=z(p.z);rect(ex-19,ey-31,38,4,'#302b28');rect(ex-19,ey-31,38*p.hull/p.maxHull,4,enemy);}
+  }
+  // 이동 중인 실제 교역 선박(소유 화물·목적지·선장 이름)을 바다에 표시한다.
+  for(const m of state.merchants||[]){
+   if(state.crewRoster.includes(m.id))continue;
+   const p=merchantPosition(m),px=x(p.x),py=z(p.z);
+   if(px<-40||px>w+40||py<65||py>h-70)continue;
+   const known=state.charted.includes(Math.floor(p.x/24)+':'+Math.floor(p.z/24));
+   if(!known)continue;
+   ship(px,py,p.heading,'dutch-fluyt',false,.68,6);
+   const captain=MERCHANT_CAPTAINS.find(c=>c.id===m.id);
+   if(captain){text(captain.name,px,py-27,9,'#f5d6a3','center');rect(px-4,py-39,8,5,'#d6b57b');}
+   hit.push({x:px-21,y:py-29,w:42,h:55,merchant:m.id});
   }
   if(state.fleet>=2)ship(w/2-26,h/2+29,state.ship.heading,'cog',false,.73,6);
   if(state.fleet>=3)ship(w/2+27,h/2+31,state.ship.heading,'galleon',false,.73,8);
@@ -197,7 +209,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  }
  function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:20))return;last=now;time=now/1000;
  const width=Math.min(560,Math.max(320,Math.round(canvas.clientWidth/1.4))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w;canvas.height=h;}ctx.imageSmoothingEnabled=false;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();}
- canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);});
+ canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
  return {setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||4.8));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);}};
 }
