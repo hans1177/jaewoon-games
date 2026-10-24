@@ -277,7 +277,10 @@ try{
  // Cozy Island RTS: run on the real published GitHub Pages only, after deployment.
  if(liveBase){
   // 공개 후: 경로 보존, 수평/수직 성문 자동 방향과 인부 길찾기의 실제 JS 모듈 검사.
-  const castleSource=fs.readFileSync(new URL('../web-games/cozy-island/castle-layout.js',import.meta.url),'utf8');
+  // 사후검증 체크아웃에는 qa 스크립트만 있으므로 실제 공개 모듈을 받아 검사한다.
+  const castleResponse=await page.request.get(liveBase+'web-games/cozy-island/castle-layout.js');
+  assert.ok(castleResponse.ok(),'COZY_LAYOUT_LIVE_SOURCE_MISSING');
+  const castleSource=await castleResponse.text();
   const castle=await import('data:text/javascript;base64,'+Buffer.from(castleSource).toString('base64'));
   const continuous=castle.wallLine({x:0,y:0},{x:270,y:180});
   assert.equal(continuous.length,6,'COZY_WALL_DRAG_GAPS_DETECTED');
@@ -326,6 +329,39 @@ try{
       return input.width===1&&input.height===1&&canvas.width>250&&canvas.height>250
        &&!!gl&&gl.getParameter(gl.VIEWPORT)[2]>250;
     },null,{timeout:30000});
+    // 공개된 Three.js 엔진으로 경제 건물 메시를 직접 생성해 모델 고유성 검사.
+    const buildingModels=await cozy.evaluate(async()=>{
+      const {IslandRendererV3,ECONOMY_3D_LOOK}=await import('./render-v3.js');
+      const renderer=Object.create(IslandRendererV3.prototype);
+      const models=Object.entries(ECONOMY_3D_LOOK).map(([id,kind])=>{
+        const model=renderer.make3d(kind,3.05);
+        const signature=JSON.stringify(model.children.map(mesh=>[
+          mesh.geometry?.type,mesh.geometry?.parameters,
+          mesh.position.toArray().map(v=>Math.round(v*100)/100),
+          mesh.material?.color?.getHex(),
+          Math.round((mesh.rotation.z||0)*100)/100
+        ]));
+        const parts=model.children.length;
+        model.traverse(mesh=>{if(mesh.isMesh){mesh.geometry.dispose();mesh.material.dispose();}});
+        return {id,signature,parts};
+      });
+      const barracks=renderer.make3d('fort-barracks',3.05);
+      const training=barracks.children.length;
+      barracks.traverse(mesh=>{if(mesh.isMesh){mesh.geometry.dispose();mesh.material.dispose();}});
+      return {
+        count:models.length,unique:new Set(models.map(m=>m.signature)).size,
+        empty:models.filter(m=>m.parts<4).map(m=>m.id),
+        incomplete:['lumber','quarry','wheat','vineyard','winery','brewery','smith','stockpile']
+          .filter(id=>!models.some(m=>m.id===id&&m.parts>=8)),
+        training
+      };
+    });
+    assert.equal(buildingModels.count,21,view.name+': COZY_BUILDING_TYPES');
+    assert.equal(buildingModels.unique,21,view.name+': COZY_BUILDING_MODEL_DUPLICATION');
+    assert.deepEqual(buildingModels.empty,[],view.name+': COZY_BUILDING_EMPTY_3D');
+    assert.deepEqual(buildingModels.incomplete,[],view.name+': COZY_PRODUCTION_MESH_INCOMPLETE');
+    assert.ok(buildingModels.training>=24,view.name+': COZY_BARRACKS_TRAINING_YARD');
+    console.log('COZY_BUILDING_3D_POSTDEPLOY=PASS '+view.name+' '+expected);
     assert.equal(await cozy.locator('#joystick').count(),0,
       view.name+': COZY_RTS_MUST_NOT_HAVE_CHARACTER_JOYSTICK');
     await cozy.locator('#castleCommand').click();
