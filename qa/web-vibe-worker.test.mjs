@@ -1,8 +1,10 @@
+// 파일명: qa/web-vibe-worker.test.mjs · 웹 작업자 검증
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import vm from 'node:vm';
 import {assertWebVibeWorkerEnvironment,chooseWebVibeTask,safeWebVibeReplacement,resolveWebVibeSources,proposeWebVibeChange} from '../tools/web-vibe-worker.mjs';
 import {emptyWebVibeQueue} from '../tools/web-vibe-organization.mjs';
 test('independent WEB worker requires its own credentials and own localhost model endpoint',()=>{
@@ -114,7 +116,7 @@ test('GitHub-hosted WEB_VIBE_1 rejects spoofed identity and requires independent
 test('existing cloud free-model response is bounded by same WEB source and save invariants',async()=>{
   const task={gameId:'demo',goal:'fix score HUD'};
   const source={relative:'web-games/demo/client/game.js',
-    original:'const score=1;\\nlocalStorage.setItem("player-save-v1", score);\\n'};
+    original:'const score=1;\nlocalStorage.setItem("player-save-v1", score);\n'};
   let calls=0;
   const patch=await proposeWebVibeChange(task,source,{cloud:true,apiKey:'fixture',
     geminiImpl:async args=>{
@@ -186,4 +188,32 @@ test('existing exorcist office extends native mission and investigation contract
   assert.match(source,/for\(const m of MISSIONS\)/);
   assert.match(source,/localStorage\.setItem\(SAVE_KEY,JSON\.stringify\(save\)\)/);
   assert.match(source,/function defaultSave\(\)/);
+});
+
+// 앞부분에 없는 함수와 기존 리스너가 있어도 실제 필요한 연결만 일괄 수정한다.
+test('keyless worker scans complete module and executes batched controls resize blur and frame fixes',async()=>{
+ const original='<html><body><button id="attackButton" data-gameplay-action="attack">공격</button>'
+  +'<button id="dodgeButton" data-gameplay-action="dodge">회피</button><script type="module">'
+  +'/*'+('existing verified game source '.repeat(550))+'*/\n'
+  +'(()=>{function attack(){state.attacks++}function dodge(){state.dodges++}\n'
+  +'function releaseInputs(){state.releases++}function resize(){state.resizes++}\n'
+  +'function tick(now,last){const dt=(now-last)/1000;return dt}globalThis.tick=tick;\n'
+  +'addEventListener("keydown",()=>{});})();</script></body></html>';
+ let network=0;
+ const edit=await proposeWebVibeChange({gameId:'demo',goal:'모바일 버튼 입력·화면 회전·프레임 시간차 수정'},
+  {relative:'web-games/demo/index.html',original},{cloud:true,apiKey:'',fetchImpl:async()=>{network++;throw Error('network')},geminiImpl:async()=>{network++;throw Error('model')}});
+ assert.equal(network,0);assert.ok(edit.analysis.bytes>13500);assert.ok(edit.analysis.functions.includes('releaseInputs'));
+ assert.equal(edit.deterministicSteps,2);
+ const handlers=new Map(),buttons=new Map(),state={attacks:0,dodges:0,releases:0,resizes:0};
+ const context=vm.createContext({state,addEventListener:(type,fn)=>handlers.set(type,fn),document:{getElementById:id=>({addEventListener:(type,fn)=>buttons.set(id,fn)})}});
+ vm.runInContext(edit.updated.match(/<script type="module">([\s\S]*?)<\/script>/)[1],context);
+ buttons.get('attackButton')();buttons.get('dodgeButton')();handlers.get('blur')();handlers.get('resize')();
+ assert.deepEqual(state,{attacks:1,dodges:1,releases:1,resizes:1});assert.equal(context.tick(10000,0),.05);assert.equal(context.tick(0,100),0);
+ await assert.rejects(()=>proposeWebVibeChange({gameId:'demo',goal:'모바일 버튼 입력·화면 회전·프레임 시간차 수정'},
+  {relative:'web-games/demo/index.html',original:edit.updated},{cloud:true,apiKey:''}),/FREE_MODEL_KEY_MISSING/);
+});
+
+test('worker refuses invalid module and inline script before any candidate write',()=>{
+ assert.throws(()=>safeWebVibeReplacement('const value=1;',JSON.stringify({oldText:'const value=1;',newText:'const value=;'}),{relative:'game.mjs'}));
+ assert.throws(()=>safeWebVibeReplacement('<html><script>let value=1;</script></html>',JSON.stringify({oldText:'let value=1;',newText:'let value=;'})));
 });
