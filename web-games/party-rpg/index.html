@@ -152,7 +152,7 @@ var SAVE_KEY="party-rpg-v1";
 var sound=new PartyAudio(),audioBtn=document.getElementById("audioBtn");
 function syncAudioButton(){audioBtn.textContent=sound.muted?"소리 끔":"소리 켬";audioBtn.setAttribute("aria-pressed",String(!sound.muted));audioBtn.setAttribute("aria-label",sound.muted?"배경 음악 및 효과음 켜기":"배경 음악 및 효과음 끄기");}
 syncAudioButton();audioBtn.onclick=function(){sound.setMuted(!sound.muted);syncAudioButton();};
-document.addEventListener("click",function(e){if(e.target.closest("button")){sound.start();sound.effect("ui");}},{passive:true});
+document.addEventListener("click",function(e){var button=e.target.closest("button");if(button){sound.start();if(!["attackBtn","interactBtn","audioBtn"].includes(button.id))sound.effect("ui");}},{passive:true});
 var MAX_PARTY_SIZE=4;
 var ZONES=[
  {name:"마을",sub:"휴식과 준비",color:"#5f8f58",lv:1,mons:[]},
