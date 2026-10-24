@@ -297,7 +297,8 @@ export async function createGem3d({canvas}){
   write(glows,flashes,256,(fx,i,d)=>{d.position.set(fx.x/SCALE,.06,fx.y/SCALE);d.rotation.x=-Math.PI/2;d.scale.setScalar(fx.r)});
   canvas.dataset.unrenderedEntities=String(clipped);
   canvas.dataset.fallbackEnemyAssets='0';
-  canvas.dataset.playerX=String(state.x);canvas.dataset.playerY=String(state.y);
+  canvas.dataset.playerX=String(state.x);canvas.dataset.playerY=String(state.y);canvas.dataset.playerHp=String(state.hp);
+  canvas.dataset.glowInstances=String(glows.count);canvas.dataset.particleInstances=String(particles.count);
   canvas.dataset.authoredMonsterKinds=String(enemyMeshes.size);
   canvas.dataset.stage=stage.id;canvas.dataset.worldWidth=String(world.width);canvas.dataset.worldHeight=String(world.height);
   canvas.dataset.nativeHeroArt='knight.glb';
