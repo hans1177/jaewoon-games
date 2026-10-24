@@ -1,6 +1,7 @@
 // 파일명: web-games/cozy-island/render-v3.js
 // 임포트: 기존 월드 좌표·깊이 정렬은 유지하고 새 중세 픽셀 아트를 연결한다.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import { findWorkerRoute } from './castle-layout.js';
 const SC=1/36;
 // 카메라: 45도 방위·30도 고도의 2:1 등각 투영. 게임 좌표는 그대로 유지한다.
 const ISO_YAW=Math.PI/4,ISO_PITCH=Math.PI/6;
@@ -883,9 +884,42 @@ export class IslandRendererV3 {
           959+(i%3)*78,404+Math.floor(i/3)*78,.55);
       }
       for(const npc of game.npcs)put('npc:'+npc.id,'npc',npc.x,npc.y,1.9);
-      for(let i=0;i<game.state.workers;i++){
-        const phase=game.timeNow/1000+i*1.7;
-        put('worker:'+i,'npc',1020+Math.cos(phase)*50+i*12,505+Math.sin(phase)*25,1.8);
+      // 인부는 더 이상 성문 앞에서 제자리 회전하지 않는다.
+      // 실제 창고↔생산시설 최단 경로를 왕복하며 닫힌 성문·성벽을 우회한다.
+      const economyJobs=game.state.economyV4?.buildings||{};
+      const destinations=[
+        ...Object.entries(economyJobs)
+         .filter(([id,b])=>b?.count>0&&!['stockpile','granary','hovel','well','market','armory'].includes(id))
+         .flatMap(([id,b])=>(b?.sites||[]).slice(0,b.count).map(p=>({id,x:p.x,y:p.y})))
+      ];
+      const workerCount=Math.min(12,destinations.length*2);
+      const wallMap=(fort.structures||[]).filter(w=>w.hp>0&&['wall','gate','tower'].includes(w.kind));
+      const signature=wallMap.map(w=>w.kind+':'+w.x+':'+w.y+':'+w.open).join('|');
+      if(!this.workerPathCache||this.workerPathCache.signature!==signature){
+        this.workerPathCache={signature,routes:new Map()};
+      }
+      for(let i=0;i<workerCount;i++){
+        const dest=destinations[i%destinations.length],routeKey=dest.id+':'+dest.x+':'+dest.y;
+        let path=this.workerPathCache.routes.get(routeKey);
+        if(!path){
+          path=findWorkerRoute({x:390,y:820},dest,wallMap);
+          this.workerPathCache.routes.set(routeKey,path);
+        }
+        if(path.length<2)continue;
+        const lengths=[0];
+        for(let p=1;p<path.length;p++)lengths.push(lengths[p-1]+Math.hypot(
+          path[p].x-path[p-1].x,path[p].y-path[p-1].y));
+        const total=lengths[lengths.length-1];
+        if(total<=0)continue;
+        const travel=((game.timeNow/1000+i*7)*78)%(total*2);
+        const current=travel>total?2*total-travel:travel;
+        let j=1;while(j<lengths.length-1&&lengths[j]<current)j++;
+        const delta=Math.max(1,lengths[j]-lengths[j-1]);
+        const f=(current-lengths[j-1])/delta;
+        const x=path[j-1].x+(path[j].x-path[j-1].x)*f;
+        const y=path[j-1].y+(path[j].y-path[j-1].y)*f;
+        put('economic-worker:'+i,'npc',x,y,1.75);
+        if(i%3===0)put('worker-wagon:'+i,'package',x+14,y+16,.83);
       }
       for(const unit of game.allies)if(unit.hp>0)put('ally:'+unit.id,
         unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);

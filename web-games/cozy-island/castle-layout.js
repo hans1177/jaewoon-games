@@ -69,3 +69,32 @@ export function validateWallLayout(existing,adding,buildingSites=[]){
  }
  return {ok:true,reason:'일꾼 통행 정상',cells:queue.length};
 }
+
+// 실제 인부 수레가 성문을 통과해 생산시설까지 이동하는 최단 경로.
+// 막힌 성벽/망루는 회피하고 'open' 성문을 우선 통과시킨다.
+export function findWorkerRoute(from,to,structures=[]){
+ const begin=snapFort(from),end=snapFort(to),label=p=>p.x+','+p.y;
+ const blocked=new Set();
+ for(const t of structures)if(t?.hp>0&&['wall','tower','gate'].includes(t.kind)&&
+      (t.kind!=='gate'||t.open===false))blocked.add(label(snapFort(t)));
+ if(blocked.has(label(begin))||blocked.has(label(end)))return [];
+ const queue=[begin],visited=new Set([label(begin)]),parents=new Map();
+ const [loX,hiX,loY,hiY]=[0,2430,-90,1710];
+ let found=false;
+ for(let i=0;i<queue.length&&i<1100;i++){
+   const p=queue[i],k=label(p);
+   if(k===label(end)){found=true;break}
+   for(const [x,y] of [[FORT_CELL,0],[-FORT_CELL,0],[0,FORT_CELL],[0,-FORT_CELL]]){
+     const q={x:p.x+x,y:p.y+y},key=label(q);
+     if(q.x<loX||q.x>hiX||q.y<loY||q.y>hiY||blocked.has(key)||visited.has(key))continue;
+     visited.add(key);parents.set(key,p);queue.push(q);
+   }
+ }
+ if(!found)return [];
+ const path=[end];let key=label(end);
+ while(key!==label(begin)){
+   const parent=parents.get(key);if(!parent)return [];
+   path.push(parent);key=label(parent);
+ }
+ return path.reverse();
+}
