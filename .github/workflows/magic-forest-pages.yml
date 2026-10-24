@@ -644,7 +644,7 @@ jobs:
             if node --input-type=module - "$RUNNER_TEMP/pages-main-diff.json" <<'NODE'
           import fs from 'node:fs';
           const diff=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const unpublished=file=>/^qa\//.test(file)||/^(?:tools\/(?:web-vibe-worker|web-vibe-organization|pwa-command-vibe2-task)\.mjs|README\.md)$/.test(file);
+          const unpublished=file=>file==='AGENTS.md'||/^roblox-games\//.test(file)||/^qa\//.test(file)||/^(?:tools\/(?:web-vibe-worker|web-vibe-organization|pwa-command-vibe2-task)\.mjs|README\.md)$/.test(file);
           const safe=diff.status==='ahead'&&Array.isArray(diff.files)&&diff.files.length<300
             &&Number.isSafeInteger(diff.total_commits)&&diff.total_commits>0&&diff.total_commits<=250
             &&diff.files.every(row=>unpublished(row.filename)&&(!row.previous_filename||unpublished(row.previous_filename)));
