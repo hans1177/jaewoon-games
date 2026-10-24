@@ -15,21 +15,21 @@ test('gem survivor uses actual 3D renderer, authored model, bounded native geome
  assert.doesNotMatch(script,/\bgetContext\s*\(\s*['"]2d['"]/);
  assert.doesNotMatch(script,/\bctx\./);
  assert.match(native,/new THREE\.WebGLRenderer\(/);
- assert.match(native,/new THREE\.PerspectiveCamera\(/);
+ assert.match(native,/new THREE\.OrthographicCamera\(/);
  assert.match(native,/renderer\.render\(scene,camera\)/);
  assert.match(native,/canvas\.dataset\.renderedFrame='true'/);
  assert.match(native,/document\.body\.dataset\.renderer='three-webgl'/);
  assert.match(native,/new THREE\.AnimationMixer\(model\)/);
  assert.match(native,/new THREE\.InstancedMesh\(/);
  assert.match(native,/function growPool\(mesh,required\)/);
- assert.match(native,/const grown=growPool\(enemyMeshes\.get\(kind\),list\.length\)/);
+ assert.match(native,/const grown=growPool\(parts\[part\],list\.length\)/);
  assert.match(native,/projectiles=growPool\(projectiles,shots\.length\)/);
  assert.match(native,/gems=growPool\(gems,drops\.length\)/);
  assert.match(native,/scene\.remove\(mesh\);scene\.add\(bigger\)/);
  assert.ok(html.includes('"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"'));
 
  assert.match(native,/MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=260/);
- assert.match(native,/nativeArtCoverage='incomplete'/);
+ assert.match(native,/nativeArtCoverage='authored-static-monsters'/);
  assert.match(native,/webglcontextlost/);
  assert.doesNotMatch(native,/localStorage|\.hp\s*[-+]?=/);
  assert.ok(fs.existsSync('assets/roblox/actors/native/knight.glb'));
@@ -50,15 +50,15 @@ test('gem survivor preserves 5-minute boss and 6 core gameplay abilities',()=>{
   assert.match(script,new RegExp(' '+type+':\\{name:'));
  for(const ability of ['arrow','poison','orbit','lightning','heal','speed'])
   assert.ok(script.includes('id:\''+ability+'\''),ability);
- assert.match(script,/gem3d\.render\(\{player,enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades\(\),effects\}/);
+ assert.match(script,/gem3d\.render\(\{player,enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades\(\),effects,world:WORLD/);
 });
 
 function harness(){
- const nodes=new Map(),events=new Map(),documentEvents=new Map();let serial=0,callback=null,renders=0;
+ const nodes=new Map(),events=new Map(),documentEvents=new Map();let serial=0,callback=null,renders=0,snapshot=null;
  function node(id){
   if(nodes.has(id))return nodes.get(id);
   const listeners=new Map(),classes=new Set();
-  const obj={id,style:{},disabled:false,textContent:'',innerHTML:'',className:'',children:[],
+  const obj={id,dataset:{},setAttribute(k,v){this[k]=v},style:{},disabled:false,textContent:'',innerHTML:'',className:'',children:[],
    classList:{add:v=>classes.add(v),remove:v=>classes.delete(v),contains:v=>classes.has(v),
     toggle:(v,on)=>on?classes.add(v):classes.delete(v)},
    addEventListener:(type,fn)=>listeners.set(type,fn),
@@ -69,16 +69,17 @@ function harness(){
   nodes.set(id,obj);return obj;
  }
  const document={hidden:false,getElementById:node,createElement:tag=>node('new-'+tag+'-'+(++serial)),
-  addEventListener:(type,fn)=>documentEvents.set(type,fn)};
+  addEventListener:(type,fn)=>documentEvents.set(type,fn),
+  querySelectorAll:()=>['cavern','garden','forge'].map(id=>{const item=node('stage-'+id);item.dataset.stage=id;return item})};
  const sandbox={document,window:{},innerWidth:390,innerHeight:760,devicePixelRatio:1,
   performance:{now:()=>0},requestAnimationFrame(fn){callback=fn},
   addEventListener:(type,fn)=>events.set(type,fn),
-  createGem3d:()=>Promise.resolve({resize(){},render(){renders++}})};
+  createGem3d:()=>Promise.resolve({resize(){},view(p){return {left:p.x-195,right:p.x+195,top:p.y-456,bottom:p.y+456}},render(state){renders++;snapshot={x:state.player.x,y:state.player.y,world:state.world,stage:state.stage.id,hp:state.player.hp}}})};
  const code=script.replace(/^\s*import\s*\{createGem3d\}\s*from\s*'\.\/gem3d\.mjs';\s*/,'');
  assert.doesNotMatch(code,/^\s*import\s/m);
  const context=vm.createContext(sandbox);
  vm.runInContext(code,context,{timeout:1000});
- return {node,events,documentEvents,document,context,get callback(){return callback},get renders(){return renders}};
+ return {node,events,documentEvents,document,context,get callback(){return callback},get renders(){return renders},get snapshot(){return snapshot}};
 }
 test('real controls preserve single pointer ownership and break ghost movement on interruptions',async()=>{
  const game=harness();
@@ -109,4 +110,34 @@ test('real controls preserve single pointer ownership and break ghost movement o
  assert.equal(stick.style.transform,'translate(0,0)');
  game.node('pauseBtn').onclick();
  assert.ok(game.node('pauseOverlay').classList.contains('show'));
+});
+
+// 새 월드와 무대가 실제 기존 게임 상태에 연결되는지 검사한다.
+test('stage selection and world movement survive resize and pause without viewport clamps',async()=>{
+ const game=harness();await new Promise(setImmediate);
+ game.node('stage-forge').onclick();
+ assert.equal(game.node('stage-forge')['aria-pressed'],'true');
+ game.node('startBtn').onclick();game.callback(33);
+ assert.equal(game.snapshot.stage,'forge');
+ assert.equal(game.snapshot.world.width,4200);assert.equal(game.snapshot.world.height,3200);
+ assert.equal(game.snapshot.x,2100);assert.equal(game.snapshot.y,1600);
+ game.events.get('keydown')({key:'D',preventDefault(){}});game.callback(66);
+ assert.ok(game.snapshot.x>2100,'uppercase keyboard movement uses existing player authority');
+ game.events.get('keyup')({key:'D'});
+ const moved=game.snapshot.x;game.context.innerWidth=1100;game.events.get('resize')();game.callback(99);
+ assert.equal(game.snapshot.x,moved,'resize must not reset or clamp world position to viewport');
+ game.node('pauseBtn').onclick();game.events.get('keydown')({key:'d',preventDefault(){}});game.callback(132);
+ assert.equal(game.snapshot.x,moved,'paused input cannot move player');
+});
+
+test('every authored monster and environment dependency exists with retained CC0 evidence',()=>{
+ for(const id of [7,15,17,18,21,26,31,35]){
+  for(const ext of ['obj','png'])assert.ok(fs.existsSync('assets/shared/forest/monster-'+id+'.'+ext));
+  const obj=fs.readFileSync('assets/shared/forest/monster-'+id+'.obj','utf8');
+  assert.match(obj,/^v /m);assert.match(obj,/^f /m);
+ }
+ assert.match(fs.readFileSync('assets/shared/forest/monsters.txt','utf8'),/Creative Commons 0/);
+ assert.ok(fs.existsSync('assets/shared/homely-house/cobblestones.obj'));
+ assert.match(native,/new OBJLoader/);
+ assert.match(native,/const visible=view\(state,world\)/);
 });
