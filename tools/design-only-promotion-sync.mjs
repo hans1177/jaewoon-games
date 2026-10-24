@@ -425,6 +425,12 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
   const stamp=nowIso();
   const catalogById=new Map(catalog.games.map(game=>[clean(game?.id),game]).filter(([gameId])=>gameId));
+  const ownerStoppedIds=new Set((catalog.ownerStoppedGameIds||[]).map(clean));
+  const ownerStopped=gameId=>{
+    const game=catalogById.get(gameId);
+    return ownerStoppedIds.has(gameId)||game?.ownerDevelopmentStopped===true
+      ||['OWNER_STOPPED','STOPPED'].includes(clean(game?.lifecycleState||game?.canonical?.lifecycle?.state).toUpperCase());
+  };
   const promoted=[],reconciled=[],demoted=[],skipped=[],reactivatedLegacyCatalogPauses=[];
   const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
   const resetIds=new Set(Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds.map(String):[]);
@@ -434,6 +440,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const vibeMinimumCreated=[];
   for(const seed of state.seeds){
     const gameId=clean(seed?.gameId);
+    if(ownerStopped(gameId))continue;
     if(clean(seed?.status).toUpperCase()!=='ACTIVE'||clean(seed?.productionClass).toUpperCase()==='RELEASE_CONFIRMED')continue;
     const catalogGame=catalogById.get(gameId);
     const lifecycle=clean(catalogGame?.canonical?.lifecycle?.state||catalogGame?.lifecycleState||'ACTIVE').toUpperCase();
@@ -450,6 +457,10 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
   for(const seed of state.seeds){
     const gameId=clean(seed?.gameId); if(!gameId)continue;
+    if(ownerStopped(gameId)){
+      skipped.push({gameId,reason:'OWNER_STOPPED_QUARANTINED'});
+      continue;
+    }
     const seedStatus=clean(seed?.status).toUpperCase();
     const pausedReason=clean(seed?.pausedReason).toUpperCase();
     const catalogGame=catalogById.get(gameId);
