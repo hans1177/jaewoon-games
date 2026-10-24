@@ -319,7 +319,7 @@ try{
      const bar=button.closest('.strategy-bar'),rect=button.getBoundingClientRect();
      const target=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
      return !!bar&&bar.closest('.controls')!==null
-      &&getComputedStyle(bar).pointerEvents==='auto'
+      &&getComputedStyle(button).pointerEvents==='auto'
       &&(target===button||button.contains(target));
     });
     assert.equal(controlsHit,true,view.name+': COZY_STRATEGY_POINTER_BLOCKED');
@@ -327,6 +327,13 @@ try{
     assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
      view.name+': COZY_CASTLE_COMMAND_FAILED');
     await cozy.locator('#panelClose').click();
+    const arc=await cozy.locator('.strategy-bar').evaluate(bar=>{
+     const first=bar.querySelector('#castleCommand').getBoundingClientRect();
+     const mid=bar.querySelector('#tradeCommand').getBoundingClientRect();
+     const last=bar.querySelector('#centerCommand').getBoundingClientRect();
+     return mid.left<first.left&&mid.left<last.left&&mid.top>first.top&&last.top>mid.top;
+    });
+    assert.equal(arc,true,view.name+': COZY_RADIAL_MENU_NOT_SEMICIRCLE');
     // 전략 메뉴의 무역 버튼이 경제 패널을 직접 열고 실제 자원 거래를 반영한다.
     assert.equal(await cozy.locator('#tradeCommand').textContent().then(t=>t.includes('무역')),true,
      view.name+': COZY_TRADE_BUTTON_MISSING');
