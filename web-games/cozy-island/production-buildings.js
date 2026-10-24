@@ -188,7 +188,7 @@ function buildMine() {
   toast('⛏️ 광산 완성 · 더블탭하면 노비 배치');
 }
 
-function assignWorker(kind) {
+export function assignWorker(kind) {
   if (!currentGame) return;
   const state = currentGame.state;
   const p = ensureProduction(state);
@@ -210,7 +210,7 @@ function assignWorker(kind) {
   toast(kind === 'lumber' ? '🪓 노비 1명을 벌목장에 배치했어' : '⛏️ 노비 1명을 광산에 배치했어');
 }
 
-function returnWorkerToFarm() {
+export function returnWorkerToFarm() {
   if (!currentGame) return;
   const state = currentGame.state;
   const p = ensureProduction(state);
