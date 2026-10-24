@@ -196,7 +196,7 @@ test('native forest ground has no 10x10 pitch mismatch and all rounded corners a
 });
 test('native forest movement clips are faster without changing gameplay-owned world movement or combat rules',()=>{
  assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
- assert.match(moduleSource,/heroAction\.setDuration\(\.28\)/);
+ assert.match(moduleSource,/heroAction\.setDuration\(selectedAppearance/);
  assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(pose==='move'\?1\.3:1\)/);
  assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(attacking\?1\.35:moving\?1\.25:1\)/);
  assert.match(moduleSource,/heroMixer\.update\(Math\.min\(\.12,/);
@@ -306,7 +306,7 @@ test('native creature source failures recover without permanent mobile loading l
   assert.ok(!moduleSource.includes('failed.attempts>=3'));
   assert.ok(moduleSource.includes('creatureFailures.delete(file)'));
   assert.ok(moduleSource.includes('nativeSpeciesMaterials=new Map()'));
-  assert.ok(moduleSource.includes('material.color.lerp(tint,.22)'));
+  assert.ok(moduleSource.includes('material.color.lerp(tint,.35)'));
   assert.ok(moduleSource.includes('for(const material of materials.values())material.dispose()'));
   assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
@@ -336,7 +336,8 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
  assert.match(moduleSource,/getRenderStats:/);
  assert.match(moduleSource,/renderer\.info\.render\.triangles/);
  assert.match(index,/dataset\.nativeTriangles=String\(nativeDraw\.triangles\)/);
- assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,mobileBudget\?\.9:1\.5\)\*qualityFactor\)/);
+ assert.match(moduleSource,/renderer\.setPixelRatio\(pixelDensity\*qualityFactor\)/);
+  assert.match(moduleSource,/canvas\.style\.imageRendering='pixelated'/);
  assert.match(index,/MAGIC_FOREST_NATIVE_3D_FRAME_FAILED/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
  assert.match(moduleSource,/productionReady:false/);
@@ -507,7 +508,7 @@ test('all authored biomes use original instanced scenery without changing intera
  assert.ok(mapping,'all region scenery mapping required');
  for(const biome of biomes)assert.ok(mapping.includes(biome+':'),'unmapped biome: '+biome);
  for(const token of [
-   'new THREE.InstancedMesh(original.geometry,original.material,49)',
+   'new THREE.InstancedMesh(original.geometry,original.material,147)',
    'const sceneryChoices=SCENERY_KIND[tileZone]',
    'let batch=sceneryBatches.get(kind)',
    'if(!batch&&models.has(kind))',
@@ -607,23 +608,30 @@ test('all existing native biome environments show distinct authored palette and 
  const m=moduleSource.indexOf('const SCENERY_KIND=Object.freeze({'),n=moduleSource.indexOf('});',m);
  const kinds=new Function(moduleSource.slice(m,n+3)+';return SCENERY_KIND;')();
  for(const name of ['forest','jungle','swamp','snow','volcano','crystal','desert','underwater','underwater-dungeon']){
-  assert.equal(kinds[name].length,2,name);
+  assert.equal(kinds[name].length,3,name);
  }
- assert.match(moduleSource,/const kind=sceneryChoices\\[hash%sceneryChoices\\.length\\]/);
- assert.match(moduleSource,/tileSeed%17\\*\\.01/);
+ assert.match(moduleSource,/const kind=sceneryChoices\[seed%sceneryChoices\.length\]/);
+ assert.match(moduleSource,/pixelCell=floor\(vMagicForestGround\.xz\*5\.0\)/);
+  assert.match(moduleSource,/biomeTiles\.setColorAt\(tileIndex,floorTint\.setHex\(tileStyle\.floor\)/);
  assert.match(moduleSource,/scene\\.fog\\.far=weatherVisualEffects/);
  assert.match(moduleSource,/for\\(const mark of regionScene\\?\\.landmarks\\|\\|\\[\\]\\)/);
 });
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
- assert.match(moduleSource,/const moving=moveDelta>\\.08&&poseElapsed>0&&poseElapsed<420/);
- assert.match(moduleSource,/actor\\.lastAttackStamp!==e\\.attackAt/);
- assert.match(moduleSource,/setLoop\\(attacking\\?THREE\\.LoopOnce:THREE\\.LoopRepeat/);
- assert.match(moduleSource,/actor\\.anchor\\.position\\.set\\(e\\.x\\*SCALE,0,e\\.y\\*SCALE\\)/);
- assert.match(moduleSource,/selectedAppearance\\?\\.model==='mage'\\?\\.43/);
- assert.match(moduleSource,/bolt\\.kind==='mageBolt'/);
- assert.match(moduleSource,/bolt\\.kind==='playerArrow'/);
- assert.match(moduleSource,/bolt\\.kind==='sporeOrb'/);
- assert.match(moduleSource,/bolt\\.kind==='sunOrb'/);
- assert.match(moduleSource,/mageBoltGeometry\\.dispose\\(\\)/);
- assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+  assert.match(moduleSource,/const moving=moveDelta>\.08&&poseElapsed>0&&poseElapsed<420/);
+  assert.match(moduleSource,/actor\.lastAttackStamp!==e\.attackAt/);
+  assert.match(moduleSource,/setLoop\(attacking\?THREE\.LoopOnce:THREE\.LoopRepeat/);
+  assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+  assert.match(moduleSource,/selectedAppearance\?\.model==='mage'\?\.43/);
+  for(const kind of ['air','slither','heavy','skitter','pounce'])
+    assert.ok(moduleSource.includes("'"+kind+"'"),kind+' motion required');
+  assert.match(moduleSource,/cameraMotionAlpha=hardCameraReset\?1:/);
+  assert.match(moduleSource,/trackedCameraX=hardCameraReset\?centerX:/);
+  assert.match(moduleSource,/hero\.avatar\.position\.x\+=\(centerX-hero\.avatar\.position\.x\)\*cameraMotionAlpha/);
+  assert.match(moduleSource,/actor\.anchor\.position\.lerp\(actorVisualTarget,cameraMotionAlpha\)/);
+  assert.match(moduleSource,/bolt\.kind==='mageBolt'/);
+  assert.match(moduleSource,/bolt\.kind==='playerArrow'/);
+  assert.match(moduleSource,/bolt\.kind==='sporeOrb'/);
+  assert.match(moduleSource,/bolt\.kind==='sunOrb'/);
+  assert.match(moduleSource,/mageBoltGeometry\.dispose\(\)/);
+  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
