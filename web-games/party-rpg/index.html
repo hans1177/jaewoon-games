@@ -522,6 +522,15 @@ function load(){
   u.skillSelection={base:settings.base!==false};SKILL_BOOKS.forEach(book=>{u.skillSelection[book.id]=settings[book.id]!==false;});
   const priorOrder=Array.isArray(u.skillOrder)?u.skillOrder.filter(id=>SKILL_BOOKS.some(book=>book.id===id)):[];
   u.skillOrder=[...new Set([...priorOrder,...SKILL_BOOKS.map(book=>book.id)])];
+  // 직업을 바꿔도 각 직업에서 달성한 각성과 시련 진행은 따로 유지.
+  const old=u.awakenings&&typeof u.awakenings==="object"&&!Array.isArray(u.awakenings)?u.awakenings:{};
+  u.awakenings={};
+  Object.keys(ADVANCEMENTS).forEach(job=>{
+   const previous=old[job]&&typeof old[job]==="object"?old[job]:{};
+   const branch=ADVANCEMENTS[job].branches.some(x=>x.id===previous.branch)?previous.branch:null;
+   const phase=previous.phase==="awakened"&&branch?"awakened":previous.phase==="ready"?"ready":previous.phase==="trial"?"trial":"idle";
+   u.awakenings[job]={phase,branch:phase==="awakened"?branch:null,kills:Math.max(0,Math.min(3,Math.floor(Number(previous.kills)||0)))};
+  });
  }
  normalizeProgress(s.player);
  s.ai.forEach(function(a){
@@ -1037,7 +1046,11 @@ function tacticsMenu(){
 }
 
 function combat(o){var s=battleState.get(o);if(!s){s={skillAt:0,bookAt:0,bookCooldowns:{},shieldUntil:0,slowUntil:0,visualUntil:0,target:null,hitAt:0,hitPower:0};battleState.set(o,s);}return s;}
-function role(u){return CLASSES[u.classId]||CLASSES.fighter;}
+function role(u){
+ const base=CLASSES[u.classId]||CLASSES.fighter,record=u.awakenings?.[u.classId];
+ const spec=record?.phase==="awakened"?ADVANCEMENTS[u.classId]?.branches.find(b=>b.id===record.branch):null;
+ return spec?{...base,name:spec.name}:base;
+}
 function proficiency(u){return Math.min(6,2+Math.floor((u.level-1)/4));}
 function ac(u){return 10+Math.min(10,Math.floor((u===state.player?playerArmorDef():aiArmorDef(u))/3))+Math.floor(role(u).save/2)+(combat(u).shieldUntil>battleTime?2:0);}
 function die(n){return 1+Math.floor(Math.random()*n);}
