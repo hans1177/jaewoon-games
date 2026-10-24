@@ -559,7 +559,8 @@ function imperialCouncil(){
  });
  return true;
 }
-\nvar storyBattle=null;
+
+var storyBattle=null;
 function act2NextZone(){
  if(!state.story.choices.ending)return 0;
  for(var z=1;z<=6;z++)if(!state.story.act2.completed[z])return z;
