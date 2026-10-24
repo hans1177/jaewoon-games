@@ -234,11 +234,11 @@ export class IslandRendererV3 {
         visibleIds.add(id);
         const loaded=this.models3d.has(kind);
         let item=this.instances3d.get(id);
-        if(item&&(item.kind!==kind||item.loaded!==loaded)){
+        if(item&&(item.kind!==kind||item.loaded!==loaded||item.height!==height)){
           this.scene3.remove(item.mesh);this.instances3d.delete(id);item=null;
         }
         if(!item){const mesh=this.make3d(kind,height);
-          this.scene3.add(mesh);item={mesh,kind,loaded};this.instances3d.set(id,item)}
+          this.scene3.add(mesh);item={mesh,kind,loaded,height};this.instances3d.set(id,item)}
         item.mesh.position.set(x*SC,.03,y*SC);
         item.mesh.rotation.y=rotation;
       };
@@ -264,27 +264,56 @@ export class IslandRendererV3 {
       const production=game.state.productionBuildings||{},village=game.state.villageDevelopment||{};
       put('lumber',production.lumberBuilt?'fort-workshop':'package',245,850,production.lumberBuilt?2.9:1.0);
       put('mine',production.mineBuilt?'fort-workshop':'stone',785,965,production.mineBuilt?2.9:1.2);
-      if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9);
-      if(village.townHallBuilt)put('townhall','fort-keep',1010,1090,5.4);
-      // 메인: 기존 건설 해금 상태에만 따라 성벽·성문·망루가 나타난다.
-      // 새 건설 가격·충돌 박스·세이브 키·공격 판정은 만들지 않는다.
+      const fort=village.fortification||{},walls=fort.walls||{};
+      const tier=Math.max(1,Math.min(3,Number(fort.wallTier)||1));
+      const wallHeight=2+(tier-1)*.65,gateHeight=3.25+(tier-1)*.38;
+      if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9+(tier-1)*.36);
+      if(village.townHallBuilt)put('townhall','fort-keep',1010,1090,5.4+
+        (game.state.townHallExpansion?.upgraded?1.15:0)+(tier-1)*.5);
+      // 메인: 실제 성벽 체력이 0이면 해당 구간이 무너져 통로가 열린다.
+      // 병력·트랩 공격 판정은 마을 방어 책임 모듈에서 처리한다.
       if(village.townHallBuilt){
         for(let i=0;i<8;i++){
-          if(i===3||i===4)continue; // 북쪽 중앙 출입로
-          put('fort-north:'+i,'fort-wall',384+i*113,210,2.0);
+          if(i===3||i===4)continue;
+          if((walls.north??1)>0)put('fort-north:'+i,'fort-wall',384+i*113,210,wallHeight);
         }
-        put('fort-north-gate','fort-gatehouse',780,210,3.25);
+        if((walls.north??1)>0)put('fort-north-gate','fort-gatehouse',780,210,gateHeight);
         for(let i=0;i<5;i++){
-          put('fort-west:'+i,'fort-wall',250,310+i*113,2.0,Math.PI/2);
-          if(i!==2)put('fort-east:'+i,'fort-wall',1310,310+i*113,2.0,Math.PI/2);
+          if((walls.south??1)>0)put('fort-west:'+i,'fort-wall',250,310+i*113,wallHeight,Math.PI/2);
+          if(i!==2&&(i<2?(walls.north??1)>0:(walls.south??1)>0))
+            put('fort-east:'+i,'fort-wall',1310,310+i*113,wallHeight,Math.PI/2);
         }
-        put('fort-east-gate','fort-gatehouse',1310,600,3.25,Math.PI/2);
-        put('fort-south-west','fort-wall',580,1030,2.0);
-        put('fort-south-mid','fort-wall',740,1030,2.0);
+        if((walls.gate??1)>0)put('fort-east-gate','fort-gatehouse',1310,600,gateHeight,Math.PI/2);
+        else put('fort-east-breach','stone',1310,600,.5);
+        if((walls.south??1)>0){
+          put('fort-south-west','fort-wall',580,1030,wallHeight);
+          put('fort-south-mid','fort-wall',740,1030,wallHeight);
+        }
+        if(tier>=2){
+          put('fort-secondary-tower','fort-watchtower',1265,955,3.8+(tier-1)*.42);
+          put('fort-inner-wall','fort-wall',990,955,wallHeight);
+        }
+        if(tier>=3){
+          put('fort-bastion','fort-watchtower',1180,305,4.7);
+          put('fort-rear-wall','fort-wall',415,1015,wallHeight);
+        }
+        for(let i=0;i<(fort.traps?.length||0);i++){
+          const trap=fort.traps[i],sites=[[1470,430],[1440,540],[1450,650],[1460,770],[1500,865],[1560,620]];
+          if(!trap||!sites[i])continue;
+          // 그래픽: 새로운 임의 원시 모델 대신 기존 CC0 3D 소품 자산을 재배치한다.
+          const kind={spikes:'fence',pit:'stone',net:'fence',oil:'package',log:'bench',barrel:'package'}[trap.type];
+          if(kind)put('fort-trap:'+i,kind,sites[i][0],sites[i][1],
+            trap.type==='spikes'?1.45:trap.type==='oil'?1.25:.9,
+            trap.type==='net'?Math.PI/2:0);
+        }
+        if((game.state.workers||0)>0)
+          put('fort-farm-home','fort-cottage',635,810,3.1);
+        if(game.state.productionBuildings?.lumberBuilt)
+          put('fort-storehouse','fort-workshop',390,820,3.8);
       }
       if(village.defenseTowerBuilt&&village.townHallBuilt){
-        put('fort-corner-nw','fort-watchtower',250,210,3.8);
-        put('fort-corner-ne','fort-watchtower',1310,210,3.8);
+        if((walls.north??1)>0)put('fort-corner-nw','fort-watchtower',250,210,3.8+(tier-1)*.5);
+        if((walls.north??1)>0)put('fort-corner-ne','fort-watchtower',1310,210,3.8+(tier-1)*.5);
       }
       // 성곽 안 길은 시각 요소뿐이며 기존 이동·상호작용 좌표는 그대로 사용.
       for(let i=0;i<7;i++)put('fort-road:'+i,'fort-road',755,465+i*72,.05);
@@ -295,6 +324,10 @@ export class IslandRendererV3 {
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
       put('ship','bench',775,760,1.4);put('fishing','bench',520,430,1.4);
+      if((fort.traderClock??180)%180<75){
+        put('merchant','npc',845,775,1.9);
+        put('merchant-cargo','package',880,795,1.3);
+      }
       if(!game.state.expanded&&!village.townHallBuilt)put('east-gate','fort-gatehouse',1325,600,3.0);
       if(jungle)put('jungle-gate','fort-gatehouse',2170,1080,3.0);
       for(let i=0;i<game.state.plots.length;i++){
