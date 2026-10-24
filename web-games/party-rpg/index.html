@@ -446,7 +446,7 @@ var INCIDENTS=[
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=5;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes","battles"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}if(!s.act2||typeof s.act2!=='object'||Array.isArray(s.act2))s.act2={};
+ s.version=6;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes","battles","recruits"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}if(!s.act2||typeof s.act2!=='object'||Array.isArray(s.act2))s.act2={};
  if(!s.act2.completed||typeof s.act2.completed!=='object'||Array.isArray(s.act2.completed))s.act2.completed={};
  Object.keys(s.battles).forEach(k=>{if(s.battles[k]==='active')s.battles[k]='pending';});
  state.story=s;
@@ -710,6 +710,55 @@ function partyHud(){
  entry.button.dataset.classId=item.u.classId||'fighter';entry.button.classList.toggle('selected',view.selection===item.id);entry.button.setAttribute('aria-label',item.name+' · '+role(item.u).name+' · 체력 '+Math.ceil(item.u.hp)+' / '+item.u.maxHp+' · 누르면 카메라 이동');entry.button.setAttribute('aria-pressed',String(view.selection===item.id));entry.name.textContent=item.name;entry.role.textContent=role(item.u).name;entry.health.style.width=Math.max(0,Math.min(100,item.u.hp/item.u.maxHp*100))+'%';entry.cooldown.textContent=combat(item.u).skillAt>battleTime?'기술 '+Math.ceil(combat(item.u).skillAt-battleTime)+'초':'기술 준비';entry.portrait.style.backgroundPosition=(portraitIndex(item.u)%5)*25+'% '+Math.floor(portraitIndex(item.u)/5)*100+'%';
  });for(var [id,entry] of uiPartyNodes)if(!used.has(id)){entry.button.remove();uiPartyNodes.delete(id);}
  var selected=items.find(function(i){return i.id===view.selection;});document.getElementById('partyInspect').textContent=(selected?selected.name:'주인공')+' · 인물 보기';
+}
+
+// 인물 · 직업과 능력치와 분리된 성격/영입 스토리
+const COMPANION_VOICES=[{"trait":"규율 강한 수비대장","talk":"장부부터 확인하자. 추측은 보고서에 못 써.","lead":"빠진 군번표를 찾아야 해.","join":"좋아. 앞은 내가 맡는다."},{"trait":"의심 많은 기록관","talk":"날짜가 안 맞아. 누가 기록을 고쳤어.","lead":"이정표의 인장을 확인해 줘.","join":"합류하지. 단서는 내가 관리해."},{"trait":"퉁명스러운 정찰병","talk":"발자국 지우는 중이야. 조용히 해.","lead":"지도에 없는 길이 있어. 흔적부터 찾아.","join":"가자. 뒤처지지 마."},{"trait":"고집 센 대장장이","talk":"내 작업대 건들지 마.","lead":"내 표식이 찍힌 쇳조각을 회수해.","join":"칼 부러뜨리면 수리비 네 몫이다."},{"trait":"실리적인 상인","talk":"정보가 필요해? 일단 값부터 정해.","lead":"잃어버린 계약서를 찾아 줘.","join":"좋아, 계약 성립. 보수는 정확히."},{"trait":"현실적인 치료사","talk":"붕대부터. 기도는 나중에.","lead":"피난민 약품 기록이 사라졌어.","join":"가겠어. 무모한 돌진은 못 봐줘."},{"trait":"깐깐한 회계사","talk":"죽은 사람에게 세금? 이건 범죄입니다.","lead":"이중으로 적힌 장부를 찾아야겠군요.","join":"동행하죠. 식비는 따로 적습니다."},{"trait":"엉뚱한 천문가","talk":"대낮인데 별이 보여! 너도 보여?","lead":"설원에서 별자리 지도를 찾아 줘.","join":"좋아! 길 잃으면 별한테 따져."},{"trait":"빈정대는 용병","talk":"또 영웅인가? 검은 들 줄 알아?","lead":"마계 전령이 남긴 신호를 찾아.","join":"좋아. 쓰러지면 업고 나와 주지."},{"trait":"수다스러운 음유시인","talk":"네 발소리 박자가 특이해. 다시 걸어 봐.","lead":"노래에서 빠진 마지막 구절을 찾아 줘.","join":"출발! 질문은 세 개까지만 할게."}];
+const RECRUIT_ARCS=[{"gate":"intro","zone":0,"site":{"x":860,"y":575},"title":"북문에서 누락된 군번표"},{"gate":"visit1","zone":1,"site":{"x":820,"y":780},"title":"찢어진 장부"},{"gate":"case1","zone":1,"site":{"x":1090,"y":720},"title":"사라진 고갯길 발자국"},{"gate":"visit2","zone":2,"site":{"x":1370,"y":620},"title":"고향 문양의 쇳조각"},{"gate":"visit3","zone":3,"site":{"x":1030,"y":830},"title":"찢긴 계약서"},{"gate":"fort","zone":4,"site":{"x":1360,"y":880},"title":"분실된 약품 목록"},{"gate":"visit4","zone":4,"site":{"x":950,"y":690},"title":"두 번 적힌 세금"},{"gate":"visit5","zone":5,"site":{"x":1180,"y":820},"title":"눈 속의 별자리"},{"gate":"visit6","zone":6,"site":{"x":1150,"y":850},"title":"전령의 암호"},{"gate":"temple","zone":6,"site":{"x":1590,"y":770},"title":"노래의 마지막 구절"}];
+function companionDiscovered(a){
+ if(!a)return false;
+ const i=portraitIndex(a),gate=RECRUIT_ARCS[i]?.gate,t=state.story;
+ if(a.party||t.companions[a.id]||t.quests[a.id]||t.recruits[a.id])return true;
+ return gate==='intro'?t.intro:gate==='visit1'?!!t.visited[1]:gate==='case1'?!!t.cases[1]:
+ gate==='visit2'?!!t.visited[2]:gate==='visit3'?!!t.visited[3]:gate==='fort'?!!t.choices.fort:
+ gate==='visit4'?!!t.visited[4]:gate==='visit5'?!!t.visited[5]:gate==='visit6'?!!t.visited[6]:
+ gate==='temple'?!!t.choices.temple:false;
+}
+function recruitStage(a){
+ return a.party||state.story.companions[a.id]||state.story.quests[a.id]?'joined':state.story.recruits[a.id]?.step||'new';
+}
+function pendingRecruitQuest(){
+ if(dungeon)return null;
+ return state.ai.find(a=>companionDiscovered(a)&&recruitStage(a)==='search'&&RECRUIT_ARCS[portraitIndex(a)].zone===state.zone)||null;
+}
+function startRecruitQuest(a){
+ if(!a||!companionDiscovered(a)||recruitStage(a)!=='new')return;
+ state.story.recruits[a.id]={step:'search'};save();
+ const done=()=>companionMenu(a.id);
+ if(!playEventScene('recruitLead:'+a.id,done))done();
+}
+function completeRecruitQuest(){
+ const a=pendingRecruitQuest();if(!a)return;
+ const pos=RECRUIT_ARCS[portraitIndex(a)].site;
+ if(Math.hypot(p.x-pos.x,p.y-pos.y)>120){moveTarget={x:pos.x,y:pos.y};toast('단서에 가까이 가야 해.');return;}
+ state.story.recruits[a.id].step='ready';save();
+ const done=()=>companionMenu(a.id);
+ if(!playEventScene('recruitClue:'+a.id,done))done();
+}
+function requestCompanion(a){
+ if(!a||!companionDiscovered(a))return;
+ if(a.party){toggleParty(a);companionMenu(a.id);return;}
+ if(partyCount()>=MAX_PARTY_SIZE-1){toast('주인공 포함 최대 4명이야.');return;}
+ const step=recruitStage(a),arc=RECRUIT_ARCS[portraitIndex(a)];
+ if(step==='new'){startRecruitQuest(a);return;}
+ if(step==='search'){
+  if(!dungeon&&state.zone===arc.zone){moveTarget={x:arc.site.x,y:arc.site.y};closeModal();toast('개인 단서로 이동해.');}
+  else{closeModal();travelMenu();toast(ZONES[arc.zone].name+'에서 단서를 찾을 수 있어.');}
+  return;
+ }
+ const done=()=>{toggleParty(a);if(state.story.recruits[a.id])state.story.recruits[a.id].step='joined';save();companionMenu(a.id);partyHud();};
+ if(step==='joined'){done();return;}
+ if(!playEventScene('recruit:'+a.id,done))done();
 }
 
 // 인물 UI · 초상화 · 캐릭터 생성 · 동료 대화
