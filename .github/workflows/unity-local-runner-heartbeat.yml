@@ -6,6 +6,16 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/unity-local-runner-heartbeat.yml'
+      # Event-only PC verification; never wake on unrelated game pushes or schedules.
+      - 'tools/web-vibe-worker.mjs'
+      - 'qa/web-vibe-worker.test.mjs'
+      - 'tools/vibe2-web-experience-ingest.mjs'
+      - 'qa/vibe2-web-experience-ingest.test.mjs'
+      - 'tools/company-development-roblox-gameplay-product-readiness.mjs'
+      - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
+      - 'assets/vibe-studio-asset-universe.js'
+      - 'company-asset-library.json'
+      - 'qa/common-asset-quality-cleanup.test.mjs'
 
 permissions:
   contents: read
@@ -17,8 +27,19 @@ concurrency:
 jobs:
   heartbeat:
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
-    timeout-minutes: 3
+    # One registered PC = one actual execution slot, never additional hosted capacity.
+    # Read-only WEB, ROBLOX, ASSET QA never replaces F0-F9 or native release gates.
+    timeout-minutes: 20
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Confirm local Unity runner and editor capabilities
         shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
@@ -60,3 +81,50 @@ jobs:
             throw 'No installed Unity editor has Android Build Support.'
           }
           Write-Host "LOCAL_UNITY_RUNNER_CAPABILITY=PASS"
+
+      # Supplemental source verification only; cloud game work is never gated on this PC.
+      - name: PC WEB source and owner-scope regression
+        id: pc_web
+        if: ${{ !cancelled() }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node --test qa/web-vibe-worker.test.mjs qa/vibe2-web-experience-ingest.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'PC_WEB_SOURCE_QA_FAILED' }
+          Write-Host 'PC_RUNNER_WEB_SOURCE_QA=PASS_READ_ONLY'
+
+      - name: PC ROBLOX source and game-readiness regression
+        id: pc_roblox
+        if: ${{ !cancelled() }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node --test qa/company-development-roblox-gameplay-product-readiness.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'PC_ROBLOX_READINESS_QA_FAILED' }
+          Write-Host 'PC_RUNNER_ROBLOX_READINESS_QA=PASS_SOURCE_ONLY_NOT_STUDIO'
+
+      - name: PC common asset quality regression
+        id: pc_assets
+        if: ${{ !cancelled() }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node --test qa/common-asset-quality-cleanup.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'PC_COMMON_ASSET_QA_FAILED' }
+          Write-Host 'PC_RUNNER_COMMON_ASSET_QA=PASS_SOURCE_ONLY_NOT_NATIVE_RUNTIME'
+
+      - name: Preserve three independently verified PC QA outcomes
+        if: ${{ !cancelled() }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $web = '${{ steps.pc_web.outcome }}'
+          $roblox = '${{ steps.pc_roblox.outcome }}'
+          $assets = '${{ steps.pc_assets.outcome }}'
+          Write-Host "PC_RUNNER_WEB_RESULT=$web"
+          Write-Host "PC_RUNNER_ROBLOX_RESULT=$roblox"
+          Write-Host "PC_RUNNER_ASSET_RESULT=$assets"
+          Write-Host 'PC_RUNNER_SCOPE=SUPPLEMENTAL_READ_ONLY_NOT_F0_F9'
+          if ($web -ne 'success' -or $roblox -ne 'success' -or $assets -ne 'success') {
+            throw 'PC_RUNNER_THREE_LANES_NOT_ALL_VERIFIED'
+          }
