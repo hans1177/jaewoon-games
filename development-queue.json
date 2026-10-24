@@ -53085,10 +53085,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-24T08:36:15.084Z",
+      "updatedAt": "2026-10-24T09:26:44.287Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -53104,16 +53104,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
       "robloxBuildArtifactIdentity": "sha256:a89d14a62fe827e0268e50f67c842158d3c5ffff73670cf2767105013b86fa60",
-      "robloxBuildPassedAt": "2026-10-24T03:18:09.323Z",
+      "robloxBuildPassedAt": "2026-10-24T09:26:44.287Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-24T03:18:09.323Z",
+      "robloxBuildPreflightPassedAt": "2026-10-24T09:26:44.287Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "survival2",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-24T03:09:16.213Z",
+        "checkedAt": "2026-10-24T09:12:59.575Z",
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:a89d14a62fe827e0268e50f67c842158d3c5ffff73670cf2767105013b86fa60",
         "secondaryOwnerFocus": false,
@@ -53148,10 +53148,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
+            "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All provided build evidence indicates that the source revision, artifact identity, and validation checks have passed. No contradictions exist in the BUILD_EVIDENCE, so the immutable package is cleared to begin runtime testing."
+            "note": "All required build evidence and deterministic package identity checks have successfully passed."
           }
         ],
         "blockers": [],
@@ -53165,12 +53165,12 @@
         "gameId": "survival2",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-24T03:09:16.941Z",
+        "checkedAt": "2026-10-24T09:13:00.458Z",
         "sourcePath": "roblox-games/survival2",
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:a89d14a62fe827e0268e50f67c842158d3c5ffff73670cf2767105013b86fa60",
         "rebuiltArtifactIdentity": "sha256:a89d14a62fe827e0268e50f67c842158d3c5ffff73670cf2767105013b86fa60",
-        "artifactRunId": 40055564173,
+        "artifactRunId": 40079837713,
         "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
         "assetSelectionFingerprint": "32a1137b23d31356573284329ad748a5a72272afbfb40f401759a13d1eeef864",
         "observedAssetSelectionFingerprint": "32a1137b23d31356573284329ad748a5a72272afbfb40f401759a13d1eeef864",
@@ -53208,11 +53208,12 @@
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
             "MISSING_GAMEPLAY_CAPABILITY:WORLD",
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -53224,30 +53225,34 @@
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
             "WORLD",
             "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "EQUIPMENT",
             "PROGRESSION",
-            "TYCOON",
             "SAVE",
             "MOBILE_UI",
-            "MULTIPLAYER",
-            "SESSION_FLOW"
+            "MULTIPLAYER"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
             "WORLD": false,
             "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": true,
+            "EQUIPMENT": false,
             "PROGRESSION": false,
-            "TYCOON": false,
             "SAVE": true,
             "MOBILE_UI": true,
-            "MULTIPLAYER": true,
-            "SESSION_FLOW": false
+            "MULTIPLAYER": true
           },
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+              "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
               "capabilities": [
                 "WORLD",
                 "CONTENT_ENTITY"
@@ -53256,17 +53261,22 @@
             },
             {
               "index": 1,
-              "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+              "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
               "capabilities": [
-                "CORE_GAMEPLAY_STATE"
+                "CONTENT_ENTITY"
               ],
               "pass": false
             }
@@ -53274,17 +53284,16 @@
           "signatureSystemTrace": [
             {
               "index": 0,
-              "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+              "name": "숲의 생존자들",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY",
-                "TYCOON"
+                "CONTENT_ENTITY"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "name": "작물 재배와 수확 계획 × 역사",
+              "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
               "capabilities": [
                 "WORLD",
                 "CONTENT_ENTITY"
@@ -53293,18 +53302,25 @@
             },
             {
               "index": 2,
-              "name": "병력 편성과 거점 정복 × 물리학",
+              "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
               ],
               "pass": false
             },
             {
               "index": 3,
-              "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+              "name": "금기와 기회의 교차",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY"
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
               ],
               "pass": false
             }
@@ -53320,8 +53336,8 @@
             "Core": "MISSING",
             "Content": "MISSING",
             "World": "MISSING",
-            "Combat": "N/A",
-            "AI": "N/A",
+            "Combat": "MISSING",
+            "AI": "PLAYABLE",
             "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
@@ -53333,14 +53349,14 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
               "applicable": true,
@@ -53359,6 +53375,10 @@
             "systemConnections": {
               "rows": [
                 {
+                  "id": "EQUIPMENT_TO_COMBAT",
+                  "pass": false
+                },
+                {
                   "id": "WORLD_TO_CONTENT",
                   "pass": false
                 }
@@ -53374,6 +53394,8 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
               "MID_LATE_GAME_DEPTH",
               "SYSTEM_CONNECTION_CHAIN"
             ],
@@ -53384,12 +53406,12 @@
             "minimumBasePartCount": 5,
             "spawnRequired": true,
             "landmarkRequired": true,
-            "objectiveRequired": true,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+          "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
           "antiSkeletonPassed": false,
           "designGenre": "Survival",
           "sourceGenre": "Survival",
@@ -53400,8 +53422,8 @@
           "Core": "MISSING",
           "Content": "MISSING",
           "World": "MISSING",
-          "Combat": "N/A",
-          "AI": "N/A",
+          "Combat": "MISSING",
+          "AI": "PLAYABLE",
           "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
@@ -53450,12 +53472,12 @@
         "gameId": "survival2",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-24T03:09:16.941Z",
+        "checkedAt": "2026-10-24T09:13:00.458Z",
         "sourcePath": "roblox-games/survival2",
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:a89d14a62fe827e0268e50f67c842158d3c5ffff73670cf2767105013b86fa60",
         "rebuiltArtifactIdentity": "sha256:a89d14a62fe827e0268e50f67c842158d3c5ffff73670cf2767105013b86fa60",
-        "artifactRunId": 40055564173,
+        "artifactRunId": 40079837713,
         "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
         "assetSelectionFingerprint": "32a1137b23d31356573284329ad748a5a72272afbfb40f401759a13d1eeef864",
         "observedAssetSelectionFingerprint": "32a1137b23d31356573284329ad748a5a72272afbfb40f401759a13d1eeef864",
@@ -53493,11 +53515,12 @@
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
             "MISSING_GAMEPLAY_CAPABILITY:WORLD",
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -53509,30 +53532,34 @@
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
             "WORLD",
             "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "EQUIPMENT",
             "PROGRESSION",
-            "TYCOON",
             "SAVE",
             "MOBILE_UI",
-            "MULTIPLAYER",
-            "SESSION_FLOW"
+            "MULTIPLAYER"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
             "WORLD": false,
             "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": true,
+            "EQUIPMENT": false,
             "PROGRESSION": false,
-            "TYCOON": false,
             "SAVE": true,
             "MOBILE_UI": true,
-            "MULTIPLAYER": true,
-            "SESSION_FLOW": false
+            "MULTIPLAYER": true
           },
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+              "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
               "capabilities": [
                 "WORLD",
                 "CONTENT_ENTITY"
@@ -53541,17 +53568,22 @@
             },
             {
               "index": 1,
-              "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+              "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
               "capabilities": [
-                "CORE_GAMEPLAY_STATE"
+                "CONTENT_ENTITY"
               ],
               "pass": false
             }
@@ -53559,17 +53591,16 @@
           "signatureSystemTrace": [
             {
               "index": 0,
-              "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+              "name": "숲의 생존자들",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY",
-                "TYCOON"
+                "CONTENT_ENTITY"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "name": "작물 재배와 수확 계획 × 역사",
+              "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
               "capabilities": [
                 "WORLD",
                 "CONTENT_ENTITY"
@@ -53578,18 +53609,25 @@
             },
             {
               "index": 2,
-              "name": "병력 편성과 거점 정복 × 물리학",
+              "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
               ],
               "pass": false
             },
             {
               "index": 3,
-              "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+              "name": "금기와 기회의 교차",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY"
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
               ],
               "pass": false
             }
@@ -53605,8 +53643,8 @@
             "Core": "MISSING",
             "Content": "MISSING",
             "World": "MISSING",
-            "Combat": "N/A",
-            "AI": "N/A",
+            "Combat": "MISSING",
+            "AI": "PLAYABLE",
             "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
@@ -53618,14 +53656,14 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
               "applicable": true,
@@ -53644,6 +53682,10 @@
             "systemConnections": {
               "rows": [
                 {
+                  "id": "EQUIPMENT_TO_COMBAT",
+                  "pass": false
+                },
+                {
                   "id": "WORLD_TO_CONTENT",
                   "pass": false
                 }
@@ -53659,6 +53701,8 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
               "MID_LATE_GAME_DEPTH",
               "SYSTEM_CONNECTION_CHAIN"
             ],
@@ -53669,12 +53713,12 @@
             "minimumBasePartCount": 5,
             "spawnRequired": true,
             "landmarkRequired": true,
-            "objectiveRequired": true,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+          "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
           "antiSkeletonPassed": false,
           "designGenre": "Survival",
           "sourceGenre": "Survival",
@@ -53685,8 +53729,8 @@
           "Core": "MISSING",
           "Content": "MISSING",
           "World": "MISSING",
-          "Combat": "N/A",
-          "AI": "N/A",
+          "Combat": "MISSING",
+          "AI": "PLAYABLE",
           "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
@@ -54279,15 +54323,16 @@
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:a89d14a62fe827e0268e50f67c842158d3c5ffff73670cf2767105013b86fa60",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 40055564173,
-        "testedAt": "2026-10-24T03:18:09.323Z",
+        "workflowRunId": 40079837713,
+        "testedAt": "2026-10-24T09:26:44.287Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
           "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+          "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+          "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
           "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
           "CORE_LOOP_STEP_UNIMPLEMENTED:0",
           "CORE_LOOP_STEP_UNIMPLEMENTED:1",
           "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -54300,6 +54345,7 @@
         "repairSurfaces": [
           "CORE_GAMEPLAY",
           "WORLD_MAP",
+          "COMBAT_FEEL",
           "PROGRESSION_CONTENT"
         ],
         "qualityFailureDetails": [
@@ -54314,11 +54360,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -54330,30 +54377,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54362,17 +54413,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -54380,17 +54436,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54399,18 +54454,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -54426,8 +54488,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -54439,14 +54501,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -54465,6 +54527,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -54480,6 +54546,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -54490,12 +54558,234 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
+              "antiSkeletonPassed": false,
+              "designGenre": "Survival",
+              "sourceGenre": "Survival",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "survival2",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "숲의 생존자들",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "MID_LATE_GAME_DEPTH",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -54514,11 +54804,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -54530,30 +54821,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54562,17 +54857,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -54580,17 +54880,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54599,18 +54898,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -54626,8 +54932,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -54639,14 +54945,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -54665,6 +54971,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -54680,6 +54990,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -54690,12 +55002,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -54706,7 +55018,7 @@
           {
             "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
+            "priority": "P1",
             "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
             "observed": {
               "version": 1,
@@ -54714,11 +55026,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -54730,30 +55043,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54762,17 +55079,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -54780,17 +55102,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54799,18 +55120,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -54826,8 +55154,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -54839,14 +55167,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -54865,6 +55193,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -54880,6 +55212,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -54890,12 +55224,456 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
+              "antiSkeletonPassed": false,
+              "designGenre": "Survival",
+              "sourceGenre": "Survival",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "survival2",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "숲의 생존자들",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "MID_LATE_GAME_DEPTH",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
+              "antiSkeletonPassed": false,
+              "designGenre": "Survival",
+              "sourceGenre": "Survival",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "survival2",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
+                "PROGRESSION": false,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "숲의 생존자들",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 6,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "MISSING",
+                "Content": "MISSING",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 6,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "MID_LATE_GAME_DEPTH",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": false,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -54914,11 +55692,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -54930,30 +55709,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54962,17 +55745,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -54980,17 +55768,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -54999,18 +55786,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -55026,8 +55820,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -55039,14 +55833,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -55065,205 +55859,9 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "WORLD_TO_CONTENT",
+                      "id": "EQUIPMENT_TO_COMBAT",
                       "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
-              "antiSkeletonPassed": false,
-              "designGenre": "Survival",
-              "sourceGenre": "Survival",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "survival2",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "PROGRESSION",
-                "TYCOON",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
-                  "capabilities": [
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "combatFeel": {
-                  "applicable": false,
-                  "signalCount": 2,
-                  "pass": true
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
+                    },
                     {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
@@ -55280,6 +55878,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -55290,212 +55890,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
-              "antiSkeletonPassed": false,
-              "designGenre": "Survival",
-              "sourceGenre": "Survival",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "survival2",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "PROGRESSION",
-                "TYCOON",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
-                  "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
-                  "capabilities": [
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
-                "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": false,
-                  "signalCount": 1,
-                  "pass": true
-                },
-                "combatFeel": {
-                  "applicable": false,
-                  "signalCount": 2,
-                  "pass": true
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -55514,11 +55914,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -55530,30 +55931,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -55562,17 +55967,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -55580,17 +55990,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -55599,18 +56008,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -55626,8 +56042,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -55639,14 +56055,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -55665,6 +56081,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -55680,6 +56100,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -55690,12 +56112,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -55714,11 +56136,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -55730,30 +56153,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -55762,17 +56189,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -55780,17 +56212,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -55799,18 +56230,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -55826,8 +56264,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -55839,14 +56277,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -55865,6 +56303,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -55880,6 +56322,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -55890,12 +56334,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -55914,11 +56358,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -55930,30 +56375,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -55962,17 +56411,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -55980,17 +56434,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -55999,18 +56452,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -56026,8 +56486,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -56039,14 +56499,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -56065,6 +56525,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -56080,6 +56544,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -56090,12 +56556,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -56114,11 +56580,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -56130,30 +56597,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56162,17 +56633,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -56180,17 +56656,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56199,18 +56674,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -56226,8 +56708,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -56239,14 +56721,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -56265,6 +56747,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -56280,6 +56766,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -56290,12 +56778,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -56314,11 +56802,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -56330,30 +56819,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56362,17 +56855,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -56380,17 +56878,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56399,18 +56896,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -56426,8 +56930,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -56439,14 +56943,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -56465,6 +56969,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -56480,6 +56988,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -56490,12 +57000,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -56514,11 +57024,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -56530,30 +57041,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56562,17 +57077,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -56580,17 +57100,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56599,18 +57118,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -56626,8 +57152,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -56639,14 +57165,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -56665,6 +57191,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -56680,6 +57210,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -56690,12 +57222,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -56714,11 +57246,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -56730,30 +57263,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56762,17 +57299,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -56780,17 +57322,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56799,18 +57340,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -56826,8 +57374,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -56839,14 +57387,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -56865,6 +57413,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -56880,6 +57432,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -56890,12 +57444,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -56914,11 +57468,12 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -56930,30 +57485,34 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
                 "PROGRESSION",
-                "TYCOON",
                 "SAVE",
                 "MOBILE_UI",
-                "MULTIPLAYER",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "EQUIPMENT": false,
                 "PROGRESSION": false,
-                "TYCOON": false,
                 "SAVE": true,
                 "MOBILE_UI": true,
-                "MULTIPLAYER": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56962,17 +57521,22 @@
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 작물 재배와 수확 계획의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "CORE_GAMEPLAY_STATE"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 }
@@ -56980,17 +57544,16 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "역사·물리학 농장 경영×판타지: 주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "숲의 생존자들",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "TYCOON"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "작물 재배와 수확 계획 × 역사",
+                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY"
@@ -56999,18 +57562,25 @@
                 },
                 {
                   "index": 2,
-                  "name": "병력 편성과 거점 정복 × 물리학",
+                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "주의 전환: 서로 다른 관찰에서 빠진 정보를 확인함의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI"
                   ],
                   "pass": false
                 }
@@ -57026,8 +57596,8 @@
                 "Core": "MISSING",
                 "Content": "MISSING",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -57039,14 +57609,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -57065,6 +57635,10 @@
                 "systemConnections": {
                   "rows": [
                     {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": false
+                    },
+                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -57080,6 +57654,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -57090,12 +57666,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "010e3d9b2f9f298ce48a6f92ff18fb57b2f8746a9c51fb189260b7f6571f10b4",
+              "designFingerprint": "581e30969af0cbb12f1cb3bff4123a4d90fb9aa9b2f5dc6e023e1390e0e65a8b",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -59245,7 +59821,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-24T09:25:59.489Z",
+  "updatedAt": "2026-10-24T09:26:44.287Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
