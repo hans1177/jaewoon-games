@@ -285,18 +285,20 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         }else gltf=await new GLTFLoader().loadAsync(url.href);
         model=gltf.scene;clips=gltf.animations||[];
       }else{
-        // 다운로드한 OBJ 원본 형상은 PNG 텍스처가 손상되거나 지연되어도 표시한다.
+        // OBJ 원본 형상은 PNG 다운로드를 기다리지 않고 즉시 3D 화면에 추가한다.
         model=await new OBJLoader().loadAsync(url.href);
-        try{
-          const texture=await new THREE.TextureLoader().loadAsync(new URL(file.replace('.obj','.png'),CREATURE_SOURCE).href);
-          texture.colorSpace=THREE.SRGBColorSpace;
-          texture.magFilter=THREE.NearestFilter;
-          const material=new THREE.MeshStandardMaterial({map:texture,roughness:.94});
-          model.traverse(child=>{if(child.isMesh)child.material=material});
-        }catch(textureError){
-          // OBJLoader가 생성한 원본 메시·기본 재질을 유지한다. 종이나 공격 판정은 변경하지 않는다.
-          if(!creatureFailures.has(file))console.warn('CC0 creature texture unavailable: '+file,textureError);
-        }
+        const material=new THREE.MeshStandardMaterial({roughness:.94});
+        model.traverse(child=>{if(child.isMesh)child.material=material});
+        // 텍스처는 원본 메시 표시 이후 도착해도 같은 머티리얼에 적용한다.
+        void new THREE.TextureLoader().loadAsync(new URL(file.replace('.obj','.png'),CREATURE_SOURCE).href)
+          .then(texture=>{
+            if(disposed){texture.dispose();return}
+            texture.colorSpace=THREE.SRGBColorSpace;
+            texture.magFilter=THREE.NearestFilter;
+            material.map=texture;material.needsUpdate=true;
+          }).catch(textureError=>{
+            if(!creatureFailures.has(file))console.warn('CC0 creature texture unavailable: '+file,textureError);
+          });
       }
       const box=new THREE.Box3().setFromObject(model);
       if(box.isEmpty())throw new Error('Missing downloaded creature mesh');
