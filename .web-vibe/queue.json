@@ -34,7 +34,7 @@
       "goal": "오너 즉시 개발 지시. 기존 게임 web-games/fantasy-survival/index.html 및 world3d.mjs에 GitHub 이슈 #9801의 전체 사양을 실제로 구현하라. 수정 바이터(3티어 HP666 일반공격55): 1초마다 20% 확률 산성 유도구슬 2개, 4초 유도 후 직진, 각각 적중 66+0.1초마다 0.3 피해 10초. 2초마다 30% 확률 3연속 고정방향 직선돌진, 1차 2배속 3초, 이후 각각 2초 간격으로 3배속/4배속, 적중 66+1초 기절+동일 DoT, 끝나면 2초 탈진 이동/공격 금지. 크리스털 리자드(3티어 HP450 일반공격45): 공격적, 40% 확률 2마리 무리, 평시 근처 접근 전 완전 은신, 2초마다 30% 확률로 3초 전투 은신(리자드만 공격 가능, 플레이어는 리자드 적중 불가), 은신 종료 복귀. 돌진 액세서리 3티어: 관련 드롭/제작, 착용 후 이동 중 화면 3회 탭 시 현재 이동 방향으로 2초간 4배속 직진, 정지 사용 불가. 수정염소 crystalgoat 신규 스폰 제거·구세이브 안전 정리; 수정산양 crystalibex는 유지. 수정사슴 crystaldeer 기본 2→14마리 출현 7배, 스폰/리스폰 일치. 새 몬스터 실제 3D 모델(은신 표시/판정 동기화, 산성 구슬·돌진·탈진 애니메이션 포함), AI, 투사체, DoT, 도감, 아이템, 제작, 모바일/PC 입력, 멀티 호스트 권한과 저장 호환성을 실제 코드로 구현. 원본 게임 삭제, 새 시연게임 생성, 허위 PASS 금지. 기존 WEB Vibe 파이프라인에서 코드수정, 스코프 QA, 실제 모바일 3D와 게임조작 검증, 정상 GitHub Pages 배포만 진행. 정확한 수치/기믹은 이슈 #9801 본문을 우선하며 임의 축소 금지.",
       "responsibleFiles": [],
       "priority": "owner-immediate",
-      "status": "queued",
+      "status": "blocked",
       "ownerDirective": true,
       "evidence": [
         "web-vibe-independent:v1",
@@ -42,10 +42,10 @@
         "qa-required-before-pr-merge",
         "web-vibe-recovery-failure:needs-source-or-provider-recheck"
       ],
-      "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-10-24T19:06:05.559Z",
-      "recoveryNextAt": "2026-10-24T20:06:05.559Z",
-      "blocker": null
+      "recoveryAttempts": 3,
+      "recoveryLastFailureAt": "2026-10-24T21:48:54.850Z",
+      "recoveryNextAt": null,
+      "blocker": "WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW"
     },
     {
       "id": "pwa-6948ae8f-0dd5-4cef-a9c9-9f0c9874fd70",
