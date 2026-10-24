@@ -793,10 +793,15 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
     ?(focus.ownerFocusedGameIds||[]).map(clean):[]);
   const platforms=focus.ownerFocusedGamePlatforms||{};
   const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
+  const ownerStoppedIds=new Set((catalog?.ownerStoppedGameIds||[]).map(clean).filter(Boolean));
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
+    const game=games.get(clean(task.gameId));
+    const ownerStopped=ownerStoppedIds.has(clean(task.gameId))||game?.ownerDevelopmentStopped===true
+      ||['OWNER_STOPPED','STOPPED'].includes(clean(game?.lifecycleState||game?.canonical?.lifecycle?.state).toUpperCase());
     const retiredWeb=clean(task.target).toLowerCase()==='web'
       &&webSourceRetiredInCatalog(games.get(clean(task.gameId)));
-    const ownerDevelopmentHold=ownerDevelopmentHeld(policy,task.gameId,task.target,task)||retiredWeb;
+    // 오너 개발중지는 작업 타입·플랫폼·현재 큐 상태와 관계없이 예약을 격리한다.
+    const ownerDevelopmentHold=ownerStopped||ownerDevelopmentHeld(policy,task.gameId,task.target,task)||retiredWeb;
     const exactFocus=!ownerDevelopmentHold&&task.status==='queued'
       &&clean(task.department).toLowerCase()==='development'
       &&clean(task.type).toLowerCase()==='implementation'
