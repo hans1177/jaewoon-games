@@ -696,7 +696,7 @@ export class IslandRendererV3 {
       if(!production.mineBuilt)put('mine-site','fort-site',785,965,.18);
       if(!game.state.barracksBuilt)put('barracks-site','fort-site',game.barracks.x,game.barracks.y,.18);
       if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9+(Math.max(1,Number(village.defenseTowerLevel)||1)-1)*.6);
-      if(village.townHallBuilt)put('townhall','fort-keep',1010,1090,5.4+
+      if(village.townHallBuilt&&!game.state.keepDestroyed)put('townhall','fort-keep',1010,1090,5.4+
         (game.state.townHallExpansion?.upgraded?1.15:0)+(tier-1)*.5);
       // 메인: 실제 성벽 체력이 0이면 해당 구간이 무너져 통로가 열린다.
       // 병력·트랩 공격 판정은 마을 방어 책임 모듈에서 처리한다.
@@ -751,11 +751,68 @@ export class IslandRendererV3 {
       if(game.state.abyssCaveV23?.researchLabBuilt)put('research-lab','house',-690,420,4);
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
-      // 외곽 거점의 위치를 전장에서 확인할 수 있게 기존 중세 모델을 재사용한다.
-      for(let i=0;i<4;i++){
-        put('frontier-watch:'+i,'fort-watchtower',2520+i*580,215+(i%2)*640,3.3);
-        put('frontier-camp:'+i,'fort-cottage',2800+i*535,490+(i%2)*480,2.8);
+      // 소유한 경제 건물: 실제 건설 위치와 레벨에 맞춰 입체 중세 건물을 렌더링한다.
+      const economy=game.state.economyV4?.buildings||{};
+      const appearance={
+        lumber:'fort-workshop',quarry:'fort-workshop',iron:'fort-workshop',
+        stockpile:'fort-workshop',granary:'fort-workshop',mill:'fort-workshop',
+        bakery:'fort-cottage',orchard:'fort-cottage',dairy:'fort-cottage',
+        wheat:'fort-cottage',vineyard:'fort-cottage',winery:'fort-workshop',
+        hops:'fort-cottage',brewery:'fort-workshop',tavern:'fort-market',
+        hovel:'fort-cottage',well:'fort-site',market:'fort-market',
+        fletcher:'fort-workshop',smith:'fort-workshop',armory:'fort-keep'
+      };
+      for(const [id,entry] of Object.entries(economy)){
+        const slots=Array.isArray(entry?.sites)?entry.sites:[];
+        for(let i=0;i<Math.min(slots.length,entry.count||0);i++){
+          // 기존 마을 작업장 첫 위치는 원래 렌더가 책임지므로 중복 표시하지 않는다.
+          if(i===0&&['lumber','quarry','stockpile','hovel'].includes(id))continue;
+          const slot=slots[i],kind=appearance[id]||'fort-workshop';
+          put('economic:'+id+':'+i,kind,slot.x,slot.y,
+            (kind==='fort-keep'?4:kind==='fort-market'?2.85:3.05)+(Math.max(1,entry.level||1)-1)*.55);
+        }
       }
+      if(game.buildingPlacement?.at){
+        const g=game.buildingPlacement;
+        const preview=appearance[g.id]||'fort-site';
+        put('construction-preview',preview,g.at.x,g.at.y,3.05);
+        const ghost=this.instances3d.get('construction-preview');
+        if(ghost&&!ghost.previewReady){
+          ghost.mesh.traverse(part=>{if(!part.isMesh)return;
+            part.material=part.material.clone();part.material.transparent=true;
+            part.material.opacity=.55;part.material.depthWrite=false;
+          });
+          ghost.previewReady=true;
+        }
+      }
+      // 적 영주는 자기 마을회관·성벽·탑·주민 건물이 있는 독립 요새를 가진다.
+      for(const lord of game.state.enemyLordsV5||[]){
+        const id='enemy-stronghold:'+lord.id,x=lord.x,y=lord.y;
+        if(!lord.defeated)put(id+':keep','fort-keep',x,y,5.25+(lord.focus==='defense'?.65:0));
+        else put(id+':ruins','stone',x,y,2.6);
+        if(!lord.defeated&&lord.wallHp>0){
+          for(let i=-3;i<=3;i++){
+            put(id+':north:'+i,'fort-wall',x+i*100,y-245,2.65);
+            put(id+':south:'+i,'fort-wall',x+i*100,y+225,2.65);
+          }
+          for(let i=-2;i<=2;i++){
+            put(id+':east:'+i,'fort-wall',x+345,y+i*90,2.65,Math.PI/2);
+            put(id+':west:'+i,'fort-wall',x-345,y+i*90,2.65,Math.PI/2);
+          }
+          put(id+':gate','fort-gatehouse',x-345,y,4);
+        }
+        for(const dx of [-350,350])for(const dy of [-245,225]){
+          if(!lord.defeated&&lord.wallHp>0)put(id+':tower:'+dx+':'+dy,'fort-watchtower',x+dx,y+dy,4.25);
+        }
+        for(let i=0;i<Math.min(8,lord.buildings||4);i++){
+          const rx=x-245+(i%4)*160,ry=y-130+Math.floor(i/4)*190;
+          if(Math.hypot(rx-x,ry-y)<120)continue;
+          put(id+':village:'+i,i%4===0?'fort-market':'fort-cottage',rx,ry,2.9);
+        }
+        for(let i=0;i<4;i++)put(id+':road:'+i,'fort-road',x-160+i*105,y+100,.07);
+      }
+      for(const enemy of game.fieldEnemies||[])if(enemy.hp>0)
+        put('enemy-garrison:'+enemy.id,enemy.kind==='archer'?'soldier':'enemy',enemy.x,enemy.y,1.95);
       put('ship','ship',775,760,1.4);put('fishing','dock',520,430,1.4);
       if((fort.traderClock??180)%180<75){
         put('merchant','npc',845,775,1.9);
