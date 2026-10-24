@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fifty-days-build-up-g14-07a981209a58",
-  "directiveFingerprint": "07a981209a581783cf82f07a8d9685ccdf363276a4039e1765f1111678a82748",
-  "previousDirectiveFingerprint": "6e27ae71ff2074c2eb4ca97503dd7dca942593fda8664996e42d6a38d9640697",
-  "forbiddenRepeatFingerprint": "6e27ae71ff2074c2eb4ca97503dd7dca942593fda8664996e42d6a38d9640697",
+  "directiveId": "fifty-days-build-up-g15-09dc03bf67e4",
+  "directiveFingerprint": "09dc03bf67e422a65bb2bc625d282f081cbf8996f2b538a5ecb78f0ff2a45231",
+  "previousDirectiveFingerprint": "07a981209a581783cf82f07a8d9685ccdf363276a4039e1765f1111678a82748",
+  "forbiddenRepeatFingerprint": "07a981209a581783cf82f07a8d9685ccdf363276a4039e1765f1111678a82748",
   "gameId": "fifty-days",
   "gameName": "50일",
-  "generation": 14,
+  "generation": 15,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fifty-days",
-  "sourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+  "sourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
   "designFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+        "sourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
-    "sourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+    "sourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+    "sourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4535,8 +4535,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 180,
-      "progression": 527,
+      "combat": 182,
+      "progression": 525,
       "ai": 62,
       "save": 119,
       "multiplayer": 43,
@@ -4546,12 +4546,12 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 28,
+      "audioDynamics": 26,
       "ui": 898,
       "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 153,
+      "input": 151,
       "map": 290,
       "landmark": 36,
       "interaction": 287,
@@ -4989,9 +4989,9 @@
   "previousVersionDelta": {
     "previousGoal": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 13,
-    "previousSourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
-    "currentSourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+    "previousGeneration": 14,
+    "previousSourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+    "currentSourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6282,7 +6282,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 430815,
+        "sourceBytes": 430826,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6315,13 +6315,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 2,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6340,7 +6340,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
@@ -6375,7 +6375,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 168,
+        "score": 150,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6489,11 +6489,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 14,
-    "previousGeneration": 13,
+    "generation": 15,
+    "previousGeneration": 14,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
-    "priorSourceFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
+    "sourceFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
+    "priorSourceFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6512,7 +6512,7 @@
     "version": 1,
     "gameId": "fifty-days",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+    "sourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7417,7 +7417,7 @@
     "gameId": "fifty-days",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+    "sourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8251,7 +8251,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "475f4cf34bd94aa3e9a51d015c1ee67f776d6d88a23cfee496fdac3e0f073f2e",
+      "sourceTreeFingerprint": "f5e872305ac2486002a82576cd6fe4e469f57e3c2a7a5590cfb1c90413aef7d8",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
@@ -8310,7 +8310,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 15,
+    "nextGeneration": 16,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8372,5 +8372,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T14:14:15.789Z"
+  "generatedAt": "2026-10-24T14:57:59.764Z"
 }
