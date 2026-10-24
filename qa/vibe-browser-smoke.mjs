@@ -1,3 +1,4 @@
+// 파일명: qa/vibe-browser-smoke.mjs
 // Browser smoke test: run with `node qa/vibe-browser-smoke.mjs` after `npx playwright install chromium`.
 import {chromium} from 'playwright';
 import {spawn} from 'node:child_process';
@@ -200,6 +201,26 @@ try{
     assert.equal(metrics.coverage,'currently-mapped',
      viewport.name+': an invisible original enemy may be present');
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught browser errors before movement');
+    // 실제 배포된 원본 CC0 장비 그림을 데스크톱·모바일 모두 열고 로딩까지 확인한다.
+    await game.locator('#heroPortrait').click();
+    assert.equal(await game.locator('.arpgInventory').isVisible(),true,
+      viewport.name+': character inventory did not open');
+    const equippedIcons=game.locator('.arpgGearMark .arpgIcon');
+    assert.equal(await equippedIcons.count(),4,
+      viewport.name+': the four character equipment slots must show image icons');
+    await game.waitForFunction(()=>[...document.querySelectorAll('.arpgGearMark .arpgIcon')]
+      .every(img=>img.complete&&img.naturalWidth>=64&&img.naturalHeight>=64),
+      null,{timeout:15000});
+    await game.locator('#arpgBagSearch').fill('나무');
+    assert.ok((await game.locator('#arpgResultCount').textContent()).includes('표시'),
+      viewport.name+': item search did not refresh');
+    await game.locator('[data-arpg-filter="equipment"]').click();
+    assert.equal(await game.locator('[data-arpg-filter="equipment"]').getAttribute('aria-pressed'),'true');
+    await game.locator('#close').click();
+    assert.equal(await game.locator('.arpgInventory').count(),1,
+      viewport.name+': closing inventory should preserve existing panel contents');
+    assert.equal(await game.locator('#sheet').getAttribute('class').then(x=>x.includes('open')),false);
+    console.log('MAGIC_FOREST_CC0_INVENTORY_LIVE_PASS '+viewport.name);
     // Real published GLB swap, not a dropdown-only or source-marker check.
     if(!viewport.mobile){
       // 캐릭터 꾸미기는 접힌 모험가 메뉴를 통해 연다.

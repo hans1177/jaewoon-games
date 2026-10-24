@@ -1,3 +1,4 @@
+// 파일명: qa/fantasy-survival-mobile-tap-combat.test.mjs
 // Regression: the real Magic Forest source receives one-tap combat without changing combat authority.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -144,5 +145,28 @@ test('quest compass and map stay integrated with existing mobile controls',()=>{
  assert.match(source,/getElementById\('questNavMap'\)\.addEventListener\('click',\(\)=>ui\.mapBtn\.click\(\)\)/);
  assert.match(source,/const guidance=questGuideData\(\)/);
  assert.match(source,/m\.setLineDash\(\[4,5\]\)/);
+ assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+
+// 마력숲 아이콘: 실제 CC0 PNG 리소스, 경로, 모바일 지연 로딩과 기존 판정 계약 검증.
+test('all inventory item types render committed CC0 image icons without changing actions or saves',()=>{
+ const icons=["armor","armorgold","aurared","axe","bag","book","bookholy","chest","crossbow","fireball","frostball","hammerheavy","helmet","legarmor","potionblue","potionred","shield","sword","swordblood"];
+ for(const name of icons){
+  const png=fs.readFileSync('web-games/fantasy-survival/icons/'+name+'.png');
+  assert.ok(png.length>20000,name+' must be a real detailed icon, not a placeholder');
+  assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a',name+' must be PNG');
+ }
+ assert.match(source,/const iconFor=\(id,kind,name=''/);
+ assert.match(source,/iconTag\(r\.id,r\.kind,r\.name\)/);
+ assert.match(source,/iconTag\('torch','weapon','마력 횃불'\)/);
+ assert.match(source,/slot\('무기',p\.weapon,'weapon'\)/);
+ assert.match(source,/slot\('방어구',p\.armor,'armor'\)/);
+ assert.match(source,/loading="lazy" decoding="async"/);
+ assert.match(source,/button\.addEventListener\('pointerdown',showInfo\)/);
+ assert.match(source,/if\(r\?\.kind==='consumable'\)useItem\(r\.id\)/);
+ assert.match(source,/else if\(r\?\.kind==='seed'\)plantSeed\(r\.id\)/);
+ assert.match(source,/else if\(r\?\.kind==='ammo'\)selectArrow\(r\.id\)/);
+ assert.match(source,/else if\(r\)equipItem\(r\.id\)/);
  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
