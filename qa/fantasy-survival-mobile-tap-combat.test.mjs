@@ -314,9 +314,11 @@ test('all 174 unchanged recipe identities and resource rows resolve verified ins
 
 test('low-quality mobile mode reduces GPU cost without deleting the original native creature and dungeon source',()=>{
  const native=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
- assert.match(native,/mobileBudget\?\.9:1\.5/);
+ assert.match(native,/let pixelDensity=Math\.max\(\.32/);
+ assert.match(native,/renderer\.setPixelRatio\(pixelDensity\*qualityFactor\)/);
  assert.match(native,/let qualityFactor=mobileBudget\?\.82:1/);
- assert.match(native,/if\(mobileBudget\?hash%5===0:hash%3!==0\)/);
+ assert.match(native,/const details=mobileBudget\?\(hash%3===0\?1:0\):barren\?1:3/);
+ assert.match(native,/if\(!batch\|\|batch\.count>=147\)continue/);
  assert.match(native,/mobileBudget\?650:1000/);
  assert.match(native,/const unsafeUnmappedEncounter=synchronizeNativeCreatures/);
  assert.match(native,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
