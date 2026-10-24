@@ -1,6 +1,6 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion} from './engine.mjs';
+import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,boardEnemy,SEA_LANDMARKS,observeSeaLandmark,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -21,7 +21,7 @@ function save(){
 }
 const scene=createOceanView($('sea'),{
  onReady(){ready=true;scene.setState(state);if(state.heroChosen){if(state.landBattle)enterBattle();view.loading.classList.add('hide');note('항구 아이콘을 누르면 항로를 정할 수 있어. 입항 후에는 마을을 걸으며 시설을 골라.');}else showCaptains();},
- onBuilding(id){openFacility(id);},onMerchant(id){apply(hailMerchant(state,id));},onMap(){gotoPanel('chart');},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
+ onBuilding(id){openFacility(id);},onLandmark(id){apply(observeSeaLandmark(state,id));},onMerchant(id){apply(hailMerchant(state,id));},onMap(){gotoPanel('chart');},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
  onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}
 });
 $('start').addEventListener('click',()=>{if(ready)showCaptains();});
@@ -35,7 +35,18 @@ function summary(){
  const canHail=nearby&&Math.hypot(state.ship.x-nearby.p.x,state.ship.z-nearby.p.z)<=20;$('hail').hidden=!canHail;if(canHail){$('hail').dataset.merchant=nearby.id;$('hail').title=MERCHANT_CAPTAINS.find(c=>c.id===nearby.id).name+' 상선 교신';}
  $('autoBattle').textContent=state.autoCombat?'자동해전 켬':'자동해전 끔';$('autoBattle').setAttribute('aria-pressed',String(state.autoCombat));
  $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:state.exploreTarget?' · 직접 탐색 → '+port(state.exploreTarget).name:'');
- $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
+ $('dock').disabled=!location;
+ const battle=state.navalCombat,enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];
+ $('battleStatus').hidden=!battle;document.body.classList.toggle('naval-engaged',!!battle&&!town);
+ if(battle){const foe=state.pirates.find(e=>e.id===battle.enemyId);
+  const limit=Math.max(0,36-Math.hypot(state.ship.x-battle.x,state.ship.z-battle.z));
+  $('battleStatus').textContent='⚔ 해전 '+(foe?.name||'해적선')+' · 선원 '+state.ship.crew+' 대 '+(foe?.crew??Math.round((foe?.maxHull||80)*.32))+' · 경계까지 '+limit.toFixed(0)+' · 밖으로 항해하면 퇴각';
+ }
+ $('board').hidden=!battle;$('board').disabled=!battle||!enemy||enemy.id!==battle.enemyId||enemy.d>7||state.ship.crew<6||state.ship.boardingCooldown>0;
+ const sight=SEA_LANDMARKS.filter(t=>!state.seaDiscoveries.includes(t.id)).sort((a,b)=>Math.hypot(a.x-state.ship.x,a.z-state.ship.z)-Math.hypot(b.x-state.ship.x,b.z-state.ship.z))[0];
+ const canObserve=sight&&Math.hypot(sight.x-state.ship.x,sight.z-state.ship.z)<=8&&!battle;
+ $('observe').hidden=!canObserve;if(canObserve){$('observe').dataset.landmark=sight.id;$('observe').textContent='관측 · '+sight.name;}
+ $('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+'/'+state.ship.maxCrew+' · 포탄 '+state.supplies.ammo;
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
 function gotoPanel(name){if(state.landBattle){enterBattle();return;}
@@ -266,6 +277,8 @@ $('close').addEventListener('click',leaveFacility);
 $('dock').addEventListener('click',()=>{if(canDock(state))enterTown();});
 $('hail').addEventListener('click',()=>{const id=$('hail').dataset.merchant;if(id)apply(hailMerchant(state,id));});
 $('fire').addEventListener('click',()=>apply(fireCannons(state)));
+$('board').addEventListener('click',()=>apply(boardEnemy(state)));
+$('observe').addEventListener('click',()=>{const id=$('observe').dataset.landmark;if(id)apply(observeSeaLandmark(state,id));});
 view.body.addEventListener('click',e=>{
  if(e.target.id==='chartMap'){
   const c=e.target,r=c.getBoundingClientRect(),mx=(e.clientX-r.left)/r.width*640,my=(e.clientY-r.top)/r.height*400;
