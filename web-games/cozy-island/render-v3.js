@@ -198,6 +198,23 @@ export class IslandRendererV3 {
           enemy.x,enemy.y,enemy.boss?3:2);
       if(game.state.jungleWestCamp?.unlocked)for(const enemy of game.jungleCampEnemies||[])
         if(enemy.alive)put('jungle-camp:'+enemy.id,'enemy',enemy.x,enemy.y,2);
+      if(west&&game.westBoss?.alive)
+        put('west-boss','enemy',game.westBoss.x,game.westBoss.y,3);
+      if(west){
+        put('west-gate','gate',145,600,3.2);
+        put('west-chest','package',-1710,875,1.5);
+      }
+      if(north)put('north-gate','gate',2170,175,3.1);
+      if(volcano){
+        put('volcano-gate','gate',2800,-280,3);
+        const blackIron=[[2940,-670],[3150,-320],[3370,-710],[3550,-180],[3740,-570],[3920,-260],[4100,-690],[4210,-390]];
+        blackIron.forEach(([x,y],i)=>put('black-ore:'+i,'stone',x,y,1.6));
+      }
+      if(cave){
+        put('cave-entry','gate',4260,-300,3.7);
+        const crystals=[[4750,-610],[5100,-120],[5390,-590],[5710,-170],[6080,-620],[6650,-150],[7210,-620]];
+        crystals.forEach(([x,y],i)=>put('abyss-crystal:'+i,'stone',x,y,1.5));
+      }
       // 기존 라이브러리 울타리는 3D 환경 장식 전용이다. 충돌과 이동 제한을 바꾸지 않는다.
       for(let i=0;i<5;i++){
         put('fence:'+i,'fence',1150+i*38,185,1.1);
