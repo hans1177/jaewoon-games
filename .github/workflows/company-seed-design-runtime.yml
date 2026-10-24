@@ -25,6 +25,8 @@ on:
       - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-all-games-design-reset.mjs'
       - 'game-catalog.json'
+      - 'web-games/**'
+      - 'tools/game-catalog-normalization.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'tools/company-design-checkpoint-recovery.mjs'
@@ -188,6 +190,26 @@ jobs:
           console.log(`OWNER_ACTIVE_DESIGN_RESET_COUNT=${active.length}`);
           console.log(`OWNER_ACTIVE_DESIGN_RESET_MATERIALIZED=${result.changed.length}`);
           console.log(`OWNER_ACTIVE_DESIGN_RESET_IDS=${active.map(x=>x.gameId).join(',')}`);
+          NODE
+
+      # Plain HTML/JS game uploads must reach the canonical DESIGN_ONLY F0 intake automatically.
+      # Catalog admission is not a claim of playable 3D or a production promotion.
+      - name: Discover normal web engine games before design auto-enrollment
+        if: steps.main_snapshot.outputs.current == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {ingestOwnerWebGameIds,normalizeCatalog} from './tools/game-catalog-normalization.mjs';
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const result=ingestOwnerWebGameIds(catalog,[],{filesystem:fs});
+          if(result.added.length||result.updated.length||result.disabled.length){
+            normalizeCatalog(catalog);
+            fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\\n');
+          }
+          console.log('GENERAL_WEB_DESIGN_INTAKE_ADDED='+result.added.join(','));
+          console.log('GENERAL_WEB_DESIGN_INTAKE_UPDATED='+result.updated.join(','));
           NODE
 
       - name: Auto-enroll and persist active GAME_SEED intake
