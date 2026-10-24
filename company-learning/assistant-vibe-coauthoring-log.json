@@ -1267,6 +1267,72 @@
         "MOBILE"
       ],
       "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_visual_teleport_stabilization_20261024",
+      "actionType": "SOURCE_CHANGE",
+      "problem": "Native renderer used instant camera/model coordinates and repeated polygon floor overlap; visible jumps during movement or combat and seams could result.",
+      "decision": "Modify existing responsible world3d renderer. Smooth camera/player/monster presentation while preserving authoritative positions and synchronizing on area/large jumps; do not create helper renderer or rewrite gameplay.",
+      "change": "Added cameraMotionAlpha and native actor interpolations, adjusted seams, preserved picking/game collision and game state.",
+      "evidence": [
+        "candidate-commit:85ef55180bf4ce255614b8d396e45d34fe80c0aa",
+        "source:web-games/fantasy-survival/world3d.mjs"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_pixel_qa_regression_20261024",
+      "actionType": "QA_OR_REGRESSION_RESULT",
+      "problem": "Prior PR candidate failed native QA owing to historical malformed regex and assumptions outdated after rendering changes; mobile gameplay QA still fails separate behaviors.",
+      "decision": "Fix malformed regex and update only affected native renderer assertions; do not suppress remaining auto combat/quest map source failures.",
+      "change": "Updated existing native 3D and mobile regression tests; dynamic extraction of 24-enemy simulation passed in V8, all original gameplay state remains unmodified.",
+      "evidence": [
+        "candidate-commit:ea626f7bb31e4a94f9efdfdb6c71f84dab62ef92",
+        "qa:V8-extracted-native-crowd-sim:PASS",
+        "qa:V8-mob-motion-and-region-static-regression:PASS",
+        "actions-run:40093279330:GAME_SCOPED_QA_FAILED",
+        "failure:quest-compass-map-input-and-auto-combat-selection-baseline-index-source",
+        "failure:low-quality-mobile-test-index-area-mapping-needs-reconciliation",
+        "qa:physical-mobile:NOT_RUN"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_magic_forest_integrated_promotion_hold_20261024",
+      "actionType": "SUPERVISOR_PASS_REVISE_DROP",
+      "problem": "User requires integrated one-shot verified main deployment; candidate source only fixes visual snapping, full live gameplay teleport/auto attack root remains unverified.",
+      "decision": "REVISE. Preserve candidate and main. Follow Rule 1 recovery/re-plan; no PASS, main merge or production claim.",
+      "change": "Updated PR 9853 scope and evidence, requires source-level index.html movement/attack inspection via authorized canonical existing Vibe tooling and independent QA.",
+      "evidence": [
+        "pull-request:https://github.com/hans1177/jaewoon-games/pull/9853",
+        "actions-run:40093279330:FAIL",
+        "policy:company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule1"
+      ],
+      "date": "2026-10-24",
+      "gameId": "fantasy-survival",
+      "engine": "NATIVE_WEBGL_THREE",
+      "domains": [
+        "WEB",
+        "VISUAL_PRESENTATION",
+        "MOBILE"
+      ],
+      "learningState": "TRACE_ONLY"
     }
   ]
 }
