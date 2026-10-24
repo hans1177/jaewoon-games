@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g45-19b9691b9836",
-  "directiveFingerprint": "19b9691b9836740278cf70569e383460e289d1a3d57ab90000c475504726ab41",
-  "previousDirectiveFingerprint": "dc702aa9297706c1a49c9ee6b1276a2b9b34a1bc293b1175f0fc5d4712e004fb",
-  "forbiddenRepeatFingerprint": "dc702aa9297706c1a49c9ee6b1276a2b9b34a1bc293b1175f0fc5d4712e004fb",
+  "directiveId": "line-defense-build-up-g46-23645b070f83",
+  "directiveFingerprint": "23645b070f8356943888d8baf5de13bdcb044bc3ff3a51a3836232216855661d",
+  "previousDirectiveFingerprint": "19b9691b9836740278cf70569e383460e289d1a3d57ab90000c475504726ab41",
+  "forbiddenRepeatFingerprint": "19b9691b9836740278cf70569e383460e289d1a3d57ab90000c475504726ab41",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 45,
+  "generation": 46,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+  "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
   "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+        "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "816aa9581cd52260a76c53109cd9ae3a1401ec03c81257882fea8e14ae2fad36",
-    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4468,7 +4468,7 @@
     ],
     "signals": {
       "combat": 291,
-      "progression": 598,
+      "progression": 577,
       "ai": 75,
       "save": 93,
       "multiplayer": 40,
@@ -4512,11 +4512,11 @@
       },
       {
         "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 301
+        "score": 281
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "score": 169
+        "score": 168
       },
       {
         "file": "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
@@ -4921,9 +4921,9 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전. 역사적 세력 균형·왕조의 정통성과 민심 전략. 골목 군단 대전에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 44,
-    "previousSourceTreeFingerprint": "62ef1c7af037f668db0f6dc3f904d95d097d014f2db53277752900185a702838",
-    "currentSourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "previousGeneration": 45,
+    "previousSourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "currentSourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6080,7 +6080,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 405255,
+        "sourceBytes": 405137,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6113,12 +6113,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 7,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=2.",
+    "themeDepth": 8,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 7,
+        "WORLD_ECOLOGY_STORY_CHAIN": 8,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
@@ -6133,7 +6133,7 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6167,7 +6167,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 68,
+        "score": 50,
         "gapDomains": []
       },
       {
@@ -6282,11 +6282,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 45,
-    "previousGeneration": 44,
+    "generation": 46,
+    "previousGeneration": 45,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
-    "priorSourceFingerprint": "62ef1c7af037f668db0f6dc3f904d95d097d014f2db53277752900185a702838",
+    "sourceFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
+    "priorSourceFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6305,7 +6305,7 @@
     "version": 1,
     "gameId": "line-defense",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7211,7 +7211,7 @@
     "gameId": "line-defense",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+    "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8045,7 +8045,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "825cefbe1c16b91b742477d88a0d846484a891ad6bfe2f6f7e2d7700a142aacb",
+      "sourceTreeFingerprint": "1942095ecebd1af2bd5bae3474b2a635ca22ae5df82106ba6442ce2e8f7aa897",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8104,7 +8104,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 46,
+    "nextGeneration": 47,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8166,5 +8166,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T20:44:53.228Z"
+  "generatedAt": "2026-10-24T21:18:43.055Z"
 }

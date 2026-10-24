@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g50-8f413beeb436",
-  "directiveFingerprint": "8f413beeb4368a22798b5f22e63636b527bc7d63637f6702cfea7657864471dc",
-  "previousDirectiveFingerprint": "9789e9ca5da59e25bd36a786dc98fbf6fe96ec41677d2fa3a70bd185781ebd75",
-  "forbiddenRepeatFingerprint": "9789e9ca5da59e25bd36a786dc98fbf6fe96ec41677d2fa3a70bd185781ebd75",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g51-bd5adb3a807b",
+  "directiveFingerprint": "bd5adb3a807bcb9101507e5ae5949c4b2e9bcbf7b63a7f4e22de3aab231f598e",
+  "previousDirectiveFingerprint": "8f413beeb4368a22798b5f22e63636b527bc7d63637f6702cfea7657864471dc",
+  "forbiddenRepeatFingerprint": "8f413beeb4368a22798b5f22e63636b527bc7d63637f6702cfea7657864471dc",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 50,
+  "generation": 51,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+  "sourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
   "designFingerprint": "0d11d62ee952b9a23b30935bec225b7cfb8560ba796ce5ab8bc181b12e7e17b7",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+        "sourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "0d11d62ee952b9a23b30935bec225b7cfb8560ba796ce5ab8bc181b12e7e17b7",
-    "sourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+    "sourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+    "sourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4467,8 +4467,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 147,
-      "progression": 450,
+      "combat": 149,
+      "progression": 448,
       "ai": 45,
       "save": 79,
       "multiplayer": 22,
@@ -4478,12 +4478,12 @@
       "vfx": 43,
       "camera": 33,
       "audio": 4,
-      "audioDynamics": 15,
+      "audioDynamics": 13,
       "ui": 869,
       "uiFlow": 1115,
       "entryFlow": 15,
       "loadingFlow": 0,
-      "input": 118,
+      "input": 116,
       "map": 196,
       "landmark": 36,
       "interaction": 260,
@@ -4921,9 +4921,9 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리. 서사시의 추방과 귀환·민속 금기와 전염 생존. 잃어버린 별의 메아리에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 49,
-    "previousSourceTreeFingerprint": "de4288438b7ee5967c51b22af651ad994d4e9e325f5004d814321404ec388637",
-    "currentSourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+    "previousGeneration": 50,
+    "previousSourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+    "currentSourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6080,7 +6080,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 382519,
+        "sourceBytes": 382528,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6113,12 +6113,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=2.",
+    "themeDepth": 9,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 8,
+        "WORLD_ECOLOGY_STORY_CHAIN": 9,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
@@ -6132,7 +6132,7 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6167,7 +6167,7 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 50,
+        "score": 32,
         "gapDomains": []
       },
       {
@@ -6282,11 +6282,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 50,
-    "previousGeneration": 49,
+    "generation": 51,
+    "previousGeneration": 50,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
-    "priorSourceFingerprint": "de4288438b7ee5967c51b22af651ad994d4e9e325f5004d814321404ec388637",
+    "sourceFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
+    "priorSourceFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6305,7 +6305,7 @@
     "version": 1,
     "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+    "sourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7193,7 +7193,7 @@
     "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+    "sourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8027,7 +8027,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "397f6541771c7d67f9b587119f2646675eb117d9ef59c096ae50af5a6869129b",
+      "sourceTreeFingerprint": "36580ec04304db348e109feb68bffcaf9077ce38257a9e013b334d197151b8be",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8086,7 +8086,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 51,
+    "nextGeneration": 52,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8148,5 +8148,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T20:44:51.784Z"
+  "generatedAt": "2026-10-24T21:18:42.446Z"
 }

@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "egg-heist-build-up-g9-31db9eaff70e",
-  "directiveFingerprint": "31db9eaff70e49f35a6599b29097251f52b7b662377368a52f7e39fc550b095e",
-  "previousDirectiveFingerprint": "e333f151c373f134a67a6df66aacb05ff2a68a31689271f6ee8ea073fc16bd2a",
-  "forbiddenRepeatFingerprint": "e333f151c373f134a67a6df66aacb05ff2a68a31689271f6ee8ea073fc16bd2a",
+  "directiveId": "egg-heist-build-up-g10-7e1156922163",
+  "directiveFingerprint": "7e1156922163696e2f1f3160c3d57cee77e9a4d21e8bb2fc8962026e185cffcc",
+  "previousDirectiveFingerprint": "31db9eaff70e49f35a6599b29097251f52b7b662377368a52f7e39fc550b095e",
+  "forbiddenRepeatFingerprint": "31db9eaff70e49f35a6599b29097251f52b7b662377368a52f7e39fc550b095e",
   "gameId": "egg-heist",
   "gameName": "알 도둑 대작전",
-  "generation": 9,
+  "generation": 10,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/egg-heist",
-  "sourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+  "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
   "designFingerprint": "b11b4e12eada31ffc33079c6917cb51568952de85f1b67261a4692b046ceb778",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+        "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "b11b4e12eada31ffc33079c6917cb51568952de85f1b67261a4692b046ceb778",
-    "sourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4509,7 +4509,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 545,
+      "progression": 566,
       "ai": 62,
       "save": 119,
       "multiplayer": 42,
@@ -4519,7 +4519,7 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 41,
+      "audioDynamics": 30,
       "ui": 897,
       "uiFlow": 1149,
       "entryFlow": 18,
@@ -4549,7 +4549,7 @@
       },
       {
         "file": "roblox-games/egg-heist/shared/GameConfig.luau",
-        "score": 509
+        "score": 531
       },
       {
         "file": "roblox-games/egg-heist/server/Game.server.luau",
@@ -4557,7 +4557,7 @@
       },
       {
         "file": "roblox-games/egg-heist/client/Game.client.luau",
-        "score": 163
+        "score": 164
       },
       {
         "file": "roblox-games/egg-heist/shared/RobloxCommonMaterials.luau",
@@ -4962,9 +4962,9 @@
   "previousVersionDelta": {
     "previousGoal": "알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 8,
-    "previousSourceTreeFingerprint": "0aa788f5f76f976096235ce1a229464a9274b9b382c526de25c2b4b0322f2376",
-    "currentSourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+    "previousGeneration": 9,
+    "previousSourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+    "currentSourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6121,7 +6121,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 428497,
+        "sourceBytes": 428529,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6154,8 +6154,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6165,9 +6165,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6211,7 +6212,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 92,
+        "score": 74,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6325,11 +6326,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 9,
-    "previousGeneration": 8,
+    "generation": 10,
+    "previousGeneration": 9,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
-    "priorSourceFingerprint": "0aa788f5f76f976096235ce1a229464a9274b9b382c526de25c2b4b0322f2376",
+    "sourceFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+    "priorSourceFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6348,7 +6349,7 @@
     "version": 1,
     "gameId": "egg-heist",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7253,7 +7254,7 @@
     "gameId": "egg-heist",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8087,7 +8088,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+      "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8146,7 +8147,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 10,
+    "nextGeneration": 11,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8208,5 +8209,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T20:44:57.996Z"
+  "generatedAt": "2026-10-24T21:18:44.986Z"
 }
