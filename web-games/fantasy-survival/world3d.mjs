@@ -264,7 +264,15 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         file==='barbarian.glb'?new URL('../../assets/roblox/actors/native/barbarian.glb',import.meta.url):new URL(file,CREATURE_SOURCE);
       let model,clips=[];
       if(file.endsWith('.fbx')){
-        model=await new FBXLoader().setResourcePath(CREATURE_SOURCE.href).loadAsync(url.href);
+        // 원본 FBX 로딩 실패 시 같은 파일을 직접 파싱해 브라우저 로더 경로 실패를 복구한다.
+        // 성공해도 종/ID/전투 판정은 게임 상태를 그대로 따른다.
+        try{model=await new FBXLoader().setResourcePath(CREATURE_SOURCE.href).loadAsync(url.href)}
+        catch(loaderError){
+          const response=await fetch(url,{cache:'force-cache'});
+          if(!response.ok)throw loaderError;
+          model=new FBXLoader().setResourcePath(CREATURE_SOURCE.href)
+            .parse(await response.arrayBuffer(),CREATURE_SOURCE.href);
+        }
         clips=model.animations||[];
       }else if(file.endsWith('.glb')){
         let gltf;
@@ -277,12 +285,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         }else gltf=await new GLTFLoader().loadAsync(url.href);
         model=gltf.scene;clips=gltf.animations||[];
       }else{
-        const texture=await new THREE.TextureLoader().loadAsync(new URL(file.replace('.obj','.png'),CREATURE_SOURCE).href);
-        texture.colorSpace=THREE.SRGBColorSpace;
-        texture.magFilter=THREE.NearestFilter;
+        // 다운로드한 OBJ 원본 형상은 PNG 텍스처가 손상되거나 지연되어도 표시한다.
         model=await new OBJLoader().loadAsync(url.href);
-        const material=new THREE.MeshStandardMaterial({map:texture,roughness:.94});
-        model.traverse(child=>{if(child.isMesh)child.material=material});
+        try{
+          const texture=await new THREE.TextureLoader().loadAsync(new URL(file.replace('.obj','.png'),CREATURE_SOURCE).href);
+          texture.colorSpace=THREE.SRGBColorSpace;
+          texture.magFilter=THREE.NearestFilter;
+          const material=new THREE.MeshStandardMaterial({map:texture,roughness:.94});
+          model.traverse(child=>{if(child.isMesh)child.material=material});
+        }catch(textureError){
+          // OBJLoader가 생성한 원본 메시·기본 재질을 유지한다. 종이나 공격 판정은 변경하지 않는다.
+          if(!creatureFailures.has(file))console.warn('CC0 creature texture unavailable: '+file,textureError);
+        }
       }
       const box=new THREE.Box3().setFromObject(model);
       if(box.isEmpty())throw new Error('Missing downloaded creature mesh');
@@ -300,9 +314,22 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const previous=creatureFailures.get(file);
       // 간헐적인 모바일 네트워크/디코딩 실패는 영구 차단하지 않는다.
       // 재시도 간격은 5초부터 최대 60초로 제한하고 경고 로그는 한 번만 남긴다.
-      creatureFailures.set(file,{at:performance.now(),attempts:(previous?.attempts||0)+1});
+      creatureFailures.set(file,{at:performance.now(),attempts:(previous?.attempts||0)+1,
+        message:String(error?.message||error).slice(0,180)});
       if(!previous)console.warn('CC0 original 3D monster unavailable: '+file,error);
     }finally{loadingCreatureCount--;creatureRequests.delete(file)}
+  }
+  // 다시 불러오기: 로드된 플레이어·지역·저장 데이터는 유지하고 실패한 종만 재요청한다.
+  function retryMissingCreatures(state){
+    if(disposed||!state||!missingVisibleMonsterIds.size)return false;
+    let retried=false;
+    for(const enemy of state.enemies||[]){
+      if(!enemy||enemy.hp<=0||enemy.area!==state.area)continue;
+      const file=enemy.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(enemy.type?.id);
+      if(file&&creatureFailures.has(file)){creatureFailures.delete(file);retried=true}
+    }
+    if(retried)nextCreatureScan=0;
+    return retried;
   }
   const initialFiles=new Map();
   for(const e of initialState?.enemies||[]){
@@ -905,7 +932,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // Source floor geometry/material are disposed once by the source model pool.
   }
   return {
-    frame,pick,dispose,setAvatarAppearance,getAvatarAppearance:()=>({...selectedAppearance}),isActive:()=>active&&!disposed&&!canvas.hidden,
+    frame,pick,dispose,setAvatarAppearance,retryMissingCreatures,getAvatarAppearance:()=>({...selectedAppearance}),isActive:()=>active&&!disposed&&!canvas.hidden,
     kind:'NATIVE_WEBGL_GAME_RENDERER',
     get playerSource(){return hero?.avatar.userData.source||''},get creatureSources(){return [...nativeCreatureSources.keys()]},
     modelCount:models.size,get playerAssetLoaded(){return !!hero},get playerMotionClipCount(){return heroClips.length},
@@ -914,6 +941,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
     getMissingAssetTypes:()=>assetReadiness.missingTypes,
     getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
+    getFailedCreatureSources:()=>[...creatureFailures].map(([file,entry])=>({file,attempts:entry.attempts,message:entry.message})),
     getAdaptiveQuality:()=>qualityFactor,getFallbackReason:()=>fallbackReason,
     getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,
       nativeCreatures:nativeCreatureActors.size,undeadCreatures:undeadActors.size,
