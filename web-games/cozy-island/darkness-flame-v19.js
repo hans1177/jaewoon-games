@@ -789,6 +789,7 @@ const originalDrawUnit = proto.drawUnit;
 
 proto.draw = function drawWithDarknessAndFlame(game) {
   currentGame = game;
+  game.volcanoEnemies=regionEnemies; // 원본 화산 적 목록 연결
   ensureState(game.state);
   restoreHeavy(); syncHeavyAttack(); applyHeavyReduction(); applyRegionDefeated();
   const now = performance.now();
