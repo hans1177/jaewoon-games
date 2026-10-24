@@ -17,6 +17,13 @@ on:
     - cron: '27 * * * *'
   workflow_dispatch:
 
+# Coalesce only identical hourly practice requests; manual/owner requests stay independent.
+# Running Windows training and its artifact remain intact while new hourly triggers wait.
+concurrency:
+  group: vibe2-unity-practice-cpu-${{ github.event_name == 'schedule' && 'hourly' || github.run_id }}
+  queue: single
+  cancel-in-progress: false
+
 permissions:
   contents: read
   actions: read
@@ -145,10 +152,23 @@ jobs:
             '--max-length', '256',
             '--batch-size', '1',
             '--grad-accum', '1',
-            '--final-eval-only'
+            '--final-eval-only',
+            '--cpu-practice-recovery'
           )
           & $env:PYTHON_EXE @trainArgs
-          if ($LASTEXITCODE -ne 0) { throw 'CPU practice LoRA training failed' }
+          if ($LASTEXITCODE -ne 0) {
+            # A Windows CPU job may end after most of the epoch with no Python
+            # traceback. Resume ONE time only from its exact Trainer checkpoint.
+            $checkpointRoot = Join-Path $adapterDir 'checkpoints'
+            $complete = @(Get-ChildItem $checkpointRoot -Directory -Filter 'checkpoint-*' -ErrorAction SilentlyContinue | Where-Object {
+              (Test-Path (Join-Path $_.FullName 'trainer_state.json')) -and
+              (Test-Path (Join-Path $_.FullName 'optimizer.pt'))
+            })
+            if ($complete.Count -eq 0) { throw 'CPU practice LoRA training failed without verified checkpoint' }
+            Write-Host 'WINDOWS_CPU_PRACTICE_RESUME=VERIFIED_CHECKPOINT'
+            & $env:PYTHON_EXE @trainArgs '--resume-checkpoint'
+            if ($LASTEXITCODE -ne 0) { throw 'CPU practice LoRA training retry failed' }
+          }
           $metadataPath = Join-Path $adapterDir 'training-metadata.json'
           $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($metadata.practiceOnly -ne $true -or $metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'practice adapter safety gate failed' }
