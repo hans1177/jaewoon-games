@@ -431,7 +431,10 @@ var INCIDENTS=[
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=4;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
+ s.version=5;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes","battles"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}if(!s.act2||typeof s.act2!=='object'||Array.isArray(s.act2))s.act2={};
+ if(!s.act2.completed||typeof s.act2.completed!=='object'||Array.isArray(s.act2.completed))s.act2.completed={};
+ Object.keys(s.battles).forEach(k=>{if(s.battles[k]==='active')s.battles[k]='pending';});
+ state.story=s;
 }
 function storyVisit(zone){
  if(zone<1||zone>6)return;
@@ -444,11 +447,74 @@ function storyVisit(zone){
  });
  save();
 }
+// 메인 · 1막 현장 복병 / 2막 돌아온 이름의 그림자 (기존 적 수치와 보상 재사용)
+const ACT2_SITES={
+ 1:{x:1540,y:875,name:'돌아온 역참의 휘장',lead:'죽은 전령이 내일 도착한다는 기록이 역참 벽에 새겨져 있다.'},
+ 2:{x:1660,y:820,name:'되살아난 나무의 연표',lead:'돌아온 사람들의 이름이 새겨진 나무에서 밤마다 글씨가 사라진다.'},
+ 3:{x:1490,y:880,name:'메아리 아래의 두 번째 길',lead:'수비대의 마지막 행군 명령이 지하 통로에서 울린다.'},
+ 4:{x:1720,y:830,name:'공물이 끊긴 우물',lead:'기억을 바치던 우물이 멎자 정체 모를 상단이 대가를 요구한다.'},
+ 5:{x:1580,y:880,name:'꺼지지 않는 경계의 불씨',lead:'맹약 후계자의 이름이 눈 속에서 되살아난다.'},
+ 6:{x:1540,y:900,name:'재판의 마지막 증인',lead:'돌아온 도시의 판결문에는 아직 공개되지 않은 명령자의 서명이 남아 있다.'}
+};
+var storyBattle=null;
+function act2NextZone(){
+ if(!state.story.choices.ending)return 0;
+ for(var z=1;z<=6;z++)if(!state.story.act2.completed[z])return z;
+ return 0;
+}
+function pendingStoryEncounter(){
+ if(dungeon||state.zone===0||storyBattle)return null;
+ var z=state.zone;
+ if(state.story.battles[z]==='pending')return{phase:'act1',zone:z,site:EVIDENCE_SITES[z],name:'사건을 뒤쫓는 복병'};
+ if(act2NextZone()===z)return{phase:'act2',zone:z,site:ACT2_SITES[z],name:ACT2_SITES[z].name};
+ return null;
+}
+function beginStoryBattle(phase,zone){
+ if(dungeon||state.zone!==zone||storyBattle)return;
+ if(phase==='act1'&&state.story.battles[zone]!=='pending')return;
+ if(phase==='act2'&&act2NextZone()!==zone)return;
+ var tag=phase+':'+zone,mobs=ZONES[zone].mons,amount=phase==='act2'?3:2;
+ storyBattle={phase,zone,tag};
+ if(phase==='act1')state.story.battles[zone]='active';
+ tacticalTargetId=null;contactTriggered=false;tacticalPaused=false;
+ document.getElementById('pauseBtn').textContent='일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed','false');
+ for(var i=0;i<amount;i++){
+  var mob=mobs[(i+(phase==='act2'?1:0))%mobs.length],angle=2*Math.PI*(i+1)/(amount+1),dist=155+(i%2)*42;
+  var x=Math.max(110,Math.min(worldW-110,p.x+Math.cos(angle)*dist)),y=Math.max(110,Math.min(worldH-110,p.y+Math.sin(angle)*dist));
+  spawnEnemy(mob[0],mob[1]+ZONES[zone].lv*8,mob[2]+ZONES[zone].lv*2,mob[3]+ZONES[zone].lv*3,mob[4]+ZONES[zone].lv*2,false,false,x,y);
+  enemies[enemies.length-1].storyTag=tag;
+ }
+ save();battleLog((phase==='act2'?'2막 · ':'1막 · ')+ZONES[zone].name+' 사건 교전');
+ toast('사건 복병 등장! 파티 전술을 사용해.');
+}
+function finishStoryBattle(){
+ if(!storyBattle||enemies.some(e=>!e.dead&&e.storyTag===storyBattle.tag))return;
+ var run=storyBattle;storyBattle=null;
+ if(run.phase==='act1')state.story.battles[run.zone]='cleared';
+ else state.story.act2.completed[run.zone]=true;
+ save();battleLog(ZONES[run.zone].name+' · 사건 교전 해결');
+ if(!playEventScene((run.phase==='act1'?'battleclear:':'act2clear:')+run.zone,storyJournal))storyJournal();
+}
+function finishIncidentChoice(zone){
+ if(zone===state.zone&&!dungeon&&Math.hypot(p.x-EVIDENCE_SITES[zone].x,p.y-EVIDENCE_SITES[zone].y)<150){
+  closeModal();beginStoryBattle('act1',zone);return;
+ }
+ storyJournal();
+}
+function inspectAct2(){
+ var e=pendingStoryEncounter();if(!e)return;
+ if(Math.hypot(p.x-e.site.x,p.y-e.site.y)>115){moveTarget={x:e.site.x,y:e.site.y};toast('사건 현장으로 이동해.');return;}
+ if(e.phase==='act1'){beginStoryBattle('act1',e.zone);return;}
+ var after=()=>{closeModal();beginStoryBattle('act2',e.zone);};
+ if(playEventScene('act2:'+e.zone,after))return;
+ after();
+}
+
 function storyRecruit(a){if(state.story.companions[a.id])return;state.story.companions[a.id]=true;save();toast(a.name+'의 이야기가 여정 기록에 열렸어.');}
 function storyClear(index){state.story.cleared[index]=true;save();}
-function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';return '맹약은 끝났어. 동료들과 남은 길을 자유롭게 탐험해.';}
+function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';for(var step=1;step<=6;step++)if(!s.act2.completed[step])return '2막 · '+ZONES[step].name+'에서 새 단서를 찾아 복병을 물리쳐.';return '2막 · 여섯 단서 확보. 북문 기록실에서 다음 여정을 준비해.';}
 function storyReady(key){var s=state.story;return key==='fort'?s.cleared[0]&&s.visited[1]&&s.visited[2]:key==='temple'?s.choices.fort&&s.cleared[1]&&s.visited[3]&&s.visited[4]:key==='ending'?s.choices.temple&&s.cleared[2]&&s.visited[5]&&s.visited[6]:false;}
-function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();if(playEventScene('choice:'+key,storyJournal))return;storyJournal();}
+function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();var after=()=>{if(key==='ending'&&playEventScene('act2intro',storyJournal))return;storyJournal();};if(playEventScene('choice:'+key,after))return;after();}
 
 
 const COUNCIL_LOCATION={x:844,y:487};
@@ -496,8 +562,8 @@ function incidentChoice(zone,path){
  if(!state.story.visited[zone]||state.story.cases[zone]||!INCIDENTS[zone-1]||!['truth','guard'].includes(path))return;
  var test=path==='truth'?checkAbility('persuade',11+zone):{success:true,roll:null,total:null};
  var result=path==='truth'&&test.success?'truth':'guard';
- state.story.cases[zone]={path:result,requested:path,roll:test.roll,total:test.total,failed:path==='truth'&&!test.success};
- save();battleLog(INCIDENTS[zone-1].person+' · '+(result==='truth'?'증언 기록':'증인 보호'));if(playEventScene('case:'+zone,storyJournal))return;storyJournal();
+ state.story.cases[zone]={path:result,requested:path,roll:test.roll,total:test.total,failed:path==='truth'&&!test.success};state.story.battles[zone]='pending';
+ save();battleLog(INCIDENTS[zone-1].person+' · '+(result==='truth'?'증언 기록':'증인 보호'));var after=()=>finishIncidentChoice(zone);if(playEventScene('case:'+zone,after))return;after();
 }
 function storyJournal(){
  var s=state.story,h='<p class="gold">잊힌 길의 서약 · 오리지널 캠페인</p><p>'+storyObjective()+'</p>';
