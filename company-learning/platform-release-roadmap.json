@@ -6632,7 +6632,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-24",
   "priorityTiers": [
     {
       "tier": 1,
@@ -28711,7 +28711,72 @@
     }
   },
   "fixedAutonomousDevelopmentOperatingContract": {
-    "version": 1,
+    "version": 2,
+    "ownerRequestedVibeOneShotPatch": {
+      "version": 1,
+      "number": 1,
+      "labelKo": "바이브 한방패치",
+      "authority": "OWNER_DIRECTIVE_2026-10-24",
+      "status": "OWNER_DIRECT_LOCKED",
+      "scope": "EXPLICIT_OWNER_REQUESTS_FOR_EXISTING_GAME_CODE_CHANGES",
+      "priority": "OWNER_DIRECT_GAME_CHANGE_FIRST_WITHIN_EXISTING_CANONICAL_GATES",
+      "executionOrder": [
+        "LOAD_AND_VALIDATE_LATEST_MAIN_CANONICAL_DOCUMENTS_AND_FINAL_LOCK",
+        "READ_LATEST_MAIN_EXISTING_GAME_SOURCE_AND_CANONICAL_PIPELINE",
+        "IMPLEMENT_OWNER_SPECIFIED_CHANGE_DIRECTLY_IN_RESPONSIBLE_GAME_FUNCTIONS",
+        "RUN_REQUIRED_IMPACT_SCOPED_PRE_MERGE_SOURCE_SECURITY_AND_BUILD_CHECKS",
+        "MERGE_APPROVED_CHANGE_TO_MAIN_VIA_EXISTING_GITHUB_FLOW",
+        "TRIGGER_EXISTING_PLATFORM_PREVIEW_OR_WEB_AUTODEPLOY_AS_ALLOWED",
+        "POST_DEPLOY_CHECK_RUNTIME_MOBILE_INPUT_LINKS_LOADING_SAVE_AND_REGRESSION",
+        "REPORT_ACTUAL_MAIN_SHA_DEPLOYMENT_TARGET_AND_VERIFIED_OR_UNVERIFIED_OUTCOME"
+      ],
+      "chatExecution": {
+        "chatgptDirectCoding": true,
+        "explicitOwnerActionWords": [
+          "진행",
+          "적용",
+          "넣어",
+          "수정",
+          "작업진행"
+        ],
+        "avoidRedundantQuestions": true,
+        "avoidUnnecessaryCodeDumps": true,
+        "conciseOutcomeOnly": true,
+        "preferExistingFunctionsToWrappers": true,
+        "duplicatePipelinesForbidden": true
+      },
+      "preservation": {
+        "existingGameplayAndSaveDataFirst": true,
+        "existingGameBalanceOrContentMayChangeOnlyByOwnerDirection": true,
+        "mobileFirst": true,
+        "assetLicenseEvidenceRequired": true,
+        "pathsAndLinksSyncedWhenChanged": true
+      },
+      "deployment": {
+        "repository": "hans1177/jaewoon-games",
+        "branch": "main",
+        "webSite": "https://jaewoon-games.pages.dev",
+        "webPath": "EXISTING_CLOUDFLARE_PAGES_AUTODEPLOY_ONLY",
+        "otherPlatform": "EXISTING_CANONICAL_PLATFORM_PUBLISH_ROUTE_ONLY",
+        "postDeploymentValidationRequired": true,
+        "unverifiedDeploymentMayNotBeClaimedSuccessful": true
+      },
+      "hardBoundaries": {
+        "existingF0F9SequenceUnchanged": true,
+        "existingPrePublicationSecurityAndReleaseGatesUnchanged": true,
+        "privateRuntimeCandidateStageAllowedOnlyWhereCurrentPipelineAlreadySupportsIt": true,
+        "noPublicReleaseBypass": true,
+        "noAutomatedSequenceUnlock": true,
+        "noSourceOrRuntimeWriteWhenCentralPreflightFails": true,
+        "doNotConfuseUserPatchPolicyOneWithExistingConstitutionalRuleOne": true
+      },
+      "completion": {
+        "mainCommitProofRequired": true,
+        "actualDeploymentProofRequiredWhenDeployRequested": true,
+        "runtimeProofRequiredWhenAvailable": true,
+        "unverifiedStatusMustBeReported": true
+      }
+    },
     "status": "FIXED_CURRENT_SYSTEM",
     "purpose": "KEEP_THE_EXISTING_PER_GAME_VIBE_DEVELOPMENT_LOOP_RUNNING_AUTONOMOUSLY_WITHOUT_OWNER_OR_CHATGPT_AS_NORMAL_EXECUTION_DEPENDENCIES",
     "systemStructure": "EXISTING_CANONICAL_PIPELINE_ONLY",
