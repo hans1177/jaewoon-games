@@ -657,6 +657,17 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
   const evidence=[...(Array.isArray(task?.evidence)?task.evidence:[]),...(Array.isArray(selected?.evidence)?selected.evidence:[])].map(clean);
   const unityWeb=[task,selected].some(row=>row?.unityWebDevelopment===true||row?.firstStageUnityWeb===true||clean(row?.executionSurface).toUpperCase()==='UNITY_WEB'||clean(row?.studioQualityEvolution?.platformLane).toLowerCase()==='unity-web')||evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web')||targetName==='unity_web';
   const platform=targetName==='roblox'?'ROBLOX':['unity','unity_android','unity_web'].includes(targetName)?(unityWeb?'UNITY_WEB':'UNITY_ANDROID'):targetName==='unreal'?'FORTNITE_UEFN':targetName.toUpperCase();
+  // 파일명: tools/vibe2-queue-control.mjs / 조직별 플랫폼과 실제 쓰기 경로 일치
+  const repositoryScope=newestOwnerScope?.repository;
+  if(repositoryScope){
+    const roots={ROBLOX:'roblox-games',WEB:'web-games',UNITY:'unity-games',FORTNITE_UEFN:'uefn-games',UNREAL:'unreal-games',GODOT:'godot-games'};
+    const paths=[task.sourceRoot,task.source?.root,selected.sourceRoot,selected.source?.root,...(task.responsibleFiles||[]),...(selected.responsibleFiles||[])].map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,''));
+    if(Object.hasOwn(roots,platform)&&platform!==repositoryScope.platform)return true;
+    for(const file of paths){
+      if(file.startsWith('/')||file.split('/').includes('..'))return true;
+      if(Object.entries(roots).some(([name,root])=>name!==repositoryScope.platform&&(file===root||file.startsWith(root+'/')||file==='assets/'+name.toLowerCase()||file.startsWith('assets/'+name.toLowerCase()+'/'))))return true;
+    }
+  }
   const assetTargets=policy.assetProductionParallelContract?.activeProductionTargets;
   const assetWork=[task,selected].some(row=>row?.assetProductionLane===true||row?.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')||evidence.includes('asset-production-parallel:v1')||evidence.includes('company-graphics-library-24h');
   if(assetWork&&Array.isArray(assetTargets)){
@@ -664,7 +675,10 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
     const assetPlatform=clean(libraryPlatform||platform).toUpperCase();
     if(!assetTargets.includes(assetPlatform))return true;
     const paths=[task.sourceRoot,task.source?.root,selected.sourceRoot,...(task.responsibleFiles||[]),...(selected.responsibleFiles||[])].map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,''));
-    if(paths.some(file=>/^(?:unity-games|web-games|assets\/(?:unity|web))(?:\/|$)/.test(file)))return true;
+    const foreignAssetRoot=repositoryScope?.platform==='WEB'
+      ? /^(?:unity-games|web-games|roblox-games|assets\/(?:unity|roblox))(?:\/|$)/
+      : /^(?:unity-games|web-games|assets\/(?:unity|web))(?:\/|$)/;
+    if(paths.some(file=>foreignAssetRoot.test(file)))return true;
   }
   // 최신 승인지시의 플랫폼 판정을 예전 developmentAccess보다 먼저 적용한다.
   // 서명 없는 임의 권한 변경은 적용하지 않으며, 명시적인 게임별 보류는 아래에서 계속 강제한다.
