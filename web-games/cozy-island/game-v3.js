@@ -36,9 +36,22 @@ window.addEventListener('cozy:place-building',e=>{
  if(cancelBuild){cancelBuild.hidden=false;cancelBuild.textContent='✕ '+def.name+' 배치 취소'}
  toast('🏗️ '+def.name+' · 지도에서 건설 위치를 터치해');
 });
+window.addEventListener('cozy:place-fort',e=>{
+ const id=e.detail?.id;if(!['wall','gate','tower','spikes','oil','pit'].includes(id))return;
+ game.buildingPlacement={id:'fort:'+id,at:{x:1350,y:690}};
+ if(cancelBuild){cancelBuild.hidden=false;cancelBuild.textContent='✕ 성곽 배치 취소'}
+ toast('🏰 지도를 터치해 성벽·함정을 설치해');
+});
 function placeEconomyAt(at){
  const mode=game.buildingPlacement;if(!mode)return;
- const p={x:Math.round(at.x/30)*30,y:Math.round(at.y/30)*30};
+ const step=mode.id.startsWith('fort:')?90:30;
+ const p={x:Math.round(at.x/step)*step,y:Math.round(at.y/step)*step};
+ if(mode.id.startsWith('fort:')){
+   const detail={id:mode.id.slice(5),at:p,success:false};
+   window.dispatchEvent(new CustomEvent('cozy:construct-fort',{detail}));
+   if(detail.success){cancelBuildPlacement();updateHUD()}
+   return;
+ }
  if(p.x<BUILDABLE_AREA.minX||p.x>BUILDABLE_AREA.maxX||p.y<BUILDABLE_AREA.minY||p.y>BUILDABLE_AREA.maxY){
    toast('영지 안의 빈 땅에 건설해야 해');return;
  }
@@ -115,7 +128,6 @@ runtime.bindTouchButton(ui.help,openGuide);
 runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButton')?.click());
 runtime.bindTouchButton(ui.barracks,openBarracks);
 runtime.bindTouchButton(ui.workers,()=>window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}})));
-runtime.bindTouchButton(ui.inventory,openInventory);
 runtime.bindTouchButton(ui.fishingCommand,openWar);
 runtime.bindTouchButton(ui.trade,()=>window.dispatchEvent(new Event('cozy:open-trade')));
 runtime.bindTouchButton(ui.center,()=>{game.siegeOverview=true;renderer.centerCamera();toast('🏰 성채 전장 전체 보기')});
@@ -416,7 +428,10 @@ function startRaid(attacker=null){
   if(attacker){
     const size=Math.min(18,Math.max(3,Math.floor(attacker.troops)));
     for(let i=0;i<size;i++){const u=createUnit(i%4===0?'archer':'soldier',true);
-      u.x=1550+i*12;u.y=400+(i%6)*80;enemies.push(u)}
+      u.x=1550+i*12;u.y=400+(i%6)*80;
+    u._lordRaid=true;u._siegeLane=u.y<520?440:u.y>730?800:610;
+    u.siegeDamage=12+(attacker.focus==='rush'?8:0);u.siegeCooldown=1.4;
+    enemies.push(u)}
     attacker.troops=Math.max(0,attacker.troops-size);attacker.food=Math.max(0,attacker.food-size*2);
     toast('⚔️ '+attacker.name+' 군세 출병! 성문과 마을회관을 방어해');
   } else if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
@@ -469,7 +484,7 @@ function updateCombatUnit(u,targets,dt,hostile){
   // 메인: 기존 공격력·사거리·재장전 간격은 유지하고 주둔 병사의 이동만 고정한다.
   if(!hostile&&u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y}
   // 공성 병기는 병사 공격이 아니라 성문/벽 돌파를 우선하며, 기존 일반 습격 전투는 유지한다.
-  if(hostile&&u._grandSiege){
+  if(hostile&&(u._grandSiege||u._lordRaid)){
     const fort=getFort(),walls=fort?.walls||{},lane=u._siegeLane||610;
     const key=lane<520?'north':lane>730?'south':'gate';
     if(u.kind==='trebuchet'&&u.ammo>0){
@@ -482,7 +497,7 @@ function updateCombatUnit(u,targets,dt,hostile){
       if(u.x>1353||Math.abs(u.y-lane)>25)moveToward(u,1355,lane,dt);
       return;
     }
-    if(SIEGE_MACHINES.has(u.kind)||u.kind==='ladder'||u._fortClimbed){
+    if(u._lordRaid||SIEGE_MACHINES.has(u.kind)||u.kind==='ladder'||u._fortClimbed){
       moveToward(u,1010,1050,dt);
       return;
     }
