@@ -13,9 +13,9 @@ export class PartyView{
   this.targetYaw=Math.PI/4;this.yaw=this.targetYaw;this.pitch=.73;this.zoom=1;this.targetZoom=1;this.offset=new THREE.Vector2();this.focus=new THREE.Vector3();this.follow='player';this.selection='player';this.destination=null;
   this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);this.hit=new THREE.Vector3();this.lastAt=0;this.frameCost=16;this.quality=1;this.qualityAt=0;this.labels=[];this.lastLabelsAt=0;this.ready=false;
   try{
-   this.gl=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});this.gl.outputColorSpace=THREE.SRGBColorSpace;this.gl.toneMapping=THREE.ACESFilmicToneMapping;this.gl.toneMappingExposure=1.12;this.gl.setClearColor(0x3e382d);this.gl.sortObjects=true;
-   this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x6b6656,28,76);this.scene.add(this.staticRoot);
-   this.skyLight=new THREE.HemisphereLight(0xe9d7b8,0x30271f,1.6);this.scene.add(this.skyLight);this.sun=new THREE.DirectionalLight(0xffd6a0,2.4);this.sun.position.set(-23,38,17);this.scene.add(this.sun);
+   this.gl=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});this.gl.outputColorSpace=THREE.SRGBColorSpace;this.gl.toneMapping=THREE.ACESFilmicToneMapping;this.gl.toneMappingExposure=.83;this.gl.setClearColor(0x242a2a);this.gl.sortObjects=true;
+   this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x49514f,12,58);this.scene.add(this.staticRoot);
+   this.skyLight=new THREE.HemisphereLight(0xa0b0b6,0x252724,.81);this.scene.add(this.skyLight);this.sun=new THREE.DirectionalLight(0xbfc2bd,1.05);this.sun.position.set(-23,38,17);this.scene.add(this.sun);
    this.camera=new THREE.OrthographicCamera(-12,12,12,-12,.1,180);this.camera.position.set(45,45,45);this.camera.lookAt(0,0,0);
    this.groundMaterials=new Map();this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
    this.marker=new THREE.Mesh(this.ringGeometry,this.ringMaterials.select);this.marker.rotation.x=-Math.PI/2;this.marker.visible=false;this.scene.add(this.marker);
@@ -105,9 +105,9 @@ buildWorld(live){
   {sky:0x514652,fog:0x68535d,far:52,light:0xe4a3a0,intensity:1.1}
  ][zone]||{sky:0x68705f,fog:0x707761,far:70,light:0xffd6a6,intensity:1.5};
  this.scene.background=new THREE.Color(mood.sky);
- this.scene.fog.color.setHex(mood.fog);this.scene.fog.near=18;this.scene.fog.far=mood.far;
+ this.scene.fog.color.setHex(mood.fog);this.scene.fog.near=13;this.scene.fog.far=mood.far;
  this.sun.color.setHex(mood.light);this.sun.intensity=mood.intensity;
- this.skyLight.intensity=dungeon?1.0:1.45;
+ this.skyLight.intensity=dungeon?.45:.88;
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(w,h),this.groundMaterial(zone,dungeon));
  floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
  const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
@@ -200,7 +200,7 @@ buildWorld(live){
  if(zone===0||dungeon||zone===2||zone===6){
   const points=dungeon?[[138,195],[live.worldW-153,live.worldH-185]]:zone===0?[[700,300],[650,750]]:[[895,620]];
   for(const [x,y] of points.slice(0,this.mobile?1:2)){
-   const light=new THREE.PointLight(dungeon?0xf5a75d:0xffcd84,dungeon?6:3.5,dungeon?7:9,2);
+   const light=new THREE.PointLight(dungeon?0xedab75:0xcda577,dungeon?3.6:2.5,dungeon?7:8,2);
    light.position.set(x*SCALE,2.4,y*SCALE);this.staticRoot.add(light);
   }
  }
