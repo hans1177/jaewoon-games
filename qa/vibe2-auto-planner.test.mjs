@@ -5784,7 +5784,7 @@ test('catalog existing web sources continue even when legacy archive flag is fal
    {id:'live-a',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/live-a/',
     hasWebArchive:false,lifecycleState:'ACTIVE'},
    {id:'live-b',productionClass:'RELEASE_CONFIRMED',webPath:'/web-games/live-b/',
-    hasWebArchive:true,lifecycleState:'ACTIVE'},
+    hasWebArchive:true,homepageWebPlayable:true,lifecycleState:'ACTIVE'},
    {id:'stopped-c',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/stopped-c/',
     hasWebArchive:true,lifecycleState:'OWNER_STOPPED',ownerDevelopmentStopped:true},
    {id:'paused-d',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/paused-d/',
@@ -5794,7 +5794,7 @@ test('catalog existing web sources continue even when legacy archive flag is fal
   assert.ok(rows.some(p=>p.gameId==='live-a'&&p.engine==='web'));
   assert.ok(rows.some(p=>p.gameId==='live-b'&&p.engine==='web'));
   assert.ok(!rows.some(p=>p.gameId==='stopped-c'||p.gameId==='paused-d'));
-  assert.equal(findWebRecurringBuildUpTask(rows.find(p=>p.gameId==='live-b'&&p.engine==='web'),root,{tasks:[]})?.id,
-    'live-b-web-autonomous-build-up-v1');
+  assert.equal(findWebRecurringBuildUpTask(rows.find(p=>p.gameId==='live-b'&&p.engine==='web'),root,{tasks:[]}),null,
+    'released web archive is not an ordinary development target');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
