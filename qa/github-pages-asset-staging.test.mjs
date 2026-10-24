@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {spawnSync} from 'node:child_process';
 
 const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
 const begin=workflow.indexOf('          const selectedAssets=[...refs].sort();');
@@ -113,4 +114,40 @@ test('duplicate full-memory reads and duplicate SHA passes cannot return',()=>{
  assert.doesNotMatch(source,/fs\.readFileSync\(asset\)/);
  assert.doesNotMatch(source,/fs\.writeFileSync\(target,source\)/);
  assert.match(workflow,/node --test qa\/github-pages-asset-staging\.test\.mjs/);
+});
+
+// 실제 기존 게시 승인 코드가 게임 변경을 막고 비게시 변경만 허용하는지 실행한다.
+test('ready Pages artifact survives worker-only main changes without admitting stale game inputs',()=>{
+ const begin=workflow.indexOf("          import fs from 'node:fs';",workflow.indexOf('pages-main-diff.json'));
+ const end=workflow.indexOf('\n          NODE',begin);assert.ok(begin>0&&end>begin);
+ const admission=workflow.slice(begin,end).split('\n').map(line=>line.slice(10)).join('\n');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pages-admit-')),file=path.join(dir,'compare.json');
+ try{
+  const check=(diff,expected)=>{
+   fs.writeFileSync(file,JSON.stringify(diff));
+   const result=spawnSync(process.execPath,['--input-type=module','-',file],{input:admission,encoding:'utf8'});
+   assert.equal(result.status,expected,result.stderr||JSON.stringify(diff));
+  };
+  check({status:'ahead',total_commits:2,files:[{filename:'tools/web-vibe-worker.mjs'},{filename:'qa/web-vibe-worker.test.mjs'}]},0);
+  check({status:'ahead',total_commits:1,files:[]},0);
+  for(const filename of ['web-games/gem-survivor/index.html','assets/x.png','index.html','company-status.json','game-catalog.json','.github/workflows/magic-forest-pages.yml','company-learning/platform-release-roadmap.json']){
+   check({status:'ahead',total_commits:1,files:[{filename}]},1);
+  }
+  check({status:'ahead',total_commits:1,files:[{filename:'qa/moved.js',previous_filename:'assets/live.js'}]},1);
+  check({status:'behind',total_commits:1,files:[]},1);
+  check({status:'diverged',total_commits:1,files:[]},1);
+  check({status:'ahead',total_commits:251,files:[]},1);
+  check({status:'ahead',total_commits:1,files:Array.from({length:300},()=>({filename:'qa/test.mjs'}))},1);
+  check({status:'ahead',files:[]},1);
+ }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});
+
+test('publication lock ends after official deploy while existing route and browser QA run afterwards',()=>{
+ const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
+ const post=workflow.slice(workflow.indexOf('  post-publication-3d-smoke:'));
+ assert.match(publish,/uses: actions\/deploy-pages@v4/);
+ assert.doesNotMatch(publish,/director_live_qa|xargs|curl/);
+ assert.match(post,/id: director_live_qa/);assert.match(post,/id: forest_native_3d_live_qa/);
+ assert.match(post,/POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
+ assert.match(post,/needs\.publish-pages\.outputs\.page_url/);
 });
