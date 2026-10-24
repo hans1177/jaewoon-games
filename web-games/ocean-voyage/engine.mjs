@@ -706,7 +706,32 @@ export const WEATHER=Object.freeze([
  {id:'storm',name:'거친 바다',speed:.78,description:'파도가 높아져. 직접 피해는 폭풍 사건의 선택 결과로만 발생해.'}
 ]);
 export function portStatus(s,id){const p=portById(id);return {owner:p?.faction||'',prosperity:50,security:60,invested:0,influence:0,lastDividend:s.day,raidedUntil:0,...s.portState[id]};}
+// 경제: 1게임일=1시세 틱. 생산·수입·지역 소비·시세 기록은 7일만 보존한다.
+export function advancePortEconomy(s){
+ for(const p of PORTS){
+  const market=s.economy[p.id],policy=PORT_MARKETS[p.id],prosperity=portStatus(s,p.id).prosperity;
+  for(const g of GOODS){
+   const id=g.id,previous=market.stock[id],target=marketBaseStock(p.id,id);
+   if(policy.produces.includes(id))market.stock[id]=Math.min(60,previous+Math.max(1,Math.round(2+prosperity/40)));
+   else if(policy.imports.includes(id)&&s.day%2===0)market.stock[id]=Math.min(24,previous+1);
+   else if(target===0&&previous>0)market.stock[id]=Math.max(0,previous-1);
+   market.pressure[id]=Math.abs(market.pressure[id])<.15?0:Math.round(market.pressure[id]*.74*10)/10;
+   const reference=priceAt(p.id,id,s.day,'buy'),current=priceAt(p.id,id,s.day,'buy',s);
+   const history=market.history[id]||[];
+   history.push(Math.round(current/reference*100));if(history.length>7)history.shift();
+   market.history[id]=history;
+  }
+ }
+ for(const [id,e] of Object.entries(s.marketShocks))if(e.until<s.day)delete s.marketShocks[id];
+ if(s.day%4===0){
+  const n=Math.floor(s.day/4),p=PORTS[(n*5+2)%PORTS.length],profile=PORT_MARKETS[p.id];
+  const kind=n%3===0?'과잉':n%3===1?'폭등':'유행',good=n%2===0?profile.produces[0]:profile.demand[0];
+  s.worldLog.push('['+s.day+'일] '+p.name+' '+(kind==='유행'?TRADE_GROUPS[good]+' '+kind:GOODS.find(g=>g.id===good).name+' '+kind)+' · 2일간 시세 영향');
+  s.worldLog=s.worldLog.slice(-20);
+ }
+}
 function advanceWorld(s){
+ advancePortEconomy(s);
  if(s.day>=s.climate.until){const w=WEATHER[(Math.floor(s.day/3)+CAPTAINS.findIndex(c=>c.id===s.captainId))%WEATHER.length];s.climate={kind:w.id,until:s.day+3};note(s,'기상 관측: '+w.name);}
  for(const p of PORTS){if(!s.portState[p.id])continue;const v=portStatus(s,p.id);v.security=Math.min(80,v.security+2);v.prosperity=Math.min(90,v.prosperity+1);s.portState[p.id]=v;}
  if(s.day%5!==0)return;
