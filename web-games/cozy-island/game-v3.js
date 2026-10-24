@@ -232,7 +232,7 @@ function moveToward(u,x,y,dt){
   const dx=x-u.x,dy=y-u.y,d=Math.hypot(dx,dy)||1;
   // 해자 이동 감소는 새 대공성전 병력에만 적용. 기존 유닛 속도는 건드리지 않는다.
   const speed=u.speed*(u._grandSiege?(u._siegeMoatFactor||1):1);
-  const step=Math.min(d,speed*dt);
+  const step=u._grandSiege?Math.min(d,speed*dt):speed*dt;
   u.x+=dx/d*step;u.y+=dy/d*step;
 }
 function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length){state.army=alive.map(u=>({kind:u.kind}));saveSoon()}}
