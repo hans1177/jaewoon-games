@@ -227,8 +227,8 @@ test('CC0 sea music checkout retains the actual Git binary without LFS pointer c
 });
 
 
-test('five regional protagonists have distinct European campaign starting ports',()=>{
- assert.equal(new Set(CAPTAINS.map(c=>c.region)).size,5);assert.equal(new Set(CAPTAINS.map(c=>c.port)).size,5);
+test('eight regional protagonists retain all five origin regions and start in distinct European ports',()=>{
+ assert.equal(new Set(CAPTAINS.map(c=>c.region)).size,5);assert.equal(new Set(CAPTAINS.map(c=>c.port)).size,8);
  for(const c of CAPTAINS){const s=newGame(c.id);assert.equal(canDock(s).id,c.port);assert.equal(restoreGame(serializeGame(s)).captainId,c.id);}
 });
 test('fog survives save copy and damaged export is rejected',()=>{
