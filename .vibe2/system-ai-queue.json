@@ -152951,7 +152951,7 @@
     },
     {
       "id": "recovery-recovery-f84bbc96c4af1596274e",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153000,8 +153000,8 @@
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
-      "handoffCount": 2,
-      "previousReservationId": "system-ai:39635496551:1",
+      "handoffCount": 3,
+      "previousReservationId": "system-ai:40101129155:1",
       "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -153009,12 +153009,12 @@
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40101129155:1",
-      "reservedAt": "2026-10-24T14:23:19.104Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-worker-missing-result-handoff",
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -153216,7 +153216,10 @@
         "actions-run:40098844354",
         "system-ai-handoff-to-reservation:system-ai:40100746677:1",
         "actions-run:40100746677",
-        "system-ai-handoff-to-reservation:system-ai:40101129155:1"
+        "system-ai-handoff-to-reservation:system-ai:40101129155:1",
+        "system-ai-handoff-state:MISSING_RESULT_REQUEUED",
+        "system-ai-handoff-from-reservation:system-ai:40101129155:1",
+        "primary-ai-collaboration-reason:REPEATED_WORKER_HANDOFF"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1473,
@@ -153231,7 +153234,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:02:09.727Z",
-      "updatedAt": "2026-10-24T14:23:19.104Z"
+      "updatedAt": "2026-10-24T14:30:12.495Z"
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
