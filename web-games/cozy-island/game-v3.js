@@ -556,7 +556,7 @@ function openKnightHall(){
 function takePrisoner(enemy,lordId){
  const c=getCourt(),lord=getEnemyLords().find(l=>l.id===lordId);
  if(!lord||lord.defeated||!courtCapacity()||c.prisoners.length>=courtCapacity())return false;
- if(enemy._captured)return false;enemy._captured=true;enemy.hp=0;
+ if(enemy._captured||enemy.hp<=0)return false;enemy._captured=true;enemy.hp=0;
  const heroName=KNIGHT_NAMES[(c.nextId+4)%KNIGHT_NAMES.length];
  c.prisoners.push({id:'p'+c.nextId++,lordId,heroName,level:1+Math.floor(Math.random()*3),
   day:state.day,lastOfferDay:-1});
@@ -1024,7 +1024,7 @@ function moveToward(u,x,y,dt){
   const step=u._grandSiege?Math.min(d,speed*dt):speed*dt;
   u.x+=dx/d*step;u.y+=dy/d*step;
 }
-function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length){state.army=alive.map(u=>({kind:u.kind}));saveSoon()}}
+function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length)saveSoon()}
 
 function makeWolf(id,x,y){return{id,x,y,homeX:x,homeY:y,hp:200,maxHp:200,attack:10,speed:68,cool:0,alive:true,respawnAt:0,wander:0,vx:0,vy:0}}
 function commandWolfAt(sx,sy){if(!state.expanded||raidActive)return;const p=renderer.screenToWorld(game,sx,sy);let best=null,bd=46;for(const w of wolves){if(!w.alive)continue;const d=Math.hypot(w.x-p.x,w.y-p.y);if(d<bd){best=w;bd=d}}if(!best)return;selectedWolfId=best.id;game.selectedWolfId=best.id;toast(`🐺 늑대 지정! 병사 ${countKind('soldier')}명 출동`)}
