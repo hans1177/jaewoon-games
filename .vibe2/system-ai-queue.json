@@ -148161,7 +148161,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -148254,7 +148254,7 @@
         "internal-motion-shui-gui-walk-v1",
         "internal-motion-huapi-walk-v1"
       ],
-      "retries": 317,
+      "retries": 318,
       "recurrenceCount": 25,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
@@ -148268,12 +148268,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40100297844:1",
-      "reservedAt": "2026-10-24T14:03:20.663Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -149327,7 +149327,8 @@
         "actions-run:40090347703",
         "system-ai-handoff-to-reservation:system-ai:40092571169:1",
         "actions-run:40092571169",
-        "system-ai-handoff-to-reservation:system-ai:40100297844:1"
+        "system-ai-handoff-to-reservation:system-ai:40100297844:1",
+        "actions-run:40100297844"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -149342,7 +149343,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-24T14:03:20.663Z"
+      "updatedAt": "2026-10-24T14:20:05.865Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
