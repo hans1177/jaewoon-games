@@ -67,3 +67,17 @@ test("판매상점과 AI 5분 행동 순환 계약", () => {
   assert.ok(!kill.includes("aiShop("));
   assert.ok(kill.includes("addMaterial(receiver,state.zone)"));
 });
+
+test("각성 계열 및 스킬북 보존", () => {
+ const advances=block("var ADVANCEMENTS={", "};\nvar SKILL_BOOKS");
+ const books=block("var SKILL_BOOKS=[", "];\nvar GEAR_FAMILIES");
+ assert.equal((advances.match(/branches:\[/g)||[]).length,5);
+ assert.equal((advances.match(/second:"/g)||[]).length,10);
+ assert.equal((books.match(/id:"/g)||[]).length,45);
+ assert.equal((books.match(/advance:"/g)||[]).length,20);
+ assert.ok(html.includes("function awakeningMenu("));
+ assert.ok(html.includes("recordAwakeningTrial();"));
+ assert.ok(html.includes("u.awakenings={}"));
+ assert.ok(html.includes("미구현 단계"));
+ assert.ok(html.includes('SAVE_KEY="party-rpg-v1"'));
+});
