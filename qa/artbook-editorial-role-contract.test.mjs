@@ -19,7 +19,7 @@ test('production evidence and release verification remain required without retir
 
 test('GAME_SEED mirrors the current selected-platform policy while preserving legacy input compatibility',()=>{
   assert.equal(directive.gameSeed.initialTargetPlatform,'ROBLOX');
-  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY']);
+  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','WEB','UNITY']);
   assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
   assert.equal(directive.gameSeed.primaryPlatformIsDefaultNotLock,true);
   assert.equal(directive.gameSeed.initialPlayMode,'PROJECT_DEFINED');
@@ -33,7 +33,7 @@ test('GAME_SEED mirrors the current selected-platform policy while preserving le
   assert.equal(GAME_SEED_POLICY.seedMaterialCombineMax,4);
   assert.equal(GAME_SEED_POLICY.targetSessionMinutes,30);
   assert.equal(GAME_SEED_POLICY.initialTargetPlatform,'ROBLOX');
-  assert.deepEqual([...GAME_SEED_POLICY.allowedTargetPlatforms],['ROBLOX','UNITY']);
+  assert.deepEqual([...GAME_SEED_POLICY.allowedTargetPlatforms],['ROBLOX','WEB','UNITY']);
 });
 
 test('GAME_SEED validator accepts any allowed selected platform and rejects unsupported targets',()=>{
