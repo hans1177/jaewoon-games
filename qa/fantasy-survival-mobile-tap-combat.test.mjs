@@ -60,3 +60,35 @@ test('tap combat waits for touch release and rejects swipes or holds',()=>{
  assert.match(source,/if\(isCombatTapGesture\(press,e,performance\.now\(\)\)\)handleWorldTap\(e\)/);
  assert.match(source,/canvas\.setPointerCapture\(e\.pointerId\)/);
 });
+
+
+test('Diablo-style character panel preserves original game data and inventory actions',()=>{
+ const inventory=source.split('function renderInventory(){')[1]?.split('\nfunction mapTerrainColorAt(')[0]||'';
+ assert.ok(inventory,'live inventory implementation is required');
+ assert.match(source,/class="arpgInventory"/);
+ assert.match(source,/class="arpgPaperdoll"/);
+ assert.match(source,/class="arpgBag"/);
+ assert.match(source,/class="arpgItemGrid"/);
+ assert.match(source,/\.sheet:has\(\.arpgInventory\)/);
+ assert.match(source,/@media\(max-width:720px\)\{/);
+ assert.match(source,/getElementById\('heroPortrait'\)\.addEventListener\('click',openInventory\)/);
+ assert.match(source,/getElementById\('avatarOpen'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+ assert.match(inventory,/getElementById\('arpgAppearance'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+ assert.match(inventory,/effectiveStat\(p\.weapon,'power'\)/);
+ assert.match(inventory,/effectiveStat\(p\.armor,'reduce'\)/);
+ assert.match(inventory,/data-inventory-kind/);
+ assert.match(inventory,/data-arpg-filter="equipment"/);
+ assert.match(inventory,/data-arpg-filter="usable"/);
+ assert.match(inventory,/data-arpg-filter="material"/);
+ assert.match(inventory,/id="arpgBagSearch"/);
+ assert.match(inventory,/const filterBag=\(\)=>\{/);
+ assert.match(inventory,/button\.hidden=!visible/);
+ assert.match(inventory,/button\.addEventListener\('focus',showInfo\)/);
+ assert.match(inventory,/if\(r\?\.kind==='consumable'\)useItem\(r\.id\)/);
+ assert.match(inventory,/else if\(r\?\.kind==='seed'\)plantSeed\(r\.id\)/);
+ assert.match(inventory,/else if\(r\?\.kind==='ammo'\)selectArrow\(r\.id\)/);
+ assert.match(inventory,/else if\(r\)equipItem\(r\.id\)/);
+ assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+ assert.match(source,/reason==='unmapped-threat'\?'주변 생물의 3D 모델을 자동으로/);
+ assert.doesNotMatch(inventory,/localStorage\.setItem|sessionStorage\.setItem|p\.inventory\[/);
+});
