@@ -256,10 +256,7 @@ export function returnWorkerToFarm() {
 
 function screenToWorld(sx, sy) {
   if (!currentGame) return null;
-  return {
-    x: sx + currentGame.player.x - window.innerWidth / 2,
-    y: sy + currentGame.player.y - window.innerHeight / 2
-  };
+  return currentGame.screenToWorld?.(sx,sy) || null;
 }
 
 function handleWorldDouble(sx, sy) {
