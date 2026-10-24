@@ -147,6 +147,61 @@ jobs:
               throw new Error('DUNGEON_EQUIPMENT_TRANSFER_DUPLICATED '+JSON.stringify(transferCheck));
             await page.locator('#modalClose').click();
             console.log('PARTY_RPG_INVENTORY_CONSUMABLE_COMPANION_EQUIPMENT_TRANSFER=PASS');
+            // 픽셀 캐릭터는 낮은 원본 해상도를 유지하고 렌더 이동은 기존 세계 좌표로 부드럽게 보간한다.
+            await page.waitForFunction(()=>!!window.partyRpgVibeState().view.actors.get('player')?.pixel,null,{timeout:12000});
+            const pixelStatus=await page.evaluate(()=>{
+              const game=window.partyRpgVibeState(),actor=game.view.actors.get('player');
+              const button=document.getElementById('autoBtn');
+              return {sprite:!!actor?.pixel,width:actor?.pixel?.material?.map?.image?.width,
+                height:actor?.pixel?.material?.map?.image?.height,autoDisabled:button.disabled,
+                autoPressed:button.getAttribute('aria-pressed'),modelHidden:actor?.model?.visible===false};
+            });
+            if(!pixelStatus.sprite||pixelStatus.width!==96||pixelStatus.height!==32
+              ||!pixelStatus.autoDisabled||pixelStatus.autoPressed!=='true'||!pixelStatus.modelHidden)
+              throw new Error('PIXEL_CHARACTERS_OR_ALWAYS_AUTO_SKILLS_MISSING '+JSON.stringify(pixelStatus));
+            const effectCheck=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState(),view=g.view,before=view.effects.length;
+              view.playSkillEffect('wizard_nova',g.p.x,g.p.y,g.p.x+15,g.p.y+10);
+              return {before,after:view.effects.length,kind:view.effects.at(-1)?.area,group:view.effects.at(-1)?.group.children.length};
+            });
+            if(effectCheck.after!==effectCheck.before+1||effectCheck.group<4)
+              throw new Error('SKILL_FX_NOT_RENDERING '+JSON.stringify(effectCheck));
+            // 사용자 지정 스킬북: 직업별 학습, 개별 자동 사용, 최우선 지정이 저장되도록 검증.
+            await page.evaluate(()=>{
+              const state=window.partyRpgVibeState().state;
+              state.player.level=20;state.player.gold=8000;state.player.masteries.axe=24;
+            });
+            await page.locator('#bagBtn').click();
+            await page.locator('#inventorySkillBook').click();
+            await page.locator('[data-learn="fighter_wall"]').click();
+            await page.locator('[data-learn="fighter_cleave"]').click();
+            await page.locator('[data-toggle-skill="fighter_wall"]').click();
+            await page.locator('[data-priority="fighter_cleave"]').click();
+            const configured=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state.player,
+                saved=JSON.parse(localStorage.getItem('party-rpg-v1')).player;
+              return {first:s.skillOrder[0],on:s.skillSelection.fighter_wall,learned:s.learnedSkills.fighter_cleave,
+                stored:!!saved.learnedSkills.fighter_cleave,savedOff:saved.skillSelection.fighter_wall===false,
+                savedPriority:saved.skillOrder[0]};
+            });
+            if(configured.first!=='fighter_cleave'||configured.on!==false||!configured.learned
+              ||!configured.stored||!configured.savedOff||configured.savedPriority!=='fighter_cleave')
+              throw new Error('INDIVIDUAL_SKILL_BOOK_PREFERENCES_NOT_SAVED '+JSON.stringify(configured));
+            await page.locator('#bookBack').click();
+            await page.locator('[data-shop="accessory"]').first().click();
+            await page.locator('[data-buy="ring_guard"]').click();
+            await page.locator('#backToBag').click();
+            await page.locator('[data-shop="weapon"]').click();
+            await page.locator('[data-buy="veteran_axe"]').click();
+            await page.locator('#backToBag').click();
+            const equipStatus=await page.evaluate(()=>{
+              const player=window.partyRpgVibeState().state.player;
+              return {ring:player.ring,weapon:player.weapon,mastery:player.masteries.axe};
+            });
+            if(equipStatus.ring!=='ring_guard'||equipStatus.weapon!=='veteran_axe'||equipStatus.mastery<24)
+              throw new Error('CLASS_EQUIPMENT_AND_MASTERY_RESTRICTIONS_FAILED '+JSON.stringify(equipStatus));
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_PIXEL_MOTION_SKILL_FX_CLASS_EQUIPMENT_AND_SKILL_BOOK=PASS');
             // 실제 모바일 크기에서 지역 안내가 맵을 가리지 않아야 한다.
             const hud=await page.evaluate(()=>{
               const r=document.querySelector('#zone').getBoundingClientRect();

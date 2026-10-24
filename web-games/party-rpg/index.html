@@ -270,7 +270,7 @@ body[data-time-phase=dusk] #zone{border-color:#ca9155}
 </style>
 </head>
 <body>
-<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="combatFeedback" aria-hidden="true"></div><div id="atmosphere" aria-hidden="true"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="tacticsBtn" type="button" aria-label="파티 대형과 전투 지시">전술</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="autoBtn" aria-pressed="true">자동 기술</button><button id="skillBtn" type="button" aria-label="현재 직업 기술 사용">직업 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button><button id="systemBtn" type="button">설정 ⚙</button></div><div id="nextQuest" role="status" aria-live="off"><b>다음 여정</b><span id="nextQuestText">이야기 확인 중</span></div><button id="partyInspect">선택한 인물 보기</button>
+<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="combatFeedback" aria-hidden="true"></div><div id="atmosphere" aria-hidden="true"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="tacticsBtn" type="button" aria-label="파티 대형과 전투 지시">전술</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="autoBtn" type="button" aria-pressed="true" aria-label="자동 기술 항상 켜짐" disabled>자동 기술 상시 켬</button><button id="skillBtn" type="button" aria-label="현재 직업 기술 사용">직업 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button><button id="systemBtn" type="button">설정 ⚙</button></div><div id="nextQuest" role="status" aria-live="off"><b>다음 여정</b><span id="nextQuestText">이야기 확인 중</span></div><button id="partyInspect">선택한 인물 보기</button>
 <div id="timeWeather" role="status" aria-live="off"><span id="timeOfDay">1일째 · 오전 8:00</span><span id="weatherOfDay">☀ 맑음</span></div>
 <div id="hud">
   <div id="stats" class="panel">
@@ -346,14 +346,81 @@ var WEAPONS=[
  {id:"iron",name:"철검",price:150,power:13},
  {id:"steel",name:"강철검",price:420,power:25},
  {id:"knight",name:"기사검",price:900,power:42},
- {id:"dragon",name:"용검",price:1800,power:68}
+ {id:"dragon",name:"용검",price:1800,power:68},
+ {id:"guard_sword",name:"수비대 장검",price:70,power:7,family:"sword",jobs:["fighter"],level:1,mastery:0},
+ {id:"war_axe",name:"전투 도끼",price:410,power:24,family:"axe",jobs:["fighter"],level:5,mastery:0},
+ {id:"veteran_axe",name:"백전의 전투도끼",price:1450,power:58,family:"axe",jobs:["fighter"],level:12,mastery:24},
+ {id:"shadow_dagger",name:"그림자 단검",price:75,power:8,family:"dagger",jobs:["rogue"],level:1,mastery:0},
+ {id:"twin_blade",name:"쌍날 단검",price:400,power:25,family:"dagger",jobs:["rogue"],level:5,mastery:8},
+ {id:"night_stiletto",name:"야행자의 침검",price:1500,power:60,family:"dagger",jobs:["rogue"],level:12,mastery:24},
+ {id:"pilgrim_mace",name:"순례자 철퇴",price:75,power:7,family:"mace",jobs:["cleric"],level:1,mastery:0},
+ {id:"sanctuary_mace",name:"성역 전투철퇴",price:440,power:24,family:"mace",jobs:["cleric"],level:5,mastery:8},
+ {id:"relic_mace",name:"성해의 철퇴",price:1500,power:59,family:"mace",jobs:["cleric"],level:12,mastery:24},
+ {id:"apprentice_staff",name:"견습 마도 지팡이",price:75,power:8,family:"staff",jobs:["wizard"],level:1,mastery:0},
+ {id:"runic_staff",name:"문양의 장지팡이",price:430,power:25,family:"staff",jobs:["wizard"],level:5,mastery:8},
+ {id:"astral_staff",name:"성좌의 지팡이",price:1600,power:63,family:"staff",jobs:["wizard"],level:12,mastery:24},
+ {id:"hunting_bow",name:"사냥꾼 장궁",price:75,power:8,family:"bow",jobs:["ranger"],level:1,mastery:0},
+ {id:"composite_bow",name:"합성 장궁",price:440,power:25,family:"bow",jobs:["ranger"],level:5,mastery:8},
+ {id:"storm_bow",name:"폭풍깃 장궁",price:1500,power:60,family:"bow",jobs:["ranger"],level:12,mastery:24}
 ];
 var ARMORS=[
  {id:"cloth",name:"천 갑옷",price:35,def:2},
  {id:"leather",name:"가죽 갑옷",price:160,def:6},
  {id:"steel",name:"강철 갑옷",price:520,def:12},
- {id:"dragon",name:"용비늘 갑옷",price:1500,def:22}
+ {id:"dragon",name:"용비늘 갑옷",price:1500,def:22},
+ {id:"guard_mail",name:"수비대 사슬갑",price:90,def:4,family:"mail",jobs:["fighter"],level:1,mastery:0},
+ {id:"bulwark_plate",name:"철벽 판금갑",price:950,def:18,family:"mail",jobs:["fighter"],level:10,mastery:8},
+ {id:"scout_vest",name:"정찰 가죽조끼",price:85,def:4,family:"leather",jobs:["rogue"],level:1,mastery:0},
+ {id:"night_cloak",name:"밤그림자 외투",price:900,def:17,family:"leather",jobs:["rogue"],level:10,mastery:8},
+ {id:"pilgrim_robes",name:"순례자의 법의",price:80,def:4,family:"cloth",jobs:["cleric"],level:1,mastery:0},
+ {id:"sanctum_mail",name:"성소의 의식갑",price:950,def:18,family:"cloth",jobs:["cleric"],level:10,mastery:8},
+ {id:"scholar_robe",name:"학자의 마법복",price:85,def:4,family:"cloth",jobs:["wizard"],level:1,mastery:0},
+ {id:"arcane_mantle",name:"별무늬 마도복",price:950,def:17,family:"cloth",jobs:["wizard"],level:10,mastery:8},
+ {id:"tracker_leather",name:"추적자의 경갑",price:85,def:4,family:"leather",jobs:["ranger"],level:1,mastery:0},
+ {id:"wildguard_coat",name:"숲수호 장갑옷",price:940,def:18,family:"leather",jobs:["ranger"],level:10,mastery:8}
 ];
+// 장신구: 반지·목걸이 슬롯. 원래 장비 수치는 불변.
+var ACCESSORIES=[
+ {id:"ring_guard",name:"수호의 인장 반지",slot:"ring",jobs:["fighter"],price:280,attack:2,def:0,level:3},
+ {id:"amulet_bastion",name:"방벽의 목걸이",slot:"necklace",jobs:["fighter"],price:640,attack:0,def:3,level:8},
+ {id:"ring_shadow",name:"암습의 반지",slot:"ring",jobs:["rogue"],price:280,attack:3,def:0,level:3},
+ {id:"amulet_silence",name:"침묵의 목걸이",slot:"necklace",jobs:["rogue"],price:640,attack:0,def:2,level:8},
+ {id:"ring_mercy",name:"자비의 서약 반지",slot:"ring",jobs:["cleric"],price:280,attack:2,def:0,level:3},
+ {id:"amulet_sanctuary",name:"성소의 목걸이",slot:"necklace",jobs:["cleric"],price:640,attack:0,def:3,level:8},
+ {id:"ring_arcane",name:"마력 회로 반지",slot:"ring",jobs:["wizard"],price:280,attack:3,def:0,level:3},
+ {id:"amulet_star",name:"별자리 목걸이",slot:"necklace",jobs:["wizard"],price:640,attack:0,def:2,level:8},
+ {id:"ring_marksman",name:"매의 눈 반지",slot:"ring",jobs:["ranger"],price:280,attack:3,def:0,level:3},
+ {id:"amulet_forest",name:"초록잎 목걸이",slot:"necklace",jobs:["ranger"],price:640,attack:0,def:2,level:8}
+];
+// 직업마다 두 권, 캐릭터별 개별 습득. 기본 직업 기술은 항상 사용.
+var SKILL_BOOKS=[
+ {id:"fighter_wall",job:"fighter",name:"파티 철벽 진형",price:300,level:4,desc:"위험할 때 보호 태세 · 22초"},
+ {id:"fighter_strike",job:"fighter",name:"방패 파쇄",price:780,level:9,desc:"가까운 적에게 추가 일격 · 22초"},
+ {id:"rogue_veil",job:"rogue",name:"그림자 은신",price:300,level:4,desc:"위험할 때 보호 태세 · 22초"},
+ {id:"rogue_pierce",job:"rogue",name:"급소 찌르기",price:780,level:9,desc:"표적에게 추가 일격 · 22초"},
+ {id:"cleric_group",job:"cleric",name:"작은 축복",price:300,level:4,desc:"위험한 아군 두 명 치유 · 22초"},
+ {id:"cleric_light",job:"cleric",name:"정화의 빛",price:780,level:9,desc:"신성 타격 · 22초"},
+ {id:"wizard_ward",job:"wizard",name:"비전 보호막",price:300,level:4,desc:"위험할 때 보호막 · 22초"},
+ {id:"wizard_bolt",job:"wizard",name:"유성의 파편",price:780,level:9,desc:"단일 표적 마법 · 22초"},
+ {id:"ranger_evasion",job:"ranger",name:"바람 걸음",price:300,level:4,desc:"위험할 때 보호 태세 · 22초"},
+ {id:"ranger_hunt",job:"ranger",name:"추적자의 일격",price:780,level:9,desc:"표적에게 추가 사격 · 22초"},
+ {id:"fighter_rally",job:"fighter",name:"전열 집결",price:420,level:6,desc:"가까운 동료 보호 · 26초"},
+ {id:"fighter_cleave",job:"fighter",name:"가로베기",price:1020,level:14,desc:"근접 적 2명 공격 · 25초"},
+ {id:"fighter_shout",job:"fighter",name:"불굴의 외침",price:1500,level:19,desc:"아군 4명 보호 · 30초"},
+ {id:"rogue_smoke",job:"rogue",name:"연막살포",price:420,level:6,desc:"적 2명 둔화 · 26초"},
+ {id:"rogue_flurry",job:"rogue",name:"연속 난도질",price:1020,level:14,desc:"단일 적 2회 공격 · 25초"},
+ {id:"rogue_escape",job:"rogue",name:"흐릿한 그림자",price:1500,level:19,desc:"위험할 때 긴 보호막 · 30초"},
+ {id:"cleric_ward",job:"cleric",name:"수호의 축성",price:420,level:6,desc:"부상 아군 보호 · 26초"},
+ {id:"cleric_purify",job:"cleric",name:"정화의 파문",price:1020,level:14,desc:"최대 3명 신성 공격 · 25초"},
+ {id:"cleric_rescue",job:"cleric",name:"위급 치유",price:1500,level:19,desc:"부상 아군 즉시 회복 · 30초"},
+ {id:"wizard_frost",job:"wizard",name:"서리 구속",price:420,level:6,desc:"적 2명 둔화 · 26초"},
+ {id:"wizard_nova",job:"wizard",name:"비전 폭풍",price:1020,level:14,desc:"최대 3명 광역 공격 · 25초"},
+ {id:"wizard_chain",job:"wizard",name:"연쇄 번개",price:1500,level:19,desc:"적 2명 번개 공격 · 30초"},
+ {id:"ranger_snare",job:"ranger",name:"덫 화살",price:420,level:6,desc:"표적 둔화 · 26초"},
+ {id:"ranger_volley",job:"ranger",name:"화살 비",price:1020,level:14,desc:"최대 3명 연속 화살 · 25초"},
+ {id:"ranger_aim",job:"ranger",name:"정밀 관통",price:1500,level:19,desc:"유리한 명중 추가 공격 · 30초"}
+];
+var GEAR_FAMILIES={sword:"검",axe:"도끼",dagger:"단검",mace:"철퇴",staff:"지팡이",bow:"활",cloth:"천옷",leather:"가죽",mail:"중갑"};
 var MATERIALS={
  1:{id:"grass_loot",name:"초원 전리품",price:8},
  2:{id:"forest_loot",name:"숲 전리품",price:15},
@@ -388,12 +455,12 @@ var DUNGEONS=[
 ];
 var AI_NAMES=["루카","미나","제이드","토르","리안","세라","보린","유나","카일","네오"];
 var defaultState={
- player:{level:1,xp:0,gold:80,maxHp:110,hp:110,baseAtk:12,weapon:null,armor:null,specialWeapon:null,specialArmor:null,ownedWeapons:[],ownedArmors:[],drops:[],materials:{}},
+ player:{level:1,xp:0,gold:80,maxHp:110,hp:110,baseAtk:12,weapon:null,armor:null,specialWeapon:null,specialArmor:null,ownedWeapons:[],ownedArmors:[],drops:[],materials:{},ownedAccessories:[],ring:null,necklace:null,masteries:{},learnedSkills:{}},
  supplies:{},
  ai:[],zone:0,x:700,y:520
 };
 function makeAI(i){
- return {id:"ai"+i,name:AI_NAMES[i],level:1,xp:0,gold:30+i*7,weapon:null,armor:null,specialWeapon:null,specialArmor:null,zone:1,x:520+(i%5)*85,y:380+Math.floor(i/5)*100,hp:90,maxHp:90,baseAtk:10,ownedWeapons:[],ownedArmors:[],drops:[],party:false,sim:Math.random()*2,materials:{},routine:"hunt",routineTime:120,roamX:700,roamY:520,shopStep:"sell",shopCooldown:0};
+ return {id:"ai"+i,name:AI_NAMES[i],level:1,xp:0,gold:30+i*7,weapon:null,armor:null,specialWeapon:null,specialArmor:null,zone:1,x:520+(i%5)*85,y:380+Math.floor(i/5)*100,hp:90,maxHp:90,baseAtk:10,ownedWeapons:[],ownedArmors:[],drops:[],ownedAccessories:[],ring:null,necklace:null,masteries:{},learnedSkills:{},party:false,sim:Math.random()*2,materials:{},routine:"hunt",routineTime:120,roamX:700,roamY:520,shopStep:"sell",shopCooldown:0};
 }
 function load(){
  var v=null;try{v=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){}
@@ -414,8 +481,23 @@ function load(){
  // 세이브 호환: 예전 보유 무기는 그대로 두고 새 소모품 수량만 보정한다.
  var previousSupplies=s.supplies&&typeof s.supplies==="object"&&!Array.isArray(s.supplies)?s.supplies:{};
  s.supplies={};SUPPLIES.forEach(function(it){var n=Number(previousSupplies[it.id]);s.supplies[it.id]=Number.isFinite(n)?Math.min(99,Math.max(0,Math.floor(n))):0;});
+ // 과거 저장값을 유지하면서 새 장비·숙련·스킬북만 추가한다.
+ function normalizeProgress(u){
+  u.ownedAccessories=Array.isArray(u.ownedAccessories)?[...new Set(u.ownedAccessories.filter(id=>ACCESSORIES.some(it=>it.id===id)))]:[];
+  for(const slot of ["ring","necklace"]){if(!ACCESSORIES.some(it=>it.id===u[slot]&&it.slot===slot))u[slot]=null;else if(!u.ownedAccessories.includes(u[slot]))u.ownedAccessories.push(u[slot]);}
+  const prior=u.masteries&&typeof u.masteries==="object"&&!Array.isArray(u.masteries)?u.masteries:{};
+  u.masteries={};Object.keys(GEAR_FAMILIES).forEach(k=>{const n=Number(prior[k]);u.masteries[k]=Number.isFinite(n)?Math.min(9999,Math.max(0,Math.floor(n))):0;});
+  const learned=u.learnedSkills&&typeof u.learnedSkills==="object"&&!Array.isArray(u.learnedSkills)?u.learnedSkills:{};
+  u.learnedSkills={};SKILL_BOOKS.forEach(book=>{if(learned[book.id]===true)u.learnedSkills[book.id]=true;});
+  const settings=u.skillSelection&&typeof u.skillSelection==="object"&&!Array.isArray(u.skillSelection)?u.skillSelection:{};
+  u.skillSelection={base:settings.base!==false};SKILL_BOOKS.forEach(book=>{u.skillSelection[book.id]=settings[book.id]!==false;});
+  const priorOrder=Array.isArray(u.skillOrder)?u.skillOrder.filter(id=>SKILL_BOOKS.some(book=>book.id===id)):[];
+  u.skillOrder=[...new Set([...priorOrder,...SKILL_BOOKS.map(book=>book.id)])];
+ }
+ normalizeProgress(s.player);
  s.ai.forEach(function(a){
   a.materials=a.materials&&typeof a.materials==="object"?a.materials:{};
+  normalizeProgress(a);
   a.ownedWeapons=Array.isArray(a.ownedWeapons)?a.ownedWeapons.filter(id=>WEAPONS.some(it=>it.id===id)):[];
   a.ownedArmors=Array.isArray(a.ownedArmors)?a.ownedArmors.filter(id=>ARMORS.some(it=>it.id===id)):[];
   if(a.weapon&&WEAPONS.some(it=>it.id===a.weapon)&&!a.ownedWeapons.includes(a.weapon))a.ownedWeapons.push(a.weapon);
@@ -514,12 +596,22 @@ function advanceEnvironment(dt){
 var classIds=["fighter","rogue","cleric","wizard","ranger"];if(!classIds.includes(state.player.classId))state.player.classId="fighter";state.ai.forEach(function(a,i){if(!classIds.includes(a.classId))a.classId=classIds[i%5];});
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}}
 function xpNeed(lv){return 90+lv*70;}
+// 장비 숙련: 공격 적중 및 피격 시 해당 종류 수련, 새 장비에만 단계 제한.
+function gearFamily(it,kind){return it.family||(kind==="weapon"?"sword":it.id==="cloth"?"cloth":it.id==="leather"?"leather":"mail");}
+function canEquipItem(u,it,kind){return !!it&&(!it.jobs||it.jobs.includes(u.classId))&&(!it.level||u.level>=it.level)&&(!it.mastery||(u.masteries?.[gearFamily(it,kind)]||0)>=it.mastery);}
+function trainEquipment(u,kind){
+ var it=kind==="weapon"?(DROPS[u.specialWeapon]||WEAPONS.find(x=>x.id===u.weapon)):(DROPS[u.specialArmor]||ARMORS.find(x=>x.id===u.armor));
+ if(!it)return;
+ var family=gearFamily(it,kind);
+ if(u.masteries&&Object.hasOwn(GEAR_FAMILIES,family))u.masteries[family]=Math.min(9999,(u.masteries[family]||0)+1);
+}
+function accessoryBonus(u,stat){return ACCESSORIES.filter(it=>it.id===u.ring||it.id===u.necklace).reduce((total,it)=>total+(it[stat]||0),0);}
 function playerWeaponPower(){if(state.player.specialWeapon&&DROPS[state.player.specialWeapon])return DROPS[state.player.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===state.player.weapon;});return w?w.power:0;}
-function playerArmorDef(){if(state.player.specialArmor&&DROPS[state.player.specialArmor])return DROPS[state.player.specialArmor].def||0;var a=ARMORS.find(function(x){return x.id===state.player.armor;});return a?a.def:0;}
-function playerAtk(){return state.player.baseAtk+playerWeaponPower();}
+function playerArmorDef(){if(state.player.specialArmor&&DROPS[state.player.specialArmor])return (DROPS[state.player.specialArmor].def||0)+accessoryBonus(state.player,'def');var a=ARMORS.find(function(x){return x.id===state.player.armor;});return (a?a.def:0)+accessoryBonus(state.player,'def');}
+function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}
 function aiWeaponPower(a){if(a.specialWeapon&&DROPS[a.specialWeapon])return DROPS[a.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===a.weapon;});return w?w.power:0;}
-function aiArmorDef(a){if(a.specialArmor&&DROPS[a.specialArmor])return DROPS[a.specialArmor].def||0;var x=ARMORS.find(function(z){return z.id===a.armor;});return x?x.def:0;}
-function aiAtk(a){return a.baseAtk+aiWeaponPower(a);}
+function aiArmorDef(a){if(a.specialArmor&&DROPS[a.specialArmor])return (DROPS[a.specialArmor].def||0)+accessoryBonus(a,'def');var x=ARMORS.find(function(z){return z.id===a.armor;});return (x?x.def:0)+accessoryBonus(a,'def');}
+function aiAtk(a){return a.baseAtk+aiWeaponPower(a)+accessoryBonus(a,'attack');}
 function gainXpUnit(u,amount,isPlayer){u.xp+=Math.max(0,amount);var up=0;while(u.xp>=xpNeed(u.level)){u.xp-=xpNeed(u.level);u.level++;u.baseAtk+=isPlayer?3:2;u.maxHp+=isPlayer?12:10;u.hp=u.maxHp;up++;}return up;}
 function partyMembers(){return state.ai.filter(function(a){return a.party;});}
 function partyCount(){return partyMembers().length;}
@@ -883,7 +975,7 @@ function storyJournal(){
 
 // D20-inspired real-time rules; not a claim of full tabletop rules compatibility.
 var CLASSES={fighter:{name:'전사',range:92,rate:1.1,mod:3,save:2},rogue:{name:'도적',range:95,rate:.85,mod:4,save:4},cleric:{name:'성직자',range:180,rate:1.4,mod:3,save:3},wizard:{name:'마법사',range:300,rate:1.65,mod:4,save:1},ranger:{name:'레인저',range:330,rate:1.2,mod:3,save:3}};
-var battleState=new WeakMap(),battleTime=0,autoSkills=true,tacticalPaused=false,moveTarget=null,combatLines=[],hudTick=0;
+var battleState=new WeakMap(),battleTime=0,tacticalPaused=false,moveTarget=null,combatLines=[],hudTick=0;
 
 const TACTIC_FORMATIONS={line:'방패벽',wedge:'쐐기 대형',spread:'산개 진형'};
 const TACTIC_MODES={balanced:'균형',hold:'위치 사수',focus:'집중 공격'};
@@ -915,7 +1007,7 @@ function tacticsMenu(){
  document.getElementById('clearFocus').onclick=function(){tacticalTargetId=null;tacticsMenu();};
 }
 
-function combat(o){var s=battleState.get(o);if(!s){s={skillAt:0,shieldUntil:0,slowUntil:0,visualUntil:0,target:null};battleState.set(o,s);}return s;}
+function combat(o){var s=battleState.get(o);if(!s){s={skillAt:0,bookAt:0,bookCooldowns:{},shieldUntil:0,slowUntil:0,visualUntil:0,target:null,hitAt:0,hitPower:0};battleState.set(o,s);}return s;}
 function role(u){return CLASSES[u.classId]||CLASSES.fighter;}
 function proficiency(u){return Math.min(6,2+Math.floor((u.level-1)/4));}
 function ac(u){return 10+Math.min(10,Math.floor((u===state.player?playerArmorDef():aiArmorDef(u))/3))+Math.floor(role(u).save/2)+(combat(u).shieldUntil>battleTime?2:0);}
@@ -924,7 +1016,58 @@ function battleLog(t){combatLines.push(t);if(combatLines.length>4)combatLines.sh
 function attackRoll(bonus,armor,advantage){var n=die(20);if(advantage)n=Math.max(n,die(20));return{roll:n,hit:n===20||(n!==1&&n+bonus>=armor),crit:n===20};}
 function saveRoll(e,unit){var dc=8+proficiency(unit)+role(unit).mod;return die(20)+(e.boss?5:e.elite?3:1)>=dc;}
 function unitBySource(id){return id==='player'?state.player:state.ai.find(function(a){return a.id===id;});}
-function autoSkill(u,pos,id,manual=false){if((!manual&&!autoSkills)||u.hp<=0)return;var c=combat(u),r=role(u);if(c.skillAt>battleTime)return;var t=orderedEnemy(pos.x,pos.y,Math.max(130,r.range));var allies=[{u:state.player,pos:p}].concat(partyMembers().map(function(a){return{u:a,pos:a};}));
+function autoSkill(u,pos,id,manual=false){
+ if(u.hp<=0)return;
+ var c=combat(u),r=role(u),t=orderedEnemy(pos.x,pos.y,Math.max(130,r.range));
+ var allies=[{u:state.player,pos:p}].concat(partyMembers().map(a=>({u:a,pos:a})));
+ // 캐릭터별 활성화 기술과 우선순위, 스킬별 독립 재사용 대기시간.
+ if(c.bookAt<=battleTime){
+  const available=SKILL_BOOKS.filter(book=>book.job===u.classId&&u.learnedSkills?.[book.id]&&u.skillSelection?.[book.id]!==false)
+   .sort((a,b)=>(u.skillOrder?.indexOf(a.id)??999)-(u.skillOrder?.indexOf(b.id)??999));
+  const low=allies.filter(a=>a.u.hp>0&&a.u.hp<a.u.maxHp*.7&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<350).sort((a,b)=>a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp);
+  const opponents=enemies.filter(e=>!e.dead&&Math.hypot(e.x-pos.x,e.y-pos.y)<Math.max(150,r.range));
+  const power=u===state.player?playerAtk():aiAtk(u);
+  for(const book of available){
+   if((c.bookCooldowns[book.id]||0)>battleTime)continue;
+   let fired=false;
+   const shield=()=>{c.shieldUntil=Math.max(c.shieldUntil,battleTime+(book.id==='rogue_escape'?8:5));fired=true;};
+   if(['fighter_wall','rogue_veil','wizard_ward','ranger_evasion','rogue_escape'].includes(book.id)&&u.hp<u.maxHp*.65)shield();
+   else if(book.id==='cleric_group'&&low.length){
+    low.slice(0,2).forEach(a=>{a.u.hp=Math.min(a.u.maxHp,a.u.hp+Math.max(1,Math.round(a.u.maxHp*.13)));});
+    fired=true;sound.effect('heal');
+   }else if(book.id==='cleric_rescue'&&low.some(a=>a.u.hp<a.u.maxHp*.5)){
+    const ally=low[0];ally.u.hp=Math.min(ally.u.maxHp,ally.u.hp+Math.max(1,Math.round(ally.u.maxHp*.3)));fired=true;sound.effect('heal');
+   }else if(['fighter_rally','fighter_shout','cleric_ward'].includes(book.id)){
+    const safe=book.id==='cleric_ward'?low.slice(0,1):allies.filter(a=>a.u.hp>0&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<350&&a.u.hp<a.u.maxHp*.85);
+    if(safe.length){safe.slice(0,book.id==='fighter_rally'?3:4).forEach(a=>{combat(a.u).shieldUntil=Math.max(combat(a.u).shieldUntil,battleTime+5);});fired=true;}
+   }else if(['rogue_smoke','wizard_frost','ranger_snare'].includes(book.id)){
+    const targets=book.id==='ranger_snare'?(t?[t]:[]):opponents.slice(0,2);
+    if(targets.length){targets.forEach(e=>{combat(e).slowUntil=Math.max(combat(e).slowUntil,battleTime+4);});fired=true;}
+   }else if(t&&Math.hypot(t.x-pos.x,t.y-pos.y)<=r.range){
+    if(['fighter_strike','rogue_pierce','cleric_light','wizard_bolt','ranger_hunt','ranger_aim'].includes(book.id)){
+     fired=damageEnemy(t,Math.max(3,Math.round(power*.4)),id,{spell:['wizard_bolt','cleric_light'].includes(book.id),advantage:book.id==='ranger_aim'});
+    }else if(['fighter_cleave','cleric_purify','wizard_nova','wizard_chain','ranger_volley'].includes(book.id)){
+     const count=['fighter_cleave','wizard_chain'].includes(book.id)?2:3;
+     const targets=opponents.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<125).slice(0,count);
+     if(targets.length>=(book.id==='fighter_cleave'?2:1)){
+      targets.forEach(e=>damageEnemy(e,Math.max(2,Math.round(power*.32)),id,{spell:['cleric_purify','wizard_nova','wizard_chain'].includes(book.id)}));fired=true;
+     }
+    }else if(book.id==='rogue_flurry'){
+     for(let i=0;i<2&&!t.dead;i++)damageEnemy(t,Math.max(2,Math.round(power*.28)),id);
+     fired=true;
+    }
+   }
+   if(fired){
+    c.bookAt=battleTime+3;
+    c.bookCooldowns[book.id]=battleTime+(book.level>=19?30:book.level>=14?25:book.level>=6?26:22);
+    c.visualUntil=performance.now()+560;
+    battleLog((u.name||'주인공')+' · '+book.name+' 자동 발동');
+    view.playSkillEffect(book.id,pos.x,pos.y,t?.x??pos.x,t?.y??pos.y);
+    break;
+   }
+  }
+ }
+ if(c.skillAt>battleTime||(!manual&&u.skillSelection?.base===false))return;
  if(u.classId==='cleric'){var low=allies.filter(function(a){return a.u.hp<a.u.maxHp*.55&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<360;}).sort(function(a,b){return a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp;})[0];if(low){low.u.hp=Math.min(low.u.maxHp,low.u.hp+Math.round(low.u.maxHp*.22)+r.mod);c.skillAt=battleTime+10;c.visualUntil=performance.now()+600;battleLog((u===state.player?'나':u.name)+' · 치유의 기도');sound.effect('heal');view.playSkillEffect('cleric',pos.x,pos.y,low.pos.x,low.pos.y);return;}}
  if(!t)return;var power=u===state.player?playerAtk():aiAtk(u);
  if(u.classId==='fighter'&&u.hp<u.maxHp*.45){c.shieldUntil=battleTime+4;c.skillAt=battleTime+12;battleLog('수호 자세 · AC +2');view.playSkillEffect('guard',pos.x,pos.y);return;}
@@ -1029,8 +1172,8 @@ function companionMenu(selected){
  if(!chosen){openModal('동료를 찾는 중','<p>1막 서막을 마치면 첫 인물이 열려. 사건을 조사할수록 새로운 동료를 만날 수 있어.</p><button id="rosterJournal" class="menuBtn">여정 기록 보기</button>');document.getElementById('rosterJournal').onclick=storyJournal;return;}
  var index=portraitIndex(chosen),voice=COMPANION_VOICES[index],arc=RECRUIT_ARCS[index],stage=recruitStage(chosen),info=CLASS_INFO[chosen.classId],secret=state.story.companions[chosen.id];
  var list=known.map(function(a){return '<button class="rosterRow '+(a.id===chosen.id?'chosen':'')+'" data-companion="'+a.id+'">'+portraitMarkup(portraitIndex(a))+'<span><b>'+a.name+'</b><small>'+role(a).name+' · '+(a.party?'동행 중':ZONES[a.zone]?.name||'탐험 중')+'</small></span><i>'+(a.party?'동행':'')+'</i></button>';}).join('');
- var html='<div class="rosterLayout"><nav class="rosterList" aria-label="동료 목록">'+list+'</nav><article class="companionDetail">'+portraitMarkup(index,'companionPortrait')+'<span class="eyebrow">'+info.position+' · '+voice.trait+'</span><h2>'+chosen.name+' <small>'+role(chosen).name+'</small></h2><p>'+info.desc+'</p><div class="ruleStats"><span>레벨 <b>'+chosen.level+'</b></span><span>체력 <b>'+Math.ceil(chosen.hp)+' / '+chosen.maxHp+'</b></span><span>방어 등급 <b>'+ac(chosen)+'</b></span></div><h3>고유 전술</h3><p class="gold">'+info.skill+'</p><h3>'+(secret?'개인 기록':'영입 서브퀘스트')+'</h3><p>'+(secret?COMPANION_SECRETS[index]:voice.lead+' · '+arc.title+' ('+ZONES[arc.zone].name+')')+'</p><div class="companionButtons"><button class="menuBtn" id="recruitCompanion" '+(!chosen.party&&partyCount()>=3?'disabled':'')+'>'+(chosen.party?'파티에서 쉬게 한다':partyCount()>=3?'파티 정원 4명':stage==='new'?'개인 서브퀘스트 시작':stage==='search'?'단서 찾기':stage==='ready'?'영입 장면 보기':'동행을 요청한다')+'</button><button class="menuBtn secondary" id="talkCompanion">이야기를 나눈다</button><button class="menuBtn secondary" id="companionBag">장비 · 인벤토리</button><button class="textBtn" id="focusCompanion">카메라로 찾기</button></div></article></div>';
- openModal('동료 · '+(partyCount()+1)+' / 4명',html);modal.dataset.mode='roster';modalBody.querySelectorAll('[data-companion]').forEach(function(b){b.onclick=function(){companionMenu(b.dataset.companion);};});document.getElementById('recruitCompanion').onclick=function(){requestCompanion(chosen);};document.getElementById('talkCompanion').onclick=function(){if(stage==='new'||stage==='search'){requestCompanion(chosen);return;}companionDialogue(chosen);};document.getElementById('companionBag').onclick=function(){bagMenu(chosen.id);};document.getElementById('focusCompanion').onclick=function(){if(!chosen.party&&(dungeon||chosen.zone!==state.zone)){toast('현재 지역에 없는 동료야. '+(ZONES[chosen.zone]?.name||'다른 지역')+'에서 찾을 수 있어.');return;}closeModal();view.selection=chosen.id;view.center(chosen.id);};
+ var html='<div class="rosterLayout"><nav class="rosterList" aria-label="동료 목록">'+list+'</nav><article class="companionDetail">'+portraitMarkup(index,'companionPortrait')+'<span class="eyebrow">'+info.position+' · '+voice.trait+'</span><h2>'+chosen.name+' <small>'+role(chosen).name+'</small></h2><p>'+info.desc+'</p><div class="ruleStats"><span>레벨 <b>'+chosen.level+'</b></span><span>체력 <b>'+Math.ceil(chosen.hp)+' / '+chosen.maxHp+'</b></span><span>방어 등급 <b>'+ac(chosen)+'</b></span></div><h3>고유 전술</h3><p class="gold">'+info.skill+'</p><h3>'+(secret?'개인 기록':'영입 서브퀘스트')+'</h3><p>'+(secret?COMPANION_SECRETS[index]:voice.lead+' · '+arc.title+' ('+ZONES[arc.zone].name+')')+'</p><div class="companionButtons"><button class="menuBtn" id="recruitCompanion" '+(!chosen.party&&partyCount()>=3?'disabled':'')+'>'+(chosen.party?'파티에서 쉬게 한다':partyCount()>=3?'파티 정원 4명':stage==='new'?'개인 서브퀘스트 시작':stage==='search'?'단서 찾기':stage==='ready'?'영입 장면 보기':'동행을 요청한다')+'</button><button class="menuBtn secondary" id="talkCompanion">이야기를 나눈다</button><button class="menuBtn secondary" id="companionBag">장비 · 인벤토리</button><button class="menuBtn secondary" id="companionSkillBook">스킬북 · 자동 기술</button><button class="textBtn" id="focusCompanion">카메라로 찾기</button></div></article></div>';
+ openModal('동료 · '+(partyCount()+1)+' / 4명',html);modal.dataset.mode='roster';modalBody.querySelectorAll('[data-companion]').forEach(function(b){b.onclick=function(){companionMenu(b.dataset.companion);};});document.getElementById('recruitCompanion').onclick=function(){requestCompanion(chosen);};document.getElementById('talkCompanion').onclick=function(){if(stage==='new'||stage==='search'){requestCompanion(chosen);return;}companionDialogue(chosen);};document.getElementById('companionBag').onclick=function(){bagMenu(chosen.id);};document.getElementById('companionSkillBook').onclick=function(){skillBookMenu(chosen.id);};document.getElementById('focusCompanion').onclick=function(){if(!chosen.party&&(dungeon||chosen.zone!==state.zone)){toast('현재 지역에 없는 동료야. '+(ZONES[chosen.zone]?.name||'다른 지역')+'에서 찾을 수 있어.');return;}closeModal();view.selection=chosen.id;view.center(chosen.id);};
 }
 // 능력 판정: d20 + 숙련 + 직업 능력 보정, 자연 1 실패 / 자연 20 성공.
 function checkAbility(kind,dc){
@@ -1065,7 +1208,7 @@ function companionDialogue(a,fromScene=false){
  modalBody.querySelectorAll('[data-companion-choice]').forEach(function(b){b.onclick=function(){companionQuestChoice(a,b.dataset.companionChoice);};});
  document.getElementById('dialogueReturn').onclick=function(){companionMenu(a.id);};
 }
-function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>실시간 디앤디식 판정 · 명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타. 동료와 함께 문 열기·함정 해제·설득 능력 판정도 할 수 있어.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=function(){bagMenu('player');};document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
+function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>실시간 디앤디식 판정 · 명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타. 동료와 함께 문 열기·함정 해제·설득 능력 판정도 할 수 있어.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="sheetSkills">스킬북 · 자동 기술 설정</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=function(){bagMenu('player');};document.getElementById('sheetSkills').onclick=function(){skillBookMenu('player');};document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
 
 storyInit();
 
@@ -1268,23 +1411,41 @@ function travelMenu(){
  modalBody.querySelectorAll("[data-dungeon]").forEach(function(b){b.onclick=function(){startDungeon(Number(b.dataset.dungeon));};});
 }
 // 상점: 원래 주인공 보유 장비 의미를 유지하며 파티 동료는 자신의 장비 목록만 소유한다.
+// 상점: 기존 아이템은 제한 없이 보존, 신규 장비만 직업·레벨·종류 숙련으로 제한.
 function shopMenu(kind,selectedId){
  var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;
  if(!u){toast('동행 중인 동료만 장비를 구매할 수 있어.');return;}
- var isWeapon=kind==="weapon",items=isWeapon?WEAPONS:ARMORS,owned=isWeapon?u.ownedWeapons:u.ownedArmors;
- var html='<p class="note">'+escapeText(u.name||'주인공')+'의 '+(isWeapon?'무기':'방어구')+' · 구매 비용은 파티 금고에서 지불해. 보유한 장비는 추가 비용 없이 교체할 수 있어. · '+Math.floor(state.player.gold)+'G</p>';
- html+=items.map(function(it){var has=owned.includes(it.id),equipped=isWeapon?u.weapon===it.id&&!u.specialWeapon:u.armor===it.id&&!u.specialArmor,stat=isWeapon?'공격 +'+it.power:'방어 +'+it.def;return '<div class="row"><div class="inventoryItem"><b>'+it.name+(equipped?' <span class="tag good">장착</span>':'')+'</b><small>'+stat+' · '+it.price+'G</small></div><div class="inventoryActions"><button data-buy="'+it.id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착 중':has?'장착':'구매')+'</button></div></div>';}).join('');
+ var isWeapon=kind==='weapon',isArmor=kind==='armor',isAccessory=kind==='accessory';
+ if(!isWeapon&&!isArmor&&!isAccessory)return;
+ var items=isWeapon?WEAPONS:isArmor?ARMORS:ACCESSORIES,owned=isWeapon?u.ownedWeapons:isArmor?u.ownedArmors:u.ownedAccessories;
+ var html='<p class="note">'+escapeText(u.name||'주인공')+' · '+role(u).name+' · 잔액 '+Math.floor(state.player.gold)+'G<br>새 장비에는 직업·레벨·종류 숙련 조건이 적용돼.</p>';
+ html+=items.filter(it=>!it.jobs||it.jobs.includes(u.classId)).map(it=>{
+  var allowed=canEquipItem(u,it,kind);
+  var eq=isWeapon?u.weapon===it.id&&!u.specialWeapon:isArmor?u.armor===it.id&&!u.specialArmor:u[it.slot]===it.id;
+  var has=owned.includes(it.id);
+  var effect=isWeapon?'공격 +'+it.power:isArmor?'방어 +'+it.def:'공격 +'+(it.attack||0)+' / 방어 +'+(it.def||0);
+  var need=it.mastery?' · '+GEAR_FAMILIES[it.family]+' 숙련 '+(u.masteries[it.family]||0)+'/'+it.mastery:'';
+  var reason=it.level&&u.level<it.level?'레벨 '+it.level+' 필요':it.mastery&&(u.masteries[it.family]||0)<it.mastery?'숙련 '+it.mastery+' 필요':'직업 제한';
+  return '<div class="row"><div class="inventoryItem"><b>'+it.name+(eq?' <span class="tag good">착용 중</span>':'')+'</b><small>'+effect+' · '+it.price+'G'+(it.level?' · Lv.'+it.level+'+':'')+need+'</small></div><div class="inventoryActions"><button data-buy="'+it.id+'" '+(!allowed||eq?'disabled':'')+'>'+(eq?'장착 중':!allowed?reason:has?'장착':'구매')+'</button></div></div>';
+ }).join('');
  html+='<button class="menuBtn secondary" id="backToBag">인벤토리로 돌아가기</button>';
- openModal(isWeapon?'무기 상점':'방어구 상점',html);
- modalBody.querySelectorAll('[data-buy]').forEach(function(b){b.onclick=function(){if(buyOrEquip(kind,b.dataset.buy,u===state.player?'player':u.id))shopMenu(kind,u===state.player?'player':u.id);};});
+ openModal(isWeapon?'무기 상점':isArmor?'방어구 상점':'장신구 상점',html);
+ modalBody.querySelectorAll('[data-buy]').forEach(b=>b.onclick=function(){if(buyOrEquip(kind,b.dataset.buy,u===state.player?'player':u.id))shopMenu(kind,u===state.player?'player':u.id);});
  document.getElementById('backToBag').onclick=function(){bagMenu(u===state.player?'player':u.id);};
 }
 function buyOrEquip(kind,id,selectedId){
- var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;if(!u)return false;
- var isWeapon=kind==="weapon",arr=isWeapon?WEAPONS:ARMORS,owned=isWeapon?u.ownedWeapons:u.ownedArmors,it=arr.find(x=>x.id===id);if(!it)return false;
- if(!owned.includes(id)){if(state.player.gold<it.price){toast('골드가 부족해.');return false;}state.player.gold-=it.price;owned.push(id);}
- if(isWeapon){u.weapon=id;u.specialWeapon=null;}else{u.armor=id;u.specialArmor=null;}
- save();updateHud();toast(escapeText(u.name||'주인공')+' · '+it.name+' 장착');return true;
+ var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;
+ if(!u)return false;
+ var isWeapon=kind==='weapon',isArmor=kind==='armor',isAccessory=kind==='accessory';
+ if(!isWeapon&&!isArmor&&!isAccessory)return false;
+ var items=isWeapon?WEAPONS:isArmor?ARMORS:ACCESSORIES,owned=isWeapon?u.ownedWeapons:isArmor?u.ownedArmors:u.ownedAccessories,it=items.find(x=>x.id===id);
+ if(!canEquipItem(u,it,kind)){toast('직업·레벨·숙련 조건을 확인해.');return false;}
+ if(!owned.includes(id)){
+  if(state.player.gold<it.price){toast('골드가 부족해.');return false;}
+  state.player.gold-=it.price;owned.push(id);
+ }
+ if(isWeapon){u.weapon=id;u.specialWeapon=null;}else if(isArmor){u.armor=id;u.specialArmor=null;}else u[it.slot]=id;
+ save();updateHud();toast((u.name||'주인공')+' · '+it.name+' 장착');return true;
 }
 function sellMenu(){
  var total=0,html='<b>일반 몬스터 전리품 판매</b>';
@@ -1315,40 +1476,87 @@ function useSupply(id,selectedId){
  state.supplies[id]--;save();updateHud();partyHud();sound.effect('heal');bagMenu(selectedId);toast((u.name||'주인공')+' · '+it.name+' 사용');
 }
 // 장비창: 주인공과 동행 중인 동료는 소모품을 공유하고 장비/전리품은 각자 소유한다.
+// 가방: 캐릭터마다 무기·갑옷·반지·목걸이 및 스킬북·숙련을 관리한다.
 function bagMenu(selectedId){
  var person=typeof selectedId==='string'&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&companionDiscovered(a)):null;
  var u=person||state.player,id=person?person.id:'player',usable=!person||person.party;
- var options=[{id:'player',unit:state.player}].concat(partyMembers().map(a=>({id:a.id,unit:a})));
+ var options=[{id:'player',unit:state.player},...partyMembers().map(a=>({id:a.id,unit:a}))];
  if(person&&!person.party)options.push({id:person.id,unit:person});
  var tabs='<nav class="inventoryTabs" aria-label="캐릭터별 인벤토리">'+options.map(x=>'<button type="button" data-bag-person="'+x.id+'" class="'+(x.id===id?'chosen':'')+'" aria-pressed="'+(x.id===id)+'">'+escapeText(x.unit.name||'주인공')+'</button>').join('')+'</nav>';
- var weapon=(u.specialWeapon&&DROPS[u.specialWeapon])?DROPS[u.specialWeapon].name:(WEAPONS.find(x=>x.id===u.weapon)||{name:'맨손'}).name;
- var armor=(u.specialArmor&&DROPS[u.specialArmor])?DROPS[u.specialArmor].name:(ARMORS.find(x=>x.id===u.armor)||{name:'없음'}).name;
  var attack=u===state.player?playerAtk():aiAtk(u),def=u===state.player?playerArmorDef():aiArmorDef(u);
- var html=tabs+'<div class="inventorySummary">'+portraitMarkup(portraitIndex(u))+'<div><b>'+escapeText(u.name||'주인공')+' · Lv.'+u.level+' · '+role(u).name+'</b><small>HP '+Math.ceil(u.hp)+' / '+u.maxHp+' · 공격 '+attack+' · 방어 '+def+'</small><small>'+(usable?'파티 동행 · 장비 교체 및 아이템 사용 가능':'비동행 동료 · 소유 장비 보기')+'</small></div></div>';
- html+='<section class="inventorySection"><h3>착용 장비</h3><div class="row"><div class="inventoryItem"><b>무기</b><small>'+weapon+'</small></div><div class="inventoryActions"><button data-shop="weapon" '+(usable?'':'disabled')+'>장비 선택</button><button data-empty="weapon" '+(!usable||(!u.weapon&&!u.specialWeapon)?'disabled':'')+'>해제</button></div></div>';
- html+='<div class="row"><div class="inventoryItem"><b>방어구</b><small>'+armor+'</small></div><div class="inventoryActions"><button data-shop="armor" '+(usable?'':'disabled')+'>장비 선택</button><button data-empty="armor" '+(!usable||(!u.armor&&!u.specialArmor)?'disabled':'')+'>해제</button></div></div></section>';
- html+='<section class="inventorySection"><h3>소유한 일반 장비</h3>';
- var ownedList=[...u.ownedWeapons.map(w=>({kind:'weapon',item:WEAPONS.find(it=>it.id===w)})),...u.ownedArmors.map(a=>({kind:'armor',item:ARMORS.find(it=>it.id===a)}))].filter(x=>x.item);
- html+=ownedList.length?ownedList.map(x=>'<div class="row"><div class="inventoryItem"><b>'+x.item.name+'</b><small>'+(x.kind==='weapon'?'무기 · 공격 +'+x.item.power:'방어구 · 방어 +'+x.item.def)+'</small></div><div class="inventoryActions"><button data-owned-kind="'+x.kind+'" data-owned-id="'+x.item.id+'" '+(!usable?'disabled':'')+'>장착</button></div></div>').join(''):'<p class="inventoryEmpty">아직 구입한 일반 장비가 없어.</p>';
- html+='</section><section class="inventorySection"><h3>던전 전용 전리품 · 장비</h3>';
- var drops=Array.isArray(u.drops)?u.drops.filter(item=>DROPS[item]):[];
- html+=drops.length?drops.map(item=>{var d=DROPS[item],eq=d.kind==='weapon'?u.specialWeapon===item:u.specialArmor===item;return '<div class="row"><div class="inventoryItem"><b>'+d.name+(eq?' <span class="tag good">착용 중</span>':'')+'</b><small>'+d.from+' · '+(d.kind==='weapon'?'공격 +'+d.power:'방어 +'+d.def)+'</small></div><div class="inventoryActions"><button data-drop="'+item+'" '+(!usable||eq?'disabled':'')+'>장착</button><button data-transfer="'+item+'" '+(!usable?'disabled':'')+'>동료에게 전달</button></div></div>';}).join(''):'<p class="inventoryEmpty">던전에서 아직 고유 장비를 얻지 못했어.</p>';
- html+='</section><section class="inventorySection"><h3>파티 공용 소모품</h3>';
+ var html=tabs+'<div class="inventorySummary">'+portraitMarkup(portraitIndex(u))+'<div><b>'+escapeText(u.name||'주인공')+' · Lv.'+u.level+' · '+role(u).name+'</b><small>HP '+Math.ceil(u.hp)+' / '+u.maxHp+' · 공격 '+attack+' · 방어 '+def+'</small><small>'+(usable?'파티 동행 · 장비·스킬북 사용 가능':'비동행 동료 · 소지품 열람')+'</small></div></div>';
+ html+='<section class="inventorySection"><h3>착용 장비 · 4개 슬롯</h3>';
+ for(const [kind,label,item] of [['weapon','무기',DROPS[u.specialWeapon]||WEAPONS.find(x=>x.id===u.weapon)],['armor','갑옷',DROPS[u.specialArmor]||ARMORS.find(x=>x.id===u.armor)],['ring','반지',ACCESSORIES.find(x=>x.id===u.ring)],['necklace','목걸이',ACCESSORIES.find(x=>x.id===u.necklace)]]){
+  html+='<div class="row"><div class="inventoryItem"><b>'+label+'</b><small>'+(item?item.name:'없음')+'</small></div><div class="inventoryActions"><button data-shop="'+(kind==='ring'||kind==='necklace'?'accessory':kind)+'" '+(!usable?'disabled':'')+'>교체</button><button data-empty="'+kind+'" '+(!usable||!item?'disabled':'')+'>해제</button></div></div>';
+ }
+ html+='</section><section class="inventorySection"><h3>소유한 일반 장비</h3>';
+ var owned=[...u.ownedWeapons.map(z=>({kind:'weapon',item:WEAPONS.find(it=>it.id===z)})),...u.ownedArmors.map(z=>({kind:'armor',item:ARMORS.find(it=>it.id===z)})),...u.ownedAccessories.map(z=>({kind:'accessory',item:ACCESSORIES.find(it=>it.id===z)}))].filter(x=>x.item);
+ html+=owned.length?owned.map(x=>{var it=x.item,allowed=canEquipItem(u,it,x.kind);return '<div class="row"><div class="inventoryItem"><b>'+it.name+'</b><small>'+(it.family?GEAR_FAMILIES[it.family]+' 숙련 '+(u.masteries[it.family]||0)+'/'+(it.mastery||0):'')+(allowed?'':' · 직업/레벨/숙련 부족')+'</small></div><div class="inventoryActions"><button data-owned-kind="'+x.kind+'" data-owned-id="'+it.id+'" '+(!usable||!allowed?'disabled':'')+'>장착</button></div></div>';}).join(''):'<p class="inventoryEmpty">아직 구매한 장비가 없어.</p>';
+ html+='</section><section class="inventorySection"><h3>무기·갑옷 종류별 숙련</h3><p class="note">공격 적중·방어구 피격 시 해당 종류 숙련이 쌓여. 신규 고급 장비 요구치 8 / 24, 기존 장비는 제한 없음.</p>';
+ html+=Object.keys(GEAR_FAMILIES).map(k=>'<div class="row"><b>'+GEAR_FAMILIES[k]+'</b><small>'+Math.floor(u.masteries[k]||0)+'회 · '+((u.masteries[k]||0)>=24?'전문':(u.masteries[k]||0)>=8?'숙련':'견습')+'</small></div>').join('');
+ html+='</section><section class="inventorySection"><h3>캐릭터별 스킬북</h3><p class="note">자동 기술은 항상 켜져 있어. 캐릭터마다 발동시킬 기술과 우선순위를 선택할 수 있어.</p><button class="menuBtn" id="inventorySkillBook">스킬북 · 기술 지정</button></section>';
+ html+='<section class="inventorySection"><h3>던전 전용 전리품 · 장비</h3>';
+ var drops=Array.isArray(u.drops)?u.drops.filter(z=>DROPS[z]):[];
+ html+=drops.length?drops.map(item=>{var d=DROPS[item],eq=d.kind==='weapon'?u.specialWeapon===item:u.specialArmor===item;return '<div class="row"><div class="inventoryItem"><b>'+d.name+(eq?' <span class="tag good">착용 중</span>':'')+'</b><small>'+d.from+' · '+(d.kind==='weapon'?'공격 +'+d.power:'방어 +'+d.def)+'</small></div><div class="inventoryActions"><button data-drop="'+item+'" '+(!usable||eq?'disabled':'')+'>장착</button><button data-transfer="'+item+'" '+(!usable?'disabled':'')+'>동료에게 전달</button></div></div>';}).join(''):'<p class="inventoryEmpty">고유 장비 없음</p>';
+ html+='</section><section class="inventorySection"><h3>공용 소모품</h3>';
  html+=SUPPLIES.map(it=>'<div class="row"><div class="inventoryItem"><b>'+it.name+' <span class="tag">'+state.supplies[it.id]+'개</span></b><small>'+it.desc+'</small></div><div class="inventoryActions"><button data-use="'+it.id+'" '+(!usable||!state.supplies[it.id]?'disabled':'')+'>사용</button></div></div>').join('');
- html+='<button class="menuBtn secondary" id="inventorySupplyShop">소모품 구매</button></section>';
- html+='<section class="inventorySection"><h3>전리품 · 재료</h3>';
+ html+='<button class="menuBtn secondary" id="inventorySupplyShop">소모품 구매</button></section><section class="inventorySection"><h3>전리품 · 재료</h3>';
  var mats=Object.values(MATERIALS).filter(it=>(Number(u.materials?.[it.id])||0)>0);
- html+=mats.length?mats.map(it=>'<div class="row"><div class="inventoryItem"><b>'+it.name+'</b><small>'+Math.floor(u.materials[it.id])+'개 · 판매 가치 '+it.price+'G / 개</small></div></div>').join(''):'<p class="inventoryEmpty">아직 전리품이 없어.</p>';
- html+='<p class="note">재료 판매는 기존 상점 규칙을 사용해. 동료의 자동 사냥/구매와 이전 세이브는 그대로 유지돼.</p></section>';
+ html+=mats.length?mats.map(it=>'<div class="row"><b>'+it.name+'</b><small>'+Math.floor(u.materials[it.id])+'개 · '+it.price+'G/개</small></div>').join(''):'<p class="inventoryEmpty">아직 재료가 없어.</p>';
+ html+='<p class="note">기존 던전 보상·전리품 판매·동료 자동 상점은 그대로 유지돼.</p></section>';
  openModal('파티 인벤토리',html);
  modalBody.querySelectorAll('[data-bag-person]').forEach(b=>b.onclick=function(){bagMenu(b.dataset.bagPerson);});
  modalBody.querySelectorAll('[data-shop]').forEach(b=>b.onclick=function(){shopMenu(b.dataset.shop,id);});
  modalBody.querySelectorAll('[data-owned-id]').forEach(b=>b.onclick=function(){if(buyOrEquip(b.dataset.ownedKind,b.dataset.ownedId,id))bagMenu(id);});
  modalBody.querySelectorAll('[data-drop]').forEach(b=>b.onclick=function(){equipDrop(b.dataset.drop,id);bagMenu(id);});
  modalBody.querySelectorAll('[data-transfer]').forEach(b=>b.onclick=function(){transferDrop(id,b.dataset.transfer);});
- modalBody.querySelectorAll('[data-empty]').forEach(b=>b.onclick=function(){if(!usable)return;var isWeapon=b.dataset.empty==='weapon';if(isWeapon){u.weapon=null;u.specialWeapon=null;}else{u.armor=null;u.specialArmor=null;}save();updateHud();bagMenu(id);});
+ modalBody.querySelectorAll('[data-empty]').forEach(b=>b.onclick=function(){
+  if(!usable)return;
+  if(b.dataset.empty==='weapon'){u.weapon=null;u.specialWeapon=null;}else if(b.dataset.empty==='armor'){u.armor=null;u.specialArmor=null;}
+  else if(['ring','necklace'].includes(b.dataset.empty))u[b.dataset.empty]=null;
+  save();updateHud();bagMenu(id);
+ });
  modalBody.querySelectorAll('[data-use]').forEach(b=>b.onclick=function(){useSupply(b.dataset.use,id);});
  document.getElementById('inventorySupplyShop').onclick=supplyShop;
+ document.getElementById('inventorySkillBook').onclick=function(){skillBookMenu(id);};
+}
+// 스킬북: 습득 여부, 자동발동 허용, 최우선 시전을 인물별로 따로 보존한다.
+function skillBookMenu(selectedId){
+ var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&companionDiscovered(a)):state.player;
+ if(!u)return;
+ var id=u===state.player?'player':u.id,books=SKILL_BOOKS.filter(b=>b.job===u.classId);
+ var usable=u===state.player||u.party;
+ var ordered=books.slice().sort((a,b)=>(u.skillOrder.indexOf(a.id)<0?999:u.skillOrder.indexOf(a.id))-(u.skillOrder.indexOf(b.id)<0?999:u.skillOrder.indexOf(b.id)));
+ var html='<p class="note">'+escapeText(u.name||'주인공')+' · '+role(u).name+' Lv.'+u.level+' · 금고 '+Math.floor(state.player.gold)+'G</p><p>자동 전투는 항상 켜져 있어. 기술별 자동 사용을 지정하고 「최우선」으로 우선 발동 순서를 조정해. 배우지 않은 기술은 자동으로 쓰지 않아.</p>';
+ var baseEnabled=u.skillSelection.base!==false;
+ html+='<div class="row"><div><b>기본 직업 기술</b><small>'+CLASS_INFO[u.classId].skill+' · 처음부터 보유</small></div><div class="inventoryActions"><button data-toggle-skill="base" '+(!usable?'disabled':'')+' aria-pressed="'+baseEnabled+'">'+(baseEnabled?'자동 사용 중':'자동 사용 꺼짐')+'</button></div></div>';
+ html+=ordered.map((book,index)=>{
+  const learned=!!u.learnedSkills[book.id],enabled=learned&&u.skillSelection[book.id]!==false;
+  return '<div class="row"><div class="inventoryItem"><b>'+book.name+(learned?' <span class="tag good">배움</span>':'')+'</b><small>'+book.desc+' · Lv.'+book.level+' · '+book.price+'G'+(learned?' · 우선순위 '+(index+1):'')+'</small></div><div class="inventoryActions">'+(learned?'<button data-toggle-skill="'+book.id+'" '+(!usable?'disabled':'')+' aria-pressed="'+enabled+'">'+(enabled?'자동 켬':'자동 끔')+'</button><button data-priority="'+book.id+'" '+(!usable?'disabled':'')+'>최우선</button>':'<button data-learn="'+book.id+'" '+(!usable||u.level<book.level?'disabled':'')+'>'+(u.level<book.level?'레벨 부족':'배우기')+'</button>')+'</div></div>';
+ }).join('');
+ html+='<button class="menuBtn secondary" id="bookBack">인벤토리로 돌아가기</button>';
+ openModal('인물별 스킬북 · 자동 시전 설정',html);
+ modalBody.querySelectorAll('[data-learn]').forEach(b=>b.onclick=function(){
+  var book=SKILL_BOOKS.find(x=>x.id===b.dataset.learn);
+  if(!usable||!book||book.job!==u.classId||u.level<book.level||u.learnedSkills[book.id])return;
+  if(state.player.gold<book.price){toast('금화가 부족해.');return;}
+  state.player.gold-=book.price;u.learnedSkills[book.id]=true;u.skillSelection[book.id]=true;
+  if(!u.skillOrder.includes(book.id))u.skillOrder.push(book.id);
+  save();updateHud();skillBookMenu(id);toast(book.name+' 습득');
+ });
+ modalBody.querySelectorAll('[data-toggle-skill]').forEach(b=>b.onclick=function(){
+  if(!usable)return;
+  const key=b.dataset.toggleSkill;
+  if(key!=='base'&&!u.learnedSkills[key])return;
+  u.skillSelection[key]=u.skillSelection[key]===false;
+  save();skillBookMenu(id);
+ });
+ modalBody.querySelectorAll('[data-priority]').forEach(b=>b.onclick=function(){
+  if(!usable||!u.learnedSkills[b.dataset.priority])return;
+  u.skillOrder=[b.dataset.priority,...u.skillOrder.filter(x=>x!==b.dataset.priority)];
+  save();skillBookMenu(id);
+ });
+ document.getElementById('bookBack').onclick=function(){bagMenu(id);};
 }
 function equipDrop(item,selectedId){
  var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player,d=DROPS[item];
@@ -1416,15 +1624,15 @@ function rollDungeonDrop(enemy,killer){
  if(enemy.boss){var entries=Object.keys(dungeon.contrib),sum=entries.reduce(function(s,k){return s+Math.max(1,dungeon.contrib[k]);},0),r=Math.random()*sum,acc=0;for(var i=0;i<entries.length;i++){acc+=Math.max(1,dungeon.contrib[entries[i]]);if(r<=acc){owner=entries[i];break;}}}
  dungeon.pendingDrops.push({item:item,owner:owner});
 }
-function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.visualUntil=performance.now()+450;var result=options.spell?{hit:true,crit:false}:attackRoll(proficiency(u)+role(u).mod,11+(e.elite?2:0)+(e.boss?3:0)+Math.min(5,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/5)),options.advantage);if(!result.hit){if(source==="player")battleLog('빗나감 · d20 '+result.roll);if(Math.random()<.3)view.popDamage(e.x,e.y,0,false,true);return false;}var dealt=Math.min(e.hp,Math.max(1,Math.round(amount*(result.crit?2:1))));e.hp-=dealt;e.lastHit=source;view.popDamage(e.x,e.y,dealt,result.crit);sound.effect('hit');if(result.crit)battleLog('치명타 · 자연 20');if(dungeon&&e.boss)dungeon.contrib[source]=(dungeon.contrib[source]||0)+dealt;if(e.hp<=0)killEnemy(e,source);return true;}
+function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.visualUntil=performance.now()+450;var result=options.spell?{hit:true,crit:false}:attackRoll(proficiency(u)+role(u).mod,11+(e.elite?2:0)+(e.boss?3:0)+Math.min(5,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/5)),options.advantage);if(!result.hit){if(source==="player")battleLog('빗나감 · d20 '+result.roll);if(Math.random()<.3)view.popDamage(e.x,e.y,0,false,true);return false;}var dealt=Math.min(e.hp,Math.max(1,Math.round(amount*(result.crit?2:1))));e.hp-=dealt;e.lastHit=source;if(!options.spell)trainEquipment(u,'weapon');view.reactToHit('enemy'+e.id,result.crit?2:1);if(result.crit)view.playSkillEffect('critical',u===state.player?p.x:u.x,u===state.player?p.y:u.y,e.x,e.y);view.popDamage(e.x,e.y,dealt,result.crit);sound.effect('hit');if(result.crit)battleLog('치명타 · 자연 20');if(dungeon&&e.boss)dungeon.contrib[source]=(dungeon.contrib[source]||0)+dealt;if(e.hp<=0)killEnemy(e,source);return true;}
 function killEnemy(e,killer){
  e.dead=true;
  if(dungeon){dungeon.contrib[killer]=(dungeon.contrib[killer]||0)+(e.boss?25:10);rollDungeonDrop(e,killer);if(e.boss)completeDungeon();else if(aliveEnemies()===0){dungeon.door=true;toast("방 클리어! 다음 문이 열렸어.");}}
  else{var receiver=killer==="player"?state.player:state.ai.find(function(a){return a.id===killer;});if(receiver){receiver.gold+=e.gold;gainXpUnit(receiver,e.xp,killer==="player");addMaterial(receiver,state.zone);}save();if(e.storyTag){finishStoryBattle();finishImperialCombat();}}
 }
 function nextAIUpgrade(a){
- var weapon=WEAPONS.find(function(it){return it.power>aiWeaponPower(a);});
- var armor=ARMORS.find(function(it){return it.def>aiArmorDef(a);});
+ var weapon=WEAPONS.find(function(it){return it.power>aiWeaponPower(a)&&canEquipItem(a,it,'weapon');});
+ var armor=ARMORS.find(function(it){return it.def>aiArmorDef(a)&&canEquipItem(a,it,'armor');});
  var list=[];if(weapon)list.push({kind:"weapon",item:weapon});if(armor)list.push({kind:"armor",item:armor});
  list.sort(function(x,y){return x.item.price-y.item.price;});return list[0]||null;
 }
@@ -1448,7 +1656,7 @@ function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(fu
 function updateEnemies(dt){
  enemies.forEach(function(e){if(e.dead)return;e.attackCd-=dt;var targets=[{id:"player",x:p.x,y:p.y,hp:state.player.hp}];partyMembers().forEach(function(a){targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});if(!dungeon&&state.zone>0)state.ai.forEach(function(a){if(!a.party&&a.zone===state.zone&&a.routine==="hunt")targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});var t=targets[0],bd=Infinity;targets.forEach(function(q){if(q.hp<=0)return;var dx=q.x-e.x,dy=q.y-e.y,d=dx*dx+dy*dy;if(d<bd){bd=d;t=q;}});var dist=Math.sqrt(bd);combat(e).target=t.id;if(e.trait&&t.hp>0){e.specialCd-=dt;if(e.specialCd<=0&&dist<330){e.specialCd=8;if(e.trait==='specter'){e.x+=(t.x-e.x)*.38;e.y+=(t.y-e.y)*.38;view.playSkillEffect('wizard',e.x,e.y);}else if(e.trait==='charger'){e.rushUntil=battleTime+1.6;view.playSkillEffect('fighter',e.x,e.y);}else if(e.trait==='ritual'){enemies.forEach(a=>{if(!a.dead&&a!==e&&Math.hypot(a.x-e.x,a.y-e.y)<230)a.hp=Math.min(a.maxHp,a.hp+Math.round(a.maxHp*.06));});view.playSkillEffect('cleric',e.x,e.y);}else if(e.trait==='bulwark'){e.shieldUntil=battleTime+3;view.playSkillEffect('guard',e.x,e.y);}}}
   if(dist>e.r+24){var vx=(t.x-e.x)/(dist||1),vy=(t.y-e.y)/(dist||1),spd=(e.boss?72:(e.elite?78:86))*(combat(e).slowUntil>battleTime?.65:1)*(e.trait==='charger'&&e.rushUntil>battleTime?1.95:1);e.x+=vx*spd*dt;e.y+=vy*spd*dt;}
-  else if(e.attackCd<=0){e.attackCd=e.boss ? .8 : 1.05;var u=unitBySource(t.id),dmg=e.atk;combat(e).visualUntil=performance.now()+450;if(u){var hit=attackRoll(3+Math.min(6,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/4)),ac(u));if(hit.hit){var received=Math.max(1,dmg-(t.id==="player"?playerArmorDef():aiArmorDef(u)))*(hit.crit?2:1);u.hp-=received;view.popDamage(t.x,t.y,received,hit.crit);if(t.id==="player")p.hitFlash=.16;}else if(t.id==="player")battleLog("회피 · 적 d20 "+hit.roll);}}
+  else if(e.attackCd<=0){e.attackCd=e.boss ? .8 : 1.05;var u=unitBySource(t.id),dmg=e.atk;combat(e).visualUntil=performance.now()+450;if(u){var hit=attackRoll(3+Math.min(6,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/4)),ac(u));if(hit.hit){var received=Math.max(1,dmg-(t.id==="player"?playerArmorDef():aiArmorDef(u)))*(hit.crit?2:1);u.hp-=received;trainEquipment(u,'armor');view.reactToHit(t.id,hit.crit?2:1);view.playSkillEffect(e.boss?'monster_boss':'monster_strike',e.x,e.y,t.x,t.y);view.popDamage(t.x,t.y,received,hit.crit);if(t.id==="player")p.hitFlash=.16;}else if(t.id==="player")battleLog("회피 · 적 d20 "+hit.roll);}}
  });
  if(state.player.hp<=0){state.player.hp=state.player.maxHp;if(dungeon){toast("쓰러져서 던전에서 이탈했어.");returnFromDungeon();}else{goZone(0);toast("마을에서 부활했어.");}}
  partyMembers().forEach(function(a){if(a.hp<=0){a.hp=a.maxHp*.45;a.x=p.x-50;a.y=p.y+65;}});
@@ -1609,7 +1817,7 @@ function endPointer(e){var q=pointers.get(e.pointerId);pointers.delete(e.pointer
 canvas.addEventListener('pointerup',endPointer);canvas.addEventListener('pointercancel',endPointer);canvas.addEventListener('wheel',function(e){e.preventDefault();view.changeZoom(Math.exp(-e.deltaY*.001));},{passive:false});
 document.getElementById('zoomIn').onclick=()=>view.changeZoom(1.15);document.getElementById('zoomOut').onclick=()=>view.changeZoom(1/1.15);document.getElementById('rotateView').onclick=()=>view.rotate();document.getElementById('centerView').onclick=()=>view.center();
 function togglePause(){tacticalPaused=!tacticalPaused;document.getElementById('pauseBtn').textContent=tacticalPaused?'전투 재개':'일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed',String(tacticalPaused));}
-document.getElementById('pauseBtn').onclick=togglePause;document.getElementById('tacticsBtn').onclick=tacticsMenu;document.getElementById('autoBtn').onclick=function(){autoSkills=!autoSkills;this.textContent='자동 기술 '+(autoSkills?'켬':'끔');this.setAttribute('aria-pressed',String(autoSkills));};document.getElementById('journalBtn').onclick=storyJournal;document.getElementById('classSelect').value=state.player.classId;
+document.getElementById('pauseBtn').onclick=togglePause;document.getElementById('tacticsBtn').onclick=tacticsMenu;document.getElementById('journalBtn').onclick=storyJournal;document.getElementById('classSelect').value=state.player.classId;
 addEventListener('keydown',function(e){if(e.code==='KeyT'&&!modalOpen&&gameStarted){e.preventDefault();tacticsMenu();}if(e.code==='Space'&&e.target===document.body&&!modalOpen&&gameStarted){e.preventDefault();togglePause();}});addEventListener('blur',function(){keys={};joy.x=joy.y=0;pointers.clear();gesture=false;});document.addEventListener('visibilitychange',function(){sound.visibility(document.hidden);});
 var joyBase=document.getElementById("joystick"),knob=document.getElementById("knob"),joyId=null;
 function joyMove(e){var r=joyBase.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,d=Math.hypot(dx,dy)||1,k=Math.min(1,max/d);dx*=k;dy*=k;joy.x=dx/max;joy.y=dy/max;knob.style.transform="translate("+dx+"px,"+dy+"px)";}
