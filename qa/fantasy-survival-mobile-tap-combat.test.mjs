@@ -272,3 +272,55 @@ test('half-circle shortcuts are real existing actions and old saves cannot disab
  assert.match(source,/--arc-x:44px;--arc-y:135px/);
  assert.match(source,/body\[data-hud-hand="left"\] \.actions>button\{left:calc\(100% - var\(--arc-x\)/);
 });
+
+
+test('worldtree ground cave and reachable shoreline enter through the existing authoritative passage rules',()=>{
+ const r=regionRuntime();
+ assert.ok(r.passages().some(row=>row.id==='worldtree-hole'));
+ assert.ok(r.passages().some(row=>row.id==='giant-lake-shore'));
+ assert.equal(r.go('worldtree-hole'),'underground');
+ assert.equal(r.go('caveexit'),'surface');
+ assert.equal(r.go('giant-lake-shore'),'underwater');
+ assert.equal(r.go('dungeon-gate'),'underwater-dungeon');
+ assert.equal(r.go('dungeon-exit'),'underwater');
+ assert.equal(r.go('lake-surface'),'surface');
+ assert.deepEqual(r.state.underwaterDungeonChests,[false,false,false]);
+ assert.match(source,/id:'world-tree-hole',model:'gate_single'/);
+ assert.match(source,/regionTravelGuideId=regionTravelGuideId===button\.dataset\.regionGuide/);
+ assert.match(source,/if\(state\.area!=='surface'\)\{/);
+ assert.match(source,/const selectedPassage=regionPassages\(\)\.find/);
+});
+
+test('all 174 unchanged recipe identities and resource rows resolve verified installed CC0 icon files',()=>{
+ const a=source.indexOf('const recipes=['),b=source.indexOf('];',a);
+ assert.ok(a>=0&&b>a);
+ const recipes=vm.runInNewContext(source.slice(a,b+2)+';recipes');
+ assert.equal(recipes.length,174);
+ assert.equal(new Set(recipes.map(r=>r.id)).size,recipes.length);
+ const c=source.indexOf("const iconFor=(id,kind,name='')=>"),d=source.indexOf('const iconTag=',c);
+ assert.ok(c>=0&&d>c);
+ const iconFor=vm.runInNewContext(source.slice(c,d)+';iconFor');
+ const installed=new Set(fs.readdirSync('web-games/fantasy-survival/icons'));
+ for(const r of recipes)assert.ok(installed.has(iconFor(r.id,r.kind,r.name)+'.png'),r.id);
+ for(const kind of ['material','ingredient','structure','torch','map']){
+  assert.ok(installed.has(iconFor(kind,kind,kind)+'.png'),kind);
+ }
+ assert.match(source,/iconTag\(k,'material',n\)/);
+ assert.match(source,/iconTag\(k,'material',name\)/);
+ assert.match(source,/iconTag\(id,'structure',r\?\.name\|\|id\)/);
+ assert.match(source,/else if\(r\?\.kind==='map'\)openMap\(\)/);
+ assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+test('low-quality mobile mode reduces GPU cost without deleting the original native creature and dungeon source',()=>{
+ const native=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+ assert.match(native,/mobileBudget\?\.9:1\.5/);
+ assert.match(native,/let qualityFactor=mobileBudget\?\.82:1/);
+ assert.match(native,/if\(mobileBudget\?hash%5===0:hash%3!==0\)/);
+ assert.match(native,/mobileBudget\?650:1000/);
+ assert.match(native,/const unsafeUnmappedEncounter=synchronizeNativeCreatures/);
+ assert.match(native,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
+ assert.match(native,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
+ assert.match(native,/updateInteriorWalls\(isInterior\?regionScene:null/);
+ assert.match(source,/underwater:'underwater','underwater-dungeon':'underwater-dungeon'/);
+});
