@@ -3,44 +3,32 @@ import { IslandRendererV3 } from './render-v3.js';
 const proto = IslandRendererV3.prototype;
 const originalDraw = proto.draw;
 const TARGET_FRAME_MS = 1000 / 32;
+const SC = 1/36;
 
-// 모바일에서 2x DPR 전체 월드를 매 프레임 그리던 비용을 낮춘다.
+// 모바일 3D 전용 크기 갱신. 기존 포인터 입력용 캔버스 버퍼는 1픽셀만 유지한다.
 proto.resize = function optimizedResize() {
   const mobile = navigator.maxTouchPoints > 0 || window.innerWidth < 900;
-  this.dpr = Math.min(mobile ? 1.5 : 2, window.devicePixelRatio || 1);
+  this.dpr = 1;
   this.width = Math.max(1, window.innerWidth);
   this.height = Math.max(1, window.innerHeight);
-  this.canvas.width = Math.round(this.width * this.dpr);
-  this.canvas.height = Math.round(this.height * this.dpr);
+  this.canvas.width = 1;
+  this.canvas.height = 1;
   this.canvas.style.width = `${this.width}px`;
   this.canvas.style.height = `${this.height}px`;
-  this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-};
-
-// 3100x2200 월드 전체 바다 파도를 그리지 않고 카메라 주변만 그린다.
-proto.drawSea = function optimizedSea(ctx, game) {
-  const cam = this.camera(game);
-  const pad = 90;
-  const left = cam.x - pad;
-  const top = cam.y - pad;
-  const right = cam.x + this.width + pad;
-  const bottom = cam.y + this.height + pad;
-
-  ctx.fillStyle = '#82cadd';
-  ctx.fillRect(left, top, right - left, bottom - top);
-  ctx.strokeStyle = 'rgba(255,255,255,.22)';
-
-  const startY = Math.floor(top / 55) * 55;
-  const startX = Math.floor(left / 85) * 85;
-  for (let y = startY; y <= bottom; y += 55) {
-    ctx.beginPath();
-    for (let x = startX; x <= right; x += 85) {
-      ctx.moveTo(x, y);
-      ctx.quadraticCurveTo(x + 20, y - 6, x + 40, y);
-    }
-    ctx.stroke();
+  this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (this.native3d) {
+    this.gl.setPixelRatio(Math.min(mobile ? 1.25 : 1.5, window.devicePixelRatio || 1));
+    this.gl.setSize(this.width, this.height, false);
+    this.camera3.left = -this.width * SC / 2;
+    this.camera3.right = this.width * SC / 2;
+    this.camera3.top = this.height * SC / 2;
+    this.camera3.bottom = -this.height * SC / 2;
+    this.camera3.updateProjectionMatrix();
   }
 };
+
+// 2D 바다 배경 제거: 확장 렌더 메서드는 유지하지만 그림은 오직 WebGL 장면에 둔다.
+proto.drawSea = function optimizedSea() {};
 
 let lastPaintAt = 0;
 proto.draw = function optimizedDraw(game) {
