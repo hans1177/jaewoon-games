@@ -196,3 +196,55 @@ function renderMultiplayer(){
    button('strike','⚔️ 적 마을회관 공격',!(duel.soldier+duel.archer))+button('shield','🛡️ 성채 방어'):
    connected?button('gift:wood','나무 10 전달')+button('gift:stone','돌 10 전달')+button('gift:food','식량 10 전달'):'');
 }
+
+async function peerAction(op,id){
+ if(op==='host'){
+  peerMode=$('#ks-mode')?.value||'duel';peerRole='host';peerStatus='초대장 만들기';
+  const c=freshPeer();wireUp(c.createDataChannel('cozy-kingdom'));
+  await c.setLocalDescription(await c.createOffer());await gathered(c);
+  myCode=JSON.stringify({version:1,mode:peerMode,desc:c.localDescription});
+  peerStatus='초대장 생성 완료 · 상대에게 코드 보내기';render();return;
+ }
+ if(op==='guest'){
+  const raw=$('#ks-remote')?.value;const msg=JSON.parse(raw);
+  if(msg.version!==1||msg.desc?.type!=='offer'||!['duel','ally'].includes(msg.mode))throw Error('초대 코드가 올바르지 않습니다.');
+  peerMode=msg.mode;peerRole='guest';peerStatus='답장 만들기';
+  const c=freshPeer();await c.setRemoteDescription(msg.desc);
+  await c.setLocalDescription(await c.createAnswer());await gathered(c);
+  myCode=JSON.stringify({version:1,mode:peerMode,desc:c.localDescription});
+  peerStatus='답장 준비됨 · 이 코드를 방장에게 보내기';render();return;
+ }
+ if(op==='answer'){
+  const msg=JSON.parse($('#ks-remote')?.value||'null');
+  if(peerRole!=='host'||!peer||msg.version!==1||msg.desc?.type!=='answer')throw Error('방을 만든 뒤 답장 코드를 넣어 주세요.');
+  await peer.setRemoteDescription(msg.desc);peerStatus='상대 연결 중';render();return;
+ }
+ if(op==='copy'){
+  await navigator.clipboard.writeText($('#ks-local')?.value||'');message('방 코드를 클립보드로 복사했습니다.');return;
+ }
+ if(op==='leave'){
+  try{wire?.close();peer?.close()}catch{}
+  peer=null;wire=null;myCode='';peerRole='';peerStatus='연결 전';render();return;
+ }
+ if(wire?.readyState!=='open')return;
+ if(op==='recruit'){
+  const kind=id==='archer'?'archer':'soldier',cost=kind==='archer'?9:6;
+  if((duel.soldier+duel.archer)>=22)return message('병력 한도 22명입니다.');
+  if(Number(api.state.inventory.food||0)<cost)return message('식량이 부족합니다.');
+  api.state.inventory.food-=cost;duel[kind]++;api.save();render();return;
+ }
+ if(op==='strike'){
+  if(!duel.soldier&&!duel.archer)return;
+  send({type:'attack',soldier:duel.soldier,archer:duel.archer});
+  duel.soldier=0;duel.archer=0;
+  window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'battle',title:'대전 공격 시작'}}));
+  render();return;
+ }
+ if(op==='shield'){duel.shield=true;message('다음 공격 피해를 44% 줄입니다.');return}
+ if(op==='gift'&&['wood','stone','food'].includes(id)){
+  if(Number(api.state.inventory[id]||0)<10)return message('해당 자원이 10개 이상 필요합니다.');
+  api.state.inventory[id]-=10;api.save();
+  send({type:'gift',item:id,amount:10});message('상대에게 자원 10개를 전송했습니다.');
+ }
+}
+render();
