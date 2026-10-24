@@ -173,7 +173,15 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   for(let i=0;i<b.enemies.length;i++){const e=b.enemies[i],at=unitPoint('enemy',i);if(e.kind==='wolf'||e.kind==='boar')animal(at.x,at.y,e.kind,e.hp<=0);else pixelPerson(at.x,at.y,'willem',true,e.hp<=0);text(e.name,at.x,at.y+17,9,'#ffe0bd','center');rect(at.x-22,at.y+22,44,4,'#392f28');rect(at.x-22,at.y+22,44*e.hp/e.maxHp,4,'#e59b78');}
   if(b.phase==='won')text('승리 · 유적을 조사할 수 있어',w/2,h*.52,16,'#ffe6a4','center');
  }
- function drawImpact(){const fx=state.combatFx,rawAge=(performance.now()-fxStarted)/1000;if(!fx||rawAge>1.4)return;let age=rawAge;const seaFx=fx.type==='cannon';let at;
+ function drawImpact(){const fx=state.combatFx,rawAge=(performance.now()-fxStarted)/1000;if(!fx||rawAge>1.4)return;
+  if(fx.type==='boarding'&&mode==='sea'){
+   const px=w/2+(fx.to.x-state.ship.x)*zoom,py=h/2+(fx.to.z-state.ship.z)*zoom,fade=Math.max(0,1-rawAge/1.1);
+   ctx.save();ctx.globalAlpha=fade;ctx.translate(px,py);ctx.strokeStyle='#fff0cf';ctx.lineWidth=4;
+   ctx.beginPath();ctx.moveTo(-20,-18);ctx.lineTo(18,19);ctx.moveTo(20,-18);ctx.lineTo(-18,19);ctx.stroke();
+   ctx.fillStyle='#cfb573';ctx.fillRect(-23,-23,10,5);ctx.fillRect(13,-23,10,5);
+   text('백병전 · 적 선원 −'+Math.round(fx.damage),0,-31-rawAge*22,12,'#ffe5af','center');ctx.restore();return;
+  }
+  let age=rawAge;const seaFx=fx.type==='cannon';let at;
   if(seaFx){
    if(mode!=='sea')return;
    const x=v=>w/2+(v-state.ship.x)*zoom,z=v=>h/2+(v-state.ship.z)*zoom;
@@ -222,7 +230,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   text('유럽 · 항로도',mw/2,mh+13,9,C.gold,'center');ctx.restore();
  }
  function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:20))return;last=now;time=now/1000;
- const width=Math.min(560,Math.max(320,Math.round(canvas.clientWidth/1.4))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w;canvas.height=h;}ctx.imageSmoothingEnabled=false;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();}
+ const width=Math.min(560,Math.max(320,Math.round(canvas.clientWidth/1.4))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w;canvas.height=h;}ctx.imageSmoothingEnabled=false;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','boarding','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();}
  canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);if(mode==='sea'&&target?.landmark)onLandmark(target.landmark);if(mode==='sea'&&!target&&miniHit&&x>=miniHit.x&&x<=miniHit.x+miniHit.w&&y>=miniHit.y&&y<=miniHit.y+miniHit.h)onMap();});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
  return {setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||4.8));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);}};
