@@ -51478,9 +51478,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-24T16:30:59.987Z",
+      "updatedAt": "2026-10-24T16:41:11.210Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -51490,7 +51490,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-24T16:41:11.210Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -51537,9 +51537,9 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
-      "robloxSourceCommit": "561940ba4a3f1084567909d9010a1a59eaacc0bb",
+      "robloxSourceCommit": "71a752b337f98060e46c2bae8c9785813d9844c1",
       "robloxSourceBootstrapPassedAt": "2026-10-24T15:26:51.705Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -52045,13 +52045,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "2347f4a77dd184e1d1a4f73e437a40fd1178d341",
+      "robloxQualityBuildUpSourceRevision": "71a752b337f98060e46c2bae8c9785813d9844c1",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "realistic-builder",
-        "sourceRevision": "2347f4a77dd184e1d1a4f73e437a40fd1178d341",
-        "sourceTreeSha": "a294ba3c8d10a47f9bd972a12fd6202fc133a69d",
+        "sourceRevision": "71a752b337f98060e46c2bae8c9785813d9844c1",
+        "sourceTreeSha": "a2b666b6ebe0627a3704c38a680877edda5eb848",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -52061,8 +52061,8 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
-          "baselineFingerprint": "e7a5014a7851524277a092a2cff164b6a742b491c34b2c297a52e79b177b9efc",
+          "libraryFingerprint": "5d0abeeac69a88bccd4c2b036329951f6d09731a2f36c893ee076f9a3c80f993",
+          "baselineFingerprint": "7184cc551aa14359e756ae4e9cf9c83360b523e29b71fd5f931a6a095a48c8ae",
           "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
         "qualityFailureKinds": [
@@ -52079,8 +52079,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40090575993,
-        "testedAt": "2026-10-24T12:21:07.225Z"
+        "workflowRunId": 40111581217,
+        "testedAt": "2026-10-24T16:41:11.210Z"
       },
       "ownerWebEditPropagation": {
         "version": 1,
@@ -78530,7 +78530,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-24T16:40:30.421Z",
+  "updatedAt": "2026-10-24T16:41:11.210Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
