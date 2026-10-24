@@ -143,7 +143,7 @@ test('quest compass and map stay integrated with existing mobile controls',()=>{
  assert.match(source,/function updateQuestGuide\(now=performance\.now\(\)\)/);
  assert.match(source,/updateQuestGuide\(now\);draw\(\)/);
  assert.match(source,/getElementById\('questNavMap'\)\.addEventListener\('click',\(\)=>ui\.mapBtn\.click\(\)\)/);
- assert.match(source,/const guidance=questGuideData\(\)/);
+ assert.match(source,/const guidance=chosen\?\{\.\.\.chosen,area:state\.area\}:questGuideData\(\)/);
  assert.match(source,/m\.setLineDash\(\[4,5\]\)/);
  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
@@ -252,7 +252,7 @@ test('automatic combat selects only reachable hostile targets and delegates atta
  const enemy=(id,x,extra={})=>({netId:id,x,y:0,hp:100,area:'surface',type:{mood:'aggressive',r:20},...extra});
  const state={area:'surface',player:{x:0,y:0,attackAt:0},pet:{mounted:false,attackAt:0},combat:{targetId:null},settings:{autoCombat:true},enemies:[]};let hits=[];
  const nodes={hudGuide:{hidden:true},avatarPanel:{hidden:true},optionsPanel:{classList:{contains:()=>false}}};
- const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentWeapon:()=>({range:80}),currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
+ const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentWeapon:()=>({range:80}),currentRange:()=>80,currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
  vm.runInContext(source.slice(start,end),context);
  state.enemies=[enemy('neutral',1,{type:{mood:'neutral',r:20},hostile:false}),enemy('other-area',5,{area:'underwater'}),enemy('burrowed',6,{type:{mood:'aggressive',r:20,burrower:true},emerged:false}),enemy('far',500),enemy('near',50)];
  vm.runInContext('updateAutoCombat(1000)',context);assert.deepEqual(hits,['near']);assert.equal(state.combat.targetId,'near');
@@ -322,7 +322,7 @@ test('low-quality mobile mode reduces GPU cost without deleting the original nat
  assert.match(native,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
  assert.match(native,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
  assert.match(native,/updateInteriorWalls\(isInterior\?regionScene:null/);
- assert.match(source,/underwater:'underwater','underwater-dungeon':'underwater-dungeon'/);
+ assert.match(source,/underwater:'underwater'|'underwater-dungeon':'underwater-dungeon'/);
 });
 
 
