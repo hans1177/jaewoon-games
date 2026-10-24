@@ -28,7 +28,7 @@ test('gem survivor uses actual 3D renderer, authored model, bounded native geome
  assert.match(native,/scene\.remove\(mesh\);scene\.add\(bigger\)/);
  assert.ok(html.includes('"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"'));
 
- assert.match(native,/MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=260/);
+ assert.match(native,/MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=360/);
  assert.match(native,/nativeArtCoverage='authored-static-monsters'/);
  assert.match(native,/webglcontextlost/);
  assert.doesNotMatch(native,/localStorage|\.hp\s*[-+]?=/);
@@ -120,7 +120,7 @@ test('stage selection and world movement survive resize and pause without viewpo
  game.node('startBtn').onclick();game.callback(33);
  assert.equal(game.snapshot.stage,'forge');
  assert.equal(game.snapshot.world.width,4200);assert.equal(game.snapshot.world.height,3200);
- assert.equal(game.snapshot.x,2100);assert.equal(game.snapshot.y,1600);
+ assert.equal(game.snapshot.x,2100);assert.equal(game.snapshot.y,1600);assert.equal(game.snapshot.hp,200);
  game.events.get('keydown')({key:'D',preventDefault(){}});game.callback(66);
  assert.ok(game.snapshot.x>2100,'uppercase keyboard movement uses existing player authority');
  game.events.get('keyup')({key:'D'});
@@ -140,4 +140,13 @@ test('every authored monster and environment dependency exists with retained CC0
  assert.ok(fs.existsSync('assets/shared/homely-house/cobblestones.obj'));
  assert.match(native,/new OBJLoader/);
  assert.match(native,/const visible=view\(state,world\)/);
+});
+
+test('owner survivability change doubles starting health while keeping damage and spawn rules',()=>{
+ assert.match(script,/const START_HP=200;/);assert.match(script,/const HURT_INV_SECONDS=\.85;/);
+ assert.match(script,/player\.hp-=amount;player\.inv=HURT_INV_SECONDS/);
+ assert.equal((script.match(/hp:START_HP,maxHp:START_HP/g)||[]).length,2);
+ assert.match(script,/Math\.max\(0,480-particles\.length\)/);
+ assert.match(native,/new THREE\.ShaderMaterial/);assert.match(native,/glows=pool\([\s\S]*?,256\)/);
+ assert.match(native,/healthFill\.scale\.x/);
 });
