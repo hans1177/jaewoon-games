@@ -48,6 +48,33 @@ jobs:
             await page.locator('#startBtn').click();
             await page.locator('#confirmHero').click();
             await page.locator('#introSkip').click();
+            // 실제 렌더러에서 정오 → 밤 햇빛 변화, 지역 비 입자, 시계 저장을 검사.
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              game.state.environment.minutes=720;game.state.environment.running=false;
+            });
+            await page.waitForTimeout(500);
+            const midday=await page.evaluate(()=>window.partyRpgVibeState().view.sun.intensity);
+            await page.evaluate(()=>{window.partyRpgVibeState().state.environment.minutes=60;});
+            await page.waitForTimeout(1000);
+            const night=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              return {sun:g.view.sun.intensity,phase:g.gameEnvironment().phase,readout:document.getElementById('timeOfDay').textContent};
+            });
+            if(!(night.sun<midday*.63)||night.phase!=='night'||!night.readout.includes('밤'))
+              throw new Error('DAY_NIGHT_LIGHTING_NOT_DYNAMIC '+JSON.stringify({midday,night}));
+            await page.evaluate(()=>{
+              const g=window.partyRpgVibeState(),env=g.state.environment;env.minutes=720;
+              for(let d=1;d<=120;d++){env.day=d;if(g.gameEnvironment().weather==='rain')break;}
+            });
+            await page.waitForFunction(()=>window.partyRpgVibeState().view.climateParticles?.kind==='rain',null,{timeout:12000});
+            const precipitation=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              return {weather:g.gameEnvironment().weather,particles:g.view.climateParticles?.count,time:g.state.environment.minutes};
+            });
+            if(precipitation.weather!=='rain'||precipitation.particles<25)
+              throw new Error('MOBILE_RAIN_PARTICLES_MISSING '+JSON.stringify(precipitation));
+            console.log('PARTY_RPG_DYNAMIC_DAY_NIGHT_WEATHER=PASS');
             // 첫 시작 시 한 명만 소개되고 영입은 반드시 서브퀘·이벤트를 거친다.
             await page.locator('#rosterBtn').click();
             const visibleCount=await page.locator('.rosterRow').count();
@@ -83,9 +110,22 @@ jobs:
             if(hud.zoneWidth>150||hud.zoneHeight>90)throw new Error('OVERSIZED_TOWN_HUD '+JSON.stringify(hud));
             if(hud.worldWidth!==2000)throw new Error('FIELD_NOT_EXPANDED '+JSON.stringify(hud));
             await page.locator('#systemBtn').click();
+            await page.locator('#systemQuality').click();
+            const lowMode=await page.evaluate(()=>window.partyRpgVibeState().state.environment.quality);
+            if(lowMode!=='low')throw new Error('QUALITY_SETTING_NOT_WORKING '+lowMode);
+            await page.locator('#systemWeatherFx').click();
+            const weatherOff=await page.evaluate(()=>window.partyRpgVibeState().state.environment.effects);
+            if(weatherOff!==false)throw new Error('WEATHER_TOGGLE_NOT_WORKING');
+            await page.locator('#systemWeatherFx').click();
+            await page.locator('#systemClock').click();
+            const resumed=await page.evaluate(()=>window.partyRpgVibeState().state.environment.running);
+            if(resumed!==true)throw new Error('CLOCK_TOGGLE_NOT_WORKING');
             await page.locator('#systemSave').click();
             const savedFromMenu=await page.evaluate(()=>!!localStorage.getItem('party-rpg-v1'));
             if(!savedFromMenu)throw new Error('SYSTEM_SAVE_FAILED');
+            const savedClock=await page.evaluate(()=>JSON.parse(localStorage.getItem('party-rpg-v1')||'{}').environment);
+            if(savedClock?.quality!=='low'||savedClock?.effects!==true||!Number.isFinite(savedClock?.minutes))
+              throw new Error('WEATHER_CLOCK_SAVE_INCOMPLETE '+JSON.stringify(savedClock));
             await page.locator('#systemMap').click();
             await page.locator('#mapCanvas').waitFor({timeout:10000});
             const mapWidth=await page.locator('#mapCanvas').evaluate(el=>el.getBoundingClientRect().width);
