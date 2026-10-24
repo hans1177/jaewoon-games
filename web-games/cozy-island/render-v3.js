@@ -751,6 +751,14 @@ export class IslandRendererV3 {
       if(game.state.abyssCaveV23?.researchLabBuilt)put('research-lab','house',-690,420,4);
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
+      // 실제 건설된 석벽/성문/망루/함정은 저장된 위치와 손상 체력으로 렌더링한다.
+      for(let i=0;i<(fort.structures?.length||0);i++){
+        const section=fort.structures[i];if(section.hp<=0)continue;
+        const look={wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
+          spikes:'fence',oil:'package',pit:'stone'}[section.kind]||'fort-site';
+        put('custom-fort:'+i,look,section.x,section.y,
+          section.kind==='tower'?4:section.kind==='gate'?3.6:section.kind==='wall'?2.5:1.1);
+      }
       // 소유한 경제 건물: 실제 건설 위치와 레벨에 맞춰 입체 중세 건물을 렌더링한다.
       const economy=game.state.economyV4?.buildings||{};
       const appearance={
@@ -774,7 +782,10 @@ export class IslandRendererV3 {
       }
       if(game.buildingPlacement?.at){
         const g=game.buildingPlacement;
-        const preview=appearance[g.id]||'fort-site';
+        const preview=g.id.startsWith('fort:')?({
+           wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
+           spikes:'fence',oil:'package',pit:'stone'
+         }[g.id.slice(5)]||'fort-site'):(appearance[g.id]||'fort-site');
         put('construction-preview',preview,g.at.x,g.at.y,3.05);
         const ghost=this.instances3d.get('construction-preview');
         if(ghost&&!ghost.previewReady){
