@@ -148,7 +148,11 @@ try{
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught browser errors before movement');
     // Real published GLB swap, not a dropdown-only or source-marker check.
     if(!viewport.mobile){
+      // 캐릭터 꾸미기는 접힌 모험가 메뉴를 통해 연다.
+      await game.locator('.hudMenu>summary').click();
       await game.locator('#avatarOpen').click();
+      assert.equal(await game.locator('#avatarPanel').isVisible(),true,
+        'avatar menu must open the character customizer');
       await game.locator('#avatarModel').selectOption('mage');
       await game.locator('#avatarSize').selectOption('110');
       await game.locator('#avatarApply').click();
