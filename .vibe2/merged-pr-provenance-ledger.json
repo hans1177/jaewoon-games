@@ -93304,11 +93304,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c5597bf9788f8de02ee776a5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9825",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "30e13ac4fae9fadec1f4ea781636e15eb7252e6b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9825,
+        "baseBranch": "main",
+        "headBranch": "fix/forest-mobile-low-graphics-allspaces-items-20261024",
+        "baseSha": "30e13ac4fae9fadec1f4ea781636e15eb7252e6b",
+        "headSha": "246b8ec4db0e0f815faa8540298fc84deb07af02",
+        "mergeCommitSha": "c31b058a3fc18f21be769781affd34620248f3ab",
+        "mergedAt": "2026-10-24T10:29:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "820d04c69ad1079cc42e71267c8b31f323359711afb4b5b87cdbf135b0c4d0f8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/forest-mobile-low-graphics-allspaces-items-20261024",
+        "candidateSha": "246b8ec4db0e0f815faa8540298fc84deb07af02"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 279,
+        "deletedLineCount": 112,
+        "changedFiles": [
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/style.css",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/style.css",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9825",
+        "merge-commit:c31b058a3fc18f21be769781affd34620248f3ab",
+        "base-main:30e13ac4fae9fadec1f4ea781636e15eb7252e6b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 732
+    "total": 733
   }
 }
