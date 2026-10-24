@@ -17,7 +17,7 @@ export class PartyView{
    this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x49514f,12,58);this.scene.add(this.staticRoot);
    this.skyLight=new THREE.HemisphereLight(0xa0b0b6,0x252724,.81);this.scene.add(this.skyLight);this.sun=new THREE.DirectionalLight(0xbfc2bd,1.05);this.sun.position.set(-23,38,17);this.scene.add(this.sun);
    this.camera=new THREE.OrthographicCamera(-12,12,12,-12,.1,180);this.camera.position.set(45,45,45);this.camera.lookAt(0,0,0);
-   this.groundMaterials=new Map();this.effects=[];this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
+   this.groundMaterials=new Map();this.effects=[];this.weather=null;this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
    this.marker=new THREE.Mesh(this.ringGeometry,this.ringMaterials.select);this.marker.rotation.x=-Math.PI/2;this.marker.visible=false;this.scene.add(this.marker);
    // Low-poly stone clue marker: visible from the road without blocking combat.
    this.evidenceBeacon=new THREE.Group();
@@ -108,8 +108,8 @@ groundMaterial(zone,dungeon){
  }
  // 지형·배경: 기존 등록 CC0 3D 모델만 사용하며 전투 판정과 이동 충돌은 변경하지 않는다.
 buildWorld(live){
- this.staticRoot.traverse(o=>{if(o.userData.ownedGeometry)o.geometry.dispose();if(o.isInstancedMesh)o.dispose();});
- this.staticRoot.clear();
+ this.staticRoot.traverse(o=>{if(o.userData.ownedGeometry)o.geometry.dispose();if(o.userData.ownedMaterial)o.material.dispose();if(o.isInstancedMesh)o.dispose();});
+ this.staticRoot.clear();this.weather=null;
  const zone=live.state.zone,dungeon=!!live.dungeon,w=live.worldW*SCALE,h=live.worldH*SCALE;
  const mood=dungeon?{sky:0x1a2125,fog:0x29302f,far:55,light:0xeac48c,intensity:1.0}:[
   {sky:0x3c4548,fog:0x4e5653,far:76,light:0xffdaa3,intensity:1.75},
@@ -129,11 +129,11 @@ buildWorld(live){
  floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
  const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
  const grove=[],high=[],crooked=[],rocks=[],pebbles=[],fences=[];
- const count=this.mobile?48:115;
+ const count=this.mobile?74:172;
  for(let i=0;i<count;i++){
   const x=65+random(i+1)*(live.worldW-130),y=65+random(i+202)*(live.worldH-130);
   if(dungeon){if(i%3===0)rocks.push([x,y,.6+random(i+35)*.75,random(i+48)*6]);continue;}
-  if(Math.abs(x-700)<205&&Math.abs(y-500)<245||Math.hypot(x-live.p.x,y-live.p.y)<125)continue;
+  if((zone===0&&Math.abs(x-700)<205&&Math.abs(y-500)<245)||Math.hypot(x-live.p.x,y-live.p.y)<110)continue;
   if([3,4,5,6].includes(zone)){
    if(i%2===0)rocks.push([x,y,.48+random(i+50)*.85,random(i+50)*6]);
    else if(zone===5&&i%3===0)high.push([x,y,1.9+random(i+52)*1.1,random(i+55)*6]);
@@ -181,11 +181,19 @@ buildWorld(live){
   this.instances('lantern',[[500,438,1.8,0],[900,438,1.8,0],[650,750,1.8,0],[750,750,1.8,0],[355,360,1.6,0],[1030,360,1.6,0]]);
   this.staticModel('fence',550,260,1.3,0);
   this.staticModel('fence',850,260,1.3,0);
+  // 캠페인 선택은 마을의 실제 배경을 변화시킨다. 상점과 사건 좌표는 보존.
+  const decisions=live.state.story?.choices||{};
+  if(decisions.fort==='witness')this.instances('pillar-stone',[[470,910,1.25,0],[520,916,1.22,0],[570,911,1.28,0]]);
+  if(decisions.fort==='refuge'){this.instances('stall',[[1450,795,1.8,0],[1540,795,1.75,0]]);this.instances('cart',[[1480,910,1.15,.3]]);}
+  if(decisions.temple==='reveal')this.instances('lantern',[[520,880,1.4,0],[630,880,1.4,0],[760,880,1.4,0],[890,880,1.4,0]]);
+  if(decisions.temple==='prepare'){this.instances('stall',[[1390,980,1.75,.6],[1535,1015,1.8,.3]]);this.instances('fence',[[1320,990,1.2,0],[1375,990,1.2,0]]);}
+  if(decisions.ending==='release')this.instances('tree',[[1500,450,3.4,0],[1580,520,3.8,.4],[1690,580,3.2,1]]);
+  if(decisions.ending==='keeper'){this.instances('wall-arch',[[1610,650,2.9,.1]]);this.instances('lantern',[[1530,635,1.65,0],[1690,635,1.65,0]]);}
  }
  if(!dungeon&&zone>0){
   // 야외 사냥터는 중세 유적·사람이 지나간 길을 남겨 전형적인 빈 초원처럼 보이지 않게 한다.
-  this.instances('road',Array.from({length:12},(_,i)=>[180+i*85,470+Math.sin(i*.6)*28,.12,Math.PI/2]));
-  const ruins=[[260,240],[1120,250],[1030,720]];
+  this.instances('road',Array.from({length:19},(_,i)=>[180+i*85,470+Math.sin(i*.6)*28,.12,Math.PI/2]));
+  const ruins=[[260,240],[1120,250],[1030,720],[1530,250],[1720,740],[1540,1020]];
   this.instances(zone>=3?'wall-broken':'wall',ruins.map(([x,y],i)=>[x,y,zone===4?1.6:2.2,i*Math.PI/2]));
   this.instances('pillar-stone',ruins.map(([x,y],i)=>[x+50,y+30,1.7+random(i+550),i]));
   this.instances('fence',[[455,640,1.0,0],[500,640,1.0,0],[890,340,1.0,0]]);
@@ -222,6 +230,15 @@ buildWorld(live){
   torches.push([138,195,1.75,0],[live.worldW-153,195,1.75,0],[138,live.worldH-185,1.75,0],[live.worldW-153,live.worldH-185,1.75,0]);
   this.instances('lantern',torches);
  }
+ // 한 번 생성한 점군으로 먼지·눈·반딧불의 미세한 이동을 표현한다.
+ const vertices=[],particleCount=this.mobile?42:95;
+ for(let j=0;j<particleCount;j++)vertices.push((random(j+827)-.5)*32,.7+random(j+422)*4,(random(j+1274)-.5)*28);
+ const cloudGeometry=new THREE.BufferGeometry();
+ cloudGeometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+ const tint=dungeon?0xd6a071:zone===5?0xd2e8f2:zone===2?0xa4c88a:zone===4?0xd8bf91:zone===6?0xc49ab7:0xe1b774;
+ const cloudMaterial=new THREE.PointsMaterial({color:tint,size:zone===5?.1:.075,transparent:true,opacity:this.mobile?.37:.48,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true});
+ this.weather=new THREE.Points(cloudGeometry,cloudMaterial);
+ this.weather.userData.ownedGeometry=true;this.weather.userData.ownedMaterial=true;this.weather.frustumCulled=false;this.staticRoot.add(this.weather);
  // 광원은 이동·전투 계산과 독립. 모바일에서 점광원 수를 제한한다.
  if(zone===0||dungeon||zone===2||zone===6){
   const points=dungeon?[[138,195],[live.worldW-153,live.worldH-185]]:zone===0?[[700,300],[650,750]]:[[895,620]];
@@ -312,17 +329,17 @@ buildWorld(live){
  }
  render(live){
   if(!this.ready)return;const started=performance.now();if(this.mobile&&this.lastRenderedAt&&started-this.lastRenderedAt<30)return;this.lastRenderedAt=started;const now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
-  const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision;
+  const choices=live.state.story?.choices||{};const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision+':'+(choices.fort||'')+':'+(choices.temple||'')+':'+(choices.ending||'');
   if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.clearEffects();this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
-  const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
+  const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);if(this.weather){this.weather.position.set(this.focus.x+Math.sin(now*.00045)*.24,0,this.focus.z);this.weather.rotation.y=Math.sin(now*.00018)*.08;}this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
   const activeMarker=live.evidence||live.council;this.evidenceBeacon.visible=!!activeMarker;
   this.evidenceLabel.textContent=live.evidence?'◆ 조사할 단서':'◆ 북문 기록실';
   if(activeMarker){const site=activeMarker;this.evidenceBeacon.position.set(site.x*SCALE,.015,site.y*SCALE);this.evidenceBeacon.rotation.y=now*.00025;const v=new THREE.Vector3(site.x*SCALE,1.5,site.y*SCALE).project(this.camera);this.evidenceLabel.hidden=Math.abs(v.x)>.95||Math.abs(v.y)>.95;if(!this.evidenceLabel.hidden)this.evidenceLabel.style.transform='translate('+Math.round((v.x+1)*this.width/2)+'px,'+Math.round((1-v.y)*this.height/2)+'px)';}
   else this.evidenceLabel.hidden=true;
   const visible=[['player',live.p,'player']];for(const a of live.state.ai)if(live.dungeon?a.party:a.party||a.zone===live.state.zone)visible.push(['ai',a,a.id]);
   const enemies=live.enemies.filter(e=>!e.dead).sort((a,b)=>(a.x-live.p.x)**2+(a.y-live.p.y)**2-(b.x-live.p.x)**2-(b.y-live.p.y)**2).slice(0,this.mobile?16:44);for(const e of enemies)visible.push(['enemy',e,'enemy'+e.id]);
-  const used=new Set();for(const [kind,obj,key] of visible){used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,moving=Math.hypot(dx,dy)>.08;entry.lastX=obj.x;entry.lastY=obj.y;entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.root.userData.live={kind,obj,key};if(moving){const target=Math.atan2(dx,dy),difference=Math.atan2(Math.sin(target-entry.model.rotation.y),Math.cos(target-entry.model.rotation.y));entry.model.rotation.y+=difference*(1-Math.exp(-dt*14));}entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];this.animate(entry,moving,live.combat?.(obj),dt);}
+  const used=new Set();for(const [kind,obj,key] of visible){used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,moving=Math.hypot(dx,dy)>.08;entry.lastX=obj.x;entry.lastY=obj.y;entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);if(live.cinematic){const beat=live.cinematic.info?.beats?.[live.cinematic.step],reacting=beat&&(beat.speaker===obj.name||(kind==='enemy'&&live.cinematic.info.key.startsWith('boss:')&&obj.boss));if(reacting){entry.root.position.y+=.09+.045*Math.sin(now*.006);entry.model.rotation.z=Math.sin(now*.004)*.035;}}else entry.model.rotation.z=0;entry.root.userData.live={kind,obj,key};if(moving){const target=Math.atan2(dx,dy),difference=Math.atan2(Math.sin(target-entry.model.rotation.y),Math.cos(target-entry.model.rotation.y));entry.model.rotation.y+=difference*(1-Math.exp(-dt*14));}entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];this.animate(entry,moving,live.combat?.(obj),dt);}
   for(const [key,entry] of this.actors)if(!used.has(key))this.removeActor(key,entry);
   this.marker.visible=!!this.destination;if(this.destination)this.marker.position.set(this.destination.x*SCALE,.06,this.destination.y*SCALE);
   for(let i=this.effects.length-1;i>=0;i--){
