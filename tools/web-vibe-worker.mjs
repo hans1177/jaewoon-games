@@ -222,12 +222,15 @@ function createPr(task,changed,token,{cloud=false}={}){
   // is available to the fixed GitHub CLI helper for this scoped PR push.
   run('git',['-c','credential.helper=','-c','credential.helper=!gh auth git-credential',
     'push','-u','origin',branch],{env:{GH_TOKEN:token,GIT_TERMINAL_PROMPT:'0'}});
-  const pr=run('gh',['pr','create','--repo',REPO,'--base','main','--head',branch,
+  // 기본 작업 토큰의 PR은 후속 CI 이벤트가 발생하지 않으므로 초안으로 유지한다.
+  const draft=cloud&&process.env.WEB_VIBE_JOB_TOKEN==='true';
+  const pr=run('gh',['pr','create',...(draft?['--draft']:[]),'--repo',REPO,'--base','main','--head',branch,
     '--title','fix(web): independent Web Vibe candidate '+task.gameId,
     '--body',[
       cloud?'WEB_VIBE_1 GitHub-hosted existing free-model candidate.':'WEB_VIBE_1 independent local model candidate (localhost:11435).',
       'Game: '+task.gameId,'Owner task: '+task.id,'Sources: '+changed.map(row=>row.source.relative).join(', '),
       'Local scoped QA: PASS. Browser/mobile/runtime/production: NOT VERIFIED.',
+      ...(draft?['기본 작업 토큰으로 생성한 초안: 독립 CI 실행과 검토 전 병합 금지.']:[]),
       'Do not merge before independent security, game QA, and human review.'
     ].join('\n')],{env:{GH_TOKEN:token}});
   return pr;

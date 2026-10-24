@@ -51,8 +51,12 @@ test('Github-hosted WEB_VIBE_1 onepatch uses its own queue and existing bridge, 
   assert.match(cloud,/needs: bridge/);
   assert.match(cloud,/github.event_name == 'issue_comment'/);
   assert.match(cloud,/github.event_name == 'repository_dispatch'/);
-  assert.match(cloud,/WEB_VIBE_GH_TOKEN: \$\{\{ secrets.WEB_VIBE_GH_TOKEN \}\}/);
+  assert.match(cloud,/WEB_VIBE_GH_TOKEN: \$\{\{ secrets.WEB_VIBE_GH_TOKEN \|\| github.token \}\}/);
   assert.match(cloud,/GEMINI_API_KEY: \$\{\{ secrets.GEMINI_API_KEY \}\}/);
+  assert.match(cloud,/contents: write\s+pull-requests: write/);
+  assert.doesNotMatch(cloud,/test -n \"\$GEMINI_API_KEY\"/);
+  assert.match(worker,/draft=cloud&&process.env.WEB_VIBE_JOB_TOKEN==='true'/);
+  assert.match(worker,/draft\?\['--draft'\]/);
   assert.match(cloud,/web-vibe-worker.mjs/);
   assert.match(cloud,/node tools\/company-constitution-enforcer\.mjs --phase=worker-before-source-write/);
   assert.match(cloud,/--cloud --apply --pr/);
