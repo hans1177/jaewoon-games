@@ -18,6 +18,14 @@ let towerShot = null;
 const pressed = new Set();
 // 메인: 기존 마을회관·방어탑을 확장하는 공성 방어 상태. 원본 습격·병력 수치는 유지한다.
 const FORT_KEYS=['gate','north','south'];
+const FORT_BUILDINGS=[
+ {id:'wall',name:'석조 성벽',icon:'🧱',wood:1,stone:3,hp:140,desc:'연속 건축이 가능한 석벽'},
+ {id:'gate',name:'성문',icon:'🚪',wood:4,stone:5,hp:320,desc:'공성전에서 돌파할 수 있는 문'},
+ {id:'tower',name:'망루',icon:'🏰',wood:4,stone:7,hp:260,desc:'궁수가 지키는 방어탑'},
+ {id:'spikes',name:'말뚝 함정',icon:'🪤',wood:3,stone:1,hp:60,desc:'접촉 시 피해'},
+ {id:'oil',name:'기름 함정',icon:'🔥',wood:4,stone:4,hp:70,desc:'지속 화염 피해'},
+ {id:'pit',name:'함정 구덩이',icon:'🕳️',wood:2,stone:3,hp:55,desc:'침입 속도 감소'}
+];
 const WALL_BASE={gate:360,north:280,south:280};
 const TRAP_SITES=[{x:1470,y:430},{x:1440,y:540},{x:1450,y:650},{x:1460,y:770},{x:1500,y:865},{x:1560,y:620}];
 const TRAP_TYPES={
@@ -59,6 +67,11 @@ function ensureVillage(state) {
   // 저장 호환: 기존 키와 타 확장 스크립트의 추가 필드는 그대로 보존한다.
   let fort=village.fortification;
   if(!fort||typeof fort!=='object'||Array.isArray(fort)){fort={};village.fortification=fort}
+  if(!Array.isArray(fort.structures))fort.structures=[];
+  fort.structures=fort.structures.slice(0,120).filter(x=>x&&FORT_BUILDINGS.some(d=>d.id===x.kind)
+    &&Number.isFinite(x.x)&&Number.isFinite(x.y)).map(x=>({...x,
+      hp:Math.max(0,Number(x.hp)||0),maxHp:Math.max(1,Number(x.maxHp)||FORT_BUILDINGS.find(d=>d.id===x.kind).hp)
+    }));
   if(!Number.isInteger(fort.wallTier)||fort.wallTier<1||fort.wallTier>3)fort.wallTier=1;
   if(!fort.walls||typeof fort.walls!=='object')fort.walls={};
   for(const key of FORT_KEYS)if(!Number.isFinite(fort.walls[key]))
@@ -322,9 +335,26 @@ const BUILD_GROUPS=[
  ['town','🏘️ 도시'],['military','⚔️ 군수'],['defense','🏰 성벽·함정']
 ];
 let activeBuildGroup='industry';
+function buildFortAt(kind,site){
+ const state=currentGame?.state,def=FORT_BUILDINGS.find(x=>x.id===kind);
+ if(!state||!site||!def)return false;
+ const f=ensureVillage(state).fortification,x=Math.round(site.x/90)*90,y=Math.round(site.y/90)*90;
+ if(f.structures.length>=120){toast('방어시설 120개가 최대야');return false}
+ if(x<130||x>2240||y<80||y>1510){toast('아군 영지에만 건설할 수 있어');return false}
+ if(f.structures.some(p=>p.hp>0&&Math.hypot(p.x-x,p.y-y)<75)||Math.hypot(x-1010,y-1090)<135){
+   toast('시설이 겹쳐서 건설할 수 없어');return false;
+ }
+ if(!canPay(def.wood,def.stone)){toast('나무 '+def.wood+' · 돌 '+def.stone+' 필요');return false}
+ spend(def.wood,def.stone);
+ f.structures.push({kind,x,y,hp:def.hp,maxHp:def.hp});
+ saveState();toast(def.icon+' '+def.name+' 설치 완료');return true;
+}
+window.addEventListener('cozy:construct-fort',event=>{
+ if(event.detail)event.detail.success=buildFortAt(event.detail.id,event.detail.at);
+});
 function renderConstruction(group=activeBuildGroup){
  const state=currentGame?.state;if(!state)return;
- const e=getEconomy(state);activeBuildGroup=group;
+ const e=getEconomy(state),fort=ensureVillage(state).fortification;activeBuildGroup=group;
  const {capacity,assigned,staff}=economyStaff(state);
  const inv=state.inventory||{},body=document.querySelector('#panelBody');
  document.querySelector('#panelTitle').textContent='🏰 왕국 건설·경제';
@@ -333,7 +363,11 @@ function renderConstruction(group=activeBuildGroup){
  let html='<div class="realm-overview"><div><strong>👷 '+assigned+'/'+capacity+'</strong><small>자동 배치 일꾼</small></div><div><strong>🪵 '+format(inv.wood)+'</strong><small>목재</small></div><div><strong>🪨 '+format(inv.stone)+'</strong><small>석재</small></div><div><strong>🪙 '+format(state.coins)+'</strong><small>금화</small></div></div>';
  html+='<div class="realm-tabs" role="group" aria-label="건설 종류">'+tabs+'</div>';
  if(group==='defense'){
-   html+='<p class="realm-help">성벽·성문·망루·함정·해자: 비용을 내고 방어선을 강화하거나 원하는 위치의 건설 부지를 선택하세요.</p>';
+   html+='<p class="realm-help">시설 선택 → 지도에 배치. 설치된 벽과 함정은 적에게 실제 피해를 받고 막아낸다.</p>';
+   html+='<div class="realm-build-grid">'+FORT_BUILDINGS.map(d=>
+     '<article class="realm-build-card"><div class="realm-build-title"><span class="realm-icon">'+d.icon+'</span><div><b>'+d.name+'</b><small>'+d.desc+'</small></div><strong>HP '+d.hp+'</strong></div>'+
+     '<div class="realm-build-meta"><span>🪵 '+d.wood+'</span><span>🪨 '+d.stone+'</span><span>건설 '+fort.structures.filter(p=>p.kind===d.id&&p.hp>0).length+'</span></div>'+
+     '<div class="realm-build-actions"><button data-build-fort="'+d.id+'" type="button" '+((Number(inv.wood)||0)<d.wood||(Number(inv.stone)||0)<d.stone?'disabled':'')+'>지도에서 배치</button></div></article>').join('')+'</div>';
    html+='<button class="realm-main-command" type="button" data-realm-legacy>🏰 성벽 · 함정 · 대공성전 관리 열기</button>';
    html+='<button class="realm-main-command" type="button" data-realm-barracks>⚔️ 병영 모집과 주둔 명령</button>';
  }else{
@@ -366,6 +400,11 @@ function renderConstruction(group=activeBuildGroup){
  body.querySelectorAll('[data-build-economy]').forEach(b=>b.addEventListener('click',()=>{
    const id=b.dataset.buildEconomy;document.querySelector('#panel')?.close();
    window.dispatchEvent(new CustomEvent('cozy:place-building',{detail:{id}}));
+ }));
+ body.querySelectorAll('[data-build-fort]').forEach(b=>b.addEventListener('click',()=>{
+   const id=b.dataset.buildFort;
+   document.querySelector('#panel')?.close();
+   window.dispatchEvent(new CustomEvent('cozy:place-fort',{detail:{id}}));
  }));
  body.querySelectorAll('[data-upgrade-economy]').forEach(b=>b.addEventListener('click',()=>{
    upgradeEconomyBuilding(b.dataset.upgradeEconomy);renderConstruction(activeBuildGroup);
@@ -660,6 +699,30 @@ function runFortification(dt){
     }
   }else fort.supplyClock=0;
   const enemies=livingRaidEnemies(),now=performance.now();
+  for(const structure of fort.structures){
+    if(structure.hp<=0)continue;
+    for(const enemy of enemies){
+      if(enemy.hp<=0||distance(enemy,structure)>80)continue;
+      if(['spikes','oil','pit'].includes(structure.kind)){
+        enemy._fortTrigger=(enemy._fortTrigger||0)-dt;
+        if(enemy._fortTrigger<=0){
+          enemy.hp-=structure.kind==='oil'?36:structure.kind==='spikes'?45:12;
+          if(structure.kind==='oil')enemy._fortBurnUntil=now+2600;
+          if(structure.kind==='pit')enemy._fortSlowUntil=now+1800;
+          structure.hp=Math.max(0,structure.hp-12);
+          enemy._fortTrigger=1.8;damaged=true;
+        }
+      }else{
+        enemy._fortStructureClock=(enemy._fortStructureClock||0)+dt;
+        if(enemy._fortStructureClock>=1.3){
+          enemy._fortStructureClock%=1.3;
+          structure.hp=Math.max(0,structure.hp-(Number(enemy.siegeDamage)||Math.max(5,Number(enemy.attack)||10)));
+          damaged=true;
+        }
+        if(structure.kind==='tower')enemy.hp-=10*dt;
+      }
+    }
+  }
   for(const enemy of enemies){
     if(enemy._fortSlowUntil&&now>=enemy._fortSlowUntil){
       if(Number.isFinite(enemy._fortOriginalSpeed))enemy.speed=enemy._fortOriginalSpeed;
@@ -680,7 +743,7 @@ function runFortification(dt){
     }
     // 성문/방벽 충돌: 구조물 HP가 있을 동안 공성 병력을 실제로 저지한다.
     // 해자는 후속 적군 이동을 늦추며, 도개교가 내려오면 성문 방향 진입이 가능하다.
-    if(enemy._grandSiege)enemy._siegeMoatFactor=fort.moatBuilt&&enemy.x>1390&&
+    if(enemy._grandSiege||enemy._lordRaid)enemy._siegeMoatFactor=fort.moatBuilt&&enemy.x>1390&&
       enemy.x<1590&&enemy.y>280&&enemy.y<970?.5:1;
     if(enemy.hp>0&&!enemy._fortClimbed&&enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
       const lane=enemy._siegeLane??enemy.y,key=lane<520?'north':lane>730?'south':'gate';
@@ -692,7 +755,7 @@ function runFortification(dt){
           if(enemy._fortClimbTimer>=(enemy.kind==='siegeTower'?5.5:3.7)){
             enemy._fortClimbed=true;enemy.x=1285;damaged=true;
           }
-        }else if(['ram','sapper','trebuchet'].includes(enemy.kind)){
+        }else if(['ram','sapper','trebuchet'].includes(enemy.kind)||enemy._lordRaid){
           enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
           const attackEvery=Number(enemy.siegeCooldown)||1.2;
           if(enemy._fortSiegeTimer>=attackEvery){
@@ -706,7 +769,7 @@ function runFortification(dt){
     }
     // 돌파·등반한 유닛이 성채에 도달하면 병종에 상관없이 내성을 깎는다.
     // 성벽 안으로 진입한 공성 병기가 성채를 파괴하면 대공성전 패배 처리.
-    if(game.grandSiege&&enemy._grandSiege&&enemy.hp>0&&enemy.x<1160&&enemy.y>890){
+    if((enemy._grandSiege||enemy._lordRaid)&&enemy.hp>0&&enemy.x<1160&&enemy.y>890){
       enemy._fortKeepTimer=(enemy._fortKeepTimer||0)+dt;
       if(enemy._fortKeepTimer>=1){
         enemy._fortKeepTimer%=1;
