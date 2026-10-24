@@ -24,6 +24,7 @@ export class IslandRendererV3 {
     // 실제 월드는 WebGL 3D만 표시하며 2D로 되돌아가지 않는다.
     this.ctx = canvas.getContext('2d', { alpha: true });
     this.models3d=new Map();this.instances3d=new Map();this.native3d=false;
+    this.viewFocus={x:1050,y:635};this.viewZoom=null;this.last3dPaint=0;
     this.init3d();this.resize();
   }
   // 3D 메인: 원본 섬·야생지대·정글 좌표와 저장/전투 책임을 유지한다.
@@ -161,6 +162,25 @@ export class IslandRendererV3 {
         for(let i=-2;i<=2;i++)part(box,m.stoneBright,i*.54,height*.96,0,.29,.35,1.03);
         part(box,m.darkWood,-.92,height*.27,.51,.1,height*.53,.08);
         part(box,m.darkWood,.92,height*.27,.51,.1,height*.53,.08);
+       }else if(kind==='fort-trebuchet'){
+        part(box,m.timber,0,.25,0,2.8,.38,2.0);
+        for(const x of [-1.05,1.05])for(const z of [-.8,.8])
+          part(tower,m.darkWood,x,.27,z,.4,.42,.4,Math.PI/2);
+        part(box,m.darkWood,0,height*.4,0,.3,height*.8,.35);
+        part(box,m.timber,.6,height*.82,0,.25,height*1.3,.28,.35);
+        part(box,m.stone,1.15,height*1.33,0,.5,.5,.5);
+      }else if(kind==='fort-ram'){
+        part(box,m.timber,0,.65,0,2.5,1.1,2.1);
+        part(roof,m.cloth,0,1.6,0,1.9,.85,1.5,Math.PI/4);
+        part(box,m.darkWood,-1.65,.57,0,2.1,.33,.4);
+        for(const x of [-.95,.95])for(const z of [-.78,.78])
+          part(tower,m.darkWood,x,.17,z,.34,.32,.34,Math.PI/2);
+      }else if(kind==='fort-siege-tower'){
+        part(box,m.timber,0,height*.46,0,2.35,height*.89,2.1);
+        part(box,m.darkWood,0,height*.92,.9,2.5,.19,.35);
+        for(const x of [-.97,.97])for(const z of [-.88,.88])
+          part(box,m.darkWood,x,height*.5,z,.17,height,.18);
+        for(const x of [-.9,.9])part(tower,m.darkWood,x,.2,0,.39,.36,.39,Math.PI/2);
       }else if(kind==='fort-keep'){
         const body=height*.82;
         part(box,m.stone,0,body*.5,0,3.2,body,3.0);
@@ -229,11 +249,14 @@ export class IslandRendererV3 {
   // 그래픽만 갱신하며 game.state/병력/자원/저장 값은 변경하지 않는다.
   draw3d(game){
     if(!this.native3d)return;
+    const now=performance.now(),minInterval=this.width<650?40:game.grandSiege?33:25;
+    if(now-this.last3dPaint<minInterval)return;
+    this.last3dPaint=now;
     try{
       const player=game.player,visibleIds=new Set();
       // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
-      const focus=game.siegeOverview?{x:1135,y:630}:player;
-      const zoom=game.siegeOverview?(this.width<600?.36:.52):(this.width<600?.68:.82);
+      const focus=game.siegeOverview?this.viewFocus:player;
+      const zoom=game.siegeOverview?(this.viewZoom??this.defaultStrategyZoom()):(this.width<600?.68:.82);
       if(this.camera3.zoom!==zoom){this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix()}
       const nearby=(x,y)=>Math.abs(x-focus.x)<this.width/(2*zoom)+200&&
         Math.abs(y-focus.y)<this.height/(2*zoom)+420;
@@ -357,16 +380,17 @@ export class IslandRendererV3 {
         unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);
       // 메인: 186명 모두 전투 판정하지만 가까운 최대 84/156명만 실제 3D 모델로 생성한다.
       // 기존 CC0 메시를 재사용하며 전투 계산은 렌더링 축소의 영향을 받지 않는다.
-      const modelBudget=this.width<600?84:156;
+      const modelBudget=this.width<600?32:this.width<900?56:96;
       const visibleEnemies=game.enemies.filter(u=>u.hp>0&&nearby(u.x,u.y))
         .sort((a,b)=>(a.x-focus.x)**2+(a.y-focus.y)**2-
           ((b.x-focus.x)**2+(b.y-focus.y)**2)).slice(0,modelBudget);
       for(const unit of visibleEnemies){
-        const kind=unit.kind==='ram'?'package':
-          unit.kind==='siegeTower'?'fort-watchtower':
-          unit.kind==='sapper'?'npc':'enemy';
+        const kind=unit.kind==='ram'?'fort-ram':
+          unit.kind==='siegeTower'?'fort-siege-tower':
+          unit.kind==='trebuchet'?'fort-trebuchet':
+          unit.kind==='sapper'?'npc':unit.kind==='ladder'?'soldier':'enemy';
         put('enemy:'+unit.id,kind,unit.x,unit.y,
-          unit.kind==='siegeTower'?4.7:unit.kind==='ram'?3.3:unit.boss?2.5:1.9);
+          unit.kind==='siegeTower'?4.7:unit.kind==='trebuchet'?3.5:unit.kind==='ram'?3.3:unit.boss?2.5:1.9);
       }
       if(game.state.expanded)for(const wolf of game.wolves)if(wolf.alive)
         put('wolf:'+wolf.id,'wolf',wolf.x,wolf.y,wolf.boss?2.8:1.6);
@@ -409,8 +433,8 @@ export class IslandRendererV3 {
       }
       // 메인: 스트롱홀드식 성채 시야. 남쪽에서 비스듬히 내려다보고 이동 방향은 유지한다.
       const focusX=focus.x*SC,focusZ=focus.y*SC;
-      this.camera3.position.set(focusX,game.siegeOverview?48:34,
-        focusZ+(game.siegeOverview?52:36));
+      this.camera3.position.set(focusX,game.siegeOverview?68:34,
+        focusZ+(game.siegeOverview?64:36));
       this.camera3.lookAt(focusX,0,focusZ);
       const hour=game.state.minutes/60;
       this.scene3.background.setHex(hour<6||hour>20?0x365372:0x86cce0);
@@ -433,7 +457,7 @@ export class IslandRendererV3 {
     this.canvas.style.height = `${this.height}px`;
     this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
     if(this.native3d){
-      this.gl.setPixelRatio(Math.min(1.3,window.devicePixelRatio||1));
+      this.gl.setPixelRatio(Math.min(this.width<650?1:1.25,window.devicePixelRatio||1));
       this.gl.setSize(this.width,this.height,false);
       this.camera3.left=-this.width*SC/2;this.camera3.right=this.width*SC/2;
       this.camera3.top=this.height*SC/2;this.camera3.bottom=-this.height*SC/2;
@@ -442,6 +466,17 @@ export class IslandRendererV3 {
       this.camera3.updateProjectionMatrix();
     }
   }
+  defaultStrategyZoom(){return Math.max(.21,Math.min(.58,this.width/1500,this.height/1450))}
+  panCamera(dx,dy){
+    const zoom=this.viewZoom??this.defaultStrategyZoom();
+    this.viewFocus.x=Math.max(140,Math.min(7500,this.viewFocus.x-dx/zoom));
+    this.viewFocus.y=Math.max(-1100,Math.min(2600,this.viewFocus.y-dy/(zoom*.7)));
+  }
+  changeZoom(factor){
+    const current=this.viewZoom??this.defaultStrategyZoom();
+    this.viewZoom=Math.max(.19,Math.min(1.15,current*factor));
+  }
+  centerCamera(){this.viewFocus={x:1050,y:635};this.viewZoom=null}
   camera(game) { return { x: game.player.x - this.width/2, y: game.player.y - this.height/2 }; }
   screenToWorld(game, sx, sy) {
     if(!this.native3d){const c=this.camera(game);return {x:sx+c.x,y:sy+c.y}}

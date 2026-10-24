@@ -6,12 +6,6 @@ const RAID_INTERVAL=120;
 const FARM_GROW_MS=20000;
 const WORKER_PRICE=50, WORKER_MAX=3, WORK_TICK=10, DELIVERY_INTERVAL=60, FEED_INTERVAL=180, FEED_COST=10;
 const SOLDIER_MAX=5, ARCHER_MAX=3;
-const TOOLS=[
-  {id:'hand',label:'손',icon:'🤲'},
-  {id:'rod',label:'낚싯대',icon:'🎣'},
-  {id:'seed',label:'씨앗',icon:'🌱'},
-  {id:'water',label:'물뿌리개',icon:'💧'}
-];
 const DEFAULT_STATE={
   version:3,day:1,minutes:480,coins:40,weather:'맑음',expanded:false,decor:[],barracksBuilt:false,army:[],raidTimer:0,raidNumber:0,
   inventory:{wood:0,stone:0,flower:0,fish:0,crop:0,seeds:3,food:0},
@@ -26,11 +20,13 @@ const canvas=document.querySelector('#game');
 const renderer=new IslandRendererV3(canvas);
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
-let selectedTool=0,lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
+let lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
+let moveTarget=null,lastAutoGather=0;
 let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
 // 메인: 기존 일반 습격은 그대로 두고 성채 건설 이후 선택형 대공성전만 추가한다.
 let grandSiege=null,raidWarningShown=false;
 const SIEGE_INTERVALS=[60,120,180,300,600],SIEGE_WAVE_SIZES=[18,24,30,34,38,42];
+const SIEGE_MACHINES=new Set(['ram','siegeTower','trebuchet','sapper']);
 const getFort=()=>state.villageDevelopment?.fortification;
 const raidInterval=()=>SIEGE_INTERVALS.includes(getFort()?.raidIntervalSec)?getFort().raidIntervalSec:RAID_INTERVAL;
 const barracks={x:1080,y:650},workerShop={x:1200,y:820};
@@ -47,9 +43,9 @@ const npcs=[
   {id:'momo',name:'모모',icon:'👩‍🦱',x:805,y:600,line:'연못에는 물고기가 있어.'},
   {id:'danbi',name:'단비',icon:'🧒',x:960,y:700,line:'농작물은 물을 준 뒤 20초면 자라.'}
 ];
-const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId};
+const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId,siegeOverview:true};
 const ui={
-  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),tool:qs('#toolButton'),action:qs('#actionButton'),inventory:qs('#inventoryButton'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
+  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),shipping:qs('#shippingCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
 function qs(s){return document.querySelector(s)}
 function normalizeState(raw){
@@ -78,21 +74,96 @@ runtime.bindKeyboard({
   KeyS:{down:()=>pressed.add('down'),up:()=>pressed.delete('down')},ArrowDown:{down:()=>pressed.add('down'),up:()=>pressed.delete('down')},
   KeyA:{down:()=>pressed.add('left'),up:()=>pressed.delete('left')},ArrowLeft:{down:()=>pressed.add('left'),up:()=>pressed.delete('left')},
   KeyD:{down:()=>pressed.add('right'),up:()=>pressed.delete('right')},ArrowRight:{down:()=>pressed.add('right'),up:()=>pressed.delete('right')},
-  Space:{down:e=>{e.preventDefault();interact()}},KeyE:{down:cycleTool}
+  Space:{down:e=>{e.preventDefault();interact()}}
 });
-runtime.bindTouchButton(ui.action,interact);runtime.bindTouchButton(ui.tool,cycleTool);runtime.bindTouchButton(ui.inventory,openInventory);runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());runtime.bindTouchButton(ui.catch,catchFish);runtime.bindTouchButton(ui.cancelFishing,stopFishing);
-window.addEventListener('resize',()=>renderer.resize());window.addEventListener('jaewoon:pause',e=>{if(e.detail.paused)pressed.clear()});
-canvas.addEventListener('dblclick',e=>commandWolfAt(e.clientX,e.clientY));
-canvas.addEventListener('pointerup',e=>{const now=performance.now();if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);lastTap={time:now,x:e.clientX,y:e.clientY}});
+runtime.bindTouchButton(ui.inventory,openInventory);
+runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButton')?.click());
+runtime.bindTouchButton(ui.barracks,openBarracks);
+runtime.bindTouchButton(ui.workers,openWorkerShop);
+runtime.bindTouchButton(ui.fishingCommand,startFishing);
+runtime.bindTouchButton(ui.shipping,shipGoods);
+runtime.bindTouchButton(ui.center,()=>{game.siegeOverview=true;renderer.centerCamera();toast('🏰 성채 전장 전체 보기')});
+runtime.bindTouchButton(ui.zoomIn,()=>{game.siegeOverview=true;renderer.changeZoom(1.2)});
+runtime.bindTouchButton(ui.zoomOut,()=>{game.siegeOverview=true;renderer.changeZoom(1/1.2)});
+runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());
+runtime.bindTouchButton(ui.catch,catchFish);
+runtime.bindTouchButton(ui.cancelFishing,stopFishing);
+window.addEventListener('resize',()=>renderer.resize());
+window.addEventListener('jaewoon:pause',e=>{if(e.detail.paused){pressed.clear();moveTarget=null}});
+let pointerGesture=null;
+canvas.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse'&&e.button!==0)return;
+  pointerGesture={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};
+  canvas.setPointerCapture?.(e.pointerId);
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
+  const g=pointerGesture,dx=e.clientX-g.x,dy=e.clientY-g.y;
+  if(g.moved||Math.hypot(e.clientX-g.startX,e.clientY-g.startY)>9){
+    g.moved=true;game.siegeOverview=true;renderer.panCamera(dx,dy);
+  }
+  g.x=e.clientX;g.y=e.clientY;
+});
+canvas.addEventListener('pointercancel',()=>{pointerGesture=null});
+canvas.addEventListener('pointerup',e=>{
+  if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
+  const g=pointerGesture;pointerGesture=null;
+  if(g.moved||ui.panel.open||ui.fishing.open||runtime.paused)return;
+  const now=performance.now();
+  if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
+  lastTap={time:now,x:e.clientX,y:e.clientY};
+  const pos=renderer.screenToWorld(game,e.clientX,e.clientY);
+  const radius=Math.max(78,Math.min(146,44/(renderer.camera3?.zoom||.5)));
+  const target=nearestInteraction(pos,radius);
+  if(target){activateInteraction(target);return}
+  moveTarget=pos;
+});
+canvas.addEventListener('wheel',e=>{e.preventDefault();game.siegeOverview=true;renderer.changeZoom(e.deltaY<0?1.16:1/1.16)},{passive:false});
 
-function cycleTool(){if(ui.panel.open||ui.fishing.open)return;selectedTool=(selectedTool+1)%TOOLS.length;updateToolUI();toast(`${TOOLS[selectedTool].icon} ${TOOLS[selectedTool].label}`)}
-function updateToolUI(){const t=TOOLS[selectedTool];ui.tool.innerHTML=`${t.icon}<small>${t.label}</small>`}
 function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p>`;ui.panel.showModal()}
 function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}
 
-function nearestInteraction(){const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=86?c[0]:null}
-function interactionHint(t){if(!t)return raidActive?'습격 중! 병사들이 마을을 방어 중':'섬을 둘러봐';const tool=TOOLS[selectedTool].id;if(t.type==='node')return t.item.kind==='tree'?'행동: 나무 줍기':t.item.kind==='rock'?'행동: 돌 줍기':'행동: 꽃 꺾기';if(t.type==='npc')return `행동: ${t.item.name}와 이야기`;if(t.type==='house')return'행동: 집 꾸미기';if(t.type==='ship')return'행동: 출하';if(t.type==='barracks')return state.barracksBuilt?'행동: 병사 모집':'행동: 병영 건설 · 나무5 돌3';if(t.type==='workerShop')return`행동: 노비 판매소 · ${state.workers}/${WORKER_MAX}`;if(t.type==='fish')return tool==='rod'?'행동: 낚시':'낚싯대를 선택해';if(t.type==='expand')return'행동: 동쪽 지역 해금 · 120골드';if(t.type==='plot'){const p=t.item.plot;if(p.state==='empty')return tool==='seed'?'행동: 씨앗 심기':'씨앗을 선택해';if(p.ready)return'행동: 수확 · 식량 +10';if(!p.watered)return tool==='water'?'행동: 물 주기':'물뿌리개를 선택해';return'20초 동안 자라는 중'}return'행동'}
-function interact(){if(runtime.paused||ui.panel.open||ui.fishing.open)return;const t=nearestInteraction();if(!t){toast('가까이 가서 행동해봐');return}const tool=TOOLS[selectedTool].id;if(t.type==='node')collectNode(t.item);else if(t.type==='npc')talkTo(t.item);else if(t.type==='house')openDecor();else if(t.type==='ship')shipGoods();else if(t.type==='barracks')openBarracks();else if(t.type==='workerShop')openWorkerShop();else if(t.type==='fish')tool==='rod'?startFishing():toast('낚싯대를 선택해');else if(t.type==='expand')expandIsland();else if(t.type==='plot')usePlot(t.item.index,tool)}
+function nearestInteraction(at=player,radius=86){const dist=(x,y)=>Math.hypot(at.x-x,at.y-y);const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=radius?c[0]:null}
+function interactionHint(t){
+  if(!t)return raidActive?'⚔️ 습격 중 · 병사들이 성채를 방어 중':'지도를 드래그하고 건물을 터치해 관리';
+  if(t.type==='node')return '근처 자원 자동 채집 중';
+  if(t.type==='npc')return t.item.name+' · 터치해서 대화';
+  if(t.type==='house')return '집 터치 · 꾸미기';
+  if(t.type==='ship')return '출하 가능 · 아래 출하 메뉴';
+  if(t.type==='barracks')return '병영 · 병력 관리';
+  if(t.type==='workerShop')return '일꾼 작업장 · 관리';
+  if(t.type==='fish')return '연못 터치 · 낚시';
+  if(t.type==='expand')return '동쪽 지역 해금 · 120골드';
+  if(t.type==='plot')return t.item.plot.ready?'밭 터치 · 수확':t.item.plot.state==='empty'?'밭 터치 · 씨앗 심기':!t.item.plot.watered?'밭 터치 · 물 주기':'밭 · 재배 중';
+  return '터치해서 관리';
+}
+function interact(){
+  if(runtime.paused||ui.panel.open||ui.fishing.open)return;
+  const target=nearestInteraction();
+  if(target)activateInteraction(target);else toast('건물을 터치하거나 조이스틱으로 이동해');
+}
+function activateInteraction(t){
+  if(runtime.paused||ui.panel.open||ui.fishing.open)return;
+  if(t.type==='node'){
+    if(dist(t.item.x,t.item.y)>70){moveTarget={x:t.item.x,y:t.item.y};toast('자원으로 이동 중');return}
+    if(t.item.readyAt<=Date.now())collectNode(t.item);
+  }else if(t.type==='npc')talkTo(t.item);
+  else if(t.type==='house')openDecor();
+  else if(t.type==='ship')shipGoods();
+  else if(t.type==='barracks')openBarracks();
+  else if(t.type==='workerShop')openWorkerShop();
+  else if(t.type==='fish')startFishing();
+  else if(t.type==='expand')expandIsland();
+  else if(t.type==='plot')usePlot(t.item.index,t.item.plot.state==='empty'?'seed':'water');
+}
+function autoGather(now){
+  if(now-lastAutoGather<350)return;
+  lastAutoGather=now;
+  for(const n of nodes){
+    if((n.lockedByExpansion&&!state.expanded)||n.readyAt>Date.now())continue;
+    if(dist(n.x,n.y)<64){collectNode(n);break}
+  }
+}
 function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){state.inventory.stone++;toast('🪨 돌 +1')}else{state.inventory.flower++;toast('🌼 꽃 +1')}n.readyAt=now+30000;saveSoon()}
 function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class="choice" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=`<p class="panel-note">${n.line}</p><div class="choice-grid">${extra}</div>`;ui.panel.showModal();ui.panelBody.querySelector('[data-seed]')?.addEventListener('click',()=>{if(state.coins<15){toast('골드가 부족해');return}state.coins-=15;state.inventory.seeds+=3;saveSoon();updateHUD();toast('🌱 씨앗 +3')})}
 function openBarracks(){ui.panelTitle.textContent=state.barracksBuilt?'병영':'병영 건설';renderBarracks();ui.panel.showModal()}
@@ -147,7 +218,7 @@ function updateRaid(dt){
     return;
   }
   if(enemies.length===0 && (!grandSiege || grandSiege.wave>=SIEGE_WAVE_SIZES.length)){
-    if(grandSiege){const f=getFort();if(f)f.siegeVictories=(Number(f.siegeVictories)||0)+1}
+    if(grandSiege){const f=getFort();if(f){f.siegeVictories=(Number(f.siegeVictories)||0)+1;f.honor=Math.min(999,(Number(f.honor)||0)+10);f.morale=Math.min(100,(Number(f.morale)||65)+8)}}
     raidActive=false;game.raidActive=false;grandSiege=null;game.grandSiege=null;
     state.raidTimer=0;saveSoon();toast('✅ 습격 방어 성공');
   }
@@ -178,18 +249,22 @@ function startRaid(){
 function spawnSiegeWave(){
   if(!grandSiege)return;
   const stage=grandSiege.wave,n=SIEGE_WAVE_SIZES[stage];
-  const roles=['soldier','archer','soldier','soldier','cavalry','soldier','archer','sapper'];
+  const roles=['soldier','archer','soldier','soldier','cavalry','shield','archer','ladder'];
   for(let i=0;i<n;i++){
-    const kind= i===0&&stage>=1?'ram':
-      i===1&&stage>=3?'siegeTower':
-      i===2&&stage>=2?'sapper':roles[(i+stage)%roles.length];
+    const kind=i===0&&stage>=1?'ram':
+       i===1&&stage>=3?'siegeTower':
+       i===2&&stage>=2?'trebuchet':
+       i===3&&stage>=2?'sapper':roles[(i+stage)%roles.length];
     const u=createUnit(kind==='archer'?'archer':'soldier',true);
     u.kind=kind;u._grandSiege=true;
     const flank=(i%3),lane=flank===0?455:flank===1?610:805;
     const rank=Math.floor(i/3);
     u.x=1650+(rank%10)*42+stage*45;
     u.y=lane+(rank%4-1.5)*22;
-    u._siegeLane=kind==='ram'?610:kind==='siegeTower'?455:kind==='sapper'?805:lane;
+    u._siegeLane=kind==='ram'?610:kind==='siegeTower'?455:kind==='sapper'?805:kind==='trebuchet'?610:lane;
+     if(kind==='trebuchet'){u.x=1840+stage*45;u.y=610;Object.assign(u,{hp:410,maxHp:410,attack:0,speed:16,siegeDamage:110,siegeCooldown:4.8,ammo:8})}
+     if(kind==='ladder')Object.assign(u,{hp:140,maxHp:140,speed:84,siegeCooldown:3.5,wallClimb:true});
+     if(kind==='shield')Object.assign(u,{hp:240,maxHp:240,speed:45,attack:7,range:48});
     if(kind==='ram')Object.assign(u,{hp:1050,maxHp:1050,attack:0,speed:28,siegeDamage:145,siegeCooldown:2.2});
     if(kind==='siegeTower')Object.assign(u,{hp:1650,maxHp:1650,attack:0,speed:23,siegeDamage:120,siegeCooldown:2.6});
     if(kind==='sapper')Object.assign(u,{hp:180,maxHp:180,attack:0,speed:90,siegeDamage:72,siegeCooldown:1.2});
@@ -207,15 +282,19 @@ function updateCombatUnit(u,targets,dt,hostile){
   if(!hostile&&u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y}
   // 공성 병기는 병사 공격이 아니라 성문/벽 돌파를 우선하며, 기존 일반 습격 전투는 유지한다.
   if(hostile&&u._grandSiege){
-    const fort=getFort(),walls=fort?.walls||{};
-    const lane=u._siegeLane||610;
+    const fort=getFort(),walls=fort?.walls||{},lane=u._siegeLane||610;
     const key=lane<520?'north':lane>730?'south':'gate';
+    if(u.kind==='trebuchet'&&u.ammo>0){
+      // 투석기는 성벽 밖에서 실제 포격하며 유한 탄약을 소모한다.
+      if(u.x>1770)moveToward(u,1760,lane,dt);
+      return;
+    }
     if(fort&&state.villageDevelopment?.townHallBuilt&&(Number(walls[key])||0)>0&&
-      (key!=='gate'||fort.drawbridgeClosed!==false)){
+      (key!=='gate'||fort.drawbridgeClosed!==false)&&!u._fortClimbed){
       if(u.x>1353||Math.abs(u.y-lane)>25)moveToward(u,1355,lane,dt);
       return;
     }
-    if(['ram','siegeTower','sapper'].includes(u.kind)){
+    if(SIEGE_MACHINES.has(u.kind)||u.kind==='ladder'||u._fortClimbed){
       moveToward(u,1010,1050,dt);
       return;
     }
@@ -225,7 +304,13 @@ function updateCombatUnit(u,targets,dt,hostile){
   if(!t)return;
   const d=Math.hypot(t.x-u.x,t.y-u.y)||1;
   if(d>u.range){if(!u._fortPost)moveToward(u,t.x,t.y,dt)}
-  else if(u.cool<=0){t.hp-=u.attack;u.cool=u.kind==='archer'?1.15:.85}
+  else if(u.cool<=0){
+    const fort=!hostile?getFort():null;
+    const order=fort?.defenseOrder||'hold',morale=fort?.morale??65;
+    const bonus=!hostile&&game.grandSiege?
+      (0.85+morale/400)*(order==='volley'&&u.kind==='archer'?1.45:order==='counter'&&u.kind!=='archer'?1.4:1):1;
+    t.hp-=u.attack*bonus;u.cool=u.kind==='archer'?1.15:.85
+  }
 }
 function nearestLiving(u,arr){let b=null,bd=1e9;for(const t of arr){if(t.hp<=0)continue;const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;b=t}}return b}
 function moveToward(u,x,y,dt){
@@ -254,7 +339,7 @@ function updateHUD(){
   ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';
   ui.coins.textContent=String(state.coins);
   if(raidActive)ui.raid.textContent=grandSiege?
-    `🏰 대공성전 ${grandSiege.wave}/6 · 적 ${enemies.length}명`:
+    `🏰 ${grandSiege.wave}/6차 · 적 ${enemies.length} · 성채 ${Math.ceil(getFort()?.keepHp??900)} · 사기 ${getFort()?.morale??65}`:
     `⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;
   else{
     const r=Math.max(0,Math.ceil(raidInterval()-state.raidTimer));
@@ -262,8 +347,21 @@ function updateHUD(){
   }
 }
 function canMoveTo(x,y){const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
-function updateMovement(dt){let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);if(!dx&&!dy)return;const mag=Math.hypot(dx,dy)||1;dx/=mag;dy/=mag;const nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;if(canMoveTo(nx,player.y))player.x=nx;if(canMoveTo(player.x,ny))player.y=ny}
+function updateMovement(dt){
+  let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);
+  if(dx||dy)moveTarget=null;
+  else if(moveTarget){
+    dx=moveTarget.x-player.x;dy=moveTarget.y-player.y;
+    if(Math.hypot(dx,dy)<57){moveTarget=null;return}
+  }else return;
+  const mag=Math.hypot(dx,dy)||1;dx/=mag;dy/=mag;
+  const nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;
+  const ox=player.x,oy=player.y;
+  if(canMoveTo(nx,player.y))player.x=nx;
+  if(canMoveTo(player.x,ny))player.y=ny;
+  if(moveTarget&&ox===player.x&&oy===player.y)moveTarget=null;
+}
 function updateHint(){ui.hint.textContent=interactionHint(nearestInteraction())}
-function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
+function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);autoGather(now);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
-allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;updateToolUI();updateHUD();requestAnimationFrame(frame);
+allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;updateHUD();requestAnimationFrame(frame);
