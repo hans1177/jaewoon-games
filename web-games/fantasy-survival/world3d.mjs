@@ -454,13 +454,21 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
   const SCENERY_KIND=Object.freeze({
-    forest:['tree','foliage_A'],jungle:['tree_large','foliage_B'],swamp:['foliage_A','tree'],
-    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
-    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','foliage_B'],
-    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_B'],
-    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree'],
-    desert:['cobblestones','foliage_A'],
-    underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
+    // 원래 라이브러리 내 원본 메시만 사용하고 지역별 셋을 달리한다. 새 GPU 지오메트리·다운로드 없음.
+    forest:['tree','foliage_A','foliage_B'],
+    jungle:['tree_large','foliage_B','tree'],
+    swamp:['foliage_A','tree','cobblestones'],
+    snow:['tree_large','cobblestones','foliage_B'],
+    canyon:['cobblestones','foliage_A','fence_straight'],
+    volcano:['cobblestones','fence_straight','foliage_B'],
+    crystal:['cobblestones','foliage_B','fence_straight'],
+    giantlake:['foliage_A','foliage_B','cobblestones'],
+    worldtree:['tree_large','foliage_B','tree'],
+    flowerfield:['foliage_A','foliage_B','tree'],
+    giantgarden:['foliage_B','tree','cobblestones'],
+    desert:['cobblestones','foliage_A','fence_straight'],
+    underwater:['foliage_B','cobblestones','foliage_A'],
+    'underwater-dungeon':['cobblestones','fence_straight','foliage_B']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
@@ -879,7 +887,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
             resourceTransform.updateMatrix();
             batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
-            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
+            // 같은 CC0 장식이라도 나무/암석/풀에 서로 다른 지역 색 대비를 적용한다.
+            const accent=kind.includes('foliage')?.47:kind.includes('tree')?.32:.17;
+            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor)
+              .multiplyScalar(.86+(hash>>>11)%5*.065).lerp(floorNeutral,accent));
             batch.count++;
           }
         }
