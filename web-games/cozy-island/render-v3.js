@@ -947,7 +947,7 @@ export class IslandRendererV3 {
       for(let i=0;i<(fort.structures?.length||0);i++){
         const section=fort.structures[i];if(section.hp<=0)continue;
         const look={wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
-          spikes:'fence',oil:'package',pit:'stone'}[section.kind]||'fort-site';
+          spikes:'fence',oil:'package',pit:'stone',net:'fence',log:'bench',barrel:'package'}[section.kind]||'fort-site';
         const vertical=section.axis==='vertical'||section.axis==='manual-vertical';
         put('custom-fort:'+i,look,section.x,section.y,
           section.kind==='tower'?4:section.kind==='gate'?3.6:section.kind==='wall'?2.5:1.1,
@@ -970,7 +970,7 @@ export class IslandRendererV3 {
         const previews=build.id==='fort:wall'?(build.preview?.length?build.preview:[build.at]):[build.at];
         const kind=build.id.startsWith('fort:')?({
            wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
-           spikes:'fence',oil:'package',pit:'stone'
+           spikes:'fence',oil:'package',pit:'stone',net:'fence',log:'bench',barrel:'package'
          }[build.id.slice(5)]||'fort-site'):(ECONOMY_3D_LOOK[build.id]||'fort-site');
         for(let i=0;i<Math.min(35,previews.length);i++){
           const p=previews[i],vertical=build.id==='fort:gate'&&build.axis==='vertical';
@@ -1088,8 +1088,17 @@ export class IslandRendererV3 {
         put('economic-worker:'+i,'npc',x,y,1.75);
         if(i%3===0)put('worker-wagon:'+i,'package',x+14,y+16,.83);
       }
-      for(const unit of game.allies)if(unit.hp>0)put('ally:'+unit.id,
-        unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);
+      // 신규 병과/공성기: 기존 메시에 연계, 모바일에서 카메라 밖 메시 생성 최소화.
+      const friendlyBudget=this.width<600?65:110;
+      for(const unit of game.allies.filter(u=>u.hp>0&&nearby(u.x,u.y)).slice(0,friendlyBudget)){
+        const kind=unit.kind==='ram'?'fort-ram':
+          unit.kind==='trebuchet'?'fort-trebuchet':
+          unit.kind==='siegeTower'?'fort-siege-tower':
+          unit.kind==='knight'?'hero':
+          ['crossbow','sapper'].includes(unit.kind)?'npc':'soldier';
+        put('ally:'+unit.id,kind,unit.x,unit.y,
+          unit.kind==='siegeTower'?4.7:unit.kind==='trebuchet'?3.5:unit.kind==='ram'?3.3:1.9);
+      }
       // 메인: 픽셀 프레임 공유로 병력 표시 비용을 줄인다. 전투 판정은 기존 게임 책임이다.
       const modelBudget=this.width<600?96:192;
       const visibleEnemies=game.enemies.filter(u=>u.hp>0&&nearby(u.x,u.y))
@@ -1171,7 +1180,7 @@ export class IslandRendererV3 {
     this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
     if(this.native3d){
       // 월드만 정수 배율로 확장하고 UI·터치 좌표는 원래 화면 해상도를 유지한다.
-      this.pixelScale=1;
+      this.pixelScale=this.width<600?1.25:1;
       this.gl.setPixelRatio(1);
       this.gl.setSize(Math.ceil(this.width/this.pixelScale),Math.ceil(this.height/this.pixelScale),false);
       this.gl.domElement.dataset.pixelScale=String(this.pixelScale);
