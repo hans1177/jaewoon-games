@@ -19,35 +19,85 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0;
  let state=null,mode='sea',facility='',frame=0,last=0,zoom=4.8,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720;
+ // 성능: 변경 없는 해안선·국경·미개척 안개는 오프스크린 해도에서 재사용한다.
+ const seaLayer=document.createElement('canvas'),seaCtx=seaLayer.getContext('2d');
+ const miniLayer=document.createElement('canvas'),miniCtx=miniLayer.getContext('2d');
+ let seaAnchorX=NaN,seaAnchorZ=NaN,seaScale=0,seaKnown=-1,miniKey='';
  const rect=(x,y,a,b,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(a),Math.round(b));};
  function text(t,x,y,size=11,color=C.gold,align='left'){ctx.font=`bold ${size}px system-ui`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(t,Math.round(x),Math.round(y));ctx.textAlign='left';}
+ // 선종마다 선체 길이·선폭·돛대·노·포문이 구분되는 픽셀 범선.
  function ship(x,y,heading,type='caravel',enemy=false,scale=1,ports=6){
   const design=SHIP_TYPES.find(t=>t.id===type)||SHIP_TYPES[0],rig=design.rig||(type==='caravel'?'lateen':'square');
-  ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(Math.PI-heading);ctx.scale(scale*(design.width||1),scale*(design.length||1));
-  rect(-7,-13,14,28,'#172d35');rect(-6,-11,12,25,enemy?'#663934':'#835b38');rect(-4,-17,8,8,'#bb9560');rect(-1,-12,2,27,'#493b30');
-  if(rig==='oars'){for(let i=0;i<7;i++){rect(-15,-9+i*3,9,1,'#c4a573');rect(6,-9+i*3,9,1,'#c4a573');}}
-  const sails=type==='galleon'||type.includes('galleon')||type.includes('fluyt')||type.includes('racer')?3:rig==='oars'?1:2;
-  for(let i=0;i<sails;i++){const sy=-9+i*9;if(rig==='lateen'||rig==='oars'||!enemy&&type===state.shipType&&state.ship.gear.sail==='lateen'&&i===sails-1){ctx.fillStyle=enemy?'#575358':'#eee1b8';ctx.beginPath();ctx.moveTo(0,sy-4);ctx.lineTo(-12,sy+8);ctx.lineTo(9,sy+7);ctx.closePath();ctx.fill();rect(-12,sy+8,22,1,'#8f8c6b');}else{rect(-11,sy,22,6,enemy?'#575358':'#eee1b8');rect(-10,sy+5,20,2,enemy?'#393d43':'#b3b99e');rect(-13,sy,26,1,'#674a36');}}
-  if(type.includes('galleon')||type.includes('fluyt')){rect(-7,9,14,8,'#af8951');rect(-5,12,10,3,design.color||'#69553e');}
-  for(let i=0;i<Math.ceil(Math.min(20,ports)/2);i++){rect(-9,-10+i*3,4,2,'#252f33');rect(5,-10+i*3,4,2,'#252f33');}
-  if(!enemy&&type===state.shipType&&state.ship.gear.figurehead!=='none'){const symbol=state.ship.gear.figurehead;rect(-3,-23,6,6,'#e4c078');if(symbol==='lion'){rect(-5,-24,3,7,'#b88c43');rect(2,-24,3,7,'#b88c43');}if(symbol==='dolphin'){rect(1,-27,6,3,'#8ebac1');rect(-4,-21,4,3,'#8ebac1');}if(symbol==='mermaid'){rect(-2,-27,4,4,'#efd4a2');rect(-4,-19,8,3,'#7ead9e');}if(symbol==='owl'){rect(-4,-27,2,5,'#e4c078');rect(2,-27,2,5,'#e4c078');rect(-2,-22,1,1,'#2e3031');rect(2,-22,1,1,'#2e3031');}}
-  rect(0,-18,8,3,enemy?'#b8634f':design.color||'#ce8c58');ctx.restore();
+  const large=/galleon|fluyt|frigate|carrack/.test(type),galley=rig==='oars'||/galley/.test(type);
+  const beam=(large?9:galley?5.5:7)*(design.width||1),length=(large?22:galley?25:18)*(design.length||1);
+  const hull=enemy?'#704238':'#805537',trim=enemy?'#b16c50':'#c3a071',sail=enemy?'#c9b7a1':'#f2e6c8';
+  ctx.save();ctx.translate(Math.round(x),Math.round(y+Math.sin(time*2+(enemy?2:0))*.7));ctx.rotate(Math.PI-heading);ctx.scale(scale,scale);
+  ctx.fillStyle='#071d2766';ctx.beginPath();ctx.ellipse(3,5,beam+6,length+5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#242e30';ctx.beginPath();ctx.moveTo(0,-length-9);ctx.bezierCurveTo(-beam-3,-length*.5,-beam-5,length*.68,-beam*.55,length+3);ctx.quadraticCurveTo(0,length+10,beam*.55,length+3);ctx.bezierCurveTo(beam+5,length*.68,beam+3,-length*.5,0,-length-9);ctx.closePath();ctx.fill();
+  ctx.fillStyle=hull;ctx.beginPath();ctx.moveTo(0,-length-5);ctx.bezierCurveTo(-beam,-length*.5,-beam,length*.6,-beam*.45,length);ctx.quadraticCurveTo(0,length+6,beam*.45,length);ctx.bezierCurveTo(beam,length*.6,beam,-length*.5,0,-length-5);ctx.closePath();ctx.fill();
+  rect(-beam+2,-length*.45,beam*2-4,length*1.14,enemy?'#745c4d':'#a27b4f');rect(-beam+3,-length*.3,beam*2-6,2,trim);
+  if(large){rect(-beam+1,length*.45,beam*2-2,9,'#4f372f');rect(-beam+2,length*.50,beam*2-4,3,trim);rect(-beam*.6,-length*.74,beam*1.2,5,'#b28b57');}
+  const holes=Math.max(2,Math.min(10,Math.round(ports/2)));
+  for(let i=0;i<holes;i++){const py=-length*.56+i*(length*1.33)/Math.max(1,holes-1);rect(-beam-1,py,4,3,'#1b2629');rect(beam-3,py,4,3,'#1b2629');}
+  if(galley){for(let i=0;i<7;i++){const py=-length*.55+i*6;rect(-beam-10,py,11,2,'#c7a774');rect(beam,py,11,2,'#c7a774');}}
+  const masts=large?[-length*.55,length*.05,length*.59]:galley?[-length*.32]:[-length*.52,length*.4];
+  for(let i=0;i<masts.length;i++){
+   const sy=masts[i];rect(-1,sy-10,2,20,'#4c3528');
+   if(rig==='lateen'||galley||(!enemy&&type===state.shipType&&state.ship.gear.sail==='lateen'&&i===masts.length-1)){
+    ctx.fillStyle=sail;ctx.beginPath();ctx.moveTo(-1,sy-13);ctx.lineTo(-beam-7,sy+10);ctx.lineTo(beam+6,sy+8);ctx.closePath();ctx.fill();rect(-beam-7,sy+9,beam*2+13,1,'#b6a27d');
+   }else{const width=large?beam+5:beam+3;rect(-width,sy-8,width*2,11,sail);rect(-width+2,sy+3,width*2-4,2,enemy?'#927e70':'#b2aa91');rect(-width-2,sy-9,width*2+4,2,'#694a34');}
+  }
+  rect(-2,-length-8,4,4,enemy?'#db8167':'#ead2a0');rect(1,-length-7,6,2,enemy?'#c66d54':design.color||'#cd9867');
+  if(!enemy&&state.ship.gear.figurehead!=='none'){rect(-3,-length-12,6,5,'#e2bb72');rect(-1,-length-15,2,4,'#f4de9c');}
+  ctx.restore();
  }
 
+ // 항해 화면: 지역명·항로·선박·파도·전투 상태를 겹쳐 표시한다.
  function sea(){
-  const cx=state.ship.x,cz=state.ship.z;drawGeography(ctx,w,h,cx,cz,zoom);drawFog(ctx,w,h,cx,cz,zoom,state.charted);
-  ctx.globalAlpha=.15;for(let i=0;i<35;i++){const x=(i*83+Math.floor(time*3))%w,y=(i*47)%h;rect(x,y,9,1,'#c1e1d5');rect(x+3,y+2,6,1,'#c1e1d5');}ctx.globalAlpha=1;
+  const cx=state.ship.x,cz=state.ship.z;
+  const sw=Math.round(w*1.55),sh=Math.round(h*1.55);
+  const limitX=(sw-w)*.33/zoom,limitZ=(sh-h)*.33/zoom;
+  if(seaLayer.width!==sw||seaLayer.height!==sh||seaScale!==zoom||seaKnown!==state.charted.length||Math.abs(cx-seaAnchorX)>limitX||Math.abs(cz-seaAnchorZ)>limitZ){
+   seaLayer.width=sw;seaLayer.height=sh;seaCtx.imageSmoothingEnabled=false;
+   drawGeography(seaCtx,sw,sh,cx,cz,zoom);drawFog(seaCtx,sw,sh,cx,cz,zoom,state.charted);
+   seaAnchorX=cx;seaAnchorZ=cz;seaScale=zoom;seaKnown=state.charted.length;
+  }
+  ctx.drawImage(seaLayer,Math.round(w/2-sw/2+(seaAnchorX-cx)*zoom),Math.round(h/2-sh/2+(seaAnchorZ-cz)*zoom));
+  ctx.globalAlpha=.25;
+  for(let i=0;i<45;i++){const wx=(i*89+time*6)%w,wy=(i*53+time*2)%h;rect(wx,wy,11,1,'#b9e5df');rect(wx+4,wy+2,6,1,'#e0f2e6');}
+  ctx.globalAlpha=1;
   const x=v=>w/2+(v-cx)*zoom,z=v=>h/2+(v-cz)*zoom;
-  ctx.strokeStyle='#e5ce87';ctx.setLineDash([3,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(w/2,h/2);for(const p of state.route||[])ctx.lineTo(x(p.x),z(p.z));ctx.stroke();ctx.setLineDash([]);
-  hit=[];for(const p of PORTS){if(!state.discovered.includes(p.id))continue;const px=x(p.x),py=z(p.z);if(px<-30||px>w+30||py<70||py>h-80)continue;rect(px-4,py-4,8,8,'#332e2a');rect(px-2,py-2,4,4,state.discovered.includes(p.id)?'#ffd48a':'#b2bdba');text(p.name,px,py-10,11,'#fff0cb','center');hit.push({x:px-24,y:py-26,w:48,h:48,port:p.id});}
-  for(const p of state.pirates)if(p.hull>0&&state.charted.includes(Math.floor(p.x/24)+':'+Math.floor(p.z/24))){ship(x(p.x),z(p.z),p.heading,'galleon',true,.65);}
-  if(state.fleet>=2)ship(w/2-24,h/2+25,state.ship.heading,'cog',false,.7);
-  if(state.fleet>=3)ship(w/2+24,h/2+28,state.ship.heading,'galleon',false,.7);
-  ship(w/2,h/2,state.ship.heading,state.shipType,false,.9,state.ship.cannons);
-  const pulse=Math.sin(time*3)*2;ctx.strokeStyle='#c8e4df88';ctx.beginPath();ctx.arc(w/2,h/2,21+pulse,0,Math.PI*2);ctx.stroke();
-  text('북',w-25,102,12);rect(w-26,109,2,23,C.gold);text('↑',w-25,119,14,C.gold,'center');
-  text('실제 해안선 · 국가 경계는 위치 참고선',w/2,h-155,9,'#cee1d5','center');
+  if(state.route.length){
+   ctx.strokeStyle='#f0d58b';ctx.setLineDash([4,5]);ctx.lineWidth=1.5;
+   ctx.beginPath();ctx.moveTo(w/2,h/2);for(const p of state.route)ctx.lineTo(x(p.x),z(p.z));ctx.stroke();ctx.setLineDash([]);
+  }
+  hit=[];
+  for(const p of PORTS){
+   if(!state.discovered.includes(p.id))continue;
+   const px=x(p.x),py=z(p.z);if(px<-30||px>w+30||py<75||py>h-80)continue;
+   rect(px-6,py-4,12,9,'#27302b');rect(px-4,py-7,8,6,'#be9965');rect(px-2,py-10,4,4,'#e1c18c');
+   text(p.name,px,py-16,11,'#fff0cb','center');hit.push({x:px-25,y:py-30,w:50,h:48,port:p.id});
+  }
+  for(const p of state.pirates)if(p.hull>0&&state.charted.includes(Math.floor(p.x/24)+':'+Math.floor(p.z/24))){
+   const enemy=p.neutral?'#9dc5cd':'#e5a28e';ship(x(p.x),z(p.z),p.heading,p.neutral?'cog':'galleon',!p.neutral,.7,p.neutral?4:10);
+   const distance=Math.hypot(p.x-cx,p.z-cz);
+   if(distance<45){const ex=x(p.x),ey=z(p.z);rect(ex-19,ey-31,38,4,'#302b28');rect(ex-19,ey-31,38*p.hull/p.maxHull,4,enemy);}
+  }
+  if(state.fleet>=2)ship(w/2-26,h/2+29,state.ship.heading,'cog',false,.73,6);
+  if(state.fleet>=3)ship(w/2+27,h/2+31,state.ship.heading,'galleon',false,.73,8);
+  // 배 후미의 항적과 선회 거품
+  const motion=Math.abs(state.ship.velocity||0);if(motion>.6){
+   const sn=Math.sin(state.ship.heading),cs=Math.cos(state.ship.heading);
+   ctx.strokeStyle='#ddf5e39c';ctx.lineWidth=2;
+   for(let i=0;i<3;i++){const off=14+i*8+Math.sin(time*5+i)*2;ctx.beginPath();ctx.moveTo(w/2-sn*off-cs*(7+i*2),h/2-cs*off+sn*(7+i*2));ctx.lineTo(w/2-sn*(off+12)-cs*(9+i*3),h/2-cs*(off+12)+sn*(9+i*3));ctx.stroke();}
+  }
+  ship(w/2,h/2,state.ship.heading,state.shipType,false,1.02,state.ship.cannons);
+  const pulse=Math.sin(time*3)*2;ctx.strokeStyle='#c8e4df88';ctx.beginPath();ctx.arc(w/2,h/2,26+pulse,0,Math.PI*2);ctx.stroke();
+  const region=cz<-626?'북해 · 잉글랜드 해협':cz<-540?'잉글랜드 해협 · 비스케이만':cx>48&&cz>-545?'지중해 · 티레니아해':'대서양 · 이베리아 연안';
+  rect(w/2-85,77,170,20,'#17313fc7');text(region,w/2,91,11,'#f2e4c3','center');
+  text('북',w-23,110,12);rect(w-24,115,2,19,C.gold);text('↑',w-23,124,14,C.gold,'center');
  }
+
  const places=[['market','교역소',.18,.35,'#9d6750'],['fleet','조선소',.77,.63,'#596f70'],['crew','선술집',.22,.60,'#ae7546'],['palace','왕궁 · 총독부',.72,.29,'#726b8d'],['quests','탐험가 사무실',.72,.47,'#497c72'],['jobs','직업 길드',.25,.79,'#74694a']];
  function building(x,y,bw,bh,label,color){rect(x-3,y+bh-2,bw+6,6,'#493d2f');rect(x,y,bw,bh,'#d0b78b');rect(x-5,y-12,bw+10,14,color);rect(x+2,y-19,bw-4,9,color);rect(x+7,y+10,13,13,'#3e5960');rect(x+bw-20,y+10,13,13,'#3e5960');rect(x+bw/2-7,y+bh-23,14,23,'#634b36');rect(x+bw/2-2,y+bh-13,2,3,'#e7c27d');rect(x-8,y+bh+6,bw+16,20,'#332e28');text(label,x+bw/2,y+bh+20,11,'#f2d7a1','center');}
  function town(){
