@@ -134,7 +134,7 @@ buildWorld(live){
  floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
  const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
  const grove=[],high=[],crooked=[],rocks=[],pebbles=[],fences=[];
- const count=this.mobile?74:172;
+ const detail=live.environment?.quality||'auto';const count=detail==='low'?(this.mobile?38:85):detail==='high'?(this.mobile?93:224):(this.mobile?74:172);
  for(let i=0;i<count;i++){
   const x=65+random(i+1)*(live.worldW-130),y=65+random(i+202)*(live.worldH-130);
   if(dungeon){if(i%3===0)rocks.push([x,y,.6+random(i+35)*.75,random(i+48)*6]);continue;}
@@ -256,6 +256,36 @@ buildWorld(live){
   torches.push([138,195,1.75,0],[live.worldW-153,195,1.75,0],[138,live.worldH-185,1.75,0],[live.worldW-153,live.worldH-185,1.75,0]);
   this.instances('lantern',torches);
  }
+ // 눈·비·잿가루·모래바람: 카메라 주변의 경량 입자. 지형·충돌·판정에는 영향 없음.
+ const climate=live.environment||{},kind=dungeon?'interior':climate.weather||'clear';
+ if(climate.effects!==false&&['rain','snow','ash','dust'].includes(kind)){
+  const low=climate.quality==='low',high=climate.quality==='high';
+  const n=this.mobile?(low?38:high?110:76):(low?90:high?290:190);
+  const array=new Float32Array(n*(kind==='rain'?6:3));
+  for(let i=0;i<n;i++){
+   const j=i*(kind==='rain'?6:3),x=(random(i+11)-.5)*18,y=.55+random(i+94)*(kind==='rain'?8:6),z=(random(i+707)-.5)*15;
+   array[j]=x;array[j+1]=y;array[j+2]=z;
+   if(kind==='rain'){array[j+3]=x+.13;array[j+4]=y+.38;array[j+5]=z;}
+  }
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(array,3));
+  const color=kind==='rain'?0xb5c9db:kind==='snow'?0xf4f8ff:kind==='ash'?0xd3a6a0:0xd5bd8f;
+  const material=kind==='rain'?new THREE.LineBasicMaterial({color,transparent:true,opacity:this.mobile?.33:.43,depthWrite:false}):
+   new THREE.PointsMaterial({color,size:kind==='snow'?.115:.085,transparent:true,opacity:this.mobile?.55:.68,depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending});
+  const mesh=kind==='rain'?new THREE.LineSegments(geometry,material):new THREE.Points(geometry,material);
+  mesh.frustumCulled=false;mesh.userData.ownedGeometry=true;mesh.userData.ownedMaterial=true;this.staticRoot.add(mesh);
+  this.climateParticles={mesh,position:array,count:n,kind};
+ }
+ // 비가 내리면 광장 돌바닥과 옛 제국의 길에 고인 빗물 반사.
+ if(kind==='rain'){
+  const quantity=this.mobile?12:30;
+  const geometry=new THREE.CircleGeometry(1,14),material=new THREE.MeshBasicMaterial({color:0x8899a3,transparent:true,opacity:.17,depthWrite:false,side:THREE.DoubleSide});
+  const puddles=new THREE.InstancedMesh(geometry,material,quantity),matrix=new THREE.Matrix4(),rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2);
+  for(let i=0;i<quantity;i++){
+   const x=110+random(i+162)*Math.max(1,live.worldW-220),y=130+random(i+817)*Math.max(1,live.worldH-250),size=.26+random(i+981)*.67;
+   matrix.compose(new THREE.Vector3(x*SCALE,.033,y*SCALE),rotation,new THREE.Vector3(size,size*.57,1));puddles.setMatrixAt(i,matrix);
+  }
+  puddles.instanceMatrix.needsUpdate=true;puddles.userData.ownedGeometry=true;puddles.userData.ownedMaterial=true;this.staticRoot.add(puddles);
+ }
  // 한 번 생성한 점군으로 먼지·눈·반딧불의 미세한 이동을 표현한다.
  const vertices=[],particleCount=this.mobile?42:95;
  for(let j=0;j<particleCount;j++)vertices.push((random(j+827)-.5)*32,.7+random(j+422)*4,(random(j+1274)-.5)*28);
@@ -265,13 +295,19 @@ buildWorld(live){
  const cloudMaterial=new THREE.PointsMaterial({color:tint,size:zone===5?.1:.075,transparent:true,opacity:this.mobile?.37:.48,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true});
  this.weather=new THREE.Points(cloudGeometry,cloudMaterial);
  this.weather.userData.ownedGeometry=true;this.weather.userData.ownedMaterial=true;this.weather.frustumCulled=false;this.staticRoot.add(this.weather);
- // 광원은 이동·전투 계산과 독립. 모바일에서 점광원 수를 제한한다.
- if(zone===0||dungeon||zone===2||zone===6){
-  const points=dungeon?[[138,195],[live.worldW-153,live.worldH-185]]:zone===0?[[700,300],[650,750]]:[[895,620]];
-  for(const [x,y] of points.slice(0,this.mobile?1:2)){
-   const light=new THREE.PointLight(dungeon?0xedab75:0xcda577,dungeon?3.6:2.5,dungeon?7:8,2);
-   light.position.set(x*SCALE,2.4,y*SCALE);this.staticRoot.add(light);
-  }
+ // 횃불·가스등이 밤에 밝아지고 새벽에 희미해진다. 모바일 광원 최대 2개.
+ const points=dungeon?[[138,195],[live.worldW-153,live.worldH-185],[825,445]]:zone===0?[[355,360],[1030,360],[650,750],[750,750]]:
+ zone===2?[[895,620],[260,715]]:zone===6?[[430,710],[975,610]]:
+ zone===7?[[720,320],[950,600]]:zone===8?[[370,440],[1120,440]]:
+ zone===9?[[520,680],[1150,700]]:zone===10?[[570,690],[1130,690]]:[[460,640],[870,630]];
+ for(const [i,[x,y]] of points.slice(0,this.mobile?2:4).entries()){
+  const fx=x*SCALE,fz=y*SCALE;
+  const light=new THREE.PointLight(0xffb76e,1.3,11,2);light.position.set(fx,1.75,fz);
+  this.staticRoot.add(light);this.torchLights.push(light);
+  const flame=new THREE.Mesh(new THREE.IcosahedronGeometry(.14,0),new THREE.MeshBasicMaterial({color:0xffae4e,transparent:true,opacity:.65,depthWrite:false,toneMapped:false}));
+  flame.position.set(fx,1.75,fz);flame.userData.ownedGeometry=true;flame.userData.ownedMaterial=true;
+  this.staticRoot.add(flame);this.torchFlames.push(flame);
+  if(!dungeon&&zone!==0&&i<2)this.staticModel('lantern',x,y,1.7);
  }
 }
  modelRole(kind,obj,live){if(kind==='player')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(live.state.player.classId)]||'warrior';if(kind==='ai')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(obj.classId)]||HEROES[(Number(obj.id?.slice(2))||0)%5];const name=obj.name||'';if(/슬라임/.test(name))return'slime';if(/토끼/.test(name))return'bunny';if(/골렘|수호자|청동|도금|인형/.test(name))return'golem';if(/망령|유령|원혼|월식/.test(name))return'ghost';if(/박쥐|마수|키메라/.test(name))return'winged';return'orc';}
