@@ -253,6 +253,28 @@ test('canonical Vibe reserve activates owner-first budget but does not weaken QA
   assert.match(workflow,/candidate-awaiting-qa-and-deployment|verified_learning_memory_sha/);
 });
 
+test('asset reservation only hands off its own proven hosted runner slot',()=>{
+  const opts={lane:'asset-development',requestedMax:63,observedActiveHostedJobs:'12'};
+  const blocked=ownerFirstRunnerAllocation({tasks:[]},opts);
+  assert.equal(blocked.admissionClosed,true);
+  assert.equal(blocked.concurrentCeiling,0);
+  assert.equal(blocked.reserveHandoffSlot,0);
+  const handed=ownerFirstRunnerAllocation({tasks:[]},{...opts,observedCurrentReserveHostedJob:'1'});
+  assert.equal(handed.observedHostedJobs,12,'real observation is never fabricated or reduced');
+  assert.equal(handed.reserveHandoffSlot,1);
+  assert.equal(handed.concurrentCeiling,1);
+  assert.equal(handed.admissionClosed,false);
+  const atPhysicalLimit=ownerFirstRunnerAllocation({tasks:[]},{...opts,observedActiveHostedJobs:'20',observedCurrentReserveHostedJob:'1'});
+  assert.equal(atPhysicalLimit.concurrentCeiling,0,'no handoff if all 20 runners are occupied');
+  assert.equal(atPhysicalLimit.admissionClosed,true);
+  const missing=ownerFirstRunnerAllocation({tasks:[]},{lane:'asset-development',requestedMax:63,observedCurrentReserveHostedJob:'1'});
+  assert.equal(missing.concurrentCeiling,0,'unknown capacity never claims free runners');
+  const otherLane=ownerFirstRunnerAllocation({tasks:[]},{...opts,lane:'learning-idle',observedCurrentReserveHostedJob:'1'});
+  assert.equal(otherLane.concurrentCeiling,0,'non-asset lanes may not borrow proof');
+  const primary=ownerFirstRunnerAllocation({tasks:[]},{...opts,lane:'game-primary',observedCurrentReserveHostedJob:'1'});
+  assert.equal(primary.concurrentCeiling,63,'game-primary logical target unchanged when separately requested');
+});
+
 // 보조 작업: 자리가 없으면 가짜 한 슬롯을 만들지 않고 실제 여유가 관측되면 재개한다.
 test('auxiliary admission uses actual runner availability rather than logical development reservations',()=>{
   const tasks=Array.from({length:128},(_,i)=>({id:'game-'+i,status:'running',executionLane:'GAME_PRIMARY'}));
