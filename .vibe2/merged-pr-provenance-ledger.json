@@ -94806,11 +94806,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_404ab97e1c7987e2dac647c8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9956",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a25f2e3d929b69e80ce28bde6deef19f81b99584",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9956,
+        "baseBranch": "main",
+        "headBranch": "owner/cozy-stronghold-strategy-20261025",
+        "baseSha": "a25f2e3d929b69e80ce28bde6deef19f81b99584",
+        "headSha": "2bfa1cdca675aef1f5bc8820babeb67f19a65ca3",
+        "mergeCommitSha": "b3bceadda2f0b7d7efe8c03d7a78dda0b9e91443",
+        "mergedAt": "2026-10-24T15:42:02Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5aa44c5bda8abc56492f0d9143c6e8783c030adfd76088e5026ac25ce36652c8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/cozy-stronghold-strategy-20261025",
+        "candidateSha": "2bfa1cdca675aef1f5bc8820babeb67f19a65ca3"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 144,
+        "deletedLineCount": 140,
+        "changedFiles": [
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/production-buildings.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js"
+        ],
+        "codingRelevantFiles": [
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/production-buildings.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9956",
+        "merge-commit:b3bceadda2f0b7d7efe8c03d7a78dda0b9e91443",
+        "base-main:a25f2e3d929b69e80ce28bde6deef19f81b99584"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 743
+    "total": 744
   }
 }
