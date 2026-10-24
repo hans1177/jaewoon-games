@@ -454,7 +454,7 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
   'cameraFrustum','creatureBounds','actorVisualTarget','cameraMotionAlpha',
   'return function synchronizeNativeCreatures(state,px,py,stamp){'+body)(
    true,.58,missing,new Map([['shadowwolf','wolf.fbx']]),new Map([['wolf.fbx',source]]),
-   null,actors,speciesMaterials,()=>({scale:{setScalar(){}},position:{},
+   null,actors,speciesMaterials,()=>({scale:{setScalar(){}},position:{set(){}},
      traverse(fn){fn({isMesh:true,material,userData:{}})}}),
    {Group,Color:class{constructor(){} }}, {add(){},remove(){}},interactables,{now:()=>1000},1/48,
    {intersectsSphere:bounds=>bounds.center.x<100},
@@ -636,6 +636,9 @@ test('native species motion uses actual movement and restarts one-shot attacks w
   assert.match(moduleSource,/trackedCameraX=hardCameraReset\?centerX:/);
   assert.match(moduleSource,/hero\.avatar\.position\.x\+=\(centerX-hero\.avatar\.position\.x\)\*cameraMotionAlpha/);
   assert.match(moduleSource,/actor\.anchor\.position\.lerp\(actorVisualTarget,cameraMotionAlpha\)/);
+  assert.match(moduleSource,/hero\.model\.position\.set\(0,hero\.model\.userData\.visualGroundY,0\)/);
+  assert.match(moduleSource,/actor\.model\.position\.set\(0,actor\.visualGroundY,0\)/);
+  assert.match(moduleSource,/desiredHeroYaw/);
   assert.match(moduleSource,/bolt\.kind==='mageBolt'/);
   assert.match(moduleSource,/bolt\.kind==='playerArrow'/);
   assert.match(moduleSource,/bolt\.kind==='sporeOrb'/);
