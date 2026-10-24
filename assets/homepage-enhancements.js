@@ -25,6 +25,7 @@ const formatDate=value=>{
 const normalizePlatform=value=>{
   const p=String(value??'').trim().toUpperCase().replace(/[\s-]+/g,'_');
   if(p==='ROBLOX')return'ROBLOX';
+  if(['WEB','GENERAL_WEB','HTML_JS_WEBGL'].includes(p))return'WEB';
   if(['UNITY','UNITY_ANDROID','ANDROID_MOBILE'].includes(p))return'UNITY';
   if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(p))return'FORTNITE_UEFN';
   return'';
@@ -32,6 +33,7 @@ const normalizePlatform=value=>{
 const platformLabel=value=>{
   const p=normalizePlatform(value);
   if(p==='UNITY')return'Unity Android';
+  if(p==='WEB')return'웹';
   if(p==='ROBLOX')return'Roblox';
   if(p==='FORTNITE_UEFN')return'Fortnite UEFN';
   return'플랫폼 선택 필요';
@@ -68,6 +70,7 @@ const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).disp
 // 집중 개발 3개와 노출 범위는 별개다. 명시적으로 개발 제외된 게임만 숨긴다.
 const activeLifecycle=row=>{
   const id=gameIdOf(row);
+  if(row?.ownerDevelopmentStopped===true||['OWNER_STOPPED','STOPPED'].includes(String(lifecycleOf(row).state||row?.lifecycleState||'').toUpperCase()))return false;
   if(runtimeInfo(row).developmentActive!==true)return false;
   if(!id||!['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase()))return false;
   const sources=sourcesOf(row),web=sources.web||{};
@@ -407,9 +410,11 @@ function buildGameCenter(catalog,status){
   const hub=document.getElementById('gameHub');
   if(!hub)return;
   for(const id of ['homeInternalReleaseFallback','homeReleaseGameCenter','homeRobloxDeploymentCenter','homeWebGameCenter'])document.getElementById(id)?.remove();
-  const available=internalReleaseRows(catalog,status);
+  // 오너 격리 게임은 개발·배포·과거 타이틀 카드에 자동 재노출하지 않는다.
+  const stopped=new Set(catalog?.ownerStoppedGameIds||[]);
+  const available=internalReleaseRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game)));
   const availableIds=new Set(available.map(gameIdOf));
-  const development=developmentRows(catalog,status).filter(game=>!availableIds.has(gameIdOf(game)));
+  const development=developmentRows(catalog,status).filter(game=>!stopped.has(gameIdOf(game))&&!availableIds.has(gameIdOf(game)));
   buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임','입장 가능한 게임 · 로비 체험 또는 본게임 가능',available);
   buildShelf(hub,'homeDevelopmentGameCenter','개발 중','설계·로비 구현과 검증이 진행 중인 게임',development);
   document.documentElement.dataset.homePlatformAvailableCount=String(available.length);
