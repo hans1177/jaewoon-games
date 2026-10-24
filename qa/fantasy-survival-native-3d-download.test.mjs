@@ -164,7 +164,7 @@ test('3D preview reads existing biome classifier and saved construction state, n
  assert.match(index,/world3d\.frame\(state,regionAt,NATIVE_SCENE_LANDMARKS\[state\.area\]\)/);
  assert.match(moduleSource,/function frame\(state,regionAt,regionScene=null\)/);
  assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
- assert.match(moduleSource,/tile\.position\.set\(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ\)/);
+ assert.match(moduleSource,/seamlessGround\.position\.set\(groundX,\.015,groundZ\)/);
  assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
@@ -195,7 +195,7 @@ test('native forest ground is seamless and follows original biome classification
 });
 test('native forest movement clips are faster without changing gameplay-owned world movement or combat rules',()=>{
  assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
- assert.match(moduleSource,/heroAction\.setDuration\(\.28\)/);
+ assert.match(moduleSource,/if\(pose==='attack'\)heroAction\.setDuration\(/);
  assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(pose==='move'\?1\.3:1\)/);
  assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(attacking\?1\.35:moving\?1\.25:1\)/);
  assert.match(moduleSource,/heroMixer\.update\(Math\.min\(\.12,/);
@@ -610,19 +610,19 @@ test('all existing native biome environments show distinct authored palette and 
  }
   assert.match(moduleSource,/const choices=SCENERY_KIND\[biome\]\|\|SCENERY_KIND\.forest,kind=choices\[\(hash>>>3\)%choices\.length\]/);
   assert.match(moduleSource,/floorTint\.setHex\(palette\.floor\)\.multiplyScalar\(\.94\+hash%9\*\.01\)/);
- assert.match(moduleSource,/scene\\.fog\\.far=weatherVisualEffects/);
- assert.match(moduleSource,/for\\(const mark of regionScene\\?\\.landmarks\\|\\|\\[\\]\\)/);
+ assert.match(moduleSource,/scene\.fog\.far=weatherVisualEffects/);
+ assert.match(moduleSource,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
 });
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
- assert.match(moduleSource,/const moving=moveDelta>\\.08&&poseElapsed>0&&poseElapsed<420/);
- assert.match(moduleSource,/actor\\.lastAttackStamp!==e\\.attackAt/);
+ assert.match(moduleSource,/const moving=moveDelta>\.08&&poseElapsed>0&&poseElapsed<420/);
+ assert.match(moduleSource,/actor\.lastAttackStamp!==e\.attackAt/);
   assert.match(moduleSource,/setLoop\(attacking\?THREE\.LoopOnce:THREE\.LoopRepeat/);
- assert.match(moduleSource,/actor\\.anchor\\.position\\.set\\(e\\.x\\*SCALE,0,e\\.y\\*SCALE\\)/);
- assert.match(moduleSource,/selectedAppearance\\?\\.model==='mage'\\?\\.43/);
- assert.match(moduleSource,/bolt\\.kind==='mageBolt'/);
- assert.match(moduleSource,/bolt\\.kind==='playerArrow'/);
- assert.match(moduleSource,/bolt\\.kind==='sporeOrb'/);
- assert.match(moduleSource,/bolt\\.kind==='sunOrb'/);
- assert.match(moduleSource,/mageBoltGeometry\\.dispose\\(\\)/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/selectedAppearance\?\.model==='mage'\?\.43/);
+ assert.match(moduleSource,/bolt\.kind==='mageBolt'/);
+ assert.match(moduleSource,/bolt\.kind==='playerArrow'/);
+ assert.match(moduleSource,/bolt\.kind==='sporeOrb'/);
+ assert.match(moduleSource,/bolt\.kind==='sunOrb'/);
+ assert.match(moduleSource,/mageBoltGeometry\.dispose\(\)/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
