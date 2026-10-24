@@ -166,8 +166,8 @@ test('GitHub PWA cloud development and local WEB Vibe run independently',()=>{
   const postJob=pages.indexOf('  post-publication-3d-smoke:');
   const browser=pages.indexOf('id: forest_native_3d_live_qa');
   const browserIssue=pages.indexOf('name: Register post-publication WebGL smoke failure');
-  assert.ok(published>0&&live>published&&routeIssue>live&&postJob>routeIssue
-    &&browser>postJob&&browserIssue>browser,
+  assert.ok(published>0&&postJob>published&&live>postJob&&routeIssue>live
+    &&browser>routeIssue&&browserIssue>browser,
     'Pages publication must precede route and independent 3D browser defect reporting');
   assert.match(pages.slice(postJob,browser),/needs: publish-pages/);
   assert.match(pages.slice(postJob,browser),/POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
