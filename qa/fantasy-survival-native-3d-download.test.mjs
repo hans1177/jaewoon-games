@@ -607,23 +607,21 @@ test('all existing native biome environments show distinct authored palette and 
  const m=moduleSource.indexOf('const SCENERY_KIND=Object.freeze({'),n=moduleSource.indexOf('});',m);
  const kinds=new Function(moduleSource.slice(m,n+3)+';return SCENERY_KIND;')();
  for(const name of ['forest','jungle','swamp','snow','volcano','crystal','desert','underwater','underwater-dungeon']){
-  assert.equal(kinds[name].length,2,name);
+  assert.equal(kinds[name].length,3,name);
  }
- assert.match(moduleSource,/const kind=sceneryChoices\\[hash%sceneryChoices\\.length\\]/);
- assert.match(moduleSource,/tileSeed%17\\*\\.01/);
- assert.match(moduleSource,/scene\\.fog\\.far=weatherVisualEffects/);
- assert.match(moduleSource,/for\\(const mark of regionScene\\?\\.landmarks\\|\\|\\[\\]\\)/);
+ assert.ok(moduleSource.includes('const kind=sceneryChoices[hash%sceneryChoices.length]'));
+ assert.ok(moduleSource.includes('tileSeed%17*.01'));
+ assert.ok(moduleSource.includes('scene.fog.far=weatherVisualEffects'));
+ assert.ok(moduleSource.includes('for(const mark of regionScene?.landmarks||[])'));
 });
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
- assert.match(moduleSource,/const moving=moveDelta>\\.08&&poseElapsed>0&&poseElapsed<420/);
- assert.match(moduleSource,/actor\\.lastAttackStamp!==e\\.attackAt/);
- assert.match(moduleSource,/setLoop\\(attacking\\?THREE\\.LoopOnce:THREE\\.LoopRepeat/);
- assert.match(moduleSource,/actor\\.anchor\\.position\\.set\\(e\\.x\\*SCALE,0,e\\.y\\*SCALE\\)/);
- assert.match(moduleSource,/selectedAppearance\\?\\.model==='mage'\\?\\.43/);
- assert.match(moduleSource,/bolt\\.kind==='mageBolt'/);
- assert.match(moduleSource,/bolt\\.kind==='playerArrow'/);
- assert.match(moduleSource,/bolt\\.kind==='sporeOrb'/);
- assert.match(moduleSource,/bolt\\.kind==='sunOrb'/);
- assert.match(moduleSource,/mageBoltGeometry\\.dispose\\(\\)/);
+ assert.ok(moduleSource.includes('const moving=moveDelta>.08&&poseElapsed>0&&poseElapsed<420'));
+ assert.ok(moduleSource.includes('actor.lastAttackStamp!==e.attackAt'));
+ assert.ok(moduleSource.includes('setLoop(attacking?THREE.LoopOnce:THREE.LoopRepeat'));
+ assert.ok(moduleSource.includes('actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE)'));
+ assert.ok(moduleSource.includes("selectedAppearance?.model==='mage'?.43"));
+ for(const type of ['mageBolt','playerArrow','sporeOrb','sunOrb'])
+  assert.ok(moduleSource.includes("bolt.kind==='"+type+"'"),type);
+ assert.ok(moduleSource.includes('mageBoltGeometry.dispose()'));
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
