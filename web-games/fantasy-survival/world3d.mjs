@@ -764,7 +764,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
         const biome=isInterior?currentBiome:String(classify(gx/SCALE,gz/SCALE)||'forest');
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-        if(mobileBudget?hash%3===0:hash%4!==0)continue;
+        if(mobileBudget?hash%3!==0:hash%4===0)continue;
         const choices=SCENERY_KIND[biome]||SCENERY_KIND.forest,kind=choices[(hash>>>3)%choices.length];
         let batch=sceneryBatches.get(kind);
         if(!batch&&models.has(kind)){
