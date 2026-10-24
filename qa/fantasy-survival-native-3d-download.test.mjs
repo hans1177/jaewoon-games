@@ -492,7 +492,7 @@ test('loading and errors never invoke a 2D gameplay renderer',()=>{
  const draw=index.split('function draw(){')[1]?.split('function syncRuntimeMeta()')[0];
  assert.ok(draw);
  assert.doesNotMatch(draw,/drawBackground|drawCreature|drawPlayer|drawCave|drawUnderwater/);
- assert.match(index,/if\(ready\)\{update\(dt,now\);syncRuntimeMeta\(\);draw\(\)\}/);
+ assert.match(index,/if\(ready\)\{update\(dt,now\);syncRuntimeMeta\(\);updateQuestGuide\(now\);draw\(\)\}/);
  assert.match(index,/nativeStatus\.hidden=ready/);
  assert.match(index,/nativeRetry\.addEventListener\('click'/);
  assert.doesNotMatch(index,/3d-fallback-/);
