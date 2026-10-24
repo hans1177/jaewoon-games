@@ -221,6 +221,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   let undeadSource=null,undeadClips=[],undeadModelHeight=1;
   // 로딩: 현재 위치에 필요한 종부터 거리순, 모바일은 동시 두 요청만 처리한다.
   const nativeCreatureSources=new Map(),creatureRequests=new Map(),creatureFailures=new Map();
+  // 같은 원본 모델을 쓰는 여러 종도 게임에 이미 정의된 색상으로 구분한다.
+  // 종별 재질을 공유해 개체마다 GPU 재질을 반복 생성하지 않는다.
+  const nativeSpeciesMaterials=new Map();
   let loadingCreatureCount=0,nextCreatureScan=0;
   async function loadCreatureSource(file){
     if(disposed||nativeCreatureSources.has(file)||creatureRequests.has(file))return;
@@ -258,11 +261,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         return;
       }
       nativeCreatureSources.set(file,{model,clips,height:Math.max(.1,box.max.y-box.min.y),floor:box.min.y});
+      creatureFailures.delete(file);
       if(file==='skeleton-warrior.glb'){
         undeadSource=model;undeadClips=clips;undeadModelHeight=Math.max(.1,box.max.y-box.min.y);
       }
     }catch(error){
       const previous=creatureFailures.get(file);
+      // 간헐적인 모바일 네트워크/디코딩 실패는 영구 차단하지 않는다.
+      // 재시도 간격은 5초부터 최대 60초로 제한하고 경고 로그는 한 번만 남긴다.
       creatureFailures.set(file,{at:performance.now(),attempts:(previous?.attempts||0)+1});
       if(!previous)console.warn('CC0 original 3D monster unavailable: '+file,error);
     }finally{loadingCreatureCount--;creatureRequests.delete(file)}
@@ -445,6 +451,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         const source=nativeCreatureSources.get(kind);
         const model=cloneAnimatedRig(source.model),scale=Math.max(.72,Math.min(3.8,
           (Number(e.type?.r)||20)*SCALE*2.2))/source.height;
+        // 동일 CC0 원본을 재사용하되 기존 몹 정의 색상만 약하게 반영한다.
+        // 지오메트리·리그·텍스처와 게임의 HP/공격/드롭/저장값은 그대로 둔다.
+        const speciesId=e.type.id;
+        let materials=nativeSpeciesMaterials.get(speciesId);
+        if(!materials){materials=new Map();nativeSpeciesMaterials.set(speciesId,materials)}
+        const tint=new THREE.Color(e.type.color||'#ffffff');
+        model.traverse(child=>{
+          if(!child.isMesh||!child.material)return;
+          const tintMaterial=original=>{
+            if(!original)return original;
+            let material=materials.get(original.uuid);
+            if(!material){
+              material=original.clone();
+              if(material.color)material.color.lerp(tint,.22);
+              materials.set(original.uuid,material);
+            }
+            return material;
+          };
+          child.material=Array.isArray(child.material)
+            ?child.material.map(tintMaterial):tintMaterial(child.material);
+        });
         model.scale.setScalar(scale);
         model.position.y=-source.floor*scale;
         const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
@@ -577,8 +604,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         if(e.hp<=0||e.area!==state.area||distance>1200)continue;
         const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
         const failed=creatureFailures.get(file);
+        const retryDelay=failed?Math.min(60000,5000*2**Math.min(4,failed.attempts-1)):0;
         if(!file||nativeCreatureSources.has(file)||creatureRequests.has(file)
-          ||(failed&&(failed.attempts>=3||sampleNow-failed.at<10000)))continue;
+          ||(failed&&sampleNow-failed.at<retryDelay))continue;
         needed.set(file,Math.min(needed.get(file)??Infinity,distance));
       }
       for(const [file] of [...needed].sort((a,b)=>a[1]-b[1])){
@@ -755,6 +783,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
     for(const model of models.values()){model.geometry.dispose();model.material.dispose()}
+    // 종별 공유 재질은 원본 텍스처/메시와 별도로 한 번만 해제한다.
+    for(const materials of nativeSpeciesMaterials.values())
+      for(const material of materials.values())material.dispose();
+    nativeSpeciesMaterials.clear();
     for(const source of nativeCreatureSources.values())source.model.traverse(o=>{
       if(!o.isMesh)return;
       o.geometry?.dispose();
