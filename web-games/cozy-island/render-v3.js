@@ -139,7 +139,8 @@ export class IslandRendererV3 {
         item.mesh.position.set(x*SC,.03,y*SC);
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
-      this.jungle3.visible=this.jungleGrass3.visible=game.world.h>1200;
+      const jungle=!!game.state.southernJungle?.unlocked||game.world.h>1200;
+      this.jungle3.visible=this.jungleGrass3.visible=jungle;
       const north=!!game.state.northernRegion?.unlocked;
       const west=!!game.state.cozyExpansionV4?.west?.unlocked;
       const volcano=!!game.state.villageExpansionV14?.townHallLv3&&north;
@@ -169,7 +170,7 @@ export class IslandRendererV3 {
         game.barracks.x,game.barracks.y,3);
       put('ship','bench',775,760,1.4);put('fishing','bench',520,430,1.4);
       if(!game.state.expanded)put('east-gate','gate',1325,600,3.0);
-      if(game.world.h>1200)put('jungle-gate','gate',2170,1080,3.0);
+      if(jungle)put('jungle-gate','gate',2170,1080,3.0);
       for(let i=0;i<game.state.plots.length;i++){
         const crop=game.state.plots[i];
         put('plot:'+i,crop.state==='growing'?'crop':'stone',
@@ -186,7 +187,7 @@ export class IslandRendererV3 {
         'enemy',unit.x,unit.y,unit.boss?2.5:1.9);
       if(game.state.expanded)for(const wolf of game.wolves)if(wolf.alive)
         put('wolf:'+wolf.id,'wolf',wolf.x,wolf.y,wolf.boss?2.8:1.6);
-      if(game.world.h>1200)for(const boar of game.boars||[])if(boar.alive)
+      if(jungle)for(const boar of game.boars||[])if(boar.alive)
         put('boar:'+boar.id,'boar',boar.x,boar.y,1.75);
       if(north)for(const animal of game.northernMobs||[])if(animal.alive)
         put('north:'+animal.id,animal.type==='wolf'?'wolf':'snake',animal.x,animal.y,1.7);
