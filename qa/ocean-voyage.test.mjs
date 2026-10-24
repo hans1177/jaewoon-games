@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion} from '../web-games/ocean-voyage/engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -14,9 +14,9 @@ test('separate save key, valid round trip, invalid save stays isolated',()=>{
  assert.equal(restoreGame('not-json').ship.hull,100);
  assert.equal(restoreGame('{"version":999}').coins,3400);
 });
-test('eight distinct ports and six independently priced goods',()=>{
- assert.equal(PORTS.length,8);assert.equal(new Set(PORTS.map(p=>p.id)).size,PORTS.length);
- assert.equal(GOODS.length,6);
+test('European ports and specialty goods have finite independent prices',()=>{
+ assert.equal(PORTS.length,13);assert.equal(new Set(PORTS.map(p=>p.id)).size,PORTS.length);
+ assert.equal(GOODS.length,13);
  for(const p of PORTS)for(const g of GOODS){
   const buy=priceAt(p.id,g.id,2,'buy'),sell=priceAt(p.id,g.id,2,'sell');
   assert.ok(buy>sell&&sell>0);
@@ -59,20 +59,20 @@ test('A star route targets exact harbor and auto navigation makes progress',()=>
 });
 test('port discoverability, provisions and periodic economy remain stable',()=>{
  let s=newGame();
- s.ship.x=70;s.ship.z=-45;
+ const harbor=PORTS.find(p=>p.id==='coral');s.ship.x=harbor.x;s.ship.z=harbor.z;
  s=stepSea(s,{manual:true},.1);
  assert.ok(s.discovered.includes('coral'));
  const day=s.day;for(let i=0;i<20;i++)s=stepSea(s,{manual:true},1);
  assert.ok(s.day>day);assert.ok(s.ship.provisions<80);
 });
 test('broadside fire needs lateral alignment and reload; pirates damage only near',()=>{
- const s=newGame();s.ship.x=51;s.ship.z=4;s.ship.heading=0;
+ const s=newGame();s.ship.x=s.pirates[0].x-12;s.ship.z=s.pirates[0].z;s.ship.heading=0;
  const shot=fireCannons(s);
  assert.equal(shot.ok,true);
  assert.ok(shot.state.pirates[0].hull<s.pirates[0].hull);
  assert.ok(shot.state.ship.cooldown>0);
  assert.equal(fireCannons(shot.state).ok,false);
- const forward=newGame();forward.ship.x=63;forward.ship.z=-7;forward.ship.heading=0;
+ const forward=newGame();forward.ship.x=forward.pirates[0].x;forward.ship.z=forward.pirates[0].z-11;forward.ship.heading=0;
  assert.equal(fireCannons(forward).ok,false);
 });
 test('delivery contracts require matching port and enough cargo',()=>{
@@ -88,7 +88,7 @@ test('delivery contracts require matching port and enough cargo',()=>{
  assert.equal(done.state.cargo[q.good],0);
  assert.equal(done.state.coins,at.coins+q.reward);
 });
-test('all rendered ship, dock and harbor GLB assets are real Kenney CC0 sources',()=>{
+test('legacy Kenney GLB sources are preserved while pixel renderer uses geography',()=>{
  const names=['ship-medium','ship-small','ship-large','ship-pirate-medium','ship-pirate-small','structure-platform-dock','structure','palm-detailed-straight','patch-sand','cannon','chest'];
  for(const name of names){
   const filename='web-games/ocean-voyage/assets/'+name+'.glb';
@@ -100,20 +100,20 @@ test('all rendered ship, dock and harbor GLB assets are real Kenney CC0 sources'
  const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
  const render=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
  assert.match(html,/viewport-fit=cover/);
- assert.match(html,/data-hold="left"/);
- assert.match(html,/data-hold="right"/);
- assert.match(render,/GLTFLoader/);
+ assert.match(html,/id="joystickRim"/);
+ assert.match(html,/id="joystickHandle"/);
+ assert.match(render,/drawGeography/);assert.match(render,/drawFog/);
  assert.doesNotMatch(render,/new THREE\.BoxGeometry/);
 });
 
 
-test('Britain 1590 campaign starts London with two officers and separated inventory',()=>{
+test('European story starts London with captain and event-recruited companions',()=>{
  const s=newGame();
  assert.equal(PORTS[0].name,'런던');
  assert.equal(PORTS[1].name,'플리머스');
  assert.equal(canDock(s).name,'런던');
  assert.equal(s.captain,'엘리너 그레이');
- assert.deepEqual(s.crewRoster,['eleanor','thomas']);
+ assert.deepEqual(s.crewRoster,['eleanor']);assert.equal(CAPTAINS.length,5);
  assert.equal(s.equipment.telescope,1);
  assert.ok(CREW.length>=6);
  assert.ok(EQUIPMENT.length>=5);
@@ -124,10 +124,10 @@ test('regional officers only join through their home-port tavern and persist',()
  assert.equal(recruitCompanion(start,'isabel').ok,false);
  const lisbon=structuredClone(start),p=PORTS.find(p=>p.id==='gold');
  lisbon.ship.x=p.x;lisbon.ship.z=p.z;
- const joined=recruitCompanion(lisbon,'isabel');
+ lisbon.cargo.spice=2;const talked=talkCompanion(talkCompanion(lisbon,'isabel').state,'isabel').state;const joined=recruitCompanion(talked,'isabel');
  assert.equal(joined.ok,true);assert.ok(joined.state.crewRoster.includes('isabel'));
- assert.equal(joined.state.crewRoster.length,3);
- assert.equal(lisbon.crewRoster.length,2);
+ assert.equal(joined.state.crewRoster.length,2);
+ assert.equal(lisbon.crewRoster.length,1);
  assert.equal(recruitCompanion(joined.state,'isabel').ok,false);
  assert.ok(restoreGame(serializeGame(joined.state)).crewRoster.includes('isabel'));
 });
@@ -140,21 +140,11 @@ test('analogue helm changes heading and inertia persists after stick release',()
  assert.ok(release.ship.velocity>0&&release.ship.velocity<moved.ship.velocity);
  assert.equal(s.ship.velocity,0);
 });
-test('CC0-only external asset references and functional UK-era voyage UI',()=>{
- const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
- const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
- assert.match(html,/id="joystickRim"/);
- assert.match(html,/id="joystickHandle"/);
- assert.match(html,/Kenney CC0/);
- assert.match(html,/data-panel="inventory"/);
- assert.match(html,/data-panel="crew"/);
- assert.match(html,/data-panel="port"/);
- assert.match(html,/\.\/assets\/cc0\/music\/pirate_ship_in_game\.ogg/);
- assert.match(main,/recruitCompanion/);
- assert.match(main,/music\.play\(\)/);
- assert.match(main,/crowded_pub_2025\.ogg/);
- assert.match(main,/joystick\.setPointerCapture/);
- assert.match(html,/\.\/assets\/cc0\/portraits\/rpgportraits\.png/);
+test('mobile pixel interface has inventory, joystick and independent scene audio',()=>{
+ const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8'),main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ for(const id of ['joystickRim','joystickHandle','captains','seaEvent','townbar'])assert.ok(html.includes('id="'+id+'"'));
+ assert.match(html,/data-panel="inventory"/);assert.match(main,/joystick.setPointerCapture/);assert.match(main,/createOscillator/);
+ assert.doesNotMatch(html,/cdn.jsdelivr.net/);
 });
 
 test('all 15 imported CC0 media files are original SHA1-verified real binaries, not placeholders',()=>{
@@ -179,27 +169,16 @@ test('all 15 imported CC0 media files are original SHA1-verified real binaries, 
  assert.equal(portraits.readUInt32BE(16),328);
  assert.equal(portraits.readUInt32BE(20),112);
 });
-test('locally hosted Kenney CC0 navigation controls, vintage windows and sea BGM load via relative paths',()=>{
- const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
- const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
- assert.match(html,/assets\/cc0\/controls\/joystick_circle_pad_a\.png/);
- assert.match(html,/assets\/cc0\/controls\/joystick_circle_nub_a\.png/);
- assert.match(html,/assets\/cc0\/ui\/panel_border_brown_detail\.png/);
- assert.match(html,/assets\/cc0\/map\/textureWater\.png/);
- assert.match(html,/assets\/cc0\/portraits\/rpgportraits\.png/);
- assert.match(html,/assets\/cc0\/music\/pirate_ship_in_game\.ogg/);
- assert.match(main,/const kennyMap='\.\/assets\/cc0\/map\/'/);
- assert.match(main,/sea:'\.\/assets\/cc0\/music\/pirate_ship_in_game\.ogg'/);
- assert.match(main,/background-size:656px 224px/);
- assert.doesNotMatch(html,/raw\.githubusercontent\.com\/shorepine\/kenney/);
+test('geography and original portrait atlases are local and valid',()=>{
+ for(const name of ['captains','crew','harbor']){const b=fs.readFileSync('web-games/ocean-voyage/assets/'+name+'.webp');assert.equal(b.subarray(0,4).toString(),'RIFF');assert.equal(b.subarray(8,12).toString(),'WEBP');assert.ok(b.length>20000);}
+ const land=fs.readFileSync('web-games/ocean-voyage/assets/world.mjs','utf8');assert.match(land,/Natural Earth/);assert.ok(land.length>100000);
 });
-
 
 test('푸른항로 has no inherited asset launcher; game-authored scripts can be deployed unchanged',()=>{
  const ocean=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
  const builder=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  const owner=fs.readFileSync('.github/workflows/owner-fast-pages-publish.yml','utf8');
- const inspector=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
+
  // Original game HTML does not request the developer inspector.
  assert.doesNotMatch(ocean,/vibe-runtime-panel\.js/);
  // No build-time injection or silent removal of game-authored functionality.
@@ -207,16 +186,43 @@ test('푸른항로 has no inherited asset launcher; game-authored scripts can be
  assert.doesNotMatch(builder,/withoutInspector=html\.replace/);
  assert.doesNotMatch(owner,/const clean=html\.replace|PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
  assert.match(owner,/OWNER_PAGES_GAME_OWNED_HTML=UNCHANGED/);
- assert.doesNotMatch(inspector,/vibeOwnerInspector!=='enabled'/);
+
  // Ship, port, and pirate assets are real GLB models bound to a 3D scene.
  const scene=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
- assert.match(scene,/loader\.load\(ROOT\+MODELS\[name\]/);
- assert.match(scene,/boatsGroup\.add\(ship\)/);
- assert.match(scene,/portsGroup,boatsGroup/);
+ assert.match(scene,/createOceanView/);assert.match(scene,/state.charted/);
 });
 
 test('CC0 sea music checkout retains the actual Git binary without LFS pointer conversion',()=>{
  const rules=fs.readFileSync('.gitattributes','utf8').split(/\r?\n/);
  assert.ok(rules.includes('*.ogg filter=lfs diff=lfs merge=lfs -text'),'generic audio LFS policy remains');
  assert.ok(rules.includes('web-games/ocean-voyage/assets/cc0/music/pirate_ship_in_game.ogg -filter -diff -merge -text'),'original Git OGG remains exempt from LFS');
+});
+
+
+test('five regional protagonists have distinct European campaign starting ports',()=>{
+ assert.equal(new Set(CAPTAINS.map(c=>c.region)).size,5);assert.equal(new Set(CAPTAINS.map(c=>c.port)).size,5);
+ for(const c of CAPTAINS){const s=newGame(c.id);assert.equal(canDock(s).id,c.port);assert.equal(restoreGame(serializeGame(s)).captainId,c.id);}
+});
+test('fog survives save copy and damaged export is rejected',()=>{
+ let s=setDestination(newGame(),'coral');s.pirates=[];
+ for(let i=0;i<2000&&s.destination;i++){if(s.event)s=resolveSeaEvent(s,1).state;s=stepSea(s,{},.1);}
+ assert.equal(canDock(s).id,'coral');assert.ok(s.charted.length>9);assert.deepEqual(importSave(exportSave(s)).charted,s.charted);assert.equal(importSave(exportSave(s)+'x'),null);
+});
+test('relic report reward is paid once and discovery stays in inventory',()=>{
+ let s=newGame('amani');s=startExpedition(s,'roman').state;const site=SITES.find(t=>t.id==='roman');for(const choice of site.answers)s=exploreChoice(s,choice).state;
+ const before=s.coins,r=reportDiscoveries(s);assert.equal(r.ok,true);assert.equal(r.state.coins,before+site.reward);assert.equal(reportDiscoveries(r.state).ok,false);assert.equal(r.state.equipment.roman,1);
+});
+test('companion scenes and objective precede recruitment; role assignment is unique and grows',()=>{
+ let s=newGame();assert.equal(recruitCompanion(s,'thomas').ok,false);s.discovered.push('coral');s=talkCompanion(talkCompanion(s,'thomas').state,'thomas').state;s=recruitCompanion(s,'thomas').state;
+ s=assignCrew(s,'sailing','thomas').state;s=assignCrew(s,'navigator','thomas').state;assert.equal(s.assignments.sailing,'');assert.equal(s.assignments.navigator,'thomas');s.xp+=360;assert.equal(crewStats(s,'thomas').level,3);assert.equal(restoreGame(serializeGame(s)).assignments.navigator,'thomas');
+});
+test('port investment is bounded by funds and duplicate dividends are rejected',()=>{
+ let s=newGame();const original=s.coins;s=investPort(s,1000).state;assert.equal(s.coins,original-1000);assert.equal(portStatus(s,'dawn').invested,1000);assert.equal(collectDividend(s).ok,false);s.day+=7;s=collectDividend(s).state;assert.ok(s.coins>original-1000);assert.equal(collectDividend(s).ok,false);
+});
+test('equipment upgrade caps preserve ship economy',()=>{
+ let s=newGame();s.coins=100000;for(const kind of ['plating','hold','rudder','hull']){for(let i=0;i<3;i++){const r=buyUpgrade(s,kind);assert.equal(r.ok,true);s=r.state;}assert.equal(buyUpgrade(s,kind).ok,false);}assert.equal(s.ship.armor,3);assert.equal(s.ship.cargoLimit,96);assert.equal(s.ship.maxHull,190);assert.equal(s.ship.rudderLevel,3);
+});
+
+test('national ship traditions require local shipyard and have distinct cargo and combat designs',()=>{
+ const national=SHIP_TYPES.filter(t=>t.nation);assert.equal(national.length,6);let s=newGame();s.coins=100000;assert.equal(refitShip(s,'portugal-caravel').ok,false);const p=PORTS.find(p=>p.id==='gold');s.ship.x=p.x;s.ship.z=p.z;const bought=refitShip(s,'portugal-caravel');assert.equal(bought.ok,true);assert.equal(bought.state.shipType,'portugal-caravel');assert.ok(SHIP_TYPES.find(t=>t.id==='dutch-fluyt').cargo>SHIP_TYPES.find(t=>t.id==='french-frigate').cargo);assert.ok(SHIP_TYPES.find(t=>t.id==='iberian-galleon').hull>SHIP_TYPES.find(t=>t.id==='portugal-caravel').hull);
 });

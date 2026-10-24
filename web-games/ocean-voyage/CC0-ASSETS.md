@@ -34,3 +34,7 @@
 - `captains.webp`: 216018 bytes · SHA-256 `3ef9e881080bdfa6f84d149c4b90c8b25cfc188072fadf4edbaf1e06a124a134`
 - `world.mjs`: 104708 bytes · SHA-256 `338a49bb5fd4070537c33db9e234d4b139606409e876594e79f66f39a0279a9c`
 - `countries.mjs`: 16163 bytes · SHA-256 `c439d7b0fc3a9fcdd02d204fb3d297c61b605d2efbd838014fb269adddb36e96`
+
+- `harbor.webp`: 독자 생성 유럽 픽셀 항구 배경. 프롬프트: 1590년 유럽 항구, 시장·선술집·길드·왕궁·탐험가 사무실·조선소 2열 3행, 중앙대로와 부두, 글자 없는 정밀 16비트 픽셀아트. 이미지 생성 스킬로 제작하고 768×1152 WebP로 최적화. 400352 bytes · SHA-256 `eeaf9f0027ee12bfa7fb416dd522e71de891fc57fcb41818b75b6ca2379d0dd8`
+
+- `crew.webp`: 이미지 생성 스킬로 제작한 독자 동료 초상화 5인. 프롬프트: 1590년 영국 항해사·포르투갈 여성 교역사·네덜란드 포술장·북유럽 여성 측량사·스페인 조선사, 사실적 유화 초상 5열 아틀라스, 글자 없음. 1500×600 WebP · 181648 bytes · SHA-256 `ff58cf035a3ac251933c6e68c393224d3c424587fa57c09780574098eb7e1f19`

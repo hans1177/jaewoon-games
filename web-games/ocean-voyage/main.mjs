@@ -1,6 +1,6 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace} from './engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -31,7 +31,7 @@ function summary(){
  $('hull').textContent=fmt(state.ship.hull/state.ship.maxHull*100)+'%';
  $('supplies').textContent=state.ship.provisions+' / '+state.ship.crew;
  const closest=nearestPort(state),location=canDock(state);
- $('compass').textContent='◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:'');
+ $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:'');
  $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;if(enemy)$('battleStatus').textContent=(enemy.name||'해적선')+' · 적 선체 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · 포탄 '+state.supplies.ammo;$('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
@@ -78,10 +78,14 @@ function fleet(){
   ['crew','선원 모집','포격 효율과 전투 유지력 증가',420],
   ['sail','돛 개선','이동 속도 향상',950+s.sail*700],
   ['cannon','함포 증설','한 번의 포격 위력 향상',780+s.cannons*85],
-  ['ship','호위함 구매','최대 3척의 함대 편성',3300+(state.fleet-1)*2600]
+  ['ship','호위함 구매','최대 3척의 함대 편성',3300+(state.fleet-1)*2600],
+  ['plating','장갑 보강','최대 3단계 · 단계당 피격 피해 8% 감소',1500+s.armor*1200],
+  ['hold','화물실 확장','최대 3단계 · 적재 +18',1300+s.holdLevel*900],
+  ['rudder','타륜 개조','최대 3단계 · 직접 조타 선회 +15%',1200+s.rudderLevel*700],
+  ['hull','선체 보강','최대 3단계 · 최대 내구 +30',1800+s.hullLevel*1400]
  ];
  return '<div class="kpi"><div>함대 규모<b>'+state.fleet+'척</b></div><div>선체 상태<b>'+Math.round(s.hull)+'%</b></div><div>함포<b>'+s.cannons+'문</b></div><div>항해 속도<b>돛 '+s.sail+'단계</b></div></div>'+
- '<h3>기함: '+SHIP_TYPES.find(t=>t.id===state.shipType).name+'</h3>'+SHIP_TYPES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+t.description+' · 적재 '+t.cargo+' / 내구 '+t.hull+'</p><button class="action" data-refit="'+t.id+'" '+(!p||t.id===state.shipType?'disabled':'')+'>'+fmt(t.cost)+' G · 기함 변경</button></div>').join('')+'<h3>소모품 보급소</h3>'+consumables(true)+'<h3>조선소 / 보급소</h3><p class="info">'+(p?p.name+' 조선소':'항구에 정박하면 개조가 가능해.')+'</p>'+
+ '<h3>기함: '+SHIP_TYPES.find(t=>t.id===state.shipType).name+'</h3>'+SHIP_TYPES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+t.description+' · '+(t.nation||'범용 설계')+' · 적재 '+t.cargo+' / 내구 '+t.hull+' / 속도 ×'+(t.speed||1)+' / 선회 ×'+(t.turn||1)+'</p><button class="action" data-refit="'+t.id+'" '+(!p||t.id===state.shipType||t.nation&&p.faction!==t.nation?'disabled':'')+'>'+fmt(t.cost)+' G · 기함 변경</button></div>').join('')+'<h3>소모품 보급소</h3>'+consumables(true)+'<h3>조선소 / 보급소</h3><p class="info">'+(p?p.name+' 조선소':'항구에 정박하면 개조가 가능해.')+'</p>'+
  upgrades.map(([id,title,desc,cost])=>'<div class="row"><div class="desc"><strong>'+title+'</strong><small>'+desc+'</small></div><button class="action" data-upgrade="'+id+'" '+(!p?'disabled':'')+'>'+fmt(cost)+' G</button></div>').join('');
 }
 function transportQuests(){
@@ -100,13 +104,21 @@ function quests(){
  '<h3>육지 탐험지</h3>'+SITES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+port(t.port).name+' · '+t.kind+'</p><p class="info">'+t.lore+'</p><button class="action" data-site="'+t.id+'" '+(home?.id!==t.port||state.discoveries.includes(t.id)||ex?'disabled':'')+'>'+(state.discoveries.includes(t.id)?t.relic+' 발견':'식량 6 · 상륙 조사')+'</button> <button class="action sub" data-route="'+t.port+'">항구로 항해</button></div>').join('')+
  '<h3>사무실 의뢰</h3>'+OFFICE_QUESTS.map(q=>'<div class="scene-card"><strong>'+q.name+'</strong><p>'+q.text+' · '+officeProgress(state,q)+' / '+q.need+' · '+q.reward+' G</p><button class="action" data-office="'+q.id+'" '+(!home||state.completedOffice.includes(q.id)?'disabled':'')+'>'+(state.completedOffice.includes(q.id)?'완료':state.officeQuests.includes(q.id)?'보상 수령':'수주')+'</button></div>').join('')+transportQuests();
 }
-function palace(){const need=[20,60,120,220][state.rank],info=storyStatus(state);return '<h3>'+canDock(state)?.name+' 왕궁 · 총독부</h3><div class="kpi"><div>명성<b>'+state.fame+'</b></div><div>작위<b>'+['자유 항해자','공인 항해자','왕실 특사','해양 기사','왕실 제독'][state.rank]+'</b></div></div><p>교역 신뢰, 발견 보고와 사건 해결로 왕실에 이름을 알려. 직업과 작위는 별개야.</p><button class="action" data-action="audience">'+(need?'명성 '+need+' · 알현':'최고 작위')+'</button><h3>왕실 임무</h3><button class="action sub" data-panel-open="quests">사무실의 해적 소탕 임무 보기</button><h3>'+info.hero.name+'의 이야기</h3>'+storyCard();}
+function palace(){
+ const p=canDock(state);if(!p)return '<p>왕궁은 항구에 입항한 뒤 이용할 수 있어.</p>';
+ const v=portStatus(state,p.id),need=[20,60,120,220][state.rank],info=storyStatus(state);
+ return '<h3>'+escapeHtml(p.name)+' 왕궁 · 총독부</h3><div class="kpi"><div>명성<b>'+state.fame+'</b></div><div>작위<b>'+['자유 항해자','공인 항해자','왕실 특사','해양 기사','왕실 제독'][state.rank]+'</b></div></div><p>교역 신뢰·발견 보고·사건 해결로 왕실에 이름을 알려.</p><button class="action" data-action="audience">'+(need?'명성 '+need+' · 알현':'최고 작위')+'</button>'+
+ '<h3>항만 통제·투자</h3><p>통제 국가: '+escapeHtml(v.owner)+' · 동맹: '+escapeHtml(state.alliance||'없음')+'</p><div class="kpi"><div>상업 번영<b>'+v.prosperity+'</b></div><div>항구 방어<b>'+v.security+'</b></div><div>상단 영향력<b>'+v.influence+'%</b></div><div>누적 투자<b>'+fmt(v.invested)+' G</b></div></div><p class="info">7일마다 현지에서 투자 배당을 받아. 약탈은 경제·방어에 피해를 주고, 방어가 낮으면 통제국이 바뀔 수 있어. 시설과 저장은 보존돼.</p><div class="stack">'+[100,500,1000].map(n=>'<button class="action" data-invest="'+n+'">'+n+' G 투자</button>').join('')+'<button class="action sub" data-action="dividend">배당 수령</button><button class="action sub" data-action="support">항구 방어 지원</button><button class="action" data-action="alliance">현 통제국과 동맹</button></div>'+
+ '<h3>국가 외교</h3>'+['이베리아 왕실','프랑스 항구동맹'].map(f=>'<div class="scene-card"><strong>'+f+' · '+(state.diplomacy[f]<0?'적대':'중립')+'</strong><p>적대 선언 시 순찰함이 공격해. 휴전에는 500 G가 필요해.</p><button class="action" data-diplomacy="'+f+'">'+(state.diplomacy[f]<0?'휴전 교섭':'적대 선언')+'</button></div>').join('')+
+ '<h3>왕실 임무</h3><button class="action sub" data-panel-open="quests">해적 소탕 임무 보기</button><h3>'+info.hero.name+'의 이야기</h3>'+storyCard();
+}
 function jobs(){return '<h3>직업 길드 · 경험 '+state.xp+'</h3><p class="info">직업을 바꿔도 선박·동료·진행 기록은 유지돼. 전직 시 경험을 소모하지 않아.</p>'+JOBS.map(j=>'<div class="scene-card"><strong>'+j.name+'</strong><p>'+j.description+' · 필요 경험 '+j.need+'</p><button class="action" data-job="'+j.id+'" '+(state.job===j.id?'disabled':'')+'>'+(state.job===j.id?'현재 직업':'전직')+'</button></div>').join('');}
 function storyCard(){const {hero,chapter,ready}=storyStatus(state);return '<div class="scene-card"><strong>'+hero.goal+'</strong><p>'+hero.intro+'</p>'+(chapter?'<h3>제'+(state.storyChapter+1)+'장 · '+chapter[1]+'</h3><p>'+chapter[2]+'</p><p class="info">'+(state.storyChapter===2?'발견 보고 1건을 마치고 ':'')+port(chapter[0]).name+'에서 단서를 확인해.</p><button class="action sub" data-route="'+chapter[0]+'">목표 항구로</button> <button class="action" data-action="story" '+(!ready?'disabled':'')+'>이야기 진행</button>':'<h3>유럽 1부 완료</h3><p>고향으로 보낼 기록을 정리했어. 다음 바다로 향할 단서가 남아 있어.</p>')+'</div>';}
-function journal(){return storyCard()+'<h3>항해 기록</h3>'+[...state.log].reverse().map(t=>'<div class="row"><small>'+escapeHtml(t)+'</small></div>').join('')+'<h3>휴대폰 저장 관리</h3><p class="info">자동 저장돼. 저장 문자열을 복사해 다른 기기로 옮길 수 있고, 검증값으로 손상 여부를 확인해. 원문을 수정하면 복구되지 않아.</p><div class="stack"><button class="action sub" data-action="save">지금 저장</button><button class="action" data-action="export">저장 복사</button><button class="action sub" data-action="import">저장 가져오기</button><button class="action" data-action="reset">새 항해</button></div><textarea id="saveText" aria-label="저장 내보내기 및 가져오기 문자열" placeholder="저장 복사에 실패하면 여기서 길게 눌러 복사해. 가져올 때는 여기에 붙여넣어."></textarea><h3>자료와 제작</h3><p class="info">Natural Earth 공개 지형 · 기존 Kenney/Buch CC0 자산 · 독자 인물·스토리·절차 작곡 음악. 원작의 음악·인물·대사를 사용하지 않아.</p>';}
+function journal(){return '<h3>기상·세계 정세</h3><p>'+WEATHER.find(w=>w.id===state.climate.kind).name+' · '+WEATHER.find(w=>w.id===state.climate.kind).description+'</p><p>동맹: '+(state.alliance||'없음')+' · 개척 해역 '+state.charted.length+'구역</p>'+state.worldLog.slice().reverse().map(t=>'<div class="scene-card">'+escapeHtml(t)+'</div>').join('')+storyCard()+'<h3>항해 기록</h3>'+[...state.log].reverse().map(t=>'<div class="row"><small>'+escapeHtml(t)+'</small></div>').join('')+'<h3>휴대폰 저장 관리</h3><p class="info">자동 저장돼. 저장 문자열을 복사해 다른 기기로 옮길 수 있고, 검증값으로 손상 여부를 확인해. 원문을 수정하면 복구되지 않아.</p><div class="stack"><button class="action sub" data-action="save">지금 저장</button><button class="action" data-action="export">저장 복사</button><button class="action sub" data-action="import">저장 가져오기</button><button class="action" data-action="reset">새 항해</button></div><textarea id="saveText" aria-label="저장 내보내기 및 가져오기 문자열" placeholder="저장 복사에 실패하면 여기서 길게 눌러 복사해. 가져올 때는 여기에 붙여넣어."></textarea><h3>자료와 제작</h3><p class="info">Natural Earth 공개 지형 · 기존 Kenney/Buch CC0 자산 · 독자 인물·스토리·절차 작곡 음악. 원작의 음악·인물·대사를 사용하지 않아.</p>';}
 
 const kennyMap='./assets/cc0/map/';
 const portrait=c=>{
+const companionIndex=['thomas','isabel','willem','freya','diego'].indexOf(c.id);if(companionIndex>=0)return '<span class="crew-face" role="img" aria-label="'+escapeHtml(c.name)+' 실사풍 초상화" style="background-position:'+companionIndex*25+'% center"></span>';
  const index=Math.max(0,Math.min(26,Number(c.portrait)||0));
  // Buch source atlas: 328x112, nine 32px faces per row with 4px gutters, enlarged 2×.
  const x=(index%9)*72+8,y=Math.floor(index/9)*72+8;
@@ -124,15 +136,16 @@ function portScene(){
  '<div class="row"><div class="desc"><strong>왕립 항해 의뢰</strong><small>운송 계약과 항해 보상</small></div><button class="action" data-panel-open="quests">계약</button></div>'+
  (p.id==='dawn'?'<div class="scene-card"><h3>제1장 · 여왕의 해도</h3><p>엘리너 그레이 선장은 런던 왕립항에서 출항 허가를 받았다. 첫 번째 목표는 플리머스의 교역망을 확보하는 것이다.</p><button class="action sub" data-route="coral">플리머스 항로 설정</button></div>':'');
 }
+function statsLine(c){const s=crewStats(state,c.id);return '<p class="crew-stats">레벨 '+s.level+' · 항해 '+s.navigation+' · 교역 '+s.trade+' · 포술 '+s.gunnery+' · 학술 '+s.scholarship+' · 의술 '+s.medicine+'</p>';}
 function companions(){
  const home=canDock(state);
- return '<h3>선장 · '+state.captain+' · '+JOBS.find(j=>j.id===state.job).name+'</h3>'+storyCard()+'<h3>선술집 소문</h3>'+rumorsAt(state).map(r=>'<div class="scene-card">'+escapeHtml(r)+'</div>').join('')+TREASURES.filter(t=>!state.treasureClues.includes(t.id)).map(t=>'<div class="row"><strong>'+t.name+' 소문</strong><button class="action" data-clue="'+t.id+'">120 G · 단서 구입</button></div>').join('')+'<h3>함대 동료</h3>'+
- CREW.filter(c=>state.crewRoster.includes(c.id)).map(c=>'<div class="crew-card">'+portrait(c)+'<div><div class="crew-name">'+escapeHtml(c.name)+' <span class="cargo-badge">'+escapeHtml(c.role)+'</span></div><div class="crew-detail">'+escapeHtml(c.nation)+' · 승선 중</div><p class="crew-lore">'+escapeHtml(c.story)+'</p></div></div>').join('')+
+ return '<h3>선장 · '+state.captain+' · '+JOBS.find(j=>j.id===state.job).name+'</h3>'+storyCard()+'<h3>선술집 소문</h3>'+rumorsAt(state).map(r=>'<div class="scene-card">'+escapeHtml(r)+'</div>').join('')+TREASURES.filter(t=>!state.treasureClues.includes(t.id)).map(t=>'<div class="row"><strong>'+t.name+' 소문</strong><button class="action" data-clue="'+t.id+'">120 G · 단서 구입</button></div>').join('')+'<h3>선박 담당 배치</h3><p class="info">동료는 영입 후 얻은 경험으로 성장해. 같은 인물은 한 직책만 맡고 주인공은 선장직을 유지해.</p>'+CREW_ROLES.map(r=>'<div class="scene-card"><strong>'+r.name+'</strong><p class="info">'+r.effect+'</p><select data-role="'+r.id+'" aria-label="'+r.name+' 배치"><option value="">미배치</option>'+CREW.filter(c=>state.crewRoster.includes(c.id)&&c.id!==state.captainId).map(c=>'<option value="'+c.id+'" '+(state.assignments[r.id]===c.id?'selected':'')+'>'+escapeHtml(c.name)+'</option>').join('')+'</select></div>').join('')+'<h3>함대 동료</h3>'+
+ CREW.filter(c=>state.crewRoster.includes(c.id)).map(c=>'<div class="crew-card">'+portrait(c)+'<div><div class="crew-name">'+escapeHtml(c.name)+' <span class="cargo-badge">'+escapeHtml(c.role)+'</span></div><div class="crew-detail">'+escapeHtml(c.nation)+' · 승선 중</div><p class="crew-lore">'+escapeHtml(c.story)+'</p>'+statsLine(c)+'</div></div>').join('')+
  '<h3>이 항구에서 만날 수 있는 인물</h3>'+
- (home?CREW.filter(c=>c.port===home.id&&!state.crewRoster.includes(c.id)).map(c=>'<div class="crew-card">'+portrait(c)+'<div><div class="crew-name">'+escapeHtml(c.name)+'</div><div class="crew-detail">'+escapeHtml(c.nation)+' · '+escapeHtml(c.role)+'</div><p class="crew-lore">'+escapeHtml(c.story)+'</p><p class="info">'+companionObjective(state,c).text+'</p><button class="action" data-recruit="'+c.id+'" '+(!companionObjective(state,c).ready?'disabled':'')+'>동료 이야기 · 영입</button></div></div>').join('')||'<p class="info">이곳에서 새로 영입할 동료는 없어.</p>':'<p class="info">항구에 정박하면 여관에서 항해사를 만날 수 있어.</p>');
+ (home?CREW.filter(c=>c.port===home.id&&!state.crewRoster.includes(c.id)).map(c=>'<div class="crew-card">'+portrait(c)+'<div><div class="crew-name">'+escapeHtml(c.name)+'</div><div class="crew-detail">'+escapeHtml(c.nation)+' · '+escapeHtml(c.role)+'</div><p class="crew-lore">'+escapeHtml(c.story)+'</p>'+statsLine(c)+'<p class="info">'+companionObjective(state,c).text+'</p><p>'+escapeHtml((RECRUIT_STORIES[c.id]||[c.story,'함께 항해할 준비가 됐어.'])[Math.min(1,state.recruitScenes[c.id]||0)])+'</p>'+((state.recruitScenes[c.id]||0)<2?'<button class="action" data-talk="'+c.id+'">이야기 듣기 '+((state.recruitScenes[c.id]||0)+1)+'/2</button>':'<button class="action" data-recruit="'+c.id+'" '+(!companionObjective(state,c).ready?'disabled':'')+'>약속을 지키고 영입</button>')+'</div></div>').join('')||'<p class="info">이곳에서 새로 영입할 동료는 없어.</p>':'<p class="info">항구에 정박하면 여관에서 항해사를 만날 수 있어.</p>');
 }
 function inventory(){
- return '<h3>기함 상세</h3><p>'+SHIP_TYPES.find(t=>t.id===state.shipType).name+' · 선체 '+Math.round(state.ship.hull)+' / '+state.ship.maxHull+' · 돛 '+state.ship.sail+' · 함포 '+state.ship.cannons+' · 선원 '+state.ship.crew+' / '+state.ship.maxCrew+'</p><h3>소모품 가방</h3>'+consumables(false)+ '<div class="kpi"><div>화물 적재<b>'+cargoWeight(state)+' / '+(state.ship.cargoLimit*state.fleet)+'</b></div><div>보유 금화<b>'+fmt(state.coins)+' G</b></div></div>'+
+ return '<h3>기함 상세</h3><p>'+SHIP_TYPES.find(t=>t.id===state.shipType).name+' · 선체 '+Math.round(state.ship.hull)+' / '+state.ship.maxHull+' · 돛 '+state.ship.sail+' · 함포 '+state.ship.cannons+' · 선원 '+state.ship.crew+' / '+state.ship.maxCrew+'</p><p>장갑 '+state.ship.armor+'단계 · 화물실 '+state.ship.holdLevel+'단계 · 타륜 '+state.ship.rudderLevel+'단계 · 선체 보강 '+state.ship.hullLevel+'단계</p><h3>소모품 가방</h3>'+consumables(false)+ '<div class="kpi"><div>화물 적재<b>'+cargoWeight(state)+' / '+(state.ship.cargoLimit*state.fleet)+'</b></div><div>보유 금화<b>'+fmt(state.coins)+' G</b></div></div>'+
  '<h3>발견 도감</h3>'+SITES.filter(t=>state.discoveries.includes(t.id)).map(t=>'<div class="scene-card"><strong>'+t.relic+'</strong><p>'+t.name+' · '+(state.reported.includes(t.id)?'보고 완료':'미보고')+'</p><small>'+t.lore+'</small></div>').join('')+TREASURES.filter(t=>state.treasures.includes(t.id)).map(t=>'<div class="scene-card"><strong>'+t.relic+'</strong><p>'+t.name+'</p></div>').join('')+'<h3>개인 장비 · 발견물</h3>'+
  EQUIPMENT.map(item=>'<div class="row"><div class="desc"><strong>'+escapeHtml(item.name)+'</strong><small>'+escapeHtml(item.group)+' · '+escapeHtml(item.description)+'</small></div><strong class="cargo-badge">×'+Math.max(0,Number(state.equipment?.[item.id])||0)+'</strong></div>').join('')+
  '<h3>선박 화물창</h3>'+
@@ -140,11 +153,12 @@ function inventory(){
  '<h3>항해 보급품</h3><div class="row"><strong>식량</strong><b>'+state.ship.provisions+'</b></div><div class="row"><strong>선원</strong><b>'+state.ship.crew+'</b></div>';
 }
 
+let renderedPanel='';
 function renderPanel(){
- if(!active)return;
+ if(!active)return;const savedScroll=renderedPanel===active?view.body.scrollTop:0;renderedPanel=active;
  const titles={jobs:'직업 길드',palace:'왕궁 · 총독부',port:'항구 · 선술집 · 조선소',crew:'선장과 항해사',inventory:'항해 가방과 화물',chart:'세계 해도',market:'항구 교역소',fleet:'함대와 조선소',quests:'계약과 탐험',journal:'항해 기록'};
  view.head.textContent=titles[active];
- view.body.innerHTML=({palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal}[active]||chart)();if(active==='chart')drawChart(false);
+ view.body.innerHTML=({palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal}[active]||chart)();if(active==='chart')drawChart(false);view.body.scrollTop=savedScroll;
 }
 function apply(result){
  if(result.ok){state=result.state;save();scene.setState(state);renderPanel();summary();}
@@ -155,9 +169,11 @@ $('close').addEventListener('click',leaveFacility);
 $('dock').addEventListener('click',()=>{if(canDock(state))enterTown();});
 $('fire').addEventListener('click',()=>apply(fireCannons(state)));
 view.body.addEventListener('click',e=>{
- const b=e.target.closest('[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy]');
+ const b=e.target.closest('[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy],[data-invest],[data-talk]');
  if(!b)return;
  if(b.dataset.panelOpen){openFacility(b.dataset.panelOpen);return;}
+ if(b.dataset.talk){apply(talkCompanion(state,b.dataset.talk));return;}
+ if(b.dataset.invest){apply(investPort(state,Number(b.dataset.invest)));return;}
  if(b.dataset.buySupply){apply(buyConsumable(state,b.dataset.buySupply));return;}
  if(b.dataset.useSupply){apply(useConsumable(state,b.dataset.useSupply));return;}
  if(b.dataset.diplomacy){const f=b.dataset.diplomacy;if(state.diplomacy[f]<0)apply(negotiatePeace(state,f));else if(confirm(f+'에 적대 선언하면 해당 순찰함이 공격해. 선언할까?'))apply(declareHostility(state,f));return;}
@@ -177,6 +193,9 @@ view.body.addEventListener('click',e=>{
   case 'cancel':state=cancelDestination(state);save();scene.setState(state);renderPanel();note('자동항로 해제');break;
   case 'take':apply(takeContract(state,canDock(state)?.id));break;
   case 'fulfill':apply(fulfillContracts(state));break;
+  case 'dividend':apply(collectDividend(state));break;
+  case 'support':apply(supportPort(state));break;
+  case 'alliance':apply(formAlliance(state));break;
   case 'report':apply(reportDiscoveries(state));break;
   case 'story':apply(advanceStory(state));break;
   case 'audience':apply(royalAudience(state));break;
@@ -186,6 +205,7 @@ view.body.addEventListener('click',e=>{
   case 'reset':if(confirm('이 게임의 항해 기록만 지우고 처음부터 시작할까?')){depart();showCaptains();}break;
  }
 });
+view.body.addEventListener('change',e=>{if(e.target.matches('select[data-role]'))apply(assignCrew(state,e.target.dataset.role,e.target.value));});
 view.body.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.closest('[data-route]'))e.target.closest('[data-route]').click();});
 for(const b of document.querySelectorAll('[data-hold]')){
  const k=b.dataset.hold;
@@ -223,9 +243,10 @@ for(const k of ['pointerup','pointercancel','lostpointercapture'])joystick.addEv
 let audio=null,musicEnabled=false,musicTimer=null,musicScene='sea',musicBeat=0;
 const motifs={sea:[0,4,7,9,7,4,2,4,7,11,9,7,4,2,0,-1],harbor:[0,2,4,7,4,2,0,-3,0,4,5,7,5,4,2,0],palace:[0,7,4,2,0,4,7,11,9,7,5,4,2,4,2,0],explore:[0,2,3,7,5,3,2,-2,0,3,5,7,8,7,3,2]};
 function tone(freq,start,duration,gain,type='triangle'){const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,start);g.gain.linearRampToValueAtTime(gain,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+duration);o.connect(g).connect(audio.destination);o.start(start);o.stop(start+duration+.02);}
-function playBar(){if(!musicEnabled||!audio||document.hidden)return;const notes=motifs[musicScene]||motifs.sea,now=audio.currentTime+.04,beat=musicScene==='sea'?.31:.38;for(let i=0;i<8;i++){const n=notes[(musicBeat+i)%notes.length];tone(220*2**(n/12),now+i*beat,beat*1.8,.045);if(i%2===0)tone(110*2**((i%4===0?0:7)/12),now+i*beat,beat*2.8,.025,'sine');}musicBeat=(musicBeat+8)%16;}
+function playBar(){if(!musicEnabled||!audio)return;if(document.hidden){musicTimer=setTimeout(playBar,1000);return;}const notes=motifs[musicScene]||motifs.sea,now=audio.currentTime+.04,beat=musicScene==='sea'?.31:.38;for(let i=0;i<8;i++){const n=notes[(musicBeat+i)%notes.length];tone(220*2**(n/12),now+i*beat,beat*1.8,.045);if(i%2===0)tone(110*2**((i%4===0?0:7)/12),now+i*beat,beat*2.8,.025,'sine');}musicBeat=(musicBeat+8)%16;clearTimeout(musicTimer);musicTimer=setTimeout(playBar,beat*8*1000);}
 function switchMusicScene(value){musicScene=value;musicBeat=0;}
-$('music-toggle').addEventListener('click',async()=>{try{if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();await audio.resume();musicEnabled=!musicEnabled;clearInterval(musicTimer);if(musicEnabled){playBar();musicTimer=setInterval(playBar,2400);}$('music-toggle').innerHTML='<b>♫</b>'+(musicEnabled?'켜짐':'음악');}catch{note('기기의 소리 설정을 확인해.');}});
+$('music-toggle').addEventListener('click',async()=>{try{if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();await audio.resume();musicEnabled=!musicEnabled;clearTimeout(musicTimer);if(musicEnabled)playBar();$('music-toggle').innerHTML='<b>♫</b>'+(musicEnabled?'켜짐':'음악');}catch{note('기기의 소리 설정을 확인해.');}});
+$('allySupport').addEventListener('click',()=>apply(callAlliance(state)));
 $('quickRepair').addEventListener('click',()=>apply(useConsumable(state,'repair')));$('quickBag').addEventListener('click',()=>gotoPanel('inventory'));
 $('speed').addEventListener('click',()=>{state.speed=state.speed===1?2:state.speed===2?4:1;$('speed').textContent=state.speed+'배속';save();});
 $('zoomIn').addEventListener('click',()=>scene.setZoom(scene.getZoom()*1.35));$('zoomOut').addEventListener('click',()=>scene.setZoom(scene.getZoom()/1.35));
@@ -235,6 +256,7 @@ function renderEvent(){const e=SEA_EVENTS.find(e=>e.id===state.event?.id);$('sea
 
 function run(now){
  requestAnimationFrame(run);
+ if(now-last<32)return;
  const dt=Math.min(.06,Math.max(0,(now-last)/1000));last=now;
  if(!ready||choosing||document.hidden)return;
  if(view.details.classList.contains('open')||town)return;
@@ -258,4 +280,3 @@ function run(now){
  }
 }
 $('speed').textContent=state.speed+'배속';summary();renderEvent();requestAnimationFrame(run);
-
