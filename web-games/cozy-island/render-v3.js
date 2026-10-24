@@ -457,7 +457,122 @@ export class IslandRendererV3 {
     }
     return canvas;
   }
+  // 입체 건물은 기존 픽셀 라이브러리의 2D 성벽 그림보다 확실한 높이와 형태를 제공한다.
+  makeFort3d(kind,height){
+    const g=new THREE.Group(),m={
+      wall:new THREE.MeshLambertMaterial({color:0xbcb29d}),
+      light:new THREE.MeshLambertMaterial({color:0xd2c4a3}),
+      stone:new THREE.MeshLambertMaterial({color:0x77766c}),
+      wood:new THREE.MeshLambertMaterial({color:0x725037}),
+      trim:new THREE.MeshLambertMaterial({color:0xad8753}),
+      roof:new THREE.MeshLambertMaterial({color:0x654b43}),
+      tile:new THREE.MeshLambertMaterial({color:0x98734e}),
+      dark:new THREE.MeshLambertMaterial({color:0x303a34}),
+      flag:new THREE.MeshLambertMaterial({color:0xa34538,side:THREE.DoubleSide}),
+      earth:new THREE.MeshLambertMaterial({color:0x958262})
+    };
+    const add=(geo,mat,x,y,z)=>{const item=new THREE.Mesh(geo,m[mat]);item.position.set(x,y,z);g.add(item);return item};
+    const box=(w,h,d,mat,x=0,y=0,z=0)=>add(new THREE.BoxGeometry(w,h,d),mat,x,y,z);
+    const cyl=(r,h,mat,x=0,y=0,z=0)=>add(new THREE.CylinderGeometry(r,r,h,8),mat,x,y,z);
+    const crest=(w,d,h)=>{
+      for(let x=-w/2+.2;x<w/2;x+=.5)for(const z of [-d/2,d/2])
+        box(.31,.34,.28,'light',x,h+.18,z);
+      for(let z=-d/2+.2;z<d/2;z+=.5)for(const x of [-w/2,w/2])
+        box(.28,.34,.31,'light',x,h+.18,z);
+    };
+    const banner=(x,y,z)=>{box(.065,1.5,.065,'trim',x,y,z);box(.94,.46,.07,'flag',x+.5,y+.43,z)};
+    if(kind==='fort-road'){
+      for(let z=-.84;z<=.84;z+=.42)for(let x=-.84;x<=.84;x+=.42)
+        box(.38,.065,.38,Math.round((x+z)*100)%3===0?'stone':'wall',x,.035,z);
+      return g;
+    }
+    if(kind==='fort-site'){
+      box(3.5,.16,3,'earth',0,.07,0);
+      for(let i=0;i<7;i++)box(.46,.22,.4,i%2?'stone':'wall',-1.4+(i%4)*.82,.23,-.95+Math.floor(i/4)*1.8);
+      for(const x of [-1.45,1.45])for(const z of [-1.22,1.22])box(.11,.55,.11,'wood',x,.34,z);
+      banner(1.35,.95,-1.1);return g;
+    }
+    if(kind==='fort-wall'||kind==='fort-wall-side'){
+      const w=kind==='fort-wall'?3:.78,d=kind==='fort-wall'?.78:3,h=Math.max(1.6,height*.83);
+      box(w,h,d,'wall',0,h/2,0);
+      box(w+.09,.17,d+.09,'stone',0,h-.08,0);crest(w,d,h);
+      return g;
+    }
+    if(kind==='fort-watchtower'){
+      const h=Math.max(3.1,height);
+      cyl(.77,h*.84,'wall',0,h*.42,0);cyl(.98,.19,'stone',0,h*.84,0);
+      for(let i=0;i<8;i++){const a=i*Math.PI/4;
+        const part=box(.34,.37,.3,'light',Math.cos(a)*.84,h*1.01,Math.sin(a)*.84);part.rotation.y=a;
+      }
+      for(const a of [0,Math.PI/2,Math.PI,3*Math.PI/2]){
+        const win=box(.2,.47,.08,'dark',Math.sin(a)*.78,h*.54,Math.cos(a)*.78);
+        win.rotation.y=a;
+      }
+      cyl(.89,.2,'stone',0,.13,0);banner(0,h+1,0);return g;
+    }
+    if(kind==='fort-gatehouse'){
+      const h=Math.max(3.3,height);
+      box(3.5,h*.74,1.3,'wall',0,h*.37,0);
+      box(1.08,h*.56,.18,'dark',0,h*.28,.72);
+      box(.88,h*.54,.12,'wood',0,h*.27,.84);
+      for(let x=-.38;x<.4;x+=.19)box(.06,h*.53,.08,'stone',x,h*.28,.94);
+      for(const x of [-1.62,1.62]){
+        cyl(.82,h*.95,'wall',x,h*.475,0);
+        cyl(.98,.15,'stone',x,h*.95,0);
+        for(let j=0;j<8;j++){const a=j*Math.PI/4;
+          box(.33,.35,.29,'light',x+Math.cos(a)*.83,h+0.1,Math.sin(a)*.83);
+        }
+        box(.18,.42,.08,'dark',x,h*.6,.84);
+      }
+      crest(3.5,1.3,h*.75);return g;
+    }
+    if(kind==='fort-keep'){
+      const h=Math.max(5,height);
+      box(4.6,h*.62,3.55,'wall',0,h*.31,0);
+      box(4.8,.19,3.75,'stone',0,h*.62,0);
+      crest(4.6,3.55,h*.63);
+      for(const x of [-1.72,1.72])for(const z of [-1.25,1.25]){
+        cyl(.64,h*.9,'wall',x,h*.45,z);
+        cyl(.78,.14,'stone',x,h*.9,z);
+        for(let i=0;i<8;i++){const a=i*Math.PI/4;
+          box(.25,.32,.24,'light',x+Math.sin(a)*.7,h*.99,z+Math.cos(a)*.7)}
+      }
+      box(1.1,h*.35,.15,'dark',0,h*.2,1.83);
+      for(const x of [-1,1])box(.27,.59,.12,'dark',x,h*.46,1.82);
+      banner(0,h*1.1,0);return g;
+    }
+    const h=Math.max(2.3,height*.74);
+    const w=kind==='fort-barracks'?4.6:kind==='fort-market'?3.9:kind==='fort-workshop'?3.5:2.8;
+    const d=kind==='fort-barracks'?3.1:2.75;
+    box(w,h*.68,d,kind==='fort-workshop'?'stone':'wall',0,h*.34,0);
+    for(const sign of [-1,1]){
+      const slab=box(w*.59,.18,d+.28,kind==='fort-barracks'?'roof':'tile',sign*w*.265,h*.84,0);
+      slab.rotation.z=sign*.57;
+    }
+    for(const x of [-w*.42,w*.42])box(.16,h*.68,.16,'wood',x,h*.34,d/2+.05);
+    box(.57,.95,.08,'dark',0,.5,d/2+.06);
+    for(const x of [-w*.29,w*.29]){
+      box(.45,.5,.07,'dark',x,h*.43,d/2+.1);
+      box(.07,.5,.08,'trim',x,h*.43,d/2+.13);
+      box(.45,.07,.08,'trim',x,h*.43,d/2+.13);
+    }
+    if(kind==='fort-barracks'){
+      banner(w*.34,h+.5,-d*.28);
+      for(let i=0;i<3;i++)box(.26,.72,.2,'wood',-w*.38+i*.42,.46,-d/2-.1);
+    }
+    if(kind==='fort-market')for(const x of [-1.35,0,1.35]){
+      box(1.15,.12,1.18,'tile',x,1.45,d/2+.9);
+      box(.99,.6,.5,'trim',x,.35,d/2+.86);
+      for(const px of [x-.48,x+.48])box(.07,1.35,.07,'wood',px,.72,d/2+.86);
+    }
+    if(kind==='fort-workshop'){
+      box(.36,1.7,.4,'stone',w*.3,h*.9,-d*.2);
+      box(.46,.17,.46,'wall',w*.3,h*1.71,-d*.2);
+    }
+    return g;
+  }
   make3d(kind,height){
+    if(kind.startsWith('fort-'))return this.makeFort3d(kind,height);
     const group=new THREE.Group(),asset=this.models3d.get(kind);
     if(!asset)return group;
     const texture=asset.texture.clone();texture.needsUpdate=true;
