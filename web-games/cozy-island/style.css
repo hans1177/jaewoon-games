@@ -25,12 +25,13 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .joystick-ring { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.46); border: 3px solid rgba(255,255,255,.72); box-shadow: inset 0 0 0 12px rgba(37,66,58,.05), 0 6px 18px rgba(28,67,56,.2); backdrop-filter: blur(5px); }
 .joystick-knob { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; border-radius: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,.94); border: 3px solid #d8f0e2; box-shadow: 0 5px 14px rgba(28,67,56,.28); pointer-events: none; transition: transform .04s linear; }
 .joystick-knob::after { content: ''; position: absolute; inset: 19px; border-radius: 50%; background: #72aa8d; opacity: .8; }
-.actions { display: flex; align-items: end; gap: 10px; pointer-events: auto; }
-.tool, .action { border: 0; box-shadow: 0 5px 15px rgba(28,67,56,.22); font-weight: 900; }
-.tool { width: 64px; height: 64px; border-radius: 20px; background: rgba(255,255,255,.9); font-size: 25px; }
-.tool small { display: block; margin-top: -2px; font-size: 10px; }
-.action { width: 82px; height: 82px; border-radius: 50%; background: #ffe194; color: #614c19; font-size: 17px; }
-.action:active, .tool:active { transform: scale(.96); }
+.strategy-bar { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; width:min(48vw,207px); padding:7px; border:2px solid rgba(223,193,122,.74); border-radius:16px; background:rgba(31,42,39,.85); box-shadow:0 6px 22px #102b25a6; backdrop-filter:blur(5px); pointer-events:auto; }
+.strategy-button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-height:56px; border:1px solid #9b8964; border-radius:10px; background:linear-gradient(#726952,#484e42); color:#fff2ce; font-size:22px; font-weight:850; text-shadow:0 1px #18251c; }
+.strategy-button small { font-size:10px; white-space:nowrap; }
+.strategy-button:active { background:#9c8154; transform:scale(.97); }
+.camera-zoom { position:absolute; right:max(12px,env(safe-area-inset-right)); top:max(66px,calc(env(safe-area-inset-top) + 56px)); z-index:5; display:flex; gap:7px; }
+.camera-zoom button { width:40px; height:40px; border:1px solid #b5a47c; border-radius:10px; background:rgba(35,48,39,.9); color:#fff0c6; font-size:25px; font-weight:900; box-shadow:0 3px 12px #23372d66; }
+#castleManageButton { display:none!important; }
 .panel { width: min(92vw, 430px); max-height: min(72vh, 600px); border: 0; border-radius: 22px; padding: 0; background: #fbfff9; box-shadow: 0 20px 60px rgba(24,52,44,.35); color: var(--ink); }
 .panel::backdrop { background: rgba(24,48,42,.35); backdrop-filter: blur(2px); }
 .panel-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; background: #fbfff9; }
@@ -64,7 +65,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 }
 @media (max-height: 620px) {
   .joystick { transform: scale(.82); transform-origin: left bottom; }
-  .actions { transform: scale(.86); transform-origin: right bottom; }
+  .strategy-bar { transform: scale(.86); transform-origin: right bottom; }
   .toast { bottom: 112px; }
 }
 
@@ -78,10 +79,16 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   background:rgba(21,45,49,.94); color:#fff; font-weight:800; text-align:center; }
 .webgl-status[hidden] { display:none; }
 .hud,.raid-status,.hint,.toast,.controls { z-index:4; }
+.hud-main { border:1px solid rgba(226,207,155,.67); background:rgba(36,49,40,.87); color:#fff2d2; box-shadow:0 3px 14px #24382955; }
+.raid-status { background:rgba(52,61,45,.9); color:#ffe5aa; border:1px solid #a99a70; }
+.hint { max-width:70vw; padding:6px 10px; background:rgba(34,47,38,.78); font-size:11px; }
+.small-button { background:#897751; color:#fff5dc; }
+.controls { align-items:flex-end; }
 .panel,.fishing-panel { z-index:9; }
 @media (max-width:420px) {
   .controls { padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right)); }
   .joystick { width: min(118px, 30vw); height: min(118px, 30vw); }
-  .action { width:72px; height:72px; }
-  .tool { width:60px; height:60px; }
+  .strategy-bar { width:min(49vw,191px); gap:4px; padding:5px; }
+  .strategy-button { min-height:51px; font-size:20px; }
+  .strategy-button small { font-size:9px; }
 }
