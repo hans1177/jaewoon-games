@@ -132,8 +132,9 @@ jobs:
               throw new Error('COMPANION_GEAR_NOT_OWNED '+JSON.stringify(gearCheck));
             await page.evaluate(()=>{
               const a=window.partyRpgVibeState().state.ai.find(x=>x.id==='ai0');
-              a.drops.push('goblin_blade');
+              if(!a.drops.includes('goblin_blade'))a.drops.push('goblin_blade');
             });
+            await page.locator('[data-bag-person="ai0"]').click();
             await page.locator('[data-transfer="goblin_blade"]').click();
             await page.locator('[data-receiver="player"]').click();
             const transferCheck=await page.evaluate(()=>{
