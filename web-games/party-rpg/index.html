@@ -242,7 +242,7 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
 
 /* 인물 퀘스트는 기존 UI와 지도에 표시, 가까워지면 터치로 즉시 조사한다. */
 #prompt.on{pointer-events:auto;cursor:pointer;border-color:#ecd6a0;box-shadow:0 0 12px #d5bc7545;animation:hintPulse 1.5s ease-in-out infinite}
-#prompt:focus-visible{outline:3px solid #efcb77}
+#prompt:focus-visible{outline:3px solid #efcb77}#interactBtn.near{border:2px solid #edcc80;box-shadow:0 0 17px #dfb75b66;filter:brightness(1.18)}
 .mapMarker.recruit{color:#f4c976}
 @keyframes hintPulse{50%{box-shadow:0 0 25px #d5bc7588}}
 @media(max-width:700px){#prompt.on{left:50%;bottom:calc(315px + env(safe-area-inset-bottom));max-width:75vw;font-size:11px;white-space:normal;text-align:center;padding:7px 12px}}
@@ -797,7 +797,7 @@ function renderCreator(){
 function confirmCharacter(){var name=document.getElementById('heroName').value.trim().slice(0,16)||'여행자';state.player.name=name;state.player.classId=uiDraft.classId;state.player.portraitId=uiDraft.portraitId;state.player.identityCreated=true;save();beginAdventure();}
 function beginAdventure(){sound.start();if(!state.player.identityCreated){showCreator();return;}gameStarted=true;document.getElementById('start').hidden=true;keys={};joy.x=joy.y=0;document.getElementById("partyCards").replaceChildren();uiPartyNodes.clear();partyHud();save();if(!state.story.intro)showIntro(0);}
 function showIntro(step){
- introStep=step;sound.effect("story");var scenes=[{portrait:state.player.portraitId,speaker:'지도가 잊은 마을',chapter:'서막 · 첫 번째 편지',text:'장례식이 끝난 저녁, 지도에서 북쪽 길이 사라졌다. 마을 사람들은 그런 길은 처음부터 없었다고 했다. 너의 주머니에는 낡은 편지 한 장이 남아 있었다.',quote:'나를 찾지 마. 내 이름을 찾아 줘.'},{portrait:0,speaker:'루카 · 관문의 수비대장',chapter:'서막 · 기억하는 사람',text:'“그 길에서 마지막으로 돌아온 건 너야.” 루카는 닳은 인장을 내밀었다. 그도 잃어버린 사람들을 찾고 있었다. 열 명의 동료 가운데 누구와 길을 걸을지는 네가 결정해야 했다.',quote:'혼자라면 길을 찾겠지. 함께라면 돌아올 수 있어.'},{portrait:1,speaker:'미나 · 기록관의 딸',chapter:'서막 · 잊힌 길의 서약',text:'“초원의 이정표부터 확인해. 숲의 묘지에도 같은 인장이 있어.” 미나는 지도의 빈 곳에 작은 점을 찍었다. 너는 편지를 접었다. 서명은 분명 네 필체였다.',quote:'지워진 것은 길일까, 우리가 기억하던 진실일까.'}];
+ introStep=step;sound.effect("story");var scenes=[{portrait:state.player.portraitId,speaker:'지도가 잊은 마을',chapter:'서막 · 첫 번째 편지',text:'장례식이 끝난 저녁, 지도에서 북쪽 길이 사라졌다. 마을 사람들은 그런 길은 처음부터 없었다고 했다. 너의 주머니에는 낡은 편지 한 장이 남아 있었다.',quote:'나를 찾지 마. 내 이름을 찾아 줘.'},{portrait:0,speaker:'루카 · 관문의 수비대장',chapter:'서막 · 기억하는 사람',text:'“그 길에서 마지막으로 돌아온 건 너야.” 루카는 관문의 군번표를 꺼냈다. 실종자 세 명의 이름이 빠져 있었다. 기록부터 조사해야 그를 동료로 맞을 수 있다.',quote:'군번표를 가져와. 내가 대조하지.'},{portrait:1,speaker:'미나 · 기록관의 딸',chapter:'서막 · 잊힌 길의 서약',text:'“초원의 인장을 먼저 봐. 숲 묘비랑 날짜가 안 맞아.” 미나는 두 장의 문서를 나란히 놓았다. 편지에 찍힌 서명은 네 필체였다.',quote:'지도보다 장부를 먼저 확인해.'}];
  scenes.splice(1,0,{portrait:0,speaker:'북쪽 관문의 마지막 밤',chapter:'서막 · 피 묻은 군번표',text:'비에 잠긴 관문 앞에 죽은 병사들의 신발이 한 줄로 놓여 있다. 루카는 문을 닫았던 자의 이름을 아직 말하지 못한다. 성벽에 남은 긁힌 자국은 문 바깥에서가 아니라 안쪽에서 시작되었다.',quote:'“문 너머의 사람들을 버린 자는 누구인가.”'});
  scenes.push({portrait:1,speaker:'기록관의 봉인',chapter:'서막 · 미나의 거짓말',text:'미나는 지도가 비어 있던 자리에 붉은 잉크를 떨어뜨린다. 그날 밤 기록관의 불은 꺼지지 않았다. 사라진 이름 중 첫 번째는 네 것이었다. 미나는 그 문서를 읽은 적이 없다고 말하지만, 손은 떨리고 있었다.',quote:'“기억을 돌려놓는다면 누군가는 다시 희생돼.”'});
  var scene=scenes[step];if(!scene){state.story.intro=true;introStep=-1;save();closeModal();toast('동료 메뉴에서 함께할 일행을 골라.');return;}
@@ -948,7 +948,7 @@ function updateHud(){
  skillButton.textContent=remaining?'기술 '+remaining+'초':(CLASSES[state.player.classId]||CLASSES.fighter).name+' 기술';
  skillButton.setAttribute('aria-label',info.skill+(remaining?' · '+remaining+'초 후 사용 가능':' · 누르면 사용'));
  skillButton.disabled=remaining>0;
- var next=storyNext();document.getElementById('nextQuestText').textContent=next.label;
+ var next=storyNext();document.getElementById('nextQuestText').textContent=next.label;document.getElementById('interactBtn').classList.toggle('near',!!currentInteract);
  lvText.textContent=state.player.name+" · Lv."+state.player.level;hpText.textContent="HP "+Math.ceil(state.player.hp)+"/"+state.player.maxHp;atkText.textContent="공격 "+playerAtk();defText.textContent="방어 "+playerArmorDef();goldText.textContent=Math.floor(state.player.gold)+"G";partyText.textContent="파티 1+"+partyCount()+"/"+MAX_PARTY_SIZE;
  hpFill.style.width=Math.max(0,state.player.hp/state.player.maxHp*100)+"%";xpFill.style.width=Math.max(0,state.player.xp/xpNeed(state.player.level)*100)+"%";
  if(dungeon){zoneName.textContent=dungeon.def.name;zoneSub.textContent="방 "+(dungeon.room+1)+"/"+(dungeon.def.rooms.length+1);if(dungeon.complete)objective.textContent="던전 클리어! 빛에 닿으면 마을로 귀환해.";else if(dungeon.room<dungeon.def.rooms.length)objective.textContent="방의 몬스터를 모두 처치해야 다음 방이 열려. 남은 적 "+aliveEnemies();else objective.textContent="보스 처치가 클리어 조건. 보스 체력을 많이 깎을수록 기여도가 올라.";}
