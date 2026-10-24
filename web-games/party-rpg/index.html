@@ -393,6 +393,14 @@ var ACCESSORIES=[
  {id:"amulet_forest",name:"초록잎 목걸이",slot:"necklace",jobs:["ranger"],price:640,attack:0,def:2,level:8}
 ];
 // 직업마다 두 권, 캐릭터별 개별 습득. 기본 직업 기술은 항상 사용.
+// 1차 각성은 레벨 10 시련과 두 갈래 전문화. 2차 전직은 명칭 예고만 표시한다.
+var ADVANCEMENTS={
+fighter:{zone:2,trial:"성문의 맹세",intro:"버려진 성문 앞에서 지킬 것과 나아갈 길을 선택한다.",branches:[{id:"fighter_guardian",name:"수호기사",desc:"파티 보호 전문가",second:"성채의 성기사"},{id:"fighter_berserker",name:"전투광",desc:"강력한 연속 공격",second:"불멸의 투신"}]},
+rogue:{zone:3,trial:"그림자의 기록",intro:"진실을 숨기는 자와 밝혀내는 자의 길을 선택한다.",branches:[{id:"rogue_assassin",name:"암행자",desc:"약점 집중 공격",second:"밤의 추적자"},{id:"rogue_trickster",name:"환영도적",desc:"연막과 교란 전문가",second:"무영의 환술사"}]},
+cleric:{zone:1,trial:"새벽의 기도",intro:"상처를 막는 방벽과 기억을 회복하는 신탁 중 선택한다.",branches:[{id:"cleric_paladin",name:"성전사",desc:"전열 보호의 성스러운 기사",second:"황금의 성기사"},{id:"cleric_oracle",name:"신탁사제",desc:"회복과 축복 전문가",second:"여명의 예언자"}]},
+wizard:{zone:4,trial:"깨진 별자리",intro:"뜨거운 원소의 길과 별의 비전 길 중 하나를 선택한다.",branches:[{id:"wizard_elemental",name:"원소술사",desc:"불꽃과 얼음 광역 마법",second:"태고의 대마도사"},{id:"wizard_arcane",name:"비전술사",desc:"비전 장벽과 연쇄 주문",second:"시간의 현자"}]},
+ranger:{zone:2,trial:"잊힌 길잡이",intro:"하나의 화살로 길을 여는 길과 숲을 지키는 길 중 선택한다.",branches:[{id:"ranger_marksman",name:"명사수",desc:"관통 사격 전문가",second:"천공의 궁성"},{id:"ranger_warden",name:"숲지기",desc:"속박과 파티 보조",second:"고대숲의 수호자"}]}
+};
 var SKILL_BOOKS=[
  {id:"fighter_wall",job:"fighter",name:"파티 철벽 진형",price:300,level:4,desc:"위험할 때 보호 태세 · 22초"},
  {id:"fighter_strike",job:"fighter",name:"방패 파쇄",price:780,level:9,desc:"가까운 적에게 추가 일격 · 22초"},
