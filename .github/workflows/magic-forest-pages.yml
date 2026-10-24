@@ -569,6 +569,7 @@ jobs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       contents: read
+      actions: write
       pages: write
       id-token: write
       issues: write
@@ -605,6 +606,17 @@ jobs:
             else
               echo "STALE_PAGES_REVISION_SKIPPED=$GITHUB_SHA CURRENT_MAIN=$latest"
               echo "publish=false" >> "$GITHUB_OUTPUT"
+              # 최신 main이 GITHUB_TOKEN 작업자 커밋이면 push 워크플로가 자동 실행되지 않는다.
+              # 기존 동일 Pages 워크플로를 최신 main으로 재요청하되 실행 중인 동일 SHA를 중복 예약하지 않는다.
+              [[ "$latest" =~ ^[a-f0-9]{40}$ ]] || { echo 'PAGES_LATEST_SHA_INVALID' >&2; exit 1; }
+              active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?head_sha=$latest&per_page=30" \
+                --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="requested" or .status=="pending")] | length')"
+              if [ "$active" = "0" ]; then
+                gh workflow run magic-forest-pages.yml --ref main
+                echo "PAGES_LATEST_MAIN_CANONICAL_REQUEUED=$latest"
+              else
+                echo "PAGES_LATEST_MAIN_CANONICAL_ALREADY_RUNNING=$latest"
+              fi
             fi
           fi
       - name: Deploy GitHub Pages explicitly instead of relying on a GITHUB_TOKEN push
