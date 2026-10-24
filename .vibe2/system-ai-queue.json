@@ -1957,7 +1957,7 @@
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -2003,12 +2003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40051096805:1",
+      "reservedAt": "2026-10-24T01:52:36.008Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -3188,7 +3188,8 @@
         "system-ai-handoff-to-reservation:system-ai:40045834248:1",
         "actions-run:40045834248",
         "system-ai-handoff-to-reservation:system-ai:40047003558:1",
-        "actions-run:40047003558"
+        "actions-run:40047003558",
+        "system-ai-handoff-to-reservation:system-ai:40051096805:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1346,
@@ -3203,7 +3204,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-10-24T01:02:08.316Z"
+      "updatedAt": "2026-10-24T01:52:36.008Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
@@ -116779,7 +116780,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116822,12 +116823,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40051096805:1",
+      "reservedAt": "2026-10-24T01:52:36.008Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -117221,7 +117222,8 @@
         "system-ai-handoff-to-reservation:system-ai:40045834248:1",
         "actions-run:40045834248",
         "system-ai-handoff-to-reservation:system-ai:40047003558:1",
-        "actions-run:40047003558"
+        "actions-run:40047003558",
+        "system-ai-handoff-to-reservation:system-ai:40051096805:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1252,
@@ -117236,7 +117238,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-24T01:02:08.316Z"
+      "updatedAt": "2026-10-24T01:52:36.008Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
@@ -145563,7 +145565,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -145605,12 +145607,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40051096805:1",
+      "reservedAt": "2026-10-24T01:52:36.008Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "stale-system-ai-reservation-reclaimed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -145722,14 +145724,17 @@
         "failed-strategy-fingerprint:8ae5d8b064cac0554c99220178eba946af568db364b907271d320fbdac4c2733",
         "model-output-sha256:af10a9ed523f1f07b239e724eb19ef79027306a0ce7277321b4e54a9b2de32a4",
         "system-ai-handoff-to-reservation:system-ai:39706845929:1",
-        "system-ai-handoff-from-reservation:system-ai:39706845929:1"
+        "system-ai-handoff-from-reservation:system-ai:39706845929:1",
+        "system-ai-impact-score:1002",
+        "system-ai-blocked-task-count:14",
+        "system-ai-handoff-to-reservation:system-ai:40051096805:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 302,
+      "impactScore": 1002,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 0,
-        "recurrenceCount": 0,
+        "blockedTaskCount": 14,
+        "recurrenceCount": 14,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -145737,7 +145742,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-10-22T02:16:02.253Z"
+      "updatedAt": "2026-10-24T01:52:36.008Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
