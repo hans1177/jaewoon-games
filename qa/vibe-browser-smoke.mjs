@@ -356,8 +356,8 @@ try{
         training
       };
     });
-    assert.equal(buildingModels.count,21,view.name+': COZY_BUILDING_TYPES');
-    assert.equal(buildingModels.unique,21,view.name+': COZY_BUILDING_MODEL_DUPLICATION');
+    assert.equal(buildingModels.count,23,view.name+': COZY_BUILDING_TYPES');
+    assert.equal(buildingModels.unique,23,view.name+': COZY_BUILDING_MODEL_DUPLICATION');
     assert.deepEqual(buildingModels.empty,[],view.name+': COZY_BUILDING_EMPTY_3D');
     assert.deepEqual(buildingModels.incomplete,[],view.name+': COZY_PRODUCTION_MESH_INCOMPLETE');
     assert.ok(buildingModels.training>=24,view.name+': COZY_BARRACKS_TRAINING_YARD');
@@ -395,14 +395,20 @@ try{
         count:1,level:3,sites:[{x:def.x,y:def.y}]};
       const advanced=economyTechStatus(baseline,'trebuchet');
       const trap=economyTechStatus(baseline,'barrel');
+      const knight=economyTechStatus(baseline,'knight');
+      delete economyV4.buildings.knightHall;
+      const knightWithoutGuild=economyTechStatus(baseline,'knight');
       return {locked:locked.unlocked,basic:basic.unlocked,advanced:advanced.unlocked,
-        trap:trap.unlocked,armyTypes:Object.keys(window.cozyRTS?.unitTypes||{}).length};
+        trap:trap.unlocked,knight:knight.unlocked,knightWithoutGuild:knightWithoutGuild.unlocked,
+        armyTypes:Object.keys(window.cozyRTS?.unitTypes||{}).length};
     });
     assert.equal(tech.locked,false,view.name+': COZY_TECH_UNLOCKED_TOO_EARLY');
     assert.equal(tech.basic,true,view.name+': COZY_BASIC_SOLDIER_REGRESSION');
     assert.equal(tech.advanced,true,view.name+': COZY_SIEGE_TECH_NEVER_UNLOCKS');
     assert.equal(tech.trap,true,view.name+': COZY_TRAP_TECH_NEVER_UNLOCKS');
     assert.equal(tech.armyTypes,10,view.name+': COZY_ARMY_ROLE_COUNT');
+    assert.equal(tech.knight,true,view.name+': COZY_KNIGHT_UNLOCK_INCOMPLETE');
+    assert.equal(tech.knightWithoutGuild,false,view.name+': COZY_KNIGHT_GUILD_BYPASS');
     console.log('COZY_TECH_TREE_PROGRESSION=PASS '+view.name);
     await cozy.locator('#panelClose').click();
     await cozy.locator('#fishingCommand').click();
@@ -425,6 +431,42 @@ try{
     assert.equal(await cozy.locator('#ks-track option').count(),4,
       view.name+': COZY_FOUR_THEME_MUSIC_MISSING');
     await cozy.locator('#systemClose').click();
+    // 배포 후 실제 게임 API에서 기사단 영입→스킬 상태→포로 몸값/거부/교환 검증.
+    const courtFlow=await cozy.evaluate(async()=>{
+      const api=window.cozyRTS,st=api.state,inv=st.inventory;
+      const {ECONOMY_BUILDINGS}=await import('./production-buildings.js');
+      for(const def of ECONOMY_BUILDINGS)st.economyV4.buildings[def.id]={
+        count:1,level:3,sites:[{x:def.x,y:def.y}]};
+      st.barracksBuilt=true;inv.food=500;inv.iron=500;inv.wood=500;inv.stone=500;st.coins=1000;
+      const hired=api.hireKnight(),knights=st.army.filter(u=>u.kind==='knight');
+      const skill=api.knightSkill(999999);
+      const court=st.knightCourtV1,iron=inv.iron,before=st.coins;
+      const gold=api.getLords().find(l=>l.id==='gold');gold.coins=999;
+      court.prisoners.push({id:'qa-gold',lordId:'gold',heroName:'시험 포로',level:1,day:st.day,lastOfferDay:-1});
+      const demanded=api.prisonAction('demand','qa-gold'),earned=st.coins-before;
+      court.heldByRivals.push({id:'qa-held',lordId:'iron',heroName:'시험 기사',
+        trait:'guardian',quality:2,level:3,xp:12,price:55,day:st.day,refused:false});
+      const refused=api.prisonAction('refuse','qa-held');
+      court.prisoners.push({id:'qa-iron',lordId:'iron',heroName:'교환 대상',
+        level:2,day:st.day,lastOfferDay:-1});
+      const swapped=api.prisonAction('exchange','qa-iron');
+      return {hired:hired.ok,knightSaved:knights.some(k=>k.heroName&&k.trait),
+        ironRemaining:iron,skillInvalid:skill?.ok===false,
+        demanded:demanded.ok,earned,refused:refused.ok,swapped:swapped.ok,
+        returned:st.army.some(k=>k.kind==='knight'&&k.heroName==='시험 기사'),
+        capacity:api.courtCapacity()};
+    });
+    assert.equal(courtFlow.hired,true,view.name+': COZY_KNIGHT_HIRE_FAILED');
+    assert.equal(courtFlow.knightSaved,true,view.name+': COZY_KNIGHT_SAVE_FIELDS');
+    assert.ok(courtFlow.ironRemaining<500,view.name+': COZY_KNIGHT_IRON_COST_IGNORED');
+    assert.equal(courtFlow.skillInvalid,true,view.name+': COZY_KNIGHT_SKILL_VALIDATION');
+    assert.equal(courtFlow.demanded,true,view.name+': COZY_PRISON_RANSOM_FAILED');
+    assert.ok(courtFlow.earned>0,view.name+': COZY_PRISON_RANSOM_NO_GOLD');
+    assert.equal(courtFlow.refused,true,view.name+': COZY_PRISON_REFUSAL_FAILED');
+    assert.equal(courtFlow.swapped,true,view.name+': COZY_PRISON_EXCHANGE_FAILED');
+    assert.equal(courtFlow.returned,true,view.name+': COZY_PRISON_KNIGHT_NOT_RETURNED');
+    assert.ok(courtFlow.capacity>=4,view.name+': COZY_PRISON_NOT_BUILT');
+    console.log('COZY_KNIGHT_PRISON_ECONOMY_RUNTIME=PASS '+view.name);
     assert.deepEqual(errors,[],view.name+': COZY_RTS_RUNTIME_ERRORS');
     console.log('COZY_RTS_PUBLIC_3D_ECONOMY_SIEGE_PASS '+view.name+' '+expected);
    }finally{await cozy.close()}
