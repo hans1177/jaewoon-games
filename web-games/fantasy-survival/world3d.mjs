@@ -138,8 +138,8 @@ async function loadSourceModels(){
     if(!response.ok)throw new Error('Compressed CC0 model pack unavailable: '+response.status);
     packedModels=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
   }
-  // 먼저 가까운 3D 배경에 필요한 5개 모델만 준비한다.
-  const required=new Set(['floor_base','tree','tree_large','foliage_A','cobblestones']);
+  // 첫 화면은 바닥 메시만 파싱하고, 나머지 CC0 에셋은 첫 프레임 뒤 순차 로딩한다.
+  const required=new Set(['floor_base']);
   const fetchSourceModel=async name=>{
     if(packedModels){
       const entry=packedModels[name];
@@ -368,13 +368,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     giantlake:'foliage_A',worldtree:'tree_large',flowerfield:'foliage_A',
     giantgarden:'foliage_A',desert:'cobblestones'
   });
+  // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
-  for(const kind of ['tree','tree_large','foliage_A','cobblestones']){
-    const original=models.get(kind);
-    const mesh=new THREE.InstancedMesh(original.geometry,original.material,49);
-    mesh.count=0;mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;
-    scene.add(mesh);sceneryBatches.set(kind,{mesh,count:0});
-  }
+  let lastSceneryModelCount=-1;
   let frameSequence=0;
   let currentBiome='forest';
   let lastHeroPoseX=null,lastHeroPoseY=null,lastHeroPoseAt=0;
@@ -689,7 +685,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // classifier, collision, damage, spawn and player movement remain authoritative.
     const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
     // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
-    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea){
+    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea||models.size!==lastSceneryModelCount){
       let tileIndex=0,seamTileIndex=0;
       for(const batch of sceneryBatches.values())batch.count=0;
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
@@ -705,7 +701,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
         if(hash%3!==0){
-          const batch=sceneryBatches.get(SCENERY_KIND[tileZone]||'tree');
+          const kind=SCENERY_KIND[tileZone]||'tree';
+          let batch=sceneryBatches.get(kind);
+          if(!batch&&models.has(kind)){
+            const original=models.get(kind);
+            const mesh=new THREE.InstancedMesh(original.geometry,original.material,49);
+            mesh.count=0;mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;
+            scene.add(mesh);batch={mesh,count:0};sceneryBatches.set(kind,batch);
+          }
           if(batch){
             const xOffset=(((hash>>>4)%5)-2)*floorPitchX*.12;
             const zOffset=(((hash>>>7)%5)-2)*floorPitchZ*.12;
@@ -741,6 +744,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       batch.mesh.boundingSphere=null;
     }
       lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;lastFloorArea=state.area;
+      lastSceneryModelCount=models.size;
     }
     interactables.length=0;
     const seen=++frameSequence; // 이전 지역 몹·상호작용 객체를 저장 시각과 무관하게 정리한다.
