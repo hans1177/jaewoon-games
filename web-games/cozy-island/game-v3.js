@@ -195,40 +195,23 @@ function openGuide(){
 function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='영지 자원';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p><p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. <a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>`;ui.panel.showModal()}
 function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}
 
-function nearestInteraction(at=player,radius=86){const dist=(x,y)=>Math.hypot(at.x-x,at.y-y);const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)},{type:'tower',d:dist(400,1090)},{type:'hall',d:dist(1010,1090)},{type:'lumber',d:dist(245,850)},{type:'mine',d:dist(785,965)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=radius?c[0]:null}
-function interactionHint(t){
-  if(!t)return raidActive?'⚔️ 습격 중 · 병사들이 성채를 방어 중':'지도를 드래그하고 건물을 터치해 관리';
-  if(t.type==='node')return '근처 자원 자동 채집 중';
-  if(t.type==='npc')return t.item.name+' · 터치해서 대화';
-  if(t.type==='house')return '집 터치 · 꾸미기';
-  if(t.type==='ship')return '무역 · 상선 매매와 생산품 출하';
-  if(t.type==='barracks')return '병영 · 병력 관리';
-  if(t.type==='workerShop')return '일꾼 작업장 · 관리';
-  if(['tower','hall','lumber','mine'].includes(t.type))return '중세 생산·방어 건물 · 터치해 건설/강화';
-  if(t.type==='fish')return '연못 터치 · 낚시';
-  if(t.type==='expand')return '동쪽 지역 해금 · 120골드';
-  if(t.type==='plot')return t.item.plot.ready?'밭 터치 · 수확':t.item.plot.state==='empty'?'밭 터치 · 씨앗 심기':!t.item.plot.watered?'밭 터치 · 물 주기':'밭 · 재배 중';
-  return '터치해서 관리';
+// 과거 수동 채집·물주기·집 꾸미기 상호작용을 전략 명령으로 교체한다.
+function nearestInteraction(at=player,radius=118){
+ const items=[
+  {type:'barracks',x:barracks.x,y:barracks.y},
+  {type:'hall',x:1010,y:1090},{type:'tower',x:400,y:1090},
+  {type:'lumber',x:245,y:850},{type:'mine',x:785,y:965},
+  {type:'workerShop',x:workerShop.x,y:workerShop.y}
+ ];
+ const ordered=items.map(p=>({...p,d:Math.hypot(at.x-p.x,at.y-p.y)})).sort((x,y)=>x.d-y.d);
+ return ordered[0]?.d<=radius?ordered[0]:null;
 }
-function interact(){
-  if(runtime.paused||ui.panel.open||ui.fishing.open)return;
-  const target=nearestInteraction();
-  if(target)activateInteraction(target);else toast('지도에서 자원 또는 건물을 선택해');
-}
+function interactionHint(t){return t?'🏗️ 건물 터치 · 건설/강화/병영':'지도 드래그 · 건설 메뉴에서 자동 일꾼 건물을 배치해'}
+function interact(){if(!ui.panel.open)window.dispatchEvent(new Event('cozy:open-construction'))}
 function activateInteraction(t){
-  if(runtime.paused||ui.panel.open||ui.fishing.open)return;
-  if(t.type==='node'){
-    // 전략게임: 화면에서 선택한 자원을 직접 채집하며 캐릭터 근접 판정을 요구하지 않는다.
-    if(t.item.readyAt<=Date.now())collectNode(t.item);
-  }else if(t.type==='npc')talkTo(t.item);
-  else if(t.type==='house')openDecor();
-  else if(t.type==='ship')ui.trade?.click();
-  else if(t.type==='barracks')openBarracks();
-  else if(t.type==='workerShop')openWorkerShop();
-  else if(['tower','hall','lumber','mine'].includes(t.type))document.querySelector('#castleManageButton')?.click();
-  else if(t.type==='fish')startFishing();
-  else if(t.type==='expand')expandIsland();
-  else if(t.type==='plot')usePlot(t.item.index,t.item.plot.state==='empty'?'seed':'water');
+ if(runtime.paused||ui.panel.open)return;
+ if(t.type==='barracks')openBarracks();
+ else window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:t.type==='hall'||t.type==='tower'?'defense':'industry'}}));
 }
 function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){state.inventory.stone++;toast('🪨 돌 +1')}else{state.inventory.flower++;toast('🌼 꽃 +1')}n.readyAt=now+30000;saveSoon()}
 function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class="choice" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=`<p class="panel-note">${n.line}</p><div class="choice-grid">${extra}</div>`;ui.panel.showModal();ui.panelBody.querySelector('[data-seed]')?.addEventListener('click',()=>{if(state.coins<15){toast('골드가 부족해');return}state.coins-=15;state.inventory.seeds+=3;saveSoon();updateHUD();toast('🌱 씨앗 +3')})}
@@ -240,7 +223,7 @@ function createUnit(kind,enemy,boss=false){const ar=kind==='archer',baseHp=ar?55
 function openWorkerShop(){window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}}))}
 function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.workerFeedTimer));ui.panelBody.innerHTML=`<p class="panel-note">노비는 자동 물주기·수확·나무/돌 채집을 해. 1분마다 작업물을 인벤토리로 줘.</p><div class="inventory-grid">${itemCard('🧑‍🌾 노비',state.workers)}${itemCard('⏱️ 지급',delivery)}${itemCard('🍖 급식까지',feed)}${itemCard('🪵 보관',s.wood)}${itemCard('🪨 보관',s.stone)}${itemCard('🍖 보관',s.food)}${itemCard('🥕 보관',s.crop)}</div><button class="choice" data-worker ${state.workers>=WORKER_MAX?'disabled':''}><span>🧑‍🌾 노비 구매 (${state.workers}/${WORKER_MAX})</span><b>${WORKER_PRICE}골드</b></button><p class="panel-note">3분마다 노비 1명당 식량 10을 먹어. 먹일 식량이 부족한 노비는 굶어 죽어.</p>`;ui.panelBody.querySelector('[data-worker]')?.addEventListener('click',buyWorker)}
 function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSoon();updateHUD();renderWorkerShop();toast('🧑‍🌾 노비가 일을 시작했어')}
-function openDecor(){ // 보존: 옛 세이브 호환용 UI, 전략 게임에서는 호출되지 않는다.const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.innerHTML=`<div class="choice-grid">${opts.map(o=>`<button class="choice" data-dec="${o.id}" ${state.decor.includes(o.id)?'disabled':''}><span>${o.i} ${o.n}</span><b>${state.decor.includes(o.id)?'배치됨':o.c+'골드'}</b></button>`).join('')}</div>`;ui.panel.showModal();ui.panelBody.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click',()=>{const o=opts.find(x=>x.id===b.dataset.dec);if(!o||state.coins<o.c)return toast('골드가 부족해');state.coins-=o.c;state.decor.push(o.id);saveSoon();updateHUD();ui.panel.close();toast('꾸미기 완료')}))}
+function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.innerHTML=`<div class="choice-grid">${opts.map(o=>`<button class="choice" data-dec="${o.id}" ${state.decor.includes(o.id)?'disabled':''}><span>${o.i} ${o.n}</span><b>${state.decor.includes(o.id)?'배치됨':o.c+'골드'}</b></button>`).join('')}</div>`;ui.panel.showModal();ui.panelBody.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click',()=>{const o=opts.find(x=>x.id===b.dataset.dec);if(!o||state.coins<o.c)return toast('골드가 부족해');state.coins-=o.c;state.decor.push(o.id);saveSoon();updateHUD();ui.panel.close();toast('꾸미기 완료')}))}
 function usePlot(index,tool){const p=state.plots[index];if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.inventory.crop++;state.inventory.food+=10;saveSoon();toast('🥕 농작물 +1 · 🍖 식량 +10');return}if(p.state==='empty'){if(tool!=='seed')return toast('씨앗을 선택해');if(state.inventory.seeds<=0)return toast('씨앗이 없어');state.inventory.seeds--;p.state='growing';p.watered=false;p.wateredAt=0;p.ready=false;saveSoon();toast('🌱 씨앗을 심었어');return}if(!p.watered){if(tool!=='water')return toast('물뿌리개를 선택해');p.watered=true;p.wateredAt=Date.now();saveSoon();toast('💧 물을 줬어 · 20초');return}toast('🌱 자라는 중')}
 function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}
 function expandIsland(){if(state.coins<120){toast('120골드가 필요해');return}state.coins-=120;state.expanded=true;saveSoon();updateHUD();toast('🏝️ 동쪽 야생지대가 크게 열렸어!')}
@@ -249,7 +232,7 @@ function startFishing(){if(fishing)return;fishing={pos:0,dir:1,speed:.7};pressed
 function catchFish(){if(!fishing)return;const ok=fishing.pos>=42&&fishing.pos<=62;stopFishing();if(ok){state.inventory.fish++;saveSoon();toast('🐟 물고기 +1')}else toast('놓쳤어')}
 function stopFishing(){fishing=null;cancelAnimationFrame(fishingFrame);fishingFrame=0;if(ui.fishing.open)ui.fishing.close()}
 
-function updateWorkers(dt){ // 보존: 옛 세이브 호환용, 새 전략 루프에서는 호출하지 않는다.if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer+=dt;
+function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer+=dt;
   for(const p of state.plots){if(p.state==='growing'&&!p.watered){p.watered=true;p.wateredAt=Date.now()}if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.workerStorage.food+=10;state.workerStorage.crop+=1}}
   while(state.workerWorkTimer>=WORK_TICK){state.workerWorkTimer-=WORK_TICK;state.workerStorage.wood+=state.workers;state.workerStorage.stone+=state.workers}
   if(state.workerDeliveryTimer>=DELIVERY_INTERVAL){state.workerDeliveryTimer%=DELIVERY_INTERVAL;const s=state.workerStorage;state.inventory.wood+=s.wood;state.inventory.stone+=s.stone;state.inventory.food+=s.food;state.inventory.crop+=s.crop;const total=s.wood+s.stone+s.food+s.crop;if(total)toast(`🧺 노비 작업물 지급 · 나무${s.wood} 돌${s.stone} 식량${s.food} 농작물${s.crop}`);state.workerStorage={wood:0,stone:0,food:0,crop:0};saveSoon()}
@@ -543,7 +526,7 @@ function updateHUD(){
   ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;
   ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';
   ui.coins.textContent=String(state.coins);
-  if(ui.economy)ui.economy.textContent=`🪵 ${Math.floor(state.inventory.wood)} · 🪨 ${Math.floor(state.inventory.stone)} · 🍖 ${Math.floor(state.inventory.food)} · ⚔️ ${allies.length}`;
+  if(ui.economy)ui.economy.textContent=`🪵 ${Math.floor(state.inventory.wood)} · 🪨 ${Math.floor(state.inventory.stone)} · 🍖 ${Math.floor(state.inventory.food)} · 👷 ${economyStaff(state).assigned} · ⚔️ ${allies.length}`;
   if(raidActive)ui.raid.textContent=grandSiege?
     `🏰 ${grandSiege.wave}/6차 · 적 ${enemies.length} · 성채 ${Math.ceil(getFort()?.keepHp??900)} · 사기 ${getFort()?.morale??65}`:
     `⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;
