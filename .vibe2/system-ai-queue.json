@@ -148302,7 +148302,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -148395,7 +148395,7 @@
         "internal-motion-shui-gui-walk-v1",
         "internal-motion-huapi-walk-v1"
       ],
-      "retries": 338,
+      "retries": 339,
       "recurrenceCount": 25,
       "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "failureSignature": "work-order-not-runnable",
@@ -148409,12 +148409,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40140372900:1",
-      "reservedAt": "2026-10-24T23:01:30.882Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -149524,7 +149524,13 @@
         "model-output-sha256:400c629a7cc3589a93cef501e9e72a830e8f3db780e655de908315d5080cf935",
         "system-ai-handoff-to-reservation:system-ai:40137813340:1",
         "actions-run:40137813340",
-        "system-ai-handoff-to-reservation:system-ai:40140372900:1"
+        "system-ai-handoff-to-reservation:system-ai:40140372900:1",
+        "actions-run:40140372900",
+        "external-ai-raw-output-sha256:a62838fbaedf5d9644a7f0f210eda4f24ac49dc9f76a5048b15dd02783efffd1",
+        "system-ai-applied-answer-sha256:a62838fbaedf5d9644a7f0f210eda4f24ac49dc9f76a5048b15dd02783efffd1",
+        "repair-strategy-fingerprint:a85d0849333a0b088fee1570c7707cbfb85ce7b2b8d908c98af058cdb60b1046",
+        "failed-strategy-fingerprint:a85d0849333a0b088fee1570c7707cbfb85ce7b2b8d908c98af058cdb60b1046",
+        "model-output-sha256:a62838fbaedf5d9644a7f0f210eda4f24ac49dc9f76a5048b15dd02783efffd1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
@@ -149539,7 +149545,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-24T23:01:30.882Z"
+      "updatedAt": "2026-10-24T23:05:13.956Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
