@@ -90,7 +90,7 @@ test('Diablo-style character panel preserves original game data and inventory ac
  assert.match(inventory,/else if\(r\?\.kind==='ammo'\)selectArrow\(r\.id\)/);
  assert.match(inventory,/else if\(r\)equipItem\(r\.id\)/);
  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
- assert.match(source,/reason==='unmapped-threat'\?'주변 생물의 3D 모델을 자동으로/);
+ assert.match(source,/reason==='unmapped-threat'\?'주변 생물의 3D 모델 확인 중:/);
  assert.doesNotMatch(inventory,/localStorage\.setItem|sessionStorage\.setItem|p\.inventory\[/);
 });
 
