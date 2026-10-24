@@ -152,6 +152,38 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
  #joystick{width:80px;height:80px}#knob{left:20px;top:20px;width:36px;height:36px}
  #actions{grid-template-columns:50px 50px;gap:3px}.act{min-height:35px}#prompt{bottom:116px}
 }
+
+/* 중간 이벤트씬 · 기존 대화창을 확장해 사건·인물·던전 장면을 모바일에서 읽기 쉽게 표시한다. */
+#modal[data-mode="event"]{background:radial-gradient(ellipse at center,#070b0cb2,#030508ef);backdrop-filter:blur(1px)}
+#modal[data-mode="event"] .card{width:min(95vw,790px);max-height:min(91dvh,760px);overflow:hidden;border:1px solid #918069;background:#101617;box-shadow:0 20px 80px #000e}
+#modal[data-mode="event"] .body{padding:0;max-height:calc(91dvh - 55px);overflow:auto;overscroll-behavior:contain}
+#modal[data-mode="event"] .head{background:#171d20;border-bottom:1px solid #7c786e}
+.eventScene{overflow:hidden;background:#171d20}
+.eventVista{position:relative;min-height:185px;display:flex;flex-direction:column;justify-content:flex-end;padding:26px 30px 22px;border-bottom:1px solid #786d58;overflow:hidden;background:radial-gradient(ellipse at 70% 30%,#b7a27a38,transparent 60%),linear-gradient(115deg,#293134,#141d23)}
+.eventVista:before,.eventVista:after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.34}
+.eventVista:before{background:repeating-linear-gradient(110deg,transparent 0 27px,#eee9de0b 28px,transparent 30px);animation:eventMist 9s linear infinite}
+.eventVista:after{inset:18% 0 0;background:linear-gradient(4deg,#090f18a6 0 36%,transparent 37%);clip-path:polygon(0 64%,10% 43%,19% 62%,26% 28%,33% 67%,44% 34%,56% 56%,69% 15%,81% 54%,90% 30%,100% 60%,100% 100%,0 100%)}
+.eventScene[data-mood="forest"] .eventVista{background:radial-gradient(ellipse at 60% 16%,#738c6a45,transparent 60%),linear-gradient(#203b32,#101b1a)}
+.eventScene[data-mood="field"] .eventVista{background:radial-gradient(ellipse at 70% 12%,#cbb88155,transparent 50%),linear-gradient(#44594c,#1b2e2a)}
+.eventScene[data-mood="cave"] .eventVista,.eventScene[data-mood="dungeon"] .eventVista{background:radial-gradient(ellipse at 61% 30%,#a98b5447,transparent 45%),linear-gradient(110deg,#303334,#101518)}
+.eventScene[data-mood="desert"] .eventVista{background:radial-gradient(ellipse at 72% 5%,#d5ba764d,transparent 54%),linear-gradient(#5f5244,#292d30)}
+.eventScene[data-mood="snow"] .eventVista{background:radial-gradient(ellipse at 65% 6%,#dae4e38a,transparent 52%),linear-gradient(#506875,#2a3944)}
+.eventScene[data-mood="abyss"] .eventVista{background:radial-gradient(ellipse at 62% 12%,#a7789455,transparent 55%),linear-gradient(#392635,#12141f)}
+.eventVista .eyebrow,.eventVista h2,.eventSigil{position:relative;z-index:2;text-shadow:0 3px 9px #000}
+.eventVista .eyebrow{font:11px Georgia,serif;letter-spacing:2px;color:#e1cdaa}
+.eventVista h2{margin:10px 0 0;color:#f0e5d1;font-size:clamp(22px,4.5vw,36px)}
+.eventSigil{position:absolute;right:36px;top:25px;font-size:44px;color:#d9c49d9a;animation:eventGlint 3s ease-in-out infinite}
+.eventDialogue{display:grid;grid-template-columns:128px minmax(0,1fr);gap:20px;padding:22px 28px}
+.eventPortrait{width:128px;height:128px;border:3px ridge #918066}
+.eventWords{min-width:0}.eventWords p{font-size:14px;line-height:1.75;margin:7px 0 14px}
+.eventWords blockquote{border-left:2px solid #998463;background:#8f83681c;padding:11px 13px;margin:0;color:#e5d8bc;line-height:1.6;font-size:15px}
+.eventControls{display:flex;align-items:center;gap:10px;padding:5px 28px 22px}
+.eventControls .menuBtn{margin:0;max-width:210px;flex:1}.eventControls .textBtn{margin-left:auto}
+.eventControls>span{color:#aa9b87;font-size:12px;min-width:45px}
+@keyframes eventMist{to{transform:translateX(65px)}}@keyframes eventGlint{50%{opacity:.35;transform:scale(.92)}}
+@media(max-width:700px){#modal[data-mode="event"]{padding:8px}#modal[data-mode="event"] .card{width:100%;max-height:94dvh}#modal[data-mode="event"] .body{max-height:calc(94dvh - 50px)}.eventVista{min-height:130px;padding:20px 16px 17px}.eventVista h2{font-size:23px}.eventVista .eyebrow{font-size:10px;letter-spacing:1px}.eventSigil{top:13px;right:18px;font-size:29px}.eventDialogue{grid-template-columns:76px minmax(0,1fr);gap:12px;padding:16px 14px}.eventPortrait{width:76px;height:76px}.eventWords p{font-size:12px;line-height:1.7}.eventWords blockquote{font-size:12px;padding:8px}.eventControls{padding:3px 12px max(12px,env(safe-area-inset-bottom));gap:6px}.eventControls .menuBtn{min-height:44px;font-size:12px}.eventControls .textBtn{font-size:11px;padding:8px}}
+@media(max-height:500px) and (orientation:landscape){.eventVista{min-height:70px;padding:6px 12px}.eventVista h2{font-size:18px;margin:3px 0}.eventDialogue{grid-template-columns:55px 1fr;padding:6px 12px;gap:10px}.eventPortrait{width:55px;height:55px}.eventWords p{margin:2px 0 5px;font-size:11px}.eventWords blockquote{font-size:11px}.eventControls{padding:3px 10px 8px}}
+@media(prefers-reduced-motion:reduce){.eventVista:before,.eventSigil{animation:none}}
 </style>
 </head>
 <body>
