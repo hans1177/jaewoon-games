@@ -490,7 +490,8 @@ function advanceWorld(s){
  if(s.day>=s.climate.until){const w=WEATHER[(Math.floor(s.day/3)+CAPTAINS.findIndex(c=>c.id===s.captainId))%WEATHER.length];s.climate={kind:w.id,until:s.day+3};note(s,'기상 관측: '+w.name);}
  for(const p of PORTS){if(!s.portState[p.id])continue;const v=portStatus(s,p.id);v.security=Math.min(80,v.security+2);v.prosperity=Math.min(90,v.prosperity+1);s.portState[p.id]=v;}
  if(s.day%5!==0)return;
- const target=PORTS[(Math.floor(s.day/5)*3)%PORTS.length],attacker=PORTS[(Math.floor(s.day/5)*3+2)%PORTS.length].faction,v=portStatus(s,target.id);
+ const attacker=PORTS[(Math.floor(s.day/5)*3+2)%PORTS.length].faction,rotation=Math.floor(s.day/5)%PORTS.length,candidates=[...PORTS.slice(rotation),...PORTS.slice(0,rotation)].filter(p=>portStatus(s,p.id).owner!==attacker);
+ const target=candidates.sort((a,b)=>portStatus(s,a.id).security-portStatus(s,b.id).security)[0];if(!target)return;const v=portStatus(s,target.id);
  if(v.owner===attacker)return;
  const defense=v.security+(s.alliance===v.owner?10:0),damage=defense>=65?6:18;
  v.security=Math.max(10,v.security-damage);v.prosperity=Math.max(20,v.prosperity-8);v.raidedUntil=s.day+2;
