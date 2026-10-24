@@ -95,13 +95,13 @@ buildWorld(live){
  this.staticRoot.traverse(o=>{if(o.userData.ownedGeometry)o.geometry.dispose();if(o.isInstancedMesh)o.dispose();});
  this.staticRoot.clear();
  const zone=live.state.zone,dungeon=!!live.dungeon,w=live.worldW*SCALE,h=live.worldH*SCALE;
- const mood=dungeon?{sky:0x292720,fog:0x403c36,far:55,light:0xeac48c,intensity:1.0}:[
-  {sky:0x7e8270,fog:0xaaa28a,far:76,light:0xffdaa3,intensity:1.75},
-  {sky:0x7d8973,fog:0x9da48c,far:78,light:0xffe0aa,intensity:1.8},
-  {sky:0x455a4c,fog:0x66735f,far:54,light:0xe7c990,intensity:1.35},
+ const mood=dungeon?{sky:0x1a2125,fog:0x29302f,far:55,light:0xeac48c,intensity:1.0}:[
+  {sky:0x3c4548,fog:0x4e5653,far:76,light:0xffdaa3,intensity:1.75},
+  {sky:0x394742,fog:0x52615a,far:78,light:0xffe0aa,intensity:1.8},
+  {sky:0x273833,fog:0x3b4b46,far:54,light:0xe7c990,intensity:1.35},
   {sky:0x626568,fog:0x777572,far:58,light:0xd5d8ca,intensity:1.2},
-  {sky:0xb6a07e,fog:0xc3ad88,far:72,light:0xffd4a0,intensity:2.0},
-  {sky:0x9caeb4,fog:0xabbac4,far:66,light:0xe2f0ff,intensity:1.6},
+  {sky:0x5e5146,fog:0x675e51,far:72,light:0xffd4a0,intensity:2.0},
+  {sky:0x556166,fog:0x657479,far:66,light:0xe2f0ff,intensity:1.6},
   {sky:0x514652,fog:0x68535d,far:52,light:0xe4a3a0,intensity:1.1}
  ][zone]||{sky:0x68705f,fog:0x707761,far:70,light:0xffd6a6,intensity:1.5};
  this.scene.background=new THREE.Color(mood.sky);
