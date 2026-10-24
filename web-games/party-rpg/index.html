@@ -426,7 +426,28 @@ var SKILL_BOOKS=[
  {id:"wizard_chain",job:"wizard",name:"연쇄 번개",price:1500,level:19,desc:"적 2명 번개 공격 · 30초"},
  {id:"ranger_snare",job:"ranger",name:"덫 화살",price:420,level:6,desc:"표적 둔화 · 26초"},
  {id:"ranger_volley",job:"ranger",name:"화살 비",price:1020,level:14,desc:"최대 3명 연속 화살 · 25초"},
- {id:"ranger_aim",job:"ranger",name:"정밀 관통",price:1500,level:19,desc:"유리한 명중 추가 공격 · 30초"}
+ {id:"ranger_aim",job:"ranger",name:"정밀 관통",price:1500,level:19,desc:"유리한 명중 추가 공격 · 30초"},
+ // 1차 전직 전용 기술은 해당 각성 계열을 완료한 캐릭터에게만 열림.
+ {id:"fighter_guardian_awakening",job:"fighter",advance:"fighter_guardian",name:"수호의 서약",price:0,level:10,effect:"barrier",desc:"다친 동료의 방어 등급 강화"},
+ {id:"fighter_guardian_master",job:"fighter",advance:"fighter_guardian",name:"전열 돌파",price:920,level:16,effect:"strike",desc:"방어선을 뚫는 강타"},
+ {id:"fighter_berserker_awakening",job:"fighter",advance:"fighter_berserker",name:"전장의 함성",price:0,level:10,effect:"sweep",desc:"근접한 여러 적 공격"},
+ {id:"fighter_berserker_master",job:"fighter",advance:"fighter_berserker",name:"맹렬한 연격",price:920,level:16,effect:"double",desc:"단일 표적 연속 공격"},
+ {id:"rogue_assassin_awakening",job:"rogue",advance:"rogue_assassin",name:"그림자 바늘",price:0,level:10,effect:"strike",desc:"표적 약점 집중 공격"},
+ {id:"rogue_assassin_master",job:"rogue",advance:"rogue_assassin",name:"숨은 칼날",price:920,level:16,effect:"double",desc:"빠른 연속 공격"},
+ {id:"rogue_trickster_awakening",job:"rogue",advance:"rogue_trickster",name:"환영 연막",price:0,level:10,effect:"slow",desc:"적 둘을 느리게 만드는 교란"},
+ {id:"rogue_trickster_master",job:"rogue",advance:"rogue_trickster",name:"흐린 시야",price:920,level:16,effect:"strike",desc:"혼란 사이 표적 강타"},
+ {id:"cleric_paladin_awakening",job:"cleric",advance:"cleric_paladin",name:"광명의 방벽",price:0,level:10,effect:"barrier",desc:"부상당한 아군 보호"},
+ {id:"cleric_paladin_master",job:"cleric",advance:"cleric_paladin",name:"빛의 심판",price:920,level:16,effect:"strike",desc:"신성한 단일 타격"},
+ {id:"cleric_oracle_awakening",job:"cleric",advance:"cleric_oracle",name:"기억의 기도",price:0,level:10,effect:"heal",desc:"다친 동료를 치유"},
+ {id:"cleric_oracle_master",job:"cleric",advance:"cleric_oracle",name:"새벽의 찬가",price:920,level:16,effect:"sweep",desc:"여럿에게 빛의 파문"},
+ {id:"wizard_elemental_awakening",job:"wizard",advance:"wizard_elemental",name:"붉은 잔화",price:0,level:10,effect:"sweep",desc:"원소 광역 공격"},
+ {id:"wizard_elemental_master",job:"wizard",advance:"wizard_elemental",name:"빙결의 고리",price:920,level:16,effect:"slow",desc:"적 둘을 얼음으로 속박"},
+ {id:"wizard_arcane_awakening",job:"wizard",advance:"wizard_arcane",name:"비전의 프리즘",price:0,level:10,effect:"barrier",desc:"아군에게 마법 장벽"},
+ {id:"wizard_arcane_master",job:"wizard",advance:"wizard_arcane",name:"별궤도 파열",price:920,level:16,effect:"sweep",desc:"연속 마력 폭발"},
+ {id:"ranger_marksman_awakening",job:"ranger",advance:"ranger_marksman",name:"천리안 사격",price:0,level:10,effect:"strike",desc:"정확한 관통 공격"},
+ {id:"ranger_marksman_master",job:"ranger",advance:"ranger_marksman",name:"화살의 비",price:920,level:16,effect:"sweep",desc:"넓은 범위에 연속 사격"},
+ {id:"ranger_warden_awakening",job:"ranger",advance:"ranger_warden",name:"덩굴 덫",price:0,level:10,effect:"slow",desc:"적 둘의 움직임 제한"},
+ {id:"ranger_warden_master",job:"ranger",advance:"ranger_warden",name:"숲의 가호",price:920,level:16,effect:"barrier",desc:"아군 한 명 보호"}
 ];
 var GEAR_FAMILIES={sword:"검",axe:"도끼",dagger:"단검",mace:"철퇴",staff:"지팡이",bow:"활",cloth:"천옷",leather:"가죽",mail:"중갑"};
 var MATERIALS={
