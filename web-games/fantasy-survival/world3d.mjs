@@ -431,6 +431,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
+  // 지역 바닥 픽셀 파편: 렌더링 전용 인스턴스(충돌/보상 무변경).
+  const pixelShape=new THREE.BoxGeometry(.22,.04,.22);
+  const pixelMaterial=new THREE.MeshLambertMaterial({color:0xffffff});
+  const pixelMarks=new THREE.InstancedMesh(pixelShape,pixelMaterial,147);
+  pixelMarks.count=0;pixelMarks.frustumCulled=false;scene.add(pixelMarks);
+  const pixelTransform=new THREE.Object3D(),pixelColor=new THREE.Color();
   const sceneryBatches=new Map();
   // 실내·신전·동굴의 실제 크기와 연구소 미로 벽을 원본 CC0 3D 메시로 시각화한다.
   const interiorWalls=new Map(),wallTransform=new THREE.Object3D();
@@ -808,7 +814,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
     // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
     if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea||models.size!==lastSceneryModelCount){
-      let tileIndex=0,seamTileIndex=0;
+      let tileIndex=0,seamTileIndex=0,pixelCount=0;
       for(const batch of sceneryBatches.values())batch.count=0;
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
@@ -824,6 +830,19 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const tileSeed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
       biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(.91+tileSeed%17*.01).lerp(floorNeutral,.12));
       tileIndex++;
+      // 좌표와 지역 팔레트 기반의 고정 픽셀 형태 배경 디테일.
+      for(let detail=0;detail<3;detail++){
+        const bit=(tileSeed+Math.imul(detail+1,2654435761))>>>0;
+        pixelTransform.position.set(gx+((bit&255)/255-.5)*floorPitchX*.76,.045,
+          gz+(((bit>>>8)&255)/255-.5)*floorPitchZ*.76);
+        pixelTransform.rotation.y=(bit&3)*Math.PI/2;
+        pixelTransform.scale.set(.7+((bit>>>16)&3)*.26,.7,1+((bit>>>24)&3)*.22);
+        pixelTransform.updateMatrix();
+        pixelMarks.setMatrixAt(pixelCount,pixelTransform.matrix);
+        pixelMarks.setColorAt(pixelCount,pixelColor.setHex(tileStyle.floor)
+          .multiplyScalar(.88+((bit>>>20)&7)*.047));
+        pixelCount++;
+      }
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
@@ -865,6 +884,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         seamTileIndex++;
       }
     }
+    pixelMarks.count=pixelCount;
+    pixelMarks.instanceMatrix.needsUpdate=true;
+    if(pixelMarks.instanceColor)pixelMarks.instanceColor.needsUpdate=true;
     biomeTiles.instanceMatrix.needsUpdate=true;
     biomeTiles.instanceColor.needsUpdate=true;
     floorSeamTiles.instanceMatrix.needsUpdate=true;
@@ -884,7 +906,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       hero.avatar.visible=true;
       hero.avatar.position.set(centerX,0,centerY);
       hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
-      const tool=String(p.tool||p.weapon||'NONE');
+      const tool=String(p.weapon||p.tool||'NONE');
       if(tool!==playerToolName){
         playerToolName=tool;
         const family=/axe/i.test(tool)?'AXE':/pick/i.test(tool)?'PICKAXE':/spear/i.test(tool)?'SPEAR':'NONE';
@@ -896,13 +918,22 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const moveDelta=lastHeroPoseX===null?0:Math.hypot(px-lastHeroPoseX,py-lastHeroPoseY);
       const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>.06;
       lastHeroPoseX=px;lastHeroPoseY=py;lastHeroPoseAt=now;
+      // 칼·단검·창·활·마법·중무기: 규칙은 유지하고 외형 동작만 구분.
+      const weaponId=String(p.weapon||'');
+      const style=/bow/.test(weaponId)?'bow':/spear|lance|glaive/.test(weaponId)?'spear':
+        /dagger|twin-blade/.test(weaponId)?'dagger':/orb|seeker/.test(weaponId)?'magic':
+        /hammer|maul|greatsword|cleaver|axe/.test(weaponId)?'heavy':'sword';
       const attackingAge=now-(Number(p.attackAt)||0);
-      const pose=attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
-      // 기사 찌르기 / 전사 내려찍기 / 도적 빠른 베기 / 법사 시전의 시각 연출만 다르게 한다.
-      const avatarStyle=selectedAppearance?.model||'knight';
-      const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
-      hero.avatar.rotation.z=avatarStyle==='barbarian'?-.11*attackPhase:avatarStyle.startsWith('rogue')?.08*attackPhase:avatarStyle==='mage'?.025*attackPhase:.045*attackPhase;
-      hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:avatarStyle==='barbarian'?.06*attackPhase:0;
+      const attackDuration=style==='dagger'?245:style==='heavy'?480:
+        style==='bow'?420:style==='magic'?455:style==='spear'?350:340;
+      const phase=attackingAge>=0&&attackingAge<attackDuration?
+        Math.sin(Math.PI*attackingAge/attackDuration):0;
+      const pose=phase>0?'attack':moving?'move':'idle';
+      const direction=(Math.floor((Number(p.attackAt)||0)/230)&1)?-1:1;
+      hero.avatar.rotation.z=(style==='dagger'?.13*direction:style==='heavy'?-.15:
+        style==='spear'?.035:style==='bow'?-.065:style==='magic'?.02:.075*direction)*phase;
+      hero.avatar.rotation.x=(style==='spear'?-.12:style==='bow'?.09:style==='heavy'?.095:0)*phase;
+      hero.avatar.position.y=(style==='magic'?.13:style==='heavy'?.07:style==='dagger'?.035:.025)*phase;
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
       const desired=heroClips.find(clip=>clip.name===clipName);
@@ -915,7 +946,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           heroAction.reset().setLoop(pose==='attack'?THREE.LoopOnce:THREE.LoopRepeat,pose==='attack'?1:Infinity);
           heroAction.clampWhenFinished=pose==='attack';
           // 시각 모션만 가속. 캐릭터 이동속도와 전투 판정은 변경하지 않는다.
-          if(pose==='attack')heroAction.setDuration(selectedAppearance?.model==='mage'?.43:selectedAppearance?.model==='barbarian'?.48:selectedAppearance?.model?.startsWith('rogue')?.23:.32);
+          if(pose==='attack')heroAction.setDuration(attackDuration/1000);
           else heroAction.setEffectiveTimeScale(pose==='move'?1.3:1);
           heroAction.fadeIn(.09).play();
         }
@@ -1042,6 +1073,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     resourceBatches.clear();
     for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
     sceneryBatches.clear();
+    scene.remove(pixelMarks);pixelMarks.dispose();pixelShape.dispose();pixelMaterial.dispose();
     for(const {mesh} of interiorWalls.values()){scene.remove(mesh);mesh.dispose()}
     interiorWalls.clear();
     // Source floor geometry/material are disposed once by the source model pool.
