@@ -455,7 +455,7 @@ export function stepSea(state,input={},seconds=.05){
  let turn=clamp(Number(input.turn)||0,-1,1),throttle=clamp(Number(input.throttle)||0,-1,1);
  const gun=CANNON_TYPES.find(g=>g.id===ship.cannonType)||CANNON_TYPES[0];
  const hostile=s.pirates.filter(p=>p.hull>0&&(!p.neutral||s.diplomacy[p.faction]<0)&&dist(ship,p)<Math.max(42,gun.range*1.25)).sort((a,b)=>dist(ship,a)-dist(ship,b));
- const combatTarget=s.autoCombat?hostile[0]:null;
+ const combatTarget=s.autoCombat&&!s.route.length?hostile[0]:null;
  if(combatTarget&&input.manual!==true){
   const bearing=Math.atan2(combatTarget.x-ship.x,combatTarget.z-ship.z),distance=dist(ship,combatTarget);
   const starboard=Math.abs(wrap(bearing+Math.PI/2-ship.heading))<=Math.abs(wrap(bearing-Math.PI/2-ship.heading))?1:-1;
@@ -525,10 +525,11 @@ export function stepSea(state,input={},seconds=.05){
   }
  }
  // 자동·수동 모두 동일한 포문·피해·장전·포탄 규칙을 사용한다.
- if(combatTarget&&ship.cooldown<=0&&s.supplies.ammo>0){
-  const bearing=Math.atan2(combatTarget.x-ship.x,combatTarget.z-ship.z);
-  if(dist(ship,combatTarget)<gun.range&&Math.abs(Math.cos(wrap(bearing-ship.heading)))<.55){
-   const volley=fireCannons(s,combatTarget.id);
+ const firingTarget=s.autoCombat?hostile[0]:null;
+ if(firingTarget&&ship.cooldown<=0&&s.supplies.ammo>0){
+  const bearing=Math.atan2(firingTarget.x-ship.x,firingTarget.z-ship.z);
+  if(dist(ship,firingTarget)<gun.range&&Math.abs(Math.cos(wrap(bearing-ship.heading)))<.55){
+   const volley=fireCannons(s,firingTarget.id);
    if(volley.ok)s=volley.state;
   }
  }
