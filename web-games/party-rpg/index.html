@@ -1398,8 +1398,16 @@ function eventSceneData(key){
  }else if(kind==='choice'){
   let choice=state.story.choices[raw];if(!choice)return null;
   title={fort:'요새 · 포로의 증언',temple:'신전 · 맹약의 원문',ending:'왕좌 · 마지막 이름'}[raw];if(!title)return null;mood=raw==='ending'?'abyss':'town';
-  let outcomes={fort:{witness:'포로의 이름이 광장에서 울려 퍼진다. 루카는 오래 숨겨 둔 보고서를 내려놓는다.',refuge:'미나는 포로들에게 숨을 곳을 마련한다. 증언은 미뤄지지만 사람들은 살아남는다.'},temple:{reveal:'지워진 장부가 광장에 펼쳐지고 사람들은 그 대가를 알게 된다.',prepare:'돌아올 사람을 위한 잠자리가 준비되고 마을의 창문에 불이 켜진다.'},ending:{release:'사라진 길이 지도에 되돌아오고 오랜 풍년의 마법은 끝난다.',keeper:'경계에 등불이 켜지고 두 도시 사이의 이름들이 다시 이어진다.'}};
-  beats=[beat('너의 결정',title,outcomes[raw][choice],'“이 선택의 결과를 끝까지 마주해야 해.”',state.player.portraitId),beat('남겨진 사람들','이후의 기록','여정 기록과 동료 대화에는 이 결정이 남는다. 선택을 되돌릴 수 없지만 남은 길은 계속 이어진다.','“우리가 잊은 사람들을 다시 부르자.”',1)];
+  let outcomes={"fort":{"witness":"루카는 광장에서 실종자의 이름을 읽었다. 누군가는 돌아온 가족을 껴안았고 누군가는 보고서를 찢었다. 그날 밤 증인 두 집에 협박장이 도착했다. 하지만 책임자를 감출 수 없게 됐다.","refuge":"미나는 포로를 옛 제분소에 숨겼다. 밤새 기침하는 아이들의 소리가 들렸다. 증인은 살아남았지만, 실종자 가족들은 진실을 기다려야 했다."},"temple":{"reveal":"신전의 원문이 광장에 붙었다. 풍년이 다른 도시 주민의 이름을 대가로 유지됐다는 사실에 시장은 문을 닫았다. 계약에 서명한 관리들은 도장을 부인하기 시작했다.","prepare":"겨울을 날 창고와 빈집을 귀환자들에게 먼저 내주었다. 마을 사람들이 곡식을 나눠 주기 시작했지만, 계약을 공개하지 않았다는 사실을 안 유족들이 분노했다."},"ending":{"release":"왕좌의 맹약을 끊자 지워진 도시가 새벽 안개 너머에서 모습을 드러냈다. 그날 마을의 곡식이 반쯤 시들었다. 돌아온 사람들은 이제 누구의 이름도 빼앗지 않겠다고 맹세했다.","keeper":"신전의 원문대로 경계를 지키는 일을 교대하기로 정했다. 네가 첫 등불을 켰고, 보린이 두 도시의 수호자 명부를 쓰기 시작했다. 누구도 혼자 영원히 남지 않게 하기 위한 약속이다."}};
+  const echo=raw==='fort'?(choice==='witness'?'루카가 군번표를 한 장씩 읽었다. 그는 자기 이름도 끝에 적었다.':'미나는 안전한 은신처 주소를 두 사람에게만 맡겼다.'):
+   raw==='temple'?(choice==='reveal'?'세라가 의식문에서 지워졌던 교대 조항을 증명했다.':'보린은 귀환자를 위한 배급 명부를 먼저 작성했다.'):
+   (choice==='release'?'첫 추수에 실패하더라도 거짓 풍년으로 돌아가지는 않기로 했다.':'수호자 이름을 새기는 문서에 더는 종신 조항을 넣지 않기로 했다.');
+  const speaker=raw==='fort'?(choice==='witness'?'루카':'미나'):raw==='temple'?(choice==='reveal'?'세라':'보린'):(choice==='release'?'돌아온 시민':'첫 경계 수호자');
+  const pledge=raw==='fort'?'“누군가는 이 선택 때문에 위험해져. 끝까지 지켜야 해.”':raw==='temple'?'“사실을 알리는 일과 사람을 살리는 일, 둘 다 끝내야 해.”':'“누구의 이름도 비용으로 쓰지 않겠어.”';
+  beats=[
+   beat('너의 결정',title,outcomes[raw][choice],pledge,state.player.portraitId),
+   beat(speaker,'그 뒤에 남은 일',echo,'“결정은 오늘 했지만 책임은 내일부터 시작돼.”',raw==='fort'?(choice==='witness'?0:1):state.player.portraitId)
+  ];
  }else if((kind==='recruitLead'||kind==='recruitClue'||kind==='recruit')&&state.ai.some(a=>a.id===raw)){
   person=state.ai.find(a=>a.id===raw);
   var i=portraitIndex(person),voice=COMPANION_VOICES[i],arc=RECRUIT_ARCS[i];
