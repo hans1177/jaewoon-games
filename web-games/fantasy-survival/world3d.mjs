@@ -603,18 +603,32 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     // Atmosphere and foliage changes are Vibe presentation only. The existing biome
     // classifier, collision, damage, spawn and player movement remain authoritative.
-    let tileIndex=0;
-    const centerTileX=Math.round(centerX/10),centerTileY=Math.round(centerY/10);
+    let tileIndex=0,seamTileIndex=0;
+    const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
-
-      const gx=(centerTileX+tx)*10,gz=(centerTileY+tz)*10;
-      // The original floor_base geometry is in world XZ and already has depth.
-      // Biome conditions are expressed through existing game light/fog; do not
-      // generate palette-filled 2D floor planes or replacement materials.
-      tile.position.set(gx,.015,gz);tile.updateMatrix();
-      biomeTiles.setMatrixAt(tileIndex++,tile.matrix);
+      const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
+      // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
+      const tileZone=String(classify(gx/SCALE,gz/SCALE)||'forest');
+      const tileStyle=BIOME_STYLE[tileZone]||BIOME_STYLE.forest;
+      tile.position.set(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ);tile.updateMatrix();
+      biomeTiles.setMatrixAt(tileIndex,tile.matrix);
+      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.48));
+      tileIndex++;
+      if(tx<3&&tz<3){
+        const seamX=gx+floorPitchX*.5,seamZ=gz+floorPitchZ*.5;
+        const seamZone=String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
+        const seamStyle=BIOME_STYLE[seamZone]||BIOME_STYLE.forest;
+        tile.position.set(seamX-floorCenterX,floorSurfaceY-.055,seamZ-floorCenterZ);
+        tile.updateMatrix();
+        floorSeamTiles.setMatrixAt(seamTileIndex,tile.matrix);
+        floorSeamTiles.setColorAt(seamTileIndex,floorTint.setHex(seamStyle.floor).lerp(floorNeutral,.48));
+        seamTileIndex++;
+      }
     }
     biomeTiles.instanceMatrix.needsUpdate=true;
+    biomeTiles.instanceColor.needsUpdate=true;
+    floorSeamTiles.instanceMatrix.needsUpdate=true;
+    floorSeamTiles.instanceColor.needsUpdate=true;
     interactables.length=0;
     const seen=state.last||Date.now();
     if(hero){
