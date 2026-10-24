@@ -234,3 +234,41 @@ test('diagonal movement slides along shoreline without walking into lake water o
  const wall={x:1000,y:1600};move(wall,1,1,185,.033,{w:72000,h:28800},clamp,()=>false,x=>x>1000);
  assert.equal(wall.x,1000);assert.ok(wall.y>1600,'building collision only blocks the obstructed axis');
 });
+
+// 자동 조작은 선택만 수행한다. 실제 채집 보상과 공격 피해는 원본 책임 함수만 호출한다.
+test('always-on auto gathering skips unmineable nearby ore and keeps authoritative cadence',()=>{
+ const start=source.indexOf('function updateAutoGather('),end=source.indexOf('\nfunction ',start+20);
+ const state={area:'surface',player:{x:0,y:0},gathering:{auto:false,target:null,nextAt:0,blockedUntil:0}};
+ const ore={id:'ore',kind:'iron',x:5,y:0,hp:4},tree={id:'tree',kind:'tree',x:10,y:0,hp:4};let calls=[];
+ const context=vm.createContext({state,AUTO_GATHER_RANGE:110,AUTO_GATHER_INTERVAL_MS:500,resourceNodes:()=>[tree,ore],playerCombatActive:()=>false,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),gather:(target,silent)=>{assert.equal(silent,true);calls.push(target.id);if(target===ore)return false;target.hp--;return true}});
+ vm.runInContext(source.slice(start,end),context);vm.runInContext('updateAutoGather(1000)',context);
+ assert.equal(state.gathering.auto,true);assert.deepEqual(calls,['ore','tree']);assert.equal(state.gathering.target,tree);assert.equal(state.gathering.nextAt,1500);
+ vm.runInContext('updateAutoGather(1200)',context);assert.equal(calls.length,2,'no faster gathering through frame rate');
+ state.player.downedUntil=5000;vm.runInContext('updateAutoGather(1600)',context);assert.equal(calls.length,2,'downed players cannot gather');
+});
+
+test('automatic combat selects only reachable hostile targets and delegates attack, ammo and cooldown',()=>{
+ const start=source.indexOf('function updateAutoCombat('),end=source.indexOf('\nfunction ',start+20);
+ const enemy=(id,x,extra={})=>({netId:id,x,y:0,hp:100,area:'surface',type:{mood:'aggressive',r:20},...extra});
+ const state={area:'surface',player:{x:0,y:0,attackAt:0},pet:{mounted:false,attackAt:0},combat:{targetId:null},settings:{autoCombat:true},enemies:[]};let hits=[];
+ const nodes={hudGuide:{hidden:true},avatarPanel:{hidden:true},optionsPanel:{classList:{contains:()=>false}}};
+ const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentWeapon:()=>({range:80}),currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
+ vm.runInContext(source.slice(start,end),context);
+ state.enemies=[enemy('neutral',1,{type:{mood:'neutral',r:20},hostile:false}),enemy('other-area',5,{area:'underwater'}),enemy('burrowed',6,{type:{mood:'aggressive',r:20,burrower:true},emerged:false}),enemy('far',500),enemy('near',50)];
+ vm.runInContext('updateAutoCombat(1000)',context);assert.deepEqual(hits,['near']);assert.equal(state.combat.targetId,'near');
+ vm.runInContext('updateAutoCombat(1100)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,'near','target status stays stable during cooldown');
+ state.settings.autoCombat=false;vm.runInContext('updateAutoCombat(1500)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,null);
+ state.settings.autoCombat=true;state.player.downedUntil=5000;vm.runInContext('updateAutoCombat(1600)',context);assert.equal(hits.length,1);
+ state.player.downedUntil=0;context.isCreative=()=>true;state.enemies=[enemy('arena',50,{creativeOwned:true,creativeAttackPlayer:false})];vm.runInContext('updateAutoCombat(2000)',context);assert.equal(hits.length,1);
+ state.enemies[0].creativeAttackPlayer=true;vm.runInContext('updateAutoCombat(2100)',context);assert.deepEqual(hits,['near','arena']);
+});
+
+test('half-circle shortcuts are real existing actions and old saves cannot disable mandatory gathering',()=>{
+ for(const id of ['autoCombat','attack','petSpecial','quickHeal','quickFood','dismount'])assert.equal((source.match(new RegExp('id="'+id+'"','g'))||[]).length,1,id);
+ assert.doesNotMatch(source,/<button[^>]+id="gather"/);assert.doesNotMatch(source,/toggleAutoGather/);
+ assert.match(source,/state\.gathering\.auto=true;state\.settings\.autoCombat=savedSettings\.autoCombat!==false/);
+ assert.match(source,/autoGather:true,autoCombat:state\.settings\.autoCombat!==false/);
+ assert.match(source,/if\(selected\)useItem\(selected\)/);
+ assert.match(source,/--arc-x:44px;--arc-y:135px/);
+ assert.match(source,/body\[data-hud-hand="left"\] \.actions>button\{left:calc\(100% - var\(--arc-x\)/);
+});
