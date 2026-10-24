@@ -143,7 +143,7 @@ test('quest compass and map stay integrated with existing mobile controls',()=>{
  assert.match(source,/function updateQuestGuide\(now=performance\.now\(\)\)/);
  assert.match(source,/updateQuestGuide\(now\);draw\(\)/);
  assert.match(source,/getElementById\('questNavMap'\)\.addEventListener\('click',\(\)=>ui\.mapBtn\.click\(\)\)/);
- assert.match(source,/const guidance=questGuideData\(\)/);
+  assert.match(source,/:questGuideData\(\)/);
  assert.match(source,/m\.setLineDash\(\[4,5\]\)/);
  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
@@ -252,11 +252,11 @@ test('automatic combat selects only reachable hostile targets and delegates atta
  const enemy=(id,x,extra={})=>({netId:id,x,y:0,hp:100,area:'surface',type:{mood:'aggressive',r:20},...extra});
  const state={area:'surface',player:{x:0,y:0,attackAt:0},pet:{mounted:false,attackAt:0},combat:{targetId:null},settings:{autoCombat:true},enemies:[]};let hits=[];
  const nodes={hudGuide:{hidden:true},avatarPanel:{hidden:true},optionsPanel:{classList:{contains:()=>false}}};
- const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentWeapon:()=>({range:80}),currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
+  const context=vm.createContext({state,document:{hidden:false,getElementById:id=>nodes[id]},ui:{sheet:{classList:{contains:()=>false}},multiPanel:{classList:{contains:()=>false}},smeltPanel:{classList:{contains:()=>false}}},isCreative:()=>false,petAlive:()=>false,currentWeapon:()=>({range:80}),currentRange:()=>80,currentCooldown:()=>380,selectedArrow:()=>null,dist:(x,y,a,b)=>Math.hypot(x-a,y-b),attack:target=>{hits.push(target.netId);state.player.attackAt=1000}});
  vm.runInContext(source.slice(start,end),context);
  state.enemies=[enemy('neutral',1,{type:{mood:'neutral',r:20},hostile:false}),enemy('other-area',5,{area:'underwater'}),enemy('burrowed',6,{type:{mood:'aggressive',r:20,burrower:true},emerged:false}),enemy('far',500),enemy('near',50)];
  vm.runInContext('updateAutoCombat(1000)',context);assert.deepEqual(hits,['near']);assert.equal(state.combat.targetId,'near');
- vm.runInContext('updateAutoCombat(1100)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,'near','target status stays stable during cooldown');
+  vm.runInContext('updateAutoCombat(1100)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,'near','nearest threat remains available during cooldown');
  state.settings.autoCombat=false;vm.runInContext('updateAutoCombat(1500)',context);assert.equal(hits.length,1);assert.equal(state.combat.targetId,null);
  state.settings.autoCombat=true;state.player.downedUntil=5000;vm.runInContext('updateAutoCombat(1600)',context);assert.equal(hits.length,1);
  state.player.downedUntil=0;context.isCreative=()=>true;state.enemies=[enemy('arena',50,{creativeOwned:true,creativeAttackPlayer:false})];vm.runInContext('updateAutoCombat(2000)',context);assert.equal(hits.length,1);
@@ -314,15 +314,15 @@ test('all 174 unchanged recipe identities and resource rows resolve verified ins
 
 test('low-quality mobile mode reduces GPU cost without deleting the original native creature and dungeon source',()=>{
  const native=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
- assert.match(native,/mobileBudget\?\.9:1\.5/);
- assert.match(native,/let qualityFactor=mobileBudget\?\.82:1/);
- assert.match(native,/if\(mobileBudget\?hash%5===0:hash%3!==0\)/);
+  assert.match(native,/canvas\.style\.imageRendering='pixelated'/);assert.match(native,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,1\)\*qualityFactor\)/);
+  assert.match(native,/let qualityFactor=mobileBudget\?\.62:\.68/);
+  assert.match(native,/if\(mobileBudget\?hash%3!==0:hash%4===0\)/);assert.match(native,/new THREE\.PlaneGeometry\(128,128,64,64\)/);
  assert.match(native,/mobileBudget\?650:1000/);
  assert.match(native,/const unsafeUnmappedEncounter=synchronizeNativeCreatures/);
  assert.match(native,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
  assert.match(native,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
  assert.match(native,/updateInteriorWalls\(isInterior\?regionScene:null/);
- assert.match(source,/underwater:'underwater','underwater-dungeon':'underwater-dungeon'/);
+ assert.match(native,/underwater:'underwater','underwater-dungeon':'underwater-dungeon'/);
 });
 
 

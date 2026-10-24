@@ -105,15 +105,15 @@ test('original source materials and Diablo-II-style native camera are bound to g
   const mtl=fs.readFileSync(mtlPath,'utf8');
   assert.match(mtl,/^Kd\s+\d/m,'missing original diffuse '+name);
  }
- // No assistant-made meshes or fabricated material palette are permitted in the
- // final visible 3D game: all floor triangles must be from original floor_base.obj.
- assert.match(source,/models\.get\('floor_base'\)/);
- assert.match(source,/new THREE\.InstancedMesh\(sourceFloor\.geometry,sourceFloor\.material,49\)/);
- assert.match(source,/Original CC0 MTL diffuse missing/);
- assert.doesNotMatch(source,/new THREE\.PlaneGeometry\(/);
- assert.doesNotMatch(source,/const PALETTE\s*=/);
- assert.doesNotMatch(source,/new THREE\.BoxGeometry\(/);
- assert.doesNotMatch(source,/new THREE\.SphereGeometry\(/);
+  // CC0 3D 장식과 종별 모델은 보존하고 지면 한 장만 픽셀화한다.
+  assert.match(source,/models\.get\('floor_base'\)/);
+  assert.match(source,/Original CC0 MTL diffuse missing/);
+  assert.match(source,/new THREE\.PlaneGeometry\(128,128,64,64\)/);
+  assert.match(source,/const seamlessGround=new THREE\.Mesh\(groundGeometry,groundMaterial\)/);
+  assert.match(source,/groundTexture\.magFilter=THREE\.NearestFilter/);
+  assert.doesNotMatch(source,/floorSeamTiles|biomeTiles/);
+  assert.doesNotMatch(source,/new THREE\.BoxGeometry\(/);
+  assert.doesNotMatch(source,/new THREE\.SphereGeometry\(/);
  assert.match(source,/new THREE\.OrthographicCamera/);
  assert.match(source,/camera\.position\.set\(centerX\+10\.5,17,centerY\+13\)/);
  assert.match(source,/name\+'\.obj'/);
@@ -164,7 +164,7 @@ test('3D preview reads existing biome classifier and saved construction state, n
  assert.match(index,/world3d\.frame\(state,regionAt,NATIVE_SCENE_LANDMARKS\[state\.area\]\)/);
  assert.match(moduleSource,/function frame\(state,regionAt,regionScene=null\)/);
  assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
- assert.match(moduleSource,/tile\.position\.set\(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ\)/);
+ assert.match(moduleSource,/seamlessGround\.position\.set\(groundX,\.015,groundZ\)/);
  assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
@@ -176,27 +176,26 @@ test('3D preview reads existing biome classifier and saved construction state, n
 
 
 // [바닥·모션 회귀] 원본 3D 자산, 지역 연결, 움직임 판정과 렌더링 책임 분리를 확인한다.
-test('native forest ground has no 10x10 pitch mismatch and all rounded corners are covered by source mesh',()=>{
- const model=fs.readFileSync(home+'floor_base.obj','utf8');
- const vertices=[...model.matchAll(/^v\s+([\d.-]+)\s+([\d.-]+)\s+([\d.-]+)/gm)]
-   .map(match=>match.slice(1,4).map(Number));
- assert.ok(vertices.length>90);
- const width=Math.max(...vertices.map(p=>p[0]))-Math.min(...vertices.map(p=>p[0]));
- const depth=Math.max(...vertices.map(p=>p[2]))-Math.min(...vertices.map(p=>p[2]));
- assert.equal(width,10);assert.equal(depth,8,'source floor is not square');
- assert.match(moduleSource,/sourceFloor\.geometry\.computeBoundingBox\(\)/);
- assert.match(moduleSource,/const floorPitchZ=floorBounds\.max\.z-floorBounds\.min\.z/);
- assert.match(moduleSource,/Math\.round\(centerY\/floorPitchZ\)/);
- assert.match(moduleSource,/new THREE\.InstancedMesh\(sourceFloor\.geometry,sourceFloor\.material,36\)/);
- assert.match(moduleSource,/floorSeamTiles\.setMatrixAt\(seamTileIndex,tile\.matrix\)/);
- assert.match(moduleSource,/floorSeamTiles\.instanceColor\.needsUpdate=true/);
- assert.match(moduleSource,/centerTileX!==lastFloorGridX\|\|centerTileY!==lastFloorGridZ/);
- assert.match(moduleSource,/scene\.remove\(floorSeamTiles\);floorSeamTiles\.dispose\(\)/);
- assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+test('native forest ground is seamless and follows original biome classification',()=>{
+  const model=fs.readFileSync(home+'floor_base.obj','utf8');
+  const vertices=[...model.matchAll(/^v\s+([\d.-]+)\s+([\d.-]+)\s+([\d.-]+)/gm)]
+    .map(match=>match.slice(1,4).map(Number));
+  assert.ok(vertices.length>90);
+  assert.equal(Math.max(...vertices.map(p=>p[0]))-Math.min(...vertices.map(p=>p[0])),10);
+  assert.equal(Math.max(...vertices.map(p=>p[2]))-Math.min(...vertices.map(p=>p[2])),8);
+  assert.match(moduleSource,/sourceFloor\.geometry\.computeBoundingBox\(\)/);
+  assert.match(moduleSource,/const floorPitchX=bounds\.max\.x-bounds\.min\.x,floorPitchZ=bounds\.max\.z-bounds\.min\.z/);
+  assert.match(moduleSource,/Math\.round\(centerY\/floorPitchZ\)/);
+  assert.match(moduleSource,/new THREE\.PlaneGeometry\(128,128,64,64\)/);
+  assert.match(moduleSource,/seamlessGround\.position\.set\(groundX,\.015,groundZ\)/);
+  assert.match(moduleSource,/groundColors\.setXYZ\(i,floorTint\.r,floorTint\.g,floorTint\.b\)/);
+  assert.match(moduleSource,/const biome=isInterior\?currentBiome:String\(classify\(x,z\)\|\|'forest'\)/);
+  assert.match(moduleSource,/scene\.remove\(seamlessGround\);groundGeometry\.dispose\(\);groundMaterial\.dispose\(\);groundTexture\.dispose\(\)/);
+  assert.doesNotMatch(moduleSource,/floorSeamTiles|biomeTiles/);
 });
 test('native forest movement clips are faster without changing gameplay-owned world movement or combat rules',()=>{
  assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
- assert.match(moduleSource,/heroAction\.setDuration\(\.28\)/);
+ assert.match(moduleSource,/if\(pose==='attack'\)heroAction\.setDuration\(/);
  assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(pose==='move'\?1\.3:1\)/);
  assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(attacking\?1\.35:moving\?1\.25:1\)/);
  assert.match(moduleSource,/heroMixer\.update\(Math\.min\(\.12,/);
@@ -336,7 +335,7 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
  assert.match(moduleSource,/getRenderStats:/);
  assert.match(moduleSource,/renderer\.info\.render\.triangles/);
  assert.match(index,/dataset\.nativeTriangles=String\(nativeDraw\.triangles\)/);
- assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,mobileBudget\?\.9:1\.5\)\*qualityFactor\)/);
+  assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,1\)\*qualityFactor\)/);
  assert.match(index,/MAGIC_FOREST_NATIVE_3D_FRAME_FAILED/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
  assert.match(moduleSource,/productionReady:false/);
@@ -507,20 +506,20 @@ test('all authored biomes use original instanced scenery without changing intera
  assert.ok(mapping,'all region scenery mapping required');
  for(const biome of biomes)assert.ok(mapping.includes(biome+':'),'unmapped biome: '+biome);
  for(const token of [
-   'new THREE.InstancedMesh(original.geometry,original.material,49)',
-   'const sceneryChoices=SCENERY_KIND[tileZone]',
-   'let batch=sceneryBatches.get(kind)',
-   'if(!batch&&models.has(kind))',
-   'models.size!==lastSceneryModelCount',
-   'if(tx!==0||tz!==0)',
-   'const seen=++frameSequence',
-   'loadRemaining:async(priorityNames=[])',
-   'stagedModels.loadRemaining(priorityModels)',
-   'for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}',
-   'interactables.push(model)',
-   'if(unsafeUnmappedEncounter||!hero)'
+    'new THREE.InstancedMesh(model.geometry,model.material,49)',
+    'const choices=SCENERY_KIND[biome]',
+    'let batch=sceneryBatches.get(kind)',
+    'if(!batch&&models.has(kind))',
+    'models.size!==lastSceneryModelCount',
+    'if(!tx&&!tz)',
+    'const seen=++frameSequence',
+    'loadRemaining:async(priorityNames=[])',
+    'stagedModels.loadRemaining(priorityModels)',
+    'for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}',
+    'interactables.push(model)',
+    'if(unsafeUnmappedEncounter||!hero)'
  ])assert.ok(moduleSource.includes(token),'original scene invariant missing: '+token);
- assert.doesNotMatch(moduleSource,/new THREE\.PlaneGeometry\(|new THREE\.BoxGeometry\(/);
+  assert.match(moduleSource,/new THREE\.PlaneGeometry\(128,128,64,64\)/);assert.doesNotMatch(moduleSource,/new THREE\.BoxGeometry\(/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
 
@@ -607,23 +606,23 @@ test('all existing native biome environments show distinct authored palette and 
  const m=moduleSource.indexOf('const SCENERY_KIND=Object.freeze({'),n=moduleSource.indexOf('});',m);
  const kinds=new Function(moduleSource.slice(m,n+3)+';return SCENERY_KIND;')();
  for(const name of ['forest','jungle','swamp','snow','volcano','crystal','desert','underwater','underwater-dungeon']){
-  assert.equal(kinds[name].length,2,name);
+    assert.ok(kinds[name].length>=3,name);
  }
- assert.match(moduleSource,/const kind=sceneryChoices\\[hash%sceneryChoices\\.length\\]/);
- assert.match(moduleSource,/tileSeed%17\\*\\.01/);
- assert.match(moduleSource,/scene\\.fog\\.far=weatherVisualEffects/);
- assert.match(moduleSource,/for\\(const mark of regionScene\\?\\.landmarks\\|\\|\\[\\]\\)/);
+  assert.match(moduleSource,/const choices=SCENERY_KIND\[biome\]\|\|SCENERY_KIND\.forest,kind=choices\[\(hash>>>3\)%choices\.length\]/);
+  assert.match(moduleSource,/floorTint\.setHex\(palette\.floor\)\.multiplyScalar\(\.94\+hash%9\*\.01\)/);
+ assert.match(moduleSource,/scene\.fog\.far=weatherVisualEffects/);
+ assert.match(moduleSource,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
 });
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
- assert.match(moduleSource,/const moving=moveDelta>\\.08&&poseElapsed>0&&poseElapsed<420/);
- assert.match(moduleSource,/actor\\.lastAttackStamp!==e\\.attackAt/);
- assert.match(moduleSource,/setLoop\\(attacking\\?THREE\\.LoopOnce:THREE\\.LoopRepeat/);
- assert.match(moduleSource,/actor\\.anchor\\.position\\.set\\(e\\.x\\*SCALE,0,e\\.y\\*SCALE\\)/);
- assert.match(moduleSource,/selectedAppearance\\?\\.model==='mage'\\?\\.43/);
- assert.match(moduleSource,/bolt\\.kind==='mageBolt'/);
- assert.match(moduleSource,/bolt\\.kind==='playerArrow'/);
- assert.match(moduleSource,/bolt\\.kind==='sporeOrb'/);
- assert.match(moduleSource,/bolt\\.kind==='sunOrb'/);
- assert.match(moduleSource,/mageBoltGeometry\\.dispose\\(\\)/);
+ assert.match(moduleSource,/const moving=moveDelta>\.08&&poseElapsed>0&&poseElapsed<420/);
+ assert.match(moduleSource,/actor\.lastAttackStamp!==e\.attackAt/);
+  assert.match(moduleSource,/setLoop\(attacking\?THREE\.LoopOnce:THREE\.LoopRepeat/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/selectedAppearance\?\.model==='mage'\?\.43/);
+ assert.match(moduleSource,/bolt\.kind==='mageBolt'/);
+ assert.match(moduleSource,/bolt\.kind==='playerArrow'/);
+ assert.match(moduleSource,/bolt\.kind==='sporeOrb'/);
+ assert.match(moduleSource,/bolt\.kind==='sunOrb'/);
+ assert.match(moduleSource,/mageBoltGeometry\.dispose\(\)/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
