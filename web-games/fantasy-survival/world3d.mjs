@@ -415,14 +415,20 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // 마법탄은 실제 게임의 투사체 좌표만 보여주는 저폴리곤 3D 효과다. 피해·적중 판정은 게임 코드 소유.
   const mageBoltGeometry=new THREE.OctahedronGeometry(.18,0);
   const mageBoltMaterial=new THREE.MeshBasicMaterial({color:0xb5eaff,transparent:true,opacity:.95,depthWrite:false});
-  const mageBoltEffects=[];
+  const arrowGeometry=new THREE.ConeGeometry(.065,.42,5);
+  const arrowMaterial=new THREE.MeshBasicMaterial({color:0xe5d5a8});
+  const sporeMaterial=new THREE.MeshBasicMaterial({color:0xc291df,depthWrite:false});
+  const sunOrbMaterial=new THREE.MeshBasicMaterial({color:0xffdf83,depthWrite:false});
+  const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
   const SCENERY_KIND=Object.freeze({
-    forest:'tree',jungle:'tree_large',swamp:'foliage_A',snow:'tree_large',
-    canyon:'cobblestones',volcano:'cobblestones',crystal:'cobblestones',
-    giantlake:'foliage_A',worldtree:'tree_large',flowerfield:'foliage_A',
-    giantgarden:'foliage_A',desert:'cobblestones',
-    underwater:'foliage_B','underwater-dungeon':'cobblestones'
+    forest:['tree','foliage_A'],jungle:['tree_large','foliage_B'],swamp:['foliage_A','tree'],
+    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
+    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','foliage_B'],
+    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_B'],
+    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree'],
+    desert:['cobblestones','foliage_A'],
+    underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
@@ -822,7 +828,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
         if(mobileBudget?hash%5===0:hash%3!==0){
-          const kind=SCENERY_KIND[tileZone]||'tree';
+          // 지역별로 서로 다른 원본 배경 메시를 섞어 같은 나무/바위 반복을 줄인다.
+          const sceneryChoices=SCENERY_KIND[tileZone]||SCENERY_KIND.forest;
+          const kind=sceneryChoices[hash%sceneryChoices.length];
           let batch=sceneryBatches.get(kind);
           if(!batch&&models.has(kind)){
             const original=models.get(kind);
@@ -888,7 +896,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const moveDelta=lastHeroPoseX===null?0:Math.hypot(px-lastHeroPoseX,py-lastHeroPoseY);
       const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>.06;
       lastHeroPoseX=px;lastHeroPoseY=py;lastHeroPoseAt=now;
-      const pose=now-(Number(p.attackAt)||0)<330?'attack':moving?'move':'idle';
+      const attackingAge=now-(Number(p.attackAt)||0);
+      const pose=attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
+      // 기사 찌르기 / 전사 내려찍기 / 도적 빠른 베기 / 법사 시전의 시각 연출만 다르게 한다.
+      const avatarStyle=selectedAppearance?.model||'knight';
+      const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
+      hero.avatar.rotation.z=avatarStyle==='barbarian'?-.11*attackPhase:avatarStyle.startsWith('rogue')?.08*attackPhase:avatarStyle==='mage'?.025*attackPhase:.045*attackPhase;
+      hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:avatarStyle==='barbarian'?.06*attackPhase:0;
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
       const desired=heroClips.find(clip=>clip.name===clipName);
@@ -957,14 +971,22 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       fallbackReason=unsafeUnmappedEncounter?'unmapped-threat':'player-model-unavailable';
       return;
     }
-    // 법사의 기존 게임 투사체만 간결한 발광체로 표시한다. 개체 수를 제한해 모바일 성능 보존.
+    // 기존 화살·포자·태양 구슬과 법사 마법탄의 실제 좌표를 타입별 시각 효과로 표시한다.
     let visibleBoltCount=0;
     for(const bolt of state.projectiles||[]){
-      if(bolt.kind!=='mageBolt'||bolt.area!==state.area||visibleBoltCount>=12)continue;
+      const isArrow=bolt.kind==='playerArrow',isMagic=bolt.kind==='mageBolt';
+      const isSpore=bolt.kind==='sporeOrb',isSun=bolt.kind==='sunOrb';
+      if((!isArrow&&!isMagic&&!isSpore&&!isSun)||bolt.area!==state.area||visibleBoltCount>=12)continue;
       let mesh=mageBoltEffects[visibleBoltCount];
       if(!mesh){mesh=new THREE.Mesh(mageBoltGeometry,mageBoltMaterial);mesh.frustumCulled=false;scene.add(mesh);mageBoltEffects.push(mesh)}
-      mesh.position.set(bolt.x*SCALE,1.12+Math.sin(sampleNow/110)*.10,bolt.y*SCALE);
-      mesh.rotation.y=sampleNow*.009;mesh.visible=true;visibleBoltCount++;
+      mesh.geometry=isArrow?arrowGeometry:mageBoltGeometry;
+      mesh.material=isArrow?arrowMaterial:isSpore?sporeMaterial:isSun?sunOrbMaterial:mageBoltMaterial;
+      mesh.position.set(bolt.x*SCALE,isArrow?1.05:1.12+Math.sin(sampleNow/110)*.10,bolt.y*SCALE);
+      if(isArrow){
+        projectileDirection.set(Number(bolt.vx)||0,0,Number(bolt.vy)||0).normalize();
+        mesh.quaternion.setFromUnitVectors(projectileUp,projectileDirection);
+      }else mesh.rotation.set(0,sampleNow*.009,0);
+      mesh.visible=true;visibleBoltCount++;
     }
     for(let i=visibleBoltCount;i<mageBoltEffects.length;i++)mageBoltEffects[i].visible=false;
     renderer.render(scene,camera);
@@ -1000,6 +1022,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     nativeCreatureActors.clear();
     for(const mesh of mageBoltEffects)scene.remove(mesh);
     mageBoltEffects.length=0;mageBoltGeometry.dispose();mageBoltMaterial.dispose();
+    arrowGeometry.dispose();arrowMaterial.dispose();sporeMaterial.dispose();sunOrbMaterial.dispose();
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
