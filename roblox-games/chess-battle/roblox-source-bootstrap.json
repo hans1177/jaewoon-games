@@ -587,9 +587,9 @@
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
   "createdAt": "2026-10-24T15:03:34.207Z",
   "semanticMappingVersion": 1,
-  "semanticMappingFingerprint": "4r3xu8",
-  "semanticVariant": "PUZZLE_STATE",
-  "coreKind": "PUZZLE",
+  "semanticMappingFingerprint": "19bunq3",
+  "semanticVariant": "OBJECTIVE_GOAL",
+  "coreKind": "OBJECTIVE",
   "gameSpecificSemanticMappings": [
     {
       "principleId": "compact-tactical-state-with-immediate-feedback",
@@ -597,7 +597,7 @@
       "sourceLearningIds": [
         "external-black-box-cavern-cravers-run-47"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-interaction",
       "domains": [
@@ -608,9 +608,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "CORE_GAMEPLAY_FEEL",
-      "mapping": "Keep board state beside the active puzzle action and acknowledge the server-confirmed move immediately.",
-      "implementation": "variant-specific puzzle-chain cue bound to LastApprovedScope",
-      "variant": "PUZZLE_STATE",
+      "mapping": "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.",
+      "implementation": "variant-specific action cue bound to LastApprovedScope",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
     },
     {
@@ -619,7 +619,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-ui",
       "domains": [
@@ -628,9 +628,9 @@
         "REWARD_AND_EVENT_PRESENTATION"
       ],
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep board goals and next valid move visible beside the active puzzle action.",
+      "mapping": "Keep level, progression, and next-step context visible around the primary action.",
       "implementation": "persistent context cue uses existing Config.Actions and replicated player attributes",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change."
     },
     {
@@ -639,7 +639,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-progression-observation",
       "domains": [
@@ -648,9 +648,9 @@
         "VISIBLE_ACTION_FEEDBACK"
       ],
       "domain": "PROGRESSION_RISK_READABILITY",
-      "mapping": "Show valid move and board-goal context before a puzzle move is committed.",
+      "mapping": "Show level and risk context before the next action is committed.",
       "implementation": "pre-action risk cue reads existing replicated state; it never grants authority",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
     },
     {
@@ -659,7 +659,7 @@
       "sourceLearningIds": [
         "external-black-box-luanti-run-10"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-3d-controls",
       "domains": [
@@ -669,9 +669,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Give board-cell selection and result-space feedback at the touched puzzle control.",
+      "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
       "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
     },
     {
@@ -680,7 +680,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-mobile-ux",
       "domains": [
@@ -689,9 +689,9 @@
         "CORE_GAMEPLAY_FEEL"
       ],
       "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
-      "mapping": "Keep board progress visible while the puzzle world remains readable.",
+      "mapping": "Keep the core state visible while the game world remains readable.",
       "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
     },
     {
@@ -700,7 +700,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-input-feedback",
       "domains": [
@@ -710,9 +710,9 @@
         "VISIBLE_ACTION_FEEDBACK"
       ],
       "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
-      "mapping": "Animate the affected board cell and goal transition after a move.",
+      "mapping": "Show the player action transition immediately after input.",
       "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
     },
     {
@@ -721,7 +721,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-interaction-observation",
       "domains": [
@@ -730,9 +730,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep contextual puzzle actions anchored beside the active board region.",
+      "mapping": "Keep contextual actions anchored beside the active game state.",
       "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
     },
     {
@@ -741,7 +741,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-feedback-observation",
       "domains": [
@@ -750,9 +750,9 @@
         "CAMERA_RESPONSE"
       ],
       "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Anchor move feedback to the active puzzle control.",
+      "mapping": "Anchor input feedback to the active game control.",
       "implementation": "control-local motion cue is separate from server authority and save state",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
     },
     {
@@ -761,7 +761,7 @@
       "sourceLearningIds": [
         "external-black-box-shattered-pixel-dungeon-run-4"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-onboarding-observation",
       "domains": [
@@ -770,9 +770,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "CONTEXTUAL_ONBOARDING",
-      "mapping": "Place the first-move instruction beside the first puzzle action.",
+      "mapping": "Place the first-play instruction beside the first game action.",
       "implementation": "contextual instruction is rendered in the game-specific HUD variant",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
     }
   ],
@@ -835,7 +835,7 @@
       "sourceLearningIds": [
         "external-black-box-cavern-cravers-run-47"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-interaction",
       "domains": [
@@ -846,9 +846,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "CORE_GAMEPLAY_FEEL",
-      "mapping": "Keep board state beside the active puzzle action and acknowledge the server-confirmed move immediately.",
-      "implementation": "variant-specific puzzle-chain cue bound to LastApprovedScope",
-      "variant": "PUZZLE_STATE",
+      "mapping": "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.",
+      "implementation": "variant-specific action cue bound to LastApprovedScope",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
     },
     {
@@ -883,7 +883,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-ui",
       "domains": [
@@ -892,9 +892,9 @@
         "REWARD_AND_EVENT_PRESENTATION"
       ],
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep board goals and next valid move visible beside the active puzzle action.",
+      "mapping": "Keep level, progression, and next-step context visible around the primary action.",
       "implementation": "persistent context cue uses existing Config.Actions and replicated player attributes",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change."
     },
     {
@@ -903,7 +903,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-progression-observation",
       "domains": [
@@ -912,9 +912,9 @@
         "VISIBLE_ACTION_FEEDBACK"
       ],
       "domain": "PROGRESSION_RISK_READABILITY",
-      "mapping": "Show valid move and board-goal context before a puzzle move is committed.",
+      "mapping": "Show level and risk context before the next action is committed.",
       "implementation": "pre-action risk cue reads existing replicated state; it never grants authority",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
     },
     {
@@ -949,7 +949,7 @@
       "sourceLearningIds": [
         "external-black-box-luanti-run-10"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-3d-controls",
       "domains": [
@@ -959,9 +959,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Give board-cell selection and result-space feedback at the touched puzzle control.",
+      "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
       "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
     },
     {
@@ -996,7 +996,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-mobile-ux",
       "domains": [
@@ -1005,9 +1005,9 @@
         "CORE_GAMEPLAY_FEEL"
       ],
       "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
-      "mapping": "Keep board progress visible while the puzzle world remains readable.",
+      "mapping": "Keep the core state visible while the game world remains readable.",
       "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
     },
     {
@@ -1016,7 +1016,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-input-feedback",
       "domains": [
@@ -1026,9 +1026,9 @@
         "VISIBLE_ACTION_FEEDBACK"
       ],
       "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
-      "mapping": "Animate the affected board cell and goal transition after a move.",
+      "mapping": "Show the player action transition immediately after input.",
       "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
     },
     {
@@ -1050,7 +1050,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-interaction-observation",
       "domains": [
@@ -1059,9 +1059,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep contextual puzzle actions anchored beside the active board region.",
+      "mapping": "Keep contextual actions anchored beside the active game state.",
       "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
     },
     {
@@ -1070,7 +1070,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-feedback-observation",
       "domains": [
@@ -1079,9 +1079,9 @@
         "CAMERA_RESPONSE"
       ],
       "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Anchor move feedback to the active puzzle control.",
+      "mapping": "Anchor input feedback to the active game control.",
       "implementation": "control-local motion cue is separate from server authority and save state",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
     },
     {
@@ -1116,7 +1116,7 @@
       "sourceLearningIds": [
         "external-black-box-shattered-pixel-dungeon-run-4"
       ],
-      "coreKind": "PUZZLE",
+      "coreKind": "OBJECTIVE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-onboarding-observation",
       "domains": [
@@ -1125,9 +1125,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "CONTEXTUAL_ONBOARDING",
-      "mapping": "Place the first-move instruction beside the first puzzle action.",
+      "mapping": "Place the first-play instruction beside the first game action.",
       "implementation": "contextual instruction is rendered in the game-specific HUD variant",
-      "variant": "PUZZLE_STATE",
+      "variant": "OBJECTIVE_GOAL",
       "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
     },
     {
@@ -1147,5 +1147,5 @@
   "verifiedExternalValidationOnlyPrincipleCount": 14,
   "verifiedExternalLearningGameDevelopmentAppliedCount": 9,
   "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-10-24T16:18:51.010Z"
+  "verifiedExternalLearningSweepAt": "2026-10-24T21:01:44.053Z"
 }
