@@ -226,3 +226,7 @@ test('equipment upgrade caps preserve ship economy',()=>{
 test('national ship traditions require local shipyard and have distinct cargo and combat designs',()=>{
  const national=SHIP_TYPES.filter(t=>t.nation);assert.equal(national.length,6);let s=newGame();s.coins=100000;assert.equal(refitShip(s,'portugal-caravel').ok,false);const p=PORTS.find(p=>p.id==='gold');s.ship.x=p.x;s.ship.z=p.z;const bought=refitShip(s,'portugal-caravel');assert.equal(bought.ok,true);assert.equal(bought.state.shipType,'portugal-caravel');assert.ok(SHIP_TYPES.find(t=>t.id==='dutch-fluyt').cargo>SHIP_TYPES.find(t=>t.id==='french-frigate').cargo);assert.ok(SHIP_TYPES.find(t=>t.id==='iberian-galleon').hull>SHIP_TYPES.find(t=>t.id==='portugal-caravel').hull);
 });
+
+test('sustained raids can change port control while preserving facilities and investments',()=>{
+ let s=newGame();s.pirates=[];const owners=Object.fromEntries(PORTS.map(p=>[p.id,p.faction]));for(let day=1;day<=50;day++){s.day=day;s.elapsed=15.99;s=stepSea(s,{},.02);}assert.ok(PORTS.some(p=>portStatus(s,p.id).owner!==owners[p.id]));assert.equal(s.worldLog.length<=20,true);assert.equal(PORTS.length,13);
+});
