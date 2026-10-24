@@ -26,6 +26,7 @@ let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
 // 메인: 기존 일반 습격은 그대로 두고 성채 건설 이후 선택형 대공성전만 추가한다.
 let grandSiege=null,raidWarningShown=false;
 const SIEGE_INTERVALS=[60,120,180,300,600],SIEGE_WAVE_SIZES=[18,24,30,34,38,42];
+const SIEGE_MACHINES=new Set(['ram','siegeTower','trebuchet','sapper']);
 const getFort=()=>state.villageDevelopment?.fortification;
 const raidInterval=()=>SIEGE_INTERVALS.includes(getFort()?.raidIntervalSec)?getFort().raidIntervalSec:RAID_INTERVAL;
 const barracks={x:1080,y:650},workerShop={x:1200,y:820};
@@ -217,7 +218,7 @@ function updateRaid(dt){
     return;
   }
   if(enemies.length===0 && (!grandSiege || grandSiege.wave>=SIEGE_WAVE_SIZES.length)){
-    if(grandSiege){const f=getFort();if(f)f.siegeVictories=(Number(f.siegeVictories)||0)+1}
+    if(grandSiege){const f=getFort();if(f){f.siegeVictories=(Number(f.siegeVictories)||0)+1;f.honor=Math.min(999,(Number(f.honor)||0)+10);f.morale=Math.min(100,(Number(f.morale)||65)+8)}}
     raidActive=false;game.raidActive=false;grandSiege=null;game.grandSiege=null;
     state.raidTimer=0;saveSoon();toast('✅ 습격 방어 성공');
   }
@@ -248,18 +249,22 @@ function startRaid(){
 function spawnSiegeWave(){
   if(!grandSiege)return;
   const stage=grandSiege.wave,n=SIEGE_WAVE_SIZES[stage];
-  const roles=['soldier','archer','soldier','soldier','cavalry','soldier','archer','sapper'];
+  const roles=['soldier','archer','soldier','soldier','cavalry','shield','archer','ladder'];
   for(let i=0;i<n;i++){
-    const kind= i===0&&stage>=1?'ram':
-      i===1&&stage>=3?'siegeTower':
-      i===2&&stage>=2?'sapper':roles[(i+stage)%roles.length];
+    const kind=i===0&&stage>=1?'ram':
+       i===1&&stage>=3?'siegeTower':
+       i===2&&stage>=2?'trebuchet':
+       i===3&&stage>=2?'sapper':roles[(i+stage)%roles.length];
     const u=createUnit(kind==='archer'?'archer':'soldier',true);
     u.kind=kind;u._grandSiege=true;
     const flank=(i%3),lane=flank===0?455:flank===1?610:805;
     const rank=Math.floor(i/3);
     u.x=1650+(rank%10)*42+stage*45;
     u.y=lane+(rank%4-1.5)*22;
-    u._siegeLane=kind==='ram'?610:kind==='siegeTower'?455:kind==='sapper'?805:lane;
+    u._siegeLane=kind==='ram'?610:kind==='siegeTower'?455:kind==='sapper'?805:kind==='trebuchet'?610:lane;
+     if(kind==='trebuchet'){u.x=1840+stage*45;u.y=610;Object.assign(u,{hp:410,maxHp:410,attack:0,speed:16,siegeDamage:110,siegeCooldown:4.8,ammo:8})}
+     if(kind==='ladder')Object.assign(u,{hp:140,maxHp:140,speed:84,siegeCooldown:3.5,wallClimb:true});
+     if(kind==='shield')Object.assign(u,{hp:240,maxHp:240,speed:45,attack:7,range:48});
     if(kind==='ram')Object.assign(u,{hp:1050,maxHp:1050,attack:0,speed:28,siegeDamage:145,siegeCooldown:2.2});
     if(kind==='siegeTower')Object.assign(u,{hp:1650,maxHp:1650,attack:0,speed:23,siegeDamage:120,siegeCooldown:2.6});
     if(kind==='sapper')Object.assign(u,{hp:180,maxHp:180,attack:0,speed:90,siegeDamage:72,siegeCooldown:1.2});
@@ -277,15 +282,19 @@ function updateCombatUnit(u,targets,dt,hostile){
   if(!hostile&&u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y}
   // 공성 병기는 병사 공격이 아니라 성문/벽 돌파를 우선하며, 기존 일반 습격 전투는 유지한다.
   if(hostile&&u._grandSiege){
-    const fort=getFort(),walls=fort?.walls||{};
-    const lane=u._siegeLane||610;
+    const fort=getFort(),walls=fort?.walls||{},lane=u._siegeLane||610;
     const key=lane<520?'north':lane>730?'south':'gate';
+    if(u.kind==='trebuchet'&&u.ammo>0){
+      // 투석기는 성벽 밖에서 실제 포격하며 유한 탄약을 소모한다.
+      if(u.x>1770)moveToward(u,1760,lane,dt);
+      return;
+    }
     if(fort&&state.villageDevelopment?.townHallBuilt&&(Number(walls[key])||0)>0&&
-      (key!=='gate'||fort.drawbridgeClosed!==false)){
+      (key!=='gate'||fort.drawbridgeClosed!==false)&&!u._fortClimbed){
       if(u.x>1353||Math.abs(u.y-lane)>25)moveToward(u,1355,lane,dt);
       return;
     }
-    if(['ram','siegeTower','sapper'].includes(u.kind)){
+    if(SIEGE_MACHINES.has(u.kind)||u.kind==='ladder'||u._fortClimbed){
       moveToward(u,1010,1050,dt);
       return;
     }
@@ -295,7 +304,13 @@ function updateCombatUnit(u,targets,dt,hostile){
   if(!t)return;
   const d=Math.hypot(t.x-u.x,t.y-u.y)||1;
   if(d>u.range){if(!u._fortPost)moveToward(u,t.x,t.y,dt)}
-  else if(u.cool<=0){t.hp-=u.attack;u.cool=u.kind==='archer'?1.15:.85}
+  else if(u.cool<=0){
+    const fort=!hostile?getFort():null;
+    const order=fort?.defenseOrder||'hold',morale=fort?.morale??65;
+    const bonus=!hostile&&game.grandSiege?
+      (0.85+morale/400)*(order==='volley'&&u.kind==='archer'?1.45:order==='counter'&&u.kind!=='archer'?1.4:1):1;
+    t.hp-=u.attack*bonus;u.cool=u.kind==='archer'?1.15:.85
+  }
 }
 function nearestLiving(u,arr){let b=null,bd=1e9;for(const t of arr){if(t.hp<=0)continue;const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;b=t}}return b}
 function moveToward(u,x,y,dt){
@@ -324,7 +339,7 @@ function updateHUD(){
   ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';
   ui.coins.textContent=String(state.coins);
   if(raidActive)ui.raid.textContent=grandSiege?
-    `🏰 대공성전 ${grandSiege.wave}/6 · 적 ${enemies.length}명`:
+    `🏰 ${grandSiege.wave}/6차 · 적 ${enemies.length} · 성채 ${Math.ceil(getFort()?.keepHp??900)} · 사기 ${getFort()?.morale??65}`:
     `⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;
   else{
     const r=Math.max(0,Math.ceil(raidInterval()-state.raidTimer));
