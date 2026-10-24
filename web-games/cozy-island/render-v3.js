@@ -9,7 +9,7 @@ export const ECONOMY_3D_LOOK=Object.freeze({
  dairy:'fort-dairy',wheat:'fort-wheat',vineyard:'fort-vineyard',winery:'fort-winery',
  hops:'fort-hops',brewery:'fort-brewery',tavern:'fort-tavern',hovel:'fort-hovel',
  well:'fort-well',market:'fort-market',fletcher:'fort-fletcher',
- smith:'fort-smith',armory:'fort-armory'
+ smith:'fort-smith',armory:'fort-armory',knightHall:'fort-knight-hall',prison:'fort-prison'
 });
 const SC=1/36;
 // 카메라: 45도 방위·30도 고도의 2:1 등각 투영. 게임 좌표는 그대로 유지한다.
@@ -401,6 +401,13 @@ export class IslandRendererV3 {
         this.models3d.set(kind,{...spec,...animated,texture});
       }catch(error){console.warn('포근섬 중세 픽셀 자산 로딩 실패: '+kind,error);}
     }));
+    // 아군 신규 병종의 구별 가능한 실루엣. 기존 텍스처 로더의 캐시를 재사용한다.
+    for(const role of ['archer','spearman','crossbow','shield','knight','sapper']){
+      const kind='ally-'+role,texture=new THREE.CanvasTexture(this.paintPixelSprite(kind));
+      texture.magFilter=texture.minFilter=THREE.NearestFilter;
+      texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;
+      this.models3d.set(kind,{texture});
+    }
   }
   // 그래픽: 전투·저장 값에 관여하지 않는 신규 야생동물·공성기·자원 픽셀 아트.
   paintPixelSprite(kind){
@@ -416,7 +423,31 @@ export class IslandRendererV3 {
       const poly=(points,color)=>{c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();};
       const line=(x,y,x2,y2,color,width=1)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.stroke();};
       const stride=moving?[0,3,-2][frame%3]:0;
-      if(siege){
+      if(kind.startsWith('ally-')){
+        const role=kind.slice(5),palette={
+          archer:['#496a48','#bd9468'],spearman:['#677b68','#e2cc91'],
+          crossbow:['#48627b','#c8ac7e'],shield:['#5c6f83','#b7b4a2'],
+          knight:['#695d73','#e3c8a0'],sapper:['#725c42','#d8c393']
+        }[role]||['#62725a','#bea680'];
+        // 얼굴·투구·갑옷을 따로 그리고 병종마다 손에 쥔 장비를 분명히 보여준다.
+        rect(19,52,9,11,'#343b38');rect(36,52,9,11,'#343b38');
+        rect(18,28,28,27,palette[0]);rect(22,14,21,18,palette[1]);
+        rect(18,10,29,9,'#555a54');rect(25,24,4,3,'#292a28');rect(39,24,4,3,'#292a28');
+        rect(14,33,8,19,palette[1]);rect(44,33,8,19,palette[1]);
+        if(role==='spearman'){line(53,6,53,61,'#a7a79b',3);
+          poly([[53,2],[48,12],[58,12]],'#d3d8cc');}
+        if(role==='archer'){line(52,18,60,48,'#976a41',3);
+          line(52,18,59,48,'#d6c49c');line(59,28,39,28,'#e2d0a3',2);}
+        if(role==='crossbow'){rect(45,34,17,5,'#80623c');
+          line(49,23,59,42,'#c9c3a4',2);line(59,24,49,43,'#c9c3a4',2);}
+        if(role==='shield'){poly([[13,28],[34,25],[31,54],[18,60],[12,47]],'#adb8c0');
+          line(18,32,28,50,'#667587',3);}
+        if(role==='knight'){rect(15,47,38,14,'#66564a');rect(52,42,9,11,'#66564a');
+          rect(12,57,7,7,'#342c26');rect(45,57,7,7,'#342c26');
+          line(48,18,53,56,'#d1c7a9',3);}
+        if(role==='sapper'){line(50,21,55,55,'#986d42',3);
+          rect(39,16,25,7,'#646d75');}
+      }else if(siege){
         const wheel=(x,y)=>{rect(x-5,y-7,10,14,'#352a1e');rect(x-3,y-5,6,10,'#8d6943');line(x-3,y,x+3,y,'#c49b5b');line(x,y-5,x,y+5,'#493623');};
         const beam=(x,y,w,h)=>{rect(x,y,w,h,'#3c2d20');rect(x+1,y+1,w-2,h-2,'#8c693f');line(x+2,y+1,x+w-2,y+1,'#c09a62');};
         poly([[13,72],[58,53],[86,67],[42,88]],'#302b22');
@@ -525,6 +556,38 @@ export class IslandRendererV3 {
     if(kind==='fort-road'){
       for(let z=-.84;z<=.84;z+=.42)for(let x=-.84;x<=.84;x+=.42)
         box(.38,.065,.38,Math.round((x+z)*100)%3===0?'stone':'wall',x,.035,z);
+      return g;
+    }
+    // 기사단 회관: 훈련마당·왕실 깃발·검상, 감옥: 철창과 감시탑을 3D로 구분한다.
+    if(kind==='fort-knight-hall'){
+      box(4.3,.2,3.65,'earth',0,.08,0);
+      box(3.3,2.2,2.4,'wall',0,1.13,-.53);
+      for(const side of [-1,1]){
+        const part=box(2,.17,2.73,'roof',side*.91,2.4,-.53);
+        part.rotation.z=side*.57;
+      }
+      for(const x of [-1.45,1.45])cyl(.29,2.2,'stone',x,1.2,.46);
+      box(1.17,1.35,.1,'dark',0,.76,.72);
+      box(1.2,.16,.32,'metal',-.98,1.2,1.52);
+      box(.18,1.32,.15,'metal',-.98,1.8,1.52);
+      for(let i=0;i<3;i++)box(.14,1.1,.12,'metal',-.67+i*.29,.66,1.58);
+      banner(1.87,3.05,-.82);banner(-1.9,2.85,-.82);
+      box(1.8,.13,.85,'wood',1.2,.22,1.46);
+      return g;
+    }
+    if(kind==='fort-prison'){
+      box(4.2,.22,3.4,'earth',0,.09,0);
+      box(3.65,2.34,2.8,'stone',0,1.2,-.1);
+      box(3.92,.31,3.1,'dark',0,2.42,-.1);
+      for(const x of [-1.4,-.47,.47,1.4]){
+        box(.15,1.15,.16,'metal',x,1.22,1.39);
+        box(.16,.13,.22,'metal',x,1.75,1.42);
+      }
+      box(1.12,1.69,.16,'dark',0,.93,1.34);
+      for(const x of [-.35,0,.35])box(.12,1.49,.12,'metal',x,.94,1.47);
+      box(1.1,3.1,1.06,'stone',1.41,1.65,-1.14);
+      box(1.3,.21,1.27,'dark',1.41,3.29,-1.14);
+      for(const z of [-.85,-.48])box(.56,.41,.12,'metal',1.41,2.41,z);
       return g;
     }
     if(kind==='fort-site'){
@@ -767,7 +830,7 @@ export class IslandRendererV3 {
     return g;
   }
   make3d(kind,height){
-    if(['fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind))return this.makeFort3d(kind,height);
+    if(['fort-knight-hall','fort-prison','fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind))return this.makeFort3d(kind,height);
     const group=new THREE.Group(),asset=this.models3d.get(kind);
     if(!asset)return group;
     const texture=asset.texture.clone();texture.needsUpdate=true;
@@ -947,7 +1010,7 @@ export class IslandRendererV3 {
       for(let i=0;i<(fort.structures?.length||0);i++){
         const section=fort.structures[i];if(section.hp<=0)continue;
         const look={wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
-          spikes:'fence',oil:'package',pit:'stone'}[section.kind]||'fort-site';
+          spikes:'fence',oil:'package',pit:'stone',net:'fence',log:'bench',barrel:'package'}[section.kind]||'fort-site';
         const vertical=section.axis==='vertical'||section.axis==='manual-vertical';
         put('custom-fort:'+i,look,section.x,section.y,
           section.kind==='tower'?4:section.kind==='gate'?3.6:section.kind==='wall'?2.5:1.1,
@@ -970,7 +1033,7 @@ export class IslandRendererV3 {
         const previews=build.id==='fort:wall'?(build.preview?.length?build.preview:[build.at]):[build.at];
         const kind=build.id.startsWith('fort:')?({
            wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
-           spikes:'fence',oil:'package',pit:'stone'
+           spikes:'fence',oil:'package',pit:'stone',net:'fence',log:'bench',barrel:'package'
          }[build.id.slice(5)]||'fort-site'):(ECONOMY_3D_LOOK[build.id]||'fort-site');
         for(let i=0;i<Math.min(35,previews.length);i++){
           const p=previews[i],vertical=build.id==='fort:gate'&&build.axis==='vertical';
@@ -1088,8 +1151,17 @@ export class IslandRendererV3 {
         put('economic-worker:'+i,'npc',x,y,1.75);
         if(i%3===0)put('worker-wagon:'+i,'package',x+14,y+16,.83);
       }
-      for(const unit of game.allies)if(unit.hp>0)put('ally:'+unit.id,
-        unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);
+      // 신규 병과/공성기: 기존 메시에 연계, 모바일에서 카메라 밖 메시 생성 최소화.
+      const friendlyBudget=this.width<600?65:110;
+      for(const unit of game.allies.filter(u=>u.hp>0&&nearby(u.x,u.y)).slice(0,friendlyBudget)){
+        const kind=unit.kind==='ram'?'fort-ram':
+          unit.kind==='trebuchet'?'fort-trebuchet':
+          unit.kind==='siegeTower'?'fort-siege-tower':
+          ['archer','spearman','crossbow','shield','knight','sapper'].includes(unit.kind)?
+            'ally-'+unit.kind:'soldier';
+        put('ally:'+unit.id,kind,unit.x,unit.y,
+          unit.kind==='siegeTower'?4.7:unit.kind==='trebuchet'?3.5:unit.kind==='ram'?3.3:1.9);
+      }
       // 메인: 픽셀 프레임 공유로 병력 표시 비용을 줄인다. 전투 판정은 기존 게임 책임이다.
       const modelBudget=this.width<600?96:192;
       const visibleEnemies=game.enemies.filter(u=>u.hp>0&&nearby(u.x,u.y))
@@ -1171,7 +1243,7 @@ export class IslandRendererV3 {
     this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
     if(this.native3d){
       // 월드만 정수 배율로 확장하고 UI·터치 좌표는 원래 화면 해상도를 유지한다.
-      this.pixelScale=1;
+      this.pixelScale=this.width<600?1.25:1;
       this.gl.setPixelRatio(1);
       this.gl.setSize(Math.ceil(this.width/this.pixelScale),Math.ceil(this.height/this.pixelScale),false);
       this.gl.domElement.dataset.pixelScale=String(this.pixelScale);

@@ -1,7 +1,7 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { snapFort,wallLine,applyGateAxes,validateWallLayout } from './castle-layout.js';
 import { IslandRendererV3 } from './render-v3.js';
-import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction, ECONOMY_BUILDINGS, getEconomy, economyStaff, constructEconomyBuilding, upgradeEconomyBuilding, setEconomyPolicy } from './production-buildings.js';
+import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction, ECONOMY_BUILDINGS, getEconomy, economyStaff, constructEconomyBuilding, upgradeEconomyBuilding, setEconomyPolicy, economyTechStatus, ECONOMY_TECH_TREE } from './production-buildings.js';
 
 const TOWER = { x: 400, y: 1090, wood: 6, stone: 5, radius: 115 };
 const TOWN_HALL = { x: 1010, y: 1090, wood: 12, stone: 10, radius: 125 };
@@ -25,7 +25,10 @@ const FORT_BUILDINGS=[
  {id:'tower',name:'망루',icon:'🏰',wood:4,stone:7,hp:260,desc:'궁수가 지키는 방어탑'},
  {id:'spikes',name:'말뚝 함정',icon:'🪤',wood:3,stone:1,hp:60,desc:'접촉 시 피해'},
  {id:'oil',name:'기름 함정',icon:'🔥',wood:4,stone:4,hp:70,desc:'지속 화염 피해'},
- {id:'pit',name:'함정 구덩이',icon:'🕳️',wood:2,stone:3,hp:55,desc:'침입 속도 감소'}
+ {id:'pit',name:'함정 구덩이',icon:'🕳️',wood:2,stone:3,hp:55,desc:'침입 속도 감소'},
+ {id:'net',name:'투척 그물',icon:'🕸️',wood:5,stone:1,hp:65,desc:'적군 잠시 속박'},
+ {id:'log',name:'통나무 덫',icon:'🪵',wood:7,stone:2,hp:85,desc:'적군 뒤로 밀침'},
+ {id:'barrel',name:'폭발 항아리',icon:'💥',wood:6,stone:6,hp:75,desc:'주변 광역 폭발'} 
 ];
 const WALL_BASE={gate:360,north:280,south:280};
 const TRAP_SITES=[{x:1470,y:430},{x:1440,y:540},{x:1450,y:650},{x:1460,y:770},{x:1500,y:865},{x:1560,y:620}];
@@ -345,10 +348,13 @@ function fortBuildingSites(state){
 function fortCandidate(kind,site,axis='auto'){
  const p=snapFort(site),d=FORT_BUILDINGS.find(t=>t.id===kind);if(!d)return null;
  return {kind,x:p.x,y:p.y,hp:d.hp,maxHp:d.hp,
+         ...(TRAP_TYPES[kind]?{charges:TRAP_TYPES[kind].charges,cooldown:0}:{}),
          ...(kind==='gate'?{axis:axis==='vertical'?'manual-vertical':axis==='horizontal'?'manual-horizontal':'horizontal',open:true}:{})};
 }
 function fortBuildGroup(kind,locations,axis='auto'){
  const state=currentGame?.state,def=FORT_BUILDINGS.find(t=>t.id===kind);
+ if(state&&def){const tech=economyTechStatus(state,kind);
+   if(!tech.unlocked)return {ok:false,reason:'개발 트리 잠금: '+tech.missing.join(' · ')};}
  if(!state||!def||!Array.isArray(locations)||!locations.length)return {ok:false,reason:'배치할 위치가 없어'};
  const fort=ensureVillage(state).fortification,existing=fort.structures||[];
  const next=[],used=new Set(existing.filter(x=>x.hp>0).map(x=>x.x+','+x.y));
@@ -396,6 +402,36 @@ window.addEventListener('cozy:preview-wall-line',e=>{
  e.detail.ok=valid.ok&&(Number(inv.wood)||0)>=e.detail.wood&&(Number(inv.stone)||0)>=e.detail.stone;
  e.detail.reason=valid.reason;
 });
+// 메인: 지도에서 선택한 설치 시설의 실제 체력·장전 수·성문 개폐를 관리한다.
+window.addEventListener('cozy:inspect-fort',event=>{
+ if(!currentGame)return;
+ const index=Number(event.detail?.index),fort=ensureVillage(currentGame.state).fortification;
+ const item=fort.structures[index],def=item&&FORT_BUILDINGS.find(t=>t.id===item.kind);
+ if(!item||item.hp<=0||!def)return;
+ const trap=TRAP_TYPES[item.kind],body=document.querySelector('#panelBody');
+ document.querySelector('#panelTitle').textContent=def.icon+' '+def.name+' · 관리';
+ body.innerHTML='<p class="panel-note">내구도 '+Math.ceil(item.hp)+'/'+item.maxHp+
+ (trap?' · 남은 발동 '+(item.charges??trap.charges)+'/'+trap.charges:'')+'</p>'+
+ '<button class="choice" data-fort-repair '+(item.hp>=item.maxHp?'disabled':'')+
+ '>🔧 수리 · 나무 2 / 돌 3</button>'+
+ (trap?'<button class="choice" data-fort-reload '+((item.charges??trap.charges)>=trap.charges?'disabled':'')+
+ '>🔁 함정 재장전 · 나무 2 / 돌 2</button>':'')+
+ (item.kind==='gate'?'<button class="choice" data-fort-gate>🚪 성문 '+(item.open===false?'열기':'닫기')+'</button>':'');
+ document.querySelector('#panel')?.showModal();
+ const refresh=()=>{document.querySelector('#panel')?.close();
+   window.dispatchEvent(new CustomEvent('cozy:inspect-fort',{detail:{index}}));};
+ body.querySelector('[data-fort-repair]')?.addEventListener('click',()=>{
+  if(!canPay(2,3))return toast('수리 자원 부족');
+  spend(2,3);item.hp=Math.min(item.maxHp,item.hp+80);saveState();refresh();
+ });
+ body.querySelector('[data-fort-reload]')?.addEventListener('click',()=>{
+  if(!canPay(2,2))return toast('재장전 자원 부족');
+  spend(2,2);item.charges=trap.charges;item.cooldown=0;saveState();refresh();
+ });
+ body.querySelector('[data-fort-gate]')?.addEventListener('click',()=>{
+  item.open=item.open===false;saveState();refresh();
+ });
+});
 function renderConstruction(group=activeBuildGroup){
  const state=currentGame?.state;if(!state)return;
  const e=getEconomy(state),fort=ensureVillage(state).fortification;activeBuildGroup=group;
@@ -407,11 +443,11 @@ function renderConstruction(group=activeBuildGroup){
  let html='<div class="realm-overview"><div><strong>👷 '+assigned+'/'+capacity+'</strong><small>자동 배치 일꾼</small></div><div><strong>🪵 '+format(inv.wood)+'</strong><small>목재</small></div><div><strong>🪨 '+format(inv.stone)+'</strong><small>석재</small></div><div><strong>🪙 '+format(state.coins)+'</strong><small>금화</small></div></div>';
  html+='<div class="realm-tabs" role="group" aria-label="건설 종류">'+tabs+'</div>';
  if(group==='defense'){
-   html+='<p class="realm-help">성벽 드래그: 시작점부터 끝점까지 자동 연속 건설(최대 35칸). 성문은 인접 성벽에 맞춰 방향을 잡고 인부 길을 막는 배치는 거부합니다.</p>';
+   html+='<p class="realm-help">성벽 연속 설치·성문 자동 연결. 상위 함정은 개발 트리에서 해금하고, 설치한 함정은 지도를 눌러 수리·재장전합니다.</p>';
    html+='<div class="realm-build-grid">'+FORT_BUILDINGS.map(d=>
      '<article class="realm-build-card"><div class="realm-build-title"><span class="realm-icon">'+d.icon+'</span><div><b>'+d.name+'</b><small>'+d.desc+'</small></div><strong>HP '+d.hp+'</strong></div>'+
      '<div class="realm-build-meta"><span>🪵 '+d.wood+'</span><span>🪨 '+d.stone+'</span><span>건설 '+fort.structures.filter(p=>p.kind===d.id&&p.hp>0).length+'</span></div>'+
-     '<div class="realm-build-actions"><button data-build-fort="'+d.id+'" type="button" '+((Number(inv.wood)||0)<d.wood||(Number(inv.stone)||0)<d.stone?'disabled':'')+'>지도에서 배치</button></div></article>').join('')+'</div>';
+     '<div class="realm-build-actions"><button data-build-fort="'+d.id+'" type="button" '+((Number(inv.wood)||0)<d.wood||(Number(inv.stone)||0)<d.stone||!economyTechStatus(state,d.id).unlocked?'disabled':'')+'>'+(economyTechStatus(state,d.id).unlocked?'지도에서 배치':'🔒 '+economyTechStatus(state,d.id).missing.join(' · '))+'</button></div></article>').join('')+'</div>';
    html+='<button class="realm-main-command" type="button" data-realm-legacy>🏰 성벽 · 함정 · 대공성전 관리 열기</button>';
    html+='<button class="realm-main-command" type="button" data-realm-barracks>⚔️ 병영 모집과 주둔 명령</button>';
  }else{
@@ -429,6 +465,24 @@ function renderConstruction(group=activeBuildGroup){
        '<button type="button" class="upgrade" data-upgrade-economy="'+d.id+'" '+(!n||entry.level>=3?'disabled':'')+'>⬆️ 강화</button></div>'+
        '<div class="realm-build-cost">'+cost+' · '+(staff[d.id]||0)+'채 가동</div></article>';
    }).join('')+'</div>';
+ }
+ // 경제 발전에 따라 군사·공성·함정 해금 상태를 단계별로 표시한다.
+ if(group==='military'||group==='defense'){
+  const names={
+   spearman:'🔱 창병',crossbow:'🎯 석궁병',shield:'🛡️ 방패병',
+   knight:'🐎 기사',sapper:'🔨 공병',ram:'🪵 공성추',
+   trebuchet:'💥 투석기',siegeTower:'🏰 공성탑',
+   net:'🕸️ 투척 그물',log:'🪵 통나무 덫',barrel:'💥 폭발 함정'
+  };
+  const list=Object.keys(ECONOMY_TECH_TREE).filter(id=>
+    group==='military'?!['net','log','barrel'].includes(id):['net','log','barrel'].includes(id));
+  html+='<section class="realm-tech-tree"><h3>🌳 경제 발전 트리</h3>'+
+   '<p class="realm-help">건물 건설·강화 → 군사 장비 생산 → 병종·공성·고급 함정 해금. 기존 유닛과 설치물은 유지됩니다.</p>'+
+   list.map(id=>{
+    const status=economyTechStatus(state,id);
+    return '<div class="realm-tech-step '+(status.unlocked?'unlocked':'locked')+'"><b>'+
+      names[id]+'</b><small>'+(status.unlocked?'✅ 연구 조건 충족':'🔒 '+status.missing.join(' + '))+'</small></div>';
+   }).join('')+'</section>';
  }
  html+='<div class="realm-policy"><h3>📜 영지 운영 정책</h3><p>주민 만족도 '+Math.floor(e.satisfaction)+'/100 · 생산한 자원은 실시간 창고로 입고</p>';
  for(const [key,title,values] of [
@@ -747,10 +801,26 @@ function runFortification(dt){
     if(structure.hp<=0)continue;
     for(const enemy of enemies){
       if(enemy.hp<=0||distance(enemy,structure)>80)continue;
-      if(['spikes','oil','pit'].includes(structure.kind)){
+      if(['spikes','oil','pit','net','log','barrel'].includes(structure.kind)){
+        const trap=TRAP_TYPES[structure.kind];
+        if(!Number.isFinite(structure.charges))structure.charges=trap.charges;
+        structure.cooldown=Math.max(0,(Number(structure.cooldown)||0)-dt);
+        if(structure.charges<=0||structure.cooldown>0)continue;
         enemy._fortTrigger=(enemy._fortTrigger||0)-dt;
         if(enemy._fortTrigger<=0){
-          enemy.hp-=structure.kind==='oil'?36:structure.kind==='spikes'?45:12;
+          enemy.hp-=structure.kind==='oil'?36:structure.kind==='spikes'?45:
+            structure.kind==='pit'?12:trap.damage;
+          structure.charges--;
+          structure.cooldown=structure.kind==='barrel'?3.5:1.8;
+          if(structure.kind==='barrel')for(const another of enemies)
+            if(another!==enemy&&another.hp>0&&distance(another,structure)<135)another.hp-=Math.floor(trap.damage*.6);
+          if(structure.kind==='log')enemy.x=Math.min(2100,enemy.x+115);
+          if(structure.kind==='net'||structure.kind==='pit'){
+            if(!enemy._fortSlowUntil||now>=enemy._fortSlowUntil)enemy._fortOriginalSpeed=Number(enemy.speed)||0;
+            enemy.speed=structure.kind==='net'?0:enemy._fortOriginalSpeed*.35;
+            enemy._fortSlowUntil=now+(structure.kind==='net'?2200:2600);
+          }
+          if(structure.kind==='spikes')enemy._fortBleedUntil=now+3000;
           if(structure.kind==='oil')enemy._fortBurnUntil=now+2600;
           if(structure.kind==='pit')enemy._fortSlowUntil=now+1800;
           structure.hp=Math.max(0,structure.hp-12);
@@ -775,6 +845,7 @@ function runFortification(dt){
     if(enemy._fortBurnUntil&&now<enemy._fortBurnUntil){
       enemy.hp-=6*dt;damaged=true;
     }
+    if(enemy._fortBleedUntil&&now<enemy._fortBleedUntil){enemy.hp-=4*dt;damaged=true;}
     // 후방 투석기: 성문/성벽을 먼 거리에서 포격하며 탄약은 실제로 감소한다.
     if(game.grandSiege&&enemy.kind==='trebuchet'&&enemy.ammo>0&&enemy.x<1960){
       enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
