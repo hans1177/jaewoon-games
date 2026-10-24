@@ -1,5 +1,5 @@
 {
-  "version": 591,
+  "version": 592,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -6632,7 +6632,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-24",
   "priorityTiers": [
     {
       "tier": 1,
@@ -7555,7 +7555,25 @@
       "postMultiverse": "OWNER_DEFINED_FUTURE_HORIZON_NOT_YET_SPECIFIED"
     }
   },
-  "changeRecord": {
+    "changeRecord": {
+    "ownerVibeOneShotPatch20261024": {
+      "authority": "OWNER_DIRECTIVE_2026-10-24",
+      "policyNumber": 1,
+      "ownerExecutionPolicy": "fixedAutonomousDevelopmentOperatingContract.ownerRequestedVibeOneShotPatch",
+      "status": "OWNER_DIRECT_LOCKED",
+      "changeType": "OWNER_REQUESTED_CHATGPT_ONE_SHOT_GAME_EDIT_EXECUTION_PREFERENCE",
+      "existingF0F9AndReleaseGatesUnchanged": true,
+      "existingConstitutionalRule1Unchanged": true,
+      "noNewPipeline": true,
+      "cloudflareExplicitlyExcluded": true,
+      "gameIdeaRequiresActualSourceChange": true,
+      "procedureBudgetOwnerFollowup": {
+        "policy": "NO_UNNECESSARY_CHECK_SECURITY_QA_ADMIN_PROCEDURE_GROWTH",
+        "reductionAndModificationAllowed": true,
+        "ownerAddsNoRoutineStages": true,
+        "existingF0F9AndRelevantSecurityReleaseProofPreserved": true
+      }
+    },
     "fastDevelopmentSourceAssetReuse20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20_FAST_DEVELOPMENT", "scope": "EXISTING_GITHUB_PAGES_ASSET_PREPARATION", "cacheKey": "EXACT_ASSET_TREE_GIT_SHA", "fallbackReuse": "CURRENT_GIT_BLOB_HASH_VERIFIED_BYTES_ONLY", "missingOrChangedAssetsOnlyRestored": true, "postRestoreBlobVerificationRequired": true, "cacheFailureFallsBackToCanonicalGit": true, "cacheSavesMainOnly": true, "publicationTriggerSequenceAndSafetyChecksPreserved": true, "actualSpeedupRequiresRuntimeMeasurements": true, "newPipeline": false},
     "ownerGitHubPagesPermanentRemoval20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","publisher":"tools/github-pages-landing.mjs","retainedOutputPrunedByExplicitCatalogRemovalOnly":true,"activeGameAndSharedFilesPreserved":true,"newWorkflowOrPipeline":false},
     "ownerStoppedGamesPermanentRemoval20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "gameIds": ["ant-simulator", "crystal-defense"], "ownerGameStopMeansPermanentRemoval": true, "sourceDeletionRequired": true, "automaticReentryForbidden": true, "lockedSequenceChanged": false},
@@ -28711,7 +28729,95 @@
     }
   },
   "fixedAutonomousDevelopmentOperatingContract": {
-    "version": 1,
+    "version": 2,
+    "ownerRequestedVibeOneShotPatch": {
+      "version": 1,
+      "number": 1,
+      "labelKo": "바이브 한방패치",
+      "authority": "OWNER_DIRECTIVE_2026-10-24",
+      "status": "OWNER_DIRECT_LOCKED",
+      "scope": "OWNER_GAME_IDEA_AND_DIRECT_GAME_SOURCE_EDIT_REQUESTS",
+      "priority": "OWNER_DIRECT_GAME_CHANGE_FIRST_WITHIN_EXISTING_CANONICAL_GATES",
+      "executionOrder": [
+        "LOAD_AND_VALIDATE_LATEST_MAIN_CANONICAL_DOCUMENTS_AND_FINAL_LOCK",
+        "READ_LATEST_MAIN_EXISTING_GAME_SOURCE_AND_CANONICAL_PIPELINE",
+        "IMPLEMENT_OWNER_SPECIFIED_CHANGE_DIRECTLY_IN_RESPONSIBLE_GAME_FUNCTIONS",
+        "RUN_REQUIRED_IMPACT_SCOPED_PRE_MERGE_SOURCE_SECURITY_AND_BUILD_CHECKS",
+        "MERGE_APPROVED_CHANGE_TO_MAIN_VIA_EXISTING_GITHUB_FLOW",
+        "PUBLISH_ONLY_THROUGH_EXPLICIT_OWNER_AUTHORIZED_EXISTING_GAME_ROUTE_EXCLUDING_CLOUDFLARE",
+        "POST_DEPLOY_CHECK_RUNTIME_MOBILE_INPUT_LINKS_LOADING_SAVE_AND_REGRESSION",
+        "REPORT_ACTUAL_MAIN_SHA_DEPLOYMENT_TARGET_AND_VERIFIED_OR_UNVERIFIED_OUTCOME"
+      ],
+      "chatExecution": {
+        "chatgptDirectCoding": true,
+        "explicitOwnerActionWords": [
+          "진행",
+          "적용",
+          "넣어",
+          "수정",
+          "작업진행"
+        ],
+        "avoidRedundantQuestions": true,
+        "avoidUnnecessaryCodeDumps": true,
+        "conciseOutcomeOnly": true,
+        "preferExistingFunctionsToWrappers": true,
+        "duplicatePipelinesForbidden": true,
+        "ideasMustResultInRealExistingGameSourceChangeWhenRequested": true,
+        "documentationOnlyNotGameIdeaCompletion": true
+      },
+      "preservation": {
+        "existingGameplayAndSaveDataFirst": true,
+        "existingGameBalanceOrContentMayChangeOnlyByOwnerDirection": true,
+        "mobileFirst": true,
+        "assetLicenseEvidenceRequired": true,
+        "pathsAndLinksSyncedWhenChanged": true
+      },
+      "deployment": {
+        "repository": "hans1177/jaewoon-games",
+        "branch": "main",
+        "webSite": null,
+        "webPath": "NO_DEFAULT_WEB_DEPLOYMENT_TARGET",
+        "otherPlatform": "EXISTING_CANONICAL_PLATFORM_PUBLISH_ROUTE_ONLY",
+        "postDeploymentValidationRequired": true,
+        "unverifiedDeploymentMayNotBeClaimedSuccessful": true,
+        "cloudflareDeploymentAllowed": false,
+        "unknownPublishTarget": "DO_NOT_DEPLOY_OR_INVENT_TARGET"
+      },
+      "hardBoundaries": {
+        "existingF0F9SequenceUnchanged": true,
+        "existingPrePublicationSecurityAndReleaseGatesUnchanged": true,
+        "privateRuntimeCandidateStageAllowedOnlyWhereCurrentPipelineAlreadySupportsIt": true,
+        "noPublicReleaseBypass": true,
+        "noAutomatedSequenceUnlock": true,
+        "noSourceOrRuntimeWriteWhenCentralPreflightFails": true,
+        "doNotConfuseUserPatchPolicyOneWithExistingConstitutionalRuleOne": true
+      },
+      "completion": {
+        "mainCommitProofRequired": true,
+        "actualDeploymentProofRequiredWhenDeployRequested": true,
+        "runtimeProofRequiredWhenAvailable": true,
+        "unverifiedStatusMustBeReported": true,
+        "ideaApplicationRequiresActualGameCodeDiff": true
+      },
+      "procedureBudget": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-24",
+        "operatingRule": "GAME_CODE_CHANGE_FIRST; MINIMUM_NECESSARY_RELEVANT_CHECKS_ONLY; NO_PROCEDURE_GROWTH",
+        "newGameDevelopmentProcessOrGateByDefaultForbidden": true,
+        "redundantReviewSecurityQaOrAdministrativeStepsForbidden": true,
+        "additionalStageJustForDocumentationOrMonitoringForbidden": true,
+        "existingProcedureReductionConsolidationOrModificationAllowed": true,
+        "existingProcedureRemovalAllowedOnlyIfNoRequiredSafetyReleaseEvidenceIsLost": true,
+        "useImpactScopedEvidenceAndValidPassingResults": true,
+        "parallelizeIndependentNonblockingChecks": true,
+        "noRestartOfAlreadyPassingUnchangedStages": true,
+        "extraGatePermittedOnlyForVerifiedDirectRiskWithOwnerExplicitDirection": true,
+        "ordinaryGameDevelopmentMustNotWaitForUnrelatedChecks": true,
+        "preserveExistingRelevantSecuritySaveAndPublicReleaseHardGates": true,
+        "preserveExistingF0F9Sequence": true,
+        "doNotCreateShadowWorkflow": true
+      }
+    },
     "status": "FIXED_CURRENT_SYSTEM",
     "purpose": "KEEP_THE_EXISTING_PER_GAME_VIBE_DEVELOPMENT_LOOP_RUNNING_AUTONOMOUSLY_WITHOUT_OWNER_OR_CHATGPT_AS_NORMAL_EXECUTION_DEPENDENCIES",
     "systemStructure": "EXISTING_CANONICAL_PIPELINE_ONLY",
