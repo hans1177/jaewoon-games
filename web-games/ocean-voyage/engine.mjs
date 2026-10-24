@@ -206,14 +206,61 @@ export function nearestPort(s){
  return PORTS.map(p=>({port:p,d:dist(s.ship,p)})).sort((a,b)=>a.d-b.d)[0];
 }
 export function canDock(s){const p=nearestPort(s);return p.d<=PORT_RADIUS?p.port:null;}
-export function priceAt(portId,goodId,day=1,mode='buy'){
- const port=portById(portId),good=GOODS.find(g=>g.id===goodId);
- if(!port||!good)return 0;
- const wave=Math.sin(day*.31+PORTS.indexOf(port)*1.7+GOODS.indexOf(good)*2.1)*.075;
- const tax=port.faction==='황금상단'?.025:0;
- const val=good.base*(port.rates[good.id]??(good.ports?.includes(port.id)?.65:1.35))*(1+wave+tax);
- return Math.max(1,Math.round(val*(mode==='buy'?1.08:.90)));
+// 경제: 게임시간 하루(기존 16초 항해)를 시세 1틱으로 사용한다. 벽시계·외부 서버에는 의존하지 않는다.
+export const marketBaseStock=(portId,goodId)=>{
+ const profile=PORT_MARKETS[portId];
+ return profile?.produces.includes(goodId)?30:profile?.imports.includes(goodId)?10:0;
+};
+export function newPortEconomy(){
+ return Object.fromEntries(PORTS.map(p=>[p.id,{
+  stock:Object.fromEntries(GOODS.map(g=>[g.id,marketBaseStock(p.id,g.id)])),
+  pressure:Object.fromEntries(GOODS.map(g=>[g.id,0])),
+  history:{}
+ }]));
 }
+export function marketEvent(s,portId,goodId,day=s?.day||1){
+ const tick=Math.floor(Number(day)/4);if(tick<1||day%4>1)return null;
+ const p=PORTS[(tick*5+2)%PORTS.length],profile=PORT_MARKETS[p.id];
+ if(p.id!==portId)return null;
+ const kind=tick%3===0?'과잉':tick%3===1?'폭등':'유행';
+ const product=tick%2===0?profile.produces[0]:profile.demand[0];
+ if(kind==='유행'?TRADE_GROUPS[goodId]!==TRADE_GROUPS[product]:goodId!==product)return null;
+ return {kind,good:product,until:tick*4+1,factor:kind==='과잉'?.68:kind==='폭등'?1.6:1.32};
+}
+export function marketShock(s,portId,goodId){
+ const v=s?.marketShocks?.[portId];
+ return v?.good===goodId&&Number(v.until)>=s.day?v:null;
+}
+export function priceAt(portId,goodId,day=1,mode='buy',state=null){
+ const p=portById(portId),g=GOODS.find(item=>item.id===goodId);
+ if(!p||!g)return 0;
+ const wave=Math.sin(Math.floor(day)*.31+PORTS.indexOf(p)*1.7+GOODS.indexOf(g)*2.1)*.075;
+ const value=g.base*(p.rates[g.id]??(g.ports?.includes(p.id)?.65:1.35));
+ let multiplier=1+wave;
+ if(state){
+  const current=state.economy?.[portId],base=marketBaseStock(portId,goodId);
+  const stock=current?.stock?.[goodId]??base,pressure=current?.pressure?.[goodId]||0;
+  const demand=PORT_MARKETS[portId]?.demand.includes(goodId)? .12:0;
+  const scarcity=base?Math.max(-.24,Math.min(.3,(base-stock)/Math.max(10,base)*.27)):.09;
+  const prosperity=(portStatus(state,portId).prosperity-50)*.001;
+  multiplier+=demand+scarcity+Math.max(-.3,Math.min(.3,pressure*.013))+prosperity;
+  const event=marketEvent(state,portId,goodId,day),shock=marketShock(state,portId,goodId);
+  if(event)multiplier*=event.factor;
+  if(shock)multiplier*=shock.kind==='품귀'?1.3:.7;
+ }
+ multiplier=Math.max(.4,Math.min(2.35,multiplier));
+ return Math.max(1,Math.round(value*multiplier*(mode==='buy'?1.08:.90)));
+}
+export function marketQuote(s,portId,goodId){
+ const profile=PORT_MARKETS[portId],base=marketBaseStock(portId,goodId),item=s.economy?.[portId];
+ const stock=item?.stock?.[goodId]??base,history=(item?.history?.[goodId]||[]).slice(-7);
+ const price=priceAt(portId,goodId,s.day,'buy',s),sell=priceAt(portId,goodId,s.day,'sell',s);
+ const reference=priceAt(portId,goodId,s.day,'buy'),percent=Math.round(price/reference*100);
+ const kind=profile?.produces.includes(goodId)?'명산품':profile?.imports.includes(goodId)?'수입품':'미취급';
+ const event=marketShock(s,portId,goodId)||marketEvent(s,portId,goodId);
+ return {buy:price,sell,stock,base,kind,percent,history,event:event?.kind||null,demand:profile?.demand.includes(goodId)||false,group:TRADE_GROUPS[goodId]};
+}
+
 export function trade(state,portId,goodId,amount,mode){
  const s=copy(state),port=canDock(s),good=GOODS.find(g=>g.id===goodId);
  const qty=Number(amount);
