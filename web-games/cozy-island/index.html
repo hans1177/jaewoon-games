@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#9bd6b3">
-  <title>포근섬</title>
+  <meta name="theme-color" content="#343b2a">
+  <title>포근섬: 영주의 성 · 중세 RTS</title>
   <link rel="stylesheet" href="./style.css">
   <!-- 공용 원본 Three.js 로더가 같은 3D 모듈 사본을 참조하도록 연결 -->
   <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
@@ -25,14 +25,15 @@
       <div class="hud-main right">
         <span>🪙 <b id="coinText">40</b></span>
         <button id="inventoryButton" class="small-button" type="button">자원</button>
-        <button id="helpCommand" class="small-button" type="button">도움말</button>
+        <button id="helpCommand" class="small-button" type="button">건설목록</button>
       </div>
     </section>
 
-    <div id="raidText" class="raid-status">⏱️ 습격 2:00</div>
+    <div id="raidText" class="raid-status">🏰 적 영주 3명</div>
     <div id="economyText" class="realm-economy" aria-label="영지 자원">🪵 0 · 🪨 0 · 🍖 0</div>
-    <div id="hint" class="hint">드래그: 이동 · 건물: 관리</div>
+    <div id="hint" class="hint">건설 → 배치 · 병영 → 모집 · 공성 → 적 성 공격</div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <button id="cancelBuild" type="button" hidden>✕ 건설 취소</button>
     <div class="camera-zoom" aria-label="전장 확대 축소">
       <button id="zoomIn" type="button" aria-label="카메라 확대">＋</button>
       <button id="zoomOut" type="button" aria-label="카메라 축소">－</button>
@@ -42,8 +43,8 @@
       <nav class="strategy-bar" aria-label="영지 관리와 전술 명령">
         <button id="castleCommand" class="strategy-button" type="button">🏗️<small>건설</small></button>
         <button id="barracksCommand" class="strategy-button" type="button">⚔️<small>병영</small></button>
-        <button id="workersCommand" class="strategy-button" type="button">👷<small>생산</small></button>
-        <button id="fishingCommand" class="strategy-button" type="button">🏹<small>공성</small></button>
+        <button id="workersCommand" class="strategy-button" type="button">🪓<small>산업</small></button>
+        <button id="fishingCommand" class="strategy-button" type="button">⚔️<small>전쟁</small></button>
         <button id="tradeCommand" class="strategy-button" type="button" aria-label="상선 무역과 경제 관리">⚖️<small>시장</small></button>
         <button id="centerCommand" class="strategy-button" type="button">🗺️<small>지도</small></button>
       </nav>
@@ -57,6 +58,7 @@
       <div id="panelBody" class="panel-body"></div>
     </dialog>
 
+    <!-- 레거시 세이브/스크립트 참조용 요소: 전략 모드 UI에서는 노출하지 않음 -->
     <dialog id="fishing" class="panel fishing-panel">
       <h2>낚시</h2>
       <p>물고기가 초록 구간에 들어왔을 때 잡아!</p>
@@ -67,6 +69,7 @@
       <button id="catchButton" class="wide-button" type="button">지금 잡기</button>
       <button id="cancelFishing" class="link-button" type="button">그만두기</button>
     </dialog>
+    <section id="gameResult" class="game-result" hidden role="alertdialog" aria-modal="true" aria-label="전쟁 결과"><h2>전쟁 결과</h2><p></p><button type="button" onclick="location.reload()">전장 새로고침</button></section>
   </main>
 
   <script src="./reset-bootstrap-v9.js"></script>
