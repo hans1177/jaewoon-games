@@ -141,7 +141,7 @@ const copy=s=>structuredClone(s);
 export function newGame(captainId="eleanor"){
  const hero=CAPTAINS.find(c=>c.id===captainId)||CAPTAINS[0],home=PORTS.find(p=>p.id===hero.port);
  return {
-  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,scene:null,eventClock:0,eventSerial:0,navalCombat:null,navalEscapeCooldown:0,merchants:merchantRoster(),economy:newPortEconomy(),marketShocks:{},speed:1,autoCombat:true,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
+  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],seaDiscoveries:[],seaReported:[],companionBonds:{},event:null,scene:null,eventClock:0,eventSerial:0,navalCombat:null,navalEscapeCooldown:0,merchants:merchantRoster(),economy:newPortEconomy(),marketShocks:{},speed:1,autoCombat:true,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
   version:1,day:1,elapsed:0,coins:3400,discovered:[hero.port],visits:{[hero.port]:1},homePort:hero.port,captain:hero.name,crewRoster:[hero.id],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
   ship:{x:home.x,z:home.z+2,heading:0,velocity:0,rudder:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0,gear:{sail:'standard',figurehead:'none'},regionalMods:[],cannonType:'bronze',armor:0,holdLevel:0,rudderLevel:0,hullLevel:0},
   fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
@@ -181,7 +181,7 @@ export function restoreGame(raw){
    s.marketShocks=Object.fromEntries(Object.entries(obj.marketShocks||{}).filter(([id,v])=>PORTS.some(p=>p.id===id)&&GOODS.some(g=>g.id===v?.good)&&['품귀','폭락'].includes(v?.kind)&&Number.isFinite(v.until)).map(([id,v])=>[id,{good:v.good,kind:v.kind,until:clamp(Math.floor(v.until),1,s.day+3)}]));
    s.portState=s.portState&&typeof s.portState==='object'?s.portState:{};s.worldLog=Array.isArray(s.worldLog)?s.worldLog.slice(-20):[];s.climate=s.climate&&WEATHER.some(w=>w.id===s.climate.kind)?s.climate:{kind:'clear',until:s.day+3};
   s.heroChosen=Boolean(s.heroChosen);s.captainId=CAPTAINS.some(c=>c.id===s.captainId)?s.captainId:'eleanor';
-  for(const field of ['discoveries','reported','completedStories','completedOffice','treasureClues','clearedCamps'])s[field]=Array.isArray(s[field])?[...new Set(s[field].filter(v=>typeof v==='string'))].slice(0,100):[];
+  for(const field of ['discoveries','reported','seaDiscoveries','seaReported','completedStories','completedOffice','treasureClues','clearedCamps'])s[field]=Array.isArray(s[field])?[...new Set(s[field].filter(v=>typeof v==='string'))].slice(0,100):[];
   s.officeQuests=Array.isArray(s.officeQuests)?s.officeQuests.filter(q=>OFFICE_QUESTS.some(o=>o.id===q)).slice(0,4):[];
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
   s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;s.autoCombat=obj.autoCombat!==false;
@@ -636,6 +636,25 @@ export const SITES=Object.freeze([
  {id:'lagoon',name:'석호의 침몰 수도원',port:'venice',kind:'수몰 건축',relic:'항해 수도사의 필사본',reward:1250,lore:'종탑의 그림자가 가라앉은 서고의 위치를 가리킨다.',choices:['현지 어부에게 묻는다','안전한 잠수줄을 설치한다','필사본을 밀봉한다'],answers:[0,1,1]},
  {id:'amberroad',name:'발트의 호박 무덤길',port:'copenhagen',kind:'고대 교역로',relic:'호박 목걸이',reward:1000,lore:'무덤에서 발견된 구슬은 먼 남쪽 바다와 이어진 교역의 흔적이다.',choices:['지층 순서를 기록한다','구슬의 산지를 대조한다','매장 방향을 보존한다'],answers:[0,0,1]}
 ]);
+// 실존 명소: 직접 해상 좌표에 접근해 망원경으로 관측. 유물은 원본을 훼손하지 않는 탐험 기록·복제본.
+export const SEA_LANDMARKS=Object.freeze([
+ {id:'belem',name:'벨렝 탑',port:'gold',x:-124,z:-454,kind:'포르투갈 대항해 해안 요새',relic:'벨렝 탑 항로 표식 탁본',reward:700,lore:'테주 강 어귀에 세워진 대항해시대의 해상 요새. 항해사의 귀항 방위를 기록해.'},
+ {id:'lanterna',name:'제노바 라 란테르나 등대',port:'genoa',x:96,z:-521,kind:'리구리아 항로 등대',relic:'제노바 등대 방위 관측록',reward:650,lore:'제노바 항구를 지키는 오래된 등대의 시각 신호를 비교해.'},
+ {id:'arsenale',name:'베네치아 아르세날레',port:'venice',x:161,z:-534,kind:'해양 조선 유산',relic:'베네치아 선창 설계 필사본',reward:800,lore:'선박 생산의 중심지인 거대한 선창의 구조를 관측하고 도면을 기록해.'},
+ {id:'sounion',name:'수니온 곶 포세이돈 신전',port:'athens',x:298,z:-439,kind:'에게해 고대 신전',relic:'포세이돈 신전 해안 측량도',reward:900,lore:'수니온 곶의 신전 기둥을 바다에서 관측해 항해 방위를 계산해.'},
+ {id:'kronborg',name:'크론보르 성 해협',port:'copenhagen',x:145,z:-677,kind:'외레순 해협 요새',relic:'외레순 해협 통행 기록',reward:750,lore:'외레순 해협을 지나는 선박과 해안 요새의 통행 신호를 관측해.'}
+]);
+export function observeSeaLandmark(state,id){
+ const t=SEA_LANDMARKS.find(v=>v.id===id);
+ if(!t)return fail(state,'관측할 해양 명소가 없어.');
+ if(state.seaDiscoveries?.includes(id))return fail(state,'이미 도감에 등록한 해양 명소야.');
+ if(state.navalCombat||state.event||state.scene||state.landBattle)return fail(state,'해전이나 사건을 마친 뒤 관측해.');
+ if(dist(state.ship,t)>8)return fail(state,'실제 해역으로 항해해. 관측 가능한 거리는 8이야.');
+ if(state.ship.provisions<2)return fail(state,'해양 관측을 위해 식량 2가 필요해.');
+ const s=copy(state);s.ship.provisions-=2;s.seaDiscoveries.push(id);s.equipment[id]=1;
+ s.xp+=35;s.score+=80;note(s,t.name+' 해양 발견 등록! '+t.relic+' 확보 · 탐험가 사무실에서 보고해.');
+ return success(s,t.name+' 관측 완료 · '+t.relic+' 도감 등록');
+}
 export const OFFICE_QUESTS=Object.freeze([
  {id:'europe',name:'유럽 항로 실측',text:'유럽의 서로 다른 항구 5곳 발견',type:'ports',need:5,reward:1000},
  {id:'first-relic',name:'첫 유적 발견 보고',text:'유적 1곳 조사 완료 후 사무실에 보고',type:'report',need:1,reward:700},
@@ -695,8 +714,14 @@ export function exploreChoice(state,choice){
  return success(s,e.notes.at(-1));
 }
 export function reportDiscoveries(state){
- if(!canDock(state)||!portHasFacility(canDock(state).id,'quests'))return fail(state,'탐험가 사무실이 있는 항구에서 보고해.');const ids=state.discoveries.filter(id=>!state.reported.includes(id));if(!ids.length)return fail(state,'새로 보고할 발견물이 없어.');
- const s=copy(state);let reward=0;for(const id of ids){const site=SITES.find(x=>x.id===id);if(!site)continue;reward+=site.reward;s.reported.push(id);s.fame+=20+(s.job==='scholar'?10:0)+(s.job==='cartographer'?5:0);}s.coins+=reward;return success(s,ids.length+'건 보고 완료 · '+reward+' G');
+ if(!canDock(state)||!portHasFacility(canDock(state).id,'quests'))return fail(state,'탐험가 사무실이 있는 항구에서 보고해.');
+ const ids=state.discoveries.filter(id=>!state.reported.includes(id));
+ const seaIds=state.seaDiscoveries.filter(id=>!state.seaReported.includes(id));
+ if(!ids.length&&!seaIds.length)return fail(state,'새로 보고할 발견물이 없어.');
+ const s=copy(state);let reward=0;
+ for(const id of ids){const site=SITES.find(x=>x.id===id);if(!site)continue;reward+=site.reward;s.reported.push(id);s.fame+=20+(s.job==='scholar'?10:0)+(s.job==='cartographer'?5:0);}
+ for(const id of seaIds){const landmark=SEA_LANDMARKS.find(x=>x.id===id);if(!landmark)continue;reward+=landmark.reward;s.seaReported.push(id);s.fame+=15+(s.job==='cartographer'?10:0);}
+ s.coins+=reward;return success(s,ids.length+seaIds.length+'건 발견 보고 완료 · '+reward+' G');
 }
 export function officeProgress(s,q){return q.type==='ports'?s.discovered.filter(id=>!['alexandria','zanzibar','goa','nagasaki'].includes(id)).length:q.type==='report'?s.reported.length:q.type==='battle'?s.victories:s.crewRoster.length;}
 export function officeContract(state,id){
