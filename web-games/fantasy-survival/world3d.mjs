@@ -32,12 +32,13 @@ const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.g
 // Reuse the existing 3D creature library. Each source is bound only to matching
 // game species; the renderer never creates a synthetic enemy or changes AI rules.
 // 파일 원본은 assets/asset-license-ledger.json의 archive/sourceEntry/SHA256으로 대조한다.
-// 종·외형이 가까운 CC0 원본만 시각적으로 연결하며 게임 ID/전투/드롭은 바꾸지 않는다.
+// 비슷한 기존 CC0 종의 시각적 대체도 허용한다. 외형 임시 매칭은 실제 종 모델 검증을 뜻하지 않는다.
+// 몬스터 ID, AI, 체력, 데미지, 드롭과 원본 저장 상태는 변경하지 않는다.
 const NATIVE_CREATURE_MODELS=Object.freeze({
   'wolf.fbx':['shadowwolf','shadowwolfleader','firewolf','polarwolf','thornhound','ironhidehound'],
-  'monster-41.obj':['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','crystalguardian'],
+  'monster-41.obj':['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','crystalguardian','jungleGuardian'],
   'tree.fbx':['worldtreegolem'],
-  'greendemon.fbx':['goblin','goblinCrossbow','goblinHeavy','goblinGeneral','crystalgoblin','flowergoblin'],
+  'greendemon.fbx':['goblin','goblinCrossbow','goblinHeavy','goblinGeneral','crystalgoblin','flowergoblin','primitiveSpearman','primitiveArcher','swampPrimitiveSpearman','swampPrimitiveArcher','swampPrimitiveGuard'],
   'hog.glb':['mossboar','crystalboar','crystalboarjunior'],
   'deer.fbx':['foreststag','sapdeer','crystaldeer'],
   'monster-18.obj':['ironibex','crystalibex','crystalgoat'],
@@ -46,16 +47,16 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'monster-7.obj':['fairy'],
   'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
   'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb'],
-  'monster-35.obj':['rootsovereign'],
-  'caterpillar.glb':['giantburrower'], 'monster-31.obj':['sandwalker'],
-  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake'],
+  'monster-35.obj':['rootsovereign','swampArrowTower'],
+  'caterpillar.glb':['giantburrower'], 'monster-31.obj':['sandwalker','mudwalker'],
+  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc'],
   'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
-  'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish'],
+  'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish','shark'],
   'monster-47.obj':['giantSquid'], 'monster-21.obj':['giantleech'],
   'monster-17.obj':['deepAngler'], 'monkey.glb':['gorilla'],
   'tiger.glb':['jungletiger','jungletigerleader'],
   'yeti.fbx':['yetileader','yeticub','froststalker'], 'cat.glb':['polarfox'],
-  'bee.fbx':['giantbee'], 'monster-15.obj':['thornmantis'],
+  'bee.fbx':['giantbee'], 'monster-15.obj':['thornmantis','giantVenomScorpion'],
   'monster-53.obj':['giantspider','giantspiderling']
 });
 const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
@@ -257,19 +258,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(!previous)console.warn('CC0 original 3D monster unavailable: '+file,error);
     }finally{loadingCreatureCount--;creatureRequests.delete(file)}
   }
-  const initialFiles=new Map();
-  for(const e of initialState?.enemies||[]){
-    const distance=Math.hypot(e.x-initialState.player.x,e.y-initialState.player.y);
-    if(e.hp<=0||e.area!==initialState.area||distance>1200)continue;
-    const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
-    if(file)initialFiles.set(file,Math.min(initialFiles.get(file)??Infinity,distance));
-  }
-  const creaturesPromise=(async()=>{
-    const ordered=[...initialFiles].sort((a,b)=>a[1]-b[1]).map(([file])=>file),limit=mobileBudget?2:4;
-    for(let i=0;i<ordered.length;i+=limit)await Promise.all(ordered.slice(i,i+limit).map(loadCreatureSource));
-  })();
+  // 시작 시 1200px 안 모든 종의 FBX/GLB 완료를 기다리지 않는다.
+  // 필수 지형/플레이어만 기다리고, 기존 frame()의 거리순 2/4개 동시 로딩으로 연결한다.
+  // 모델 미준비 몬스터가 실제 전투권에 있으면 기존 unmapped-threat 게이트로 화면을 막는다.
   let models;
-  try{[models]=await Promise.all([modelsPromise,heroPromise,creaturesPromise])}
+  try{[models]=await Promise.all([modelsPromise,heroPromise])}
   catch(error){
     disposed=true;heroLoadVersion++;
     for(const source of nativeCreatureSources.values())source.model.traverse(child=>{
