@@ -256,9 +256,9 @@ function feedWorkers(){let survivors=0;for(let i=0;i<state.workers;i++){if(state
 // 적 영주도 식량·군대·금화를 생산해 전략적으로 출병한다.
 // 마을회관 파괴 즉시 해당 영주가 패배하고 3개 모두 점령 시 게임 승리.
 const ENEMY_BLUEPRINTS=[
- {id:'iron',name:'철혈 영주',x:3090,y:430,focus:'rush',color:'#b64e39'},
- {id:'stone',name:'석벽 영주',x:4060,y:680,focus:'defense',color:'#8b8c80'},
- {id:'gold',name:'황금 영주',x:3590,y:1560,focus:'trade',color:'#d5ac52'}
+ {id:'iron',name:'철혈 영주',x:4550,y:850,focus:'rush',region:'동쪽 붉은 협곡',color:'#b64e39'},
+ {id:'stone',name:'석벽 영주',x:4520,y:-2750,focus:'defense',region:'북동쪽 설산',color:'#8b8c80'},
+ {id:'gold',name:'황금 영주',x:-2450,y:-2650,focus:'trade',region:'북서쪽 황금 초원',color:'#d5ac52'}
 ];
 let fieldEnemies=[],offensiveTarget=null;
 function getEnemyLords(){
@@ -267,6 +267,11 @@ function getEnemyLords(){
   wood:15,stone:15,food:60,coins:50,troops:3+i*2,
   economyClock:0,decisionClock:0,defeated:false,buildings:3+i*2
  }));
+ // 구버전 세이브의 적 좌표를 네 왕국 신지도 좌표로 이관, HP·승리·자원 등은 보존.
+ for(const d of ENEMY_BLUEPRINTS){
+   const lord=state.enemyLordsV5.find(l=>l?.id===d.id);
+   if(lord){lord.x=d.x;lord.y=d.y;lord.region=d.region;lord.name=d.name;}
+ }
  return state.enemyLordsV5;
 }
 function advanceEnemyLords(dt){
@@ -277,6 +282,9 @@ function advanceEnemyLords(dt){
    lord.decisionClock=(Number(lord.decisionClock)||0)+dt;
    if(lord.economyClock>=8){
      lord.economyClock%=8;
+     if(state.strongholdDiplomacy?.[lord.id]==='ally'){
+       state.coins+=2;state.inventory.wood=(Number(state.inventory.wood)||0)+2;
+     }
      const harvest=lord.focus==='trade'?9:lord.focus==='defense'?5:6;
      lord.wood+=harvest;lord.stone+=lord.focus==='defense'?7:4;
      lord.food+=10;lord.coins+=lord.focus==='trade'?10:5;
@@ -288,7 +296,7 @@ function advanceEnemyLords(dt){
      }
    }
    const threshold=lord.focus==='rush'?9:lord.focus==='trade'?18:23;
-   if(!attacker&&lord.troops>=threshold&&lord.decisionClock>(lord.focus==='rush'?65:95)&&!offensiveTarget){
+   if(!attacker&&state.strongholdDiplomacy?.[lord.id]!=='ally'&&lord.troops>=threshold&&lord.decisionClock>(lord.focus==='rush'?65:95)&&!offensiveTarget){
      lord.decisionClock=0;attacker=lord;
    }
  }
@@ -332,9 +340,9 @@ function renderWar(){
  ui.panelBody.innerHTML='<p class="panel-note">수비대를 모집하고 집결/방어/공격/후퇴를 지정해. 적 성벽을 돌파하고 마을회관을 파괴하면 영주가 패배한다.</p>'+
  '<div class="realm-war-orders"><button data-army-order="rally">🚩 집결</button><button data-army-order="hold">🛡️ 방어</button><button data-army-order="attack">⚔️ 공격</button><button data-army-order="retreat">🏳️ 퇴각</button></div>'+
  '<div class="realm-enemy-grid">'+lords.map(l=>'<article class="realm-lord">'+
- '<h3>🏰 '+l.name+(l.defeated?' · 점령':'')+'</h3>'+
+ '<h3>🏰 '+l.name+(l.defeated?' · 점령':state.strongholdDiplomacy?.[l.id]==='ally'?' · 동맹':'')+'</h3><p>📍 '+l.region+'</p>'+
  '<p>🏛️ 성채 '+Math.ceil(l.hp)+'/'+l.maxHp+' · 🧱 성벽 '+Math.ceil(l.wallHp)+' · ⚔️ 주둔 '+l.troops+'</p>'+
- '<button class="realm-main-command" type="button" data-lord="'+l.id+'" '+(l.defeated||!state.barracksBuilt||army.length<1||offensiveTarget?'disabled':'')+'>'+(l.defeated?'✅ 점령 완료':offensiveTarget===''+l.id?'공성 진행 중':'⚔️ 출병 명령')+'</button>'+
+ '<button class="realm-main-command" type="button" data-lord="'+l.id+'" '+(l.defeated||state.strongholdDiplomacy?.[l.id]==='ally'||!state.barracksBuilt||army.length<1||offensiveTarget?'disabled':'')+'>'+(l.defeated?'✅ 점령 완료':offensiveTarget===''+l.id?'공성 진행 중':'⚔️ 출병 명령')+'</button>'+
  '<button class="realm-look" type="button" data-look="'+l.id+'">🗺️ 적 성 보기</button></article>').join('')+'</div>'+
  '<button class="realm-main-command" type="button" data-home>🏰 내 성으로 돌아가기</button>'+
  '<p class="panel-note">현재 군대 '+army.length+'명 · 병영 건설과 식량 생산이 전쟁 준비의 핵심</p>';
@@ -343,7 +351,7 @@ function renderWar(){
  }));
  ui.panelBody.querySelectorAll('[data-lord]').forEach(b=>b.addEventListener('click',()=>{
    const lord=lords.find(l=>l.id===b.dataset.lord);
-   if(!lord||!state.barracksBuilt||!army.length||offensiveTarget)return;
+   if(!lord||state.strongholdDiplomacy?.[lord.id]==='ally'||!state.barracksBuilt||!army.length||offensiveTarget)return;
    offensiveTarget=lord.id;game.offensiveTarget=lord.id;
    fieldEnemies=Array.from({length:Math.min(5,Math.max(2,Math.ceil(lord.troops/5)))},(_,i)=>{
      const u=createUnit(i%2?'archer':'soldier',true);
@@ -353,7 +361,8 @@ function renderWar(){
    game.fieldEnemies=fieldEnemies;
    for(const u of army)u._expedition=true;
    ui.panel.close();
-   renderer.viewFocus={x:lord.x-450,y:lord.y};renderer.viewZoom=.55;
+   renderer.viewFocus={x:lord.x-450,y:lord.y};renderer.viewZoom=.65;
+   window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'battle',title:lord.name+' 공성전 출격'}}));
    toast('🚩 '+lord.name+' 성채로 부대 출병!');
  }));
  ui.panelBody.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('click',()=>{
@@ -401,6 +410,7 @@ function updateOffensive(dt){
    for(const u of allies)delete u._expedition;
    state.coins+=120;state.inventory.wood+=20;state.inventory.stone+=16;saveSoon();
    const remaining=getEnemyLords().filter(l=>!l.defeated);
+   window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'victory',title:lord.name+' 함락'}}));
    if(!remaining.length)showGameResult('🏆 승리 · 모든 적 영주 격파','모든 적 마을회관을 파괴하고 왕국을 통일했어.');
    else toast('🏰 '+lord.name+' 마을회관 파괴! 적 영주 패배 · 영지 점령');
  }
@@ -431,6 +441,7 @@ function updateRaid(dt){
   if(game.siegeSurrendered){
     state.keepDestroyed=true;
     game.keepDestroyed=true;showGameResult('패배 · 마을회관 함락','적군이 성채를 점령했어. 세이브를 새로 시작해야 해.');
+    window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'defeat',title:'우리 성채 함락'}}));
     enemies=[];game.enemies=enemies;game.siegeSurrendered=false;
     raidActive=false;game.raidActive=false;grandSiege=null;game.grandSiege=null;
     state.raidTimer=0;saveSoon();toast('🏰 성채가 함락됐어! 성벽과 성채를 수리해');
@@ -459,6 +470,7 @@ function startRaid(attacker=null){
     enemies.push(u)}
     attacker.troops=Math.max(0,attacker.troops-size);attacker.food=Math.max(0,attacker.food-size*2);
     toast('⚔️ '+attacker.name+' 군세 출병! 성문과 마을회관을 방어해');
+     window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'attack',title:attacker.name+' 침공'}}));
   } else if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
   else if(state.raidNumber===2){
     for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
@@ -590,6 +602,20 @@ function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));last
 
 allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;
 getEnemyLords();
+window.cozyRTS={
+ state,getLords:getEnemyLords,save:()=>{saveSoon();runtime.flushSaveProgress(state)},
+ diplomacy(id,mode){
+   const lord=getEnemyLords().find(l=>l.id===id);
+   if(!lord||lord.defeated||!['ally','hostile'].includes(mode))return false;
+   state.strongholdDiplomacy=state.strongholdDiplomacy||{};
+   if(mode==='ally'&&state.strongholdDiplomacy[id]!=='ally'){
+     if(state.coins<80){toast('동맹에는 금화 80 필요');return false}
+     state.coins-=80;
+   }
+   state.strongholdDiplomacy[id]=mode;saveSoon();updateHUD();return true;
+ },
+ center(x,y){game.siegeOverview=true;renderer.viewFocus={x,y};renderer.viewZoom=.63}
+};
 if(state.keepDestroyed)showGameResult('패배 · 마을회관 함락','영주가 쓰러지고 성채가 무너졌어. 새 전쟁을 시작할 수 있어.');
 else if(getEnemyLords().every(l=>l.defeated))showGameResult('🏆 승리 · 왕국 통일','모든 적 영주의 마을회관을 파괴했어.');
 updateHUD();requestAnimationFrame(frame);

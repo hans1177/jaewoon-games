@@ -26,6 +26,7 @@
         <span>🪙 <b id="coinText">40</b></span>
         <button id="inventoryButton" class="small-button" type="button">자원</button>
         <button id="helpCommand" class="small-button" type="button">건설목록</button>
+        <button id="systemCommand" class="small-button" type="button">⚙️ 시스템</button>
       </div>
     </section>
 
@@ -69,6 +70,7 @@
       <button id="catchButton" class="wide-button" type="button">지금 잡기</button>
       <button id="cancelFishing" class="link-button" type="button">그만두기</button>
     </dialog>
+    <dialog id="systemDialog" class="system-dialog"><header><h2>⚙️ 왕국 시스템</h2><button id="systemClose" type="button">✕</button></header><nav id="systemTabs" class="system-tabs"><button data-tab="game">💾 저장</button><button data-tab="map">🗺️ 왕국</button><button data-tab="diplomacy">🤝 동맹</button><button data-tab="multiplayer">🌐 대전</button><button data-tab="sound">🎵 음향</button></nav><section id="systemBody" class="system-body"></section></dialog>
     <section id="gameResult" class="game-result" hidden role="alertdialog" aria-modal="true" aria-label="전쟁 결과"><h2>전쟁 결과</h2><p></p><button type="button" onclick="location.reload()">전장 새로고침</button></section>
   </main>
 
@@ -110,6 +112,7 @@
   <script type="module" src="./heavy-damage-v21.js"></script>
   <script type="module" src="./abyss-cave-v23.js"></script>
   <script type="module" src="./game-v3.js"></script>
+  <script type="module" src="./kingdom-system.js"></script>
   <script type="module" src="./fishing-limit-v9.js"></script>
 </body>
 </html>
