@@ -64,7 +64,7 @@ export function safeWebVibeReplacement(original,response,{relative='index.html'}
   if(/\.html?$/i.test(relative)){
     for(const block of updated.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)){
       if(/\bsrc\s*=/i.test(block[1]))continue;
-      const type=block[1].match(/\btype\s*=\s*['"]([^'"]+)['"]/i)?.[1]||'';
+      const type=block[1].match(/\btype\s*=\s*['"]([^'"]+)['"]/i)?.[1]?.toLowerCase()||'';
       if(type&&!['module','text/javascript','application/javascript'].includes(type.toLowerCase()))continue;
       run('node',['--check','--input-type='+(type==='module'?'module':'commonjs')],{input:block[2]});
     }
@@ -161,7 +161,8 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
           const name=action[0][3],buttonId=id[0][3];
           if(!/^[A-Za-z_$][\w$-]{0,79}$/.test(buttonId)||!actions.has(name)||ids.filter(value=>value===buttonId).length!==1)continue;
           if((code.match(new RegExp('\\bfunction\\s+'+name+'\\s*\\(\\s*\\)','g'))||[]).length!==1)continue;
-          if(new RegExp('getElementById\\(\\s*[\"\']'+buttonId+'[\"\']').test(code))continue;
+          const escapedId=buttonId.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+          if(new RegExp('getElementById\\(\\s*[\"\']'+escapedId+'[\"\']').test(code))continue;
           bindings.push('document.getElementById('+JSON.stringify(buttonId)+').addEventListener("click", '+name+');');
         }
         if(/\bfunction\s+releaseInputs\s*\(\s*\)/.test(code)&&! /addEventListener\(\s*['"]blur['"]/.test(code))bindings.push('addEventListener("blur", releaseInputs);');
