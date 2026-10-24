@@ -96261,11 +96261,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4f3407af9108dd85bc0ec258",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9998",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6b1459579761349e6666b3595d9365e90b4c711e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9998,
+        "baseBranch": "main",
+        "headBranch": "feat/party-rpg-class-fx-atmosphere-mobile-20261025",
+        "baseSha": "6b1459579761349e6666b3595d9365e90b4c711e",
+        "headSha": "ae696caf405bc30b2d892344b028e34c159083ad",
+        "mergeCommitSha": "ec8554d4f77b73b2d1bd723abcb019fbfc4d8708",
+        "mergedAt": "2026-10-24T17:51:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3cce367c1b89c567839ba2a2a938b44999227d72b93056733387d16f6da23e79",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/party-rpg-class-fx-atmosphere-mobile-20261025",
+        "candidateSha": "ae696caf405bc30b2d892344b028e34c159083ad"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 215,
+        "deletedLineCount": 78,
+        "changedFiles": [
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "web-games/party-rpg/index.html",
+          "web-games/party-rpg/view.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "web-games/party-rpg/index.html",
+          "web-games/party-rpg/view.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9998",
+        "merge-commit:ec8554d4f77b73b2d1bd723abcb019fbfc4d8708",
+        "base-main:6b1459579761349e6666b3595d9365e90b4c711e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 755
+    "total": 756
   }
 }
