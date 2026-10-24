@@ -152951,7 +152951,7 @@
     },
     {
       "id": "recovery-recovery-f84bbc96c4af1596274e",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153009,12 +153009,12 @@
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40104758880:1",
+      "reservedAt": "2026-10-24T15:07:52.921Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -153228,22 +153228,24 @@
         "system-ai-applied-answer-sha256:0e35c2589599692d5f6650832724b6f7f00c07bd12584e2686e71c151e525f8b",
         "repair-strategy-fingerprint:054e6d23fdb7af06651bd0ff125dd8f02a618eb962189c24c64d6cb4c0a9e02e",
         "failed-strategy-fingerprint:054e6d23fdb7af06651bd0ff125dd8f02a618eb962189c24c64d6cb4c0a9e02e",
-        "model-output-sha256:cf5f646fa3b5546218d1ffb86984ce110a9148380eb62aeace01c170f34c45d5"
+        "model-output-sha256:cf5f646fa3b5546218d1ffb86984ce110a9148380eb62aeace01c170f34c45d5",
+        "system-ai-impact-score:1474",
+        "system-ai-handoff-to-reservation:system-ai:40104758880:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1473,
+      "impactScore": 1474,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 18,
-        "recurrenceCount": 34,
+        "recurrenceCount": 35,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 161.63,
+        "ageHours": 162.1,
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:02:09.727Z",
-      "updatedAt": "2026-10-24T14:56:49.711Z"
+      "updatedAt": "2026-10-24T15:07:52.921Z"
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
