@@ -106,9 +106,9 @@ buildWorld(live){
  ][zone]||{sky:0x68705f,fog:0x707761,far:70,light:0xffd6a6,intensity:1.5};
  this.scene.background=new THREE.Color(mood.sky);
  this.scene.fog.color.setHex(mood.fog);this.scene.fog.near=13;this.scene.fog.far=mood.far;
- this.sun.color.setHex(mood.light);this.sun.intensity=mood.intensity;
+ this.sun.color.setHex(mood.light);this.sun.intensity=mood.intensity*.75;
  this.skyLight.intensity=dungeon?.45:.88;
- const floor=new THREE.Mesh(new THREE.PlaneGeometry(w,h),this.groundMaterial(zone,dungeon));
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(w,h),this.groundMaterial(zone,dungeon));floor.receiveShadow=true;
  floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
  const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
  const grove=[],high=[],crooked=[],rocks=[],pebbles=[],fences=[];
