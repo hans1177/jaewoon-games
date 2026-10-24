@@ -6718,7 +6718,7 @@ function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.mi
    nativeRetry.hidden=loading;
    nativeStatusText.textContent=loading?'주변 3D 모델을 불러오는 중이야.':
     reason==='region-3d-not-yet-mapped'?'이 구역의 3D 지형은 아직 준비되지 않았어.':
-    reason==='unmapped-threat'?'주변 생물의 3D 모델을 준비하지 못했어. 다시 불러오기를 눌러 줘.':'3D 화면을 준비하지 못했어. 다시 불러오기를 눌러 줘.';
+    reason==='unmapped-threat'?'주변 생물의 3D 모델을 자동으로 불러오는 중이야. 계속 실패하면 다시 불러오기를 눌러 줘.':'3D 화면을 준비하지 못했어. 다시 불러오기를 눌러 줘.';
   }
  }
  requestAnimationFrame(loop)
