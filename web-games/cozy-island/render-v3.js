@@ -37,44 +37,112 @@ export class IslandRendererV3 {
       this.gl.outputColorSpace=THREE.SRGBColorSpace;
       this.scene3=new THREE.Scene();this.scene3.background=new THREE.Color(0x86cce0);
       this.camera3=new THREE.OrthographicCamera(-10,10,10,-10,.1,180);
-      this.scene3.add(new THREE.HemisphereLight(0xfff7e2,0x366c7d,2.15));
-      const sun=new THREE.DirectionalLight(0xfff0d8,2.0);sun.position.set(-18,56,32);
-      this.scene3.add(sun);
-      // 메인: 저폴리 성채는 기존 렌더 장면·재질을 공유하며 저장·게임 상태와 독립된다.
+      // 그래픽: 기존 3D 렌더러 안에서 재사용하는 64px 도트 재질. 별도 캔버스 게임은 만들지 않는다.
+      const pixelTexture=(type)=>{
+        const tile=document.createElement('canvas');tile.width=tile.height=64;
+        const ctx=tile.getContext('2d'),seed=[...type].reduce((v,c)=>v*33+c.charCodeAt(0),21)|0;
+        let randomSeed=seed;
+        const rand=()=>{randomSeed=(Math.imul(randomSeed,1664525)+1013904223)|0;return (randomSeed>>>0)/4294967296};
+        const colors={
+          stone:['#bdb5a1','#ccc3ad','#a99e8c','#d8ceb7'],
+          wood:['#94704b','#a98254','#735539','#bd9262'],
+          roof:['#aa674c','#be7754','#8d513d','#ce8e61'],
+          sand:['#dfd0a8','#e9dbb9','#c8b990','#f4e7c4'],
+          grass:['#789f64','#82aa6b','#668e58','#9abd77'],
+          jungle:['#4a7954','#568961','#3f694b','#709a70'],
+          snow:['#d6ded4','#ecede4','#bfcec9','#ffffff'],
+          ash:['#71635f','#82736c','#5d5352','#99847b'],
+          cave:['#434b58','#515968','#343d49','#666d75'],
+          road:['#a99a7f','#c0ae8c','#90846f','#d0bea0'],
+          water:['#58acc0','#65bed0','#409aad','#8ad1d9']
+        }[type]||['#9e9a8d','#aaa395','#888478','#c8c0af'];
+        ctx.fillStyle=colors[0];ctx.fillRect(0,0,64,64);
+        if(['stone','road','roof'].includes(type)){
+          const brickH=type==='roof'?10:type==='stone'?12:16,brickW=type==='roof'?14:type==='stone'?23:20;
+          ctx.fillStyle=type==='roof'?'#61453a':'#655f55';
+          for(let row=-1;row<=64/brickH;row++)for(let col=-2;col<64/brickW+2;col++){
+            const x=Math.round(col*brickW+(row%2)*brickW*.5),y=row*brickH;
+            ctx.fillRect(x,y,brickW,brickH);
+            ctx.fillStyle=colors[Math.floor(rand()*colors.length)];
+            ctx.fillRect(x+1,y+1,brickW-2,brickH-2);
+            ctx.fillStyle=type==='roof'?'#61453a':'#655f55';
+            ctx.fillStyle=type==='roof'?'#81533f':'#857c6c';
+            ctx.fillRect(x+2,y+brickH-3,brickW-4,1);
+            ctx.fillStyle=type==='roof'?'#61453a':'#655f55';
+          }
+        }else if(type==='wood'){
+          for(let x=0;x<64;x+=12){
+            ctx.fillStyle='#5d4432';ctx.fillRect(x,0,2,64);
+            ctx.fillStyle=colors[2];ctx.fillRect(x+4,0,1,64);
+            ctx.fillStyle=colors[3];ctx.fillRect(x+8,0,1,64);
+            for(let y=8;y<64;y+=16){ctx.fillStyle='#79573b';ctx.fillRect(x+2,y,10,1)}
+          }
+        }else if(type==='water'){
+          for(let i=0;i<36;i++){
+            const x=(rand()*64)|0,y=(rand()*64)|0;
+            ctx.fillStyle=colors[1+(i%3)];ctx.fillRect(x,y,6+(rand()*15|0),1);
+          }
+        }
+        const speckles=type==='water'?35:135;
+        for(let i=0;i<speckles;i++){
+          const x=rand()*64|0,y=rand()*64|0;
+          ctx.fillStyle=colors[1+(rand()*3|0)];
+          ctx.fillRect(x,y,type==='grass'||type==='jungle'?2:1,type==='grass'||type==='jungle'?3:1);
+        }
+        const texture=new THREE.CanvasTexture(tile);
+        texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
+        texture.magFilter=THREE.NearestFilter;
+        texture.minFilter=THREE.NearestMipmapNearestFilter;
+        texture.colorSpace=THREE.SRGBColorSpace;
+        return texture;
+      };
+      this.pixelTextures={};
+      for(const type of ['stone','wood','roof','sand','grass','jungle','snow','ash','cave','road','water'])
+        this.pixelTextures[type]=pixelTexture(type);
+      this.scene3.background=new THREE.Color(0x8bbed1);
+      this.scene3.add(new THREE.HemisphereLight(0xffecd2,0x526576,1.65));
+      const sun=new THREE.DirectionalLight(0xffe4bf,2.15);
+      sun.position.set(-30,65,40);this.scene3.add(sun);
+      // 지형·성채 공유 재질: 3D 표면에 픽셀 문양이 붙고 건물의 명암은 유지된다.
       this.fortGeometry={
         box:new THREE.BoxGeometry(1,1,1),
         roof:new THREE.ConeGeometry(1,1,4),
         tower:new THREE.CylinderGeometry(1,1,1,6)
       };
-      const paint=color=>new THREE.MeshLambertMaterial({color,flatShading:true});
+      const paint=(color,type)=>new THREE.MeshLambertMaterial({
+        color,map:this.pixelTextures[type],flatShading:true
+      });
       this.fortMaterial={
-        stone:paint(0xb5b0a3),stoneBright:paint(0xd8cfb8),
-        timber:paint(0x886244),darkWood:paint(0x523a30),
-        tile:paint(0x9c5947),cloth:paint(0x587f68),
-        banner:paint(0xb54e42),road:paint(0xada18d)
+        stone:paint(0xe4ded0,'stone'),stoneBright:paint(0xffffff,'stone'),
+        timber:paint(0xcaa98a,'wood'),darkWood:paint(0x8d6a50,'wood'),
+        tile:paint(0xffffff,'roof'),cloth:paint(0x7ba385,'wood'),
+        banner:new THREE.MeshLambertMaterial({color:0xb54e42,flatShading:true}),
+        road:paint(0xffffff,'road')
       };
-      const ground=(w,d,x,y,color,elevation)=>{
+      const ground=(w,d,x,y,color,elevation,type='grass')=>{
+        const map=this.pixelTextures[type].clone();
+        map.repeat.set(Math.max(1,w/215),Math.max(1,d/215));map.needsUpdate=true;
         const mesh=new THREE.Mesh(new THREE.BoxGeometry(w*SC,.45,d*SC),
-          new THREE.MeshLambertMaterial({color}));
+          new THREE.MeshLambertMaterial({color,map}));
         mesh.position.set(x*SC,elevation,y*SC);this.scene3.add(mesh);return mesh;
       };
-      ground(3800,2500,1700,1030,0x60bfd3,-1.35);
-      ground(1280,1030,730,595,0xf4dfac,-.7);
-      ground(1170,920,730,595,0x97cc8b,-.4);
-      this.east3=ground(1490,950,2100,595,0xebd09c,-.68);
-      this.eastGrass3=ground(1380,850,2100,595,0x82be7c,-.39);
-      this.jungle3=ground(1460,1020,2120,1550,0xeacf8c,-.7);
-      this.jungleGrass3=ground(1360,880,2120,1560,0x589267,-.39);
-      // 북쪽·서쪽·화산·심연동굴·정글 서쪽은 기존 좌표와 해금 조건 그대로 사용한다.
-      this.north3=ground(1380,965,2115,-350,0xf3f0e2,-.7);
-      this.northGrass3=ground(1300,860,2115,-350,0xa6c4aa,-.4);
-      this.west3=ground(3015,890,-1342,595,0xe2cc9e,-.7);
-      this.westGrass3=ground(2920,790,-1342,595,0x8baf78,-.4);
-      this.volcano3=ground(1560,1040,3540,-300,0x846964,-.57);
-      this.cave3=ground(3100,1040,6100,-300,0x414958,-.6);
-      this.jungleWest3=ground(1185,830,892,1610,0x528e5d,-.39);
+      ground(3800,2500,1700,1030,0xb3e6ef,-1.35,'water');
+      ground(1280,1030,730,595,0xffffff,-.7,'sand');
+      ground(1170,920,730,595,0xffffff,-.4,'grass');
+      this.east3=ground(1490,950,2100,595,0xffffff,-.68,'sand');
+      this.eastGrass3=ground(1380,850,2100,595,0xffffff,-.39,'grass');
+      this.jungle3=ground(1460,1020,2120,1550,0xe4d4a7,-.7,'sand');
+      this.jungleGrass3=ground(1360,880,2120,1560,0xffffff,-.39,'jungle');
+      // 기존 지역의 좌표·해금·충돌을 바꾸지 않고 재질만 교체한다.
+      this.north3=ground(1380,965,2115,-350,0xffffff,-.7,'snow');
+      this.northGrass3=ground(1300,860,2115,-350,0xe6f1ef,-.4,'snow');
+      this.west3=ground(3015,890,-1342,595,0xffffff,-.7,'sand');
+      this.westGrass3=ground(2920,790,-1342,595,0xe6e7bd,-.4,'grass');
+      this.volcano3=ground(1560,1040,3540,-300,0xffffff,-.57,'ash');
+      this.cave3=ground(3100,1040,6100,-300,0xffffff,-.6,'cave');
+      this.jungleWest3=ground(1185,830,892,1610,0xffffff,-.39,'jungle');
       const lake=new THREE.Mesh(new THREE.CircleGeometry(1,48),
-        new THREE.MeshStandardMaterial({color:0x55b8d0,roughness:.5}));
+        new THREE.MeshStandardMaterial({color:0xdaf5fc,map:this.pixelTextures.water,roughness:.64,metalness:0}));
       lake.rotation.x=-Math.PI/2;lake.scale.set(150*SC,112*SC,1);
       lake.position.set(390*SC,.035,370*SC);this.scene3.add(lake);
       // 기존 연못 물 재질과 메시를 재사용해 성문 앞 해자 형상을 표현한다.
@@ -143,6 +211,10 @@ export class IslandRendererV3 {
         part(box,m.stone,0,height*.43,0,3.08,height*.86,.4);
         part(box,m.stoneBright,0,height*.87,0,3.14,.16,.46);
         for(let i=-2;i<=2;i++)part(box,m.stoneBright,i*.65,height*.99,0,.35,height*.24,.48);
+        for(const x of [-1.2,0,1.2]){
+          part(box,m.stoneBright,x,height*.41,.23,.18,height*.76,.20);
+          part(box,m.darkWood,x,height*.59,.34,.09,.27,.025);
+        }
       }else if(kind==='fort-watchtower'){
         part(tower,m.stone,0,height*.43,0,.83,height*.86,.83);
         part(tower,m.stoneBright,0,height*.87,0,1.03,.24,1.03);
@@ -152,6 +224,7 @@ export class IslandRendererV3 {
         }
         part(box,m.banner,.08,height+1.02,0,.055,1.72,.055);
         part(box,m.banner,.43,height+1.56,0,.7,.37,.055);
+        for(const z of [-.56,.56])part(box,m.darkWood,0,height*.49,z,.16,.56,.05);
       }else if(kind==='fort-gatehouse'){
         for(const x of [-1.3,1.3]){
           part(box,m.stone,x,height*.37,0,.78,height*.74,1.25);
@@ -206,6 +279,11 @@ export class IslandRendererV3 {
         part(box,m.darkWood,0,.48,depth*.5+.07,.58,.96,.09);
         part(roof,large?m.cloth:m.tile,0,body+height*.19,0,
           w*.8,height*.38,depth*.89,Math.PI/4);
+        for(const x of [-w*.29,w*.29]){
+          part(box,m.stoneBright,x,body*.61,depth*.5+.11,.43,.48,.07);
+          part(box,m.darkWood,x,body*.61,depth*.5+.16,.27,.33,.06);
+          part(box,m.timber,x,body*.61,depth*.5+.22,.055,.43,.05);
+        }
         if(work){
           part(box,m.timber,1.0,.42,1.5,.8,.84,.72);
           part(box,m.darkWood,1.0,.89,1.5,.93,.15,.83);
@@ -256,10 +334,10 @@ export class IslandRendererV3 {
       const player=game.player,visibleIds=new Set();
       // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
       const focus=game.siegeOverview?this.viewFocus:player;
-      const zoom=game.siegeOverview?(this.viewZoom??this.defaultStrategyZoom()):(this.width<600?.68:.82);
+      const zoom=game.siegeOverview?(this.viewZoom??this.defaultStrategyZoom()):(this.width<600?.72:.88);
       if(this.camera3.zoom!==zoom){this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix()}
-      const nearby=(x,y)=>Math.abs(x-focus.x)<this.width/(2*zoom)+200&&
-        Math.abs(y-focus.y)<this.height/(2*zoom)+420;
+      const nearby=(x,y)=>Math.abs(x-focus.x)<(this.width+this.height*.36)/(2*zoom)+230&&
+        Math.abs(y-focus.y)<(this.height+this.width*.36)/(2*zoom)+420;
       const put=(id,kind,x,y,height=2,rotation=0)=>{
         if(!Number.isFinite(x)||!Number.isFinite(y)||!nearby(x,y))return;
         visibleIds.add(id);
@@ -431,10 +509,11 @@ export class IslandRendererV3 {
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
         this.scene3.remove(item.mesh);this.instances3d.delete(id);
       }
-      // 메인: 스트롱홀드식 성채 시야. 남쪽에서 비스듬히 내려다보고 이동 방향은 유지한다.
+      // 카메라: 실제 x/z 깊이가 보이는 45도 쿼터뷰. 터치 역투영과 같은 카메라를 공유한다.
       const focusX=focus.x*SC,focusZ=focus.y*SC;
-      this.camera3.position.set(focusX,game.siegeOverview?68:34,
-        focusZ+(game.siegeOverview?64:36));
+      const depth=game.siegeOverview?58:33;
+      this.camera3.position.set(focusX+depth*.68,game.siegeOverview?70:39,
+        focusZ+depth*.73);
       this.camera3.lookAt(focusX,0,focusZ);
       const hour=game.state.minutes/60;
       this.scene3.background.setHex(hour<6||hour>20?0x365372:0x86cce0);
@@ -457,24 +536,28 @@ export class IslandRendererV3 {
     this.canvas.style.height = `${this.height}px`;
     this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
     if(this.native3d){
-      this.gl.setPixelRatio(Math.min(this.width<650?1:1.25,window.devicePixelRatio||1));
+      // 모바일: 픽셀 재질은 Nearest 필터로 선명하게, GPU 채움 비용은 DPR 제한.
+      this.gl.setPixelRatio(Math.min(this.width<700?1:1.3,window.devicePixelRatio||1));
       this.gl.setSize(this.width,this.height,false);
       this.camera3.left=-this.width*SC/2;this.camera3.right=this.width*SC/2;
       this.camera3.top=this.height*SC/2;this.camera3.bottom=-this.height*SC/2;
       // 시야: 모바일도 성곽과 건물 배치가 보이도록 넓히되 성능·저장 로직은 건드리지 않는다.
-      this.camera3.zoom=this.width<600?.68:.82;
+      this.camera3.zoom=this.width<600?.72:.88;
       this.camera3.updateProjectionMatrix();
     }
   }
-  defaultStrategyZoom(){return Math.max(.21,Math.min(.58,this.width/1500,this.height/1450))}
+  defaultStrategyZoom(){return Math.max(.29,Math.min(.7,this.width/1120,this.height/1300))}
   panCamera(dx,dy){
     const zoom=this.viewZoom??this.defaultStrategyZoom();
-    this.viewFocus.x=Math.max(140,Math.min(7500,this.viewFocus.x-dx/zoom));
-    this.viewFocus.y=Math.max(-1100,Math.min(2600,this.viewFocus.y-dy/(zoom*.7)));
+    // 카메라 45도 회전에 맞춰 손가락 드래그를 지면 x/z 이동으로 변환한다.
+    const horizontal=(-dx*.73+dy*.68/.75)/zoom;
+    const vertical=(dx*.68+dy*.73/.75)/zoom;
+    this.viewFocus.x=Math.max(140,Math.min(7500,this.viewFocus.x+horizontal));
+    this.viewFocus.y=Math.max(-1100,Math.min(2600,this.viewFocus.y+vertical));
   }
   changeZoom(factor){
     const current=this.viewZoom??this.defaultStrategyZoom();
-    this.viewZoom=Math.max(.19,Math.min(1.15,current*factor));
+    this.viewZoom=Math.max(.23,Math.min(1.45,current*factor));
   }
   centerCamera(){this.viewFocus={x:1050,y:635};this.viewZoom=null}
   camera(game) { return { x: game.player.x - this.width/2, y: game.player.y - this.height/2 }; }
