@@ -608,12 +608,13 @@ function imperialCaseInvestigate(){
  if(Math.hypot(p.x-c.x,p.y-c.y)>125){moveTarget={x:c.x,y:c.y};toast('수사 현장에 더 가까이 가야 해.');return;}
  const record=state.story.imperialCases[c.id];
  if(record){if(record.status==='cleared'){storyJournal();return;}beginImperialCombat(c);return;}
- let html='<p class="gold">'+c.kind+' · '+ZONES[c.zone].name+'</p><p>'+c.lead+'</p><h3>어떤 방식으로 사건을 조사할까?</h3>';
+ let html='<p class="gold">'+c.kind+' · '+ZONES[c.zone].name+'</p><p>'+c.lead+'</p><p class="note">현장 조사 방식을 고르면 파티원이 d20 감식 판정을 해. 성공하면 약점 단서를 찾아 사건 수호자의 체력과 공격을 약화할 수 있어. 실패하더라도 선택한 수사는 계속 진행돼.</p><h3>어떤 방식으로 사건을 조사할까?</h3>';
  html+='<button class="menuBtn" data-imperial-choice="1">'+c.choice1+'</button><button class="menuBtn secondary" data-imperial-choice="2">'+c.choice2+'</button>';
  openModal(c.name,html);
  modalBody.querySelectorAll('[data-imperial-choice]').forEach(b=>b.onclick=()=>{
   const choice=b.dataset.imperialChoice;
-  state.story.imperialCases[c.id]={path:choice,status:'pending'};
+  const investigation=checkAbility('investigate',12+Math.floor((c.zone-7)*1.8));
+  state.story.imperialCases[c.id]={path:choice,status:'pending',investigation:{success:investigation.success,roll:investigation.roll,total:investigation.total}};
   save();const next=()=>{closeModal();beginImperialCombat(c);};
   if(!playEventScene('imperial:'+c.id,next))next();
  });
@@ -633,16 +634,19 @@ function beginImperialCombat(c){
   const angle=Math.PI*2*(i+1)/(count+1),dist=145+(i%2)*44;
   const xx=Math.max(100,Math.min(worldW-100,p.x+Math.cos(angle)*dist)),yy=Math.max(100,Math.min(worldH-100,p.y+Math.sin(angle)*dist));
   spawnEnemy(enemy[0],enemy[1],enemy[2],enemy[3],enemy[4],i===0&&idx%3===0,false,xx,yy);
-  enemies[enemies.length-1].storyTag=tag;
+  const foe=enemies[enemies.length-1];foe.storyTag=tag;
+  if(record.investigation?.success){foe.hp=Math.max(1,Math.round(foe.hp*.85));foe.maxHp=foe.hp;foe.atk=Math.max(1,Math.round(foe.atk*.88));}
  }
+ if(record.investigation?.success)battleLog('감식 성공 · 증거로 적의 약점을 찾아 공격/체력 감소');
  save();battleLog('제국 사건 교전 · '+c.name);toast('수사 현장을 지키는 존재들이 나타났어!');
 }
 function finishImperialCombat(){
  if(!imperialBattle||enemies.some(e=>!e.dead&&e.storyTag===imperialBattle.tag))return;
  const run=imperialBattle;imperialBattle=null;
- state.story.imperialCases[run.id].status='cleared';save();
+ const record=state.story.imperialCases[run.id];record.status='cleared';
+ const bonus=20+Math.round(ZONES[run.zone].lv*1.4);state.player.gold+=bonus;gainXpUnit(state.player,bonus,true);record.reward=bonus;save();
  const c=IMPERIAL_CASES.find(c=>c.id===run.id);
- battleLog('사건 해결 · '+c.name);
+ battleLog('사건 해결 · '+c.name+' · 수사 보상 '+record.reward+'G / 경험치 '+record.reward);
  if(!playEventScene('imperialClear:'+run.id,storyJournal))storyJournal();
 }
 function imperialCouncil(){
@@ -842,6 +846,8 @@ function storyJournal(){
    const r=s.imperialCases[c.id],path=r?.path;
    h+='<section class="journalEntry"><span class="eyebrow">'+c.kind+' · '+ZONES[c.zone].name+'</span><h3>'+c.name+'</h3><p>'+c.lead+'</p>';
    if(r?.status==='cleared')h+='<blockquote>'+(path==='1'?c.answer1:c.answer2)+'</blockquote>';
+   if(r?.investigation)h+='<p class="note">현장 감식 '+(r.investigation.success?'성공 · 수호자의 약점 발견':'실패 · 증거 불충분')+' · d20 '+r.investigation.roll+' / 총합 '+r.investigation.total+'</p>';
+   if(r?.reward)h+='<p class="gold">사건 의뢰 보상 '+r.reward+'G / 경험치 '+r.reward+'</p>';
    h+='<p class="gold">'+(r?.status==='cleared'?'사건 해결':r?'현장 교전 대기':'단서 조사 대기 · '+c.x+' / '+c.y)+'</p></section>';
   });
   if(!imperialNextCase()&&!s.imperialVerdict)h+='<p class="gold">모든 사건을 확인했어. 마을 북문 기록실에서 마지막 청문회를 열 수 있어.</p>';
@@ -1009,11 +1015,11 @@ function companionMenu(selected){
 }
 // 능력 판정: d20 + 숙련 + 직업 능력 보정, 자연 1 실패 / 자연 20 성공.
 function checkAbility(kind,dc){
- var talent={door:{fighter:3,rogue:1},trap:{rogue:3,ranger:1},persuade:{cleric:3,wizard:1}}[kind]||{};
+ var talent={door:{fighter:3,rogue:1},trap:{rogue:3,ranger:1},persuade:{cleric:3,wizard:1},investigate:{rogue:3,wizard:2,ranger:2,cleric:1}}[kind]||{};
  var people=[{u:state.player}].concat(partyMembers().map(function(a){return{u:a};})).filter(function(a){return a.u.hp>0;});
  people.sort(function(a,b){return proficiency(b.u)+role(b.u).mod+(talent[b.u.classId]||0)-proficiency(a.u)-role(a.u).mod-(talent[a.u.classId]||0);});
  var u=people.length?people[0].u:state.player,roll=die(20),total=roll+proficiency(u)+role(u).mod+(talent[u.classId]||0),success=roll===20||(roll!==1&&total>=dc);
- battleLog((u.name||'나')+' · '+({door:'문 열기',trap:'함정 해제',persuade:'설득'}[kind]||kind)+' d20 '+roll+' → '+total+' / 난이도 '+dc+' · '+(success?'성공':'실패'));
+ battleLog((u.name||'나')+' · '+({door:'문 열기',trap:'함정 해제',persuade:'설득',investigate:'현장 감식'}[kind]||kind)+' d20 '+roll+' → '+total+' / 난이도 '+dc+' · '+(success?'성공':'실패'));
  return{success:success,roll:roll,total:total};
 }
 function companionQuestChoice(a,path){
