@@ -3,8 +3,8 @@
   "gameId": "ocean-voyage",
   "date": "2026-10-24",
   "seedId": "AUTO-MISSING-DESIGN-OCEAN-VOYAGE",
-  "fingerprint": "faad58f0775e01d5e0d7566086e05a55785ffb9ae05a99f00fae9c407765c79a",
-  "policyDigest": "38df549955799c6c30f34509856c897a09f9950e47162a2a78db9b87ff526a40",
+  "fingerprint": "fce79339a4b716068ab61fc34c2c8aa06c9f8dde1509c7aad19b166980ce9770",
+  "policyDigest": "622649807c4fdec5c64d1bf74b9baaf1b5063f7c6e7cd041a74001a58fefc1e7",
   "engineDigest": "4103d218e83e2d86483fc004fcf1ded074a08467cf846e10cbc1ab9a45ab5964",
   "ownerDesignEventId": null,
   "designTopicMode": null,
@@ -680,21 +680,21 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-23T15:26:32.160Z",
-  "updatedAt": "2026-10-24T13:13:32.730Z",
+  "createdAt": "2026-10-24T13:29:09.373Z",
+  "updatedAt": "2026-10-24T13:29:09.474Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 141,
-    "sha256": "b0650ea1b2feb2e2e2d22bc1181a67ba56f5d4ec52a67665a93aebc18d0988d0",
-    "inventoryCount": 110,
+    "version": 142,
+    "sha256": "bf5b8d72489af3dce47907adafad82e975e0969d762e5d7c3eb8fa2b516dd9f3",
+    "inventoryCount": 160,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 110,
-        "eligibleAssetCount": 106,
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -709,12 +709,17 @@
           "WEAPON"
         ],
         "availableRoles": {
-          "AUDIO": [],
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
           "BUILDING": [
+            "DOOR",
             "FENCE",
             "GATE",
             "GROUND_TILE",
-            "HOUSE"
+            "HOUSE",
+            "WALL"
           ],
           "CHARACTER": [],
           "CREATURE": [],
@@ -725,15 +730,48 @@
           ],
           "MOTION": [],
           "PROP": [
+            "APPLE",
+            "BANANA",
             "BENCH",
+            "BOOKCASE",
+            "BOOKS",
             "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
             "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
             "LETTER",
+            "LIGHT",
             "MAILBOX",
-            "PACKAGE"
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
           ],
           "SKILL": [],
-          "UI": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
           "VFX": [],
           "WEAPON": []
         },
@@ -862,8 +900,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 110,
-        "eligibleAssetCount": 106,
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -878,12 +916,17 @@
           "WEAPON"
         ],
         "availableRoles": {
-          "AUDIO": [],
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
           "BUILDING": [
+            "DOOR",
             "FENCE",
             "GATE",
             "GROUND_TILE",
-            "HOUSE"
+            "HOUSE",
+            "WALL"
           ],
           "CHARACTER": [],
           "CREATURE": [],
@@ -894,15 +937,48 @@
           ],
           "MOTION": [],
           "PROP": [
+            "APPLE",
+            "BANANA",
             "BENCH",
+            "BOOKCASE",
+            "BOOKS",
             "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
             "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
             "LETTER",
+            "LIGHT",
             "MAILBOX",
-            "PACKAGE"
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
           ],
           "SKILL": [],
-          "UI": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
           "VFX": [],
           "WEAPON": []
         },
@@ -1031,8 +1107,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 110,
-        "eligibleAssetCount": 106,
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1047,12 +1123,17 @@
           "WEAPON"
         ],
         "availableRoles": {
-          "AUDIO": [],
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
           "BUILDING": [
+            "DOOR",
             "FENCE",
             "GATE",
             "GROUND_TILE",
-            "HOUSE"
+            "HOUSE",
+            "WALL"
           ],
           "CHARACTER": [],
           "CREATURE": [],
@@ -1063,15 +1144,48 @@
           ],
           "MOTION": [],
           "PROP": [
+            "APPLE",
+            "BANANA",
             "BENCH",
+            "BOOKCASE",
+            "BOOKS",
             "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
             "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
             "LETTER",
+            "LIGHT",
             "MAILBOX",
-            "PACKAGE"
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
           ],
           "SKILL": [],
-          "UI": [],
+          "UI": [
+            "CONTROL_ICON"
+          ],
           "VFX": [],
           "WEAPON": []
         },
