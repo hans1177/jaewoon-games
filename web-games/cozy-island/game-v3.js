@@ -45,6 +45,7 @@ const npcs=[
 ];
 const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId,siegeOverview:true};
 game.screenToWorld=(sx,sy)=>renderer.screenToWorld(game,sx,sy);
+game.centerStrategyView=()=>{game.siegeOverview=true;renderer.centerCamera()};;
 const ui={
   help:qs('#helpCommand'),day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),trade:qs('#tradeCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
@@ -144,9 +145,9 @@ function openGuide(){
   ui.panel.showModal();
   ui.panelBody.querySelectorAll('[data-guide]').forEach(button=>button.addEventListener('click',()=>{
     const target=button.dataset.guide;ui.panel.close();
-    if(target==='castle')ui.castle.click();
-    else if(target==='barracks')ui.barracks.click();
-    else ui.workers.click();
+    if(target==='castle')document.querySelector('#castleManageButton')?.click();
+    else if(target==='barracks')openBarracks();
+    else openWorkerShop();
   }));
 }
 function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p><p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. <a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>`;ui.panel.showModal()}
@@ -182,7 +183,7 @@ function activateInteraction(t){
   else if(t.type==='ship')ui.trade?.click();
   else if(t.type==='barracks')openBarracks();
   else if(t.type==='workerShop')openWorkerShop();
-  else if(['tower','hall','lumber','mine'].includes(t.type))ui.castle.click();
+  else if(['tower','hall','lumber','mine'].includes(t.type))document.querySelector('#castleManageButton')?.click();
   else if(t.type==='fish')startFishing();
   else if(t.type==='expand')expandIsland();
   else if(t.type==='plot')usePlot(t.item.index,t.item.plot.state==='empty'?'seed':'water');
