@@ -350,8 +350,10 @@ export class IslandRendererV3 {
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
         this.scene3.remove(item.mesh);this.instances3d.delete(id);
       }
-      this.camera3.position.set(player.x*SC,54,player.y*SC+10);
-      this.camera3.lookAt(player.x*SC,0,player.y*SC);
+      // 메인: 스트롱홀드식 성채 시야. 남쪽에서 비스듬히 내려다보고 이동 방향은 유지한다.
+      const focusX=player.x*SC,focusZ=player.y*SC;
+      this.camera3.position.set(focusX,34,focusZ+36);
+      this.camera3.lookAt(focusX,0,focusZ);
       const hour=game.state.minutes/60;
       this.scene3.background.setHex(hour<6||hour>20?0x365372:0x86cce0);
       this.gl.render(this.scene3,this.camera3);
@@ -377,11 +379,24 @@ export class IslandRendererV3 {
       this.gl.setSize(this.width,this.height,false);
       this.camera3.left=-this.width*SC/2;this.camera3.right=this.width*SC/2;
       this.camera3.top=this.height*SC/2;this.camera3.bottom=-this.height*SC/2;
+      // 시야: 모바일도 성곽과 건물 배치가 보이도록 넓히되 성능·저장 로직은 건드리지 않는다.
+      this.camera3.zoom=this.width<600?.68:.82;
       this.camera3.updateProjectionMatrix();
     }
   }
   camera(game) { return { x: game.player.x - this.width/2, y: game.player.y - this.height/2 }; }
-  screenToWorld(game, sx, sy) { const c=this.camera(game); return {x:sx+c.x,y:sy+c.y}; }
+  screenToWorld(game, sx, sy) {
+    if(!this.native3d){const c=this.camera(game);return {x:sx+c.x,y:sy+c.y}}
+    // 입력: 기울어진 카메라의 화면 터치를 실제 지면 좌표로 변환한다.
+    const bounds=this.canvas.getBoundingClientRect();
+    const pointer=new THREE.Vector2((sx-bounds.left)/bounds.width*2-1,
+      1-(sy-bounds.top)/bounds.height*2);
+    const ray=new THREE.Raycaster();ray.setFromCamera(pointer,this.camera3);
+    const hit=new THREE.Vector3();
+    if(ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),hit))
+      return {x:hit.x/SC,y:hit.z/SC};
+    return {x:game.player.x,y:game.player.y};
+  }
   draw(game) {
     if(this.native3d)this.draw3d(game);
     // 원본 확장 렌더 함수 연결은 유지하지만 2D 출력은 1픽셀 비표시 버퍼로만 보낸다.
