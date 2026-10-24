@@ -327,6 +327,19 @@ try{
     assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
      view.name+': COZY_CASTLE_COMMAND_FAILED');
     await cozy.locator('#panelClose').click();
+    // 전략 메뉴의 무역 버튼이 경제 패널을 직접 열고 실제 자원 거래를 반영한다.
+    assert.equal(await cozy.locator('#tradeCommand').textContent().then(t=>t.includes('무역')),true,
+     view.name+': COZY_TRADE_BUTTON_MISSING');
+    await cozy.locator('#tradeCommand').click();
+    assert.equal(await cozy.locator('#panelTitle').textContent(),'⚓ 무역 · 경제',
+     view.name+': COZY_TRADE_PANEL_NOT_OPEN');
+    assert.equal(await cozy.locator('.market-item').count(),6,
+     view.name+': COZY_TRADE_MARKET_ITEMS_MISSING');
+    const goldBefore=Number(await cozy.locator('#coinText').textContent());
+    await cozy.locator('[data-castle="trade:buy:wood"]').click();
+    await cozy.waitForFunction(gold=>Number(document.querySelector('#coinText').textContent)<gold,
+     goldBefore,{timeout:4000});
+    await cozy.locator('#panelClose').click();
     assert.equal(await cozy.locator('#actionButton').evaluate(el=>el.hidden),true,
      view.name+': COZY_OLD_ACTION_BUTTON_VISIBLE');
     assert.equal(await cozy.locator('#zoomIn').isVisible(),true,

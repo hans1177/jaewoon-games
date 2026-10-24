@@ -46,6 +46,12 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .choice { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: 14px; padding: 12px 14px; background: #edf7ef; text-align: left; font-weight: 800; }
 .choice:disabled { opacity: .45; }
 .choice b { color: var(--green-dark); }
+.market-item { margin:10px 0; padding:10px; border:1px solid #c9d7c3; border-radius:13px; background:#f2f8ee; }
+.market-item strong { display:block; margin:0 0 9px; font-size:14px; }
+.market-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+.market-actions .choice { padding:10px 8px; flex-wrap:wrap; font-size:12px; }
+.market-actions .choice b { white-space:nowrap; }
+
 .wide-button { width: 100%; border: 0; border-radius: 14px; padding: 13px 15px; background: var(--green); color: white; font-weight: 900; }
 .link-button { width: 100%; border: 0; padding: 12px; background: transparent; color: #648077; }
 .fishing-panel { padding: 20px; text-align: center; }
