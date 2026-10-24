@@ -1,7 +1,7 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
 import { snapFort,wallLine } from './castle-layout.js';
-import { ECONOMY_BUILDINGS,getEconomy,constructEconomyBuilding,upgradeEconomyBuilding,economyStaff } from './production-buildings.js';
+import { ECONOMY_BUILDINGS,getEconomy,constructEconomyBuilding,upgradeEconomyBuilding,economyStaff,economyTechStatus } from './production-buildings.js';
 
 const GAME_ID='cozy-island';
 const RAID_INTERVAL=120;
@@ -86,7 +86,7 @@ window.addEventListener('cozy:place-building',e=>{
  toast('🏗️ '+def.name+' · 지도에서 건설 위치를 터치해');updateBuildStatus();
 });
 window.addEventListener('cozy:place-fort',e=>{
- const id=e.detail?.id;if(!['wall','gate','tower','spikes','oil','pit'].includes(id))return;
+ const id=e.detail?.id;if(!['wall','gate','tower','spikes','oil','pit','net','log','barrel'].includes(id))return;
  game.buildingPlacement={id:'fort:'+id,at:{x:1350,y:690},axis:'auto',startAt:null,preview:null};
  if(cancelBuild){cancelBuild.hidden=false;cancelBuild.textContent='✕ 성곽 배치 취소'}
  toast(id==='wall'?'🧱 성벽을 드래그하여 연속 시공':'🏰 성문·망루·함정을 지도에 설치해');updateBuildStatus();
@@ -281,6 +281,8 @@ function nearestInteraction(at=player,radius=118){
   {type:'hall',x:1010,y:1090},{type:'tower',x:400,y:1090}
  ];
  const e=getEconomy(state),items=[...special];
+ const structures=state.villageDevelopment?.fortification?.structures||[];
+ structures.forEach((p,index)=>{if(p.hp>0&&Number.isFinite(p.x)&&Number.isFinite(p.y))items.push({type:'fort',index,x:p.x,y:p.y})});
  for(const def of ECONOMY_BUILDINGS){
   const entry=e.buildings[def.id];
   for(const site of (entry?.sites||[]).slice(0,entry.count||0))
@@ -295,6 +297,9 @@ function interact(){if(!ui.panel.open)window.dispatchEvent(new Event('cozy:open-
 function activateInteraction(t){
  if(runtime.paused||ui.panel.open)return;
  if(t.type==='barracks'){openBarracks();return;}
+ if(t.type==='fort'){
+   window.dispatchEvent(new CustomEvent('cozy:inspect-fort',{detail:{index:t.index}}));return;
+ }
  if(t.type==='economy'){openBuilding(t.id);return;}
  window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'defense'}}));
 }
@@ -334,7 +339,7 @@ function renderBarracks(){
   '명 · 식량 '+Math.floor(inv.food||0)+' · 철 '+Math.floor(inv.iron||0)+
   ' · 공성 장비는 적 성벽에 추가 피해를 줍니다.</p>'+
   '<div class="realm-build-grid">'+Object.entries(RTS_UNIT_TYPES).map(([id,d])=>{
-   const n=countKind(id),cost=['식량 '+d.food,
+   const tech=economyTechStatus(state,id),n=countKind(id),cost=['식량 '+d.food,
     ...(d.wood?['나무 '+d.wood]:[]),...(d.stone?['돌 '+d.stone]:[]),
     ...(d.iron?['철 '+d.iron]:[]),...(d.coins?['금화 '+d.coins]:[])].join(' · ');
    const affordable=Number(inv.food||0)>=d.food&&Number(inv.wood||0)>=(d.wood||0)&&
@@ -344,8 +349,8 @@ function renderBarracks(){
     d.icon+'</span><div><b>'+d.name+'</b><small>체력 '+d.hp+' · 공격 '+d.attack+
     ' · 사거리 '+d.range+(d.siegeDamage?' · 성벽 추가 '+d.siegeDamage:'')+
     '</small></div><strong>'+n+'/'+d.max+'</strong></div><div class="realm-build-actions">'+
-    '<button class="choice" data-rec="'+id+'" '+(!affordable||n>=d.max?'disabled':'')+
-    '>모집 · '+cost+'</button></div></article>';
+    '<button class="choice" data-rec="'+id+'" '+(!affordable||n>=d.max||!tech.unlocked?'disabled':'')+
+    '>'+(tech.unlocked?'모집 · '+cost:'🔒 '+tech.missing.join(' + ')+' 필요')+'</button></div></article>';
   }).join('')+'</div>';
  ui.panelBody.querySelectorAll('[data-rec]').forEach(b=>b.addEventListener('click',()=>recruit(b.dataset.rec)));
 }
@@ -356,6 +361,7 @@ function buildBarracks(){
 }
 function recruit(kind){
  const d=RTS_UNIT_TYPES[kind];if(!d)return;
+ const tech=economyTechStatus(state,kind);if(!tech.unlocked)return toast('🔒 해금 조건: '+tech.missing.join(' · '));
  if(countKind(kind)>=d.max){toast('이 병종 최대 인원에 도달했어');return}
  const inv=state.inventory;
  for(const key of ['food','wood','stone','iron'])if(Number(inv[key]||0)<(d[key]||0))
