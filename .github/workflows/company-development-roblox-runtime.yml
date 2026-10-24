@@ -170,8 +170,38 @@ jobs:
             echo "ROBLOX_BATCH_CONTRACT_SUPERSEDED=$GITHUB_SHA:$current_main"
             TARGET_SHA="$current_main"
             if [ -n "$REQUESTED_GAME_ID" ]; then
-              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
-              echo "ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:$REQUESTED_GAME_ID:$current_main"
+              # An older, still-queued exact-game planner can wake after a newer
+              # game planner was already dispatched. Do not requeue a duplicate.
+              # Query the new head, not the old run's head or a mixed history page.
+              if ! gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?head_sha=$current_main&per_page=100" > /tmp/roblox-exact-contract-latest-runs.json; then
+                echo "ROBLOX_EXACT_CONTRACT_SUPERSEDED_DEDUPE=UNKNOWN_FAIL_CLOSED:$REQUESTED_GAME_ID:$current_main" >&2
+                exit 17
+              fi
+              active_same_game="$(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" TARGET_SHA="$current_main" CURRENT_RUN_ID="$GITHUB_RUN_ID" node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-exact-contract-latest-runs.json','utf8'));
+          const runs=payload.workflow_runs;
+          if(!Array.isArray(runs)||!Number.isInteger(payload.total_count)
+            ||payload.total_count>runs.length){
+            throw new Error('ROBLOX_EXACT_CONTRACT_DEDUPE_INCOMPLETE_FAIL_CLOSED');
+          }
+          const states=new Set(['queued','pending','in_progress','requested','waiting']);
+          const title='Roblox runtime · '+String(process.env.REQUESTED_GAME_ID||'');
+          const head=String(process.env.TARGET_SHA||'');
+          const found=runs.some(run=>
+            String(run.id)!==String(process.env.CURRENT_RUN_ID||'')
+            &&states.has(String(run.status||'').toLowerCase())
+            &&String(run.display_title||'')===title
+            &&String(run.head_sha||'')===head);
+          process.stdout.write(found?'yes':'no');
+          NODE
+              )"
+              if [ "$active_same_game" = yes ]; then
+                echo "ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_CURRENT_MAIN_GAME:$REQUESTED_GAME_ID:$current_main"
+              else
+                gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+                echo "ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:$REQUESTED_GAME_ID:$current_main"
+              fi
             else
               active_same_sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" | TARGET_SHA="$TARGET_SHA" CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const states=new Set(['queued','pending','in_progress','requested']);const n=(j.workflow_runs||[]).filter(r=>String(r.id)!==String(process.env.CURRENT_RUN_ID||'')&&states.has(String(r.status||'').toLowerCase())&&String(r.head_sha||'')===String(process.env.TARGET_SHA||'')).length;process.stdout.write(String(n));})")"
               echo "ROBLOX_BATCH_SAME_SHA_ACTIVE_RUNS=$active_same_sha"
