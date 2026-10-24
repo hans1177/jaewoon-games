@@ -267,8 +267,9 @@ test('asset reservation only hands off its own proven hosted runner slot',()=>{
   const atPhysicalLimit=ownerFirstRunnerAllocation({tasks:[]},{...opts,observedActiveHostedJobs:'20',observedCurrentReserveHostedJob:'1'});
   assert.equal(atPhysicalLimit.concurrentCeiling,0,'no handoff if all 20 runners are occupied');
   assert.equal(atPhysicalLimit.admissionClosed,true);
-  const missing=ownerFirstRunnerAllocation({tasks:[]},{lane:'asset-development',requestedMax:63,observedCurrentReserveHostedJob:'1'});
-  assert.equal(missing.concurrentCeiling,0,'unknown capacity never claims free runners');
+  const unknownQueue={tasks:Array.from({length:128},(_,i)=>({id:'running-'+i,status:'running',executionLane:'GAME_PRIMARY'}))};
+  const missing=ownerFirstRunnerAllocation(unknownQueue,{lane:'asset-development',requestedMax:63,observedCurrentReserveHostedJob:'1'});
+  assert.equal(missing.concurrentCeiling,0,'handoff proof cannot override conservative unknown-capacity queue pressure');
   const otherLane=ownerFirstRunnerAllocation({tasks:[]},{...opts,lane:'learning-idle',observedCurrentReserveHostedJob:'1'});
   assert.equal(otherLane.concurrentCeiling,0,'non-asset lanes may not borrow proof');
   const primary=ownerFirstRunnerAllocation({tasks:[]},{...opts,lane:'game-primary',observedCurrentReserveHostedJob:'1'});
