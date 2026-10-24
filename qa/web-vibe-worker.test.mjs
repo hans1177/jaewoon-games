@@ -202,6 +202,8 @@ test('keyless worker scans complete module and executes batched controls resize 
  let network=0;
  const edit=await proposeWebVibeChange({gameId:'demo',goal:'모바일 버튼 입력·화면 회전·프레임 시간차 수정'},
   {relative:'web-games/demo/index.html',original},{cloud:true,apiKey:'',fetchImpl:async()=>{network++;throw Error('network')},geminiImpl:async()=>{network++;throw Error('model')}});
+ await assert.rejects(()=>proposeWebVibeChange({gameId:'demo',goal:'모바일 버튼 연결과 신규 보스 전투 구현'},
+  {relative:'web-games/demo/index.html',original},{cloud:true,apiKey:''}),/FREE_MODEL_KEY_MISSING/);
  assert.equal(network,0);assert.ok(edit.analysis.bytes>13500);assert.ok(edit.analysis.functions.includes('releaseInputs'));
  assert.equal(edit.deterministicSteps,2);
  const handlers=new Map(),buttons=new Map(),state={attacks:0,dodges:0,releases:0,resizes:0};
