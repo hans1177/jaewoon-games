@@ -20,7 +20,9 @@ on:
 permissions:
   contents: write
 
-# Publication serialization is scoped only to publish-pages; postpublish smoke runs independently.
+# Main build serialization keeps one active packaging run and coalesces pending main updates.
+# An active build must finish: repeated main pushes must not starve the static publisher.
+# Publication serialization remains scoped to publish-pages; postpublish smoke runs independently.
 
 jobs:
   deploy:
@@ -31,7 +33,9 @@ jobs:
       actions: write
     concurrency:
       group: ${{ github.event_name == 'pull_request' && format('pages-pr-build-{0}', github.event.pull_request.number) || 'pages-main-build-latest' }}
-      cancel-in-progress: true
+      # Cancel outdated PR preview builds, but never interrupt active main packaging.
+      # GitHub keeps one running plus the newest pending main build in this group.
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Prune superseded owner PR builds from the existing Pages queue
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
@@ -66,9 +70,9 @@ jobs:
             console.log('PAGES_SUPERSEDED_PR_CANCELLED='+run.id);
           }
           console.log('PAGES_SUPERSEDED_PR_CANCEL_COUNT='+cancelled);
-          // Release speed: superseded main builds should not repeatedly stage and upload
-          // a complete ~889MB site while the canonical latest main waits.
-          // Keep the only live Pages publication job serialized and protected.
+          // Release speed: coalesce obsolete queued main builds, never abort one
+          // already staging ~889MB: repeated pushes would prevent any build finishing.
+          // Keep latest-source admission and the sole publication lock unchanged.
           const latest=api('commits/main')?.sha;
           if(latest===process.env.GITHUB_SHA){
             const candidates=api('actions/workflows/magic-forest-pages.yml/runs?branch=main&event=push&per_page=100').workflow_runs||[];
@@ -79,17 +83,18 @@ jobs:
                 ||String(run.id)===process.env.GITHUB_RUN_ID
                 ||run.event!=='push'||run.head_branch!=='main'
                 ||run.head_repository?.full_name!==repo
-                ||!['queued','pending','in_progress'].includes(run.status)
+                ||!['queued','pending'].includes(run.status)
                 ||!/^[a-f0-9]{40}$/.test(run.head_sha||'')
                 ||run.head_sha===latest)continue;
               const ancestry=api('compare/'+run.head_sha+'...'+latest);
               if(ancestry?.status!=='ahead'||!(ancestry.total_commits>0))continue;
               const current=api('actions/runs/'+run.id);
               if(current.head_sha!==run.head_sha||current.head_branch!=='main'
-                ||!['queued','pending','in_progress'].includes(current.status))continue;
+                ||!['queued','pending'].includes(current.status))continue;
               const jobs=api('actions/runs/'+run.id+'/jobs?per_page=100').jobs||[];
-              if(jobs.some(job=>job.name!=='deploy'&&
-                ['in_progress','completed'].includes(job.status)))continue;
+              // A run with any started or completed job has progressed beyond the
+              // disposable queue, even if GitHub briefly reports it as pending.
+              if(jobs.some(job=>['in_progress','completed'].includes(job.status)))continue;
               api('actions/runs/'+run.id+'/cancel','POST');
               superseded++;
               console.log('PAGES_OLDER_MAIN_BUILD_SUPERSEDED='+run.id);
