@@ -295,6 +295,7 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
  .quickMenu>.act{width:46px;height:46px;min-width:46px;min-height:46px}
 
 }
+@media(max-width:360px) and (max-height:600px){.actions{height:236px;--arc-scale:.87}}
 @media(max-width:360px){.actions{width:184px}.actions>#quickHeal{--arc-x:56px}.actions>#autoCombat,.actions>#attack,.actions>#dismount,.actions>#buildBlueprint{--arc-x:148px}}
 @media(orientation:landscape) and (max-height:520px){
  .actions{height:230px;--arc-scale:.85}
@@ -425,6 +426,7 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
 .regionTravel[hidden]{display:none!important}
 .regionTravel{position:absolute;z-index:18;left:50%;bottom:max(322px,calc(env(safe-area-inset-bottom) + 314px));transform:translateX(-50%);width:min(238px,calc(100vw - 28px));min-height:48px;padding:10px 14px;border:1px solid #cbb77b;border-radius:12px;background:#152b25f2;color:#fff0c2;font-weight:800;box-shadow:0 4px 18px #0008;touch-action:manipulation}
 body:has(#optionsPanel.open) .regionTravel,body:has(#multiPanel.open) .regionTravel,body:has(#smeltPanel.open) .regionTravel,body:has(#questNavDetails:not([hidden])) .regionTravel,body:has(#sheet.open) .regionTravel,body:has(#hudGuide:not([hidden])) .regionTravel,body:has(#avatarPanel:not([hidden])) .regionTravel,body[data-native-blocked="true"] .regionTravel{visibility:hidden;pointer-events:none}
+@media(max-width:360px){.regionTravel{width:calc(100vw - 132px)}}
 @media(orientation:landscape) and (max-height:600px){.regionTravel{bottom:max(24px,env(safe-area-inset-bottom));width:min(220px,calc(100vw - 300px))}}
 </style>
 <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
