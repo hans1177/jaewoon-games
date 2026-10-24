@@ -76,7 +76,10 @@ test('포근섬 웹게임 3D는 기존 좌표·원본 에셋·터치 입력·저
   assert.match(world,/currentGame\.boars=boars/);
   assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
   assert.match(game,/runtime\.queueSaveProgress\(state\)/);
-  assert.match(game,/runtime\.bindTouchButton\(ui\.action,interact\)/);
+  // 현재 본편은 수동 채집 버튼을 제거했으므로, 자동 채집과 기존 터치 이벤트를 검증한다.
+  assert.match(game,/function autoGather\(now\)/);
+  assert.match(game,/autoGather\(now\);advanceClock\(dt\)/);
+  assert.match(game,/const legacyAction=document\.querySelector\('#actionButton'\)/);
   assert.match(joystick,/setPointerCapture/);
   assert.doesNotMatch(css,/(?:^|\n)\s*\/\/\s*3D/m);
   assert.match(css,/\/\* 3D 화면만 표시/);
