@@ -17,8 +17,13 @@
       "evidence": [
         "web-vibe-independent:v1",
         "owner-source-authenticated",
-        "qa-required-before-pr-merge"
-      ]
+        "qa-required-before-pr-merge",
+        "web-vibe-recovery-failure:needs-source-or-provider-recheck"
+      ],
+      "recoveryAttempts": 1,
+      "recoveryLastFailureAt": "2026-10-24T05:07:25.742Z",
+      "recoveryNextAt": "2026-10-24T05:37:25.742Z",
+      "blocker": null
     }
   ],
   "ingest": {
