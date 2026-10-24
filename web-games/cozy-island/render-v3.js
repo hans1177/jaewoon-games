@@ -158,6 +158,12 @@ export class IslandRendererV3 {
         'enemy',unit.x,unit.y,unit.boss?2.5:1.9);
       if(game.state.expanded)for(const wolf of game.wolves)if(wolf.alive)
         put('wolf:'+wolf.id,'wolf',wolf.x,wolf.y,wolf.boss?2.8:1.6);
+      if(game.world.h>1200)for(const boar of game.boars||[])if(boar.alive)
+        put('boar:'+boar.id,'boar',boar.x,boar.y,1.75);
+      // 기존 라이브러리 울타리는 3D 환경 장식 전용이다. 충돌과 이동 제한을 바꾸지 않는다.
+      for(let i=0;i<5;i++){
+        put('fence:'+i,'fence',1150+i*38,185,1.1);
+      }
       put('player','hero',player.x,player.y,1.9);
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
         this.scene3.remove(item.mesh);this.instances3d.delete(id);
