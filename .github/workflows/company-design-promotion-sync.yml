@@ -91,23 +91,38 @@ jobs:
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const catalogById=new Map((catalog.games||[]).map(game=>[game.id,game]));
+          const ownerStopped=new Set(catalog.ownerStoppedGameIds||[]);
           const byGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));
           let confirmed=0;
           for(const seed of state.seeds||[]){
             if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(seed.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const game=catalogById.get(seed.gameId);
+            if(ownerStopped.has(seed.gameId)||game?.ownerDevelopmentStopped===true
+              ||['OWNER_STOPPED','STOPPED'].includes(String(game?.lifecycleState||'').toUpperCase()))continue;
             confirmed++;
             const item=byGame.get(seed.gameId);
             if(!item)throw new Error(`development queue missing: ${seed.gameId}`);
             if(item.minimumDesignContract?.pass!==true)throw new Error(`minimum design contract missing: ${seed.gameId}`);
             const targets=new Set(item.concurrentTargetPlatforms||[]);
-            if(!targets.has('ROBLOX')||targets.has('UNITY'))throw new Error(`Roblox-only target invariant failed: ${seed.gameId}`);
-            if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
+            const isWeb=String(item.selectedPlatform||'').toUpperCase()==='WEB';
+            if(isWeb){
+              if(item.ownerWebIntakeEngine!=='HTML_CSS_JAVASCRIPT'||item.web3dRedevelopmentRequired!==true
+                ||targets.size!==1||!targets.has('WEB')||item.platformDesignProfiles?.WEB?.jsonPointer!=='/content/webCanonicalDesign'
+                ||item.targetSourcePath!==`web-games/${seed.gameId}`)
+                throw new Error(`Web-only F0-F9 source invariant failed: ${seed.gameId}`);
+            }else{
+              if(!targets.has('ROBLOX')||targets.has('UNITY'))throw new Error(`Roblox-only target invariant failed: ${seed.gameId}`);
+              if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
+            }
             if(Object.hasOwn(item,'webValidationRequired')||Object.hasOwn(item,'musicValidationRequired'))throw new Error(`legacy Web gate key still present: ${seed.gameId}`);
             const currentStep=String(item.currentStep||'').trim().toUpperCase();
-            if(!currentStep||/^WEB_|^WAITING_WEB/.test(currentStep))throw new Error(`direct-native progress invalid: ${seed.gameId}:${currentStep||'MISSING'}`);
+            if(!currentStep||(!isWeb&&/^WEB_|^WAITING_WEB/.test(currentStep)))throw new Error(`direct-native progress invalid: ${seed.gameId}:${currentStep||'MISSING'}`);
             const project=(portfolio.projects||[]).find(row=>row.slug===seed.gameId);
-            if(project?.mode!=='ROBLOX_ONLY_OWNER_ACTIVE')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);
+            const mode=isWeb?'GENERAL_WEB_3D_AUTONOMOUS':'ROBLOX_ONLY_OWNER_ACTIVE';
+            if(project?.mode!==mode)throw new Error(`platform production mode mismatch: ${seed.gameId}`);
           }
           console.log(`ACTIVE_DEVELOPMENT_CONFIRMED_SEED_COUNT=${confirmed}`);
           console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_ROBLOX_DESIGN_READY');
