@@ -738,9 +738,11 @@ export function advancePortEconomy(s){
   const market=s.economy[p.id],policy=PORT_MARKETS[p.id],prosperity=portStatus(s,p.id).prosperity;
   for(const g of GOODS){
    const id=g.id,previous=market.stock[id],target=marketBaseStock(p.id,id);
-   if(policy.produces.includes(id))market.stock[id]=Math.min(60,previous+Math.max(1,Math.round(2+prosperity/40)));
-   else if(policy.imports.includes(id)&&s.day%2===0)market.stock[id]=Math.min(24,previous+1);
-   else if(target===0&&previous>0)market.stock[id]=Math.max(0,previous-1);
+   const port=portStatus(s,p.id),consumption=policy.demand.includes(id)?(prosperity>=70?2:1):0;
+   const safety=port.security<40?.6:1;
+   if(policy.produces.includes(id))market.stock[id]=clamp(previous+Math.max(1,Math.round((2+prosperity/40)*safety))-consumption,0,60);
+   else if(policy.imports.includes(id))market.stock[id]=clamp(previous+(s.day%2===0?Math.round(3*safety):0)-consumption,0,24);
+   else if(previous>0)market.stock[id]=Math.max(0,previous-Math.max(1,consumption));
    market.pressure[id]=Math.abs(market.pressure[id])<.15?0:Math.round(market.pressure[id]*.74*10)/10;
    const reference=priceAt(p.id,id,s.day,'buy'),current=priceAt(p.id,id,s.day,'buy',s);
    const history=market.history[id]||[];
