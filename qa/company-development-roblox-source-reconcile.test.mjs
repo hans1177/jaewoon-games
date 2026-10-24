@@ -945,6 +945,46 @@ test('visual learning rebind does not require or inspect Roblox server source',(
   }
 });
 
+// Imported, reviewed UI must bind to the real ScreenGui without creating fake Frames.
+test('existing simple-rpg imported ScreenGui studio binding is repeatable and fail-closed',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-imported-screen-gui-binding-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const original=fs.readFileSync(new URL('../roblox-games/simple-rpg/client/Game.client.luau',import.meta.url),'utf8');
+    assert.match(original,/validUiTemplate\(template\)/);
+    assert.match(original,/template:IsA\("ScreenGui"\)/);
+    assert.match(original,/local imported = template:Clone\(\)/);
+    fs.writeFileSync(clientFile,original);
+    const applied=applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning
+    });
+    const client=fs.readFileSync(clientFile,'utf8');
+    assert.match(client,/if hasStudioAssetAtom\("UI", "FRAME_PANEL"\) then\s*imported:SetAttribute\("StudioAssetImportedUiBinding", "FRAME_PANEL"\)/);
+    assert.match(client,/imported:SetAttribute\("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION\)/);
+    assert.match(client,/local imported = template:Clone\(\)/);
+    assert.doesNotMatch(client,/studioAssetStroke\.Name = "StudioAssetFramePanel"/);
+    assert.equal(applied.serverSourceChanged,false);
+    applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning
+    });
+    assert.equal(fs.readFileSync(clientFile,'utf8'),client,'rebind must not accumulate imported UI metadata');
+    fs.writeFileSync(clientFile,original.replaceAll('template:IsA("ScreenGui")','template:IsA("Frame")'));
+    assert.throws(()=>applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning
+    }),/EXISTING_STUDIO_ASSET_VISIBLE_TARGET_REQUIRED/,'unverified imported UI cannot satisfy the binding gate');
+    fs.writeFileSync(clientFile,'-- StudioAssetImportedUiBinding\n'+original);
+    applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning
+    });
+    assert.match(fs.readFileSync(clientFile,'utf8'),/imported:SetAttribute\("StudioAssetImportedUiBinding", "FRAME_PANEL"\)/,
+      'comment-only binding markers must not bypass the actual imported UI bind');
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('verified learning rebind injects a dedicated GameConfig require when the client did not already use Config',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-client-no-config-'));
   try{

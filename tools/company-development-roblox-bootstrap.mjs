@@ -996,7 +996,8 @@ function bindExistingClientStudioAssets(source='',familyStatus={}){
   const tail=output.slice(insertAt).replace(/^\n*/,'');
   const prefix=output.slice(0,insertAt).replace(/\n*$/,'');
   output=prefix+(learningContext?'\n\n':'\n')+block+tail;
-  const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output);
+  const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output)
+    &&!/SetAttribute\s*\(\s*["']StudioAssetImportedUiBinding["']\s*,\s*["']FRAME_PANEL["']\s*\)/.test(output);
   const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
   if(studioUiVisualMissing||studioUiTraceMissing){
     // Imported ScreenGui keeps its licensed visuals; only bind selection metadata.
@@ -1016,6 +1017,11 @@ if hasStudioAssetAtom("UI", "FRAME_PANEL") then
   studioAssetStroke.Transparency = 0.55
   studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
   studioAssetStroke.Parent = ${frameVar}
+end
+`:studioUiVisualMissing&&importedGui?`
+-- Imported, licensed ScreenGui is the visual target; no placeholder Frame.
+if hasStudioAssetAtom("UI", "FRAME_PANEL") then
+  ${frameVar}:SetAttribute("StudioAssetImportedUiBinding", "FRAME_PANEL")
 end
 `:'';
     const trace=studioUiTraceMissing?`
