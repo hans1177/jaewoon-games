@@ -64,8 +64,8 @@ jobs:
             await page.locator('#prompt.on').waitFor({timeout:12000});
             await page.locator('#prompt').click();
             await page.locator('#modal[data-mode="event"] #eventSkip').click();
-            const ready=await page.evaluate(()=>window.partyRpgVibeState().state.story.recruits.ai0?.step);
-            if(ready!=='ready')throw new Error('RECRUIT_CLUE_NOT_FOUND '+ready);
+            const questReady=await page.evaluate(()=>window.partyRpgVibeState().state.story.recruits.ai0?.step);
+            if(questReady!=='ready')throw new Error('RECRUIT_CLUE_NOT_FOUND '+questReady);
             await page.locator('#recruitCompanion').click();
             await page.locator('#modal[data-mode="event"] #eventSkip').click();
             const team=await page.evaluate(()=>{
