@@ -76,6 +76,10 @@ export class IslandRendererV3 {
         new THREE.MeshStandardMaterial({color:0x55b8d0,roughness:.5}));
       lake.rotation.x=-Math.PI/2;lake.scale.set(150*SC,112*SC,1);
       lake.position.set(390*SC,.035,370*SC);this.scene3.add(lake);
+      // 기존 연못 물 재질과 메시를 재사용해 성문 앞 해자 형상을 표현한다.
+      this.moat3=lake.clone();this.moat3.scale.set(180*SC,330*SC,1);
+      this.moat3.position.set(1460*SC,.055,615*SC);
+      this.moat3.visible=false;this.scene3.add(this.moat3);
       this.native3d=true;this.load3dModels();
     }catch(error){
       console.error('포근섬 3D 초기화 실패',error);
@@ -269,6 +273,11 @@ export class IslandRendererV3 {
       put('lumber',production.lumberBuilt?'fort-workshop':'package',245,850,production.lumberBuilt?2.9:1.0);
       put('mine',production.mineBuilt?'fort-workshop':'stone',785,965,production.mineBuilt?2.9:1.2);
       const fort=village.fortification||{},walls=fort.walls||{};
+      if(this.moat3)this.moat3.visible=!!village.townHallBuilt&&!!fort.moatBuilt;
+      if(village.townHallBuilt&&fort.moatBuilt){
+        if(fort.drawbridgeClosed!==false)put('fort-raised-bridge','gate',1400,608,2.7,Math.PI/2);
+        else put('fort-lowered-bridge','bench',1430,608,1.4,Math.PI/2);
+      }
       const tier=Math.max(1,Math.min(3,Number(fort.wallTier)||1));
       const wallHeight=2+(tier-1)*.65,gateHeight=3.25+(tier-1)*.38;
       if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9+(tier-1)*.36);
