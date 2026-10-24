@@ -197,3 +197,57 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .realm-war-orders button:active,.realm-war-orders button:focus-visible {outline:2px solid #edcc77}
 @media(max-width:420px){.realm-war-orders{grid-template-columns:repeat(2,minmax(0,1fr))}
 .realm-war-orders button{min-height:45px;font-size:12px}}
+
+/* 영주 시스템: 별도 캐릭터 UI가 아닌 상용 중세 RTS의 일관된 설정 화면 */
+.system-button{background:#56452f!important;color:#fff1cb!important;border:1px solid #bba16b!important;font-weight:900}
+.system-dialog{position:fixed;inset:0;margin:auto;width:min(96vw,680px);max-height:83dvh;overflow:hidden;
+ padding:0;border:2px solid #c3a372;border-radius:12px;background:#e9dfc5;color:#403829;
+ box-shadow:0 15px 60px #081309b3;z-index:25}
+.system-dialog::backdrop{background:rgba(6,19,13,.66)}
+.system-dialog header{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;
+ background:#4b4632;color:#f7edcb;border-bottom:2px solid #a98e5e}
+.system-dialog header h2{font-size:17px;line-height:1.25;margin:0}
+.system-dialog header button{padding:7px 11px;border:1px solid #b7a178;background:#6d6046;color:#ffefc7;
+ font-size:18px;border-radius:5px}
+.system-tabs{display:flex;gap:5px;overflow-x:auto;padding:10px;background:#d6c6a6;
+ border-bottom:1px solid #ac9570;scrollbar-width:thin}
+.system-tabs button{flex:0 0 auto;padding:10px 12px;border:1px solid #ac9570;border-radius:5px;
+ background:#efe4cb;color:#493c29;font-size:12px;font-weight:900}
+.system-tabs button.selected{background:#514b36;color:#fff3cf;border-color:#3b3325}
+.system-body{padding:13px;max-height:calc(83dvh - 115px);overflow:auto}
+.ks-note{padding:10px;background:#f3ead5;border:1px solid #c9b693;border-radius:6px;
+ color:#574b36;font-size:12px;line-height:1.55}
+.ks-row{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ border-bottom:1px solid #cbb896;padding:12px 2px;min-height:56px}
+.ks-row>div{min-width:0;flex:1}.ks-row b{font-size:13px}
+.ks-row small{display:block;color:#7b715d;font-size:10px;margin-top:4px}
+.ks-action{padding:10px 9px;margin:4px 3px;border:1px solid #74603d;border-radius:5px;
+ background:linear-gradient(#687a4f,#425537);color:#fff2cd;font-weight:900;font-size:12px;min-height:40px}
+.ks-action:disabled{background:#a29a88;color:#e4dfd3;opacity:.65}
+.ks-action:active,.ks-action:focus-visible{outline:2px solid #e6c676}
+.ks-mini-map{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:10px 0;padding:10px;
+ border:3px double #a48b62;background:linear-gradient(140deg,#adb594,#e3d4a7,#bbab86)}
+.ks-mini-map span{min-height:78px;display:grid;place-items:center;border:1px solid #8d8065;
+ background:#f1e4c5d9;border-radius:5px;font-weight:900;font-size:12px}
+.ks-field{display:flex;flex-direction:column;gap:8px;margin:10px 0;font-weight:900;font-size:12px;color:#4b4335}
+.ks-field select,.ks-field input,.ks-field textarea{width:100%;border:1px solid #b09c75;border-radius:6px;
+ background:#faf3e4;padding:10px;color:#433928;font:inherit}
+.ks-field textarea{min-height:80px;resize:vertical;overflow-wrap:anywhere;white-space:pre-wrap;font-size:10px}
+.ks-field input[type=range]{padding:2px;accent-color:#657d4b}
+.ks-peer-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
+.ks-peer-buttons button{width:calc(100% - 6px)}
+.ks-duel{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;
+ background:#40392e;color:#f6e7c2;padding:11px;border:1px solid #987e50;border-radius:5px}
+.ks-duel small{width:100%}
+@media(max-width:460px){
+ .system-dialog{max-height:86dvh;width:97vw}
+ .system-dialog header{padding:10px 12px}
+ .system-dialog header h2{font-size:14px}
+ .system-tabs{padding:7px;gap:3px}
+ .system-tabs button{font-size:10px;padding:9px 8px}
+ .system-body{max-height:calc(86dvh - 98px);padding:9px}
+ .ks-row{gap:3px}
+ .ks-row b{font-size:11px}
+ .ks-action{padding:9px 5px;font-size:10px}
+ .system-button{font-size:10px!important;padding:5px!important}
+}
