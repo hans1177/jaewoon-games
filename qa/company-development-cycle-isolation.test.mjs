@@ -186,7 +186,6 @@ test('superseded exact-game Roblox plan reuses a live current-main run without t
   // result so a different game, old SHA, completed run or missing page cannot masquerade as a current owner.
   const code=block.split("node <<'NODE'"+String.fromCharCode(10))[1]?.split(String.fromCharCode(10)+'          NODE')[0];
   assert.ok(code,'exact inline node probe must exist');
-  const vm=require('node:vm');
   const current='b'.repeat(40),other='a'.repeat(40);
   const game='cozy-island';
   const evaluate=(runs,total_count=runs.length)=>{
