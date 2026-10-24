@@ -2,10 +2,10 @@
 :root {
   color-scheme: light;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans KR", sans-serif;
-  --glass: rgba(255, 255, 255, .86);
-  --ink: #25423a;
-  --green: #4b8d70;
-  --green-dark: #2f6b54;
+  --glass: rgba(243, 234, 210, .95);
+  --ink: #3c3f36;
+  --green: #497968;
+  --green-dark: #31574b;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #8fd0e2; color: var(--ink); }
@@ -13,11 +13,11 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #app { position: fixed; inset: 0; overflow: hidden; }
 #game { width: 100%; height: 100%; display: block; touch-action: none; }
 .hud { position: absolute; top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; }
-.hud-main { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 11px; border-radius: 16px; background: var(--glass); box-shadow: 0 4px 18px rgba(31,69,57,.12); backdrop-filter: blur(7px); font-size: 13px; white-space: nowrap; }
+.hud-main { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 11px; border: 2px solid #b9ae92; border-radius: 10px; background: var(--glass); box-shadow: 0 4px 15px rgba(49,49,37,.17); font-size: 13px; white-space: nowrap; }
 .hud-main.right { pointer-events: auto; }
 .small-button { border: 0; border-radius: 10px; padding: 6px 9px; background: #dff4e8; font-weight: 800; }
 .raid-status { position: absolute; left: 10px; top: max(58px, calc(env(safe-area-inset-top) + 48px)); padding: 7px 10px; border-radius: 12px; background: rgba(255,255,255,.9); box-shadow: 0 4px 14px rgba(31,69,57,.12); font-size: 12px; font-weight: 900; pointer-events: none; }
-.hint { position: absolute; left: 50%; top: max(96px, calc(env(safe-area-inset-top) + 88px)); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 8px 12px; border-radius: 14px; background: rgba(37,66,58,.75); color: white; font-size: 13px; text-align: center; pointer-events: none; }
+.hint { position: absolute; left: 50%; top: max(106px, calc(env(safe-area-inset-top) + 96px)); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 8px 12px; border-radius: 14px; background: rgba(37,66,58,.75); color: white; font-size: 13px; text-align: center; pointer-events: none; }
 .toast { position: absolute; left: 50%; bottom: 150px; transform: translate(-50%, 12px); opacity: 0; transition: .18s ease; max-width: calc(100% - 40px); padding: 9px 13px; border-radius: 999px; background: rgba(30,51,45,.9); color: white; font-weight: 800; font-size: 13px; pointer-events: none; text-align: center; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .controls { position: absolute; left: 0; right: 0; bottom: max(12px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: end; padding: 0 16px; pointer-events: none; }
@@ -31,9 +31,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .tool small { display: block; margin-top: -2px; font-size: 10px; }
 .action { width: 82px; height: 82px; border-radius: 50%; background: #ffe194; color: #614c19; font-size: 17px; }
 .action:active, .tool:active { transform: scale(.96); }
-.panel { width: min(92vw, 430px); max-height: min(72vh, 600px); border: 0; border-radius: 22px; padding: 0; background: #fbfff9; box-shadow: 0 20px 60px rgba(24,52,44,.35); color: var(--ink); }
+.panel { width: min(92vw, 480px); max-height: min(76vh, 640px); border: 3px solid #a9946f; border-radius: 13px; padding: 0; background: #f8f0dc; box-shadow: 0 20px 60px rgba(24,52,44,.35); color: var(--ink); }
 .panel::backdrop { background: rgba(24,48,42,.35); backdrop-filter: blur(2px); }
-.panel-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; background: #fbfff9; }
+.panel-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; background: #eee2c5; }
 .panel-head h2 { margin: 0; font-size: 20px; }
 .panel-head button { width: 36px; height: 36px; border: 0; border-radius: 12px; background: #eaf4ec; font-size: 24px; }
 .panel-body { padding: 4px 18px 20px; overflow: auto; }
@@ -42,7 +42,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .item-card span { display: block; margin-top: 4px; font-size: 20px; }
 .panel-note { line-height: 1.55; color: #567067; font-size: 13px; }
 .choice-grid { display: grid; gap: 9px; }
-.choice { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: 14px; padding: 12px 14px; background: #edf7ef; text-align: left; font-weight: 800; }
+.choice { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; border: 1px solid #c6b891; border-radius: 9px; padding: 12px 14px; background: #f0e7d1; text-align: left; font-weight: 800; }
 .choice:disabled { opacity: .45; }
 .choice b { color: var(--green-dark); }
 .wide-button { width: 100%; border: 0; border-radius: 14px; padding: 13px 15px; background: var(--green); color: white; font-weight: 900; }
@@ -53,6 +53,40 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .fish-track { position: relative; height: 48px; margin: 8px 0 18px; border-radius: 18px; background: #b7dbe6; overflow: hidden; border: 4px solid #eaf8fb; }
 .fish-good { position: absolute; left: 42%; width: 20%; top: 0; bottom: 0; background: #8bd58f; }
 .fish-marker { position: absolute; left: 0; top: 50%; transform: translate(-50%,-50%); font-size: 24px; }
+/* 영지 관리: 스트롱홀드식 자원 막대와 모바일 전용 건설 메뉴. */
+.estate-ui { position:absolute; top:max(60px,calc(env(safe-area-inset-top) + 50px)); right:10px; z-index:5;
+  display:flex; gap:7px; align-items:center; pointer-events:auto; }
+.estate-resources { display:flex; gap:10px; align-items:center; min-height:42px; padding:7px 10px;
+  border:2px solid #ab9978; border-radius:10px; background:#eee2c6f2; color:#3a3d31;
+  box-shadow:0 4px 12px #29291f30; font-size:13px; font-weight:850; }
+.estate-resources span { white-space:nowrap; }
+.estate-button { min-height:44px; min-width:80px; padding:8px 12px;
+  border:2px solid #9e8b68; border-radius:10px; background:#d1b884; color:#3a392f;
+  box-shadow:0 4px 12px #29291f30; font-weight:900; cursor:pointer; }
+.estate-button:active { transform:translateY(1px); }
+.estate-goal { position:absolute; top:max(108px,calc(env(safe-area-inset-top) + 98px)); right:10px;
+  max-width:min(58vw,300px); padding:6px 9px; z-index:5; border-radius:8px;
+  background:#304b43eb; color:#fff9e9; font-size:12px; font-weight:750; pointer-events:none; }
+.estate-goal[hidden] { display:none; }
+.estate-dashboard { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:0 0 13px; }
+.estate-dashboard div { padding:11px 6px; border:1px solid #cab991; border-radius:9px;
+  background:#e8ddc3; text-align:center; font-weight:900; font-size:12px; }
+.estate-dashboard b { display:block; margin-top:5px; font-size:17px; }
+.estate-section { margin:14px 0 8px; font-size:15px; color:#52644f; }
+.estate-building { display:flex; justify-content:space-between; align-items:center; min-height:48px;
+  gap:12px; padding:9px 12px; border:1px solid #cbbb99; border-radius:9px;
+  background:#f4ead2; width:100%; text-align:left; color:#383b35; font-weight:800; }
+.estate-building span { display:block; font-size:12px; font-weight:600; color:#6a6a5d; margin-top:3px; }
+.estate-building strong { flex:none; color:#466c5e; font-size:12px; }
+.estate-building:active { background:#e6d5b3; }
+.estate-building:focus-visible,.estate-button:focus-visible { outline:3px solid #367e7a; outline-offset:2px; }
+@media (max-width:520px) {
+  .estate-ui { top:max(102px,calc(env(safe-area-inset-top) + 92px)); left:10px; right:10px; justify-content:space-between; }
+  .estate-resources { gap:8px; min-height:42px; padding:7px 8px; font-size:12px; }
+  .estate-button { min-width:75px; padding:8px 9px; }
+  .estate-goal { top:max(151px,calc(env(safe-area-inset-top) + 141px)); left:10px; right:auto; max-width:65vw; }
+  .hint { top:max(198px,calc(env(safe-area-inset-top) + 188px)); }
+}
 @media (min-width: 700px) {
   .controls { padding: 0 28px 12px; }
   .joystick { width: 146px; height: 146px; }

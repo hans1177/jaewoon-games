@@ -109,3 +109,32 @@ test('포근섬은 2D 월드 출력 없이 WebGL 3D만 표시하고 기존 입�
   assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
   assert.match(game,/runtime\.queueSaveProgress\(state\)/);
 });
+
+test('포근섬 로우폴리 성채는 기존 건설·전투·저장 계약과 3D 전용 출력을 유지한다',()=>{
+  const renderer=read('web-games/cozy-island/render-v3.js');
+  const game=read('web-games/cozy-island/game-v3.js');
+  const html=read('web-games/cozy-island/index.html');
+  const css=read('web-games/cozy-island/style.css');
+  assert.match(renderer,/makeFort3d\(kind,height\)/);
+  assert.match(renderer,/new THREE\.BoxGeometry/);
+  assert.match(renderer,/new THREE\.ConeGeometry/);
+  assert.match(renderer,/new THREE\.OctahedronGeometry/);
+  assert.match(renderer,/village\.defenseTowerBuilt\)put\('defense-tower','fort:tower'/);
+  assert.match(renderer,/village\.townHallBuilt\)/);
+  assert.match(renderer,/game\.state\.barracksBuilt\?'fort:barracks'/);
+  assert.match(renderer,/production\.lumberBuilt\?'fort:lumber'/);
+  assert.match(renderer,/production\.mineBuilt\?'fort:mine'/);
+  assert.match(renderer,/game\.estateTarget/);
+  assert.match(renderer,/this\.gl\.render\(this\.scene3,this\.camera3\)/);
+  assert.match(game,/function openEstate\(\)/);
+  assert.match(game,/runtime\.bindTouchButton\(ui\.estate,openEstate\)/);
+  assert.match(game,/data-estate-place/);
+  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
+  assert.match(game,/const RAID_INTERVAL=120/);
+  assert.match(html,/id="estateButton"/);
+  assert.match(html,/id="estateGoal"/);
+  assert.match(html,/id="estateWood"/);
+  assert.match(css,/#game\s*\{[^}]*opacity\s*:\s*0\s*;/);
+  assert.match(css,/#island3d\s*\{/);
+  assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=/);
+});
