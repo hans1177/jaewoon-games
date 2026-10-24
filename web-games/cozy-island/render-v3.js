@@ -1,23 +1,245 @@
 // 파일명: web-games/cozy-island/render-v3.js
-// 임포트: 기존 Three.js와 CC0 원본 아트 라이브러리.
+// 임포트: 기존 월드 좌표·깊이 정렬은 유지하고 새 중세 픽셀 아트를 연결한다.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
-import {OBJLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/OBJLoader.js';
-import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
-import {FBXLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/FBXLoader.js';
-import {clone as cloneRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 const SC=1/36;
 // 카메라: 45도 방위·30도 고도의 2:1 등각 투영. 게임 좌표는 그대로 유지한다.
 const ISO_YAW=Math.PI/4,ISO_PITCH=Math.PI/6;
-const MODELS=Object.freeze({
- tree:'homely-house/tree.obj',tree_large:'homely-house/tree_large.obj',
- stone:'homely-house/cobblestones.obj',flower:'homely-house/foliage_A.obj',
- crop:'homely-house/foliage_B.obj',house:'homely-house/house.obj',
- bench:'homely-house/bench_A.obj',fence:'homely-house/fence_straight.obj',
- gate:'homely-house/gate_single.obj',package:'homely-house/package.obj',
- hero:'actor:knight.glb',npc:'actor:rogue.glb',soldier:'actor:barbarian.glb',
- enemy:'actor:skeleton-warrior.glb',wolf:'forest:wolf.fbx',boar:'forest:hog.glb',
- snake:'forest:monster-26.obj',spider:'forest:monster-53.obj',bat:'forest:bat.fbx',
- golem:'forest:monster-41.obj',wizard:'actor:mage.glb'
+// 원본 모델 연결 제거: 새 중세 픽셀 아트와 방향별 프레임만 사용한다.
+const PIXEL_ART=Object.freeze({
+  "tree": {
+    "file": "oaktree.png",
+    "bounds": [
+      3,
+      3,
+      172,
+      145
+    ]
+  },
+  "tree_large": {
+    "file": "pinetree.png",
+    "bounds": [
+      2,
+      8,
+      61,
+      139
+    ]
+  },
+  "crop": {
+    "file": "crops.png",
+    "bounds": [
+      0,
+      7,
+      128,
+      83
+    ]
+  },
+  "house": {
+    "file": "house1-0.png",
+    "bounds": [
+      15,
+      45,
+      255,
+      270
+    ]
+  },
+  "fort-cottage": {
+    "file": "house1-0.png",
+    "bounds": [
+      15,
+      45,
+      255,
+      270
+    ]
+  },
+  "fort-barracks": {
+    "file": "house2-0.png",
+    "bounds": [
+      103,
+      112,
+      292,
+      326
+    ]
+  },
+  "fort-workshop": {
+    "file": "house1-2.png",
+    "bounds": [
+      30,
+      44,
+      255,
+      267
+    ]
+  },
+  "fort-market": {
+    "file": "tavern.png",
+    "bounds": [
+      0,
+      3,
+      128,
+      154
+    ]
+  },
+  "fort-keep": {
+    "file": "keep.png",
+    "bounds": [
+      0,
+      0,
+      500,
+      422
+    ]
+  },
+  "fort-watchtower": {
+    "file": "watchtower.png",
+    "bounds": [
+      0,
+      12,
+      128,
+      167
+    ]
+  },
+  "fort-gatehouse": {
+    "file": "castle.png",
+    "bounds": [
+      130,
+      180,
+      220,
+      160
+    ]
+  },
+  "fort-wall": {
+    "file": "wal0000.png",
+    "bounds": [
+      6,
+      11,
+      96,
+      103
+    ]
+  },
+  "fort-wall-side": {
+    "file": "wal0001.png",
+    "bounds": [
+      6,
+      10,
+      96,
+      104
+    ]
+  },
+  "fort-road": {
+    "file": "marblepath.png",
+    "bounds": [
+      0,
+      2,
+      128,
+      68
+    ]
+  },
+  "hero": {
+    "file": "CitizenSheet.png",
+    "columns": 12,
+    "rows": 5,
+    "row": 4,
+    "frames": 3,
+    "directions": 4
+  },
+  "npc": {
+    "file": "CitizenSheet.png",
+    "columns": 12,
+    "rows": 5,
+    "row": 0,
+    "frames": 3,
+    "directions": 4
+  },
+  "soldier": {
+    "file": "CitizenSheet.png",
+    "columns": 12,
+    "rows": 5,
+    "row": 4,
+    "frames": 3,
+    "directions": 4
+  },
+  "enemy": {
+    "file": "CitizenSheet.png",
+    "columns": 12,
+    "rows": 5,
+    "row": 3,
+    "frames": 3,
+    "directions": 4
+  },
+  "wizard": {
+    "file": "CitizenSheet.png",
+    "columns": 12,
+    "rows": 5,
+    "row": 4,
+    "frames": 3,
+    "directions": 4
+  },
+  "stone": {
+    "procedural": true,
+    "animated": false
+  },
+  "flower": {
+    "procedural": true,
+    "animated": false
+  },
+  "package": {
+    "procedural": true,
+    "animated": false
+  },
+  "bench": {
+    "procedural": true,
+    "animated": false
+  },
+  "gate": {
+    "procedural": true,
+    "animated": false
+  },
+  "fence": {
+    "procedural": true,
+    "animated": false
+  },
+  "ship": {
+    "procedural": true,
+    "animated": false
+  },
+  "dock": {
+    "procedural": true,
+    "animated": false
+  },
+  "wolf": {
+    "procedural": true,
+    "animated": true
+  },
+  "boar": {
+    "procedural": true,
+    "animated": true
+  },
+  "snake": {
+    "procedural": true,
+    "animated": true
+  },
+  "spider": {
+    "procedural": true,
+    "animated": true
+  },
+  "bat": {
+    "procedural": true,
+    "animated": true
+  },
+  "golem": {
+    "procedural": true,
+    "animated": false
+  },
+  "fort-ram": {
+    "procedural": true,
+    "animated": false
+  },
+  "fort-trebuchet": {
+    "procedural": true,
+    "animated": false
+  },
+  "fort-siege-tower": {
+    "procedural": true,
+    "animated": false
+  }
 });
 export class IslandRendererV3 {
   constructor(canvas) {
@@ -43,28 +265,26 @@ export class IslandRendererV3 {
       this.scene3.add(new THREE.HemisphereLight(0xffefcf,0x454c36,1.7));
       const sun=new THREE.DirectionalLight(0xffecc9,1.7);sun.position.set(-35,65,24);
       this.scene3.add(sun);
-      // 메인: 저폴리 성채는 기존 렌더 장면·재질을 공유하며 저장·게임 상태와 독립된다.
-      this.fortGeometry={
-        box:new THREE.BoxGeometry(1,1,1),
-        roof:new THREE.ConeGeometry(1,1,4),
-        tower:new THREE.CylinderGeometry(1,1,1,6)
-      };
-      const paint=(color,kind)=>new THREE.MeshLambertMaterial({color,flatShading:true,map:this.pixelTexture(kind)});
-      this.fortMaterial={
-        stone:paint(0xa99a7b,'stone'),stoneBright:paint(0xd0c3a2,'stone'),
-        timber:paint(0x94734b,'wood'),darkWood:paint(0x503a29,'wood'),
-        plaster:paint(0xd3c2a0,'plaster'),tile:paint(0x9a4832,'roof'),
-        cloth:paint(0x727b50,'cloth'),banner:paint(0xa73f2c,'cloth'),
-        road:paint(0xb19b71,'road')
-      };
       const ground=(w,d,x,y,color,elevation)=>{
         const kind=elevation<=-1?'water':color===0x414958?'rock':
           color===0x846964?'rock':elevation<-.5?'sand':'grass';
         const map=this.pixelTexture(kind).clone();
         map.repeat.set(w/180,d/180);map.needsUpdate=true;
-        const mesh=new THREE.Mesh(new THREE.BoxGeometry(w*SC,.45,d*SC),
-          new THREE.MeshLambertMaterial({color,map}));
-        mesh.position.set(x*SC,elevation,y*SC);this.scene3.add(mesh);return mesh;
+        // 섬 표면을 둥근 해안 평면으로 교체한다. 이동 판정용 월드 좌표는 바꾸지 않는다.
+        const width=w*SC,depth=d*SC,radius=Math.min(85*SC,width*.12,depth*.12);
+        const left=-width/2,right=width/2,bottom=-depth/2,top=depth/2;
+        const shape=new THREE.Shape();
+        shape.moveTo(left+radius,bottom);shape.lineTo(right-radius,bottom);
+        shape.quadraticCurveTo(right,bottom,right,bottom+radius);
+        shape.lineTo(right,top-radius);shape.quadraticCurveTo(right,top,right-radius,top);
+        shape.lineTo(left+radius,top);shape.quadraticCurveTo(left,top,left,top-radius);
+        shape.lineTo(left,bottom+radius);shape.quadraticCurveTo(left,bottom,left+radius,bottom);
+        const geometry=new THREE.ShapeGeometry(shape,6),positions=geometry.attributes.position;
+        const uv=geometry.attributes.uv;
+        for(let i=0;i<positions.count;i++)uv.setXY(i,positions.getX(i)/width+.5,positions.getY(i)/depth+.5);
+        const mesh=new THREE.Mesh(geometry,new THREE.MeshLambertMaterial({color,map}));
+        mesh.rotation.x=-Math.PI/2;
+        mesh.position.set(x*SC,elevation+.225,y*SC);this.scene3.add(mesh);return mesh;
       };
       ground(3800,2500,1700,1030,0x68979b,-1.35);
       ground(1280,1030,730,595,0xd4bc89,-.7);
@@ -100,6 +320,13 @@ export class IslandRendererV3 {
   // 그래픽: 원본 게임 이미지를 복사하지 않고 작은 팔레트 질감을 한 번 생성한다.
   pixelTexture(kind='grass'){
     if(this.pixelTextures.has(kind))return this.pixelTextures.get(kind);
+    const terrain={grass:'newgrass.png',sand:'dirt.png',road:'marblepath.png'}[kind];
+    if(terrain){
+      const texture=new THREE.TextureLoader().load(new URL('../../assets/shared/medieval/'+terrain,import.meta.url).href);
+      texture.magFilter=texture.minFilter=THREE.NearestFilter;
+      texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.generateMipmaps=false;
+      texture.colorSpace=THREE.SRGBColorSpace;this.pixelTextures.set(kind,texture);return texture;
+    }
     const canvas=document.createElement('canvas');canvas.width=canvas.height=32;
     const ctx=canvas.getContext('2d');
     for(let y=0;y<32;y++)for(let x=0;x<32;x++){
@@ -125,180 +352,139 @@ export class IslandRendererV3 {
     texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;
     this.pixelTextures.set(kind,texture);return texture;
   }
-  // 유틸: 첫 프레임 이후 원본 라이브러리를 차례로 적재한다.
+  // 자산: 같은 원본 이미지는 한 번만 적재하고 기존 모델·원시 도형은 생성하지 않는다.
   async load3dModels(){
     await new Promise(resolve=>requestAnimationFrame(resolve));
-    for(const [kind,path] of Object.entries(MODELS)){
-      if(!this.native3d)return;
+    const images=new Map(),loader=new THREE.TextureLoader();
+    await Promise.all(Object.entries(PIXEL_ART).map(async ([kind,spec])=>{
       try{
-        let model;
-        if(path.startsWith('actor:')){
-          const url=new URL('../../assets/roblox/actors/native/'+path.slice(6),import.meta.url);
-          model=(await new GLTFLoader().loadAsync(url.href)).scene;
-        }else if(path.startsWith('forest:')){
-          const url=new URL('../../assets/shared/forest/'+path.slice(7),import.meta.url);
-          if(path.endsWith('.fbx'))model=await new FBXLoader().loadAsync(url.href);
-          else if(path.endsWith('.obj')){
-            model=await new OBJLoader().loadAsync(url.href);
-            const palette={snake:0x6c9b69,spider:0x78666b,golem:0x9b9998};
-            model.traverse(part=>{if(part.isMesh)part.material=new THREE.MeshStandardMaterial({
-              color:palette[kind]||0x9c9b95,roughness:1})});
-          }else model=(await new GLTFLoader().loadAsync(url.href)).scene;
-        }else{
-          const url=new URL('../../assets/shared/'+path,import.meta.url);
-          model=await new OBJLoader().loadAsync(url.href);
-          const palette={tree:0x7d8b4b,tree_large:0x5e723c,stone:0xaaa28d,
-            flower:0xc5a77b,crop:0x8a9850,house:0xd2bb8a};
-          model.traverse(part=>{if(part.isMesh)part.material=new THREE.MeshStandardMaterial({
-            color:palette[kind]||0xb9a584,roughness:1,flatShading:true,
-            map:this.pixelTexture(kind==='stone'?'rock':kind==='house'?'plaster':'grass')})});
+        let texture;
+        if(spec.procedural){texture=new THREE.CanvasTexture(this.paintPixelSprite(kind));}
+        else{
+          if(!images.has(spec.file))images.set(spec.file,loader.loadAsync(
+            new URL('../../assets/shared/medieval/'+spec.file,import.meta.url).href));
+          texture=await images.get(spec.file);
         }
-        model.traverse(part=>{
-          if(!part.isMesh)return;
-          for(const material of Array.isArray(part.material)?part.material:[part.material]){
-            if(!material)continue;
-            material.flatShading=true;
-            if(material.map){material.map.magFilter=material.map.minFilter=THREE.NearestFilter;
-              material.map.generateMipmaps=false;material.map.needsUpdate=true;}
-            material.needsUpdate=true;
-          }
-        });
-        this.models3d.set(kind,model);
-      }catch(error){console.warn('포근섬 CC0 원본 모델 로딩 실패: '+kind,error)}
-      await new Promise(resolve=>setTimeout(resolve,0));
+        texture.magFilter=texture.minFilter=THREE.NearestFilter;
+        texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;
+        const animated=spec.animated?{frames:3,directions:4,columns:12,rows:1,row:0}:{};
+        this.models3d.set(kind,{...spec,...animated,texture});
+      }catch(error){console.warn('포근섬 중세 픽셀 자산 로딩 실패: '+kind,error);}
+    }));
+  }
+  // 그래픽: 전투·저장 값에 관여하지 않는 신규 야생동물·공성기·자원 픽셀 아트.
+  paintPixelSprite(kind){
+    const moving=['wolf','boar','snake','spider','bat'].includes(kind);
+    const siege=kind.startsWith('fort-');
+    const cell=siege?96:64,canvas=document.createElement('canvas');
+    canvas.width=cell*(moving?12:1);canvas.height=cell;
+    const c=canvas.getContext('2d');c.imageSmoothingEnabled=false;
+    for(let frame=0;frame<(moving?12:1);frame++){
+      c.save();c.translate(frame*cell,0);
+      if(moving&&Math.floor(frame/3)===1){c.translate(cell,0);c.scale(-1,1);}
+      const rect=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);};
+      const poly=(points,color)=>{c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();};
+      const line=(x,y,x2,y2,color,width=1)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.stroke();};
+      const stride=moving?[0,3,-2][frame%3]:0;
+      if(siege){
+        const wheel=(x,y)=>{rect(x-5,y-7,10,14,'#352a1e');rect(x-3,y-5,6,10,'#8d6943');line(x-3,y,x+3,y,'#c49b5b');line(x,y-5,x,y+5,'#493623');};
+        const beam=(x,y,w,h)=>{rect(x,y,w,h,'#3c2d20');rect(x+1,y+1,w-2,h-2,'#8c693f');line(x+2,y+1,x+w-2,y+1,'#c09a62');};
+        poly([[13,72],[58,53],[86,67],[42,88]],'#302b22');
+        wheel(28,78);wheel(71,72);beam(20,65,57,8);
+        if(kind==='fort-siege-tower'){
+          poly([[24,66],[57,51],[57,12],[24,26]],'#987447');
+          poly([[57,51],[78,62],[78,23],[57,12]],'#655033');
+          for(let y=28;y<67;y+=7)line(25,y,56,y-14,'#453623');
+          for(let y=21;y<56;y+=7)line(59,y,77,y+10,'#463423');
+          beam(23,24,4,43);beam(55,10,4,43);beam(76,21,4,42);
+          poly([[20,23],[57,6],[83,20],[45,37]],'#aa8650');
+          for(let x=25;x<80;x+=11)beam(x,Math.round(16+Math.abs(x-56)*.42),6,8);
+          line(34,34,34,66,'#d5ba7c',2);line(43,30,43,62,'#d5ba7c',2);
+          for(let y=38;y<65;y+=6)line(34,y,43,y-4,'#d5ba7c',2);
+        }else if(kind==='fort-trebuchet'){
+          beam(34,30,6,39);beam(61,25,6,39);
+          line(37,31,19,68,'#bc9458',4);line(64,27,79,67,'#705332',4);
+          line(26,12,73,53,'#d0a46b',5);rect(20,5,15,17,'#4b4234');rect(21,7,12,12,'#b2a27f');
+          line(72,53,85,61,'#d9ca93');line(81,61,89,66,'#3f3529',4);
+        }else{
+          beam(20,43,4,27);beam(73,40,4,27);
+          poly([[13,43],[47,24],[83,41],[49,60]],'#4c4a35');
+          poly([[13,43],[49,60],[49,69],[13,51]],'#77764e');
+          for(let x=20;x<75;x+=8)line(x,43-Math.abs(x-47)*.2,x+12,48,'#a49d69');
+          line(22,64,82,43,'#4c3622',9);line(22,62,82,41,'#c0995d',3);rect(13,62,12,8,'#9d9e90');
+        }
+      }else if(kind==='wolf'||kind==='boar'){
+        const boar=kind==='boar',dark=boar?'#493e30':'#505350',mid=boar?'#766049':'#939389',light=boar?'#ad8c63':'#c3c2ad';
+        poly([[13,30],[22,23],[39,24],[46,31],[43,44],[18,44]],dark);
+        poly([[15,30],[24,26],[39,28],[43,35],[35,39],[19,38]],mid);
+        rect(18+stride,40,5,14,dark);rect(34-stride,40,5,14,dark);rect(20+stride,40,2,10,light);rect(36-stride,40,2,10,mid);
+        poly([[36,27],[42,15],[48,22],[55,24],[59,30],[53,35],[42,36]],mid);
+        poly([[42,19],[43,11],[48,20]],dark);rect(53,25,3,2,'#1e201c');rect(56,30,5,3,dark);
+        if(boar){line(56,34,60,29,'#e4d3ac',2);for(let x=18;x<41;x+=4)rect(x,22,2,4,dark);}
+        else{poly([[14,30],[5,22],[7,31],[15,36]],dark);poly([[43,31],[51,35],[44,40],[39,34]],light);}
+        for(let i=0;i<13;i++)rect(17+(i*7)%25,28+(i*5)%10,2,1,i%2?light:dark);
+      }else if(kind==='snake'){
+        for(let i=0;i<12;i++){const x=8+i*4,y=35+Math.round(Math.sin(i*.65+stride*.3)*5);rect(x,y,6,6,'#3c4b2e');rect(x,y,5,2,'#a0a362');}
+        rect(50,30,10,8,'#737e47');rect(57,31,2,2,'#211e13');
+      }else if(kind==='spider'){
+        for(let i=0;i<4;i++){line(28,32,10,20+i*7,'#4a352e',2);line(36,32,55,20+i*7,'#4a352e',2);}
+        poly([[23,26],[32,21],[42,28],[42,38],[32,43],[22,36]],'#6b4a38');rect(28,29,10,8,'#a17e59');rect(29,24,2,2,'#cfb271');
+      }else if(kind==='bat'){
+        const lift=stride*2;poly([[30,30],[7,16+lift],[5,38],[16,32],[23,40]],'#55433b');poly([[34,30],[57,16+lift],[59,38],[48,32],[41,40]],'#55433b');
+        rect(27,26,10,18,'#322f2c');rect(27,20,3,7,'#46372f');rect(34,20,3,7,'#46372f');rect(29,29,2,2,'#c9bba1');
+      }else if(kind==='stone'||kind==='golem'){
+        poly([[8,49],[12,30],[28,17],[45,22],[56,43],[48,55],[24,58]],'#625e50');poly([[12,30],[28,17],[45,22],[33,36]],'#bcb39a');poly([[12,31],[33,36],[25,55],[9,49]],'#97957f');poly([[34,36],[45,23],[54,43],[46,53],[26,55]],'#7c7b68');
+        for(let i=0;i<25;i++)rect(14+(i*13)%32,31+(i*7)%20,2,1,i%2?'#c1bda5':'#565d50');
+      }else if(kind==='flower'){
+        for(let i=0;i<5;i++){const x=15+i*8,y=33+(i%2)*9;rect(x,y,2,22-(i%2)*9,'#4b6540');rect(x-2,y,7,3,i%2?'#b1a27b':'#a26053');rect(x,y-3,3,8,i%2?'#dfd0a0':'#d69478');}
+      }else if(kind==='ship'||kind==='dock'||kind==='bench'){
+        poly([[6,36],[41,22],[61,34],[48,52],[20,56]],'#533c28');poly([[9,35],[41,25],[57,34],[45,47],[22,50]],'#af8a52');
+        for(let y=34;y<48;y+=4)line(17,y,48,y-7,'#705334');
+        if(kind==='ship'){line(35,30,35,5,'#58432d',2);poly([[37,6],[53,23],[37,27]],'#ded1ae');}
+        else{rect(14,43,4,15,'#5a422c');rect(49,35,4,15,'#5a422c');}
+      }else if(kind==='gate'||kind==='fence'){
+        for(let x=10;x<58;x+=9){rect(x,20,5,35,'#634a2c');rect(x,20,2,35,'#af8d57');}rect(9,29,48,4,'#937247');rect(9,44,48,4,'#937247');
+      }else{
+        poly([[14,27],[36,17],[53,27],[31,38]],'#ba935b');poly([[14,27],[31,38],[31,57],[14,46]],'#866239');poly([[31,38],[53,27],[53,46],[31,57]],'#694c2e');
+        line(16,31,29,40,'#d5b579');line(34,40,51,31,'#b89359');line(21,30,21,49,'#483b28',2);line(44,34,44,50,'#423625',2);
+      }
+      c.restore();
     }
+    return canvas;
   }
   make3d(kind,height){
-    const group=new THREE.Group();
-    // 메인: 스트롱홀드식 저폴리 건축은 기존 Three.js 장면에서만 그린다.
-    // 공용 기본 메쉬/재질을 재사용하고 경제·충돌·전투·저장 값에는 관여하지 않는다.
-    if(kind.startsWith('fort-')){
-      const {box,roof,tower}=this.fortGeometry;
-      const m=this.fortMaterial;
-      const part=(geometry,material,x,y,z,sx,sy,sz,rotation=0)=>{
-        const mesh=new THREE.Mesh(geometry,material);
-        mesh.position.set(x,y,z);
-        mesh.scale.set(sx,sy,sz);
-        mesh.rotation.y=rotation;
-        group.add(mesh);
-      };
-      if(kind==='fort-road'){
-        part(box,m.road,0,.015,0,2.1,.035,2.05);
-        part(box,m.stoneBright,-.82,.036,-.8,.31,.013,.23);
-        part(box,m.stoneBright,.75,.036,.7,.27,.013,.34);
-      }else if(kind==='fort-wall'){
-        part(box,m.stone,0,height*.43,0,3.08,height*.86,.4);
-        part(box,m.stoneBright,0,height*.87,0,3.14,.16,.46);
-        for(let i=-2;i<=2;i++)part(box,m.stoneBright,i*.65,height*.99,0,.35,height*.24,.48);
-      }else if(kind==='fort-watchtower'){
-        part(tower,m.stone,0,height*.43,0,.83,height*.86,.83);
-        part(tower,m.stoneBright,0,height*.87,0,1.03,.24,1.03);
-        for(let i=0;i<6;i++){
-          const a=i*Math.PI/3;
-          part(box,m.stoneBright,Math.cos(a)*.83,height*.98,Math.sin(a)*.83,.33,.45,.34,a);
-        }
-        part(box,m.banner,.08,height+1.02,0,.055,1.72,.055);
-        part(box,m.banner,.43,height+1.56,0,.7,.37,.055);
-      }else if(kind==='fort-gatehouse'){
-        for(const x of [-1.3,1.3]){
-          part(box,m.stone,x,height*.37,0,.78,height*.74,1.25);
-          part(box,m.stoneBright,x,height*.78,0,1.03,.24,1.45);
-          part(roof,m.tile,x,height*.97,0,.89,.78,.92,Math.PI/4);
-        }
-        part(box,m.stone,0,height*.73,0,2.5,.5,.95);
-        for(let i=-2;i<=2;i++)part(box,m.stoneBright,i*.54,height*.96,0,.29,.35,1.03);
-        part(box,m.darkWood,-.92,height*.27,.51,.1,height*.53,.08);
-        part(box,m.darkWood,.92,height*.27,.51,.1,height*.53,.08);
-       }else if(kind==='fort-trebuchet'){
-        part(box,m.timber,0,.25,0,2.8,.38,2.0);
-        for(const x of [-1.05,1.05])for(const z of [-.8,.8])
-          part(tower,m.darkWood,x,.27,z,.4,.42,.4,Math.PI/2);
-        part(box,m.darkWood,0,height*.4,0,.3,height*.8,.35);
-        part(box,m.timber,.6,height*.82,0,.25,height*1.3,.28,.35);
-        part(box,m.stone,1.15,height*1.33,0,.5,.5,.5);
-      }else if(kind==='fort-ram'){
-        part(box,m.timber,0,.65,0,2.5,1.1,2.1);
-        part(roof,m.cloth,0,1.6,0,1.9,.85,1.5,Math.PI/4);
-        part(box,m.darkWood,-1.65,.57,0,2.1,.33,.4);
-        for(const x of [-.95,.95])for(const z of [-.78,.78])
-          part(tower,m.darkWood,x,.17,z,.34,.32,.34,Math.PI/2);
-      }else if(kind==='fort-siege-tower'){
-        part(box,m.timber,0,height*.46,0,2.35,height*.89,2.1);
-        part(box,m.darkWood,0,height*.92,.9,2.5,.19,.35);
-        for(const x of [-.97,.97])for(const z of [-.88,.88])
-          part(box,m.darkWood,x,height*.5,z,.17,height,.18);
-        for(const x of [-.9,.9])part(tower,m.darkWood,x,.2,0,.39,.36,.39,Math.PI/2);
-      }else if(kind==='fort-keep'){
-        const body=height*.82;
-        part(box,m.stone,0,body*.5,0,3.2,body,3.0);
-        part(box,m.stoneBright,0,body+.12,0,3.4,.27,3.2);
-        for(const x of [-1.46,1.46])for(const z of [-1.35,1.35]){
-          part(box,m.stoneBright,x,body+.34,z,.45,.5,.46);
-        }
-        part(box,m.darkWood,0,.58,1.52,.7,1.14,.11);
-        for(const x of [-.88,.88]){
-          part(box,m.darkWood,x,body*.62,1.55,.19,.42,.07);
-          part(box,m.darkWood,x,body*.62,-1.55,.19,.42,.07);
-        }
-        part(box,m.banner,0,height+.27,0,.055,.92,.055);
-        part(box,m.banner,.46,height+.45,0,.86,.28,.065);
-      }else if(kind==='fort-cottage'||kind==='fort-barracks'||kind==='fort-workshop'){
-        const large=kind==='fort-barracks',work=kind==='fort-workshop';
-        const w=large?3.4:work?2.7:3.0;
-        const depth=large?2.8:2.4,body=height*.58;
-        part(box,large?m.stone:m.plaster,0,body*.5,0,w,body,depth);
-        for(const x of [-w*.38,w*.38]){
-          part(box,m.darkWood,x,body*.5,depth*.5+.04,.14,body,.13);
-        }
-        part(box,m.darkWood,0,.48,depth*.5+.07,.58,.96,.09);
-        part(box,m.darkWood,0,body*.78,depth*.5+.055,w,.12,.12);
-        part(box,m.darkWood,0,body*.1,depth*.5+.055,w,.13,.12);
-        for(const x of [-w*.28,w*.28]){
-          part(box,m.darkWood,x,body*.57,depth*.5+.08,.33,.42,.08);
-          part(box,m.cloth,x,body*.57,depth*.5+.13,.23,.29,.025);
-        }
-        part(roof,large?m.cloth:m.tile,0,body+height*.19,0,
-          w*.8,height*.38,depth*.89,Math.PI/4);
-        if(work){
-          part(box,m.timber,1.0,.42,1.5,.8,.84,.72);
-          part(box,m.darkWood,1.0,.89,1.5,.93,.15,.83);
-        }
-      }else if(kind==='fort-market'){
-        part(box,m.timber,0,.12,0,3.1,.22,2.4);
-        for(const x of [-1.35,1.35])for(const z of [-.98,.98]){
-          part(box,m.darkWood,x,height*.4,z,.16,height*.8,.16);
-        }
-        part(roof,m.cloth,0,height*.86,0,2.33,.8,1.85,Math.PI/4);
-        part(box,m.timber,-.63,.39,.16,.85,.57,.67);
-        part(box,m.stoneBright,.65,.44,-.35,.64,.69,.62);
-      }
-      return group;
+    const group=new THREE.Group(),asset=this.models3d.get(kind);
+    if(!asset)return group;
+    const texture=asset.texture.clone();texture.needsUpdate=true;
+    const image=texture.image;
+    let width=image.width,heightPx=image.height;
+    if(asset.frames){
+      width/=asset.columns;heightPx/=asset.rows;
+      texture.repeat.set(1/asset.columns,1/asset.rows);
+      texture.offset.set(1/asset.columns,1-((asset.row||0)+1)/asset.rows);
+    }else if(asset.bounds){
+      const [x,y,w,h]=asset.bounds;width=w;heightPx=h;
+      texture.repeat.set(w/image.width,h/image.height);
+      texture.offset.set(x/image.width,1-(y+h)/image.height);
     }
-    const original=this.models3d.get(kind);
-    if(original){
-      const model=['hero','npc','soldier','enemy'].includes(kind)?cloneRig(original):original.clone(true);
-      const box=new THREE.Box3().setFromObject(model);
-      if(!box.isEmpty()){
-        const size=Math.max(.01,box.max.y-box.min.y),factor=height/size;
-        const center=box.getCenter(new THREE.Vector3());
-        model.scale.setScalar(factor);
-        model.position.set(-center.x*factor,-box.min.y*factor,-center.z*factor);
-      }
-      group.add(model);
+    if(kind==='fort-road'){
+      const road=new THREE.Mesh(new THREE.PlaneGeometry(2.1,2.1),new THREE.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false}));
+      road.rotation.x=-Math.PI/2;road.position.y=.025;group.add(road);
     }else{
-      // 에셋 다운로드 중에만 임시 형상을 표시. 다운로드 완료 즉시 원본 교체.
-      const geo=kind==='tree'||kind==='tree_large'?new THREE.ConeGeometry(height*.35,height,8):
-        kind==='stone'?new THREE.DodecahedronGeometry(height*.4,0):
-        kind==='flower'||kind==='crop'?new THREE.IcosahedronGeometry(height*.4,0):
-        new THREE.CapsuleGeometry(height*.23,height*.5,4,8);
-      const part=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({
-        color:kind==='tree'||kind==='tree_large'?0x60956c:
-          kind==='stone'?0x929f9b:kind==='flower'?0xe8a7c0:0xd5b58d
-      }));
-      part.position.y=height*.5;group.add(part);
+      const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,transparent:true,alphaTest:.07,depthWrite:false}));
+      const visualHeight=kind==='fort-wall'||kind==='fort-wall-side'?height*1.3:height;
+      sprite.center.set(.5,0);sprite.scale.set(visualHeight*width/heightPx,visualHeight,1);group.add(sprite);
     }
     return group;
   }
+  release3d(item){
+    this.scene3.remove(item.mesh);
+    item.mesh.traverse(part=>{
+      if(part.material){part.material.map?.dispose();part.material.dispose();}
+      if(part.isMesh)part.geometry.dispose();
+    });
+  }
+
   // 그래픽만 갱신하며 game.state/병력/자원/저장 값은 변경하지 않는다.
   draw3d(game){
     if(!this.native3d)return;
@@ -317,16 +503,30 @@ export class IslandRendererV3 {
       const nearby=(x,y)=>Math.abs(x-focus.x)<reachX&&Math.abs(y-focus.y)<reachY;
       const put=(id,kind,x,y,height=2,rotation=0)=>{
         if(!Number.isFinite(x)||!Number.isFinite(y)||!nearby(x,y))return;
+        if(kind==='fort-wall'&&Math.abs(Math.sin(rotation))>.5)kind='fort-wall-side';
         visibleIds.add(id);
         const loaded=this.models3d.has(kind);
         let item=this.instances3d.get(id);
         if(item&&(item.kind!==kind||item.loaded!==loaded||item.height!==height)){
-          this.scene3.remove(item.mesh);this.instances3d.delete(id);item=null;
+          this.release3d(item);this.instances3d.delete(id);item=null;
         }
         if(!item){const mesh=this.make3d(kind,height);
           this.scene3.add(mesh);item={mesh,kind,loaded,height};this.instances3d.set(id,item)}
+        const asset=this.models3d.get(kind),sprite=item.mesh.children[0];
+        if(asset?.frames&&sprite?.material?.map){
+          const dx=x-(item.lastX??x),dy=y-(item.lastY??y);
+          if(Math.hypot(dx,dy)>.05){
+            item.movedAt=now;
+            const sx=dx-dy,sy=(dx+dy)*.5;
+            item.direction=Math.abs(sx)>Math.abs(sy)?sx>0?3:1:sy>0?0:2;
+          }
+          const frame=now-(item.movedAt??-Infinity)<180?Math.floor(now/145)%asset.frames:1;
+          const column=(item.direction||0)*asset.frames+frame;
+          sprite.material.map.offset.set(column/asset.columns,1-((asset.row||0)+1)/asset.rows);
+        }
+        item.lastX=x;item.lastY=y;
         item.mesh.position.set(x*SC,.03,y*SC);
-        item.mesh.rotation.y=rotation;
+        item.mesh.rotation.y=0;
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
       const jungle=!!game.state.southernJungle?.unlocked||game.world.h>1200;
@@ -409,12 +609,12 @@ export class IslandRendererV3 {
       // 성곽 안 길은 시각 요소뿐이며 기존 이동·상호작용 좌표는 그대로 사용.
       for(let i=0;i<7;i++)put('fort-road:'+i,'fort-road',755,465+i*72,.05);
       if(game.state.seedDepot?.built)put('seed-depot','package',835,505,1.3);
-      if(game.state.smithy)put('smithy','bench',790,1080,2.1);
+      if(game.state.smithy)put('smithy','fort-workshop',790,1080,2.1);
       if(game.state.darknessFlameV19?.blackMineBuilt)put('black-mine','house',-880,690,3.6);
       if(game.state.abyssCaveV23?.researchLabBuilt)put('research-lab','house',-690,420,4);
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
-      put('ship','bench',775,760,1.4);put('fishing','bench',520,430,1.4);
+      put('ship','ship',775,760,1.4);put('fishing','dock',520,430,1.4);
       if((fort.traderClock??180)%180<75){
         put('merchant','npc',845,775,1.9);
         put('merchant-cargo','package',880,795,1.3);
@@ -433,9 +633,8 @@ export class IslandRendererV3 {
       }
       for(const unit of game.allies)if(unit.hp>0)put('ally:'+unit.id,
         unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);
-      // 메인: 186명 모두 전투 판정하지만 가까운 최대 84/156명만 실제 3D 모델로 생성한다.
-      // 기존 CC0 메시를 재사용하며 전투 계산은 렌더링 축소의 영향을 받지 않는다.
-      const modelBudget=this.width<600?32:this.width<900?56:96;
+      // 메인: 픽셀 프레임 공유로 병력 표시 비용을 줄인다. 전투 판정은 기존 게임 책임이다.
+      const modelBudget=this.width<600?96:192;
       const visibleEnemies=game.enemies.filter(u=>u.hp>0&&nearby(u.x,u.y))
         .sort((a,b)=>(a.x-focus.x)**2+(a.y-focus.y)**2-
           ((b.x-focus.x)**2+(b.y-focus.y)**2)).slice(0,modelBudget);
@@ -484,7 +683,7 @@ export class IslandRendererV3 {
       }
       put('player','hero',player.x,player.y,1.9);
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
-        this.scene3.remove(item.mesh);this.instances3d.delete(id);
+        this.release3d(item);this.instances3d.delete(id);
       }
       // 메인: 원작의 2:1 사선 구도. 같은 카메라를 터치·드래그·이동 변환에 사용한다.
       const focusX=focus.x*SC,focusZ=focus.y*SC;
@@ -515,7 +714,7 @@ export class IslandRendererV3 {
     this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
     if(this.native3d){
       // 월드만 정수 배율로 확장하고 UI·터치 좌표는 원래 화면 해상도를 유지한다.
-      this.pixelScale=this.width>=1440?3:2;
+      this.pixelScale=1;
       this.gl.setPixelRatio(1);
       this.gl.setSize(Math.ceil(this.width/this.pixelScale),Math.ceil(this.height/this.pixelScale),false);
       this.gl.domElement.dataset.pixelScale=String(this.pixelScale);
@@ -526,7 +725,7 @@ export class IslandRendererV3 {
       this.camera3.updateProjectionMatrix();
     }
   }
-  defaultStrategyZoom(){return Math.max(.21,Math.min(.58,this.width/1500,this.height/1450))}
+  defaultStrategyZoom(){return Math.max(.3,Math.min(.7,this.width/1150,this.height/1100))}
   panCamera(dx,dy){
     const zoom=this.viewZoom??this.defaultStrategyZoom();
     const x=(Math.cos(ISO_YAW)*dx+Math.sin(ISO_YAW)*dy/Math.sin(ISO_PITCH))/zoom;

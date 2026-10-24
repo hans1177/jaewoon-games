@@ -47,8 +47,8 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
   'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb'],
   'monster-35.obj':['rootsovereign'],
-  'caterpillar.glb':['giantburrower'], 'monster-31.obj':['sandwalker','mudwalker'],
-  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc'],
+  'caterpillar.glb':['giantburrower','crystallizard'], 'monster-31.obj':['sandwalker','mudwalker'],
+  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake','lakecroc','crystalbiter'],
   'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
   'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish','shark'],
   'monster-47.obj':['giantSquid'], 'monster-21.obj':['giantleech'],
@@ -473,6 +473,30 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const interactables=[];
   const undeadActors=new Map();
   const nativeCreatureActors=new Map();
+  // 메인: 기존 CC0 석재 메시를 공유하여 산성 구슬을 GPU 한 번의 배치로 렌더링한다.
+  let acidBatch=null,acidBatchCapacity=0;
+  const acidTransform=new THREE.Object3D();
+  const acidMaterial=new THREE.MeshStandardMaterial({color:0x9cff6c,emissive:0x5ce22d,emissiveIntensity:1.25});
+  function updateBiterAcidMeshes(state){
+    const source=models.get('cobblestones');
+    if(!source){if(acidBatch)acidBatch.count=0;return}
+    const active=(state.projectiles||[]).filter(q=>q.kind==='biterAcid'&&q.area===state.area);
+    if(active.length>acidBatchCapacity){
+      if(acidBatch)scene.remove(acidBatch);
+      acidBatchCapacity=Math.max(16,2**Math.ceil(Math.log2(active.length)));
+      acidBatch=new THREE.InstancedMesh(source.geometry,acidMaterial,acidBatchCapacity);
+      acidBatch.frustumCulled=false;scene.add(acidBatch);
+    }
+    if(!acidBatch)return;
+    const scale=.19/Math.max(.001,source.geometry.boundingSphere?.radius||1);
+    for(let i=0;i<active.length;i++){
+      const q=active[i];
+      acidTransform.position.set(q.x*SCALE,.65,q.y*SCALE);
+      acidTransform.scale.setScalar(scale);acidTransform.updateMatrix();
+      acidBatch.setMatrixAt(i,acidTransform.matrix);
+    }
+    acidBatch.count=active.length;acidBatch.instanceMatrix.needsUpdate=true;
+  }
   const cameraFrustum=new THREE.Frustum(),cameraProjection=new THREE.Matrix4();
   const creatureBounds=new THREE.Sphere(new THREE.Vector3(),4);
   const missingVisibleMonsterIds=new Set();
@@ -605,9 +629,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         nativeCreatureActors.set(key,actor);
       }
       actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      actor.anchor.visible=!(e.type?.id==='crystallizard'&&e.crystalHidden);
+      if(e.type?.id==='crystalbiter'&&performance.now()<(e.biterRestUntil||0)){
+        actor.anchor.rotation.z=.20;
+        if(actor.anchor.scale)actor.anchor.scale.y=.70;
+      }else{actor.anchor.rotation.z=0;if(actor.anchor.scale)actor.anchor.scale.y=1}
       actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
-      actor.model.traverse(child=>{
+      if(actor.anchor.visible)actor.model.traverse(child=>{
         if(!child.isMesh)return;
         child.userData.worldPoint={x:e.x,y:e.y};
         interactables.push(child);
@@ -926,6 +955,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     synchronizeUndead(state,px,py,seen);
     const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
+    updateBiterAcidMeshes(state,seen);
     // 다른 지역으로 이동하면 앞서 표시한 지상의 식물/광석 배치를 즉시 지운다.
     if(isInterior)for(const batch of resourceBatches.values())batch.mesh.count=0;
     if(!isInterior)resources(state.trees,'tree',px,py,seen,1.28);
@@ -1020,6 +1050,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     undeadActors.clear();
     for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
     nativeCreatureActors.clear();
+    if(acidBatch)scene.remove(acidBatch);
+    acidMaterial.dispose();
     for(const mesh of mageBoltEffects)scene.remove(mesh);
     mageBoltEffects.length=0;mageBoltGeometry.dispose();mageBoltMaterial.dispose();
     arrowGeometry.dispose();arrowMaterial.dispose();sporeMaterial.dispose();sunOrbMaterial.dispose();
