@@ -1166,7 +1166,7 @@ function spawnFieldBatch(){
  if(state.zone===0||dungeon)return;var z=ZONES[state.zone];
  while(enemies.length<9){var m=z.mons[Math.floor(Math.random()*z.mons.length)],lv=Math.max(1,z.lv+Math.floor(Math.random()*3)-1),elite=Math.random()<0.16;spawnEnemy(m[0],m[1]+lv*8,m[2]+lv*2,m[3]+lv*3,m[4]+lv*2,elite,false,randomPos(100,worldW-100),randomPos(120,worldH-120));}
 }
-function spawnEnemy(name,hp,atk,xp,gold,elite,boss,x,y){var mul=elite?2.4:1;enemies.push({id:nextEnemyId++,name:name,hp:Math.round(hp*mul),maxHp:Math.round(hp*mul),atk:Math.round(atk*(elite?1.65:1)),xp:Math.round(xp*(elite?2.15:1)),gold:Math.round(gold*(elite?2.15:1)),elite:elite,boss:boss,x:x,y:y,r:boss?30:(elite?24:19),attackCd:Math.random(),dead:false,lastHit:null});}
+function spawnEnemy(name,hp,atk,xp,gold,elite,boss,x,y){var mul=elite?2.4:1;enemies.push({id:nextEnemyId++,name:name,hp:Math.round(hp*mul),maxHp:Math.round(hp*mul),atk:Math.round(atk*(elite?1.65:1)),xp:Math.round(xp*(elite?2.15:1)),gold:Math.round(gold*(elite?2.15:1)),elite:elite,boss:boss,x:x,y:y,r:boss?30:(elite?24:19),attackCd:Math.random(),dead:false,lastHit:null,trait:state.zone>=7&&!dungeon?(/유령|원혼|망령/.test(name)?'specter':/미노타우로스|키메라/.test(name)?'charger':/사제|예언자|심판관/.test(name)?'ritual':/인형/.test(name)?'bulwark':null):null,specialCd:4+Math.random()*3,rushUntil:0,shieldUntil:0});}
 function randomPos(a,b){return a+Math.random()*(b-a);}
 function aliveEnemies(){return enemies.filter(function(e){return !e.dead&&e.hp>0;}).length;}
 
