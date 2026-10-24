@@ -123,3 +123,68 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
  .hint {max-width:57vw;font-size:9px;}
  .camera-zoom button {width:35px;height:35px;font-size:22px;}
 }
+
+/* Stronghold RTS – 상용 게임형 건설/경제 카드 메뉴 */
+#cancelBuild { position:absolute;top:max(148px,calc(env(safe-area-inset-top) + 138px));left:50%;
+ transform:translateX(-50%);z-index:7;border:2px solid #d8bd83;border-radius:8px;
+ padding:12px 16px;background:#562f28;color:#fff2d5;font-weight:900;font-size:13px;
+ box-shadow:0 8px 20px #171d1577; }
+#cancelBuild[hidden],#gameResult[hidden] {display:none!important}
+.realm-overview {position:sticky;z-index:3;top:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:5px;padding:7px;border:1px solid #af986c;border-radius:6px;background:#403f30;color:#f5e7c6}
+.realm-overview>div {display:flex;flex-direction:column;gap:2px;text-align:center}
+.realm-overview strong {font-size:14px;white-space:nowrap}.realm-overview small {font-size:9px;color:#d5c9a4}
+.realm-tabs {display:flex;gap:5px;overflow-x:auto;padding:9px 1px 8px;scrollbar-width:thin;position:sticky;top:63px;z-index:2;background:#ece0c3}
+.realm-tab {flex:0 0 auto;border:1px solid #ba9d71;border-radius:6px;padding:9px 12px;
+ background:#d2c3a2;color:#51452d;font-size:12px;font-weight:900}
+.realm-tab.selected {border-color:#493e28;background:#51452d;color:#fff0ca}
+.realm-help {font-size:11px;line-height:1.6;color:#61563c;background:#e8dab7;padding:9px;border-radius:5px}
+.realm-build-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0}
+.realm-build-card {min-width:0;background:#f7f0d9;border:1px solid #b59a72;border-radius:7px;padding:11px;
+ box-shadow:0 2px 6px #3c322122}
+.realm-build-title {display:flex;gap:8px;align-items:center;min-height:57px}
+.realm-icon {display:grid;place-items:center;font-size:26px;width:45px;height:45px;flex:0 0 45px;
+ border:1px solid #b7a07c;border-radius:5px;background:#e0d3b7}
+.realm-build-title>div {display:flex;flex:1;flex-direction:column;min-width:0;gap:3px}
+.realm-build-title b {font-size:13px;color:#493c2a}
+.realm-build-title small {font-size:10px;color:#796b54;line-height:1.35}
+.realm-build-title>strong {font-size:11px;white-space:nowrap;color:#7a6a4c}
+.realm-build-meta {display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px;padding:8px 0;margin:7px 0;
+ border-block:1px solid #d6c6a8;color:#645841;font-size:10px;font-weight:800}
+.realm-build-actions {display:flex;gap:5px}
+.realm-build-actions button {border:1px solid #6c623b;border-radius:4px;padding:10px 7px;flex:2;
+ background:#61734b;color:#fff6d6;font-size:12px;font-weight:900}
+.realm-build-actions button.upgrade {flex:1;background:#786a4f;color:#fff5d6}
+.realm-build-actions button:disabled {opacity:.58;background:#9b947f;color:#ece4d5}
+.realm-build-cost {font-size:10px;padding-top:7px;color:#796b54;font-weight:750}
+.realm-policy {margin-top:15px;border-top:2px solid #bca579;padding-top:11px}
+.realm-policy>p {font-size:11px;color:#6d5d43}
+.realm-policy-row {display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 0;
+ border-bottom:1px solid #d9c9a9;font-size:11px;font-weight:900}
+.realm-policy-row>div {display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.realm-policy-row button {border:1px solid #bca880;border-radius:4px;background:#eee1c6;
+ padding:7px 6px;color:#564b37;font-size:10px;font-weight:850}
+.realm-policy-row button.selected {background:#65553c;color:#ffedc6}
+.realm-main-command,.realm-legacy-entry {width:100%;min-height:44px;margin:5px 0;padding:12px;border:1px solid #ad8b57;
+ border-radius:6px;background:#586b44;color:#fff3d7;font-weight:900;text-align:center}
+.realm-main-command:disabled {opacity:.45}
+.realm-legacy-entry {background:#62543c}
+.realm-enemy-grid {display:grid;gap:8px}
+.realm-lord {border:1px solid #b69b69;border-radius:7px;padding:10px;background:#f4e7c9}
+.realm-lord h3 {margin:0 0 6px;font-size:14px}
+.realm-lord p {font-size:11px}
+.realm-look {border:1px solid #aa9470;border-radius:5px;padding:8px 12px;background:#dfd2b6;color:#41392c;font-weight:850;width:100%}
+.game-result {position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:15px;padding:30px;text-align:center;
+ background:#171c15e8;color:#fff0ce}
+.game-result h2 {font-size:28px}.game-result p {max-width:420px;line-height:1.5}
+.game-result button {padding:13px 20px;border:2px solid #dcc18c;border-radius:7px;background:#74633e;color:#fff7db;font-weight:900}
+@media (max-width:520px) {
+ .realm-build-grid {grid-template-columns:1fr}
+ .realm-tabs {top:61px}
+ .realm-build-card {padding:9px}
+ .panel {width:min(97vw,440px);max-height:75vh}
+ .realm-overview strong {font-size:11px}
+ .realm-overview small {font-size:8px}
+ .realm-tab {font-size:11px;padding:8px 9px}
+}
