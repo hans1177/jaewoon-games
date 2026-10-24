@@ -113,7 +113,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    const shades={'영국 왕실':'#284c6750','포르투갈 상단':'#86602b44','북해 상인연맹':'#4b72824b','프랑스 항구동맹':'#526b9450','이베리아 왕실':'#9a76424a','지중해 공화국':'#81704b44'};
    rect(0,75,w,h-75,shades[townPort.faction]||'#55726a40');
    rect(0,75,w,48,'#162e37cd');text(townPort.name+' 항구 · '+townPort.region,w/2,97,15,'#ffe4aa','center');text(townPort.faction+' | 1590',w/2,113,10,'#e4caa7','center');
-   hit=[];for(const [id,label,px,py,color] of places){const row=id==='market'||id==='palace'?0:id==='crew'||id==='quests'?1:2,x=w*(px<.5?.23:.77),y=75+(h-75)*[.25,.455,.65][row];rect(x-52,y,104,21,'#2b2c2de8');text(label,x,y+14,11,C.gold,'center');hit.push({x:x-64,y:y-(h-75)*.15,w:128,h:(h-75)*.19,building:id});}rect(w/2-122,128,244,22,'#263335cb');text('교역 · 선술집 · 조선소 · 왕궁',w/2,144,11,C.gold,'center');return;}
+   hit=[];for(const [id,label,px,py,color] of cityPlaces()){const row=id==='market'||id==='palace'?0:id==='crew'||id==='quests'?1:2,x=w*(px<.5?.23:.77),y=75+(h-75)*[.25,.455,.65][row];rect(x-52,y,104,21,'#2b2c2de8');text(label,x,y+14,11,C.gold,'center');hit.push({x:x-64,y:y-(h-75)*.15,w:128,h:(h-75)*.19,building:id});}rect(w/2-122,128,244,22,'#263335cb');text('교역 · 선술집 · 조선소 · 왕궁',w/2,144,11,C.gold,'center');return;}
   rect(0,0,w,h,'#7c8b68');for(let y=90;y<h;y+=16)for(let x=0;x<w;x+=16)rect(x+((y/16)%2?8:0),y,2,2,'#657c5b');
   rect(w*.41,105,w*.19,h-140,'#b6a27a');rect(0,h*.49,w,h*.09,'#b6a27a');
   for(let y=110;y<h-90;y+=12){rect(w*.44,y,15,1,'#8f815e');rect(w*.53,y+5,16,1,'#d0b88b');}
