@@ -446,7 +446,7 @@ body:has(#optionsPanel.open) .regionTravel,body:has(#multiPanel.open) .regionTra
 <div id="startScreen" class="startScreen" role="dialog" aria-modal="true" aria-label="마력숲 시작 화면"><div class="startCard"><h1>마력숲 생존기</h1><p>숲을 탐험하고, 만들고, 살아남아 봐.</p><div id="startMain"><button id="startPlay" class="startAction">게임 시작</button><button id="startOptions" class="startAction secondary">옵션</button></div><div id="startModes" hidden><p>플레이할 모드를 선택해.</p><button id="startNormal" class="startAction">일반 모드<br><small>기존 마력숲 · 기존 저장 이어하기</small></button><button id="startCreative" class="startAction">크리에이티브 모드<br><small>재료 무제한 · 몬스터 소환과 대결</small></button><button id="startAvatar" class="startAction secondary">3D 캐릭터 꾸미기</button><button id="startBack" class="startAction secondary">뒤로</button></div></div></div>
 <!-- 메인: 원본 CC0 3D 플레이어 외형 · 기존 게임 데이터와 분리해 저장 -->
 <div id="avatarPanel" class="avatarPanel" role="dialog" aria-modal="true" aria-label="3D 캐릭터 꾸미기" hidden>
- <div class="avatarBox"><h3>3D 캐릭터 꾸미기</h3><p>CC0 원본 모델 중 선택해. 외형 크기만 바뀌고 체력·공격력·장비 능력은 그대로야.</p>
+ <div class="avatarBox"><h3>3D 캐릭터 꾸미기</h3><p>기사: 근접 베기 · 전사: 묵직한 내려찍기 · 도적: 빠른 찌르기 · 법사: 원거리 마법탄(무기 필요). 체력·장비 공격력·쿨다운은 그대로야.</p>
  <label for="avatarModel">캐릭터 외형</label><select id="avatarModel"><option value="knight">기사</option><option value="mage">마법사</option><option value="barbarian">전사</option><option value="rogue">도적</option><option value="rogue-hooded">후드 도적</option></select>
  <label for="avatarSize">외형 크기</label><select id="avatarSize"><option value="90">작게</option><option value="100">보통</option><option value="110">크게</option></select>
  <div class="avatarButtons"><button id="avatarApply" type="button">적용·저장</button><button id="avatarClose" type="button">닫기</button></div>
@@ -3467,7 +3467,8 @@ function updateAutoCombat(now){
  attack(target);
 }
 function currentWeapon(){return item(state.player.weapon)}function currentDamage(){const base=effectiveStat(state.player.weapon,'power')+effectiveStat(state.player.armor,'bonusDamage');return base*(performance.now()<(state.player.weakenedUntil||0)?.5:1)}// 법사의 일반 무기 기본 공격은 원거리 마법탄으로 전환한다. 무기 공격력과 재사용 시간은 유지한다.
-function currentRange(){const range=currentWeapon()?.range||0;return avatarAppearance.model==='mage'&&currentWeapon()&&!currentWeapon().ranged?Math.max(405,range):range}function currentCooldown(){return currentWeapon()?.cooldown||380}
+function currentRange(){const range=currentWeapon()?.range||0;return avatarAppearance.model==='mage'&&currentWeapon()&&!currentWeapon().ranged?Math.max(405,range):range}
+function currentCooldown(){return currentWeapon()?.cooldown||380}
 function selectedArrow(){const p=state.player;if(p.arrowType&&ARROW_IDS.includes(p.arrowType)&&invCount(p.arrowType)>0)return item(p.arrowType);const fallback=ARROW_IDS.find(id=>invCount(id)>0)||null;p.arrowType=fallback;return fallback?item(fallback):null}
 function selectArrow(id){if(!ARROW_IDS.includes(id)||invCount(id)<1)return;state.player.arrowType=id;state.dirty=true;showNotice(item(id).name+' 선택');updateHud();renderPanel();saveGame(false)}
 function awardLoot(e){
@@ -4868,7 +4869,7 @@ function handleWorldTap(e){
   const interactable=!(closest.type.labBoss&&now<(closest.submergedUntil||0))&&!(closest.type.burrower&&!closest.emerged);
   if(!eligible||!interactable){doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));return}
   doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));
-  const w=currentWeapon(),range=Number(w?.range)||0,dx=closest.x-state.player.x,dy=closest.y-state.player.y;
+  const w=currentWeapon(),range=currentRange(),dx=closest.x-state.player.x,dy=closest.y-state.player.y;
   if(!w){showNotice('가방에서 무기를 장착해');return}
   if(Math.hypot(dx,dy)>range+(Number(closest.type.r)||0)){showNotice(closest.type.name+' · 공격 사거리 밖');return}
   const len=Math.hypot(dx,dy)||1;state.player.faceX=dx/len;state.player.faceY=dy/len;
@@ -7630,7 +7631,7 @@ document.getElementById('avatarApply').addEventListener('click',async()=>{
   catch{showNotice('외형 저장 실패 · 현재 화면에서만 적용');return}
   syncHudUi();
   document.getElementById('avatarPanel').hidden=true;
-  showNotice('CC0 3D 캐릭터 외형 저장 완료');
+  showNotice(next.model==='mage'?'법사 장착 · 원거리 마법탄 사용':'캐릭터 공격 모션과 외형 적용 완료');
  }finally{applyButton.disabled=false}
 });
 document.getElementById('startNormal').addEventListener('click',()=>beginGame('normal'));
