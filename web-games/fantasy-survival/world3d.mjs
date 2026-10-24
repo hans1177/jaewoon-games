@@ -138,8 +138,8 @@ async function loadSourceModels(){
     if(!response.ok)throw new Error('Compressed CC0 model pack unavailable: '+response.status);
     packedModels=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
   }
-  // 먼저 가까운 3D 배경에 필요한 5개 모델만 준비한다.
-  const required=new Set(['floor_base','tree','tree_large','foliage_A','cobblestones']);
+  // 첫 3D 프레임에는 바닥만 파싱하고 나머지 CC0 배경을 순차 적재한다.
+  const required=new Set(['floor_base']);
   const fetchSourceModel=async name=>{
     if(packedModels){
       const entry=packedModels[name];
@@ -343,6 +343,22 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     worldtree:{floor:0x335039,sky:0x203e2d},flowerfield:{floor:0x668551,sky:0x586b50},
     giantgarden:{floor:0x625071,sky:0x4a3d55},desert:{floor:0xb38c55,sky:0xa38259}
   });
+  // 원본 CC0 3D 장식만 사용한다. 실제 채집·통행·출입·저장 오브젝트는 원본 게임이 관리한다.
+  // 지형과 지역 판정은 regionAt 및 기존 실내 area를 그대로 사용한다.
+  const BIOME_SCENERY=Object.freeze({
+    forest:['tree','foliage_B','tree_large'],
+    jungle:['tree_large','foliage_B','tree'],
+    swamp:['foliage_B','tree','cobblestones'],
+    snow:['tree_large','cobblestones','tree'],
+    canyon:['cobblestones','fence_straight','cobblestones'],
+    volcano:['cobblestones','cobblestones','fence_straight'],
+    crystal:['cobblestones','foliage_B','cobblestones'],
+    giantlake:['foliage_A','cobblestones','foliage_B'],
+    worldtree:['tree_large','tree_large','foliage_B'],
+    flowerfield:['foliage_A','foliage_B','tree'],
+    giantgarden:['foliage_B','foliage_A','cobblestones'],
+    desert:['cobblestones','cobblestones','foliage_B']
+  });
   // 바닥: 원본 CC0 모델의 실제 크기(10 x 8)로 놓고 둥근 모서리의 틈을 같은 메시로 연결한다.
   sourceFloor.geometry.computeBoundingBox();
   const floorBounds=sourceFloor.geometry.boundingBox;
@@ -360,6 +376,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
+  // 렌더링 전용 지형 소품은 기존 OBJ 메시로 GPU 인스턴스만 공유한다.
+  const sceneryBatches=new Map();
+  let lastSceneryModelCount=-1;
   let currentBiome='forest';
   let lastHeroPoseX=null,lastHeroPoseY=null,lastHeroPoseAt=0;
   const raycaster=new THREE.Raycaster();
@@ -673,8 +692,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // classifier, collision, damage, spawn and player movement remain authoritative.
     const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
     // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
-    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea){
+    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea||models.size!==lastSceneryModelCount){
       let tileIndex=0,seamTileIndex=0;
+      const sceneryCounts=new Map();
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
       // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
@@ -684,6 +704,30 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
       biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.48));
       tileIndex++;
+      // 기존 지역 좌표에서 배경만 꾸민다. 중앙 타일은 비워 이동·전투 가시성을 보존한다.
+      if(tx!==0||tz!==0){
+        const choices=BIOME_SCENERY[tileZone]||BIOME_SCENERY.forest;
+        const seed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
+        const kind=choices[seed%choices.length],source=models.get(kind);
+        if(source){
+          let batch=sceneryBatches.get(kind);
+          if(!batch){
+            const mesh=new THREE.InstancedMesh(source.geometry,source.material,64);
+            mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;
+            scene.add(mesh);batch={mesh};sceneryBatches.set(kind,batch);
+          }
+          const index=sceneryCounts.get(kind)||0;
+          const xShift=((seed&255)/255-.5)*floorPitchX*.5;
+          const zShift=(((seed>>>8)&255)/255-.5)*floorPitchZ*.5;
+          resourceTransform.position.set(gx+xShift,0,gz+zShift);
+          resourceTransform.rotation.y=((seed>>>16)&255)/255*Math.PI*2;
+          resourceTransform.scale.setScalar(kind.startsWith('foliage')?.58:
+            kind==='fence_straight'?.78:kind==='cobblestones'?.82:.88);
+          resourceTransform.updateMatrix();
+          batch.mesh.setMatrixAt(index,resourceTransform.matrix);
+          sceneryCounts.set(kind,index+1);
+        }
+      }
       if(tx<3&&tz<3){
         const seamX=gx+floorPitchX*.5,seamZ=gz+floorPitchZ*.5;
         const seamZone=isInterior?currentBiome:String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
@@ -699,7 +743,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     biomeTiles.instanceColor.needsUpdate=true;
     floorSeamTiles.instanceMatrix.needsUpdate=true;
     floorSeamTiles.instanceColor.needsUpdate=true;
+    for(const [kind,batch] of sceneryBatches){
+      batch.mesh.count=sceneryCounts.get(kind)||0;
+      if(batch.mesh.count)batch.mesh.instanceMatrix.needsUpdate=true;
+    }
       lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;lastFloorArea=state.area;
+      lastSceneryModelCount=models.size;
     }
     interactables.length=0;
     const seen=state.last||Date.now();
@@ -833,6 +882,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     scene.remove(floorSeamTiles);floorSeamTiles.dispose();
     for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
     resourceBatches.clear();
+    for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
+    sceneryBatches.clear();
     // Source floor geometry/material are disposed once by the source model pool.
   }
   return {
