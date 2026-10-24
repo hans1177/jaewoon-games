@@ -354,7 +354,7 @@ function companionQuestChoice(a,path){
  save();toast(path==='truth'&&!result.success?'설득 실패 · 대신 증인을 보호하기로 했어.':'동료 개인 의뢰가 시작됐어.');companionDialogue(a);
 }
 function companionDialogue(a){
- var idx=portraitIndex(a),unlocked=!!state.story.companions[a.id],quest=state.story.quests[a.id];
+ var idx=portraitIndex(a),unlocked=!!state.story.companions[a.id],quest=state.story.quests[a.id],event=INCIDENTS.find(function(c){return c.person===a.name;}),eventZone=event?INCIDENTS.indexOf(event)+1:0,eventCase=eventZone?state.story.cases[eventZone]:null;
  var html='<div class="dialogueLayout">'+portraitMarkup(idx,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+role(a).name+' · '+CLASS_INFO[a.classId].title+'</span><h2>'+a.name+'</h2><p>'+(unlocked?COMPANION_SECRETS[idx]:'“이 길을 혼자 걸을 생각이야? 함께라면 서로의 빈 곳을 채울 수 있을 거야.”')+'</p><blockquote>'+(unlocked?'“내 이야기를 기억해 줘. 나도 네 이름을 잊지 않을게.”':'“어디로 가든, 먼저 서로를 믿는 것부터 시작하자.”')+'</blockquote>';
  if(unlocked&&!quest){
   html+='<h3>동료 개인 의뢰</h3><p>진실을 밝혀 지워진 기록을 복원할지, 위험해진 증인을 안전하게 지킬지 선택해.</p>';
