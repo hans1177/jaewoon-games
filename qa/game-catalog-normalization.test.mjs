@@ -222,6 +222,36 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
+// General HTML/CSS/JavaScript engines are admitted to development without Unity.
+// Registration is automatic, but 2D source never becomes a verified 3D play claim.
+{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'general-web-game-intake-'));
+  try{
+    const id='school-tycoon';
+    const dir=path.join(root,id);
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'index.html'),`<!doctype html><title>학교 타이쿤</title><canvas id="game"></canvas><button id="start">시작</button><script src="game.js"></script>`+' '.repeat(600));
+    fs.writeFileSync(path.join(dir,'game.js'),`let gameState={score:0,lesson:1};function update(){gameState.score+=1};document.addEventListener('click',()=>{gameState.lesson+=1});setInterval(update,1000);`);
+    const fixture={games:[],permanentRemovalPolicy:{ids:[]}};
+    const first=ingestOwnerWebGameIds(fixture,[],{rootDir:root});
+    assert.deepEqual(first.added,[id],'real HTML/JS game must enter canonical design flow');
+    const game=fixture.games[0];
+    assert.equal(game.name,'학교 타이쿤');
+    assert.equal(game.webPath,'web-games/school-tycoon');
+    assert.equal(game.ownerWebIntakeEngine,'HTML_CSS_JAVASCRIPT');
+    assert.equal(game.web3dRedevelopmentRequired,true);
+    assert.equal(game.productionClass,'DESIGN_ONLY');
+    assert.equal(game.hasWebArchive,true);
+    assert.equal(game.homepageWebPlayable,false,'without real QA 2D must not be published as verified play');
+    assert.equal(game.ownerWebSourceState,'WEB_SOURCE_DEVELOPMENT_PENDING_QA');
+    assert.equal(game.webDevelopmentResetRequired,true);
+    const second=ingestOwnerWebGameIds(fixture,[],{rootDir:root});
+    assert.deepEqual(second.added,[],'repeated sync must not duplicate the game');
+    assert.equal(fixture.games.length,1);
+    assert.equal(fs.existsSync(path.join(dir,'game.js')),true,'original JavaScript must be preserved');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+}
+
 // Regression: a shared click-only genre control shell is not a playable game even if its HTML is long.
 {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'click-only-web-'));
