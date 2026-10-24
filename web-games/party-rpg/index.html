@@ -108,6 +108,9 @@
 .tacticsHint{font-size:12px;color:#aab2b0;line-height:1.7}
 @media(max-width:700px){#commandBar button{padding:6px 1px;font-size:9px;letter-spacing:-.15px}.tacticsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+.evidence-label{position:absolute;top:0;left:0;white-space:nowrap;pointer-events:none;font:12px Georgia,serif;color:#d7c39a;text-shadow:0 1px 5px #000;letter-spacing:.5px;animation:cluePulse 2.6s ease-in-out infinite}
+@keyframes cluePulse{0%,100%{opacity:.74}50%{opacity:1}}
+@media(max-width:700px){.evidence-label{font-size:10px}}
 </style>
 </head>
 <body>
@@ -605,7 +608,7 @@ function rollDungeonDrop(enemy,killer){
  if(enemy.boss){var entries=Object.keys(dungeon.contrib),sum=entries.reduce(function(s,k){return s+Math.max(1,dungeon.contrib[k]);},0),r=Math.random()*sum,acc=0;for(var i=0;i<entries.length;i++){acc+=Math.max(1,dungeon.contrib[entries[i]]);if(r<=acc){owner=entries[i];break;}}}
  dungeon.pendingDrops.push({item:item,owner:owner});
 }
-function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.visualUntil=performance.now()+450;var result=options.spell?{hit:true,crit:false}:attackRoll(proficiency(u)+role(u).mod,11+(e.elite?2:0)+(e.boss?3:0)+Math.min(5,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/5)),options.advantage);if(!result.hit){if(source==="player")battleLog('빗나감 · d20 '+result.roll);return false;}var dealt=Math.min(e.hp,Math.max(1,Math.round(amount*(result.crit?2:1))));e.hp-=dealt;e.lastHit=source;sound.effect('hit');if(result.crit)battleLog('치명타 · 자연 20');if(dungeon&&e.boss)dungeon.contrib[source]=(dungeon.contrib[source]||0)+dealt;if(e.hp<=0)killEnemy(e,source);return true;}
+function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.visualUntil=performance.now()+450;var result=options.spell?{hit:true,crit:false}:attackRoll(proficiency(u)+role(u).mod,11+(e.elite?2:0)+(e.boss?3:0)+Math.min(5,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/5)),options.advantage);if(!result.hit){if(source==="player")battleLog('빗나감 · d20 '+result.roll);if(Math.random()<.3)view.popDamage(e.x,e.y,0,false,true);return false;}var dealt=Math.min(e.hp,Math.max(1,Math.round(amount*(result.crit?2:1))));e.hp-=dealt;e.lastHit=source;view.popDamage(e.x,e.y,dealt,result.crit);sound.effect('hit');if(result.crit)battleLog('치명타 · 자연 20');if(dungeon&&e.boss)dungeon.contrib[source]=(dungeon.contrib[source]||0)+dealt;if(e.hp<=0)killEnemy(e,source);return true;}
 function killEnemy(e,killer){
  e.dead=true;
  if(dungeon){dungeon.contrib[killer]=(dungeon.contrib[killer]||0)+(e.boss?25:10);rollDungeonDrop(e,killer);if(e.boss)completeDungeon();else if(aliveEnemies()===0){dungeon.door=true;toast("방 클리어! 다음 문이 열렸어.");}}
@@ -637,7 +640,7 @@ function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(fu
 function updateEnemies(dt){
  enemies.forEach(function(e){if(e.dead)return;e.attackCd-=dt;var targets=[{id:"player",x:p.x,y:p.y,hp:state.player.hp}];partyMembers().forEach(function(a){targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});if(!dungeon&&state.zone>0)state.ai.forEach(function(a){if(!a.party&&a.zone===state.zone&&a.routine==="hunt")targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});var t=targets[0],bd=Infinity;targets.forEach(function(q){if(q.hp<=0)return;var dx=q.x-e.x,dy=q.y-e.y,d=dx*dx+dy*dy;if(d<bd){bd=d;t=q;}});var dist=Math.sqrt(bd);combat(e).target=t.id;
   if(dist>e.r+24){var vx=(t.x-e.x)/(dist||1),vy=(t.y-e.y)/(dist||1),spd=(e.boss?72:(e.elite?78:86))*(combat(e).slowUntil>battleTime?.65:1);e.x+=vx*spd*dt;e.y+=vy*spd*dt;}
-  else if(e.attackCd<=0){e.attackCd=e.boss ? .8 : 1.05;var u=unitBySource(t.id),dmg=e.atk;combat(e).visualUntil=performance.now()+450;if(u){var hit=attackRoll(3+Math.min(6,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/4)),ac(u));if(hit.hit){u.hp-=Math.max(1,dmg-(t.id==="player"?playerArmorDef():aiArmorDef(u)))*(hit.crit?2:1);if(t.id==="player")p.hitFlash=.16;}else if(t.id==="player")battleLog("회피 · 적 d20 "+hit.roll);}}
+  else if(e.attackCd<=0){e.attackCd=e.boss ? .8 : 1.05;var u=unitBySource(t.id),dmg=e.atk;combat(e).visualUntil=performance.now()+450;if(u){var hit=attackRoll(3+Math.min(6,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/4)),ac(u));if(hit.hit){var received=Math.max(1,dmg-(t.id==="player"?playerArmorDef():aiArmorDef(u)))*(hit.crit?2:1);u.hp-=received;view.popDamage(t.x,t.y,received,hit.crit);if(t.id==="player")p.hitFlash=.16;}else if(t.id==="player")battleLog("회피 · 적 d20 "+hit.roll);}}
  });
  if(state.player.hp<=0){state.player.hp=state.player.maxHp;if(dungeon){toast("쓰러져서 던전에서 이탈했어.");returnFromDungeon();}else{goZone(0);toast("마을에서 부활했어.");}}
  partyMembers().forEach(function(a){if(a.hp<=0){a.hp=a.maxHp*.45;a.x=p.x-50;a.y=p.y+65;}});
