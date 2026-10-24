@@ -4158,7 +4158,7 @@ function visualCraftWorkerGuidance(order={},context={}){
     .filter(Boolean).map(clean).join(' ');
   const hasVisualWork=order?.presentationQuality?.required===true
     ||order?.assetProduction?.required===true
-    ||/(?:그래픽|시각|꾸미|ui|hud|인벤|아이콘|대미지|데미지|tooltip|damage.?popup|visual|presentation|layout)/i.test(intent);
+    ||/(?:그래픽|시각|픽셀|타일|배경|모션|애니|액션|타격|렌더|카메라|이펙트|꾸미|ui|hud|인벤|아이콘|대미지|데미지|tooltip|damage.?popup|visual|presentation|layout|pixel|tile|render|animation|motion|vfx|camera)/i.test(intent);
   if(!hasVisualWork)return'';
   const game=order?.gameDesign||order?.design||order?.selectedTask?.design||{};
   const world=game?.world||order?.worldDesign||order?.selectedTask?.world||{};
@@ -4177,6 +4177,10 @@ function visualCraftWorkerGuidance(order={},context={}){
     JSON.stringify({materialRecipes:craft.craftPlans.map(row=>row.materialRecipe),
       surfaceLayouts:craft.craftPlans.map(row=>({surface:row.surface,grammar:row.grammar,
         layout:row.layout,focus:row.focus})),supportedEffects:craft.craftPlans[0]?.requiredPatterns||[]}),
+    'F0와 이후 반복 BUILD_UP에서 같은 게임의 기존 그래픽/모션 책임 코드를 추적하고, 이전 검증된 시각 기준보다 약한 장면을 이번 허용된 책임 범위에서 실제 수정한다. 새 render loop, wrapper, 우회 stage는 만들지 않는다.',
+    '해당 게임 스타일이 픽셀일 때만 지역별 타일 무늬·경계·식생·수면, nearest 픽셀 격자와 부드러운 카메라/이동을 결합한다. 3D/비픽셀 게임은 네이티브 모델·리그·머티리얼 품질을 심화한다.',
+    '종별 idle/walk/run/turn/hit/death, foot sliding/문워크 방지, 장비별 windup/impact/recoil/recovery, 기존 적중 시점과 VFX/SFX/카메라 반응을 동기화한다. 같은 색·스탯만 바꾼 몹/무기 복제를 품질 개선으로 보지 않는다.',
+    '모바일 터치/위험 예고를 가리지 않게 이펙트 밀도·드로우콜·메모리를 제한하고, 기존 HP·쿨다운·명중 판정·드롭·세이브·네트워크 권한을 유지한다. 실제 QA 근거 없이는 PASS라 하지 않는다.',
     'For each actual UI surface present in the allowed source, implement the relevant visual behavior in that game client owner: frames/icons/fonts/spacing, damage numbers, tooltip placement, notice stacking, stateful icons, boss/status displays, and native 3D item preview when a verified model is actually available.',
     'Use existing engine-native UI module and graphics runtime functions ONLY if actually imported/bound in the selected game source. Never treat a common library name as proof that the running game uses it; add the normal existing library binding within the authorized responsibility where necessary.',
     'Avoid fixed default themes, fabricated asset IDs, synthetic gameplay events, new parallel render loops, semantic HP changes, save changes, server-authority shifts or broad unrelated rewrites.',
