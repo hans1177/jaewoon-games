@@ -312,19 +312,25 @@ try{
     assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
      view.name+': COZY_ISLAND_INVENTORY_FAILED');
     await cozy.locator('#panelClose').click();
-    // 실제 터치 대상이 기존 .actions 안에 있고 입력 캔버스가 클릭을 가로채지 않는지 확인.
-    const controlsHit=await cozy.locator('#toolButton').evaluate(button=>{
-     const actions=button.closest('.actions'),rect=button.getBoundingClientRect();
+    // 전략 버튼 클릭과 레거시 지역 입력의 비표시 여부를 확인.
+    assert.equal(await cozy.locator('#toolButton').count(),0,
+     view.name+': COZY_OLD_HAND_BUTTON_VISIBLE');
+    const controlsHit=await cozy.locator('#castleCommand').evaluate(button=>{
+     const bar=button.closest('.strategy-bar'),rect=button.getBoundingClientRect();
      const target=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
-     return !!actions&&actions.closest('.controls')!==null
-      &&getComputedStyle(actions).pointerEvents==='auto'
+     return !!bar&&bar.closest('.controls')!==null
+      &&getComputedStyle(bar).pointerEvents==='auto'
       &&(target===button||button.contains(target));
     });
-    assert.equal(controlsHit,true,view.name+': COZY_ISLAND_TOOL_POINTER_HIT_BLOCKED');
-    const tool=await cozy.locator('#toolButton').textContent();
-    await cozy.locator('#toolButton').click();
-    assert.notEqual(await cozy.locator('#toolButton').textContent(),tool,
-     view.name+': COZY_ISLAND_ACTION_FAILED');
+    assert.equal(controlsHit,true,view.name+': COZY_STRATEGY_POINTER_BLOCKED');
+    await cozy.locator('#castleCommand').click();
+    assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
+     view.name+': COZY_CASTLE_COMMAND_FAILED');
+    await cozy.locator('#panelClose').click();
+    assert.equal(await cozy.locator('#actionButton').evaluate(el=>el.hidden),true,
+     view.name+': COZY_OLD_ACTION_BUTTON_VISIBLE');
+    assert.equal(await cozy.locator('#zoomIn').isVisible(),true,
+     view.name+': COZY_STRATEGY_ZOOM_MISSING');
     if(view.mobile){
      const bounds=await cozy.locator('#joystick').boundingBox();
      assert.ok(bounds,view.name+': COZY_ISLAND_JOYSTICK_NOT_VISIBLE');
