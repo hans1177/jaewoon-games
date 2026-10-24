@@ -68,10 +68,15 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   .toast { bottom: 112px; }
 }
 
-/* 3D 메인과 기존 게임 2D 확장 표시를 겹치지 않게 유지한다. */
+/* 3D 화면만 표시한다. 기존 게임 입력·확장 API용 2D 캔버스는 보이지 않는다. */
 #island3d { position:absolute; inset:0; width:100%; height:100%; z-index:0;
   display:block; pointer-events:none; touch-action:none; }
-#game { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+#game { position:absolute; inset:0; width:100%; height:100%; z-index:1;
+  opacity:0; pointer-events:auto; touch-action:none; }
+.webgl-status { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  z-index:12; width:min(90vw,420px); padding:22px; border-radius:18px;
+  background:rgba(21,45,49,.94); color:#fff; font-weight:800; text-align:center; }
+.webgl-status[hidden] { display:none; }
 .hud,.raid-status,.hint,.toast,.controls { z-index:4; }
 .panel,.fishing-panel { z-index:9; }
 @media (max-width:420px) {
