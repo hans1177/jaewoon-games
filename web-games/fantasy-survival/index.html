@@ -5665,7 +5665,7 @@ function updateProjectiles(dt,now){
   }
   if(q.kind==='biterAcid'&&now<(q.homingUntil||0)){
    const target=q.targetId===multiplayer.playerId?p:multiplayer.remote.get(q.targetId);
-   if(target&&target.area===q.area){const dx=target.x-q.x,dy=target.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*225;q.vy=dy/d*225}
+   if(target&&(q.targetId===multiplayer.playerId?state.area:target.area)===q.area){const dx=target.x-q.x,dy=target.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*225;q.vy=dy/d*225}
   }
   if(q.kind==='mud'&&now<(q.homingUntil||0)){
    let t=q.targetId===multiplayer.playerId?p:multiplayer.remote.get(q.targetId);
@@ -5684,7 +5684,7 @@ function updateProjectiles(dt,now){
   }
   if(q.kind==='biterAcid'){
    const target=q.targetId===multiplayer.playerId?p:multiplayer.remote.get(q.targetId);
-   if(target&&target.area===q.area&&dist(target.x,target.y,q.x,q.y)<33){
+   if(target&&(q.targetId===multiplayer.playerId?state.area:target.area)===q.area&&dist(target.x,target.y,q.x,q.y)<33){
     const source=state.enemies.find(e=>e.netId===q.sourceId)||{type:creatures.crystalbiter,netId:q.sourceId};
     const owner={...source,playerTargetId:q.targetId};
     enemyDamageTarget(owner,66,true);applyEnemyEffectTarget(owner,p,'biterAcid',10000);
@@ -5851,7 +5851,7 @@ function crystalRegionEnemyMove(e,targetP,now){
   if(d<700&&Math.random()<.20){
    for(let i=0;i<2;i++){
     const a=Math.atan2(targetP.y-e.y,targetP.x-e.x)+(i===0?-.18:.18);
-    state.projectiles.push({kind:'biterAcid',x:e.x+Math.cos(a)*35,y:e.y+Math.sin(a)*35,vx:Math.cos(a)*225,vy:Math.sin(a)*225,speed:225,area:e.area,createdAt:now,life:7000,homingUntil:now+4000,targetId:e.playerTargetId||multiplayer.playerId,sourceId:e.netId,orbIndex:i,playerOwned:false,damage:66});
+    state.projectiles.push({kind:'biterAcid',x:e.x+Math.cos(a)*35,y:e.y+Math.sin(a)*35,vx:Math.cos(a)*225,vy:Math.sin(a)*225,speed:225,area:e.area,createdAt:now,life:7000,homingUntil:now+4000,targetId:e.playerTargetId==='pet'?multiplayer.playerId:(e.playerTargetId||multiplayer.playerId),sourceId:e.netId,orbIndex:i,playerOwned:false,damage:66});
    }
   }
  }
