@@ -26,6 +26,9 @@ test('OWNER LOCK: every main merge triggers the existing Pages publisher without
     'slow post-publication browser QA must never retain the global Pages publication lock');
   assert.match(publishHeader,/group: magic-forest-pages-main-publish/);
   assert.match(publishHeader,/cancel-in-progress: false/);
+  const publicationJob=workflow.split('  publish-pages:')[1].split('  post-publication-3d-smoke:')[0];
+  assert.doesNotMatch(publicationJob,/director_live_qa|xargs|curl/, 'slow HTTP QA must not retain the publication lock');
+  assert.match(workflow,/PAGES_IDENTICAL_PUBLICATION_INPUTS=PASS/);
   assert.match(workflow,/id: latest_main/);
   assert.match(workflow,/if: steps.latest_main.outputs.publish == 'true'/);
   assert.match(workflow,/id: live_revision/);
