@@ -64688,9 +64688,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-24T15:53:19.786Z",
+      "updatedAt": "2026-10-24T15:56:34.827Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -64700,9 +64700,9 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "a61a3c1925f851db040eb17bbc5a30591b4063a0",
+      "robloxSourceCommit": "9c8afc75c1e0837dca3697decaee3fe124a5caf6",
       "robloxSourceBootstrapPassedAt": "2026-10-24T15:26:51.705Z",
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-24T15:56:34.827Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -65210,7 +65210,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_DATASTORE_REQUIRED|SERVER_DATASTORE_LOAD_REQUIRED|SERVER_DATASTORE_SAVE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
@@ -65257,13 +65257,13 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "d3633012584eb1e5383ec550c26b49ea1161ae39",
+      "robloxQualityBuildUpSourceRevision": "9c8afc75c1e0837dca3697decaee3fe124a5caf6",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-roblox-survival-horror-es-doors",
-        "sourceRevision": "d3633012584eb1e5383ec550c26b49ea1161ae39",
-        "sourceTreeSha": "6bd58befe5fb32343dc7a5ab06c9a7c3acc46a4a",
+        "sourceRevision": "9c8afc75c1e0837dca3697decaee3fe124a5caf6",
+        "sourceTreeSha": "91fe8b2aee1c81b217e7e46f175b7db0ee6d6be5",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -65282,7 +65282,7 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
+          "libraryFingerprint": "5d0abeeac69a88bccd4c2b036329951f6d09731a2f36c893ee076f9a3c80f993",
           "baselineFingerprint": "6e65709e63fce788d27abef2284aab0356767144bafb888b9daa26222ae9b51e",
           "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
@@ -65363,8 +65363,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40089073518,
-        "testedAt": "2026-10-24T11:46:29.590Z"
+        "workflowRunId": 40107092193,
+        "testedAt": "2026-10-24T15:56:34.827Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -82365,7 +82365,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-24T15:55:43.990Z",
+  "updatedAt": "2026-10-24T15:56:34.827Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
