@@ -427,7 +427,7 @@ function createUnit(kind,enemy,boss=false,saved=null){
   Math.max(1,Math.min(maxHp,saved.hp)):maxHp;
  return{id:unitId++,kind,enemy,boss,hp,maxHp,level,quality,
   ...(kind==='knight'&&!enemy?{
-   heroName:typeof saved?.heroName==='string'?saved.heroName:'방랑 기사',
+   heroName:typeof saved?.heroName==='string'?saved.heroName.replace(/[<>"'`]/g,'').slice(0,32):'방랑 기사',
    trait:['charge','guardian','medic','siege'].includes(saved?.trait)?saved.trait:'guardian',
    xp:Math.max(0,Math.min(5000,Number(saved?.xp)||0)),
    skillReadyAt:Math.max(0,Number(saved?.skillReadyAt)||0)}:{}),
@@ -452,8 +452,12 @@ function getCourt(){
  if(!Array.isArray(c.prisoners))c.prisoners=[];
  if(!Array.isArray(c.heldByRivals))c.heldByRivals=[];
  if(!Array.isArray(c.history))c.history=[];
- c.prisoners=c.prisoners.filter(p=>p&&typeof p.id==='string').slice(0,8);
- c.heldByRivals=c.heldByRivals.filter(p=>p&&typeof p.id==='string').slice(0,8);
+ c.prisoners=c.prisoners.filter(p=>p&&typeof p.id==='string').slice(0,8).map(p=>({
+  ...p,heroName:String(p.heroName||'이름 없는 포로').replace(/[<>"'`]/g,'').slice(0,32)
+ }));
+ c.heldByRivals=c.heldByRivals.filter(p=>p&&typeof p.id==='string').slice(0,8).map(p=>({
+  ...p,heroName:String(p.heroName||'기사').replace(/[<>"'`]/g,'').slice(0,32)
+ }));
  c.history=c.history.slice(-20);
  c.reputation=Math.max(-100,Math.min(100,Number(c.reputation)||0));
  c.nextId=Math.max(1,Math.floor(Number(c.nextId)||1));
@@ -855,6 +859,12 @@ function updateOffensive(dt){
  allies=allies.filter(u=>u.hp>0);fieldEnemies=fieldEnemies.filter(u=>u.hp>0);game.fieldEnemies=fieldEnemies;game.allies=allies;
  if(lord.hp<=0){
    lord.hp=0;lord.defeated=true;offensiveTarget=null;game.offensiveTarget=null;fieldEnemies=[];
+   // 왕국 점령 시 해당 영주가 억류하던 우리 기사들은 감옥에서 구조한다.
+   const court=getCourt(),rescued=court.heldByRivals.filter(p=>p.lordId===lord.id);
+   for(const captive of rescued)freeKnight(captive);
+   court.heldByRivals=court.heldByRivals.filter(p=>p.lordId!==lord.id);
+   if(rescued.length){courtLog(lord.name+' 함락 · 아군 기사 '+rescued.length+'명 구조');
+     toast('⚜️ 포로 기사 '+rescued.length+'명 귀환');}
    for(const u of allies)delete u._expedition;
    state.coins+=120;state.inventory.wood+=20;state.inventory.stone+=16;saveSoon();
    const remaining=getEnemyLords().filter(l=>!l.defeated);
