@@ -1361,23 +1361,41 @@ function travelMenu(){
  modalBody.querySelectorAll("[data-dungeon]").forEach(function(b){b.onclick=function(){startDungeon(Number(b.dataset.dungeon));};});
 }
 // 상점: 원래 주인공 보유 장비 의미를 유지하며 파티 동료는 자신의 장비 목록만 소유한다.
+// 상점: 기존 아이템은 제한 없이 보존, 신규 장비만 직업·레벨·종류 숙련으로 제한.
 function shopMenu(kind,selectedId){
  var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;
  if(!u){toast('동행 중인 동료만 장비를 구매할 수 있어.');return;}
- var isWeapon=kind==="weapon",items=isWeapon?WEAPONS:ARMORS,owned=isWeapon?u.ownedWeapons:u.ownedArmors;
- var html='<p class="note">'+escapeText(u.name||'주인공')+'의 '+(isWeapon?'무기':'방어구')+' · 구매 비용은 파티 금고에서 지불해. 보유한 장비는 추가 비용 없이 교체할 수 있어. · '+Math.floor(state.player.gold)+'G</p>';
- html+=items.map(function(it){var has=owned.includes(it.id),equipped=isWeapon?u.weapon===it.id&&!u.specialWeapon:u.armor===it.id&&!u.specialArmor,stat=isWeapon?'공격 +'+it.power:'방어 +'+it.def;return '<div class="row"><div class="inventoryItem"><b>'+it.name+(equipped?' <span class="tag good">장착</span>':'')+'</b><small>'+stat+' · '+it.price+'G</small></div><div class="inventoryActions"><button data-buy="'+it.id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착 중':has?'장착':'구매')+'</button></div></div>';}).join('');
+ var isWeapon=kind==='weapon',isArmor=kind==='armor',isAccessory=kind==='accessory';
+ if(!isWeapon&&!isArmor&&!isAccessory)return;
+ var items=isWeapon?WEAPONS:isArmor?ARMORS:ACCESSORIES,owned=isWeapon?u.ownedWeapons:isArmor?u.ownedArmors:u.ownedAccessories;
+ var html='<p class="note">'+escapeText(u.name||'주인공')+' · '+role(u).name+' · 잔액 '+Math.floor(state.player.gold)+'G<br>새 장비에는 직업·레벨·종류 숙련 조건이 적용돼.</p>';
+ html+=items.filter(it=>!it.jobs||it.jobs.includes(u.classId)).map(it=>{
+  var allowed=canEquipItem(u,it,kind);
+  var eq=isWeapon?u.weapon===it.id&&!u.specialWeapon:isArmor?u.armor===it.id&&!u.specialArmor:u[it.slot]===it.id;
+  var has=owned.includes(it.id);
+  var effect=isWeapon?'공격 +'+it.power:isArmor?'방어 +'+it.def:'공격 +'+(it.attack||0)+' / 방어 +'+(it.def||0);
+  var need=it.mastery?' · '+GEAR_FAMILIES[it.family]+' 숙련 '+(u.masteries[it.family]||0)+'/'+it.mastery:'';
+  var reason=it.level&&u.level<it.level?'레벨 '+it.level+' 필요':it.mastery&&(u.masteries[it.family]||0)<it.mastery?'숙련 '+it.mastery+' 필요':'직업 제한';
+  return '<div class="row"><div class="inventoryItem"><b>'+it.name+(eq?' <span class="tag good">착용 중</span>':'')+'</b><small>'+effect+' · '+it.price+'G'+(it.level?' · Lv.'+it.level+'+':'')+need+'</small></div><div class="inventoryActions"><button data-buy="'+it.id+'" '+(!allowed||eq?'disabled':'')+'>'+(eq?'장착 중':!allowed?reason:has?'장착':'구매')+'</button></div></div>';
+ }).join('');
  html+='<button class="menuBtn secondary" id="backToBag">인벤토리로 돌아가기</button>';
- openModal(isWeapon?'무기 상점':'방어구 상점',html);
- modalBody.querySelectorAll('[data-buy]').forEach(function(b){b.onclick=function(){if(buyOrEquip(kind,b.dataset.buy,u===state.player?'player':u.id))shopMenu(kind,u===state.player?'player':u.id);};});
+ openModal(isWeapon?'무기 상점':isArmor?'방어구 상점':'장신구 상점',html);
+ modalBody.querySelectorAll('[data-buy]').forEach(b=>b.onclick=function(){if(buyOrEquip(kind,b.dataset.buy,u===state.player?'player':u.id))shopMenu(kind,u===state.player?'player':u.id);});
  document.getElementById('backToBag').onclick=function(){bagMenu(u===state.player?'player':u.id);};
 }
 function buyOrEquip(kind,id,selectedId){
- var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;if(!u)return false;
- var isWeapon=kind==="weapon",arr=isWeapon?WEAPONS:ARMORS,owned=isWeapon?u.ownedWeapons:u.ownedArmors,it=arr.find(x=>x.id===id);if(!it)return false;
- if(!owned.includes(id)){if(state.player.gold<it.price){toast('골드가 부족해.');return false;}state.player.gold-=it.price;owned.push(id);}
- if(isWeapon){u.weapon=id;u.specialWeapon=null;}else{u.armor=id;u.specialArmor=null;}
- save();updateHud();toast(escapeText(u.name||'주인공')+' · '+it.name+' 장착');return true;
+ var u=selectedId&&selectedId!=='player'?state.ai.find(a=>a.id===selectedId&&a.party):state.player;
+ if(!u)return false;
+ var isWeapon=kind==='weapon',isArmor=kind==='armor',isAccessory=kind==='accessory';
+ if(!isWeapon&&!isArmor&&!isAccessory)return false;
+ var items=isWeapon?WEAPONS:isArmor?ARMORS:ACCESSORIES,owned=isWeapon?u.ownedWeapons:isArmor?u.ownedArmors:u.ownedAccessories,it=items.find(x=>x.id===id);
+ if(!canEquipItem(u,it,kind)){toast('직업·레벨·숙련 조건을 확인해.');return false;}
+ if(!owned.includes(id)){
+  if(state.player.gold<it.price){toast('골드가 부족해.');return false;}
+  state.player.gold-=it.price;owned.push(id);
+ }
+ if(isWeapon){u.weapon=id;u.specialWeapon=null;}else if(isArmor){u.armor=id;u.specialArmor=null;}else u[it.slot]=id;
+ save();updateHud();toast((u.name||'주인공')+' · '+it.name+' 장착');return true;
 }
 function sellMenu(){
  var total=0,html='<b>일반 몬스터 전리품 판매</b>';
