@@ -314,7 +314,11 @@ var ZONES=[
  {name:"동굴",sub:"Lv.6+",color:"#555862",lv:6,mons:[["동굴 박쥐",145,22,46,35],["암석 골렘",190,20,52,42]]},
  {name:"사막",sub:"Lv.10+",color:"#b18a4e",lv:10,mons:[["사막 전갈",230,30,70,55],["모래 망령",210,34,75,60]]},
  {name:"설원",sub:"Lv.15+",color:"#9ec7d6",lv:15,mons:[["설원 늑대",310,40,96,72],["얼음 골렘",390,38,110,82]]},
- {name:"마계",sub:"Lv.21+",color:"#6b466f",lv:21,mons:[["마계 기사",470,52,145,105],["심연 마수",540,58,160,118]]}
+ {name:"마계",sub:"Lv.21+",color:"#6b466f",lv:21,mons:[["마계 기사",470,52,145,105],["심연 마수",540,58,160,118]]},
+ {name:"붉은 원형경기장",sub:"옛 제국 · Lv.24+",color:"#a97957",lv:24,mons:[["원혼 검투사",525,58,169,120],["청동 미노타우로스",620,66,188,138],["가면 쓴 심판관",505,57,165,118]]},
+ {name:"아피아 수로 묘역",sub:"옛 제국 · Lv.27+",color:"#758f89",lv:27,mons:[["납관 유령",570,63,184,140],["수로 원혼",545,67,181,136],["물먹은 백인대장",690,70,202,155]]},
+ {name:"황금 월계수 별장",sub:"옛 제국 · Lv.30+",color:"#aa9854",lv:30,mons:[["황금 가면 망령",655,75,215,164],["도금된 근위 인형",770,78,225,180],["욕망의 예언자",630,74,217,159]]},
+ {name:"신탁의 일곱 언덕",sub:"옛 제국 · Lv.33+",color:"#806f9c",lv:33,mons:[["거짓 신탁 사제",710,80,236,187],["기억 먹는 키메라",835,88,251,200],["월식의 원혼",780,87,248,194]]}
 ];
 var WEAPONS=[
  {id:"wood",name:"목검",price:40,power:5},
@@ -335,7 +339,11 @@ var MATERIALS={
  3:{id:"cave_loot",name:"동굴 전리품",price:25},
  4:{id:"desert_loot",name:"사막 전리품",price:38},
  5:{id:"snow_loot",name:"설원 전리품",price:55},
- 6:{id:"demon_loot",name:"마계 전리품",price:80}
+ 6:{id:"demon_loot",name:"마계 전리품",price:80},
+ 7:{id:"arena_relic",name:"황동 경기장 유물",price:97},
+ 8:{id:"aqueduct_relic",name:"수로 묘비 조각",price:118},
+ 9:{id:"villa_relic",name:"월계수 금박",price:143},
+ 10:{id:"oracle_relic",name:"신탁 점토판",price:172}
 };
 var DROPS={
  goblin_blade:{id:"goblin_blade",name:"요새 이빨검",kind:"weapon",power:31,from:"고블린 요새"},
@@ -454,9 +462,11 @@ var INCIDENTS=[
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=6;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes","battles","recruits"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}if(!s.act2||typeof s.act2!=='object'||Array.isArray(s.act2))s.act2={};
+ s.version=7;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes","battles","recruits","imperialCases"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}if(!s.act2||typeof s.act2!=='object'||Array.isArray(s.act2))s.act2={};
  if(!s.act2.completed||typeof s.act2.completed!=='object'||Array.isArray(s.act2.completed))s.act2.completed={};
  Object.keys(s.battles).forEach(k=>{if(s.battles[k]==='active')s.battles[k]='pending';});
+ if(!['release','archive'].includes(s.imperialVerdict))s.imperialVerdict=null;
+ Object.keys(s.imperialCases).forEach(k=>{if(s.imperialCases[k]?.status==='fighting')s.imperialCases[k].status='pending';});
  state.story=s;
 }
 function storyVisit(zone){
@@ -479,7 +489,77 @@ const ACT2_SITES={
  5:{x:1580,y:880,name:'꺼지지 않는 경계의 불씨',lead:'맹약 후계자의 이름이 눈 속에서 되살아난다.'},
  6:{x:1540,y:900,name:'재판의 마지막 증인',lead:'돌아온 도시의 판결문에는 아직 공개되지 않은 명령자의 서명이 남아 있다.'}
 };
-var storyBattle=null;
+// 3막 · 사라진 제국: 영웅·마왕 이분법 대신 시민권과 기억 소유권을 다룬다.
+// 과거 제국은 고대 로마형 도시국가였고 기억을 사고파는 신탁 제도가 멸망을 불렀다.
+const IMPERIAL_CASES=[{"id":"arena_murder","zone":7,"x":1190,"y":610,"kind":"살인","name":"죽은 검투사가 세 번 사망한 밤","lead":"경기장 모래 아래 동일한 살해 보고서가 세 장 발견됐다. 세 시신의 검상은 같고 목격자의 이름만 다르다.","choice1":"증인들을 불러 공개 재현한다","choice2":"살아남은 노예의 신원을 숨기고 조사한다","answer1":"시신 세 명 중 둘은 제국이 기억을 복제한 대역이었다. 귀족은 대역에게 살인을 뒤집어씌웠다.","answer2":"노예는 살아남았다. 대신 경기장 귀족이 증언을 없애려 수호령을 풀었다.","foe":"원혼 검투사","voice":"죽은 검투사의 음성은 범인의 이름만 건너뛴다."},{"id":"arena_myth","zone":7,"x":1660,"y":850,"kind":"신화","name":"미노타우로스는 왜 울었나","lead":"투우 괴물이라 불린 존재는 손에 어린아이의 팔찌를 쥐고 있다. 경기장 관리인이 사라진 아이들을 공물로 바쳤다.","choice1":"괴물의 기억을 공개해 투기장을 멈춘다","choice2":"관리인의 가족부터 구출한다","answer1":"미노타우로스는 인간을 잡아먹은 적이 없다. 제국은 저항한 수호자를 괴물로 전시했다.","answer2":"관리인의 가족은 살아남았다. 그러나 공물 장부는 밤마다 다른 이름으로 고쳐 쓰인다.","foe":"청동 미노타우로스","voice":"“괴물이라고 부르면, 그곳에 가둬도 된다고 믿게 되지.”"},{"id":"aqua_murder","zone":8,"x":1180,"y":720,"kind":"살인·추리","name":"물에 젖지 않는 시체","lead":"수로에서 발견된 시신의 혀에는 물이 없고 손에는 향료가 묻었다. 익사로 처리된 사건의 사망 시각이 기록보다 하루 빠르다.","choice1":"부검 흔적과 관료의 시간을 대조한다","choice2":"유족에게 시신을 돌려주고 기록만 쫓는다","answer1":"수로 관리관은 물이 아니라 망각 향으로 증인을 살해했다. 살해 명령은 제국 원로원에서 내려왔다.","answer2":"유족이 장례를 치렀다. 관리관의 장부에는 아직 살아 있는 사람의 사망 날짜도 있다.","foe":"납관 유령","voice":"“증인 없는 죽음은 사고로 분류하면 끝이다.”"},{"id":"aqua_ghost","zone":8,"x":1570,"y":960,"kind":"유령·미스터리","name":"수로에 갇힌 백 번째 목소리","lead":"죽은 자의 목소리 아흔아홉 개가 배수구에서 울린다. 백 번째 목소리는 살아 있는 주인공을 부른다.","choice1":"봉인된 관을 열어 목소리를 추적한다","choice2":"남은 유령의 이름을 먼저 기록한다","answer1":"유령은 인간의 기억으로 만든 신탁 장치의 불완전한 출력이었다. 장치에 네 이름이 누락되어 있다.","answer2":"기억을 되찾은 원혼은 사라졌지만 백 번째 목소리는 수로 밖에서 다시 들렸다.","foe":"물먹은 백인대장","voice":"“여기서 울부짖는 건 죽은 자가 아니라, 죽었다고 처리된 자다.”"},{"id":"villa_desire","zone":9,"x":1180,"y":590,"kind":"욕망·배신","name":"영원한 젊음을 산 의원","lead":"팔십 년 전에 죽은 원로가 오늘도 잔치를 열고 있다. 저택의 하인은 해마다 같은 나이로 장부에 적힌다.","choice1":"연회장을 공개하고 불사의 가격을 밝힌다","choice2":"하인부터 빼돌려 거래 기록을 찾는다","answer1":"불로의 대가는 수명 대신 다른 사람의 과거였다. 원로는 매년 하인 한 명의 삶을 훔쳤다.","answer2":"하인들은 구조됐지만 원로는 새 신분을 사서 도주했다. 거래인은 아직 살아 있다.","foe":"황금 가면 망령","voice":"“젊어지는 게 아니라 남의 시간을 덮어썼군.”"},{"id":"villa_vow","zone":9,"x":1600,"y":940,"kind":"사랑·집착","name":"조각상이 된 신부","lead":"저택 분수대에 밤마다 여인이 돌아온다. 그녀가 남긴 편지는 모두 서로 다른 사람의 필체다.","choice1":"편지를 공개해 혼인 계약을 무효화한다","choice2":"신부의 원래 이름을 먼저 찾아준다","answer1":"신랑은 여자를 사랑한 것이 아니라 신탁이 보장한 완벽한 배우자를 원했다. 신부는 스스로 돌이 되기를 택했다.","answer2":"신부는 이름을 되찾았으나 저택을 떠나지 않았다. 그녀의 선택을 대신할 권리는 아무에게도 없다.","foe":"도금된 근위 인형","voice":"“가질 수 없는 걸 고쳐서 갖겠다는 게 사랑일까?”"},{"id":"hill_oracle","zone":10,"x":1210,"y":630,"kind":"신화·광신","name":"일곱 신탁의 여덟 번째 입","lead":"사제들이 신의 예언이라고 전한 문장은 서로 충돌한다. 낡은 점토판에는 여덟 번째 신탁의 서명이 칼로 긁혀 있다.","choice1":"거짓 예언을 광장에 공개한다","choice2":"신탁의 기계를 먼저 멈춘다","answer1":"제국의 신탁은 신이 아니라 시민들의 선택을 예측하는 거대한 기억 기록 장치였다.","answer2":"장치를 정지시키자 서로 다른 미래를 기억하는 사람들이 나타났다. 사제들 역시 조작의 피해자였다.","foe":"거짓 신탁 사제","voice":"“미래를 예측한 게 아니라, 한 가지 미래만 남긴 거군.”"},{"id":"hill_tribunal","zone":10,"x":1640,"y":940,"kind":"재판·권력","name":"존재하지 않은 황제의 재판","lead":"초대 황제의 동상 아래 시민들이 밤마다 재판을 연다. 피고석에 앉힌 인물은 기록에는 존재하지 않는다.","choice1":"지워진 재판기록을 모두 공개한다","choice2":"피고의 증언을 듣고 판결을 늦춘다","answer1":"황제는 한 사람이 아니라 기록을 갈아 끼운 여러 사람의 직책이었다. 누구도 최초의 명령자를 모른다.","answer2":"피고는 사면을 거절했다. 제국의 기억을 독점할 권리가 누구에게도 없다는 판결을 요구했다.","foe":"기억 먹는 키메라","voice":"“권력자가 사람을 지운 게 아니라, 권력이 사람을 만들었어.”"}];
+function imperialUnlocked(){return !!state.story.choices.ending&&[1,2,3,4,5,6].every(z=>state.story.act2.completed[z]);}
+function imperialNextCase(){
+ if(!imperialUnlocked())return null;
+ return IMPERIAL_CASES.find(c=>state.story.imperialCases[c.id]?.status!=='cleared')||null;
+}
+function imperialCaseAtLocation(){
+ if(dungeon||!imperialUnlocked()||state.zone<7)return null;
+ return IMPERIAL_CASES.find(c=>c.zone===state.zone&&state.story.imperialCases[c.id]?.status!=='cleared')||null;
+}
+function imperialCaseInvestigate(){
+ const c=imperialCaseAtLocation();
+ if(!c)return;
+ if(Math.hypot(p.x-c.x,p.y-c.y)>125){moveTarget={x:c.x,y:c.y};toast('수사 현장에 더 가까이 가야 해.');return;}
+ const record=state.story.imperialCases[c.id];
+ if(record){if(record.status==='cleared'){storyJournal();return;}beginImperialCombat(c);return;}
+ let html='<p class="gold">'+c.kind+' · '+ZONES[c.zone].name+'</p><p>'+c.lead+'</p><h3>어떤 방식으로 사건을 조사할까?</h3>';
+ html+='<button class="menuBtn" data-imperial-choice="1">'+c.choice1+'</button><button class="menuBtn secondary" data-imperial-choice="2">'+c.choice2+'</button>';
+ openModal(c.name,html);
+ modalBody.querySelectorAll('[data-imperial-choice]').forEach(b=>b.onclick=()=>{
+  const choice=b.dataset.imperialChoice;
+  state.story.imperialCases[c.id]={path:choice,status:'pending'};
+  save();const next=()=>{closeModal();beginImperialCombat(c);};
+  if(!playEventScene('imperial:'+c.id,next))next();
+ });
+}
+var imperialBattle=null;
+function beginImperialCombat(c){
+ if(dungeon||state.zone!==c.zone||imperialBattle)return;
+ const record=state.story.imperialCases[c.id];
+ if(!record||record.status==='cleared')return;
+ const tag='imperial:'+c.id,z=ZONES[c.zone],mobs=z.mons,idx=IMPERIAL_CASES.indexOf(c);
+ imperialBattle={id:c.id,zone:c.zone,tag};record.status='fighting';
+ const mob=mobs[idx%3],count=idx%2===0?3:2;
+ contactTriggered=false;tacticalPaused=false;
+ document.getElementById('pauseBtn').textContent='일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed','false');
+ for(let i=0;i<count;i++){
+  const enemy=i===0?[c.foe,mob[1]+z.lv*8,mob[2]+z.lv*2,mob[3]+z.lv*3,mob[4]+z.lv*2]:mobs[(i+idx)%mobs.length];
+  const angle=Math.PI*2*(i+1)/(count+1),dist=145+(i%2)*44;
+  const xx=Math.max(100,Math.min(worldW-100,p.x+Math.cos(angle)*dist)),yy=Math.max(100,Math.min(worldH-100,p.y+Math.sin(angle)*dist));
+  spawnEnemy(enemy[0],enemy[1],enemy[2],enemy[3],enemy[4],i===0&&idx%3===0,false,xx,yy);
+  enemies[enemies.length-1].storyTag=tag;
+ }
+ save();battleLog('제국 사건 교전 · '+c.name);toast('수사 현장을 지키는 존재들이 나타났어!');
+}
+function finishImperialCombat(){
+ if(!imperialBattle||enemies.some(e=>!e.dead&&e.storyTag===imperialBattle.tag))return;
+ const run=imperialBattle;imperialBattle=null;
+ state.story.imperialCases[run.id].status='cleared';save();
+ const c=IMPERIAL_CASES.find(c=>c.id===run.id);
+ battleLog('사건 해결 · '+c.name);
+ if(!playEventScene('imperialClear:'+run.id,storyJournal))storyJournal();
+}
+function imperialCouncil(){
+ if(!imperialUnlocked()||imperialNextCase()||state.story.imperialVerdict)return false;
+ const cases=IMPERIAL_CASES.map(c=>state.story.imperialCases[c.id]),publicRecords=cases.filter(x=>x.path==='1').length;
+ let h='<h3>3막 최종 청문회 · 기억은 누구의 것인가</h3>';
+ h+='<p>원로원은 제국의 멸망을 막은 게 아니라 기억을 시민권의 담보로 삼았다. 하지만 모든 기록을 즉시 공개하면 살아 있는 증인들도 위험해진다.</p>';
+ h+='<p class="gold">공개 조사를 선택한 사건 '+publicRecords+' / 8 · 보호/재조사를 선택한 사건 '+(8-publicRecords)+' / 8</p>';
+ h+='<button class="menuBtn" data-verdict="release">기억 장부를 시민들에게 돌려준다</button>';
+ h+='<button class="menuBtn secondary" data-verdict="archive">증인의 동의부터 받고 장부를 개방한다</button>';
+ openModal('원로원의 마지막 청문회 · 아직 끝나지 않은 이야기',h);
+ modalBody.querySelectorAll('[data-verdict]').forEach(b=>b.onclick=()=>{
+  state.story.imperialVerdict=b.dataset.verdict;save();
+  if(!playEventScene('imperialVerdict',storyJournal))storyJournal();
+ });
+ return true;
+}
+\nvar storyBattle=null;
 function act2NextZone(){
  if(!state.story.choices.ending)return 0;
  for(var z=1;z<=6;z++)if(!state.story.act2.completed[z])return z;
