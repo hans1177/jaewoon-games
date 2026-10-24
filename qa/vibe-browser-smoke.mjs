@@ -39,6 +39,55 @@ try{
  assert.equal(await checkbox.isChecked(),true);
  assert.deepEqual(errors,[],'Uncaught browser exceptions');
  if(liveBase){
+  // 보석생존전: 실제 공개 커밋의 스테이지·월드·입력·일시정지를 검사한다.
+  const response=await page.request.get(liveBase+'web-games/publish-manifest.json');
+  assert.ok(response.ok(),'GEM_PUBLIC_MANIFEST_HTTP');
+  assert.equal((await response.json()).sourceSha,process.env.GITHUB_SHA,'GEM_PUBLIC_SOURCE_SHA');
+  for(const mobile of [false,true]){
+   const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1100,height:720},isMobile:mobile,hasTouch:mobile});
+   const gem=await context.newPage(),gemErrors=[];
+   gem.on('pageerror',e=>gemErrors.push(e.message));
+   try{
+    for(const stage of ['cavern','garden','forge']){
+     const route=await gem.goto(liveBase+'web-games/gem-survivor/',{waitUntil:'domcontentloaded'});
+     assert.ok(route?.ok(),'GEM_ROUTE_HTTP');
+     await gem.locator('#startBtn').waitFor({state:'visible'});
+     await gem.waitForFunction(()=>!document.getElementById('startBtn').disabled,null,{timeout:60000});
+     await gem.locator('[data-stage="'+stage+'"]').click();
+     assert.equal(await gem.locator('[data-stage="'+stage+'"]').getAttribute('aria-pressed'),'true');
+     await gem.locator('#startBtn').click();
+     await gem.waitForFunction(id=>document.getElementById('game').dataset.stage===id,stage);
+     const canvas=gem.locator('#game');
+     assert.equal(await canvas.getAttribute('data-world-width'),'4200');
+     assert.equal(await canvas.getAttribute('data-world-height'),'3200');
+     assert.equal(await canvas.getAttribute('data-authored-monster-kinds'),'8');
+     const first=Number(await canvas.getAttribute('data-player-x'));
+     if(mobile){
+      const bounds=await gem.locator('#joystick').boundingBox();
+      const cdp=await context.newCDPSession(gem);
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:bounds.x+bounds.width/2+30,y:bounds.y+bounds.height/2}]});
+      await gem.waitForTimeout(700);
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      await cdp.detach();
+     }else{
+      await gem.keyboard.down('d');await gem.waitForTimeout(700);await gem.keyboard.up('d');
+     }
+     const moved=Number(await canvas.getAttribute('data-player-x'));
+     assert.ok(moved>first+25,'GEM_MOVE_'+(mobile?'TOUCH':'KEYBOARD'));
+     await gem.locator('#pauseBtn').click();
+     const paused=Number(await canvas.getAttribute('data-player-x'));
+     await gem.keyboard.down('d');await gem.waitForTimeout(200);await gem.keyboard.up('d');
+     assert.equal(Number(await canvas.getAttribute('data-player-x')),paused,'GEM_PAUSE_MOVEMENT');
+     await gem.locator('#resumeBtn').click();
+     assert.equal(await canvas.getAttribute('data-rendered-frame'),'true');
+     assert.equal(await canvas.getAttribute('data-fallback-enemy-assets'),'0');
+     assert.deepEqual(gemErrors,[],'GEM_RUNTIME_ERRORS');
+     console.log('GEM_SURVIVOR_PUBLIC_PLAY_PASS '+JSON.stringify({sourceSha:process.env.GITHUB_SHA,mobile,stage,first,moved}));
+    }
+   }finally{await context.close()}
+  }
+ }
+ if(liveBase){
   // Post-deploy validation of the REAL Magic Forest, not just the model viewer.
   // This block only runs against the official public GitHub Pages URL after
   // the deployment step has already published the exact current revision.

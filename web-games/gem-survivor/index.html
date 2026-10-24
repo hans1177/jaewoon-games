@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- 파일명: web-games/gem-survivor/index.html · 보석 생존전 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -25,7 +26,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .bossHud .label{color:#ffd0d0}.bossHud .bar>i{background:linear-gradient(90deg,#ff404f,#b357ff)}
 .joystick{position:fixed;z-index:7;left:18px;bottom:calc(env(safe-area-inset-bottom) + 22px);width:116px;height:116px;border-radius:50%;border:2px solid #7ef5d05e;background:#112b3788;box-shadow:inset 0 0 25px #51ffd21a}
 .stick{position:absolute;left:31px;top:31px;width:54px;height:54px;border-radius:50%;background:#dbfff4da;border:3px solid #65efc8;box-shadow:0 0 18px #54efc899;transform:translate(0,0)}
-.pause{position:fixed;z-index:8;right:11px;top:calc(env(safe-area-inset-top) + 58px);width:42px;height:42px;border-radius:13px;border:1px solid #ffffff2b;background:#14253edb;color:#fff;font-size:18px;font-weight:950}
+.pause{position:fixed;z-index:8;right:11px;top:calc(env(safe-area-inset-top) + 106px);width:42px;height:42px;border-radius:13px;border:1px solid #ffffff2b;background:#14253edb;color:#fff;font-size:18px;font-weight:950}
 .tip{position:fixed;z-index:4;left:50%;bottom:8px;transform:translateX(-50%);font-size:10px;font-weight:800;color:#9db4cb;white-space:nowrap;pointer-events:none}
 .phase{position:fixed;z-index:6;left:50%;top:calc(env(safe-area-inset-top) + 112px);transform:translateX(-50%);padding:6px 10px;border:1px solid #ffffff1f;border-radius:999px;background:#071321d6;font-size:11px;font-weight:900;color:#d9e8f8;pointer-events:none}
 .overlay{position:fixed;z-index:20;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:#020811dc;backdrop-filter:blur(7px)}
@@ -34,6 +35,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .eyebrow{font-size:11px;letter-spacing:.12em;color:#6ef0c9;font-weight:950}
 .panel h1,.panel h2{margin:4px 0 8px}
 .panel p{margin:0 0 15px;color:#b8c9dc;font-size:13px;line-height:1.5}
+.stages{display:grid;gap:8px;margin:12px 0}.stages button{min-height:48px;border:1px solid #537466;border-radius:12px;background:#102b32;color:#cbe5de;text-align:left;padding:10px}.stages button[aria-pressed="true"]{border-color:#7dffce;background:#205d50;color:#fff}.stageNote{display:block;font-size:11px;margin-top:3px;color:#b8c9dc}#worldPosition{position:fixed;right:12px;bottom:28px;z-index:4;padding:6px 9px;border-radius:9px;background:#071321cf;color:#c5e4db;font-size:10px;pointer-events:none}
 .wide,.choice{width:100%;border:1px solid #8be4cd44;border-radius:16px;color:#fff;font-weight:900}
 .wide{min-height:56px;background:#187d6c;font-size:15px}
 .choices{display:grid;gap:9px}
@@ -62,11 +64,13 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 <div id="bossHud" class="bossHud"><div class="label"><span>보석 포식자</span><span id="bossHpText"></span></div><div class="bar"><i id="bossHpBar"></i></div></div>
 <button id="pauseBtn" class="pause" aria-label="일시정지">Ⅱ</button>
 <div id="joystick" class="joystick" aria-label="이동 조이스틱"><div id="stick" class="stick"></div></div>
+<div id="worldPosition" aria-live="off"></div>
 <div class="tip">이동만 하면 공격은 자동으로 나가</div>
 
 <div id="startOverlay" class="overlay show"><div class="panel">
  <div class="eyebrow">5분 생존 액션</div><h1>보석 생존전</h1>
  <p>몬스터를 잡아 보석을 모으고 능력을 골라. 2분과 3분 30초에 새로운 적이 합류하고, 5분에 보스가 등장해. 보스를 잡으면 클리어야.</p>
+ <div class="stages" role="group" aria-label="스테이지 선택"><button data-stage="cavern" aria-pressed="true">수정 동굴<span class="stageNote">빛나는 수정 군락과 넓은 채굴 광장</span></button><button data-stage="garden" aria-pressed="false">폐허 정원<span class="stageNote">오래된 돌길과 정원의 흔적</span></button><button data-stage="forge" aria-pressed="false">화산 채굴장<span class="stageNote">붉은 광맥과 격자형 채굴 구역</span></button></div>
  <button id="startBtn" class="wide">게임 시작</button>
 </div></div>
 
@@ -87,6 +91,9 @@ import {createGem3d} from './gem3d.mjs';
 'use strict';
 
 // ==================== 기본 설정 ====================
+const WORLD={width:4200,height:3200};
+const STAGES={cavern:{name:'수정 동굴',sky:'#08152b',floor:'#172c48',accent:'#65d8ff'},garden:{name:'폐허 정원',sky:'#11251f',floor:'#254536',accent:'#a7efa0'},forge:{name:'화산 채굴장',sky:'#25101c',floor:'#49302e',accent:'#ffaf66'}};
+let stageId='cavern';
 const SURVIVE_SECONDS=300;
 const PHASE_TWO_SECONDS=120;
 const PHASE_THREE_SECONDS=210;
@@ -172,7 +179,7 @@ function reset(){
  releaseInputs();
  elapsed=0;spawnTimer=0;kills=0;bossSpawned=false;boss=null;screenShake=0;
  enemies.length=0;projectiles.length=0;gems.length=0;effects.length=0;poisonPools.length=0;particles.length=0;
- Object.assign(player,{x:W/2,y:H/2,r:15,hp:100,maxHp:100,speed:220,inv:0,gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92});
+ Object.assign(player,{x:WORLD.width/2,y:WORLD.height/2,r:15,hp:100,maxHp:100,speed:220,inv:0,gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92});
  Object.keys(abilityLv).forEach(function(k){abilityLv[k]=0});
  Object.keys(abilityTimers).forEach(function(k){abilityTimers[k]=0});
  orbitAngle=0;running=true;paused=false;
@@ -205,11 +212,11 @@ function weightedEnemyType(){
  return list[0][0]
 }
 function edgeSpawn(m){
- m=m||45;const side=Math.floor(Math.random()*4);
- if(side===0)return{x:rnd(0,W),y:-m};
- if(side===1)return{x:W+m,y:rnd(0,H)};
- if(side===2)return{x:rnd(0,W),y:H+m};
- return{x:-m,y:rnd(0,H)}
+ m=m||45;const view=gem3d.view(player,WORLD),side=Math.floor(Math.random()*4);
+ if(side===0)return{x:rnd(view.left,view.right),y:view.top-m};
+ if(side===1)return{x:view.right+m,y:rnd(view.top,view.bottom)};
+ if(side===2)return{x:rnd(view.left,view.right),y:view.bottom+m};
+ return{x:view.left-m,y:rnd(view.top,view.bottom)}
 }
 function spawnEnemy(typeId){
  const t=ENEMY_TYPES[typeId],p=edgeSpawn(),late=1+Math.min(.55,elapsed/SURVIVE_SECONDS*.35);
@@ -232,7 +239,7 @@ function killEnemy(e,index){
   enemies.splice(index,1);boss=null;ui.bossHud.classList.remove('show');
   burst(e.x,e.y,'#ffd166',45);tone(880,.4,'triangle',.06);endGame(true);return
  }
- kills++;dropGems(e);burst(e.x,e.y,e.color,8);enemies.splice(index,1)
+ kills++;dropGems(e);burst(e.x,e.y,e.color,8);effects.push({kind:'death',x:e.x,y:e.y,r:e.r,life:.3,max:.3});enemies.splice(index,1)
 }
 function damageEnemy(e,amount){e.hp-=amount;e.hit=.07;burst(e.x,e.y,'#dffcff',2)}
 
@@ -321,7 +328,7 @@ function renderAbilityList(){
  })
 }
 function collectGem(g,index){
- player.gems+=g.v;gems.splice(index,1);tone(650,.025,'sine',.01);updateUi();
+ player.gems+=g.v;burst(g.x,g.y,'#8effde',6);gems.splice(index,1);tone(650,.025,'sine',.01);updateUi();
  if(player.gems>=player.gemNeed&&!paused)showAbilityChoice()
 }
 
@@ -347,8 +354,8 @@ function update(dt){
  mx+=(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0);
  my+=(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);
  const ml=Math.hypot(mx,my);if(ml>1){mx/=ml;my/=ml}
- player.x=clamp(player.x+mx*player.speed*dt,player.r,W-player.r);
- player.y=clamp(player.y+my*player.speed*dt,player.r+88,H-player.r-4);
+ player.x=clamp(player.x+mx*player.speed*dt,player.r,WORLD.width-player.r);
+ player.y=clamp(player.y+my*player.speed*dt,player.r,WORLD.height-player.r);
 
  if(player.basicTimer<=0){player.basicTimer=player.basicRate;fireBasic()}
  updateAbilities(dt);
@@ -371,7 +378,7 @@ function update(dt){
     }
    }
   }
-  if(hit||b.life<=0||b.x<-40||b.x>W+40||b.y<-40||b.y>H+40)projectiles.splice(i,1)
+  if(hit||b.life<=0||b.x<-80||b.x>WORLD.width+80||b.y<-80||b.y>WORLD.height+80)projectiles.splice(i,1)
  }
 
  for(let i=poisonPools.length-1;i>=0;i--){
@@ -440,6 +447,7 @@ function update(dt){
 
 // ==================== UI ====================
 function updateUi(){
+ $('worldPosition').textContent=STAGES[stageId].name+' · '+Math.round(player.x)+', '+Math.round(player.y);
  ui.gemCount.textContent=player.gems;ui.gemNeed.textContent=player.gemNeed;ui.kills.textContent=kills;
  ui.time.textContent=fmtTime(Math.min(elapsed,SURVIVE_SECONDS));
  ui.hpText.textContent=Math.ceil(Math.max(0,player.hp))+' / '+Math.ceil(player.maxHp);
@@ -461,7 +469,7 @@ function updateUi(){
 // ==================== 그리기 ====================
 function draw(){
  if(!gem3d)return;
- try{gem3d.render({player,enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades(),effects},performance.now())}
+ try{gem3d.render({player,enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades(),effects,world:WORLD,stage:{id:stageId,...STAGES[stageId]}},performance.now())}
  catch(error){
   console.error('[Gem Survivor WebGL3D]',error);
   gem3d=null;running=false;paused=true;releaseInputs();
@@ -487,8 +495,8 @@ function joyEnd(e){if(e.pointerId!==joy.id)return;releaseInputs()}
 function releaseInputs(){joy.id=null;joy.dx=joy.dy=0;$('stick').style.transform='translate(0,0)';keys.clear()}
 joyEl.addEventListener('pointerup',joyEnd);joyEl.addEventListener('pointercancel',joyEnd);joyEl.addEventListener('lostpointercapture',joyEnd);
 
-addEventListener('keydown',function(e){keys.add(e.key)});
-addEventListener('keyup',function(e){keys.delete(e.key)});
+addEventListener('keydown',function(e){if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.length===1?e.key.toLowerCase():e.key)});
+addEventListener('keyup',function(e){keys.delete(e.key.length===1?e.key.toLowerCase():e.key)});
 
 function setPause(v){if(!running)return;paused=v;if(v)releaseInputs();$('pauseOverlay').classList.toggle('show',v)}
 $('pauseBtn').onclick=function(){setPause(true)};
@@ -497,6 +505,10 @@ $('startBtn').onclick=function(){if(!gem3d)return;$('startOverlay').classList.re
 $('restartBtn').onclick=function(){reset()};
 document.addEventListener('visibilitychange',function(){if(document.hidden){releaseInputs();if(running&&!paused)setPause(true)}});
 addEventListener('blur',function(){releaseInputs();if(running&&!paused)setPause(true)});
+document.querySelectorAll('[data-stage]').forEach(button=>button.onclick=()=>{
+ if(running)return;stageId=button.dataset.stage;
+ document.querySelectorAll('[data-stage]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+});
 $('startBtn').disabled=true;
 createGem3d({canvas}).then(renderer=>{
  gem3d=renderer;
