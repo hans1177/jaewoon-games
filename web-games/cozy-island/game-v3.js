@@ -21,7 +21,7 @@ const renderer=new IslandRendererV3(canvas);
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
 let lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
-let moveTarget=null,lastAutoGather=0;
+// 기존 저장 좌표는 호환을 위해 유지하며 전략 시점에는 캐릭터 이동을 사용하지 않는다.
 let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
 // 메인: 기존 일반 습격은 그대로 두고 성채 건설 이후 선택형 대공성전만 추가한다.
 let grandSiege=null,raidWarningShown=false;
@@ -44,8 +44,9 @@ const npcs=[
   {id:'danbi',name:'단비',icon:'🧒',x:960,y:700,line:'농작물은 물을 준 뒤 20초면 자라.'}
 ];
 const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId,siegeOverview:true};
+game.screenToWorld=(sx,sy)=>renderer.screenToWorld(game,sx,sy);
 const ui={
-  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),trade:qs('#tradeCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
+  help:qs('#helpCommand'),day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),trade:qs('#tradeCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
 function qs(s){return document.querySelector(s)}
 function normalizeState(raw){
@@ -77,6 +78,7 @@ runtime.bindKeyboard({
   Space:{down:e=>{e.preventDefault();interact()}}
 });
 runtime.bindTouchButton(ui.inventory,openInventory);
+runtime.bindTouchButton(ui.help,openGuide);
 runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButton')?.click());
 runtime.bindTouchButton(ui.barracks,openBarracks);
 runtime.bindTouchButton(ui.workers,openWorkerShop);
@@ -89,7 +91,7 @@ runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());
 runtime.bindTouchButton(ui.catch,catchFish);
 runtime.bindTouchButton(ui.cancelFishing,stopFishing);
 window.addEventListener('resize',()=>renderer.resize());
-window.addEventListener('jaewoon:pause',e=>{if(e.detail.paused){pressed.clear();moveTarget=null}});
+window.addEventListener('jaewoon:pause',e=>{if(e.detail.paused)pressed.clear()});
 let pointerGesture=null;
 canvas.addEventListener('pointerdown',e=>{
   if(e.pointerType==='mouse'&&e.button!==0)return;
@@ -121,14 +123,36 @@ canvas.addEventListener('pointerup',e=>{
   const radius=Math.max(78,Math.min(146,44/(renderer.camera3?.zoom||.5)));
   const target=nearestInteraction(pos,radius);
   if(target){activateInteraction(target);return}
-  moveTarget=pos;
+  // 빈 땅 터치는 선택을 해제한다. 전략 카메라는 드래그로만 이동한다.
 });
 canvas.addEventListener('wheel',e=>{e.preventDefault();game.siegeOverview=true;renderer.changeZoom(e.deltaY<0?1.16:1/1.16)},{passive:false});
 
+// 도움말: 건설/생산/군사 명령을 기존 조작 패널로 연결한다.
+function openGuide(){
+  if(ui.panel.open||ui.fishing.open)return;
+  const village=state.villageDevelopment||{},production=state.productionBuildings||{};
+  ui.panelTitle.textContent='영지 운영 안내';
+  ui.panelBody.innerHTML=`<p class="panel-note">지도 드래그로 이동 · 두 손가락 또는 ＋/－로 확대·축소 · 건물과 자원을 눌러 관리해. 플레이어 캐릭터는 없어.</p>
+    <div class="inventory-grid">
+      <div class="item-card">성채 건설<span>${village.townHallBuilt?'완료':'건설 필요'}</span></div>
+      <div class="item-card">병영<span>${state.barracksBuilt?'완료':'건설 필요'}</span></div>
+      <div class="item-card">벌목장<span>${production.lumberBuilt?'가동 가능':'미건설'}</span></div>
+      <div class="item-card">광산<span>${production.mineBuilt?'가동 가능':'미건설'}</span></div>
+    </div>
+    <p class="panel-note">① 지도에서 나무·돌을 채집하거나 자원 생산시설을 건설해. ② 병영을 지어 부대를 모집하고 병력을 강화해. ③ 성채에서 방어시설과 수비 명령을 정해. ④ 준비되면 대공성전을 시작해.</p>
+    <div class="choice-grid"><button class="choice" data-guide="castle">🏰 성채·건물 건설</button><button class="choice" data-guide="barracks">⚔️ 병영·병력 강화</button><button class="choice" data-guide="workers">👷 주민·생산 관리</button></div>`;
+  ui.panel.showModal();
+  ui.panelBody.querySelectorAll('[data-guide]').forEach(button=>button.addEventListener('click',()=>{
+    const target=button.dataset.guide;ui.panel.close();
+    if(target==='castle')ui.castle.click();
+    else if(target==='barracks')ui.barracks.click();
+    else ui.workers.click();
+  }));
+}
 function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p><p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. <a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>`;ui.panel.showModal()}
 function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}
 
-function nearestInteraction(at=player,radius=86){const dist=(x,y)=>Math.hypot(at.x-x,at.y-y);const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=radius?c[0]:null}
+function nearestInteraction(at=player,radius=86){const dist=(x,y)=>Math.hypot(at.x-x,at.y-y);const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)},{type:'tower',d:dist(400,1090)},{type:'hall',d:dist(1010,1090)},{type:'lumber',d:dist(245,850)},{type:'mine',d:dist(785,965)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=radius?c[0]:null}
 function interactionHint(t){
   if(!t)return raidActive?'⚔️ 습격 중 · 병사들이 성채를 방어 중':'지도를 드래그하고 건물을 터치해 관리';
   if(t.type==='node')return '근처 자원 자동 채집 중';
@@ -137,6 +161,7 @@ function interactionHint(t){
   if(t.type==='ship')return '무역 · 상선 매매와 생산품 출하';
   if(t.type==='barracks')return '병영 · 병력 관리';
   if(t.type==='workerShop')return '일꾼 작업장 · 관리';
+  if(['tower','hall','lumber','mine'].includes(t.type))return '중세 생산·방어 건물 · 터치해 건설/강화';
   if(t.type==='fish')return '연못 터치 · 낚시';
   if(t.type==='expand')return '동쪽 지역 해금 · 120골드';
   if(t.type==='plot')return t.item.plot.ready?'밭 터치 · 수확':t.item.plot.state==='empty'?'밭 터치 · 씨앗 심기':!t.item.plot.watered?'밭 터치 · 물 주기':'밭 · 재배 중';
@@ -145,29 +170,22 @@ function interactionHint(t){
 function interact(){
   if(runtime.paused||ui.panel.open||ui.fishing.open)return;
   const target=nearestInteraction();
-  if(target)activateInteraction(target);else toast('건물을 터치하거나 조이스틱으로 이동해');
+  if(target)activateInteraction(target);else toast('지도에서 자원 또는 건물을 선택해');
 }
 function activateInteraction(t){
   if(runtime.paused||ui.panel.open||ui.fishing.open)return;
   if(t.type==='node'){
-    if(dist(t.item.x,t.item.y)>70){moveTarget={x:t.item.x,y:t.item.y};toast('자원으로 이동 중');return}
+    // 전략게임: 화면에서 선택한 자원을 직접 채집하며 캐릭터 근접 판정을 요구하지 않는다.
     if(t.item.readyAt<=Date.now())collectNode(t.item);
   }else if(t.type==='npc')talkTo(t.item);
   else if(t.type==='house')openDecor();
   else if(t.type==='ship')ui.trade?.click();
   else if(t.type==='barracks')openBarracks();
   else if(t.type==='workerShop')openWorkerShop();
+  else if(['tower','hall','lumber','mine'].includes(t.type))ui.castle.click();
   else if(t.type==='fish')startFishing();
   else if(t.type==='expand')expandIsland();
   else if(t.type==='plot')usePlot(t.item.index,t.item.plot.state==='empty'?'seed':'water');
-}
-function autoGather(now){
-  if(now-lastAutoGather<350)return;
-  lastAutoGather=now;
-  for(const n of nodes){
-    if((n.lockedByExpansion&&!state.expanded)||n.readyAt>Date.now())continue;
-    if(dist(n.x,n.y)<64){collectNode(n);break}
-  }
 }
 function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){state.inventory.stone++;toast('🪨 돌 +1')}else{state.inventory.flower++;toast('🌼 꽃 +1')}n.readyAt=now+30000;saveSoon()}
 function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class="choice" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=`<p class="panel-note">${n.line}</p><div class="choice-grid">${extra}</div>`;ui.panel.showModal();ui.panelBody.querySelector('[data-seed]')?.addEventListener('click',()=>{if(state.coins<15){toast('골드가 부족해');return}state.coins-=15;state.inventory.seeds+=3;saveSoon();updateHUD();toast('🌱 씨앗 +3')})}
@@ -350,22 +368,17 @@ function updateHUD(){
     ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`;
   }
 }
-function canMoveTo(x,y){const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
-function updateMovement(dt){
-  let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);
-  if(dx||dy)moveTarget=null;
-  else if(moveTarget){
-    dx=moveTarget.x-player.x;dy=moveTarget.y-player.y;
-    if(Math.hypot(dx,dy)<57){moveTarget=null;return}
-  }else return;
-  const mag=Math.hypot(dx,dy)||1;dx/=mag;dy/=mag;
-  const nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;
-  const ox=player.x,oy=player.y;
-  if(canMoveTo(nx,player.y))player.x=nx;
-  if(canMoveTo(player.x,ny))player.y=ny;
-  if(moveTarget&&ox===player.x&&oy===player.y)moveTarget=null;
+// 메인: 방향키는 영지 지도를 이동한다. 캐릭터 이동은 하지 않는다.
+function updateCameraControl(dt){
+  const dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0);
+  const dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);
+  if(!dx&&!dy)return;
+  game.siegeOverview=true;
+  renderer.panCamera(-dx*480*dt,-dy*480*dt);
 }
-function updateHint(){ui.hint.textContent=interactionHint(nearestInteraction())}
-function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);autoGather(now);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
+function updateHint(){
+  ui.hint.textContent=raidActive?'성채 수비 중 · 병력과 성벽 상황을 확인해':'지도 드래그 · 건물 터치 · 성채에서 건설/방어 관리';
+}
+function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateCameraControl(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
 allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;updateHUD();requestAnimationFrame(frame);

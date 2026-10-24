@@ -24,12 +24,13 @@
       </div>
       <div class="hud-main right">
         <span>🪙 <b id="coinText">40</b></span>
-        <button id="inventoryButton" class="small-button" type="button">가방</button>
+        <button id="inventoryButton" class="small-button" type="button">자원</button>
+        <button id="helpCommand" class="small-button" type="button">도움말</button>
       </div>
     </section>
 
     <div id="raidText" class="raid-status">⏱️ 습격 2:00</div>
-    <div id="hint" class="hint">섬을 천천히 둘러봐</div>
+    <div id="hint" class="hint">지도를 드래그하고 건물과 자원을 터치해</div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <div class="camera-zoom" aria-label="전장 확대 축소">
       <button id="zoomIn" type="button" aria-label="카메라 확대">＋</button>
@@ -37,17 +38,13 @@
     </div>
 
     <section class="controls" aria-label="조작 버튼">
-      <div id="joystick" class="joystick" aria-label="이동 조이스틱">
-        <div class="joystick-ring"></div>
-        <div id="joystickKnob" class="joystick-knob"></div>
-      </div>
-      <nav class="strategy-bar" aria-label="성채 전술 명령">
+      <nav class="strategy-bar" aria-label="영지 관리와 전술 명령">
         <button id="castleCommand" class="strategy-button" type="button">🏰<small>성채</small></button>
         <button id="barracksCommand" class="strategy-button" type="button">⚔️<small>병영</small></button>
         <button id="workersCommand" class="strategy-button" type="button">👷<small>일꾼</small></button>
         <button id="fishingCommand" class="strategy-button" type="button">🎣<small>낚시</small></button>
         <button id="tradeCommand" class="strategy-button" type="button" aria-label="상선 무역과 경제 관리">⚖️<small>무역</small></button>
-        <button id="centerCommand" class="strategy-button" type="button">🗺️<small>성채보기</small></button>
+        <button id="centerCommand" class="strategy-button" type="button">🗺️<small>전장</small></button>
       </nav>
     </section>
 
@@ -72,7 +69,6 @@
   </main>
 
   <script src="./reset-bootstrap-v9.js"></script>
-  <script src="./joystick.js"></script>
   <script src="./worker-shop-freeze-guard.js"></script>
   <script src="./performance-guard.js"></script>
   <script src="./fps32-v16.js"></script>
@@ -101,7 +97,6 @@
   <script type="module" src="./sixth-raid-v17.js"></script>
   <script type="module" src="./seventh-raid-v18.js"></script>
   <script type="module" src="./class-upgrades-pirate-v12.js"></script>
-  <script type="module" src="./levelup-button-v13.js"></script>
   <script type="module" src="./iron-lv3-spearman-v14.js"></script>
   <script type="module" src="./iron-worker-v15.js"></script>
   <script type="module" src="./iron-layout-v16.js"></script>
