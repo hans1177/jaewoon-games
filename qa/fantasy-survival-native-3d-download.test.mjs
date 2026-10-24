@@ -483,6 +483,27 @@ test('game-specific compressed assets preserve original bytes and source hashes'
  assert.match(moduleSource,/mergeVertices\(geometry,1e-6\)/);
 });
 
+test('all authored biomes use original instanced scenery without changing interactions',()=>{
+ const biomes=['forest','jungle','swamp','snow','canyon','volcano','crystal','giantlake',
+   'worldtree','flowerfield','giantgarden','desert'];
+ const mapping=moduleSource.split('const SCENERY_KIND=Object.freeze({')[1]?.split('});')[0]||'';
+ assert.ok(mapping,'all region scenery mapping required');
+ for(const biome of biomes)assert.ok(mapping.includes(biome+':'),'unmapped biome: '+biome);
+ for(const token of [
+   'new THREE.InstancedMesh(original.geometry,original.material,49)',
+   'const batch=sceneryBatches.get(SCENERY_KIND[tileZone]',
+   'if(tx!==0||tz!==0)',
+   'const seen=++frameSequence',
+   'loadRemaining:async(priorityNames=[])',
+   'stagedModels.loadRemaining(priorityModels)',
+   'for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}',
+   'interactables.push(model)',
+   'if(unsafeUnmappedEncounter||!hero)'
+ ])assert.ok(moduleSource.includes(token),'original scene invariant missing: '+token);
+ assert.doesNotMatch(moduleSource,/new THREE\.PlaneGeometry\(|new THREE\.BoxGeometry\(/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
 test('fast loading streams CC0 scenery after first frame and renders authored region coordinates',()=>{
  assert.match(moduleSource,/new Set\(\['floor_base','tree','tree_large','foliage_A','cobblestones'\]\)/);
  assert.match(moduleSource,/if\(!extraModelsStarted\)/);
