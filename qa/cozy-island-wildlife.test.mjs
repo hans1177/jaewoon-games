@@ -79,7 +79,7 @@ test('포근섬 웹게임 3D는 기존 좌표·원본 에셋·터치 입력·저
   assert.match(game,/runtime\.bindTouchButton\(ui\.action,interact\)/);
   assert.match(joystick,/setPointerCapture/);
   assert.doesNotMatch(css,/(?:^|\n)\s*\/\/\s*3D/m);
-  assert.match(css,/\/\* 3D 메인/);
+  assert.match(css,/\/\* 3D 화면만 표시/);
   assert.match(css,/#island3d\s*\{/);
   assert.match(css,/#game\s*\{\s*position:absolute/);
   assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=/);
