@@ -98072,11 +98072,167 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ccd0fb4c5716174d7acf4312",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10035",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "99c21cd1e97202094b927e554543a170896e02e1",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10035,
+        "baseBranch": "main",
+        "headBranch": "game/ocean-world",
+        "baseSha": "99c21cd1e97202094b927e554543a170896e02e1",
+        "headSha": "ad2f01d234cc553aea2e8314642bf9f7a5f3d097",
+        "mergeCommitSha": "db790811d58a46026310ad5362a68850789dc6b8",
+        "mergedAt": "2026-10-24T20:25:56Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0a529c6f12493fb679e45a8acf45efa19da1a0b803e8e828a8b8548860edaf0f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "game/ocean-world",
+        "candidateSha": "ad2f01d234cc553aea2e8314642bf9f7a5f3d097"
+      },
+      "changeStats": {
+        "changedFileCount": 23,
+        "codingRelevantFileCount": 19,
+        "addedLineCount": 485,
+        "deletedLineCount": 1758,
+        "changedFiles": [
+          "company-asset-library.json",
+          "qa/ocean-voyage.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/roblox-source-bootstrap.json",
+          "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau",
+          "web-games/ocean-voyage/CC0-ASSETS.md",
+          "web-games/ocean-voyage/README.md",
+          "web-games/ocean-voyage/assets/crew.webp",
+          "web-games/ocean-voyage/assets/harbor.webp",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "company-asset-library.json",
+          "qa/ocean-voyage.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "roblox-games/tower-choice-rpg/client/Game.client.luau",
+          "roblox-games/tower-choice-rpg/roblox-source-bootstrap.json",
+          "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
+          "roblox-games/zombie-survival/client/Game.client.luau",
+          "roblox-games/zombie-survival/roblox-source-bootstrap.json",
+          "roblox-games/zombie-survival/shared/GameConfig.luau",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10035",
+        "merge-commit:db790811d58a46026310ad5362a68850789dc6b8",
+        "base-main:99c21cd1e97202094b927e554543a170896e02e1"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 770
+    "total": 771
   }
 }
