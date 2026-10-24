@@ -464,7 +464,8 @@ function startRaid(attacker=null){
   if(attacker){
     const size=Math.min(18,Math.max(3,Math.floor(attacker.troops)));
     for(let i=0;i<size;i++){const u=createUnit(i%4===0?'archer':'soldier',true);
-      u.x=1550+i*12;u.y=400+(i%6)*80;
+      u.x=attacker.x+(i%5)*28;u.y=attacker.y+(i%4)*24;
+      u.speed=Math.max(u.speed,165); // 적 영주 성에서 실제 진군
     u._lordRaid=true;u._siegeLane=u.y<520?440:u.y>730?800:610;
     u.siegeDamage=12+(attacker.focus==='rush'?8:0);u.siegeCooldown=1.4;
     enemies.push(u)}
