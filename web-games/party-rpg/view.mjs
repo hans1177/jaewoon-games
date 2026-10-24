@@ -13,9 +13,9 @@ export class PartyView{
   this.targetYaw=Math.PI/4;this.yaw=this.targetYaw;this.pitch=.73;this.zoom=1;this.targetZoom=1;this.offset=new THREE.Vector2();this.focus=new THREE.Vector3();this.follow='player';this.selection='player';this.destination=null;
   this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);this.hit=new THREE.Vector3();this.lastAt=0;this.frameCost=16;this.quality=1;this.qualityAt=0;this.labels=[];this.lastLabelsAt=0;this.ready=false;
   try{
-   this.gl=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});this.gl.outputColorSpace=THREE.SRGBColorSpace;this.gl.setClearColor(0x202c25);this.gl.sortObjects=true;
-   this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x657265,32,82);this.scene.add(this.staticRoot);
-   this.scene.add(new THREE.HemisphereLight(0xdfddc9,0x444631,1.65));const sun=new THREE.DirectionalLight(0xffe5bb,2.1);sun.position.set(-18,35,16);this.scene.add(sun);
+   this.gl=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});this.gl.outputColorSpace=THREE.SRGBColorSpace;this.gl.toneMapping=THREE.ACESFilmicToneMapping;this.gl.toneMappingExposure=1.12;this.gl.setClearColor(0x3e382d);this.gl.sortObjects=true;
+   this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x6b6656,28,76);this.scene.add(this.staticRoot);
+   this.skyLight=new THREE.HemisphereLight(0xe9d7b8,0x30271f,1.6);this.scene.add(this.skyLight);this.sun=new THREE.DirectionalLight(0xffd6a0,2.4);this.sun.position.set(-23,38,17);this.scene.add(this.sun);
    this.camera=new THREE.OrthographicCamera(-12,12,12,-12,.1,180);this.camera.position.set(45,45,45);this.camera.lookAt(0,0,0);
    this.groundMaterials=new Map();this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
    this.marker=new THREE.Mesh(this.ringGeometry,this.ringMaterials.select);this.marker.rotation.x=-Math.PI/2;this.marker.visible=false;this.scene.add(this.marker);
@@ -44,31 +44,167 @@ export class PartyView{
  changeZoom(factor){this.targetZoom=THREE.MathUtils.clamp(this.targetZoom*factor,.6,1.9);}
  rotate(){this.targetYaw+=Math.PI/2;}
  center(id='player'){this.follow=id;this.offset.set(0,0);}
- groundMaterial(zone,dungeon){const key=dungeon?'dungeon':String(zone);if(this.groundMaterials.has(key))return this.groundMaterials.get(key);
-  const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const c=canvas.getContext('2d');const base=dungeon?'#514f48':['#687354','#7d8355','#4e6248','#505452','#a3916c','#bac5c2','#534d59'][zone]||'#687354';c.fillStyle=base;c.fillRect(0,0,128,128);
-  for(let i=0;i<950;i++){const x=(i*73+11)%128,y=(i*47+31)%128;c.globalAlpha=.035+(i%4)*.018;c.fillStyle=i%3?'#172218':'#e2d4ae';c.fillRect(x,y,1+i%4,1+i%3);}c.globalAlpha=1;
-  if(dungeon){c.strokeStyle='#353a36';for(let y=0;y<128;y+=32){c.beginPath();c.moveTo(0,y);c.lineTo(128,y);c.stroke();for(let x=(y%64?16:0);x<128;x+=32){c.beginPath();c.moveTo(x,y);c.lineTo(x,y+32);c.stroke();}}}
-  const texture=new THREE.CanvasTexture(canvas);texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(9,6);texture.anisotropy=1;texture.colorSpace=THREE.SRGBColorSpace;
-  const material=new THREE.MeshLambertMaterial({map:texture});this.groundMaterials.set(key,material);return material;
+ // 중세 판타지 재질: 마을의 마모된 포석, 야외 흙길, 던전의 불규칙 석재.
+groundMaterial(zone,dungeon){
+ const key=dungeon?'dungeon':String(zone);
+ if(this.groundMaterials.has(key))return this.groundMaterials.get(key);
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
+ const ctx=canvas.getContext('2d'),stone=dungeon||zone===0||zone===3||zone===6;
+ const palette=dungeon?['#393a36','#44443f','#525049','#5c554b']:zone===0?['#6b6657','#79715b','#827a67','#594e40']:zone===2?['#334c36','#455d3b','#5c693e','#344d32']:zone===4?['#a18a60','#b39c70','#887553','#bcaa7d']:zone===5?['#9aa9a7','#b7c2b7','#798b8a','#c8c8b7']:['#526040','#667249','#454f33','#757451'];
+ const random=n=>{const t=Math.sin(n*127.41+(zone+3)*64.7)*24316.379;return t-Math.floor(t);};
+ ctx.fillStyle=palette[0];ctx.fillRect(0,0,256,256);
+ if(stone){
+  for(let y=0,row=0;y<256;y+=31,row++){
+   const offset=(row%2)*27;
+   for(let x=-70+offset;x<300;x+=56){
+    const jitter=3+random(x+y)*4;
+    ctx.fillStyle='#29261f';ctx.fillRect(x+2,y+2,52,27);
+    ctx.fillStyle=palette[Math.floor(random(x*13+y*7+3)*palette.length)];
+    ctx.fillRect(x+3,y+3,49-jitter/2,24-jitter/3);
+    ctx.fillStyle='rgba(255,231,179,.10)';ctx.fillRect(x+5,y+5,42,2);
+    ctx.fillStyle='rgba(0,0,0,.12)';ctx.fillRect(x+7,y+25,40,2);
+   }
+  }
+ }else{
+  for(let i=0;i<1600;i++){
+   const x=random(i*3+4)*256,y=random(i*7+900)*256;
+   ctx.fillStyle=palette[Math.floor(random(i+173)*palette.length)];
+   ctx.globalAlpha=.12+random(i+211)*.20;
+   ctx.fillRect(x,y,1+random(i*9)*9,1+random(i*21)*5);
+  }
+  ctx.globalAlpha=1;
+  for(let i=0;i<65;i++){
+   const x=random(i+104)*256,y=random(i+381)*256;
+   ctx.strokeStyle='rgba(18,29,15,.12)';
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-3+random(i)*6,y-5-random(i+34)*7);ctx.stroke();
+  }
  }
+ ctx.globalAlpha=1;
+ const texture=new THREE.CanvasTexture(canvas);
+ texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(stone?9:8,stone?6:6);
+ texture.anisotropy=1;texture.colorSpace=THREE.SRGBColorSpace;
+ const material=new THREE.MeshLambertMaterial({map:texture,color:0xece4d3});
+ this.groundMaterials.set(key,material);return material;
+}
  staticModel(key,x,y,height,rotation=0){const original=this.models.get(key);if(!original)return null;const root=new THREE.Group(),model=original.scene.clone(true),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3()),scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);root.add(model);root.position.set(x*SCALE,.02,y*SCALE);root.rotation.y=rotation;this.staticRoot.add(root);return root;}
  instances(key,placements){const original=this.models.get(key);if(!original||!placements.length)return;original.scene.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(original.scene),center=box.getCenter(new THREE.Vector3()),height=Math.max(.01,box.max.y-box.min.y),local=new THREE.Matrix4();
   original.scene.traverse(part=>{if(!part.isMesh||part.isSkinnedMesh)return;const batch=new THREE.InstancedMesh(part.geometry,part.material,placements.length);for(let i=0;i<placements.length;i++){const p=placements[i],scale=p[2]/height;local.compose(new THREE.Vector3(p[0]*SCALE-center.x*scale,-box.min.y*scale,p[1]*SCALE-center.z*scale),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),p[3]||0),new THREE.Vector3(scale,scale,scale));batch.setMatrixAt(i,local.clone().multiply(part.matrixWorld));}batch.instanceMatrix.needsUpdate=true;this.staticRoot.add(batch);});
  }
- buildWorld(live){
-  this.staticRoot.traverse(o=>{if(o.userData.ownedGeometry)o.geometry.dispose();if(o.isInstancedMesh)o.dispose();});this.staticRoot.clear();const w=live.worldW*SCALE,h=live.worldH*SCALE;const floor=new THREE.Mesh(new THREE.PlaneGeometry(w,h),this.groundMaterial(live.state.zone,!!live.dungeon));floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);this.scene.background=new THREE.Color(live.dungeon?0x242b29:0x657265);
-  const random=n=>{const a=Math.sin(n*127.1+live.state.zone*13)*43758.5453;return a-Math.floor(a);};const trees=[],rocks=[];
-  for(let i=0;i<(this.mobile?44:70);i++){const x=55+random(i+1)*(live.worldW-110),y=70+random(i+202)*(live.worldH-140);if(Math.abs(x-700)<135||Math.abs(y-500)<105||Math.hypot(x-live.p.x,y-live.p.y)<100)continue;if(live.dungeon||[3,4,6].includes(live.state.zone))rocks.push([x,y,.55+random(i+50)*1.1,i]);else trees.push([x,y,2.0+random(i+33)*1.6,i]);}
-  this.instances('tree',trees.filter((_,i)=>i%2===0));this.instances('tree-high',trees.filter((_,i)=>i%2===1));this.instances('rock-large',rocks);
-  if(!live.dungeon&&live.state.zone===0){
-   for(const [x,y,turn] of [[390,300,0],[1010,300,Math.PI],[700,690,0],[700,815,Math.PI/2]]){
-    this.staticModel('wall',x,y,2.4,turn);this.staticModel('wall-wood',x+58,y,2.4,turn);this.staticModel('wall-door',x+18,y+28,2.3,turn);const roof=this.staticModel('roof-gable',x+20,y,1.2,turn);if(roof)roof.position.y=2.35;const chimney=this.staticModel('chimney',x-22,y-24,.9,turn);if(chimney)chimney.position.y=2.7;
-   }
-   this.staticModel('fountain-round',700,300,1.25);this.staticModel('stall',700,690,2.5);this.staticModel('cart',825,708,1.25);this.instances('lantern',[[500,438,1.65,0],[900,438,1.65,0],[650,750,1.65,0]]);
-   this.instances('road',Array.from({length:16},(_,i)=>[700,100+i*50,.12,0]));
+ // 지형·배경: 기존 등록 CC0 3D 모델만 사용하며 전투 판정과 이동 충돌은 변경하지 않는다.
+buildWorld(live){
+ this.staticRoot.traverse(o=>{if(o.userData.ownedGeometry)o.geometry.dispose();if(o.isInstancedMesh)o.dispose();});
+ this.staticRoot.clear();
+ const zone=live.state.zone,dungeon=!!live.dungeon,w=live.worldW*SCALE,h=live.worldH*SCALE;
+ const mood=dungeon?{sky:0x292720,fog:0x403c36,far:55,light:0xeac48c,intensity:1.0}:[
+  {sky:0x7e8270,fog:0xaaa28a,far:76,light:0xffdaa3,intensity:1.75},
+  {sky:0x7d8973,fog:0x9da48c,far:78,light:0xffe0aa,intensity:1.8},
+  {sky:0x455a4c,fog:0x66735f,far:54,light:0xe7c990,intensity:1.35},
+  {sky:0x626568,fog:0x777572,far:58,light:0xd5d8ca,intensity:1.2},
+  {sky:0xb6a07e,fog:0xc3ad88,far:72,light:0xffd4a0,intensity:2.0},
+  {sky:0x9caeb4,fog:0xabbac4,far:66,light:0xe2f0ff,intensity:1.6},
+  {sky:0x514652,fog:0x68535d,far:52,light:0xe4a3a0,intensity:1.1}
+ ][zone]||{sky:0x68705f,fog:0x707761,far:70,light:0xffd6a6,intensity:1.5};
+ this.scene.background=new THREE.Color(mood.sky);
+ this.scene.fog.color.setHex(mood.fog);this.scene.fog.near=18;this.scene.fog.far=mood.far;
+ this.sun.color.setHex(mood.light);this.sun.intensity=mood.intensity;
+ this.skyLight.intensity=dungeon?1.0:1.45;
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(w,h),this.groundMaterial(zone,dungeon));
+ floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
+ const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
+ const grove=[],high=[],crooked=[],rocks=[],pebbles=[],fences=[];
+ const count=this.mobile?65:115;
+ for(let i=0;i<count;i++){
+  const x=65+random(i+1)*(live.worldW-130),y=65+random(i+202)*(live.worldH-130);
+  if(dungeon){if(i%3===0)rocks.push([x,y,.6+random(i+35)*.75,random(i+48)*6]);continue;}
+  if(Math.abs(x-700)<205&&Math.abs(y-500)<245||Math.hypot(x-live.p.x,y-live.p.y)<125)continue;
+  if([3,4,5,6].includes(zone)){
+   if(i%2===0)rocks.push([x,y,.48+random(i+50)*.85,random(i+50)*6]);
+   else if(zone===5&&i%3===0)high.push([x,y,1.9+random(i+52)*1.1,random(i+55)*6]);
+   else pebbles.push([x,y,.22+random(i+26)*.4,random(i+63)*6]);
+  }else if(zone===2){
+   (i%4===0?crooked:i%3===0?high:grove).push([x,y,2.5+random(i+33)*2,random(i+34)*6]);
+  }else{
+   (i%4===0?high:grove).push([x,y,2.2+random(i+33)*1.3,random(i+34)*6]);
   }
-  if(live.dungeon){const walls=[];for(let x=50;x<live.worldW;x+=90){walls.push([x,65,2.3,0],[x,live.worldH-40,2.3,0]);}for(let y=140;y<live.worldH-80;y+=90){walls.push([40,y,2.3,Math.PI/2]);if(Math.abs(y-live.worldH/2)>110)walls.push([live.worldW-40,y,2.3,Math.PI/2]);}this.instances('wall-broken',walls);this.instances('pillar-stone',[[100,130,3,0],[live.worldW-110,130,3,0],[100,live.worldH-110,3,0],[live.worldW-110,live.worldH-110,3,0],[310,405,1.2,0]]);this.staticModel('wall-arch',live.worldW-55,live.worldH/2,3,Math.PI/2);this.staticModel('wall-door',825,445,2.4,Math.PI/2);}
  }
+ this.instances('tree',grove);this.instances('tree-high',high);
+ this.instances('tree-crooked',crooked);this.instances('rock-large',rocks);this.instances('rock-small',pebbles);
+ if(!dungeon&&zone===0){
+  // 기존 네 상점·샘·길 좌표를 그대로 유지한 성벽 마을 구조.
+  const buildings=[[390,300,0],[1010,300,Math.PI],[700,690,0],[700,815,Math.PI/2]];
+  for(const [x,y,rotation] of buildings){
+   this.staticModel('wall',x,y,2.65,rotation);
+   this.staticModel('wall-wood',x+55,y,2.55,rotation);
+   this.staticModel('wall-window-shutters',x-48,y,2.5,rotation);
+   this.staticModel('wall-door',x+18,y+28,2.55,rotation);
+   const roof=this.staticModel('roof-gable',x+18,y,1.4,rotation);if(roof)roof.position.y=2.55;
+   const chimney=this.staticModel('chimney',x-20,y-25,1.05,rotation);if(chimney)chimney.position.y=3.05;
+  }
+  // 성문·망루·돌길·마을 광장.
+  this.instances('road',Array.from({length:21},(_,i)=>[700,85+i*38,.16,0]));
+  this.instances('road',Array.from({length:13},(_,i)=>[460+i*39,518,.14,Math.PI/2]));
+  this.instances('fence',[[260,350,1.15,0],[330,350,1.15,0],[1070,350,1.15,0],[1140,350,1.15,0],[260,745,1.15,0],[1140,745,1.15,0]]);
+  for(const [x,y,rot] of [[215,150,0],[1185,150,0],[215,770,0],[1185,770,0]]){
+   this.staticModel('pillar-stone',x,y,3.2,rot);
+   const roof=this.staticModel('roof-gable-end',x,y,1.0,rot);if(roof)roof.position.y=3;
+  }
+  this.instances('wall-arch',[[700,125,3.5,0],[700,865,3.5,0]]);
+  this.staticModel('fountain-round',700,300,1.3);
+  this.staticModel('stall',700,690,2.65);this.staticModel('cart',825,708,1.35);
+  this.staticModel('cart',580,685,1.2,Math.PI);
+  this.instances('lantern',[[500,438,1.8,0],[900,438,1.8,0],[650,750,1.8,0],[750,750,1.8,0],[355,360,1.6,0],[1030,360,1.6,0]]);
+  this.staticModel('fence',550,260,1.3,0);
+  this.staticModel('fence',850,260,1.3,0);
+ }
+ if(!dungeon&&zone>0){
+  // 야외 사냥터는 중세 유적·사람이 지나간 길을 남겨 전형적인 빈 초원처럼 보이지 않게 한다.
+  this.instances('road',Array.from({length:12},(_,i)=>[180+i*85,470+Math.sin(i*.6)*28,.12,Math.PI/2]));
+  const ruins=[[260,240],[1120,250],[1030,720]];
+  this.instances(zone>=3?'wall-broken':'wall',ruins.map(([x,y],i)=>[x,y,zone===4?1.6:2.2,i*Math.PI/2]));
+  this.instances('pillar-stone',ruins.map(([x,y],i)=>[x+50,y+30,1.7+random(i+550),i]));
+  this.instances('fence',[[455,640,1.0,0],[500,640,1.0,0],[890,340,1.0,0]]);
+  if(zone===2||zone===3||zone===6){
+   this.staticModel('wall-arch',870,630,2.7,Math.PI/2);
+   this.staticModel('lantern',895,620,1.4);
+  }else if(zone===4||zone===5){
+   this.staticModel('cart',880,630,1.4,-.35);
+   this.staticModel('wall-broken',920,640,1.6);
+  }
+ }
+ if(dungeon){
+  // 층별 석조 회랑 · 원래 몬스터와 출구 동작을 방해하지 않는 장식 전용 지형.
+  const walls=[],columns=[],rubble=[],torches=[];
+  for(let x=45;x<live.worldW;x+=78){
+   walls.push([x,55,2.5,0],[x,live.worldH-34,2.5,0]);
+  }
+  for(let y=112;y<live.worldH-75;y+=75){
+   walls.push([38,y,2.5,Math.PI/2]);
+   if(Math.abs(y-live.worldH/2)>100)walls.push([live.worldW-36,y,2.5,Math.PI/2]);
+  }
+  for(const x of [130,live.worldW-145])for(const y of [145,live.worldH-145])columns.push([x,y,3.1,0]);
+  for(let i=0;i<(this.mobile?14:24);i++){
+   let x=100+random(i+210)*Math.max(200,live.worldW-200),y=95+random(i+909)*Math.max(150,live.worldH-190);
+   if(Math.abs(y-live.worldH/2)<95||Math.hypot(x-145,y-310)<150||Math.hypot(x-825,y-445)<90)continue;
+   rubble.push([x,y,.25+random(i+48)*.42,random(i+45)*6]);
+  }
+  this.instances('wall-broken',walls);
+  this.instances('pillar-stone',columns.concat([[310,405,1.1,0]]));
+  this.instances('rock-small',rubble);
+  this.instances('wall-arch',[[live.worldW-58,live.worldH/2,3.1,Math.PI/2],[410,70,2.8,0]]);
+  this.staticModel('wall-door',825,445,2.45,Math.PI/2);
+  this.staticModel('fence',330,375,1.2,0);
+  torches.push([138,195,1.75,0],[live.worldW-153,195,1.75,0],[138,live.worldH-185,1.75,0],[live.worldW-153,live.worldH-185,1.75,0]);
+  this.instances('lantern',torches);
+ }
+ // 광원은 이동·전투 계산과 독립. 모바일에서 점광원 수를 제한한다.
+ if(zone===0||dungeon||zone===2||zone===6){
+  const points=dungeon?[[138,195],[live.worldW-153,live.worldH-185]]:zone===0?[[700,300],[650,750]]:[[895,620]];
+  for(const [x,y] of points.slice(0,this.mobile?1:2)){
+   const light=new THREE.PointLight(dungeon?0xf5a75d:0xffcd84,dungeon?6:3.5,dungeon?7:9,2);
+   light.position.set(x*SCALE,2.4,y*SCALE);this.staticRoot.add(light);
+  }
+ }
+}
  modelRole(kind,obj,live){if(kind==='player')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(live.state.player.classId)]||'warrior';if(kind==='ai')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(obj.classId)]||HEROES[(Number(obj.id?.slice(2))||0)%5];const name=obj.name||'';if(/슬라임/.test(name))return'slime';if(/토끼/.test(name))return'bunny';if(/골렘|수호자/.test(name))return'golem';if(/망령/.test(name))return'ghost';if(/박쥐|마수/.test(name))return'winged';return'orc';}
  createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();}});root.add(model);
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
