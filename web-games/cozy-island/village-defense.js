@@ -28,7 +28,10 @@ const TRAP_TYPES={
  log:{name:'통나무 낙하',wood:7,stone:2,damage:38,charges:5},
  barrel:{name:'폭발 항아리',wood:6,stone:6,damage:75,charges:2}
 };
-const GUARD_SITES=[{name:'동쪽 성문',x:1285,y:608},{name:'북쪽 성벽',x:790,y:235}];
+const GUARD_SITES=[
+  {name:'동쪽 성문',x:1285,y:608},{name:'북쪽 성벽',x:790,y:235},
+  {name:'남쪽 성벽',x:1170,y:985},{name:'성채 예비대',x:1100,y:955}
+];
 const RAID_TIME_OPTIONS=[60,120,180,300,600];
 const SIEGE_MODES=['off','third','always'];
 const KEEP_HP=900;
@@ -59,6 +62,8 @@ function ensureVillage(state) {
   if(!RAID_TIME_OPTIONS.includes(fort.raidIntervalSec))fort.raidIntervalSec=120;
   if(!SIEGE_MODES.includes(fort.siegeAuto))fort.siegeAuto='off';
   fort.siegeRequested=fort.siegeRequested===true;
+  fort.drawbridgeClosed=fort.drawbridgeClosed!==false;
+  fort.moatBuilt=fort.moatBuilt===true;
   fort.siegeVictories=Math.max(0,Math.floor(Number(fort.siegeVictories)||0));
   fort.siegeDefeats=Math.max(0,Math.floor(Number(fort.siegeDefeats)||0));
   if(!Number.isFinite(fort.keepHp))fort.keepHp=KEEP_HP;
@@ -285,6 +290,13 @@ function renderCastle(){
   html+='<p class="panel-note">성채 체력 '+Math.ceil(fort.keepHp)+'/'+KEEP_HP+
     ' · 방어 승리 '+fort.siegeVictories+'회 · 함락 '+fort.siegeDefeats+'회</p>';
   if(built&&fort.keepHp<KEEP_HP)html+=button('siege:keep','성채 수리','나무 4 · 돌 6');
+  html+='<h3>🌊 해자 · 도개교</h3>';
+  if(built){
+    html+=button('fort:moat','해자 건설 · 공성군 이동 속도 절반',
+      fort.moatBuilt?'완성':'나무 12 · 돌 18',fort.moatBuilt);
+    html+=button('fort:bridge',fort.drawbridgeClosed?'도개교 열기':'도개교 올리기',
+      fort.drawbridgeClosed?'성문 앞 통로 개방':'성문 방어',!fort.moatBuilt);
+  }else html+='<p class="panel-note">성채 건설 후 해자와 도개교가 해금돼.</p>';
   html+='<h3>🛡️ 성벽 주둔 병력</h3><p class="panel-note">'+postStatus+'</p>';
   if(built&&state.barracksBuilt)for(let i=0;i<GUARD_SITES.length;i++){
     html+=button('guard:'+i+':archer',GUARD_SITES[i].name+' 궁수 배치','','');
@@ -324,6 +336,18 @@ function manageCastle(action){
   const game=currentGame,state=game?.state;if(!state)return;
   const village=ensureVillage(state),fort=village.fortification,inv=state.inventory||{};
   const parts=action.split(':'),op=parts[0],id=Number(parts[1]);
+  if(op==='fort'){
+    if(!village.townHallBuilt)return toast('마을회관부터 건설해');
+    if(parts[1]==='moat'){
+      if(fort.moatBuilt)return;
+      if(!canPay(12,18))return toast('해자 건설 자원 부족');
+      spend(12,18);fort.moatBuilt=true;
+    }else if(parts[1]==='bridge'){
+      if(!fort.moatBuilt)return toast('해자를 먼저 건설해');
+      fort.drawbridgeClosed=!fort.drawbridgeClosed;
+    }else return;
+    saveState();renderCastle();return;
+  }
   if(op==='timer'){
     const sec=Number(parts[1]);if(!RAID_TIME_OPTIONS.includes(sec))return;
     fort.raidIntervalSec=sec;
@@ -437,9 +461,12 @@ function runFortification(dt){
       enemy.hp-=6*dt;damaged=true;
     }
     // 성문/방벽 충돌: 구조물 HP가 있을 동안 공성 병력을 실제로 저지한다.
+    // 해자는 후속 적군 이동을 늦추며, 도개교가 내려오면 성문 방향 진입이 가능하다.
+    if(enemy._grandSiege)enemy._siegeMoatFactor=fort.moatBuilt&&enemy.x>1390&&
+      enemy.x<1590&&enemy.y>280&&enemy.y<970?.5:1;
     if(enemy.hp>0&&enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
       const lane=enemy._siegeLane??enemy.y,key=lane<520?'north':lane>730?'south':'gate';
-      if(fort.walls[key]>0){
+      if(fort.walls[key]>0&&(key!=='gate'||fort.drawbridgeClosed)){
         enemy.x=Math.max(enemy.x,1350);
         enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
         const attackEvery=Number(enemy.siegeCooldown)||1.2;
