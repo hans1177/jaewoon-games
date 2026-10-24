@@ -119,7 +119,17 @@ function feedWorkers(){let survivors=0;for(let i=0;i<state.workers;i++){if(state
 function updateRaid(dt){if(!raidActive){state.raidTimer+=dt;if(state.raidTimer>=RAID_INTERVAL)startRaid();return}updateRaidCombat(dt);if(enemies.length===0){raidActive=false;game.raidActive=false;state.raidTimer=0;saveSoon();toast('✅ 습격 방어 성공')}}
 function startRaid(){state.raidTimer=0;state.raidNumber=(state.raidNumber%3)+1;raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));else if(state.raidNumber===2){for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));for(let i=0;i<2;i++)enemies.push(createUnit('archer',true))}else enemies.push(createUnit('soldier',true,true));game.enemies=enemies;toast(state.raidNumber===3?'👹 보스 습격!':`⚠️ ${state.raidNumber}차 습격!`);saveSoon()}
 function updateRaidCombat(dt){for(const u of allies)updateCombatUnit(u,enemies,dt,false);for(const u of enemies)updateCombatUnit(u,allies,dt,true);allies=allies.filter(u=>u.hp>0);enemies=enemies.filter(u=>u.hp>0);game.allies=allies;game.enemies=enemies;saveArmyIfChanged()}
-function updateCombatUnit(u,targets,dt,hostile){u.cool=Math.max(0,u.cool-dt);let t=nearestLiving(u,targets);if(!t&&hostile){moveToward(u,barracks.x,barracks.y,dt);return}if(!t)return;const d=Math.hypot(t.x-u.x,t.y-u.y)||1;if(d>u.range)moveToward(u,t.x,t.y,dt);else if(u.cool<=0){t.hp-=u.attack;u.cool=u.kind==='archer'?1.15:.85}}
+function updateCombatUnit(u,targets,dt,hostile){
+  u.cool=Math.max(0,u.cool-dt);
+  // 메인: 기존 공격력·사거리·재장전 간격은 유지하고 주둔 병사의 이동만 고정한다.
+  if(!hostile&&u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y}
+  const t=nearestLiving(u,targets);
+  if(!t&&hostile){moveToward(u,barracks.x,barracks.y,dt);return}
+  if(!t)return;
+  const d=Math.hypot(t.x-u.x,t.y-u.y)||1;
+  if(d>u.range){if(!u._fortPost)moveToward(u,t.x,t.y,dt)}
+  else if(u.cool<=0){t.hp-=u.attack;u.cool=u.kind==='archer'?1.15:.85}
+}
 function nearestLiving(u,arr){let b=null,bd=1e9;for(const t of arr){if(t.hp<=0)continue;const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;b=t}}return b}
 function moveToward(u,x,y,dt){const dx=x-u.x,dy=y-u.y,d=Math.hypot(dx,dy)||1;u.x+=dx/d*u.speed*dt;u.y+=dy/d*u.speed*dt}
 function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length){state.army=alive.map(u=>({kind:u.kind}));saveSoon()}}
@@ -127,11 +137,11 @@ function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.lengt
 function makeWolf(id,x,y){return{id,x,y,homeX:x,homeY:y,hp:200,maxHp:200,attack:10,speed:68,cool:0,alive:true,respawnAt:0,wander:0,vx:0,vy:0}}
 function commandWolfAt(sx,sy){if(!state.expanded||raidActive)return;const p=renderer.screenToWorld(game,sx,sy);let best=null,bd=46;for(const w of wolves){if(!w.alive)continue;const d=Math.hypot(w.x-p.x,w.y-p.y);if(d<bd){best=w;bd=d}}if(!best)return;selectedWolfId=best.id;game.selectedWolfId=best.id;toast(`🐺 늑대 지정! 병사 ${countKind('soldier')}명 출동`)}
 function updateWolves(dt){const now=Date.now();for(const w of wolves){if(!w.alive){if(w.respawnAt&&now>=w.respawnAt){w.alive=true;w.hp=w.maxHp;w.x=w.homeX;w.y=w.homeY;w.respawnAt=0}continue}w.cool=Math.max(0,w.cool-dt);if(raidActive||selectedWolfId!==w.id){w.wander-=dt;if(w.wander<=0){const a=Math.random()*Math.PI*2;w.vx=Math.cos(a);w.vy=Math.sin(a);w.wander=1.5+Math.random()*2.5}const nx=w.x+w.vx*w.speed*.2*dt,ny=w.y+w.vy*w.speed*.2*dt;if(nx>1450&&nx<2800)w.x=nx;else w.vx*=-1;if(ny>220&&ny<980)w.y=ny;else w.vy*=-1;continue}
-    const soldiers=allies.filter(u=>u.kind==='soldier'&&u.hp>0);for(const s of soldiers){s.cool=Math.max(0,s.cool-dt);const d=Math.hypot(w.x-s.x,w.y-s.y)||1;if(d>s.range)moveToward(s,w.x,w.y,dt);else if(s.cool<=0){w.hp-=s.attack;s.cool=.85}}
+    const soldiers=allies.filter(u=>u.kind==='soldier'&&u.hp>0&&!u._fortPost);for(const s of soldiers){s.cool=Math.max(0,s.cool-dt);const d=Math.hypot(w.x-s.x,w.y-s.y)||1;if(d>s.range)moveToward(s,w.x,w.y,dt);else if(s.cool<=0){w.hp-=s.attack;s.cool=.85}}
     const target=nearestLiving(w,soldiers);if(target){const d=Math.hypot(target.x-w.x,target.y-w.y)||1;if(d>52)moveToward(w,target.x,target.y,dt);else if(w.cool<=0){target.hp-=w.attack;w.cool=.9}}
     if(w.hp<=0){w.alive=false;w.respawnAt=now+60000;selectedWolfId=null;game.selectedWolfId=null;toast('🐺 늑대를 처치했어!')}allies=allies.filter(u=>u.hp>0);game.allies=allies;saveArmyIfChanged()}}
 
-function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(wolf&&u.kind==='soldier')continue;u.wander-=dt;if(u.wander<=0){const a=Math.random()*Math.PI*2;u.vx=Math.cos(a);u.vy=Math.sin(a);u.wander=1.2+Math.random()*2.2}const nx=u.x+u.vx*u.speed*.28*dt,ny=u.y+u.vy*u.speed*.28*dt;if(nx>350&&nx<1280)u.x=nx;else u.vx*=-1;if(ny>450&&ny<900)u.y=ny;else u.vy*=-1}}
+function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y;continue}if(wolf&&u.kind==='soldier')continue;u.wander-=dt;if(u.wander<=0){const a=Math.random()*Math.PI*2;u.vx=Math.cos(a);u.vy=Math.sin(a);u.wander=1.2+Math.random()*2.2}const nx=u.x+u.vx*u.speed*.28*dt,ny=u.y+u.vy*u.speed*.28*dt;if(nx>350&&nx<1280)u.x=nx;else u.vx*=-1;if(ny>450&&ny<900)u.y=ny;else u.vy*=-1}}
 function advanceClock(dt){clockCarry+=dt;if(clockCarry<.5)return;const ticks=Math.floor(clockCarry/.5);clockCarry-=ticks*.5;state.minutes+=ticks*5;state.playMinutes+=ticks*2.5/60;while(state.minutes>=1440){state.minutes-=1440;state.day++;state.weather=seededWeather(state.day);game.weather=state.weather;toast(`${state.day}일차 · ${state.weather}`)}updateHUD();saveSoon()}
 function seededWeather(day){return Math.abs(Math.sin(day*91.731)*10000)%1<.28?'비':'맑음'}
 function updateHUD(){const h=Math.floor(state.minutes/60),m=Math.floor(state.minutes%60),pm=h>=12,h12=((h+11)%12)+1;ui.day.textContent=`${state.day}일차`;ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';ui.coins.textContent=String(state.coins);if(raidActive)ui.raid.textContent=`⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;else{const r=Math.max(0,Math.ceil(RAID_INTERVAL-state.raidTimer));ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`}}
