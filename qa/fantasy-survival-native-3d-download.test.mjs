@@ -281,6 +281,16 @@ test('downloaded KayKit knight is ledgered as preview only and source-bound to e
  assert.match(index,/data-spatial-dimension="3d-loading"/);
 });
 
+test('native creature source failures recover without permanent mobile loading lock',()=>{
+  assert.ok(moduleSource.includes('const retryDelay=failed?Math.min(60000,5000*2**Math.min(4,failed.attempts-1)):0'));
+  assert.ok(!moduleSource.includes('failed.attempts>=3'));
+  assert.ok(moduleSource.includes('creatureFailures.delete(file)'));
+  assert.ok(moduleSource.includes('nativeSpeciesMaterials=new Map()'));
+  assert.ok(moduleSource.includes('material.color.lerp(tint,.22)'));
+  assert.ok(moduleSource.includes('for(const material of materials.values())material.dispose()'));
+  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
 test('native 3D binds exact existing monster types and adapts GPU load without changing their combat',()=>{
  assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
  const original=ledger.entries.find(e=>e.id==='forest-cc0-originals-20261020');
@@ -404,18 +414,21 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
  const body=moduleSource.split('function synchronizeNativeCreatures(state,px,py,stamp){')[1]
   ?.split('\n  if(hero)scene.add(hero.avatar);')[0];
  assert.ok(body,'native creature synchronization missing');
- const actors=new Map(),missing=new Set(),interactables=[];
+ const actors=new Map(),missing=new Set(),interactables=[],speciesMaterials=new Map();
+ let clones=0;
+ const material={uuid:'existing-wolf-material',clone(){clones++;return {color:{lerp(){}}}}};
  const source={model:{},clips:[],height:1,floor:0};
  const vector=()=>({set(){}});
  class Group{constructor(){this.position=vector();this.rotation={};this.userData={}}add(){}}
  const sync=new Function('mobileBudget','qualityFactor','missingVisibleMonsterIds',
   'NATIVE_CREATURE_BY_ID','nativeCreatureSources','undeadSource','nativeCreatureActors',
-  'cloneAnimatedRig','THREE','scene','interactables','performance','SCALE',
+  'nativeSpeciesMaterials','cloneAnimatedRig','THREE','scene','interactables','performance','SCALE',
   'cameraFrustum','creatureBounds',
   'return function synchronizeNativeCreatures(state,px,py,stamp){'+body)(
    true,1,missing,new Map([['shadowwolf','wolf.fbx']]),new Map([['wolf.fbx',source]]),
-   null,actors,()=>({scale:{setScalar(){}},position:{},traverse(fn){fn({isMesh:true,userData:{}})}}),
-   {Group}, {add(){},remove(){}},interactables,{now:()=>1000},1/48,
+   null,actors,speciesMaterials,()=>({scale:{setScalar(){}},position:{},
+     traverse(fn){fn({isMesh:true,material,userData:{}})}}),
+   {Group,Color:class{constructor(){} }}, {add(){},remove(){}},interactables,{now:()=>1000},1/48,
    {intersectsSphere:bounds=>bounds.center.x<100},
    {center:{x:0,set(x){this.x=x}}}
   );
@@ -426,6 +439,7 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
  assert.equal(sync(state,0,0,1),false,'mapped crowd must not request 2D fallback');
  assert.equal(actors.size,24,'visible actors cannot be dropped at the former mobile cap');
  assert.equal(interactables.length,24,'every visible enemy must remain tappable');
+ assert.equal(clones,1,'the same monster species must share exactly one tinted material');
  assert.equal(missing.size,0);
  assert.equal(JSON.stringify(state),before,'rendering must not mutate gameplay state');
  state.enemies=[{id:'missing',type:{id:'unknown'},area:'surface',x:1,y:0,hp:10}];
@@ -465,8 +479,8 @@ test('streaming is nearest-first bounded and never requests the full species lib
  assert.doesNotMatch(moduleSource,/Object\.keys\(NATIVE_CREATURE_MODELS\)\.map/);
  assert.match(moduleSource,/distance>1200/);
  assert.match(moduleSource,/loadingCreatureCount>=\(mobileBudget\?2:4\)/);
- assert.match(moduleSource,/failed\.attempts>=3/);
- assert.match(moduleSource,/sampleNow-failed\.at<10000/);
+ assert.doesNotMatch(moduleSource,/failed\.attempts>=3/);
+ assert.match(moduleSource,/sampleNow-failed\.at<retryDelay/);
  assert.match(moduleSource,/if\(disposed\)\{/);
  assert.match(moduleSource,/worldPoints\?\.\[hit\.instanceId\]/);
 });
