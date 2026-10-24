@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -152945,7 +152945,7 @@
     },
     {
       "id": "recovery-recovery-f84bbc96c4af1596274e",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -152989,7 +152989,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/vibe2-candidate-release.yml:89d15f267bcd6d85e48209adb3f91a0bc1db8b13:unresolved-run-39067647976"
       ],
-      "retries": 27,
+      "retries": 28,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
@@ -153003,12 +153003,12 @@
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40093961756:1",
-      "reservedAt": "2026-10-24T12:32:09.677Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -153195,7 +153195,8 @@
         "system-ai-handoff-to-reservation:system-ai:40092571169:1",
         "actions-run:40092571169",
         "system-ai-impact-score:1472",
-        "system-ai-handoff-to-reservation:system-ai:40093961756:1"
+        "system-ai-handoff-to-reservation:system-ai:40093961756:1",
+        "actions-run:40093961756"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1472,
@@ -153210,7 +153211,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:02:09.727Z",
-      "updatedAt": "2026-10-24T12:32:09.677Z"
+      "updatedAt": "2026-10-24T12:44:57.311Z"
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
@@ -163047,6 +163048,7 @@
       "department": "recovery",
       "taskType": "bottleneck-repair",
       "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Analyze the exact failed WEB deployment stage RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO for an unresolved game using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
       "responsibleFiles": [
         ".github/workflows/vibe2-candidate-release.yml"
@@ -163054,36 +163056,7 @@
       "contextFiles": [
         ".github/workflows/vibe2-candidate-release.yml"
       ],
-      "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
-      "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
-      "relatedTaskIds": [
-        "deployment:.github/workflows/vibe2-candidate-release.yml:cd8b5bd736b74b986babc3f2619268c624b9ebd2:unresolved-run-40093941757"
-      ],
-      "blockedTaskIds": [
-        "deployment:.github/workflows/vibe2-candidate-release.yml:cd8b5bd736b74b986babc3f2619268c624b9ebd2:unresolved-run-40093941757"
-      ],
-      "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
-      "recurrenceCount": 1,
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "sourceMutationRequired": true,
-      "sourceMutationBaseline": "cd8b5bd736b74b986babc3f2619268c624b9ebd2",
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "compareLastKnownGoodFirstBrokenCurrentRequired": false,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "saveMigrationValidationRequired": false,
-        "multiplayerLifecycleValidationRequired": false,
-        "multiplayerUserAssistanceRequired": false,
-        "multiplayerMinimumAutomatedClients": 0,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "repeatedSameApproachWithoutNewCausalEvidenceForbidden": false
-      },
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "repair only assigned responsible files",
         "reproduce the exact failure before patch or preserve existing verified reproduction evidence",
@@ -163107,7 +163080,24 @@
         "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
       ],
       "dependencies": [],
+      "relatedTaskIds": [
+        "deployment:.github/workflows/vibe2-candidate-release.yml:cd8b5bd736b74b986babc3f2619268c624b9ebd2:unresolved-run-40093941757"
+      ],
+      "blockedTaskIds": [
+        "deployment:.github/workflows/vibe2-candidate-release.yml:cd8b5bd736b74b986babc3f2619268c624b9ebd2:unresolved-run-40093941757"
+      ],
       "retries": 0,
+      "recurrenceCount": 1,
+      "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "cd8b5bd736b74b986babc3f2619268c624b9ebd2",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -163142,11 +163132,10 @@
         "primary-ai-collaboration-task:recovery-recovery-4b6e2e150408f5b08171"
       ],
       "supervisorReviewRequired": true,
-      "workerSelfAcceptance": false,
-      "learningCandidate": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-10-24T12:40:57.239Z",
       "updatedAt": "2026-10-24T12:40:57.239Z"
     }
-  ],
-  "updatedAt": "2026-10-24T12:42:26.369Z"
+  ]
 }
