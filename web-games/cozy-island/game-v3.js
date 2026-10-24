@@ -44,6 +44,7 @@ const npcs=[
   {id:'danbi',name:'단비',icon:'🧒',x:960,y:700,line:'농작물은 물을 준 뒤 20초면 자라.'}
 ];
 const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId,siegeOverview:true};
+game.screenToWorld=(sx,sy)=>renderer.screenToWorld(game,sx,sy);
 const ui={
   help:qs('#helpCommand'),day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),inventory:qs('#inventoryButton'),castle:qs('#castleCommand'),barracks:qs('#barracksCommand'),workers:qs('#workersCommand'),fishingCommand:qs('#fishingCommand'),trade:qs('#tradeCommand'),center:qs('#centerCommand'),zoomIn:qs('#zoomIn'),zoomOut:qs('#zoomOut'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
@@ -151,7 +152,7 @@ function openGuide(){
 function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p><p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. <a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>`;ui.panel.showModal()}
 function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}
 
-function nearestInteraction(at=player,radius=86){const dist=(x,y)=>Math.hypot(at.x-x,at.y-y);const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=radius?c[0]:null}
+function nearestInteraction(at=player,radius=86){const dist=(x,y)=>Math.hypot(at.x-x,at.y-y);const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)},{type:'tower',d:dist(400,1090)},{type:'hall',d:dist(1010,1090)},{type:'lumber',d:dist(245,850)},{type:'mine',d:dist(785,965)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=radius?c[0]:null}
 function interactionHint(t){
   if(!t)return raidActive?'⚔️ 습격 중 · 병사들이 성채를 방어 중':'지도를 드래그하고 건물을 터치해 관리';
   if(t.type==='node')return '근처 자원 자동 채집 중';
@@ -160,6 +161,7 @@ function interactionHint(t){
   if(t.type==='ship')return '무역 · 상선 매매와 생산품 출하';
   if(t.type==='barracks')return '병영 · 병력 관리';
   if(t.type==='workerShop')return '일꾼 작업장 · 관리';
+  if(['tower','hall','lumber','mine'].includes(t.type))return '중세 생산·방어 건물 · 터치해 건설/강화';
   if(t.type==='fish')return '연못 터치 · 낚시';
   if(t.type==='expand')return '동쪽 지역 해금 · 120골드';
   if(t.type==='plot')return t.item.plot.ready?'밭 터치 · 수확':t.item.plot.state==='empty'?'밭 터치 · 씨앗 심기':!t.item.plot.watered?'밭 터치 · 물 주기':'밭 · 재배 중';
@@ -180,6 +182,7 @@ function activateInteraction(t){
   else if(t.type==='ship')ui.trade?.click();
   else if(t.type==='barracks')openBarracks();
   else if(t.type==='workerShop')openWorkerShop();
+  else if(['tower','hall','lumber','mine'].includes(t.type))ui.castle.click();
   else if(t.type==='fish')startFishing();
   else if(t.type==='expand')expandIsland();
   else if(t.type==='plot')usePlot(t.item.index,t.item.plot.state==='empty'?'seed':'water');
