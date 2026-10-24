@@ -112,6 +112,11 @@ canvas.addEventListener('pointerup',e=>{
   const now=performance.now();
   if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
   lastTap={time:now,x:e.clientX,y:e.clientY};
+  // 기존 지역 확장 스크립트의 상호작용 이벤트를 월드 터치에 연결.
+  const legacyAction=document.querySelector('#actionButton');
+  if(legacyAction&&!legacyAction.dispatchEvent(new PointerEvent('pointerdown',{
+    bubbles:true,cancelable:true,pointerType:e.pointerType||'touch'
+  })))return;
   const pos=renderer.screenToWorld(game,e.clientX,e.clientY);
   const radius=Math.max(78,Math.min(146,44/(renderer.camera3?.zoom||.5)));
   const target=nearestInteraction(pos,radius);
