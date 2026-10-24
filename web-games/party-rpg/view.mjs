@@ -17,7 +17,7 @@ export class PartyView{
    this.scene=new THREE.Scene();this.scene.fog=new THREE.Fog(0x49514f,12,58);this.scene.add(this.staticRoot);
    this.skyLight=new THREE.HemisphereLight(0xa0b0b6,0x252724,.81);this.scene.add(this.skyLight);this.sun=new THREE.DirectionalLight(0xbfc2bd,1.05);this.sun.position.set(-23,38,17);this.scene.add(this.sun);
    this.camera=new THREE.OrthographicCamera(-12,12,12,-12,.1,180);this.camera.position.set(45,45,45);this.camera.lookAt(0,0,0);
-   this.groundMaterials=new Map();this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
+   this.groundMaterials=new Map();this.effects=[];this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
    this.marker=new THREE.Mesh(this.ringGeometry,this.ringMaterials.select);this.marker.rotation.x=-Math.PI/2;this.marker.visible=false;this.scene.add(this.marker);
    // Low-poly stone clue marker: visible from the road without blocking combat.
    this.evidenceBeacon=new THREE.Group();
@@ -87,6 +87,14 @@ groundMaterial(zone,dungeon){
    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-3+random(i)*6,y-5-random(i+34)*7);ctx.stroke();
   }
  }
+ // 마모된 포석/흙길의 미세 균열. 게임 충돌 및 좌표는 유지.
+ for(let i=0;i<110;i++){
+  const x=random(i*17+421)*256,y=random(i*19+779)*256,len=3+random(i+141)*14;
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+len,y+(random(i+32)-.5)*6);
+  if(stone)ctx.lineTo(x+len+random(i+5)*5,y+3+random(i+54)*6);
+  ctx.strokeStyle=stone?'rgba(8,13,14,.23)':zone===5?'rgba(209,213,207,.17)':'rgba(17,22,18,.18)';
+  ctx.lineWidth=.5+random(i+66)*.9;ctx.stroke();
+ }
  ctx.globalAlpha=1;
  const texture=new THREE.CanvasTexture(canvas);
  texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(stone?9:8,stone?6:6);
@@ -115,7 +123,8 @@ buildWorld(live){
  this.scene.background=new THREE.Color(mood.sky);
  this.scene.fog.color.setHex(mood.fog);this.scene.fog.near=13;this.scene.fog.far=mood.far;
  this.sun.color.setHex(mood.light);this.sun.intensity=mood.intensity*.75;
- this.skyLight.intensity=dungeon?.45:.88;
+ this.skyLight.intensity=dungeon?.45:zone===6?.55:zone===2?.7:.82;
+ this.gl.toneMappingExposure=dungeon?.68:zone===6?.72:zone===5?.91:.83;
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(w,h),this.groundMaterial(zone,dungeon));floor.receiveShadow=true;
  floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
  const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
@@ -137,6 +146,13 @@ buildWorld(live){
  }
  this.instances('tree',grove);this.instances('tree-high',high);
  this.instances('tree-crooked',crooked);this.instances('rock-large',rocks);this.instances('rock-small',pebbles);
+ // 지역별 흔적: 기존 공유 건축 자산만 재사용. 전투·맵 충돌에는 참여하지 않는다.
+ if(!dungeon&&zone===1){this.instances('fence',[[340,500,.85,.18],[385,507,.75,-.17],[935,460,.78,.28]]);this.instances('cart',[[1055,570,.8,.45]]);}
+ if(!dungeon&&zone===2){this.instances('wall-broken',[[250,670,1.35,.2],[314,685,.9,-.3]]);this.instances('tree-crooked',[[260,715,3.4,0],[1050,250,3.7,1.2]]);}
+ if(!dungeon&&zone===3){this.instances('pillar-stone',[[290,640,1.4,.15],[338,635,1.65,-.3],[1085,470,2.2,.2]]);this.instances('rock-wide',[[385,645,.8,0],[1000,475,.9,0]]);}
+ if(!dungeon&&zone===4){this.instances('cart',[[310,685,1.1,-.5],[350,718,.65,.4]]);this.instances('wall-broken',[[930,205,1.4,.22],[980,240,1.05,-.2]]);}
+ if(!dungeon&&zone===5){this.instances('wall-arch',[[345,260,2.15,.15]]);this.instances('pillar-stone',[[395,286,1.55,.1],[1030,675,1.9,.2]]);}
+ if(!dungeon&&zone===6){this.instances('wall-broken',[[310,715,2.25,.3],[370,715,2.4,-.1],[1080,610,2.65,1.5]]);this.instances('lantern',[[430,710,1.6,0],[975,610,1.55,0]]);}
  if(!dungeon&&zone===0){
   // 기존 네 상점·샘·길 좌표를 그대로 유지한 성벽 마을 구조.
   const buildings=[[390,300,0],[1010,300,Math.PI],[700,690,0],[700,815,Math.PI/2]];
@@ -216,13 +232,73 @@ buildWorld(live){
  }
 }
  modelRole(kind,obj,live){if(kind==='player')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(live.state.player.classId)]||'warrior';if(kind==='ai')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(obj.classId)]||HEROES[(Number(obj.id?.slice(2))||0)%5];const name=obj.name||'';if(/슬라임/.test(name))return'slime';if(/토끼/.test(name))return'bunny';if(/골렘|수호자/.test(name))return'golem';if(/망령/.test(name))return'ghost';if(/박쥐|마수/.test(name))return'winged';return'orc';}
- createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();}});root.add(model);
+ // 기존 인물 GLB에 직업 장비만 더해 리깅과 애니메이션을 보존한다.
+ dressActor(root,role){
+  const armor=new THREE.MeshStandardMaterial({color:0x555c5d,roughness:.82,metalness:.36});
+  const leather=new THREE.MeshStandardMaterial({color:0x302e2a,roughness:.98});
+  const cloth=new THREE.MeshStandardMaterial({color:0x45474a,roughness:1});
+  const sacred=new THREE.MeshStandardMaterial({color:0x88806c,roughness:.92});
+  const add=(g,m,x,y,z,rz=0,rx=0)=>{
+   const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.rotation.z=rz;o.rotation.x=rx;o.userData.classGear=true;root.add(o);
+  };
+  if(role==='warrior'){
+   add(new THREE.BoxGeometry(.41,.18,.35),armor,-.3,1.32,0,-.16);
+   add(new THREE.BoxGeometry(.41,.18,.35),armor,.3,1.32,0,.16);
+   add(new THREE.CylinderGeometry(.28,.32,.08,8),armor,.48,.94,.17,0,Math.PI/2);
+  }else if(role==='rogue'){
+   add(new THREE.SphereGeometry(.26,9,6,0,Math.PI*2,0,Math.PI*.56),cloth,0,1.57,0);
+   add(new THREE.BoxGeometry(.4,.09,.13),leather,0,.91,.27);
+   add(new THREE.BoxGeometry(.07,.48,.08),armor,.4,.82,.03,.5);
+  }else if(role==='cleric'){
+   add(new THREE.BoxGeometry(.55,.15,.3),sacred,0,1.25,-.04);
+   add(new THREE.CylinderGeometry(.038,.046,1.5,7),leather,.48,.88,-.06,.06);
+   add(new THREE.TorusGeometry(.13,.033,5,10),sacred,.49,1.62,-.06);
+  }else if(role==='wizard'){
+   add(new THREE.BoxGeometry(.53,.11,.3),cloth,0,1.21,-.02);
+   add(new THREE.CylinderGeometry(.035,.048,1.58,7),leather,.47,.87,-.1,-.07);
+   add(new THREE.OctahedronGeometry(.11),sacred,.54,1.68,-.1);
+  }else if(role==='ranger'){
+   add(new THREE.CylinderGeometry(.11,.13,.54,7),leather,-.36,1.16,-.25,-.22);
+   add(new THREE.BoxGeometry(.08,.65,.08),sacred,-.43,1.24,-.26,.3);
+   add(new THREE.BoxGeometry(.11,.6,.09),leather,.3,1,-.21,.3);
+  }
+ }
+ createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();}});root.add(model);if(kind!=='enemy')this.dressActor(root,role);
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
   const mixer=new THREE.AnimationMixer(model),actions=new Map();for(const clip of original.animations){const action=mixer.clipAction(clip);actions.set(clip.name,action);}
   const result={root,model,ring,mixer,actions,action:null,role,lastX:obj.x,lastY:obj.y,height};this.scene.add(root);return result;
  }
  animate(entry,moving,combat,dt){let term=combat?.visualUntil>performance.now()?'attack':moving?'walk':'idle';const names=[...entry.actions.keys()];const choose=term==='attack'?names.find(n=>/attack|spell|shoot|punch|bite|headbutt/i.test(n)&&!/idle/i.test(n)):names.find(n=>new RegExp(term,'i').test(n));const name=choose||names.find(n=>/idle/i.test(n))||names[0];if(name&&entry.action!==name){const next=entry.actions.get(name);const previous=entry.actions.get(entry.action);next.reset().setEffectiveWeight(1).play();if(previous)next.crossFadeFrom(previous,.16,true);entry.action=name;}entry.mixer.update(dt);}
- removeActor(key,entry){this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
+ removeActor(key,entry){this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear)o.geometry.dispose();});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
+ // 간결한 직업별 주문·공격 시각효과, 실제 피해량 판정에는 개입하지 않는다.
+ playSkillEffect(kind,sx,sy,tx=sx,ty=sy){
+  if(!this.ready||this.effects.length>=(this.mobile?9:18))return;
+  const colors={strike:0xc8b391,fighter:0xd8bd87,guard:0xc2d0d2,rogue:0xb6a0ad,cleric:0xdbce8e,wizard:0x769ac8,ranger:0xa3b18b};
+  const color=colors[kind]||colors.strike,group=new THREE.Group();
+  group.position.set(tx*SCALE,.13,ty*SCALE);
+  const material=()=>new THREE.MeshBasicMaterial({color,transparent:true,opacity:.74,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
+  const ring=new THREE.Mesh(new THREE.RingGeometry(kind==='wizard'?.15:.29,kind==='wizard'?.3:.38,24),material());
+  ring.rotation.x=-Math.PI/2;ring.position.y=.02;group.add(ring);
+  if(kind==='cleric'||kind==='guard'){
+   const halo=new THREE.Mesh(new THREE.TorusGeometry(.36,.035,5,18),material());halo.position.y=kind==='guard'?.95:1.45;group.add(halo);
+  }else{
+   const diff=new THREE.Vector3((sx-tx)*SCALE,0,(sy-ty)*SCALE),length=diff.length();
+   if(length>.07){
+    const beam=new THREE.Mesh(new THREE.CylinderGeometry(.026,.044,Math.min(length,5.2),6),material());
+    beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),diff.clone().normalize());
+    beam.position.copy(diff.multiplyScalar(.5)).add(new THREE.Vector3(0,.53,0));group.add(beam);
+   }
+   if(kind==='wizard'||kind==='fighter'){
+    const arc=new THREE.Mesh(new THREE.TorusGeometry(kind==='wizard'?.44:.65,.045,5,22,Math.PI*1.3),material());
+    arc.rotation.x=kind==='wizard'?.3:1.2;arc.position.y=.52;group.add(arc);
+   }
+  }
+  this.scene.add(group);this.effects.push({group,born:performance.now(),duration:kind==='cleric'?800:kind==='guard'?850:540});
+ }
+ clearEffects(){
+  for(const fx of this.effects){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}
+  this.effects.length=0;
+ }
  popDamage(x,y,amount,critical=false,miss=false){
   if(!this.ready||!this.camera||!this.width)return;
   const pos=new THREE.Vector3(x*SCALE,1.5,y*SCALE).project(this.camera);
@@ -237,7 +313,7 @@ buildWorld(live){
  render(live){
   if(!this.ready)return;const started=performance.now();if(this.mobile&&this.lastRenderedAt&&started-this.lastRenderedAt<30)return;this.lastRenderedAt=started;const now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
   const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision;
-  if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
+  if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.clearEffects();this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
   const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
   const activeMarker=live.evidence||live.council;this.evidenceBeacon.visible=!!activeMarker;
@@ -249,6 +325,12 @@ buildWorld(live){
   const used=new Set();for(const [kind,obj,key] of visible){used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,moving=Math.hypot(dx,dy)>.08;entry.lastX=obj.x;entry.lastY=obj.y;entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.root.userData.live={kind,obj,key};if(moving){const target=Math.atan2(dx,dy),difference=Math.atan2(Math.sin(target-entry.model.rotation.y),Math.cos(target-entry.model.rotation.y));entry.model.rotation.y+=difference*(1-Math.exp(-dt*14));}entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];this.animate(entry,moving,live.combat?.(obj),dt);}
   for(const [key,entry] of this.actors)if(!used.has(key))this.removeActor(key,entry);
   this.marker.visible=!!this.destination;if(this.destination)this.marker.position.set(this.destination.x*SCALE,.06,this.destination.y*SCALE);
+  for(let i=this.effects.length-1;i>=0;i--){
+   const fx=this.effects[i],phase=(now-fx.born)/fx.duration;
+   if(phase>=1){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});this.effects.splice(i,1);continue;}
+   fx.group.scale.setScalar(.7+phase*.85);fx.group.rotation.y+=dt*1.3;
+   fx.group.traverse(o=>{if(o.isMesh)o.material.opacity=.74*(1-phase);});
+  }
   this.gl.render(this.scene,this.camera);this.frameCost=this.frameCost*.94+(performance.now()-started)*.06;
   if(now-this.qualityAt>2200){this.qualityAt=now;const q=this.frameCost>24?Math.max(.72,this.quality-.1):this.frameCost<13?Math.min(1,this.quality+.05):this.quality;if(Math.abs(q-this.quality)>.01){this.quality=q;this.resize();}}
   if(now-this.lastLabelsAt>110){this.lastLabelsAt=now;const labels=[];for(const [kind,obj,key] of visible){const entry=this.actors.get(key);if(!entry)continue;const v=new THREE.Vector3(obj.x*SCALE,entry.height+.2,obj.y*SCALE).project(this.camera);if(Math.abs(v.x)>1.1||Math.abs(v.y)>1.1)continue;const hp=kind==='player'?live.state.player:obj;labels.push({key,text:kind==='player'?live.state.player.name||'나':obj.name,x:(v.x+1)*this.width/2,y:(1-v.y)*this.height/2,hp:Math.max(0,Math.min(1,(hp.hp||0)/(hp.maxHp||1))),kind});}
