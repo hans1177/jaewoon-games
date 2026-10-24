@@ -283,6 +283,15 @@ try{
     assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
      view.name+': COZY_ISLAND_INVENTORY_FAILED');
     await cozy.locator('#panelClose').click();
+    // 게임 캔버스가 행동 버튼의 실제 클릭 영역을 가로채면 즉시 실패한다.
+    const controlsHit=await cozy.locator('#toolButton').evaluate(button=>{
+     const actions=button.closest('.actions'),rect=button.getBoundingClientRect();
+     const target=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
+     return !!actions&&actions.closest('.controls')!==null
+      &&getComputedStyle(actions).pointerEvents==='auto'
+      &&(target===button||button.contains(target));
+    });
+    assert.equal(controlsHit,true,view.name+': COZY_ISLAND_TOOL_POINTER_HIT_BLOCKED');
     const tool=await cozy.locator('#toolButton').textContent();
     await cozy.locator('#toolButton').click();
     assert.notEqual(await cozy.locator('#toolButton').textContent(),tool,
