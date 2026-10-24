@@ -2,6 +2,15 @@
 // 임포트: 기존 월드 좌표·깊이 정렬은 유지하고 새 중세 픽셀 아트를 연결한다.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 import { findWorkerRoute } from './castle-layout.js';
+// 건물 외형: 경제 건물의 저장 구조를 바꾸지 않는 입체 모델 매핑.
+export const ECONOMY_3D_LOOK=Object.freeze({
+ lumber:'fort-lumber',quarry:'fort-quarry',iron:'fort-iron',stockpile:'fort-stockpile',
+ granary:'fort-granary',mill:'fort-mill',bakery:'fort-bakery',orchard:'fort-orchard',
+ dairy:'fort-dairy',wheat:'fort-wheat',vineyard:'fort-vineyard',winery:'fort-winery',
+ hops:'fort-hops',brewery:'fort-brewery',tavern:'fort-tavern',hovel:'fort-hovel',
+ well:'fort-well',market:'fort-market',fletcher:'fort-fletcher',
+ smith:'fort-smith',armory:'fort-armory'
+});
 const SC=1/36;
 // 카메라: 45도 방위·30도 고도의 2:1 등각 투영. 게임 좌표는 그대로 유지한다.
 const ISO_YAW=Math.PI/4,ISO_PITCH=Math.PI/6;
@@ -485,11 +494,27 @@ export class IslandRendererV3 {
       tile:new THREE.MeshLambertMaterial({color:0x98734e}),
       dark:new THREE.MeshLambertMaterial({color:0x303a34}),
       flag:new THREE.MeshLambertMaterial({color:0xa34538,side:THREE.DoubleSide}),
-      earth:new THREE.MeshLambertMaterial({color:0x958262})
+      earth:new THREE.MeshLambertMaterial({color:0x958262}),
+      soil:new THREE.MeshLambertMaterial({color:0x684c33}),
+      leaf:new THREE.MeshLambertMaterial({color:0x43844e}),
+      crop:new THREE.MeshLambertMaterial({color:0xd9b457}),
+      grape:new THREE.MeshLambertMaterial({color:0x643878}),
+      metal:new THREE.MeshLambertMaterial({color:0x667b88}),
+      fire:new THREE.MeshLambertMaterial({color:0xff9a35,emissive:0x4e1c00}),
+      water:new THREE.MeshLambertMaterial({color:0x54a6aa})
     };
     const add=(geo,mat,x,y,z)=>{const item=new THREE.Mesh(geo,m[mat]);item.position.set(x,y,z);g.add(item);return item};
     const box=(w,h,d,mat,x=0,y=0,z=0)=>add(new THREE.BoxGeometry(w,h,d),mat,x,y,z);
     const cyl=(r,h,mat,x=0,y=0,z=0)=>add(new THREE.CylinderGeometry(r,r,h,8),mat,x,y,z);
+    const cone=(r,h,mat,x=0,y=0,z=0)=>add(new THREE.ConeGeometry(r,h,7),mat,x,y,z);
+    const log=(x,y,z)=>{const p=cyl(.21,1.5,'wood',x,y,z);p.rotation.z=Math.PI/2;};
+    const barrel=(x,z)=>{cyl(.34,.74,'wood',x,.38,z);
+      cyl(.36,.07,'metal',x,.16,z);cyl(.36,.07,'metal',x,.63,z);};
+    const gable=(w,d,y,mat='roof')=>{for(const side of [-1,1]){
+      const p=box(w*.59,.16,d+.22,mat,side*w*.264,y,0);p.rotation.z=side*.58;}};
+    const hut=(w=3,d=2.5,mat='wall')=>{
+      box(w,1.55,d,mat,0,.78,0);gable(w,d,1.88);
+      box(.6,1.05,.1,'dark',0,.53,d/2+.04);};
     const crest=(w,d,h)=>{
       for(let x=-w/2+.2;x<w/2;x+=.5)for(const z of [-d/2,d/2])
         box(.31,.34,.28,'light',x,h+.18,z);
@@ -557,6 +582,151 @@ export class IslandRendererV3 {
       for(const x of [-1,1])box(.27,.59,.12,'dark',x,h*.46,1.82);
       banner(0,h*1.1,0);return g;
     }
+
+    // 역할별 3D 실루엣: 들판, 채굴장, 작업장 장치, 수확물까지 실물로 표시.
+    if(kind==='fort-lumber'){
+      box(4.6,.12,3.7,'soil',0,.06,0);
+      box(2.1,1.26,2.3,'wood',-1,.67,-.65);
+      for(const side of [-1,1]){const p=box(.75,.13,2.5,'tile',-1+side*.43,1.51,-.65);p.rotation.z=side*.58;}
+      for(let i=0;i<3;i++)for(const z of [-.7,-.2])log(.97,.3+i*.46,z);
+      for(let i=0;i<5;i++)box(1.55,.1,.3,'trim',1.1,.18+i*.14,1.12);
+      box(.19,1.1,.19,'metal',-1.8,.6,1);return g;
+    }
+    if(kind==='fort-quarry'){
+      box(4.8,.13,4,'soil',0,.06,0);
+      cyl(1.25,.17,'stone',-.65,.12,-.36);
+      cyl(.99,.11,'dark',-.65,.22,-.36);
+      for(const [x,z,r] of [[-1.6,-1.15,.61],[-1.62,1,.6],[.5,-1.55,.46],[1.57,.8,.69]]){
+        const b=add(new THREE.DodecahedronGeometry(r,0),'stone',x,r*.55,z);b.rotation.y=x;}
+      box(.17,2.45,.17,'wood',1.44,1.28,-.8);box(2,.18,.18,'wood',.5,2.38,-.8);
+      box(.08,1.2,.09,'metal',-.44,1.77,-.8);box(.71,.4,.67,'stone',-.44,.98,-.8);return g;
+    }
+    if(kind==='fort-iron'){
+      box(3.6,2.4,2.2,'stone',-.4,1.2,-.55);
+      box(1.54,1.55,.14,'dark',-.35,.8,.61);
+      for(const x of [-1.13,.42])box(.2,1.7,.19,'wood',x,.87,.72);
+      box(1.78,.2,.22,'wood',-.35,1.75,.72);
+      for(let i=0;i<6;i++)box(.5,.29,.43,'metal',.46+(i%3)*.51,
+        .27+Math.floor(i/3)*.28,1.52);return g;
+    }
+    if(['fort-wheat','fort-vineyard','fort-hops','fort-orchard'].includes(kind)){
+      box(4.7,.12,3.92,'soil',0,.06,0);
+      if(kind==='fort-wheat'){
+        for(let r=0;r<4;r++){const z=-1.28+r*.85;
+          box(4.32,.15,.47,'earth',0,.19,z);
+          for(let i=0;i<6;i++){const x=-1.83+i*.73;
+            box(.09,.67,.09,'leaf',x,.58,z);cone(.19,.48,'crop',x,1.12,z);}}
+      }else if(kind==='fort-vineyard'){
+        for(const z of [-1.17,0,1.17]){
+          for(const x of [-1.8,0,1.8])box(.11,1.7,.11,'wood',x,.89,z);
+          box(3.6,.1,.12,'wood',0,1.55,z);
+          for(const x of [-1.2,0,1.2]){
+            box(.99,.35,.48,'leaf',x,1.39,z);
+            for(const side of [-1,1])cyl(.16,.36,'grape',x+side*.3,1.05,z+.14);}}
+      }else if(kind==='fort-hops'){
+        for(const x of [-1.53,-.52,.5,1.5]){
+          for(const z of [-1.25,1.25])box(.1,2.73,.1,'wood',x,1.41,z);
+          for(let i=0;i<5;i++){
+            box(.35,.34,.35,'leaf',x,.5+i*.45,0);
+            box(.2,.19,.21,'crop',x,.61+i*.43,.28);}}
+        box(3.9,.12,.13,'wood',0,2.74,0);
+      }else{
+        for(const [x,z] of [[-1.37,-1],[1.37,-1],[-1.37,1],[1.37,1]]){
+          cyl(.16,1.18,'wood',x,.63,z);
+          add(new THREE.IcosahedronGeometry(.73,0),'leaf',x,1.49,z);
+          box(.2,.19,.2,'flag',x+.4,1.38,z+.2);}
+        box(1,.65,.78,'wood',0,.34,0);
+      }
+      return g;
+    }
+    if(kind==='fort-mill'){
+      cyl(1.18,3.65,'wall',0,1.84,0);cone(1.48,1.38,'roof',0,4.3,0);
+      for(let i=0;i<4;i++){const a=i*Math.PI/2;
+        const blade=box(.34,1.55,.14,'light',Math.cos(a)*.93,
+          2.68+Math.sin(a)*.93,1.29);blade.rotation.z=-a;}
+      cyl(.26,.4,'wood',0,2.68,1.3).rotation.x=Math.PI/2;
+      box(.65,1.15,.11,'dark',0,.62,1.16);return g;
+    }
+    if(kind==='fort-granary'){
+      cyl(1.2,2.95,'wood',0,1.5,-.3);cone(1.65,1.53,'tile',0,3.63,-.3);
+      for(let i=0;i<5;i++)box(.75,.46,.6,'crop',-1.25+(i%2)*.85,
+        .32+Math.floor(i/2)*.41,1.34);return g;
+    }
+    if(kind==='fort-stockpile'){
+      box(4.8,.12,3.9,'earth',0,.06,0);
+      for(const x of [-1.78,1.78])for(const z of [-1.28,1.28])
+        box(.15,2.12,.15,'wood',x,1.1,z);
+      gable(4.12,3.08,2.22,'tile');
+      for(let i=0;i<4;i++)log(-1,.31+i*.36,.3);
+      for(let i=0;i<5;i++)box(.76,.49,.52,'stone',
+        .41+(i%2)*.79,.3+Math.floor(i/2)*.44,.72);return g;
+    }
+    if(kind==='fort-well'){
+      cyl(1.05,.95,'stone',0,.5,0);cyl(.79,.95,'water',0,.52,0);
+      for(const x of [-1.17,1.17])box(.15,2.13,.15,'wood',x,1.1,0);
+      box(2.5,.16,.21,'wood',0,2.19,0);
+      cyl(.22,.46,'metal',0,1.44,0);return g;
+    }
+    if(kind==='fort-smith'){
+      box(3.45,1.54,2.51,'stone',-.25,.79,-.35);gable(3.75,2.7,1.9);
+      box(.72,2.67,.73,'stone',1.11,2.33,-.9);
+      box(1.35,.91,1.04,'dark',1.12,.49,1.44);
+      box(.9,.52,.15,'fire',1.12,.59,1.98);
+      box(.98,.25,.49,'metal',-1.04,1.03,1.52);
+      box(.35,.99,.3,'metal',-1.04,.51,1.52);return g;
+    }
+    if(['fort-winery','fort-brewery','fort-bakery','fort-dairy',
+        'fort-tavern','fort-fletcher'].includes(kind)){
+      hut(kind==='fort-tavern'?3.9:3.4,2.55,
+        kind==='fort-brewery'?'stone':kind==='fort-dairy'?'wood':'wall');
+      if(kind==='fort-winery'){
+        for(const x of [-1.45,-.5,.44])barrel(x,1.75);
+        cyl(.83,.31,'wood',1.31,.51,1.46);
+        box(.91,.24,.8,'grape',1.31,.81,1.46);
+        box(.14,1.42,.14,'wood',1.31,1.4,1.46);
+      }else if(kind==='fort-brewery'){
+        for(const x of [-1.4,-.56,.28])barrel(x,1.73);
+        cyl(.74,1.12,'metal',1.25,.67,1.39);
+        box(.83,.2,.75,'fire',1.25,.17,1.39);
+        box(.58,2,.54,'stone',1.05,2.37,-.73);
+      }else if(kind==='fort-bakery'){
+        box(1.34,1.05,1.11,'stone',1.46,.53,1.35);
+        box(.88,.44,.13,'fire',1.46,.48,1.97);
+        box(.55,2.17,.55,'stone',.9,2.3,-.72);
+        for(let i=0;i<3;i++)box(.42,.15,.28,'crop',-.95+i*.46,.42,1.54);
+      }else if(kind==='fort-dairy'){
+        box(1.28,.81,.66,'light',1.15,.75,1.91);
+        box(.49,.55,.51,'light',1.72,.77,1.95);
+        for(const x of [.71,1.48])for(const z of [1.63,2.15])
+          box(.17,.51,.19,'dark',x,.3,z);
+        for(let i=0;i<3;i++)cyl(.18,.27,'light',-.94+i*.32,.14,1.49);
+      }else if(kind==='fort-tavern'){
+        box(3.7,.14,1.46,'flag',0,1.84,2.07);
+        for(const x of [-1.51,1.51])box(.12,1.75,.12,'wood',x,.91,2.7);
+        for(const x of [-1.2,0,1.2])barrel(x,1.58);
+      }else{
+        for(let i=0;i<7;i++)box(.07,1.42,.08,'wood',
+          -1.5+i*.18,.85,1.56);
+        cyl(.62,.12,'crop',1.31,1.14,1.67).rotation.x=Math.PI/2;
+        cyl(.39,.13,'flag',1.31,1.14,1.79).rotation.x=Math.PI/2;
+        box(.14,1.89,.16,'wood',1.31,.97,1.51);
+      }
+      return g;
+    }
+    if(kind==='fort-hovel'){
+      box(2.5,1.45,2.2,'wood',0,.74,0);gable(2.9,2.4,1.85,'crop');
+      box(.59,1,.11,'dark',0,.51,1.16);
+      box(1.17,.58,.66,'wood',1.14,.31,-.73);return g;
+    }
+    if(kind==='fort-armory'){
+      box(4.1,2.35,3.0,'stone',0,1.18,0);gable(4.3,3.2,2.66);
+      box(.8,1.5,.1,'metal',0,.8,1.54);
+      for(const x of [-1.54,1.54]){
+        cyl(.43,.17,'metal',x,1.47,1.57).rotation.x=Math.PI/2;
+        for(let i=0;i<3;i++)box(.1,2.3,.1,'metal',
+          x+(i-1)*.3,1.32,1.9);}
+      banner(1.65,3.25,-1);return g;
+    }
     const h=Math.max(2.3,height*.74);
     const w=kind==='fort-barracks'?4.6:kind==='fort-market'?3.9:kind==='fort-workshop'?3.5:2.8;
     const d=kind==='fort-barracks'?3.1:2.75;
@@ -575,6 +745,15 @@ export class IslandRendererV3 {
     if(kind==='fort-barracks'){
       banner(w*.34,h+.5,-d*.28);
       for(let i=0;i<3;i++)box(.26,.72,.2,'wood',-w*.38+i*.42,.46,-d/2-.1);
+      // 훈련장·대련 허수아비·깃발·검걸이.
+      box(4.5,.13,1.84,'earth',0,.06,d/2+1.03);
+      for(const x of [-1.35,.15]){
+        box(.15,1.6,.16,'wood',x,.82,d/2+1.08);
+        box(.95,.15,.13,'wood',x,1.18,d/2+1.08);
+        cyl(.25,.42,'crop',x,1.74,d/2+1.08);}
+      banner(1.83,2.6,d/2+.56);
+      for(let i=0;i<4;i++)box(.09,1.42,.09,'metal',
+        1.13+i*.21,.79,d/2+1.49);
     }
     if(kind==='fort-market')for(const x of [-1.35,0,1.35]){
       box(1.15,.12,1.18,'tile',x,1.45,d/2+.9);
@@ -588,7 +767,7 @@ export class IslandRendererV3 {
     return g;
   }
   make3d(kind,height){
-    if(['fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site'].includes(kind))return this.makeFort3d(kind,height);
+    if(['fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind))return this.makeFort3d(kind,height);
     const group=new THREE.Group(),asset=this.models3d.get(kind);
     if(!asset)return group;
     const texture=asset.texture.clone();texture.needsUpdate=true;
@@ -696,8 +875,8 @@ export class IslandRendererV3 {
       for(let i=0;i<8;i++)put('palisade-n:'+i,'fence',180+i*147,145,1.1);
       put('market','fort-market',game.workerShop.x,game.workerShop.y,3.0);
       const production=game.state.productionBuildings||{},village=game.state.villageDevelopment||{};
-      put('lumber',production.lumberBuilt?'fort-workshop':'package',245,850,production.lumberBuilt?2.9:1.0);
-      put('mine',production.mineBuilt?'fort-workshop':'stone',785,965,production.mineBuilt?2.9:1.2);
+      put('lumber',production.lumberBuilt?'fort-lumber':'package',245,850,production.lumberBuilt?2.9:1.0);
+      put('mine',production.mineBuilt?'fort-quarry':'stone',785,965,production.mineBuilt?2.9:1.2);
       const fort=village.fortification||{},walls=fort.walls||{};
       if(this.moat3)this.moat3.visible=!!village.townHallBuilt&&!!fort.moatBuilt;
       if(village.townHallBuilt&&fort.moatBuilt){
@@ -750,10 +929,7 @@ export class IslandRendererV3 {
             trap.type==='spikes'?1.45:trap.type==='oil'?1.25:.9,
             trap.type==='net'?Math.PI/2:0);
         }
-        if((game.state.workers||0)>0)
-          put('fort-farm-home','fort-cottage',635,810,3.1);
-        if(game.state.productionBuildings?.lumberBuilt)
-          put('fort-storehouse','fort-workshop',390,820,3.8);
+        // 오두막·창고는 저장된 경제 건물 위치를 단일 출처로 렌더링한다.
       }
       if(village.defenseTowerBuilt&&village.townHallBuilt){
         if((walls.north??1)>0)put('fort-corner-nw','fort-watchtower',250,210,3.8+(tier-1)*.5);
@@ -762,7 +938,7 @@ export class IslandRendererV3 {
       // 성곽 안 길은 시각 요소뿐이며 기존 이동·상호작용 좌표는 그대로 사용.
       for(let i=0;i<7;i++)put('fort-road:'+i,'fort-road',755,465+i*72,.05);
       if(game.state.seedDepot?.built)put('seed-depot','package',835,505,1.3);
-      if(game.state.smithy)put('smithy','fort-workshop',790,1080,2.1);
+      if(game.state.smithy)put('smithy','fort-smith',790,1080,2.1);
       if(game.state.darknessFlameV19?.blackMineBuilt)put('black-mine','house',-880,690,3.6);
       if(game.state.abyssCaveV23?.researchLabBuilt)put('research-lab','house',-690,420,4);
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
@@ -779,21 +955,12 @@ export class IslandRendererV3 {
       }
       // 소유한 경제 건물: 실제 건설 위치와 레벨에 맞춰 입체 중세 건물을 렌더링한다.
       const economy=game.state.economyV4?.buildings||{};
-      const appearance={
-        lumber:'fort-workshop',quarry:'fort-workshop',iron:'fort-workshop',
-        stockpile:'fort-workshop',granary:'fort-workshop',mill:'fort-workshop',
-        bakery:'fort-cottage',orchard:'fort-cottage',dairy:'fort-cottage',
-        wheat:'fort-cottage',vineyard:'fort-cottage',winery:'fort-workshop',
-        hops:'fort-cottage',brewery:'fort-workshop',tavern:'fort-market',
-        hovel:'fort-cottage',well:'fort-site',market:'fort-market',
-        fletcher:'fort-workshop',smith:'fort-workshop',armory:'fort-keep'
-      };
       for(const [id,entry] of Object.entries(economy)){
         const slots=Array.isArray(entry?.sites)?entry.sites:[];
         for(let i=0;i<Math.min(slots.length,entry.count||0);i++){
           // 기존 마을 작업장 첫 위치는 원래 렌더가 책임지므로 중복 표시하지 않는다.
-          if(i===0&&['lumber','quarry','stockpile','hovel'].includes(id))continue;
-          const slot=slots[i],kind=appearance[id]||'fort-workshop';
+          if(i===0&&['lumber','quarry'].includes(id))continue;
+          const slot=slots[i],kind=ECONOMY_3D_LOOK[id]||'fort-workshop';
           put('economic:'+id+':'+i,kind,slot.x,slot.y,
             (kind==='fort-keep'?4:kind==='fort-market'?2.85:3.05)+(Math.max(1,entry.level||1)-1)*.55);
         }
@@ -804,7 +971,7 @@ export class IslandRendererV3 {
         const kind=build.id.startsWith('fort:')?({
            wall:'fort-wall',gate:'fort-gatehouse',tower:'fort-watchtower',
            spikes:'fence',oil:'package',pit:'stone'
-         }[build.id.slice(5)]||'fort-site'):(appearance[build.id]||'fort-site');
+         }[build.id.slice(5)]||'fort-site'):(ECONOMY_3D_LOOK[build.id]||'fort-site');
         for(let i=0;i<Math.min(35,previews.length);i++){
           const p=previews[i],vertical=build.id==='fort:gate'&&build.axis==='vertical';
           const key='construction-preview:'+i;
