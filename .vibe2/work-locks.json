@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-51cs7c",
+      "worker": "vibe2",
+      "taskId": "territory-war-existing-web-assessment-v1",
+      "gameId": "territory-war",
+      "files": [
+        "web-games/territory-war/index.html"
+      ],
+      "baseSha": "70199534b87d18f03ae3fdd2cd992de32f2c20c2",
+      "runId": "40101086455",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-24T14:26:28.388Z",
+      "expiresAt": "2026-10-24T15:11:28.388Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:territory-war-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
