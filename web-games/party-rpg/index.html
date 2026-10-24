@@ -359,7 +359,7 @@ var INCIDENTS=[
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=3;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
+ s.version=4;s.intro=!!s.intro;if(!s.cases||typeof s.cases!=='object'||Array.isArray(s.cases))s.cases={};for(var key of ["quests","checks","scenes"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
 }
 function storyVisit(zone){
  if(zone<1||zone>6)return;
@@ -577,6 +577,73 @@ function companionDialogue(a){
 function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>실시간 디앤디식 판정 · 명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타. 동료와 함께 문 열기·함정 해제·설득 능력 판정도 할 수 있어.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=bagMenu;document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
 
 storyInit();
+
+// 메인: 중간 이벤트씬 · 기존 대화창/카메라를 이용해 판정과 보상을 변경하지 않는다.
+var activeEventScene=null;
+function eventSceneData(key){
+ var [kind,raw,arg]=key.split(':'),n=Number(raw),incident=INCIDENTS[n-1],zone=ZONES[n],site=EVIDENCE_SITES[n],person=incident&&state.ai.find(a=>a.name===incident.person);
+ var beats=[],focus=null,mood='town',title='';
+ var beat=(speaker,chapter,text,quote,portrait)=>({speaker,chapter,text,quote,portrait:portrait||0});
+ if(kind==='council'){
+  title='북문 조사단 · 첫 기록';focus=COUNCIL_LOCATION;
+  beats=[beat('루카','마을 · 첫 번째 회의','북문에서 돌아오지 못한 병사들의 이름표가 낡은 탁자 위에 놓여 있다.','“그날 밤 관문에서 무슨 일이 있었는지 끝까지 밝히겠어.”',0),beat('미나','마을 · 사라진 이름','미나가 봉랍 묻은 지도를 펼친다. 이름을 공개하는 일과 사람을 지키는 일은 항상 같지 않다.','“누구의 이야기를 먼저 들을지 네가 결정해.”',1)];
+ }else if((kind==='evidence'||kind==='case')&&incident){
+  mood=['','field','forest','cave','desert','snow','abyss'][n];title=incident.name;focus=site;
+  if(kind==='evidence')beats=[beat('발견한 흔적',zone.name+' · 사건 현장',site.trace+'. 손길이 닿자 오래 묻혀 있던 글씨가 보인다.','“진실은 잊혀도 흔적은 사라지지 않는다.”',state.player.portraitId),beat(incident.person,'증언 · '+incident.name,incident.lead,'“공개할지 보호할지, 먼저 이야기를 들어 줘.”',person?portraitIndex(person):0)];
+  else {let r=state.story.cases[n];if(!r)return null;beats=[beat(incident.person,r.failed?'설득 실패 · 남은 길':r.path==='truth'?'공개된 진실':'지켜진 증인',r.path==='truth'?incident.truth:incident.guard,r.failed?'“말하지 못했지만 아직 끝난 건 아니야.”':r.path==='truth'?'“이 기록을 지켜 줘.”':'“이름을 지킨 선택을 기억할게.”',person?portraitIndex(person):0)];}
+ }else if(kind==='companion'){
+  person=state.ai.find(a=>a.id===raw);if(!person)return null;
+  n=portraitIndex(person);title=person.name+' · 잊힌 고백';focus={x:person.x,y:person.y};
+  beats=[beat(person.name,'동료 · '+role(person).name,COMPANION_SECRETS[n],'“내가 말하지 못한 일도 같이 짊어져 줄래?”',n),beat(person.name,'동료 · 개인 의뢰','진실을 밝힐 수도, 위험한 증언을 보호할 수도 있다. 어떤 길을 걸을지는 함께 정해야 한다.','“내가 길을 잃으면 네가 이름을 불러 줘.”',n)];
+ }else if((kind==='boss'||kind==='victory')&&DUNGEONS[n]){
+  mood='dungeon';title=DUNGEONS[n].name+(kind==='boss'?' · 마지막 방':' · 전투 이후');focus={x:720,y:310};
+  const threat=['낡은 수비대의 깃발 아래서 추방당한 자들이 검을 빼든다.','제단의 봉인이 갈라지고 오래된 맹약을 지킨 수호자가 모습을 드러낸다.','왕좌 앞에 선 왕은 괴물로 몰린 이들의 이름을 하나씩 읽고 있다.'][n];
+  const aftermath=['포로의 명부에는 마을에서 지워진 사람들의 이름이 있다.','맹약의 원문은 축복이 아니라 경고였다.','왕좌는 비었지만 맹약의 결말은 아직 네 손에 남았다.'][n];
+  beats=kind==='boss'?[beat('봉인된 회랑','던전 · 마지막 문',threat,'“문 너머에는 우리가 잊은 이름이 있다.”',state.player.portraitId),beat(DUNGEONS[n].boss,'보스 조우 · 전술 준비','동료들은 서로의 이름을 부르고 전투 대형을 정비한다.','“이름을 지키려는 자는 누구인가.”',Math.min(9,6+n))]:[beat('전투의 잔향','던전 · 기록과 선택',aftermath,'“승리는 끝이 아니라 책임의 시작이다.”',state.player.portraitId)];
+ }else if(kind==='choice'){
+  let choice=state.story.choices[raw];if(!choice)return null;
+  title={fort:'요새 · 포로의 증언',temple:'신전 · 맹약의 원문',ending:'왕좌 · 마지막 이름'}[raw];if(!title)return null;mood=raw==='ending'?'abyss':'town';
+  let outcomes={fort:{witness:'포로의 이름이 광장에서 울려 퍼진다. 루카는 오래 숨겨 둔 보고서를 내려놓는다.',refuge:'미나는 포로들에게 숨을 곳을 마련한다. 증언은 미뤄지지만 사람들은 살아남는다.'},temple:{reveal:'지워진 장부가 광장에 펼쳐지고 사람들은 그 대가를 알게 된다.',prepare:'돌아올 사람을 위한 잠자리가 준비되고 마을의 창문에 불이 켜진다.'},ending:{release:'사라진 길이 지도에 되돌아오고 오랜 풍년의 마법은 끝난다.',keeper:'경계에 등불이 켜지고 두 도시 사이의 이름들이 다시 이어진다.'}};
+  beats=[beat('너의 결정',title,outcomes[raw][choice],'“이 선택의 결과를 끝까지 마주해야 해.”',state.player.portraitId),beat('남겨진 사람들','이후의 기록','여정 기록과 동료 대화에는 이 결정이 남는다. 선택을 되돌릴 수 없지만 남은 길은 계속 이어진다.','“우리가 잊은 사람들을 다시 부르자.”',1)];
+ }else if(kind==='sigil'&&DUNGEONS[n]&&['trap','door'].includes(arg)){
+  mood='dungeon';title=arg==='trap'?'룬 함정의 숨겨진 인장':'석문의 오래된 기록';focus=arg==='trap'?{x:310,y:405}:{x:825,y:445};
+  let matches=Object.keys(state.story.checks).filter(s=>s.startsWith(n+':')&&s.endsWith(':'+arg));let r=state.story.checks[matches[matches.length-1]];if(!r)return null;
+  beats=[beat(r.success?'열린 기록':'봉인된 흔적','능력 판정 · d20 '+r.roll,r.success?(arg==='trap'?'룬의 빛이 꺼지고 아래의 인장이 드러난다.':'석문이 열리자 잊힌 맹약의 문장이 나타난다.'):'봉인은 다시 굳게 닫힌다. 이 방에서는 다시 시도할 수 없다.',r.success?'“오래 묻힌 진실의 조각을 발견했다.”':'“다음 기록은 다른 곳에 남아 있을 거야.”',state.player.portraitId)];
+ }
+ return beats.length?{key,title,beats,mood,focus}:null;
+}
+function showEventScene(){
+ let run=activeEventScene;if(!run)return;let info=run.info,b=info.beats[run.step],last=run.step===info.beats.length-1;
+ let html='<div class="eventScene" data-mood="'+escapeText(info.mood)+'"><div class="eventVista"><span class="eyebrow">'+escapeText(b.chapter)+'</span><span class="eventSigil">✧</span><h2>'+escapeText(info.title)+'</h2></div><div class="eventDialogue">'+portraitMarkup(b.portrait,'eventPortrait')+'<div class="eventWords"><span class="eyebrow">'+escapeText(b.speaker)+'</span><p>'+escapeText(b.text)+'</p><blockquote>'+escapeText(b.quote)+'</blockquote></div></div><div class="eventControls"><span>'+(run.step+1)+' / '+info.beats.length+'</span><button class="menuBtn" id="eventNext">'+(last?'장면 마치기':'다음 장면')+'</button><button class="textBtn" id="eventSkip">건너뛰기</button></div></div>';
+ openModal(info.title,html);modal.dataset.mode='event';modalBody.scrollTop=0;
+ document.getElementById('eventNext').onclick=nextEventScene;document.getElementById('eventSkip').onclick=finishEventScene;
+}
+function playEventScene(key,done=null,replay=false){
+ if(activeEventScene||!gameStarted||(!replay&&state.story.scenes[key]))return false;
+ let info=eventSceneData(key);if(!info)return false;
+ activeEventScene={info,done,replay,step:0,snapshot:{follow:view.follow,x:view.offset.x,y:view.offset.y,zoom:view.targetZoom,selection:view.selection}};
+ if(info.focus){view.follow='player';view.offset.set(info.focus.x-p.x,info.focus.y-p.y);view.targetZoom=Math.max(1.14,Math.min(1.42,view.targetZoom*1.12));}
+ sound.effect('story');showEventScene();return true;
+}
+function nextEventScene(){
+ if(!activeEventScene)return;
+ if(++activeEventScene.step<activeEventScene.info.beats.length){sound.effect('ui');showEventScene();}else finishEventScene();
+}
+function finishEventScene(){
+ let run=activeEventScene;if(!run)return;activeEventScene=null;
+ let saved=run.snapshot;view.follow=saved.follow;view.offset.set(saved.x,saved.y);view.targetZoom=saved.zoom;view.selection=saved.selection;
+ if(!run.replay){state.story.scenes[run.info.key]=true;save();}
+ if(run.done)run.done();else closeModal();
+}
+function eventArchive(){
+ let memories=Object.keys(state.story.scenes).filter(k=>state.story.scenes[k]&&eventSceneData(k));
+ let html='<p>이전에 본 장면을 다시 볼 수 있어. 재생해도 판정, 보상과 선택은 반복되지 않아.</p>';
+ html+=memories.length?memories.map(k=>'<button class="menuBtn secondary" data-replay="'+escapeText(k)+'">'+escapeText(eventSceneData(k).title)+'</button>').join(''):'<p>아직 기록된 장면이 없어. 북문 기록실, 사건 석판, 동료 대화나 던전에 가 봐.</p>';
+ html+='<button class="textBtn" id="archiveBack">여정 기록으로 돌아가기</button>';
+ openModal('지난 장면 · 회상',html);
+ modalBody.querySelectorAll('[data-replay]').forEach(b=>b.onclick=()=>playEventScene(b.dataset.replay,eventArchive,true));
+ document.getElementById('archiveBack').onclick=storyJournal;
+}
 
 function resize(){W=innerWidth;H=innerHeight;view.resize();}
 addEventListener("resize",resize);resize();
