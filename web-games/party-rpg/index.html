@@ -247,6 +247,24 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
 @keyframes hintPulse{50%{box-shadow:0 0 25px #d5bc7588}}
 @media(max-width:700px){#prompt.on{left:50%;bottom:calc(315px + env(safe-area-inset-bottom));max-width:75vw;font-size:11px;white-space:normal;text-align:center;padding:7px 12px}}
 @media(prefers-reduced-motion:reduce){#prompt.on{animation:none}}
+/* 중세 필사본 스타일의 시각·날씨 패널. 기존 지역 HUD의 폭을 늘리지 않는다. */
+#timeWeather{position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:21;display:flex;flex-direction:column;align-items:center;min-width:158px;max-width:min(220px,40vw);gap:2px;pointer-events:none;padding:6px 12px;border:1px solid #9c8051a5;border-radius:3px;background:linear-gradient(125deg,#1f211fed,#473a2bdc,#1c1f20f0);box-shadow:inset 0 0 0 1px #231c19,0 4px 15px #070b0b80;color:#f1e0b8;font-family:Georgia,'Batang',serif;text-align:center;text-shadow:0 1px 3px #000}
+#timeWeather:before,#timeWeather:after{content:'❖';position:absolute;top:12px;font-size:11px;color:#bc965b}
+#timeWeather:before{left:5px}#timeWeather:after{right:5px}
+#timeOfDay{font-size:11px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+#weatherOfDay{font-size:10px;color:#d2c1a7;white-space:nowrap}
+body[data-time-phase=night] #timeWeather{background:linear-gradient(130deg,#101a28f0,#26263ade,#111821ef);border-color:#7488a08c}
+body[data-time-phase=dawn] #timeWeather,body[data-time-phase=dusk] #timeWeather{border-color:#e7a16b;background:linear-gradient(135deg,#35251eea,#553527dc,#241d20ea)}
+#atmosphere{pointer-events:none}
+body[data-time-phase=night] #atmosphere:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 48% 35%,transparent 32%,#07132328 100%);mix-blend-mode:multiply}
+body[data-time-phase=dusk] #atmosphere:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(150deg,#e8953310,transparent 44%,#281e3217)}
+body[data-weather=rain] #atmosphere{box-shadow:inset 0 0 120px #43586816}
+body[data-weather=fog] #atmosphere{box-shadow:inset 0 0 130px #aeb9aa16}
+body[data-time-phase=night] #zone{border-color:#6e7f9b}
+body[data-time-phase=dusk] #zone{border-color:#ca9155}
+@media(max-width:700px){#timeWeather{top:calc(82px + env(safe-area-inset-top));min-width:112px;width:max-content;padding:3px 10px;max-width:145px;box-shadow:0 2px 7px #0008}#timeOfDay{font-size:9px}#weatherOfDay{font-size:9px}#timeWeather:before,#timeWeather:after{top:7px;font-size:8px}}
+@media(max-width:480px){#timeWeather{top:calc(90px + env(safe-area-inset-top));left:58%;}}
+@media(max-height:500px) and (orientation:landscape){#timeWeather{top:calc(44px + env(safe-area-inset-top));padding:2px 7px}}
 </style>
 </head>
 <body>
@@ -1112,12 +1130,20 @@ function systemMenu(){
  html+='<button class="menuBtn" id="systemSave">지금 저장하기</button>';
  html+='<button class="menuBtn secondary" id="systemMap">큰 지도 열기</button>';
  html+='<button class="menuBtn secondary" id="systemTravel">지역 / 던전 이동</button>';
+ html+='<h3>시간·날씨·그래픽</h3>';
+ html+='<p class="note">실제 시각과 무관한 게임 속 하루(현실 약 16분). 낮·저녁·밤과 지역별 비, 안개, 눈, 잿가루가 자연스럽게 바뀌어. 저장 후에도 시간이 유지돼.</p>';
+ html+='<button class="menuBtn secondary" id="systemClock">'+(environment.running?'시간 흐름: 진행 중 · 누르면 정지':'시간 흐름: 정지됨 · 누르면 재개')+'</button>';
+ html+='<button class="menuBtn secondary" id="systemWeatherFx">'+(environment.effects?'날씨 입자 효과: 켜짐':'날씨 입자 효과: 꺼짐')+'</button>';
+ html+='<button class="menuBtn secondary" id="systemQuality">그래픽 품질: '+({auto:'자동',low:'절전',high:'고급'}[environment.quality])+'</button>';
  html+='<button class="menuBtn secondary" id="systemHome">저장하고 시작 화면으로</button>';
  html+='<p class="note">홈으로 돌아가도 아이템·레벨·선택·동료 기록은 삭제되지 않아. 새로고침하면 기존 규칙대로 마을에서 시작해.</p>';
  openModal('게임 시스템',html);
  document.getElementById('systemSave').onclick=function(){save();toast('진행 데이터를 저장했어.');};
  document.getElementById('systemMap').onclick=worldMap;
  document.getElementById('systemTravel').onclick=travelMenu;
+ document.getElementById('systemClock').onclick=function(){environment.running=!environment.running;save();systemMenu();};
+ document.getElementById('systemWeatherFx').onclick=function(){environment.effects=!environment.effects;save();view.worldSignature='';systemMenu();};
+ document.getElementById('systemQuality').onclick=function(){const all=['auto','low','high'];environment.quality=all[(all.indexOf(environment.quality)+1)%all.length];save();view.worldSignature='';view.resize();systemMenu();};
  document.getElementById('systemHome').onclick=function(){
   save();activeEventScene=null;introStep=-1;modal.hidden=true;modalOpen=false;gameStarted=false;tacticalPaused=false;contactTriggered=false;keys={};joy.x=joy.y=0;moveTarget=null;
   document.getElementById('pauseBtn').textContent='일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed','false');
