@@ -390,19 +390,31 @@ export function setDestination(state,id){
 export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];s.exploreTarget=null;s.autoMode=null;return s;}
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 // 독립 상단 항해 시뮬레이션
-function advanceMerchantFleet(s,dt){for(const m of s.merchants){if(s.crewRoster.includes(m.id))continue;const a=portById(m.from),b=portById(m.to);if(!a||!b)continue;m.progress+=dt*2.65/Math.max(5,merchantPosition(m).length);if(m.progress<1)continue;const income=m.count*priceAt(m.to,m.cargo,s.day,'sell');m.coins+=income;m.lastProfit=income;m.voyages++;const old=m.from;m.from=m.to;m.to=old;m.progress=0;const spec=MERCHANT_CAPTAINS.find(c=>c.id===m.id);if(spec){m.cargo=spec.goods[m.voyages%spec.goods.length];const cost=priceAt(m.from,m.cargo,s.day,'buy');m.count=Math.min(8,Math.floor(m.coins/Math.max(1,cost)));m.coins-=m.count*cost;s.worldLog.push('['+s.day+'일] '+spec.name+' 상선 · '+b.name+' 교역 '+income+' G');s.worldLog=s.worldLog.slice(-20);}}}
-export function dismissStoryScene(state){
- if(!state.scene)return fail(state,'현재 진행 중인 대화 장면이 없어.');
- const s=copy(state);s.scene=null;return success(s,'이야기를 항해일지에 기록했어.');
+function advanceMerchantFleet(s,dt){
+ for(const m of s.merchants){
+  if(s.crewRoster.includes(m.id))continue;
+  const origin=portById(m.from),dest=portById(m.to);
+  if(!origin||!dest)continue;
+  m.progress+=dt*2.65/Math.max(5,merchantPosition(m).length);
+  if(m.progress<1)continue;
+  // 독립 선장 판매도 실제 항구 재고·수요·시세에 반영한다.
+  const sold=m.count,unitPrice=priceAt(m.to,m.cargo,s.day,'sell',s),income=sold*unitPrice,book=s.economy[m.to];
+  book.stock[m.cargo]=clamp((book.stock[m.cargo]||0)+sold,0,999);
+  book.pressure[m.cargo]=clamp((book.pressure[m.cargo]||0)-sold*.4,-25,25);
+  m.coins+=income;m.lastProfit=income;m.voyages++;
+  const prev=m.from;m.from=m.to;m.to=prev;m.progress=0;
+  const captain=MERCHANT_CAPTAINS.find(c=>c.id===m.id);
+  if(!captain)continue;
+  m.cargo=captain.goods[m.voyages%captain.goods.length];
+  const available=s.economy[m.from].stock[m.cargo],unitBuy=priceAt(m.from,m.cargo,s.day,'buy',s);
+  m.count=Math.max(0,Math.min(8,available,Math.floor(m.coins/Math.max(1,unitBuy))));
+  m.coins-=m.count*unitBuy;
+  s.economy[m.from].stock[m.cargo]-=m.count;
+  s.economy[m.from].pressure[m.cargo]=clamp((s.economy[m.from].pressure[m.cargo]||0)+m.count*.4,-25,25);
+  s.worldLog.push('['+s.day+'일] '+captain.name+' 상선 · '+dest.name+' 교역 '+sold+'개 / '+income+' G');
+  s.worldLog=s.worldLog.slice(-20);
+ }
 }
-export function hailMerchant(state,id){
- const captain=MERCHANT_CAPTAINS.find(c=>c.id===id),vessel=state.merchants?.find(m=>m.id===id);
- if(!captain||!vessel||state.crewRoster.includes(id))return fail(state,'해당 선장은 현재 승선 중이거나 바다에 없어.');
- if(dist(state.ship,merchantPosition(vessel))>20)return fail(state,'상선이 너무 멀리 있어.');
- if(state.event||state.landBattle)return fail(state,'진행 중인 사건을 먼저 해결해.');
- const s=copy(state);s.event={id:'merchant_meeting',merchantId:id};return success(s,captain.name+' 선장의 상선에 다가갔어.');
-}
-// 선장과의 교신: 화물은 실제 선장의 화물창에서 이동하고, 인연은 항해일 기준으로 진행한다.
 export function resolveMerchantEncounter(state,choice){
  const event=state.event,leader=MERCHANT_CAPTAINS.find(c=>c.id===event?.merchantId);
  const m=state.merchants?.find(x=>x.id===leader?.id);
