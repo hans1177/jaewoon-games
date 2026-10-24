@@ -336,6 +336,31 @@ export const ECONOMY_BUILDINGS=Object.freeze([
  {id:'armory',name:'무기고',icon:'🛡️',group:'military',wood:8,stone:8,gold:0,jobs:0,out:null,amount:0,desc:'무장 창고와 병력 보급',max:2,x:700,y:1120}
 ]);
 const ECONOMY_BY_ID=new Map(ECONOMY_BUILDINGS.map(def=>[def.id,def]));
+// 개발 트리: 생산 시설의 실물 건설과 강화로 고급 병과·공성·함정을 해금한다.
+// 소유한 기존 유닛과 기존 설치물은 연구 조건이 달라져도 삭제하지 않는다.
+export const ECONOMY_TECH_TREE=Object.freeze({
+ spearman:[['lumber',2]],
+ crossbow:[['fletcher',1],['iron',1]],
+ shield:[['smith',1],['armory',1]],
+ knight:[['smith',2],['armory',1],['hovel',2]],
+ sapper:[['quarry',2],['smith',1]],
+ ram:[['lumber',2],['stockpile',2],['armory',1]],
+ trebuchet:[['quarry',2],['smith',2],['iron',1]],
+ siegeTower:[['lumber',3],['armory',2],['stockpile',2]],
+ net:[['fletcher',1]],
+ log:[['lumber',2]],
+ barrel:[['winery',1],['smith',1]]
+});
+export function economyTechStatus(state,id){
+ const requirements=ECONOMY_TECH_TREE[id]||[];
+ const e=getEconomy(state);
+ const missing=requirements.map(([name,level])=>{
+  const def=ECONOMY_BY_ID.get(name),building=e?.buildings?.[name];
+  return building?.count&&building.level>=level?null:(def?.name||name)+' '+level+'단계';
+ }).filter(Boolean);
+ return {unlocked:missing.length===0,requirements,missing};
+}
+
 const ECONOMY_STEP=6;
 export function getEconomy(state){
  if(!state||typeof state!=='object')return null;
