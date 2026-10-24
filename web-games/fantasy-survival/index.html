@@ -2986,10 +2986,12 @@ function updateQuestGuide(now=performance.now()){
  // 지도에서 고른 현재 지역의 출입구를 기존 길안내 UI에 표시한다. 이동/해금은 원래 함수가 담당한다.
  const selectedPassage=regionPassages().find(row=>row.id===regionTravelGuideId);
  if(!selectedPassage)regionTravelGuideId='';
+ // 원래 퀘스트 길안내를 단일 조회하고, 사용자가 고른 출입구 표식만 우선 표시한다.
+ const guidance=questGuideData();
  const map=document.getElementById('questNavMap'),target=selectedPassage
   ?{name:selectedPassage.name,area:state.area,x:selectedPassage.x,y:selectedPassage.y,
     hint:'표시된 방향으로 걸어서 입구에 도착한 뒤 지역 이동을 눌러. 원래 해금·보스·제물 조건은 유지돼.'}
-  :questGuideData();
+  :guidance;
  root.hidden=!target;
  if(!target){document.body.dataset.questGuideTarget='';return}
  title.textContent=target.name;
@@ -3475,7 +3477,8 @@ function updateAutoCombat(now){
  if(mounted&&state.pet.special)return;
  if(!mounted&&w.ranged==='bow'&&!selectedArrow())return;
  let target=null,bestSq=Infinity;
- const attackRange=mounted?150:currentRange();
+ // 기본 무기 사거리를 보존하며 선택 화면의 부분 초기화 상황에서도 조준 오류를 막는다.
+ const attackRange=mounted?150:(typeof currentRange==='function'?currentRange():(Number(w?.range)||0));
  for(const e of state.enemies){
   if(isCreative()&&!(e.creativeOwned&&e.creativeAttackPlayer))continue;
   if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless'||e.type.burrower&&!e.emerged||e.type.labBoss&&now<(e.submergedUntil||0))continue;
