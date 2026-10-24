@@ -424,11 +424,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   // The native rigs follow the *existing* monster coordinates, direction and actions.
   // No new spawn/damage/loot logic is allowed in the rendering layer.
   function synchronizeNativeCreatures(state,px,py,stamp){
-    const near=mobileBudget?720:1000;
+    // 모바일 화질 축소는 해상도와 그림자만 조절하고, 시야 안의 몹은 제거하지 않는다.
     missingVisibleMonsterIds.clear();
     let unsafeUnmappedEncounter=false;
     for(const e of state.enemies||[]){
-      if(!e||e.hp<=0||e.area!==state.area||Math.hypot(e.x-px,e.y-py)>Math.max(430,near*qualityFactor))continue;
+      if(!e||e.hp<=0||e.area!==state.area)continue;
       // 성능: 화면 밖 개체만 제외한다. 화면 안 개체 수로 2D 복귀를 결정하지 않는다.
       creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
       if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
@@ -596,24 +596,6 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     if(state.area!=='surface'||!state.player){lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='region-3d-not-yet-mapped';return}
     const p=state.player,px=Number(p.x)||0,py=Number(p.y)||0,centerX=px*SCALE,centerY=py*SCALE;
-    if(sampleNow>=nextCreatureScan){
-      nextCreatureScan=sampleNow+250;
-      const needed=new Map();
-      for(const e of state.enemies||[]){
-        const distance=Math.hypot(e.x-px,e.y-py);
-        if(e.hp<=0||e.area!==state.area||distance>1200)continue;
-        const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
-        const failed=creatureFailures.get(file);
-        const retryDelay=failed?Math.min(60000,5000*2**Math.min(4,failed.attempts-1)):0;
-        if(!file||nativeCreatureSources.has(file)||creatureRequests.has(file)
-          ||(failed&&sampleNow-failed.at<retryDelay))continue;
-        needed.set(file,Math.min(needed.get(file)??Infinity,distance));
-      }
-      for(const [file] of [...needed].sort((a,b)=>a[1]-b[1])){
-        if(loadingCreatureCount>=(mobileBudget?2:4))break;
-        void loadCreatureSource(file);
-      }
-    }
     const w=window.innerWidth,h=window.innerHeight;
     if(w!==lastW||h!==lastH){
       lastW=w;lastH=h;
@@ -631,6 +613,30 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     camera.updateMatrixWorld();
     cameraProjection.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
     cameraFrustum.setFromProjectionMatrix(cameraProjection);
+    // 로딩: 플레이어 근처를 우선하되, 넓은 화면에서 멀리 보이는 원본 몹도 빠짐없이 요청한다.
+    // 카메라 갱신 뒤 시야를 판단하며 250ms/동시 요청 제한을 유지한다.
+    if(sampleNow>=nextCreatureScan){
+      nextCreatureScan=sampleNow+250;
+      const needed=new Map();
+      for(const e of state.enemies||[]){
+        if(!e||e.hp<=0||e.area!==state.area)continue;
+        const distance=Math.hypot(e.x-px,e.y-py);
+        if(distance>1200){
+          creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
+          if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
+        }
+        const file=e.type?.id==='wastelandMummy'?'skeleton-warrior.glb':NATIVE_CREATURE_BY_ID.get(e.type?.id);
+        if(!file||nativeCreatureSources.has(file)||creatureRequests.has(file))continue;
+        const failed=creatureFailures.get(file);
+        const retryDelay=failed?Math.min(60000,5000*2**Math.min(4,failed.attempts-1)):0;
+        if(failed&&sampleNow-failed.at<retryDelay)continue;
+        needed.set(file,Math.min(needed.get(file)??Infinity,distance));
+      }
+      for(const [file] of [...needed].sort((a,b)=>a[1]-b[1])){
+        if(loadingCreatureCount>=(mobileBudget?2:4))break;
+        void loadCreatureSource(file);
+      }
+    }
      const classify=typeof regionAt==='function'?regionAt:()=> 'forest';
     const zone=String(classify(px,py)||'forest');
     currentBiome=BIOME_STYLE[zone]?zone:'forest';
