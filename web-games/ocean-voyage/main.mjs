@@ -221,7 +221,7 @@ function renderPanel(){
  view.body.innerHTML=({battle:battlePanel,palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal}[active]||chart)();if(active==='chart')drawChart(false);view.body.scrollTop=savedScroll;
 }
 function apply(result){
- if(result.ok){const priorFx=state.combatFx?.serial;state=result.state;save();scene.setState(state);if(state.landBattle){if(active!=='battle')enterBattle();else renderPanel();}else renderPanel();summary();if(state.combatFx?.serial!==priorFx)impactSound();}
+ if(result.ok){const priorFx=state.combatFx?.serial;state=result.state;save();scene.setState(state);if(state.landBattle){if(active!=='battle')enterBattle();else renderPanel();}else renderPanel();summary();renderEvent();if(state.combatFx?.serial!==priorFx)impactSound();}
  note(result.message);
 }
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>gotoPanel(b.dataset.panel)));
@@ -335,9 +335,45 @@ $('sfx-toggle').addEventListener('click',()=>{soundEnabled=!soundEnabled;$('sfx-
 $('speed').addEventListener('click',()=>{state.speed=state.speed===1?2:state.speed===2?4:1;$('speed').textContent=state.speed+'배속';save();});
 $('autoBattle').addEventListener('click',()=>{state.autoCombat=!state.autoCombat;save();summary();note(state.autoCombat?'자동 해전 켬 · 적을 만나면 측면을 잡고 자동 사격해.':'자동 해전 끔 · 수동 조타와 포격을 사용해.');});
 $('zoomIn').addEventListener('click',()=>scene.setZoom(scene.getZoom()*1.35));$('zoomOut').addEventListener('click',()=>scene.setZoom(scene.getZoom()/1.35));
-$('eventChoices').addEventListener('click',e=>{const b=e.target.closest('[data-event]');if(!b)return;apply(resolveSeaEvent(state,Number(b.dataset.event)));renderEvent();});
+$('eventChoices').addEventListener('click',e=>{
+ const button=e.target.closest('[data-event]');if(!button)return;
+ const choice=Number(button.dataset.event);
+ apply(state.scene?dismissStoryScene(state):state.event?.id==='merchant_meeting'?resolveMerchantEncounter(state,choice):resolveSeaEvent(state,choice));
+ renderEvent();
+});
 let renderedEvent='';
-function renderEvent(){const e=SEA_EVENTS.find(e=>e.id===state.event?.id);$('seaEvent').hidden=!e;if(!e){renderedEvent='';return;}if(renderedEvent===e.id)return;renderedEvent=e.id;if(e){$('eventTitle').textContent=e.title;$('eventText').textContent=e.text;$('eventChoices').innerHTML=e.options.map((t,i)=>'<button class="action" data-event="'+i+'">'+t+'</button>').join('');}}
+function renderEvent(){
+ const story=state.scene,meeting=state.event?.id==='merchant_meeting'?state.event:null;
+ const e=story||meeting||SEA_EVENTS.find(v=>v.id===state.event?.id);
+ const art=$('eventArt');$('seaEvent').hidden=!e;
+ if(!e){renderedEvent='';art.classList.remove('show');art.innerHTML='';return;}
+ const key=JSON.stringify(e)+':'+(meeting?state.merchants.find(m=>m.id===meeting.merchantId)?.met||0:0);
+ if(renderedEvent===key)return;renderedEvent=key;
+ let title='',body='',options=[],face=null,caption='';
+ if(story){
+  const captain=story.kind==='story'?CAPTAINS.find(c=>c.id===story.captainId):MERCHANT_CAPTAINS.find(c=>c.id===story.merchantId);
+  title=story.title;body=story.text;caption=story.kind==='story'?'항해사의 이야기 · 장면 기록':'바다 위에서 이어지는 인연';
+  face=story.kind==='story'?CREW.find(c=>c.id===captain?.id):CREW.find(c=>c.id===story.merchantId);
+  options=[['이야기를 마치고 항해 계속',0,false]];
+ }else if(meeting){
+  const captain=MERCHANT_CAPTAINS.find(c=>c.id===meeting.merchantId),m=state.merchants.find(m=>m.id===meeting.merchantId);
+  title='상선 교신 · '+captain.name;caption='교역·영입 · 독립 상선';
+  body=captain.story+' 현재 '+port(m.from).name+' → '+port(m.to).name+' 항해 중. 화물 '+(GOODS.find(g=>g.id===m.cargo)?.name||'없음')+' ×'+m.count+' · 항해 '+m.voyages+'회 · 대화 '+m.met+'/2회.';
+  face=CREW.find(c=>c.id===captain.id);
+  options=[['화물 1개 직접 구매',0,!m.count],['선장의 개인 이야기 듣기',1,false],['항해사로 영입',2,m.met<2],['교신 종료',3,false]];
+ }else{
+  title=e.title;body=e.text;caption='1590년 · 항해 중 사건';
+  options=e.options.map((t,i)=>[t,i,false]);
+ }
+ $('eventTitle').textContent=title;$('eventText').textContent=body;
+ $('eventChoices').innerHTML=options.map(([label,id,disabled])=>'<button class="action" data-event="'+id+'" '+(disabled?'disabled':'')+'>'+escapeHtml(label)+'</button>').join('');
+ if(face){
+  art.classList.add('show');
+  art.innerHTML='<span class="scene-caption">'+escapeHtml(caption)+'</span><div class="event-person">'+portrait(face)+'</div>';
+ }else{
+  art.classList.remove('show');art.innerHTML='';
+ }
+}
 
 function run(now){
  requestAnimationFrame(run);
@@ -345,7 +381,7 @@ function run(now){
  const dt=Math.min(.06,Math.max(0,(now-last)/1000));last=now;
  if(!ready||choosing||document.hidden)return;
  if(view.details.classList.contains('open')||town)return;
- if(state.event){renderEvent();return;}
+ if(state.event||state.scene){renderEvent();return;}
  const left=buttons.left||keys.has('a')||keys.has('arrowleft');
  const right=buttons.right||keys.has('d')||keys.has('arrowright');
  const ahead=buttons.ahead||keys.has('w')||keys.has('arrowup');
