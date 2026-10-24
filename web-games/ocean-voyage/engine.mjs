@@ -147,7 +147,7 @@ export function restoreGame(raw){
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
   s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;s.autoCombat=obj.autoCombat!==false;
   s.event=s.event&&(SEA_EVENTS.some(e=>e.id===s.event.id)||(s.event.id==='merchant_meeting'&&MERCHANT_CAPTAINS.some(c=>c.id===s.event.merchantId)))?s.event:null;
-   s.scene=s.scene&&s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)?s.scene:null;
+   s.scene=s.scene&&(s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)||s.scene.kind==='merchant'&&MERCHANT_CAPTAINS.some(c=>c.id===s.scene.merchantId))?s.scene:null;
    const ships=Array.isArray(obj.merchants)?obj.merchants:[];
    s.merchants=merchantRoster().map(base=>{const old=ships.find(x=>x?.id===base.id);return old?{...base,from:PORTS.some(p=>p.id===old.from)?old.from:base.from,to:PORTS.some(p=>p.id===old.to)?old.to:base.to,progress:clamp(Number(old.progress)||0,0,1),coins:clamp(Number(old.coins)||0,0,1e8),cargo:GOODS.some(g=>g.id===old.cargo)?old.cargo:base.cargo,count:clamp(Math.floor(Number(old.count)||0),0,12),voyages:clamp(Math.floor(Number(old.voyages)||0),0,1e7),met:clamp(Math.floor(Number(old.met)||0),0,100),lastMeetingDay:Number.isFinite(old.lastMeetingDay)?old.lastMeetingDay:-10,lastProfit:clamp(Math.floor(Number(old.lastProfit)||0),-1e6,1e6)}:base;});
   s.expedition=s.expedition&&SITES.some(e=>e.id===s.expedition.id)?s.expedition:null;
@@ -302,6 +302,10 @@ export function cancelDestination(state){const s=copy(state);s.destination=null;
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 // 독립 상단 항해 시뮬레이션
 function advanceMerchantFleet(s,dt){for(const m of s.merchants){if(s.crewRoster.includes(m.id))continue;const a=portById(m.from),b=portById(m.to);if(!a||!b)continue;m.progress+=dt*2.65/Math.max(5,dist(a,b));if(m.progress<1)continue;const income=m.count*priceAt(m.to,m.cargo,s.day,'sell');m.coins+=income;m.lastProfit=income;m.voyages++;const old=m.from;m.from=m.to;m.to=old;m.progress=0;const spec=MERCHANT_CAPTAINS.find(c=>c.id===m.id);if(spec){m.cargo=spec.goods[m.voyages%spec.goods.length];const cost=priceAt(m.from,m.cargo,s.day,'buy');m.count=Math.min(8,Math.floor(m.coins/Math.max(1,cost)));m.coins-=m.count*cost;s.worldLog.push('['+s.day+'일] '+spec.name+' 상선 · '+b.name+' 교역 '+income+' G');s.worldLog=s.worldLog.slice(-20);}}}
+export function dismissStoryScene(state){
+ if(!state.scene)return fail(state,'현재 진행 중인 대화 장면이 없어.');
+ const s=copy(state);s.scene=null;return success(s,'이야기를 항해일지에 기록했어.');
+}
 export function hailMerchant(state,id){
  const captain=MERCHANT_CAPTAINS.find(c=>c.id===id),vessel=state.merchants?.find(m=>m.id===id);
  if(!captain||!vessel||state.crewRoster.includes(id))return fail(state,'해당 선장은 현재 승선 중이거나 바다에 없어.');
@@ -341,7 +345,7 @@ export function resolveMerchantEncounter(state,choice){
  s.event=null;return success(s,msg);
 }
 export function stepSea(state,input={},seconds=.05){
- if(state.event||state.landBattle)return state;
+ if(state.event||state.scene||state.landBattle)return state;
  let s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
  const ship=s.ship;
  if(ship.hull<=0)return s;
@@ -548,7 +552,7 @@ export function officeContract(state,id){
 export function storyStatus(s){const hero=CAPTAINS.find(c=>c.id===s.captainId)||CAPTAINS[0],chapter=hero.chapters[s.storyChapter];return {hero,chapter,ready:!!chapter&&canDock(s)?.id===chapter[0]&&(s.storyChapter===0||s.storyChapter===1?s.discovered.length>=s.storyChapter+1:s.reported.length>=1)};}
 export function advanceStory(state){
  const info=storyStatus(state);if(!info.chapter)return fail(state,'유럽 1부 이야기를 마쳤어. 다음 바다의 단서를 기다려.');if(!info.ready)return fail(state,'목표 항구에 도착해. 마지막 장은 발견 보고 1건도 필요해.');
- const s=copy(state);s.completedStories.push(s.captainId+'-'+s.storyChapter);s.storyChapter++;s.xp+=90;s.fame+=15;s.coins+=600;if(s.storyChapter===2){s.event={id:'privateer'};const enemy=s.pirates.find(e=>e.id===21);if(!enemy)s.pirates.push({id:21,x:s.ship.x+22,z:s.ship.z+20,heading:0,hull:105,maxHull:105,cooldown:6,name:'밀약 상단의 사략선'});}return success(s,info.chapter[1]+' 해결 · '+(s.storyChapter===3?'유럽 1부 종료. 고향으로 보낼 편지를 기록했어.':'새 단서를 항해일지에 적었어.'));
+ const s=copy(state);s.completedStories.push(s.captainId+'-'+s.storyChapter);s.storyChapter++;s.xp+=90;s.fame+=15;s.coins+=600;s.scene={kind:'story',captainId:s.captainId,title:info.chapter[1],text:info.chapter[2]};if(s.storyChapter===2){s.event={id:'privateer'};const enemy=s.pirates.find(e=>e.id===21);if(!enemy)s.pirates.push({id:21,x:s.ship.x+22,z:s.ship.z+20,heading:0,hull:105,maxHull:105,cooldown:6,name:'밀약 상단의 사략선'});}return success(s,info.chapter[1]+' 해결 · '+(s.storyChapter===3?'유럽 1부 종료. 고향으로 보낼 편지를 기록했어.':'새 단서를 항해일지에 적었어.'));
 }
 export function royalAudience(state){
  const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'왕궁·총독부가 있는 항구에서 알현해.');const need=[20,60,120,220][state.rank];if(!need)return fail(state,'왕실의 최고 신뢰를 얻었어.');if(state.fame<need)return fail(state,'다음 작위에는 명성 '+need+'이 필요해.');
