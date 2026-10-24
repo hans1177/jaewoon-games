@@ -100,6 +100,7 @@ export function inferHomepageGenres(game={}){
 }
 
 export function inferHomepagePlatform(game={}){
+  if(game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT')return 'WEB';
   const explicit=selectedPlatformOf(game);
   if(explicit)return explicit;
   if(clean(game.uefnProjectPath||game.fortniteProjectPath))return 'FORTNITE_UEFN';
@@ -120,7 +121,13 @@ export function applyHomepageAutoClassification(game={}){
   const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
   game.homepageInfo=runtime;
 
-  let platform=selectedPlatformOf(game);
+  // 실제 HTML/JS 소스의 웹 플랫폼 정체성이 타이쿤/RPG 장르 추정보다 우선한다.
+  let platform=game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'?'WEB':selectedPlatformOf(game);
+  if(game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'){
+    game.selectedPlatform='WEB';
+    runtime.platform='WEB';
+    runtime.platformLabel='웹';
+  }
   if(!platform){
     platform=inferHomepagePlatform(game);
     if(platform)game.selectedPlatform=platform;
@@ -202,6 +209,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
   const entryFile=clean(policy.requiredEntryFile)||'index.html';
   const minBytes=Math.max(1,Number(policy.minimumEntryBytes)||512);
   const removed=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean));
+  const ownerStopped=new Set(list(catalog?.ownerStoppedGameIds));
   const rejectedWeb=new Set((catalog?.permanentRemovalPolicy?.rejectedWebTestEntries||[]).map(clean));
   const quality=policy.webExposureQuality||{};
   const excluded=new Set(list(quality.excludeFromGameCatalog));
@@ -216,6 +224,13 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
     const dir=diskRoot+'/'+id;
     const indexFile=dir+'/'+entryFile;
     const existing=byId.get(id)||null;
+    // 오너가 개발중지한 원본은 감지·재등록·검증·재배포 대상으로 재진입하지 않는다.
+    if(ownerStopped.has(id)||existing?.ownerDevelopmentStopped===true
+      ||['OWNER_STOPPED','STOPPED'].includes(clean(existing?.lifecycleState||existing?.lifecycle?.state).toUpperCase())){
+      if(existing){existing.ownerDevelopmentStopped=true;existing.lifecycleState='OWNER_STOPPED';disabled.push(id);}
+      else ignored.push(id);
+      continue;
+    }
     if(rejectedWeb.has(id)){
       if(existing){existing.homepageWebPlayable=false;existing.hasWebArchive=false;existing.ownerWebSourceState='PERMANENTLY_REMOVED_REJECTED_TEST';disabled.push(id);}
       else ignored.push(id);
@@ -415,8 +430,9 @@ function normalizedProductionClass(value){
   return normalizeProductionClass(value)||PRODUCTION_CLASSES.DESIGN_ONLY;
 }
 function lifecycleStateOf(game={}){
+  if(game.ownerDevelopmentStopped===true)return 'OWNER_STOPPED';
   const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();
-  return ['ACTIVE','REBUILD','PAUSED','RETIRED','REMOVED'].includes(raw)?raw:'ACTIVE';
+  return ['ACTIVE','REBUILD','PAUSED','RETIRED','REMOVED','OWNER_STOPPED','STOPPED'].includes(raw)?raw:'ACTIVE';
 }
 function selectedPlatformOf(game={}){
   const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
@@ -628,10 +644,20 @@ export function normalizeCatalog(catalog={}){
   // 게임 중지=영구 제거. 플랫폼 OWNER_HOLD나 개별 작업 실패는 이 대상이 아니다.
   const removal=catalog.permanentRemovalPolicy||{};
   const removed=new Set(list(removal.ids));
+  const ownerStopped=new Set(list(catalog.ownerStoppedGameIds));
+  for(const game of catalog.games){
+    const id=clean(game.id||game.gameId);
+    if(ownerStopped.has(id)||game.ownerDevelopmentStopped===true||['OWNER_STOPPED'].includes(clean(game.lifecycleState||game.lifecycle?.state).toUpperCase())){
+      if(id)ownerStopped.add(id);
+      game.ownerDevelopmentStopped=true;
+      game.lifecycleState='OWNER_STOPPED';
+    }
+  }
+  catalog.ownerStoppedGameIds=[...ownerStopped].sort();
   if(removal.ownerGameStopMeansPermanentRemoval===true){
     const stopped=new Set(['PAUSED','STOPPED','RETIRED','REMOVED']);
     for(const game of catalog.games){
-      if(stopped.has(clean(game.lifecycleState||game.lifecycle?.state).toUpperCase())){
+      if(game.ownerDevelopmentStopped!==true&&stopped.has(clean(game.lifecycleState||game.lifecycle?.state).toUpperCase())){
         const id=clean(game.id||game.gameId);
         if(/^[a-z0-9][a-z0-9-]*$/.test(id))removed.add(id);
       }
@@ -642,6 +668,8 @@ export function normalizeCatalog(catalog={}){
     removal.automaticMaintenanceAllowed=false;
   }
   catalog.games=catalog.games.filter(game=>!removed.has(clean(game.id||game.gameId)));
+  // 이전 명시적 영구삭제와 새 오너 개발중지는 별개다. 중지는 소스·저장 보존 격리.
+  catalog.ownerStoppedGameIds=catalog.ownerStoppedGameIds.filter(id=>!removed.has(id));
   catalog.webExposurePolicy=policy.ownerWebAutoIngest?.webExposureQuality||{};
   const ids=new Set();
   let covers={};
