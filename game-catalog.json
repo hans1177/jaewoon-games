@@ -313,8 +313,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-24T02:13:00.667Z",
-        "status": "PENDING_ROBLOX_SOURCE_BIND",
+        "updatedAt": "2026-10-24T02:36:01.116Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -426,8 +426,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-24T02:13:00.667Z",
-            "status": "PENDING_ROBLOX_SOURCE_BIND",
+            "updatedAt": "2026-10-24T02:36:01.116Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2593,9 +2593,9 @@
         "subgenre": "",
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
-        "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-24T02:13:00.667Z",
-        "status": "PENDING_ROBLOX_SOURCE_BIND",
+        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+        "updatedAt": "2026-10-24T02:36:14.945Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
@@ -2737,9 +2737,9 @@
             "subgenre": "",
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
-            "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-24T02:13:00.667Z",
-            "status": "PENDING_ROBLOX_SOURCE_BIND",
+            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "updatedAt": "2026-10-24T02:36:14.945Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -4608,8 +4608,8 @@
         },
         "publication": {
           "web": {
-            "route": "web-games/gem-survivor/",
-            "sourceTreeSha": "a7b9983811d3a68ef22851691d9358a7eab98293"
+            "route": "",
+            "sourceTreeSha": ""
           },
           "roblox": {
             "universeId": "",
@@ -4708,8 +4708,8 @@
           "sha256": "c3148149bb8f2e6fe0e9985b93bbfea3c126c2b654c7ae3061e96f371879f0a1"
         }
       },
-      "webPublishedRoute": "web-games/gem-survivor/",
-      "webPublishedSourceTreeSha": "a7b9983811d3a68ef22851691d9358a7eab98293"
+      "webPublishedRoute": "",
+      "webPublishedSourceTreeSha": ""
     },
     {
       "id": "human-go",
@@ -7934,8 +7934,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-24T02:13:00.667Z",
-        "status": "PENDING_ROBLOX_SOURCE_BIND",
+        "updatedAt": "2026-10-24T02:34:34.178Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
@@ -8050,8 +8050,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-24T02:13:00.667Z",
-            "status": "PENDING_ROBLOX_SOURCE_BIND",
+            "updatedAt": "2026-10-24T02:34:34.178Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -10414,22 +10414,6 @@
         "style": "ROBLOX_BLOCK_AVATAR_V1",
         "source": "HOMEPAGE_MANAGER_TITLE_ARTWORK",
         "runtimeScreenshot": false
-      }
-    },
-    {
-      "id": "card-grid-duel",
-      "name": "card-grid-duel",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "EXISTING_ROBLOX_SOURCE_INTAKE",
-      "lifecycleState": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "robloxProjectPath": "roblox-games/card-grid-duel",
-      "developmentHandling": "PRESERVE_EXISTING_SOURCE_AND_CONTINUE",
-      "sourceIntake": {
-        "kind": "EXISTING_ROJO_PROJECT",
-        "designVerified": false,
-        "runtimeVerified": false,
-        "externalReleaseApproved": false
       }
     }
   ],
