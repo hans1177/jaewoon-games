@@ -572,7 +572,7 @@ export class IslandRendererV3 {
     return g;
   }
   make3d(kind,height){
-    if(kind.startsWith('fort-'))return this.makeFort3d(kind,height);
+    if(['fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site'].includes(kind))return this.makeFort3d(kind,height);
     const group=new THREE.Group(),asset=this.models3d.get(kind);
     if(!asset)return group;
     const texture=asset.texture.clone();texture.needsUpdate=true;
