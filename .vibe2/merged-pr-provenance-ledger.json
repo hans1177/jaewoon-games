@@ -92262,11 +92262,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5c049213d861d0e79b68f390",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9797",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "89ab5699829ebe976feca187b098d3cea5882ca9",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9797,
+        "baseBranch": "main",
+        "headBranch": "cozy-stronghold-camera-20261024",
+        "baseSha": "89ab5699829ebe976feca187b098d3cea5882ca9",
+        "headSha": "707def7705a749a9bbfac3bb98a85b698dd44802",
+        "mergeCommitSha": "eb1149e0c36b74fe92510e5d074439618fcb9949",
+        "mergedAt": "2026-10-24T09:39:23Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0db619ac4303dcdbe9e37c906a4b2960be29a7b38effa49b6c27ee290d32ecf1",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "cozy-stronghold-camera-20261024",
+        "candidateSha": "707def7705a749a9bbfac3bb98a85b698dd44802"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 874,
+        "deletedLineCount": 301,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/egg-heist/client/Game.client.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/production-buildings.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/egg-heist/client/Game.client.luau",
+          "roblox-games/egg-heist/roblox-source-bootstrap.json",
+          "roblox-games/egg-heist/shared/GameConfig.luau",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/production-buildings.js",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9797",
+        "merge-commit:eb1149e0c36b74fe92510e5d074439618fcb9949",
+        "base-main:89ab5699829ebe976feca187b098d3cea5882ca9"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 724
+    "total": 725
   }
 }
