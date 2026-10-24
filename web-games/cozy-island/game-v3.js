@@ -172,25 +172,43 @@ let pointerGesture=null;
 canvas.addEventListener('pointerdown',e=>{
   if(e.pointerType==='mouse'&&e.button!==0)return;
   pointerGesture={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};
+  if(game.buildingPlacement?.id==='fort:wall'){
+    const start=snapFort(renderer.screenToWorld(game,e.clientX,e.clientY));
+    game.buildingPlacement.startAt=start;
+    game.buildingPlacement.at=start;
+    game.buildingPlacement.preview=[start];
+    updateBuildStatus();
+  }
   canvas.setPointerCapture?.(e.pointerId);
 });
 canvas.addEventListener('pointermove',e=>{
   if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture,dx=e.clientX-g.x,dy=e.clientY-g.y;
-  if(game.buildingPlacement){game.buildingPlacement.at=renderer.screenToWorld(game,e.clientX,e.clientY);return}
+  if(game.buildingPlacement){
+    game.buildingPlacement.at=snapFort(renderer.screenToWorld(game,e.clientX,e.clientY));
+    if(game.buildingPlacement.id==='fort:wall')updateBuildStatus();
+    return;
+  }
   if(g.moved||Math.hypot(e.clientX-g.startX,e.clientY-g.startY)>9){
     g.moved=true;game.siegeOverview=true;renderer.panCamera(dx,dy);
   }
   g.x=e.clientX;g.y=e.clientY;
 });
-canvas.addEventListener('pointercancel',()=>{pointerGesture=null});
+canvas.addEventListener('pointercancel',()=>{pointerGesture=null;if(game.buildingPlacement?.id==='fort:wall')game.buildingPlacement.startAt=null;updateBuildStatus()});
 canvas.addEventListener('pointerup',e=>{
   if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture;pointerGesture=null;
   if((g.moved&&!game.buildingPlacement)||ui.panel.open||ui.fishing.open||runtime.paused)return;
   const now=performance.now();
   if(game.buildingPlacement){
-    const at=renderer.screenToWorld(game,e.clientX,e.clientY);
+    const at=renderer.screenToWorld(game,e.clientX,e.clientY),mode=game.buildingPlacement;
+    if(mode.id==='fort:wall'){
+      const detail={start:mode.startAt||snapFort(at),end:snapFort(at),success:false};
+      window.dispatchEvent(new CustomEvent('cozy:construct-wall-line',{detail}));
+      if(detail.success){cancelBuildPlacement();updateHUD()}
+      else updateBuildStatus();
+      return;
+    }
     placeEconomyAt(at);return;
   }
   if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
