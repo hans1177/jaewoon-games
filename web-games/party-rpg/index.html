@@ -333,6 +333,30 @@ function storyClear(index){state.story.cleared[index]=true;save();}
 function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';return '맹약은 끝났어. 동료들과 남은 길을 자유롭게 탐험해.';}
 function storyReady(key){var s=state.story;return key==='fort'?s.cleared[0]&&s.visited[1]&&s.visited[2]:key==='temple'?s.choices.fort&&s.cleared[1]&&s.visited[3]&&s.visited[4]:key==='ending'?s.choices.temple&&s.cleared[2]&&s.visited[5]&&s.visited[6]:false;}
 function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();storyJournal();}
+
+const EVIDENCE_SITES={
+ 1:{x:925,y:315,trace:'북문으로 이어졌던 수레바퀴 자국과 수비대 군번표'},
+ 2:{x:1025,y:640,trace:'기록관의 인장이 찍힌 이름 없는 무덤'},
+ 3:{x:385,y:245,trace:'두 번째 목소리가 남은 부서진 정찰병의 창'},
+ 4:{x:1045,y:270,trace:'봉랍으로 닫힌 사막 공물 장부'},
+ 5:{x:365,y:675,trace:'눈 속에 묻힌 사제의 마지막 맹세'},
+ 6:{x:1020,y:660,trace:'도시의 생존자들이 남긴 판결문'}
+};
+function pendingEvidence(){
+ return !dungeon&&state.zone>0&&state.zone<=6&&!state.story.cases[state.zone]?EVIDENCE_SITES[state.zone]:null;
+}
+function inspectEvidence(){
+ var zone=state.zone,site=pendingEvidence(),c=INCIDENTS[zone-1];if(!site||!c)return;
+ if(Math.hypot(p.x-site.x,p.y-site.y)>105){toast('현장에 더 가까이 다가가야 해.');moveTarget={x:site.x,y:site.y};return;}
+ var idx=state.ai.findIndex(function(a){return a.name===c.person;});
+ var html='<div class="dialogueLayout">'+portraitMarkup(Math.max(0,idx),'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">현장 사건 · '+ZONES[zone].name+'</span><h2>'+c.name+'</h2><p>'+site.trace+'</p><p>'+c.lead+'</p><blockquote>“이 기록을 세상에 남기는 일은 누군가의 안전을 빼앗을 수도 있다.”</blockquote><h3>선택을 기록한다</h3>';
+ html+='<button class="menuBtn" data-local-choice="truth">[설득 d20] '+c.a+'</button><button class="menuBtn secondary" data-local-choice="guard">'+c.b+'</button><button class="textBtn" id="evidenceLater">아직 결정하지 않는다</button></div></div>';
+ openModal('사건 조사 · '+c.person,html);modal.dataset.mode='dialogue';
+ modalBody.querySelectorAll('[data-local-choice]').forEach(function(el){el.onclick=function(){incidentChoice(zone,el.dataset.localChoice);};});
+ document.getElementById('evidenceLater').onclick=closeModal;
+ sound.effect('story');
+}
+
 function incidentChoice(zone,path){
  if(!state.story.visited[zone]||state.story.cases[zone]||!INCIDENTS[zone-1]||!['truth','guard'].includes(path))return;
  var test=path==='truth'?checkAbility('persuade',11+zone):{success:true,roll:null,total:null};
@@ -706,7 +730,9 @@ function updateInteractions(){
    });
   }
   if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
- }else if(state.zone===0){
+ }else if(state.zone>0){
+   var site=pendingEvidence();if(site&&Math.hypot(site.x-p.x,site.y-p.y)<95){currentInteract={kind:'evidence',name:'사건 조사 · '+INCIDENTS[state.zone-1].name};prompt.textContent='사건 조사 · 증거 수집';prompt.classList.add('on');return;}
+  }else if(state.zone===0){
   var objs=[{x:390,y:300,name:'무기상점',kind:'weapon'},{x:1010,y:300,name:'방어구상점',kind:'armor'},{x:700,y:300,name:'회복의 샘',kind:'heal'},{x:700,y:690,name:'판매상점',kind:'sell'}],best=null,bd=75*75;
   objs.forEach(function(o){var d=(o.x-p.x)**2+(o.y-p.y)**2;if(d<bd){bd=d;best=o;}});
   if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
@@ -716,6 +742,7 @@ function updateInteractions(){
 function interact(){
  if(modalOpen)return;
  if(!currentInteract){toast('상호작용할 대상이 없어.');return;}sound.effect('interact');
+ if(currentInteract.kind==='evidence'){inspectEvidence();return;}
  if(dungeon&&(currentInteract.kind==='trap'||currentInteract.kind==='door')){
   var kind=currentInteract.kind,puzzle=dungeon.roomPuzzle;if(!puzzle)return;
   var test=checkAbility(kind,12+dungeon.index*2);
@@ -730,9 +757,9 @@ function interact(){
  else if(currentInteract.kind==='sell')sellMenu();else shopMenu(currentInteract.kind);
 }
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
-function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
+function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
-function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat});}
+function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat,evidence:pendingEvidence()});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
 function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})));}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
 
