@@ -9,6 +9,7 @@ import {execFileSync} from 'node:child_process';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject, restoreApprovedOwnerFocusedCancelledTasks } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
+import {findWebRecurringBuildUpTask} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
@@ -5721,4 +5722,79 @@ test('registered general web games stay in HTML JavaScript WebGL lane after desi
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/- 'web-games\/\*\*'/);
   assert.match(workflow,/Discover normal web engine games before design auto-enrollment/);
+});
+
+
+// [자동 웹게임 반복] 실제 원본 개발 세대가 생성·중복 억제·인과 수리 후 계속되는지 검증한다.
+test('active web games repeat verified source development; failed generations repair first',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-autonomous-loop-'));
+ try{
+  const id='cozy-loop',base=path.join(root,'web-games',id);
+  fs.mkdirSync(base,{recursive:true});
+  fs.writeFileSync(path.join(base,'index.html'),'<canvas id="game"></canvas><script type="module" src="./game-v3.js"></script>');
+  fs.writeFileSync(path.join(base,'game-v3.js'),'export const state={};\n');
+  const project={gameId:id,name:'Cozy Loop',engine:'web',target:'web',
+    releaseState:'development-confirmed',projectPath:'web-games/'+id,source:'catalog'};
+  const item=(id,status)=>({id,gameId:project.gameId,target:'web',department:'development',
+    type:'implementation',status,sourceRoot:project.projectPath,responsibleFiles:[project.projectPath+'/game-v3.js'],
+    blocker:status==='failed'?'MOBILE_SAVE_REGRESSION':null});
+  const legacyFailure=findWebRecurringBuildUpTask(project,root,{tasks:[{
+    id:'cozy-loop-existing-web-assessment-v1',gameId:id,target:'web',
+    department:'development',type:'implementation',status:'failed',
+    blocker:'INITIAL_WEB_RUNTIME_FAILURE',sourceRoot:project.projectPath
+  }]});
+  assert.match(legacyFailure.goal,/WEB_CAUSAL_REPAIR/);
+  assert.match(legacyFailure.goal,/INITIAL_WEB_RUNTIME_FAILURE/);
+  const first=findWebRecurringBuildUpTask(project,root,{tasks:[]});
+  assert.equal(first.id,id+'-web-autonomous-build-up-v1');
+  assert.deepEqual(first.responsibleFiles,[project.projectPath+'/game-v3.js']);
+  assert.match(first.goal,/WEB_AUTONOMOUS_BUILD_UP/);
+  assert.ok(first.evidence.includes('web-autonomous-recurring-build-up:v1'));
+  assert.equal(findWebRecurringBuildUpTask(project,root,{tasks:[item(first.id,'queued')]}),null,
+    'must not create the next generation while its predecessor is running');
+  const second=findWebRecurringBuildUpTask(project,root,{tasks:[item(first.id,'verified')]});
+  assert.equal(second.id,id+'-web-autonomous-build-up-v2');
+  assert.match(second.goal,/PROGRESSION/);
+  const repaired=findWebRecurringBuildUpTask(project,root,{tasks:[
+    item(first.id,'verified'),item(second.id,'failed')
+  ]});
+  assert.equal(repaired.id,id+'-web-autonomous-build-up-v3');
+  assert.match(repaired.goal,/WEB_CAUSAL_REPAIR/);
+  assert.match(repaired.goal,/MOBILE_SAVE_REGRESSION/);
+  assert.equal(repaired.priority,'high');
+  const afterRepair=findWebRecurringBuildUpTask(project,root,{tasks:[
+    item(first.id,'verified'),item(second.id,'failed'),{...item(repaired.id,'verified'),goal:repaired.goal}
+  ]});
+  assert.equal(afterRepair.id,id+'-web-autonomous-build-up-v4');
+  assert.match(afterRepair.goal,/PROGRESSION/);
+  assert.equal(findWebRecurringBuildUpTask({...project,engine:'roblox'},root,{tasks:[]}),null);
+  assert.equal(findWebRecurringBuildUpTask({...project,releaseState:'reviewing'},root,{tasks:[]}),null);
+  assert.equal(findWebRecurringBuildUpTask({...project,projectPath:'web-games/../evil'},root,{tasks:[]}),null);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('catalog existing web sources continue even when legacy archive flag is false; stopped games are isolated',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-active-loop-'));
+ try{
+  for(const id of ['live-a','live-b','stopped-c']){
+   const dir=path.join(root,'web-games',id);
+   fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),'<canvas></canvas>');
+  }
+  const games=[
+   {id:'live-a',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/live-a/',
+    hasWebArchive:false,lifecycleState:'ACTIVE'},
+   {id:'live-b',productionClass:'RELEASE_CONFIRMED',webPath:'/web-games/live-b/',
+    hasWebArchive:true,lifecycleState:'ACTIVE'},
+   {id:'stopped-c',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/stopped-c/',
+    hasWebArchive:true,lifecycleState:'OWNER_STOPPED',ownerDevelopmentStopped:true},
+   {id:'paused-d',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/paused-d/',
+    hasWebArchive:true,lifecycleState:'PAUSED'}
+  ];
+  const rows=collectProjects({projects:[]},{games},root,{items:[]});
+  assert.ok(rows.some(p=>p.gameId==='live-a'&&p.engine==='web'));
+  assert.ok(rows.some(p=>p.gameId==='live-b'&&p.engine==='web'));
+  assert.ok(!rows.some(p=>p.gameId==='stopped-c'||p.gameId==='paused-d'));
+  assert.equal(findWebRecurringBuildUpTask(rows.find(p=>p.gameId==='live-b'&&p.engine==='web'),root,{tasks:[]})?.id,
+    'live-b-web-autonomous-build-up-v1');
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

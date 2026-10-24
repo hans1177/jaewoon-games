@@ -50,7 +50,11 @@ function parallelLimit(value){
 function releaseState(value){const normalized=clean(value).toLowerCase();return Object.hasOwn(RELEASE_RANK,normalized)?normalized:'other';}
 function stateFromCatalog(game={}){const cls=clean(game.productionClass).toUpperCase();if(cls==='RELEASE_CONFIRMED')return'release-confirmed';if(cls==='DEVELOPMENT_CONFIRMED')return'development-confirmed';return releaseState(game.homepageCategory);}
 function engineFromProject(project={}){const projectPath=posix(project.robloxProjectPath||project.unrealProjectPath||project.uefnProjectPath||project.projectPath||project.source),target=clean(project.selectedPlatform||project.targetPlatform||project.target).toLowerCase();if(projectPath.startsWith('roblox-games/')||target.startsWith('roblox'))return'roblox';if(projectPath.startsWith('unity-games/')||target.startsWith('unity'))return'unity';if(projectPath.startsWith('web-games/')||target==='web')return'web';if((projectPath.startsWith('uefn-games/')||projectPath.startsWith('unreal-games/'))||target.startsWith('unreal')||target.startsWith('fortnite')||target.startsWith('uefn'))return'unreal';if(projectPath.startsWith('godot-games/')||target.startsWith('godot'))return'godot';return null;}
-function webRootFromCatalog(game={}){const webPath=posix(game.webPath).replace(/^\//,'');return /^web-games\/[a-zA-Z0-9._-]+$/.test(webPath)?webPath:null;}
+function webRootFromCatalog(game={}){
+ const webPath=posix(game.webPath||game?.canonical?.sources?.web?.path||game.ownerWebEntryFile||'')
+   .replace(/^\//,'').replace(/\/index\.html$/,'');
+ return /^web-games\/[a-zA-Z0-9._-]+$/.test(webPath)?webPath:null;
+}
 function robloxRootFromCatalog(game={}){const explicit=posix(game.robloxProjectPath||game.robloxPath||game?.canonical?.sources?.roblox?.projectPath||'');if(/^roblox-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`roblox-games/${id}`:null;}
 function unityRootFromCatalog(game={}){const explicit=posix(game.unityProjectPath||game.unityPath||game?.canonical?.sources?.unity?.projectPath||'');if(/^unity-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`unity-games/${id}`:null;}
 function uefnRootFromCatalog(game={}){const explicit=posix(game.uefnProjectPath||game.fortniteUefnProjectPath||game.unrealProjectPath||game?.canonical?.sources?.fortniteUefn?.projectPath||game?.canonical?.sources?.uefn?.projectPath||game?.canonical?.sources?.unreal?.projectPath||'');if(/^uefn-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;if(/^unreal-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`uefn-games/${id}`:null;}
@@ -773,7 +777,8 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
     &&game.webDevelopmentResetRequired===true
     &&game.homepageWebPlayable!==true
   );
-  if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;
+  if(!id||!root||(!fs.existsSync(path.join(repoRoot,root,'index.html'))&&game.hasWebArchive!==true)
+    ||(!developmentWebEligible&&!publishedWebEligible))continue;
   if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;
   const exists=fs.existsSync(path.join(repoRoot,root));
   rows.push({
@@ -887,7 +892,7 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
     return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){if(access.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed'){
+  if(['development-confirmed','release-confirmed'].includes(project.releaseState)){
     if(project.engine!=='web')return false;
     // 승인된 최신 소유자 지시가 있으면 이전 필드/원시 권한은 개발 슬롯을 열 수 없다.
     if(!ownerScope)return true; // 격리된 레거시 설계 fixture; 실제 검증된 예약에는 ownerScope 필수.
@@ -2638,6 +2643,51 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
   const goal=`[EXISTING_WEB_DEVELOPMENT_CONTINUATION] ${project.name||project.gameId}는 ACTIVE DEVELOPMENT_CONFIRMED 기존 실제 Web 게임이지만 최신 development validation이 아직 없다. 기존 게임/세이브/핵심 루프를 재생성하거나 초기화하지 말고 현재 소스를 기준으로 개발을 계속한다. 실제 플레이에서 체감되는 하나의 일관된 기능 패키지를 구현하거나 현재 끊긴 시스템 연결을 완성하고, 모바일 입력·상태 일치·저장 호환·실패/재시도·회귀 안정성을 함께 확인한다. 검증용 숫자/라벨/버튼만 추가하는 작업은 금지한다. 변경 후 다음 Web 실제 플레이 검증이 가능한 상태로 만든다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
   return task(id,project,goal,[relative],'high','medium',['existing-web-continuation','development-validation:missing','preserve-existing-game']);
 }
+
+// 메인: 기존 개발→F0~F9 검증 완료 뒤 새 아이디어를 기존 책임 코드에서 계속 구현한다.
+export function findWebRecurringBuildUpTask(project,repoRoot,queue){
+ if(project.engine!=='web'||!['development-confirmed','release-confirmed'].includes(project.releaseState))return null;
+ const root=posix(project.projectPath);
+ if(!/^web-games\/[a-zA-Z0-9._-]+$/.test(root)||!fs.existsSync(sourceFile(repoRoot,root+'/index.html')))return null;
+ // 미완성 변경이 있으면 다음 세대를 시작하지 않는다. 검증·저장·배포 단계도 건너뛰지 않는다.
+ if((queue.tasks||[]).some(t=>clean(t.gameId)===project.gameId&&clean(t.target).toLowerCase()==='web'
+   &&isDevelopmentImplementation(t)&&['queued','running'].includes(clean(t.status).toLowerCase())))return null;
+ const prefix=project.gameId+'-web-autonomous-build-up-v';
+ const history=(queue.tasks||[]).filter(t=>clean(t.id).startsWith(prefix)&&/^\d+$/.test(clean(t.id).slice(prefix.length)))
+   .sort((a,b)=>Number(a.id.slice(prefix.length))-Number(b.id.slice(prefix.length)));
+ const prev=history.at(-1)||null,last=clean(prev?.status).toLowerCase();
+ if(prev&&!['verified','done','completed','failed','error','rejected'].includes(last))return null;
+ const version=prev?Number(prev.id.slice(prefix.length))+1:1;
+ if(!Number.isSafeInteger(version)||version<1)return null;
+ const previousFailed=['failed','error','rejected'].includes(last);
+ const pendingFailure=!prev?(queue.tasks||[]).filter(t=>clean(t.gameId)===project.gameId
+   &&clean(t.target).toLowerCase()==='web'&&isDevelopmentImplementation(t)
+   &&['failed','error','rejected'].includes(clean(t.status).toLowerCase())).at(-1):null;
+ const failed=previousFailed||Boolean(pendingFailure),cause=previousFailed?prev:pendingFailure;
+ const passed=history.filter(t=>['verified','done','completed'].includes(clean(t.status).toLowerCase())
+   &&!clean(t.goal).includes('[WEB_CAUSAL_REPAIR]')).length;
+ const domains=[
+  ['CORE_FUN','핵심 조작→행동→결과의 재미와 적 대응을 기존 게임 규칙 안에서 강화한다.'],
+  ['PROGRESSION','현재 존재하는 경제·성장·퀘스트·연구 중 막힌 해금·보상 연결을 실제 구현한다.'],
+  ['WORLD_CONTENT','현재 게임의 지역·인물·건물·장르 시스템에서 파생된 새 사건과 상호작용을 승인 설계 안에서 구현한다.'],
+  ['GRAPHICS_AUDIO','해당 게임 고유의 3D 모델·모션·음악·전투 피드백을 실제 렌더 함수에서 개선한다.'],
+  ['MOBILE_SAVE','모바일 터치·성능·화면 잘림·진행막힘·세이브/복구와 시작 경험을 고친다.']
+ ];
+ const [focus,idea]=domains[passed%domains.length];
+ // 큰 게임은 index.html을 장식하지 않고 실제 게임 모듈을 우선 수정한다.
+ const owner=['game-v3.js','game.js','main.js','script.js','app.js','index.js','index.html']
+   .map(name=>root+'/'+name).find(file=>fs.existsSync(sourceFile(repoRoot,file)))||root+'/index.html';
+ const goal=failed
+   ?'[WEB_CAUSAL_REPAIR] '+project.gameId+' 이전 '+cause.id+' 실패 원인과 정확한 QA 근거를 조사하고 같은 책임 함수에서 수정해 동일 검증을 재실행한다: '+[cause.blocker,cause.lastOutcome].map(clean).filter(Boolean).join(' | ').slice(0,300)
+   :'[WEB_AUTONOMOUS_BUILD_UP] '+project.gameId+' 세대 '+version+' / '+focus+'\n'+idea+
+     '\n검증된 전 세대·현재 소스·승인 설계·실제 플레이 문제를 비교해 한 가지 일관된 게임 기능 아이디어를 선택하고 기존 함수에 실제 구현한다. 문서·라벨·검증 버튼만 변경해 완료 처리하지 않는다. 기존 게임 정체성·밸런스·성벽/경제/동맹 같은 핵심 기능·저장 키와 저장 의미를 임의로 변경하지 않는다. 승인 근거 없는 신규 밸런스 변경은 금지한다. 해당 게임의 기존 BUILD_UP→F0~F9 후보·모바일 브라우저·저장·회귀·정확한 소스 revision 검증 후에만 다음 세대로 이어간다. 새 큐·워크플로·래퍼·우회 배포를 만들지 않는다.';
+ let out=task(prefix+version,project,goal,[owner],failed?'high':'normal','medium',[
+   'web-autonomous-recurring-build-up:v1','web-recurring-focus:'+focus,
+   'web-loop:EXISTING_BUILD_UP_F0_F9','real-source-diff-required','preserve-existing-save-and-rules',
+   ...(failed?['failed-generation-repair:'+cause.id]:[])
+ ]);
+ return attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
+}
 function findRobloxInternalPlaytestTask(project,repoRoot,queue){
   if(project.engine!=='roblox'||project.releaseState!=='development-confirmed')return null;
   if(project.queueRobloxQualityBuildUpRequired===true)return null;
@@ -3994,7 +4044,7 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
       if(startupSpatialRepair)return[startupSpatialRepair];
-      return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
+      return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue),findWebRecurringBuildUpTask(project,repoRoot,queue)]);
     }
     // Preserve canonical Web bootstrap/exact-repair authority before quality backfill.
     const owner=findWebAssessmentTask(project,repoRoot,queue);
@@ -4003,7 +4053,7 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     if(startupSpatialRepair)return[startupSpatialRepair];
     const cc0Replacement=findWebPresentationQualityTask(project,repoRoot,queue);
     if(cc0Replacement?.evidence?.some(value=>['web-cc0-action-motion-replacement:v1','owner-library-cc0-replacement:v1'].includes(value)))return[cc0Replacement];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),...holisticBackfillTasks,findPresentationQualityTask(project,repoRoot,queue),...normalStudioTasks,findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),...holisticBackfillTasks,findPresentationQualityTask(project,repoRoot,queue),...normalStudioTasks,findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue),findWebRecurringBuildUpTask(project,repoRoot,queue)]);
   }
   return[];
 }
@@ -4318,7 +4368,14 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const planningProjects=[
     ...focusedProjects.filter(project=>focusedMissingLaneKeys.has(clean(project.gameId)+'|'+studioQualityLane(project)))
       .map(project=>({project,webSeed:false,distinctSeed:false,focusedSeed:true})),
-    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false,focusedSeed:false})):[]),
+    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId))
+    .sort((a,b)=>{
+      const count=id=>(queue.tasks||[]).filter(t=>clean(t.gameId)===id
+        &&/web-autonomous-build-up-v\d+$/.test(clean(t.id))
+        &&['verified','done','completed'].includes(clean(t.status).toLowerCase())
+        &&!clean(t.goal).includes('[WEB_CAUSAL_REPAIR]')).length;
+      return count(a.gameId)-count(b.gameId)||projectSort(a,b);
+    }).map(project=>({project,webSeed:true,distinctSeed:false,focusedSeed:false})):[]),
     ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true,focusedSeed:false})):[]),
     ...projects.map(project=>({project,webSeed:false,distinctSeed:false,focusedSeed:false}))
   ];
