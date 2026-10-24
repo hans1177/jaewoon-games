@@ -478,7 +478,20 @@ export function stepSea(state,input={},seconds=.05){
  const speed=(2.1+ship.sail*1.15)*(shipDesign.speed||1)*(sailGear.speed||1)*(figure.speed||1)*(ship.gear.figurehead!=='none'&&ship.regionalMods.includes('venice-carving')?1.02:1)*(1+assignedPower(s,'sailing','navigation')/600)*(1+wind*.24)*(ship.gear.sail==='stormcloth'?Math.max(.93,climate.speed):climate.speed)*laden*(ship.hull/ship.maxHull*.6+.4);
  const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
  const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,-1020,900);
- if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}else{ship.velocity=0;if(s.destination){s.route=[];s.destination=null;note(s,'얕은 해안이야. 해도에서 해상 항로를 다시 설정해.');}}
+ if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}
+ else{
+  // 얕은 연안에서 회전 반경으로 항로 밖으로 나갈 때만 현재 경유점 쪽으로 조타를 보정한다.
+  const wp=s.route.length&&input.manual!==true&&!combatTarget?s.route[0]:null;
+  const course=wp?Math.atan2(wp.x-ship.x,wp.z-ship.z):ship.heading;
+  const sidestepX=clamp(ship.x+Math.sin(course)*ship.velocity*dt,-WORLD_LIMIT,WORLD_LIMIT);
+  const sidestepZ=clamp(ship.z+Math.cos(course)*ship.velocity*dt,-1020,900);
+  if(wp&&(!isLand(sidestepX,sidestepZ)||PORTS.some(p=>Math.hypot(p.x-sidestepX,p.z-sidestepZ)<5))){
+   ship.x=sidestepX;ship.z=sidestepZ;ship.heading=course;ship.rudder=0;
+  }else{
+   ship.velocity=0;
+   if(s.destination){s.route=[];s.destination=null;note(s,'얕은 해안이야. 해도에서 해상 항로를 다시 설정해.');}
+  }
+ }
  advanceMerchantFleet(s,dt);
  ship.cooldown=Math.max(0,ship.cooldown-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
  s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
