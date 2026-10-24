@@ -13,6 +13,7 @@ export function drawGeography(ctx,w,h,cx,cz,scale){
  ctx.setLineDash([]);ctx.restore();
  if(scale>.5){ctx.font='bold '+(w<200?7:11)+'px system-ui';ctx.fillStyle='#f4e1ad';ctx.textAlign='center';for(const c of COUNTRIES){const x=w/2+(c.lon-cx)*scale,y=h/2+(c.z-cz)*scale;if(x>10&&x<w-10&&y>20&&y<h-20)ctx.fillText(c.name,x,y);}ctx.textAlign='left';}
 }
+export function drawFog(ctx,w,h,cx,cz,scale,charted){const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;ctx.fillStyle='#071a2deB';for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++)if(!known.has(gx+':'+gz))ctx.fillRect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);}
 export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{}}={}){
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  let state=null,mode='sea',facility='',frame=0,last=0,zoom=4.8,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720;
@@ -20,12 +21,12 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  function text(t,x,y,size=11,color=C.gold,align='left'){ctx.font=`bold ${size}px system-ui`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(t,Math.round(x),Math.round(y));ctx.textAlign='left';}
  function ship(x,y,heading,type='caravel',enemy=false,scale=1){ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(Math.PI-heading);ctx.scale(scale,scale);rect(-7,-13,14,28,'#172d35');rect(-6,-11,12,25,enemy?'#663934':'#835b38');rect(-4,-17,8,8,'#bb9560');rect(-1,-12,2,27,'#493b30');const sails=type==='galleon'?3:type==='carrack'?3:type==='cog'?1:2;for(let i=0;i<sails;i++){const sy=-9+i*9;rect(-11,sy,22,6,enemy?'#575358':'#eee1b8');rect(-10,sy+5,20,2,enemy?'#393d43':'#b3b99e');rect(-13,sy,26,1,'#674a36');}rect(0,-18,8,3,enemy?'#b8634f':'#ce8c58');ctx.restore();}
  function sea(){
-  const cx=state.ship.x,cz=state.ship.z;drawGeography(ctx,w,h,cx,cz,zoom);
+  const cx=state.ship.x,cz=state.ship.z;drawGeography(ctx,w,h,cx,cz,zoom);drawFog(ctx,w,h,cx,cz,zoom,state.charted);
   ctx.globalAlpha=.15;for(let i=0;i<35;i++){const x=(i*83+Math.floor(time*3))%w,y=(i*47)%h;rect(x,y,9,1,'#c1e1d5');rect(x+3,y+2,6,1,'#c1e1d5');}ctx.globalAlpha=1;
   const x=v=>w/2+(v-cx)*zoom,z=v=>h/2+(v-cz)*zoom;
   ctx.strokeStyle='#e5ce87';ctx.setLineDash([3,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(w/2,h/2);for(const p of state.route||[])ctx.lineTo(x(p.x),z(p.z));ctx.stroke();ctx.setLineDash([]);
-  hit=[];for(const p of PORTS){const px=x(p.x),py=z(p.z);if(px<-30||px>w+30||py<70||py>h-80)continue;rect(px-4,py-4,8,8,'#332e2a');rect(px-2,py-2,4,4,state.discovered.includes(p.id)?'#ffd48a':'#b2bdba');text(p.name,px,py-10,11,'#fff0cb','center');hit.push({x:px-24,y:py-26,w:48,h:48,port:p.id});}
-  for(const p of state.pirates)if(p.hull>0){ship(x(p.x),z(p.z),p.heading,'galleon',true,.65);}
+  hit=[];for(const p of PORTS){if(!state.discovered.includes(p.id))continue;const px=x(p.x),py=z(p.z);if(px<-30||px>w+30||py<70||py>h-80)continue;rect(px-4,py-4,8,8,'#332e2a');rect(px-2,py-2,4,4,state.discovered.includes(p.id)?'#ffd48a':'#b2bdba');text(p.name,px,py-10,11,'#fff0cb','center');hit.push({x:px-24,y:py-26,w:48,h:48,port:p.id});}
+  for(const p of state.pirates)if(p.hull>0&&state.charted.includes(Math.floor(p.x/24)+':'+Math.floor(p.z/24))){ship(x(p.x),z(p.z),p.heading,'galleon',true,.65);}
   if(state.fleet>=2)ship(w/2-24,h/2+25,state.ship.heading,'cog',false,.7);
   if(state.fleet>=3)ship(w/2+24,h/2+28,state.ship.heading,'galleon',false,.7);
   ship(w/2,h/2,state.ship.heading,state.shipType,false,.9);
@@ -55,7 +56,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   else if(facility==='market'){for(let i=0;i<9;i++){const x=15+i%3*150,y=h*.53+Math.floor(i/3)*55;rect(x,y,65,43,'#987247');rect(x+3,y+5,59,2,'#c5a276');rect(x+31,y,3,43,'#604932');}}
   else {rect(w*.08,h*.72,w*.84,32,'#9b774e');if(facility==='quests'||facility==='jobs'){rect(w*.22,h*.67,w*.5,25,'#ddc893');text('航海',w*.45,h*.70,15,'#715a37');}else for(let i=0;i<4;i++)rect(40+i*100,h*.69,15,20,'#b4945e');}
  }
- function minimap(){const mw=128,mh=104,mx=w-mw-8,my=h-290;ctx.save();ctx.translate(mx,my);drawGeography(ctx,mw,mh,75,-550,.20);ctx.strokeStyle='#ebd3a1';ctx.strokeRect(0,0,mw,mh);const x=64+(state.ship.x-75)*.20,y=52+(state.ship.z+550)*.20;ctx.fillStyle='#fff3b6';ctx.fillRect(x-2,y-2,4,4);if(state.destination){const p=PORTS.find(p=>p.id===state.destination);ctx.fillStyle='#f49367';ctx.fillRect(64+(p.x-75)*.20-2,52+(p.z+550)*.20-2,4,4);}text('유럽 · 현재 위치',64,mh+13,9,C.gold,'center');ctx.restore();}
+ function minimap(){const mw=128,mh=104,mx=w-mw-8,my=h-290;ctx.save();ctx.translate(mx,my);drawGeography(ctx,mw,mh,75,-550,.20);drawFog(ctx,mw,mh,75,-550,.20,state.charted);ctx.strokeStyle='#ebd3a1';ctx.strokeRect(0,0,mw,mh);const x=64+(state.ship.x-75)*.20,y=52+(state.ship.z+550)*.20;ctx.fillStyle='#fff3b6';ctx.fillRect(x-2,y-2,4,4);if(state.destination){const p=PORTS.find(p=>p.id===state.destination);ctx.fillStyle='#f49367';ctx.fillRect(64+(p.x-75)*.20-2,52+(p.z+550)*.20-2,4,4);}text('유럽 · 현재 위치',64,mh+13,9,C.gold,'center');ctx.restore();}
  function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:33))return;last=now;time=now/1000;
  const width=Math.min(560,Math.max(320,Math.round(canvas.clientWidth/1.4))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w;canvas.height=h;}ctx.imageSmoothingEnabled=false;if(!state)return;mode==='sea'?sea():facility?interior():town();if(mode==='sea')minimap();}
  canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);});
