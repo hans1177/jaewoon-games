@@ -545,7 +545,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         undeadActors.set(id,actor);
       }
       actorVisualTarget.set(e.x*SCALE,0,e.y*SCALE);
-      if(actor.seen===0||sampleNow-(actor.lastFrame||0)>500||
+      if(actor.seen===0||performance.now()-(actor.lastFrame||0)>500||
         actor.anchor.position.distanceToSquared(actorVisualTarget)>81)
         actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
       else actor.anchor.position.lerp(actorVisualTarget,cameraMotionAlpha);
@@ -664,7 +664,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         nativeCreatureActors.set(key,actor);
       }
       actorVisualTarget.set(e.x*SCALE,0,e.y*SCALE);
-      if(actor.seen===0||sampleNow-(actor.lastFrame||0)>500||
+      if(actor.seen===0||performance.now()-(actor.lastFrame||0)>500||
         actor.anchor.position.distanceToSquared(actorVisualTarget)>81)
         actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
       else actor.anchor.position.lerp(actorVisualTarget,cameraMotionAlpha);
