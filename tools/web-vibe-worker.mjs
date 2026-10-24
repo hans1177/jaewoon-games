@@ -30,7 +30,7 @@ export function assertWebVibeWorkerEnvironment({token='',endpoint=OLLAMA_URL,mod
       ||environment.GITHUB_REPOSITORY!==REPO||!['issue_comment','repository_dispatch'].includes(environment.GITHUB_EVENT_NAME)
       ||environment.GITHUB_REF!=='refs/heads/main')
       fail('WEB_VIBE_GITHUB_OWNER_MAIN_CONTEXT_REQUIRED');
-    if(!clean(environment.GEMINI_API_KEY))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING');
+    // 무모델 후보는 키 없이 실행 가능하다. 외부 호출 직전에는 여전히 키를 요구한다.
     return {endpoint:'EXISTING_GEMINI_FREE_API',model:'EXISTING_VERIFIED_FREE_PAIR',
       organization:'WEB',sharedNativeCredentialAllowed:false,githubHosted:true};
   }
@@ -133,6 +133,40 @@ function verifiedLocalMain(){
 export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fetch,
   geminiImpl=requestGeminiFreePair,apiKey='',previousVerified=[]}={}){
   const excerpt=source.original.slice(0,13500);
+  // [무모델 웹 개발] 기존 HTML 버튼과 책임 함수를 직접 묶어 외부 모델 없이 편집한다.
+  // WEB 조직의 기존 단일 교체/QA/PR 경로를 그대로 사용한다.
+  if(/mobile|touch|input|button|combat|attack|craft|quest|모바일|터치|입력|버튼|전투|공격|제작|퀘스트/i.test(clean(task.goal))
+    &&/\.html?$/i.test(source.relative)){
+    const scripts=[...source.original.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+    if(scripts.length===1&&!scripts[0][1].trim()
+      &&!/\b(?:addEventListener|onclick|onpointerdown|ontouchstart)\b/i.test(source.original)){
+      const code=scripts[0][2];
+      const ids=[...source.original.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)].map(row=>row[2]);
+      const actions=new Set(['attack','interact','gather','dodge','openInventory','openMap','openCrafting','openQuestLog']);
+      for(const button of source.original.matchAll(/<button\b([^>]*)>/gi)){
+        const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
+        const id=attrs.filter(row=>row[1].toLowerCase()==='id');
+        const action=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
+        if(button.index>scripts[0].index||id.length!==1||action.length!==1
+          ||!/^[A-Za-z_$][\w$-]{0,79}$/.test(id[0][3])
+          ||!actions.has(action[0][3])||ids.filter(value=>value===id[0][3]).length!==1)continue;
+        const name=action[0][3],buttonId=id[0][3];
+        if((code.match(new RegExp('\\bfunction\\s+'+name+'\\s*\\(\\s*\\)','g'))||[]).length!==1
+          ||code.includes('getElementById('+JSON.stringify(buttonId)))continue;
+        const oldText='</script>';
+        if(source.original.split(oldText).length!==2)continue;
+        const newText='document.getElementById('+JSON.stringify(buttonId)
+          +').addEventListener("click", '+name+');\n'+oldText;
+        try{
+          const edit=safeWebVibeReplacement(source.original,JSON.stringify({
+            oldText,newText,reason:'Existing gameplay action bound without model'
+          }),{relative:source.relative});
+          return{...edit,deterministicWebInput:true};
+        }catch{}
+      }
+    }
+  }
+  if(cloud&&!clean(apiKey))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING');
   const system='You are the independent WEB-only coding assistant. Inspect only the provided existing web-game file. '
     +'If no relevant change is needed, return JSON {"skip":true,"reason":"not affected"}. '
     +'Otherwise return JSON with one unique bounded oldText,newText,reason replacement for this file. '
