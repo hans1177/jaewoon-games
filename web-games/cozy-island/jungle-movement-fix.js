@@ -1,3 +1,4 @@
+// 파일명: web-games/cozy-island/jungle-movement-fix.js
 import {VibeMotionEngine} from '../../assets/vibe-motion-engine.mjs';
 import {VibeGameplayController} from '../../assets/vibe-gameplay-controller.mjs';
 import { IslandRendererV3 } from './render-v3.js';
@@ -10,6 +11,7 @@ const KEY_TO_DIR = {
 };
 
 let currentGame = null;
+let currentRenderer = null;
 let sharedController=null;
 fetch(new URL('../../assets/vibe-visual-design-system.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()}).then(design=>{
  const sharedMotion=new VibeMotionEngine(design);
@@ -23,6 +25,7 @@ const rendererProto = IslandRendererV3.prototype;
 const originalDraw = rendererProto.draw;
 rendererProto.draw = function drawWithUnifiedMovement(game) {
   currentGame = game;
+  currentRenderer = this;
   originalDraw.call(this, game);
 };
 
@@ -205,9 +208,9 @@ function movementFrame(now) {
     let dx = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
     let dy = (held.has('down') ? 1 : 0) - (held.has('up') ? 1 : 0);
     if (dx || dy) {
-      const mag = Math.hypot(dx, dy) || 1;
-      dx /= mag;
-      dy /= mag;
+      // 화면 방향 입력만 사선 월드 방향으로 변환한다. 이동 속도·충돌은 그대로다.
+      const direction=currentRenderer.screenDirectionToWorld(dx,dy);
+      dx=direction.x;dy=direction.y;
       const speed = Number(player.speed) || 185;
 
       if(!sharedController){const nextX=player.x+dx*speed*dt;if(canStandAt(nextX,player.y))player.x=nextX;const nextY=player.y+dy*speed*dt;if(canStandAt(player.x,nextY))player.y=nextY;requestAnimationFrame(movementFrame);return;}
@@ -230,3 +233,4 @@ function movementFrame(now) {
   requestAnimationFrame(movementFrame);
 }
 requestAnimationFrame(movementFrame);
+
