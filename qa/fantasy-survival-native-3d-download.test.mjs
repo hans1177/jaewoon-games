@@ -187,6 +187,7 @@ test('native forest ground has no 10x10 pitch mismatch and all rounded corners a
  assert.match(moduleSource,/new THREE\.InstancedMesh\(sourceFloor\.geometry,sourceFloor\.material,36\)/);
  assert.match(moduleSource,/floorSeamTiles\.setMatrixAt\(seamTileIndex,tile\.matrix\)/);
  assert.match(moduleSource,/floorSeamTiles\.instanceColor\.needsUpdate=true/);
+ assert.match(moduleSource,/centerTileX!==lastFloorGridX\|\|centerTileY!==lastFloorGridZ/);
  assert.match(moduleSource,/scene\.remove\(floorSeamTiles\);floorSeamTiles\.dispose\(\)/);
  assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
 });
