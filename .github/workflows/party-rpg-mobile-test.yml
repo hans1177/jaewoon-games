@@ -184,9 +184,60 @@ jobs:
               return {zone:game.state.zone,record:game.state.story.imperialCases.arena_murder,
                       foes:game.enemies.filter(e=>!e.dead&&e.storyTag==='imperial:arena_murder').length};
             });
-            if(investigation.zone!==7||investigation.record?.path!=='1'||investigation.foes<2)
+            if(investigation.zone!==7||investigation.record?.path!=='1'||!Number.isInteger(investigation.record?.investigation?.roll)||investigation.foes<2)
               throw new Error('IMPERIAL_INVESTIGATION_DID_NOT_START '+JSON.stringify(investigation));
             console.log('PARTY_RPG_ANCIENT_EMPIRE_REGION_AND_MURDER_CASE=PASS');
+            // 야외 탐험 기록은 실제 필드에서 다가가 조사해야 하며 보상이 중복되지 않는다.
+            await page.locator('#systemBtn').click();
+            await page.locator('#systemTravel').click();
+            await page.locator('[data-zone="1"]').click();
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              game.p.x=500;game.p.y=980;
+              game.enemies.forEach(e=>{e.x=1850;e.y=1140;});
+            });
+            await page.locator('#prompt.on').waitFor({timeout:10000});
+            const explorerGold=await page.evaluate(()=>window.partyRpgVibeState().state.player.gold);
+            await page.locator('#prompt').click();
+            await page.locator('#modalTitle').filter({hasText:'숨겨진 기록'}).waitFor();
+            const found=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state;
+              return {done:!!s.exploration.discovered.relic_1_1,gold:s.player.gold};
+            });
+            if(!found.done||found.gold<=explorerGold)throw new Error('FIELD_LANDMARK_REWARD_MISSING '+JSON.stringify(found));
+            await page.locator('#modalClose').click();
+            await page.locator('#journalBtn').click();
+            await page.getByText('빗물에 잠긴 군번표').first().waitFor();
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_EXPLORATION_NOTE_REWARD_AND_JOURNAL=PASS');
+            // 야영은 안전한 필드에서만 가능하며 비용을 내고 체력/시계가 저장된다.
+            await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              g.state.player.hp=Math.floor(g.state.player.maxHp*.35);
+              g.enemies.forEach(e=>{e.x=1850;e.y=1140;});
+            });
+            await page.locator('#systemBtn').click();
+            await page.locator('#systemCamp').click();
+            const campButton=page.locator('#campRest');
+            if(await campButton.isDisabled())throw new Error('SAFE_CAMP_WRONGLY_BLOCKED');
+            const beforeCamp=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              return {gold:g.state.player.gold,hp:g.state.player.hp,minutes:g.state.environment.minutes,day:g.state.environment.day};
+            });
+            await campButton.click();
+            const afterCamp=await page.evaluate(()=>{
+              const g=window.partyRpgVibeState();
+              const saved=JSON.parse(localStorage.getItem('party-rpg-v1')||'{}');
+              return {gold:g.state.player.gold,hp:g.state.player.hp,minutes:g.state.environment.minutes,
+                camps:Object.keys(saved.exploration?.camps||{}).length,found:!!saved.exploration?.discovered?.relic_1_1};
+            });
+            if(!(afterCamp.gold<beforeCamp.gold&&afterCamp.hp>beforeCamp.hp&&afterCamp.camps>0&&afterCamp.found))
+              throw new Error('CAMP_HEAL_SAVE_OR_COST_FAILED '+JSON.stringify({beforeCamp,afterCamp}));
+            await page.locator('#systemBtn').click();
+            await page.locator('#systemCamp').click();
+            if(!(await page.locator('#campRest').isDisabled()))throw new Error('DUPLICATE_DAILY_CAMP_ALLOWED');
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_CAMP_HEAL_ONCE_DAILY_AND_SAVE=PASS');
             await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
             if(errors.length)throw new Error('PARTY_RPG_BROWSER_ERRORS: '+errors.join(' | '));
             console.log('PARTY_RPG_MOBILE_EVENT_RECRUIT_AND_SAVE=PASS');
