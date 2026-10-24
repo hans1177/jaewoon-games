@@ -114,7 +114,7 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 /* 마력숲 모바일 액션 RPG: 기존 조작/저장/전투 핸들러에 직접 연결된 단일 화면 구성.
    외부 게임의 그래픽을 복제하지 않고 고유 숲·황동·석재 화면 언어를 사용한다. */
 :root{--arpg-gold:#d6b779;--arpg-ivory:#f2ead5;--arpg-stone:#161b1b;--arpg-edge:#927c55;--arpg-red:#ae303d;--arpg-forest:#173125}
-#world3d{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none;touch-action:none}
+#world3d{image-rendering:pixelated;position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none;touch-action:none}
 #world3d[hidden]{display:none!important}
 /* 3D 준비: 2D 월드를 대신 그리지 않고 기존 입력을 준비 상태에서 막는다. */
 #game{background:transparent}
@@ -464,7 +464,7 @@ body:has(#optionsPanel.open) .regionTravel,body:has(#multiPanel.open) .regionTra
 <button id="questNavOpen" class="questNavOpen" type="button" aria-expanded="false" aria-controls="questNavDetails" aria-label="임무 길안내 펼치기"><span id="questNavArrow" class="questNavArrow" aria-hidden="true">↑</span><span id="questNavDistance">목표를 찾는 중</span><span class="questNavMore">길안내</span></button>
 <div id="questNavDetails" class="questNavDetails" role="region" aria-label="게임 진행 도우미" hidden><strong id="questNavTitle">진행 도우미</strong><p id="questNavHint">현재 임무를 확인하고 있어.</p><small>방향과 거리는 직선 기준이야. 길을 막는 지형은 돌아가야 해.</small><button id="questNavMap" type="button">지도에서 목적지 보기</button></div>
 </div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><details class="hudMenu"><summary aria-label="게임 메뉴 열기">☰ 메뉴</summary><div class="hudMenuPanel"><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button><button id="avatarOpen" class="multiBtn" type="button">캐릭터 꾸미기</button><button id="hudGuideOpen" class="multiBtn" type="button">조작 안내</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="../../">홈</a></div></details></div>
-<div id="notice" class="notice"></div><div id="miniMapWrap" class="miniMapWrap" role="button" tabindex="0" aria-label="지도를 열기" title="눌러서 지도 열기"><b>미니맵</b><canvas id="miniMap" class="miniMap" width="160" height="160"></canvas></div><button id="rotateBlueprint" class="blueprintRotate" data-gameplay-action="blueprint-rotate">회전</button><div id="optionsPanel" class="optionsPanel"><div class="optionHead"><b>옵션</b><button id="optionsClose">×</button></div><div class="optionRow"><span>자동 채집</span><span id="autoGather" role="status">자동 채집 · 항상 켜짐</span></div><div class="optionRow"><span>음악</span><button id="bgmToggle" data-audio-control="mute" data-mechanic-id="audio-bgm-toggle">BGM ON</button></div><div class="optionRow"><span>음악 볼륨</span><input id="bgmVolume" type="range" min="0" max="100" step="5" value="100" data-audio-control="volume" aria-label="BGM 볼륨"></div><div class="optionRow"><span>전투 음악</span><button id="battlePreview" type="button" data-audio-control="preview">새 전투곡 듣기</button></div><div id="musicInfo" class="difficultyInfo" role="status" aria-live="polite">전투곡 듣기로 바로 확인 가능</div><div class="optionRow"><span>난이도</span><select id="difficultySelect" aria-label="난이도"><option value="easy">쉬움</option><option value="normal" selected>중간</option><option value="hard">어려움</option></select></div><div id="difficultyInfo" class="difficultyInfo">중간 · 기존 몬스터 수치</div>
+<div id="notice" class="notice"></div><div id="miniMapWrap" class="miniMapWrap" role="button" tabindex="0" aria-label="지도를 열기" title="눌러서 지도 열기"><b>미니맵</b><canvas id="miniMap" class="miniMap" width="160" height="160"></canvas></div><button id="rotateBlueprint" class="blueprintRotate" data-gameplay-action="blueprint-rotate">회전</button><div id="optionsPanel" class="optionsPanel"><div class="optionHead"><b>옵션</b><button id="optionsClose">×</button></div><div class="optionRow"><span>자동 채집</span><span id="autoGather" role="status">자동 채집 · 항상 켜짐</span></div><div class="optionRow"><span>음악</span><button id="bgmToggle" data-audio-control="mute" data-mechanic-id="audio-bgm-toggle">BGM ON</button></div><div class="optionRow"><span>음악 볼륨</span><input id="bgmVolume" type="range" min="0" max="100" step="5" value="100" data-audio-control="volume" aria-label="BGM 볼륨"></div><div class="optionRow"><span>전투 음악</span><button id="battlePreview" type="button" data-audio-control="preview">차분한 전투 루프 듣기</button></div><div id="musicInfo" class="difficultyInfo" role="status" aria-live="polite">지역마다 차분한 반복 음악이 재생돼</div><div class="optionRow"><span>난이도</span><select id="difficultySelect" aria-label="난이도"><option value="easy">쉬움</option><option value="normal" selected>중간</option><option value="hard">어려움</option></select></div><div id="difficultyInfo" class="difficultyInfo">중간 · 기존 몬스터 수치</div>
 <div class="optionRow"><label for="hudHandedness">조작 손</label><select id="hudHandedness" aria-label="조작 손"><option value="right">왼쪽 이동 · 오른쪽 공격</option><option value="left">오른쪽 이동 · 왼쪽 공격</option></select></div>
 <div class="optionRow"><label for="hudSize">전투 버튼 크기</label><select id="hudSize" aria-label="전투 버튼 크기"><option value="100">기본</option><option value="108">크게</option></select></div>
 <div class="optionRow"><span>임무 표시</span><button id="hudQuestMode" type="button" aria-pressed="false">요약 보기</button></div>
@@ -1397,7 +1397,8 @@ function drawWeatherOverlay(now){
  ctx.restore()
 }
 
-const MUSIC_TRACK_SECONDS=180;
+// 반복곡은 8마디 끝에서 다음 마디를 끊김 없이 미리 예약한다.
+const MUSIC_LOOP_BARS=8;
 const MUSIC_THEMES={
  forest:{bpm:60,mode:'minor',root:146.83,progression:[0,3,5,4,0,6,3,4],riff:[0,2,1,3,0,4,2,1],style:'forest'},
  canyon:{bpm:54,mode:'minor',root:110,progression:[0,5,3,1,0,6,4,1],riff:[0,-1,2,0,-2,1,-1,0],style:'canyon'},
@@ -1416,18 +1417,14 @@ const MUSIC_THEMES={
  underground:{bpm:46,mode:'minor',root:98,progression:[0,5,3,6,0,4,1,5],riff:[0,-2,1,-1,2,0,-3,1],style:'underground'},
  questcave:{bpm:50,mode:'minor',root:92.5,progression:[0,3,1,5,0,6,4,1],riff:[0,1,-2,2,0,-1,1,-3],style:'questcave'},
  // 전투 곡: 독립된 후렴·화성·박자 (탐험 곡은 그대로)
- battle1:{bpm:152,mode:'minor',root:146.83,progression:[0,5,3,6,0,3,4,5],riff:[0,2,4,5,4,2,3,1,0,3,5,6,5,3,2,4],style:'battle1'},
- battle2:{bpm:146,mode:'minor',root:123.47,progression:[0,6,4,5,0,3,6,5],riff:[0,4,2,5,4,2,1,3,0,3,5,4,2,5,3,1],style:'battle2'},
- battle3:{bpm:138,mode:'minor',root:98,progression:[0,1,5,6,0,3,1,5],riff:[0,2,3,1,4,2,5,3,0,3,2,5,4,2,1,3],style:'battle3'},
- boss:{bpm:132,mode:'minor',root:73.42,progression:[0,5,6,4,0,3,1,5],riff:[0,4,5,3,4,2,1,3,0,5,6,4,5,3,2,4],style:'boss'}
+ battle1:{bpm:72,mode:'minor',root:146.83,progression:[0,5,3,6,0,3,4,5],riff:[0,2,4,5,4,2,3,1,0,3,5,6,5,3,2,4],style:'battle1'},
+ battle2:{bpm:68,mode:'minor',root:123.47,progression:[0,6,4,5,0,3,6,5],riff:[0,4,2,5,4,2,1,3,0,3,5,4,2,5,3,1],style:'battle2'},
+ battle3:{bpm:64,mode:'minor',root:98,progression:[0,1,5,6,0,3,1,5],riff:[0,2,3,1,4,2,5,3,0,3,2,5,4,2,1,3],style:'battle3'},
+ boss:{bpm:60,mode:'minor',root:73.42,progression:[0,5,6,4,0,3,1,5],riff:[0,4,5,3,4,2,1,3,0,5,6,4,5,3,2,4],style:'boss'}
 };
 // 전투곡 네 종류: 모두 CC0. 정식 음원을 우선 재생하고 기존 합성 음악을 오프라인 대체곡으로 유지한다.
-const COMBAT_MUSIC_URLS={
- battle1:'https://opengameart.org/sites/default/files/jrpg_battle_loop.mp3', // HydroGene
- battle2:'https://opengameart.org/sites/default/files/Battle.mp3', // Wolfgang_
- battle3:'https://opengameart.org/sites/default/files/raiders_march_-_loop.mp3', // Bobjt
- boss:'https://opengameart.org/sites/default/files/CleytonRX%20-%20Battle%20RPG%20Theme_1.mp3' // Cleyton Kauffman
-};
+// 지역·전투 음악은 기존 WebAudio 합성기로 재생한다. 외부 네트워크 음원 없이 루프한다.
+const COMBAT_MUSIC_URLS=Object.freeze({});
 const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,combatUntil:0,previewUntil:0,combatWasPlaying:false,combatBlocked:false,warmupUntil:0,startPending:false,combatAudio:null,combatKey:null,combatFailed:false};
 function initMusicNoiseDeferred(){
  if(!music.ctx||music.noise||music.noiseInitPending)return;music.noiseInitPending=true;
@@ -1575,68 +1572,18 @@ function scheduleBandBeat(key,t,beat,at){
    longPad(.034,650);if(b===0)lowDrum(at,64,.058,beatDur*.78);if(b===1||b===3)noiseBrush(at,beatDur*.46,.006,1150);if(b===2)smoothVoice(lead,at,beatDur*1.8,.010,'sine',980,.38);break;
   case'underground':case'questcave':
    longPad(t.style==='questcave'?.039:.043,t.style==='questcave'?430:500);if(b===0)lowDrum(at,t.style==='questcave'?54:50,.052,beatDur*.95);if(b===3)noiseBrush(at,beatDur*.75,.006,620);break;
-  case'battle1':
-   // 8분음표 현악·브라스풍 멜로디와 강한 스네어.
-   if(b===0){padVoice(root,at,beatDur*3.8,.017,1150);padVoice(scaleFreq(t.root,ch+4,minor,-1),at,beatDur*3.8,.009,1450)}
-   if(b===0||b===2)lowDrum(at,b===0?108:84,b===0?.136:.100,beatDur*.38);
-   if(b===1||b===3)noiseBrush(at,beatDur*.23,.028,1950);
-   smoothVoice(root*.5,at,beatDur*.67,.031,'triangle',680,.012);
-   for(let step=0;step<2;step++){
-    const hitAt=at+step*beatDur*.5,note=scaleFreq(t.root,ch+t.riff[(beat*2+step)%t.riff.length],minor,1);
-    smoothVoice(note,hitAt,beatDur*.44,.021,'sawtooth',2500,.012);
-    noiseBrush(hitAt,beatDur*.12,step===0?.006:.004,5400)
-   }
-   if(b===3&&bar%4===3)for(let step=0;step<2;step++)noiseBrush(at+step*beatDur*.5,beatDur*.16,.016,2800);
-   break;
-  case'battle2':
-   // 엇박 기타풍 화음과 베이스, 두 번째 전투 후렴.
-   if(b===0){padVoice(root,at,beatDur*3.7,.019,880);padVoice(root*1.5,at,beatDur*3.7,.008,1250)}
-   if(b===0||b===2)lowDrum(at,b===0?100:77,b===0?.145:.105,beatDur*.34);
-   if(b===1||b===3)noiseBrush(at,beatDur*.17,.032,2100);
-   noiseBrush(at+beatDur*.5,beatDur*.10,.005,5900);
-   smoothVoice(root*.5,at,beatDur*.42,.033,'sawtooth',660,.012);
-   smoothVoice(root*.5,at+beatDur*.74,beatDur*.22,.018,'triangle',670,.008);
-   for(let step=0;step<2;step++){
-    if(step===1&&b===3&&bar%2===0)continue;
-    const hitAt=at+step*beatDur*.5,note=scaleFreq(t.root,ch+t.riff[(beat*2+step)%t.riff.length],minor,1);
-    smoothVoice(note,hitAt,beatDur*.40,.021,'sawtooth',2280,.010);
-    if(b===0&&step===0)smoothVoice(note*.75,hitAt,beatDur*.48,.011,'triangle',1150,.018)
-   }
-   break;
-  case'battle3':
-   // 타악 중심의 묵직한 리프, 단계적으로 강해지는 선율.
-   if(b===0){padVoice(root,at,beatDur*3.8,.024,850);padVoice(root*.5,at,beatDur*3.8,.010,520)}
-   if(b===0||b===2)lowDrum(at,b===0?88:66,b===0?.154:.110,beatDur*.48);
-   if(b===1||b===3)noiseBrush(at,beatDur*.27,.029,1450);
-   for(let step=0;step<2;step++){
-    const hitAt=at+step*beatDur*.5;
-    noiseBrush(hitAt,beatDur*.10,.005,4800);
-    smoothVoice(root*.5,hitAt,beatDur*.34,.029,'sawtooth',610,.009)
-   }
-   if(b===0||b===2||bar%2===1)smoothVoice(scaleFreq(t.root,ch+t.riff[beat%t.riff.length],minor,1),at,beatDur*.74,.025,'sawtooth',1950,.015);
-   if(b===3&&bar%4===3)for(let step=0;step<2;step++)noiseBrush(at+step*beatDur*.48,beatDur*.20,.018,1750);
-   break;
-  case'boss':
-   // 보스: 합창풍 코드·브라스 팡파르·전쟁 북·마디 끝 필인.
+  case'battle1':case'battle2':case'battle3':case'boss':{
+   // 차분한 패드·유리 종소리 8마디 루프. 보스/전투는 음역과 화성으로만 긴장감을 표현한다.
+   const isBoss=t.style==='boss',tone=t.style==='battle3'?.82:t.style==='battle2'?.92:1;
    if(b===0){
-    padVoice(root,at,beatDur*3.95,.028,1000);
-    padVoice(scaleFreq(t.root,ch+4,minor,-1),at,beatDur*3.95,.016,1260);
-    padVoice(root*.5,at,beatDur*3.95,.014,570)
+    padVoice(root,at,beatDur*3.96,isBoss?.021:.016,isBoss?720:1080);
+    padVoice(scaleFreq(t.root,ch+4,minor,-1),at,beatDur*3.96,isBoss?.010:.008,1100);
    }
-   if(b===0||b===2)lowDrum(at,b===0?90:71,b===0?.174:.128,beatDur*.56);
-   if(b===1||b===3)noiseBrush(at,beatDur*.25,.039,1850);
-   smoothVoice(root*.5,at,beatDur*.73,.034,'sawtooth',730,.012);
-   noiseBrush(at+beatDur*.5,beatDur*.12,.008,4600);
-   if(b===0||b===2){
-    const note=scaleFreq(t.root,ch+t.riff[beat%t.riff.length],minor,1);
-    smoothVoice(note,at,beatDur*.90,.036,'sawtooth',2250,.019);
-    smoothVoice(note*.5,at,beatDur*.80,.017,'triangle',1260,.014)
-   }else{
-    const note=scaleFreq(t.root,ch+t.riff[(beat+bar)%t.riff.length],minor,1);
-    smoothVoice(note,at+beatDur*.47,beatDur*.49,.030,'sawtooth',2400,.012)
-   }
-   if(b===3&&bar%4===3)for(let step=0;step<3;step++)noiseBrush(at+step*beatDur/3,beatDur*.13,.022,2350);
+   if(b===1||b===3)glassVoice(lead*tone,at+beatDur*.15,beatDur*(isBoss?1.2:1.5),isBoss?.007:.009);
+   if(b===2)smoothVoice(scaleFreq(t.root,ch+2,minor,0),at,beatDur*1.8,.008,'sine',1500,.28);
+   if(isBoss&&b===0)lowDrum(at,54,.016,beatDur*.64);
    break;
+  }
  }
 }
 function syncCombatMusic(key){
@@ -1690,8 +1637,8 @@ function musicTick(){
   music.master.gain.setTargetAtTime(externalPlaying?.0001:Math.max(.0001,music.volume),music.ctx.currentTime,.045);
  }
  if(externalPlaying)return;
- const now=music.ctx.currentTime,elapsed=now-music.trackStart;
- if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.10;music.nextAt=music.trackStart}
+ const now=music.ctx.currentTime;
+ if(music.beatIndex>=MUSIC_LOOP_BARS*4){music.beatIndex=0;music.trackStart=music.nextAt}
  if(music.nextAt<now-.25)music.nextAt=now+.04;
  let scheduled=0,maxPerFrame=performance.now()<(music.warmupUntil||0)?1:2;
  while(music.nextAt<now+.08&&scheduled<maxPerFrame){
