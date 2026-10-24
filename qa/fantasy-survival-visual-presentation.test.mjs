@@ -547,3 +547,57 @@ test('stone fiber and tree density is exactly fourfold only in ordinary forest a
  assert.match(source,/RESOURCE_RESPAWN_MS=300000/);
  assert.match(source,/jaewoon_fantasy_survival_v1/);
 });
+
+
+// [3D 몬스터 연계] 기존 종 ID를 변경하지 않고 라이선스된 모델에 연결한다.
+test('all 79 original magic forest monster IDs have provenance-backed native 3D bindings',()=>{
+ const native=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+ const original=source.split('const creatures={')[1]?.split('};')[0]||'';
+ const monsterIds=[...original.matchAll(/[\w-]+:\{id:'([^']+)',name:'[^']+'/g)].map(match=>match[1]);
+ assert.equal(monsterIds.length,79,'original monster roster changed; re-review balance and save compatibility');
+ assert.equal(new Set(monsterIds).size,79,'original monster IDs must be unique');
+ const block=native.split('const NATIVE_CREATURE_MODELS=Object.freeze({')[1]?.split('});')[0]||'';
+ assert.ok(block,'native creature binding table missing');
+ const rows=[...block.matchAll(/'([^']+\.(?:fbx|obj|glb))':\[([^\]]+)\]/g)]
+  .map(match=>({file:match[1],ids:[...match[2].matchAll(/'([^']+)'/g)].map(id=>id[1])}));
+ const boundIds=rows.flatMap(row=>row.ids);
+ assert.equal(boundIds.length,78,'all species except the dedicated mummy must use original CC0 binding');
+ assert.equal(new Set(boundIds).size,78,'one monster must not be bound twice');
+ assert.deepEqual(monsterIds.filter(id=>!boundIds.includes(id)),['wastelandMummy']);
+ const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
+ const originals=ledger.entries.find(item=>item.id==='forest-cc0-originals-20261020');
+ assert.ok(originals&&originals.license==='CC0-1.0'&&originals.commercialUse);
+ const approved=new Set(originals.evidence.files.map(item=>item.path));
+ for(const {file,ids} of rows){
+  assert.ok(ids.length,'unassigned visual source: '+file);
+  const path='assets/shared/forest/'+file;
+  assert.ok(approved.has(path),'unregistered CC0 source: '+file);
+  assert.ok(fs.statSync(path).size>100,'missing actual 3D model: '+file);
+ }
+ const approximated=['lakecroc','shark','mudwalker','primitiveSpearman','primitiveArcher',
+  'jungleGuardian','swampPrimitiveSpearman','swampPrimitiveArcher','swampPrimitiveGuard',
+  'swampArrowTower','giantVenomScorpion'];
+ for(const id of approximated){
+  assert.ok(boundIds.includes(id),'requested approximate species binding missing: '+id);
+ }
+ assert.match(native,/e\.type\?\.id==='wastelandMummy'\?'skeleton-warrior\.glb'/);
+ assert.match(native,/function synchronizeUndead\(state,px,py,stamp\)/);
+ assert.match(native,/function synchronizeNativeCreatures\(state,px,py,stamp\)/);
+ assert.match(native,/missingVisibleMonsterIds\.add/);
+ assert.match(native,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
+ assert.match(native,/productionReady:false/);
+});
+
+// [빠른 시작] 지형/플레이어는 필수, 몬스터는 기존 근거리 스트리밍으로 나중에 적재한다.
+test('magic forest boot no longer waits for every surrounding creature while unseen combat remains blocked',()=>{
+ const native=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+ assert.match(native,/Promise\.all\(\[modelsPromise,heroPromise\]\)/);
+ assert.doesNotMatch(native,/creaturesPromise|const initialFiles=new Map\(\)/);
+ assert.match(native,/nextCreatureScan=sampleNow\+250/);
+ assert.match(native,/loadingCreatureCount>=\(mobileBudget\?2:4\)/);
+ assert.match(native,/distance>1200/);
+ assert.match(native,/nativeCreatureSources\.has\(file\)\|\|creatureRequests\.has\(file\)/);
+ assert.match(native,/if\(Math\.hypot\(e\.x-px,e\.y-py\)<430\)unsafeUnmappedEncounter=true/);
+ assert.match(native,/fallbackReason=unsafeUnmappedEncounter\?'unmapped-threat':'player-model-unavailable'/);
+ assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
