@@ -147859,7 +147859,7 @@
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -147966,12 +147966,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40055037254:1",
+      "reservedAt": "2026-10-24T02:41:45.536Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -148923,14 +148923,15 @@
         "system-ai-handoff-to-reservation:system-ai:40053367643:1",
         "actions-run:40053367643",
         "system-ai-handoff-to-reservation:system-ai:40054037325:1",
-        "actions-run:40054037325"
+        "actions-run:40054037325",
+        "system-ai-handoff-to-reservation:system-ai:40055037254:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 26,
-        "recurrenceCount": 269,
+        "recurrenceCount": 270,
         "dependencyCentrality": 26,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -148938,7 +148939,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-24T02:35:56.208Z"
+      "updatedAt": "2026-10-24T02:41:45.536Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
