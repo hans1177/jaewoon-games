@@ -1,6 +1,6 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
-import { assignWorker, returnWorkerToFarm } from './production-buildings.js';
+import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction } from './production-buildings.js';
 
 const TOWER = { x: 400, y: 1090, wood: 6, stone: 5, radius: 115 };
 const TOWN_HALL = { x: 1010, y: 1090, wood: 12, stone: 10, radius: 125 };
@@ -54,6 +54,7 @@ function ensureVillage(state) {
   if (!state || typeof state !== 'object') return null;
   const village=state.villageDevelopment && typeof state.villageDevelopment==='object' ? state.villageDevelopment : {};
   village.defenseTowerBuilt=Boolean(village.defenseTowerBuilt);
+  village.defenseTowerLevel=village.defenseTowerBuilt?Math.max(1,Math.min(3,Math.floor(Number(village.defenseTowerLevel)||1))):0;
   village.townHallBuilt=Boolean(village.townHallBuilt);
   // 저장 호환: 기존 키와 타 확장 스크립트의 추가 필드는 그대로 보존한다.
   let fort=village.fortification;
@@ -186,6 +187,7 @@ function buildTower() {
   }
   spend(TOWER.wood, TOWER.stone);
   village.defenseTowerBuilt = true;
+  village.defenseTowerLevel = 1;
   saveState();
   updateBuildButton();
   toast('🗼 방어탑 완성 · 습격 적을 자동 공격해');
@@ -232,7 +234,7 @@ function runTower(dt) {
     }
   }
   if (!target) return;
-  target.hp -= TOWER_DAMAGE*(fort?.defenseOrder==='volley'?1.35:1);
+  target.hp -= TOWER_DAMAGE*village.defenseTowerLevel*(fort?.defenseOrder==='volley'?1.35:1);
   towerShot = { x1: TOWER.x, y1: TOWER.y - 55, x2: target.x, y2: target.y, until: performance.now() + 180 };
 }
 
@@ -244,7 +246,6 @@ function villageTick() {
     runTower(dt);
     runFortification(dt);
   }
-  updateBuildButton();
   patchPanels();
 }
 
@@ -253,7 +254,7 @@ function patchPanels() {
   const panel = document.querySelector('#panel');
   const body = document.querySelector('#panelBody');
   const title = document.querySelector('#panelTitle')?.textContent || '';
-  if (!panel?.open || !body || title !== '가방') return;
+  if (!panel?.open || !body || (title !== '가방' && title !== '자원')) return;
   let note = body.querySelector('[data-village-status]');
   if (!note) {
     note = document.createElement('p');
@@ -326,7 +327,16 @@ function renderCastle(){
   const units=currentGame.allies||[];
   const postStatus=fort.guardPosts.map((kind,i)=>GUARD_SITES[i].name+': '+(kind==='archer'?'궁수':kind==='soldier'?'병사':'비어 있음')).join(' · ');
   const button=(action,label,cost='',disabled=false)=>'<button class="choice" data-castle="'+action+'" '+(disabled?'disabled':'')+'><span>'+label+'</span><b>'+cost+'</b></button>';
-  let html='<p class="panel-note">성채 건설·방어 · 기존 마을회관 및 병영 필요. 기존 전투와 주민 최대치는 그대로 유지해.</p>';
+  let html='<p class="panel-note">스트롱홀드 영지 관리 · 건물은 여기서 건설하고 선택한 건물마다 강화할 수 있어. 지도 터치로 자원을 채집해.</p>';
+  html+='<h3>🔨 건설 · 시설 업그레이드</h3>';
+  html+=button('build:hall',built?'🏛️ 마을회관 완공':'🏛️ 마을회관 건설',built?'건설됨':'나무 12 · 돌 10',built);
+  html+=button('build:tower',village.defenseTowerBuilt?'🗼 방어탑 완공':'🗼 방어탑 건설',village.defenseTowerBuilt?'건설됨':'나무 6 · 돌 5',village.defenseTowerBuilt);
+  html+=button('building:tower','🗼 방어탑 강화 · '+village.defenseTowerLevel+'/3',village.defenseTowerLevel>=3?'최대':'나무 '+(4+4*village.defenseTowerLevel)+' · 돌 '+(3+5*village.defenseTowerLevel),!village.defenseTowerBuilt||village.defenseTowerLevel>=3);
+  html+=button('build:lumber',production.lumberBuilt?'🪓 벌목장 완공':'🪓 벌목장 건설',production.lumberBuilt?'건설됨':'나무 3 · 돌 1',production.lumberBuilt);
+  html+=button('building:lumber','🪓 벌목장 강화 · '+(production.lumberLevel||0)+'/3',production.lumberBuilt?'생산량 '+(production.lumberLevel||1)+'배':'건설 필요',!production.lumberBuilt||(production.lumberLevel||1)>=3);
+  html+=button('build:mine',production.mineBuilt?'⛏️ 광산 완공':'⛏️ 광산 건설',production.mineBuilt?'건설됨':'나무 2 · 돌 3',production.mineBuilt);
+  html+=button('building:mine','⛏️ 광산 강화 · '+(production.mineLevel||0)+'/3',production.mineBuilt?'생산량 '+(production.mineLevel||1)+'배':'건설 필요',!production.mineBuilt||(production.mineLevel||1)>=3);
+  html+='<p class="panel-note">상위 성채·병영 성장은 기존 강화 체계와 연결돼. 강화 단계는 저장되고 자원 생산·방어탑 공격에 적용돼.</p>';
   html+='<div class="inventory-grid">'+
     '<div class="item-card">성벽 단계<span>'+fort.wallTier+'/3</span></div>'+
     '<div class="item-card">성문 체력<span>'+Math.ceil(fort.walls.gate)+'</span></div>'+
@@ -350,7 +360,7 @@ function renderCastle(){
   html+=button('siege:auto:third','3번째 습격마다 대공성전');
   html+=button('siege:auto:always','매 습격을 대공성전으로');
   html+=button('siege:start','대공성전 지금 시작',currentGame.raidActive?'습격 중':'',!built||currentGame.raidActive);
-  html+=button('siege:view',currentGame.siegeOverview?'내 캐릭터 시야로 돌아가기':'성채 전체 전장 시야');
+  html+=button('siege:view','성채 전장 중심으로 보기');
   html+='<p class="panel-note">성채 체력 '+Math.ceil(fort.keepHp)+'/'+KEEP_HP+
     ' · 방어 승리 '+fort.siegeVictories+'회 · 함락 '+fort.siegeDefeats+'회</p>';
   if(built&&fort.keepHp<KEEP_HP)html+=button('siege:keep','성채 수리','나무 4 · 돌 6');
@@ -397,6 +407,24 @@ function manageCastle(action){
   const game=currentGame,state=game?.state;if(!state)return;
   const village=ensureVillage(state),fort=village.fortification,inv=state.inventory||{};
   const parts=action.split(':'),op=parts[0],id=Number(parts[1]);
+  if(op==='build'){
+    if(parts[1]==='hall')buildTownHall();
+    else if(parts[1]==='tower')buildTower();
+    else if(parts[1]==='lumber')buildLumberyard();
+    else if(parts[1]==='mine')buildMine();
+    renderCastle();return;
+  }
+  if(op==='building'){
+    if(parts[1]==='lumber'||parts[1]==='mine')upgradeProduction(parts[1]);
+    else if(parts[1]==='tower'&&village.defenseTowerBuilt){
+      const level=village.defenseTowerLevel;
+      if(level>=3)return;
+      const wood=4+4*level,stone=3+5*level;
+      if(!canPay(wood,stone))return toast('방어탑 강화 자원 부족');
+      spend(wood,stone);village.defenseTowerLevel=level+1;saveState();
+    }
+    renderCastle();return;
+  }
   if(op==='order'){
     const order=parts[1];if(!['hold','volley','counter'].includes(order))return;
     fort.defenseOrder=order;saveState();renderCastle();toast('🛡️ 수비 진형 변경');return;
@@ -421,7 +449,7 @@ function manageCastle(action){
   }
   if(op==='siege'){
     const command=parts[1];
-    if(command==='view'){game.siegeOverview=!game.siegeOverview;renderCastle();return}
+    if(command==='view'){game.siegeOverview=true;document.querySelector('#panel')?.close();document.querySelector('#centerCommand')?.click();return}
     if(command==='auto'){
       if(!SIEGE_MODES.includes(parts[2]))return;
       fort.siegeAuto=parts[2];saveState();renderCastle();return;
@@ -700,7 +728,6 @@ rendererProto.draw = function drawWithVillage(game) {
   currentGame = game;
   ensureVillage(game.state);
   originalDraw.call(this, game);
-  updateBuildButton();
   patchPanels();
 };
 
@@ -803,7 +830,5 @@ function drawTownHall(ctx, built) {
   ctx.restore();
 }
 
-setupBuildButton();
-bindMovement();
+// 전략 화면은 캐릭터 이동·근접 건설 버튼을 사용하지 않는다.
 setInterval(villageTick, 100);
-setInterval(runExtendedMovement, 16);
