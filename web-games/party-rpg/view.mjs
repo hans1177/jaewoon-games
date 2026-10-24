@@ -19,7 +19,15 @@ export class PartyView{
    this.camera=new THREE.OrthographicCamera(-12,12,12,-12,.1,180);this.camera.position.set(45,45,45);this.camera.lookAt(0,0,0);
    this.groundMaterials=new Map();this.ringGeometry=new THREE.RingGeometry(.48,.53,32);this.ringMaterials={ally:new THREE.MeshBasicMaterial({color:0x89b37a,side:THREE.DoubleSide,depthWrite:false}),enemy:new THREE.MeshBasicMaterial({color:0xc16c61,side:THREE.DoubleSide,depthWrite:false}),select:new THREE.MeshBasicMaterial({color:0xf0d49c,side:THREE.DoubleSide,depthWrite:false})};
    this.marker=new THREE.Mesh(this.ringGeometry,this.ringMaterials.select);this.marker.rotation.x=-Math.PI/2;this.marker.visible=false;this.scene.add(this.marker);
-   this.labelRoot=document.createElement('div');this.labelRoot.id='worldLabels';this.labelRoot.setAttribute('aria-hidden','true');canvas.after(this.labelRoot);
+   // Low-poly stone clue marker: visible from the road without blocking combat.
+   this.evidenceBeacon=new THREE.Group();
+   const evidenceStone=new THREE.MeshStandardMaterial({color:0x454a47,roughness:1});
+   const evidenceGold=new THREE.MeshStandardMaterial({color:0xa69472,roughness:.83,metalness:.2,emissive:0x2d2419});
+   const tablet=new THREE.Mesh(new THREE.BoxGeometry(.55,.95,.23),evidenceStone);tablet.position.y=.48;
+   const glyph=new THREE.Mesh(new THREE.TorusGeometry(.23,.035,6,18),evidenceGold);glyph.position.set(0,.68,.14);
+   this.evidenceBeacon.add(tablet,glyph);this.scene.add(this.evidenceBeacon);this.evidenceBeacon.visible=false;
+
+   this.labelRoot=document.createElement('div');this.labelRoot.id='worldLabels';this.labelRoot.setAttribute('aria-hidden','true');canvas.after(this.labelRoot);this.evidenceLabel=document.createElement('div');this.evidenceLabel.className='evidence-label';this.evidenceLabel.hidden=true;this.evidenceLabel.textContent='◆ 조사할 단서';this.labelRoot.append(this.evidenceLabel);
    this.ready=true;this.resize();this.load(onLoad);
   }catch(error){const status=document.getElementById('viewStatus');if(status){status.textContent='3D 화면을 시작하지 못했어. WebGL을 지원하는 브라우저에서 열어 줘.';status.hidden=false;}console.error('파티 RPG 새 렌더러 초기화 실패',error);}
  }
@@ -213,12 +221,26 @@ buildWorld(live){
  }
  animate(entry,moving,combat,dt){let term=combat?.visualUntil>performance.now()?'attack':moving?'walk':'idle';const names=[...entry.actions.keys()];const choose=term==='attack'?names.find(n=>/attack|spell|shoot|punch|bite|headbutt/i.test(n)&&!/idle/i.test(n)):names.find(n=>new RegExp(term,'i').test(n));const name=choose||names.find(n=>/idle/i.test(n))||names[0];if(name&&entry.action!==name){const next=entry.actions.get(name);const previous=entry.actions.get(entry.action);next.reset().setEffectiveWeight(1).play();if(previous)next.crossFadeFrom(previous,.16,true);entry.action=name;}entry.mixer.update(dt);}
  removeActor(key,entry){this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
+ popDamage(x,y,amount,critical=false,miss=false){
+  if(!this.ready||!this.camera||!this.width)return;
+  const pos=new THREE.Vector3(x*SCALE,1.5,y*SCALE).project(this.camera);
+  if(Math.abs(pos.x)>1.1||Math.abs(pos.y)>1.1)return;
+  const node=document.createElement('div');node.className='damageFloat'+(critical?' critical':'')+(miss?' miss':'');
+  node.textContent=miss?'빗나감':(critical?'치명타 ':'−')+Math.max(0,Math.round(amount));
+  node.style.left=((pos.x+1)*this.width/2)+'px';node.style.top=((1-pos.y)*this.height/2)+'px';
+  const host=document.getElementById('combatFeedback');if(!host)return;
+  if(host.childElementCount>19)host.firstElementChild.remove();
+  host.append(node);node.addEventListener('animationend',()=>node.remove(),{once:true});
+ }
  render(live){
   if(!this.ready)return;const started=performance.now();if(this.mobile&&this.lastRenderedAt&&started-this.lastRenderedAt<30)return;this.lastRenderedAt=started;const now=started,dt=Math.min(.05,(now-(this.lastAt||now))/1000);this.lastAt=now;
   const signature=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field')+':'+this.assetRevision;
   if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
   const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
+  this.evidenceBeacon.visible=!!live.evidence;
+  if(live.evidence){const site=live.evidence;this.evidenceBeacon.position.set(site.x*SCALE,.015,site.y*SCALE);this.evidenceBeacon.rotation.y=now*.00025;const v=new THREE.Vector3(site.x*SCALE,1.5,site.y*SCALE).project(this.camera);this.evidenceLabel.hidden=Math.abs(v.x)>.95||Math.abs(v.y)>.95;if(!this.evidenceLabel.hidden)this.evidenceLabel.style.transform='translate('+Math.round((v.x+1)*this.width/2)+'px,'+Math.round((1-v.y)*this.height/2)+'px)';}
+  else this.evidenceLabel.hidden=true;
   const visible=[['player',live.p,'player']];for(const a of live.state.ai)if(live.dungeon?a.party:a.party||a.zone===live.state.zone)visible.push(['ai',a,a.id]);
   const enemies=live.enemies.filter(e=>!e.dead).sort((a,b)=>(a.x-live.p.x)**2+(a.y-live.p.y)**2-(b.x-live.p.x)**2-(b.y-live.p.y)**2).slice(0,this.mobile?16:44);for(const e of enemies)visible.push(['enemy',e,'enemy'+e.id]);
   const used=new Set();for(const [kind,obj,key] of visible){used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,moving=Math.hypot(dx,dy)>.08;entry.lastX=obj.x;entry.lastY=obj.y;entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.root.userData.live={kind,obj,key};if(moving){const target=Math.atan2(dx,dy),difference=Math.atan2(Math.sin(target-entry.model.rotation.y),Math.cos(target-entry.model.rotation.y));entry.model.rotation.y+=difference*(1-Math.exp(-dt*14));}entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];this.animate(entry,moving,live.combat?.(obj),dt);}
