@@ -307,6 +307,15 @@ function openCastle(){
   renderCastle();
   document.querySelector('#panel').showModal();
 }
+// 공성 명령은 별도 캐릭터 조작이 아니라 기존 성채 전술 메뉴로 진입한다.
+function openSiege(){
+  if(!currentGame||document.querySelector('dialog[open]'))return;
+  openCastle();
+  const body=document.querySelector('#panelBody');
+  const button=body?.querySelector('[data-castle="siege:start"]');
+  if(button)body.scrollTop=Math.max(0,button.offsetTop-170);
+}
+window.addEventListener('cozy:open-siege',openSiege);
 function renderCastle(){
   const state=currentGame?.state;
   if(!state)return;
