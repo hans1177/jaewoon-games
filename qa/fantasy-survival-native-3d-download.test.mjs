@@ -28,8 +28,11 @@ test('mobile ARPG HUD preserves existing survival mechanics and only uses CSS ar
  for(const id of ['stick','knob','craft','inventory','map','gather','attack','petSpecial','dismount','buildBlueprint','sheet','sheetBody','smeltPanel','multiPanel','optionsPanel','avatarPanel']){
   assert.equal((index.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'duplicate or missing control: '+id);
  }
- assert.match(index,/id="heroPortrait"[\s\S]*?aria-label="3D 캐릭터 꾸미기"/);
- assert.match(index,/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+ assert.match(index,/id="heroPortrait"[\s\S]*?aria-label="캐릭터 장비와 가방 열기"/);
+ assert.match(index,/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openInventory\)/);
+ // 기존 모험가 메뉴의 외형 변경과 게임 시작 단계 꾸미기는 그대로 남긴다.
+ assert.match(index,/document\.getElementById\('avatarOpen'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+ assert.match(index,/document\.getElementById\('startAvatar'\)\.addEventListener\('click',openAvatarCustomizer\)/);
  const ui=index.split('/* 마력숲 모바일 액션 RPG:')[1]?.split('</style>')[0]||'';
  assert.match(ui,/\.actions>#attack/);
  assert.match(ui,/\.sheetHead/);
@@ -516,7 +519,7 @@ test('loading and errors never invoke a 2D gameplay renderer',()=>{
  const draw=index.split('function draw(){')[1]?.split('function syncRuntimeMeta()')[0];
  assert.ok(draw);
  assert.doesNotMatch(draw,/drawBackground|drawCreature|drawPlayer|drawCave|drawUnderwater/);
- assert.match(index,/if\(ready\)\{update\(dt,now\);syncRuntimeMeta\(\);draw\(\)\}/);
+ assert.match(index,/if\(ready\)\{update\(dt,now\);syncRuntimeMeta\(\);updateQuestGuide\(now\);draw\(\)\}/);
  assert.match(index,/nativeStatus\.hidden=ready/);
  assert.match(index,/nativeRetry\.addEventListener\('click'/);
  assert.doesNotMatch(index,/3d-fallback-/);
