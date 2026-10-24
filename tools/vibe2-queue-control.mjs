@@ -1483,7 +1483,8 @@ export function runQueueCommand(args = {}) {
         lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
         totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
         ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8),
-        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS
+        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS,
+        observedCurrentReserveHostedJob:process.env.VIBE2_OBSERVED_CURRENT_RESERVE_HOSTED_JOB
       }):null;
     const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
     const reserved = ownerFirst?.admissionClosed
@@ -1502,7 +1503,8 @@ export function runQueueCommand(args = {}) {
         lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
         totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
         ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8),
-        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS
+        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS,
+        observedCurrentReserveHostedJob:process.env.VIBE2_OBSERVED_CURRENT_RESERVE_HOSTED_JOB
       }):null;
     const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
     const speculativeExpansion=executionLane==='game-primary'

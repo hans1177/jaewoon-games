@@ -241,7 +241,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
 // owns physical queueing. Queue reservations are not observed hosted runners.
 export function ownerFirstRunnerAllocation(queue={},{
   lane='game-primary',requestedMax=128,totalSlots=20,ownerReservedSlots=8,
-  observedActiveHostedJobs=null
+  observedActiveHostedJobs=null,observedCurrentReserveHostedJob=null
 }={}){
   lane=clean(lane).toLowerCase().replaceAll('_','-')||'game-primary';
   const requested=Math.max(1,Math.floor(num(requestedMax)||1));
@@ -268,12 +268,17 @@ export function ownerFirstRunnerAllocation(queue={},{
   const currentLaneActive=tasks.filter(t=>clean(t.status).toLowerCase()==='running'
     &&clean(t.executionLane).toLowerCase().replaceAll('_','-')===lane
     &&!/candidate-awaiting|awaiting.*qa|slot-released|quota|external.*wait/i.test(clean(t.blocker))).length;
-  const liveFree=observed===null?null:Math.max(0,(automatic?total-reserved:total)-observed);
+  // Only the exact observed hosted reserve job can hand off ONE slot to its
+  // dependent asset worker. The reserve exits before any dependent worker starts.
+  // All 20 physical slots and eight owner/QA/release reserved slots remain intact.
+  const reserveHandoffSlot=lane==='asset-development'&&knownObserved&&observed>0
+    &&clean(observedCurrentReserveHostedJob)==='1' ? 1 : 0;
+  const liveFree=observed===null?null:Math.max(0,(automatic?total-reserved:total)-observed+reserveHandoffSlot);
   // 실제 실행 관측이 있으면 논리 예약 수를 물리 점유로 중복 계산하지 않는다.
   const ceiling=Math.max(0,liveFree===null?laneCeiling:currentLaneActive+liveFree);
   return Object.freeze({
     ownerReady,automatic,totalSlots:total,ownerReservedSlots:reserved,
-    otherLanesActive,currentLaneActive,observedHostedJobs:observed,
+    otherLanesActive,currentLaneActive,observedHostedJobs:observed,reserveHandoffSlot,
     observedScope:'CURRENT_REPOSITORY_ONLY',
     admissionClosed:!fixedDevelopment&&(ceiling===0||liveFree===0),
     concurrentCeiling:fixedDevelopment?requested:Math.min(requested,ceiling),

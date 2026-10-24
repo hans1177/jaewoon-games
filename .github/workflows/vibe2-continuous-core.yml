@@ -715,15 +715,21 @@ jobs:
           const groups=runs.map(run=>{
             const file='/tmp/vibe2-live-run-jobs/'+run.id+'.json';
             const data=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):null;
-            return {status:run.status,jobs:data&&data.total_count<=100?data.jobs:null};
+            return {id:run.id,status:run.status,jobs:data&&data.total_count<=100?data.jobs:null};
           });
-          const snapshot=observedHostedRunnerJobs({runs:groups});
+          const snapshot=observedHostedRunnerJobs({runs:groups,currentRunId:process.env.GITHUB_RUN_ID});
+          if(snapshot.reserveJobObserved&&snapshot.known)
+            fs.writeFileSync('/tmp/vibe2-observed-current-reserve','1');
           process.stdout.write(snapshot.known?String(snapshot.observedJobs):'UNKNOWN');
           NODE
                 )"
                 if [[ "$live_job_count" =~ ^[0-9]+$ ]]; then
                   export VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS="$live_job_count"
                   echo "VIBE2_OBSERVED_HOSTED_JOBS_CURRENT_REPO=$live_job_count"
+                  if [ "$(cat /tmp/vibe2-observed-current-reserve 2>/dev/null || true)" = '1' ]; then
+                    export VIBE2_OBSERVED_CURRENT_RESERVE_HOSTED_JOB=1
+                    echo 'VIBE2_RUNNER_CAPACITY_SELF_HANDOFF=EXACT_HOSTED_RESERVE_JOB'
+                  fi
                 fi
               fi
             fi
