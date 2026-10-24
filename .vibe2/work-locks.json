@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-snkwnx",
+      "worker": "vibe2",
+      "taskId": "zombie-survival-existing-web-assessment-v1",
+      "gameId": "zombie-survival",
+      "files": [
+        "web-games/zombie-survival/index.html"
+      ],
+      "baseSha": "4eff8a8b5ba81a12ebe0157e7a7fa8ea6fa511cb",
+      "runId": "40096038980",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-24T13:21:06.797Z",
+      "expiresAt": "2026-10-24T14:06:06.797Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:zombie-survival-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
