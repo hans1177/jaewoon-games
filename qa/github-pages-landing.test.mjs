@@ -17,6 +17,9 @@ test('OWNER LOCK: every main merge triggers the existing Pages publisher without
   assert.match(push,/branches:\s*\[main\]/);
   assert.doesNotMatch(push,/^\s*(?:paths|paths-ignore|if):/m,'main merge publication must not be filtered or gated');
   const deployHeader=workflow.split('  deploy:')[1]?.split('    steps:')[0]||'';
+  assert.match(deployHeader,/pages-main-build-latest/,'superseded 889MB main builds should coalesce');
+  assert.match(deployHeader,/cancel-in-progress: true/,'latest main revision should preempt old packaging');
+  assert.match(workflow,/PAGES_OLDER_MAIN_BUILD_SUPERSEDED_COUNT/,'stale queued main runs must be pruned');
   const publishHeader=workflow.split('  publish-pages:')[1]?.split('    steps:')[0]||'';
   assert.doesNotMatch(deployHeader,/\s+if:/,'build job cannot depend on QA or director preapproval');
   assert.match(publishHeader,/needs: deploy/);
