@@ -2517,9 +2517,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:35:08.290Z",
-      "updatedAt": "2026-10-24T06:51:31.321Z",
+      "updatedAt": "2026-10-24T06:59:08.017Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2531,7 +2531,7 @@
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "523569f15280d4dadb8f184f43e075a031ebf9b6",
       "robloxSourceBootstrapPassedAt": "2026-10-24T01:19:57.684Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-24T02:52:03.028Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-24T06:59:08.017Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -2581,9 +2581,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxFailureSignature": "existing-source-verified-external-learning-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
+        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
       ],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "523569f15280d4dadb8f184f43e075a031ebf9b6",
@@ -46607,7 +46607,7 @@
       "updatedAt": "2026-10-24T06:51:31.321Z"
     }
   ],
-  "updatedAt": "2026-10-24T06:58:20.903Z",
+  "updatedAt": "2026-10-24T06:59:08.017Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
