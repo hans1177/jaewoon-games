@@ -163039,6 +163039,113 @@
       "impactComponents": null,
       "createdAt": "2026-10-24T09:42:01.819Z",
       "updatedAt": "2026-10-24T09:42:01.819Z"
+    },
+    {
+      "id": "recovery-recovery-4b6e2e150408f5b08171",
+      "status": "queued",
+      "priority": "critical",
+      "department": "recovery",
+      "taskType": "bottleneck-repair",
+      "gameId": null,
+      "goal": "Analyze the exact failed WEB deployment stage RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO for an unresolved game using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "responsibleFiles": [
+        ".github/workflows/vibe2-candidate-release.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/vibe2-candidate-release.yml"
+      ],
+      "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "failureSignature": "WORKFLOW_FAILED_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+      "relatedTaskIds": [
+        "deployment:.github/workflows/vibe2-candidate-release.yml:cd8b5bd736b74b986babc3f2619268c624b9ebd2:unresolved-run-40093941757"
+      ],
+      "blockedTaskIds": [
+        "deployment:.github/workflows/vibe2-candidate-release.yml:cd8b5bd736b74b986babc3f2619268c624b9ebd2:unresolved-run-40093941757"
+      ],
+      "blastRadius": "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+      "recurrenceCount": 1,
+      "repairMode": "FOCUSED_REPAIR",
+      "userAssistanceRequired": false,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "cd8b5bd736b74b986babc3f2619268c624b9ebd2",
+      "gameRepairContract": {
+        "version": 1,
+        "mode": "FOCUSED_REPAIR",
+        "prePatchReproductionRequired": true,
+        "causalResponsibleSystemRequired": true,
+        "compareLastKnownGoodFirstBrokenCurrentRequired": false,
+        "originalScenarioReplayRequired": true,
+        "invariantValidationRequired": true,
+        "saveMigrationValidationRequired": false,
+        "multiplayerLifecycleValidationRequired": false,
+        "multiplayerUserAssistanceRequired": false,
+        "multiplayerMinimumAutomatedClients": 0,
+        "impactRegressionRequired": true,
+        "fullRegressionFanInRequired": true,
+        "repeatedSameApproachWithoutNewCausalEvidenceForbidden": false
+      },
+      "acceptanceCriteria": [
+        "repair only assigned responsible files",
+        "reproduce the exact failure before patch or preserve existing verified reproduction evidence",
+        "identify the causal responsible system before widening scope",
+        "produce a real responsible-source mutation before rerunning the same failed signature",
+        "unchanged-source revalidation is forbidden",
+        "rerun the original player-visible failure scenario after source mutation",
+        "validate affected game-state invariants",
+        "run impact-scoped regression",
+        "full regression fan-in remains required before acceptance",
+        "preserve verified checkpoint and gameplay semantics",
+        "no central policy write",
+        "no self acceptance"
+      ],
+      "verificationCommands": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "deployment-failure-run:40093941757:1",
+        "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
+        "deployment-platform:WEB",
+        "deployment-game:UNRESOLVED",
+        "deployment-head-sha:cd8b5bd736b74b986babc3f2619268c624b9ebd2",
+        "deployment-production-class:UNVERIFIED",
+        "deployment-failed-job:REJECT",
+        "deployment-failed-step:RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/40093941757",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED",
+        "recovery-queue:recovery-4b6e2e150408f5b08171",
+        "recovery-exact-stage:DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
+        "system-ai-scoped-game-repair:NO",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "learning-route:existing-vibe-learning-motor",
+        "primary-ai-collaboration-task:recovery-recovery-4b6e2e150408f5b08171"
+      ],
+      "supervisorReviewRequired": true,
+      "workerSelfAcceptance": false,
+      "learningCandidate": true,
+      "createdAt": "2026-10-24T12:40:57.239Z",
+      "updatedAt": "2026-10-24T12:40:57.239Z"
     }
   ]
 }
