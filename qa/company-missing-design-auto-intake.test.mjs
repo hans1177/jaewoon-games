@@ -23,6 +23,15 @@ function tempRepo(){
   return root;
 }
 
+test('new HTML JavaScript games get a WEB design seed, never a Unity seed',()=>{
+  const seed=makeAutoMissingDesignSeed({id:'school-tycoon',name:'학교 타이쿤',description:'일반 웹 엔진 학교 경영 시뮬레이션',ownerWebIntakeEngine:'HTML_CSS_JAVASCRIPT',web3dRedevelopmentRequired:true});
+  assert.equal(seed.INITIAL_TARGET_PLATFORM,'WEB');
+  assert.equal(seed.status,'ACTIVE');
+  assert.equal(seed.SOURCE_CODE_RULE,'PRESERVE_EXISTING_IMPLEMENTATION_UNTIL_VERIFIED_DESIGN_GUIDES_CHANGE');
+  assert.equal(seed.autoMissingDesignIntake,true);
+  assert.equal(validateGameSeed(seed).errors.some(value=>String(value).includes('INITIAL_TARGET_PLATFORM')),false);
+});
+
 test('owner design reset stages every relative module before switching to the runtime branch',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/owner-all-games-design-reset.yml',import.meta.url),'utf8');
   const switchIndex=workflow.indexOf('git checkout -B owner-all-games-design-reset-runtime');
