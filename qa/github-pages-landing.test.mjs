@@ -51,7 +51,7 @@ test('OWNER LOCK: every main merge triggers the existing Pages publisher without
   assert.match(workflow,/PAGES_ATOMIC_PUSH_CONFLICT_RETRY/);
   assert.match(workflow,/git -C "\$site" reset --quiet --hard FETCH_HEAD/);
   assert.match(workflow,/PAGES_ATOMIC_PUSH_CONFLICT_EXHAUSTED/);
-  assert.match(workflow,/always\\(\\) && steps.live_revision.outputs.exact == 'true'/);
+  assert.match(workflow,/always\(\) && steps.live_revision.outputs.exact == 'true'/);
   assert.match(workflow,/uses: actions\/deploy-pages@v4/);
 });
 
