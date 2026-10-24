@@ -1330,7 +1330,7 @@ function bagMenu(selectedId){
  html+='<section class="inventorySection"><h3>소유한 일반 장비</h3>';
  var ownedList=[...u.ownedWeapons.map(w=>({kind:'weapon',item:WEAPONS.find(it=>it.id===w)})),...u.ownedArmors.map(a=>({kind:'armor',item:ARMORS.find(it=>it.id===a)}))].filter(x=>x.item);
  html+=ownedList.length?ownedList.map(x=>'<div class="row"><div class="inventoryItem"><b>'+x.item.name+'</b><small>'+(x.kind==='weapon'?'무기 · 공격 +'+x.item.power:'방어구 · 방어 +'+x.item.def)+'</small></div><div class="inventoryActions"><button data-owned-kind="'+x.kind+'" data-owned-id="'+x.item.id+'" '+(!usable?'disabled':'')+'>장착</button></div></div>').join(''):'<p class="inventoryEmpty">아직 구입한 일반 장비가 없어.</p>';
- html+='</section><section class="inventorySection"><h3>던전 전용 장비</h3>';
+ html+='</section><section class="inventorySection"><h3>던전 전용 전리품 · 장비</h3>';
  var drops=Array.isArray(u.drops)?u.drops.filter(item=>DROPS[item]):[];
  html+=drops.length?drops.map(item=>{var d=DROPS[item],eq=d.kind==='weapon'?u.specialWeapon===item:u.specialArmor===item;return '<div class="row"><div class="inventoryItem"><b>'+d.name+(eq?' <span class="tag good">착용 중</span>':'')+'</b><small>'+d.from+' · '+(d.kind==='weapon'?'공격 +'+d.power:'방어 +'+d.def)+'</small></div><div class="inventoryActions"><button data-drop="'+item+'" '+(!usable||eq?'disabled':'')+'>장착</button><button data-transfer="'+item+'" '+(!usable?'disabled':'')+'>동료에게 전달</button></div></div>';}).join(''):'<p class="inventoryEmpty">던전에서 아직 고유 장비를 얻지 못했어.</p>';
  html+='</section><section class="inventorySection"><h3>파티 공용 소모품</h3>';
