@@ -550,8 +550,8 @@ export class IslandRendererV3 {
   panCamera(dx,dy){
     const zoom=this.viewZoom??this.defaultStrategyZoom();
     // 카메라 45도 회전에 맞춰 손가락 드래그를 지면 x/z 이동으로 변환한다.
-    const horizontal=(-dx*.73+dy*.68/.75)/zoom;
-    const vertical=(dx*.68+dy*.73/.75)/zoom;
+    const horizontal=(-dx*.73-dy*.68/.75)/zoom;
+    const vertical=(dx*.68-dy*.73/.75)/zoom;
     this.viewFocus.x=Math.max(140,Math.min(7500,this.viewFocus.x+horizontal));
     this.viewFocus.y=Math.max(-1100,Math.min(2600,this.viewFocus.y+vertical));
   }
