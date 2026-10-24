@@ -2194,11 +2194,11 @@ function renderInventory(){
   if(r.kind==='ingredient')action='요리 재료';
   if(r.kind==='seed')action='심기';
   const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');
-  html+='<button class="invItem arpgItem arpgTier'+itemTier(r.id)+(clickable?'':' isEquipped')+'" data-id="'+r.id+'" '+(clickable?'':'disabled')+'>'
+  html+='<button class="invItem arpgItem arpgTier'+itemTier(r.id)+(clickable?'':' isEquipped')+'" data-inventory-kind="'+(['weapon','tool','armor','ammo'].includes(r.kind)?'equipment':['consumable','seed'].includes(r.kind)?'usable':'material')+'" data-id="'+r.id+'" '+(clickable?'':'disabled')+'>'
    +'<span class="arpgItemGlyph">'+(kinds[r.kind]||'✦')+'</span><span class="tierBadge">'+itemTier(r.id)+'티어</span>'
    +'<b>'+upgradedName(r.id)+'</b><small>×'+invCount(r.id)+'</small><small class="slot">'+action+'</small></button>';
  }
- if(isCreative())html+='<button class="invItem arpgItem" id="creativeBlockItem"><span class="arpgItemGlyph">✦</span><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 설정</small><small class="slot">설치하기</small></button>';
+ if(isCreative())html+='<button class="invItem arpgItem" data-inventory-kind="material" id="creativeBlockItem"><span class="arpgItemGlyph">✦</span><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 설정</small><small class="slot">설치하기</small></button>';
  html+='</div><p id="arpgItemInfo" class="arpgItemInfo" role="status" aria-live="polite">아이템을 선택하면 설명이 나타나.</p><details class="arpgDetails" open><summary>재료와 자원</summary><div class="invMaterials">'
   +'<div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'
   +materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div></details>'
