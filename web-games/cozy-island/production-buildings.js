@@ -31,6 +31,9 @@ function ensureProduction(progress) {
   const production = {
     lumberBuilt: Boolean(source.lumberBuilt),
     mineBuilt: Boolean(source.mineBuilt),
+    // 업그레이드: 기존 건물/자원 저장을 유지하고 레벨만 추가한다.
+    lumberLevel: source.lumberBuilt ? Math.max(1,Math.min(3,Math.floor(Number(source.lumberLevel)||1))) : 0,
+    mineLevel: source.mineBuilt ? Math.max(1,Math.min(3,Math.floor(Number(source.mineLevel)||1))) : 0,
     lumberWorker: source.lumberWorker ? 1 : 0,
     mineWorker: source.mineWorker ? 1 : 0,
     lumberTimer: Math.max(0, Number(source.lumberTimer) || 0),
@@ -154,7 +157,7 @@ function updateBuildButton() {
     : '⛏️ 광산 건설 · 나무2 돌3';
 }
 
-function buildLumberyard() {
+export function buildLumberyard() {
   const state = currentGame?.state;
   if (!state) return;
   const p = ensureProduction(state);
@@ -166,12 +169,13 @@ function buildLumberyard() {
   state.inventory.wood -= LUMBER.wood;
   state.inventory.stone -= LUMBER.stone;
   p.lumberBuilt = true;
+  p.lumberLevel = 1;
   saveState(state);
   updateBuildButton();
   toast('🪓 벌목장 완성 · 더블탭하면 노비 배치');
 }
 
-function buildMine() {
+export function buildMine() {
   const state = currentGame?.state;
   if (!state) return;
   const p = ensureProduction(state);
@@ -183,11 +187,30 @@ function buildMine() {
   state.inventory.wood -= MINE.wood;
   state.inventory.stone -= MINE.stone;
   p.mineBuilt = true;
+  p.mineLevel = 1;
   saveState(state);
   updateBuildButton();
   toast('⛏️ 광산 완성 · 더블탭하면 노비 배치');
 }
 
+// 생산 건물 강화: 기존 5초 주기와 주민 배치는 그대로, 단계별 산출량만 증가한다.
+export function upgradeProduction(kind) {
+  const state=currentGame?.state;
+  if(!state || !['lumber','mine'].includes(kind))return;
+  const p=ensureProduction(state);
+  const built=kind==='lumber'?p.lumberBuilt:p.mineBuilt;
+  const levelKey=kind==='lumber'?'lumberLevel':'mineLevel';
+  if(!built)return toast('건물을 먼저 건설해');
+  const tier=p[levelKey];
+  if(tier>=3)return toast('이미 최대 3단계야');
+  const wood=4+tier*4,stone=3+tier*4;
+  if((Number(state.inventory.wood)||0)<wood||(Number(state.inventory.stone)||0)<stone)
+    return toast('강화 재료 부족 · 나무 '+wood+' 돌 '+stone);
+  state.inventory.wood-=wood;state.inventory.stone-=stone;
+  p[levelKey]=tier+1;
+  saveState(state);
+  toast((kind==='lumber'?'벌목장':'광산')+' '+p[levelKey]+'단계 · 생산량 증가');
+}
 export function assignWorker(kind) {
   if (!currentGame) return;
   const state = currentGame.state;
@@ -233,10 +256,7 @@ export function returnWorkerToFarm() {
 
 function screenToWorld(sx, sy) {
   if (!currentGame) return null;
-  return {
-    x: sx + currentGame.player.x - window.innerWidth / 2,
-    y: sy + currentGame.player.y - window.innerHeight / 2
-  };
+  return currentGame.screenToWorld?.(sx,sy) || null;
 }
 
 function handleWorldDouble(sx, sy) {
@@ -311,20 +331,12 @@ function runProduction(dt) {
       p.lumberTimer += dt;
       while (p.lumberTimer >= PRODUCE_SECONDS) {
         p.lumberTimer -= PRODUCE_SECONDS;
-        p.bufferWood += 1;
+        p.bufferWood += p.lumberLevel;
         produced = true;
       }
       p.playerLumberTimer = 0;
-    } else if (distance(currentGame.player, LUMBER) <= 92) {
-      p.playerLumberTimer += dt;
-      while (p.playerLumberTimer >= PRODUCE_SECONDS) {
-        p.playerLumberTimer -= PRODUCE_SECONDS;
-        state.inventory.wood = (Number(state.inventory.wood) || 0) + 1;
-        produced = true;
-        toast('🪵 벌목장에서 직접 작업 · 나무 +1');
-      }
     } else {
-      p.playerLumberTimer = 0;
+      p.playerLumberTimer=0;
     }
   }
 
@@ -333,20 +345,12 @@ function runProduction(dt) {
       p.mineTimer += dt;
       while (p.mineTimer >= PRODUCE_SECONDS) {
         p.mineTimer -= PRODUCE_SECONDS;
-        p.bufferStone += 1;
+        p.bufferStone += p.mineLevel;
         produced = true;
       }
       p.playerMineTimer = 0;
-    } else if (distance(currentGame.player, MINE) <= 92) {
-      p.playerMineTimer += dt;
-      while (p.playerMineTimer >= PRODUCE_SECONDS) {
-        p.playerMineTimer -= PRODUCE_SECONDS;
-        state.inventory.stone = (Number(state.inventory.stone) || 0) + 1;
-        produced = true;
-        toast('🪨 광산에서 직접 작업 · 돌 +1');
-      }
     } else {
-      p.playerMineTimer = 0;
+      p.playerMineTimer=0;
     }
   }
 
@@ -538,5 +542,5 @@ function drawMine(ctx, p) {
   ctx.restore();
 }
 
-setupBuildButton();
+// 전략형 UI는 성채 패널에서 건설하므로 플레이어 근접 건설 버튼을 만들지 않는다.
 setInterval(productionTick, 100);

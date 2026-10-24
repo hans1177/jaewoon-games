@@ -286,7 +286,10 @@ export class IslandRendererV3 {
         mesh.rotation.x=-Math.PI/2;
         mesh.position.set(x*SC,elevation+.225,y*SC);this.scene3.add(mesh);return mesh;
       };
-      ground(3800,2500,1700,1030,0x68979b,-1.35);
+      // 넓어진 전략 전장: 중앙 성곽과 외곽 사막은 같은 3D 지형으로 이어진다.
+      ground(9500,5300,2400,900,0x68979b,-1.35);
+      this.frontier3=ground(4200,2100,3150,460,0xd0aa77,-.78);
+      this.frontierGrass3=ground(3400,1650,3220,420,0xa9986a,-.73);
       ground(1280,1030,730,595,0xd4bc89,-.7);
       ground(1170,920,730,595,0x9ca168,-.4);
       this.east3=ground(1490,950,2100,595,0xebd09c,-.68);
@@ -529,6 +532,8 @@ export class IslandRendererV3 {
         item.mesh.rotation.y=0;
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
+      // 외곽 사막은 기본적으로 보여 주되 기존 유료 확장 지역의 해금 판정은 유지한다.
+      this.frontier3.visible=this.frontierGrass3.visible=true;
       const jungle=!!game.state.southernJungle?.unlocked||game.world.h>1200;
       this.jungle3.visible=this.jungleGrass3.visible=jungle;
       const north=!!game.state.northernRegion?.unlocked;
@@ -558,7 +563,7 @@ export class IslandRendererV3 {
       }
       const tier=Math.max(1,Math.min(3,Number(fort.wallTier)||1));
       const wallHeight=2+(tier-1)*.65,gateHeight=3.25+(tier-1)*.38;
-      if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9+(tier-1)*.36);
+      if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9+(Math.max(1,Number(village.defenseTowerLevel)||1)-1)*.6);
       if(village.townHallBuilt)put('townhall','fort-keep',1010,1090,5.4+
         (game.state.townHallExpansion?.upgraded?1.15:0)+(tier-1)*.5);
       // 메인: 실제 성벽 체력이 0이면 해당 구간이 무너져 통로가 열린다.
@@ -614,6 +619,11 @@ export class IslandRendererV3 {
       if(game.state.abyssCaveV23?.researchLabBuilt)put('research-lab','house',-690,420,4);
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
+      // 외곽 거점의 위치를 전장에서 확인할 수 있게 기존 중세 모델을 재사용한다.
+      for(let i=0;i<4;i++){
+        put('frontier-watch:'+i,'fort-watchtower',2520+i*580,215+(i%2)*640,3.3);
+        put('frontier-camp:'+i,'fort-cottage',2800+i*535,490+(i%2)*480,2.8);
+      }
       put('ship','ship',775,760,1.4);put('fishing','dock',520,430,1.4);
       if((fort.traderClock??180)%180<75){
         put('merchant','npc',845,775,1.9);
@@ -681,7 +691,7 @@ export class IslandRendererV3 {
       if(!village.townHallBuilt)for(let i=0;i<5;i++){
         put('fence:'+i,'fence',1150+i*38,185,1.1);
       }
-      put('player','hero',player.x,player.y,1.9);
+      // 스트롱홀드식 전략게임: 내부 호환용 좌표는 유지하지만 플레이어 아바타는 렌더링하지 않는다.
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
         this.release3d(item);this.instances3d.delete(id);
       }
