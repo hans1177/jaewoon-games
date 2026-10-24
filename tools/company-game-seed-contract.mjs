@@ -29,7 +29,7 @@ export const GAME_SEED_POLICY = Object.freeze({
   materialMustBeExistingGame: false,
   transformationModes: Object.freeze(['HOMAGE', 'REINTERPRETATION', 'ORIGINAL_COMPOSITION']),
   initialTargetPlatform: 'ROBLOX',
-  allowedTargetPlatforms: Object.freeze(['ROBLOX', 'UNITY']),
+  allowedTargetPlatforms: Object.freeze(['ROBLOX', 'WEB', 'UNITY']),
   pausedTargetPlatforms: Object.freeze(['FORTNITE_UEFN']),
   projectMaySelectAnyAllowedPlatform: true,
   primaryPlatformIsDefaultNotLock: true,
