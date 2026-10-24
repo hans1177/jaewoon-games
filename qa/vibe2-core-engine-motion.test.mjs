@@ -34,6 +34,19 @@ test('engine adapters expose Unreal and gated Vibe Web first-implementation cont
   assert.equal(validateVibeEngineAdapter(web).valid, true);
 });
 
+test('픽셀 지역 디테일·몹 모션·무기 이펙트가 제작 지시와 모바일 검증에 포함된다', () => {
+  const request='픽셀 지역별 타일과 몹 걷기 회전 모션 및 무기 타격 잔상 이펙트 개선';
+  const brief=createVibeEditBrief({request,target:'web',gameId:'fantasy-survival',files:['web-games/fantasy-survival/world3d.mjs']});
+  assert.equal(brief.target,'web');
+  assert.deepEqual(brief.responsibleFiles,['web-games/fantasy-survival/world3d.mjs']);
+  assert(brief.directives.some(x=>x.includes('타일 경계')&&x.includes('새 렌더러')));
+  assert(brief.directives.some(x=>x.includes('발 접지')&&x.includes('쿨다운')));
+  assert(brief.directives.some(x=>x.includes('잔상')&&x.includes('모바일 버튼')));
+  assert(brief.requiredChecks.some(x=>x.includes('동일 장면 전후')));
+  assert(brief.requiredChecks.some(x=>x.includes('연속 프레임')));
+  assert(brief.requiredChecks.some(x=>x.includes('메모리 예산')));
+  assert.equal(brief.outputContract.noWrapperPatch,true);
+});
 test('workbench permits existing web source maintenance', () => {
   const plan = planVibeWorkbenchTask({ request: '기존 웹게임 버튼 오류 수정', target: 'web', gameId: 'legacy' });
   const brief = createVibeEditBrief({ request: '기존 웹게임 버튼 오류 수정', target: 'web', gameId: 'legacy' });
