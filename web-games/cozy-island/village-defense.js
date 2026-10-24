@@ -1,7 +1,7 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { snapFort,wallLine,applyGateAxes,validateWallLayout } from './castle-layout.js';
 import { IslandRendererV3 } from './render-v3.js';
-import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction, ECONOMY_BUILDINGS, getEconomy, economyStaff, constructEconomyBuilding, upgradeEconomyBuilding, setEconomyPolicy, economyTechStatus } from './production-buildings.js';
+import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction, ECONOMY_BUILDINGS, getEconomy, economyStaff, constructEconomyBuilding, upgradeEconomyBuilding, setEconomyPolicy, economyTechStatus, ECONOMY_TECH_TREE } from './production-buildings.js';
 
 const TOWER = { x: 400, y: 1090, wood: 6, stone: 5, radius: 115 };
 const TOWN_HALL = { x: 1010, y: 1090, wood: 12, stone: 10, radius: 125 };
@@ -465,6 +465,24 @@ function renderConstruction(group=activeBuildGroup){
        '<button type="button" class="upgrade" data-upgrade-economy="'+d.id+'" '+(!n||entry.level>=3?'disabled':'')+'>⬆️ 강화</button></div>'+
        '<div class="realm-build-cost">'+cost+' · '+(staff[d.id]||0)+'채 가동</div></article>';
    }).join('')+'</div>';
+ }
+ // 경제 발전에 따라 군사·공성·함정 해금 상태를 단계별로 표시한다.
+ if(group==='military'||group==='defense'){
+  const names={
+   spearman:'🔱 창병',crossbow:'🎯 석궁병',shield:'🛡️ 방패병',
+   knight:'🐎 기사',sapper:'🔨 공병',ram:'🪵 공성추',
+   trebuchet:'💥 투석기',siegeTower:'🏰 공성탑',
+   net:'🕸️ 투척 그물',log:'🪵 통나무 덫',barrel:'💥 폭발 함정'
+  };
+  const list=Object.keys(ECONOMY_TECH_TREE).filter(id=>
+    group==='military'?!['net','log','barrel'].includes(id):['net','log','barrel'].includes(id));
+  html+='<section class="realm-tech-tree"><h3>🌳 경제 발전 트리</h3>'+
+   '<p class="realm-help">건물 건설·강화 → 군사 장비 생산 → 병종·공성·고급 함정 해금. 기존 유닛과 설치물은 유지됩니다.</p>'+
+   list.map(id=>{
+    const status=economyTechStatus(state,id);
+    return '<div class="realm-tech-step '+(status.unlocked?'unlocked':'locked')+'"><b>'+
+      names[id]+'</b><small>'+(status.unlocked?'✅ 연구 조건 충족':'🔒 '+status.missing.join(' + '))+'</small></div>';
+   }).join('')+'</section>';
  }
  html+='<div class="realm-policy"><h3>📜 영지 운영 정책</h3><p>주민 만족도 '+Math.floor(e.satisfaction)+'/100 · 생산한 자원은 실시간 창고로 입고</p>';
  for(const [key,title,values] of [
