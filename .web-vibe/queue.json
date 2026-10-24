@@ -12,7 +12,7 @@
       "goal": "보석생존전 웹게임 실제 개선. 최신 main 기존 index.html·gem3d.mjs 책임 함수를 직접 수정하고 기존 WEB_VIBE_1 검증·병합·배포 흐름을 사용해. 1) 화면 W/H와 월드 경계를 분리해 휴대폰에서도 여러 화면 넓이의 넓은 맵, 플레이어 추적 카메라, 카메라 기준 화면 가장자리 적 생성, 월드 좌표 충돌·드랍·자동공격 일치. 2) 시작에서 수정 동굴·폐허 정원·화산 채굴장 3개 스테이지 선택, 서로 다른 바닥·조명·랜드마크·배경. 이동을 가로막지 않는 장식과 작은 위치 안내 적용. 3) 기존 7종+보스의 구별 가능한 외형·걷기·피격·사망 연출과 무대별 외형 변주. 검증된 저장소 라이선스 에셋 먼저 재사용, 없는 종은 확보·권리·실행 검증 전 완료 주장 금지. 단순 도형의 색만 바꿔 다양화 완료라고 하지 마. 4) 기본탄 궤적·명중 섬광, 화살 방향·잔상, 독 웅덩이 맥동·기포, 꺾인 번개·명중빛, 회전칼날 궤적, 보스 돌진 예고, 보석 획득 반짝임. 이펙트는 객체풀·상한·화면밖 생략으로 모바일 성능 유지하고 판정·피해량은 기존 로직 권한. 5) 기존 5분 보스·120/210초 적 해금·체력·속도·공격력·드랍·1.65 성장배율·저장 의미 유지. 스테이지는 같은 규칙의 선택 맵으로 만들고 강제 진행/리셋 금지. 새 파이프라인·래퍼·정책 변경·타 게임 수정 금지. 모바일 시작·조이스틱 이동·카메라 경계·종류별 공격·능력선택·일시정지·재시작·리사이즈·성능·에셋 경로 및 공개 sourceSha를 검증. 정적/CI/공개 실행 증거를 분리 보고하고 확인되지 않은 항목 완료 금지.",
       "responsibleFiles": [],
       "priority": "owner-immediate",
-      "status": "queued",
+      "status": "blocked",
       "ownerDirective": true,
       "evidence": [
         "web-vibe-independent:v1",
@@ -20,10 +20,10 @@
         "qa-required-before-pr-merge",
         "web-vibe-recovery-failure:needs-source-or-provider-recheck"
       ],
-      "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-10-24T09:29:46.502Z",
-      "recoveryNextAt": "2026-10-24T10:29:46.502Z",
-      "blocker": null
+      "recoveryAttempts": 3,
+      "recoveryLastFailureAt": "2026-10-24T13:34:44.087Z",
+      "recoveryNextAt": null,
+      "blocker": "WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW"
     },
     {
       "id": "pwa-8fdb237a-154b-4c88-973a-e7fb15863d42",
