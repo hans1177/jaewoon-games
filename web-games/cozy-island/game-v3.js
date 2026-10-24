@@ -1,5 +1,6 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
+import { snapFort,wallLine } from './castle-layout.js';
 import { ECONOMY_BUILDINGS,getEconomy,constructEconomyBuilding,economyStaff } from './production-buildings.js';
 
 const GAME_ID='cozy-island';
@@ -23,31 +24,61 @@ const renderer=new IslandRendererV3(canvas);
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
 const BUILDABLE_AREA={minX:130,maxX:2320,minY:85,maxY:1580};
-const cancelBuild=document.querySelector('#cancelBuild');
+const cancelBuild=document.querySelector('#cancelBuild'),
+      buildStatus=document.querySelector('#buildStatus'),
+      rotateGate=document.querySelector('#rotateGate');
+function updateBuildStatus(){
+ const b=game.buildingPlacement;
+ if(!b){if(buildStatus)buildStatus.hidden=true;if(rotateGate)rotateGate.hidden=true;return}
+ if(rotateGate){
+   rotateGate.hidden=b.id!=='fort:gate';
+   rotateGate.textContent='🔄 성문 방향: '+(b.axis==='horizontal'?'가로':b.axis==='vertical'?'세로':'자동');
+ }
+ if(!buildStatus)return;
+ buildStatus.hidden=false;
+ if(b.id==='fort:wall'){
+   const detail={start:b.startAt||b.at,end:b.at};
+   window.dispatchEvent(new CustomEvent('cozy:preview-wall-line',{detail}));
+   b.preview=detail.points||wallLine(detail.start,detail.end,35);
+   b.previewValid=!!detail.ok;
+   buildStatus.textContent='🧱 '+(detail.count||0)+'칸 · 목재 '+(detail.wood||0)+' · 돌 '+(detail.stone||0)+
+     (detail.ok?' ✅ 설치 가능':' ⛔ '+(detail.reason||'자원 또는 인부 통행 확인'));
+ }else{
+   b.preview=null;b.previewValid=true;
+   buildStatus.textContent=b.id==='fort:gate'?'🚪 성문은 인부 통행 허용 · 주변 성벽 방향에 정렬':'🏗️ 지도 터치로 건설';
+ }
+}
 function cancelBuildPlacement(){
  game.buildingPlacement=null;
  if(cancelBuild)cancelBuild.hidden=true;
+ if(buildStatus)buildStatus.hidden=true;
+ if(rotateGate)rotateGate.hidden=true;
 }
 cancelBuild?.addEventListener('click',cancelBuildPlacement);
+rotateGate?.addEventListener('click',()=>{
+ const mode=game.buildingPlacement;if(mode?.id!=='fort:gate')return;
+ mode.axis=mode.axis==='auto'?'horizontal':mode.axis==='horizontal'?'vertical':'auto';
+ updateBuildStatus();
+});
 window.addEventListener('keydown',e=>{if(e.key==='Escape')cancelBuildPlacement()});
 window.addEventListener('cozy:place-building',e=>{
  const id=e.detail?.id,def=ECONOMY_BUILDINGS.find(x=>x.id===id);if(!def)return;
  game.buildingPlacement={id,at:{x:Math.max(200,Math.min(1850,def.x)),y:Math.max(200,Math.min(1170,def.y))}};
  if(cancelBuild){cancelBuild.hidden=false;cancelBuild.textContent='✕ '+def.name+' 배치 취소'}
- toast('🏗️ '+def.name+' · 지도에서 건설 위치를 터치해');
+ toast('🏗️ '+def.name+' · 지도에서 건설 위치를 터치해');updateBuildStatus();
 });
 window.addEventListener('cozy:place-fort',e=>{
  const id=e.detail?.id;if(!['wall','gate','tower','spikes','oil','pit'].includes(id))return;
- game.buildingPlacement={id:'fort:'+id,at:{x:1350,y:690}};
+ game.buildingPlacement={id:'fort:'+id,at:{x:1350,y:690},axis:'auto',startAt:null,preview:null};
  if(cancelBuild){cancelBuild.hidden=false;cancelBuild.textContent='✕ 성곽 배치 취소'}
- toast('🏰 지도를 터치해 성벽·함정을 설치해');
+ toast(id==='wall'?'🧱 성벽을 드래그하여 연속 시공':'🏰 성문·망루·함정을 지도에 설치해');updateBuildStatus();
 });
 function placeEconomyAt(at){
  const mode=game.buildingPlacement;if(!mode)return;
  const step=mode.id.startsWith('fort:')?90:30;
  const p={x:Math.round(at.x/step)*step,y:Math.round(at.y/step)*step};
  if(mode.id.startsWith('fort:')){
-   const detail={id:mode.id.slice(5),at:p,success:false};
+   const detail={id:mode.id.slice(5),at:p,axis:mode.axis||'auto',success:false};
    window.dispatchEvent(new CustomEvent('cozy:construct-fort',{detail}));
    if(detail.success){cancelBuildPlacement();updateHUD()}
    return;
@@ -60,9 +91,8 @@ function placeEconomyAt(at){
  if(spots.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<78)||Math.hypot(p.x-1010,p.y-1090)<100){
    toast('건물과 겹쳐서 건설할 수 없어');return;
  }
- if(constructEconomyBuilding(mode.id,p)){
-   cancelBuildPlacement();updateHUD();
- }else toast('건설 조건을 확인해');
+ if(constructEconomyBuilding(mode.id,p)){cancelBuildPlacement();updateHUD()}
+ else toast('건설 조건을 확인해');
 }
 
 let lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
@@ -142,25 +172,43 @@ let pointerGesture=null;
 canvas.addEventListener('pointerdown',e=>{
   if(e.pointerType==='mouse'&&e.button!==0)return;
   pointerGesture={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};
+  if(game.buildingPlacement?.id==='fort:wall'){
+    const start=snapFort(renderer.screenToWorld(game,e.clientX,e.clientY));
+    game.buildingPlacement.startAt=start;
+    game.buildingPlacement.at=start;
+    game.buildingPlacement.preview=[start];
+    updateBuildStatus();
+  }
   canvas.setPointerCapture?.(e.pointerId);
 });
 canvas.addEventListener('pointermove',e=>{
   if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture,dx=e.clientX-g.x,dy=e.clientY-g.y;
-  if(game.buildingPlacement){game.buildingPlacement.at=renderer.screenToWorld(game,e.clientX,e.clientY);return}
+  if(game.buildingPlacement){
+    game.buildingPlacement.at=snapFort(renderer.screenToWorld(game,e.clientX,e.clientY));
+    if(game.buildingPlacement.id==='fort:wall')updateBuildStatus();
+    return;
+  }
   if(g.moved||Math.hypot(e.clientX-g.startX,e.clientY-g.startY)>9){
     g.moved=true;game.siegeOverview=true;renderer.panCamera(dx,dy);
   }
   g.x=e.clientX;g.y=e.clientY;
 });
-canvas.addEventListener('pointercancel',()=>{pointerGesture=null});
+canvas.addEventListener('pointercancel',()=>{pointerGesture=null;if(game.buildingPlacement?.id==='fort:wall')game.buildingPlacement.startAt=null;updateBuildStatus()});
 canvas.addEventListener('pointerup',e=>{
   if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture;pointerGesture=null;
   if((g.moved&&!game.buildingPlacement)||ui.panel.open||ui.fishing.open||runtime.paused)return;
   const now=performance.now();
   if(game.buildingPlacement){
-    const at=renderer.screenToWorld(game,e.clientX,e.clientY);
+    const at=renderer.screenToWorld(game,e.clientX,e.clientY),mode=game.buildingPlacement;
+    if(mode.id==='fort:wall'){
+      const detail={start:mode.startAt||snapFort(at),end:snapFort(at),success:false};
+      window.dispatchEvent(new CustomEvent('cozy:construct-wall-line',{detail}));
+      if(detail.success){cancelBuildPlacement();updateHUD()}
+      else updateBuildStatus();
+      return;
+    }
     placeEconomyAt(at);return;
   }
   if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
@@ -464,7 +512,8 @@ function startRaid(attacker=null){
   if(attacker){
     const size=Math.min(18,Math.max(3,Math.floor(attacker.troops)));
     for(let i=0;i<size;i++){const u=createUnit(i%4===0?'archer':'soldier',true);
-      u.x=1550+i*12;u.y=400+(i%6)*80;
+      u.x=attacker.x+(i%5)*28;u.y=attacker.y+(i%4)*24;
+      u.speed=Math.max(u.speed,165); // 적 영주 성에서 실제 진군
     u._lordRaid=true;u._siegeLane=u.y<520?440:u.y>730?800:610;
     u.siegeDamage=12+(attacker.focus==='rush'?8:0);u.siegeCooldown=1.4;
     enemies.push(u)}
