@@ -83,6 +83,13 @@ function drawChart(world=false){
   ctx.beginPath();ctx.arc(px,py,known?5:3,0,Math.PI*2);ctx.fill();ctx.stroke();
   if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#fff0c8';ctx.fillText(p.name,px+7,py-6);}
  }
+ for(const m of state.merchants||[]){
+  if(state.crewRoster.includes(m.id))continue;
+  const at=merchantPosition(m),px=x(at.x),py=y(at.z);
+  if(px<6||py<6||px>634||py>393)continue;
+  ctx.fillStyle='#f0ad74';ctx.strokeStyle='#382b28';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(px,py-6);ctx.lineTo(px-5,py+4);ctx.lineTo(px+5,py+4);ctx.closePath();ctx.fill();ctx.stroke();
+ }
  const px=x(state.ship.x),py=y(state.ship.z);
  ctx.save();ctx.translate(px,py);ctx.rotate(-state.ship.heading);ctx.fillStyle='#fff9d3';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(-7,8);ctx.lineTo(0,4);ctx.lineTo(7,8);ctx.closePath();ctx.fill();ctx.restore();
  ctx.fillStyle='#f2cf8e';ctx.font='bold 13px system-ui';ctx.textAlign='left';ctx.fillText('✦ 해도 · '+(world?'세계 위치':'유럽 연안')+'  |  발견한 항구 터치',12,22);
