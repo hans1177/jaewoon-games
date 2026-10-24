@@ -355,11 +355,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     hero?.model.traverse(child=>{if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}});
     throw error;
   }
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
+  // 픽셀 풍 3D: 기존 메시·광원·좌표계 유지, 화면 샘플만 선명한 블록 단위로 표시한다.
+  canvas.style.imageRendering='pixelated';
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'default'});
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.18;
   // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*(mobileBudget?.82:1));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.85:1.2)*(mobileBudget?.82:1));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -413,6 +415,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
   // 마법탄은 실제 게임의 투사체 좌표만 보여주는 저폴리곤 3D 효과다. 피해·적중 판정은 게임 코드 소유.
+  // 무기별 공격 잔상: 기존 공격 시각만 읽는 시각 효과이며 별도 적중/피해 판정은 없다.
+  const strikeArcGeometry=new THREE.TorusGeometry(.82,.055,3,24,Math.PI*1.4);
+  const strikeArcMaterial=new THREE.MeshBasicMaterial({color:0xf1e0b0,transparent:true,opacity:.48,depthWrite:false,side:THREE.DoubleSide});
+  const strikeArc=new THREE.Mesh(strikeArcGeometry,strikeArcMaterial);
+  strikeArc.visible=false;strikeArc.renderOrder=3;scene.add(strikeArc);
   const mageBoltGeometry=new THREE.OctahedronGeometry(.18,0);
   const mageBoltMaterial=new THREE.MeshBasicMaterial({color:0xb5eaff,transparent:true,opacity:.95,depthWrite:false});
   const arrowGeometry=new THREE.ConeGeometry(.065,.42,5);
@@ -421,14 +428,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const sunOrbMaterial=new THREE.MeshBasicMaterial({color:0xffdf83,depthWrite:false});
   const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
+  // 기존 라이선스 확인된 3D 원본을 지역별 세 종류씩 섞는다. 지형·충돌 판정은 바꾸지 않는다.
   const SCENERY_KIND=Object.freeze({
-    forest:['tree','foliage_A'],jungle:['tree_large','foliage_B'],swamp:['foliage_A','tree'],
-    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
-    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','foliage_B'],
-    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_B'],
-    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree'],
-    desert:['cobblestones','foliage_A'],
-    underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
+    forest:['tree','tree_large','foliage_A'],jungle:['tree_large','foliage_B','tree'],
+    swamp:['foliage_A','cobblestones','tree'],snow:['tree_large','cobblestones','foliage_A'],
+    canyon:['cobblestones','fence_straight','foliage_A'],volcano:['cobblestones','fence_straight','house'],
+    crystal:['cobblestones','foliage_B','tree_large'],giantlake:['foliage_A','foliage_B','cobblestones'],
+    worldtree:['tree_large','tree','foliage_B'],flowerfield:['foliage_A','foliage_B','tree'],
+    giantgarden:['foliage_B','tree','tree_large'],desert:['cobblestones','foliage_A','fence_straight'],
+    underwater:['foliage_B','cobblestones','foliage_A'],
+    'underwater-dungeon':['cobblestones','fence_straight','foliage_B']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
@@ -723,7 +732,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(Math.abs(next-qualityFactor)>.01){
         qualityFactor=next;stableQualityWindows=0;
         renderer.shadowMap.enabled=!mobileBudget&&qualityFactor>=.8;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*qualityFactor);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.85:1.2)*qualityFactor);
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
@@ -822,12 +831,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
       // 흰색 혼합을 줄여 설원·화산·수정 지대와 숲의 색채가 뚜렷하게 구분되도록 한다.
       const tileSeed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(.91+tileSeed%17*.01).lerp(floorNeutral,.12));
+      // 고정 해시 기반 3D 타일 명암: 수풀이 없는 좌표도 작은 픽셀 색차와 지역별 색감을 갖는다.
+      const tileBrightness=(tileSeed%13===0?.78:tileSeed%7===0?1.16:.91+tileSeed%17*.01);
+      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(tileBrightness).lerp(floorNeutral,.07));
       tileIndex++;
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-        if(mobileBudget?hash%5===0:hash%3!==0){
+        if(mobileBudget?hash%3!==0:hash%4!==0){
           // 지역별로 서로 다른 원본 배경 메시를 섞어 같은 나무/바위 반복을 줄인다.
           const sceneryChoices=SCENERY_KIND[tileZone]||SCENERY_KIND.forest;
           const kind=sceneryChoices[hash%sceneryChoices.length];
@@ -843,10 +854,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             const zOffset=(((hash>>>7)%5)-2)*floorPitchZ*.12;
             resourceTransform.position.set(gx+xOffset,0,gz+zOffset);
             resourceTransform.rotation.y=(hash%8)*(Math.PI/4);
-            resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
+            // 낮은 풀·중간 돌·높은 나무가 지역마다 엇갈려 보이게 크기·방향을 고정 배치한다.
+             const sizeBands=[.30,.45,.65,.83];
+             resourceTransform.scale.setScalar(sizeBands[(hash>>>10)%sizeBands.length]);
             resourceTransform.updateMatrix();
             batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
-            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
+            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.45));
             batch.count++;
           }
         }
@@ -880,6 +893,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     interactables.length=0;
     const seen=++frameSequence; // 이전 지역 몹·상호작용 객체를 저장 시각과 무관하게 정리한다.
+    strikeArc.visible=false;
     if(hero){
       hero.avatar.visible=true;
       hero.avatar.position.set(centerX,0,centerY);
@@ -898,11 +912,27 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       lastHeroPoseX=px;lastHeroPoseY=py;lastHeroPoseAt=now;
       const attackingAge=now-(Number(p.attackAt)||0);
       const pose=attackingAge<(selectedAppearance?.model==='barbarian'?490:selectedAppearance?.model==='mage'?440:330)?'attack':moving?'move':'idle';
-      // 기사 찌르기 / 전사 내려찍기 / 도적 빠른 베기 / 법사 시전의 시각 연출만 다르게 한다.
-      const avatarStyle=selectedAppearance?.model||'knight';
-      const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
-      hero.avatar.rotation.z=avatarStyle==='barbarian'?-.11*attackPhase:avatarStyle.startsWith('rogue')?.08*attackPhase:avatarStyle==='mage'?.025*attackPhase:.045*attackPhase;
-      hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:avatarStyle==='barbarian'?.06*attackPhase:0;
+      // 무기 계열과 캐릭터 체형을 함께 사용한다. 대미지·사거리·공격 간격은 기존 로직이 소유한다.
+      const avatarStyle=selectedAppearance?.model||'knight',weaponId=String(p.weapon||'');
+      const weaponFamily=/bow|crossbow/i.test(weaponId)?'bow':
+        /spear|lance|trident|harpoon/i.test(weaponId)?'spear':
+        /hammer|maul|mace|club/i.test(weaponId)?'hammer':
+        /staff|wand|orb|magic/i.test(weaponId)?'staff':'blade';
+      const attackDuration=weaponFamily==='hammer'?510:weaponFamily==='spear'?390:weaponFamily==='bow'?480:weaponFamily==='staff'?460:340;
+      const attackPhase=attackingAge>=0&&attackingAge<attackDuration?Math.sin(Math.PI*attackingAge/attackDuration):0;
+      const strikeSide=Math.floor((Number(p.attackAt)||0)/100)%2===0?1:-1;
+      const styleLean=avatarStyle==='barbarian'?1.24:avatarStyle.startsWith('rogue')?.83:1;
+      hero.avatar.rotation.z=(weaponFamily==='hammer'?-.17:weaponFamily==='spear'?.08:weaponFamily==='bow'?.065:weaponFamily==='staff'?.035:.13*strikeSide)*attackPhase*styleLean;
+      hero.avatar.rotation.x=(weaponFamily==='spear'?-.18:weaponFamily==='hammer'?.14:weaponFamily==='bow'?.06:0)*attackPhase;
+      hero.avatar.position.y=(weaponFamily==='staff'?.12:weaponFamily==='hammer'?.06:weaponFamily==='spear'?.025:0)*attackPhase;
+      strikeArc.visible=attackPhase>.06&&weaponFamily!=='bow'&&weaponFamily!=='staff';
+      if(strikeArc.visible){
+        strikeArcMaterial.color.setHex(weaponFamily==='hammer'?0xfabf78:weaponFamily==='spear'?0xb9ecda:0xffe5b0);
+        strikeArcMaterial.opacity=.12+.42*attackPhase;
+        strikeArc.position.set(centerX+(Number(p.faceX)||0)*.75,1.08,centerY+(Number(p.faceY)||0)*.75);
+        strikeArc.rotation.set(0,hero.avatar.rotation.y+(weaponFamily==='spear'?.5:0),strikeSide*(.4+attackPhase*1.15));
+        strikeArc.scale.setScalar(weaponFamily==='spear'?.75:weaponFamily==='hammer'?1.22:1);
+      }
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
       const desired=heroClips.find(clip=>clip.name===clipName);
@@ -1022,6 +1052,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     nativeCreatureActors.clear();
     for(const mesh of mageBoltEffects)scene.remove(mesh);
     mageBoltEffects.length=0;mageBoltGeometry.dispose();mageBoltMaterial.dispose();
+    scene.remove(strikeArc);strikeArcGeometry.dispose();strikeArcMaterial.dispose();
     arrowGeometry.dispose();arrowMaterial.dispose();sporeMaterial.dispose();sunOrbMaterial.dispose();
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
