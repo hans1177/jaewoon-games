@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells} from '../web-games/ocean-voyage/engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -170,7 +170,7 @@ test('all 15 imported CC0 media files are original SHA1-verified real binaries, 
  assert.equal(portraits.readUInt32BE(20),112);
 });
 test('geography and original portrait atlases are local and valid',()=>{
- for(const name of ['captains','crew','harbor']){const b=fs.readFileSync('web-games/ocean-voyage/assets/'+name+'.webp');assert.equal(b.subarray(0,4).toString(),'RIFF');assert.equal(b.subarray(8,12).toString(),'WEBP');assert.ok(b.length>20000);}
+ for(const name of ['captains','crew','harbor','innkeepers']){const b=fs.readFileSync('web-games/ocean-voyage/assets/'+name+'.webp');assert.equal(b.subarray(0,4).toString(),'RIFF');assert.equal(b.subarray(8,12).toString(),'WEBP');assert.ok(b.length>20000);}
  const land=fs.readFileSync('web-games/ocean-voyage/assets/world.mjs','utf8');assert.match(land,/Natural Earth/);assert.ok(land.length>100000);
 });
 
@@ -242,7 +242,7 @@ test('cannon grades change range, reload and projectile identity without losing 
  let s=newGame();s.coins=10000;const before=s.ship.cannons;s=buyCannon(s,'culverin').state;assert.equal(s.ship.cannons,before);s.pirates=[{id:1,x:s.ship.x+38,z:s.ship.z,hull:500,maxHull:500,cooldown:8}];const hit=fireCannons(s);assert.equal(hit.ok,true);assert.equal(hit.state.ship.cooldown,4.3);assert.equal(hit.state.combatFx.gun,'culverin');assert.equal(hit.state.combatFx.speed,200);s.ship.cannonType='bronze';assert.equal(fireCannons(s).ok,false);assert.equal(CANNON_TYPES.length,4);
 });
 test('personal skill names are distinct and land consumables are actually spent',()=>{
- assert.equal(new Set(Object.values(PERSONAL_SKILLS).map(s=>s.name)).size,10);let s=startExpedition(newGame('samira'),'lagoon').state;s.landBattle.party[0].hp=15;const count=s.supplies.medicine;s=landAction(s,'medicine',0).state;assert.equal(s.supplies.medicine,count-1);assert.ok(s.landBattle.party[0].hp>15);let next=startExpedition(newGame('samira'),'lagoon').state;next.landBattle.party[0].focus=0;next=landAction(next,'rations',0).state;assert.equal(next.supplies.rations,2);assert.equal(next.landBattle.party[0].focus,12);
+ assert.equal(new Set(Object.values(PERSONAL_SKILLS).map(s=>s.name)).size,12);let s=startExpedition(newGame('samira'),'lagoon').state;s.landBattle.party[0].hp=15;const count=s.supplies.medicine;s=landAction(s,'medicine',0).state;assert.equal(s.supplies.medicine,count-1);assert.ok(s.landBattle.party[0].hp>15);let next=startExpedition(newGame('samira'),'lagoon').state;next.landBattle.party[0].focus=0;next=landAction(next,'rations',0).state;assert.equal(next.supplies.rations,2);assert.equal(next.landBattle.party[0].focus,12);
 });
 
 test('charted sea routes sail automatically while unknown routes stop at exploration frontier',()=>{
@@ -250,4 +250,17 @@ test('charted sea routes sail automatically while unknown routes stop at explora
 });
 test('land event requires a choice and resolves once without blocking the next exploration step',()=>{
  let s=newGame('amani');s.clearedCamps.push('roman');s=startExpedition(s,'roman').state;s=exploreChoice(s,0).state;s=exploreChoice(s,0).state;assert.ok(LAND_EVENTS.some(e=>e.id===s.expedition.event));assert.equal(exploreChoice(s,1).ok,false);s=resolveLandEvent(s,1).state;assert.equal(s.expedition.eventResolved,true);assert.equal(resolveLandEvent(s,1).ok,false);assert.equal(exploreChoice(s,1).ok,true);
+});
+
+test('regional equipment and custom shipyard upgrades preserve capacity when refitting',()=>{
+ let s=newGame('amani');s.coins=50000;assert.equal(buyShipEquipment(s,'sail','broadcloth').ok,false);s=buyShipEquipment(s,'sail','lateen').state;s=buyShipEquipment(s,'figurehead','dolphin').state;assert.equal(s.ship.gear.sail,'lateen');assert.equal(s.ship.gear.figurehead,'dolphin');const p=PORTS.find(p=>p.id==='jade');s.ship.x=p.x;s.ship.z=p.z;s=refineShip(s,'dutch-hold').state;assert.equal(s.ship.cargoLimit,54);assert.equal(refineShip(s,'dutch-hold').ok,false);s=refitShip(s,'cog').state;assert.equal(s.ship.cargoLimit,97);assert.equal(restoreGame(serializeGame(s)).ship.gear.figurehead,'dolphin');
+});
+test('tavern dialogue and gifts have daily limits and high-trust information is saved once',()=>{
+ let s=newGame('samira');const coins=s.coins;s=talkContact(s,'florence').state;s=giveGift(s,'florence','book').state;assert.equal(s.coins,coins-140);assert.equal(relationStatus(s,'florence').trust,16);assert.equal(giveGift(s,'florence','brooch').ok,false);assert.equal(talkContact(s,'florence').ok,false);for(let i=0;i<2;i++){s.day++;s=talkContact(s,'florence').state;s=giveGift(s,'florence','book').state;}assert.equal(relationStatus(s,'florence').trust,48);s=premiumInformation(s,'florence').state;assert.equal(s.treasureClues.length,1);assert.equal(premiumInformation(s,'florence').ok,false);assert.equal(restoreGame(serializeGame(s)).tavernRelations.florence.trust,48);
+});
+test('rare city companion requires trust, discovery and story; reserve keeps growth',()=>{
+ let s=newGame('samira');s=talkCompanion(talkCompanion(s,'florence').state,'florence').state;assert.equal(recruitCompanion(s,'florence').ok,false);s.reported.push('lagoon');s.tavernRelations.florence={trust:40};s=recruitCompanion(s,'florence').state;assert.ok(s.crewRoster.includes('florence'));s=assignCrew(s,'doctor','florence').state;s.xp+=360;const level=crewStats(s,'florence').level;s=benchCompanion(s,'florence').state;assert.ok(s.reserveCrew.includes('florence'));assert.equal(s.assignments.doctor,'');s=recruitCompanion(s,'florence').state;assert.equal(crewStats(s,'florence').level,level);s.tavernRelations.florence.trust=80;assert.equal(expressBond(s,'florence').ok,false);s.completedStories.push('samira-0');s=expressBond(s,'florence').state;assert.equal(s.tavernRelations.florence.bond,true);
+});
+test('new and restored national patrols stay on water and imported relation markup is normalized',()=>{
+ const s=newGame('samira');assert.ok(s.pirates.every(p=>!isLand(p.x,p.z)));s.pirates.find(p=>p.id===12).x=39;s.pirates.find(p=>p.id===12).z=-546;s.tavernRelations.florence={trust:'<img src=x>',lastTalk:'bad'};s.portState.venice={prosperity:'<script>',owner:'bad'};s.captain='<img>';const r=restoreGame(serializeGame(s));assert.ok(!isLand(r.pirates.find(p=>p.id===12).x,r.pirates.find(p=>p.id===12).z));assert.equal(r.tavernRelations.florence.trust,0);assert.equal(typeof r.portState.venice.prosperity,'number');assert.equal(r.captain,'사미라 알자흐라');
 });
