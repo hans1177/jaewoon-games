@@ -404,12 +404,44 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const floorCenterX=(floorBounds.min.x+floorBounds.max.x)/2;
   const floorCenterZ=(floorBounds.min.z+floorBounds.max.z)/2;
   const floorSurfaceY=.015-floorBounds.max.y;
-  const biomeTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,49);
+  // 기존 CC0 바닥 지오메트리는 그대로 재사용한다. 16x16 픽셀 무늬는 1회만 생성해 모든 지역에서 공유한다.
+  // 텍스처 파일 다운로드 없이 풀·돌·흙 얼룩 느낌을 만들어 저사양 모바일에도 추가 로딩이 없다.
+  const floorPatternSide=16,floorPatternPixels=new Uint8Array(floorPatternSide*floorPatternSide*4);
+  for(let y=0;y<floorPatternSide;y++)for(let x=0;x<floorPatternSide;x++){
+    const cell=(Math.imul(x+3,374761393)^Math.imul(y+7,668265263))>>>0;
+    const group=(Math.floor(x/3)+Math.floor(y/3)*7)%5;
+    const value=cell%17===0?160:cell%9===0?191:group===1?213:group===3?236:248;
+    const i=(y*floorPatternSide+x)*4;
+    floorPatternPixels[i]=value;floorPatternPixels[i+1]=value;floorPatternPixels[i+2]=value;floorPatternPixels[i+3]=255;
+  }
+  const floorPattern=new THREE.DataTexture(floorPatternPixels,floorPatternSide,floorPatternSide,THREE.RGBAFormat);
+  floorPattern.magFilter=THREE.NearestFilter;floorPattern.minFilter=THREE.NearestFilter;
+  floorPattern.wrapS=THREE.RepeatWrapping;floorPattern.wrapT=THREE.RepeatWrapping;
+  floorPattern.generateMipmaps=false;floorPattern.needsUpdate=true;
+  // 원본 바닥에 UV가 없다면 기존 꼭짓점으로 좌표만 생성한다. 형태·충돌·저장값은 변경하지 않는다.
+  if(!sourceFloor.geometry.getAttribute('uv')){
+    const positions=sourceFloor.geometry.getAttribute('position'),uv=new Float32Array(positions.count*2);
+    for(let i=0;i<positions.count;i++){
+      uv[i*2]=(positions.getX(i)-floorBounds.min.x)/floorPitchX;
+      uv[i*2+1]=(positions.getZ(i)-floorBounds.min.z)/floorPitchZ;
+    }
+    sourceFloor.geometry.setAttribute('uv',new THREE.BufferAttribute(uv,2));
+  }
+  const patternedFloorMaterial=sourceFloor.material.clone();
+  patternedFloorMaterial.map=floorPattern;patternedFloorMaterial.needsUpdate=true;
+  const biomeTiles=new THREE.InstancedMesh(sourceFloor.geometry,patternedFloorMaterial,49);
   biomeTiles.receiveShadow=true;biomeTiles.frustumCulled=false;scene.add(biomeTiles);
-  const floorSeamTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,36);
+  const floorSeamTiles=new THREE.InstancedMesh(sourceFloor.geometry,patternedFloorMaterial,36);
   floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
   const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
+  const BIOME_ACCENT=Object.freeze({
+    forest:[.89,1,1.09],jungle:[.83,1,1.11],swamp:[.82,.94,1.04],snow:[.89,1,1.05],
+    canyon:[.77,.94,1.08],volcano:[.73,.93,1.11],crystal:[.76,1,1.17],
+    giantlake:[.86,1,1.12],worldtree:[.83,1,1.13],flowerfield:[.83,1,1.18],
+    giantgarden:[.85,1,1.16],desert:[.8,1,1.13],underwater:[.82,1,1.15],
+    'underwater-dungeon':[.78,.98,1.1],water:[.9,1,1.08],lava:[.78,.96,1.13]
+  });
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
   // 마법탄은 실제 게임의 투사체 좌표만 보여주는 저폴리곤 3D 효과다. 피해·적중 판정은 게임 코드 소유.
@@ -422,13 +454,21 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
   const SCENERY_KIND=Object.freeze({
-    forest:['tree','foliage_A'],jungle:['tree_large','foliage_B'],swamp:['foliage_A','tree'],
-    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
-    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','foliage_B'],
-    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_B'],
-    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree'],
-    desert:['cobblestones','foliage_A'],
-    underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
+    // 원래 라이브러리 내 원본 메시만 사용하고 지역별 셋을 달리한다. 새 GPU 지오메트리·다운로드 없음.
+    forest:['tree','foliage_A','foliage_B'],
+    jungle:['tree_large','foliage_B','tree'],
+    swamp:['foliage_A','tree','cobblestones'],
+    snow:['tree_large','cobblestones','foliage_B'],
+    canyon:['cobblestones','foliage_A','fence_straight'],
+    volcano:['cobblestones','fence_straight','foliage_B'],
+    crystal:['cobblestones','foliage_B','fence_straight'],
+    giantlake:['foliage_A','foliage_B','cobblestones'],
+    worldtree:['tree_large','foliage_B','tree'],
+    flowerfield:['foliage_A','foliage_B','tree'],
+    giantgarden:['foliage_B','tree','cobblestones'],
+    desert:['cobblestones','foliage_A','fence_straight'],
+    underwater:['foliage_B','cobblestones','foliage_A'],
+    'underwater-dungeon':['cobblestones','fence_straight','foliage_B']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
@@ -822,7 +862,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
       // 흰색 혼합을 줄여 설원·화산·수정 지대와 숲의 색채가 뚜렷하게 구분되도록 한다.
       const tileSeed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(.91+tileSeed%17*.01).lerp(floorNeutral,.12));
+      const shade=BIOME_ACCENT[surface?.kind||tileZone]||BIOME_ACCENT.forest;
+      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(shade[tileSeed%shade.length]).lerp(floorNeutral,.07));
       tileIndex++;
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
@@ -846,7 +887,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
             resourceTransform.updateMatrix();
             batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
-            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
+            // 같은 CC0 장식이라도 나무/암석/풀에 서로 다른 지역 색 대비를 적용한다.
+            const accent=kind.includes('foliage')?.47:kind.includes('tree')?.32:.17;
+            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor)
+              .multiplyScalar(.86+(hash>>>11)%5*.065).lerp(floorNeutral,accent));
             batch.count++;
           }
         }
@@ -861,7 +905,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         tile.position.set(seamX-floorCenterX,floorSurfaceY-.055,seamZ-floorCenterZ);
         tile.updateMatrix();
         floorSeamTiles.setMatrixAt(seamTileIndex,tile.matrix);
-        floorSeamTiles.setColorAt(seamTileIndex,floorTint.setHex(seamStyle.floor).lerp(floorNeutral,.12));
+        const seamSeed=(Math.imul(centerTileX+tx+31,83492791)^Math.imul(centerTileY+tz+17,2654435761))>>>0;
+        const seamShade=BIOME_ACCENT[surface?.kind||seamZone]||BIOME_ACCENT.forest;
+        floorSeamTiles.setColorAt(seamTileIndex,floorTint.setHex(seamStyle.floor).multiplyScalar(seamShade[seamSeed%seamShade.length]).lerp(floorNeutral,.07));
         seamTileIndex++;
       }
     }
@@ -1038,6 +1084,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     });
     scene.remove(biomeTiles);biomeTiles.dispose();
     scene.remove(floorSeamTiles);floorSeamTiles.dispose();
+    patternedFloorMaterial.dispose();floorPattern.dispose();
     for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
     resourceBatches.clear();
     for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}

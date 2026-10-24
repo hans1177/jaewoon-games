@@ -187,7 +187,7 @@ test('native forest ground has no 10x10 pitch mismatch and all rounded corners a
  assert.match(moduleSource,/sourceFloor\.geometry\.computeBoundingBox\(\)/);
  assert.match(moduleSource,/const floorPitchZ=floorBounds\.max\.z-floorBounds\.min\.z/);
  assert.match(moduleSource,/Math\.round\(centerY\/floorPitchZ\)/);
- assert.match(moduleSource,/new THREE\.InstancedMesh\(sourceFloor\.geometry,sourceFloor\.material,36\)/);
+ assert.match(moduleSource,/new THREE\.InstancedMesh\(sourceFloor\.geometry,patternedFloorMaterial,36\)/);
  assert.match(moduleSource,/floorSeamTiles\.setMatrixAt\(seamTileIndex,tile\.matrix\)/);
  assert.match(moduleSource,/floorSeamTiles\.instanceColor\.needsUpdate=true/);
  assert.match(moduleSource,/centerTileX!==lastFloorGridX\|\|centerTileY!==lastFloorGridZ/);
@@ -196,7 +196,7 @@ test('native forest ground has no 10x10 pitch mismatch and all rounded corners a
 });
 test('native forest movement clips are faster without changing gameplay-owned world movement or combat rules',()=>{
  assert.match(moduleSource,/const moving=lastHeroPoseAt>0&&poseElapsed<=300&&moveDelta>\.06/);
- assert.match(moduleSource,/heroAction\.setDuration\(\.28\)/);
+ assert.match(moduleSource,/heroAction\.setDuration\(selectedAppearance\?\.model===/);
  assert.match(moduleSource,/heroAction\.setEffectiveTimeScale\(pose==='move'\?1\.3:1\)/);
  assert.match(moduleSource,/actor\.action\.setEffectiveTimeScale\(attacking\?1\.35:moving\?1\.25:1\)/);
  assert.match(moduleSource,/heroMixer\.update\(Math\.min\(\.12,/);
@@ -609,21 +609,36 @@ test('all existing native biome environments show distinct authored palette and 
  for(const name of ['forest','jungle','swamp','snow','volcano','crystal','desert','underwater','underwater-dungeon']){
   assert.equal(kinds[name].length,2,name);
  }
- assert.match(moduleSource,/const kind=sceneryChoices\\[hash%sceneryChoices\\.length\\]/);
- assert.match(moduleSource,/tileSeed%17\\*\\.01/);
- assert.match(moduleSource,/scene\\.fog\\.far=weatherVisualEffects/);
- assert.match(moduleSource,/for\\(const mark of regionScene\\?\\.landmarks\\|\\|\\[\\]\\)/);
+ assert.match(moduleSource,/const kind=sceneryChoices\[hash%sceneryChoices\.length\]/);
+ assert.match(moduleSource,/shade\[tileSeed%shade\.length\]/);
+ assert.match(moduleSource,/scene\.fog\.far=weatherVisualEffects/);
+ assert.match(moduleSource,/for\(const mark of regionScene\?\.landmarks\|\|\[\]\)/);
 });
 test('native species motion uses actual movement and restarts one-shot attacks without changing gameplay position',()=>{
- assert.match(moduleSource,/const moving=moveDelta>\\.08&&poseElapsed>0&&poseElapsed<420/);
- assert.match(moduleSource,/actor\\.lastAttackStamp!==e\\.attackAt/);
- assert.match(moduleSource,/setLoop\\(attacking\\?THREE\\.LoopOnce:THREE\\.LoopRepeat/);
- assert.match(moduleSource,/actor\\.anchor\\.position\\.set\\(e\\.x\\*SCALE,0,e\\.y\\*SCALE\\)/);
- assert.match(moduleSource,/selectedAppearance\\?\\.model==='mage'\\?\\.43/);
- assert.match(moduleSource,/bolt\\.kind==='mageBolt'/);
- assert.match(moduleSource,/bolt\\.kind==='playerArrow'/);
- assert.match(moduleSource,/bolt\\.kind==='sporeOrb'/);
- assert.match(moduleSource,/bolt\\.kind==='sunOrb'/);
- assert.match(moduleSource,/mageBoltGeometry\\.dispose\\(\\)/);
+ assert.match(moduleSource,/const moving=moveDelta>\.08&&poseElapsed>0&&poseElapsed<420/);
+ assert.match(moduleSource,/actor\.lastAttackStamp!==e\.attackAt/);
+ assert.match(moduleSource,/setLoop\(attacking\?THREE\.LoopOnce:THREE\.LoopRepeat/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/selectedAppearance\?\.model==='mage'\?\.43/);
+ assert.match(moduleSource,/bolt\.kind==='mageBolt'/);
+ assert.match(moduleSource,/bolt\.kind==='playerArrow'/);
+ assert.match(moduleSource,/bolt\.kind==='sporeOrb'/);
+ assert.match(moduleSource,/bolt\.kind==='sunOrb'/);
+ assert.match(moduleSource,/mageBoltGeometry\.dispose\(\)/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+
+test('all region pixel ground palettes use one tiny shared nearest-neighbor texture on original CC0 ground geometry',()=>{
+ assert.match(moduleSource,/const floorPatternSide=16,floorPatternPixels=new Uint8Array/);
+ assert.match(moduleSource,/new THREE.DataTexture\(floorPatternPixels,floorPatternSide,floorPatternSide,THREE.RGBAFormat\)/);
+ assert.match(moduleSource,/floorPattern.magFilter=THREE.NearestFilter/);
+ assert.match(moduleSource,/floorPattern.minFilter=THREE.NearestFilter/);
+ assert.match(moduleSource,/const patternedFloorMaterial=sourceFloor.material.clone\(\)/);
+ assert.match(moduleSource,/const biomeTiles=new THREE.InstancedMesh\(sourceFloor.geometry,patternedFloorMaterial,49\)/);
+ assert.match(moduleSource,/const floorSeamTiles=new THREE.InstancedMesh\(sourceFloor.geometry,patternedFloorMaterial,36\)/);
+ assert.match(moduleSource,/const BIOME_ACCENT=Object.freeze/);
+ assert.match(moduleSource,/patternedFloorMaterial.dispose\(\);floorPattern.dispose\(\)/);
+ assert.doesNotMatch(moduleSource,/new THREE.PlaneGeometry\(|new THREE.BoxGeometry\(/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
