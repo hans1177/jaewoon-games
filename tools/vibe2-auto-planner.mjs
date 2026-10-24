@@ -892,7 +892,7 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
     return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){if(access.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(['development-confirmed','release-confirmed'].includes(project.releaseState)){
+  if(project.releaseState==='development-confirmed'){
     if(project.engine!=='web')return false;
     // 승인된 최신 소유자 지시가 있으면 이전 필드/원시 권한은 개발 슬롯을 열 수 없다.
     if(!ownerScope)return true; // 격리된 레거시 설계 fixture; 실제 검증된 예약에는 ownerScope 필수.
@@ -2646,7 +2646,7 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
 
 // 메인: 기존 개발→F0~F9 검증 완료 뒤 새 아이디어를 기존 책임 코드에서 계속 구현한다.
 export function findWebRecurringBuildUpTask(project,repoRoot,queue){
- if(project.engine!=='web'||!['development-confirmed','release-confirmed'].includes(project.releaseState))return null;
+ if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
  const root=posix(project.projectPath);
  if(!/^web-games\/[a-zA-Z0-9._-]+$/.test(root)||!fs.existsSync(sourceFile(repoRoot,root+'/index.html')))return null;
  // 미완성 변경이 있으면 다음 세대를 시작하지 않는다. 검증·저장·배포 단계도 건너뛰지 않는다.
