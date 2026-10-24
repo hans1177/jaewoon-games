@@ -1058,7 +1058,7 @@ joyBase.addEventListener("pointermove",function(e){if(e.pointerId===joyId)joyMov
 function joyEnd(e){if(e.pointerId!==joyId)return;joyId=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
 joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointercancel",joyEnd);
 addEventListener('keydown',function(e){if(!modalOpen)return;if(activeEventScene&&(e.code==='Enter'||e.code==='Space')){e.preventDefault();nextEventScene();return;}if(e.code==='Escape'){closeModal();return;}if(e.code==='Tab'){var nodes=[...modal.querySelectorAll('button:not(:disabled),a[href],input,select,[tabindex="0"]')].filter(function(n){return n.getClientRects().length;});var first=nodes[0],lastNode=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();lastNode.focus();}else if(!e.shiftKey&&document.activeElement===lastNode){e.preventDefault();first.focus();}}});
-window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,view,combat,storyObjective,tacticalPaused});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
+window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,view,combat,storyObjective,tacticalPaused,worldW,worldH,gameStarted});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
 </body>
