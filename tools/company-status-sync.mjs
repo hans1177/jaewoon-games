@@ -69,13 +69,14 @@ const baselineRank=book=>{
   return book?0.5:0;
 };
 const normalizeGenre=value=>clean(value).toLowerCase().replace(/\s+/g,' ');
-const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED']);
-export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
+const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED','OWNER_STOPPED','STOPPED']);
+export function gameLifecycleState(game={}){if(game.ownerDevelopmentStopped===true)return 'OWNER_STOPPED';const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
 export function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
 
 export function normalizeSelectedPlatform(value){
   const raw=clean(value).toUpperCase().replaceAll('-','_');
   if(raw==='ROBLOX')return 'ROBLOX';
+  if(['WEB','GENERAL_WEB','HTML_JS_WEBGL'].includes(raw))return 'WEB';
   if(['UNITY','UNITY_ANDROID','ANDROID_MOBILE'].includes(raw))return 'UNITY';
   if(['FORTNITE_UEFN','UEFN','FORTNITE'].includes(raw))return 'FORTNITE_UEFN';
   return '';
@@ -91,13 +92,15 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
   const queueById=latestById(developmentQueue?.items,'gameId');
   const seedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
   const removed=new Set([...(policy.permanentProjectRemoval?.ids||[]),...(catalog.permanentRemovalPolicy?.ids||[])].map(clean));
+  const ownerStoppedIds=new Set((catalog.ownerStoppedGameIds||[]).map(clean));
   catalog.runtimeAuthority='company-runtime';
   catalog.runtimeInfoAuthority='company-runtime';
   catalog.runtimeSupportedPlatforms=[...PLATFORM_PRIORITY];
   for(const game of catalog.games){
     const id=clean(game?.id);if(!id)continue;
+    if(ownerStoppedIds.has(id)){game.ownerDevelopmentStopped=true;game.lifecycleState='OWNER_STOPPED';}
     const queue=queueById.get(id)||null,seed=seedById.get(id)||null;
-    const platform=normalizeSelectedPlatform(queue?.selectedPlatform||queue?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.targetPlatform||game?.productionTarget);
+    const platform=game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'?'WEB':normalizeSelectedPlatform(queue?.selectedPlatform||queue?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.targetPlatform||game?.productionTarget);
     const score=developmentHomepageScore(queue);
     const baseGenres=Array.isArray(game?.genre)?game.genre:[];
     const robloxGenre=clean(seed?.ROBLOX_GENRE_LABEL_KO||seed?.ROBLOX_GENRE||queue?.ROBLOX_GENRE_LABEL_KO||queue?.ROBLOX_GENRE);
@@ -108,7 +111,7 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
       authority:'company-runtime',
       // 집중 개발 우선순위·대기열 유무는 노출 제한이 아니다. 명시적인 개발 제외만 반영한다.
       developmentActive:Boolean(!removed.has(id)
-        &&['ACTIVE','REBUILD'].includes(clean(game.lifecycleState||'ACTIVE').toUpperCase())
+        &&lifecycleAllowsDevelopment(game)
         &&![queue?.lifecycleState,queue?.status].some(value=>['PAUSED','DISABLED','REMOVED','RETIRED','ARCHIVED','CANCELLED','STOPPED'].includes(clean(value).toUpperCase()))
         &&queue?.ownerDevelopmentHold!==true),
       platform,
