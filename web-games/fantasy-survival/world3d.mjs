@@ -409,7 +409,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const floorSeamTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,36);
   floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
   const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
+  // 메인: 기존 원본 타일을 색 단계로 나누고 새 텍스처·지오메트리는 만들지 않는다.
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
+  const pixelTerrainTones=Object.freeze([.82,.88,.92,.96,1.01,1.06,1.11,1.16]);
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
   // 마법탄은 실제 게임의 투사체 좌표만 보여주는 저폴리곤 3D 효과다. 피해·적중 판정은 게임 코드 소유.
@@ -422,13 +424,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
   const SCENERY_KIND=Object.freeze({
-    forest:['tree','foliage_A'],jungle:['tree_large','foliage_B'],swamp:['foliage_A','tree'],
-    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
-    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','foliage_B'],
-    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_B'],
-    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree'],
-    desert:['cobblestones','foliage_A'],
-    underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
+    forest:['tree','foliage_A','foliage_B','tree_large'],jungle:['tree_large','foliage_B','tree','foliage_A'],swamp:['foliage_A','tree','cobblestones','foliage_B'],
+    snow:['tree_large','cobblestones','tree'],canyon:['cobblestones','foliage_A','tree'],
+    volcano:['cobblestones','fence_straight','tree'],crystal:['cobblestones','foliage_B','tree_large'],
+    giantlake:['foliage_A','foliage_B','cobblestones'],worldtree:['tree_large','foliage_B','foliage_A'],
+    flowerfield:['foliage_A','foliage_B','tree'],giantgarden:['foliage_B','tree','tree_large'],
+    desert:['cobblestones','foliage_A','fence_straight'],
+    underwater:['foliage_B','cobblestones','foliage_A'],'underwater-dungeon':['cobblestones','fence_straight','foliage_B']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
@@ -480,9 +482,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   let qualityFactor=mobileBudget?.82:1,framesInWindow=0,fpsWindowStart=0,stableQualityWindows=0,measuredFps=0;
   function synchronizeUndead(state,px,py,stamp){
     if(!undeadSource)return;
-    const candidates=(state.enemies||[]).filter(e=>e?.type?.id==='wastelandMummy'&&e.hp>0&&e.area===state.area
-      &&Math.hypot(e.x-px,e.y-py)<940);
-    for(const e of candidates){
+    // 전투 렌더링: 필터 임시 배열 없이 같은 거리/지역의 언데드만 표시한다.
+    const maxDistanceSq=940*940;
+    for(const e of state.enemies||[]){
+      if(e?.type?.id!=='wastelandMummy'||e.hp<=0||e.area!==state.area)continue;
+      const dx=e.x-px,dy=e.y-py;
+      if(dx*dx+dy*dy>=maxDistanceSq)continue;
       creatureBounds.center.set(e.x*SCALE,2,e.y*SCALE);
       if(!cameraFrustum.intersectsSphere(creatureBounds))continue;
       const id=String(e.netId||e.id||'');
@@ -681,8 +686,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       batch={mesh,capacity:128,points:[]};scene.add(mesh);resourceBatches.set(kind,batch);
     }
     let count=0;
+    // 메인: 모바일 자원 배치 프레임에서 같은 가시거리의 거리제곱을 한 번만 계산한다.
+    const range=Math.max(mobileBudget?250:430,(mobileBudget?650:1000)*qualityFactor),rangeSq=range*range;
     for(const item of arr){
-      if(!item||item.dead||Math.hypot(item.x-px,item.y-py)>Math.max(mobileBudget?250:430,(mobileBudget?650:1000)*qualityFactor))continue;
+      if(!item||item.dead)continue;
+      const dx=item.x-px,dy=item.y-py;
+      if(dx*dx+dy*dy>rangeSq)continue;
       const key=kind+':'+String(item.id),variation=assetAppearanceFactor(key),size=scale*variation.scale;
       creatureBounds.center.copy(source.geometry.boundingSphere.center).multiplyScalar(size);
       creatureBounds.center.x+=item.x*SCALE;creatureBounds.center.z+=item.y*SCALE;
@@ -822,7 +831,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
       // 흰색 혼합을 줄여 설원·화산·수정 지대와 숲의 색채가 뚜렷하게 구분되도록 한다.
       const tileSeed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-      biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(.91+tileSeed%17*.01).lerp(floorNeutral,.12));
+      // 좌표 시드가 고정된 8단계 명암: 이동 중 타일 색이 깜빡이지 않는다.
+        biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(pixelTerrainTones[(tileSeed>>>9)&7]).lerp(floorNeutral,.075));
       tileIndex++;
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
@@ -843,10 +853,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
             const zOffset=(((hash>>>7)%5)-2)*floorPitchZ*.12;
             resourceTransform.position.set(gx+xOffset,0,gz+zOffset);
             resourceTransform.rotation.y=(hash%8)*(Math.PI/4);
-            resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
+            resourceTransform.scale.setScalar(.32+((hash>>>10)%6)*.10);
             resourceTransform.updateMatrix();
             batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
-            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.35));
+            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).multiplyScalar(pixelTerrainTones[(hash>>>14)&7]).lerp(floorNeutral,.30));
             batch.count++;
           }
         }
@@ -861,7 +871,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         tile.position.set(seamX-floorCenterX,floorSurfaceY-.055,seamZ-floorCenterZ);
         tile.updateMatrix();
         floorSeamTiles.setMatrixAt(seamTileIndex,tile.matrix);
-        floorSeamTiles.setColorAt(seamTileIndex,floorTint.setHex(seamStyle.floor).lerp(floorNeutral,.12));
+        floorSeamTiles.setColorAt(seamTileIndex,floorTint.setHex(seamStyle.floor).multiplyScalar(pixelTerrainTones[(tileSeed>>>3)&7]).lerp(floorNeutral,.10));
         seamTileIndex++;
       }
     }
