@@ -107,7 +107,7 @@ test('hourly Windows CPU practice coalesces duplicate queue wakes and resumes on
   assert.match(workflow,/--resume-checkpoint/);
   assert.match(workflow,/WINDOWS_CPU_PRACTICE_RESUME=VERIFIED_CHECKPOINT/);
   assert.match(workflow,/CPU practice LoRA training failed without verified checkpoint/);
-  assert.match(trainer,/CPU practice recovery is restricted to verified practice-only CPU training/);
+  assert.match(trainer,/CPU checkpoint recovery is restricted to verified practice-only CPU training/);
   assert.match(trainer,/save_strategy="steps" if args.cpu_practice_recovery/);
   assert.match(trainer,/save_steps=16, save_total_limit=2/);
   assert.match(trainer,/validated_cpu_practice_checkpoint\(output, identity, args.resume_checkpoint\)/);
