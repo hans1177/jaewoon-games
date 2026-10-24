@@ -116845,7 +116845,7 @@
     },
     {
       "id": "marketing-cozy-island-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -116888,12 +116888,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40120355791:1",
+      "reservedAt": "2026-10-24T18:25:31.097Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -117405,14 +117405,15 @@
         "system-ai-handoff-to-reservation:system-ai:40118672591:1",
         "actions-run:40118672591",
         "system-ai-handoff-to-reservation:system-ai:40119390743:1",
-        "actions-run:40119390743"
+        "actions-run:40119390743",
+        "system-ai-handoff-to-reservation:system-ai:40120355791:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1666,
+      "impactScore": 1638,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 33,
-        "recurrenceCount": 33,
+        "blockedTaskCount": 32,
+        "recurrenceCount": 32,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -117420,7 +117421,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-24T18:21:35.308Z"
+      "updatedAt": "2026-10-24T18:25:31.097Z"
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
@@ -147267,7 +147268,7 @@
     },
     {
       "id": "recovery-recovery-c6e7736588dc69fb9540",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -147366,12 +147367,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40120355791:1",
+      "reservedAt": "2026-10-24T18:25:31.097Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -148208,14 +148209,15 @@
         "failed-strategy-fingerprint:d41f45cf81348d27e2876fc5e781016de6bbcce23d62f6b7ee1cd1009376cd40",
         "model-output-sha256:4678313f9a733849b90fbf98599d5514698524842c8f4b1e29aa0100c28bc7ee",
         "system-ai-handoff-to-reservation:system-ai:40119390743:1",
-        "actions-run:40119390743"
+        "actions-run:40119390743",
+        "system-ai-handoff-to-reservation:system-ai:40120355791:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1938,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 23,
-        "recurrenceCount": 219,
+        "recurrenceCount": 220,
         "dependencyCentrality": 22,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -148223,11 +148225,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-24T18:21:35.308Z"
+      "updatedAt": "2026-10-24T18:25:31.097Z"
     },
     {
       "id": "recovery-recovery-13016eae2090171271f7",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -148334,12 +148336,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40120355791:1",
+      "reservedAt": "2026-10-24T18:25:31.097Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -149421,14 +149423,15 @@
         "system-ai-handoff-to-reservation:system-ai:40118672591:1",
         "actions-run:40118672591",
         "system-ai-handoff-to-reservation:system-ai:40119390743:1",
-        "actions-run:40119390743"
+        "actions-run:40119390743",
+        "system-ai-handoff-to-reservation:system-ai:40120355791:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 2086,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 26,
-        "recurrenceCount": 327,
+        "recurrenceCount": 328,
         "dependencyCentrality": 26,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -149436,7 +149439,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-09T18:59:51.440Z",
-      "updatedAt": "2026-10-24T18:21:35.308Z"
+      "updatedAt": "2026-10-24T18:25:31.097Z"
     },
     {
       "id": "marketing-crystal-defense-pre-release-v1",
@@ -153557,7 +153560,7 @@
     },
     {
       "id": "recovery-recovery-907315c8bf74eb20724e",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153615,12 +153618,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40120355791:1",
+      "reservedAt": "2026-10-24T18:25:31.097Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39070616916:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -154172,22 +154175,24 @@
         "system-ai-handoff-to-reservation:system-ai:40116632064:1",
         "actions-run:40116632064",
         "system-ai-handoff-to-reservation:system-ai:40117413226:1",
-        "actions-run:40117413226"
+        "actions-run:40117413226",
+        "system-ai-impact-score:1028",
+        "system-ai-handoff-to-reservation:system-ai:40120355791:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1027,
+      "impactScore": 1028,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 2,
-        "recurrenceCount": 189,
+        "recurrenceCount": 190,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 164.26,
+        "ageHours": 164.92,
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:30:30.043Z",
-      "updatedAt": "2026-10-24T17:50:16.768Z"
+      "updatedAt": "2026-10-24T18:25:31.097Z"
     },
     {
       "id": "recovery-recovery-919dea22a6ccc3578fc7",
@@ -155773,7 +155778,7 @@
     },
     {
       "id": "recovery-recovery-14e80275e875a40a2953",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -155840,12 +155845,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40120355791:1",
+      "reservedAt": "2026-10-24T18:25:31.097Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39125330568:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -156850,22 +156855,23 @@
         "actions-run:40118672591",
         "system-ai-impact-score:1453",
         "system-ai-handoff-to-reservation:system-ai:40119390743:1",
-        "actions-run:40119390743"
+        "actions-run:40119390743",
+        "system-ai-handoff-to-reservation:system-ai:40120355791:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1453,
       "impactComponents": {
         "severity": 4,
         "blockedTaskCount": 13,
-        "recurrenceCount": 437,
+        "recurrenceCount": 438,
         "dependencyCentrality": 10,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 150.16,
+        "ageHours": 150.34,
         "repairRisk": 1
       },
       "createdAt": "2026-10-18T12:05:12.952Z",
-      "updatedAt": "2026-10-24T18:21:35.308Z"
+      "updatedAt": "2026-10-24T18:25:31.097Z"
     },
     {
       "id": "recovery-recovery-d90b9f15e26888b0a88c",
@@ -164086,6 +164092,7 @@
       "department": "recovery",
       "taskType": "bottleneck-repair",
       "gameId": "fantasy-survival",
+      "jointDecisionRequired": false,
       "goal": "Analyze the exact failed WEB deployment stage VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
       "responsibleFiles": [
         ".github/workflows/magic-forest-pages.yml"
@@ -164094,36 +164101,7 @@
         ".github/workflows/magic-forest-pages.yml",
         "web-games/fantasy-survival"
       ],
-      "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
-      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
-      "relatedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:276bfcec074bda60f7224eee26d6975b60f75b2c:fantasy-survival"
-      ],
-      "blockedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:276bfcec074bda60f7224eee26d6975b60f75b2c:fantasy-survival"
-      ],
-      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
-      "recurrenceCount": 1,
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "sourceMutationRequired": true,
-      "sourceMutationBaseline": "276bfcec074bda60f7224eee26d6975b60f75b2c",
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "compareLastKnownGoodFirstBrokenCurrentRequired": false,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "saveMigrationValidationRequired": false,
-        "multiplayerLifecycleValidationRequired": false,
-        "multiplayerUserAssistanceRequired": false,
-        "multiplayerMinimumAutomatedClients": 0,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "repeatedSameApproachWithoutNewCausalEvidenceForbidden": false
-      },
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "repair only assigned responsible files",
         "reproduce the exact failure before patch or preserve existing verified reproduction evidence",
@@ -164147,7 +164125,24 @@
         "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
       ],
       "dependencies": [],
+      "relatedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:276bfcec074bda60f7224eee26d6975b60f75b2c:fantasy-survival"
+      ],
+      "blockedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:276bfcec074bda60f7224eee26d6975b60f75b2c:fantasy-survival"
+      ],
       "retries": 0,
+      "recurrenceCount": 1,
+      "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "276bfcec074bda60f7224eee26d6975b60f75b2c",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -164182,8 +164177,8 @@
         "primary-ai-collaboration-task:recovery-recovery-edcb4866fea38a3dd219"
       ],
       "supervisorReviewRequired": true,
-      "workerSelfAcceptance": false,
-      "learningCandidate": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-10-24T18:23:03.295Z",
       "updatedAt": "2026-10-24T18:23:03.295Z"
     }
