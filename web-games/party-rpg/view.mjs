@@ -365,11 +365,72 @@ buildWorld(live){
  createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();}});root.add(model);if(kind!=='enemy')this.dressActor(root,role);
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
   const mixer=new THREE.AnimationMixer(model),actions=new Map();for(const clip of original.animations){const action=mixer.clipAction(clip);actions.set(clip.name,action);}
-  const result={root,model,ring,mixer,actions,action:null,role,kind,lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials:[]};model.traverse(p=>{if(!p.isMesh)return;for(const m of Array.isArray(p.material)?p.material:[p.material])if(m?.emissive)result.flashMaterials.push({material:m,red:m.emissive.r,green:m.emissive.g,blue:m.emissive.b});});this.scene.add(root);return result;
+  // 픽셀 캐릭터: 기존 게임의 3D 좌표·상호작용·전투 모델은 유지하고 표시만 24x32 픽셀 스프라이트로 전환.
+  // 네 프레임 그림을 고해상도로 늘리지 않고 NearestFilter로 출력. 효과와 배경은 별도 고해상도 3D.
+  const canvas=document.createElement('canvas');canvas.width=96;canvas.height=32;
+  const ctx=canvas.getContext('2d',{alpha:true});
+  const palette={
+   warrior:['#334458','#7a8f9e','#e8c492','#a8b7ba','#d6a36b'],
+   rogue:['#302e48','#6b537c','#dbc3a0','#96869b','#b9d09a'],
+   cleric:['#596050','#b8ad88','#edcca2','#f7e2a8','#b9d8c4'],
+   wizard:['#313e66','#5969a0','#dac1a3','#9abced','#b99ddd'],
+   ranger:['#334d3b','#68875a','#dbc69f','#b0bf89','#d6b18a'],
+   slime:['#334f62','#75b7aa','#9edcc0','#b7e6dc','#76d7c9'],
+   orc:['#494832','#81905d','#b0bc80','#e2d09f','#9b9f72'],
+   bunny:['#716a63','#bcb2a4','#ead6b9','#f3e7d8','#d0b6af'],
+   golem:['#474e5b','#8895a0','#b4bbc1','#d0c8ac','#aeb5c2'],
+   ghost:['#344458','#6f8e9e','#bdd1d5','#e3eff2','#93bddb'],
+   winged:['#553b51','#a1738b','#d4b9af','#f0cdd5','#c69fc6']
+  };
+  const colors=palette[role]||palette.warrior;
+  const cell=(color,x,y,w,h)=>{ctx.fillStyle=color;ctx.fillRect(x,y,w,h);};
+  for(let frame=0;frame<4;frame++){
+   const x=frame*24,step=frame===1?1:frame===3?-1:0,swipe=frame===2;
+   // 칼날이나 활을 가진 5직업 및 적 6종 모두 정면에서 읽히는 단순 실루엣.
+   const enemy=kind==='enemy',slime=role==='slime',spirit=role==='ghost',wing=role==='winged';
+   if(slime){
+    cell(colors[0],x+5,16,14,11);cell(colors[1],x+3,19,18,7);cell(colors[2],x+6,14+(frame%2),12,7);
+    cell('#122d32',x+9,19,2,2);cell('#122d32',x+15,19,2,2);
+    cell(colors[3],x+6,17,3,2);
+   }else{
+    if(wing){cell(colors[1],x+1,10+step,7,13);cell(colors[1],x+16,10-step,7,13);cell(colors[3],x+2,12,4,6);cell(colors[3],x+18,12,4,6);}
+    const leg=spirit?colors[2]:colors[0];
+    cell(leg,x+7,24,4,6+(step>0?1:0));cell(leg,x+13,24,4,6+(step<0?1:0));
+    cell(colors[0],x+6,13,12,13);
+    cell(colors[1],x+7,15,10,9);
+    cell(colors[1],x+3,15+step,4,10);cell(colors[1],x+17,15-step,4,10);
+    cell(colors[0],x+6,5,12,11);cell(colors[2],x+8,8,8,7);
+    cell(colors[0],x+7,4,10,4);cell(colors[3],x+7,13,10,2);
+    cell('#1f2830',x+9,11,2,2);cell('#1f2830',x+14,11,2,2);
+    if(role==='wizard'||role==='cleric'){cell(colors[4],x+4,3,16,3);cell(colors[0],x+8,1,8,3);}
+    else if(role==='bunny'){cell(colors[2],x+7,0,3,9);cell(colors[2],x+14,0,3,9);}
+    else if(role==='golem'){cell(colors[3],x+4,6,4,8);cell(colors[3],x+16,6,4,8);}
+    else{cell(colors[4],x+8,4,8,3);}
+    if(role==='ranger'){cell(colors[4],x+20,13,2,12);cell(colors[3],x+18,14,2,8);}
+    else if(role==='wizard'||role==='cleric'){cell(colors[4],x+20,11,2,17);cell(colors[3],x+19,10,4,4);}
+    else if(role==='rogue'){cell(colors[3],x+20,swipe?8:17,2,10);}
+    else if(role==='warrior'||role==='orc'){cell(colors[3],x+20,swipe?7:14,2,14);cell(colors[4],x+19,swipe?7:14,4,3);}
+   }
+   if(enemy&&!slime&&frame===2)cell('#f4a0a0',x+9,11,2,2);
+  }
+  const texture=new THREE.CanvasTexture(canvas);texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestFilter;texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.ClampToEdgeWrapping;texture.repeat.set(.25,1);
+  const pixel=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,transparent:true,alphaTest:.08,depthWrite:false,toneMapped:false}));
+  pixel.position.y=height*.55;pixel.scale.set(height*.81,height*1.07,1);root.add(pixel);model.visible=false;
+  const result={root,model,ring,mixer,actions,action:null,role,kind,pixel,pixelFrame:-1,lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials:[]};
+  this.scene.add(root);return result;
  }
  // 애니메이션: GLB 실제 걷기/공격 클립을 크로스페이드, 클립 없는 적도 관성·공격 반동·피격 경직 처리.
  animate(entry,moving,combat,dt,now){
   const attack=combat?.visualUntil>now,hit=entry.hitAt>0?Math.max(0,1-(now-entry.hitAt)/280):0;
+  if(entry.pixel){
+   const frame=attack?Math.floor(now/88)%4:moving?Math.floor(now/125)%4:0;
+   if(entry.pixelFrame!==frame){entry.pixelFrame=frame;entry.pixel.material.map.offset.x=frame/4;}
+   const bob=moving?Math.sin(now*.017+entry.height)*.055:Math.sin(now*.003+entry.height)*.015;
+   const thrust=attack?Math.sin(now*.026)*.07:0;
+   entry.pixel.position.y+=(entry.height*.55+bob+thrust+hit*.08-entry.pixel.position.y)*(1-Math.exp(-dt*16));
+   entry.pixel.material.color.setRGB(1,1-hit*.45,1-hit*.48);
+   return;
+  }
   const term=attack?'attack':moving?'walk':'idle',names=[...entry.actions.keys()];
   const preferred=term==='attack'?names.find(n=>/attack|spell|shoot|punch|bite|headbutt|slash/i.test(n)&&!/idle/i.test(n)):names.find(n=>new RegExp(term,'i').test(n));
   const fallback=names.find(n=>/idle/i.test(n))||names[0],name=preferred||fallback;
@@ -395,7 +456,7 @@ buildWorld(live){
   const entry=this.actors.get(key);if(entry){entry.hitAt=performance.now();entry.hitPower=power;}
   if(key==='player'||power>1)this.cameraImpact=Math.min(.12,this.cameraImpact+(power>1?.052:.025));
  }
- removeActor(key,entry){this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
+ removeActor(key,entry){if(entry.pixel){entry.pixel.material.map.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
  // 직업·기술별 색, 궤적, 보호막, 투사체, 마법 파편을 조합한 경량 3D 이펙트.
  // 게임 피해 판정과 분리하고 휴대폰은 효과/파편 개수를 제한한다.
  playSkillEffect(kind,sx,sy,tx=sx,ty=sy){
