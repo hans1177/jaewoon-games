@@ -162,6 +162,25 @@ export class IslandRendererV3 {
         for(let i=-2;i<=2;i++)part(box,m.stoneBright,i*.54,height*.96,0,.29,.35,1.03);
         part(box,m.darkWood,-.92,height*.27,.51,.1,height*.53,.08);
         part(box,m.darkWood,.92,height*.27,.51,.1,height*.53,.08);
+       }else if(kind==='fort-trebuchet'){
+        part(box,m.timber,0,.25,0,2.8,.38,2.0);
+        for(const x of [-1.05,1.05])for(const z of [-.8,.8])
+          part(tower,m.darkWood,x,.27,z,.4,.42,.4,Math.PI/2);
+        part(box,m.darkWood,0,height*.4,0,.3,height*.8,.35);
+        part(box,m.timber,.6,height*.82,0,.25,height*1.3,.28,.35);
+        part(box,m.stone,1.15,height*1.33,0,.5,.5,.5);
+      }else if(kind==='fort-ram'){
+        part(box,m.timber,0,.65,0,2.5,1.1,2.1);
+        part(roof,m.cloth,0,1.6,0,1.9,.85,1.5,Math.PI/4);
+        part(box,m.darkWood,-1.65,.57,0,2.1,.33,.4);
+        for(const x of [-.95,.95])for(const z of [-.78,.78])
+          part(tower,m.darkWood,x,.17,z,.34,.32,.34,Math.PI/2);
+      }else if(kind==='fort-siege-tower'){
+        part(box,m.timber,0,height*.46,0,2.35,height*.89,2.1);
+        part(box,m.darkWood,0,height*.92,.9,2.5,.19,.35);
+        for(const x of [-.97,.97])for(const z of [-.88,.88])
+          part(box,m.darkWood,x,height*.5,z,.17,height,.18);
+        for(const x of [-.9,.9])part(tower,m.darkWood,x,.2,0,.39,.36,.39,Math.PI/2);
       }else if(kind==='fort-keep'){
         const body=height*.82;
         part(box,m.stone,0,body*.5,0,3.2,body,3.0);
@@ -366,11 +385,12 @@ export class IslandRendererV3 {
         .sort((a,b)=>(a.x-focus.x)**2+(a.y-focus.y)**2-
           ((b.x-focus.x)**2+(b.y-focus.y)**2)).slice(0,modelBudget);
       for(const unit of visibleEnemies){
-        const kind=unit.kind==='ram'?'package':
-          unit.kind==='siegeTower'?'fort-watchtower':
-          unit.kind==='sapper'?'npc':'enemy';
+        const kind=unit.kind==='ram'?'fort-ram':
+          unit.kind==='siegeTower'?'fort-siege-tower':
+          unit.kind==='trebuchet'?'fort-trebuchet':
+          unit.kind==='sapper'?'npc':unit.kind==='ladder'?'soldier':'enemy';
         put('enemy:'+unit.id,kind,unit.x,unit.y,
-          unit.kind==='siegeTower'?4.7:unit.kind==='ram'?3.3:unit.boss?2.5:1.9);
+          unit.kind==='siegeTower'?4.7:unit.kind==='trebuchet'?3.5:unit.kind==='ram'?3.3:unit.boss?2.5:1.9);
       }
       if(game.state.expanded)for(const wolf of game.wolves)if(wolf.alive)
         put('wolf:'+wolf.id,'wolf',wolf.x,wolf.y,wolf.boss?2.8:1.6);
