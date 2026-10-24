@@ -318,7 +318,7 @@ test('low-quality mobile mode reduces GPU cost without deleting the original nat
  assert.match(native,/let pixelDensity=Math\.max\(\.32/);
  assert.match(native,/renderer\.setPixelRatio\(pixelDensity\*qualityFactor\)/);
  assert.match(native,/let qualityFactor=mobileBudget\?\.82:1/);
- assert.match(native,/const details=mobileBudget\?\(hash%3===0\?1:0\):barren\?1:3/);
+ assert.match(native,/const details=mobileBudget\?\(hash%5===0\?1:0\):barren\?1:3/);
  assert.match(native,/if\(!batch\|\|batch\.count>=147\)continue/);
  assert.match(native,/mobileBudget\?650:1000/);
  assert.match(native,/const unsafeUnmappedEncounter=synchronizeNativeCreatures/);
