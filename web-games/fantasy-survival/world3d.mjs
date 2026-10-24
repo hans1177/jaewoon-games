@@ -251,6 +251,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const scaledHeight=1.9*heightFactor*(choice.size/100)/modelHeight;
       model.scale.setScalar(scaledHeight);
       model.position.y=-box.min.y*scaledHeight;
+      // 루트 모션은 게임 좌표 담당이 아니므로 실제 모델 기준 원점을 고정한다.
+      model.userData.visualGroundY=model.position.y;
       avatar.add(model);
       avatar.userData.source=source.href;
       const previous=hero,previousMixer=heroMixer;
@@ -537,11 +539,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         model.scale.setScalar(heightScale);
         const actorBox=new THREE.Box3().setFromObject(model);
         model.position.y=-actorBox.min.y;
+        const visualGroundY=model.position.y;
         const anchor=new THREE.Group();
         anchor.add(model);
         scene.add(anchor);
         const mixer=undeadClips.length?new THREE.AnimationMixer(model):null;
-        actor={anchor,model,mixer,clipName:'',action:null,lastFrame:performance.now(),seen:0};
+        actor={anchor,model,mixer,visualGroundY,clipName:'',action:null,lastFrame:performance.now(),seen:0};
         undeadActors.set(id,actor);
       }
       actorVisualTarget.set(e.x*SCALE,0,e.y*SCALE);
@@ -549,7 +552,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.anchor.position.distanceToSquared(actorVisualTarget)>81)
         actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
       else actor.anchor.position.lerp(actorVisualTarget,cameraMotionAlpha);
-      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      const desiredYaw=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      if(actor.seen===0)actor.anchor.rotation.y=desiredYaw;
+      else actor.anchor.rotation.y+=Math.atan2(Math.sin(desiredYaw-actor.anchor.rotation.y),
+        Math.cos(desiredYaw-actor.anchor.rotation.y))*Math.min(1,cameraMotionAlpha*1.7);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       // The game owns the tap-target/attack decision. Native skinned surfaces only
       // provide the correct original world coordinates to its existing handler.
@@ -584,6 +590,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+        // FBX/GLB 원본 공격·달리기의 root translation 누적을 막아 화면 순간이동을 방지.
+        actor.model.position.set(0,actor.visualGroundY,0);
         actor.lastFrame=now;
       }
       actor.seen=stamp;
@@ -652,6 +660,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         });
         model.scale.setScalar(scale);
         model.position.y=-source.floor*scale;
+        const visualGroundY=model.position.y;
         const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
         const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
         const motionFamily=/bat|bee|fairy|pheasant|heron|spirit/i.test(speciesId)?'air':
@@ -659,7 +668,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           /golem|guardian|bear|yeti|buffalo/i.test(speciesId)?'heavy':
           /spider|scorpion|mantis|caterpillar|burrower/i.test(speciesId)?'skitter':
           /wolf|hound|tiger|fox|boar/i.test(speciesId)?'pounce':'walk';
-        actor={anchor,model,mixer,clips:source.clips,motionFamily,clipName:'',action:null,
+        actor={anchor,model,mixer,clips:source.clips,motionFamily,visualGroundY,clipName:'',action:null,
           lastFrame:performance.now(),seen:0};
         nativeCreatureActors.set(key,actor);
       }
@@ -668,7 +677,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.anchor.position.distanceToSquared(actorVisualTarget)>81)
         actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
       else actor.anchor.position.lerp(actorVisualTarget,cameraMotionAlpha);
-      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      const desiredYaw=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      if(actor.seen===0)actor.anchor.rotation.y=desiredYaw;
+      else actor.anchor.rotation.y+=Math.atan2(Math.sin(desiredYaw-actor.anchor.rotation.y),
+        Math.cos(desiredYaw-actor.anchor.rotation.y))*Math.min(1,cameraMotionAlpha*1.7);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       actor.model.traverse(child=>{
         if(!child.isMesh)return;
@@ -710,6 +722,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const now=performance.now();
       if(Math.hypot(e.x-px,e.y-py)<300||now-actor.lastFrame>=100){
         actor.mixer?.update(Math.min(.15,Math.max(0,(now-actor.lastFrame)/1000)));
+        // FBX/GLB 원본 공격·달리기의 root translation 누적을 막아 화면 순간이동을 방지.
+        actor.model.position.set(0,actor.visualGroundY,0);
         actor.lastFrame=now;
       }actor.seen=stamp;
     }
@@ -979,7 +993,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         hero.avatar.position.z+=(centerY-hero.avatar.position.z)*cameraMotionAlpha;
       }
       hero.avatar.userData.lastArea=state.area;
-      hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      const desiredHeroYaw=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      if(hardCameraReset)hero.avatar.rotation.y=desiredHeroYaw;
+      else hero.avatar.rotation.y+=Math.atan2(Math.sin(desiredHeroYaw-hero.avatar.rotation.y),
+        Math.cos(desiredHeroYaw-hero.avatar.rotation.y))*Math.min(1,cameraMotionAlpha*1.7);
       const tool=String(p.tool||p.weapon||'NONE');
       if(tool!==playerToolName){
         playerToolName=tool;
@@ -1019,6 +1036,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         if(pose==='attack')lastHeroAttackAt=attackAt;
       }
       if(heroMixer){heroMixer.update(Math.min(.12,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
+      // 액션 리그의 root.position 키가 이동 좌표를 덮어쓰지 못하게 프레임 끝에서 고정.
+      hero.model.position.set(0,hero.model.userData.visualGroundY,0);
     }
     synchronizeUndead(state,px,py,seen);
     const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
