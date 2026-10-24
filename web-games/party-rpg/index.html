@@ -951,6 +951,11 @@ function townCouncil(fromScene=false){
  openModal('북문 사건 조사단',h);modal.dataset.mode='dialogue';
  modalBody.querySelectorAll('[data-council]').forEach(function(btn){btn.onclick=function(){
   var key=btn.dataset.council,text=key==='luca'?(luca?(luca.path==='truth'?'루카: “그 문을 닫은 손은 내 것이었어. 네가 열어젖힌 증언을 끝까지 지켜야겠지.”':'루카: “네가 부하들의 유족을 지켰어. 아직 말하지 못할 이름도 있어.”'):'루카: “북문에 남은 군번표를 가져와. 그때 모두가 죽었다는 보고서부터 의심해야 해.”'):key==='mina'?(mina?(mina.path==='truth'?'미나: “아버지의 봉랍을 열었어. 누가 내 기억을 빼앗았는지는 모르겠지만 진실은 남았지.”':'미나: “기록을 감춘 게 아니라 사람을 지킨 거야. 하지만 언젠간 남은 글을 읽어야겠지.”'):'미나: “숲의 이름 없는 묘에는 아버지의 봉인이 있어. 누군가 기록을 두 번 고쳐 썼어.”'):'미나: “'+storyObjective()+'”';
+  // 조사단의 답변에도 루카의 책임감, 미나의 증거 중심 말투를 일관되게 적용한다.
+  if(key==='luca'||key==='mina'){
+   const member=state.ai[key==='luca'?0:1],path=(key==='luca'?luca:mina)?.path;
+   text+='\n'+member.name+': “'+companionResponse(member,path||'discovery')+'”';
+  }
   var panel=modalBody.querySelector('#councilResponse');if(!panel){panel=document.createElement('blockquote');panel.id='councilResponse';modalBody.querySelector('.dialogueText').append(panel);}panel.textContent=text;sound.effect('story');
  };});
  document.getElementById('councilJournal').onclick=storyJournal;
