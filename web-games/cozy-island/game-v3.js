@@ -28,6 +28,11 @@ const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
 let selectedTool=0,lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
 let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
+// 메인: 기존 일반 습격은 그대로 두고 성채 건설 이후 선택형 대공성전만 추가한다.
+let grandSiege=null;
+const SIEGE_INTERVALS=[60,120,180,300,600],SIEGE_WAVE_SIZES=[18,24,30,34,38,42];
+const getFort=()=>state.villageDevelopment?.fortification;
+const raidInterval=()=>SIEGE_INTERVALS.includes(getFort()?.raidIntervalSec)?getFort().raidIntervalSec:RAID_INTERVAL;
 const barracks={x:1080,y:650},workerShop={x:1200,y:820};
 const wolves=[
   makeWolf(1,1650,360),makeWolf(2,2050,760),makeWolf(3,2450,420),makeWolf(4,2720,840)
@@ -116,13 +121,99 @@ function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.wo
 }
 function feedWorkers(){let survivors=0;for(let i=0;i<state.workers;i++){if(state.inventory.food>=FEED_COST){state.inventory.food-=FEED_COST;survivors++}}const dead=state.workers-survivors;state.workers=survivors;saveSoon();if(dead>0)toast(`⚠️ 식량 부족으로 노비 ${dead}명이 굶어 죽었어`);else toast(`🍖 노비 급식 -${survivors*FEED_COST}`)}
 
-function updateRaid(dt){if(!raidActive){state.raidTimer+=dt;if(state.raidTimer>=RAID_INTERVAL)startRaid();return}updateRaidCombat(dt);if(enemies.length===0){raidActive=false;game.raidActive=false;state.raidTimer=0;saveSoon();toast('✅ 습격 방어 성공')}}
-function startRaid(){state.raidTimer=0;state.raidNumber=(state.raidNumber%3)+1;raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));else if(state.raidNumber===2){for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));for(let i=0;i<2;i++)enemies.push(createUnit('archer',true))}else enemies.push(createUnit('soldier',true,true));game.enemies=enemies;toast(state.raidNumber===3?'👹 보스 습격!':`⚠️ ${state.raidNumber}차 습격!`);saveSoon()}
+function updateRaid(dt){
+  const fort=getFort();
+  if(!raidActive){
+    state.raidTimer+=dt;
+    if(fort?.siegeRequested || state.raidTimer>=raidInterval())startRaid();
+    return;
+  }
+  if(grandSiege){
+    grandSiege.elapsed+=dt;
+    // 부대는 최대 110명까지 동시에 유지하고, 전투가 진행되면 후속 부대를 출진시킨다.
+    if(grandSiege.wave<SIEGE_WAVE_SIZES.length &&
+       grandSiege.elapsed>=grandSiege.nextWaveAt && enemies.length<90)spawnSiegeWave();
+  }
+  updateRaidCombat(dt);
+  if(game.siegeSurrendered){
+    enemies=[];game.enemies=enemies;game.siegeSurrendered=false;
+    raidActive=false;game.raidActive=false;grandSiege=null;game.grandSiege=null;
+    state.raidTimer=0;saveSoon();toast('🏰 성채가 함락됐어! 성벽과 성채를 수리해');
+    return;
+  }
+  if(enemies.length===0 && (!grandSiege || grandSiege.wave>=SIEGE_WAVE_SIZES.length)){
+    if(grandSiege){const f=getFort();if(f)f.siegeVictories=(Number(f.siegeVictories)||0)+1}
+    raidActive=false;game.raidActive=false;grandSiege=null;game.grandSiege=null;
+    state.raidTimer=0;saveSoon();toast('✅ 습격 방어 성공');
+  }
+}
+function startRaid(){
+  const fort=getFort(),auto=fort?.siegeAuto||'off';
+  const siegeEnabled=!!fort?.siegeRequested||(!!fort&&fort.siegeAuto==='always')||
+    (!!fort&&auto==='third'&&state.raidNumber===2);
+  if(fort)fort.siegeRequested=false;
+  state.raidTimer=0;state.raidNumber=(state.raidNumber%3)+1;
+  raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];
+  // 기존 일반 습격/특수 습격 로직을 그대로 실행한다.
+  if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
+  else if(state.raidNumber===2){
+    for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
+    for(let i=0;i<2;i++)enemies.push(createUnit('archer',true));
+  }else enemies.push(createUnit('soldier',true,true));
+  if(siegeEnabled && fort?.wallTier && state.villageDevelopment?.townHallBuilt){
+    grandSiege={wave:0,elapsed:0,nextWaveAt:.6,spawned:0};
+    game.grandSiege=grandSiege;
+    toast('🚩 대공성전 개시! 성문과 성벽을 방어해');
+  }else{
+    grandSiege=null;game.grandSiege=null;
+    toast(state.raidNumber===3?'👹 보스 습격!':`⚠️ ${state.raidNumber}차 습격!`);
+  }
+  game.enemies=enemies;saveSoon();
+}
+function spawnSiegeWave(){
+  if(!grandSiege)return;
+  const stage=grandSiege.wave,n=SIEGE_WAVE_SIZES[stage];
+  const roles=['soldier','archer','soldier','soldier','cavalry','soldier','archer','sapper'];
+  for(let i=0;i<n;i++){
+    const kind= i===0&&stage>=1?'ram':
+      i===1&&stage>=3?'siegeTower':
+      i===2&&stage>=2?'sapper':roles[(i+stage)%roles.length];
+    const u=createUnit(kind==='archer'?'archer':'soldier',true);
+    u.kind=kind;u._grandSiege=true;
+    const flank=(i%3),lane=flank===0?455:flank===1?610:805;
+    const rank=Math.floor(i/3);
+    u.x=1650+(rank%10)*42+stage*45;
+    u.y=lane+(rank%4-1.5)*22;
+    u._siegeLane=kind==='ram'?610:kind==='siegeTower'?455:kind==='sapper'?805:lane;
+    if(kind==='ram')Object.assign(u,{hp:1050,maxHp:1050,attack:0,speed:28,siegeDamage:145,siegeCooldown:2.2});
+    if(kind==='siegeTower')Object.assign(u,{hp:1650,maxHp:1650,attack:0,speed:23,siegeDamage:120,siegeCooldown:2.6});
+    if(kind==='sapper')Object.assign(u,{hp:180,maxHp:180,attack:0,speed:90,siegeDamage:72,siegeCooldown:1.2});
+    enemies.push(u);
+  }
+  grandSiege.wave++;grandSiege.spawned+=n;
+  grandSiege.nextWaveAt=grandSiege.elapsed+12;
+  game.enemies=enemies;
+  toast(`🏹 대공성전 ${grandSiege.wave}/${SIEGE_WAVE_SIZES.length}차 공세 · 적군 ${n}명 증원`);
+}
 function updateRaidCombat(dt){for(const u of allies)updateCombatUnit(u,enemies,dt,false);for(const u of enemies)updateCombatUnit(u,allies,dt,true);allies=allies.filter(u=>u.hp>0);enemies=enemies.filter(u=>u.hp>0);game.allies=allies;game.enemies=enemies;saveArmyIfChanged()}
 function updateCombatUnit(u,targets,dt,hostile){
   u.cool=Math.max(0,u.cool-dt);
   // 메인: 기존 공격력·사거리·재장전 간격은 유지하고 주둔 병사의 이동만 고정한다.
   if(!hostile&&u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y}
+  // 공성 병기는 병사 공격이 아니라 성문/벽 돌파를 우선하며, 기존 일반 습격 전투는 유지한다.
+  if(hostile&&u._grandSiege){
+    const fort=getFort(),walls=fort?.walls||{};
+    const lane=u._siegeLane||610;
+    const key=lane<520?'north':lane>730?'south':'gate';
+    if(fort&&state.villageDevelopment?.townHallBuilt&&(Number(walls[key])||0)>0){
+      if(u.x>1353||Math.abs(u.y-lane)>25)moveToward(u,1355,lane,dt);
+      return;
+    }
+    if(['ram','siegeTower','sapper'].includes(u.kind)){
+      moveToward(u,1010,1050,dt);
+      return;
+    }
+  }
   const t=nearestLiving(u,targets);
   if(!t&&hostile){moveToward(u,barracks.x,barracks.y,dt);return}
   if(!t)return;
@@ -144,7 +235,20 @@ function updateWolves(dt){const now=Date.now();for(const w of wolves){if(!w.aliv
 function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y;continue}if(wolf&&u.kind==='soldier')continue;u.wander-=dt;if(u.wander<=0){const a=Math.random()*Math.PI*2;u.vx=Math.cos(a);u.vy=Math.sin(a);u.wander=1.2+Math.random()*2.2}const nx=u.x+u.vx*u.speed*.28*dt,ny=u.y+u.vy*u.speed*.28*dt;if(nx>350&&nx<1280)u.x=nx;else u.vx*=-1;if(ny>450&&ny<900)u.y=ny;else u.vy*=-1}}
 function advanceClock(dt){clockCarry+=dt;if(clockCarry<.5)return;const ticks=Math.floor(clockCarry/.5);clockCarry-=ticks*.5;state.minutes+=ticks*5;state.playMinutes+=ticks*2.5/60;while(state.minutes>=1440){state.minutes-=1440;state.day++;state.weather=seededWeather(state.day);game.weather=state.weather;toast(`${state.day}일차 · ${state.weather}`)}updateHUD();saveSoon()}
 function seededWeather(day){return Math.abs(Math.sin(day*91.731)*10000)%1<.28?'비':'맑음'}
-function updateHUD(){const h=Math.floor(state.minutes/60),m=Math.floor(state.minutes%60),pm=h>=12,h12=((h+11)%12)+1;ui.day.textContent=`${state.day}일차`;ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';ui.coins.textContent=String(state.coins);if(raidActive)ui.raid.textContent=`⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;else{const r=Math.max(0,Math.ceil(RAID_INTERVAL-state.raidTimer));ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`}}
+function updateHUD(){
+  const h=Math.floor(state.minutes/60),m=Math.floor(state.minutes%60),pm=h>=12,h12=((h+11)%12)+1;
+  ui.day.textContent=`${state.day}일차`;
+  ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;
+  ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';
+  ui.coins.textContent=String(state.coins);
+  if(raidActive)ui.raid.textContent=grandSiege?
+    `🏰 대공성전 ${grandSiege.wave}/6 · 적 ${enemies.length}명`:
+    `⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;
+  else{
+    const r=Math.max(0,Math.ceil(raidInterval()-state.raidTimer));
+    ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`;
+  }
+}
 function canMoveTo(x,y){const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
 function updateMovement(dt){let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);if(!dx&&!dy)return;const mag=Math.hypot(dx,dy)||1;dx/=mag;dy/=mag;const nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;if(canMoveTo(nx,player.y))player.x=nx;if(canMoveTo(player.x,ny))player.y=ny}
 function updateHint(){ui.hint.textContent=interactionHint(nearestInteraction())}
