@@ -4153,7 +4153,7 @@ function preSubmitSelfReviewBlockFromPrompt(prompt='') {
 // A concrete craft contract fed into the SAME existing source worker, not a new pipeline.
 function visualCraftWorkerGuidance(order={},context={}){
   const target=clean(order?.target).toLowerCase();
-  if(!['web','roblox'].includes(target))return'';
+  if(!['web','roblox','unity'].includes(target))return'';
   const intent=[order?.goal,order?.selectedTask?.goal,order?.selectedTask?.focus]
     .filter(Boolean).map(clean).join(' ');
   const hasVisualWork=order?.presentationQuality?.required===true
@@ -4174,6 +4174,11 @@ function visualCraftWorkerGuidance(order={},context={}){
     '[VIBE GAME VISUAL CRAFT BEGIN]',
     'target='+target.toUpperCase()+'; gameId='+clean(order.gameId||order.selectedTask?.gameId),
     'Actual renderable composition recipes, not visual approval:',
+    target==='unity'
+      ?'Unity는 실제 프로젝트에 존재하는 Renderer/Animator/Timeline/ParticleSystem/URP/Canvas 소스를 먼저 확인하고 검증된 기존 책임 구현을 직접 수정한다. 기존 컴포넌트가 없으면 이름만 만든 가짜 바인딩/중복 Renderer를 추가하지 않는다.'
+      :target==='roblox'
+        ?'Roblox 기존 Luau client/Animator/Motor6D/TweenService/ParticleEmitter/Camera/UI 책임 함수에 연결한다.'
+        :'Web 기존 Canvas/WebGL/DOM/animation frame 책임 함수에 연결하고 추가 렌더 루프나 그림자 pipeline은 만들지 않는다.',
     JSON.stringify({materialRecipes:craft.craftPlans.map(row=>row.materialRecipe),
       surfaceLayouts:craft.craftPlans.map(row=>({surface:row.surface,grammar:row.grammar,
         layout:row.layout,focus:row.focus})),supportedEffects:craft.craftPlans[0]?.requiredPatterns||[]}),
