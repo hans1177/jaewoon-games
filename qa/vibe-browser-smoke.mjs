@@ -276,6 +276,31 @@ try{
  }
  // Cozy Island RTS: run on the real published GitHub Pages only, after deployment.
  if(liveBase){
+  // 공개 후: 경로 보존, 수평/수직 성문 자동 방향과 인부 길찾기의 실제 JS 모듈 검사.
+  const castleSource=fs.readFileSync(new URL('../web-games/cozy-island/castle-layout.js',import.meta.url),'utf8');
+  const castle=await import('data:text/javascript;base64,'+Buffer.from(castleSource).toString('base64'));
+  const continuous=castle.wallLine({x:0,y:0},{x:270,y:180});
+  assert.equal(continuous.length,6,'COZY_WALL_DRAG_GAPS_DETECTED');
+  for(let i=1;i<continuous.length;i++){
+    assert.equal(Math.hypot(continuous[i].x-continuous[i-1].x,continuous[i].y-continuous[i-1].y),
+      90,'COZY_WALL_DRAG_NONCONTIGUOUS');
+  }
+  const gate={kind:'gate',x:450,y:630,hp:200,axis:'horizontal',open:true};
+  assert.equal(castle.neighborGateAxis(gate,[
+    gate,{kind:'wall',x:360,y:630,hp:140},{kind:'wall',x:540,y:630,hp:140}
+  ]),'horizontal','COZY_GATE_HORIZONTAL_ALIGNMENT');
+  assert.equal(castle.neighborGateAxis(gate,[
+    gate,{kind:'wall',x:450,y:540,hp:140},{kind:'wall',x:450,y:720,hp:140}
+  ]),'vertical','COZY_GATE_VERTICAL_ALIGNMENT');
+  const pathBefore=castle.findWorkerRoute({x:390,y:820},{x:245,y:850},[]);
+  const pathDetour=castle.findWorkerRoute({x:390,y:820},{x:245,y:850},
+    [{kind:'wall',x:270,y:810,hp:140}]);
+  assert.ok(pathBefore.length>0&&pathDetour.length>pathBefore.length,
+    'COZY_WORKER_PATH_DID_NOT_AVOID_WALL');
+  assert.equal(castle.validateWallLayout([],[
+    {kind:'wall',x:360,y:810,hp:140}
+  ]).ok,false,'COZY_WALL_ALLOWED_BLOCKED_STOCKPILE');
+  console.log('COZY_LAYOUT_WORKER_GATE_PATH_POSTDEPLOY=PASS');
   const expected=String(process.env.GITHUB_SHA||'').trim();
   assert.match(expected,/^[0-9a-f]{40}$/i,'COZY_RTS_REVISION_REQUIRED');
   const res=await page.request.get(liveBase+'web-games/publish-manifest.json');
