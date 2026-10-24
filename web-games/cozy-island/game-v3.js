@@ -134,7 +134,7 @@ function interactionHint(t){
   if(t.type==='node')return '근처 자원 자동 채집 중';
   if(t.type==='npc')return t.item.name+' · 터치해서 대화';
   if(t.type==='house')return '집 터치 · 꾸미기';
-  if(t.type==='ship')return '출하 가능 · 아래 출하 메뉴';
+  if(t.type==='ship')return '무역 가능 · 상선 거래와 일괄 출하';
   if(t.type==='barracks')return '병영 · 병력 관리';
   if(t.type==='workerShop')return '일꾼 작업장 · 관리';
   if(t.type==='fish')return '연못 터치 · 낚시';
@@ -154,7 +154,7 @@ function activateInteraction(t){
     if(t.item.readyAt<=Date.now())collectNode(t.item);
   }else if(t.type==='npc')talkTo(t.item);
   else if(t.type==='house')openDecor();
-  else if(t.type==='ship')shipGoods();
+  else if(t.type==='ship')ui.trade?.click();
   else if(t.type==='barracks')openBarracks();
   else if(t.type==='workerShop')openWorkerShop();
   else if(t.type==='fish')startFishing();
