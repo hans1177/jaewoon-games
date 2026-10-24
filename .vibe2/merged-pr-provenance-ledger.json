@@ -89539,11 +89539,161 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6fac9e92067f45b8c8358cef",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9663",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c31eed05e54325864003f4cef454193e5d32cf29",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9663,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe2-reserve-runner-slot-handoff-20261024",
+        "baseSha": "c31eed05e54325864003f4cef454193e5d32cf29",
+        "headSha": "21f0a06a75f2dbf0a82aad937854197386b14e9c",
+        "mergeCommitSha": "b49be985edb9c706c60d399683f3e1d272be8f73",
+        "mergedAt": "2026-10-24T02:43:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ca0f06ba910fad75d9b7a17aab655cb7a20a050bb61a952ec4e0baf02354f2ba",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe2-reserve-runner-slot-handoff-20261024",
+        "candidateSha": "21f0a06a75f2dbf0a82aad937854197386b14e9c"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 18,
+        "addedLineCount": 399,
+        "deletedLineCount": 191,
+        "changedFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/gem-survivor-3d.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-adaptive-backpressure.test.mjs",
+          "qa/vibe2-autonomous-operations.test.mjs",
+          "roblox-games/chess-battle/client/Game.client.luau",
+          "roblox-games/chess-battle/roblox-source-bootstrap.json",
+          "roblox-games/chess-battle/shared/GameConfig.luau",
+          "tools/vibe2-adaptive-backpressure.mjs",
+          "tools/vibe2-autonomous-operations.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/fantasy-survival/world3d.mjs",
+          "web-games/gem-survivor/gem3d.mjs",
+          "web-games/gem-survivor/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/gem-survivor-3d.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-adaptive-backpressure.test.mjs",
+          "qa/vibe2-autonomous-operations.test.mjs",
+          "roblox-games/chess-battle/client/Game.client.luau",
+          "roblox-games/chess-battle/roblox-source-bootstrap.json",
+          "roblox-games/chess-battle/shared/GameConfig.luau",
+          "tools/vibe2-adaptive-backpressure.mjs",
+          "tools/vibe2-autonomous-operations.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/fantasy-survival/world3d.mjs",
+          "web-games/gem-survivor/gem3d.mjs",
+          "web-games/gem-survivor/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9663",
+        "merge-commit:b49be985edb9c706c60d399683f3e1d272be8f73",
+        "base-main:c31eed05e54325864003f4cef454193e5d32cf29"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 704
+    "total": 705
   }
 }
