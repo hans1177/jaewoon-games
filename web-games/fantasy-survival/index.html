@@ -3458,7 +3458,7 @@ function updateAutoCombat(now){
   if(isCreative()&&!(e.creativeOwned&&e.creativeAttackPlayer))continue;
   if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless'||e.type.burrower&&!e.emerged||e.type.labBoss&&now<(e.submergedUntil||0))continue;
   if(!(e.hostile||e.type.mood==='aggressive'||e.type.mood==='boss'||e.type.boss||e.type.labBoss))continue;
-  const d=dist(p.x,p.y,e.x,e.y),range=mounted?150:(Number(w.range)||0)+(Number(e.type.r)||0);
+  const d=dist(p.x,p.y,e.x,e.y),range=mounted?150:currentRange()+(Number(e.type.r)||0);
   if((mounted?d<range:d<=range)&&d<best){target=e;best=d}
  }
  if(!target)return;
@@ -3466,7 +3466,8 @@ function updateAutoCombat(now){
  if(mounted?now-(state.pet.attackAt||0)<750:now-(p.attackAt||0)<currentCooldown())return;
  attack(target);
 }
-function currentWeapon(){return item(state.player.weapon)}function currentDamage(){const base=effectiveStat(state.player.weapon,'power')+effectiveStat(state.player.armor,'bonusDamage');return base*(performance.now()<(state.player.weakenedUntil||0)?.5:1)}function currentRange(){return currentWeapon()?.range||0}function currentCooldown(){return currentWeapon()?.cooldown||380}
+function currentWeapon(){return item(state.player.weapon)}function currentDamage(){const base=effectiveStat(state.player.weapon,'power')+effectiveStat(state.player.armor,'bonusDamage');return base*(performance.now()<(state.player.weakenedUntil||0)?.5:1)}// 법사의 일반 무기 기본 공격은 원거리 마법탄으로 전환한다. 무기 공격력과 재사용 시간은 유지한다.
+function currentRange(){const range=currentWeapon()?.range||0;return avatarAppearance.model==='mage'&&currentWeapon()&&!currentWeapon().ranged?Math.max(405,range):range}function currentCooldown(){return currentWeapon()?.cooldown||380}
 function selectedArrow(){const p=state.player;if(p.arrowType&&ARROW_IDS.includes(p.arrowType)&&invCount(p.arrowType)>0)return item(p.arrowType);const fallback=ARROW_IDS.find(id=>invCount(id)>0)||null;p.arrowType=fallback;return fallback?item(fallback):null}
 function selectArrow(id){if(!ARROW_IDS.includes(id)||invCount(id)<1)return;state.player.arrowType=id;state.dirty=true;showNotice(item(id).name+' 선택');updateHud();renderPanel();saveGame(false)}
 function awardLoot(e){
@@ -4190,6 +4191,32 @@ function attack(selectedTapTarget=null){
   const tappedInRange=tapped&&Math.hypot(tapped.x-p.x,tapped.y-p.y)<=(Number(w.range)||760)+(Number(tapped.type.r)||0);
   const target=tappedInRange?tapped:nearestSporeTarget(p,w);if(!target){showNotice('근처에 적이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',.35);fireSporeSeeker(now,p,w,target);return}
  if(w?.ranged==='bow'){const arrow=selectedArrow();if(!arrow){showNotice('화살이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',Math.max(0,Math.min(1,(Number(w.power)||0)/180)));firePlayerArrow(now,p,w,arrow);return}
+ // 캐릭터별 기본 공격: 법사는 실제 충돌하는 마법탄을 발사한다.
+ // 기존 무기와 방어구의 공격력·쿨다운을 사용하고 아이템/저장/보스 판정은 기존 투사체 흐름을 따른다.
+ if(avatarAppearance.model==='mage'&&!w?.ranged){
+  const target=aimed&&aimed.hp>0&&aimed.area===state.area&&dist(aimed.x,aimed.y,p.x,p.y)<=currentRange()+(Number(aimed.type.r)||0)
+   ?aimed:state.enemies.filter(e=>e.hp>0&&e.area===state.area&&(e.type.mood!=='harmless'||e.type.huntable)
+     &&!(e.type.labBoss&&now<(e.submergedUntil||0))
+     &&dist(e.x,e.y,p.x,p.y)<=currentRange()+(Number(e.type.r)||0))
+     .sort((a,b)=>dist(a.x,a.y,p.x,p.y)-dist(b.x,b.y,p.x,p.y))[0];
+  if(!target){showNotice('마법 사거리 안에 적이 없어');return}
+  const dx=target.x-p.x,dy=target.y-p.y,d=Math.hypot(dx,dy)||1,speed=480;
+  p.faceX=dx/d;p.faceY=dy/d;p.attackAt=now;p.attackFx=now+220;
+  playCombatAudio('swing',.38);
+  const projectile={x:p.x+dx/d*25,y:p.y+dy/d*25,vx:dx/d*speed,vy:dy/d*speed,speed,
+   damage:currentDamage(),weaponId:w.id,createdAt:now,life:2200,area:state.area,
+   sourceId:multiplayer.playerId,ownerId:multiplayer.playerId,kind:'mageBolt',
+   targetId:target.netId,playerOwned:true};
+  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2'){
+   // 멀티의 피해 권한은 기존 공격 메시지/호스트에 유지한다. 로컬 투사체는 시각 효과만 표시한다.
+   multiSend('attack',{attackerId:multiplayer.playerId,x:p.x,y:p.y,area:state.area,
+    faceX:p.faceX,faceY:p.faceY,range:currentRange(),damage:projectile.damage,
+    neutralDouble:!!w?.neutralDouble,bind:w?.bindChance||0,slowChance:w?.slowChance||0,
+    slowDuration:w?.slowDuration||0,bleedChance:w?.bleedChance||0,bleedDamage:w?.bleedDamage||0});
+   projectile.visualOnly=true;
+  }
+  state.projectiles.push(projectile);state.dirty=true;return;
+ }
  p.attackAt=now;p.attackFx=now+150;
  const web=state.area==='surface'?state.flowerWebs.find(v=>v.hits>0&&dist(p.x,p.y,v.x,v.y)<=currentRange()+v.r):null;if(web){const dx=web.x-p.x,dy=web.y-p.y,d=Math.hypot(dx,dy),dot=(dx*p.faceX+dy*p.faceY)/(d||1);if(dot>=-.18){if(multiplayer.connected&&!multiIsHost())multiSend('flower-web-hit',{id:web.id});else damageFlowerWeb(web)}}
  const audioWeight=Math.max(0,Math.min(1,(Number(w?.power)||0)/180));playCombatAudio('swing',audioWeight);
@@ -5710,7 +5737,7 @@ function updateProjectiles(dt,now){
  const p=state.player;
  for(let i=state.projectiles.length-1;i>=0;i--){
   const q=state.projectiles[i];
-  if(q.kind==='sporeOrb'||q.kind==='sunOrb'){const t=state.enemies.find(e=>e.netId===q.targetId&&e.hp>0&&e.area===q.area);if(q.kind==='sunOrb'&&!t){state.projectiles.splice(i,1);continue}if(t){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||360);q.vy=dy/d*(q.speed||360)}}
+  if(q.kind==='sporeOrb'||q.kind==='sunOrb'||q.kind==='mageBolt'){const t=state.enemies.find(e=>e.netId===q.targetId&&e.hp>0&&e.area===q.area);if(q.kind==='sunOrb'&&!t){state.projectiles.splice(i,1);continue}if(t){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||360);q.vy=dy/d*(q.speed||360)}}
   if(q.kind==='toxicGasShot'&&now>=(q.nextSlowAt||0)){
    q.nextSlowAt=(q.nextSlowAt||now)+500;
    q.speedRatio=Math.max(.5,(Number(q.speedRatio)||1.5)-.1);
@@ -5741,10 +5768,15 @@ function updateProjectiles(dt,now){
    state.projectiles.splice(i,1);continue
   }
   if(q.playerOwned){
-   if(multiplayer.connected&&!multiIsHost())continue;
+   if(q.visualOnly||multiplayer.connected&&!multiIsHost())continue;
    let hitEnemy=null;
-   for(const e of state.enemies){if(e.hp<=0||e.area!==q.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;if(q.kind==='sunOrb'&&e.netId!==q.targetId)continue;if(dist(q.x,q.y,e.x,e.y)>e.type.r+10)continue;hitEnemy=e;break}
-   if(hitEnemy){if(q.kind==='sporeOrb')spawnSporeCloud(hitEnemy.x,hitEnemy.y,q.area,q.ownerId||q.sourceId||multiplayer.playerId,now,!!q.enhanced);if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const dmg=enemyIncomingDamage(hitEnemy,Number(q.damage)||0,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;if(q.kind==='sunOrb'){hitEnemy.sunOrbImpactUntil=now+450;hitEnemy.sunOrbImpactDamage=Math.max(0,Math.round(dmg));playGameSfx('monsterHurt',hitEnemy.type)}engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){markEnemyHitByPlayer(hitEnemy);if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now,q.kind==='sunOrb'?'sunOrb':'');state.projectiles.splice(i,1);state.dirty=true;continue}
+   for(const e of state.enemies){if(e.hp<=0||e.area!==q.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;if((q.kind==='sunOrb'||q.kind==='mageBolt')&&e.netId!==q.targetId)continue;if(dist(q.x,q.y,e.x,e.y)>e.type.r+10)continue;hitEnemy=e;break}
+   if(hitEnemy){if(q.kind==='sporeOrb')spawnSporeCloud(hitEnemy.x,hitEnemy.y,q.area,q.ownerId||q.sourceId||multiplayer.playerId,now,!!q.enhanced);if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const weapon=q.kind==='mageBolt'?item(q.weaponId):null;
+   const raw=(Number(q.damage)||0)*(weapon?.neutralDouble&&hitEnemy.type.mood==='neutral'?2:1);
+   const dmg=enemyIncomingDamage(hitEnemy,raw,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;
+   if(weapon?.bleedChance&&Math.random()<weapon.bleedChance)hitEnemy.hp-=Number(weapon.bleedDamage)||0;
+   if(weapon?.bindChance&&Math.random()<weapon.bindChance)hitEnemy.stunnedUntil=now+2000;
+   if(weapon?.slowChance&&Math.random()<weapon.slowChance)hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+(weapon.slowDuration||3000));if(q.kind==='sunOrb'){hitEnemy.sunOrbImpactUntil=now+450;hitEnemy.sunOrbImpactDamage=Math.max(0,Math.round(dmg));playGameSfx('monsterHurt',hitEnemy.type)}engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){markEnemyHitByPlayer(hitEnemy);if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now,q.kind==='sunOrb'?'sunOrb':'');state.projectiles.splice(i,1);state.dirty=true;continue}
    continue
   }
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
@@ -7159,6 +7191,7 @@ function drawProjectiles(cx,cy){
    }
    else if(q.kind==='playerArrow'){const colors=q.arrowId==='wood-arrow'?['#8b6a43','#d7b37a']:q.arrowId==='iron-arrow'?['#7d878c','#e0e6e8']:q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
   else if(q.kind==='sunOrb'){ctx.strokeStyle='rgba(255,190,55,.65)';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(0,30);ctx.stroke();ctx.fillStyle='rgba(255,220,90,.28)';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffd567';ctx.strokeStyle='#fff3bf';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
+  else if(q.kind==='mageBolt'){ctx.globalAlpha=.35;ctx.fillStyle='#81bdff';ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.fillStyle='#b5f0ff';ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='sporeOrb'){ctx.fillStyle='#b786d9';ctx.strokeStyle='#e6c9ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='toxicThrow'){ctx.globalAlpha=.92;ctx.fillStyle='#79d84f';ctx.strokeStyle='#d3ff9d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.35;ctx.fillStyle='#a8ff78';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill()}
