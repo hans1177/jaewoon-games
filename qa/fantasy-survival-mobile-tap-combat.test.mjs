@@ -58,10 +58,37 @@ test('tap combat waits for touch release and rejects swipes or holds',()=>{
  assert.equal(fn(p,{clientX:100,clientY:200},1701),false);
  assert.equal(fn({...p,cancelled:true},{clientX:100,clientY:200},1100),false);
  assert.match(source,/pendingCombatTap=\{pointerId:e\.pointerId,x:e\.clientX,y:e\.clientY/);
- assert.match(source,/if\(isCombatTapGesture\(press,e,performance\.now\(\)\)\)handleWorldTap\(e\)/);
+ assert.match(source,/if\(isCombatTapGesture\(press,e,performance\.now\(\)\)\)\{const point=worldPointerCoords\(e\);if\(!maybeCrystalDashTripleTap\(point,performance\.now\(\)\)\)handleWorldTap\(e\)\}/);
  assert.match(source,/canvas\.setPointerCapture\(e\.pointerId\)/);
 });
 
+
+
+test('crystal dash uses three valid background taps and preserves single-tap fallback',()=>{
+ const begin=source.indexOf('let crystalTripleTapAt=');
+ const end=source.indexOf('\nfunction isCombatTapGesture(',begin);
+ assert.ok(begin>=0&&end>begin);
+ const state={player:{accessory:'crystal-dash-accessory'},blueprint:null,creativePlacing:false,
+   keys:new Set(['KeyD']),stick:{x:0,y:0}};
+ const notices=[];
+ const dash=new Function('state','combatTapTarget','showNotice',source.slice(begin,end)+';return maybeCrystalDashTripleTap;')(
+   state,()=>null,message=>notices.push(message));
+ const p={x:20,y:20};
+ assert.equal(dash(p,1000),false);
+ assert.equal(dash(p,1150),false);
+ assert.equal(dash(p,1300),true);
+ assert.deepEqual(state.player.dashState,{dx:1,dy:0,until:3300});
+ state.keys.clear();state.player.dashState=null;
+ assert.equal(dash(p,2200),false);
+ assert.equal(dash(p,2350),false);
+ assert.equal(dash(p,2500),true);
+ assert.equal(state.player.dashState,null,'standing still cannot dash');
+ state.keys.add('KeyD');state.player.stunnedUntil=4000;
+ assert.equal(dash(p,3100),false);
+ assert.equal(dash(p,3250),false);
+ assert.equal(dash(p,3400),true);
+ assert.equal(state.player.dashState,null,'stunned player cannot dash');
+});
 
 test('Diablo-style character panel preserves original game data and inventory actions',()=>{
  const inventory=source.split('function renderInventory(){')[1]?.split('\nfunction mapTerrainColorAt(')[0]||'';
