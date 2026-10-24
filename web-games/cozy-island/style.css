@@ -188,3 +188,12 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
  .realm-overview small {font-size:8px}
  .realm-tab {font-size:11px;padding:8px 9px}
 }
+
+/* 중세 전투 패널: 모바일에서 바로 누를 수 있는 명확한 명령 버튼 */
+.realm-war-orders {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:6px 0 12px}
+.realm-war-orders button {min-height:50px;padding:8px 3px;border:2px solid #7b6949;
+ border-radius:6px;background:linear-gradient(180deg,#756a4f,#454839);
+ color:#fff2ce;font-size:11px;font-weight:900;box-shadow:0 3px 7px #2e302e44}
+.realm-war-orders button:active,.realm-war-orders button:focus-visible {outline:2px solid #edcc77}
+@media(max-width:420px){.realm-war-orders{grid-template-columns:repeat(2,minmax(0,1fr))}
+.realm-war-orders button{min-height:45px;font-size:12px}}
