@@ -312,6 +312,7 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
  assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
  assert.match(moduleSource,/getUnmappedVisibleMonsterIds:/);
+ assert.ok(!moduleSource.includes('if(Math.hypot(e.x-px,e.y-py)<430)unsafeUnmappedEncounter=true'));
  assert.match(moduleSource,/unsafeUnmappedEncounter/);
  assert.match(moduleSource,/getRenderStats:/);
  assert.match(moduleSource,/renderer\.info\.render\.triangles/);
@@ -446,6 +447,10 @@ test('mapped crowds remain native 3D without losing visible enemies',()=>{
  assert.equal(sync(state,0,0,2),true,'a genuinely missing threat must still be reported');
  assert.deepEqual([...missing],['unknown']);
  assert.equal(actors.size,0,'departed crowd must release its actor instances');
+ // 화면 안에 있지만 430 이상 떨어진 원본 몹도 보이지 않게 통과시키면 안 된다.
+ state.enemies=[{id:'far-missing',type:{id:'unknown'},area:'surface',x:540,y:0,hp:10}];
+ assert.equal(sync(state,0,0,3),true,'visible distant monster must also wait for its native 3D model');
+ assert.deepEqual([...missing],['unknown']);
 });
 
 // 압축: 내려받은 원본과 해제 후 바이트가 같아야 리그·모션 보존으로 인정한다.
