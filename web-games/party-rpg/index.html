@@ -1242,7 +1242,7 @@ function companionContext(a){
  const c=companionPersonality(a),q=state.story.quests[a.id];
  if(q?.complete)return q.path==='truth'?'자기 이름으로 증언을 남긴 뒤에도 '+a.name+'의 손은 떨린다.':'보호한 증인이 무사한 것을 확인한 뒤에도 '+a.name+'은 출입구를 살핀다.';
  if(q)return q.path==='truth'?'공개 증언에 필요한 단서를 쫓는 동안 '+a.name+'은 '+c.manner+'.':'증인을 지키려는 동안 '+a.name+'은 '+c.manner+'.';
- return a.name+'은 '+c.manner+'.';
+ return a.name+' · '+c.manner+'.';
 }
 const RECRUIT_ARCS=[{"gate":"intro","zone":0,"site":{"x":860,"y":575},"title":"북문에서 누락된 군번표"},{"gate":"visit1","zone":1,"site":{"x":820,"y":780},"title":"찢어진 장부"},{"gate":"case1","zone":1,"site":{"x":1090,"y":720},"title":"사라진 고갯길 발자국"},{"gate":"visit2","zone":2,"site":{"x":1370,"y":620},"title":"고향 문양의 쇳조각"},{"gate":"visit3","zone":3,"site":{"x":1030,"y":830},"title":"찢긴 계약서"},{"gate":"fort","zone":4,"site":{"x":1360,"y":880},"title":"분실된 약품 목록"},{"gate":"visit4","zone":4,"site":{"x":950,"y":690},"title":"두 번 적힌 세금"},{"gate":"visit5","zone":5,"site":{"x":1180,"y":820},"title":"눈 속의 별자리"},{"gate":"visit6","zone":6,"site":{"x":1150,"y":850},"title":"전령의 암호"},{"gate":"temple","zone":6,"site":{"x":1590,"y":770},"title":"노래의 마지막 구절"}];
 function companionDiscovered(a){
@@ -1412,7 +1412,7 @@ function eventSceneData(key){
  }else if(kind==='companion'){
   person=state.ai.find(a=>a.id===raw);if(!person)return null;
   n=portraitIndex(person);title=person.name+' · 잊힌 고백';focus={x:person.x,y:person.y};
-  beats=[beat(person.name,'동료 · '+COMPANION_VOICES[n].trait,COMPANION_SECRETS[n],'“'+COMPANION_VOICES[n].talk+'”',n),beat(person.name,'개인 의뢰 · '+role(person).name,COMPANION_VOICES[n].lead,'“확인할 건 직접 확인해.”',n)];
+  beats=[beat(person.name,'동료 · '+COMPANION_VOICES[n].trait,COMPANION_SECRETS[n]+' '+companionPersonality(person).manner+'.','“'+COMPANION_VOICES[n].talk+'”',n),beat(person.name,'개인 의뢰 · '+role(person).name,COMPANION_VOICES[n].lead,'“'+companionResponse(person,'past')+'”',n)];
  }else if((kind==='boss'||kind==='victory')&&DUNGEONS[n]){
   mood='dungeon';title=DUNGEONS[n].name+(kind==='boss'?' · 마지막 방':' · 전투 이후');focus={x:720,y:310};
   const threat=["돌문 뒤에는 북문에서 사라진 군번표가 전리품처럼 걸려 있다. 지워진 병사들의 방패 아래에서 고블린 대장이 선다. 포로를 구하려면 이 방을 통과해야 한다.","제단 한가운데 풍년 계약서의 원본이 봉인돼 있다. 오래된 수호자는 문서의 인장을 공격하는 자에게만 칼을 든다. 그러나 문서를 가져오지 않고서는 누가 대가를 치렀는지 알 수 없다.","왕좌 주변 벽에는 지워진 이들의 이름이 끝도 없이 적혀 있다. 마왕은 그 이름을 지키며 성문을 닫고 있었다. 그의 군대가 널 적으로 보는 이유는 네가 가져온 마을의 인장 때문이다."][n];
@@ -1440,15 +1440,32 @@ function eventSceneData(key){
   var i=portraitIndex(person),voice=COMPANION_VOICES[i],arc=RECRUIT_ARCS[i];
   title=person.name+' · '+arc.title;mood=arc.zone===0?'town':['','field','forest','cave','desert','snow','abyss'][arc.zone];
   focus=arc.site;
-  if(kind==='recruitLead')beats=[beat('새로 만난 사람',person.name+' · '+voice.trait,voice.talk,'“'+voice.lead+'”',i),
-    beat(person.name,'개인 서브퀘스트 · '+arc.title,'단서 위치: '+ZONES[arc.zone].name+'. 찾았다고 바로 영입하는 건 아니야. 먼저 이 사람의 사정을 알아야 해.','“해 볼 거면 끝까지 확인해.”',i)];
-  else if(kind==='recruitClue')beats=[beat('사건 단서','개인 서브퀘스트 · '+arc.title,arc.title+'의 흔적을 찾았다. '+voice.lead+' 이제 이 물증을 직접 보여 주면 자신의 사정을 들려줄 것이다.','“찾던 단서가 맞아. 이제 얘기할 준비가 됐어.”',state.player.portraitId)];
+  const personality=companionPersonality(person);
+  if(kind==='recruitLead')beats=[beat(person.name,'첫 만남 · '+voice.trait,personality.manner+'. '+voice.talk,'“'+voice.lead+'”',i),
+    beat(person.name,'개인 의뢰 · '+arc.title,'필요한 증거는 '+ZONES[arc.zone].name+'에 있어. 말뿐인 약속은 필요 없어. 물증을 가져오면 내 이야기를 더 하겠어.','“'+personality.discovery+'”',i)];
+  else if(kind==='recruitClue')beats=[beat('사건 단서','개인 의뢰 · '+arc.title,arc.title+'의 흔적을 확인했다. '+personality.manner+'.','“'+personality.discovery+'”',i)];
   else beats=[beat(person.name,'영입 · '+voice.trait,voice.lead,'“'+voice.join+'”',i),
-    beat(person.name,'파티 합류 · '+role(person).name,'이제 이 인물의 전투 기술과 개인 의뢰를 함께 진행할 수 있어.','“'+voice.talk+'”',i)];
+    beat(person.name,'함께 걷는 이유',personality.manner+'. 이 사람은 '+personality.value+'을 중요하게 여긴다.','“'+personality.past+'”',i)];
  }else if(kind==='sigil'&&DUNGEONS[n]&&['trap','door'].includes(arg)){
   mood='dungeon';title=arg==='trap'?'룬 함정의 숨겨진 인장':'석문의 오래된 기록';focus=arg==='trap'?{x:310,y:405}:{x:825,y:445};
   let matches=Object.keys(state.story.checks).filter(s=>s.startsWith(n+':')&&s.endsWith(':'+arg));let r=state.story.checks[matches[matches.length-1]];if(!r)return null;
   beats=[beat(r.success?'열린 기록':'봉인된 흔적','능력 판정 · d20 '+r.roll,r.success?(arg==='trap'?'룬의 빛이 꺼지고 아래의 인장이 드러난다.':'석문이 열리자 잊힌 맹약의 문장이 나타난다.'):'봉인은 다시 굳게 닫힌다. 이 방에서는 다시 시도할 수 없다.',r.success?'“오래 묻힌 진실의 조각을 발견했다.”':'“다음 기록은 다른 곳에 남아 있을 거야.”',state.player.portraitId)];
+ }
+ // 동행 중인 인물은 같은 사건에도 서로 다른 말을 한다. 기존 이벤트/선택/보상 조건은 그대로 유지.
+ if(beats.length&&['evidence','case','boss','victory','choice','act2','act2clear','imperial','imperialClear'].includes(kind)){
+  let topic='discovery';
+  if(kind==='boss')topic='danger';
+  else if(kind==='case')topic=state.story.cases[n]?.path==='truth'?'truth':'guard';
+  else if(kind==='choice'){
+   const picked=state.story.choices[raw];
+   topic=['witness','reveal','release'].includes(picked)?'truth':'guard';
+  }else if(kind==='victory'||kind==='act2clear'||kind==='imperialClear')topic='past';
+  const participants=partyMembers().filter(a=>a.hp>0).slice(0,2);
+  participants.forEach(a=>{
+   const profile=companionPersonality(a),voice=COMPANION_VOICES[portraitIndex(a)];
+   const line=companionResponse(a,topic);
+   beats.push(beat(a.name,'동료의 반응 · '+voice.trait,profile.manner+'.','“'+line+'”',portraitIndex(a)));
+  });
  }
  return beats.length?{key,title,beats,mood,focus}:null;
 }
