@@ -160,8 +160,9 @@ async function loadSourceModels(){
     return [name,parseDownloadedObj(text,name,materialText)];
   };
   const models=new Map(await Promise.all(MODEL_NAMES.filter(name=>required.has(name)).map(fetchSourceModel)));
-  return {models,loadRemaining:async()=>{
-    for(const name of MODEL_NAMES){
+  return {models,loadRemaining:async(priorityNames=[])=>{
+    // 플레이 중인 지역의 원본 출입구·상자 모델부터 먼저 준비한다.
+    for(const name of [...new Set([...priorityNames.filter(name=>MODEL_NAMES.includes(name)),...MODEL_NAMES])]){
       if(required.has(name))continue;
       await new Promise(resolve=>setTimeout(resolve,0));
       const [key,model]=await fetchSourceModel(name);
@@ -360,6 +361,21 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
+  // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
+  const SCENERY_KIND=Object.freeze({
+    forest:'tree',jungle:'tree_large',swamp:'foliage_A',snow:'tree_large',
+    canyon:'cobblestones',volcano:'cobblestones',crystal:'cobblestones',
+    giantlake:'foliage_A',worldtree:'tree_large',flowerfield:'foliage_A',
+    giantgarden:'foliage_A',desert:'cobblestones'
+  });
+  const sceneryBatches=new Map();
+  for(const kind of ['tree','tree_large','foliage_A','cobblestones']){
+    const original=models.get(kind);
+    const mesh=new THREE.InstancedMesh(original.geometry,original.material,49);
+    mesh.count=0;mesh.castShadow=false;mesh.receiveShadow=true;mesh.frustumCulled=false;
+    scene.add(mesh);sceneryBatches.set(kind,{mesh,count:0});
+  }
+  let frameSequence=0;
   let currentBiome='forest';
   let lastHeroPoseX=null,lastHeroPoseY=null,lastHeroPoseAt=0;
   const raycaster=new THREE.Raycaster();
@@ -675,6 +691,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
     if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea){
       let tileIndex=0,seamTileIndex=0;
+      for(const batch of sceneryBatches.values())batch.count=0;
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
       // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
@@ -684,6 +701,24 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
       biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.48));
       tileIndex++;
+      // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
+      if(tx!==0||tz!==0){
+        const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
+        if(hash%3!==0){
+          const batch=sceneryBatches.get(SCENERY_KIND[tileZone]||'tree');
+          if(batch){
+            const xOffset=(((hash>>>4)%5)-2)*floorPitchX*.12;
+            const zOffset=(((hash>>>7)%5)-2)*floorPitchZ*.12;
+            resourceTransform.position.set(gx+xOffset,0,gz+zOffset);
+            resourceTransform.rotation.y=(hash%8)*(Math.PI/4);
+            resourceTransform.scale.setScalar(.38+((hash>>>10)%4)*.09);
+            resourceTransform.updateMatrix();
+            batch.mesh.setMatrixAt(batch.count,resourceTransform.matrix);
+            batch.mesh.setColorAt(batch.count,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.72));
+            batch.count++;
+          }
+        }
+      }
       if(tx<3&&tz<3){
         const seamX=gx+floorPitchX*.5,seamZ=gz+floorPitchZ*.5;
         const seamZone=isInterior?currentBiome:String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
@@ -699,10 +734,16 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     biomeTiles.instanceColor.needsUpdate=true;
     floorSeamTiles.instanceMatrix.needsUpdate=true;
     floorSeamTiles.instanceColor.needsUpdate=true;
+    for(const batch of sceneryBatches.values()){
+      batch.mesh.count=batch.count;
+      batch.mesh.instanceMatrix.needsUpdate=true;
+      if(batch.mesh.instanceColor)batch.mesh.instanceColor.needsUpdate=true;
+      batch.mesh.boundingSphere=null;
+    }
       lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;lastFloorArea=state.area;
     }
     interactables.length=0;
-    const seen=state.last||Date.now();
+    const seen=++frameSequence; // 이전 지역 몹·상호작용 객체를 저장 시각과 무관하게 정리한다.
     if(hero){
       hero.avatar.visible=true;
       hero.avatar.position.set(centerX,0,centerY);
@@ -792,7 +833,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(!extraModelsStarted){
       extraModelsStarted=true;
       // 첫 WebGL 프레임 이후 멀리 있는 장식 메시를 단계적으로 파싱한다.
-      setTimeout(()=>{if(!disposed)void stagedModels.loadRemaining().catch(error=>
+      const priorityModels=(regionScene?.landmarks||[]).map(mark=>mark?.model).filter(Boolean);
+      if(!isInterior)priorityModels.push('bench_A','bench_B','fence_straight','gate_single','package');
+      setTimeout(()=>{if(!disposed)void stagedModels.loadRemaining(priorityModels).catch(error=>
         console.warn('CC0 optional scenery unavailable',error));},0);
     }
   }
@@ -833,6 +876,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     scene.remove(floorSeamTiles);floorSeamTiles.dispose();
     for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
     resourceBatches.clear();
+    for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
+    sceneryBatches.clear();
     // Source floor geometry/material are disposed once by the source model pool.
   }
   return {
