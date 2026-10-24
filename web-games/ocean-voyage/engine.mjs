@@ -71,7 +71,7 @@ const copy=s=>structuredClone(s);
 export function newGame(captainId="eleanor"){
  const hero=CAPTAINS.find(c=>c.id===captainId)||CAPTAINS[0],home=PORTS.find(p=>p.id===hero.port);
  return {
-  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,eventClock:0,eventSerial:0,speed:1,shipType:"caravel",tradeLedger:{},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
+  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,eventClock:0,eventSerial:0,speed:1,shipType:"caravel",tradeLedger:{},portState:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
   version:1,day:1,elapsed:0,coins:3400,discovered:[hero.port],visits:{[hero.port]:1},homePort:hero.port,captain:hero.name,crewRoster:[hero.id],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
   ship:{x:home.x,z:home.z+2,heading:0,velocity:0,rudder:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0},
   fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
@@ -94,10 +94,11 @@ export function restoreGame(raw){
   const s={...base,...obj,ship:{...base.ship,...obj.ship},cargo:{...base.cargo,...obj.cargo},visits:{...base.visits,...obj.visits},reputation:{...base.reputation,...obj.reputation}};
   if(obj.voyageVersion!==2){
    const old=LEGACY_PORTS.map(p=>({p,d:dist(s.ship,p)})).sort((a,b)=>a.d-b.d)[0].p,newPort=portById(old.id);
-   s.ship.x=newPort.x+(s.ship.x-old.x);s.ship.z=newPort.z+(s.ship.z-old.z);s.route=[];s.destination=null;s.voyageVersion=2;s.heroChosen=true;s.pirates=s.pirates.map(e=>{const pos=base.pirates.find(p=>p.id===e.id);return pos?{...e,x:pos.x,z:pos.z}:e;});if(isLand(s.ship.x,s.ship.z)){s.ship.x=newPort.x;s.ship.z=newPort.z+2;}
+   s.ship.x=newPort.x+(s.ship.x-old.x);s.ship.z=newPort.z+(s.ship.z-old.z);s.route=[];s.destination=null;s.voyageVersion=2;s.heroChosen=true;s.pirates=(Array.isArray(s.pirates)?s.pirates:base.pirates).map(e=>{const pos=base.pirates.find(p=>p.id===e.id);return pos?{...e,x:pos.x,z:pos.z}:e;});if(dist(obj.ship,old)<=11||isLand(s.ship.x,s.ship.z)){s.ship.x=newPort.x;s.ship.z=newPort.z+2;}
   }
   s.supplies={...base.supplies,...(s.supplies&&typeof s.supplies==='object'?s.supplies:{})};for(const k of Object.keys(base.supplies))s.supplies[k]=clamp(Math.floor(Number(s.supplies[k])||0),0,999);s.diplomacy=s.diplomacy&&typeof s.diplomacy==='object'?s.diplomacy:{};
   s.charted=Array.isArray(obj.charted)?[...new Set(obj.charted.filter(v=>typeof v==='string'&&/^-?\d+:-?\d+$/.test(v)))].slice(-4096):revealCells([],s.ship.x,s.ship.z);
+  s.portState=s.portState&&typeof s.portState==='object'?s.portState:{};s.worldLog=Array.isArray(s.worldLog)?s.worldLog.slice(-20):[];s.climate=s.climate&&WEATHER.some(w=>w.id===s.climate.kind)?s.climate:{kind:'clear',until:s.day+3};
   s.heroChosen=Boolean(s.heroChosen);s.captainId=CAPTAINS.some(c=>c.id===s.captainId)?s.captainId:'eleanor';
   for(const field of ['discoveries','reported','completedStories','completedOffice','treasureClues'])s[field]=Array.isArray(s[field])?[...new Set(s[field].filter(v=>typeof v==='string'))].slice(0,100):[];
   s.officeQuests=Array.isArray(s.officeQuests)?s.officeQuests.filter(q=>OFFICE_QUESTS.some(o=>o.id===q)).slice(0,4):[];
@@ -199,7 +200,7 @@ export function fulfillContracts(state){
 export function navigationRoute(from,to,segment=false){
  if(!to||!Number.isFinite(to.x)||!Number.isFinite(to.z))return [];
  const med=p=>p.x>-60&&p.z>-564&&p.z<-336;
- if(!segment&&med(from)!==med(to)){let gates=[{x:-144,z:-540},{x:-132,z:-432},{x:-72,z:-429.6},{x:-48,z:-429.6},{x:24,z:-456}];if(med(from))gates.reverse();let at=from,out=[];for(const target of [...gates,to]){const part=navigationRoute(at,target,true);if(!part.length)return [];out.push(...part);at=target;}return out;} 
+ if(!segment&&med(from)!==med(to)){let gates=[{x:-144,z:-540},{x:-132,z:-432},{x:-72,z:-429.6},{x:-48,z:-429.6},{x:24,z:-456}];if(med(from))gates.reverse();let at=from,out=[];for(const target of [...gates,to]){const part=navigationRoute(at,target,true);if(!part.length)return [];out.push(...part);at=target;}return out;}
  const cell=1,size=4321,zero=2160;
  const coord=v=>clamp(Math.round(v/cell)+zero,0,size-1);
  const sx=coord(from.x),sz=coord(from.z),tx=coord(to.x),tz=coord(to.z);
@@ -246,7 +247,7 @@ export function stepSea(state,input={},seconds=.05){
  const s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
  const ship=s.ship;
  if(ship.hull<=0)return s;
- const wind=Math.sin(s.day*.7+s.elapsed*.03)*.4;
+ const climate=WEATHER.find(w=>w.id===s.climate.kind)||WEATHER[0],wind=Math.sin(s.day*.7+s.elapsed*.03)*.4;
  let turn=clamp(Number(input.turn)||0,-1,1),throttle=clamp(Number(input.throttle)||0,-1,1);
  if(s.route.length&&input.manual!==true){
   const target=s.route[0],d=dist(ship,target);
@@ -259,7 +260,7 @@ export function stepSea(state,input={},seconds=.05){
  }
  ship.rudder=clamp((Number(ship.rudder)||0)+(turn-(Number(ship.rudder)||0))*Math.min(1,dt*4),-1,1);ship.heading=wrap(ship.heading+ship.rudder*dt*(.8+ship.sail*.06));
  const laden=1-cargoWeight(s)/Math.max(1,ship.cargoLimit*s.fleet)*.18;
- const speed=(2.1+ship.sail*1.15)*(1+wind*.24)*laden*(ship.hull/ship.maxHull*.6+.4);
+ const speed=(2.1+ship.sail*1.15)*(1+wind*.24)*climate.speed*laden*(ship.hull/ship.maxHull*.6+.4);
  const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
  const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,-1020,900);
  if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}else{ship.velocity=0;if(s.destination){s.route=[];s.destination=null;note(s,'얕은 해안이야. 해도에서 해상 항로를 다시 설정해.');}}
@@ -267,7 +268,7 @@ export function stepSea(state,input={},seconds=.05){
  s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
  if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=24){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
-  s.elapsed-=16;s.day++;ship.provisions=Math.max(0,ship.provisions-2);
+  s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-2);
   if(ship.provisions===0){ship.hull=Math.max(1,ship.hull-4);ship.crew=Math.max(1,ship.crew-1);note(s,'식량 부족으로 선원과 선체가 약해졌어.');}
  }
  for(const p of PORTS){
@@ -456,8 +457,35 @@ export const CONSUMABLES=Object.freeze([
 ]);
 export function buyConsumable(state,id){const c=CONSUMABLES.find(c=>c.id===id);if(!c||!canDock(state))return fail(state,'항구 보급소에서 구입해.');const cost=state.job==='merchant'?Math.ceil(c.cost*.9):c.cost;if(state.coins<cost)return fail(state,'보급품 구입 금화가 부족해.');const qty=id==='ammo'?10:1;if(state.supplies[id]+qty>999)return fail(state,'보급품 보유 한도야.');const s=copy(state);s.coins-=cost;s.supplies[id]+=qty;return success(s,c.name+' 보급 완료');}
 export function useConsumable(state,id){if(id==='ammo')return fail(state,'포탄은 포격할 때 사용돼.');if(!CONSUMABLES.some(c=>c.id===id)||state.supplies[id]<1)return fail(state,'사용할 소모품이 없어.');if(state.supplyCooldown>0&&!canDock(state))return fail(state,'소모품 사용 준비 중이야.');if(id==='repair'&&state.ship.hull>=state.ship.maxHull)return fail(state,'선체가 온전해.');if(id==='medicine'&&state.ship.crew>=state.ship.maxCrew)return fail(state,'선원이 최대 인원이야.');if(id==='rations'&&state.ship.provisions>=140)return fail(state,'식량이 가득해.');const s=copy(state);s.supplies[id]--;s.supplyCooldown=4;if(id==='repair')s.ship.hull=Math.min(s.ship.maxHull,s.ship.hull+25);if(id==='medicine')s.ship.crew=Math.min(s.ship.maxCrew,s.ship.crew+8);if(id==='rations')s.ship.provisions=Math.min(140,s.ship.provisions+20);if(id==='smoke')for(const e of s.pirates)if(dist(e,s.ship)<45)e.cooldown=Math.max(18,e.cooldown);return success(s,CONSUMABLES.find(c=>c.id===id).name+' 사용 완료');}
-export function declareHostility(state,faction){const p=canDock(state);if(!p)return fail(state,'왕궁에서 외교 방침을 정해.');if(!['이베리아 왕실','프랑스 항구동맹'].includes(faction))return fail(state,'현재 유럽의 두 순찰 세력만 외교 대상이야.');const s=copy(state);s.diplomacy[faction]=-30;return success(s,faction+'에 적대 선언. 해당 국가 순찰함이 공격해.');}
+export function declareHostility(state,faction){const p=canDock(state);if(!p)return fail(state,'왕궁에서 외교 방침을 정해.');if(!['이베리아 왕실','프랑스 항구동맹'].includes(faction))return fail(state,'현재 유럽의 두 순찰 세력만 외교 대상이야.');const s=copy(state);s.diplomacy[faction]=-30;if(s.alliance===faction)s.alliance=null;return success(s,faction+'에 적대 선언. 해당 국가 순찰함이 공격해.');}
 export function negotiatePeace(state,faction){if(!canDock(state)||!(state.diplomacy[faction]<0))return fail(state,'현재 적대 중인 국가를 확인해.');if(state.coins<500)return fail(state,'휴전 교섭금 500 G가 필요해.');const s=copy(state);s.coins-=500;s.diplomacy[faction]=0;return success(s,faction+'과 휴전했어.');}
 
 // 탐험 해역: 지나는 격자와 인접 해역을 영구 해도에 기록한다.
 export function revealCells(cells,x,z){const known=new Set(cells),cx=Math.floor(x/24),cz=Math.floor(z/24);for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)known.add((cx+dx)+':'+(cz+dz));return [...known].slice(-4096);}
+
+// 세계: 유럽 항구의 투자·세력·약탈·기후를 일 단위로만 갱신해 저장 폭증을 막는다.
+export const WEATHER=Object.freeze([
+ {id:'clear',name:'맑음',speed:1,description:'시야가 좋고 항해가 안정적이야.'},
+ {id:'wind',name:'무역풍',speed:1.18,description:'순풍으로 항해 속도가 조금 빨라져.'},
+ {id:'rain',name:'비',speed:.92,description:'빗줄기로 주변 항구가 흐리게 보여.'},
+ {id:'fog',name:'해무',speed:.85,description:'가까운 배를 살피며 항해해. 해도 탐험 기록은 유지돼.'},
+ {id:'storm',name:'거친 바다',speed:.78,description:'파도가 높아져. 직접 피해는 폭풍 사건의 선택 결과로만 발생해.'}
+]);
+export function portStatus(s,id){const p=portById(id);return {owner:p?.faction||'',prosperity:50,security:60,invested:0,influence:0,lastDividend:s.day,raidedUntil:0,...s.portState[id]};}
+function advanceWorld(s){
+ if(s.day>=s.climate.until){const w=WEATHER[(Math.floor(s.day/3)+CAPTAINS.findIndex(c=>c.id===s.captainId))%WEATHER.length];s.climate={kind:w.id,until:s.day+3};note(s,'기상 관측: '+w.name);}
+ for(const p of PORTS){if(!s.portState[p.id])continue;const v=portStatus(s,p.id);v.security=Math.min(80,v.security+2);v.prosperity=Math.min(90,v.prosperity+1);s.portState[p.id]=v;}
+ if(s.day%5!==0)return;
+ const target=PORTS[(Math.floor(s.day/5)*3)%PORTS.length],attacker=PORTS[(Math.floor(s.day/5)*3+2)%PORTS.length].faction,v=portStatus(s,target.id);
+ if(v.owner===attacker)return;
+ const defense=v.security+(s.alliance===v.owner?10:0),damage=defense>=65?6:18;
+ v.security=Math.max(10,v.security-damage);v.prosperity=Math.max(20,v.prosperity-8);v.raidedUntil=s.day+2;
+ let event=attacker+'의 사략선이 '+target.name+'을 습격. 교역 시설은 보존되고 경제 피해가 남았어.';
+ if(v.security<=20){v.owner=attacker;event=target.name+'의 항만 통제권이 '+attacker+'으로 넘어갔어.';}
+ s.portState[target.id]=v;s.worldLog.push('['+s.day+'일] '+event);s.worldLog=s.worldLog.slice(-20);note(s,event);
+}
+export function investPort(state,amount){const p=canDock(state);if(!p||![100,500,1000].includes(amount))return fail(state,'정박한 항구에서 투자 금액을 선택해.');if(state.coins<amount)return fail(state,'투자금이 부족해.');const s=copy(state),v=portStatus(s,p.id);s.coins-=amount;v.invested+=amount;v.influence=Math.min(100,v.influence+Math.floor(amount/100));v.prosperity=Math.min(100,v.prosperity+Math.ceil(amount/200));s.portState[p.id]=v;s.reputation[v.owner]=(s.reputation[v.owner]||0)+Math.floor(amount/100);return success(s,p.name+'에 '+amount+' G 투자 · 영향력 '+v.influence+'%');}
+export function collectDividend(state){const p=canDock(state);if(!p)return fail(state,'투자한 항구에서 배당을 받아.');const v=portStatus(state,p.id);if(!v.invested)return fail(state,'먼저 항구에 투자해.');if(state.day-v.lastDividend<7)return fail(state,'다음 배당까지 '+(7-state.day+v.lastDividend)+'일 남았어.');const s=copy(state),profit=Math.floor(v.invested*.08*(v.prosperity/50));v.lastDividend=s.day;s.coins+=profit;s.portState[p.id]=v;return success(s,'항구 투자 배당 '+profit+' G. 자동 누적 이자는 없어.');}
+export function supportPort(state){const p=canDock(state);if(!p)return fail(state,'항구 총독부에서 방어를 지원해.');if(state.coins<200||state.supplies.ammo<5)return fail(state,'방어 지원에 200 G와 포탄 5발이 필요해.');const s=copy(state),v=portStatus(s,p.id);if(v.security>=95)return fail(state,'항구 방어가 충분해.');s.coins-=200;s.supplies.ammo-=5;v.security=Math.min(100,v.security+25);v.influence=Math.min(100,v.influence+5);v.raidedUntil=0;s.portState[p.id]=v;s.fame+=4;return success(s,p.name+' 방어 지원 · 보안 '+v.security+' / 영향력 '+v.influence+'%');}
+export function formAlliance(state){const p=canDock(state);if(!p)return fail(state,'왕궁·총독부에서 동맹을 협의해.');const owner=portStatus(state,p.id).owner;if(state.diplomacy[owner]<0)return fail(state,'휴전을 먼저 체결해.');if(state.alliance===owner)return fail(state,'이미 동맹인 국가야.');if((state.reputation[owner]||0)<30)return fail(state,'교역·투자로 국가 신뢰 30이 필요해.');const s=copy(state);s.alliance=owner;return success(s,owner+'과 해상 동맹을 맺었어. 적대 선언을 하면 동맹이 해제돼.');}
+export function callAlliance(state){if(!state.alliance)return fail(state,'왕궁에서 먼저 동맹을 맺어.');if(state.day-state.allianceSupportDay<5)return fail(state,'동맹 지원은 5일마다 요청할 수 있어.');const targets=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)&&dist(e,state.ship)<40);if(!targets.length)return fail(state,'주변에 동맹 지원 대상이 없어.');const s=copy(state);for(const t of targets){const enemy=s.pirates.find(e=>e.id===t.id);enemy.hull=Math.max(1,enemy.hull-24);enemy.cooldown=Math.max(12,enemy.cooldown);}s.allianceSupportDay=s.day;return success(s,'동맹 호위대가 지원 포격했어. 적 함포 장전도 지연돼.');}
