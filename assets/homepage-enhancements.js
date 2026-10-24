@@ -6,6 +6,7 @@ let refreshInFlight=false;
 let lastSignature='';
 let portfolioStatus={games:[],counts:{}};
 let platformExposure={games:[]};
+let publishedWebRoutes=new Set();
 
 
 const getJson=async path=>{
@@ -149,6 +150,7 @@ function sourceWebHref(row){
   if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state)||source.archive===false)return '';
   const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
+  if(!publishedWebRoutes.has(root+'/'))return '';
   return `https://hans1177.github.io/jaewoon-games/${root}/`;
 }
 // 웹 플레이 표시는 기존 게시 증거를 유지하지만 원본 링크 활성화의 조건은 아니다.
@@ -160,6 +162,7 @@ function playableWebHref(row){
   if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state)||source.archive===false)return '';
   const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
+  if(!publishedWebRoutes.has(root+'/'))return '';
   const published=publicationOf(row).web||{};
   if(published.route!==`web-games/${id}/`
     ||!/^[a-f0-9]{40}$/.test(String(published.sourceTreeSha||'')))return '';
@@ -323,7 +326,7 @@ function buildCard(row){
   const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);const label=platformReleaseLabel(p);return label==='개발 중'&&links[platform==='ROBLOX'?'roblox':'unity']?'개발 중 · 실행 가능':label;};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
-    button(links.web||links.webSource,links.web?'일반 웹게임 · 플레이':'원본 게임 · 열기','원본 경로 없음','platformAction webAction'),
+    (links.web||links.webSource)?button(links.web||links.webSource,links.web?'일반 웹게임 · 플레이':'원본 게임 · 열기','','platformAction webAction'):'',
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
     // 기존에 검증된 Unity 설치 기능은 일반 웹게임 버튼과 별도로 보존한다.
     links.unity?button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction'):''
@@ -475,15 +478,18 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,exposure,portfolio]=await Promise.all([getJson('/jaewoon-games/game-catalog.json'),getJson('/jaewoon-games/company-status.json'),getJson('/jaewoon-games/homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('/jaewoon-games/homepage-portfolio-status.json'):Promise.resolve(null)]);
+    const [catalog,status,exposure,portfolio,webManifest]=await Promise.all([getJson('/jaewoon-games/game-catalog.json'),getJson('/jaewoon-games/company-status.json'),getJson('/jaewoon-games/homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('/jaewoon-games/homepage-portfolio-status.json'):Promise.resolve(null),getJson('/jaewoon-games/web-games/publish-manifest.json')]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
     const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
     const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
     if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
+    // 배포 목록에 없는 원본 경로는 실행 링크로 노출하지 않는다.
+    publishedWebRoutes=new Set((Array.isArray(webManifest?.routes)?webManifest.routes:[])
+      .filter(route=>/^web-games\/[a-z0-9][a-z0-9-]*\/$/.test(route)));
     const renderCatalog=currentCatalog=>{
-      const sig=JSON.stringify([currentCatalog,status,portfolioStatus,platformExposure]);
+      const sig=JSON.stringify([currentCatalog,status,portfolioStatus,platformExposure,[...publishedWebRoutes]]);
       if(sig===lastSignature)return;
       // Keep the user's open player intact while background status snapshots change.
       if(document.querySelector('.homeGameplayVideo[open]'))return;
