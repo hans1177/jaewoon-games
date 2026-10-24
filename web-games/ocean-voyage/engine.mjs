@@ -302,6 +302,13 @@ export function cancelDestination(state){const s=copy(state);s.destination=null;
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 // 독립 상단 항해 시뮬레이션
 function advanceMerchantFleet(s,dt){for(const m of s.merchants){if(s.crewRoster.includes(m.id))continue;const a=portById(m.from),b=portById(m.to);if(!a||!b)continue;m.progress+=dt*2.65/Math.max(5,dist(a,b));if(m.progress<1)continue;const income=m.count*priceAt(m.to,m.cargo,s.day,'sell');m.coins+=income;m.lastProfit=income;m.voyages++;const old=m.from;m.from=m.to;m.to=old;m.progress=0;const spec=MERCHANT_CAPTAINS.find(c=>c.id===m.id);if(spec){m.cargo=spec.goods[m.voyages%spec.goods.length];const cost=priceAt(m.from,m.cargo,s.day,'buy');m.count=Math.min(8,Math.floor(m.coins/Math.max(1,cost)));m.coins-=m.count*cost;s.worldLog.push('['+s.day+'일] '+spec.name+' 상선 · '+b.name+' 교역 '+income+' G');s.worldLog=s.worldLog.slice(-20);}}}
+export function hailMerchant(state,id){
+ const captain=MERCHANT_CAPTAINS.find(c=>c.id===id),vessel=state.merchants?.find(m=>m.id===id);
+ if(!captain||!vessel||state.crewRoster.includes(id))return fail(state,'해당 선장은 현재 승선 중이거나 바다에 없어.');
+ if(dist(state.ship,merchantPosition(vessel))>20)return fail(state,'상선이 너무 멀리 있어.');
+ if(state.event||state.landBattle)return fail(state,'진행 중인 사건을 먼저 해결해.');
+ const s=copy(state);s.event={id:'merchant_meeting',merchantId:id};return success(s,captain.name+' 선장의 상선에 다가갔어.');
+}
 export function stepSea(state,input={},seconds=.05){
  if(state.event||state.landBattle)return state;
  let s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
