@@ -38,16 +38,27 @@
 .npc-dialog strong{display:block;color:#4d372a}.npc-dialog small{color:#675640}.npc-dialog p{margin:4px 0;font-size:12px;color:#5b4835}
 .npc-portrait{flex:0 0 78px;height:88px;border:3px ridge #93754b;background:url('./assets/cc0/portraits/rpgportraits.png') no-repeat;background-size:400% 300%;image-rendering:pixelated}
 @media(max-width:740px){.npc-portrait{flex-basis:62px;height:77px}.ship-preview svg{max-height:190px}}
+.hero-face.male{background-image:url('./assets/crew.webp')}
+#captainCards{grid-template-columns:repeat(4,minmax(0,1fr))}
+#captains .hero-card{min-width:0}
+#captains .hero-card .hero-face{background-position:center}
+#hail{background:#476951!important;border-color:#d5ba78!important;color:#fff3d4}
+.event-art{display:none;min-height:112px;margin:-12px -12px 12px;background:linear-gradient(180deg,#29485d8c,#1b2d38bb),url('./assets/harbor.webp') center 42%/cover;border-bottom:3px double #99805c}
+.event-art.show{display:block}
+.event-art .scene-portrait{height:110px;width:115px;float:right;border-left:3px solid #b99d68;background-size:500% 100%;background-repeat:no-repeat}
+.event-art .scene-caption{padding:9px;color:#fae8be;font:bold 12px system-ui;text-shadow:1px 2px #1a2633}
+#seaEvent article{overflow:hidden}
+@media(max-width:740px){#captainCards{grid-template-columns:1fr}.event-art{min-height:95px}.event-art .scene-portrait{height:95px;width:91px}#hail{font-size:11px}}
 </style></head><body>
 <canvas id="sea" aria-label="실제 해안선을 사용하는 픽셀 항해 지도와 항구 마을"></canvas><div id="veil"></div>
 <header id="top"><div id="brand"><small>다섯 바다의 약속 · 1590</small><strong>푸른 항로</strong></div><div id="status"><span class="stat"><small>항해일</small><b id="day">1일</b></span><span class="stat"><small>금화</small><b id="gold">0</b></span><span class="stat"><small>선체</small><b id="hull">100%</b></span><span class="stat extra"><small>식량 / 선원</small><b id="supplies"></b></span></div></header>
 <div id="compass"></div><div id="foodStatus"></div><div id="battleStatus" hidden role="status"></div><nav id="nav" aria-label="게임 메뉴"><button class="nav" data-panel="port" aria-label="항구 입항"><span>♜</span>항구와 도시</button><button class="nav" data-panel="crew" aria-label="동료와 소문"><span>♙</span>동료와 소문</button><button class="nav" data-panel="inventory" aria-label="가방과 발견 도감"><span>◈</span>가방·발견</button><button class="nav" data-panel="chart" aria-label="해도와 보물"><span>⌖</span>해도·보물</button><button class="nav" data-panel="market" aria-label="교역소"><span>⚖</span>교역소</button><button class="nav" data-panel="fleet" aria-label="조선소"><span>⚓</span>조선소</button><button class="nav" data-panel="quests" aria-label="탐험과 의뢰"><span>✦</span>탐험·의뢰</button><button class="nav" data-panel="journal" aria-label="이야기와 저장"><span>☷</span>이야기·저장</button></nav>
-<div id="tools"><button id="zoomIn" aria-label="지도 확대">확대</button><button id="zoomOut" aria-label="지도 축소">축소</button><button id="speed">1배속</button><button id="autoBattle" aria-label="해전 자동 조타 및 자동 포격 켜고 끄기" aria-pressed="true">자동해전 켬</button><button id="quickRepair" aria-label="수리 목재 즉시 사용">수리</button><button id="allySupport" aria-label="동맹 함대 지원 요청">동맹</button><button id="sfx-toggle" aria-label="효과음 켜기 끄기">효과음 켬</button><button id="quickBag" aria-label="선박과 소모품 가방">가방</button></div>
+<div id="tools"><button id="zoomIn" aria-label="지도 확대">확대</button><button id="zoomOut" aria-label="지도 축소">축소</button><button id="speed">1배속</button><button id="autoBattle" aria-label="해전 자동 조타 및 자동 포격 켜고 끄기" aria-pressed="true">자동해전 켬</button><button id="hail" hidden aria-label="가까운 무역선과 교신">상선 교신</button><button id="quickRepair" aria-label="수리 목재 즉시 사용">수리</button><button id="allySupport" aria-label="동맹 함대 지원 요청">동맹</button><button id="sfx-toggle" aria-label="효과음 켜기 끄기">효과음 켬</button><button id="quickBag" aria-label="선박과 소모품 가방">가방</button></div>
 <aside id="details" aria-label="시설과 정보"><div id="panelHead"><h2 id="panelTitle"></h2><button id="close" aria-label="시설 닫기">✕</button></div><div id="content"></div></aside>
 <div id="message" role="status" aria-live="polite">항해를 준비하고 있어.</div><div id="hint">방향키 / WASD 조타 · E 입항 · M 해도 · 스페이스 포격</div>
 <div id="controls"><div class="group"><div id="joystick" role="group" aria-label="항해 조타 스틱"><div id="joystickRim"><div id="joystickHandle"></div></div><span id="joystickLabel">조타 스틱</span></div></div><div class="group"><button id="dock" class="pad"><b>⚓</b>입항</button><button id="fire" class="pad fire"><b>✹</b>포격</button><button id="music-toggle" class="pad" aria-label="음악 켜기 끄기"><b>♫</b>음악</button></div></div>
 <div id="townbar" hidden><strong id="townTitle"></strong><button id="townBack">마을</button><button id="townJournal">기록·저장</button><button id="depart">출항</button></div>
 <section id="loading"><div><h1>푸른 항로</h1><p>다섯 바다에서 출발하는 다섯 사람의 항해.<br>픽셀 해도와 유럽 항구를 준비하고 있어.</p><button id="start" class="action">항해 준비</button></div></section>
 <section id="captains" hidden aria-label="주인공 선택"><header><h1>다섯 바다의 약속</h1><p>출신 지역·출발 항구·항해 목적이 다른 다섯 주인공.<br>유럽 1부: 교역·상륙 탐험·왕실·동료 이야기를 따라 항로를 열어.<br>출신 지역은 도입 이야기로 소개되고, 본편은 각자 다른 유럽 항구에서 시작해. 실시간 다중 접속 기능은 없어.</p></header><div id="captainCards"></div></section>
-<section id="seaEvent" hidden aria-label="항해 중 사건"><article><small>항해 중 발견한 이야기</small><h2 id="eventTitle"></h2><p id="eventText"></p><div id="eventChoices"></div></article></section>
+<section id="seaEvent" hidden aria-label="항해 중 사건"><article><small>항해 중 발견한 이야기</small><div id="eventArt" class="event-art" aria-hidden="true"></div><h2 id="eventTitle"></h2><p id="eventText"></p><div id="eventChoices"></div></article></section>
 <script type="module" src="./main.mjs"></script></body></html>
