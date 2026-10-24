@@ -174,6 +174,25 @@ function ownerWebTitle(filesystem,indexFile,fallback){
     return title||fallback;
   }catch{return fallback;}
 }
+// Plain HTML/JS games enter the existing design pipeline even before runtime QA.
+// An entry page alone is never proof of playability or native 3D.
+export function inspectGeneralWebGameSource({filesystem=fs,dir='',entryFile='index.html'}={}){
+  let html='';
+  try{html=filesystem.readFileSync(dir+'/'+entryFile,'utf8');}catch{return{recognized:false,reasons:['ENTRY_MISSING']};}
+  const files=[...html.matchAll(/<script\\b[^>]*src=["']([^"']+)["']/gi)]
+    .map(m=>m[1].split(/[?#]/)[0]).filter(file=>/^(?:\\.\\/)?[a-z0-9_./-]+\\.m?js$/i.test(file)&&!file.includes('..')&&!file.startsWith('/'))
+    .slice(0,12);
+  let source=html.slice(0,192000);
+  for(const file of files){try{source+='\\n'+filesystem.readFileSync(dir+'/'+file.replace(/^\\.\\//,''),'utf8').slice(0,128000);}catch{}}
+  const runtime=/(?:requestAnimationFrame|setInterval|setTimeout)\\s*\\(/.test(source);
+  const input=/(?:addEventListener\\s*\\(\\s*['"`](?:key|pointer|touch|mouse|click)|\\.on(?:click|keydown|pointerdown|touchstart)\\s*=|<button\\b|<input\\b)/i.test(source);
+  const world=/(?:<canvas\\b|\\.getContext\\s*\\(|createElement\\s*\\(\\s*['"`]canvas|class(?:room)?|학교|교실|수업|player|character|enemy|monster|health|score|inventory|shop|quest|money|coins|gameState|gameLoop|draw|render)/i.test(source);
+  const state=/(?:\\b(?:let|const|var)\\s+\\w+\\s*=|\\bfunction\\s+\\w+\\s*\\(|=>\\s*\\{|\\bclass\\s+\\w+)/.test(source);
+  const meaningfulLogic=/(?:\\b(?:update|render|tick|loop|draw|spawn|attack|move|advance|nextDay|nextLesson|startClass|buy|earn|saveGame|loadGame)\\s*\\(|(?:classroom|player|score|money|coins|level|students|studentsState|health|gameState)\\s*(?:\\.|\\[|[+\\-*/]?=))/i.test(source);
+  return {recognized:runtime&&input&&world&&state&&meaningfulLogic,
+    engine:'HTML_CSS_JAVASCRIPT',signals:{runtime,input,world,state,meaningfulLogic}};
+}
+
 export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootDir='',unityProjectRoot='unity-games'}={}){
   if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
   const policy=normalizationPolicy()?.ownerWebAutoIngest||{};
@@ -289,6 +308,43 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
           break;
         }catch{}
       }
+    }
+    // Source admission and playable publication are separate, so quick 2D games
+    // automatically enter design → native WebGL 3D F0-F9 without Unity.
+    const generalWeb=archivePresent&&!verifiedRoot
+      ?inspectGeneralWebGameSource({filesystem,dir,entryFile}):{recognized:false};
+    if(generalWeb.recognized){
+      const revision=webTreeFingerprint(filesystem,dir);
+      const entry=canonicalRoot+'/'+id+'/'+entryFile;
+      if(existing){
+        const prior=clean(existing.ownerWebSourceRevision);
+        existing.webPath=canonicalRoot+'/'+id;
+        existing.hasWebArchive=true;
+        existing.homepageWebPlayable=false;
+        existing.ownerWebSourceState='WEB_SOURCE_DEVELOPMENT_PENDING_QA';
+        existing.ownerDirectWebUpload=true;
+        existing.ownerWebIntakeEngine='HTML_CSS_JAVASCRIPT';
+        existing.web3dRedevelopmentRequired=true;
+        existing.ownerWebSourceRevision=revision;
+        existing.ownerWebEntryFile=entry;
+        if(prior!==revision)existing.webDevelopmentResetRequired=true;
+        if(existing.homepageDisplayMode==='WEB_PUBLISHED')existing.homepageDisplayMode='';
+        updated.push(id);
+      }else{
+        catalog.games.push({
+          id,name:ownerWebTitle(filesystem,indexFile,id),description:'일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중',
+          genre:[],image:'',webPath:canonicalRoot+'/'+id,hasWebArchive:true,homepageWebPlayable:false,
+          homepageOfficialCard:false,homepageTestCandidate:false,homepageDisplayMode:'',
+          homepageStage:'웹게임 등록 · 3D 설계 및 F0~F9 개발 대기',
+          lifecycleState:'ACTIVE',productionClass:'DESIGN_ONLY',productionClassSource:'GENERAL_WEB_SOURCE_INTAKE',
+          homepageCategory:'design-only',ownerDirectWebUpload:true,
+          ownerWebSourceState:'WEB_SOURCE_DEVELOPMENT_PENDING_QA',ownerWebIntakeEngine:'HTML_CSS_JAVASCRIPT',
+          web3dRedevelopmentRequired:true,ownerWebSourceRevision:revision,ownerWebEntryFile:entry,
+          webDevelopmentResetRequired:true
+        });
+        byId.set(id,catalog.games[catalog.games.length-1]);added.push(id);
+      }
+      continue;
     }
     valid=Boolean(verifiedRoot);
     if(valid)sourceState='UNITY_WEB_VERIFIED';
