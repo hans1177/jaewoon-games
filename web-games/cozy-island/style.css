@@ -18,40 +18,14 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .small-button { border: 0; border-radius: 10px; padding: 6px 9px; background: #dff4e8; font-weight: 800; }
 .raid-status { position: absolute; left: 10px; top: max(58px, calc(env(safe-area-inset-top) + 48px)); padding: 7px 10px; border-radius: 12px; background: rgba(255,255,255,.9); box-shadow: 0 4px 14px rgba(31,69,57,.12); font-size: 12px; font-weight: 900; pointer-events: none; }
 .hint { position: absolute; left: 50%; top: max(96px, calc(env(safe-area-inset-top) + 88px)); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 8px 12px; border-radius: 14px; background: rgba(37,66,58,.75); color: white; font-size: 13px; text-align: center; pointer-events: none; }
-.toast { position: absolute; left: 50%; bottom: 150px; transform: translate(-50%, 12px); opacity: 0; transition: .18s ease; max-width: calc(100% - 40px); padding: 9px 13px; border-radius: 999px; background: rgba(30,51,45,.9); color: white; font-weight: 800; font-size: 13px; pointer-events: none; text-align: center; }
+.toast { position: absolute; left: 50%; bottom: 88px; transform: translate(-50%, 12px); opacity: 0; transition: .18s ease; max-width: calc(100% - 40px); padding: 9px 13px; border-radius: 999px; background: rgba(30,51,45,.9); color: white; font-weight: 800; font-size: 13px; pointer-events: none; text-align: center; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-.controls { position: absolute; left: 0; right: 0; bottom: max(12px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: end; padding: 0 16px; pointer-events: none; }
-.joystick { position: relative; width: 132px; height: 132px; border-radius: 50%; pointer-events: auto; touch-action: none; user-select: none; }
-.joystick-ring { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.46); border: 3px solid rgba(255,255,255,.72); box-shadow: inset 0 0 0 12px rgba(37,66,58,.05), 0 6px 18px rgba(28,67,56,.2); backdrop-filter: blur(5px); }
-.joystick-knob { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; border-radius: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,.94); border: 3px solid #d8f0e2; box-shadow: 0 5px 14px rgba(28,67,56,.28); pointer-events: none; transition: transform .04s linear; }
-.joystick-knob::after { content: ''; position: absolute; inset: 19px; border-radius: 50%; background: #72aa8d; opacity: .8; }
-.strategy-bar {
-  position:relative; flex:0 0 210px; width:210px; height:275px; margin:0;
-  border:0; background:none; box-shadow:none; pointer-events:none;
-  touch-action:none; user-select:none;
-}
-.strategy-bar::before {
-  content:""; position:absolute; inset:5px 0 5px 28px; border-radius:70% 8% 8% 70%;
-  border:2px solid rgba(195,170,112,.5);
-  background:radial-gradient(ellipse at 100% 50%,rgba(29,43,34,.76),rgba(29,43,34,.4) 60%,transparent 78%);
-  pointer-events:none;
-}
-.strategy-button {
-  position:absolute; width:56px; height:56px; min-height:0; display:flex;
-  flex-direction:column; align-items:center; justify-content:center; gap:0;
-  border:2px solid #b8a471; border-radius:50%;
-  background:linear-gradient(145deg,#7c7358,#343f34); color:#fff2ce;
-  box-shadow:0 4px 11px #102b25a6; font-size:22px; font-weight:850;
-  text-shadow:0 1px #18251c; pointer-events:auto; touch-action:manipulation;
-}
-.strategy-button small { font-size:9px; line-height:12px; white-space:nowrap; }
-.strategy-button:active { background:#a1854f; transform:scale(.96); }
-#castleCommand { top:0; right:0; }
-#barracksCommand { top:36px; right:56px; }
-#workersCommand { top:81px; right:102px; }
-#tradeCommand { top:138px; right:102px; }
-#fishingCommand { top:183px; right:56px; }
-#centerCommand { top:219px; right:0; }
+/* 메인: 전략게임 전용 고정 명령바. 캐릭터 이동 스틱 없이 전장을 터치한다. */
+.controls { position:absolute; left:0; right:0; bottom:max(8px,env(safe-area-inset-bottom)); display:flex; justify-content:center; padding:0 8px; pointer-events:none; }
+.strategy-bar { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:5px; width:min(100%,540px); padding:6px; border:1px solid #a99469; border-radius:14px; background:rgba(35,43,34,.94); box-shadow:0 5px 18px #12251e85; pointer-events:auto; }
+.strategy-button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; width:100%; min-width:0; min-height:55px; border:1px solid #aa9566; border-radius:9px; background:linear-gradient(160deg,#72684e,#3b4436); color:#fff1d0; font-size:20px; font-weight:800; touch-action:manipulation; }
+.strategy-button small { font-size:10px; white-space:nowrap; }
+.strategy-button:active { background:#94774b; }
 .camera-zoom { position:absolute; right:max(12px,env(safe-area-inset-right)); top:max(66px,calc(env(safe-area-inset-top) + 56px)); z-index:5; display:flex; gap:7px; }
 .camera-zoom button { width:40px; height:40px; border:1px solid #b5a47c; border-radius:10px; background:rgba(35,48,39,.9); color:#fff0c6; font-size:25px; font-weight:900; box-shadow:0 3px 12px #23372d66; }
 #castleManageButton { display:none!important; }
@@ -83,19 +57,17 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .fish-track { position: relative; height: 48px; margin: 8px 0 18px; border-radius: 18px; background: #b7dbe6; overflow: hidden; border: 4px solid #eaf8fb; }
 .fish-good { position: absolute; left: 42%; width: 20%; top: 0; bottom: 0; background: #8bd58f; }
 .fish-marker { position: absolute; left: 0; top: 50%; transform: translate(-50%,-50%); font-size: 24px; }
-@media (min-width: 700px) {
-  .controls { padding: 0 28px 12px; }
-  .joystick { width: 146px; height: 146px; }
-  .joystick-knob { width: 70px; height: 70px; }
-}
 @media (max-width: 420px) {
-  .hud-main { gap: 5px; padding: 7px 8px; font-size: 11px; }
-  .small-button { padding: 6px 7px; }
+  .hud-main { gap:5px; padding:7px 8px; font-size:11px; }
+  .small-button { padding:6px; font-size:11px; }
+  .strategy-bar { gap:3px; padding:4px; }
+  .strategy-button { min-height:49px; font-size:17px; }
+  .strategy-button small { font-size:9px; }
 }
 @media (max-height: 620px) {
-  .joystick { transform: scale(.82); transform-origin: left bottom; }
-  .strategy-bar { transform: scale(.86); transform-origin: right bottom; }
-  .toast { bottom: 112px; }
+  .hint { display:none; }
+  .strategy-button { min-height:44px; }
+  .toast { bottom:72px; }
 }
 
 /* 3D 화면만 표시한다. 기존 게임 입력·확장 API용 2D 캔버스는 보이지 않는다. */
@@ -114,18 +86,3 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .small-button { background:#897751; color:#fff5dc; }
 .controls { align-items:flex-end; }
 .panel,.fishing-panel { z-index:9; }
-@media (max-width:420px) {
-  .controls { padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right)); }
-  .joystick { width: min(118px, 30vw); height: min(118px, 30vw); }
-  .strategy-bar { flex-basis:178px; width:178px; height:236px; }
-  .strategy-bar::before { inset:4px 0 4px 20px; }
-  .strategy-button { width:50px; height:50px; font-size:19px; }
-  .strategy-button small { font-size:9px; }
-  #castleCommand { top:0; right:0; }
-  #barracksCommand { top:31px; right:44px; }
-  #workersCommand { top:69px; right:84px; }
-  #tradeCommand { top:118px; right:84px; }
-  #fishingCommand { top:158px; right:44px; }
-  #centerCommand { top:186px; right:0; }
-}
-
