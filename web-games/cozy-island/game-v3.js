@@ -261,15 +261,16 @@ canvas.addEventListener('pointerup',e=>{
   }
   if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
   lastTap={time:now,x:e.clientX,y:e.clientY};
-  // 기존 지역 확장 스크립트의 상호작용 이벤트를 월드 터치에 연결.
-  const legacyAction=document.querySelector('#actionButton');
-  if(legacyAction&&!legacyAction.dispatchEvent(new PointerEvent('pointerdown',{
-    bubbles:true,cancelable:true,pointerType:e.pointerType||'touch'
-  })))return;
+  // 실제 건물 터치가 레거시 액션보다 먼저 처리되도록 선택 우선순위를 보장한다.
   const pos=renderer.screenToWorld(game,e.clientX,e.clientY);
   const radius=Math.max(78,Math.min(146,44/(renderer.camera3?.zoom||.5)));
   const target=nearestInteraction(pos,radius);
   if(target){activateInteraction(target);return}
+  // 레거시 이벤트는 빈 지도 터치에서만 처리해 기존 하위 게임 기능을 보호한다.
+  const legacyAction=document.querySelector('#actionButton');
+  if(legacyAction&&!legacyAction.dispatchEvent(new PointerEvent('pointerdown',{
+    bubbles:true,cancelable:true,pointerType:e.pointerType||'touch'
+  })))return;
   // 빈 땅 터치는 선택을 해제한다. 전략 카메라는 드래그로만 이동한다.
 });
 canvas.addEventListener('wheel',e=>{e.preventDefault();game.siegeOverview=true;renderer.changeZoom(e.deltaY<0?1.16:1/1.16)},{passive:false});
