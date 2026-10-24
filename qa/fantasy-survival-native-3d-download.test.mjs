@@ -484,7 +484,7 @@ test('game-specific compressed assets preserve original bytes and source hashes'
 });
 
 test('fast loading streams CC0 scenery after first frame and renders authored region coordinates',()=>{
- assert.match(moduleSource,/new Set\(\['floor_base','tree','tree_large','foliage_A','cobblestones'\]\)/);
+ assert.match(moduleSource,/new Set\(\['floor_base'\]\)/);
  assert.match(moduleSource,/if\(!extraModelsStarted\)/);
  assert.match(moduleSource,/stagedModels\.loadRemaining\(\)/);
  assert.match(moduleSource,/const isInterior=state\.area!=='surface'/);
@@ -498,6 +498,22 @@ test('fast loading streams CC0 scenery after first frame and renders authored re
  assert.match(index,/'goblinoutpost-'\+floor/);
  assert.match(moduleSource,/NATIVE_CREATURE_BY_ID\.get\(e\.type\?\.id\)/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+test('12 native biome backgrounds use original instanced scenery without mutating gameplay state',()=>{
+ const biomes=['forest','jungle','swamp','snow','canyon','volcano','crystal',
+  'giantlake','worldtree','flowerfield','giantgarden','desert'];
+ for(const biome of biomes)assert.ok(moduleSource.includes('    '+biome+':['),'missing 3D scenery: '+biome);
+ assert.match(moduleSource,/const BIOME_SCENERY=Object\.freeze/);
+ assert.match(moduleSource,/const sceneryBatches=new Map\(\)/);
+ assert.match(moduleSource,/new THREE\.InstancedMesh\(source\.geometry,source\.material,64\)/);
+ assert.match(moduleSource,/models\.size!==lastSceneryModelCount/);
+ assert.match(moduleSource,/for\(const \[kind,batch\] of sceneryBatches\)/);
+ assert.match(moduleSource,/const tileZone=isInterior\?currentBiome:/);
+ assert.match(moduleSource,/regionScene\?\.landmarks/);
+ assert.match(moduleSource,/sceneryBatches\.clear\(\)/);
+ assert.doesNotMatch(moduleSource,/new THREE\.(?:PlaneGeometry|BoxGeometry|SphereGeometry)\(/);
+ assert.match(moduleSource,/productionReady:false/);
 });
 
 test('streaming is nearest-first bounded and never requests the full species library at startup',()=>{
