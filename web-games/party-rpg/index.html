@@ -616,7 +616,7 @@ function inspectAct2(){
 
 function storyRecruit(a){if(state.story.companions[a.id])return;state.story.companions[a.id]=true;save();toast(a.name+'의 이야기가 여정 기록에 열렸어.');}
 function storyClear(index){state.story.cleared[index]=true;save();}
-function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';for(var step=1;step<=6;step++)if(!s.act2.completed[step])return '2막 · '+ZONES[step].name+'에서 새 단서를 찾아 복병을 물리쳐.';return '2막 · 여섯 단서 확보. 북문 기록실에서 다음 여정을 준비해.';}
+function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';for(var step=1;step<=6;step++)if(!s.act2.completed[step])return '2막 · '+ZONES[step].name+'에서 새 단서를 찾아 복병을 물리쳐.';return s.imperialVerdict?'4막 예고 · 시민의 기억 장부를 두고 새로운 세력이 등장했다.':'3막 · 옛 제국의 살인·신화·욕망 사건을 추적해.';}
 function storyReady(key){var s=state.story;return key==='fort'?s.cleared[0]&&s.visited[1]&&s.visited[2]:key==='temple'?s.choices.fort&&s.cleared[1]&&s.visited[3]&&s.visited[4]:key==='ending'?s.choices.temple&&s.cleared[2]&&s.visited[5]&&s.visited[6]:false;}
 function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();var after=()=>{if(key==='ending'&&playEventScene('act2intro',storyJournal))return;storyJournal();};if(playEventScene('choice:'+key,after))return;after();}
 
@@ -1061,7 +1061,7 @@ function systemMenu(){
 function worldMap(){
  var spots=dungeon?[{x:310,y:405,name:'룬 함정',type:'clue'},{x:825,y:445,name:'숨겨진 석문',type:'clue'},{x:worldW-72,y:worldH/2,name:'다음 방',type:'clue'}]:
  state.zone===0?[{x:390,y:300,name:'무기',type:'shop'},{x:1010,y:300,name:'방어구',type:'shop'},{x:700,y:300,name:'회복의 샘',type:'shop'},{x:700,y:690,name:'상점',type:'shop'},{x:844,y:487,name:'북문 기록실',type:'clue'}]:
- [{...(EVIDENCE_SITES[state.zone]||{x:700,y:500}),name:INCIDENTS[state.zone-1].name,type:'clue'}];
+ state.zone>6?[]:[{...(EVIDENCE_SITES[state.zone]||{x:700,y:500}),name:INCIDENTS[state.zone-1].name,type:'clue'}];
  var storySpot=pendingStoryEncounter();if(storySpot)spots.push({x:storySpot.site.x,y:storySpot.site.y,name:(storySpot.phase==='act2'?'2막 · ':'1막 · ')+storySpot.name,type:'clue'});
  var side=pendingRecruitQuest();if(side){var arc=RECRUIT_ARCS[portraitIndex(side)];spots.push({x:arc.site.x,y:arc.site.y,name:side.name+' 영입 단서 · '+arc.title,type:'recruit'});}
  var markers=spots.map(o=>'<span class="mapMarker '+o.type+'" style="left:'+(o.x/worldW*100)+'%;top:'+(o.y/worldH*100)+'%" title="'+escapeText(o.name)+'"><b>◆</b><small>'+escapeText(o.name)+'</small></span>').join('');
@@ -1081,8 +1081,8 @@ function worldMap(){
  document.getElementById('mapBack').onclick=closeModal;
 }
 function travelMenu(){
- var html='<button class="menuBtn secondary" id="showMap">현재 지역 큰 지도</button><h3>사냥터 6개</h3>';
- html+=ZONES.map(function(z,i){return '<div class="row"><div><b>'+z.name+'</b><small>'+z.sub+(i===0?" · 회복/상점/던전":" · 엘리트 출현")+'</small></div><button data-zone="'+i+'">이동</button></div>';}).join("");
+ var html='<button class="menuBtn secondary" id="showMap">현재 지역 큰 지도</button><h3>탐험 지역 10개 · 제국 유적 4개</h3>';
+ html+=ZONES.map(function(z,i){return '<div class="row"><div><b>'+z.name+'</b><small>'+z.sub+(i===0?' · 상점·던전':i>6?' · 제국의 괴물과 사건':' · 엘리트')+'</small></div><button data-zone="'+i+'" '+(i>6&&!imperialUnlocked()?'disabled':'')+'>'+(i>6&&!imperialUnlocked()?'2막 완료 후':'이동')+'</button></div>';}).join("");
  html+="<hr style='border-color:#ffffff20;margin:13px 0'><b>파티 던전 3개</b><small style='display:block;color:#b9c8bc;margin-top:3px'>플레이어 포함 2명 이상이어야 입장 가능</small>";
  html+=DUNGEONS.map(function(d,i){return '<div class="row"><div><b>'+d.name+'</b><small>권장 Lv.'+d.lv+' · '+(d.rooms.length+1)+'개 방 · 몬스터 10 + 보스 1</small></div><button data-dungeon="'+i+'">입장</button></div>';}).join("");
  openModal("지역 / 파티 던전",html);
@@ -1127,7 +1127,7 @@ function bagMenu(){
 function equipDrop(id){var d=DROPS[id];if(!d||state.player.drops.indexOf(id)<0)return;if(d.kind==="weapon"){state.player.specialWeapon=id;state.player.weapon=null;}else{state.player.specialArmor=id;state.player.armor=null;}save();toast(d.name+" 장착");}
 
 function goZone(i){
- if(dungeon)return;if(storyBattle&&storyBattle.phase==='act1'&&state.story.battles[storyBattle.zone]==='active')state.story.battles[storyBattle.zone]='pending';storyBattle=null;sound.effect("story");state.zone=Math.max(0,Math.min(ZONES.length-1,i));tacticalTargetId=null;contactTriggered=false;p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});moveTarget=null;if(view)view.center();if(state.zone>0)spawnFieldBatch();storyVisit(state.zone);save();
+ if(dungeon)return;if(i>=7&&!imperialUnlocked()){toast('2막의 여섯 단서를 모으면 제국 유적이 열려.');return;}if(imperialBattle){const c=state.story.imperialCases[imperialBattle.id];if(c&&c.status==='fighting')c.status='pending';imperialBattle=null;}if(storyBattle&&storyBattle.phase==='act1'&&state.story.battles[storyBattle.zone]==='active')state.story.battles[storyBattle.zone]='pending';storyBattle=null;sound.effect("story");state.zone=Math.max(0,Math.min(ZONES.length-1,i));tacticalTargetId=null;contactTriggered=false;p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});moveTarget=null;if(view)view.center();if(state.zone>0)spawnFieldBatch();storyVisit(state.zone);save();
 }
 function spawnFieldBatch(){
  if(state.zone===0||dungeon)return;var z=ZONES[state.zone];
