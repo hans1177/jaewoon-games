@@ -59,7 +59,7 @@ const matchers = {
     /^ASSET_RULES\.md$/,
     /^assets\/shared\//,
     /^web-games\/[^/]+\/world3d\.mjs$/,
-    /^assets\/vibe-motion-/
+    /^assets\/vibe-motion-/,
     /^\.github\/agents\/graphics\.agent\.md$/
   ],
   balance: [
