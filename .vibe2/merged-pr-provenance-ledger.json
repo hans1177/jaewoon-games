@@ -94558,11 +94558,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_5b8b0857fb789309e5b8ab09",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "merged-pr-9937",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "49a95f058d3cf18ec968aaabc11d500c1cc3d7dc",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9937,
+        "baseBranch": "main",
+        "headBranch": "vibe2/candidate/party-rpg-medieval-turns-20261024",
+        "baseSha": "49a95f058d3cf18ec968aaabc11d500c1cc3d7dc",
+        "headSha": "5a7bb0253f9f635acede2520df37f22d8ae7b541",
+        "mergeCommitSha": "25f6475b6503e1c6659eb9094a83a27a2d199b7d",
+        "mergedAt": "2026-10-24T15:05:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "808e98674f7ff930717cdf6db8d53f62b2a89014d619fc0255255d49e6c57f97",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/candidate/party-rpg-medieval-turns-20261024",
+        "candidateSha": "5a7bb0253f9f635acede2520df37f22d8ae7b541"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 289,
+        "deletedLineCount": 646,
+        "changedFiles": [
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/roblox-source-bootstrap.json",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "web-games/party-rpg/index.html",
+          "web-games/party-rpg/view.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/roblox-source-bootstrap.json",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "web-games/party-rpg/index.html",
+          "web-games/party-rpg/view.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9937",
+        "merge-commit:25f6475b6503e1c6659eb9094a83a27a2d199b7d",
+        "base-main:49a95f058d3cf18ec968aaabc11d500c1cc3d7dc"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 741
+    "total": 742
   }
 }
