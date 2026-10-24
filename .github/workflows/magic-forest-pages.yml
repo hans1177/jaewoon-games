@@ -536,7 +536,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Admit only latest canonical main SHA
+      - name: Admit latest main or identical publication inputs
         id: latest_main
         env:
           GH_TOKEN: ${{ github.token }}
@@ -547,25 +547,67 @@ jobs:
           if [ "$latest" = "$GITHUB_SHA" ]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
           else
-            echo "STALE_PAGES_REVISION_SKIPPED=$GITHUB_SHA CURRENT_MAIN=$latest"
-            echo "publish=false" >> "$GITHUB_OUTPUT"
+            # 게임·에셋·홈페이지·배포 입력이 바뀌면 기존 최신판 보호를 유지한다.
+            # 작업자/검사만 앞서간 경우에는 이미 준비한 동일 게시물을 즉시 사용한다.
+            gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$latest" > "$RUNNER_TEMP/pages-main-diff.json"
+            if node --input-type=module - "$RUNNER_TEMP/pages-main-diff.json" <<'NODE'
+          import fs from 'node:fs';
+          const diff=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const unpublished=file=>/^qa\//.test(file)||/^(?:tools\/(?:web-vibe-worker|web-vibe-organization|pwa-command-vibe2-task)\.mjs|README\.md)$/.test(file);
+          const safe=diff.status==='ahead'&&Array.isArray(diff.files)&&diff.files.length<300
+            &&Number.isSafeInteger(diff.total_commits)&&diff.total_commits>0&&diff.total_commits<=250
+            &&diff.files.every(row=>unpublished(row.filename)&&(!row.previous_filename||unpublished(row.previous_filename)));
+          process.exit(safe?0:1);
+          NODE
+            then
+              echo "PAGES_IDENTICAL_PUBLICATION_INPUTS=PASS SOURCE=$GITHUB_SHA CURRENT_MAIN=$latest"
+              echo "publish=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "STALE_PAGES_REVISION_SKIPPED=$GITHUB_SHA CURRENT_MAIN=$latest"
+              echo "publish=false" >> "$GITHUB_OUTPUT"
+            fi
           fi
       - name: Deploy GitHub Pages explicitly instead of relying on a GITHUB_TOKEN push
         if: steps.latest_main.outputs.publish == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
 
+  post-publication-3d-smoke:
+    needs: publish-pages
+    if: github.event_name != 'pull_request' && needs.publish-pages.outputs.page_url != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Bind browser QA to exact live published revision
+        id: live_revision
+        env:
+          PAGES_BASE: ${{ needs.publish-pages.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="${PAGES_BASE%/}/web-games/publish-manifest.json"
+          actual="$(curl -fsSL --retry 2 --max-time 15 "$url" | node -e "let t='';process.stdin.on('data',d=>t+=d);process.stdin.on('end',()=>{try{let j=JSON.parse(t);if(!/^[a-f0-9]{40}$/.test(j.sourceSha||''))process.exit(1);process.stdout.write(j.sourceSha)}catch{process.exit(1)}})")"
+          if [ "$actual" != "$GITHUB_SHA" ]; then
+            echo "POST_PUBLISH_SMOKE_SUPERSEDED_BY=$actual"
+            echo "exact=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "POST_PUBLISH_SMOKE_EXACT_SHA=PASS"
+            echo "exact=true" >> "$GITHUB_OUTPUT"
+          fi
       # Director checks public games only AFTER publication; not a release gate.
       - name: Verify live GitHub Pages source and game routes
         id: director_live_qa
-        if: steps.latest_main.outputs.publish == 'true'
+        if: steps.live_revision.outputs.exact == 'true'
         continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           director_report="$RUNNER_TEMP/pages-director-game-failures.txt"
           : > "$director_report"
-          base="${{ steps.deployment.outputs.page_url }}"
+          base="${{ needs.publish-pages.outputs.page_url }}"
           test -n "$base" || { echo 'WEB_PAGES_DEPLOY_URL_MISSING' >&2; exit 1; }
           base="${base%/}/"
           manifest_url="$base""web-games/publish-manifest.json"
@@ -670,31 +712,6 @@ jobs:
           gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$body"
           echo 'DIRECTOR_POST_DEPLOY_ISSUE=CREATED'
 
-  post-publication-3d-smoke:
-    needs: publish-pages
-    if: github.event_name != 'pull_request' && needs.publish-pages.outputs.page_url != ''
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      contents: read
-      issues: write
-    steps:
-      - name: Bind browser QA to exact live published revision
-        id: live_revision
-        env:
-          PAGES_BASE: ${{ needs.publish-pages.outputs.page_url }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          url="${PAGES_BASE%/}/web-games/publish-manifest.json"
-          actual="$(curl -fsSL --retry 2 --max-time 15 "$url" | node -e "let t='';process.stdin.on('data',d=>t+=d);process.stdin.on('end',()=>{try{let j=JSON.parse(t);if(!/^[a-f0-9]{40}$/.test(j.sourceSha||''))process.exit(1);process.stdout.write(j.sourceSha)}catch{process.exit(1)}})")"
-          if [ "$actual" != "$GITHUB_SHA" ]; then
-            echo "POST_PUBLISH_SMOKE_SUPERSEDED_BY=$actual"
-            echo "exact=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "POST_PUBLISH_SMOKE_EXACT_SHA=PASS"
-            echo "exact=true" >> "$GITHUB_OUTPUT"
-          fi
       # OWNER: Publish first. Runtime 3D smoke tests only the public, exact published URL.
       # Never block or roll back the GitHub Pages release because a browser/CDN/mobile test fails.
       - name: Checkout smoke script only after live publication
