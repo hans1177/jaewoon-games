@@ -6,7 +6,7 @@ test('original PWA polling retains its existing cloud queue while local chat use
   const source=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   const localStart=source.indexOf('  bridge:'),cloudStart=source.indexOf('  github-cloud:');
   assert.ok(localStart>0&&cloudStart>localStart);
-  const local=source.slice(localStart,cloudStart),cloud=source.slice(cloudStart,source.indexOf('  web-cloud-onepatch:'));
+  const local=source.slice(localStart,cloudStart),cloud=source.slice(cloudStart,source.indexOf('  web-recovery-select:'));
   assert.ok(cloud.includes("if: github.event_name != 'issue_comment'"));
   assert.ok(!cloud.includes("if [ \"$GITHUB_EVENT_NAME\" = 'repository_dispatch' ]"));
   assert.ok(!cloud.includes('OWNER_WEB_CLOUD_INGEST=AUTHORIZED'));
@@ -32,7 +32,7 @@ test('original PWA polling retains its existing cloud queue while local chat use
 test('local-only issue comment remains independent while authenticated dispatch runs in the cloud',()=>{
   const source=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
   const local=source.slice(source.indexOf('  bridge:'),source.indexOf('  github-cloud:'));
-  const cloud=source.slice(source.indexOf('  github-cloud:'),source.indexOf('  web-cloud-onepatch:'));
+  const cloud=source.slice(source.indexOf('  github-cloud:'),source.indexOf('  web-recovery-select:'));
   assert.ok(cloud.includes("steps.next.outputs.has_work == 'true'"));
   assert.ok(!cloud.includes('steps.local.outputs'));
   assert.ok(local.includes("steps.local.outputs.has_work == 'true'"));

@@ -219,3 +219,21 @@ test('worker refuses invalid module and inline script before any candidate write
  assert.throws(()=>safeWebVibeReplacement('const value=1;',JSON.stringify({oldText:'const value=1;',newText:'const value=;'}),{relative:'game.mjs'}));
  assert.throws(()=>safeWebVibeReplacement('<html><script>let value=1;</script></html>',JSON.stringify({oldText:'let value=1;',newText:'let value=;'})));
 });
+
+test('scheduled WEB retry is restricted to the authenticated owner WEB workflow',()=>{
+  const token='x'.repeat(30);
+  const env={GITHUB_ACTIONS:'true',GITHUB_REPOSITORY:'hans1177/jaewoon-games',
+    GITHUB_REF:'refs/heads/main',GITHUB_EVENT_NAME:'schedule',
+    GITHUB_ACTOR:'github-actions[bot]',GITHUB_WORKFLOW:'PWA Command Bridge'};
+  assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,environment:env}).githubHosted,true);
+  for(const changed of [
+    {GITHUB_WORKFLOW:'Different workflow'},
+    {GITHUB_REPOSITORY:'other/repository'},
+    {GITHUB_REF:'refs/heads/feature'},
+    {GITHUB_ACTIONS:'false'},
+    {GITHUB_EVENT_NAME:'pull_request'},
+    {GITHUB_EVENT_NAME:'workflow_dispatch'}
+  ])assert.throws(()=>assertWebVibeWorkerEnvironment({token,cloud:true,environment:{...env,...changed}}));
+  assert.equal(assertWebVibeWorkerEnvironment({token,cloud:true,
+    environment:{...env,GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_ACTOR:'hans1177'}}).githubHosted,true);
+});

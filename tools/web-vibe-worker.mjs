@@ -26,8 +26,14 @@ export function assertWebVibeWorkerEnvironment({token='',endpoint=OLLAMA_URL,mod
   environment=process.env}={}){
   if(!clean(token)||clean(token).length<12)fail('WEB_VIBE_DEDICATED_TOKEN_REQUIRED');
   if(cloud){
-    if(environment.GITHUB_ACTIONS!=='true'||environment.GITHUB_ACTOR!=='hans1177'
-      ||environment.GITHUB_REPOSITORY!==REPO||!['issue_comment','repository_dispatch'].includes(environment.GITHUB_EVENT_NAME)
+    // Scheduled replay only consumes previously authenticated owner tasks.
+    const ownerEvent=environment.GITHUB_ACTOR==='hans1177'
+      &&['issue_comment','repository_dispatch'].includes(environment.GITHUB_EVENT_NAME);
+    const scheduledReplay=['schedule','workflow_dispatch'].includes(environment.GITHUB_EVENT_NAME)
+      &&environment.GITHUB_WORKFLOW==='PWA Command Bridge'
+      &&(environment.GITHUB_EVENT_NAME==='schedule'||environment.GITHUB_ACTOR==='hans1177');
+    if(environment.GITHUB_ACTIONS!=='true'||!(ownerEvent||scheduledReplay)
+      ||environment.GITHUB_REPOSITORY!==REPO
       ||environment.GITHUB_REF!=='refs/heads/main')
       fail('WEB_VIBE_GITHUB_OWNER_MAIN_CONTEXT_REQUIRED');
     // 무모델 후보는 키 없이 실행 가능하다. 외부 호출 직전에는 여전히 키를 요구한다.
@@ -298,6 +304,9 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
   if(args.check)return {organization:'WEB',engine:'WEB_VIBE_1',webQueued:state.queue.tasks.filter(t=>t.status==='queued').length,sourceWritten:false,modelConnected:false};
   if(!args.task)fail('WEB_VIBE_TASK_ID_REQUIRED');
   const task=chooseWebVibeTask(state.queue,args.task);
+  if(['schedule','workflow_dispatch'].includes(process.env.GITHUB_EVENT_NAME)
+    &&(task.ownerDirective!==true||!task.evidence?.includes('owner-source-authenticated')))
+    fail('WEB_VIBE_UNVERIFIED_SCHEDULED_TASK');
   const sources=resolveWebVibeSources(task.gameId,{files:args.all?'*':args.files||'index.html'});
   const prior=(task.ownerPatchLineage?.verifiedPredecessors||[])
     .map(id=>state.queue.tasks.find(row=>row.id===id))

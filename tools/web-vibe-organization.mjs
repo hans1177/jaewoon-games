@@ -19,6 +19,12 @@ export function assertWebVibeTask(task){
      clean(task?.target)!=='web'||clean(task?.sourceRoot)!==root||
      !STATES.has(clean(task?.status))||
      !clean(task?.goal)||clean(task.goal).length>12000||
+     (task.sourceFiles!==undefined && (
+       typeof task.sourceFiles!=='string'||task.sourceFiles.length>1500||
+       !task.sourceFiles.trim()||!task.sourceFiles.split(/[;,]/).every(f=>
+         f==='*'||f==='all'||/^(?:[A-Za-z0-9._-]+\/)*[A-Za-z0-9._-]+\.(?:html?|css|js|mjs|cjs|json|svg)$/i.test(f)
+       )
+     ))||
      (task.responsibleFiles||[]).some(f=>!String(f).replaceAll('\\','/').startsWith(root+'/'))||
      (task.evidence||[]).some(e=>/^native-development-enabled|^unity-runner/i.test(clean(e))))
     throw new Error('WEB_VIBE_NATIVE_OR_INVALID_TASK_REJECTED');
@@ -57,6 +63,7 @@ export function ingestWebVibeTask({task,queue,catalog={},status={},repoRoot=proc
     .slice(-4).map(row=>row.id);
   const next=assertWebVibeTask({
     id:old.id,gameId:old.gameId,target:'web',sourceRoot:old.sourceRoot,
+    sourceFiles:clean(task.files||'*'),
     goal:clean(task.body),responsibleFiles:[],priority:'owner-immediate',status:'queued',
     ownerDirective:true,
     ...(verified.length?{ownerPatchLineage:{gameId:old.gameId,platform:'WEB',
@@ -67,7 +74,8 @@ export function ingestWebVibeTask({task,queue,catalog={},status={},repoRoot=proc
   });
   const current=validated.tasks.find(item=>item.id===next.id);
   if(current){
-    if(current.gameId!==next.gameId||current.target!=='web'||current.goal!==next.goal)
+    if(current.gameId!==next.gameId||current.target!=='web'||current.goal!==next.goal||
+      clean(current.sourceFiles||'*')!==next.sourceFiles)
       throw new Error('WEB_VIBE_QUEUE_IDENTITY_COLLISION');
     return {...validated,ingest:{added:false,taskId:next.id,reason:'ALREADY_QUEUED'}};
   }

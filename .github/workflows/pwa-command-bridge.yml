@@ -303,6 +303,119 @@ jobs:
           echo 'PWA_OWNER_POST_PUBLISH_QA=EXISTING_MAIN_RELEASE_PIPELINE'
 
 
+  web-recovery-select:
+    # Five-minute PWA watchdog reuses the existing authenticated WEB-only queue.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-slim
+    timeout-minutes: 3
+    outputs:
+      selected: ${{ steps.select.outputs.selected }}
+      task_id: ${{ steps.select.outputs.task_id }}
+      files: ${{ steps.select.outputs.files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Select oldest eligible WEB owner task
+        id: select
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-head.json
+          jq -r '.content' /tmp/web-recovery-head.json | base64 -d > /tmp/web-recovery-queue.json
+          node tools/web-vibe-recovery.mjs select /tmp/web-recovery-queue.json > /tmp/web-recovery-selection.json
+          if jq -e 'type=="object" and .taskId != null' /tmp/web-recovery-selection.json >/dev/null; then
+            task_id="$(jq -r '.taskId' /tmp/web-recovery-selection.json)"
+            files="$(jq -r '.files' /tmp/web-recovery-selection.json)"
+            [[ "$task_id" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$ ]] || exit 1
+            echo "selected=true" >> "$GITHUB_OUTPUT"
+            echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
+            echo "files=$files" >> "$GITHUB_OUTPUT"
+            echo 'WEB_VIBE_RECOVERY=EXACT_OWNER_TASK_SELECTED'
+          else
+            echo "selected=false" >> "$GITHUB_OUTPUT"
+            echo 'WEB_VIBE_RECOVERY=NO_ELIGIBLE_OWNER_QUEUE'
+          fi
+
+  web-recovery-onepatch:
+    needs: web-recovery-select
+    if: needs.web-recovery-select.outputs.selected == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    concurrency:
+      group: web-vibe-onepatch-${{ needs.web-recovery-select.outputs.task_id }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN || github.token }}
+      WEB_VIBE_JOB_TOKEN: ${{ !secrets.WEB_VIBE_GH_TOKEN }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      WEB_OWNER_TASK_ID: ${{ needs.web-recovery-select.outputs.task_id }}
+      WEB_OWNER_FILES: ${{ needs.web-recovery-select.outputs.files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preserve original WEB worker security and QA gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$WEB_VIBE_GH_TOKEN"
+          node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
+          node --check tools/web-vibe-worker.mjs
+          node --check tools/web-vibe-recovery.mjs
+          node --test qa/web-vibe-worker.test.mjs qa/web-vibe-organization.test.mjs qa/pwa-command-vibe2-task.test.mjs
+      - name: Resume exact authenticated WEB owner task
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$WEB_OWNER_TASK_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$ ]] || exit 1
+          if [ "$WEB_OWNER_FILES" = '*' ] || [ "$WEB_OWNER_FILES" = 'all' ]; then
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" --all --cloud --apply --pr
+          else
+            node tools/web-vibe-worker.mjs "--task=pwa-$WEB_OWNER_TASK_ID" "--files=$WEB_OWNER_FILES" --cloud --apply --pr
+          fi
+          echo 'WEB_VIBE_RECOVERY_RESULT=PR_CANDIDATE_ONLY_NOT_MERGED'
+      - name: Persist bounded WEB retry evidence after failure
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            gh api "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json?ref=web-vibe-control" > /tmp/web-recovery-current.json
+            jq -r '.content' /tmp/web-recovery-current.json | base64 -d > /tmp/web-recovery-queue.json
+            node tools/web-vibe-recovery.mjs failure /tmp/web-recovery-queue.json "pwa-$WEB_OWNER_TASK_ID" /tmp/web-recovery-updated.json > /tmp/web-recovery-outcome.json
+            if ! jq -e '.changed == true' /tmp/web-recovery-outcome.json >/dev/null; then
+              echo 'WEB_VIBE_RECOVERY=ALREADY_REVIEWED_OR_SUPERSEDED'
+              exit 0
+            fi
+            content="$(base64 -w0 /tmp/web-recovery-updated.json)"
+            sha="$(jq -r '.sha' /tmp/web-recovery-current.json)"
+            jq -nc --arg message "web-vibe: checkpoint failed owner retry [skip ci]" \
+              --arg content "$content" --arg sha "$sha" \
+              '{message:$message,content:$content,sha:$sha,branch:"web-vibe-control"}' \
+              > /tmp/web-recovery-payload.json
+            if gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/.web-vibe/queue.json" \
+                --input /tmp/web-recovery-payload.json >/dev/null; then
+              echo 'WEB_VIBE_RECOVERY=FAILED_WITH_BOUNDED_RETRY_CHECKPOINT'
+              exit 0
+            fi
+          done
+          echo 'WEB_VIBE_RECOVERY=QUEUE_WRITE_CONFLICT_NEEDS_TRIAGE' >&2
+          exit 1
+
   web-cloud-onepatch:
     # Run WEB_VIBE_1 on GitHub with existing WEB-only queue; no native task dispatch.
     permissions:
