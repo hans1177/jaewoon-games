@@ -53,8 +53,8 @@ try{
      assert.ok(route?.ok(),'GEM_ROUTE_HTTP');
      await gem.locator('#startBtn').waitFor({state:'visible'});
      await gem.waitForFunction(()=>!document.getElementById('startBtn').disabled,null,{timeout:60000});
-     await gem.locator('[data-stage="'+stage+'"]').click();
-     assert.equal(await gem.locator('[data-stage="'+stage+'"]').getAttribute('aria-pressed'),'true');
+     await gem.locator('button[data-stage="'+stage+'"]').click();
+     assert.equal(await gem.locator('button[data-stage="'+stage+'"]').getAttribute('aria-pressed'),'true');
      await gem.locator('#startBtn').click();
      await gem.waitForFunction(id=>document.getElementById('game').dataset.stage===id,stage);
      const canvas=gem.locator('#game');
