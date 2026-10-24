@@ -57,9 +57,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:37:22.817Z",
-      "updatedAt": "2026-10-24T15:53:19.786Z",
+      "updatedAt": "2026-10-24T16:20:21.497Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -69,7 +69,7 @@
         "capturedAt": "2026-10-12T02:39:01.675Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-24T16:20:21.497Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -114,11 +114,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "66c5d4e3d3f37ed3b961e7e2b8b092640a25c062",
+      "robloxSourceCommit": "6bb21432c32a9f8112b9207f978dee8afda40878",
       "robloxSourceBootstrapPassedAt": "2026-10-24T15:26:51.705Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -624,13 +624,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "f6790ae6358f16f4ac3f440d648e5fafb70e5cbc",
+      "robloxQualityBuildUpSourceRevision": "6bb21432c32a9f8112b9207f978dee8afda40878",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "amusement-tycoon",
-        "sourceRevision": "f6790ae6358f16f4ac3f440d648e5fafb70e5cbc",
-        "sourceTreeSha": "2ed094e3ea942a93b9f641e3dd7d3b03c7439d92",
+        "sourceRevision": "6bb21432c32a9f8112b9207f978dee8afda40878",
+        "sourceTreeSha": "5cab2a1970059ead3233d7a61f575fc269f78435",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -645,8 +645,8 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
-          "baselineFingerprint": "b7d874bb4a24b7c17ae6774ca29f4a8aefe853e512f0c20b7a8343b1cbcadb7b",
+          "libraryFingerprint": "5d0abeeac69a88bccd4c2b036329951f6d09731a2f36c893ee076f9a3c80f993",
+          "baselineFingerprint": "bfb4a80f64df074121b60fb5ec2c3449e9e55d9f9a6c656c3bb9e5de8b495ff1",
           "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
         "qualityFailureKinds": [
@@ -698,8 +698,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40076652639,
-        "testedAt": "2026-10-24T08:46:27.895Z"
+        "workflowRunId": 40109966205,
+        "testedAt": "2026-10-24T16:20:21.497Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -81694,7 +81694,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-24T16:17:48.845Z",
+  "updatedAt": "2026-10-24T16:20:21.497Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
