@@ -359,7 +359,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.18;
   // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*(mobileBudget?.82:1));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFShadowMap;
