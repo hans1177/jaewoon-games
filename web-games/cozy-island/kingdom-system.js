@@ -107,3 +107,31 @@ body.addEventListener('input',e=>{
   body.querySelector('output').textContent=Math.round(config.volume*100)+'%';audioSettings();
  }
 });
+
+body.addEventListener('click',async e=>{
+ const el=e.target.closest('[data-action]');if(!el)return;
+ const [op,id,value]=el.dataset.action.split(':');
+ try{
+  if(op==='save'){
+   api.save();
+   localStorage.setItem(SAVE+id,JSON.stringify({at:Date.now(),progress:JSON.parse(JSON.stringify(api.state))}));
+   render();return;
+  }
+  if(op==='load'&&slot(id)&&confirm('현재 자동저장을 덮어쓰고 해당 슬롯을 불러올까요?')){
+   const current=JSON.parse(localStorage.getItem(STORE)||'{}');
+   localStorage.setItem(STORE,JSON.stringify({...current,progress:slot(id).progress,updatedAt:Date.now()}));
+   location.reload();return;
+  }
+  if(op==='now'){api.save();message('현재 영지를 저장했습니다.');return}
+  if(op==='goto'){const point=locations[Number(id)];if(point){api.center(point[1],point[2]);dialog.close()}return}
+  if(op==='ally'){if(api.diplomacy(id,value))render();else message('금화 또는 외교 조건이 부족합니다.');return}
+  if(op==='play'){
+   if(initAudio()){music=true;if(!beatTimer)beatTimer=setInterval(beat,750);beat();render()}
+   return;
+  }
+  if(op==='stop'){music=false;render();return}
+  if(op==='voice'){config.voice=!config.voice;audioSettings();render();return}
+  if(op==='drum'&&initAudio()){drum(ctx.currentTime+.02);drum(ctx.currentTime+.42);return}
+  await peerAction(op,id,value);
+ }catch(error){message('오류: '+String(error.message||error).slice(0,180))}
+});
