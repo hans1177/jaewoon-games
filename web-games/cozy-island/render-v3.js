@@ -76,6 +76,10 @@ export class IslandRendererV3 {
         new THREE.MeshStandardMaterial({color:0x55b8d0,roughness:.5}));
       lake.rotation.x=-Math.PI/2;lake.scale.set(150*SC,112*SC,1);
       lake.position.set(390*SC,.035,370*SC);this.scene3.add(lake);
+      // 기존 연못 물 재질과 메시를 재사용해 성문 앞 해자 형상을 표현한다.
+      this.moat3=lake.clone();this.moat3.scale.set(180*SC,330*SC,1);
+      this.moat3.position.set(1460*SC,.055,615*SC);
+      this.moat3.visible=false;this.scene3.add(this.moat3);
       this.native3d=true;this.load3dModels();
     }catch(error){
       console.error('포근섬 3D 초기화 실패',error);
@@ -227,18 +231,22 @@ export class IslandRendererV3 {
     if(!this.native3d)return;
     try{
       const player=game.player,visibleIds=new Set();
-      const nearby=(x,y)=>Math.abs(x-player.x)<this.width+160&&
-        Math.abs(y-player.y)<this.height+170;
+      // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
+      const focus=game.siegeOverview?{x:1135,y:630}:player;
+      const zoom=game.siegeOverview?(this.width<600?.36:.52):(this.width<600?.68:.82);
+      if(this.camera3.zoom!==zoom){this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix()}
+      const nearby=(x,y)=>Math.abs(x-focus.x)<this.width/(2*zoom)+200&&
+        Math.abs(y-focus.y)<this.height/(2*zoom)+420;
       const put=(id,kind,x,y,height=2,rotation=0)=>{
         if(!Number.isFinite(x)||!Number.isFinite(y)||!nearby(x,y))return;
         visibleIds.add(id);
         const loaded=this.models3d.has(kind);
         let item=this.instances3d.get(id);
-        if(item&&(item.kind!==kind||item.loaded!==loaded)){
+        if(item&&(item.kind!==kind||item.loaded!==loaded||item.height!==height)){
           this.scene3.remove(item.mesh);this.instances3d.delete(id);item=null;
         }
         if(!item){const mesh=this.make3d(kind,height);
-          this.scene3.add(mesh);item={mesh,kind,loaded};this.instances3d.set(id,item)}
+          this.scene3.add(mesh);item={mesh,kind,loaded,height};this.instances3d.set(id,item)}
         item.mesh.position.set(x*SC,.03,y*SC);
         item.mesh.rotation.y=rotation;
       };
@@ -264,27 +272,61 @@ export class IslandRendererV3 {
       const production=game.state.productionBuildings||{},village=game.state.villageDevelopment||{};
       put('lumber',production.lumberBuilt?'fort-workshop':'package',245,850,production.lumberBuilt?2.9:1.0);
       put('mine',production.mineBuilt?'fort-workshop':'stone',785,965,production.mineBuilt?2.9:1.2);
-      if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9);
-      if(village.townHallBuilt)put('townhall','fort-keep',1010,1090,5.4);
-      // 메인: 기존 건설 해금 상태에만 따라 성벽·성문·망루가 나타난다.
-      // 새 건설 가격·충돌 박스·세이브 키·공격 판정은 만들지 않는다.
+      const fort=village.fortification||{},walls=fort.walls||{};
+      if(this.moat3)this.moat3.visible=!!village.townHallBuilt&&!!fort.moatBuilt;
+      if(village.townHallBuilt&&fort.moatBuilt){
+        if(fort.drawbridgeClosed!==false)put('fort-raised-bridge','gate',1400,608,2.7,Math.PI/2);
+        else put('fort-lowered-bridge','bench',1430,608,1.4,Math.PI/2);
+      }
+      const tier=Math.max(1,Math.min(3,Number(fort.wallTier)||1));
+      const wallHeight=2+(tier-1)*.65,gateHeight=3.25+(tier-1)*.38;
+      if(village.defenseTowerBuilt)put('defense-tower','fort-watchtower',400,1090,3.9+(tier-1)*.36);
+      if(village.townHallBuilt)put('townhall','fort-keep',1010,1090,5.4+
+        (game.state.townHallExpansion?.upgraded?1.15:0)+(tier-1)*.5);
+      // 메인: 실제 성벽 체력이 0이면 해당 구간이 무너져 통로가 열린다.
+      // 병력·트랩 공격 판정은 마을 방어 책임 모듈에서 처리한다.
       if(village.townHallBuilt){
         for(let i=0;i<8;i++){
-          if(i===3||i===4)continue; // 북쪽 중앙 출입로
-          put('fort-north:'+i,'fort-wall',384+i*113,210,2.0);
+          if(i===3||i===4)continue;
+          if((walls.north??1)>0)put('fort-north:'+i,'fort-wall',384+i*113,210,wallHeight);
         }
-        put('fort-north-gate','fort-gatehouse',780,210,3.25);
+        if((walls.north??1)>0)put('fort-north-gate','fort-gatehouse',780,210,gateHeight);
         for(let i=0;i<5;i++){
-          put('fort-west:'+i,'fort-wall',250,310+i*113,2.0,Math.PI/2);
-          if(i!==2)put('fort-east:'+i,'fort-wall',1310,310+i*113,2.0,Math.PI/2);
+          if((walls.south??1)>0)put('fort-west:'+i,'fort-wall',250,310+i*113,wallHeight,Math.PI/2);
+          if(i!==2&&(i<2?(walls.north??1)>0:(walls.south??1)>0))
+            put('fort-east:'+i,'fort-wall',1310,310+i*113,wallHeight,Math.PI/2);
         }
-        put('fort-east-gate','fort-gatehouse',1310,600,3.25,Math.PI/2);
-        put('fort-south-west','fort-wall',580,1030,2.0);
-        put('fort-south-mid','fort-wall',740,1030,2.0);
+        if((walls.gate??1)>0)put('fort-east-gate','fort-gatehouse',1310,600,gateHeight,Math.PI/2);
+        else put('fort-east-breach','stone',1310,600,.5);
+        if((walls.south??1)>0){
+          put('fort-south-west','fort-wall',580,1030,wallHeight);
+          put('fort-south-mid','fort-wall',740,1030,wallHeight);
+        }
+        if(tier>=2){
+          put('fort-secondary-tower','fort-watchtower',1265,955,3.8+(tier-1)*.42);
+          put('fort-inner-wall','fort-wall',990,955,wallHeight);
+        }
+        if(tier>=3){
+          put('fort-bastion','fort-watchtower',1180,305,4.7);
+          put('fort-rear-wall','fort-wall',415,1015,wallHeight);
+        }
+        for(let i=0;i<(fort.traps?.length||0);i++){
+          const trap=fort.traps[i],sites=[[1470,430],[1440,540],[1450,650],[1460,770],[1500,865],[1560,620]];
+          if(!trap||!sites[i])continue;
+          // 그래픽: 새로운 임의 원시 모델 대신 기존 CC0 3D 소품 자산을 재배치한다.
+          const kind={spikes:'fence',pit:'stone',net:'fence',oil:'package',log:'bench',barrel:'package'}[trap.type];
+          if(kind)put('fort-trap:'+i,kind,sites[i][0],sites[i][1],
+            trap.type==='spikes'?1.45:trap.type==='oil'?1.25:.9,
+            trap.type==='net'?Math.PI/2:0);
+        }
+        if((game.state.workers||0)>0)
+          put('fort-farm-home','fort-cottage',635,810,3.1);
+        if(game.state.productionBuildings?.lumberBuilt)
+          put('fort-storehouse','fort-workshop',390,820,3.8);
       }
       if(village.defenseTowerBuilt&&village.townHallBuilt){
-        put('fort-corner-nw','fort-watchtower',250,210,3.8);
-        put('fort-corner-ne','fort-watchtower',1310,210,3.8);
+        if((walls.north??1)>0)put('fort-corner-nw','fort-watchtower',250,210,3.8+(tier-1)*.5);
+        if((walls.north??1)>0)put('fort-corner-ne','fort-watchtower',1310,210,3.8+(tier-1)*.5);
       }
       // 성곽 안 길은 시각 요소뿐이며 기존 이동·상호작용 좌표는 그대로 사용.
       for(let i=0;i<7;i++)put('fort-road:'+i,'fort-road',755,465+i*72,.05);
@@ -295,6 +337,10 @@ export class IslandRendererV3 {
       put('barracks',game.state.barracksBuilt?'fort-barracks':'package',
         game.barracks.x,game.barracks.y,3);
       put('ship','bench',775,760,1.4);put('fishing','bench',520,430,1.4);
+      if((fort.traderClock??180)%180<75){
+        put('merchant','npc',845,775,1.9);
+        put('merchant-cargo','package',880,795,1.3);
+      }
       if(!game.state.expanded&&!village.townHallBuilt)put('east-gate','fort-gatehouse',1325,600,3.0);
       if(jungle)put('jungle-gate','fort-gatehouse',2170,1080,3.0);
       for(let i=0;i<game.state.plots.length;i++){
@@ -309,8 +355,19 @@ export class IslandRendererV3 {
       }
       for(const unit of game.allies)if(unit.hp>0)put('ally:'+unit.id,
         unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);
-      for(const unit of game.enemies)if(unit.hp>0)put('enemy:'+unit.id,
-        'enemy',unit.x,unit.y,unit.boss?2.5:1.9);
+      // 메인: 186명 모두 전투 판정하지만 가까운 최대 84/156명만 실제 3D 모델로 생성한다.
+      // 기존 CC0 메시를 재사용하며 전투 계산은 렌더링 축소의 영향을 받지 않는다.
+      const modelBudget=this.width<600?84:156;
+      const visibleEnemies=game.enemies.filter(u=>u.hp>0&&nearby(u.x,u.y))
+        .sort((a,b)=>(a.x-focus.x)**2+(a.y-focus.y)**2-
+          ((b.x-focus.x)**2+(b.y-focus.y)**2)).slice(0,modelBudget);
+      for(const unit of visibleEnemies){
+        const kind=unit.kind==='ram'?'package':
+          unit.kind==='siegeTower'?'fort-watchtower':
+          unit.kind==='sapper'?'npc':'enemy';
+        put('enemy:'+unit.id,kind,unit.x,unit.y,
+          unit.kind==='siegeTower'?4.7:unit.kind==='ram'?3.3:unit.boss?2.5:1.9);
+      }
       if(game.state.expanded)for(const wolf of game.wolves)if(wolf.alive)
         put('wolf:'+wolf.id,'wolf',wolf.x,wolf.y,wolf.boss?2.8:1.6);
       if(jungle)for(const boar of game.boars||[])if(boar.alive)
@@ -350,8 +407,11 @@ export class IslandRendererV3 {
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
         this.scene3.remove(item.mesh);this.instances3d.delete(id);
       }
-      this.camera3.position.set(player.x*SC,54,player.y*SC+10);
-      this.camera3.lookAt(player.x*SC,0,player.y*SC);
+      // 메인: 스트롱홀드식 성채 시야. 남쪽에서 비스듬히 내려다보고 이동 방향은 유지한다.
+      const focusX=focus.x*SC,focusZ=focus.y*SC;
+      this.camera3.position.set(focusX,game.siegeOverview?48:34,
+        focusZ+(game.siegeOverview?52:36));
+      this.camera3.lookAt(focusX,0,focusZ);
       const hour=game.state.minutes/60;
       this.scene3.background.setHex(hour<6||hour>20?0x365372:0x86cce0);
       this.gl.render(this.scene3,this.camera3);
@@ -377,11 +437,24 @@ export class IslandRendererV3 {
       this.gl.setSize(this.width,this.height,false);
       this.camera3.left=-this.width*SC/2;this.camera3.right=this.width*SC/2;
       this.camera3.top=this.height*SC/2;this.camera3.bottom=-this.height*SC/2;
+      // 시야: 모바일도 성곽과 건물 배치가 보이도록 넓히되 성능·저장 로직은 건드리지 않는다.
+      this.camera3.zoom=this.width<600?.68:.82;
       this.camera3.updateProjectionMatrix();
     }
   }
   camera(game) { return { x: game.player.x - this.width/2, y: game.player.y - this.height/2 }; }
-  screenToWorld(game, sx, sy) { const c=this.camera(game); return {x:sx+c.x,y:sy+c.y}; }
+  screenToWorld(game, sx, sy) {
+    if(!this.native3d){const c=this.camera(game);return {x:sx+c.x,y:sy+c.y}}
+    // 입력: 기울어진 카메라의 화면 터치를 실제 지면 좌표로 변환한다.
+    const bounds=this.canvas.getBoundingClientRect();
+    const pointer=new THREE.Vector2((sx-bounds.left)/bounds.width*2-1,
+      1-(sy-bounds.top)/bounds.height*2);
+    const ray=new THREE.Raycaster();ray.setFromCamera(pointer,this.camera3);
+    const hit=new THREE.Vector3();
+    if(ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),hit))
+      return {x:hit.x/SC,y:hit.z/SC};
+    return {x:game.player.x,y:game.player.y};
+  }
   draw(game) {
     if(this.native3d)this.draw3d(game);
     // 원본 확장 렌더 함수 연결은 유지하지만 2D 출력은 1픽셀 비표시 버퍼로만 보낸다.
