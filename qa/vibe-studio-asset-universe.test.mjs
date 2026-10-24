@@ -1934,6 +1934,24 @@ test('removed self authored pack stays absent: monster-adventure-v1',()=>{
   assert.equal(registry.assets.some(asset=>asset.id==='roblox-monster-adventure-v1'||asset.packId==='roblox-monster-adventure-v1'),false);
 });
 
+test('licensed in-game art remains intact without polluting the CC0 company registry',()=>{
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const lib=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const allowed=new Set(['CC0','CC0-1.0','CC0 1.0 Universal']);
+  assert.ok(lib.assets.every(a=>allowed.has(a.license)),
+    'only CC0 is allowed for company-wide common asset reuse');
+  assert.ok(lib.assets.every(a=>!String(a.id).startsWith('medieval-pixel-')
+    &&a.id!=='party-rpg-portraits'),'keep attributed/game-original art out of shared CC0 assets');
+  assert.equal(lib.cozyIslandMedievalArt.sourceRoot,'assets/shared/medieval');
+  assert.equal(lib.partyRpgArt.sourceRoot,'assets/shared/party');
+  const license=fs.readFileSync(path.join(root,'assets/shared/medieval/license.txt'),'utf8');
+  assert.match(license,/CC BY 3\.0/,'attributed artwork retains true original license');
+  assert.ok(fs.existsSync(path.join(root,'assets/shared/medieval/castle.png')),
+    'no actual image files may be removed');
+  assert.ok(fs.existsSync(path.join(root,'assets/shared/party/sources.json')),
+    'the party artwork keeps its provenance file');
+});
+
 // [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
 test('Rule5 removed original stays absent - monster adventure pack is registered',()=>{
   const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
