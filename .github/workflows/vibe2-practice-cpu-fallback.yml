@@ -147,6 +147,9 @@ jobs:
             '--output', $adapterDir,
             '--adapter-version', $adapterVersion,
             '--task-type', 'unity',
+            # The Windows CPU fallback cannot reliably load the default 1.7B model.
+            # Keep the canonical trainer default unchanged; this adapter stays practice-only.
+            '--base-model', 'Qwen/Qwen3-0.6B',
             '--method', 'lora',
             '--epochs', '1.0',
             '--max-length', '256',

@@ -86,6 +86,12 @@ test('CPU practice speedup removes duplicate eval without reducing train or eval
   assert.match(trainer, /eval_result = trainer\.evaluate\(\)/);
   assert.match(trainer, /supervised != len\(answer_ids\)/);
   assert.match(trainer, /answer token coverage mismatch/);
+  // CPU fallback uses a smaller Qwen3 base after the 1.7B shard-loading failure.
+  // The canonical training default and practice-only promotion gates stay unchanged.
+  assert.match(workflow, /'--base-model', 'Qwen\/Qwen3-0\.6B'/);
+  assert.match(trainer, /default="Qwen\/Qwen3-1\.7B"/);
+  assert.match(workflow, /PRACTICE_RUNTIME_PROMOTION: 'NO'/);
+  assert.match(workflow, /PRACTICE_PROMOTION_STATE=UNVERIFIED/);
   assert.match(workflow, /'--epochs', '1\.0'/);
   assert.match(workflow, /'--max-length', '256'/);
   assert.match(workflow, /'--final-eval-only'/);
