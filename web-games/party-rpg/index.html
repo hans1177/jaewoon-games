@@ -94,10 +94,24 @@
  #cameraTools{top:58px}
 }
 
+
+/* Tactical CRPG readability: combat feedback, environmental depth, compact party orders. */
+#atmosphere{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 51% 45%,transparent 30%,#050c125c 100%),linear-gradient(to bottom,#12151a40,transparent 27%,transparent 75%,#10111545)}
+#combatFeedback{position:fixed;inset:0;pointer-events:none;z-index:19;overflow:hidden}
+.damageFloat{position:absolute;font:bold 13px Georgia,serif;color:#ded0b4;text-shadow:0 1px 3px #000,0 2px 9px #090707;white-space:nowrap;animation:damageRise .85s ease-out both;will-change:transform,opacity}
+.damageFloat.critical{font-size:16px;color:#ebbb81}.damageFloat.miss{color:#94a5a8;font-size:11px}
+@keyframes damageRise{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-43px)}}
+#tacticsBtn[aria-pressed=true]{border-color:#ba9e73;background:linear-gradient(#5b5650,#2e3436)}
+.tacticsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}
+.tacticsGrid button{min-width:0;font-size:12px;text-align:left;min-height:57px;padding:8px;white-space:normal}
+.tacticsGrid .selectedOrder{border-color:#c7ae80;color:#eee1c7;background:linear-gradient(#4e5149,#292d2b)}
+.tacticsHint{font-size:12px;color:#aab2b0;line-height:1.7}
+@media(max-width:700px){#commandBar button{padding:6px 1px;font-size:9px;letter-spacing:-.15px}.tacticsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
-<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="autoBtn" aria-pressed="true">자동 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button></div><button id="partyInspect">선택한 인물 보기</button>
+<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="combatFeedback" aria-hidden="true"></div><div id="atmosphere" aria-hidden="true"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="tacticsBtn" type="button" aria-label="파티 대형과 전투 지시">전술</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="autoBtn" aria-pressed="true">자동 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button></div><button id="partyInspect">선택한 인물 보기</button>
 <div id="hud">
   <div id="stats" class="panel">
     <div id="statsTop">
