@@ -744,6 +744,7 @@ const originalDrawObjects = rendererProto.drawObjects;
 
 rendererProto.draw = function drawWithExpansionV4(game) {
   currentGame = game;
+  game.westBoss=westBoss; // 원본 서쪽 보스 전투정보 보존
   ensureState(game.state);
   if (game.state.cozyExpansionV4.west.unlocked) game.world.w = Math.max(game.world.w, 6000);
   const result = originalDraw.call(this, game);
