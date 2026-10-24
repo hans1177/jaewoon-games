@@ -1240,9 +1240,9 @@ function companionResponse(a,topic){
 }
 function companionContext(a){
  const c=companionPersonality(a),q=state.story.quests[a.id];
- if(q?.complete)return q.path==='truth'?'자기 이름으로 증언을 남긴 뒤에도 '+a.name+'의 손은 떨린다.':'보호한 증인이 무사한 것을 확인한 뒤에도 '+a.name+'은 출입구를 살핀다.';
- if(q)return q.path==='truth'?'공개 증언에 필요한 단서를 쫓는 동안 '+a.name+'은 '+c.manner+'.':'증인을 지키려는 동안 '+a.name+'은 '+c.manner+'.';
- return a.name+' · '+c.manner+'.';
+ const context=q?.complete?(q.path==='truth'?'증언을 공개한 뒤에도':'증인을 보호한 뒤에도'):
+  q?(q.path==='truth'?'공개 증언의 단서를 찾는 동안':'증인을 지키기 위해 움직이는 동안'):'대화하는 동안';
+ return context+' '+a.name+' · '+c.manner+'.';
 }
 const RECRUIT_ARCS=[{"gate":"intro","zone":0,"site":{"x":860,"y":575},"title":"북문에서 누락된 군번표"},{"gate":"visit1","zone":1,"site":{"x":820,"y":780},"title":"찢어진 장부"},{"gate":"case1","zone":1,"site":{"x":1090,"y":720},"title":"사라진 고갯길 발자국"},{"gate":"visit2","zone":2,"site":{"x":1370,"y":620},"title":"고향 문양의 쇳조각"},{"gate":"visit3","zone":3,"site":{"x":1030,"y":830},"title":"찢긴 계약서"},{"gate":"fort","zone":4,"site":{"x":1360,"y":880},"title":"분실된 약품 목록"},{"gate":"visit4","zone":4,"site":{"x":950,"y":690},"title":"두 번 적힌 세금"},{"gate":"visit5","zone":5,"site":{"x":1180,"y":820},"title":"눈 속의 별자리"},{"gate":"visit6","zone":6,"site":{"x":1150,"y":850},"title":"전령의 암호"},{"gate":"temple","zone":6,"site":{"x":1590,"y":770},"title":"노래의 마지막 구절"}];
 function companionDiscovered(a){
@@ -1349,7 +1349,7 @@ function companionDialogue(a,fromScene=false,topic=""){
  }
  if(event&&unlocked)html+='<h3>사건 · '+event.name+'</h3><p>'+(eventCase?(eventCase.path==='truth'?event.truth:event.guard):state.story.visited[eventZone]?event.lead+' · 여정 기록에서 조사 방향을 정해 줘.':'아직 사건 현장을 조사하지 못했어.')+'</p>';
   if(unlocked&&!quest){
-  html+='<h3>동료 개인 의뢰</h3><p>진실을 공개하면 위험한 사람이 생기고, 증인을 먼저 지키면 책임자가 도망칠 시간도 생겨. '+escapeText(a.name)+'이(가) 무엇을 선택할지 이야기를 들어 봐.</p>';
+  html+='<h3>동료 개인 의뢰</h3><p>진실을 공개하면 위험한 사람이 생기고, 증인을 먼저 지키면 책임자가 도망칠 시간도 생겨. '+escapeText(a.name)+'에게 무엇을 선택할지 직접 물어봐.</p>';
   html+='<button class="menuBtn" data-companion-choice="truth">설득 판정 · 진실을 밝히자</button>';
   html+='<button class="menuBtn secondary" data-companion-choice="guard">비밀을 지키고 증인을 보호하자</button>';
  }else if(quest){
