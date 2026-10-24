@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-s4s7jz",
+      "worker": "vibe2",
+      "taskId": "human-go-temp-web-startup-spatial-repair-v1",
+      "gameId": "human-go-temp",
+      "files": [
+        "web-games/human-go-temp/index.html"
+      ],
+      "baseSha": "b85d206868770a2f81d0b6f9daead302fadd5570",
+      "runId": "40085119413",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-24T10:49:59.264Z",
+      "expiresAt": "2026-10-24T11:34:59.264Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:human-go-temp-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
