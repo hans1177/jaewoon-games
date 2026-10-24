@@ -250,13 +250,13 @@ function buildPresentationQualityContract(task = {}, target = '') {
     beforeAfterEvidenceRequired:replacementInput?.implementation?.beforeAfterEvidenceRequired!==false
   }):freeze({required:false,version:1});
   const checks={
-    ASSET_ADAPTATION:['style-lock-consistency','reuse-existing-assets-first','context-matched-background','non-placeholder-character-enemy-models','runtime-render-binding','no-duplicate-render-pipeline','gameplay-semantics-unchanged'],
-    LIVING_MOTION:['idle-alive-motion','locomotion-blend-or-equivalent','acceleration-deceleration','turn-smoothing','secondary-motion','state-driven-motion-not-decorative-only','gameplay-speed-unchanged'],
-    ANIMATION_FEEL:['anticipation','impact-sync','attack-hit-death-state-coverage','hit-stop-presentation-only','recoil-recovery','authoritative-hit-event-preserved'],
-    VFX:['impact-feedback','effect-budget','mobile-readability','bounded-particles-or-transients','gameplay-readability-preserved'],
+    ASSET_ADAPTATION:['style-lock-consistency','reuse-existing-assets-first','context-matched-background','regional-tiles-and-landmark-depth','pixel-grid-only-for-pixel-art','character-enemy-weapon-silhouette','non-placeholder-character-enemy-models','runtime-render-binding','no-duplicate-render-pipeline','gameplay-semantics-unchanged'],
+    LIVING_MOTION:['idle-alive-motion','locomotion-blend-or-equivalent','acceleration-deceleration','turn-smoothing','foot-contact-no-moonwalk','species-specific-movement','secondary-motion','state-driven-motion-not-decorative-only','gameplay-speed-unchanged'],
+    ANIMATION_FEEL:['anticipation','weapon-specific-windup-and-recoil','impact-sync','attack-hit-death-state-coverage','hit-stop-presentation-only','recoil-recovery','authoritative-hit-event-preserved'],
+    VFX:['impact-feedback','impact-audio-vfx-camera-sync','bounded-weapon-trails-and-hit-flash','effect-budget','mobile-readability','bounded-particles-or-transients','gameplay-readability-preserved'],
     AUDIO_FEEL:['first-gesture-audio-web','mute-volume','no-duplicate-resume-playback','state-transition-audio','impact-audio-sync'],
     CAMERA_LANGUAGE:['subtle-normal-response','strong-action-response','hero-moment-control','runtime-camera-binding','mobile-readability','no-critical-input-obscure'],
-    POLISH_MOBILE:['animation-pop-removal','vfx-clutter-check','audio-transition-check','touch-during-effects','frame-stability','actual-runtime-presentation-hardgate','save-gameplay-semantics-unchanged']
+    POLISH_MOBILE:['animation-pop-removal','tile-repetition-and-camera-jitter-review','vfx-clutter-check','audio-transition-check','touch-during-effects','frame-stability','actual-runtime-presentation-hardgate','save-gameplay-semantics-unchanged']
   };
   const runtimeChecks={
     ASSET_ADAPTATION:['same-scene-before-after-readability'],
@@ -333,6 +333,10 @@ function presentationQualityGuidance(contract = {}) {
       '완성 자산 그대로 사용에만 묶이지 않는다. 현재 컨셉에 정확히 맞으면 재사용하고, 필요하면 재질·비율·색·모션·VFX·레이아웃을 응용하며, 여러 호환 후보의 장점을 재조합해 하나의 게임 전용 표현으로 만든다. 무가공 에셋팩 짬뽕은 금지한다.',
       '완료 결과에는 실제 교체 개수, 변경한 표현 계열, 사용한 재사용/변형/재조합 방식을 기록해야 한다. actualCount의 각 1개는 touched source path + bindingKey + 그 변경 소스에 실제 존재하는 sourceEvidence로 개별 근거가 있어야 하며, 근거 없는 숫자 부풀리기는 PASS가 아니다. 실제 source/binding 교체가 0개면 이 그래픽/presentation 작업은 PASS가 아니다.'
     ]:[]),
+    'F0부터 지역·실루엣·장비·프레임 안정성을 해당 게임 Style Lock에 맞춰 실제로 제작한다. F0~F9와 기존 presentation pass 순서는 유지하고 매 반복 verified baseline의 약한 시각 축을 기존 책임 소스에서 더 깊게 개선한다.',
+    '픽셀 게임은 원본 타일 반복·경계·지역 식생/암석/수면 디테일·nearest 필터·픽셀 그리드 일치·카메라 떨림을 검토한다. 비픽셀 게임에 픽셀화나 임의 스프라이트 변환을 강제하지 않는다.',
+    '몬스터 종별 idle/walk/run/turn과 발 접지, 무기별 windup/contact/recoil/recovery를 원본 gameplay 상태에 동기화한다. 적중 순간 VFX/SFX/카메라 반응을 하나의 이벤트에 연결하고 판정/쿨다운/저장에 손대지 않는다.',
+    '동일 장면 전후, 모바일 버튼 가림, 이펙트 과밀, FPS·GPU·메모리 근거는 기존 관련 QA/런타임 단계에서 확인한다. 문서/마커만으로 완료라 하지 않는다.',
     '실제 대상 플랫폼 플레이 화면에 컨셉에 맞는 배경/환경, 임시 primitive가 아닌 캐릭터·몬스터 표현, 상태 기반 idle/move/attack/hit/death, gameplay event에 연결된 VFX·카메라, 모바일 터치/프레임 근거가 있어야 PASS다.',
     '마커·설명문·정적 CSS 장식만 추가하거나 컨셉 불일치 배경/모형 몹을 남긴 상태는 presentation 완료로 인정하지 않는다.',
     `atomic-neuron=${contract.atomicNeuron?.mode||'NONE'}; max-variants=${contract.atomicNeuron?.maxVariants||1}; task-micro-fanin=required`,
