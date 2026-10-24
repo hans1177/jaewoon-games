@@ -491,7 +491,10 @@ test('all authored biomes use original instanced scenery without changing intera
  for(const biome of biomes)assert.ok(mapping.includes(biome+':'),'unmapped biome: '+biome);
  for(const token of [
    'new THREE.InstancedMesh(original.geometry,original.material,49)',
-   'const batch=sceneryBatches.get(SCENERY_KIND[tileZone]',
+   'const kind=SCENERY_KIND[tileZone]',
+   'let batch=sceneryBatches.get(kind)',
+   'if(!batch&&models.has(kind))',
+   'models.size!==lastSceneryModelCount',
    'if(tx!==0||tz!==0)',
    'const seen=++frameSequence',
    'loadRemaining:async(priorityNames=[])',
@@ -505,7 +508,7 @@ test('all authored biomes use original instanced scenery without changing intera
 });
 
 test('fast loading streams CC0 scenery after first frame and renders authored region coordinates',()=>{
- assert.match(moduleSource,/new Set\(\['floor_base','tree','tree_large','foliage_A','cobblestones'\]\)/);
+ assert.match(moduleSource,/new Set\(\['floor_base'\]\)/);
  assert.match(moduleSource,/if\(!extraModelsStarted\)/);
  assert.match(moduleSource,/stagedModels\.loadRemaining\(priorityModels\)/);
  assert.match(moduleSource,/const isInterior=state\.area!=='surface'/);
