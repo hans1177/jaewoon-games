@@ -480,10 +480,27 @@ test('game-specific compressed assets preserve original bytes and source hashes'
  assert.match(moduleSource,/mergeVertices\(geometry,1e-6\)/);
 });
 
+test('fast loading streams CC0 scenery after first frame and renders authored region coordinates',()=>{
+ assert.match(moduleSource,/new Set\(\['floor_base','tree','tree_large','foliage_A','cobblestones'\]\)/);
+ assert.match(moduleSource,/if\(!extraModelsStarted\)/);
+ assert.match(moduleSource,/stagedModels\.loadRemaining\(\)/);
+ assert.match(moduleSource,/const isInterior=state\.area!=='surface'/);
+ assert.match(moduleSource,/regionScene\?\.landmarks/);
+ assert.match(index,/rel="modulepreload" href="\.\/world3d\.mjs"/);
+ assert.match(index,/rel="preload" href="\.\/models\.json\.gz"/);
+ assert.match(index,/world3d\.frame\(state,regionAt,NATIVE_SCENE_LANDMARKS\[state\.area\]\)/);
+ for(const name of ['underwater','underground','worldtreeinside','questcave','storylab1','storylab2',
+  'jungletemple','jungletemple-upper','jungletemple-lower','jungletemple-secret'])
+  assert.ok(index.includes(name+':{landmarks:')||index.includes("'"+name+"':{landmarks:"),'region mapped: '+name);
+ assert.match(index,/'goblinoutpost-'\+floor/);
+ assert.match(moduleSource,/NATIVE_CREATURE_BY_ID\.get\(e\.type\?\.id\)/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
 test('streaming is nearest-first bounded and never requests the full species library at startup',()=>{
  assert.doesNotMatch(moduleSource,/Object\.keys\(NATIVE_CREATURE_MODELS\)\.map/);
  assert.match(moduleSource,/distance>1200/);
- assert.match(moduleSource,/loadingCreatureCount>=\(mobileBudget\?2:4\)/);
+ assert.match(moduleSource,/loadingCreatureCount>=\(mobileBudget\?6:10\)/);
  const renderer=moduleSource.split('function synchronizeNativeCreatures(state,px,py,stamp){')[1]?.split('  if(hero)scene.add(hero.avatar);')[0]||'';
  assert.doesNotMatch(renderer,/near\*qualityFactor|distance>Math\.max\(430/,'GPU quality scaling must not cull visible monsters');
  const streaming=moduleSource.split('cameraFrustum.setFromProjectionMatrix(cameraProjection);')[1]?.split(' const classify=')[0]||'';
