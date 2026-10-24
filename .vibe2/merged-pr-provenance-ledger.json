@@ -89201,11 +89201,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_577f3a503e735d32384b45ba",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9657",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ff6ca854fbf126c2be2c02dee4c19d8e3f32dfc0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9657,
+        "baseBranch": "main",
+        "headBranch": "gem-live-fix",
+        "baseSha": "ff6ca854fbf126c2be2c02dee4c19d8e3f32dfc0",
+        "headSha": "f30e83e2b81c009cd1f949def5da569666260c64",
+        "mergeCommitSha": "70e87a302e6aa27a9129a284927a9f9b1763b5f4",
+        "mergedAt": "2026-10-24T02:29:12Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8aee8a7ed260977c2944818a30459700caad7f2a24332a933a123b67a7893a88",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "gem-live-fix",
+        "candidateSha": "f30e83e2b81c009cd1f949def5da569666260c64"
+      },
+      "changeStats": {
+        "changedFileCount": 22,
+        "codingRelevantFileCount": 22,
+        "addedLineCount": 443,
+        "deletedLineCount": 318,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/gem-survivor-3d.test.mjs",
+          "qa/github-pages-asset-staging.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "qa/pwa-command-vibe2-task.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/roblox-source-bootstrap.json",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/insect-survival/client/Game.client.luau",
+          "roblox-games/insect-survival/roblox-source-bootstrap.json",
+          "roblox-games/insect-survival/shared/GameConfig.luau",
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "web-games/gem-survivor/gem3d.mjs",
+          "web-games/gem-survivor/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/gem-survivor-3d.test.mjs",
+          "qa/github-pages-asset-staging.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "qa/pwa-command-vibe2-task.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/roblox-source-bootstrap.json",
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/insect-survival/client/Game.client.luau",
+          "roblox-games/insect-survival/roblox-source-bootstrap.json",
+          "roblox-games/insect-survival/shared/GameConfig.luau",
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "web-games/gem-survivor/gem3d.mjs",
+          "web-games/gem-survivor/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9657",
+        "merge-commit:70e87a302e6aa27a9129a284927a9f9b1763b5f4",
+        "base-main:ff6ca854fbf126c2be2c02dee4c19d8e3f32dfc0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 702
+    "total": 703
   }
 }
