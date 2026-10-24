@@ -21,3 +21,16 @@
 - GitHub 바이너리 Blob SHA1과 원본 주소 및 바이트 수는 `assets/cc0/manifest.json`에 기록했다. **15개의 새 CC0 바이너리는 원본과 Git Blob SHA1이 일치함**을 업로드할 때 확인했다.
 - 원작 대항해시대 4의 이미지·음악·캐릭터 파일은 사용하지 않는다.
 
+
+## 유럽 픽셀 항해 개편 · 2026-10-25
+
+- `assets/world.mjs`: Natural Earth `ne_110m_land.geojson`의 좌표를 경도×12, 위도×−12 게임 좌표로 변환했다. 원본: https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_land.geojson
+- `assets/countries.mjs`: 같은 프로젝트의 `ne_110m_admin_0_countries.geojson`에서 유럽 및 인접국 경계를 추출했다. 경계는 현대 지리 참고선이며 1590년 역사 국경 재현이 아니다. Natural Earth는 Public Domain: https://www.naturalearthdata.com/about/terms-of-use/
+- `assets/captains.webp`: 사용자가 요청한 실사풍 5개 지역 주인공을 위한 독자 생성 초상화. 원작 인물·이미지·상표를 복제하지 않았다. 생성 도구 imagegen. 최종 프롬프트: 1590년 항해자 5인 동일 너비 초상화 아틀라스, 잉글랜드 여성 선장·이집트 여성 학자·스와힐리 남성 상인·인도 남성 항해사·일본 여성 항해사, 사실적 유화, 글자 없음. 생성 PNG를 1500×600 WebP로 최적화했다.
+- 픽셀 선박·마을·시설 배경은 게임 렌더러에서 직접 구성한 독자 그래픽이다. 기존 Kenney GLB와 CC0 원본들은 삭제하지 않았다. 기존 Buch 초상화는 동료 표시에서 계속 사용한다.
+- 배경음악은 Web Audio 선법·선율·저음으로 직접 구성한 독자 절차 작곡이다. 항해·항구·왕궁·탐험 장면에 따라 선율이 바뀌며 사용자 음악 버튼 이후 재생한다. 기존 OGG는 보존되지만 새 재생 경로에서는 사용하지 않는다.
+- 이 기록은 런타임 검증 통과 주장이 아니다. 실제 배포와 검증 결과는 별도로 확인한다.
+
+- `captains.webp`: 216018 bytes · SHA-256 `3ef9e881080bdfa6f84d149c4b90c8b25cfc188072fadf4edbaf1e06a124a134`
+- `world.mjs`: 104708 bytes · SHA-256 `338a49bb5fd4070537c33db9e234d4b139606409e876594e79f66f39a0279a9c`
+- `countries.mjs`: 16163 bytes · SHA-256 `c439d7b0fc3a9fcdd02d204fb3d297c61b605d2efbd838014fb269adddb36e96`
