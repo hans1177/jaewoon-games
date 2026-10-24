@@ -424,13 +424,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const mageBoltEffects=[],projectileDirection=new THREE.Vector3(),projectileUp=new THREE.Vector3(0,1,0);
   // CC0 원본 메시만 재사용해 모든 지역의 입체 배경을 그린다. 이 장식은 채집·충돌 대상이 아니다.
   const SCENERY_KIND=Object.freeze({
-    forest:['tree','foliage_A','foliage_B','tree_large'],jungle:['tree_large','foliage_B','tree','foliage_A'],swamp:['foliage_A','tree','cobblestones','foliage_B'],
-    snow:['tree_large','cobblestones','tree'],canyon:['cobblestones','foliage_A','tree'],
-    volcano:['cobblestones','fence_straight','tree'],crystal:['cobblestones','foliage_B','tree_large'],
-    giantlake:['foliage_A','foliage_B','cobblestones'],worldtree:['tree_large','foliage_B','foliage_A'],
-    flowerfield:['foliage_A','foliage_B','tree'],giantgarden:['foliage_B','tree','tree_large'],
-    desert:['cobblestones','foliage_A','fence_straight'],
-    underwater:['foliage_B','cobblestones','foliage_A'],'underwater-dungeon':['cobblestones','fence_straight','foliage_B']
+    forest:['tree','foliage_B'],jungle:['tree_large','foliage_A'],swamp:['foliage_A','cobblestones'],
+    snow:['tree_large','cobblestones'],canyon:['cobblestones','foliage_A'],
+    volcano:['cobblestones','fence_straight'],crystal:['cobblestones','tree_large'],
+    giantlake:['foliage_A','foliage_B'],worldtree:['tree_large','foliage_A'],
+    flowerfield:['foliage_A','foliage_B'],giantgarden:['foliage_B','tree_large'],
+    desert:['cobblestones','foliage_A'],
+    underwater:['foliage_B','cobblestones'],'underwater-dungeon':['cobblestones','fence_straight']
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
@@ -832,7 +832,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       // 흰색 혼합을 줄여 설원·화산·수정 지대와 숲의 색채가 뚜렷하게 구분되도록 한다.
       const tileSeed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
       // 좌표 시드가 고정된 8단계 명암: 이동 중 타일 색이 깜빡이지 않는다.
-        biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(pixelTerrainTones[(tileSeed>>>9)&7]).lerp(floorNeutral,.075));
+        biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar((.91+tileSeed%17*.01)*pixelTerrainTones[(tileSeed>>>9)&7]).lerp(floorNeutral,.075));
       tileIndex++;
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
