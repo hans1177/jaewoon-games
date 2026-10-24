@@ -227,8 +227,12 @@ export class IslandRendererV3 {
     if(!this.native3d)return;
     try{
       const player=game.player,visibleIds=new Set();
-      const nearby=(x,y)=>Math.abs(x-player.x)<this.width+160&&
-        Math.abs(y-player.y)<this.height+170;
+      // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
+      const focus=game.siegeOverview?{x:1135,y:630}:player;
+      const zoom=game.siegeOverview?(this.width<600?.36:.52):(this.width<600?.68:.82);
+      if(this.camera3.zoom!==zoom){this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix()}
+      const nearby=(x,y)=>Math.abs(x-focus.x)<this.width/(2*zoom)+200&&
+        Math.abs(y-focus.y)<this.height/(2*zoom)+420;
       const put=(id,kind,x,y,height=2,rotation=0)=>{
         if(!Number.isFinite(x)||!Number.isFinite(y)||!nearby(x,y))return;
         visibleIds.add(id);
@@ -342,8 +346,19 @@ export class IslandRendererV3 {
       }
       for(const unit of game.allies)if(unit.hp>0)put('ally:'+unit.id,
         unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);
-      for(const unit of game.enemies)if(unit.hp>0)put('enemy:'+unit.id,
-        'enemy',unit.x,unit.y,unit.boss?2.5:1.9);
+      // 메인: 186명 모두 전투 판정하지만 가까운 최대 84/156명만 실제 3D 모델로 생성한다.
+      // 기존 CC0 메시를 재사용하며 전투 계산은 렌더링 축소의 영향을 받지 않는다.
+      const modelBudget=this.width<600?84:156;
+      const visibleEnemies=game.enemies.filter(u=>u.hp>0&&nearby(u.x,u.y))
+        .sort((a,b)=>(a.x-focus.x)**2+(a.y-focus.y)**2-
+          ((b.x-focus.x)**2+(b.y-focus.y)**2)).slice(0,modelBudget);
+      for(const unit of visibleEnemies){
+        const kind=unit.kind==='ram'?'package':
+          unit.kind==='siegeTower'?'fort-watchtower':
+          unit.kind==='sapper'?'npc':'enemy';
+        put('enemy:'+unit.id,kind,unit.x,unit.y,
+          unit.kind==='siegeTower'?4.7:unit.kind==='ram'?3.3:unit.boss?2.5:1.9);
+      }
       if(game.state.expanded)for(const wolf of game.wolves)if(wolf.alive)
         put('wolf:'+wolf.id,'wolf',wolf.x,wolf.y,wolf.boss?2.8:1.6);
       if(jungle)for(const boar of game.boars||[])if(boar.alive)
@@ -384,8 +399,9 @@ export class IslandRendererV3 {
         this.scene3.remove(item.mesh);this.instances3d.delete(id);
       }
       // 메인: 스트롱홀드식 성채 시야. 남쪽에서 비스듬히 내려다보고 이동 방향은 유지한다.
-      const focusX=player.x*SC,focusZ=player.y*SC;
-      this.camera3.position.set(focusX,34,focusZ+36);
+      const focusX=focus.x*SC,focusZ=focus.y*SC;
+      this.camera3.position.set(focusX,game.siegeOverview?48:34,
+        focusZ+(game.siegeOverview?52:36));
       this.camera3.lookAt(focusX,0,focusZ);
       const hour=game.state.minutes/60;
       this.scene3.background.setHex(hour<6||hour>20?0x365372:0x86cce0);
