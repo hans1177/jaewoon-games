@@ -81,3 +81,23 @@ test("각성 계열 및 스킬북 보존", () => {
  assert.ok(html.includes("미구현 단계"));
  assert.ok(html.includes('SAVE_KEY="party-rpg-v1"'));
 });
+
+test("스토리 인과관계·대사·선택지 연속성 계약", () => {
+ const evidence=block("var STORY_NOTES=", "var COMPANION_SECRETS=");
+ const incidents=block("var INCIDENTS=", "function storyInit");
+ const act2=block("const ACT2_SITES=", "// 3막");
+ const imperial=block("const IMPERIAL_CASES=", "function imperialUnlocked");
+ assert.equal((evidence.match(/초원|숲|동굴|사막|설원|마계/g)||[]).length>=6,true);
+ assert.equal((incidents.match(/\"person\":/g)||[]).length,6);
+ assert.equal((act2.match(/lead:/g)||[]).length,6);
+ assert.equal((imperial.match(/\"id\":/g)||[]).length,8);
+ assert.ok(html.includes("서막 · 봉인된 명령"));
+ assert.ok(html.includes("마을에서 지워진 사람들의 이름"));
+ assert.ok(html.includes("경계의 수호를 교대로 맡는다"));
+ assert.ok(html.includes("function eventSceneData(key)"));
+ assert.ok(html.includes("kind==='act2clear'||kind==='battleclear'"));
+ assert.ok(html.includes("s.choices.fort"));
+ assert.ok(html.includes("s.choices.temple"));
+ assert.ok(html.includes("s.choices.ending"));
+ assert.ok(html.includes("state.story.choices[raw]"));
+});
