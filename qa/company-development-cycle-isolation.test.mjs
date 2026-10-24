@@ -165,3 +165,41 @@ test('owner web intent uses the immutable main policy after runtime branch check
   const read=workflow.indexOf("fs.readFileSync('/tmp/owner-web-edit-main-policy.json','utf8')");
   assert.ok(save>=0&&branch>save&&read>branch);
 });
+
+
+test('superseded exact-game Roblox plan reuses a live current-main run without touching other games or completed evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const marker=workflow.indexOf('ROBLOX_BATCH_CONTRACT_SUPERSEDED=$GITHUB_SHA:$current_main');
+  const end=workflow.indexOf('      - name: Bind Roblox source-plan contract fingerprint',marker);
+  const block=workflow.slice(marker,end);
+  assert.ok(marker>0&&end>marker);
+  assert.ok(block.includes('runs?head_sha=$current_main&per_page=100'));
+  assert.match(block,/ROBLOX_EXACT_CONTRACT_DEDUPE_INCOMPLETE_FAIL_CLOSED/);
+  assert.match(block,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_DEDUPE=UNKNOWN_FAIL_CLOSED/);
+  assert.match(block,/DEDUPED_CURRENT_MAIN_GAME:/);
+  assert.match(block,/const title='Roblox runtime · '/);
+  assert.ok(block.includes("String(run.head_sha||'')===head"));
+  const probe=block.indexOf('active_same_game="$(REQUESTED_GAME_ID=');
+  const dispatch=block.indexOf('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"');
+  assert.ok(probe>=0&&dispatch>probe);
+  // Execute the workflow's exact inline decision with a synthetic GitHub API
+  // result so a different game, old SHA, completed run or missing page cannot masquerade as a current owner.
+  const code=block.split("node <<'NODE'"+String.fromCharCode(10))[1]?.split(String.fromCharCode(10)+'          NODE')[0];
+  assert.ok(code,'exact inline node probe must exist');
+  const current='b'.repeat(40),other='a'.repeat(40);
+  const game='cozy-island';
+  const evaluate=(runs,total_count=runs.length)=>{
+    let output='';
+    const fsMock={readFileSync:()=>JSON.stringify({workflow_runs:runs,total_count})};
+    const processMock={env:{REQUESTED_GAME_ID:game,TARGET_SHA:current,CURRENT_RUN_ID:'999'},stdout:{write:x=>output+=x}};
+    vm.runInNewContext(code,{require:()=>fsMock,process:processMock});
+    return output;
+  };
+  const base={id:998,status:'queued',display_title:'Roblox runtime · '+game,head_sha:current};
+  assert.equal(evaluate([base]),'yes');
+  assert.equal(evaluate([{...base,head_sha:other}]),'no');
+  assert.equal(evaluate([{...base,display_title:'Roblox runtime · insect-survival'}]),'no');
+  assert.equal(evaluate([{...base,status:'completed'}]),'no');
+  assert.equal(evaluate([{...base,id:999}]),'no');
+  assert.throws(()=>evaluate([base],2),/INCOMPLETE_FAIL_CLOSED/);
+});
