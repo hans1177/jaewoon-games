@@ -308,77 +308,171 @@ function feedAssignedWorkers(state, p) {
   if (dead > 0) toast(`⚠️ 식량 부족으로 작업장 노비 ${dead}명이 굶어 죽었어`);
 }
 
+
+// 중세 도시 경제: 건물 건설 즉시 일꾼이 자동 배치되고, 생산 체인이 주기적으로 순환한다.
+// 최초 무료 벌목장·채석장·곡물창고·마을회관은 수동 자원 채집 없이 시작하기 위한 영지 기반시설.
+// 기존 progress.inventory/productionBuildings/workerTotal 저장 키는 삭제하지 않는다.
+export const ECONOMY_BUILDINGS=Object.freeze([
+ {id:'lumber',name:'벌목장',icon:'🪓',group:'industry',wood:0,stone:0,gold:0,jobs:1,out:'wood',amount:4,desc:'나무를 자동으로 베어 창고에 보관',max:6,x:250,y:830},
+ {id:'quarry',name:'채석장',icon:'🪨',group:'industry',wood:2,stone:0,gold:0,jobs:2,out:'stone',amount:3,desc:'돌을 채굴하고 자동 운반',max:6,x:785,y:970},
+ {id:'iron',name:'철 광산',icon:'⛏️',group:'industry',wood:8,stone:5,gold:18,jobs:2,out:'iron',amount:2,desc:'대장간·무기고용 철 생산',max:4,x:1460,y:780},
+ {id:'stockpile',name:'자재 창고',icon:'📦',group:'industry',wood:5,stone:3,gold:0,jobs:0,out:null,amount:0,desc:'생산품을 보관하는 물자 집결지',max:3,x:670,y:920},
+ {id:'wheat',name:'밀 농장',icon:'🌾',group:'food',wood:4,stone:0,gold:0,jobs:1,out:'wheat',amount:4,desc:'제분소에 공급할 밀 자동 수확',max:6,x:1160,y:400},
+ {id:'mill',name:'제분소',icon:'⚙️',group:'food',wood:6,stone:3,gold:0,jobs:2,input:'wheat',need:3,out:'flour',amount:3,desc:'밀 3 → 밀가루 3',max:4,x:1260,y:520},
+ {id:'bakery',name:'제빵소',icon:'🍞',group:'food',wood:6,stone:2,gold:0,jobs:1,input:'flour',need:2,out:'food',amount:9,desc:'밀가루 2 → 식량 9',max:5,x:1110,y:930},
+ {id:'orchard',name:'사과 과수원',icon:'🍎',group:'food',wood:3,stone:0,gold:0,jobs:1,out:'food',amount:4,desc:'과일 재배로 식량 자동 공급',max:6,x:460,y:480},
+ {id:'dairy',name:'낙농장',icon:'🧀',group:'food',wood:5,stone:0,gold:0,jobs:1,out:'food',amount:5,desc:'소·치즈 생산으로 식량 확보',max:4,x:470,y:1030},
+ {id:'granary',name:'식량 창고',icon:'🏠',group:'food',wood:4,stone:0,gold:0,jobs:0,out:null,amount:0,desc:'농장 생산 식량을 보관',max:3,x:860,y:470},
+ {id:'vineyard',name:'포도밭',icon:'🍇',group:'wine',wood:5,stone:0,gold:0,jobs:1,out:'grapes',amount:4,desc:'양조장에 공급할 포도 수확',max:6,x:1430,y:340},
+ {id:'winery',name:'포도주 양조장',icon:'🍷',group:'wine',wood:8,stone:5,gold:0,jobs:2,input:'grapes',need:3,out:'wine',amount:3,desc:'포도 3 → 포도주 3',max:4,x:1530,y:570},
+ {id:'hops',name:'홉 농장',icon:'🌿',group:'wine',wood:4,stone:0,gold:0,jobs:1,out:'hops',amount:3,desc:'맥주용 홉 재배',max:5,x:1610,y:310},
+ {id:'brewery',name:'맥주 양조장',icon:'🍺',group:'wine',wood:7,stone:4,gold:0,jobs:2,input:'hops',need:2,out:'ale',amount:3,desc:'홉 2 → 맥주 3',max:4,x:1720,y:600},
+ {id:'tavern',name:'선술집',icon:'🍻',group:'wine',wood:9,stone:5,gold:12,jobs:1,input:'wine',need:1,out:'coins',amount:8,desc:'포도주 판매로 금화 8 획득',max:3,x:990,y:750},
+ {id:'hovel',name:'주민 오두막',icon:'🏘️',group:'town',wood:5,stone:0,gold:0,jobs:0,out:null,amount:0,desc:'건물당 자동 일꾼 +4명',max:8,x:610,y:340},
+ {id:'well',name:'우물',icon:'🪣',group:'town',wood:3,stone:4,gold:0,jobs:0,out:null,amount:0,desc:'마을의 식수 공급',max:4,x:350,y:580},
+ {id:'market',name:'시장',icon:'⚖️',group:'town',wood:7,stone:2,gold:0,jobs:0,out:null,amount:0,desc:'상품 매입과 판매',max:2,x:900,y:830},
+ {id:'fletcher',name:'활 제작소',icon:'🏹',group:'military',wood:8,stone:3,gold:0,jobs:1,input:'wood',need:3,out:'bows',amount:2,desc:'나무 3 → 활 2',max:4,x:1310,y:945},
+ {id:'smith',name:'대장간',icon:'⚒️',group:'military',wood:9,stone:7,gold:10,jobs:2,input:'iron',need:2,out:'swords',amount:2,desc:'철 2 → 검 2',max:3,x:1190,y:1110},
+ {id:'armory',name:'무기고',icon:'🛡️',group:'military',wood:8,stone:8,gold:0,jobs:0,out:null,amount:0,desc:'무장 창고와 병력 보급',max:2,x:700,y:1120}
+]);
+const ECONOMY_BY_ID=new Map(ECONOMY_BUILDINGS.map(def=>[def.id,def]));
+const ECONOMY_STEP=6;
+export function getEconomy(state){
+ if(!state||typeof state!=='object')return null;
+ let e=state.economyV4;
+ if(!e||typeof e!=='object'||Array.isArray(e)){
+   const p=state.productionBuildings||{};
+   e={version:1,timer:0,policy:{ration:'normal',tax:'normal',autoTrade:'off'},satisfaction:65,buildings:{
+     lumber:{count:1,level:Math.max(1,Number(p.lumberLevel)||1),sites:[{x:245,y:850}]},
+     quarry:{count:1,level:Math.max(1,Number(p.mineLevel)||1),sites:[{x:785,y:965}]},
+     stockpile:{count:1,level:1,sites:[{x:390,y:820}]},granary:{count:1,level:1,sites:[{x:870,y:480}]},hovel:{count:1,level:1,sites:[{x:610,y:335}]}
+   }};
+   state.economyV4=e;
+   state.inventory=state.inventory||{};
+   state.inventory.wood=Math.max(8,Number(state.inventory.wood)||0);
+   state.inventory.stone=Math.max(6,Number(state.inventory.stone)||0);
+   state.inventory.food=Math.max(18,Number(state.inventory.food)||0);
+   // 주민은 자동으로 고용되고 집에서 출퇴근한다. 최초 수동 구매 불필요.
+   state.villageDevelopment=state.villageDevelopment||{};
+   state.villageDevelopment.townHallBuilt=true;
+   const prod=state.productionBuildings||{};
+   prod.lumberBuilt=true;prod.mineBuilt=true;
+   prod.lumberLevel=Math.max(1,Number(prod.lumberLevel)||1);
+   prod.mineLevel=Math.max(1,Number(prod.mineLevel)||1);
+   state.productionBuildings=prod;
+   activeRuntime?.queueSaveProgress(state);
+ }
+ e.timer=Math.max(0,Math.min(ECONOMY_STEP,Number(e.timer)||0));
+ e.policy=e.policy&&typeof e.policy==='object'?e.policy:{ration:'normal',tax:'normal',autoTrade:'off'};
+ e.satisfaction=Math.max(0,Math.min(100,Number(e.satisfaction)||65));
+ e.buildings=e.buildings&&typeof e.buildings==='object'?e.buildings:{};
+ for(const def of ECONOMY_BUILDINGS){
+   const entry=e.buildings[def.id];
+   if(entry)e.buildings[def.id]={...entry,
+     sites:Array.isArray(entry.sites)?entry.sites.filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)).slice(0,def.max):[],
+     count:Math.max(0,Math.min(def.max,Math.floor(Number(entry.count)||0))),
+     level:Math.max(1,Math.min(3,Math.floor(Number(entry.level)||1)))
+   };
+ }
+ return e;
+}
+export function economyStaff(state){
+ const e=getEconomy(state),capacity=6+(e.buildings.hovel?.count||0)*4;
+ let open=capacity;
+ const staff={};
+ for(const def of ECONOMY_BUILDINGS){
+   const count=e.buildings[def.id]?.count||0;
+   const staffed=def.jobs?Math.min(count,Math.floor(open/def.jobs)):count;
+   staff[def.id]=staffed;
+   open-=staffed*def.jobs;
+ }
+ return {capacity,assigned:capacity-open,available:open,staff};
+}
+function cash(state,key){return key==='coins'?state.coins:Number(state.inventory?.[key]||0)}
+function grant(state,key,amount){if(key==='coins')state.coins+=amount;else state.inventory[key]=(Number(state.inventory[key])||0)+amount}
+export function constructEconomyBuilding(id,site=null){
+ const state=currentGame?.state,def=ECONOMY_BY_ID.get(id);
+ if(!state||!def)return false;
+ const e=getEconomy(state),entry=e.buildings[id]||{count:0,level:1};
+ if(entry.count>=def.max){toast(def.name+' 건설 한도 도달');return false}
+ if(cash(state,'wood')<def.wood||cash(state,'stone')<def.stone||cash(state,'coins')<def.gold){
+   toast('자원 부족 · 나무 '+def.wood+' 돌 '+def.stone+' 금화 '+def.gold);return false;
+ }
+ grant(state,'wood',-def.wood);grant(state,'stone',-def.stone);grant(state,'coins',-def.gold);
+ entry.count++;if(!Array.isArray(entry.sites))entry.sites=[];
+ const n=entry.count-1,position=site&&Number.isFinite(site.x)&&Number.isFinite(site.y)?site:{x:def.x+(n%3)*145,y:def.y+Math.floor(n/3)*135};
+ entry.sites.push({x:Math.round(position.x),y:Math.round(position.y)});e.buildings[id]=entry;
+ if(id==='lumber'||id==='quarry'){
+   const p=ensureProduction(state);const isLumber=id==='lumber';
+   p[isLumber?'lumberBuilt':'mineBuilt']=true;
+   p[isLumber?'lumberLevel':'mineLevel']=entry.level;
+ }
+ saveState(state);toast('🏗️ '+def.name+' 건설 · 자동 일꾼 배치');
+ return true;
+}
+export function upgradeEconomyBuilding(id){
+ const state=currentGame?.state,def=ECONOMY_BY_ID.get(id);
+ if(!state||!def)return false;
+ const e=getEconomy(state),entry=e.buildings[id];
+ if(!entry?.count||entry.level>=3){toast('건물이 없거나 최고 레벨이야');return false}
+ const wood=def.wood+entry.level*5,stone=def.stone+entry.level*3,gold=def.gold+entry.level*6;
+ if(cash(state,'wood')<wood||cash(state,'stone')<stone||cash(state,'coins')<gold){
+   toast('강화 자원 부족 · 나무 '+wood+' 돌 '+stone+' 금화 '+gold);return false;
+ }
+ grant(state,'wood',-wood);grant(state,'stone',-stone);grant(state,'coins',-gold);
+ entry.level++;
+ const p=ensureProduction(state);
+ if(id==='lumber')p.lumberLevel=entry.level;
+ if(id==='quarry')p.mineLevel=entry.level;
+ saveState(state);toast('⬆️ '+def.name+' '+entry.level+'단계 · 자동 생산 증가');
+ return true;
+}
+export function setEconomyPolicy(id,value){
+ const state=currentGame?.state;if(!state)return false;
+ const e=getEconomy(state),allowed={ration:['low','normal','high'],tax:['low','normal','high'],autoTrade:['off','wood','stone']};
+ if(!allowed[id]?.includes(value))return false;
+ e.policy[id]=value;saveState(state);return true;
+}
+function advanceEconomy(dt){
+ const state=currentGame?.state;if(!state||document.hidden||activeRuntime?.paused)return;
+ const e=getEconomy(state);if(!e)return;
+ e.timer+=dt;if(e.timer<ECONOMY_STEP)return;
+ const steps=Math.min(6,Math.floor(e.timer/ECONOMY_STEP));e.timer%=ECONOMY_STEP;
+ const {staff}=economyStaff(state);
+ for(let tick=0;tick<steps;tick++)for(const def of ECONOMY_BUILDINGS){
+   const entry=e.buildings[def.id],count=staff[def.id]||0;
+   if(!entry||!count||!def.out)continue;
+   let qty=count*entry.level,amount=qty*def.amount;
+   if(def.input){
+     const stock=cash(state,def.input),cycles=Math.min(qty,Math.floor(stock/def.need));
+     if(cycles<=0)continue;
+     grant(state,def.input,-cycles*def.need);amount=cycles*def.amount;
+   }
+   if(amount)grant(state,def.out,amount);
+ }
+ const policy=e.policy;
+ const homes=e.buildings.hovel?.count||1,pop=6+homes*4;
+ const rations={low:1,normal:2,high:3},tax={low:0,normal:1,high:2};
+ for(let i=0;i<steps;i++){
+   const need=pop*(rations[policy.ration]||2)/5;
+   const consumed=Math.min(Number(state.inventory.food)||0,need);
+   grant(state,'food',-consumed);
+   e.satisfaction=Math.min(100,Math.max(0,e.satisfaction+(consumed<need?-4:policy.ration==='high'?1:.1)-(tax[policy.tax]||0)*.55));
+   grant(state,'coins',Math.max(0,Math.floor(pop*(tax[policy.tax]||0)*e.satisfaction/110)));
+   if(policy.autoTrade==='wood'&&state.inventory.wood>75){grant(state,'wood',-10);grant(state,'coins',17)}
+   if(policy.autoTrade==='stone'&&state.inventory.stone>65){grant(state,'stone',-8);grant(state,'coins',22)}
+ }
+ const p=ensureProduction(state);
+ // 이전 버전의 생산품은 지급해 중복 지급 없이 기존 보관분을 보존한다.
+ if(p.bufferWood||p.bufferStone){
+   grant(state,'wood',p.bufferWood);grant(state,'stone',p.bufferStone);
+   p.bufferWood=0;p.bufferStone=0;
+ }
+ saveState(state);
+}
+
 function runProduction(dt) {
-  if (!currentGame || document.hidden || activeRuntime?.paused) return;
-  const state = currentGame.state;
-  const p = ensureProduction(state);
-  if (!p || !state.inventory) return;
-
-  // 예전 '농사 노비가 10초마다 나무+돌도 자동 채집' 규칙을 끈다.
-  state.workerWorkTimer = 0;
-  if (state.workerStorage) {
-    state.workerStorage.wood = 0;
-    state.workerStorage.stone = 0;
-  }
-
-  const farmWorkers = workerNumber(state.workers);
-  const assigned = p.lumberWorker + p.mineWorker;
-  state.workerTotal = Math.min(WORKER_MAX, farmWorkers + assigned);
-
-  let produced = false;
-  if (p.lumberBuilt) {
-    if (p.lumberWorker) {
-      p.lumberTimer += dt;
-      while (p.lumberTimer >= PRODUCE_SECONDS) {
-        p.lumberTimer -= PRODUCE_SECONDS;
-        p.bufferWood += p.lumberLevel;
-        produced = true;
-      }
-      p.playerLumberTimer = 0;
-    } else {
-      p.playerLumberTimer=0;
-    }
-  }
-
-  if (p.mineBuilt) {
-    if (p.mineWorker) {
-      p.mineTimer += dt;
-      while (p.mineTimer >= PRODUCE_SECONDS) {
-        p.mineTimer -= PRODUCE_SECONDS;
-        p.bufferStone += p.mineLevel;
-        produced = true;
-      }
-      p.playerMineTimer = 0;
-    } else {
-      p.playerMineTimer=0;
-    }
-  }
-
-  if (assigned > 0) {
-    p.deliveryTimer += dt;
-    p.assignedFeedTimer += dt;
-    if (p.deliveryTimer >= DELIVERY_SECONDS) {
-      p.deliveryTimer %= DELIVERY_SECONDS;
-      const wood = p.bufferWood;
-      const stone = p.bufferStone;
-      state.inventory.wood = (Number(state.inventory.wood) || 0) + wood;
-      state.inventory.stone = (Number(state.inventory.stone) || 0) + stone;
-      p.bufferWood = 0;
-      p.bufferStone = 0;
-      if (wood + stone > 0) toast(`🧺 작업장 1분 지급 · 나무 ${wood} · 돌 ${stone}`);
-      produced = true;
-    }
-    if (p.assignedFeedTimer >= FEED_SECONDS) {
-      p.assignedFeedTimer %= FEED_SECONDS;
-      feedAssignedWorkers(state, p);
-      return;
-    }
-  } else {
-    p.deliveryTimer = 0;
-    p.assignedFeedTimer = 0;
-  }
-
-  if (produced) saveState(state);
+  advanceEconomy(dt);
 }
 
 function productionTick() {
