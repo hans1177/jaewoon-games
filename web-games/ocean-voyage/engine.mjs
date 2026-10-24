@@ -59,8 +59,22 @@ export const MERCHANT_CAPTAINS=Object.freeze([
  {id:'etienne',name:'에티엔 르루',port:'storm',ports:['storm','coral'],goods:['wine','wool'],portrait:21,story:'폭풍에 실종된 친구의 우편선을 추적하는 해협 선장.'}
 ]);
 export function merchantPosition(m){
- const a=portById(m.from),b=portById(m.to),t=clamp(Number(m.progress)||0,0,1);
- return a&&b?{x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,heading:Math.atan2(b.x-a.x,b.z-a.z)}:{x:0,z:0,heading:0};
+ const a=portById(m.from),b=portById(m.to);
+ if(!a||!b)return {x:0,z:0,heading:0,length:0};
+ // 제노바~마르세유의 해안 우회 항로. 육지를 관통하지 않도록 남쪽 해역을 경유한다.
+ const via=m.id==='lorenzo'?(m.from==='genoa'?[{x:103,z:-517},{x:60,z:-508}]:[{x:60,z:-508},{x:103,z:-517}]):[];
+ const points=[a,...via,b];
+ const lengths=points.slice(1).map((p,i)=>dist(points[i],p));
+ const length=lengths.reduce((n,v)=>n+v,0);
+ let along=clamp(Number(m.progress)||0,0,1)*length;
+ for(let i=0;i<lengths.length;i++){
+  if(along<=lengths[i]||i===lengths.length-1){
+   const t=clamp(along/Math.max(.001,lengths[i]),0,1),p=points[i],q=points[i+1];
+   return {x:p.x+(q.x-p.x)*t,z:p.z+(q.z-p.z)*t,heading:Math.atan2(q.x-p.x,q.z-p.z),length};
+  }
+  along-=lengths[i];
+ }
+ return {x:b.x,z:b.z,heading:0,length};
 }
 export const merchantRoster=()=>MERCHANT_CAPTAINS.map((c,i)=>({id:c.id,from:c.ports[0],to:c.ports[1],progress:.08+i*.12,coins:1700,cargo:c.goods[0],count:4,voyages:0,met:0,lastMeetingDay:-10,lastProfit:0}));
 export const CREW=Object.freeze([
@@ -301,7 +315,7 @@ export function setDestination(state,id){
 export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];s.exploreTarget=null;s.autoMode=null;return s;}
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 // 독립 상단 항해 시뮬레이션
-function advanceMerchantFleet(s,dt){for(const m of s.merchants){if(s.crewRoster.includes(m.id))continue;const a=portById(m.from),b=portById(m.to);if(!a||!b)continue;m.progress+=dt*2.65/Math.max(5,dist(a,b));if(m.progress<1)continue;const income=m.count*priceAt(m.to,m.cargo,s.day,'sell');m.coins+=income;m.lastProfit=income;m.voyages++;const old=m.from;m.from=m.to;m.to=old;m.progress=0;const spec=MERCHANT_CAPTAINS.find(c=>c.id===m.id);if(spec){m.cargo=spec.goods[m.voyages%spec.goods.length];const cost=priceAt(m.from,m.cargo,s.day,'buy');m.count=Math.min(8,Math.floor(m.coins/Math.max(1,cost)));m.coins-=m.count*cost;s.worldLog.push('['+s.day+'일] '+spec.name+' 상선 · '+b.name+' 교역 '+income+' G');s.worldLog=s.worldLog.slice(-20);}}}
+function advanceMerchantFleet(s,dt){for(const m of s.merchants){if(s.crewRoster.includes(m.id))continue;const a=portById(m.from),b=portById(m.to);if(!a||!b)continue;m.progress+=dt*2.65/Math.max(5,merchantPosition(m).length);if(m.progress<1)continue;const income=m.count*priceAt(m.to,m.cargo,s.day,'sell');m.coins+=income;m.lastProfit=income;m.voyages++;const old=m.from;m.from=m.to;m.to=old;m.progress=0;const spec=MERCHANT_CAPTAINS.find(c=>c.id===m.id);if(spec){m.cargo=spec.goods[m.voyages%spec.goods.length];const cost=priceAt(m.from,m.cargo,s.day,'buy');m.count=Math.min(8,Math.floor(m.coins/Math.max(1,cost)));m.coins-=m.count*cost;s.worldLog.push('['+s.day+'일] '+spec.name+' 상선 · '+b.name+' 교역 '+income+' G');s.worldLog=s.worldLog.slice(-20);}}}
 export function dismissStoryScene(state){
  if(!state.scene)return fail(state,'현재 진행 중인 대화 장면이 없어.');
  const s=copy(state);s.scene=null;return success(s,'이야기를 항해일지에 기록했어.');
