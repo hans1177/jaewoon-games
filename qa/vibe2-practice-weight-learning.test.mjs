@@ -113,3 +113,27 @@ test('hourly Windows CPU practice coalesces duplicate queue wakes and resumes on
   assert.match(trainer,/validated_cpu_practice_checkpoint\(output, identity, args.resume_checkpoint\)/);
   assert.match(trainer,/trainer.train\(resume_from_checkpoint=resume_path\)/);
 });
+
+
+test('Windows PC executor provides exactly three independent read-only Web Roblox and asset checks',()=>{
+  const wf=fs.readFileSync('.github/workflows/unity-local-runner-heartbeat.yml','utf8');
+  assert.match(wf,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
+  assert.match(wf,/permissions:\s+contents: read/);
+  assert.match(wf,/persist-credentials: false/);
+  assert.match(wf,/ref: \$\{\{ github\.sha \}\}/);
+  assert.match(wf,/PC WEB source and owner-scope regression/);
+  assert.match(wf,/PC ROBLOX source and game-readiness regression/);
+  assert.match(wf,/PC common asset quality regression/);
+  assert.match(wf,/node --test qa\/web-vibe-worker\.test\.mjs qa\/vibe2-web-experience-ingest\.test\.mjs/);
+  assert.match(wf,/node --test qa\/company-development-roblox-gameplay-product-readiness\.test\.mjs/);
+  assert.match(wf,/node --test qa\/common-asset-quality-cleanup\.test\.mjs/);
+  assert.match(wf,/steps\.pc_web\.outcome/);
+  assert.match(wf,/steps\.pc_roblox\.outcome/);
+  assert.match(wf,/steps\.pc_assets\.outcome/);
+  assert.match(wf,/PC_RUNNER_THREE_LANES_NOT_ALL_VERIFIED/);
+  assert.match(wf,/PC_RUNNER_SCOPE=SUPPLEMENTAL_READ_ONLY_NOT_F0_F9/);
+  assert.match(wf,/cancel-in-progress: false/);
+  assert.doesNotMatch(wf,/schedule:|cron:|continue-on-error: true/);
+  const qaSteps=wf.match(/- name: PC (?:WEB source and owner-scope|ROBLOX source and game-readiness|common asset quality) regression/g)||[];
+  assert.equal(qaSteps.length,3);
+});
