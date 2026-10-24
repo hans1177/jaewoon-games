@@ -376,9 +376,34 @@ try{
       view.name+': COZY_RTS_VINEYARD_MISSING');
     assert.equal(await cozy.locator('[data-build-economy="winery"]').count(),1,
       view.name+': COZY_RTS_WINERY_MISSING');
+    await cozy.locator('[data-realm-tab="military"]').click();
+    assert.equal(await cozy.locator('.realm-tech-step').count(),8,
+      view.name+': COZY_ECONOMY_MILITARY_TECH_TREE_MISSING');
     await cozy.locator('[data-realm-tab="defense"]').click();
-    assert.equal(await cozy.locator('[data-build-fort]').count(),6,
-      view.name+': COZY_RTS_WALL_GATE_TOWER_TRAPS_MISSING');
+    assert.equal(await cozy.locator('[data-build-fort]').count(),9,
+      view.name+': COZY_NINE_FORT_TRAP_AND_WALL_CARDS_MISSING');
+    assert.equal(await cozy.locator('.realm-tech-step').count(),3,
+      view.name+': COZY_ECONOMY_TRAP_TECH_TREE_MISSING');
+    // 실물 경제 건물이 없는 상태에서는 고급 병력·함정을 모집하거나 배치할 수 없다.
+    const tech=await cozy.evaluate(async()=>{
+      const {economyTechStatus,ECONOMY_BUILDINGS}=await import('./production-buildings.js');
+      const economyV4={version:1,buildings:{}};
+      const baseline={economyV4,inventory:{wood:20,stone:20,food:20},coins:100};
+      const locked=economyTechStatus(baseline,'trebuchet');
+      const basic=economyTechStatus(baseline,'soldier');
+      for(const def of ECONOMY_BUILDINGS)economyV4.buildings[def.id]={
+        count:1,level:3,sites:[{x:def.x,y:def.y}]};
+      const advanced=economyTechStatus(baseline,'trebuchet');
+      const trap=economyTechStatus(baseline,'barrel');
+      return {locked:locked.unlocked,basic:basic.unlocked,advanced:advanced.unlocked,
+        trap:trap.unlocked,armyTypes:Object.keys(window.cozyRTS?.unitTypes||{}).length};
+    });
+    assert.equal(tech.locked,false,view.name+': COZY_TECH_UNLOCKED_TOO_EARLY');
+    assert.equal(tech.basic,true,view.name+': COZY_BASIC_SOLDIER_REGRESSION');
+    assert.equal(tech.advanced,true,view.name+': COZY_SIEGE_TECH_NEVER_UNLOCKS');
+    assert.equal(tech.trap,true,view.name+': COZY_TRAP_TECH_NEVER_UNLOCKS');
+    assert.equal(tech.armyTypes,10,view.name+': COZY_ARMY_ROLE_COUNT');
+    console.log('COZY_TECH_TREE_PROGRESSION=PASS '+view.name);
     await cozy.locator('#panelClose').click();
     await cozy.locator('#fishingCommand').click();
     assert.match(await cozy.locator('#panelTitle').textContent(),/전쟁/,
@@ -389,6 +414,17 @@ try{
       view.name+': COZY_RTS_TACTICAL_ORDERS_MISSING');
     await cozy.locator('#panelClose').click();
     assert.ok(await cozy.locator('#zoomIn').isVisible(),view.name+': COZY_RTS_ZOOM_MISSING');
+    await cozy.locator('#systemCommand').click();
+    assert.equal(await cozy.locator('[data-action="home"]').count(),1,
+      view.name+': COZY_SYSTEM_HOME_MISSING');
+    assert.equal(await cozy.locator('[data-action="resume"]').count(),1,
+      view.name+': COZY_SYSTEM_RESUME_MISSING');
+    assert.equal(await cozy.locator('[data-action="restart"]').count(),1,
+      view.name+': COZY_SYSTEM_RESTART_MISSING');
+    await cozy.locator('[data-tab="sound"]').click();
+    assert.equal(await cozy.locator('#ks-track option').count(),4,
+      view.name+': COZY_FOUR_THEME_MUSIC_MISSING');
+    await cozy.locator('#systemClose').click();
     assert.deepEqual(errors,[],view.name+': COZY_RTS_RUNTIME_ERRORS');
     console.log('COZY_RTS_PUBLIC_3D_ECONOMY_SIEGE_PASS '+view.name+' '+expected);
    }finally{await cozy.close()}
