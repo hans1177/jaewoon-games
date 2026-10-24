@@ -751,7 +751,13 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
   const explicitWebRoot=webRootFromCatalog(game);
   const recentOwnerWebRoot=id&&game.ownerDirectWebUpload===true&&fs.existsSync(path.join(repoRoot,`web-games/${id}`))?`web-games/${id}`:null;
   const root=explicitWebRoot||recentOwnerWebRoot;
-  const developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;
+  // Normal HTML/JS sources start in DESIGN_ONLY, then enter WebGL 3D F0 only
+  // after canonical verified design. Never treat intake as a playable F9 release.
+  const generalWebSourceIntake=game.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'
+    &&game.web3dRedevelopmentRequired===true
+    &&clean(game.ownerWebSourceState)==='WEB_SOURCE_DEVELOPMENT_PENDING_QA';
+  const verifiedGeneralWebDesign=generalWebSourceIntake&&Boolean(latestVerifiedDesign(repoRoot,id));
+  const developmentWebEligible=state==='development-confirmed'||verifiedGeneralWebDesign,publishedWebEligible=game.homepageWebPlayable===true;
   const ownerRecentWebPriority=Boolean(
     developmentWebEligible
     &&recentOwnerWebRoot
@@ -766,6 +772,10 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
     releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
     ownerRecentWebPriority,
     ownerRecentWebPriorityReason:ownerRecentWebPriority?'RECENT_OWNER_WEB_SOURCE_AWAITING_FIRST_PLAYABLE_DEPLOY':null,
+    generalWebSourceIntake,
+    verifiedGeneralWebDesign,
+    web3dRedevelopmentRequired:generalWebSourceIntake,
+    targetWebEngine:generalWebSourceIntake?'HTML_CSS_JAVASCRIPT_WEBGL':'EXISTING_WEB',
     ownerWebSourceRevision:clean(game.ownerWebSourceRevision)
   });
 }
