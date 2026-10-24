@@ -13,14 +13,24 @@ export function drawGeography(ctx,w,h,cx,cz,scale){
  ctx.setLineDash([]);ctx.restore();
  if(scale>.5){ctx.font='bold '+(w<200?7:11)+'px system-ui';ctx.fillStyle='#f4e1ad';ctx.textAlign='center';for(const c of COUNTRIES){const x=w/2+(c.lon-cx)*scale,y=h/2+(c.z-cz)*scale;if(x>10&&x<w-10&&y>20&&y<h-20)ctx.fillText(c.name,x,y);}ctx.textAlign='left';}
 }
-export function drawFog(ctx,w,h,cx,cz,scale,charted){const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;ctx.fillStyle='#071a2deB';for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++)if(!known.has(gx+':'+gz))ctx.fillRect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);}
+export function drawFog(ctx,w,h,cx,cz,scale,charted){const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;ctx.fillStyle='#071a2deB';ctx.beginPath();for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++)if(!known.has(gx+':'+gz))ctx.rect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);ctx.fill();}
 export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{}}={}){
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let state=null,mode='sea',facility='',frame=0,last=0,zoom=4.8,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720;
  const rect=(x,y,a,b,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(a),Math.round(b));};
  function text(t,x,y,size=11,color=C.gold,align='left'){ctx.font=`bold ${size}px system-ui`;ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(t,Math.round(x),Math.round(y));ctx.textAlign='left';}
- function ship(x,y,heading,type='caravel',enemy=false,scale=1){ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(Math.PI-heading);ctx.scale(scale,scale);rect(-7,-13,14,28,'#172d35');rect(-6,-11,12,25,enemy?'#663934':'#835b38');rect(-4,-17,8,8,'#bb9560');rect(-1,-12,2,27,'#493b30');const sails=type==='galleon'?3:type==='carrack'?3:type==='cog'?1:2;for(let i=0;i<sails;i++){const sy=-9+i*9;rect(-11,sy,22,6,enemy?'#575358':'#eee1b8');rect(-10,sy+5,20,2,enemy?'#393d43':'#b3b99e');rect(-13,sy,26,1,'#674a36');}rect(0,-18,8,3,enemy?'#b8634f':'#ce8c58');ctx.restore();}
+ function ship(x,y,heading,type='caravel',enemy=false,scale=1){
+  const design=SHIP_TYPES.find(t=>t.id===type)||SHIP_TYPES[0],rig=design.rig||(type==='caravel'?'lateen':'square');
+  ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(Math.PI-heading);ctx.scale(scale*(design.width||1),scale*(design.length||1));
+  rect(-7,-13,14,28,'#172d35');rect(-6,-11,12,25,enemy?'#663934':'#835b38');rect(-4,-17,8,8,'#bb9560');rect(-1,-12,2,27,'#493b30');
+  if(rig==='oars'){for(let i=0;i<7;i++){rect(-15,-9+i*3,9,1,'#c4a573');rect(6,-9+i*3,9,1,'#c4a573');}}
+  const sails=type==='galleon'||type.includes('galleon')||type.includes('fluyt')||type.includes('racer')?3:rig==='oars'?1:2;
+  for(let i=0;i<sails;i++){const sy=-9+i*9;if(rig==='lateen'||rig==='oars'){ctx.fillStyle=enemy?'#575358':'#eee1b8';ctx.beginPath();ctx.moveTo(0,sy-4);ctx.lineTo(-12,sy+8);ctx.lineTo(9,sy+7);ctx.closePath();ctx.fill();rect(-12,sy+8,22,1,'#8f8c6b');}else{rect(-11,sy,22,6,enemy?'#575358':'#eee1b8');rect(-10,sy+5,20,2,enemy?'#393d43':'#b3b99e');rect(-13,sy,26,1,'#674a36');}}
+  if(type.includes('galleon')||type.includes('fluyt')){rect(-7,9,14,8,'#af8951');rect(-5,12,10,3,design.color||'#69553e');}
+  rect(0,-18,8,3,enemy?'#b8634f':design.color||'#ce8c58');ctx.restore();
+ }
+
  function sea(){
   const cx=state.ship.x,cz=state.ship.z;drawGeography(ctx,w,h,cx,cz,zoom);drawFog(ctx,w,h,cx,cz,zoom,state.charted);
   ctx.globalAlpha=.15;for(let i=0;i<35;i++){const x=(i*83+Math.floor(time*3))%w,y=(i*47)%h;rect(x,y,9,1,'#c1e1d5');rect(x+3,y+2,6,1,'#c1e1d5');}ctx.globalAlpha=1;
