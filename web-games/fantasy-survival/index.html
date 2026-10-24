@@ -3218,8 +3218,20 @@ function openChest(ch){state.activeChestId=ch.id;state.panelMode='chest';ui.shee
 function portalById(id){return state.portals.find(p=>p.id===id)||null}
 function portalLabel(portal){const i=state.portals.findIndex(p=>p===portal||p.id===portal?.id);return '포탈 '+(i>=0?i+1:'?')}
 function teleportToPortal(target){
- if(!target)return;
- const p=state.player;p.restingBedId=null;p.x=clamp(target.x,25,WORLD.w-25);p.y=clamp(target.y,25,WORLD.h-25);
+ // 메인: 일반 전투 중 포탈은 허용하되 잡힘·기절·탑승 돌진 중 위치 충돌을 막는다.
+ if(!target||state.area!=='surface'||!state.portals.includes(target))return;
+ const p=state.player,now=performance.now();
+ if(p.downedUntil||now<(p.grabbedUntil||0)||now<(p.stunnedUntil||0)||now<(p.rootedUntil||0)||
+    state.pet.mounted&&state.pet.special){showNotice('이동 불가 상태에서는 순간이동할 수 없어');return}
+ const x=clamp(Number(target.x),25,WORLD.w-25),y=clamp(Number(target.y),25,WORLD.h-25);
+ if(!Number.isFinite(x)||!Number.isFinite(y)||pointInGiantLakeWater(x,y)||blockedByPlayerBuilding(x,y)){showNotice('목적지 포탈 위치가 막혀 있어');return}
+ p.restingBedId=null;p.x=x;p.y=y;
+ // 전투 조준과 채집 추적만 초기화해 공격 쿨다운·피해·저장은 그대로 유지한다.
+ if(state.pet.mounted&&petAlive()){state.pet.x=x;state.pet.y=y}
+ state.combat.targetId=null;state.gathering.target=null;state.gathering.manualTarget=null;
+ state.arrowAim.targetId=null;state.arrowAim.tapTargetId=null;state.arrowAim.taps=0;
+ const cx=clamp(x-innerWidth/2,0,Math.max(0,WORLD.w-innerWidth)),cy=clamp(y-innerHeight/2,0,Math.max(0,WORLD.h-innerHeight));
+ state.camera.area='surface';state.camera.baseX=cx;state.camera.baseY=cy;state.camera.x=cx;state.camera.y=cy;
  state.activePortalId=null;state.dirty=true;ui.sheet.classList.remove('open');showNotice(portalLabel(target)+'로 순간이동');updateHud();saveGame(false)
 }
 function renderPortalMenu(){
@@ -3330,9 +3342,18 @@ function demolishBuilding(hit){
  state.dirty=true;syncStructureEdit('demolish',{id:hit.b.id||'',buildId:hit.buildId,x:hit.b.x,y:hit.b.y});updateHud();saveGame(false);showNotice(r.name+' 철거 · 재료 반환');return true
 }
 function blockedByPlayerBuilding(x,y,radius=18){
- if(state.area!=='surface')return false;if(insideSnowOutpost(x,y,radius))return true;
- const blocks=[...state.walls,...state.doors.filter(d=>!d.open)];
- for(const b of blocks){const hx=b.vertical?17:48,hy=b.vertical?48:17;if(Math.abs(x-b.x)<hx+radius&&Math.abs(y-b.y)<hy+radius)return true}
+ // 메인: 이동마다 합친 임시 배열을 만들지 않고 현재 충돌 규칙을 직접 적용한다.
+ if(state.area!=='surface')return false;
+ if(insideSnowOutpost(x,y,radius))return true;
+ for(const b of state.walls){
+  const hx=b.vertical?17:48,hy=b.vertical?48:17;
+  if(Math.abs(x-b.x)<hx+radius&&Math.abs(y-b.y)<hy+radius)return true
+ }
+ for(const b of state.doors){
+  if(b.open)continue;
+  const hx=b.vertical?17:48,hy=b.vertical?48:17;
+  if(Math.abs(x-b.x)<hx+radius&&Math.abs(y-b.y)<hy+radius)return true
+ }
  return false
 }
 function openGiftPlayer(targetId){
@@ -3453,13 +3474,15 @@ function updateAutoCombat(now){
  if(!mounted&&!w)return;
  if(mounted&&state.pet.special)return;
  if(!mounted&&w.ranged==='bow'&&!selectedArrow())return;
- let target=null,best=Infinity;
+ let target=null,bestSq=Infinity;
+ const attackRange=mounted?150:currentRange();
  for(const e of state.enemies){
   if(isCreative()&&!(e.creativeOwned&&e.creativeAttackPlayer))continue;
   if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless'||e.type.burrower&&!e.emerged||e.type.labBoss&&now<(e.submergedUntil||0))continue;
   if(!(e.hostile||e.type.mood==='aggressive'||e.type.mood==='boss'||e.type.boss||e.type.labBoss))continue;
-  const d=dist(p.x,p.y,e.x,e.y),range=mounted?150:currentRange()+(Number(e.type.r)||0);
-  if((mounted?d<range:d<=range)&&d<best){target=e;best=d}
+  // 전투: 기존 사거리와 우선순위를 유지하고 거리 제곱근 계산을 제거한다.
+  const dx=e.x-p.x,dy=e.y-p.y,dSq=dx*dx+dy*dy,range=attackRange+(mounted?0:(Number(e.type.r)||0));
+  if((mounted?dSq<range*range:dSq<=range*range)&&dSq<bestSq){target=e;bestSq=dSq}
  }
  if(!target)return;
  state.combat.targetId=target.netId;
