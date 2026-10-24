@@ -2,6 +2,42 @@
 // 역할: 재운컴퍼니 PWA 앱 셸과 비상 AI를 캐시하고 연결 차단 시에도 개발 대화를 이어간다.
 
 const CACHE_NAME='jaewoon-pwa-v26';
+// 마력숲 3D 데이터만 격리 저장한다. 세이브·API·HTML·게임 규칙은 캐시하지 않는다.
+const FOREST_CACHE='jaewoon-forest-3d-v1';
+const FOREST_MAX_ENTRIES=48;
+const FOREST_MAX_FILE_BYTES=24*1024*1024;
+const forestValidated=new Set();
+function isForestAsset(path){
+  return /\/web-games\/fantasy-survival\/(?:models\.json\.gz|(?:knight|mage|rogue|rogue-hooded|barbarian)\.glb\.gz)$/.test(path)
+    || /\/assets\/shared\/forest\/[^?#]+\.(?:fbx|glb|obj|mtl|png|webp|jpg|jpeg)$/.test(path)
+    || /\/assets\/roblox\/actors\/native\/[^?#]+\.glb$/.test(path);
+}
+async function cacheForestAsset(cache,request,response){
+  if(!response.ok||response.type!=='basic')return;
+  const size=Number(response.headers.get('content-length')||0);
+  if(size>FOREST_MAX_FILE_BYTES)return;
+  try{
+    await cache.put(request,response.clone());
+    const keys=await cache.keys();
+    for(const old of keys.slice(0,Math.max(0,keys.length-FOREST_MAX_ENTRIES)))await cache.delete(old);
+  }catch{ /* 사설 모드/용량 초과에서는 네트워크 로딩 유지 */ }
+}
+async function serveForestAsset(request,event){
+  let cache;
+  try{cache=await caches.open(FOREST_CACHE)}catch{return fetch(request)}
+  const cached=await cache.match(request);
+  if(cached){
+    if(!forestValidated.has(request.url)){
+      forestValidated.add(request.url);
+      event.waitUntil(fetch(request,{cache:'no-cache'}).then(response=>
+        cacheForestAsset(cache,request,response)).catch(()=>{}));
+    }
+    return cached;
+  }
+  const response=await fetch(request);
+  if(response.ok)event.waitUntil(cacheForestAsset(cache,request,response));
+  return response;
+}
 const APP_SHELL=['/jaewoon-games/command.html','/jaewoon-games/emergency-ai.js','/jaewoon-games/install.html','/jaewoon-games/offline.html','/jaewoon-games/manifest.webmanifest','/jaewoon-games/assets/pwa-icon.svg','/jaewoon-games/assets/pwa-icon-192.png','/jaewoon-games/assets/pwa-icon-512.png'];
 const NETWORK_ONLY=/\/web-games\/_shared\/touch-controls\.js(?:\?|$)|\/assets\/homepage-enhancements\.js(?:\?|$)|\/(?:game-catalog|company-status|homepage-platform-exposure|homepage-portfolio-status|test-game-candidates|public-game-health|game-artbooks|public-release-baselines)\.json(?:\?|$)/;
 
@@ -36,12 +72,13 @@ self.addEventListener('install',event=>{
   self.skipWaiting();
 });
 self.addEventListener('activate',event=>{
-  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)))));
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>((key.startsWith('jaewoon-pwa-')&&key!==CACHE_NAME)||(key.startsWith('jaewoon-forest-3d-')&&key!==FOREST_CACHE))).map(key=>caches.delete(key)))));
   self.clients.claim();
 });
 self.addEventListener('fetch',event=>{
   const request=event.request;if(request.method!=='GET')return;
   const url=new URL(request.url);if(url.origin!==self.location.origin)return;
+  if(isForestAsset(url.pathname)){event.respondWith(serveForestAsset(request,event));return;}
   if(url.pathname==='/jaewoon-games/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
   if(NETWORK_ONLY.test(url.pathname+url.search)){
     // 런타임 JSON은 서버가 선언한 짧은 HTTP 캐시만 사용한다. 오프라인 앱 저장소로 대체하지 않는다.

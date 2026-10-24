@@ -172,6 +172,26 @@ async function loadSourceModels(){
 }
 
 export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100},initialState=null){
+  // 로딩: 기존 공용 서비스 워커를 등록해 방문한 3D 지형물을 휴대폰에 재사용한다.
+  // 등록 실패/저장 공간 부족은 게임 시작이나 기존 저장 데이터에 영향을 주지 않는다.
+  if(typeof navigator!=='undefined'&&'serviceWorker' in navigator&&location.protocol==='https:'){
+    void navigator.serviceWorker.register(new URL('../../sw.js',import.meta.url),{updateViaCache:'none'}).then(()=>{
+      const warmFirstRegion=()=>{
+        if(!navigator.serviceWorker.controller||navigator.connection?.saveData)return;
+        setTimeout(()=>{
+          if(disposed)return;
+          for(const name of ['models.json.gz','knight.glb.gz']){
+            void fetch(new URL('./'+name,import.meta.url),{cache:'force-cache'}).catch(()=>{});
+          }
+        },1500);
+      };
+      if(navigator.serviceWorker.controller)warmFirstRegion();
+      else navigator.serviceWorker.addEventListener('controllerchange',warmFirstRegion,{once:true});
+    }).catch(()=>{});
+    if(navigator.storage?.persist){
+      window.addEventListener('pointerdown',()=>{void navigator.storage.persist().catch(()=>false)},{once:true,passive:true});
+    }
+  }
   // 로딩: 배경·플레이어·몬스터 요청을 함께 시작하고 한 번만 합류한다.
   const modelsPromise=loadSourceModels();
   // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
