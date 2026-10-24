@@ -12,9 +12,9 @@ const clean=v=>String(v??'').trim();
 const MODEL='qwen2.5-coder:3b';
 const OLLAMA_URL='http://127.0.0.1:11435/api/chat';
 function fail(message){throw new Error(message);}
-function run(binary,args,{cwd=ROOT,timeout=120000,env={}}={}){
+function run(binary,args,{cwd=ROOT,timeout=120000,env={},input}={}){
   return execFileSync(binary,args,{cwd,encoding:'utf8',timeout,maxBuffer:4*1024*1024,
-    windowsHide:true,env:{...process.env,...env},stdio:['ignore','pipe','pipe']}).trim();
+    windowsHide:true,env:{...process.env,...env},input,stdio:[input===undefined?'ignore':'pipe','pipe','pipe']}).trim();
 }
 function options(argv){const out={};for(const part of argv){
   if(part==='--check'||part==='--apply'||part==='--pr'||part==='--all'||part==='--cloud')out[part.slice(2)]=true;
@@ -59,6 +59,16 @@ export function safeWebVibeReplacement(original,response,{relative='index.html'}
   // An unrequested localStorage key migration can erase user saves.
   const keys=text=>[...text.matchAll(/localStorage\.(?:getItem|setItem|removeItem)\s*\(\s*(['"`])([^'"`]+)\1/g)].map(x=>x[2]).sort();
   if(JSON.stringify(keys(original))!==JSON.stringify(keys(updated)))fail('WEB_VIBE_SAVE_KEY_CHANGED');
+  // 수정된 게임 코드는 실행하기 전에 구문을 검사한다. HTML의 모듈도 포함한다.
+  if(/\.(?:mjs|cjs|js)$/i.test(relative))run('node',['--check','--input-type='+(/\.cjs$/i.test(relative)?'commonjs':'module')],{input:updated});
+  if(/\.html?$/i.test(relative)){
+    for(const block of updated.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)){
+      if(/\bsrc\s*=/i.test(block[1]))continue;
+      const type=block[1].match(/\btype\s*=\s*['"]([^'"]+)['"]/i)?.[1]||'';
+      if(type&&!['module','text/javascript','application/javascript'].includes(type.toLowerCase()))continue;
+      run('node',['--check','--input-type='+(type==='module'?'module':'commonjs')],{input:block[2]});
+    }
+  }
   return {updated,oldText:a,newText:b,reason:clean(value.reason).slice(0,280)};
 }
 // 유틸: 같은 게임의 실제 텍스트 책임 파일만 범위로 선택한다. 수량 제한 없음.
@@ -132,41 +142,51 @@ function verifiedLocalMain(){
 // 원격 모델 응답은 절대 권한이 아니며 기존 단일 bounded edit 검사만 통과한다.
 export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fetch,
   geminiImpl=requestGeminiFreePair,apiKey='',previousVerified=[]}={}){
+  // [전체 코드 진단] 무모델 분석은 앞부분 발췌가 아닌 실제 파일 전체를 읽는다.
+  const analysis={bytes:Buffer.byteLength(source.original),
+    functions:[...source.original.matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(row=>row[1]),
+    scripts:[...source.original.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]};
   const excerpt=source.original.slice(0,13500);
-  // [무모델 웹 개발] 기존 HTML 버튼과 책임 함수를 직접 묶어 외부 모델 없이 편집한다.
-  // WEB 조직의 기존 단일 교체/QA/PR 경로를 그대로 사용한다.
-  if(/mobile|touch|input|button|combat|attack|craft|quest|모바일|터치|입력|버튼|전투|공격|제작|퀘스트/i.test(clean(task.goal))
-    &&/\.html?$/i.test(source.relative)){
-    const scripts=[...source.original.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
-    if(scripts.length===1&&!scripts[0][1].trim()
-      &&!/\b(?:addEventListener|onclick|onpointerdown|ontouchstart)\b/i.test(source.original)){
-      const code=scripts[0][2];
+  if(/\.html?$/i.test(source.relative)){
+    const scripts=analysis.scripts.filter(row=>! /\bsrc\s*=/i.test(row[1]));
+    if(scripts.length===1&&(!scripts[0][1].trim()||/^\s*type=['"]module['"]\s*$/i.test(scripts[0][1]))){
+      const code=scripts[0][2],goal=clean(task.goal),bindings=[],steps=[];
       const ids=[...source.original.matchAll(/\bid\s*=\s*(["'])(.*?)\1/gi)].map(row=>row[2]);
       const actions=new Set(['attack','interact','gather','dodge','openInventory','openMap','openCrafting','openQuestLog']);
-      for(const button of source.original.matchAll(/<button\b([^>]*)>/gi)){
-        const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
-        const id=attrs.filter(row=>row[1].toLowerCase()==='id');
-        const action=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
-        if(button.index>scripts[0].index||id.length!==1||action.length!==1
-          ||!/^[A-Za-z_$][\w$-]{0,79}$/.test(id[0][3])
-          ||!actions.has(action[0][3])||ids.filter(value=>value===id[0][3]).length!==1)continue;
-        const name=action[0][3],buttonId=id[0][3];
-        if((code.match(new RegExp('\\bfunction\\s+'+name+'\\s*\\(\\s*\\)','g'))||[]).length!==1
-          ||code.includes('getElementById('+JSON.stringify(buttonId)))continue;
-        const oldText='</script>';
-        if(source.original.split(oldText).length!==2)continue;
-        const newText='document.getElementById('+JSON.stringify(buttonId)
-          +').addEventListener("click", '+name+');\n'+oldText;
-        try{
-          const edit=safeWebVibeReplacement(source.original,JSON.stringify({
-            oldText,newText,reason:'Existing gameplay action bound without model'
-          }),{relative:source.relative});
-          return{...edit,deterministicWebInput:true};
-        }catch{}
+      if(/mobile|touch|input|button|combat|attack|craft|quest|모바일|터치|입력|버튼|전투|공격|제작|퀘스트/i.test(goal)){
+        for(const button of source.original.matchAll(/<button\b([^>]*)>/gi)){
+          const attrs=[...button[1].matchAll(/([\w-]+)\s*=\s*(["'])(.*?)\2/g)];
+          const id=attrs.filter(row=>row[1].toLowerCase()==='id'),action=attrs.filter(row=>row[1].toLowerCase()==='data-gameplay-action');
+          if(button.index>scripts[0].index||id.length!==1||action.length!==1||/\bon(?:click|pointerdown|touchstart)\s*=/i.test(button[1]))continue;
+          const name=action[0][3],buttonId=id[0][3];
+          if(!/^[A-Za-z_$][\w$-]{0,79}$/.test(buttonId)||!actions.has(name)||ids.filter(value=>value===buttonId).length!==1)continue;
+          if((code.match(new RegExp('\\bfunction\\s+'+name+'\\s*\\(\\s*\\)','g'))||[]).length!==1)continue;
+          if(new RegExp('getElementById\\(\\s*[\"\']'+buttonId+'[\"\']').test(code))continue;
+          bindings.push('document.getElementById('+JSON.stringify(buttonId)+').addEventListener("click", '+name+');');
+        }
+        if(/\bfunction\s+releaseInputs\s*\(\s*\)/.test(code)&&! /addEventListener\(\s*['"]blur['"]/.test(code))bindings.push('addEventListener("blur", releaseInputs);');
+      }
+      if(/resize|canvas|viewport|화면|해상도|회전/i.test(goal)&&/\bfunction\s+resize\s*\(\s*\)/.test(code)&&! /addEventListener\(\s*['"]resize['"]/.test(code))bindings.push('addEventListener("resize", resize);');
+      if(/frame|delta|프레임|시간차|버벅/i.test(goal)){
+        const rows=[...code.matchAll(/const dt=\(now-last\)\/1000;/g)];
+        if(rows.length===1)steps.push({oldText:rows[0][0],newText:'const dt=Math.max(0,Math.min(.05,(now-last)/1000));',reason:'기존 프레임 시간차 유한 범위 제한'});
+      }
+      if(bindings.length){
+        const scoped=code.trimEnd().endsWith('})();');
+        const close=scripts[0].index+scripts[0][0].lastIndexOf('</script>');
+        const end=scoped?source.original.slice(close-32,close+9):'</script>';
+        const inserted=scoped?end.replace(/\}\)\(\);\s*<\/script>$/,bindings.join('\n')+'\n})();</script>'):bindings.join('\n')+'\n'+end;
+        if(source.original.split(end).length===2)steps.push({oldText:end,newText:inserted,reason:'검증된 기존 함수에 입력·화면 연결 일괄 적용'});
+      }
+      if(steps.length){
+        let updated=source.original;
+        for(const step of steps)updated=safeWebVibeReplacement(updated,JSON.stringify(step),{relative:source.relative}).updated;
+        return {updated,oldText:steps[0].oldText,newText:steps[0].newText,reason:steps.map(row=>row.reason).join('; '),
+          deterministicWebInput:true,deterministicSteps:steps.length,analysis:{bytes:analysis.bytes,functions:analysis.functions}};
       }
     }
   }
-  if(cloud&&!clean(apiKey))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING');
+  if(cloud&&!clean(apiKey))fail('WEB_VIBE_FREE_MODEL_KEY_MISSING:'+source.relative+':functions='+analysis.functions.length+':bytes='+analysis.bytes);
   const system='You are the independent WEB-only coding assistant. Inspect only the provided existing web-game file. '
     +'If no relevant change is needed, return JSON {"skip":true,"reason":"not affected"}. '
     +'Otherwise return JSON with one unique bounded oldText,newText,reason replacement for this file. '
@@ -283,12 +303,19 @@ export async function runWebVibeWorker(argv=process.argv.slice(2),{fetchImpl=fet
       &&row.target==='web'&&row.sourceRoot===task.sourceRoot);
   if(prior.length!==(task.ownerPatchLineage?.verifiedPredecessors||[]).length)
     fail('WEB_VIBE_BUILD_UP_HISTORY_NOT_VERIFIED');
-  const changed=[];
+  const changed=[],unsupported=[];
   for(const source of sources){
-    const edit=await proposeWebVibeChange(task,source,{cloud:args.cloud===true,fetchImpl,geminiImpl,
-      apiKey:args.cloud?clean(process.env.GEMINI_API_KEY):'',previousVerified:prior});
-    if(edit)changed.push({source,edit});
+    try{
+      const edit=await proposeWebVibeChange(task,source,{cloud:args.cloud===true,fetchImpl,geminiImpl,
+        apiKey:args.cloud?clean(process.env.GEMINI_API_KEY):'',previousVerified:prior});
+      if(edit)changed.push({source,edit});
+    }catch(error){
+      if(String(error.message).startsWith('WEB_VIBE_FREE_MODEL_KEY_MISSING:'))unsupported.push(error.message);
+      else throw error;
+    }
   }
+  // 한방패치의 일부 파일만 고쳐 완료로 보내지 않는다. 모든 차단 원인을 모은다.
+  if(unsupported.length)fail('WEB_VIBE_NO_MODEL_PLAN_INCOMPLETE:'+unsupported.join('|'));
   if(!changed.length)fail('WEB_VIBE_NO_ACTUAL_SOURCE_DELTA');
   if(!args.apply)return {taskId:task.id,selectedFiles:sources.length,
     affectedFiles:changed.map(row=>row.source.relative),
