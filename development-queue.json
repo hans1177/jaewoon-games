@@ -34793,9 +34793,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-24T07:18:13.076Z",
+      "updatedAt": "2026-10-24T07:20:32.811Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -34805,9 +34805,9 @@
         "capturedAt": "2026-10-12T02:23:12.492Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "86ffa27256e3f221cfe90f0fe05affbd7d639e31",
+      "robloxSourceCommit": "fc12c93923963466ae1726e783d472b35e8413f8",
       "robloxSourceBootstrapPassedAt": "2026-10-23T12:59:28.014Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-24T02:40:10.329Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-24T07:20:32.811Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -35362,12 +35362,12 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "86ffa27256e3f221cfe90f0fe05affbd7d639e31",
+      "robloxQualityBuildUpSourceRevision": "fc12c93923963466ae1726e783d472b35e8413f8",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
-        "sourceRevision": "86ffa27256e3f221cfe90f0fe05affbd7d639e31",
+        "sourceRevision": "fc12c93923963466ae1726e783d472b35e8413f8",
         "sourceTreeSha": "c94f103ec5aa4e7ea0c88bbc2a9b268bd42d982d",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -35385,7 +35385,7 @@
         },
         "assetRepairContext": {
           "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
-          "baselineFingerprint": "d2044eee2e5f8fa92d26c1ec82fe9761d323e873a00fdb64a0d54cefd24d333e",
+          "baselineFingerprint": "958d96f78e0b7947caf56fb1c8de8872ff4038e39bd44a272823725499ee5cd5",
           "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
         "qualityFailureKinds": [
@@ -35444,8 +35444,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40052676652,
-        "testedAt": "2026-10-24T02:40:10.329Z"
+        "workflowRunId": 40071517739,
+        "testedAt": "2026-10-24T07:20:32.811Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -46613,7 +46613,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-24T07:18:30.338Z",
+  "updatedAt": "2026-10-24T07:20:32.811Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
