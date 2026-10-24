@@ -20,7 +20,8 @@ const MODELS=Object.freeze({
 export class IslandRendererV3 {
   constructor(canvas) {
     this.canvas = canvas;
-    // 2D는 확장 모듈의 기존 표시 계층. 월드 본체는 WebGL 3D로 그린다.
+    // 기존 2D 캔버스는 확장 모듈의 좌표·입력 처리 전용으로만 유지한다.
+    // 실제 월드는 WebGL 3D만 표시하며 2D로 되돌아가지 않는다.
     this.ctx = canvas.getContext('2d', { alpha: true });
     this.models3d=new Map();this.instances3d=new Map();this.native3d=false;
     this.init3d();this.resize();
@@ -63,8 +64,12 @@ export class IslandRendererV3 {
       lake.rotation.x=-Math.PI/2;lake.scale.set(150*SC,112*SC,1);
       lake.position.set(390*SC,.035,370*SC);this.scene3.add(lake);
       this.native3d=true;this.load3dModels();
-    }catch(error){console.warn('포근섬 WebGL 시작 실패 · 기존 화면 유지',error);
-      layer?.remove();this.native3d=false;}
+    }catch(error){
+      console.error('포근섬 3D 초기화 실패',error);
+      layer?.remove();this.native3d=false;
+      const status=document.querySelector('#webglStatus');
+      if(status){status.textContent='3D 화면을 시작할 수 없어. 이 브라우저의 WebGL 지원을 확인해 줘.';status.hidden=false}
+    }
   }
   // 유틸: 첫 프레임 이후 원본 라이브러리를 차례로 적재한다.
   async load3dModels(){
@@ -234,15 +239,20 @@ export class IslandRendererV3 {
       const hour=game.state.minutes/60;
       this.scene3.background.setHex(hour<6||hour>20?0x365372:0x86cce0);
       this.gl.render(this.scene3,this.camera3);
-    }catch(error){console.error('포근섬 3D 렌더 오류 · 기존 렌더러 유지',error);
-      this.native3d=false;this.gl.domElement.hidden=true}
+    }catch(error){
+      console.error('포근섬 3D 렌더링 실패',error);
+      this.native3d=false;if(this.gl?.domElement)this.gl.domElement.hidden=true;
+      const status=document.querySelector('#webglStatus');
+      if(status){status.textContent='3D 표시 오류가 발생했어. 화면을 새로고침해 줘.';status.hidden=false}
+    }
   }
   resize() {
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     this.width = Math.max(1, window.innerWidth);
     this.height = Math.max(1, window.innerHeight);
-    this.canvas.width = Math.round(this.width * this.dpr);
-    this.canvas.height = Math.round(this.height * this.dpr);
+    // 이전 확장 스크립트의 2D 캔버스 API만 유지하고 화면 버퍼는 최소 크기로 둔다.
+    this.canvas.width = 1;
+    this.canvas.height = 1;
     this.canvas.style.width = `${this.width}px`;
     this.canvas.style.height = `${this.height}px`;
     this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
@@ -258,6 +268,7 @@ export class IslandRendererV3 {
   screenToWorld(game, sx, sy) { const c=this.camera(game); return {x:sx+c.x,y:sy+c.y}; }
   draw(game) {
     if(this.native3d)this.draw3d(game);
+    // 원본 확장 렌더 함수 연결은 유지하지만 2D 출력은 1픽셀 비표시 버퍼로만 보낸다.
     const ctx=this.ctx; ctx.setTransform(this.dpr,0,0,this.dpr,0,0); ctx.clearRect(0,0,this.width,this.height);
     const cam=this.camera(game); ctx.save(); ctx.translate(-cam.x,-cam.y);
     this.drawSea(ctx,game); this.drawIsland(ctx,game); this.drawObjects(ctx,game); this.drawUnits(ctx,game); this.drawPlayer(ctx,game.player); ctx.restore();
