@@ -24,7 +24,7 @@ export class IslandRendererV3 {
     // 실제 월드는 WebGL 3D만 표시하며 2D로 되돌아가지 않는다.
     this.ctx = canvas.getContext('2d', { alpha: true });
     this.models3d=new Map();this.instances3d=new Map();this.native3d=false;
-    this.viewFocus={x:1050,y:635};this.viewZoom=null;
+    this.viewFocus={x:1050,y:635};this.viewZoom=null;this.last3dPaint=0;
     this.init3d();this.resize();
   }
   // 3D 메인: 원본 섬·야생지대·정글 좌표와 저장/전투 책임을 유지한다.
@@ -230,6 +230,9 @@ export class IslandRendererV3 {
   // 그래픽만 갱신하며 game.state/병력/자원/저장 값은 변경하지 않는다.
   draw3d(game){
     if(!this.native3d)return;
+    const now=performance.now(),minInterval=this.width<650?40:game.grandSiege?33:25;
+    if(now-this.last3dPaint<minInterval)return;
+    this.last3dPaint=now;
     try{
       const player=game.player,visibleIds=new Set();
       // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
@@ -358,7 +361,7 @@ export class IslandRendererV3 {
         unit.kind==='knight'?'hero':'soldier',unit.x,unit.y,1.9);
       // 메인: 186명 모두 전투 판정하지만 가까운 최대 84/156명만 실제 3D 모델로 생성한다.
       // 기존 CC0 메시를 재사용하며 전투 계산은 렌더링 축소의 영향을 받지 않는다.
-      const modelBudget=this.width<600?84:156;
+      const modelBudget=this.width<600?32:this.width<900?56:96;
       const visibleEnemies=game.enemies.filter(u=>u.hp>0&&nearby(u.x,u.y))
         .sort((a,b)=>(a.x-focus.x)**2+(a.y-focus.y)**2-
           ((b.x-focus.x)**2+(b.y-focus.y)**2)).slice(0,modelBudget);
@@ -434,7 +437,7 @@ export class IslandRendererV3 {
     this.canvas.style.height = `${this.height}px`;
     this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
     if(this.native3d){
-      this.gl.setPixelRatio(Math.min(1.3,window.devicePixelRatio||1));
+      this.gl.setPixelRatio(Math.min(this.width<650?1:1.25,window.devicePixelRatio||1));
       this.gl.setSize(this.width,this.height,false);
       this.camera3.left=-this.width*SC/2;this.camera3.right=this.width*SC/2;
       this.camera3.top=this.height*SC/2;this.camera3.bottom=-this.height*SC/2;
