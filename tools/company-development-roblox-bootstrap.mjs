@@ -996,7 +996,8 @@ function bindExistingClientStudioAssets(source='',familyStatus={}){
   const tail=output.slice(insertAt).replace(/^\n*/,'');
   const prefix=output.slice(0,insertAt).replace(/\n*$/,'');
   output=prefix+(learningContext?'\n\n':'\n')+block+tail;
-  const studioUiVisualMissing=!/StudioAssetFramePanel|StudioAssetImportedUiBinding/.test(output);
+  const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output)
+    &&!/SetAttribute\s*\(\s*["']StudioAssetImportedUiBinding["']\s*,\s*["']FRAME_PANEL["']\s*\)/.test(output);
   const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
   if(studioUiVisualMissing||studioUiTraceMissing){
     // Imported ScreenGui keeps its licensed visuals; only bind selection metadata.
