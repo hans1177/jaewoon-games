@@ -295,6 +295,80 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
 @media(prefers-reduced-motion:reduce){.actions>button,.heroPortrait{transition:none}}
 /* 모바일 조작: 전용 공격 버튼 대신 실제 세계 화면을 탭한다. */
 .actions>#attack{display:none!important}
+/* 마력숲 장비창 · 기존 sheet/invItem 책임을 확장하는 표시 전용 스타일 */
+.sheet:has(.arpgInventory){right:clamp(8px,3vw,40px);top:max(54px,env(safe-area-inset-top));bottom:max(24px,env(safe-area-inset-bottom));width:min(890px,96vw);background:linear-gradient(155deg,#1b1b1a,#0e1313 64%,#11160f);border:2px ridge #92764c;border-radius:9px;box-shadow:0 18px 58px #000d,inset 0 0 35px #ba9c5020}
+.sheet:has(.arpgInventory) .sheetHead{background:#151b19;border-bottom:1px solid #b49a6947}
+.sheet:has(.arpgInventory) .sheetBody{padding:0}
+.arpgInventory{color:#ede3d1;font-family:system-ui,"Noto Sans KR",sans-serif;font-size:12px}
+.arpgHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px 14px;background:linear-gradient(90deg,#49382066,#171e1a);border-bottom:1px solid #ad884a50}
+.arpgHead small{font-size:10px;letter-spacing:.14em;color:#b9a274}.arpgHead h2{font-size:23px;letter-spacing:.03em;line-height:1.1;margin:5px 0 0;color:#f4e4bf}
+.arpgHead>span{font-size:10px;color:#b59c75}.arpgContent{display:grid;grid-template-columns:minmax(280px,.94fr) minmax(310px,1.1fr);gap:0;min-height:0}
+.arpgCharacter{padding:16px;background:radial-gradient(ellipse at 50% 35%,#3b3324,#141b1b 68%);border-right:1px solid #a18b6040}
+.arpgCharacter h3,.arpgBag h3{margin:0;font-size:16px;font-weight:900;color:#f0d7a4}
+.arpgVitals{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:12px 0;padding:9px;border:1px solid #947d4e66;background:#0b110fd4}
+.arpgVitals>div{display:flex;justify-content:space-between;gap:6px;font-size:10px;color:#b6b3a3}.arpgVitals strong{color:#e8c989;font-variant-numeric:tabular-nums}
+.arpgPaperdoll{display:grid;grid-template-columns:minmax(85px,1fr) minmax(95px,1.1fr) minmax(85px,1fr);align-items:center;gap:5px;min-height:250px}
+.arpgGearColumn{display:flex;flex-direction:column;gap:11px}.arpgGearSlot{min-height:94px;padding:9px 6px;background:linear-gradient(155deg,#272a26,#111918);border:1px solid #705b3d;border-radius:5px;box-shadow:inset 0 0 15px #0007;overflow-wrap:anywhere;text-align:center}
+.arpgGearSlot.filled{border-color:#b99a5a;box-shadow:inset 0 0 14px #80693b43}.arpgGearMark{display:block;font-size:25px;line-height:1.1;color:#d7bf87}
+.arpgGearLabel{display:block;font-size:9px;letter-spacing:.07em;color:#b3a38b;margin:5px 0}.arpgGearSlot strong{font-size:10px;display:block;color:#eee2c9}.arpgGearSlot small{font-size:9px;color:#a9a38f}
+.arpgHero{position:relative;align-self:stretch;min-height:240px;overflow:hidden;filter:drop-shadow(0 5px 6px #000b)}
+.arpgHalo{position:absolute;inset:15% -12%;border-radius:50%;border:1px solid #c09c5655;background:radial-gradient(ellipse,#bba36d30,transparent 69%)}
+.arpgHeadShape{position:absolute;z-index:3;width:33px;height:39px;top:17%;left:calc(50% - 16px);background:linear-gradient(100deg,#84785e,#cabda0 48%,#645741);border:2px solid #4a432f;border-radius:42% 42% 36% 36%}
+.arpgTorsoShape{position:absolute;z-index:2;width:61px;height:94px;top:31%;left:calc(50% - 30px);background:linear-gradient(90deg,#252f31,#677979 48%,#202b2d);clip-path:polygon(12% 0,88% 0,100% 80%,65% 100%,35% 100%,0 80%);border:1px solid #b4a273}
+.arpgArmShape{position:absolute;width:20px;height:92px;top:34%;background:linear-gradient(90deg,#394544,#81745f);border-radius:15px;transform:rotate(9deg);left:calc(50% - 52px)}
+.arpgArmShape.right{left:auto;right:calc(50% - 52px);transform:rotate(-9deg)}
+.arpgLegShape{position:absolute;top:62%;left:calc(50% - 23px);width:19px;height:76px;background:linear-gradient(90deg,#222c2b,#546060);border-radius:5px;transform:rotate(3deg)}
+.arpgLegShape.right{left:calc(50% + 5px);transform:rotate(-3deg)}
+.arpgHero>span{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:10px;color:#bcac86}
+.arpgHandSlot{margin-top:10px;padding:8px 10px;text-align:center;border:1px solid #846c483d;background:#121a19;color:#cfb98e;font-size:10px}
+.arpgHint{font-size:10px;color:#b7b19e;line-height:1.55;margin:10px 0 0}
+.arpgBag{padding:16px;min-width:0}.arpgBagTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.arpgBagTitle span{font-size:10px;color:#b9aa8e}
+.arpgItemGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.arpgInventory .arpgItem{min-width:0;min-height:126px;display:flex;flex-direction:column;align-items:stretch;padding:9px 6px;border:1px solid #6c6453;border-radius:5px;background:linear-gradient(135deg,#2a302a,#131d1b);text-align:center;color:#f2e7d1;box-shadow:inset 0 1px #d0b47c26;position:relative}
+.arpgInventory .arpgItem:active{transform:scale(.97)}.arpgInventory .arpgItem:disabled{opacity:.9}
+.arpgInventory .arpgItem.isEquipped{background:linear-gradient(155deg,#323c30,#18241c)}
+.arpgItemGlyph{font-size:28px;line-height:1.2;color:#d3b77b;text-shadow:0 2px 5px #000}.arpgInventory .arpgItem b{font-size:11px;line-height:1.3;max-width:100%;word-break:keep-all;overflow-wrap:anywhere;margin:7px 0 2px}
+.arpgInventory .arpgItem small{color:#bfb5a3;font-size:10px}.arpgInventory .arpgItem .slot{margin-top:auto;padding-top:5px;color:#dabf80!important}
+.arpgInventory .arpgItem .tierBadge{position:absolute;right:5px;top:5px;font-size:9px;color:#bfb7a5;background:#13140fcc;border:1px solid #6c6453;padding:1px 4px;border-radius:3px}
+.arpgInventory .arpgTier3{border-color:#598da0}.arpgInventory .arpgTier4{border-color:#ae79a6}.arpgInventory .arpgTier5{border-color:#cd9d4b}
+.arpgInventory .arpgTier3 .arpgItemGlyph{color:#a6d7e2}.arpgInventory .arpgTier4 .arpgItemGlyph{color:#d4a0e4}.arpgInventory .arpgTier5 .arpgItemGlyph{color:#ecc47c}
+.arpgEmpty{grid-column:1/-1;padding:30px 10px;text-align:center;border:1px dashed #8f8062;color:#bba98c}
+.arpgDetails{margin-top:12px;border:1px solid #806c4766;background:#101917}.arpgDetails summary{cursor:pointer;min-height:44px;padding:12px;color:#d8bb86;font-weight:800;touch-action:manipulation}.arpgDetails .invMaterials{padding:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.arpgDetails .mat{border-radius:3px;background:#1c2824;color:#e6d5bc}
+@media(max-width:720px){.sheet:has(.arpgInventory){left:max(5px,env(safe-area-inset-left));right:max(5px,env(safe-area-inset-right));top:auto;bottom:max(5px,env(safe-area-inset-bottom));max-height:88dvh;width:auto}.arpgContent{grid-template-columns:1fr}.arpgCharacter{border-right:0;border-bottom:1px solid #a18b6040;padding:12px}.arpgHead{padding:12px}.arpgHead h2{font-size:19px}.arpgPaperdoll{min-height:190px}.arpgHero{min-height:190px}.arpgBag{padding:12px}.arpgItemGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.arpgInventory .arpgItem{min-height:112px}}
+@media(max-width:360px){.arpgItemGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.arpgPaperdoll{grid-template-columns:minmax(70px,1fr) 90px minmax(70px,1fr)}.arpgGearSlot{min-height:88px;padding:7px 4px}.arpgVitals{grid-template-columns:1fr}}
+
+/* 장비창: 모바일 안전영역 · 선택 피드백 · 가방 검색과 품목 필터 */
+.arpgInventory{min-width:0;overflow-wrap:anywhere}
+.arpgHead .arpgAppearance{margin-left:auto;flex-shrink:0;min-height:44px;padding:7px 12px;border:1px solid #bda46c;border-radius:6px;background:#292d24;color:#f4deb1;font:700 11px system-ui}
+.arpgBagTools{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}
+.arpgBagTools button{min-height:42px;padding:9px 11px;border:1px solid #806f54;border-radius:5px;background:#202b25;color:#dfd4bc;font-size:11px;font-weight:750}
+.arpgBagTools button[aria-pressed="true"]{background:#69542e;color:#fff0c8;border-color:#d7b678}
+.arpgBagSearch{display:block;width:100%;min-height:44px;margin:0 0 9px;padding:9px 12px;background:#0d1615;border:1px solid #8c7858;border-radius:5px;color:#fff2d7;font-size:13px}
+.arpgBagSearch::placeholder{color:#a9a494}
+.arpgResultCount{font-size:10px;line-height:1.6;color:#c0ab84;margin-bottom:7px}
+.arpgInventory .arpgItem[hidden]{display:none!important}
+.arpgInventory .arpgItem{min-height:126px;cursor:pointer;touch-action:manipulation}
+.arpgInventory .arpgItem:focus-visible,.arpgBagTools button:focus-visible,.arpgBagSearch:focus-visible,.arpgAppearance:focus-visible{outline:2px solid #f2d58c;outline-offset:2px}
+.arpgInventory .arpgItem:not(:disabled):hover{border-color:#eed094;box-shadow:0 0 0 1px #b8a16b66,inset 0 0 16px #ddc28b23}
+.arpgItemInfo{min-height:57px;margin:12px 0 0;padding:10px 12px;line-height:1.6;border-left:3px solid #b79458;background:#111b18;color:#dfd2b5;font-size:11px}
+.arpgBag{max-width:100%;overflow:hidden}
+.arpgItemGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.sheet:has(.arpgInventory){overflow:hidden;z-index:58}
+.sheet:has(.arpgInventory) .sheetBody{overflow-y:auto;overscroll-behavior:contain;max-height:calc(100% - 56px);height:auto;scrollbar-color:#a58d60 #17201b}
+.arpgGearSlot{min-width:0}
+.arpgInventory .arpgItem:disabled{cursor:default}
+@media(max-width:720px){
+ .sheet:has(.arpgInventory){top:max(5px,env(safe-area-inset-top));bottom:max(5px,env(safe-area-inset-bottom));height:auto;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 10px)}
+ .sheet:has(.arpgInventory) .sheetBody{max-height:calc(100% - 52px)}
+ .arpgContent{grid-template-columns:minmax(0,1fr)}
+ .arpgHead .arpgAppearance{padding:6px 8px;white-space:nowrap}
+ .arpgItemGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .arpgInventory .arpgItem{min-height:112px}
+}
+@media(max-width:360px){.arpgItemGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.arpgInventory .arpgItem{transition:none}}
+
 </style>
 <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head>
@@ -323,7 +397,7 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
  <p>이 몬스터가 나를 공격하게 할지 정해. 기본은 공격 안 함이야.</p>
  <div class="creativeButtons"><button id="creativePassive">공격 안 함</button><button id="creativeAttackPlayer">나를 공격</button></div>
  <div class="creativeButtons"><button id="creativeAggroClose">닫기</button></div></div></div>
-<div class="hud" data-mobile-layout="dark-fantasy-action-rpg"><div class="card main"><div class="top"><button id="heroPortrait" class="heroPortrait" type="button" aria-label="3D 캐릭터 꾸미기">◇<small>캐릭터</small></button><div class="statusBars"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><button id="questToggle" class="questToggle" type="button" aria-expanded="false" aria-label="현재 임무 펼치기"><span id="questText" class="questLine">수정 북쪽 끝으로 가세요</span></button><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><details class="hudMenu"><summary aria-label="게임 메뉴 열기">☰ 메뉴</summary><div class="hudMenuPanel"><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button><button id="avatarOpen" class="multiBtn" type="button">캐릭터 꾸미기</button><button id="hudGuideOpen" class="multiBtn" type="button">조작 안내</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="../../">홈</a></div></details></div>
+<div class="hud" data-mobile-layout="dark-fantasy-action-rpg"><div class="card main"><div class="top"><button id="heroPortrait" class="heroPortrait" type="button" aria-label="캐릭터 장비와 가방 열기">◇<small>캐릭터</small></button><div class="statusBars"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><button id="questToggle" class="questToggle" type="button" aria-expanded="false" aria-label="현재 임무 펼치기"><span id="questText" class="questLine">수정 북쪽 끝으로 가세요</span></button><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><details class="hudMenu"><summary aria-label="게임 메뉴 열기">☰ 메뉴</summary><div class="hudMenuPanel"><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button><button id="avatarOpen" class="multiBtn" type="button">캐릭터 꾸미기</button><button id="hudGuideOpen" class="multiBtn" type="button">조작 안내</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="../../">홈</a></div></details></div>
 <div id="notice" class="notice"></div><div id="miniMapWrap" class="miniMapWrap" role="button" tabindex="0" aria-label="지도를 열기" title="눌러서 지도 열기"><b>미니맵</b><canvas id="miniMap" class="miniMap" width="160" height="160"></canvas></div><button id="rotateBlueprint" class="blueprintRotate" data-gameplay-action="blueprint-rotate">회전</button><div id="optionsPanel" class="optionsPanel"><div class="optionHead"><b>옵션</b><button id="optionsClose">×</button></div><div class="optionRow"><span>자동 채집</span><button id="autoGather" data-mechanic-id="auto-gather-toggle" aria-pressed="false">자동 OFF</button></div><div class="optionRow"><span>음악</span><button id="bgmToggle" data-audio-control="mute" data-mechanic-id="audio-bgm-toggle">BGM ON</button></div><div class="optionRow"><span>음악 볼륨</span><input id="bgmVolume" type="range" min="0" max="100" step="5" value="100" data-audio-control="volume" aria-label="BGM 볼륨"></div><div class="optionRow"><span>전투 음악</span><button id="battlePreview" type="button" data-audio-control="preview">새 전투곡 듣기</button></div><div id="musicInfo" class="difficultyInfo" role="status" aria-live="polite">전투곡 듣기로 바로 확인 가능</div><div class="optionRow"><span>난이도</span><select id="difficultySelect" aria-label="난이도"><option value="easy">쉬움</option><option value="normal" selected>중간</option><option value="hard">어려움</option></select></div><div id="difficultyInfo" class="difficultyInfo">중간 · 기존 몬스터 수치</div>
 <div class="optionRow"><label for="hudHandedness">조작 손</label><select id="hudHandedness" aria-label="조작 손"><option value="right">왼쪽 이동 · 오른쪽 공격</option><option value="left">오른쪽 이동 · 왼쪽 공격</option></select></div>
 <div class="optionRow"><label for="hudSize">전투 버튼 크기</label><select id="hudSize" aria-label="전투 버튼 크기"><option value="100">기본</option><option value="108">크게</option></select></div>
@@ -2080,12 +2154,105 @@ function openCooking(){
  state.panelMode='cooking';ui.sheet.classList.add('open');renderCooking()
 }
 function renderInventory(){
- tabState();const p=state.player,gear=recipes.filter(r=>['weapon','tool','armor','ammo','consumable','ingredient','seed'].includes(r.kind)&&invCount(r.id)>0);
- let html='<div class="info"><b>인벤토리</b><br>한 번도 얻지 못한 상위 재료와 제작물은 ???로 표시돼.</div><div class="invSection">재료</div><div class="invMaterials"><div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'+materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div><div class="invSection">설치물</div><div class="invMaterials">'+structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('toxic-furnace',state.toxicFurnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('sunstone-bench',state.sunstoneBench)+structureInventoryRow('blacksmith-anvil',state.blacksmithAnvil)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)+structureCountRow('상자',state.chests.length)+structureCountRow('나무벽',state.walls.length)+structureCountRow('나무문',state.doors.length)+structureCountRow('수비탑',state.towers.length)+structureCountRow('침대',state.beds.length)+structureCountRow('텃밭',state.gardens.length)+structureCountRow('포탈',state.portals.length)+structureCountRow('깃발',state.flags.length)+structureCountRow('재배 중',state.crops.length)+'</div><div class="invSection">아이템</div><div class="grid">';
- if(p.torch)html+='<button class="invItem" id="torchToggle"><b>마력 횃불</b><small>왼손 · 남은 내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'왼손 장착 중':'왼손에 들기')+'</small></button>';
- if(!gear.length&&!p.torch&&!isCreative())html+='<div class="info">아직 보유한 장비나 소모품이 없어.</div>';
- for(const r of gear){let action='보유';if(r.kind==='weapon')action=p.weapon===r.id?'장착 중':'장착';if(r.kind==='tool')action=p.tool===r.id?'장착 중':'장착';if(r.kind==='armor')action=p.armor===r.id?'장착 중':'장착';if(r.kind==='ammo')action=p.arrowType===r.id?'선택 중':'화살 선택';if(r.kind==='consumable')action='사용';if(r.kind==='ingredient')action='요리 재료';if(r.kind==='seed')action='심기';const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');html+='<button class="invItem" data-id="'+r.id+'" '+(clickable?'':'disabled')+'><b>'+upgradedName(r.id)+' ×'+invCount(r.id)+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="slot">'+action+'</small></button>'}
- if(isCreative())html+='<button class="invItem" id="creativeBlockItem"><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 종류와 마릿수 선택</small><small class="slot">설치하기</small></button>';html+='</div>';ui.sheetBody.innerHTML=html;const cb=document.getElementById('creativeBlockItem');if(cb)cb.addEventListener('click',()=>{closeSheet();state.creativePlacing=true;showNotice('원하는 바닥을 눌러 스폰 블록 설치')});const tt=document.getElementById('torchToggle');if(tt)tt.addEventListener('click',toggleTorch);ui.sheetBody.querySelectorAll('.invItem:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{const r=item(b.dataset.id);if(r?.kind==='consumable')useItem(r.id);else if(r?.kind==='seed')plantSeed(r.id);else if(r?.kind==='ammo')selectArrow(r.id);else equipItem(r.id)}))
+ // 메인 · 기존 보유/장착/소모품 상태만 읽는 다크 판타지 장비·가방 화면. 저장 및 게임 판정 불변.
+ tabState();
+ const p=state.player;
+ const gear=recipes.filter(r=>['weapon','tool','armor','ammo','consumable','ingredient','seed'].includes(r.kind)&&invCount(r.id)>0)
+   .sort((a,b)=>itemTier(b.id)-itemTier(a.id)||a.name.localeCompare(b.name,'ko'));
+ const stats={
+  hp:Math.ceil(p.hp),maxHp:Math.ceil(p.maxHp),food:Math.ceil(p.hunger),
+  power:Math.round(effectiveStat(p.weapon,'power')+effectiveStat(p.armor,'bonusDamage')),
+  defense:Math.round(effectiveStat(p.armor,'reduce'))
+ };
+ const slot=(name,id,mark)=>'<div class="arpgGearSlot '+(id?'filled':'')+'"><span class="arpgGearMark">'+mark+'</span><span class="arpgGearLabel">'+name+'</span><strong>'+(id?upgradedName(id):'비어 있음')+'</strong>'+(id?'<small>'+itemTier(id)+'티어 장착</small>':'<small>가방에서 장착</small>')+'</div>';
+ const kinds={weapon:'⚔',tool:'◆',armor:'◈',ammo:'➶',consumable:'✚',ingredient:'✦',seed:'❀'};
+ let html='<section class="arpgInventory" aria-label="장비와 인벤토리">'
+  +'<header class="arpgHead"><div><small>마력숲 · 모험가 정보</small><h2>장비와 소지품</h2></div><button class="arpgAppearance" id="arpgAppearance" type="button">외형 변경</button></header>'
+  +'<div class="arpgContent"><section class="arpgCharacter" aria-label="캐릭터 장비">'
+  +'<h3>캐릭터</h3><div class="arpgVitals"><div>체력 <strong>'+stats.hp+' / '+stats.maxHp+'</strong></div><div>배고픔 <strong>'+stats.food+' / 100</strong></div><div>무기 공격력 <strong>'+stats.power+'</strong></div><div>방어구 방어 <strong>'+stats.defense+'</strong></div></div>'
+  +'<div class="arpgPaperdoll"><div class="arpgGearColumn">'
+  +slot('무기',p.weapon,'⚔')+slot('도구',p.tool,'◆')
+  +'</div><div class="arpgHero" data-model="'+avatarAppearance.model+'"><div class="arpgHalo"></div><div class="arpgHeadShape"></div><div class="arpgTorsoShape"></div><div class="arpgArmShape left"></div><div class="arpgArmShape right"></div><div class="arpgLegShape left"></div><div class="arpgLegShape right"></div><span>장착 중인 장비</span></div><div class="arpgGearColumn">'
+  +slot('방어구',p.armor,'◈')+slot('화살',p.arrowType,'➶')
+  +'</div></div>'
+  +'<div class="arpgHandSlot">'+(p.torch?'횃불 · '+(p.torchEquipped?'왼손 장착 중':'가방 보유')+' · '+Math.ceil(p.torchDurability/1000)+'초':'왼손 · 횃불 없음')+'</div>'
+  +'<p class="arpgHint">가방의 아이템을 누르면 기존 방식대로 장착하거나 사용해.</p></section>'
+  +'<section class="arpgBag" aria-label="가방"><div class="arpgBagTitle"><h3>가방</h3><span>보유 품목 '+(gear.length+(p.torch?1:0))+'종</span></div>'
+  +'<nav class="arpgBagTools" aria-label="가방 분류"><button data-arpg-filter="all" type="button" aria-pressed="true">전체</button><button data-arpg-filter="equipment" type="button" aria-pressed="false">장비</button><button data-arpg-filter="usable" type="button" aria-pressed="false">소모품</button><button data-arpg-filter="material" type="button" aria-pressed="false">재료</button></nav>'
+  +'<input id="arpgBagSearch" class="arpgBagSearch" type="search" aria-label="가방 아이템 검색" placeholder="가방 아이템 검색" autocomplete="off">'
+  +'<div id="arpgResultCount" class="arpgResultCount" role="status" aria-live="polite"></div>'
+  +'<div class="arpgItemGrid">';
+ if(p.torch)html+='<button class="invItem arpgItem" data-inventory-kind="equipment" id="torchToggle"><span class="arpgItemGlyph">✦</span><b>마력 횃불</b><small>내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'왼손 장착 중':'왼손에 들기')+'</small></button>';
+ if(!gear.length&&!p.torch&&!isCreative())html+='<div class="arpgEmpty">아직 보유한 아이템이 없어. 채집하고 제작하면 여기에 나타나.</div>';
+ for(const r of gear){
+  let action='보유';
+  if(r.kind==='weapon')action=p.weapon===r.id?'장착 중':'장착';
+  if(r.kind==='tool')action=p.tool===r.id?'장착 중':'장착';
+  if(r.kind==='armor')action=p.armor===r.id?'장착 중':'장착';
+  if(r.kind==='ammo')action=p.arrowType===r.id?'선택 중':'화살 선택';
+  if(r.kind==='consumable')action='사용';
+  if(r.kind==='ingredient')action='요리 재료';
+  if(r.kind==='seed')action='심기';
+  const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');
+  html+='<button class="invItem arpgItem arpgTier'+itemTier(r.id)+(clickable?'':' isEquipped')+'" data-id="'+r.id+'" '+(clickable?'':'disabled')+'>'
+   +'<span class="arpgItemGlyph">'+(kinds[r.kind]||'✦')+'</span><span class="tierBadge">'+itemTier(r.id)+'티어</span>'
+   +'<b>'+upgradedName(r.id)+'</b><small>×'+invCount(r.id)+'</small><small class="slot">'+action+'</small></button>';
+ }
+ if(isCreative())html+='<button class="invItem arpgItem" id="creativeBlockItem"><span class="arpgItemGlyph">✦</span><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 설정</small><small class="slot">설치하기</small></button>';
+ html+='</div><p id="arpgItemInfo" class="arpgItemInfo" role="status" aria-live="polite">아이템을 선택하면 설명이 나타나.</p><details class="arpgDetails" open><summary>재료와 자원</summary><div class="invMaterials">'
+  +'<div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'
+  +materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div></details>'
+  +'<details class="arpgDetails"><summary>설치물과 건축 현황</summary><div class="invMaterials">'
+  +structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('toxic-furnace',state.toxicFurnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('sunstone-bench',state.sunstoneBench)+structureInventoryRow('blacksmith-anvil',state.blacksmithAnvil)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)
+  +structureCountRow('상자',state.chests.length)+structureCountRow('나무벽',state.walls.length)+structureCountRow('나무문',state.doors.length)+structureCountRow('수비탑',state.towers.length)+structureCountRow('침대',state.beds.length)+structureCountRow('텃밭',state.gardens.length)+structureCountRow('포탈',state.portals.length)+structureCountRow('깃발',state.flags.length)+structureCountRow('재배 중',state.crops.length)
+  +'</div></details></section></div></section>';
+ ui.sheetBody.innerHTML=html;
+ // 가방 분류·검색은 표시만 제어한다. 아이템 획득·장착·사용의 기존 판단을 재사용한다.
+ const bag=ui.sheetBody.querySelector('.arpgBag');
+ const find=bag.querySelector('#arpgBagSearch');
+ const result=bag.querySelector('#arpgResultCount');
+ const info=bag.querySelector('#arpgItemInfo');
+ const buttons=[...bag.querySelectorAll('.arpgItem')];
+ let selectedKind='all';
+ const filterBag=()=>{
+  const term=find.value.trim().toLocaleLowerCase('ko');
+  let shown=0;
+  for(const button of buttons){
+   const visible=(selectedKind==='all'||button.dataset.inventoryKind===selectedKind)
+    &&(!term||button.textContent.toLocaleLowerCase('ko').includes(term));
+   button.hidden=!visible;
+   if(visible)shown++;
+  }
+  result.textContent='표시 '+shown+' / '+buttons.length+'종';
+ };
+ bag.querySelectorAll('[data-arpg-filter]').forEach(button=>button.addEventListener('click',()=>{
+  selectedKind=button.dataset.arpgFilter;
+  bag.querySelectorAll('[data-arpg-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+  filterBag();
+ }));
+ find.addEventListener('input',filterBag);
+ for(const button of buttons){
+  const showInfo=()=>{
+   const r=item(button.dataset.id);
+   info.textContent=r?upgradedName(r.id)+' · '+(r.desc||'아이템 설명 없음')
+    :'마력 횃불 · 왼손 장착 및 해제';
+  };
+  button.addEventListener('focus',showInfo);
+  button.addEventListener('pointerenter',showInfo);
+ }
+ filterBag();
+ document.getElementById('arpgAppearance').addEventListener('click',openAvatarCustomizer);
+ const cb=document.getElementById('creativeBlockItem');
+ if(cb)cb.addEventListener('click',()=>{closeSheet();state.creativePlacing=true;showNotice('원하는 바닥을 눌러 스폰 블록 설치')});
+ const tt=document.getElementById('torchToggle');
+ if(tt)tt.addEventListener('click',toggleTorch);
+ ui.sheetBody.querySelectorAll('.invItem[data-id]:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{
+  const r=item(b.dataset.id);
+  if(r?.kind==='consumable')useItem(r.id);
+  else if(r?.kind==='seed')plantSeed(r.id);
+  else if(r?.kind==='ammo')selectArrow(r.id);
+  else if(r)equipItem(r.id)
+ }))
 }
 function mapTerrainColorAt(x,y){
  const r=regionAt(x,y);
@@ -6886,7 +7053,7 @@ function openAvatarCustomizer(){
 }
 document.getElementById('startAvatar').addEventListener('click',openAvatarCustomizer);
 document.getElementById('avatarOpen').addEventListener('click',openAvatarCustomizer);
-document.getElementById('heroPortrait').addEventListener('click',openAvatarCustomizer);
+document.getElementById('heroPortrait').addEventListener('click',openInventory);
 // 모바일 UI: 기존 동작 버튼 그대로 재사용하고 화면 편의 설정만 연결한다.
 syncHudUi();
 document.getElementById('hudHandedness').addEventListener('change',e=>changeHudUi('hand',e.target.value));
