@@ -288,7 +288,9 @@ test('original native monster loader recovers texture and FBX failures without r
  assert.match(moduleSource,/new FBXLoader\(\)\.setResourcePath\(CREATURE_SOURCE\.href\)/);
  assert.match(moduleSource,/\.parse\(await response\.arrayBuffer\(\),CREATURE_SOURCE\.href\)/);
  assert.match(moduleSource,/model=await new OBJLoader\(\)\.loadAsync\(url\.href\)/);
- assert.match(moduleSource,/catch\(textureError\)/);
+ assert.match(moduleSource,/void new THREE\.TextureLoader\(\)\.loadAsync/);
+ assert.match(moduleSource,/material\.map=texture;material\.needsUpdate=true/);
+ assert.match(moduleSource,/\.catch\(textureError=>/);
  assert.match(moduleSource,/function retryMissingCreatures\(state\)/);
  assert.match(moduleSource,/if\(retried\)nextCreatureScan=0/);
  assert.match(moduleSource,/getFailedCreatureSources:/);
