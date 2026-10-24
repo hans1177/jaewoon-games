@@ -358,7 +358,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
   const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
-  let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null;
+  let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
   let currentBiome='forest';
   let lastHeroPoseX=null,lastHeroPoseY=null,lastHeroPoseAt=0;
@@ -673,7 +673,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // classifier, collision, damage, spawn and player movement remain authoritative.
     const centerTileX=Math.round(centerX/floorPitchX),centerTileY=Math.round(centerY/floorPitchZ);
     // 프레임마다 85개 지형을 다시 칠하지 않고 실제 타일 경계가 바뀔 때만 갱신한다.
-    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier){
+    if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea){
       let tileIndex=0,seamTileIndex=0;
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
@@ -699,7 +699,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     biomeTiles.instanceColor.needsUpdate=true;
     floorSeamTiles.instanceMatrix.needsUpdate=true;
     floorSeamTiles.instanceColor.needsUpdate=true;
-      lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;
+      lastFloorGridX=centerTileX;lastFloorGridZ=centerTileY;lastFloorClassifier=classify;lastFloorArea=state.area;
     }
     interactables.length=0;
     const seen=state.last||Date.now();
@@ -743,6 +743,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     synchronizeUndead(state,px,py,seen);
     const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
+    // 다른 지역으로 이동하면 앞서 표시한 지상의 식물/광석 배치를 즉시 지운다.
+    if(isInterior)for(const batch of resourceBatches.values())batch.mesh.count=0;
     if(!isInterior)resources(state.trees,'tree',px,py,seen,1.28);
     if(!isInterior)resources(state.swampTrees,'tree_large',px,py,seen,1.65);
     if(!isInterior)resources(state.rocks,'cobblestones',px,py,seen,1.05);
