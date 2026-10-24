@@ -27,9 +27,10 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   rect(-7,-13,14,28,'#172d35');rect(-6,-11,12,25,enemy?'#663934':'#835b38');rect(-4,-17,8,8,'#bb9560');rect(-1,-12,2,27,'#493b30');
   if(rig==='oars'){for(let i=0;i<7;i++){rect(-15,-9+i*3,9,1,'#c4a573');rect(6,-9+i*3,9,1,'#c4a573');}}
   const sails=type==='galleon'||type.includes('galleon')||type.includes('fluyt')||type.includes('racer')?3:rig==='oars'?1:2;
-  for(let i=0;i<sails;i++){const sy=-9+i*9;if(rig==='lateen'||rig==='oars'){ctx.fillStyle=enemy?'#575358':'#eee1b8';ctx.beginPath();ctx.moveTo(0,sy-4);ctx.lineTo(-12,sy+8);ctx.lineTo(9,sy+7);ctx.closePath();ctx.fill();rect(-12,sy+8,22,1,'#8f8c6b');}else{rect(-11,sy,22,6,enemy?'#575358':'#eee1b8');rect(-10,sy+5,20,2,enemy?'#393d43':'#b3b99e');rect(-13,sy,26,1,'#674a36');}}
+  for(let i=0;i<sails;i++){const sy=-9+i*9;if(rig==='lateen'||rig==='oars'||!enemy&&type===state.shipType&&state.ship.gear.sail==='lateen'&&i===sails-1){ctx.fillStyle=enemy?'#575358':'#eee1b8';ctx.beginPath();ctx.moveTo(0,sy-4);ctx.lineTo(-12,sy+8);ctx.lineTo(9,sy+7);ctx.closePath();ctx.fill();rect(-12,sy+8,22,1,'#8f8c6b');}else{rect(-11,sy,22,6,enemy?'#575358':'#eee1b8');rect(-10,sy+5,20,2,enemy?'#393d43':'#b3b99e');rect(-13,sy,26,1,'#674a36');}}
   if(type.includes('galleon')||type.includes('fluyt')){rect(-7,9,14,8,'#af8951');rect(-5,12,10,3,design.color||'#69553e');}
-  for(let i=0;i<Math.ceil(Math.min(16,ports)/2);i++){rect(-9,-10+i*3,4,2,'#252f33');rect(5,-10+i*3,4,2,'#252f33');}
+  for(let i=0;i<Math.ceil(Math.min(20,ports)/2);i++){rect(-9,-10+i*3,4,2,'#252f33');rect(5,-10+i*3,4,2,'#252f33');}
+  if(!enemy&&type===state.shipType&&state.ship.gear.figurehead!=='none'){const symbol=state.ship.gear.figurehead;rect(-3,-23,6,6,'#e4c078');if(symbol==='lion'){rect(-5,-24,3,7,'#b88c43');rect(2,-24,3,7,'#b88c43');}if(symbol==='dolphin'){rect(1,-27,6,3,'#8ebac1');rect(-4,-21,4,3,'#8ebac1');}if(symbol==='mermaid'){rect(-2,-27,4,4,'#efd4a2');rect(-4,-19,8,3,'#7ead9e');}if(symbol==='owl'){rect(-4,-27,2,5,'#e4c078');rect(2,-27,2,5,'#e4c078');rect(-2,-22,1,1,'#2e3031');rect(2,-22,1,1,'#2e3031');}}
   rect(0,-18,8,3,enemy?'#b8634f':design.color||'#ce8c58');ctx.restore();
  }
 
