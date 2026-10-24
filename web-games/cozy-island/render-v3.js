@@ -54,7 +54,12 @@ export class IslandRendererV3 {
           ash:['#71635f','#82736c','#5d5352','#99847b'],
           cave:['#434b58','#515968','#343d49','#666d75'],
           road:['#a99a7f','#c0ae8c','#90846f','#d0bea0'],
-          water:['#58acc0','#65bed0','#409aad','#8ad1d9']
+          water:['#58acc0','#65bed0','#409aad','#8ad1d9'],
+          foliage:['#567f51','#72935b','#426a47','#a0b87a'],
+          crops:['#7b944b','#a9bb64','#567c41','#d1c775'],
+          clay:['#a06f50','#bc8b64','#8a5a43','#cfaa7c'],
+          iron:['#68727b','#9199a0','#505e6b','#bbc3bb'],
+          hide:['#9c816e','#b39b7f','#776b63','#d2b298']
         }[type]||['#9e9a8d','#aaa395','#888478','#c8c0af'];
         ctx.fillStyle=colors[0];ctx.fillRect(0,0,64,64);
         if(['stone','road','roof'].includes(type)){
@@ -97,7 +102,8 @@ export class IslandRendererV3 {
         return texture;
       };
       this.pixelTextures={};
-      for(const type of ['stone','wood','roof','sand','grass','jungle','snow','ash','cave','road','water'])
+      for(const type of ['stone','wood','roof','sand','grass','jungle','snow','ash','cave','road','water',
+        'foliage','crops','clay','iron','hide'])
         this.pixelTextures[type]=pixelTexture(type);
       this.scene3.background=new THREE.Color(0x8bbed1);
       this.scene3.add(new THREE.HemisphereLight(0xffecd2,0x526576,1.65));
@@ -107,8 +113,21 @@ export class IslandRendererV3 {
       this.fortGeometry={
         box:new THREE.BoxGeometry(1,1,1),
         roof:new THREE.ConeGeometry(1,1,4),
-        tower:new THREE.CylinderGeometry(1,1,1,6)
+        tower:new THREE.CylinderGeometry(1,1,1,6),
+        shadow:new THREE.CircleGeometry(1,20),
+        selector:new THREE.RingGeometry(.78,1,32)
       };
+      this.shadowMaterial=new THREE.MeshBasicMaterial({
+        color:0x172b24,transparent:true,opacity:.22,depthWrite:false
+      });
+      this.selectorMaterial=new THREE.MeshBasicMaterial({
+        color:0xffd47a,transparent:true,opacity:.85,depthWrite:false,
+        side:THREE.DoubleSide
+      });
+      this.selection3=new THREE.Mesh(this.fortGeometry.selector,this.selectorMaterial);
+      this.selection3.rotation.x=-Math.PI/2;
+      this.selection3.visible=false;
+      this.scene3.add(this.selection3);
       const paint=(color,type)=>new THREE.MeshLambertMaterial({
         color,map:this.pixelTextures[type],flatShading:true
       });
@@ -172,17 +191,38 @@ export class IslandRendererV3 {
           if(path.endsWith('.fbx'))model=await new FBXLoader().loadAsync(url.href);
           else if(path.endsWith('.obj')){
             model=await new OBJLoader().loadAsync(url.href);
-            const palette={snake:0x6c9b69,spider:0x78666b,golem:0x9b9998};
-            model.traverse(part=>{if(part.isMesh)part.material=new THREE.MeshStandardMaterial({
-              color:palette[kind]||0x9c9b95,roughness:1})});
+            const palette={snake:0xb6cbb2,spider:0xb5a4a0,golem:0xe5e1dc};
+            const surface={snake:'foliage',spider:'hide',golem:'stone'}[kind]||'hide';
+            const material=new THREE.MeshStandardMaterial({
+              color:palette[kind]||0xd0c3ae,map:this.pixelTextures[surface],roughness:.98
+            });
+            model.traverse(part=>{if(part.isMesh)part.material=material});
           }else model=(await new GLTFLoader().loadAsync(url.href)).scene;
         }else{
           const url=new URL('../../assets/shared/'+path,import.meta.url);
           model=await new OBJLoader().loadAsync(url.href);
-          const palette={tree:0x619364,tree_large:0x4f8058,stone:0x9da5a0,
-            flower:0xd6abbc,crop:0x83a969,house:0xe0b88b};
-          model.traverse(part=>{if(part.isMesh)part.material=new THREE.MeshStandardMaterial({
-            color:palette[kind]||0xb9a584,roughness:1})});
+          // CC0 OBJ의 실제 지오메트리/UV를 유지하고 16종 게임 픽셀 재질을 재사용한다.
+          const nativeSurfaces={tree:'foliage',tree_large:'foliage',stone:'stone',
+            flower:'foliage',crop:'crops',house:'clay',bench:'wood',
+            fence:'wood',gate:'wood',package:'wood'};
+          const palette={tree:0xc6e7bf,tree_large:0xb4dab1,stone:0xf6f0e3,
+            flower:0xf7d2e3,crop:0xe0eea3,house:0xf4e7d4,
+            bench:0xf6dfbb,fence:0xf1ddbb,gate:0xf0dfc1,package:0xf0dfc1};
+          const material=new THREE.MeshStandardMaterial({
+            color:palette[kind]||0xfff0d5,
+            map:this.pixelTextures[nativeSurfaces[kind]||'stone'],
+            roughness:.96,metalness:0,flatShading:true
+          });
+          model.traverse(part=>{if(part.isMesh)part.material=material});
+        }
+        // 원본 GLB/FBX의 리깅·모션·텍스처를 보존하고 픽셀 샘플링만 통일한다.
+        if(path.startsWith('actor:')||path.startsWith('forest:')){
+          model.traverse(part=>{
+            if(!part.isMesh)return;
+            for(const material of [].concat(part.material||[])){
+              if(material?.map){material.map.magFilter=THREE.NearestFilter;material.map.needsUpdate=true}
+            }
+          });
         }
         this.models3d.set(kind,model);
       }catch(error){console.warn('포근섬 CC0 원본 모델 로딩 실패: '+kind,error)}
@@ -203,6 +243,15 @@ export class IslandRendererV3 {
         mesh.rotation.y=rotation;
         group.add(mesh);
       };
+      if(kind!=='fort-road'){
+        // 실시간 그림자 패스 대신 공유 메시 기반 바닥 접촉 그림자로 모바일 GPU 부하를 제한한다.
+        const shadow=new THREE.Mesh(this.fortGeometry.shadow,this.shadowMaterial);
+        shadow.rotation.x=-Math.PI/2;
+        shadow.position.set(.18,.008,.21);
+        const radius=kind==='fort-wall'?1.9:kind==='fort-keep'?2.5:1.65;
+        shadow.scale.set(radius,radius*.81,1);
+        group.add(shadow);
+      }
       if(kind==='fort-road'){
         part(box,m.road,0,.015,0,2.1,.035,2.05);
         part(box,m.stoneBright,-.82,.036,-.8,.31,.013,.23);
@@ -506,6 +555,10 @@ export class IslandRendererV3 {
         put('fence:'+i,'fence',1150+i*38,185,1.1);
       }
       put('player','hero',player.x,player.y,1.9);
+      // 선택 대상이 있으면 기존 전투 상태를 읽어 지면의 3D 타깃 링만 표시한다.
+      const selected=(game.wolves||[]).find(w=>w.id===game.selectedWolfId&&w.alive);
+      this.selection3.visible=!!selected&&nearby(selected.x,selected.y);
+      if(this.selection3.visible)this.selection3.position.set(selected.x*SC,.06,selected.y*SC);
       for(const [id,item] of this.instances3d)if(!visibleIds.has(id)){
         this.scene3.remove(item.mesh);this.instances3d.delete(id);
       }
