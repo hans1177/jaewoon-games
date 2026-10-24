@@ -294,12 +294,20 @@ try{
     const response=await cozy.goto(liveBase+'web-games/cozy-island/',
       {waitUntil:'domcontentloaded',timeout:30000});
     assert.ok(response?.ok(),view.name+': COZY_ISLAND_ROUTE_NOT_LIVE');
+    // 3D 화면은 실제 WebGL 캔버스에 그리고 입력용 2D 버퍼는 비표시 1×1로 유지한다.
     await cozy.waitForFunction(()=>{
-     const canvas=document.querySelector('#game');
-     return canvas&&canvas.width>250&&canvas.height>250;
+     const input=document.querySelector('#game');
+     const canvas=document.querySelector('#island3d');
+     const status=document.querySelector('#webglStatus');
+     if(!input||!canvas||!status||!status.hidden)return false;
+     const gl=canvas.getContext('webgl2');
+     return input.width===1&&input.height===1
+       && getComputedStyle(input).opacity==='0'
+       && canvas.width>250&&canvas.height>250
+       && !!gl&&gl.getParameter(gl.VIEWPORT)[2]>250;
     },null,{timeout:20000});
-    assert.equal(await cozy.locator('#game').evaluate(c=>!!c.getContext('2d')),true,
-     view.name+': COZY_ISLAND_RENDERER_NOT_READY');
+    assert.equal(await cozy.locator('#island3d').evaluate(c=>!!c.getContext('webgl2')),true,
+     view.name+': COZY_ISLAND_3D_RENDERER_NOT_READY');
     await cozy.locator('#inventoryButton').click();
     assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
      view.name+': COZY_ISLAND_INVENTORY_FAILED');
@@ -308,18 +316,42 @@ try{
     await cozy.locator('#toolButton').click();
     assert.notEqual(await cozy.locator('#toolButton').textContent(),tool,
      view.name+': COZY_ISLAND_ACTION_FAILED');
-    await cozy.keyboard.down('d');
-    await cozy.waitForTimeout(750);
-    await cozy.keyboard.up('d');
+    if(view.mobile){
+     const bounds=await cozy.locator('#joystick').boundingBox();
+     assert.ok(bounds,view.name+': COZY_ISLAND_JOYSTICK_NOT_VISIBLE');
+     const cdp=await cozy.context().newCDPSession(cozy);
+     try{
+      await cdp.send('Input.dispatchTouchEvent',{
+       type:'touchStart',
+       touchPoints:[{x:bounds.x+bounds.width/2+30,y:bounds.y+bounds.height/2}]
+      });
+      await cozy.waitForTimeout(750);
+     }finally{
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      await cdp.detach();
+     }
+    }else{
+     await cozy.keyboard.down('d');
+     await cozy.waitForTimeout(750);
+     await cozy.keyboard.up('d');
+    }
     await cozy.waitForFunction(()=>{
      try{return Number(JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')||'null')?.progress?.player?.x)>760}
      catch{return false}
     },null,{timeout:10000});
     const savedX=await cozy.evaluate(()=>JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')).progress.player.x);
     await cozy.reload({waitUntil:'domcontentloaded',timeout:30000});
+    // 3D 화면은 실제 WebGL 캔버스에 그리고 입력용 2D 버퍼는 비표시 1×1로 유지한다.
     await cozy.waitForFunction(()=>{
-     const canvas=document.querySelector('#game');
-     return canvas&&canvas.width>250&&canvas.height>250;
+     const input=document.querySelector('#game');
+     const canvas=document.querySelector('#island3d');
+     const status=document.querySelector('#webglStatus');
+     if(!input||!canvas||!status||!status.hidden)return false;
+     const gl=canvas.getContext('webgl2');
+     return input.width===1&&input.height===1
+       && getComputedStyle(input).opacity==='0'
+       && canvas.width>250&&canvas.height>250
+       && !!gl&&gl.getParameter(gl.VIEWPORT)[2]>250;
     },null,{timeout:20000});
     await cozy.waitForTimeout(1400);
     const restoredX=await cozy.evaluate(()=>Number(
