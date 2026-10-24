@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 
 const sourceCommit = String(process.argv[2] || '').trim();
 const runId = String(process.argv[3] || '').trim();
-if (!sourceCommit) throw new Error('source commit required');
+if (!/^[a-f0-9]{40}$/i.test(sourceCommit)) throw new Error('verified source commit must be a full SHA40');
 
 const ledgerPath = 'department-experience.json';
 const runtimeStatePath = 'assets/department-experience-state.js';
@@ -19,7 +19,11 @@ if (ledger.history.some((event) => event.sourceCommit === sourceCommit)) {
   process.exit(0);
 }
 
-const changed = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', sourceCommit], { encoding: 'utf8' })
+// workflow_run may point at an older main commit or a merge commit. Compare the
+// first-parent changes of that exact verified SHA, not the latest checkout.
+const sourceParent = execFileSync('git', ['rev-parse', sourceCommit + '^1'], {encoding:'utf8'}).trim();
+if (!/^[a-f0-9]{40}$/i.test(sourceParent)) throw new Error('verified source first parent unavailable');
+const changed = execFileSync('git', ['diff', '--name-only', sourceParent, sourceCommit, '--'], { encoding: 'utf8' })
   .split(/\r?\n/)
   .map((value) => value.trim())
   .filter(Boolean)
@@ -30,11 +34,17 @@ const matchers = {
     /^COMPANY_FLOW\.md$/,
     /^assets\/vibe-company-development-flow\.js$/,
     /^assets\/game-blueprint\.js$/,
-    /^\.github\/agents\/planning\.agent\.md$/
+    /^\.github\/agents\/planning\.agent\.md$/,
+    /^design\//,
+    /^company-learning\/game-design-/
   ],
   development: [
     /^unity-games\//,
     /^godot-games\//,
+    /^web-games\//,
+    /^roblox-games\//,
+    /^survival\//,
+    /^dinosaur-survival\//,
     /^assets\/.*\.js$/,
     /^tools\/.*\.(mjs|js|ps1)$/,
     /^\.github\/agents\/development\.agent\.md$/
@@ -47,6 +57,9 @@ const matchers = {
   graphics: [
     /(^|\/)(graphics|visual|ui|animation|animated|asset|art)(-|_|\/|\.)/i,
     /^ASSET_RULES\.md$/,
+    /^assets\/shared\//,
+    /^web-games\/[^/]+\/world3d\.mjs$/,
+    /^assets\/vibe-motion-/
     /^\.github\/agents\/graphics\.agent\.md$/
   ],
   balance: [
@@ -57,12 +70,17 @@ const matchers = {
     /^index\.html$/,
     /^company\.html$/,
     /^game-catalog\.json$/,
+    /^assets\/homepage-/,
+    /^tools\/github-pages-landing\.mjs$/,
     /^HOMEPAGE_OPERATIONS\.md$/,
     /^\.github\/agents\/homepage\.agent\.md$/
   ],
   release: [
     /^\.build-requests\//,
     /^\.github\/workflows\/unity-cloud-android-test\.yml$/,
+    /^\.github\/workflows\/magic-forest-pages\.yml$/,
+    /^\.github\/workflows\/owner-fast-pages-publish\.yml$/,
+    /^\.github\/workflows\/vibe2-candidate-release\.yml$/,
     /^\.github\/agents\/release\.agent\.md$/
   ],
   director: [
