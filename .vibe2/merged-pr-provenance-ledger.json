@@ -88695,11 +88695,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_27102ab55f6ce67e42901969",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9645",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "68354f1ce59538d8736e4f7d7698ebd86fa82a57",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9645,
+        "baseBranch": "main",
+        "headBranch": "fix-web-auth",
+        "baseSha": "68354f1ce59538d8736e4f7d7698ebd86fa82a57",
+        "headSha": "546413e91c6121357f6ef1714ab52a6019fcbf38",
+        "mergeCommitSha": "86ffa27256e3f221cfe90f0fe05affbd7d639e31",
+        "mergedAt": "2026-10-24T02:01:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7f73ea4a516754dd89defe3b4371c7c10ecb1f7099762c5b9dd17e8dd9ac3e1e",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix-web-auth",
+        "candidateSha": "546413e91c6121357f6ef1714ab52a6019fcbf38"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 150,
+        "deletedLineCount": 142,
+        "changedFiles": [
+          ".github/workflows/pwa-command-bridge.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/github-cloud-web-isolation.test.mjs",
+          "tools/web-vibe-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/pwa-command-bridge.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/github-cloud-web-isolation.test.mjs",
+          "tools/web-vibe-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9645",
+        "merge-commit:86ffa27256e3f221cfe90f0fe05affbd7d639e31",
+        "base-main:68354f1ce59538d8736e4f7d7698ebd86fa82a57"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 698
+    "total": 699
   }
 }
