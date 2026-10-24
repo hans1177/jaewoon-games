@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-xroo3b",
+      "worker": "vibe2",
+      "taskId": "defense-existing-web-assessment-v1",
+      "gameId": "defense",
+      "files": [
+        "web-games/defense/index.html"
+      ],
+      "baseSha": "0502debbece89893ee7569d493ba4c9979e83e85",
+      "runId": "40048929062",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-24T01:30:03.413Z",
+      "expiresAt": "2026-10-24T02:15:03.413Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:defense-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
