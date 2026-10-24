@@ -99433,11 +99433,155 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b344a683e58b722aa969aa3d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10054",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "62a4c056166d7f5dd3ec9ad8a9f9ac1dddf6e157",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10054,
+        "baseBranch": "main",
+        "headBranch": "feat/ocean-voyage-naval-map-mobile-20261025",
+        "baseSha": "62a4c056166d7f5dd3ec9ad8a9f9ac1dddf6e157",
+        "headSha": "50c998a24ba0aade39cf2888d4f65527b87773ee",
+        "mergeCommitSha": "f3956ccb13d201c0c5aa0160df17aec6e3915d62",
+        "mergedAt": "2026-10-24T22:37:19Z",
+        "authorLogin": "hans1177",
+        "titleHash": "869b71c7aea9b5c43f8e09dabe1878bbc099993faacff76150162b7d82c1e8fb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/ocean-voyage-naval-map-mobile-20261025",
+        "candidateSha": "50c998a24ba0aade39cf2888d4f65527b87773ee"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 1125,
+        "deletedLineCount": 348,
+        "changedFiles": [
+          ".github/workflows/party-rpg-mobile-test.yml",
+          "qa/ocean-voyage.test.mjs",
+          "qa/party-rpg-contract.test.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/island-village/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs",
+          "web-games/party-rpg/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/party-rpg-mobile-test.yml",
+          "qa/ocean-voyage.test.mjs",
+          "qa/party-rpg-contract.test.mjs",
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/roblox-source-bootstrap.json",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/island-village/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/roblox-source-bootstrap.json",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs",
+          "web-games/party-rpg/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10054",
+        "merge-commit:f3956ccb13d201c0c5aa0160df17aec6e3915d62",
+        "base-main:62a4c056166d7f5dd3ec9ad8a9f9ac1dddf6e157"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 781
+    "total": 782
   }
 }
