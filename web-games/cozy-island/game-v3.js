@@ -1,3 +1,5 @@
+// 파일명: web-games/cozy-island/game-v3.js
+// 임포트: 기존 게임 런타임 및 3D 렌더러.
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
 
@@ -27,7 +29,7 @@ const renderer=new IslandRendererV3(canvas);
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
 let selectedTool=0,lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
-let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
+let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0},estateTarget=null;
 const barracks={x:1080,y:650},workerShop={x:1200,y:820};
 const wolves=[
   makeWolf(1,1650,360),makeWolf(2,2050,760),makeWolf(3,2450,420),makeWolf(4,2720,840)
@@ -44,7 +46,8 @@ const npcs=[
 ];
 const game={world,state,player,nodes,npcs,barracks,workerShop,allies,enemies,wolves,weather:state.weather,timeNow:Date.now(),raidActive,selectedWolfId};
 const ui={
-  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),hint:qs('#hint'),toast:qs('#toast'),tool:qs('#toolButton'),action:qs('#actionButton'),inventory:qs('#inventoryButton'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
+  day:qs('#dayText'),time:qs('#timeText'),weather:qs('#weatherText'),coins:qs('#coinText'),raid:qs('#raidText'),
+  estate:qs('#estateButton'),estateWood:qs('#estateWood'),estateStone:qs('#estateStone'),estateFood:qs('#estateFood'),estateGoal:qs('#estateGoal'),hint:qs('#hint'),toast:qs('#toast'),tool:qs('#toolButton'),action:qs('#actionButton'),inventory:qs('#inventoryButton'),panel:qs('#panel'),panelTitle:qs('#panelTitle'),panelBody:qs('#panelBody'),panelClose:qs('#panelClose'),fishing:qs('#fishing'),fishMarker:qs('#fishMarker'),catch:qs('#catchButton'),cancelFishing:qs('#cancelFishing')
 };
 function qs(s){return document.querySelector(s)}
 function normalizeState(raw){
@@ -75,7 +78,7 @@ runtime.bindKeyboard({
   KeyD:{down:()=>pressed.add('right'),up:()=>pressed.delete('right')},ArrowRight:{down:()=>pressed.add('right'),up:()=>pressed.delete('right')},
   Space:{down:e=>{e.preventDefault();interact()}},KeyE:{down:cycleTool}
 });
-runtime.bindTouchButton(ui.action,interact);runtime.bindTouchButton(ui.tool,cycleTool);runtime.bindTouchButton(ui.inventory,openInventory);runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());runtime.bindTouchButton(ui.catch,catchFish);runtime.bindTouchButton(ui.cancelFishing,stopFishing);
+runtime.bindTouchButton(ui.action,interact);runtime.bindTouchButton(ui.tool,cycleTool);runtime.bindTouchButton(ui.inventory,openInventory);runtime.bindTouchButton(ui.estate,openEstate);runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());runtime.bindTouchButton(ui.catch,catchFish);runtime.bindTouchButton(ui.cancelFishing,stopFishing);
 window.addEventListener('resize',()=>renderer.resize());window.addEventListener('jaewoon:pause',e=>{if(e.detail.paused)pressed.clear()});
 canvas.addEventListener('dblclick',e=>commandWolfAt(e.clientX,e.clientY));
 canvas.addEventListener('pointerup',e=>{const now=performance.now();if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);lastTap={time:now,x:e.clientX,y:e.clientY}});
@@ -84,6 +87,50 @@ function cycleTool(){if(ui.panel.open||ui.fishing.open)return;selectedTool=(sele
 function updateToolUI(){const t=TOOLS[selectedTool];ui.tool.innerHTML=`${t.icon}<small>${t.label}</small>`}
 function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='가방';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p>`;ui.panel.showModal()}
 function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}
+// 메인: 기존 건설 위치·건설 원가·상태를 영지 UI에 표시한다.
+function openEstate(){
+  if(ui.panel.open||ui.fishing.open)return;
+  const production=state.productionBuildings||{},village=state.villageDevelopment||{};
+  const places=[
+    {name:'병영 · 병사 모집',x:1080,y:650,done:state.barracksBuilt,cost:'나무 5 · 돌 3',group:'방어'},
+    {name:'방어탑',x:400,y:1090,done:village.defenseTowerBuilt,cost:'나무 6 · 돌 5',group:'방어'},
+    {name:'마을회관',x:1010,y:1090,done:village.townHallBuilt,cost:'나무 5 · 돌 5',group:'방어'},
+    {name:'벌목장',x:245,y:850,done:production.lumberBuilt,cost:'나무 3 · 돌 1',group:'생산'},
+    {name:'광산',x:785,y:965,done:production.mineBuilt,cost:'나무 2 · 돌 3',group:'생산'},
+    {name:'농장 · 재배',x:970,y:450,done:true,cost:'씨앗 · 물뿌리개',group:'생산'},
+    {name:'일꾼 작업장',x:1200,y:820,done:true,cost:'기존 일꾼 관리',group:'생산'}
+  ];
+  const card=place=>`<button type="button" class="estate-building" data-estate-place="${places.indexOf(place)}">
+    <div>${place.name}<span>${place.cost}</span></div>
+    <strong>${place.done?'위치 보기':'건설 위치 →'}</strong>
+  </button>`;
+  ui.panelTitle.textContent='🏰 포근섬 영지';
+  ui.panelBody.innerHTML=`<div class="estate-dashboard">
+    <div>🪵 나무<b>${Math.floor(Number(state.inventory.wood)||0)}</b></div>
+    <div>🪨 돌<b>${Math.floor(Number(state.inventory.stone)||0)}</b></div>
+    <div>🍖 식량<b>${Math.floor(Number(state.inventory.food)||0)}</b></div>
+    <div>🪙 골드<b>${Math.floor(Number(state.coins)||0)}</b></div>
+    <div>🧑‍🌾 일꾼<b>${Math.floor(Number(state.workerTotal??state.workers)||0)}</b></div>
+    <div>🛡️ 병력<b>${allies.filter(unit=>unit.hp>0).length}</b></div>
+  </div>
+  <h3 class="estate-section">🛡️ 방어 · 성채</h3>
+  <div class="choice-grid">${places.filter(place=>place.group==='방어').map(card).join('')}</div>
+  <h3 class="estate-section">🌾 경제 · 생산</h3>
+  <div class="choice-grid">${places.filter(place=>place.group==='생산').map(card).join('')}</div>
+  <p class="panel-note">기존 자원 비용·생산·전투 규칙을 유지해. 목적지에 다가가서 기존 건설/행동 버튼을 사용해.</p>`;
+  ui.panelBody.querySelectorAll('[data-estate-place]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      const place=places[Number(button.dataset.estatePlace)];
+      if(!place)return;
+      estateTarget={name:place.name,x:place.x,y:place.y};
+      game.estateTarget=estateTarget;
+      ui.panel.close();
+      toast('🧭 '+place.name+' 위치를 표시했어');
+    });
+  });
+  ui.panel.showModal();
+}
+
 
 function nearestInteraction(){const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));state.plots.forEach((p,i)=>{const x=959+(i%3)*78,y=404+Math.floor(i/3)*78;c.push({type:'plot',item:{plot:p,index:i},d:dist(x,y)})});c.push({type:'house',d:dist(765,350)},{type:'ship',d:dist(775,760)},{type:'fish',d:dist(520,430)},{type:'barracks',d:dist(barracks.x,barracks.y)},{type:'workerShop',d:dist(workerShop.x,workerShop.y)});if(!state.expanded)c.push({type:'expand',d:dist(1325,600)});c.sort((a,b)=>a.d-b.d);return c[0]?.d<=86?c[0]:null}
 function interactionHint(t){if(!t)return raidActive?'습격 중! 병사들이 마을을 방어 중':'섬을 둘러봐';const tool=TOOLS[selectedTool].id;if(t.type==='node')return t.item.kind==='tree'?'행동: 나무 줍기':t.item.kind==='rock'?'행동: 돌 줍기':'행동: 꽃 꺾기';if(t.type==='npc')return `행동: ${t.item.name}와 이야기`;if(t.type==='house')return'행동: 집 꾸미기';if(t.type==='ship')return'행동: 출하';if(t.type==='barracks')return state.barracksBuilt?'행동: 병사 모집':'행동: 병영 건설 · 나무5 돌3';if(t.type==='workerShop')return`행동: 노비 판매소 · ${state.workers}/${WORKER_MAX}`;if(t.type==='fish')return tool==='rod'?'행동: 낚시':'낚싯대를 선택해';if(t.type==='expand')return'행동: 동쪽 지역 해금 · 120골드';if(t.type==='plot'){const p=t.item.plot;if(p.state==='empty')return tool==='seed'?'행동: 씨앗 심기':'씨앗을 선택해';if(p.ready)return'행동: 수확 · 식량 +10';if(!p.watered)return tool==='water'?'행동: 물 주기':'물뿌리개를 선택해';return'20초 동안 자라는 중'}return'행동'}
@@ -134,10 +181,26 @@ function updateWolves(dt){const now=Date.now();for(const w of wolves){if(!w.aliv
 function updatePeaceAllies(dt){if(raidActive)return;const wolf=wolves.find(w=>w.id===selectedWolfId&&w.alive);for(const u of allies){if(wolf&&u.kind==='soldier')continue;u.wander-=dt;if(u.wander<=0){const a=Math.random()*Math.PI*2;u.vx=Math.cos(a);u.vy=Math.sin(a);u.wander=1.2+Math.random()*2.2}const nx=u.x+u.vx*u.speed*.28*dt,ny=u.y+u.vy*u.speed*.28*dt;if(nx>350&&nx<1280)u.x=nx;else u.vx*=-1;if(ny>450&&ny<900)u.y=ny;else u.vy*=-1}}
 function advanceClock(dt){clockCarry+=dt;if(clockCarry<.5)return;const ticks=Math.floor(clockCarry/.5);clockCarry-=ticks*.5;state.minutes+=ticks*5;state.playMinutes+=ticks*2.5/60;while(state.minutes>=1440){state.minutes-=1440;state.day++;state.weather=seededWeather(state.day);game.weather=state.weather;toast(`${state.day}일차 · ${state.weather}`)}updateHUD();saveSoon()}
 function seededWeather(day){return Math.abs(Math.sin(day*91.731)*10000)%1<.28?'비':'맑음'}
-function updateHUD(){const h=Math.floor(state.minutes/60),m=Math.floor(state.minutes%60),pm=h>=12,h12=((h+11)%12)+1;ui.day.textContent=`${state.day}일차`;ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';ui.coins.textContent=String(state.coins);if(raidActive)ui.raid.textContent=`⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;else{const r=Math.max(0,Math.ceil(RAID_INTERVAL-state.raidTimer));ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`}}
+function updateHUD(){const h=Math.floor(state.minutes/60),m=Math.floor(state.minutes%60),pm=h>=12,h12=((h+11)%12)+1;ui.day.textContent=`${state.day}일차`;ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';ui.coins.textContent=String(state.coins);
+  const resources=[
+    [ui.estateWood,state.inventory.wood],[ui.estateStone,state.inventory.stone],[ui.estateFood,state.inventory.food]
+  ];
+  for(const [el,amount] of resources){
+    if(!el)continue;
+    const label=String(Math.floor(Number(amount)||0));
+    if(el.textContent!==label)el.textContent=label;
+  }
+  if(ui.estateGoal){
+    const near=estateTarget&&dist(estateTarget.x,estateTarget.y)<120;
+    const label=estateTarget?(near?'목적지 도착 · 기존 건설/행동 버튼 사용':
+      '🧭 '+estateTarget.name+' · '+Math.ceil(dist(estateTarget.x,estateTarget.y))+'m'):'';
+    if(ui.estateGoal.textContent!==label)ui.estateGoal.textContent=label;
+    ui.estateGoal.hidden=!estateTarget;
+  }
+  if(raidActive)ui.raid.textContent=`⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;else{const r=Math.max(0,Math.ceil(RAID_INTERVAL-state.raidTimer));ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`}}
 function canMoveTo(x,y){const maxX=state.expanded?2820:1305;if(x<165||x>maxX||y<160||y>1025)return false;const pond=Math.pow((x-390)/150,2)+Math.pow((y-370)/112,2)<1;if(pond)return false;if(x>635&&x<900&&y>170&&y<415)return false;return true}
 function updateMovement(dt){let dx=(pressed.has('right')?1:0)-(pressed.has('left')?1:0),dy=(pressed.has('down')?1:0)-(pressed.has('up')?1:0);if(!dx&&!dy)return;const mag=Math.hypot(dx,dy)||1;dx/=mag;dy/=mag;const nx=player.x+dx*player.speed*dt,ny=player.y+dy*player.speed*dt;if(canMoveTo(nx,player.y))player.x=nx;if(canMoveTo(player.x,ny))player.y=ny}
 function updateHint(){ui.hint.textContent=interactionHint(nearestInteraction())}
-function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
+function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateMovement(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;game.estateTarget=estateTarget;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
 allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;updateToolUI();updateHUD();requestAnimationFrame(frame);
