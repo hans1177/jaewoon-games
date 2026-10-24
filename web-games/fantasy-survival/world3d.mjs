@@ -507,6 +507,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   let frameSequence=0;
   let currentBiome='forest';
   let lastHeroPoseX=null,lastHeroPoseY=null,lastHeroPoseAt=0;
+  // 카메라/모델 보간은 게임 좌표·이동 속도·저장을 변경하지 않는다.
+  let trackedCameraX=null,trackedCameraY=null,lastCameraTick=0,lastCameraArea=null,cameraMotionAlpha=1;
+  const actorVisualTarget=new THREE.Vector3();
   const raycaster=new THREE.Raycaster();
   const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
   const entities=new Map();
@@ -541,7 +544,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor={anchor,model,mixer,clipName:'',action:null,lastFrame:performance.now(),seen:0};
         undeadActors.set(id,actor);
       }
-      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      actorVisualTarget.set(e.x*SCALE,0,e.y*SCALE);
+      if(actor.seen===0||sampleNow-(actor.lastFrame||0)>500||
+        actor.anchor.position.distanceToSquared(actorVisualTarget)>81)
+        actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      else actor.anchor.position.lerp(actorVisualTarget,cameraMotionAlpha);
       actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       // The game owns the tap-target/attack decision. Native skinned surfaces only
@@ -656,7 +663,11 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           lastFrame:performance.now(),seen:0};
         nativeCreatureActors.set(key,actor);
       }
-      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      actorVisualTarget.set(e.x*SCALE,0,e.y*SCALE);
+      if(actor.seen===0||sampleNow-(actor.lastFrame||0)>500||
+        actor.anchor.position.distanceToSquared(actorVisualTarget)>81)
+        actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      else actor.anchor.position.lerp(actorVisualTarget,cameraMotionAlpha);
       actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       actor.model.traverse(child=>{
@@ -814,9 +825,17 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       camera.updateProjectionMatrix();
       renderer.setSize(w,h,false);
     }
-    // Follow real saved player coordinates without rotating while the player moves.
-    camera.position.set(centerX+10.5,17,centerY+13);
-    camera.lookAt(centerX,0,centerY);
+    // 전투·이동 중 카메라 튐 감소. 지역 전환/큰 실제 좌표 이동은 즉시 동기화.
+    const cameraStep=lastCameraTick>0?Math.min(.12,Math.max(.001,(sampleNow-lastCameraTick)/1000)):.016;
+    const regionChanged=lastCameraArea!==state.area;
+    const cameraDisplacement=trackedCameraX===null?Infinity:Math.hypot(centerX-trackedCameraX,centerY-trackedCameraY);
+    const hardCameraReset=regionChanged||cameraDisplacement>9||sampleNow-lastCameraTick>500;
+    cameraMotionAlpha=hardCameraReset?1:1-Math.exp(-cameraStep*19);
+    trackedCameraX=hardCameraReset?centerX:trackedCameraX+(centerX-trackedCameraX)*cameraMotionAlpha;
+    trackedCameraY=hardCameraReset?centerY:trackedCameraY+(centerY-trackedCameraY)*cameraMotionAlpha;
+    lastCameraTick=sampleNow;lastCameraArea=state.area;
+    camera.position.set(trackedCameraX+10.5,17,trackedCameraY+13);
+    camera.lookAt(trackedCameraX,0,trackedCameraY);
     camera.updateMatrixWorld();
     cameraProjection.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
     cameraFrustum.setFromProjectionMatrix(cameraProjection);
@@ -885,7 +904,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         ||s.kind==='lava'&&s.pools?.some(p=>Math.hypot(gx/SCALE-p.x,gz/SCALE-p.y)<=p.r));
       const tileStyle=surface?BIOME_STYLE[surface.kind==='lava'?'lava':'water']:BIOME_STYLE[tileZone]||BIOME_STYLE.forest;
       // 기존 원본 둥근 타일을 겹쳐 바닥 틈을 없앤다.
-      tile.scale.set(1.075,1,1.09);
+      tile.scale.set(1.002,1,1.002);
       tile.position.set(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ);tile.updateMatrix();
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
       // 흰색 혼합을 줄여 설원·화산·수정 지대와 숲의 색채가 뚜렷하게 구분되도록 한다.
@@ -927,7 +946,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           ||s.kind==='waterCircles'&&s.pools?.some(p=>Math.hypot(seamX/SCALE-p.x,seamZ/SCALE-p.y)<=p.r)
           ||s.kind==='lava'&&s.pools?.some(p=>Math.hypot(seamX/SCALE-p.x,seamZ/SCALE-p.y)<=p.r));
         const seamStyle=surface?BIOME_STYLE[surface.kind==='lava'?'lava':'water']:BIOME_STYLE[seamZone]||BIOME_STYLE.forest;
-        tile.scale.set(1.17,1,1.19);
+        tile.scale.set(1.22,1,1.24);
         tile.position.set(seamX-floorCenterX,floorSurfaceY-.04,seamZ-floorCenterZ);
         tile.updateMatrix();
         floorSeamTiles.setMatrixAt(seamTileIndex,tile.matrix);
@@ -952,7 +971,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     const seen=++frameSequence; // 이전 지역 몹·상호작용 객체를 저장 시각과 무관하게 정리한다.
     if(hero){
       hero.avatar.visible=true;
-      hero.avatar.position.set(centerX,0,centerY);
+      // 카메라와 같은 시각 보간을 적용해 공격 중 화면 중심이 왕복하는 현상 방지.
+      if(hardCameraReset||hero.avatar.userData.lastArea!==state.area)
+        hero.avatar.position.set(centerX,0,centerY);
+      else{
+        hero.avatar.position.x+=(centerX-hero.avatar.position.x)*cameraMotionAlpha;
+        hero.avatar.position.z+=(centerY-hero.avatar.position.z)*cameraMotionAlpha;
+      }
+      hero.avatar.userData.lastArea=state.area;
       hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
       const tool=String(p.tool||p.weapon||'NONE');
       if(tool!==playerToolName){
