@@ -360,6 +360,37 @@ function storyJournal(){
 // D20-inspired real-time rules; not a claim of full tabletop rules compatibility.
 var CLASSES={fighter:{name:'전사',range:92,rate:1.1,mod:3,save:2},rogue:{name:'도적',range:95,rate:.85,mod:4,save:4},cleric:{name:'성직자',range:180,rate:1.4,mod:3,save:3},wizard:{name:'마법사',range:300,rate:1.65,mod:4,save:1},ranger:{name:'레인저',range:330,rate:1.2,mod:3,save:3}};
 var battleState=new WeakMap(),battleTime=0,autoSkills=true,tacticalPaused=false,moveTarget=null,combatLines=[],hudTick=0;
+
+const TACTIC_FORMATIONS={line:'방패벽',wedge:'쐐기 대형',spread:'산개 진형'};
+const TACTIC_MODES={balanced:'균형',hold:'위치 사수',focus:'집중 공격'};
+if(!state.tactics||typeof state.tactics!=='object'||Array.isArray(state.tactics))state.tactics={};
+if(!TACTIC_FORMATIONS[state.tactics.formation])state.tactics.formation='line';
+if(!TACTIC_MODES[state.tactics.mode])state.tactics.mode='balanced';
+state.tactics.autoPause=state.tactics.autoPause!==false;
+var tacticalTargetId=null,contactTriggered=false;
+function orderedEnemy(x,y,range){
+ var marked=enemies.find(function(e){return !e.dead&&e.id===tacticalTargetId;});
+ return marked&&Math.hypot(marked.x-x,marked.y-y)<=range?marked:nearestEnemy(x,y,range);
+}
+function formationSpot(member,index){
+ var layout=state.tactics.formation,offsets=layout==='spread'?[[-88,25],[88,55],[0,110]]:layout==='wedge'?[[-65,-65],[65,-65],[0,85]]:[[-72,50],[0,80],[72,50]];
+ var offset=offsets[index%3];return{x:p.x+offset[0],y:p.y+offset[1]};
+}
+function tacticsMenu(){
+ var h='<p class="tacticsHint">필라스식 실시간 일시정지 전술 · 파티 초상화로 인물 선택 · 일시정지 상태에서 적을 클릭해 일행의 집중 공격 대상으로 지정. 대형은 이동과 추종 위치에 적용돼.</p>';
+ h+='<h3>파티 대형</h3><div class="tacticsGrid">';
+ Object.keys(TACTIC_FORMATIONS).forEach(function(k){h+='<button class="menuBtn '+(state.tactics.formation===k?'selectedOrder':'')+'" data-form="'+k+'">'+TACTIC_FORMATIONS[k]+'</button>';});
+ h+='</div><h3>동료 전투 태세</h3><div class="tacticsGrid">';
+ Object.keys(TACTIC_MODES).forEach(function(k){h+='<button class="menuBtn '+(state.tactics.mode===k?'selectedOrder':'')+'" data-mode="'+k+'">'+TACTIC_MODES[k]+'</button>';});
+ h+='</div><button class="menuBtn secondary" id="autoPauseOption">적 발견 시 일시정지 · '+(state.tactics.autoPause?'켬':'끔')+'</button>';
+ h+='<button class="menuBtn secondary" id="clearFocus">집중 대상 지우기 · '+(tacticalTargetId?'지정됨':'없음')+'</button>';
+ openModal('파티 전술과 진형',h);
+ modalBody.querySelectorAll('[data-form]').forEach(function(el){el.onclick=function(){state.tactics.formation=el.dataset.form;save();tacticsMenu();};});
+ modalBody.querySelectorAll('[data-mode]').forEach(function(el){el.onclick=function(){state.tactics.mode=el.dataset.mode;save();tacticsMenu();};});
+ document.getElementById('autoPauseOption').onclick=function(){state.tactics.autoPause=!state.tactics.autoPause;save();tacticsMenu();};
+ document.getElementById('clearFocus').onclick=function(){tacticalTargetId=null;tacticsMenu();};
+}
+
 function combat(o){var s=battleState.get(o);if(!s){s={skillAt:0,shieldUntil:0,slowUntil:0,visualUntil:0,target:null};battleState.set(o,s);}return s;}
 function role(u){return CLASSES[u.classId]||CLASSES.fighter;}
 function proficiency(u){return Math.min(6,2+Math.floor((u.level-1)/4));}
@@ -369,7 +400,7 @@ function battleLog(t){combatLines.push(t);if(combatLines.length>4)combatLines.sh
 function attackRoll(bonus,armor,advantage){var n=die(20);if(advantage)n=Math.max(n,die(20));return{roll:n,hit:n===20||(n!==1&&n+bonus>=armor),crit:n===20};}
 function saveRoll(e,unit){var dc=8+proficiency(unit)+role(unit).mod;return die(20)+(e.boss?5:e.elite?3:1)>=dc;}
 function unitBySource(id){return id==='player'?state.player:state.ai.find(function(a){return a.id===id;});}
-function autoSkill(u,pos,id){if(!autoSkills||u.hp<=0)return;var c=combat(u),r=role(u);if(c.skillAt>battleTime)return;var t=nearestEnemy(pos.x,pos.y,Math.max(130,r.range));var allies=[{u:state.player,pos:p}].concat(partyMembers().map(function(a){return{u:a,pos:a};}));
+function autoSkill(u,pos,id){if(!autoSkills||u.hp<=0)return;var c=combat(u),r=role(u);if(c.skillAt>battleTime)return;var t=orderedEnemy(pos.x,pos.y,Math.max(130,r.range));var allies=[{u:state.player,pos:p}].concat(partyMembers().map(function(a){return{u:a,pos:a};}));
  if(u.classId==='cleric'){var low=allies.filter(function(a){return a.u.hp<a.u.maxHp*.55&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<360;}).sort(function(a,b){return a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp;})[0];if(low){low.u.hp=Math.min(low.u.maxHp,low.u.hp+Math.round(low.u.maxHp*.22)+r.mod);c.skillAt=battleTime+10;c.visualUntil=performance.now()+600;battleLog((u===state.player?'나':u.name)+' · 치유의 기도');sound.effect('heal');return;}}
  if(!t)return;var power=u===state.player?playerAtk():aiAtk(u);
  if(u.classId==='fighter'&&u.hp<u.maxHp*.45){c.shieldUntil=battleTime+4;c.skillAt=battleTime+12;battleLog('수호 자세 · AC +2');return;}
@@ -379,7 +410,7 @@ function autoSkill(u,pos,id){if(!autoSkills||u.hp<=0)return;var c=combat(u),r=ro
  else if(u.classId==='fighter'){var group=enemies.filter(function(e){return !e.dead&&Math.hypot(e.x-pos.x,e.y-pos.y)<110;});if(group.length<2)return;c.skillAt=battleTime+6;group.slice(0,3).forEach(function(e){damageEnemy(e,power+die(6),id);});battleLog('회전 베기');}
  else return;c.visualUntil=performance.now()+600;
 }
-function updateCombat(dt){battleTime+=dt;attackPlayer(true);autoSkill(state.player,p,'player');partyMembers().forEach(function(a){autoSkill(a,a,a.id);});}
+function updateCombat(dt){battleTime+=dt;var threat=enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<260;});if(!threat)contactTriggered=false;else if(!contactTriggered&&state.tactics.autoPause){contactTriggered=true;tacticalPaused=true;document.getElementById('pauseBtn').textContent='전투 재개';document.getElementById('pauseBtn').setAttribute('aria-pressed','true');battleLog('적 접촉 · 일시정지 · 전술 지시 가능');}if(tacticalPaused)return;attackPlayer(true);autoSkill(state.player,p,'player');partyMembers().forEach(function(a){autoSkill(a,a,a.id);});}
 function partyHud(){
  var root=document.getElementById('partyCards'),used=new Set(),items=[{u:state.player,id:'player',name:state.player.name}].concat(partyMembers().map(function(a){return{u:a,id:a.id,name:a.name};}));
  items.forEach(function(item){used.add(item.id);var entry=uiPartyNodes.get(item.id);if(!entry){var b=document.createElement('button');b.className='partyCard';b.innerHTML=portraitMarkup(portraitIndex(item.u))+'<span class="partyName"></span><span class="partyRole"></span><span class="partyHealth"><i></i></span><span class="partyCooldown"></span>';b.onclick=function(){view.selection=item.id;view.center(item.id);partyHud();};root.append(b);entry={button:b,name:b.querySelector('.partyName'),role:b.querySelector('.partyRole'),health:b.querySelector('.partyHealth i'),cooldown:b.querySelector('.partyCooldown'),portrait:b.querySelector('.portrait')};uiPartyNodes.set(item.id,entry);}
@@ -577,7 +608,7 @@ function buyAIUpgrade(a,choice){
  else{a.armor=it.id;a.specialArmor=null;}
  a.shopCooldown=7;return true;
 }
-function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=nearestEnemy(p.x,p.y,r.range);if(!target){if(automatic!==true)toast("공격 범위에 적이 없어.");return;}p.attackCd=r.rate;sound.effect('attack');combat(p).visualUntil=performance.now()+450;damageEnemy(target,playerAtk()+die(6),"player");}
+function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=orderedEnemy(p.x,p.y,r.range);if(!target){if(automatic!==true)toast("공격 범위에 적이 없어.");return;}p.attackCd=r.rate;sound.effect('attack');combat(p).visualUntil=performance.now()+450;damageEnemy(target,playerAtk()+die(6),"player");}
 function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(function(e){if(e.dead)return;var dx=e.x-x,dy=e.y-y,dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=e;}});return best;}
 function updateEnemies(dt){
  enemies.forEach(function(e){if(e.dead)return;e.attackCd-=dt;var targets=[{id:"player",x:p.x,y:p.y,hp:state.player.hp}];partyMembers().forEach(function(a){targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});if(!dungeon&&state.zone>0)state.ai.forEach(function(a){if(!a.party&&a.zone===state.zone&&a.routine==="hunt")targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});var t=targets[0],bd=Infinity;targets.forEach(function(q){if(q.hp<=0)return;var dx=q.x-e.x,dy=q.y-e.y,d=dx*dx+dy*dy;if(d<bd){bd=d;t=q;}});var dist=Math.sqrt(bd);combat(e).target=t.id;
