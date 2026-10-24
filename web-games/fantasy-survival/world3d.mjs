@@ -355,11 +355,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     hero?.model.traverse(child=>{if(child.isMesh){child.geometry?.dispose();for(const m of (Array.isArray(child.material)?child.material:[child.material])){m?.map?.dispose();m?.dispose()}}});
     throw error;
   }
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
+  canvas.style.imageRendering='pixelated';
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'default'});
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.18;
   // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*(mobileBudget?.82:1));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.82:.95)*(mobileBudget?.82:1));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -409,7 +410,49 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const floorSeamTiles=new THREE.InstancedMesh(sourceFloor.geometry,sourceFloor.material,36);
   floorSeamTiles.receiveShadow=true;floorSeamTiles.frustumCulled=false;scene.add(floorSeamTiles);
   const tile=new THREE.Object3D(),resourceTransform=new THREE.Object3D();
+
   const floorTint=new THREE.Color(),floorNeutral=new THREE.Color(0xffffff);
+  // 배경: 기존 CC0 바닥, 지역 좌표 및 충돌은 보존하고 픽셀 디테일만 겹친다.
+  const PIXEL_TERRAIN=Object.freeze({
+    forest:['#79a65a','#294c36','#a2bd73'],jungle:['#327d49','#174a33','#8eae50'],
+    swamp:['#75814b','#303d31','#8c6947'],snow:['#ffffff','#9ac6d7','#d3e6ee'],
+    canyon:['#cf9268','#78513f','#b4a083'],volcano:['#de7341','#381f24','#a83e31'],
+    crystal:['#c7a0fa','#564179','#86cfe1'],giantlake:['#79bfd1','#245a76','#b0e6d2'],
+    worldtree:['#91b96a','#214d32','#58a981'],flowerfield:['#d7c37b','#c57aa4','#f0a9bb'],
+    giantgarden:['#ddabd4','#6b4b86','#99b87f'],desert:['#f3d69b','#aa8655','#dfae68'],
+    underwater:['#5bafb8','#1b5369','#97cdda'],'underwater-dungeon':['#518292','#163847','#6aa3a0'],
+    water:['#8dcee5','#246586','#d9f5f5'],lava:['#ffc074','#ad4429','#e46e30']
+  });
+  const detailGeometry=new THREE.PlaneGeometry(floorPitchX*.94,floorPitchZ*.94);
+  const detailTransform=new THREE.Object3D(),terrainDetailBatches=new Map();
+  function terrainPixelBatch(zone){
+    let row=terrainDetailBatches.get(zone);
+    if(row)return row;
+    const palette=PIXEL_TERRAIN[zone]||PIXEL_TERRAIN.forest;
+    const art=document.createElement('canvas');art.width=16;art.height=16;
+    const brush=art.getContext('2d',{alpha:true});
+    let seed=0;for(const ch of zone)seed=(Math.imul(seed,31)+ch.charCodeAt(0))>>>0;
+    for(let i=0;i<36;i++){
+      seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      const x=(seed>>>8)&15,y=(seed>>>16)&15;
+      brush.globalAlpha=.32+((seed>>>26)&3)*.12;
+      brush.fillStyle=palette[i%palette.length];
+      const water=zone==='water'||zone==='giantlake'||zone.startsWith('underwater');
+      const snow=zone==='snow',stone=['canyon','volcano','crystal','underwater-dungeon'].includes(zone);
+      brush.fillRect(x,y,water?3:stone?2:1,snow?1:(i%5===0?2:1));
+      if(!water&&!snow&&i%9===0)brush.fillRect(Math.max(0,x-1),Math.max(0,y-1),2,2);
+    }
+    brush.globalAlpha=1;
+    const texture=new THREE.CanvasTexture(art);
+    texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestFilter;
+    texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;
+    const material=new THREE.MeshBasicMaterial({map:texture,transparent:true,
+      depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,side:THREE.DoubleSide});
+    const mesh=new THREE.InstancedMesh(detailGeometry,material,49);
+    mesh.count=0;mesh.frustumCulled=false;mesh.renderOrder=2;scene.add(mesh);
+    row={mesh,material,texture};terrainDetailBatches.set(zone,row);
+    return row;
+  }
   let lastFloorGridX=null,lastFloorGridZ=null,lastFloorClassifier=null,lastFloorArea=null;
   const resourceBatches=new Map();
   // 마법탄은 실제 게임의 투사체 좌표만 보여주는 저폴리곤 3D 효과다. 피해·적중 판정은 게임 코드 소유.
@@ -525,8 +568,18 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor={anchor,model,mixer,clipName:'',action:null,lastFrame:performance.now(),seen:0};
         undeadActors.set(id,actor);
       }
-      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
-      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+
+      const poseNow=performance.now(),poseElapsed=Math.min(80,Math.max(1,poseNow-(actor.lastPoseAt||poseNow-16)));
+      const moveDelta=Math.hypot(e.x-(actor.lastX??e.x),e.y-(actor.lastY??e.y));
+      const destX=e.x*SCALE,destZ=e.y*SCALE,turnTo=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      if(!actor.lastPoseAt||Math.hypot(destX-actor.anchor.position.x,destZ-actor.anchor.position.z)>2.6){
+        actor.anchor.position.set(destX,0,destZ);actor.anchor.rotation.y=turnTo;
+      }else{
+        const glide=1-Math.exp(-poseElapsed*.019),turnEase=1-Math.exp(-poseElapsed*.012);
+        actor.anchor.position.x+=(destX-actor.anchor.position.x)*glide;
+        actor.anchor.position.z+=(destZ-actor.anchor.position.z)*glide;
+        actor.anchor.rotation.y+=Math.atan2(Math.sin(turnTo-actor.anchor.rotation.y),Math.cos(turnTo-actor.anchor.rotation.y))*turnEase;
+      }
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       // The game owns the tap-target/attack decision. Native skinned surfaces only
       // provide the correct original world coordinates to its existing handler.
@@ -536,13 +589,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         interactables.push(child);
       });
       // 이동/공격 상태를 실제 좌표와 공격 시각으로 검출한다. 제자리 문워크와 반복 공격 무동작 방지.
-      const poseNow=performance.now(),moveDelta=Math.hypot(e.x-(actor.lastX??e.x),e.y-(actor.lastY??e.y));
-      const poseElapsed=poseNow-(actor.lastPoseAt||poseNow);
-      const moving=moveDelta>.08&&poseElapsed>0&&poseElapsed<420;
+
+      const moving=moveDelta>.14&&poseElapsed>0&&poseElapsed<420;
       const attacking=poseNow-(Number(e.attackAt)||0)<430;
       actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
-      actor.anchor.position.y=moving?.045*Math.sin(poseNow/95):0;
-      actor.anchor.rotation.x=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
+      actor.anchor.position.y=moving?.014*Math.sin(poseNow/95):.005*Math.sin(poseNow/360);
+      const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.09:0;
+      actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
       const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
         ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
@@ -628,13 +681,23 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
           lastFrame:performance.now(),seen:0};
         nativeCreatureActors.set(key,actor);
       }
-      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+
+      const poseNow=performance.now(),poseElapsed=Math.min(80,Math.max(1,poseNow-(actor.lastPoseAt||poseNow-16)));
+      const moveDelta=Math.hypot(e.x-(actor.lastX??e.x),e.y-(actor.lastY??e.y));
+      const destX=e.x*SCALE,destZ=e.y*SCALE,turnTo=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      if(!actor.lastPoseAt||Math.hypot(destX-actor.anchor.position.x,destZ-actor.anchor.position.z)>2.6){
+        actor.anchor.position.set(destX,0,destZ);actor.anchor.rotation.y=turnTo;
+      }else{
+        const glide=1-Math.exp(-poseElapsed*.019),turnEase=1-Math.exp(-poseElapsed*.012);
+        actor.anchor.position.x+=(destX-actor.anchor.position.x)*glide;
+        actor.anchor.position.z+=(destZ-actor.anchor.position.z)*glide;
+        actor.anchor.rotation.y+=Math.atan2(Math.sin(turnTo-actor.anchor.rotation.y),Math.cos(turnTo-actor.anchor.rotation.y))*turnEase;
+      }
       actor.anchor.visible=!(e.type?.id==='crystallizard'&&e.crystalHidden);
       if(e.type?.id==='crystalbiter'&&performance.now()<(e.biterRestUntil||0)){
         actor.anchor.rotation.z=.20;
         if(actor.anchor.scale)actor.anchor.scale.y=.70;
       }else{actor.anchor.rotation.z=0;if(actor.anchor.scale)actor.anchor.scale.y=1}
-      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
       if(actor.anchor.visible)actor.model.traverse(child=>{
         if(!child.isMesh)return;
@@ -642,13 +705,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         interactables.push(child);
       });
       // 몬스터 실제 이동량을 쓰므로 벽에 걸렸을 때 이동 애니메이션이 계속 나오지 않는다.
-      const poseNow=performance.now(),moveDelta=Math.hypot(e.x-(actor.lastX??e.x),e.y-(actor.lastY??e.y));
-      const poseElapsed=poseNow-(actor.lastPoseAt||poseNow);
-      const moving=moveDelta>.08&&poseElapsed>0&&poseElapsed<420;
+
+      const moving=moveDelta>.14&&poseElapsed>0&&poseElapsed<420;
       const attacking=poseNow-(Number(e.attackAt)||0)<430;
       actor.lastX=e.x;actor.lastY=e.y;actor.lastPoseAt=poseNow;
-      actor.anchor.position.y=moving?.04*Math.sin(poseNow/110):0;
-      actor.anchor.rotation.x=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
+      actor.anchor.position.y=moving?.016*Math.sin(poseNow/110):.006*Math.sin(poseNow/410);
+      const lean=attacking?-.11:poseNow<(Number(e.hitAt)||0)?.08:0;
+      actor.anchor.rotation.x+=(lean-actor.anchor.rotation.x)*Math.min(1,poseElapsed/65);
       const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
       const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
         ||actor.clips.find(c=>/idle|walk/i.test(c.name));
@@ -675,7 +738,53 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     return unsafeUnmappedEncounter;
   }
   if(hero)scene.add(hero.avatar);
+
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
+  let equippedVisualId='',equippedVisual=null;
+  const swingArc=new THREE.Mesh(new THREE.TorusGeometry(.79,.045,4,23,Math.PI*1.12),
+    new THREE.MeshBasicMaterial({color:0xdbe8fb,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+  swingArc.visible=false;swingArc.position.set(0,1.05,.46);swingArc.rotation.set(.12,0,-.25);
+  const swingRing=new THREE.Mesh(new THREE.RingGeometry(.30,.38,18),
+    new THREE.MeshBasicMaterial({color:0xe6d4a0,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+  swingRing.visible=false;swingRing.rotation.x=-Math.PI/2;swingRing.position.y=.055;
+  function disposeEquippedVisual(){
+    if(!equippedVisual)return;
+    equippedVisual.parent?.remove(equippedVisual);
+    equippedVisual.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose()}});
+    equippedVisual=null;equippedVisualId='';
+  }
+  function updateEquippedVisual(id){
+    if(!hero)return;
+    if(equippedVisual?.parent===hero.avatar&&id===equippedVisualId)return;
+    disposeEquippedVisual();equippedVisualId=id;
+    if(!id||id==='none')return;
+    const kind=/bow|crossbow/.test(id)?'bow':/spear|lance|glaive|trident/.test(id)?'spear':
+      /axe|scythe/.test(id)?'axe':/hammer|maul|mace/.test(id)?'hammer':
+      /dagger|knife|fang/.test(id)?'dagger':/orb|staff|wand|seeker/.test(id)?'staff':'sword';
+    const gold=/gold|sunstone|holy/.test(id),crystal=/crystal|rune/.test(id);
+    const metal=new THREE.MeshStandardMaterial({color:gold?0xf0cb60:crystal?0xb3a3f8:0xb3c6cf,metalness:.36,roughness:.52,flatShading:true});
+    const grip=new THREE.MeshStandardMaterial({color:0x604a35,roughness:1,flatShading:true});
+    const equipment=new THREE.Group();equipment.position.set(.48,1.04,.25);
+    const part=(geometry,material,x,y,z,rz=0)=>{
+      const mesh=new THREE.Mesh(geometry,material.clone());
+      mesh.position.set(x,y,z);mesh.rotation.z=rz;mesh.castShadow=false;equipment.add(mesh);
+    };
+    if(kind==='bow'){
+      part(new THREE.TorusGeometry(.35,.035,4,14,Math.PI),grip,0,.15,0,Math.PI/2);
+      part(new THREE.CylinderGeometry(.012,.012,.7,4),metal,-.01,.15,0);
+    }else{
+      const length=kind==='spear'||kind==='staff'?1.22:kind==='hammer'?.75:.62;
+      part(new THREE.CylinderGeometry(.035,.045,length,5),grip,0,.1,0,-.25);
+      if(kind==='spear')part(new THREE.ConeGeometry(.13,.44,5),metal,.16,.79,0,-.25);
+      else if(kind==='axe')part(new THREE.BoxGeometry(.32,.30,.10),metal,.12,.39,0,-.25);
+      else if(kind==='hammer')part(new THREE.BoxGeometry(.40,.26,.25),metal,.14,.45,0,-.25);
+      else if(kind==='staff')part(new THREE.OctahedronGeometry(.16,0),metal,.17,.73,0);
+      else if(kind==='dagger')part(new THREE.ConeGeometry(.095,.40,4),metal,.10,.50,0,-.25);
+      else part(new THREE.BoxGeometry(.13,.65,.07),metal,.12,.59,0,-.25);
+    }
+    metal.dispose();grip.dispose();
+    hero.avatar.add(equipment);equippedVisual=equipment;
+  }
   let observedWeather='';
   let weatherVisualEffects=[];
   let active=false,lastW=0,lastH=0;
@@ -752,7 +861,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(Math.abs(next-qualityFactor)>.01){
         qualityFactor=next;stableQualityWindows=0;
         renderer.shadowMap.enabled=!mobileBudget&&qualityFactor>=.8;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*qualityFactor);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.82:.95)*qualityFactor);
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
@@ -839,6 +948,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(centerTileX!==lastFloorGridX||centerTileY!==lastFloorGridZ||classify!==lastFloorClassifier||state.area!==lastFloorArea||models.size!==lastSceneryModelCount){
       let tileIndex=0,seamTileIndex=0;
       for(const batch of sceneryBatches.values())batch.count=0;
+      for(const row of terrainDetailBatches.values())row.mesh.count=0;
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
       // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
@@ -853,6 +963,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const tileSeed=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
       biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).multiplyScalar(.91+tileSeed%17*.01).lerp(floorNeutral,.12));
       tileIndex++;
+      const pixelZone=surface?(surface.kind==='lava'?'lava':'water'):tileZone;
+      const pixelBatch=terrainPixelBatch(pixelZone);
+      detailTransform.position.set(gx,.032,gz);
+      detailTransform.rotation.set(-Math.PI/2,0,0);
+      detailTransform.scale.setScalar(1);detailTransform.updateMatrix();
+      pixelBatch.mesh.setMatrixAt(pixelBatch.mesh.count++,detailTransform.matrix);
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
@@ -896,6 +1012,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     biomeTiles.instanceMatrix.needsUpdate=true;
     biomeTiles.instanceColor.needsUpdate=true;
+    for(const row of terrainDetailBatches.values()){row.mesh.instanceMatrix.needsUpdate=true;row.mesh.boundingSphere=null;}
     floorSeamTiles.instanceMatrix.needsUpdate=true;
     floorSeamTiles.instanceColor.needsUpdate=true;
     for(const batch of sceneryBatches.values()){
@@ -913,10 +1030,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       hero.avatar.visible=true;
       hero.avatar.position.set(centerX,0,centerY);
       hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
-      const tool=String(p.tool||p.weapon||'NONE');
+      const tool=String(p.weapon||p.tool||'NONE').toLowerCase();
+      updateEquippedVisual(tool);
+      if(swingArc.parent!==hero.avatar)hero.avatar.add(swingArc);
+      if(swingRing.parent!==hero.avatar)hero.avatar.add(swingRing);
       if(tool!==playerToolName){
         playerToolName=tool;
-        const family=/axe/i.test(tool)?'AXE':/pick/i.test(tool)?'PICKAXE':/spear/i.test(tool)?'SPEAR':'NONE';
+        const family=/axe/i.test(tool)?'AXE':/pick/i.test(tool)?'PICKAXE':/spear|lance|glaive/i.test(tool)?'SPEAR':'NONE';
         playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:family});
       }
       const now=performance.now();
@@ -932,6 +1052,23 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const attackPhase=attackingAge>=0&&attackingAge<440?Math.sin(Math.PI*attackingAge/440):0;
       hero.avatar.rotation.z=avatarStyle==='barbarian'?-.11*attackPhase:avatarStyle.startsWith('rogue')?.08*attackPhase:avatarStyle==='mage'?.025*attackPhase:.045*attackPhase;
       hero.avatar.position.y=avatarStyle==='mage'?.12*attackPhase:avatarStyle==='barbarian'?.06*attackPhase:0;
+      // 공격 이벤트와 동기화된 무기별 잔상·충격파. 데미지/쿨다운/범위 불변.
+      const swingAge=Math.max(0,attackingAge),swinging=attackingAge>=0&&attackingAge<260;
+      const heavy=/hammer|maul|greatsword|heavy|axe/.test(tool);
+      const ranged=/bow|crossbow|staff|orb|seeker/.test(tool);
+      swingArc.visible=swinging&&!ranged;
+      swingRing.visible=swinging&&heavy&&swingAge>75;
+      if(swingArc.visible){
+        swingArc.material.color.setHex(/crystal|rune/.test(tool)?0xb69dff:/fire|sunstone/.test(tool)?0xffaf65:0xe4e9dc);
+        swingArc.material.opacity=(1-swingAge/260)*.82;
+        swingArc.rotation.z=-.6+swingAge/260*2.05;
+        swingArc.scale.setScalar(heavy?1.28:/dagger|knife/.test(tool)?.72:1);
+      }
+      if(swingRing.visible){
+        swingRing.material.opacity=(1-swingAge/260)*.35;
+        swingRing.scale.setScalar(.5+swingAge/220*2);
+      }
+      if(equippedVisual)equippedVisual.rotation.z=attackPhase*(heavy?-.50:/spear|lance|glaive/.test(tool)?-.14:-.32);
       // 액션 모션: 이름 일부가 우연히 겹치는 첫 클립 대신 CC0 원본 역할을 정확히 선택한다.
       const clipName=playerMotionProfile.cc0Clips[pose==='move'?'run':pose];
       const desired=heroClips.find(clip=>clip.name===clipName);
@@ -1050,6 +1187,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     undeadActors.clear();
     for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
     nativeCreatureActors.clear();
+    disposeEquippedVisual();swingArc.parent?.remove(swingArc);swingRing.parent?.remove(swingRing);
+    swingArc.geometry.dispose();swingArc.material.dispose();swingRing.geometry.dispose();swingRing.material.dispose();
     if(acidBatch)scene.remove(acidBatch);
     acidMaterial.dispose();
     for(const mesh of mageBoltEffects)scene.remove(mesh);
@@ -1068,6 +1207,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       o.geometry?.dispose();
       for(const m of (Array.isArray(o.material)?o.material:[o.material]))m?.dispose();
     });
+    for(const row of terrainDetailBatches.values()){scene.remove(row.mesh);row.mesh.dispose();row.material.dispose();row.texture.dispose()}
+    terrainDetailBatches.clear();detailGeometry.dispose();
     scene.remove(biomeTiles);biomeTiles.dispose();
     scene.remove(floorSeamTiles);floorSeamTiles.dispose();
     for(const {mesh} of resourceBatches.values()){scene.remove(mesh);mesh.dispose()}
