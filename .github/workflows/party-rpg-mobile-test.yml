@@ -101,6 +101,51 @@ jobs:
             });
             if(!team.joined||team.stage!=='joined')throw new Error('RECRUIT_EVENT_DID_NOT_JOIN '+JSON.stringify(team));
             await page.locator('#modalClose').click();
+            // 파티 공용 소모품, 동료별 장비, 실제 소유권 전달을 모바일 탭으로 검증한다.
+            await page.locator('#bagBtn').click();
+            if(!(await page.locator('[data-bag-person="ai0"]').count()))throw new Error('PARTY_INVENTORY_MEMBER_TAB_MISSING');
+            await page.locator('#inventorySupplyShop').click();
+            await page.locator('[data-supply-buy="bandage"]').click();
+            await page.locator('#supplyBack').click();
+            await page.locator('[data-bag-person="ai0"]').click();
+            await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state;
+              const unit=s.ai.find(a=>a.id==='ai0');unit.hp=Math.max(1,unit.maxHp-45);
+            });
+            const hpBeforeSupply=await page.evaluate(()=>window.partyRpgVibeState().state.ai.find(a=>a.id==='ai0').hp);
+            await page.locator('[data-use="bandage"]').click();
+            const supplyCheck=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state,unit=s.ai.find(a=>a.id==='ai0');
+              return {hp:unit.hp,supplies:s.supplies.bandage,saved:JSON.parse(localStorage.getItem('party-rpg-v1')).supplies?.bandage};
+            });
+            if(supplyCheck.hp<=hpBeforeSupply||supplyCheck.supplies!==0||supplyCheck.saved!==0)
+              throw new Error('PARTY_SUPPLY_NOT_CONSUMED_SAVED '+JSON.stringify(supplyCheck));
+            await page.evaluate(()=>{window.partyRpgVibeState().state.player.gold+=500;});
+            await page.locator('[data-shop="weapon"]').click();
+            await page.locator('[data-buy="iron"]').click();
+            await page.locator('#backToBag').click();
+            const gearCheck=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state,a=s.ai.find(x=>x.id==='ai0');
+              return {weapon:a.weapon,owns:a.ownedWeapons.includes('iron'),ownerWeapon:s.player.weapon};
+            });
+            if(gearCheck.weapon!=='iron'||!gearCheck.owns||gearCheck.ownerWeapon==='iron')
+              throw new Error('COMPANION_GEAR_NOT_OWNED '+JSON.stringify(gearCheck));
+            await page.evaluate(()=>{
+              const a=window.partyRpgVibeState().state.ai.find(x=>x.id==='ai0');
+              a.drops.push('goblin_blade');
+            });
+            await page.locator('[data-transfer="goblin_blade"]').click();
+            await page.locator('[data-receiver="player"]').click();
+            const transferCheck=await page.evaluate(()=>{
+              const s=window.partyRpgVibeState().state,a=s.ai.find(x=>x.id==='ai0');
+              const saved=JSON.parse(localStorage.getItem('party-rpg-v1'));
+              return {from:a.drops.includes('goblin_blade'),to:s.player.drops.includes('goblin_blade'),
+                savedTo:saved.player.drops.includes('goblin_blade'),savedFrom:saved.ai.find(x=>x.id==='ai0').drops.includes('goblin_blade')};
+            });
+            if(transferCheck.from||!transferCheck.to||!transferCheck.savedTo||transferCheck.savedFrom)
+              throw new Error('DUNGEON_EQUIPMENT_TRANSFER_DUPLICATED '+JSON.stringify(transferCheck));
+            await page.locator('#modalClose').click();
+            console.log('PARTY_RPG_INVENTORY_CONSUMABLE_COMPANION_EQUIPMENT_TRANSFER=PASS');
             // 실제 모바일 크기에서 지역 안내가 맵을 가리지 않아야 한다.
             const hud=await page.evaluate(()=>{
               const r=document.querySelector('#zone').getBoundingClientRect();
