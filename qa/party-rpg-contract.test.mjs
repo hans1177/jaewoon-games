@@ -101,3 +101,21 @@ test("스토리 인과관계·대사·선택지 연속성 계약", () => {
  assert.ok(html.includes("s.choices.ending"));
  assert.ok(html.includes("state.story.choices[raw]"));
 });
+
+test("열 명의 동료가 고유한 말투와 반응을 유지한다", () => {
+ const raw=block("const COMPANION_PERSONALITIES=", ";\n// 캐릭터별 어휘");
+ const profiles=JSON.parse(raw.slice("const COMPANION_PERSONALITIES=".length));
+ const names=["루카","미나","제이드","토르","리안","세라","보린","유나","카일","네오"];
+ assert.equal(profiles.length,10);
+ assert.equal(profiles.map(p=>p.name).join(","),names.join(","));
+ for(const key of ["manner","value","flaw","truth","guard","danger","discovery","past"]){
+  assert.equal(new Set(profiles.map(p=>p[key])).size,10,key+" 중복 대사");
+  assert.ok(profiles.every(p=>typeof p[key]==="string"&&p[key].trim().length>4),key+" 빈 대사");
+ }
+ assert.ok(html.includes("function companionResponse(a,topic)"));
+ assert.ok(html.includes("data-personality-topic"));
+ assert.ok(html.includes("b.dataset.personalityTopic"));
+ assert.ok(html.includes("동료의 반응 · "));
+ assert.ok(html.includes("companionResponse(a,quest.path)"));
+ assert.ok(html.includes("const participants=partyMembers()"));
+});
