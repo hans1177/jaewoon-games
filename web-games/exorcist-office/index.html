@@ -60,7 +60,8 @@ const MISSIONS=[
 {id:'m9',level:3,name:'지하상가의 네 그림자',site:'폐지하상가',ghost:'pack',reward:2600,bg:'#211d27'},
 {id:'m6',level:4,name:'무너진 봉인',site:'폐사찰',ghost:'breaker',reward:3800,bg:'#29231b'},
 {id:'m7',level:5,name:'거울방의 실종자',site:'폐백화점 거울관',ghost:'mirror',reward:5200,bg:'#202632'},
-{id:'m8',level:6,name:'장례식장의 검은 낫',site:'폐장례식장',ghost:'reaper',reward:7600,bg:'#231d27'}];
+{id:'m8',level:6,name:'장례식장의 검은 낫',site:'폐장례식장',ghost:'reaper',reward:7600,bg:'#231d27'},
+{id:'m10',level:3,name:'막차가 끊긴 지하역',site:'폐쇄 지하역',ghost:'pack',reward:2600,bg:'#18232b'}];
 const INVESTIGATIONS={
 m1:{title:'폐가 내부 조사',rule:'단서로 사진 순서를 알아낸 뒤 지하실 전원을 복구해',gate:{x:1450,y:220,label:'지하실 문'},clueHints:['낡은 메모: 지하실 전기는 분전함부터 살려야 한다.','사진 뒷면 연도는 1998 → 2005 → 2012 순서다.','마지막 가족사진 조각은 낡은 액자 뒤에 숨겨졌다.'],tasks:[
 {x:280,y:300,label:'지하 분전함 복구',requiresClues:[0]},
@@ -129,6 +130,22 @@ m8:{title:'장례식장 안치실 추적',rule:'명부·영정·관 번호를 �
 {x:1240,y:260,label:'남쪽 봉인등 점등',requiresTasks:[5]},
 {x:1320,y:700,label:'안치실 문패 뒤집기',requiresTasks:[6],requiresClues:[4]},
 {x:1360,y:480,label:'최종 봉인번호 대조',requiresTasks:[7]}
+]},
+m10:{title:'폐역 신호망 복구',rule:'역무원 기록과 신호 중계기 순서를 대조해 안전문을 열어',gate:{x:1450,y:360,label:'폐역 안전문'},clueHints:[
+'운행 기록: 막차는 3번 승강장에 멈췄지만 비상전력은 2번 구역에서 시작된다.',
+'역무실 메모: 비상전력은 2번을 먼저 살리고 신호실의 제어키를 확인해야 한다.',
+'훼손된 신호 지도: 북쪽 신호실이 1번과 3번 중계기를 동시에 제어한다.',
+'관제 로그: 2번 → 1번 → 3번 중계기를 복구한 다음 안전문 전원을 내려라.',
+'승강장 표지판: 마지막 신호가 꺼져야 중앙 안전문을 다시 열 수 있다.'
+],tasks:[
+{x:260,y:260,label:'막차 운행 기록 대조',requiresClues:[0]},
+{x:490,y:770,label:'2번 구역 비상전력 확보',requiresTasks:[0],requiresClues:[1]},
+{x:730,y:260,label:'신호실 제어키 회수',requiresTasks:[0],requiresClues:[2]},
+{x:940,y:770,label:'2번 중계기 연결',requiresTasks:[1,2]},
+{x:1120,y:260,label:'1번 중계기 복원',requiresTasks:[3],requiresClues:[3]},
+{x:1270,y:760,label:'3번 중계기 복원',requiresTasks:[4],requiresClues:[4]},
+{x:1320,y:480,label:'안전문 전류 차단',requiresTasks:[5]},
+{x:1390,y:320,label:'폐역 안전문 재가동',requiresTasks:[6]}
 ]}
 };
 const OFFICE_UPGRADES=[{level:1,next:2,cost:900,label:'사무소 2층 확장',desc:'위험도 3~4 의뢰가 열린다.'},{level:2,next:3,cost:2600,label:'별관 증축',desc:'위험도 5 의뢰가 열린다.'},{level:3,next:4,cost:6000,label:'대형 퇴마 본부',desc:'위험도 6 의뢰가 열린다.'},{level:4,next:5,cost:9000,label:'특수 퇴마 대응실',desc:'위험도 7 거울귀 의뢰가 열린다.'},{level:5,next:6,cost:14000,label:'최상급 봉인 본부',desc:'위험도 8 사신귀 의뢰가 열린다.'}];
