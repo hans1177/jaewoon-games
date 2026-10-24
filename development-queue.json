@@ -18512,10 +18512,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-24T08:30:49.312Z",
+      "updatedAt": "2026-10-24T09:25:59.489Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -18531,16 +18531,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
       "robloxBuildArtifactIdentity": "sha256:331290f5941cb253b75851cc8480fd36bc141030848a50c99ef35f895e926705",
-      "robloxBuildPassedAt": "2026-10-24T03:27:13.987Z",
+      "robloxBuildPassedAt": "2026-10-24T09:25:59.489Z",
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-24T03:27:13.987Z",
+      "robloxBuildPreflightPassedAt": "2026-10-24T09:25:59.489Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-24T03:22:18.440Z",
+        "checkedAt": "2026-10-24T09:12:16.616Z",
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:331290f5941cb253b75851cc8480fd36bc141030848a50c99ef35f895e926705",
         "secondaryOwnerFocus": false,
@@ -18575,10 +18575,10 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "openai/gpt-oss-20b",
+            "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All provided build evidence indicates that the source revision, artifact identity, and validation checks have passed. No contradictions exist in the BUILD_EVIDENCE, so the immutable package is cleared to begin runtime testing."
+            "note": "All required build evidence indicates that source validation and package building have successfully passed for the immutable Roblox package."
           }
         ],
         "blockers": [],
@@ -18592,12 +18592,12 @@
         "gameId": "defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-24T03:22:19.174Z",
+        "checkedAt": "2026-10-24T09:12:17.298Z",
         "sourcePath": "roblox-games/defense",
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:331290f5941cb253b75851cc8480fd36bc141030848a50c99ef35f895e926705",
         "rebuiltArtifactIdentity": "sha256:331290f5941cb253b75851cc8480fd36bc141030848a50c99ef35f895e926705",
-        "artifactRunId": 40057193937,
+        "artifactRunId": 40079823538,
         "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
         "assetSelectionFingerprint": "a685047988b59875058416b23ded1b9dadd7cf85814e247d2eccb8e35ba91788",
         "observedAssetSelectionFingerprint": "a685047988b59875058416b23ded1b9dadd7cf85814e247d2eccb8e35ba91788",
@@ -18635,11 +18635,13 @@
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
             "MISSING_GAMEPLAY_CAPABILITY:WORLD",
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -18651,49 +18653,64 @@
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
             "WORLD",
             "CONTENT_ENTITY",
-            "EQUIPMENT",
+            "COMBAT",
+            "ENEMY_AI",
+            "WAVE",
             "PROGRESSION",
+            "TYCOON",
+            "DEFENSE",
             "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI",
-            "SESSION_FLOW"
+            "MULTIPLAYER"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
             "WORLD": false,
             "CONTENT_ENTITY": false,
-            "EQUIPMENT": false,
+            "COMBAT": false,
+            "ENEMY_AI": true,
+            "WAVE": false,
             "PROGRESSION": false,
+            "TYCOON": false,
+            "DEFENSE": true,
             "SAVE": true,
-            "MULTIPLAYER": true,
             "MOBILE_UI": true,
-            "SESSION_FLOW": false
+            "MULTIPLAYER": true
           },
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+              "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
               "capabilities": [
                 "CONTENT_ENTITY",
-                "EQUIPMENT"
+                "COMBAT",
+                "ENEMY_AI",
+                "TYCOON"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+              "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+              "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
               "capabilities": [
-                "WORLD"
+                "TYCOON"
               ],
               "pass": false
             }
@@ -18701,38 +18718,46 @@
           "signatureSystemTrace": [
             {
               "index": 0,
-              "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+              "name": "숲길 디펜스",
               "capabilities": [
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT"
+                "COMBAT",
+                "ENEMY_AI",
+                "TYCOON",
+                "DEFENSE"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "name": "안전 구역과 수집 경로 × 스포츠",
+              "name": "방어 시설 배치 × 역사적 세력 균형",
               "capabilities": [
-                "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT"
+                "COMBAT",
+                "ENEMY_AI",
+                "TYCOON"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "name": "보너스 선택과 빠른 재시도 × 축구",
+              "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION"
               ],
               "pass": false
             },
             {
               "index": 3,
-              "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+              "name": "금기와 기회의 교차",
               "capabilities": [
-                "EQUIPMENT",
-                "MULTIPLAYER"
+                "WORLD"
               ],
               "pass": false
             }
@@ -18745,11 +18770,11 @@
             "meaningfulGameplayFunctionCount": 0
           },
           "studioQualitySheet": {
-            "Core": "MISSING",
-            "Content": "MISSING",
+            "Core": "ROUGH",
+            "Content": "ROUGH",
             "World": "MISSING",
-            "Combat": "N/A",
-            "AI": "N/A",
+            "Combat": "MISSING",
+            "AI": "PLAYABLE",
             "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
@@ -18761,14 +18786,14 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
               "applicable": true,
@@ -18802,6 +18827,8 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
               "MID_LATE_GAME_DEPTH",
               "SYSTEM_CONNECTION_CHAIN"
             ],
@@ -18812,12 +18839,12 @@
             "minimumBasePartCount": 5,
             "spawnRequired": true,
             "landmarkRequired": true,
-            "objectiveRequired": false,
+            "objectiveRequired": true,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+          "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
           "antiSkeletonPassed": false,
           "designGenre": "Strategy",
           "sourceGenre": "Strategy",
@@ -18825,11 +18852,11 @@
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
-          "Core": "MISSING",
-          "Content": "MISSING",
+          "Core": "ROUGH",
+          "Content": "ROUGH",
           "World": "MISSING",
-          "Combat": "N/A",
-          "AI": "N/A",
+          "Combat": "MISSING",
+          "AI": "PLAYABLE",
           "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
@@ -18878,12 +18905,12 @@
         "gameId": "defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-24T03:22:19.174Z",
+        "checkedAt": "2026-10-24T09:12:17.298Z",
         "sourcePath": "roblox-games/defense",
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:331290f5941cb253b75851cc8480fd36bc141030848a50c99ef35f895e926705",
         "rebuiltArtifactIdentity": "sha256:331290f5941cb253b75851cc8480fd36bc141030848a50c99ef35f895e926705",
-        "artifactRunId": 40057193937,
+        "artifactRunId": 40079823538,
         "buildUpAssetSourceUsageFingerprint": "314df347d5daa20c3cdda31886cf530fc6f6e5e71ac1d4b37472485bab059b34",
         "assetSelectionFingerprint": "a685047988b59875058416b23ded1b9dadd7cf85814e247d2eccb8e35ba91788",
         "observedAssetSelectionFingerprint": "a685047988b59875058416b23ded1b9dadd7cf85814e247d2eccb8e35ba91788",
@@ -18921,11 +18948,13 @@
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
             "MISSING_GAMEPLAY_CAPABILITY:WORLD",
             "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
             "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
             "CORE_LOOP_STEP_UNIMPLEMENTED:0",
             "CORE_LOOP_STEP_UNIMPLEMENTED:1",
             "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -18937,49 +18966,64 @@
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
             "WORLD",
             "CONTENT_ENTITY",
-            "EQUIPMENT",
+            "COMBAT",
+            "ENEMY_AI",
+            "WAVE",
             "PROGRESSION",
+            "TYCOON",
+            "DEFENSE",
             "SAVE",
-            "MULTIPLAYER",
             "MOBILE_UI",
-            "SESSION_FLOW"
+            "MULTIPLAYER"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
             "WORLD": false,
             "CONTENT_ENTITY": false,
-            "EQUIPMENT": false,
+            "COMBAT": false,
+            "ENEMY_AI": true,
+            "WAVE": false,
             "PROGRESSION": false,
+            "TYCOON": false,
+            "DEFENSE": true,
             "SAVE": true,
-            "MULTIPLAYER": true,
             "MOBILE_UI": true,
-            "SESSION_FLOW": false
+            "MULTIPLAYER": true
           },
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+              "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
               "capabilities": [
                 "CONTENT_ENTITY",
-                "EQUIPMENT"
+                "COMBAT",
+                "ENEMY_AI",
+                "TYCOON"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+              "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+              "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
               "capabilities": [
-                "WORLD"
+                "TYCOON"
               ],
               "pass": false
             }
@@ -18987,38 +19031,46 @@
           "signatureSystemTrace": [
             {
               "index": 0,
-              "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+              "name": "숲길 디펜스",
               "capabilities": [
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT"
+                "COMBAT",
+                "ENEMY_AI",
+                "TYCOON",
+                "DEFENSE"
               ],
               "pass": false
             },
             {
               "index": 1,
-              "name": "안전 구역과 수집 경로 × 스포츠",
+              "name": "방어 시설 배치 × 역사적 세력 균형",
               "capabilities": [
-                "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT"
+                "COMBAT",
+                "ENEMY_AI",
+                "TYCOON"
               ],
               "pass": false
             },
             {
               "index": 2,
-              "name": "보너스 선택과 빠른 재시도 × 축구",
+              "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION"
               ],
               "pass": false
             },
             {
               "index": 3,
-              "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+              "name": "금기와 기회의 교차",
               "capabilities": [
-                "EQUIPMENT",
-                "MULTIPLAYER"
+                "WORLD"
               ],
               "pass": false
             }
@@ -19031,11 +19083,11 @@
             "meaningfulGameplayFunctionCount": 0
           },
           "studioQualitySheet": {
-            "Core": "MISSING",
-            "Content": "MISSING",
+            "Core": "ROUGH",
+            "Content": "ROUGH",
             "World": "MISSING",
-            "Combat": "N/A",
-            "AI": "N/A",
+            "Combat": "MISSING",
+            "AI": "PLAYABLE",
             "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
@@ -19047,14 +19099,14 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
               "applicable": true,
@@ -19088,6 +19140,8 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
               "MID_LATE_GAME_DEPTH",
               "SYSTEM_CONNECTION_CHAIN"
             ],
@@ -19098,12 +19152,12 @@
             "minimumBasePartCount": 5,
             "spawnRequired": true,
             "landmarkRequired": true,
-            "objectiveRequired": false,
+            "objectiveRequired": true,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+          "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
           "antiSkeletonPassed": false,
           "designGenre": "Strategy",
           "sourceGenre": "Strategy",
@@ -19111,11 +19165,11 @@
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
-          "Core": "MISSING",
-          "Content": "MISSING",
+          "Core": "ROUGH",
+          "Content": "ROUGH",
           "World": "MISSING",
-          "Combat": "N/A",
-          "AI": "N/A",
+          "Combat": "MISSING",
+          "AI": "PLAYABLE",
           "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
@@ -19708,15 +19762,17 @@
         "sourceRevision": "657441c9abaed903d34b0177c406ab466636bf71",
         "artifactIdentity": "sha256:331290f5941cb253b75851cc8480fd36bc141030848a50c99ef35f895e926705",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 40057193937,
-        "testedAt": "2026-10-24T03:27:13.987Z",
+        "workflowRunId": 40079823538,
+        "testedAt": "2026-10-24T09:25:59.489Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
           "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+          "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+          "MISSING_GAMEPLAY_CAPABILITY:WAVE",
           "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+          "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
           "CORE_LOOP_STEP_UNIMPLEMENTED:0",
           "CORE_LOOP_STEP_UNIMPLEMENTED:1",
           "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -19729,6 +19785,7 @@
         "repairSurfaces": [
           "CORE_GAMEPLAY",
           "WORLD_MAP",
+          "COMBAT_FEEL",
           "PROGRESSION_CONTENT"
         ],
         "qualityFailureDetails": [
@@ -19743,11 +19800,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -19759,49 +19818,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -19809,38 +19883,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -19853,11 +19935,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -19869,14 +19951,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -19910,6 +19992,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -19920,12 +20004,240 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "defense",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
+                "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "TYCOON"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "숲길 디펜스",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 5,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "ROUGH",
+                "Content": "ROUGH",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 5,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "MID_LATE_GAME_DEPTH",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": true,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -19944,11 +20256,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -19960,49 +20274,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -20010,38 +20339,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -20054,11 +20391,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -20070,14 +20407,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -20111,6 +20448,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -20121,12 +20460,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -20137,7 +20476,7 @@
           {
             "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
+            "priority": "P1",
             "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
             "observed": {
               "version": 1,
@@ -20145,11 +20484,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -20161,49 +20502,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -20211,38 +20567,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -20255,11 +20619,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -20271,14 +20635,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -20312,6 +20676,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -20322,12 +20688,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -20336,7 +20702,7 @@
             }
           },
           {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+            "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
             "priority": "P1",
             "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
@@ -20346,11 +20712,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -20362,49 +20730,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -20412,38 +20795,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -20456,11 +20847,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -20472,14 +20863,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -20513,6 +20904,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -20523,12 +20916,240 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
+              "antiSkeletonPassed": false,
+              "designGenre": "Strategy",
+              "sourceGenre": "Strategy",
+              "designPlayMode": "COOP",
+              "sourcePlayMode": "COOP"
+            }
+          },
+          {
+            "id": "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "observed": {
+              "version": 1,
+              "gameId": "defense",
+              "pass": false,
+              "blockers": [
+                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
+                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
+                "GENERIC_SCOPE_HANDLER_SKELETON"
+              ],
+              "requiredCapabilities": [
+                "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
+                "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
+                "SAVE",
+                "MOBILE_UI",
+                "MULTIPLAYER"
+              ],
+              "implementedCapabilities": {
+                "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
+                "WORLD": false,
+                "CONTENT_ENTITY": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
+                "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
+                "SAVE": true,
+                "MOBILE_UI": true,
+                "MULTIPLAYER": true
+              },
+              "coreLoopTrace": [
+                {
+                  "index": 0,
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "TYCOON"
+                  ],
+                  "pass": false
+                }
+              ],
+              "signatureSystemTrace": [
+                {
+                  "index": 0,
+                  "name": "숲길 디펜스",
+                  "capabilities": [
+                    "WORLD",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 1,
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
+                  "capabilities": [
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "금기와 기회의 교차",
+                  "capabilities": [
+                    "WORLD"
+                  ],
+                  "pass": false
+                }
+              ],
+              "placeholderDebt": {
+                "primitiveConstructionCount": 0,
+                "meshConstructionCount": 0,
+                "likelyPrimitiveHeavy": false,
+                "genericScopeHandlerCount": 5,
+                "meaningfulGameplayFunctionCount": 0
+              },
+              "studioQualitySheet": {
+                "Core": "ROUGH",
+                "Content": "ROUGH",
+                "World": "MISSING",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
+                "Progression": "MISSING",
+                "UI": "POLISHED",
+                "Graphics": "ROUGH",
+                "Motion": "POLISHED",
+                "Audio": "MISSING",
+                "Mobile": "POLISHED",
+                "Performance": "MISSING",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 1,
+                  "pass": false
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 3,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 2,
+                  "pass": false
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": false
+                    }
+                  ],
+                  "pass": false
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 0,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 5,
+                  "meaningfulGameplayFunctionCount": 0
+                },
+                "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
+                  "MID_LATE_GAME_DEPTH",
+                  "SYSTEM_CONNECTION_CHAIN"
+                ],
+                "f9SourceQualityReady": false
+              },
+              "runtimeRequirements": {
+                "worldRequired": true,
+                "minimumBasePartCount": 5,
+                "spawnRequired": true,
+                "landmarkRequired": true,
+                "objectiveRequired": true,
+                "serverBootRequired": true,
+                "simulationRequired": true,
+                "actualPlayRequired": true
+              },
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -20547,11 +21168,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -20563,49 +21186,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -20613,38 +21251,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -20657,11 +21303,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -20673,14 +21319,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -20714,6 +21360,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -20724,12 +21372,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -20738,7 +21386,7 @@
             }
           },
           {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "id": "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
             "priority": "P1",
             "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
@@ -20748,11 +21396,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -20764,49 +21414,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -20814,38 +21479,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -20858,11 +21531,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -20874,14 +21547,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -20915,6 +21588,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -20925,12 +21600,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -20949,11 +21624,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -20965,49 +21642,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -21015,38 +21707,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -21059,11 +21759,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -21075,14 +21775,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -21116,6 +21816,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -21126,12 +21828,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -21150,11 +21852,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -21166,49 +21870,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -21216,38 +21935,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -21260,11 +21987,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -21276,14 +22003,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -21317,6 +22044,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -21327,12 +22056,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -21351,11 +22080,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -21367,49 +22098,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -21417,38 +22163,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -21461,11 +22215,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -21477,14 +22231,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -21518,6 +22272,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -21528,12 +22284,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -21552,11 +22308,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -21568,49 +22326,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -21618,38 +22391,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -21662,11 +22443,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -21678,14 +22459,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -21719,6 +22500,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -21729,12 +22512,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -21753,11 +22536,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -21769,49 +22554,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -21819,38 +22619,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -21863,11 +22671,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -21879,14 +22687,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -21920,6 +22728,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -21930,12 +22740,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -21954,11 +22764,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -21970,49 +22782,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -22020,38 +22847,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -22064,11 +22899,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -22080,14 +22915,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -22121,6 +22956,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -22131,12 +22968,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -22155,11 +22992,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -22171,49 +23010,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -22221,38 +23075,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -22265,11 +23127,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -22281,14 +23143,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -22322,6 +23184,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -22332,12 +23196,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -22356,11 +23220,13 @@
               "pass": false,
               "blockers": [
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -22372,49 +23238,64 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
+                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
-                "EQUIPMENT",
+                "COMBAT",
+                "ENEMY_AI",
+                "WAVE",
                 "PROGRESSION",
+                "TYCOON",
+                "DEFENSE",
                 "SAVE",
-                "MULTIPLAYER",
                 "MOBILE_UI",
-                "SESSION_FLOW"
+                "MULTIPLAYER"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
+                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
-                "EQUIPMENT": false,
+                "COMBAT": false,
+                "ENEMY_AI": true,
+                "WAVE": false,
                 "PROGRESSION": false,
+                "TYCOON": false,
+                "DEFENSE": true,
                 "SAVE": true,
-                "MULTIPLAYER": true,
                 "MOBILE_UI": true,
-                "SESSION_FLOW": false
+                "MULTIPLAYER": true
               },
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "A 시작: RouteState·RiskState를 확인한 뒤 줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
                   "capabilities": [
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 획득한 점수와 위험에 따라 다음 도전 목표를 선택한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 안전 구역과 수집 경로의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
                   "capabilities": [
-                    "WORLD"
+                    "TYCOON"
                   ],
                   "pass": false
                 }
@@ -22422,38 +23303,46 @@
               "signatureSystemTrace": [
                 {
                   "index": 0,
-                  "name": "스포츠·축구 배틀로얄×무협: 공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "숲길 디펜스",
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON",
+                    "DEFENSE"
                   ],
                   "pass": false
                 },
                 {
                   "index": 1,
-                  "name": "안전 구역과 수집 경로 × 스포츠",
+                  "name": "방어 시설 배치 × 역사적 세력 균형",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
-                    "EQUIPMENT"
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "TYCOON"
                   ],
                   "pass": false
                 },
                 {
                   "index": 2,
-                  "name": "보너스 선택과 빠른 재시도 × 축구",
+                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "WAVE",
+                    "PROGRESSION"
                   ],
                   "pass": false
                 },
                 {
                   "index": 3,
-                  "name": "공동 항로: 관측한 위험과 합류 지점이 확인됨의 성립",
+                  "name": "금기와 기회의 교차",
                   "capabilities": [
-                    "EQUIPMENT",
-                    "MULTIPLAYER"
+                    "WORLD"
                   ],
                   "pass": false
                 }
@@ -22466,11 +23355,11 @@
                 "meaningfulGameplayFunctionCount": 0
               },
               "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "MISSING",
+                "Core": "ROUGH",
+                "Content": "ROUGH",
                 "World": "MISSING",
-                "Combat": "N/A",
-                "AI": "N/A",
+                "Combat": "MISSING",
+                "AI": "PLAYABLE",
                 "Progression": "MISSING",
                 "UI": "POLISHED",
                 "Graphics": "ROUGH",
@@ -22482,14 +23371,14 @@
               },
               "studioReadiness": {
                 "ai": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 1,
-                  "pass": true
+                  "pass": false
                 },
                 "combatFeel": {
-                  "applicable": false,
+                  "applicable": true,
                   "signalCount": 2,
-                  "pass": true
+                  "pass": false
                 },
                 "worldTopology": {
                   "applicable": true,
@@ -22523,6 +23412,8 @@
                   "meaningfulGameplayFunctionCount": 0
                 },
                 "criticalGaps": [
+                  "AI_STATE_DEPTH",
+                  "COMBAT_FEEL_CHAIN",
                   "MID_LATE_GAME_DEPTH",
                   "SYSTEM_CONNECTION_CHAIN"
                 ],
@@ -22533,12 +23424,12 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": false,
+                "objectiveRequired": true,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "043d0260b7754f0874a934649eb3de9863d09869756f533448625245aa04a673",
+              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
               "antiSkeletonPassed": false,
               "designGenre": "Strategy",
               "sourceGenre": "Strategy",
@@ -58354,7 +59245,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-24T09:25:48.287Z",
+  "updatedAt": "2026-10-24T09:25:59.489Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
