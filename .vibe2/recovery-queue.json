@@ -202823,7 +202823,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-24T13:13:51.967Z"
+      "updatedAt": "2026-10-24T13:16:20.909Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203044,7 +203044,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-24T13:13:51.994Z"
+      "updatedAt": "2026-10-24T13:16:20.944Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -237856,7 +237856,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-24T13:13:52.165Z"
+      "updatedAt": "2026-10-24T13:16:21.043Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -239016,7 +239016,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-24T13:13:52.292Z"
+      "updatedAt": "2026-10-24T13:16:21.126Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -240109,7 +240109,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-24T13:13:52.133Z"
+      "updatedAt": "2026-10-24T13:16:21.015Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -241060,7 +241060,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-24T13:13:52.029Z"
+      "updatedAt": "2026-10-24T13:16:20.967Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -242209,9 +242209,9 @@
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
       "blastRadius": "single-task",
-      "checkpoint": "2026-10-24T12:47:05.090Z",
+      "checkpoint": "2026-10-24T13:14:05.989Z",
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "2026-10-24T12:47:05.090Z",
+      "sourceMutationBaseline": "2026-10-24T13:14:05.989Z",
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -242405,7 +242405,8 @@
         "system-ai-handoff-to-reservation:system-ai:40093961756:1",
         "actions-run:40093961756",
         "system-ai-handoff-to-reservation:system-ai:40094971600:1",
-        "actions-run:40094971600"
+        "actions-run:40094971600",
+        "system-ai-handoff-to-reservation:system-ai:40096498853:1"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -242423,7 +242424,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-24T13:13:52.246Z"
+      "updatedAt": "2026-10-24T13:16:21.086Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -243445,7 +243446,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-24T13:13:52.274Z"
+      "updatedAt": "2026-10-24T13:16:21.108Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
