@@ -179,7 +179,8 @@ export async function proposeWebVibeChange(task,source,{cloud=false,fetchImpl=fe
         const inserted=scoped?end.replace(/\}\)\(\);\s*<\/script>$/,bindings.join('\n')+'\n})();</script>'):bindings.join('\n')+'\n'+end;
         if(source.original.split(end).length===2)steps.push({oldText:end,newText:inserted,reason:'검증된 기존 함수에 입력·화면 연결 일괄 적용'});
       }
-      if(steps.length){
+      const complexGoal=/(?:맵|월드|스테이지|몬스터|보스|전투).{0,24}(?:생성|추가|구현|확장|다양화|전체\s*작성)|(?:new|add|expand).{0,20}(?:world|stage|monster|boss)/i.test(goal);
+      if(steps.length&&!complexGoal){
         let updated=source.original;
         for(const step of steps)updated=safeWebVibeReplacement(updated,JSON.stringify(step),{relative:source.relative}).updated;
         return {updated,oldText:steps[0].oldText,newText:steps[0].newText,reason:steps.map(row=>row.reason).join('; '),
