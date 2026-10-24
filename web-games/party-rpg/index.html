@@ -20,10 +20,23 @@
 @media(max-height:550px) and (min-width:701px){#introMenu{grid-template-columns:1fr 250px;gap:30px;padding:10px 25px}.introCopy h1{font-size:40px;margin:12px 0}.introCopy p{font-size:12px;margin:8px 0}.titleLine{margin:12px 0}.introMenuButtons{margin:15px 0 5px}#introPortrait{max-width:240px}#partyCards{bottom:68px}.partyCard{width:56px}.partyRole{display:none}#partyInspect{bottom:170px}#objective{top:88px;max-width:250px;font-size:10px}#cameraTools{top:88px}#combatLog{display:none}.creatorLayout{grid-template-columns:190px 1fr;gap:20px}.dialoguePortrait{max-width:200px}.dialogueLayout{grid-template-columns:200px 1fr;gap:25px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
+
+/* 모바일 턴제 전투 · 기존 판타지 화면 위의 전술 명령 */
+#turnPanel{position:fixed;z-index:42;left:50%;bottom:136px;transform:translateX(-50%);width:min(96vw,590px);padding:9px 11px;background:linear-gradient(#344034fa,#142018fa);border:1px solid #b99b62;box-shadow:0 4px 20px #000b;color:#f5e2b9;text-align:center;pointer-events:auto}
+#turnInfo{font-size:12px;line-height:1.5;min-height:19px;margin-bottom:7px}
+#turnActions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+#turnActions button{border:1px solid #a78c5a;background:#243629;min-width:0;min-height:48px;padding:5px 1px;font-size:12px;touch-action:manipulation}
+#turnActions button[data-turn="skill"]{background:#394263}#turnActions button[data-turn="guard"]{background:#3d4432}
+#turnActions button[data-turn="retreat"]{background:#54382d}
+body.in-turn #joystick{opacity:.28;pointer-events:none}body.in-turn #attackBtn{display:none}
+body.in-turn #prompt{display:none}
+@media(max-width:700px){#turnPanel{bottom:306px;padding:8px 7px}#turnActions{gap:3px}#turnActions button{min-height:46px;font-size:11px}#turnInfo{font-size:11px}body.in-turn #partyCards{bottom:132px}}
+@media(max-height:600px) and (orientation:landscape){#turnPanel{bottom:70px;left:auto;right:8px;transform:none;width:min(50vw,380px)}#turnActions button{min-height:37px;font-size:10px}}
 </style>
 </head>
 <body>
 <canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="autoBtn" aria-pressed="true">자동 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button></div><button id="partyInspect">선택한 인물 보기</button>
+<div id="turnPanel" hidden aria-live="polite"><div id="turnInfo">전투 시작</div><div id="turnActions"><button data-turn="attack">공격</button><button data-turn="skill">기술</button><button data-turn="guard">방어</button><button data-turn="move">이동</button><button data-turn="retreat">후퇴</button></div></div>
 <div id="hud">
   <div id="stats" class="panel">
     <div id="statsTop">
@@ -233,7 +246,7 @@ function storyJournal(){
 
 // D20-inspired real-time rules; not a claim of full tabletop rules compatibility.
 var CLASSES={fighter:{name:'전사',range:92,rate:1.1,mod:3,save:2},rogue:{name:'도적',range:95,rate:.85,mod:4,save:4},cleric:{name:'성직자',range:180,rate:1.4,mod:3,save:3},wizard:{name:'마법사',range:300,rate:1.65,mod:4,save:1},ranger:{name:'레인저',range:330,rate:1.2,mod:3,save:3}};
-var battleState=new WeakMap(),battleTime=0,autoSkills=true,tacticalPaused=false,moveTarget=null,combatLines=[],hudTick=0;
+var battleState=new WeakMap(),battleTime=0,autoSkills=true,tacticalPaused=false,moveTarget=null,combatLines=[],hudTick=0,turnState=null;
 function combat(o){var s=battleState.get(o);if(!s){s={skillAt:0,shieldUntil:0,slowUntil:0,visualUntil:0,target:null};battleState.set(o,s);}return s;}
 function role(u){return CLASSES[u.classId]||CLASSES.fighter;}
 function proficiency(u){return Math.min(6,2+Math.floor((u.level-1)/4));}
@@ -243,21 +256,126 @@ function battleLog(t){combatLines.push(t);if(combatLines.length>4)combatLines.sh
 function attackRoll(bonus,armor,advantage){var n=die(20);if(advantage)n=Math.max(n,die(20));return{roll:n,hit:n===20||(n!==1&&n+bonus>=armor),crit:n===20};}
 function saveRoll(e,unit){var dc=8+proficiency(unit)+role(unit).mod;return die(20)+(e.boss?5:e.elite?3:1)>=dc;}
 function unitBySource(id){return id==='player'?state.player:state.ai.find(function(a){return a.id===id;});}
-function autoSkill(u,pos,id){if(!autoSkills||u.hp<=0)return;var c=combat(u),r=role(u);if(c.skillAt>battleTime)return;var t=nearestEnemy(pos.x,pos.y,Math.max(130,r.range));var allies=[{u:state.player,pos:p}].concat(partyMembers().map(function(a){return{u:a,pos:a};}));
- if(u.classId==='cleric'){var low=allies.filter(function(a){return a.u.hp<a.u.maxHp*.55&&Math.hypot(a.pos.x-pos.x,a.pos.y-pos.y)<360;}).sort(function(a,b){return a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp;})[0];if(low){low.u.hp=Math.min(low.u.maxHp,low.u.hp+Math.round(low.u.maxHp*.22)+r.mod);c.skillAt=battleTime+10;c.visualUntil=performance.now()+600;battleLog((u===state.player?'나':u.name)+' · 치유의 기도');return;}}
- if(!t)return;var power=u===state.player?playerAtk():aiAtk(u);
- if(u.classId==='fighter'&&u.hp<u.maxHp*.45){c.shieldUntil=battleTime+4;c.skillAt=battleTime+12;battleLog('수호 자세 · AC +2');return;}
- if(u.classId==='wizard'){var group=enemies.filter(function(e){return !e.dead&&Math.hypot(e.x-t.x,e.y-t.y)<110;});if(group.length<2)return;c.skillAt=battleTime+8;group.forEach(function(e){damageEnemy(e,(power+die(8))*(saveRoll(e,u)?.5:1),id,{spell:true});});battleLog('비전 파열 · 내성 성공 시 피해 절반');}
- else if(u.classId==='rogue'){if(!combat(t).target||combat(t).target===id)return;c.skillAt=battleTime+7;damageEnemy(t,power+die(6)+die(6),id,{advantage:true});battleLog('기습 · 유리한 명중 판정');}
- else if(u.classId==='ranger'){c.skillAt=battleTime+7;if(damageEnemy(t,power+die(8),id)&&!saveRoll(t,u))combat(t).slowUntil=battleTime+3;battleLog('속박 사격');}
- else if(u.classId==='fighter'){var group=enemies.filter(function(e){return !e.dead&&Math.hypot(e.x-pos.x,e.y-pos.y)<110;});if(group.length<2)return;c.skillAt=battleTime+6;group.slice(0,3).forEach(function(e){damageEnemy(e,power+die(6),id);});battleLog('회전 베기');}
- else return;c.visualUntil=performance.now()+600;
+// 전투: 탐험은 실시간, 적과 접촉한 뒤에는 파티/몬스터가 순서대로 행동한다.
+function turnHeroes(){
+ return [{id:'player',u:state.player,pos:p}].concat(partyMembers().map(function(a){return{id:a.id,u:a,pos:a};}));
 }
-function updateCombat(dt){battleTime+=dt;attackPlayer(true);autoSkill(state.player,p,'player');partyMembers().forEach(function(a){autoSkill(a,a,a.id);});}
+function currentTurnHero(){return turnState&&turnState.heroes[turnState.index]||null;}
+function turnTarget(pos){
+ if(!turnState)return null;
+ var marked=turnState.foes.find(function(e){return !e.dead&&'enemy'+e.id===view.selection;});
+ if(marked)return marked;
+ return turnState.foes.filter(function(e){return !e.dead;}).sort(function(a,b){return Math.hypot(a.x-pos.x,a.y-pos.y)-Math.hypot(b.x-pos.x,b.y-pos.y);})[0]||null;
+}
+function renderTurnUI(){
+ var panel=document.getElementById('turnPanel');panel.hidden=!turnState;document.body.classList.toggle('in-turn',!!turnState);
+ if(!turnState)return;
+ var actor=currentTurnHero(),enemy=actor&&turnTarget(actor.pos);
+ if(!actor){document.getElementById('turnInfo').textContent='적의 차례';return;}
+ var name=actor.id==='player'?'나':actor.u.name,remaining=turnState.foes.filter(function(e){return !e.dead;}).length;
+ document.getElementById('turnInfo').textContent='제 '+turnState.round+'라운드 · '+name+' ('+role(actor.u).name+') · 적 '+remaining+'명'+(enemy?' · 표적 '+enemy.name+' HP '+Math.ceil(enemy.hp):'');
+ document.querySelector('[data-turn="skill"]').disabled=combat(actor.u).skillAt>battleTime;
+ document.querySelector('[data-turn="skill"]').textContent=combat(actor.u).skillAt>battleTime?'대기 '+Math.ceil(combat(actor.u).skillAt-battleTime):'기술';
+}
+function stopTurnCombat(){
+ turnState=null;view.selection='player';renderTurnUI();save();
+ partyMembers().forEach(function(a){if(a.hp<=0){a.hp=a.maxHp*.45;a.x=p.x-50;a.y=p.y+65;}});
+}
+function beginTurnCombat(){
+ if(turnState||!gameStarted||state.zone===0&&!dungeon||!enemies.some(function(e){return !e.dead;})||dungeon&&dungeon.complete)return;
+ var allies=turnHeroes(),foes=enemies.filter(function(e){return !e.dead&&allies.some(function(a){return a.u.hp>0&&Math.hypot(a.pos.x-e.x,a.pos.y-e.y)<355;});}).slice(0,6);
+ if(!foes.length)return;
+ turnState={heroes:allies,foes:foes,index:0,round:1};moveTarget=null;keys={};joy.x=joy.y=0;view.selection='player';
+ battleLog('전투 돌입 · 적 '+foes.length+'명 · 행동을 선택해.');renderTurnUI();
+}
+function turnSkill(actor,target){
+ var u=actor.u,c=combat(u),r=role(u),id=actor.id,power=id==='player'?playerAtk():aiAtk(u),group;
+ if(c.skillAt>battleTime)return false;
+ if(u.classId==='cleric'){
+  var friends=turnState.heroes.filter(function(a){return a.u.hp>0&&a.u.hp<a.u.maxHp;}).sort(function(a,b){return a.u.hp/a.u.maxHp-b.u.hp/b.u.maxHp;});
+  if(friends.length){var ally=friends[0];ally.u.hp=Math.min(ally.u.maxHp,ally.u.hp+Math.round(ally.u.maxHp*.22)+r.mod);battleLog(u.name||'나'+' · 치유의 기도 → '+(ally.u.name||'나'));}else if(target&&Math.hypot(actor.pos.x-target.x,actor.pos.y-target.y)<r.range){damageEnemy(target,power+die(6),id,{spell:true});battleLog('성스러운 빛');}else return false;
+ }else if(u.classId==='fighter'){
+  group=turnState.foes.filter(function(e){return !e.dead&&Math.hypot(e.x-actor.pos.x,e.y-actor.pos.y)<=110;});
+  if(group.length){group.slice(0,3).forEach(function(e){damageEnemy(e,power+die(6),id);});battleLog('회전 베기 · '+Math.min(3,group.length)+'명');}
+  else{c.shieldUntil=battleTime+2;battleLog('전사 · 수호 자세 AC +2');}
+ }else{
+  if(!target||Math.hypot(target.x-actor.pos.x,target.y-actor.pos.y)>r.range)return false;
+  if(u.classId==='wizard'){group=turnState.foes.filter(function(e){return !e.dead&&Math.hypot(e.x-target.x,e.y-target.y)<110;});group.forEach(function(e){damageEnemy(e,(power+die(8))*(saveRoll(e,u)?.5:1),id,{spell:true});});battleLog('비전 파열 · '+group.length+'명');}
+  else if(u.classId==='rogue'){damageEnemy(target,power+die(6)+die(6),id,{advantage:combat(target).target!==id});battleLog('도적 · 기습');}
+  else if(u.classId==='ranger'){if(damageEnemy(target,power+die(8),id)&&!saveRoll(target,u))combat(target).slowUntil=battleTime+2;battleLog('속박 사격');}
+  else return false;
+ }
+ c.skillAt=battleTime+2;c.visualUntil=performance.now()+500;return true;
+}
+function enemyTurnPhase(){
+ if(!turnState)return;
+ var heroes=turnState.heroes;
+ for(var e of turnState.foes){
+  if(e.dead)continue;
+  var targets=heroes.filter(function(a){return a.u.hp>0;});if(!targets.length)break;
+  var t=targets.sort(function(a,b){return Math.hypot(a.pos.x-e.x,a.pos.y-e.y)-Math.hypot(b.pos.x-e.x,b.pos.y-e.y);})[0],dist=Math.hypot(t.pos.x-e.x,t.pos.y-e.y);
+  combat(e).target=t.id;
+  if(dist>e.r+48){var step=Math.min(dist-e.r-40,combat(e).slowUntil>battleTime?48:95);e.x+=(t.pos.x-e.x)/dist*step;e.y+=(t.pos.y-e.y)/dist*step;continue;}
+  var hit=attackRoll(3+Math.min(6,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/4)),ac(t.u));
+  combat(e).visualUntil=performance.now()+430;
+  if(hit.hit){var amount=Math.max(1,e.atk-(t.id==='player'?playerArmorDef():aiArmorDef(t.u)))*(hit.crit?2:1);t.u.hp=Math.max(0,t.u.hp-amount);battleLog(e.name+' → '+(t.u.name||'나')+' '+amount+' 피해');}
+  else battleLog(e.name+'의 공격 회피 · d20 '+hit.roll);
+ }
+ if(state.player.hp<=0){
+  stopTurnCombat();state.player.hp=state.player.maxHp;
+  if(dungeon){returnFromDungeon();toast('쓰러져서 던전에서 이탈했어.');}else{goZone(0);toast('마을에서 부활했어.');}
+ }
+}
+function nextTurn(){
+ if(!turnState)return;
+ if(!turnState.foes.some(function(e){return !e.dead;})){battleLog('전투 종료 · 탐험 재개');stopTurnCombat();return;}
+ turnState.index++;
+ if(turnState.index>=turnState.heroes.length){
+  enemyTurnPhase();if(!turnState)return;
+  turnState.index=0;turnState.round++;battleTime++;
+ }
+ while(turnState&&currentTurnHero()&&currentTurnHero().u.hp<=0){
+  turnState.index++;if(turnState.index>=turnState.heroes.length){enemyTurnPhase();if(!turnState)return;turnState.index=0;turnState.round++;battleTime++;}
+ }
+ if(!turnState)return;
+ view.selection=currentTurnHero().id;renderTurnUI();
+ var next=currentTurnHero();
+ if(next.id!=='player'&&autoSkills){
+  var target=turnTarget(next.pos),distance=target?Math.hypot(next.pos.x-target.x,next.pos.y-target.y):Infinity;
+  var mode=distance>role(next.u).range?'move':'attack';
+  if(next.u.classId==='cleric'&&turnState.heroes.some(function(a){return a.u.hp>0&&a.u.hp<a.u.maxHp*.8;}))mode='skill';
+  else if(target&&distance<=role(next.u).range&&combat(next.u).skillAt<=battleTime)mode='skill';
+  if(!turnAction(mode))turnAction('guard');
+ }
+}
+function turnAction(mode){
+ if(!turnState||tacticalPaused||modalOpen)return false;
+ var actor=currentTurnHero();if(!actor||actor.u.hp<=0)return false;
+ var target=turnTarget(actor.pos),distance=target?Math.hypot(target.x-actor.pos.x,target.y-actor.pos.y):Infinity,r=role(actor.u);
+ if(mode==='retreat'){
+  stopTurnCombat();if(dungeon)returnFromDungeon();else goZone(0);battleLog('파티 후퇴');return true;
+ }
+ if(mode==='attack'){
+  if(!target||distance>r.range){toast('사거리 밖이야. 이동을 선택해.');return false;}
+  damageEnemy(target,(actor.id==='player'?playerAtk():aiAtk(actor.u))+die(6),actor.id);combat(actor.u).visualUntil=performance.now()+450;
+ }else if(mode==='skill'){
+  if(!turnSkill(actor,target)){toast('기술을 사용할 수 없어.');return false;}
+ }else if(mode==='guard'){
+  combat(actor.u).shieldUntil=battleTime+2;battleLog((actor.u.name||'나')+' · 방어 자세');
+ }else if(mode==='move'){
+  if(!target){toast('이동할 적이 없어.');return false;}
+  var step=Math.max(0,Math.min(135,distance-r.range*.75));if(step<3){toast('이미 행동 사거리 안이야.');return false;}
+  actor.pos.x+=(target.x-actor.pos.x)/distance*step;actor.pos.y+=(target.y-actor.pos.y)/distance*step;
+  battleLog((actor.u.name||'나')+' · 전술 이동');
+ }else return false;
+ if(actor.id==='player'){state.x=p.x;state.y=p.y;}
+ nextTurn();return true;
+}
+function updateCombat(dt){/* 실시간 공격/기술 시뮬레이션 대신 턴 행동만 처리 */}
 function partyHud(){
  var root=document.getElementById('partyCards'),used=new Set(),items=[{u:state.player,id:'player',name:state.player.name}].concat(partyMembers().map(function(a){return{u:a,id:a.id,name:a.name};}));
  items.forEach(function(item){used.add(item.id);var entry=uiPartyNodes.get(item.id);if(!entry){var b=document.createElement('button');b.className='partyCard';b.innerHTML=portraitMarkup(portraitIndex(item.u))+'<span class="partyName"></span><span class="partyRole"></span><span class="partyHealth"><i></i></span><span class="partyCooldown"></span>';b.onclick=function(){view.selection=item.id;view.center(item.id);partyHud();};root.append(b);entry={button:b,name:b.querySelector('.partyName'),role:b.querySelector('.partyRole'),health:b.querySelector('.partyHealth i'),cooldown:b.querySelector('.partyCooldown'),portrait:b.querySelector('.portrait')};uiPartyNodes.set(item.id,entry);}
- entry.button.classList.toggle('selected',view.selection===item.id);entry.button.setAttribute('aria-label',item.name+' · '+role(item.u).name+' · 체력 '+Math.ceil(item.u.hp)+' / '+item.u.maxHp+' · 누르면 카메라 이동');entry.button.setAttribute('aria-pressed',String(view.selection===item.id));entry.name.textContent=item.name;entry.role.textContent=role(item.u).name;entry.health.style.width=Math.max(0,Math.min(100,item.u.hp/item.u.maxHp*100))+'%';entry.cooldown.textContent=combat(item.u).skillAt>battleTime?'기술 '+Math.ceil(combat(item.u).skillAt-battleTime)+'초':'기술 준비';entry.portrait.style.backgroundPosition=(portraitIndex(item.u)%5)*25+'% '+Math.floor(portraitIndex(item.u)/5)*100+'%';
+ entry.button.classList.toggle('selected',turnState?currentTurnHero()&&currentTurnHero().id===item.id:view.selection===item.id);entry.button.setAttribute('aria-label',item.name+' · '+role(item.u).name+' · 체력 '+Math.ceil(item.u.hp)+' / '+item.u.maxHp+' · 누르면 카메라 이동');entry.button.setAttribute('aria-pressed',String(view.selection===item.id));entry.name.textContent=item.name;entry.role.textContent=role(item.u).name;entry.health.style.width=Math.max(0,Math.min(100,item.u.hp/item.u.maxHp*100))+'%';entry.cooldown.textContent=combat(item.u).skillAt>battleTime?'기술 '+Math.ceil(combat(item.u).skillAt-battleTime)+'턴':'기술 준비';entry.portrait.style.backgroundPosition=(portraitIndex(item.u)%5)*25+'% '+Math.floor(portraitIndex(item.u)/5)*100+'%';
  });for(var [id,entry] of uiPartyNodes)if(!used.has(id)){entry.button.remove();uiPartyNodes.delete(id);}
  var selected=items.find(function(i){return i.id===view.selection;});document.getElementById('partyInspect').textContent=(selected?selected.name:'주인공')+' · 인물 보기';
 }
@@ -354,7 +472,7 @@ function bagMenu(){
 function equipDrop(id){var d=DROPS[id];if(!d||state.player.drops.indexOf(id)<0)return;if(d.kind==="weapon"){state.player.specialWeapon=id;state.player.weapon=null;}else{state.player.specialArmor=id;state.player.armor=null;}save();toast(d.name+" 장착");}
 
 function goZone(i){
- if(dungeon)return;state.zone=Math.max(0,Math.min(ZONES.length-1,i));p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});moveTarget=null;if(view)view.center();if(state.zone>0)spawnFieldBatch();storyVisit(state.zone);save();
+ if(dungeon||turnState)return;state.zone=Math.max(0,Math.min(ZONES.length-1,i));p.x=700;p.y=520;state.x=p.x;state.y=p.y;enemies=[];partyMembers().forEach(function(a,k){a.zone=state.zone;a.x=p.x-45-k*32;a.y=p.y+55;});moveTarget=null;if(view)view.center();if(state.zone>0)spawnFieldBatch();storyVisit(state.zone);save();
 }
 function spawnFieldBatch(){
  if(state.zone===0||dungeon)return;var z=ZONES[state.zone];
@@ -418,7 +536,7 @@ function buyAIUpgrade(a,choice){
  else{a.armor=it.id;a.specialArmor=null;}
  a.shopCooldown=7;return true;
 }
-function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=nearestEnemy(p.x,p.y,r.range);if(!target){if(automatic!==true)toast("공격 범위에 적이 없어.");return;}p.attackCd=r.rate;combat(p).visualUntil=performance.now()+450;damageEnemy(target,playerAtk()+die(6),"player");}
+function attackPlayer(automatic){if(turnState)return turnAction('attack');if(!automatic)toast('적에게 다가가면 턴제 전투가 시작돼.');}
 function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(function(e){if(e.dead)return;var dx=e.x-x,dy=e.y-y,dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=e;}});return best;}
 function updateEnemies(dt){
  enemies.forEach(function(e){if(e.dead)return;e.attackCd-=dt;var targets=[{id:"player",x:p.x,y:p.y,hp:state.player.hp}];partyMembers().forEach(function(a){targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});if(!dungeon&&state.zone>0)state.ai.forEach(function(a){if(!a.party&&a.zone===state.zone&&a.routine==="hunt")targets.push({id:a.id,x:a.x,y:a.y,hp:a.hp});});var t=targets[0],bd=Infinity;targets.forEach(function(q){if(q.hp<=0)return;var dx=q.x-e.x,dy=q.y-e.y,d=dx*dx+dy*dy;if(d<bd){bd=d;t=q;}});var dist=Math.sqrt(bd);combat(e).target=t.id;
@@ -496,12 +614,26 @@ function updateInteractions(){
  prompt.classList.remove("on");
 }
 function interact(){if(modalOpen)return;if(currentInteract){if(currentInteract.kind==="heal"){state.player.hp=state.player.maxHp;partyMembers().forEach(function(a){a.hp=a.maxHp;});toast("모두 회복했어.");save();}else if(currentInteract.kind==="sell")sellMenu();else shopMenu(currentInteract.kind);return;}toast("상호작용할 대상이 없어.");}
-function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
-function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){view.selection=hit.key;moveTarget={x:hit.obj.x,y:hit.obj.y};return;}var point=view.screenToWorld(clientX,clientY);if(point){moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
+function toggleParty(ai){if(!ai)return;if(turnState){toast('전투가 끝난 뒤 동료를 변경할 수 있어.');return;}if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
+function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;if(turnState){var picked=view.pick(clientX,clientY);if(picked&&picked.kind==='enemy'&&turnState.foes.includes(picked.obj)){view.selection=picked.key;renderTurnUI();}return;}var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){view.selection=hit.key;if(turnState){renderTurnUI();return;}moveTarget={x:hit.obj.x,y:hit.obj.y};return;}var point=view.screenToWorld(clientX,clientY);if(point){moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
 function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat});}
-function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){updatePlayer(dt);updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}updateHud();hudTick+=dt;if(hudTick>.25){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
-
+function loop(now){
+ var dt=Math.min(.04,(now-last)/1000);last=now;
+ if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){
+  if(!turnState){
+   updatePlayer(dt);beginTurnCombat();
+   if(!turnState){
+    updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);
+    updateEnemies(dt);simulateFreeAI(dt);updateInteractions();
+    if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}
+   }
+  }
+  saveTick+=dt;if(saveTick>=5){saveTick=0;save();}
+ }
+ updateHud();hudTick+=dt;if(hudTick>.25){hudTick=0;partyHud();}
+ draw();requestAnimationFrame(loop);
+}
 document.getElementById("attackBtn").onclick=attackPlayer;
 document.getElementById("interactBtn").onclick=interact;
 document.getElementById("mapBtn").onclick=travelMenu;
@@ -523,8 +655,8 @@ canvas.addEventListener('pointermove',function(e){var q=pointers.get(e.pointerId
 function endPointer(e){var q=pointers.get(e.pointerId);pointers.delete(e.pointerId);if(q&&e.type==='pointerup'&&!gesture)onCanvasTap(e.clientX,e.clientY);if(!pointers.size){gesture=false;pinchDistance=0;}}
 canvas.addEventListener('pointerup',endPointer);canvas.addEventListener('pointercancel',endPointer);canvas.addEventListener('wheel',function(e){e.preventDefault();view.changeZoom(Math.exp(-e.deltaY*.001));},{passive:false});
 document.getElementById('zoomIn').onclick=()=>view.changeZoom(1.15);document.getElementById('zoomOut').onclick=()=>view.changeZoom(1/1.15);document.getElementById('rotateView').onclick=()=>view.rotate();document.getElementById('centerView').onclick=()=>view.center();
-function togglePause(){tacticalPaused=!tacticalPaused;document.getElementById('pauseBtn').textContent=tacticalPaused?'전투 재개':'일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed',String(tacticalPaused));}
-document.getElementById('pauseBtn').onclick=togglePause;document.getElementById('autoBtn').onclick=function(){autoSkills=!autoSkills;this.textContent='자동 기술 '+(autoSkills?'켬':'끔');this.setAttribute('aria-pressed',String(autoSkills));};document.getElementById('journalBtn').onclick=storyJournal;document.getElementById('classSelect').value=state.player.classId;
+function togglePause(){tacticalPaused=!tacticalPaused;document.getElementById('pauseBtn').textContent=tacticalPaused?'재개':'일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed',String(tacticalPaused));}
+document.getElementById('pauseBtn').onclick=togglePause;document.querySelectorAll('[data-turn]').forEach(function(b){b.onclick=function(){turnAction(b.dataset.turn);};});document.getElementById('autoBtn').textContent='동료 자동 켬';document.getElementById('autoBtn').onclick=function(){autoSkills=!autoSkills;this.textContent='동료 자동 '+(autoSkills?'켬':'끔');this.setAttribute('aria-pressed',String(autoSkills));};document.getElementById('journalBtn').onclick=storyJournal;document.getElementById('classSelect').value=state.player.classId;
 addEventListener('keydown',function(e){if(e.code==='Space'&&e.target===document.body&&!modalOpen&&gameStarted){e.preventDefault();togglePause();}});addEventListener('blur',function(){keys={};joy.x=joy.y=0;pointers.clear();gesture=false;});
 var joyBase=document.getElementById("joystick"),knob=document.getElementById("knob"),joyId=null;
 function joyMove(e){var r=joyBase.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,d=Math.hypot(dx,dy)||1,k=Math.min(1,max/d);dx*=k;dy*=k;joy.x=dx/max;joy.y=dy/max;knob.style.transform="translate("+dx+"px,"+dy+"px)";}
