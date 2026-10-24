@@ -71257,9 +71257,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-24T01:45:31.976Z",
+      "updatedAt": "2026-10-24T01:51:01.536Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -71269,9 +71269,9 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "7dbe69552b0dab92567b8097f5ef81bb37547d22",
+      "robloxSourceCommit": "0502debbece89893ee7569d493ba4c9979e83e85",
       "robloxSourceBootstrapPassedAt": "2026-10-23T13:02:00.587Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-24T01:06:40.166Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-24T01:51:01.536Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -71826,12 +71826,12 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "7dbe69552b0dab92567b8097f5ef81bb37547d22",
+      "robloxQualityBuildUpSourceRevision": "0502debbece89893ee7569d493ba4c9979e83e85",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-roblox-survival-horror-es-doors",
-        "sourceRevision": "7dbe69552b0dab92567b8097f5ef81bb37547d22",
+        "sourceRevision": "0502debbece89893ee7569d493ba4c9979e83e85",
         "sourceTreeSha": "6bd58befe5fb32343dc7a5ab06c9a7c3acc46a4a",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -71852,7 +71852,7 @@
         },
         "assetRepairContext": {
           "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
-          "baselineFingerprint": "eecd49f2408909f595076473250c610a2763a6acc4733c7cac694f8fbbe2917f",
+          "baselineFingerprint": "6e65709e63fce788d27abef2284aab0356767144bafb888b9daa26222ae9b51e",
           "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
         "qualityFailureKinds": [
@@ -71932,8 +71932,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40046739261,
-        "testedAt": "2026-10-24T01:06:40.166Z"
+        "workflowRunId": 40049615527,
+        "testedAt": "2026-10-24T01:51:01.536Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -93567,7 +93567,7 @@
       "updatedAt": "2026-10-24T01:45:31.976Z"
     }
   ],
-  "updatedAt": "2026-10-24T01:50:52.911Z",
+  "updatedAt": "2026-10-24T01:51:01.536Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
