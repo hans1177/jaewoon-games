@@ -26,6 +26,16 @@
       </div>
     </section>
 
+    <aside class="estate-ui" aria-label="영지 자원">
+      <div class="estate-resources" aria-label="보유 자원">
+        <span title="나무">🪵 <b id="estateWood">0</b></span>
+        <span title="돌">🪨 <b id="estateStone">0</b></span>
+        <span title="식량">🍖 <b id="estateFood">0</b></span>
+      </div>
+      <button id="estateButton" class="estate-button" type="button" aria-label="영지 건설 및 방어 메뉴">🏰 영지</button>
+    </aside>
+    <div id="estateGoal" class="estate-goal" role="status" hidden></div>
+
     <div id="raidText" class="raid-status">⏱️ 습격 2:00</div>
     <div id="hint" class="hint">섬을 천천히 둘러봐</div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -35,7 +45,8 @@
         <div class="joystick-ring"></div>
         <div id="joystickKnob" class="joystick-knob"></div>
       </div>
-      <button id="toolButton" class="tool" type="button">🤲<small>손</small></button>
+      <div class="actions">
+        <button id="toolButton" class="tool" type="button">🤲<small>손</small></button>
       <button id="actionButton" class="action" type="button">행동</button>
       </div>
     </section>
