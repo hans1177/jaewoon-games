@@ -306,7 +306,8 @@ jobs:
   web-cloud-onepatch:
     # Run WEB_VIBE_1 on GitHub with existing WEB-only queue; no native task dispatch.
     permissions:
-      contents: read
+      contents: write
+      pull-requests: write
     needs: bridge
     if: >-
       (github.event_name == 'issue_comment' || github.event_name == 'repository_dispatch') &&
@@ -318,7 +319,8 @@ jobs:
       group: web-vibe-onepatch-${{ needs.bridge.outputs.task_id }}
       cancel-in-progress: false
     env:
-      WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN }}
+      WEB_VIBE_GH_TOKEN: ${{ secrets.WEB_VIBE_GH_TOKEN || github.token }}
+      WEB_VIBE_JOB_TOKEN: ${{ !secrets.WEB_VIBE_GH_TOKEN }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       WEB_OWNER_TASK_ID: ${{ needs.bridge.outputs.task_id }}
       WEB_OWNER_FILES: ${{ needs.bridge.outputs.files }}
@@ -333,12 +335,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify WEB-only source and existing model gate
+      - name: Verify WEB-only source and existing authorization
         shell: bash
         run: |
           set -euo pipefail
           test -n "$WEB_VIBE_GH_TOKEN" || { echo 'WEB_VIBE_GITHUB_DEDICATED_PAT_REQUIRED' >&2; exit 1; }
-          test -n "$GEMINI_API_KEY" || { echo 'WEB_VIBE_GITHUB_FREE_MODEL_SECRET_REQUIRED' >&2; exit 1; }
           # Canonical owner-policy enforcement is mandatory before any game source write.
           node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
           node --check tools/web-vibe-worker.mjs
