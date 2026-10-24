@@ -362,7 +362,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     canyon:{floor:0x806958,sky:0x62574e},volcano:{floor:0x4c4142,sky:0x392f35},
     crystal:{floor:0x555378,sky:0x383855},giantlake:{floor:0x3d696a,sky:0x366677},
     worldtree:{floor:0x335039,sky:0x203e2d},flowerfield:{floor:0x668551,sky:0x586b50},
-    giantgarden:{floor:0x625071,sky:0x4a3d55},desert:{floor:0xb38c55,sky:0xa38259}
+    giantgarden:{floor:0x625071,sky:0x4a3d55},desert:{floor:0xb38c55,sky:0xa38259},
+    underwater:{floor:0x165268,sky:0x185569},'underwater-dungeon':{floor:0x234951,sky:0x0b2b38},
+    water:{floor:0x168cb3,sky:0x366677},lava:{floor:0xde5626,sky:0x392f35}
   });
   // 바닥: 원본 CC0 모델의 실제 크기(10 x 8)로 놓고 둥근 모서리의 틈을 같은 메시로 연결한다.
   sourceFloor.geometry.computeBoundingBox();
@@ -386,10 +388,42 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     forest:'tree',jungle:'tree_large',swamp:'foliage_A',snow:'tree_large',
     canyon:'cobblestones',volcano:'cobblestones',crystal:'cobblestones',
     giantlake:'foliage_A',worldtree:'tree_large',flowerfield:'foliage_A',
-    giantgarden:'foliage_A',desert:'cobblestones'
+    giantgarden:'foliage_A',desert:'cobblestones',
+    underwater:'foliage_B','underwater-dungeon':'cobblestones'
   });
   // 미로딩 원본에 접근하지 않고 실제 메시가 들어올 때만 3D 장식 인스턴스를 만든다.
   const sceneryBatches=new Map();
+  // 실내·신전·동굴의 실제 크기와 연구소 미로 벽을 원본 CC0 3D 메시로 시각화한다.
+  const interiorWalls=new Map(),wallTransform=new THREE.Object3D();
+  function updateInteriorWalls(regionScene,state,px,py){
+    for(const row of interiorWalls.values())row.mesh.count=0;
+    if(!regionScene?.bounds)return;
+    const room=regionScene.bounds,source=models.get(room.model||'cobblestones');
+    if(!source)return;
+    const kind=room.model||'cobblestones';
+    let row=interiorWalls.get(kind);
+    if(!row){
+      const mesh=new THREE.InstancedMesh(source.geometry,source.material,128);
+      mesh.count=0;mesh.frustumCulled=false;mesh.castShadow=false;mesh.receiveShadow=true;
+      scene.add(mesh);row={mesh};interiorWalls.set(kind,row)
+    }
+    let count=0;
+    const stamp=(x,y,angle=0)=>{
+      if(count>=128||Math.hypot(x-px,y-py)>1000)return;
+      wallTransform.position.set(x*SCALE,0,y*SCALE);
+      wallTransform.rotation.y=angle;wallTransform.scale.setScalar(1.5);
+      wallTransform.updateMatrix();row.mesh.setMatrixAt(count++,wallTransform.matrix)
+    };
+    const left=room.x,right=room.x+room.w,top=room.y,bottom=room.y+room.h,step=170;
+    for(let x=left;x<=right;x+=step){stamp(x,top);stamp(x,bottom)}
+    for(let y=top+step;y<bottom;y+=step){stamp(left,y,Math.PI/2);stamp(right,y,Math.PI/2)}
+    for(const b of regionScene.barriers||[]){
+      if(b.untilBoss&&state.story?.labBossDefeated)continue;
+      const vertical=b.h>b.w,length=vertical?b.h:b.w;
+      for(let d=0;d<=length;d+=step)stamp(vertical?b.x+b.w/2:b.x+d,vertical?b.y+d:b.y+b.h/2,vertical?Math.PI/2:0)
+    }
+    row.mesh.count=count;row.mesh.instanceMatrix.needsUpdate=true;row.mesh.boundingSphere=null
+  }
   let lastSceneryModelCount=-1;
   let frameSequence=0;
   let currentBiome='forest';
@@ -561,7 +595,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   let active=false,lastW=0,lastH=0;
   canvas.hidden=true;
 
-  function addVisibleEntity(key,kind,x,y,scale,seen,rotationY=0){
+  function addVisibleEntity(key,kind,x,y,scale,seen,rotationY=0,visualOnly=false){
     if(!Number.isFinite(x)||!Number.isFinite(y))return;
     if(!models.has(kind))return;
     let row=entities.get(key);
@@ -578,7 +612,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     model.rotation.y=rotationY+variation.rotation*Math.PI/180;
     model.userData.worldPoint={x,y};
     row.seen=seen;
-    interactables.push(model);
+    if(!visualOnly)interactables.push(model);
   }
   function resources(arr,kind,px,py,seen,scale=1){
     if(!Array.isArray(arr)||!models.has(kind))return;
@@ -638,7 +672,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     if(!state.player){lastHeroPoseX=null;lastHeroPoseY=null;lastHeroPoseAt=0;canvas.hidden=true;active=false;fallbackReason='player-model-unavailable';return}
     const interiorBiome={
-      underwater:'giantlake','underwater-dungeon':'giantlake',underground:'canyon',worldtreeinside:'worldtree',questcave:'swamp',
+      underwater:'underwater','underwater-dungeon':'underwater-dungeon',underground:'canyon',worldtreeinside:'worldtree',questcave:'swamp',
       storylab1:'crystal',storylab2:'crystal',jungletemple:'jungle',
       'jungletemple-upper':'jungle','jungletemple-lower':'swamp','jungletemple-secret':'jungle',
       'goblinoutpost-1':'forest','goblinoutpost-2':'forest','goblinoutpost-3':'swamp','goblinoutpost-4':'canyon'
@@ -721,7 +755,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       const gx=(centerTileX+tx)*floorPitchX,gz=(centerTileY+tz)*floorPitchZ;
       // 기존 지역 판정과 원본 모델·재질을 보존하고 지역 색만 적용한다.
       const tileZone=isInterior?currentBiome:String(classify(gx/SCALE,gz/SCALE)||'forest');
-      const tileStyle=BIOME_STYLE[tileZone]||BIOME_STYLE.forest;
+      const surface=(regionScene?.surfaces||[]).find(s=>s.kind==='water'&&gx/SCALE>=s.x&&gx/SCALE<=s.x+s.w&&gz/SCALE>=s.y&&gz/SCALE<=s.y+s.h
+        ||s.kind==='waterCircles'&&s.pools?.some(p=>Math.hypot(gx/SCALE-p.x,gz/SCALE-p.y)<=p.r)
+        ||s.kind==='lava'&&s.pools?.some(p=>Math.hypot(gx/SCALE-p.x,gz/SCALE-p.y)<=p.r));
+      const tileStyle=surface?BIOME_STYLE[surface.kind==='lava'?'lava':'water']:BIOME_STYLE[tileZone]||BIOME_STYLE.forest;
       tile.position.set(gx-floorCenterX,floorSurfaceY,gz-floorCenterZ);tile.updateMatrix();
       biomeTiles.setMatrixAt(tileIndex,tile.matrix);
       biomeTiles.setColorAt(tileIndex,floorTint.setHex(tileStyle.floor).lerp(floorNeutral,.48));
@@ -754,7 +791,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(tx<3&&tz<3){
         const seamX=gx+floorPitchX*.5,seamZ=gz+floorPitchZ*.5;
         const seamZone=isInterior?currentBiome:String(classify(seamX/SCALE,seamZ/SCALE)||'forest');
-        const seamStyle=BIOME_STYLE[seamZone]||BIOME_STYLE.forest;
+        const surface=(regionScene?.surfaces||[]).find(s=>s.kind==='water'&&seamX/SCALE>=s.x&&seamX/SCALE<=s.x+s.w&&seamZ/SCALE>=s.y&&seamZ/SCALE<=s.y+s.h
+          ||s.kind==='waterCircles'&&s.pools?.some(p=>Math.hypot(seamX/SCALE-p.x,seamZ/SCALE-p.y)<=p.r)
+          ||s.kind==='lava'&&s.pools?.some(p=>Math.hypot(seamX/SCALE-p.x,seamZ/SCALE-p.y)<=p.r));
+        const seamStyle=surface?BIOME_STYLE[surface.kind==='lava'?'lava':'water']:BIOME_STYLE[seamZone]||BIOME_STYLE.forest;
         tile.position.set(seamX-floorCenterX,floorSurfaceY-.055,seamZ-floorCenterZ);
         tile.updateMatrix();
         floorSeamTiles.setMatrixAt(seamTileIndex,tile.matrix);
@@ -852,8 +892,9 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     // 해당 지역의 기존 출입구·제단·상자만 실제 저장 좌표에 표시하고 누르기 판정은 원본 게임에 맡긴다.
     for(const mark of regionScene?.landmarks||[]){
       if(!mark||Math.hypot(mark.x-px,mark.y-py)>950)continue;
-      addVisibleEntity('region:'+state.area+':'+mark.id,mark.model,mark.x,mark.y,mark.scale||1.4,seen);
+      addVisibleEntity('region:'+state.area+':'+mark.id,mark.model,mark.x,mark.y,mark.scale||1.4,seen,0,!!mark.decorative);
     }
+    updateInteriorWalls(isInterior?regionScene:null,state,px,py);
     // Reuse existing world entities. No synthetic monsters or substitute species.
     for(const [key,row] of entities)if(row.seen!==seen){scene.remove(row.model);entities.delete(key)}
     if(unsafeUnmappedEncounter||!hero){
@@ -911,6 +952,8 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     resourceBatches.clear();
     for(const {mesh} of sceneryBatches.values()){scene.remove(mesh);mesh.dispose()}
     sceneryBatches.clear();
+    for(const {mesh} of interiorWalls.values()){scene.remove(mesh);mesh.dispose()}
+    interiorWalls.clear();
     // Source floor geometry/material are disposed once by the source model pool.
   }
   return {

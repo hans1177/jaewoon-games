@@ -601,16 +601,34 @@ const NATIVE_SCENE_LANDMARKS=Object.freeze({
   {id:'crystal-heart',model:'cobblestones',x:CRYSTAL_HEART.x,y:CRYSTAL_HEART.y,scale:2},
   {id:'survivor',model:'bench_A',x:SURVIVOR.x,y:SURVIVOR.y,scale:1.6},
   {id:'radio-lab',model:'house',x:LAB_STORY_ENTRANCE.x,y:LAB_STORY_ENTRANCE.y,scale:2},
+  {id:'root',model:'tree_large',...ROOT_NODE,scale:3,decorative:true},
+  {id:'volcano',model:'cobblestones',x:VOLCANO_CORE.x+VOLCANO_CORE.w/2,y:VOLCANO_CORE.y+VOLCANO_CORE.h/2,scale:3,decorative:true},
+  {id:'oasis',model:'foliage_B',...OASIS,scale:3,decorative:true},
+  {id:'crystal',model:'cobblestones',x:CRYSTAL_REGION.x+CRYSTAL_REGION.w/2,y:CRYSTAL_REGION.y+CRYSTAL_REGION.h/2,scale:3,decorative:true},
+  {id:'jungle',model:'tree_large',x:JUNGLE_REGION.x+JUNGLE_REGION.w/2,y:JUNGLE_REGION.y+JUNGLE_REGION.h/2,scale:3,decorative:true},
+  {id:'swamp',model:'foliage_A',x:SWAMP_REGION.x+SWAMP_REGION.w/2,y:SWAMP_REGION.y+SWAMP_REGION.h/2,scale:3,decorative:true},
+  {id:'snow',model:'tree_large',x:SNOW_REGION.x+SNOW_REGION.w/2,y:SNOW_REGION.y+SNOW_REGION.h/2,scale:3,decorative:true},
+  {id:'canyon',model:'cobblestones',x:12900,y:6800,scale:3,decorative:true},
+  {id:'flower',model:'foliage_B',x:FLOWER_FIELD.x+FLOWER_FIELD.w/2,y:FLOWER_FIELD.y+FLOWER_FIELD.h/2,scale:3,decorative:true},
+  {id:'giantgarden',model:'foliage_B',x:GIANT_GARDEN.x+GIANT_GARDEN.w/2,y:GIANT_GARDEN.y+GIANT_GARDEN.h/2,scale:3,decorative:true},
+  {id:'desert',model:'cobblestones',x:WILDERNESS_DESERT.x+WILDERNESS_DESERT.w/2,y:WILDERNESS_DESERT.y+WILDERNESS_DESERT.h/2,scale:3,decorative:true},
+  {id:'swamp-outpost',model:'house',...SWAMP_OUTPOST.chest,scale:2},
+  ...SNOW_OUTPOSTS.map((o,i)=>({id:'snow-outpost-'+i,model:'house',...o.chest,scale:2})),
   ...FLOWER_BUILDINGS.map((b,i)=>({id:'flower-house-'+i,model:'house',x:b.x,y:b.y,scale:2}))
+ ],surfaces:[
+  {kind:'water',x:GIANT_LAKE_WATER.x,y:GIANT_LAKE_WATER.y,w:GIANT_LAKE_WATER.w,h:GIANT_LAKE_WATER.h},
+  {kind:'waterCircles',pools:JUNGLE_LAKES},
+  {kind:'waterCircles',pools:[OASIS]},
+  {kind:'lava',pools:LAVA_POOLS}
  ]},
  worldtreeinside:{landmarks:[
   {id:'tree-exit',model:'gate_single',...WORLD_TREE_INTERIOR.exit,scale:2},
   {id:'root-stairs',model:'gate_single',...WORLD_TREE_INTERIOR.basement,scale:2}
- ]},
+ ],bounds:{x:55,y:55,w:WORLD_TREE_INTERIOR.w-110,h:WORLD_TREE_INTERIOR.h-110,model:'tree_large'}},
  underground:{landmarks:[
   {id:'cave-exit',model:'gate_single',...CAVE_EXIT,scale:2},
   {id:'boss-altar',model:'bench_A',...BOSS_ALTAR,scale:2}
- ]},
+ ],bounds:{x:1150,y:900,w:3700,h:2550,model:'cobblestones'}},
  underwater:{landmarks:[
   {id:'lake-surface',model:'gate_single',x:UNDERWATER.entry.x,y:UNDERWATER.exitY+40,scale:2},
   {id:'dungeon-entrance',model:'gate_single',...UNDERWATER_DUNGEON.gate,scale:3}
@@ -625,46 +643,46 @@ const NATIVE_SCENE_LANDMARKS=Object.freeze({
    {id:'north-rock-'+i,model:'cobblestones',x,y:90,scale:3},
    {id:'south-rock-'+i,model:'cobblestones',x,y:1710,scale:3}
   ])
- ]},
+ ],bounds:{x:55,y:55,w:UNDERWATER_DUNGEON.w-110,h:UNDERWATER_DUNGEON.h-110,model:'cobblestones'}},
  questcave:{landmarks:[
   {id:'quest-exit',model:'gate_single',...QUEST_CAVE.exit,scale:2},
   {id:'quest-radio',model:'package',...QUEST_CAVE.radio,scale:1.5}
- ]},
+ ],bounds:{x:55,y:55,w:QUEST_CAVE.w-110,h:QUEST_CAVE.h-110,model:'cobblestones'}},
  storylab1:{landmarks:[
   {id:'lab-exit',model:'gate_single',...STORY_LAB_1.exit,scale:1.8},
   {id:'lab-ladder',model:'gate_single',...STORY_LAB_1.ladder,scale:1.8},
   {id:'lab-chest',model:'package',...STORY_LAB_1.chest,scale:1.3}
- ]},
+ ],bounds:{x:55,y:55,w:STORY_LAB_1.w-110,h:STORY_LAB_1.h-110,model:'fence_straight'},barriers:STORY_LAB_1_WALLS},
  storylab2:{landmarks:[
   {id:'lab-ladder',model:'gate_single',...STORY_LAB_2.ladder,scale:1.8},
   {id:'lab-shutter',model:'gate_single',x:STORY_LAB_2.shutter.x,y:STORY_LAB_2.shutter.y+STORY_LAB_2.shutter.h/2,scale:2},
   {id:'lab-sensor',model:'package',...STORY_LAB_2.sensor,scale:1.3},
   {id:'lab-report',model:'package',...STORY_LAB_2.report,scale:1.3}
- ]},
+ ],bounds:{x:55,y:55,w:STORY_LAB_2.w-110,h:STORY_LAB_2.h-110,model:'fence_straight'},barriers:[{...STORY_LAB_2.shutter,untilBoss:true}]},
  jungletemple:{landmarks:[
   {id:'temple-exit',model:'gate_single',...JUNGLE_TEMPLE_LOBBY.exit,scale:1.8},
   {id:'temple-upper',model:'gate_single',...JUNGLE_TEMPLE_LOBBY.upper,scale:1.8},
   {id:'temple-lower',model:'gate_single',...JUNGLE_TEMPLE_LOBBY.lower,scale:1.8}
- ]},
+ ],bounds:{x:55,y:55,w:JUNGLE_TEMPLE_LOBBY.w-110,h:JUNGLE_TEMPLE_LOBBY.h-110,model:'cobblestones'}},
  'jungletemple-upper':{landmarks:[
   {id:'temple-return',model:'gate_single',...JUNGLE_TEMPLE_UPPER.return,scale:1.8},
   {id:'tiger-altar',model:'bench_A',...JUNGLE_TEMPLE_UPPER.altar,scale:2},
   {id:'secret-door',model:'gate_single',...JUNGLE_TEMPLE_UPPER.secret,scale:1.8}
- ]},
+ ],bounds:{x:55,y:55,w:JUNGLE_TEMPLE_UPPER.w-110,h:JUNGLE_TEMPLE_UPPER.h-110,model:'cobblestones'}},
  'jungletemple-lower':{landmarks:[
   {id:'temple-return',model:'gate_single',...JUNGLE_TEMPLE_LOWER.return,scale:1.8}
- ]},
+ ],bounds:{x:55,y:55,w:JUNGLE_TEMPLE_LOWER.w-110,h:JUNGLE_TEMPLE_LOWER.h-110,model:'cobblestones'}},
  'jungletemple-secret':{landmarks:[
   {id:'temple-return',model:'gate_single',...JUNGLE_TEMPLE_SECRET.return,scale:1.8},
   {id:'secret-chest',model:'package',...JUNGLE_TEMPLE_SECRET.chest,scale:1.3}
- ]},
+ ],bounds:{x:55,y:55,w:JUNGLE_TEMPLE_SECRET.w-110,h:JUNGLE_TEMPLE_SECRET.h-110,model:'cobblestones'}},
  ...Object.fromEntries(Object.entries(GOBLIN_OUTPOST_FLOORS).map(([floor,room])=>[
   'goblinoutpost-'+floor,{landmarks:[
    ...(room.entry?[{id:'floor-entry',model:'gate_single',...room.entry,scale:1.8}]:[]),
    ...(room.up?[{id:'floor-up',model:'gate_single',...room.up,scale:1.8}]:[]),
    ...(room.down?[{id:'floor-down',model:'gate_single',...room.down,scale:1.8}]:[]),
    ...(room.chest?[{id:'general-chest',model:'package',...room.chest,scale:1.3}]:[])
-  ]}
+  ],bounds:{x:55,y:55,w:room.w-110,h:room.h-110,model:'fence_straight'}}
  ]))
 });
 const recipes=[
