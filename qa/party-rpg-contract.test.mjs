@@ -39,7 +39,7 @@ test("파티 RPG 핵심 계약", () => {
 });
 
 test("판매상점과 AI 5분 행동 순환 계약", () => {
-  assert.ok(html.includes('name:'판매상점',kind:'sell''));
+  assert.ok(html.includes("name:'판매상점',kind:'sell'"));
   assert.ok(html.includes('function sellMaterials(unit)'));
   assert.ok(html.includes('function sellMenu()'));
   assert.ok(html.includes('materials:{}'));
