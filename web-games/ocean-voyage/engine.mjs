@@ -448,6 +448,10 @@ export function resolveMerchantEncounter(state,choice){
  }else{msg=leader.name+'과(와) 인사를 나누고 항로로 돌아왔어.';}
  s.event=null;return success(s,msg);
 }
+// 선원은 출항일마다 기존 기본 식량 2를 소비한다. 대형 함대만 추가 배급이 필요하다.
+export function dailyProvisions(s){
+ return Math.max(1,2+Math.floor(Math.max(0,s.ship.crew-40)/30)-(assignedPower(s,'quartermaster','trade')>=75?1:0));
+}
 export function stepSea(state,input={},seconds=.05){
  if(state.event||state.scene||state.landBattle)return state;
  let s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
@@ -500,7 +504,8 @@ export function stepSea(state,input={},seconds=.05){
  s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
  if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
-  s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-(assignedPower(s,'quartermaster','trade')>=75?1:2));
+  s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-dailyProvisions(s));
+  if(ship.provisions>0&&ship.provisions<10&&s.day-(s.lastFoodWarningDay||0)>=3){s.lastFoodWarningDay=s.day;note(s,'식량 부족 경고 · 근처 항구에서 보급하거나 비상 식량을 사용해.');}
   if(ship.provisions===0){ship.hull=Math.max(1,ship.hull-4);ship.crew=Math.max(1,ship.crew-1);note(s,'식량 부족으로 선원과 선체가 약해졌어.');}
  }
  for(const p of PORTS){
