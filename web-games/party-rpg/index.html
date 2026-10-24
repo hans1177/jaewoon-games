@@ -213,6 +213,17 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
  .mapCanvas{height:clamp(245px,46dvh,400px)}
 }
 @media(max-height:500px) and (orientation:landscape){#objective{top:54px}#cameraTools{top:54px}#hud #stats{width:38vw}#hud #zone{width:90px}.mapCanvas{height:56dvh;min-height:170px}}
+
+/* 이벤트 인물 표현: 기존 초상화 유지, 장면별 표정 인상과 미세 동작으로 전달 */
+.eventPortrait{position:relative;transform-origin:50% 88%;animation:eventBreathing 2.8s ease-in-out infinite;box-shadow:inset 0 0 0 1px #ffffff16,0 7px 16px #0007;filter:saturate(.76) contrast(1.13)}
+.eventScene[data-emotion="grave"] .eventPortrait{filter:grayscale(.37) brightness(.68) contrast(1.25);animation:eventShiver 2.4s ease-in-out infinite}
+.eventScene[data-emotion="resolve"] .eventPortrait{filter:saturate(.95) brightness(1.08) sepia(.08);box-shadow:0 0 0 1px #d2b97f90,0 0 23px #d9bc7633}
+.eventScene[data-emotion="grave"] .eventVista:after{opacity:.63}
+.eventWords blockquote{animation:eventFade .38s ease-out both}
+@keyframes eventBreathing{50%{transform:translateY(-2px) scale(1.012)}}
+@keyframes eventShiver{20%,80%{transform:translateX(-1px)}50%{transform:translateX(1px) rotate(-.3deg)}}
+@keyframes eventFade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.eventPortrait,.eventWords blockquote{animation:none}}
 </style>
 </head>
 <body>
@@ -679,14 +690,15 @@ function eventSceneData(key){
 }
 function showEventScene(){
  let run=activeEventScene;if(!run)return;let info=run.info,b=info.beats[run.step],last=run.step===info.beats.length-1;
- let html='<div class="eventScene" data-mood="'+escapeText(info.mood)+'"><div class="eventVista"><span class="eyebrow">'+escapeText(b.chapter)+'</span><span class="eventSigil">✧</span><h2>'+escapeText(info.title)+'</h2></div><div class="eventDialogue">'+portraitMarkup(b.portrait,'eventPortrait')+'<div class="eventWords"><span class="eyebrow">'+escapeText(b.speaker)+'</span><p>'+escapeText(b.text)+'</p><blockquote>'+escapeText(b.quote)+'</blockquote></div></div><div class="eventControls"><span>'+(run.step+1)+' / '+info.beats.length+'</span><button class="menuBtn" id="eventNext">'+(last?'장면 마치기':'다음 장면')+'</button><button class="textBtn" id="eventSkip">건너뛰기</button></div></div>';
- openModal(info.title,html);modal.dataset.mode='event';modalBody.scrollTop=0;
+ let emotion=/실패|닫힌|왕좌|고백|숨겨|봉인/.test(b.chapter)?'grave':/승리|열린|진실|기록과 선택|결정/.test(b.chapter)?'resolve':'quiet';
+ let html='<div class="eventScene" data-mood="'+escapeText(info.mood)+'" data-emotion="'+emotion+'"><div class="eventVista"><span class="eyebrow">'+escapeText(b.chapter)+'</span><span class="eventSigil">✧</span><h2>'+escapeText(info.title)+'</h2></div><div class="eventDialogue">'+portraitMarkup(b.portrait,'eventPortrait')+'<div class="eventWords"><span class="eyebrow">'+escapeText(b.speaker)+'</span><p>'+escapeText(b.text)+'</p><blockquote>'+escapeText(b.quote)+'</blockquote></div></div><div class="eventControls"><span>'+(run.step+1)+' / '+info.beats.length+'</span><button class="menuBtn" id="eventNext">'+(last?'장면 마치기':'다음 장면')+'</button><button class="textBtn" id="eventSkip">건너뛰기</button></div></div>';
+ openModal(info.title,html);modal.dataset.mode='event';modalBody.scrollTop=0;if(run.snapshot){view.targetYaw=run.snapshot.yaw+Math.sin((run.step+1)*.9)*.17;view.targetZoom=Math.min(1.55,run.snapshot.zoom*(run.step===0?1.18:1.27));}
  document.getElementById('eventNext').onclick=nextEventScene;document.getElementById('eventSkip').onclick=finishEventScene;
 }
 function playEventScene(key,done=null,replay=false){
  if(activeEventScene||!gameStarted||(!replay&&state.story.scenes[key]))return false;
  let info=eventSceneData(key);if(!info)return false;
- activeEventScene={info,done,replay,step:0,snapshot:{follow:view.follow,x:view.offset.x,y:view.offset.y,zoom:view.targetZoom,selection:view.selection}};
+ activeEventScene={info,done,replay,step:0,snapshot:{follow:view.follow,x:view.offset.x,y:view.offset.y,zoom:view.targetZoom,yaw:view.targetYaw,selection:view.selection}};
  if(info.focus){view.follow='player';view.offset.set(info.focus.x-p.x,info.focus.y-p.y);view.targetZoom=Math.max(1.14,Math.min(1.42,view.targetZoom*1.12));}
  sound.effect('story');showEventScene();return true;
 }
@@ -696,7 +708,7 @@ function nextEventScene(){
 }
 function finishEventScene(){
  let run=activeEventScene;if(!run)return;activeEventScene=null;
- let saved=run.snapshot;view.follow=saved.follow;view.offset.set(saved.x,saved.y);view.targetZoom=saved.zoom;view.selection=saved.selection;
+ let saved=run.snapshot;view.follow=saved.follow;view.offset.set(saved.x,saved.y);view.targetZoom=saved.zoom;view.targetYaw=saved.yaw;view.selection=saved.selection;
  if(!run.replay){state.story.scenes[run.info.key]=true;save();}
  if(run.done)run.done();else closeModal();
 }
@@ -1009,7 +1021,7 @@ function interact(){
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
 function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
-function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat,evidence:pendingEvidence(),council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
+function draw(){view.destination=moveTarget;view.render({p,state,enemies,dungeon,worldW,worldH,combat,cinematic:activeEventScene,evidence:pendingEvidence(),council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
 function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})));}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
 
