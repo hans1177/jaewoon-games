@@ -301,7 +301,7 @@ export function setDestination(state,id){
 export function cancelDestination(state){const s=copy(state);s.destination=null;s.route=[];s.exploreTarget=null;s.autoMode=null;return s;}
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 // 독립 상단 항해 시뮬레이션
-function advanceMerchantFleet(s,dt){for(const m of s.merchants){if(s.crewRoster.includes(m.id))continue;const a=portById(m.from),b=portById(m.to);if(!a||!b)continue;m.progress+=dt*2.65/Math.max(5,dist(a,b));if(m.progress<1)continue;const income=m.count*priceAt(m.to,m.cargo,s.day,'sell');m.coins+=income;m.lastProfit=income;m.voyages++;const old=m.from;m.from=m.to;m.to=old;m.progress=0;}}
+function advanceMerchantFleet(s,dt){for(const m of s.merchants){if(s.crewRoster.includes(m.id))continue;const a=portById(m.from),b=portById(m.to);if(!a||!b)continue;m.progress+=dt*2.65/Math.max(5,dist(a,b));if(m.progress<1)continue;const income=m.count*priceAt(m.to,m.cargo,s.day,'sell');m.coins+=income;m.lastProfit=income;m.voyages++;const old=m.from;m.from=m.to;m.to=old;m.progress=0;const spec=MERCHANT_CAPTAINS.find(c=>c.id===m.id);if(spec){m.cargo=spec.goods[m.voyages%spec.goods.length];const cost=priceAt(m.from,m.cargo,s.day,'buy');m.count=Math.min(8,Math.floor(m.coins/Math.max(1,cost)));m.coins-=m.count*cost;}}}
 export function stepSea(state,input={},seconds=.05){
  if(state.event||state.landBattle)return state;
  let s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
