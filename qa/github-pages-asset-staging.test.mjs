@@ -142,6 +142,27 @@ test('ready Pages artifact survives worker-only main changes without admitting s
  }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });
 
+test('queued Pages pruning cancels only superseded same-owner PR runs',()=>{
+ const start=workflow.indexOf("          import {execFileSync} from 'node:child_process';");
+ const stop=workflow.indexOf('          NODE',start);
+ const code=workflow.slice(start,stop).replace(/          /g,'').replace(/import .*?;\n/,'');
+ const repo='hans1177/jaewoon-games',old='a'.repeat(40),current='b'.repeat(40);
+ const base={event:'pull_request',status:'queued',head_repository:{full_name:repo},actor:{login:'hans1177'},head_branch:'patch',head_sha:old};
+ const runs=[{...base,id:1},{...base,id:2,event:'push'},{...base,id:3,status:'in_progress'},
+  {...base,id:4,head_repository:{full_name:'other/fork'}},{...base,id:5,head_sha:current},
+  {...base,id:6,head_branch:'ambiguous'},{...base,id:7,head_branch:'started'}];
+ const cancelled=[];
+ const exec=(command,args)=>{
+  assert.equal(command,'gh');const method=args[2],route=args[3];
+  if(method==='POST'){cancelled.push(route);return '';}
+  if(route.includes('/workflows/'))return JSON.stringify({workflow_runs:runs});
+  if(route.includes('pulls?'))return JSON.stringify(route.includes('ambiguous')?[]:[{head:{repo:{full_name:repo},ref:route.includes('started')?'started':'patch',sha:current}}]);
+  const id=Number(route.split('/').at(-1));return JSON.stringify({...runs.find(x=>x.id===id),...(id===7?{status:'in_progress'}:{})});
+ };
+ new Function('execFileSync','process','console',code)(exec,{env:{GITHUB_REPOSITORY:repo,GITHUB_RUN_ID:'99'}},{log(){}});
+ assert.deepEqual(cancelled,['repos/'+repo+'/actions/runs/1/cancel']);
+});
+
 test('publication lock ends after official deploy while existing route and browser QA run afterwards',()=>{
  const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
  const post=workflow.slice(workflow.indexOf('  post-publication-3d-smoke:'));

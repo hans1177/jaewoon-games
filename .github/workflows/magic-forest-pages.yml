@@ -26,7 +26,47 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: write
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('pages-pr-build-{0}', github.event.pull_request.number) || format('pages-main-build-{0}', github.run_id) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     steps:
+      - name: Prune superseded owner PR builds from the existing Pages queue
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {execFileSync} from 'node:child_process';
+          const repo=process.env.GITHUB_REPOSITORY;
+          if(repo!=='hans1177/jaewoon-games')throw Error('PAGES_PR_PRUNE_REPOSITORY');
+          const api=(path,method='GET')=>{
+            const raw=execFileSync('gh',['api','--method',method,'repos/'+repo+'/'+path],{encoding:'utf8',timeout:15000,stdio:['ignore','pipe','ignore']});
+            return raw.trim()?JSON.parse(raw):null;
+          };
+          const runs=api('actions/workflows/magic-forest-pages.yml/runs?event=pull_request&status=queued&per_page=100').workflow_runs||[];
+          let cancelled=0;
+          for(const run of runs){
+            if(cancelled>=5)break;
+            if(!Number.isSafeInteger(run.id)||run.id<=0||String(run.id)===process.env.GITHUB_RUN_ID
+              ||run.event!=='pull_request'||run.status!=='queued'||run.head_repository?.full_name!==repo
+              ||run.actor?.login!=='hans1177'||!/^[A-Za-z0-9._/-]{1,200}$/.test(run.head_branch||''))continue;
+            const pulls=api('pulls?state=all&head='+encodeURIComponent('hans1177:'+run.head_branch)+'&per_page=2');
+            if(!Array.isArray(pulls)||pulls.length!==1)continue;
+            const pr=pulls[0];
+            if(pr.head?.repo?.full_name!==repo||pr.head?.ref!==run.head_branch
+              ||!/^[a-f0-9]{40}$/.test(pr.head?.sha||'')||pr.head.sha===run.head_sha)continue;
+            const current=api('actions/runs/'+run.id);
+            if(current.status!=='queued'||current.event!=='pull_request'||current.head_sha!==run.head_sha)continue;
+            api('actions/runs/'+run.id+'/cancel','POST');cancelled++;
+            console.log('PAGES_SUPERSEDED_PR_CANCELLED='+run.id);
+          }
+          console.log('PAGES_SUPERSEDED_PR_CANCEL_COUNT='+cancelled);
+          NODE
       - name: Checkout exact main source without hydrating large unused assets
         uses: actions/checkout@v4
         with:
