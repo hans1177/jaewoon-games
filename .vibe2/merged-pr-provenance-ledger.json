@@ -91579,11 +91579,160 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_30661ccca341542b16c14567",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9747",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "bed9a17cebaf26f85d9efe63b1627800df195324",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9747,
+        "baseBranch": "main",
+        "headBranch": "feat/magic-forest-cc0-icons-20261024",
+        "baseSha": "bed9a17cebaf26f85d9efe63b1627800df195324",
+        "headSha": "33c2b6b395557b26ad6dca5dd70a2179b10685e9",
+        "mergeCommitSha": "bf2d1f2062d892bf40342122b9ff19dcddbf5e68",
+        "mergedAt": "2026-10-24T06:24:38Z",
+        "authorLogin": "hans1177",
+        "titleHash": "dee3453735be6539e1a37d94ac585eb9c1b93ddd769e22fe1782d01eb4719fe5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/magic-forest-cc0-icons-20261024",
+        "candidateSha": "33c2b6b395557b26ad6dca5dd70a2179b10685e9"
+      },
+      "changeStats": {
+        "changedFileCount": 27,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 218,
+        "deletedLineCount": 23,
+        "changedFiles": [
+          "assets/asset-license-ledger.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/fantasy-survival/icons/armor.png",
+          "web-games/fantasy-survival/icons/armorgold.png",
+          "web-games/fantasy-survival/icons/aurared.png",
+          "web-games/fantasy-survival/icons/axe.png",
+          "web-games/fantasy-survival/icons/bag.png",
+          "web-games/fantasy-survival/icons/book.png",
+          "web-games/fantasy-survival/icons/bookholy.png",
+          "web-games/fantasy-survival/icons/chest.png",
+          "web-games/fantasy-survival/icons/crossbow.png",
+          "web-games/fantasy-survival/icons/fireball.png",
+          "web-games/fantasy-survival/icons/frostball.png",
+          "web-games/fantasy-survival/icons/hammerheavy.png",
+          "web-games/fantasy-survival/icons/helmet.png",
+          "web-games/fantasy-survival/icons/legarmor.png",
+          "web-games/fantasy-survival/icons/potionblue.png",
+          "web-games/fantasy-survival/icons/potionred.png",
+          "web-games/fantasy-survival/icons/shield.png",
+          "web-games/fantasy-survival/icons/sword.png",
+          "web-games/fantasy-survival/icons/swordblood.png",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/asset-license-ledger.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9747",
+        "merge-commit:bf2d1f2062d892bf40342122b9ff19dcddbf5e68",
+        "base-main:bed9a17cebaf26f85d9efe63b1627800df195324"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 719
+    "total": 720
   }
 }
