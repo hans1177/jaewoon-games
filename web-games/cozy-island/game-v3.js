@@ -29,7 +29,7 @@ const pressed=new Set();
 let selectedTool=0,lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
 let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
 // 메인: 기존 일반 습격은 그대로 두고 성채 건설 이후 선택형 대공성전만 추가한다.
-let grandSiege=null;
+let grandSiege=null,raidWarningShown=false;
 const SIEGE_INTERVALS=[60,120,180,300,600],SIEGE_WAVE_SIZES=[18,24,30,34,38,42];
 const getFort=()=>state.villageDevelopment?.fortification;
 const raidInterval=()=>SIEGE_INTERVALS.includes(getFort()?.raidIntervalSec)?getFort().raidIntervalSec:RAID_INTERVAL;
@@ -125,6 +125,11 @@ function updateRaid(dt){
   const fort=getFort();
   if(!raidActive){
     state.raidTimer+=dt;
+    const remaining=raidInterval()-state.raidTimer;
+    if(remaining>30)raidWarningShown=false;
+    if(!raidWarningShown&&remaining<=30&&remaining>0&&!fort?.siegeRequested){
+      raidWarningShown=true;toast('🔔 정찰대 경보! 30초 뒤 습격이 시작돼');
+    }
     if(fort?.siegeRequested || state.raidTimer>=raidInterval())startRaid();
     return;
   }
@@ -152,7 +157,7 @@ function startRaid(){
   const siegeEnabled=!!fort?.siegeRequested||(!!fort&&fort.siegeAuto==='always')||
     (!!fort&&auto==='third'&&state.raidNumber===2);
   if(fort)fort.siegeRequested=false;
-  state.raidTimer=0;state.raidNumber=(state.raidNumber%3)+1;
+  state.raidTimer=0;raidWarningShown=false;state.raidNumber=(state.raidNumber%3)+1;
   raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];
   // 기존 일반 습격/특수 습격 로직을 그대로 실행한다.
   if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
@@ -205,7 +210,8 @@ function updateCombatUnit(u,targets,dt,hostile){
     const fort=getFort(),walls=fort?.walls||{};
     const lane=u._siegeLane||610;
     const key=lane<520?'north':lane>730?'south':'gate';
-    if(fort&&state.villageDevelopment?.townHallBuilt&&(Number(walls[key])||0)>0){
+    if(fort&&state.villageDevelopment?.townHallBuilt&&(Number(walls[key])||0)>0&&
+      (key!=='gate'||fort.drawbridgeClosed!==false)){
       if(u.x>1353||Math.abs(u.y-lane)>25)moveToward(u,1355,lane,dt);
       return;
     }
@@ -222,7 +228,13 @@ function updateCombatUnit(u,targets,dt,hostile){
   else if(u.cool<=0){t.hp-=u.attack;u.cool=u.kind==='archer'?1.15:.85}
 }
 function nearestLiving(u,arr){let b=null,bd=1e9;for(const t of arr){if(t.hp<=0)continue;const d=Math.hypot(t.x-u.x,t.y-u.y);if(d<bd){bd=d;b=t}}return b}
-function moveToward(u,x,y,dt){const dx=x-u.x,dy=y-u.y,d=Math.hypot(dx,dy)||1;u.x+=dx/d*u.speed*dt;u.y+=dy/d*u.speed*dt}
+function moveToward(u,x,y,dt){
+  const dx=x-u.x,dy=y-u.y,d=Math.hypot(dx,dy)||1;
+  // 해자 이동 감소는 새 대공성전 병력에만 적용. 기존 유닛 속도는 건드리지 않는다.
+  const speed=u.speed*(u._grandSiege?(u._siegeMoatFactor||1):1);
+  const step=Math.min(d,speed*dt);
+  u.x+=dx/d*step;u.y+=dy/d*step;
+}
 function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length){state.army=alive.map(u=>({kind:u.kind}));saveSoon()}}
 
 function makeWolf(id,x,y){return{id,x,y,homeX:x,homeY:y,hp:200,maxHp:200,attack:10,speed:68,cool:0,alive:true,respawnAt:0,wander:0,vx:0,vy:0}}
