@@ -929,7 +929,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
         const barren=tileZone==='volcano'||tileZone==='desert'||tileZone==='canyon';
-        const details=mobileBudget?(hash%3===0?1:0):barren?1:3;
+        const details=mobileBudget?(hash%5===0?1:0):barren?1:3;
         const sceneryChoices=SCENERY_KIND[tileZone]||SCENERY_KIND.forest;
         for(let detail=0;detail<details;detail++){
           const seed=(hash^Math.imul(detail+1,2246822519))>>>0;
