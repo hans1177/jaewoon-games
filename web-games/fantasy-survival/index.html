@@ -423,10 +423,6 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
 @media(prefers-reduced-motion:reduce){.questNavArrow{transition:none}}
 
 /* 지역 이동: 기존 입장 함수와 연결되는 모바일 근접 조작 */
-.regionExitList{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin:10px 0;max-height:min(30dvh,240px);overflow:auto}
-.regionExitList button{min-height:44px;border:1px solid #aa946a;border-radius:8px;background:#233e34;color:#f9e5b8;font-weight:700;padding:7px;font-size:12px;touch-action:manipulation;text-align:left}
-.regionExitList button[aria-pressed="true"]{border-color:#f1df87;background:#365b40}
-.arpgDetails .mat .arpgIcon{display:inline-block;width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:5px}
 .regionTravel[hidden]{display:none!important}
 .regionTravel{position:absolute;z-index:18;left:50%;bottom:max(322px,calc(env(safe-area-inset-bottom) + 314px));transform:translateX(-50%);width:min(238px,calc(100vw - 28px));min-height:48px;padding:10px 14px;border:1px solid #cbb77b;border-radius:12px;background:#152b25f2;color:#fff0c2;font-weight:800;box-shadow:0 4px 18px #0008;touch-action:manipulation}
 body:has(#optionsPanel.open) .regionTravel,body:has(#multiPanel.open) .regionTravel,body:has(#smeltPanel.open) .regionTravel,body:has(#questNavDetails:not([hidden])) .regionTravel,body:has(#sheet.open) .regionTravel,body:has(#hudGuide:not([hidden])) .regionTravel,body:has(#avatarPanel:not([hidden])) .regionTravel,body[data-native-blocked="true"] .regionTravel{visibility:hidden;pointer-events:none}
@@ -624,7 +620,6 @@ const LAVA_POOLS=[{x:7400,y:3450,r:120},{x:7950,y:4050,r:140},{x:8650,y:3320,r:1
 const NATIVE_SCENE_LANDMARKS=Object.freeze({
  surface:{landmarks:[
   {id:'lake-dive',model:'gate_single',x:GIANT_LAKE_WATER.x+GIANT_LAKE_WATER.w/2,y:GIANT_LAKE_WATER.y+GIANT_LAKE_WATER.h+40,scale:2},
-  {id:'world-tree-hole',model:'gate_single',...TREE_HOLE,scale:1.8},
   {id:'world-tree',model:'tree_large',x:WORLD_TREE.x,y:WORLD_TREE.y,scale:8},
   {id:'world-tree-door',model:'gate_single',x:WORLD_TREE_INTERIOR.door.x,y:WORLD_TREE_INTERIOR.door.y,scale:2},
   {id:'goblin-outpost',model:'gate_single',x:GOBLIN_OUTPOST_ENTRANCE.x,y:GOBLIN_OUTPOST_ENTRANCE.y,scale:2},
@@ -2027,57 +2022,10 @@ function addMaterial(k,n=1){const p=state.player;if(Object.prototype.hasOwnPrope
 function canPay(cost){if(isCreative())return true;const c=normalizeCost(cost);return Object.keys(c).every(k=>materialAmount(k)>=c[k])}
 function pay(cost){if(isCreative())return;const p=state.player,c=normalizeCost(cost);for(const [k,v] of Object.entries(c)){if(!v)continue;if(Object.prototype.hasOwnProperty.call(p,k))p[k]-=v;else{p.loot=p.loot||{};p.loot[k]=(p.loot[k]||0)-v}}state.dirty=true}
 function costText(cost){const c=normalizeCost(cost),out=[],baseNames={wood:'나무',stone:'돌',fiber:'섬유',ironOre:'철광석',ironIngot:'구운철',goldOre:'화산 금',goldIngot:'구운금',essence:'정수'};for(const [k,v] of Object.entries(c))if(v)out.push((baseNames[k]||DROP_MATERIAL_NAMES[k]||k)+' '+v);return out.join(' · ')||'재료 없음'}
-// 자산 라이브러리: 검증된 CC0 원본 아이콘을 제작·재료·전리품 화면에 공통 연결한다.
-// 원본 아이템 ID/수치/종류와 기존 저장 구조는 변경하지 않는다.
-const iconFor=(id,kind,name='')=>{
- const key=(String(id||'')+' '+String(name||'')).toLocaleLowerCase('ko');
- if(kind==='map'||/지도|도감/.test(key))return 'book';
- if(kind==='torch'||/torch|횃불/.test(key))return 'fireball';
- if(kind==='structure'){
-  if(/chest|상자|storage|보관/.test(key))return 'chest';
-  if(/wall|tower|문|벽|탑|방어/.test(key))return 'shield';
-  if(/furnace|forge|anvil|화로|용광로|모루/.test(key))return 'hammerheavy';
-  if(/garden|seed|텃밭/.test(key))return 'bookholy';
-  return 'armor';
- }
- if(kind==='weapon'||kind==='tool'){
-  if(/bow|crossbow|arrow|활|석궁/.test(key))return 'crossbow';
-  if(/axe|도끼/.test(key))return 'axe';
-  if(/hammer|maul|pick|망치|곡괭이|철퇴/.test(key))return 'hammerheavy';
-  if(/orb|spore|구슬|추적구/.test(key))return /toxic|독|ice|눈|수정/.test(key)?'frostball':'fireball';
-  if(/dagger|단검|knife|scythe|낫|칼/.test(key))return 'swordblood';
-  return 'sword';
- }
- if(kind==='armor'){
-  if(/shield|방패/.test(key))return 'shield';
-  if(/helmet|투구|머리/.test(key))return 'helmet';
-  if(/leg|다리/.test(key))return 'legarmor';
-  if(/gold|황금|sunstone|태양석|금/.test(key))return 'armorgold';
-  return 'armor';
- }
- if(kind==='ammo')return 'crossbow';
- if(kind==='consumable'){
-  if(/bandage|붕대|회복|heal/.test(key))return 'potionred';
-  if(/독|poison|mana|마나|물약/.test(key))return 'potionblue';
-  return 'bag';
- }
- if(kind==='seed')return 'bookholy';
- if(kind==='ingredient'||kind==='material'){
-  if(/egg|알/.test(key))return 'aurared';
-  if(/wood|나무|잎|fiber|섬유|씨앗/.test(key))return 'bookholy';
-  if(/iron|stone|rock|gold|광석|돌|금|철|crystal|수정/.test(key))return 'hammerheavy';
-  if(/core|essence|정수|핵|마력|magic/.test(key))return 'aurared';
-  if(/meat|고기|raw|food|당근/.test(key))return 'bag';
-  if(/hide|fur|shell|가죽|껍질|늑대/.test(key))return 'armor';
-  return 'chest';
- }
- return 'chest';
-};
-const iconTag=(id,kind,name='')=>'<img class="arpgIcon" alt="" loading="lazy" decoding="async" src="./icons/'+iconFor(id,kind,name)+'.png">';
-function lootMaterialHtml(){return Object.entries(DROP_MATERIAL_NAMES).map(([k,n])=>state.knownMaterials[k]?'<div class="mat">'+iconTag(k,'material',n)+n+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>').join('')}
-function materialInventoryRow(k,name){return state.knownMaterials[k]?'<div class="mat">'+iconTag(k,'material',name)+name+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>'}
-function structureInventoryRow(id,placed){if(!placed)return '<div class="mat">??? <b>?</b></div>';const r=item(id);return '<div class="mat">'+iconTag(id,'structure',r?.name||id)+(r?.name||id)+' <b>설치됨</b></div>'}
-function structureCountRow(name,count){const n=Math.max(0,Number(count)||0);return n?'<div class="mat">'+iconTag(name,'structure',name)+name+' <b>'+n+'개</b></div>':'<div class="mat">??? <b>?</b></div>'}
+function lootMaterialHtml(){return Object.entries(DROP_MATERIAL_NAMES).map(([k,n])=>state.knownMaterials[k]?'<div class="mat">'+n+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>').join('')}
+function materialInventoryRow(k,name){return state.knownMaterials[k]?'<div class="mat">'+name+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>'}
+function structureInventoryRow(id,placed){if(!placed)return '<div class="mat">??? <b>?</b></div>';const r=item(id);return '<div class="mat">'+(r?.name||id)+' <b>설치됨</b></div>'}
+function structureCountRow(name,count){const n=Math.max(0,Number(count)||0);return n?'<div class="mat">'+name+' <b>'+n+'개</b></div>':'<div class="mat">??? <b>?</b></div>'}
 function nearStructure(s,range=155){return state.area==='surface'&&!!s&&dist(state.player.x,state.player.y,s.x,s.y)<range}function nearBench(){return nearStructure(state.bench)}function nearIronBench(){return nearStructure(state.ironBench)}function nearGoldBench(){return nearStructure(state.goldBench)}
 function nearJungleBench(){return nearStructure(state.jungleBench)}function nearSunstoneBench(){return nearStructure(state.sunstoneBench)}function nearAnvil(){return nearStructure(state.blacksmithAnvil,175)}function nearFurnace(){return nearStructure(state.furnace,175)}function nearCookingStation(){return nearStructure(state.cookingStation,175)}
 function recalcPlayerMaxHp(){const p=state.player;p.maxHp=100+effectiveStat(p.armor,'maxHp')+effectiveStat(p.weapon,'maxHp');p.hp=Math.min(p.hp,p.maxHp)}
@@ -2393,7 +2341,7 @@ function renderInventory(){
  // 메인 · 기존 보유/장착/소모품 상태만 읽는 다크 판타지 장비·가방 화면. 저장 및 게임 판정 불변.
  tabState();
  const p=state.player;
- const gear=recipes.filter(r=>['weapon','tool','armor','ammo','consumable','ingredient','seed','structure','map','material'].includes(r.kind)&&invCount(r.id)>0)
+ const gear=recipes.filter(r=>['weapon','tool','armor','ammo','consumable','ingredient','seed'].includes(r.kind)&&invCount(r.id)>0)
    .sort((a,b)=>itemTier(b.id)-itemTier(a.id)||a.name.localeCompare(b.name,'ko'));
  const stats={
   hp:Math.ceil(p.hp),maxHp:Math.ceil(p.maxHp),food:Math.ceil(p.hunger),
@@ -2402,6 +2350,30 @@ function renderInventory(){
  };
  const slot=(name,id,kind)=>'<div class="arpgGearSlot '+(id?'filled':'')+'"><span class="arpgGearMark">'+iconTag(id,kind,id?item(id)?.name:'')+'</span><span class="arpgGearLabel">'+name+'</span><strong>'+(id?upgradedName(id):'비어 있음')+'</strong>'+(id?'<small>'+itemTier(id)+'티어 장착</small>':'<small>가방에서 장착</small>')+'</div>';
  // 기존 아이템 ID·종류·이름만 활용한다. 실제 아이콘은 CC0 원본 추출 PNG이며 게임 데이터는 수정하지 않는다.
+ const iconFor=(id,kind,name='')=>{
+  const key=(String(id||'')+' '+String(name||'')).toLocaleLowerCase('ko');
+  if(/torch|횃불/.test(key))return 'fireball';
+  if(kind==='weapon'||kind==='tool'){
+   if(/bow|crossbow|arrow|활|석궁/.test(key))return 'crossbow';
+   if(/axe|도끼/.test(key))return 'axe';
+   if(/hammer|maul|pick|망치|곡괭이|철퇴/.test(key))return 'hammerheavy';
+   if(/orb|spore|구슬|추적구/.test(key))return /toxic|독|ice|눈|수정/.test(key)?'frostball':'fireball';
+   if(/dagger|단검|knife|scythe|낫|칼/.test(key))return 'swordblood';
+   return 'sword';
+  }
+  if(kind==='armor'){
+   if(/shield|방패/.test(key))return 'shield';
+   if(/helmet|투구|머리/.test(key))return 'helmet';
+   if(/leg|다리/.test(key))return 'legarmor';
+   if(/gold|황금|sunstone|태양석|금/.test(key))return 'armorgold';
+   return 'armor';
+  }
+  if(kind==='ammo')return 'crossbow';
+  if(kind==='consumable')return /bandage|붕대/.test(key)?'potionred':'bag';
+  if(kind==='ingredient'||kind==='seed')return 'bag';
+  return 'chest';
+ };
+ const iconTag=(id,kind,name='')=>'<img class="arpgIcon" alt="" loading="lazy" decoding="async" src="./icons/'+iconFor(id,kind,name)+'.png">';
  let html='<section class="arpgInventory" aria-label="장비와 인벤토리">'
   +'<header class="arpgHead"><div><small>마력숲 · 모험가 정보</small><h2>장비와 소지품</h2></div><button class="arpgAppearance" id="arpgAppearance" type="button">외형 변경</button></header>'
   +'<div class="arpgContent"><section class="arpgCharacter" aria-label="캐릭터 장비">'
@@ -2429,17 +2401,14 @@ function renderInventory(){
   if(r.kind==='consumable')action='사용';
   if(r.kind==='ingredient')action='요리 재료';
   if(r.kind==='seed')action='심기';
-  if(r.kind==='map')action='지도 보기';
-  if(r.kind==='structure')action='설치물 · 제작 메뉴';
-  if(r.kind==='material')action='제작 재료';
-  const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||r.kind==='map'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');
+  const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');
   html+='<button class="invItem arpgItem arpgTier'+itemTier(r.id)+(clickable?'':' isEquipped')+'" data-inventory-kind="'+(['weapon','tool','armor','ammo'].includes(r.kind)?'equipment':['consumable','seed'].includes(r.kind)?'usable':'material')+'" data-id="'+r.id+'" '+(clickable?'':'disabled')+'>'
    +'<span class="arpgItemGlyph">'+iconTag(r.id,r.kind,r.name)+'</span><span class="tierBadge">'+itemTier(r.id)+'티어</span>'
    +'<b>'+upgradedName(r.id)+'</b><small>×'+invCount(r.id)+'</small><small class="slot">'+action+'</small></button>';
  }
  if(isCreative())html+='<button class="invItem arpgItem" data-inventory-kind="material" id="creativeBlockItem"><span class="arpgItemGlyph">'+iconTag('creative-block','material','스폰 블록')+'</span><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 설정</small><small class="slot">설치하기</small></button>';
  html+='</div><p id="arpgItemInfo" class="arpgItemInfo" role="status" aria-live="polite">아이템을 선택하면 설명이 나타나.</p><details class="arpgDetails" open><summary>'+iconTag('materials','material','재료')+'재료와 자원</summary><div class="invMaterials">'
-  +'<div class="mat">'+iconTag('wood','material','나무')+'나무 <b>'+p.wood+'</b></div><div class="mat">'+iconTag('stone','material','돌')+'돌 <b>'+p.stone+'</b></div><div class="mat">'+iconTag('fiber','material','섬유')+'섬유 <b>'+p.fiber+'</b></div>'
+  +'<div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'
   +materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div></details>'
   +'<details class="arpgDetails"><summary>'+iconTag('buildings','structure','건축')+'설치물과 건축 현황</summary><div class="invMaterials">'
   +structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('toxic-furnace',state.toxicFurnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('sunstone-bench',state.sunstoneBench)+structureInventoryRow('blacksmith-anvil',state.blacksmithAnvil)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)
@@ -2492,7 +2461,6 @@ function renderInventory(){
   if(r?.kind==='consumable')useItem(r.id);
   else if(r?.kind==='seed')plantSeed(r.id);
   else if(r?.kind==='ammo')selectArrow(r.id);
-  else if(r?.kind==='map')openMap();
   else if(r)equipItem(r.id)
  }))
 }
@@ -2544,26 +2512,6 @@ function drawLakeMap(mc){
 function drawMap(){
  const mc=document.getElementById('mapCanvas');if(!mc)return;
  if(state.area==='underwater'||state.area==='underwater-dungeon'){drawLakeMap(mc);return}
- // 지상이 아닌 실제 방/던전 지도는 지상 월드를 그리지 않고 기존 룸 랜드마크와 출입구를 표시한다.
- if(state.area!=='surface'){
-  const m=mc.getContext('2d'),sceneData=NATIVE_SCENE_LANDMARKS[state.area]||{};
-  const marks=sceneData.landmarks||[],passages=regionPassages(),bounds=sceneData.bounds||{};
-  const mapW=Math.max((bounds.x||0)+(bounds.w||0)+110,state.player.x+100,...marks.map(mark=>mark.x+100));
-  const mapH=Math.max((bounds.y||0)+(bounds.h||0)+110,state.player.y+100,...marks.map(mark=>mark.y+100));
-  const sx=mc.width/Math.max(1,mapW),sy=mc.height/Math.max(1,mapH);
-  m.fillStyle='#112a2b';m.fillRect(0,0,mc.width,mc.height);
-  m.strokeStyle='#6e8875';m.lineWidth=2;m.strokeRect(1,1,mc.width-2,mc.height-2);
-  for(const mark of marks){if(!Number.isFinite(mark.x)||!Number.isFinite(mark.y))continue;
-   m.fillStyle=mark.model==='package'?'#c9ad73':'#6f948c';
-   m.fillRect(mark.x*sx-3,mark.y*sy-3,6,6);
-  }
-  for(const passage of passages){
-   const x=passage.x*sx,y=passage.y*sy;m.fillStyle='#f5dd87';m.beginPath();m.arc(x,y,5,0,Math.PI*2);m.fill();
-   m.textAlign='center';m.font='bold 9px system-ui';m.fillText(passage.name,x,Math.max(10,y-8));
-  }
-  const p=state.player;m.fillStyle='#fff';m.beginPath();m.arc(p.x*sx,p.y*sy,5,0,Math.PI*2);m.fill();
-  return;
- }
  const m=mc.getContext('2d'),sx=mc.width/WORLD.w,sy=mc.height/WORLD.h;
  m.fillStyle='#040806';m.fillRect(0,0,mc.width,mc.height);
  for(const key of Object.keys(state.explored)){
@@ -2597,8 +2545,7 @@ function drawMap(){
  multiplayer.pings=multiplayer.pings.filter(p=>p.expiresAt>Date.now());
  for(const p of multiplayer.pings){if((p.area||'surface')!=='surface')continue;const x=p.x*sx,y=p.y*sy;m.strokeStyle='#ffd85a';m.lineWidth=2;m.beginPath();m.arc(x,y,7,0,Math.PI*2);m.stroke();m.beginPath();m.moveTo(x-10,y);m.lineTo(x+10,y);m.moveTo(x,y-10);m.lineTo(x,y+10);m.stroke()}
  // 지도: 기존 발견 영역과 핑을 보존하고 현재 목적지 방향의 직선 기준선만 추가한다.
- const chosen=regionPassages().find(row=>row.id===regionTravelGuideId);
- const guidance=chosen?{...chosen,area:state.area}:questGuideData();
+ const guidance=questGuideData();
  if(state.area==='surface'&&guidance?.area==='surface'&&Number.isFinite(guidance.x)&&Number.isFinite(guidance.y)){
   const p=state.player,tx=guidance.x*sx,ty=guidance.y*sy;
   m.save();m.setLineDash([4,5]);m.lineWidth=1.5;m.strokeStyle='#f6d17e';
@@ -2610,22 +2557,9 @@ function drawMap(){
  const mapPlayerPos=state.area.startsWith('jungletemple')?JUNGLE_TEMPLE_ENTRANCE:state.player;m.fillStyle='#ffffff';m.beginPath();m.arc(mapPlayerPos.x*sx,mapPlayerPos.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){
- tabState();
- const title=state.area==='underwater-dungeon'?'수중 던전 지도':state.area==='underwater'?'거대 호수 지도':state.area==='surface'?'탐험 지도':'지역 지도';
- const passages=regionPassages().slice().sort((a,b)=>dist(state.player.x,state.player.y,a.x,a.y)-dist(state.player.x,state.player.y,b.x,b.y));
- ui.sheetBody.innerHTML='<div class="info"><b>'+title+'</b><br>방향 안내는 실제 이동을 돕고 순간 이동이나 잠금 해제는 하지 않아. 지상은 탐험한 지형만 표시돼.</div>'
-  +'<canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>'
-  +'<div class="info">지역 출입구 · 눌러서 방향 안내</div><nav class="regionExitList" aria-label="지역 출입구 길안내">'
-  +passages.map(row=>'<button type="button" data-region-guide="'+row.id+'" aria-pressed="'+String(regionTravelGuideId===row.id)+'">'
-    +row.name+' · '+Math.ceil(dist(state.player.x,state.player.y,row.x,row.y))+' 거리</button>').join('')+'</nav>';
- drawMap();
- const mc=document.getElementById('mapCanvas');
- if(mc&&(state.area==='surface'||state.area==='underwater'))mc.addEventListener('pointerdown',placeMapPing);
- ui.sheetBody.querySelectorAll('[data-region-guide]').forEach(button=>button.addEventListener('click',()=>{
-  regionTravelGuideId=regionTravelGuideId===button.dataset.regionGuide?'':button.dataset.regionGuide;
-  closeSheet();questGuideUpdateAt=-Infinity;updateQuestGuide();
-  showNotice(regionTravelGuideId?'입구 길안내 시작 · 직접 걸어서 이동해':'퀘스트 길안내로 복귀');
- }));
+ tabState();const title=state.area==='underwater-dungeon'?'수중 던전 지도':state.area==='underwater'?'거대 호수 지도':'지도';
+ ui.sheetBody.innerHTML='<div class="info"><b>'+title+'</b><br>직접 가본 곳만 표시돼. 발견하지 않은 미니 바이옴은 지도에 나오지 않아. 핑은 10초에 1개씩 찍을 수 있어.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';
+ drawMap();const mc=document.getElementById('mapCanvas');if(mc)mc.addEventListener('pointerdown',placeMapPing)
 }
 
 function placeMapPing(e){
@@ -2970,7 +2904,7 @@ function questGuideData(){
  if(area!=='surface'&&area!==next.area)return{name:'지상으로 이동',area:null,x:null,y:null,hint:'먼저 현재 지역의 출입구로 나가서 지상에 돌아와.'};
  return next;
 }
-let questGuideUpdateAt=0,regionTravelGuideId='';
+let questGuideUpdateAt=0;
 function updateQuestGuide(now=performance.now()){
  if(now-questGuideUpdateAt<380)return;
  questGuideUpdateAt=now;
@@ -2983,13 +2917,7 @@ function updateQuestGuide(now=performance.now()){
  const root=document.getElementById('questNav'),button=document.getElementById('questNavOpen');
  const arrow=document.getElementById('questNavArrow'),distance=document.getElementById('questNavDistance');
  const title=document.getElementById('questNavTitle'),hint=document.getElementById('questNavHint');
- // 지도에서 고른 현재 지역의 출입구를 기존 길안내 UI에 표시한다. 이동/해금은 원래 함수가 담당한다.
- const selectedPassage=regionPassages().find(row=>row.id===regionTravelGuideId);
- if(!selectedPassage)regionTravelGuideId='';
- const map=document.getElementById('questNavMap'),target=selectedPassage
-  ?{name:selectedPassage.name,area:state.area,x:selectedPassage.x,y:selectedPassage.y,
-    hint:'표시된 방향으로 걸어서 입구에 도착한 뒤 지역 이동을 눌러. 원래 해금·보스·제물 조건은 유지돼.'}
-  :questGuideData();
+ const map=document.getElementById('questNavMap'),target=questGuideData();
  root.hidden=!target;
  if(!target){document.body.dataset.questGuideTarget='';return}
  title.textContent=target.name;
@@ -4365,15 +4293,10 @@ function regionPassages(){
  const add=(id,name,point,action,range=180,tapRadius=100)=>rows.push({id,name,x:point.x,y:point.y,action,range,tapRadius});
  if(state.area==='surface'){
   add('worldtree-inner-door','세계수 내부',WORLD_TREE_INTERIOR.door,enterWorldTreeInterior,270,130);
-  add('worldtree-hole','세계수 지하 동굴',TREE_HOLE,enterCave,185,105);
   add('goblin-outpost-entry','고블린 전초기지',GOBLIN_OUTPOST_ENTRANCE,enterGoblinOutpost,220,127);
   add('jungle-temple-entry','밀림 신전',JUNGLE_TEMPLE_ENTRANCE,enterJungleTemple,220,122);
   add('wasteland-cave','황무지 동굴',WASTELAND_CAVE,enterQuestCave,210,90);
   add('story-lab-entry','연구소 1층',LAB_STORY_ENTRANCE,enterStoryLab,210,90);
-  // 수면 충돌을 유지하면서 호숫가에서도 기존 잠수 입장 함수를 사용한다.
-  add('giant-lake-shore','거대 호수 수중',{
-   x:GIANT_LAKE_WATER.x+GIANT_LAKE_WATER.w/2,y:GIANT_LAKE_WATER.y+GIANT_LAKE_WATER.h+40
-  },enterUnderwater,210,112);
   if(regionAt(p.x,p.y)==='giantlake')add('giant-lake-water','거대 호수 잠수',{
    x:clamp(p.x,GIANT_LAKE_WATER.x,GIANT_LAKE_WATER.x+GIANT_LAKE_WATER.w),
    y:clamp(p.y,GIANT_LAKE_WATER.y,GIANT_LAKE_WATER.y+GIANT_LAKE_WATER.h)

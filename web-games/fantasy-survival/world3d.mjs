@@ -358,8 +358,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.18;
-  // 모바일 저사양 그래픽: 기존 3D 모델·충돌·몬스터는 유지하고 화면 렌더링 해상도만 낮춘다.
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*(mobileBudget?.82:1));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -466,7 +465,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const creatureBounds=new THREE.Sphere(new THREE.Vector3(),4);
   const missingVisibleMonsterIds=new Set();
   let fallbackReason='';
-  let qualityFactor=mobileBudget?.82:1,framesInWindow=0,fpsWindowStart=0,stableQualityWindows=0,measuredFps=0;
+  let qualityFactor=1,framesInWindow=0,fpsWindowStart=0,stableQualityWindows=0,measuredFps=0;
   function synchronizeUndead(state,px,py,stamp){
     if(!undeadSource)return;
     const candidates=(state.enemies||[]).filter(e=>e?.type?.id==='wastelandMummy'&&e.hp>0&&e.area===state.area
@@ -653,7 +652,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     }
     let count=0;
     for(const item of arr){
-      if(!item||item.dead||Math.hypot(item.x-px,item.y-py)>Math.max(mobileBudget?250:430,(mobileBudget?650:1000)*qualityFactor))continue;
+      if(!item||item.dead||Math.hypot(item.x-px,item.y-py)>Math.max(430,1000*qualityFactor))continue;
       const key=kind+':'+String(item.id),variation=assetAppearanceFactor(key),size=scale*variation.scale;
       creatureBounds.center.copy(source.geometry.boundingSphere.center).multiplyScalar(size);
       creatureBounds.center.x+=item.x*SCALE;creatureBounds.center.z+=item.y*SCALE;
@@ -689,12 +688,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     if(sampleNow-fpsWindowStart>=2400){
       const fps=framesInWindow*1000/(sampleNow-fpsWindowStart);measuredFps=fps;
       stableQualityWindows=fps>48?stableQualityWindows+1:0;
-      const next=fps<26?Math.max(mobileBudget?.48:.58,qualityFactor-.13):
-        stableQualityWindows>=3?Math.min(mobileBudget?.82:1,qualityFactor+.06):qualityFactor;
+      const next=fps<25?Math.max(.58,qualityFactor-.13):
+        stableQualityWindows>=3?Math.min(1,qualityFactor+.08):qualityFactor;
       if(Math.abs(next-qualityFactor)>.01){
         qualityFactor=next;stableQualityWindows=0;
         renderer.shadowMap.enabled=!mobileBudget&&qualityFactor>=.8;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileBudget?.9:1.5)*qualityFactor);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5)*qualityFactor);
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
@@ -795,7 +794,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       // 지형 판정과 같은 좌표계를 쓰는 고정 3D 배경. 가운데 타일은 비워 전투 시야를 보존한다.
       if(tx!==0||tz!==0){
         const hash=(Math.imul(centerTileX+tx,73856093)^Math.imul(centerTileY+tz,19349663))>>>0;
-        if(mobileBudget?hash%5===0:hash%3!==0){
+        if(hash%3!==0){
           const kind=SCENERY_KIND[tileZone]||'tree';
           let batch=sceneryBatches.get(kind);
           if(!batch&&models.has(kind)){
