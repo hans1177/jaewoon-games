@@ -391,8 +391,8 @@ test('world tree inner room is reachable from original world tree without resizi
   assert.match(source,/WORLD_TREE_INTERIOR=\{w:3200,h:2300/);
   assert.match(functionBody('enterWorldTreeInterior'),/state\.area='worldtreeinside'/);
   assert.match(functionBody('leaveWorldTreeInterior'),/state\.area='surface'/);
-  assert.match(functionBody('handleWorldTap'),/worldtree-inner-door/);
-  assert.match(functionBody('handleWorldTap'),/worldtree-inner-exit/);
+  assert.match(functionBody('regionPassages'),/worldtree-inner-door/);
+  assert.match(functionBody('regionPassages'),/worldtree-inner-exit/);
   assert.match(functionBody('drawWorldTreeInterior'),/Living|나이테|발광/);
   assert.doesNotMatch(functionBody('draw'),/drawWorldTreeInterior/); // 오너 지시: 2D 대체 화면 금지
   assert.match(functionBody('update'),/WORLD_TREE_INTERIOR\.w-85/);
@@ -433,8 +433,9 @@ test('golem launches four roots every two seconds with 50 percent roll and no hi
 test('world tree chamber art and cellar entrance are bound to the existing tap and floor renderer',()=>{
   assert.match(source,/WORLD_TREE_INTERIOR=\{w:3200,h:2300,[^;]*basement:\{x:1600,y:335\}/);
   const tap=functionBody('handleWorldTap'),inside=functionBody('drawWorldTreeInterior');
-  assert.match(tap,/worldtree-basement-entrance/);
-  assert.match(tap,/WORLD_TREE_INTERIOR\.basement\.x/);
+  assert.match(functionBody('regionPassages'),/worldtree-basement-entrance/);
+  assert.match(functionBody('regionPassages'),/WORLD_TREE_INTERIOR\.basement,enterCave/);
+  assert.match(tap,/regionPassages\(\)/);
   assert.match(inside,/뿌리 회랑/);
   assert.match(inside,/고목 심장/);
   assert.match(inside,/floor\.addColorStop\(0,'#617756'\)/);
