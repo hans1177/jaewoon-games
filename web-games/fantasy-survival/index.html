@@ -374,6 +374,19 @@ body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .st
 @media(prefers-reduced-motion:reduce){.arpgInventory .arpgItem{transition:none}}
 
 
+
+/* 인벤토리: 기존 CC0 원본의 마력숲 톤 보정. 모바일에서는 화면에 나타날 때만 로딩한다. */
+.arpgInventory .arpgItemGlyph{display:grid;place-items:center;min-height:53px;font-size:0}
+.arpgInventory .arpgItemGlyph .arpgIcon{display:block;width:51px;height:51px;max-width:96%;object-fit:contain;filter:contrast(1.08) saturate(.86) drop-shadow(0 3px 4px #000a)}
+.arpgInventory .arpgGearMark{display:flex;align-items:center;justify-content:center;min-height:43px}
+.arpgInventory .arpgGearMark .arpgIcon{display:block;width:43px;height:43px;max-width:100%;object-fit:contain;filter:contrast(1.06) saturate(.85) drop-shadow(0 2px 3px #000a)}
+.arpgInventory .arpgTier4 .arpgIcon{filter:contrast(1.12) saturate(1.04) drop-shadow(0 0 5px #b87abc66)}
+.arpgInventory .arpgTier5 .arpgIcon{filter:contrast(1.12) saturate(1.1) drop-shadow(0 0 5px #dfb66877)}
+.arpgInventory .arpgItem{min-height:147px}
+.arpgInventory .arpgDetails summary{display:flex;align-items:center;gap:8px}
+.arpgInventory .arpgDetails summary .arpgIcon{width:23px;height:23px;object-fit:contain}
+@media(max-width:720px){.arpgInventory .arpgItem{min-height:134px}.arpgInventory .arpgItemGlyph .arpgIcon{width:45px;height:45px}}
+
 /* 메인 · 기존 스토리 진행도 기반 길안내 시각화 */
 .questNav[hidden],.questNavDetails[hidden],.questNavDetails button[hidden]{display:none!important}
 .questNav{margin:6px 0 0;min-width:0}
@@ -2255,16 +2268,40 @@ function renderInventory(){
   power:Math.round(effectiveStat(p.weapon,'power')+effectiveStat(p.armor,'bonusDamage')),
   defense:Math.round(effectiveStat(p.armor,'reduce'))
  };
- const slot=(name,id,mark)=>'<div class="arpgGearSlot '+(id?'filled':'')+'"><span class="arpgGearMark">'+mark+'</span><span class="arpgGearLabel">'+name+'</span><strong>'+(id?upgradedName(id):'비어 있음')+'</strong>'+(id?'<small>'+itemTier(id)+'티어 장착</small>':'<small>가방에서 장착</small>')+'</div>';
- const kinds={weapon:'⚔',tool:'◆',armor:'◈',ammo:'➶',consumable:'✚',ingredient:'✦',seed:'❀'};
+ const slot=(name,id,kind)=>'<div class="arpgGearSlot '+(id?'filled':'')+'"><span class="arpgGearMark">'+iconTag(id,kind,id?item(id)?.name:'')+'</span><span class="arpgGearLabel">'+name+'</span><strong>'+(id?upgradedName(id):'비어 있음')+'</strong>'+(id?'<small>'+itemTier(id)+'티어 장착</small>':'<small>가방에서 장착</small>')+'</div>';
+ // 기존 아이템 ID·종류·이름만 활용한다. 실제 아이콘은 CC0 원본 추출 PNG이며 게임 데이터는 수정하지 않는다.
+ const iconFor=(id,kind,name='')=>{
+  const key=(String(id||'')+' '+String(name||'')).toLocaleLowerCase('ko');
+  if(/torch|횃불/.test(key))return 'fireball';
+  if(kind==='weapon'||kind==='tool'){
+   if(/bow|crossbow|arrow|활|석궁/.test(key))return 'crossbow';
+   if(/axe|도끼/.test(key))return 'axe';
+   if(/hammer|maul|pick|망치|곡괭이|철퇴/.test(key))return 'hammerheavy';
+   if(/orb|spore|구슬|추적구/.test(key))return /toxic|독|ice|눈|수정/.test(key)?'frostball':'fireball';
+   if(/dagger|단검|knife|scythe|낫|칼/.test(key))return 'swordblood';
+   return 'sword';
+  }
+  if(kind==='armor'){
+   if(/shield|방패/.test(key))return 'shield';
+   if(/helmet|투구|머리/.test(key))return 'helmet';
+   if(/leg|다리/.test(key))return 'legarmor';
+   if(/gold|황금|sunstone|태양석|금/.test(key))return 'armorgold';
+   return 'armor';
+  }
+  if(kind==='ammo')return 'crossbow';
+  if(kind==='consumable')return /bandage|붕대/.test(key)?'potionred':'bag';
+  if(kind==='ingredient'||kind==='seed')return 'bag';
+  return 'chest';
+ };
+ const iconTag=(id,kind,name='')=>'<img class="arpgIcon" alt="" loading="lazy" decoding="async" src="./icons/'+iconFor(id,kind,name)+'.png">';
  let html='<section class="arpgInventory" aria-label="장비와 인벤토리">'
   +'<header class="arpgHead"><div><small>마력숲 · 모험가 정보</small><h2>장비와 소지품</h2></div><button class="arpgAppearance" id="arpgAppearance" type="button">외형 변경</button></header>'
   +'<div class="arpgContent"><section class="arpgCharacter" aria-label="캐릭터 장비">'
   +'<h3>캐릭터</h3><div class="arpgVitals"><div>체력 <strong>'+stats.hp+' / '+stats.maxHp+'</strong></div><div>배고픔 <strong>'+stats.food+' / 100</strong></div><div>무기 공격력 <strong>'+stats.power+'</strong></div><div>방어구 방어 <strong>'+stats.defense+'</strong></div></div>'
   +'<div class="arpgPaperdoll"><div class="arpgGearColumn">'
-  +slot('무기',p.weapon,'⚔')+slot('도구',p.tool,'◆')
+  +slot('무기',p.weapon,'weapon')+slot('도구',p.tool,'tool')
   +'</div><div class="arpgHero" data-model="'+avatarAppearance.model+'"><div class="arpgHalo"></div><div class="arpgHeadShape"></div><div class="arpgTorsoShape"></div><div class="arpgArmShape left"></div><div class="arpgArmShape right"></div><div class="arpgLegShape left"></div><div class="arpgLegShape right"></div><span>장착 중인 장비</span></div><div class="arpgGearColumn">'
-  +slot('방어구',p.armor,'◈')+slot('화살',p.arrowType,'➶')
+  +slot('방어구',p.armor,'armor')+slot('화살',p.arrowType,'ammo')
   +'</div></div>'
   +'<div class="arpgHandSlot">'+(p.torch?'횃불 · '+(p.torchEquipped?'왼손 장착 중':'가방 보유')+' · '+Math.ceil(p.torchDurability/1000)+'초':'왼손 · 횃불 없음')+'</div>'
   +'<p class="arpgHint">가방의 아이템을 누르면 기존 방식대로 장착하거나 사용해.</p></section>'
@@ -2273,7 +2310,7 @@ function renderInventory(){
   +'<input id="arpgBagSearch" class="arpgBagSearch" type="search" aria-label="가방 아이템 검색" placeholder="가방 아이템 검색" autocomplete="off">'
   +'<div id="arpgResultCount" class="arpgResultCount" role="status" aria-live="polite"></div>'
   +'<div class="arpgItemGrid">';
- if(p.torch)html+='<button class="invItem arpgItem" data-inventory-kind="equipment" id="torchToggle"><span class="arpgItemGlyph">✦</span><b>마력 횃불</b><small>내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'왼손 장착 중':'왼손에 들기')+'</small></button>';
+ if(p.torch)html+='<button class="invItem arpgItem" data-inventory-kind="equipment" id="torchToggle"><span class="arpgItemGlyph">'+iconTag('torch','weapon','마력 횃불')+'</span><b>마력 횃불</b><small>내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'왼손 장착 중':'왼손에 들기')+'</small></button>';
  if(!gear.length&&!p.torch&&!isCreative())html+='<div class="arpgEmpty">아직 보유한 아이템이 없어. 채집하고 제작하면 여기에 나타나.</div>';
  for(const r of gear){
   let action='보유';
@@ -2286,14 +2323,14 @@ function renderInventory(){
   if(r.kind==='seed')action='심기';
   const clickable=r.kind==='consumable'||r.kind==='seed'||r.kind==='ammo'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');
   html+='<button class="invItem arpgItem arpgTier'+itemTier(r.id)+(clickable?'':' isEquipped')+'" data-inventory-kind="'+(['weapon','tool','armor','ammo'].includes(r.kind)?'equipment':['consumable','seed'].includes(r.kind)?'usable':'material')+'" data-id="'+r.id+'" '+(clickable?'':'disabled')+'>'
-   +'<span class="arpgItemGlyph">'+(kinds[r.kind]||'✦')+'</span><span class="tierBadge">'+itemTier(r.id)+'티어</span>'
+   +'<span class="arpgItemGlyph">'+iconTag(r.id,r.kind,r.name)+'</span><span class="tierBadge">'+itemTier(r.id)+'티어</span>'
    +'<b>'+upgradedName(r.id)+'</b><small>×'+invCount(r.id)+'</small><small class="slot">'+action+'</small></button>';
  }
- if(isCreative())html+='<button class="invItem arpgItem" data-inventory-kind="material" id="creativeBlockItem"><span class="arpgItemGlyph">✦</span><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 설정</small><small class="slot">설치하기</small></button>';
- html+='</div><p id="arpgItemInfo" class="arpgItemInfo" role="status" aria-live="polite">아이템을 선택하면 설명이 나타나.</p><details class="arpgDetails" open><summary>재료와 자원</summary><div class="invMaterials">'
+ if(isCreative())html+='<button class="invItem arpgItem" data-inventory-kind="material" id="creativeBlockItem"><span class="arpgItemGlyph">'+iconTag('creative-block','material','스폰 블록')+'</span><b>몬스터 스폰 블록 ×∞</b><small>설치 후 두 번 눌러 설정</small><small class="slot">설치하기</small></button>';
+ html+='</div><p id="arpgItemInfo" class="arpgItemInfo" role="status" aria-live="polite">아이템을 선택하면 설명이 나타나.</p><details class="arpgDetails" open><summary>'+iconTag('materials','material','재료')+'재료와 자원</summary><div class="invMaterials">'
   +'<div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'
   +materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div></details>'
-  +'<details class="arpgDetails"><summary>설치물과 건축 현황</summary><div class="invMaterials">'
+  +'<details class="arpgDetails"><summary>'+iconTag('buildings','structure','건축')+'설치물과 건축 현황</summary><div class="invMaterials">'
   +structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('toxic-furnace',state.toxicFurnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('sunstone-bench',state.sunstoneBench)+structureInventoryRow('blacksmith-anvil',state.blacksmithAnvil)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)
   +structureCountRow('상자',state.chests.length)+structureCountRow('나무벽',state.walls.length)+structureCountRow('나무문',state.doors.length)+structureCountRow('수비탑',state.towers.length)+structureCountRow('침대',state.beds.length)+structureCountRow('텃밭',state.gardens.length)+structureCountRow('포탈',state.portals.length)+structureCountRow('깃발',state.flags.length)+structureCountRow('재배 중',state.crops.length)
   +'</div></details></section></div></section>';
@@ -2325,11 +2362,13 @@ function renderInventory(){
  for(const button of buttons){
   const showInfo=()=>{
    const r=item(button.dataset.id);
-   info.textContent=r?upgradedName(r.id)+' · '+(r.desc||'아이템 설명 없음')
+   const bonus=r?.kind==='weapon'?' · 공격력 '+Math.round(effectiveStat(r.id,'power')):r?.kind==='armor'?' · 방어력 '+Math.round(effectiveStat(r.id,'reduce')):r?.kind==='ammo'?' · 추가 공격력 '+(Number(r.power)||0):'';
+   info.textContent=r?upgradedName(r.id)+' · '+(r.desc||'아이템 설명 없음')+bonus
     :'마력 횃불 · 왼손 장착 및 해제';
   };
   button.addEventListener('focus',showInfo);
   button.addEventListener('pointerenter',showInfo);
+  button.addEventListener('pointerdown',showInfo);
  }
  filterBag();
  document.getElementById('arpgAppearance').addEventListener('click',openAvatarCustomizer);
