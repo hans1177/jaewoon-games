@@ -78,7 +78,11 @@ test('CPU practice speedup removes duplicate eval without reducing train or eval
 
   assert.match(trainer, /--final-eval-only/);
   assert.match(trainer, /eval_strategy="no" if args\.final_eval_only else "epoch"/);
-  assert.match(trainer, /save_strategy="no" if args\.final_eval_only else "epoch"/);
+  // Normal final-eval-only training still skips duplicate checkpoints.
+  // Only the opt-in, CPU + PRACTICE_ONLY verified recovery path saves resumable state.
+  assert.match(trainer, /save_strategy="steps" if args\.cpu_practice_recovery else \("no" if args\.final_eval_only else "epoch"\)/);
+  assert.match(trainer, /CPU checkpoint recovery is restricted to verified practice-only CPU training/);
+  assert.match(trainer, /save_steps=16, save_total_limit=2/);
   assert.match(trainer, /eval_result = trainer\.evaluate\(\)/);
   assert.match(trainer, /supervised != len\(answer_ids\)/);
   assert.match(trainer, /answer token coverage mismatch/);
