@@ -5710,3 +5710,15 @@ test('all-platform library CC0 replacement uses registered responsible sources a
   assert.equal(fs.readFileSync(path.join(root,file),'utf8'),'original presentation source');
  }
 });
+
+// The 2D → WebGL 3D path is design-gated and never misrouted through Unity Web.
+test('registered general web games stay in HTML JavaScript WebGL lane after design QA',()=>{
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  assert.match(planner,/game\.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'/);
+  assert.match(planner,/game\.web3dRedevelopmentRequired===true/);
+  assert.match(planner,/verifiedGeneralWebDesign=generalWebSourceIntake&&Boolean\(latestVerifiedDesign\(repoRoot,id\)\)/);
+  assert.match(planner,/targetWebEngine:generalWebSourceIntake\?'HTML_CSS_JAVASCRIPT_WEBGL'/);
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/- 'web-games\/\*\*'/);
+  assert.match(workflow,/Discover normal web engine games before design auto-enrollment/);
+});
