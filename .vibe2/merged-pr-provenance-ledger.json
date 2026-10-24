@@ -92804,11 +92804,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_30391cfd15d0363e41f43456",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-9815",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "10a24f342703c64b160fef302c2085877c810de8",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 9815,
+        "baseBranch": "main",
+        "headBranch": "fix/forest-native-asset-bind-20261024",
+        "baseSha": "10a24f342703c64b160fef302c2085877c810de8",
+        "headSha": "d44deb5d1cf37924039d40d3058ec18172afe379",
+        "mergeCommitSha": "0f8d34f4528de699742740abf017c522bf3c532a",
+        "mergedAt": "2026-10-24T10:11:04Z",
+        "authorLogin": "hans1177",
+        "titleHash": "0b9ff31175396120e9647db3e86c21e6a367b4d0b0f4459cf216d7a737d216f1",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/forest-native-asset-bind-20261024",
+        "candidateSha": "d44deb5d1cf37924039d40d3058ec18172afe379"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 584,
+        "deletedLineCount": 214,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "web-games/cozy-island/game-v3.js",
+          "web-games/cozy-island/index.html",
+          "web-games/cozy-island/render-v3.js",
+          "web-games/cozy-island/style.css",
+          "web-games/cozy-island/village-defense.js",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:9815",
+        "merge-commit:0f8d34f4528de699742740abf017c522bf3c532a",
+        "base-main:10a24f342703c64b160fef302c2085877c810de8"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 728
+    "total": 729
   }
 }
