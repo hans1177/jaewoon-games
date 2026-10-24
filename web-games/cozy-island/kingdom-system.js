@@ -126,12 +126,32 @@ function mapPanel(){
  realms.map((r,i)=>'<div class="ks-row"><div><b>'+r.name+'</b><small>'+r.where+'</small></div>'+btn('focus:'+i,'🗺️ 보기')+'</div>').join('');
 }
 function diplomacyPanel(){
- return '<p class="ks-note">동맹 체결에는 금화 80. AI 동맹은 우리 성을 공격하지 않고 8초마다 자원·세금을 지원합니다. 동맹은 언제든 해제할 수 있습니다.</p>'+
+ const court=game.getCourt?.()||{prisoners:[],heldByRivals:[],reputation:0};
+ return '<p class="ks-note">동맹 체결 금화 80 · AI 왕국과 포로 교환·몸값 요구·교섭 거부 가능. 적대 영주는 자금·군사력·신뢰에 따라 제안을 거절할 수 있습니다.</p>'+
  game.getLords().map(l=>{
   const allied=game.state.strongholdDiplomacy?.[l.id]==='ally';
-  return '<div class="ks-row"><div><b>'+esc(l.name)+'</b><small>'+esc(l.region)+' · '+(l.defeated?'함락':allied?'동맹':'적대')+'</small></div>'+
-  btn('diplomacy:'+l.id+':'+(allied?'hostile':'ally'),allied?'⚔️ 해제':'🤝 체결',l.defeated||(!allied&&game.state.coins<80))+'</div>';
- }).join('');
+  const mine=court.prisoners.filter(p=>p.lordId===l.id),
+        theirs=court.heldByRivals.filter(p=>p.lordId===l.id);
+  return '<div class="ks-row"><div><b>'+esc(l.name)+'</b><small>'+esc(l.region)+' · '+
+  (l.defeated?'함락':allied?'동맹':'적대')+' · 억류 '+mine.length+' · 우리 포로 '+theirs.length+
+  '</small></div>'+
+  btn('diplomacy:'+l.id+':'+(allied?'hostile':'ally'),allied?'⚔️ 해제':'🤝 체결',
+    l.defeated||(!allied&&game.state.coins<80))+'</div>'+
+  mine.map(p=>'<div class="ks-prison-row"><b>🔒 '+esc(p.heroName)+' · '+esc(l.name)+'</b>'+
+    btn('prison:demand:'+p.id,'💰 몸값 요구')+
+    btn('prison:exchange:'+p.id,'🤝 교환')+
+    btn('prison:release:'+p.id,'🕊️ 석방')+
+    btn('prison:execute:'+p.id,'⚔️ 처형')+'</div>').join('')+
+  theirs.map(p=>'<div class="ks-prison-row"><b>⚠️ '+esc(p.heroName)+
+    ' · 몸값 '+p.price+'금화'+(p.refused?' · 이전 요구 거부':'')+'</b>'+
+    btn('prison:pay:'+p.id,'💰 지불',game.state.coins<p.price)+
+    btn('prison:refuse:'+p.id,'⛔ 거부')+
+    btn('prison:exchange:'+p.id,'🤝 교환 요청')+'</div>').join('');
+ }).join('')+
+ '<p class="ks-note">⚖️ 왕국 신뢰 '+court.reputation+' · 포로 '+court.prisoners.length+'/'+
+ (game.courtCapacity?.()||0)+'명 · 최근 교섭 기록은 감옥에서 확인.</p>'+
+ '<div class="ks-navigation">'+btn('open-knights','⚜️ 기사단 회관')+
+ btn('open-prison','🔒 감옥 관리')+'</div>';
 }
 function soundPanel(){
  return '<p class="ks-note">중세 화음·하프·저음·선율이 겹치는 자체 합성 BGM 4곡. 전투 시 북소리와 이벤트 음성이 재생됩니다. 최초 재생은 버튼으로 시작합니다.</p>'+
@@ -263,6 +283,12 @@ body.addEventListener('click',async e=>{
   else if(action==='quick'){game.save();note('자동 저장 완료')}
   else if(action==='focus'){const r=realms[Number(id)];if(r){game.center(r.x,r.y);dialog.close()}}
   else if(action==='diplomacy'){if(game.diplomacy(id,opt))render();else note('외교 조건이 부족합니다')}
+  else if(action==='prison'){
+    const result=game.prisonAction?.(id,opt)||{ok:false,message:'감옥 기능 없음'};
+    render();note(result.message);
+  }
+  else if(action==='open-knights'){dialog.close();game.openKnightHall?.()}
+  else if(action==='open-prison'){dialog.close();game.openPrison?.()}
   else if(action==='music-on'){
    if(audioReady()){music=true;nextBeatAt=0;if(!musicLoop)musicLoop=setInterval(beat,180);beat();render()}
   }
