@@ -765,8 +765,8 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T03:05:15.145Z",
-      "updatedAt": "2026-10-24T21:16:33.257Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-24T21:16:33.257Z",
+      "updatedAt": "2026-10-24T21:24:40.638Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-24T21:24:40.638Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -824,7 +824,7 @@
         "capturedAt": "2026-10-12T03:25:06.835Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "2596e3dff91dc3aebb077c8ec6fe60a5b5b87158",
+      "robloxSourceCommit": "b4c494acfd422fbf887207ac2495ca942e5b0597",
       "robloxSourceBootstrapPassedAt": "2026-10-24T15:26:51.705Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -1330,12 +1330,12 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "2596e3dff91dc3aebb077c8ec6fe60a5b5b87158",
+      "robloxQualityBuildUpSourceRevision": "b4c494acfd422fbf887207ac2495ca942e5b0597",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "bug-defense",
-        "sourceRevision": "2596e3dff91dc3aebb077c8ec6fe60a5b5b87158",
+        "sourceRevision": "b4c494acfd422fbf887207ac2495ca942e5b0597",
         "sourceTreeSha": "55ab51e9f29a7221ba47110c5cf4704a84389141",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -1380,8 +1380,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40129653124,
-        "testedAt": "2026-10-24T21:16:33.257Z"
+        "workflowRunId": 40132413367,
+        "testedAt": "2026-10-24T21:24:40.638Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -60331,7 +60331,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-24T21:17:14.310Z",
+  "updatedAt": "2026-10-24T21:24:40.638Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -60397,5 +60397,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
