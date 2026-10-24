@@ -79,8 +79,33 @@ test('포근섬 웹게임 3D는 기존 좌표·원본 에셋·터치 입력·저
   assert.match(game,/runtime\.bindTouchButton\(ui\.action,interact\)/);
   assert.match(joystick,/setPointerCapture/);
   assert.doesNotMatch(css,/(?:^|\n)\s*\/\/\s*3D/m);
-  assert.match(css,/\/\* 3D 메인/);
+  assert.match(css,/\/\* 3D 화면만 표시/);
   assert.match(css,/#island3d\s*\{/);
   assert.match(css,/#game\s*\{\s*position:absolute/);
   assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=/);
+});
+
+test('포근섬은 2D 월드 출력 없이 WebGL 3D만 표시하고 기존 입력·저장은 유지한다',()=>{
+  const renderer=read('web-games/cozy-island/render-v3.js');
+  const perf=read('web-games/cozy-island/render-performance.js');
+  const css=read('web-games/cozy-island/style.css');
+  const html=read('web-games/cozy-island/index.html');
+  const game=read('web-games/cozy-island/game-v3.js');
+  assert.match(css,/#game\s*\{[^}]*opacity\s*:\s*0\s*;/);
+  assert.match(css,/#game\s*\{[^}]*pointer-events\s*:\s*auto\s*;/);
+  assert.match(css,/#island3d\s*\{[^}]*pointer-events\s*:\s*none\s*;/);
+  assert.match(html,/id="webglStatus"/);
+  assert.match(html,/id="game"/);
+  assert.match(renderer,/this\.canvas\.width\s*=\s*1/);
+  assert.match(renderer,/this\.canvas\.height\s*=\s*1/);
+  assert.match(renderer,/new THREE\.WebGLRenderer/);
+  assert.match(renderer,/this\.gl\.render\(this\.scene3,this\.camera3\)/);
+  assert.doesNotMatch(renderer,/3D 렌더 오류 · 기존 렌더러 유지|WebGL 시작 실패 · 기존 화면 유지/);
+  assert.match(perf,/this\.canvas\.width\s*=\s*1/);
+  assert.match(perf,/this\.gl\.setSize\(this\.width, this\.height, false\)/);
+  assert.match(perf,/this\.camera3\.updateProjectionMatrix\(\)/);
+  assert.match(perf,/proto\.drawSea\s*=\s*function optimizedSea\(\)\s*\{\}/);
+  assert.match(game,/canvas\.addEventListener\('pointerup'/);
+  assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
+  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
 });
