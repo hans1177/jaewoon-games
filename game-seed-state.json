@@ -92722,8 +92722,8 @@
       "REFERENCE_GAMES": [],
       "REFERENCE_INPUTS": [
         {
-          "type": "CANONICAL_GAME_CATALOG",
-          "value": "잊혀진 대륙 | 2D 생존 | 일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중 | RPG | 생존 | 액션 | 샌드박스"
+          "type": "ORIGINAL_MATERIAL",
+          "value": "original non-game seed material composition"
         }
       ],
       "CORE_FUN_TO_LEARN": [
@@ -92732,9 +92732,9 @@
         "모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름"
       ],
       "CORE_LOOP": [
-        "잊혀진 대륙 | 2D 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-        "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-        "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다."
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ],
       "DISTINCT_IDENTITY": "일반 웹 엔진 게임 · 기존 소스 보존 및 3D 개발 중",
       "GAMEPLAY_SKETCH": {
@@ -94595,14 +94595,311 @@
         }
       },
       "MARKET_EVIDENCE_SUMMARY": {
-        "role": "AUTO_MISSING_DESIGN_INTAKE",
+        "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
         "hardPassFailGate": false,
-        "available": false,
-        "note": "Canonical catalog identity seeds the existing design pipeline; strict design review must establish the actual design before gameplay authority resumes."
+        "available": true,
+        "note": "Canonical catalog identity seeds the existing design pipeline; strict design review must establish the actual design before gameplay authority resumes.",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "Vampire Survivors",
+            "qualitative": "action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations",
+            "metrics": []
+          },
+          {
+            "title": "Brotato",
+            "qualitative": "compact arena survival benchmark for short runs, item choices and build synergy",
+            "metrics": []
+          },
+          {
+            "title": "Survivor.io",
+            "qualitative": "mobile survival-roguelite benchmark for touch readability, wave pressure and upgrade selection",
+            "metrics": []
+          },
+          {
+            "title": "Global action/session signal",
+            "metrics": [
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
       },
       "TARGET_AUDIENCE": "RPG · 생존 · 액션 · 샌드박스 플레이를 선호하는 글로벌 플레이어",
-      "TARGET_SESSION_DIRECTION": "첫 세션부터 입력, 핵심 행동, 실제 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 설계한다.",
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "TARGET_SESSION_MINUTES": 30,
       "INITIAL_TARGET_PLATFORM": "WEB",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
@@ -94632,7 +94929,15 @@
           "createdAt": "2026-10-24T15:16:14.985Z",
           "source": "CANONICAL_GAME_SEED"
         }
-      ]
+      ],
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": false,
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      }
     }
   ],
   "seedMaterials": [
@@ -96985,7 +97290,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-10-24T15:14:59.252Z",
+    "lastReplenishedAt": "2026-10-24T15:23:08.599Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
@@ -100440,6 +100745,5 @@
       "zombie-survival",
       "ocean-voyage"
     ]
-  },
-  "policyAuthority": "company-learning/platform-release-roadmap.json"
+  }
 }
