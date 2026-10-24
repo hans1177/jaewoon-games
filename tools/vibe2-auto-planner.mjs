@@ -287,8 +287,8 @@ function buildUpIterationExpectationPrompt(expectation={}){
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
 }
-const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED']);
-export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
+const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED','OWNER_STOPPED','STOPPED']);
+export function gameLifecycleState(game={}){if(game.ownerDevelopmentStopped===true)return 'OWNER_STOPPED';const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
 function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
 function isProductionImplementationTask(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
 const HISTORICAL_MAINTENANCE_REGISTRY_PATH='company-learning/roblox-sustained-maintenance.json';
@@ -321,6 +321,9 @@ function verifiedFocusedReleaseTask(item={}){
     &&['INTERNAL_PLATFORM_RELEASE','PUBLIC_RELEASE','LEGACY_PUBLIC_RELEASE'].includes(releaseKind);
 }
 function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={},repoRoot=process.cwd()){
+  // 오너가 중지한 게임은 과거 F0~F9 체크포인트·역사 배포 복구보다 우선한다.
+  const stopped=new Set((catalog.ownerStoppedGameIds||[]).map(clean));
+  for(const game of catalog.games||[])if(stopped.has(clean(game.id)))game.ownerDevelopmentStopped=true;
   const byId=catalogById(catalog),historicalById=historicalMaintenanceById(historicalRegistry),removed=permanentRemovalIds(catalog);
   const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{
     if(!isProductionImplementationTask(item))return item;
@@ -338,6 +341,12 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
     }
     if(!game||!lifecycleAllowsDevelopment(game)){
       const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
+      // 소유자 중지는 잠금 대기나 유휴가 아니라 격리 취소다. 복구는 오너 명시 해제 후에만.
+      if(state==='OWNER_STOPPED'||state==='STOPPED')return{
+        ...item,status:'cancelled',blocker:'lifecycle-inactive:OWNER_STOPPED',
+        reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,
+        lastOutcome:'CANCELLED_BY_OWNER_STOP',postReleaseFocused:false,historicalDeploymentRecovery:false,
+        evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:OWNER_STOPPED'])]};
       if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-sync:${state}`])]};
       if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-stop-requested:${state}`])]};
       return item;
@@ -444,7 +453,7 @@ export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd())
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
 function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='roblox'&&project.queueRobloxPostF9ContinuousEvolution===true)return 0;if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
 
-export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game)||(engine==='web'&&webSourceRetiredInCatalog(game)))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
+export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;const stopped=new Set((catalog.ownerStoppedGameIds||[]).map(clean));for(const game of catalog.games||[])if(stopped.has(clean(game.id)))game.ownerDevelopmentStopped=true;const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game)||(engine==='web'&&webSourceRetiredInCatalog(game)))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
 for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:[]){
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
