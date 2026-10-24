@@ -286,27 +286,42 @@ export class IslandRendererV3 {
         mesh.rotation.x=-Math.PI/2;
         mesh.position.set(x*SC,elevation+.225,y*SC);this.scene3.add(mesh);return mesh;
       };
-      // 넓어진 전략 전장: 중앙 성곽과 외곽 사막은 같은 3D 지형으로 이어진다.
-      ground(9500,5300,2400,900,0x68979b,-1.35);
-      // 큰 육지를 기반으로 지형이 연결되며 성벽 외곽도 전장으로 보인다.
-      ground(4600,2550,1970,620,0xc5ad7e,-.83);
-      ground(3800,2130,1880,590,0x898f58,-.76);
-      this.frontier3=ground(4200,2100,3150,460,0xd0aa77,-.78);
-      this.frontierGrass3=ground(3400,1650,3220,420,0xa9986a,-.73);
-      ground(1280,1030,730,595,0xd4bc89,-.7);
-      ground(1170,920,730,595,0x9ca168,-.4);
-      this.east3=ground(1490,950,2100,595,0xebd09c,-.68);
-      this.eastGrass3=ground(1380,850,2100,595,0x92965c,-.39);
-      this.jungle3=ground(1460,1020,2120,1550,0xeacf8c,-.7);
-      this.jungleGrass3=ground(1360,880,2120,1560,0x677c4d,-.39);
-      // 북쪽·서쪽·화산·심연동굴·정글 서쪽은 기존 좌표와 해금 조건 그대로 사용한다.
-      this.north3=ground(1380,965,2115,-350,0xf3f0e2,-.7);
-      this.northGrass3=ground(1300,860,2115,-350,0xa6c4aa,-.4);
-      this.west3=ground(3015,890,-1342,595,0xe2cc9e,-.7);
-      this.westGrass3=ground(2920,790,-1342,595,0x8baf78,-.4);
-      this.volcano3=ground(1560,1040,3540,-300,0x846964,-.57);
-      this.cave3=ground(3100,1040,6100,-300,0x414958,-.6);
-      this.jungleWest3=ground(1185,830,892,1610,0x528e5d,-.39);
+      // 네 영주의 성이 겹치지 않는 네 왕국. 잔디·고산·암석·황토 지형은 겹치되
+      // 동일한 배경 타일이 월드 전체를 덮지 않도록 높이와 색을 달리한다.
+      ground(13000,9900,1100,-950,0x638e9b,-1.35); // 수평선/해안
+      ground(12200,9150,1100,-950,0xb7ad80,-.88); // 넓게 연결된 중앙 대륙
+      ground(11450,8580,1100,-950,0x939c68,-.72);
+      ground(3900,3050,850,600,0x809a64,-.32); // 내 성 · 푸른 평야
+      ground(3100,2800,4450,950,0xc49a62,-.29); // 동쪽 · 붉은 바위협곡
+      ground(3000,2800,4450,-2750,0xa5b0ae,-.27); // 북동 · 설산
+      ground(3250,3050,-2700,-2650,0xb6a067,-.30); // 북서 · 황금 초원
+      ground(1600,880,2350,-1200,0x6e8760,-.21); // 국경 숲
+      ground(1500,730,-800,-900,0x87975c,-.22); // 완충 삼림
+      ground(1400,680,2400,-3180,0xaebbb3,-.19); // 북부 고지
+      ground(1450,640,-900,-2900,0xc1a86e,-.18); // 황토 고원
+      // 얕은 강은 3D 표면 위에 놓고 지형과 다른 물결 텍스처를 가진다.
+      const river=(w,d,x,y,angle=0)=>{
+        const material=new THREE.MeshLambertMaterial({color:0x739c9b,map:this.pixelTexture('water'),side:THREE.DoubleSide});
+        const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w*SC,d*SC),material);
+        mesh.rotation.x=-Math.PI/2;mesh.rotation.z=angle;
+        mesh.position.set(x*SC,.18,y*SC);this.scene3.add(mesh);return mesh;
+      };
+      river(4000,110,1740,-1900,.19);
+      river(2900,92,-1180,-1230,-.28);
+      // 기존 지역 게임 모듈이 기대하는 지형 참조는 새 지형에서 유지한다.
+      this.frontier3=ground(1900,1200,2420,540,0xb8ab77,-.39);
+      this.frontierGrass3=ground(1800,1150,2430,550,0x8f9960,-.25);
+      this.east3=ground(880,680,2100,595,0xbfa36e,-.35);
+      this.eastGrass3=ground(780,590,2100,595,0x88a16b,-.22);
+      this.jungle3=ground(1260,900,2120,1550,0xa5ab79,-.33);
+      this.jungleGrass3=ground(1200,840,2120,1560,0x63875d,-.21);
+      this.north3=ground(1200,850,2115,-350,0xd2d8c5,-.35);
+      this.northGrass3=ground(1140,810,2115,-350,0x98b0a2,-.21);
+      this.west3=ground(1890,730,-1342,595,0xc3b078,-.35);
+      this.westGrass3=ground(1830,680,-1342,595,0x8fa377,-.21);
+      this.volcano3=ground(1460,880,3540,-300,0x836c63,-.26);
+      this.cave3=ground(1850,850,6100,-300,0x777d7b,-.26);
+      this.jungleWest3=ground(1100,780,892,1610,0x5a875c,-.21);
       const lake=new THREE.Mesh(new THREE.CircleGeometry(1,48),
         new THREE.MeshLambertMaterial({color:0x689b9e,map:this.pixelTexture('water')}));
       lake.rotation.x=-Math.PI/2;lake.scale.set(150*SC,112*SC,1);
@@ -797,6 +812,19 @@ export class IslandRendererV3 {
         }
       }
       // 적 영주는 자기 마을회관·성벽·탑·주민 건물이 있는 독립 요새를 가진다.
+      // 성과 성 사이: 왕국별로 숲·암석·설산·국경길이 실제 화면에 나타난다.
+      const clusters=[
+        {x:-1250,y:-650,kind:'tree',n:20,dx:135,dy:95},
+        {x:2090,y:-1310,kind:'tree',n:18,dx:150,dy:125},
+        {x:3470,y:1450,kind:'stone',n:19,dx:120,dy:130},
+        {x:4620,y:-3560,kind:'stone',n:26,dx:142,dy:128},
+        {x:-3300,y:-3180,kind:'tree',n:13,dx:154,dy:165}
+      ];
+      for(const area of clusters)for(let i=0;i<area.n;i++){
+        const x=area.x+(i%7)*area.dx+(i%2)*24;
+        const y=area.y+Math.floor(i/7)*area.dy+((i*17)%33);
+        put('realm-biome:'+area.kind+':'+area.x+':'+i,area.kind,x,y,area.kind==='tree'?2.8+(i%4)*.35:.95+(i%3)*.27);
+      }
       for(const lord of game.state.enemyLordsV5||[]){
         const id='enemy-stronghold:'+lord.id,x=lord.x,y=lord.y;
         if(!lord.defeated)put(id+':keep','fort-keep',x,y,5.25+(lord.focus==='defense'?.65:0));
