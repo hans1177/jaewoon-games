@@ -251,3 +251,52 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
  .ks-action{padding:9px 5px;font-size:10px}
  .system-button{font-size:10px!important;padding:5px!important}
 }
+
+/* 성문 자동 방향과 연속 성벽 건설: 터치 시 비용/인부 통행로 상태를 즉시 안내 */
+#rotateGate {position:absolute;top:max(200px,calc(env(safe-area-inset-top) + 190px));left:50%;
+ transform:translateX(-50%);z-index:8;padding:10px 14px;min-width:152px;
+ border:2px solid #d4c098;border-radius:8px;background:#3a4d42;color:#fff1cc;
+ font-size:12px;font-weight:900;box-shadow:0 4px 14px #101b1588}
+#rotateGate[hidden],.build-status[hidden]{display:none!important}
+.build-status {position:absolute;left:50%;bottom:max(103px,calc(env(safe-area-inset-bottom) + 99px));
+ transform:translateX(-50%);z-index:7;width:max-content;max-width:min(90vw,380px);
+ padding:9px 13px;border:1px solid #cfb17d;border-radius:7px;
+ background:#25362ee9;color:#f4ebd4;font-size:11px;font-weight:900;text-align:center;
+ box-shadow:0 3px 15px #0c1b15aa;pointer-events:none}
+.system-button{background:linear-gradient(170deg,#695d42,#333d33)!important;color:#f8e9c8!important}
+.system-dialog {width:min(96vw,600px);max-height:84dvh;border:2px solid #baa178;
+ border-radius:12px;padding:0;background:#ece2c9;color:#3c3428;box-shadow:0 18px 60px #0d1d16bc}
+.system-dialog::backdrop{background:#0c1916b8}
+.system-dialog header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+ background:#4a4939;color:#fff3d9}
+.system-dialog header h2{font-size:17px;margin:0}
+.system-dialog header button{background:#74583b;color:white;border:1px solid #d4c19b;
+ border-radius:6px;padding:9px}
+.system-tabs {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:6px;
+ background:#d3c4a5}
+.system-tabs button{border:1px solid #b49a71;border-radius:5px;background:#e7d9be;
+ padding:10px 2px;font-size:10px;font-weight:900;color:#4d4532}
+.system-tabs button.selected{background:#4e6248;color:#fff6df}
+.system-body{overflow-y:auto;max-height:58dvh;padding:13px}
+.ks-row{display:flex;gap:6px;justify-content:space-between;align-items:center;
+ padding:10px 7px;border-bottom:1px solid #cebd9e}
+.ks-row div{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.ks-row small{color:#766748;font-size:10px}
+.ks-action{background:#556d4e;color:#fff6dc;border:1px solid #798361;
+ border-radius:6px;padding:9px 10px;font-size:11px;font-weight:900;white-space:nowrap}
+.ks-action:disabled{opacity:.45}
+.ks-note{font-size:12px;line-height:1.55;color:#69583b;background:#dfd2b3;
+ border-radius:6px;padding:9px}
+.ks-mini-map{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:15px;
+ border:1px solid #b8a27d;border-radius:8px;background:#b5c09b;text-align:center}
+.ks-mini-map span{border-radius:7px;padding:20px 6px;font-weight:900;font-size:12px}
+.ks-map-nw{background:#dec78c}.ks-map-ne{background:#c9d7d6}
+.ks-map-sw{background:#9bba89}.ks-map-se{background:#ce9980}
+.ks-field{display:flex;flex-direction:column;gap:6px;margin:9px 0;font-size:12px;font-weight:900}
+.ks-field select,.ks-field input,.ks-field textarea{width:100%;min-height:37px;border:1px solid #a08a67;
+ border-radius:6px;background:#fbf4df;color:#39382f;padding:8px}
+.ks-field textarea{min-height:65px;resize:vertical;word-break:break-all;font-size:10px}
+.ks-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:9px 0}
+@media(max-width:420px){.system-dialog{max-height:86dvh}.system-body{max-height:58dvh;padding:9px}
+ .system-tabs button{font-size:9px;padding:9px 0}.ks-action{font-size:10px;padding:9px 6px}
+ .build-status{font-size:10px;bottom:calc(env(safe-area-inset-bottom) + 91px)}}
