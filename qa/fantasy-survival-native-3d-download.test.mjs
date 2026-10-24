@@ -284,6 +284,19 @@ test('downloaded KayKit knight is ledgered as preview only and source-bound to e
  assert.match(index,/data-spatial-dimension="3d-loading"/);
 });
 
+test('original native monster loader recovers texture and FBX failures without resetting saves or species',()=>{
+ assert.match(moduleSource,/new FBXLoader\(\)\.setResourcePath\(CREATURE_SOURCE\.href\)/);
+ assert.match(moduleSource,/\.parse\(await response\.arrayBuffer\(\),CREATURE_SOURCE\.href\)/);
+ assert.match(moduleSource,/model=await new OBJLoader\(\)\.loadAsync\(url\.href\)/);
+ assert.match(moduleSource,/catch\(textureError\)/);
+ assert.match(moduleSource,/function retryMissingCreatures\(state\)/);
+ assert.match(moduleSource,/if\(retried\)nextCreatureScan=0/);
+ assert.match(moduleSource,/getFailedCreatureSources:/);
+ assert.match(index,/world3d\.retryMissingCreatures\(state\)/);
+ assert.match(index,/주변 생물의 3D 모델 확인 중/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+ assert.match(moduleSource,/if\(unsafeUnmappedEncounter\|\|!hero\)/);
+});
 test('native creature source failures recover without permanent mobile loading lock',()=>{
   assert.ok(moduleSource.includes('const retryDelay=failed?Math.min(60000,5000*2**Math.min(4,failed.attempts-1)):0'));
   assert.ok(!moduleSource.includes('failed.attempts>=3'));
