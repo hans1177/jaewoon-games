@@ -378,9 +378,6 @@ jobs:
           git worktree prune
           echo 'HOMEPAGE_PLATFORM_EXPOSURE_RUNTIME_SYNC=PASS'
 
-      - name: Sync official Roblox titles and fill game title artwork
-        run: node tools/homepage-manager.mjs --sync-roblox-titles
-
       - name: Plan source-bound release gameplay capture
         id: media_plan
         run: node tools/homepage-manager.mjs --plan-release-media
@@ -408,6 +405,11 @@ jobs:
           echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
           echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
           echo 'HOMEPAGE_VERIFIED_PUBLIC_STATUS_CANDIDATE=READY'
+
+      # Generate title art from the final reconciled game catalog, not the stale main snapshot.
+      - name: Auto-create game-specific block-avatar title images for web and Roblox
+        if: github.event_name != 'pull_request'
+        run: node tools/homepage-manager.mjs --sync-roblox-titles
 
       - name: Sync validation evidence candidates
         if: github.event_name != 'pull_request'
