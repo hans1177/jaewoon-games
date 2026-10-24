@@ -19,16 +19,16 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .label{display:flex;justify-content:space-between;margin:0 2px 2px;font-size:10px;font-weight:900;color:#c8dcf3}
 .bar{height:11px;border-radius:99px;overflow:hidden;border:1px solid #ffffff24;background:#ffffff16}
 .bar>i{display:block;height:100%;transition:width .12s}
-.hp>i{background:linear-gradient(90deg,#ff5470,#ff9c5b)}
+.hp{height:20px}.hp+.label{font-size:12px}.label:has(#hpText){font-size:12px}.hp>i{box-shadow:0 0 14px #ff657580;background:linear-gradient(90deg,#ff5470,#ff9c5b)}
 .gem>i{background:linear-gradient(90deg,#40eeb7,#66baff)}
 .bossHud{position:fixed;z-index:6;top:calc(env(safe-area-inset-top) + 100px);left:50%;transform:translateX(-50%);width:min(84vw,460px);display:none}
 .bossHud.show{display:block}
 .bossHud .label{color:#ffd0d0}.bossHud .bar>i{background:linear-gradient(90deg,#ff404f,#b357ff)}
 .joystick{position:fixed;z-index:7;left:18px;bottom:calc(env(safe-area-inset-bottom) + 22px);width:116px;height:116px;border-radius:50%;border:2px solid #7ef5d05e;background:#112b3788;box-shadow:inset 0 0 25px #51ffd21a}
 .stick{position:absolute;left:31px;top:31px;width:54px;height:54px;border-radius:50%;background:#dbfff4da;border:3px solid #65efc8;box-shadow:0 0 18px #54efc899;transform:translate(0,0)}
-.pause{position:fixed;z-index:8;right:11px;top:calc(env(safe-area-inset-top) + 106px);width:42px;height:42px;border-radius:13px;border:1px solid #ffffff2b;background:#14253edb;color:#fff;font-size:18px;font-weight:950}
+.pause{position:fixed;z-index:8;right:11px;top:calc(env(safe-area-inset-top) + 140px);width:42px;height:42px;border-radius:13px;border:1px solid #ffffff2b;background:#14253edb;color:#fff;font-size:18px;font-weight:950}
 .tip{position:fixed;z-index:4;left:50%;bottom:8px;transform:translateX(-50%);font-size:10px;font-weight:800;color:#9db4cb;white-space:nowrap;pointer-events:none}
-.phase{position:fixed;z-index:6;left:50%;top:calc(env(safe-area-inset-top) + 112px);transform:translateX(-50%);padding:6px 10px;border:1px solid #ffffff1f;border-radius:999px;background:#071321d6;font-size:11px;font-weight:900;color:#d9e8f8;pointer-events:none}
+.phase{position:fixed;z-index:6;left:50%;top:calc(env(safe-area-inset-top) + 138px);transform:translateX(-50%);padding:6px 10px;border:1px solid #ffffff1f;border-radius:999px;background:#071321d6;font-size:11px;font-weight:900;color:#d9e8f8;pointer-events:none}
 .overlay{position:fixed;z-index:20;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:#020811dc;backdrop-filter:blur(7px)}
 .overlay.show{display:flex}
 .panel{width:min(100%,440px);max-height:90vh;overflow:auto;border:1px solid #78c9bd44;border-radius:24px;background:linear-gradient(180deg,#13283b,#0b1728);box-shadow:0 24px 70px #000b;padding:20px}
@@ -56,7 +56,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
   <div class="pill">처치 <b id="kills">0</b> · <b id="time">0:00</b> / 5:00</div>
  </div>
  <div class="bars">
-  <div><div class="label"><span>HP</span><span id="hpText">100 / 100</span></div><div class="bar hp"><i id="hpBar"></i></div></div>
+  <div><div class="label"><span>HP</span><span id="hpText">200 / 200</span></div><div class="bar hp"><i id="hpBar"></i></div></div>
   <div><div class="label"><span>다음 능력</span><span id="gemText">0 / 3</span></div><div class="bar gem"><i id="gemBar"></i></div></div>
  </div>
 </div>
@@ -94,6 +94,8 @@ import {createGem3d} from './gem3d.mjs?v=20261024-world-2';
 const WORLD={width:4200,height:3200};
 const STAGES={cavern:{name:'수정 동굴',sky:'#08152b',floor:'#172c48',accent:'#65d8ff'},garden:{name:'폐허 정원',sky:'#11251f',floor:'#254536',accent:'#a7efa0'},forge:{name:'화산 채굴장',sky:'#25101c',floor:'#49302e',accent:'#ffaf66'}};
 let stageId='cavern';
+const START_HP=200;
+const HURT_INV_SECONDS=.85;
 const SURVIVE_SECONDS=300;
 const PHASE_TWO_SECONDS=120;
 const PHASE_THREE_SECONDS=210;
@@ -115,7 +117,7 @@ const keys=new Set(),enemies=[],projectiles=[],gems=[],effects=[],poisonPools=[]
 const joy={id:null,dx:0,dy:0};
 
 const player={
- x:0,y:0,r:15,hp:100,maxHp:100,speed:220,inv:0,
+ x:0,y:0,r:15,hp:START_HP,maxHp:START_HP,speed:220,inv:0,
  gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,
  basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92
 };
@@ -168,7 +170,8 @@ function tone(freq,dur,type,vol){
  }catch(e){}
 }
 function burst(x,y,color,n){
- for(let i=0;i<(n||7);i++){
+ const count=Math.min(n||7,Math.max(0,480-particles.length));
+ for(let i=0;i<count;i++){
   const a=Math.random()*Math.PI*2,s=rnd(35,150);
   particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.2,.5),max:.5,r:rnd(1.5,4),color:color})
  }
@@ -179,7 +182,7 @@ function reset(){
  releaseInputs();
  elapsed=0;spawnTimer=0;kills=0;bossSpawned=false;boss=null;screenShake=0;
  enemies.length=0;projectiles.length=0;gems.length=0;effects.length=0;poisonPools.length=0;particles.length=0;
- Object.assign(player,{x:WORLD.width/2,y:WORLD.height/2,r:15,hp:100,maxHp:100,speed:220,inv:0,gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92});
+ Object.assign(player,{x:WORLD.width/2,y:WORLD.height/2,r:15,hp:START_HP,maxHp:START_HP,speed:220,inv:0,gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92});
  Object.keys(abilityLv).forEach(function(k){abilityLv[k]=0});
  Object.keys(abilityTimers).forEach(function(k){abilityTimers[k]=0});
  orbitAngle=0;running=true;paused=false;
@@ -197,8 +200,8 @@ function endGame(clear){
 
 function hurt(amount){
  if(player.inv>0||!running)return;
- player.hp-=amount;player.inv=.55;screenShake=Math.max(screenShake,8);
- burst(player.x,player.y,'#ffffff',10);tone(115,.11,'sawtooth',.035);
+ player.hp-=amount;player.inv=HURT_INV_SECONDS;screenShake=Math.max(screenShake,8);
+ burst(player.x,player.y,'#ffffff',18);tone(115,.11,'sawtooth',.035);
  if(player.hp<=0){player.hp=0;endGame(false)}
 }
 
@@ -239,9 +242,12 @@ function killEnemy(e,index){
   enemies.splice(index,1);boss=null;ui.bossHud.classList.remove('show');
   burst(e.x,e.y,'#ffd166',45);tone(880,.4,'triangle',.06);endGame(true);return
  }
- kills++;dropGems(e);burst(e.x,e.y,e.color,8);effects.push({kind:'death',x:e.x,y:e.y,r:e.r,life:.3,max:.3});enemies.splice(index,1)
+ kills++;dropGems(e);burst(e.x,e.y,e.color,18);if(effects.length<160)effects.push({kind:'death',x:e.x,y:e.y,r:e.r,life:.4,max:.4,color:e.color});enemies.splice(index,1)
 }
-function damageEnemy(e,amount){e.hp-=amount;e.hit=.07;burst(e.x,e.y,'#dffcff',2)}
+function damageEnemy(e,amount){
+ e.hp-=amount;e.hit=.1;burst(e.x,e.y,'#dffcff',5);
+ if(effects.length<160)effects.push({kind:'impact',x:e.x,y:e.y,r:e.r,life:.18,max:.18,color:'#bbfaff'});
+}
 
 // ==================== 자동 기본 공격 ====================
 function nearestEnemy(from,max){
