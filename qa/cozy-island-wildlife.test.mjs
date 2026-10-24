@@ -68,6 +68,11 @@ test('포근섬 웹게임 3D는 기존 좌표·원본 에셋·터치 입력·저
     ['economy-west-v2.js','game.westBoss=westBoss']
   ])assert.ok(read('web-games/cozy-island/'+file).includes(field),
     'canonical 3D binding missing: '+file);
+  assert.match(renderer,/if\(path\.endsWith\('\.obj'\)\)/);
+  assert.match(renderer,/model=await new OBJLoader\(\)\.loadAsync\(url\.href\)/);
+  assert.match(renderer,/snake:'forest:monster-26\.obj'/);
+  assert.match(renderer,/spider:'forest:monster-53\.obj'/);
+  assert.match(renderer,/golem:'forest:monster-41\.obj'/);
   assert.match(world,/currentGame\.boars=boars/);
   assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
   assert.match(game,/runtime\.queueSaveProgress\(state\)/);
