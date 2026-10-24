@@ -1,11 +1,12 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
+import { ECONOMY_BUILDINGS,getEconomy,constructEconomyBuilding,economyStaff } from './production-buildings.js';
 
 const GAME_ID='cozy-island';
 const RAID_INTERVAL=120;
 const FARM_GROW_MS=20000;
 const WORKER_PRICE=50, WORKER_MAX=3, WORK_TICK=10, DELIVERY_INTERVAL=60, FEED_INTERVAL=180, FEED_COST=10;
-const SOLDIER_MAX=5, ARCHER_MAX=3;
+const SOLDIER_MAX=12, ARCHER_MAX=10;
 const DEFAULT_STATE={
   version:3,day:1,minutes:480,coins:40,weather:'맑음',expanded:false,decor:[],barracksBuilt:false,army:[],raidTimer:0,raidNumber:0,
   inventory:{wood:0,stone:0,flower:0,fish:0,crop:0,seeds:3,food:0},
@@ -16,10 +17,41 @@ const DEFAULT_STATE={
 const world={w:3100,h:1200};
 const runtime=new JaewoonVibeRuntime({gameId:GAME_ID,autosaveDelay:350}).boot({errorReporter:e=>console.error('[포근섬 오류]',e)});
 const state=normalizeState(runtime.loadProgress(DEFAULT_STATE));
+getEconomy(state); // 기존 세이브를 살리고 처음부터 건설/목재/석재/노동력이 가동되게 한다.
 const canvas=document.querySelector('#game');
 const renderer=new IslandRendererV3(canvas);
 const player={x:state.player.x,y:state.player.y,speed:185};
 const pressed=new Set();
+const BUILDABLE_AREA={minX:130,maxX:2320,minY:85,maxY:1580};
+const cancelBuild=document.querySelector('#cancelBuild');
+function cancelBuildPlacement(){
+ game.buildingPlacement=null;
+ if(cancelBuild)cancelBuild.hidden=true;
+}
+cancelBuild?.addEventListener('click',cancelBuildPlacement);
+window.addEventListener('keydown',e=>{if(e.key==='Escape')cancelBuildPlacement()});
+window.addEventListener('cozy:place-building',e=>{
+ const id=e.detail?.id,def=ECONOMY_BUILDINGS.find(x=>x.id===id);if(!def)return;
+ game.buildingPlacement={id,at:{x:Math.max(200,Math.min(1850,def.x)),y:Math.max(200,Math.min(1170,def.y))}};
+ if(cancelBuild){cancelBuild.hidden=false;cancelBuild.textContent='✕ '+def.name+' 배치 취소'}
+ toast('🏗️ '+def.name+' · 지도에서 건설 위치를 터치해');
+});
+function placeEconomyAt(at){
+ const mode=game.buildingPlacement;if(!mode)return;
+ const p={x:Math.round(at.x/30)*30,y:Math.round(at.y/30)*30};
+ if(p.x<BUILDABLE_AREA.minX||p.x>BUILDABLE_AREA.maxX||p.y<BUILDABLE_AREA.minY||p.y>BUILDABLE_AREA.maxY){
+   toast('영지 안의 빈 땅에 건설해야 해');return;
+ }
+ const econ=getEconomy(state);
+ const spots=Object.values(econ.buildings).flatMap(x=>x.sites||[]);
+ if(spots.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<78)||Math.hypot(p.x-1010,p.y-1090)<100){
+   toast('건물과 겹쳐서 건설할 수 없어');return;
+ }
+ if(constructEconomyBuilding(mode.id,p)){
+   cancelBuildPlacement();updateHUD();
+ }else toast('건설 조건을 확인해');
+}
+
 let lastFrame=performance.now(),clockCarry=0,toastTimer=0,fishing=null,fishingFrame=0,unitId=1,raidActive=false;
 // 기존 저장 좌표는 호환을 위해 유지하며 전략 시점에는 캐릭터 이동을 사용하지 않는다.
 let allies=[],enemies=[],selectedWolfId=null,lastTap={time:0,x:0,y:0};
@@ -58,7 +90,7 @@ function normalizeState(raw){
   const plots=Array.isArray(r.plots)&&r.plots.length===6?r.plots.map(p=>({state:'empty',watered:false,wateredAt:0,ready:false,...p})):base.plots;
   return {...base,...r,version:3,inventory:inv,plots,
     army:Array.isArray(r.army)?r.army.filter(x=>x?.kind==='soldier'||x?.kind==='archer').slice(0,SOLDIER_MAX+ARCHER_MAX):[],
-    workers:Math.min(WORKER_MAX,Math.max(0,oldWorkers)),
+    workers:Math.max(0,oldWorkers),
     workerStorage:{wood:Math.max(0,Number(oldBuf.wood)||0),stone:Math.max(0,Number(oldBuf.stone)||0),food:Math.max(0,Number(oldBuf.food)||0),crop:Math.max(0,Number(oldBuf.crop)||0)},
     workerWorkTimer:Math.max(0,Number(r.workerWorkTimer)||Number(r.workers?.workElapsed)||0),
     workerDeliveryTimer:Math.max(0,Number(r.workerDeliveryTimer)||Number(r.workers?.deliveryElapsed)||0),
@@ -82,8 +114,9 @@ runtime.bindTouchButton(ui.inventory,openInventory);
 runtime.bindTouchButton(ui.help,openGuide);
 runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButton')?.click());
 runtime.bindTouchButton(ui.barracks,openBarracks);
-runtime.bindTouchButton(ui.workers,openWorkerShop);
-runtime.bindTouchButton(ui.fishingCommand,()=>window.dispatchEvent(new Event('cozy:open-siege')));
+runtime.bindTouchButton(ui.workers,()=>window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}})));
+runtime.bindTouchButton(ui.inventory,openInventory);
+runtime.bindTouchButton(ui.fishingCommand,openWar);
 runtime.bindTouchButton(ui.trade,()=>window.dispatchEvent(new Event('cozy:open-trade')));
 runtime.bindTouchButton(ui.center,()=>{game.siegeOverview=true;renderer.centerCamera();toast('🏰 성채 전장 전체 보기')});
 runtime.bindTouchButton(ui.zoomIn,()=>{game.siegeOverview=true;renderer.changeZoom(1.2)});
@@ -102,6 +135,7 @@ canvas.addEventListener('pointerdown',e=>{
 canvas.addEventListener('pointermove',e=>{
   if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture,dx=e.clientX-g.x,dy=e.clientY-g.y;
+  if(game.buildingPlacement){game.buildingPlacement.at=renderer.screenToWorld(game,e.clientX,e.clientY);return}
   if(g.moved||Math.hypot(e.clientX-g.startX,e.clientY-g.startY)>9){
     g.moved=true;game.siegeOverview=true;renderer.panCamera(dx,dy);
   }
@@ -111,8 +145,12 @@ canvas.addEventListener('pointercancel',()=>{pointerGesture=null});
 canvas.addEventListener('pointerup',e=>{
   if(!pointerGesture||pointerGesture.id!==e.pointerId)return;
   const g=pointerGesture;pointerGesture=null;
-  if(g.moved||ui.panel.open||ui.fishing.open||runtime.paused)return;
+  if((g.moved&&!game.buildingPlacement)||ui.panel.open||ui.fishing.open||runtime.paused)return;
   const now=performance.now();
+  if(game.buildingPlacement){
+    const at=renderer.screenToWorld(game,e.clientX,e.clientY);
+    placeEconomyAt(at);return;
+  }
   if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
   lastTap={time:now,x:e.clientX,y:e.clientY};
   // 기존 지역 확장 스크립트의 상호작용 이벤트를 월드 터치에 연결.
@@ -130,6 +168,9 @@ canvas.addEventListener('wheel',e=>{e.preventDefault();game.siegeOverview=true;r
 
 // 도움말: 건설/생산/군사 명령을 기존 조작 패널로 연결한다.
 function openGuide(){
+  // 도움말은 마을회관의 건설 카탈로그를 연다.
+  window.dispatchEvent(new Event('cozy:open-construction'));return;
+
   if(ui.panel.open||ui.fishing.open)return;
   const village=state.villageDevelopment||{},production=state.productionBuildings||{};
   ui.panelTitle.textContent='영지 운영 안내';
@@ -196,10 +237,10 @@ function renderBarracks(){if(!state.barracksBuilt){ui.panelBody.innerHTML=`<p cl
 function buildBarracks(){if(state.inventory.wood<5||state.inventory.stone<3){toast('재료가 부족해');return}state.inventory.wood-=5;state.inventory.stone-=3;state.barracksBuilt=true;saveSoon();ui.panel.close();toast('🏕️ 병영 완성')}
 function recruit(kind){const max=kind==='archer'?ARCHER_MAX:SOLDIER_MAX,cost=kind==='archer'?20:10;if(countKind(kind)>=max){toast('최대 인원이야');return}if(state.inventory.food<cost){toast(`식량 ${cost} 필요`);return}state.inventory.food-=cost;allies.push(createUnit(kind,false));game.allies=allies;saveSoon();renderBarracks();toast(kind==='archer'?'🏹 궁수 합류':'⚔️ 병사 합류')}
 function createUnit(kind,enemy,boss=false){const ar=kind==='archer',baseHp=ar?55:100,baseAtk=ar?25:10,hp=boss?baseHp*7:baseHp;return{id:unitId++,kind,enemy,boss,hp,maxHp:hp,attack:boss?baseAtk*3:baseAtk,range:ar?220:55,speed:ar?64:76,cool:Math.random()*.5,wander:0,vx:0,vy:0,x:enemy?1490+Math.random()*60:barracks.x+(Math.random()-.5)*70,y:enemy?550+Math.random()*180:barracks.y+60+Math.random()*60}}
-function openWorkerShop(){ui.panelTitle.textContent='노비 판매소';renderWorkerShop();ui.panel.showModal()}
+function openWorkerShop(){window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}}))}
 function renderWorkerShop(){const s=state.workerStorage,delivery=Math.max(0,Math.ceil(DELIVERY_INTERVAL-state.workerDeliveryTimer)),feed=Math.max(0,Math.ceil(FEED_INTERVAL-state.workerFeedTimer));ui.panelBody.innerHTML=`<p class="panel-note">노비는 자동 물주기·수확·나무/돌 채집을 해. 1분마다 작업물을 인벤토리로 줘.</p><div class="inventory-grid">${itemCard('🧑‍🌾 노비',state.workers)}${itemCard('⏱️ 지급',delivery)}${itemCard('🍖 급식까지',feed)}${itemCard('🪵 보관',s.wood)}${itemCard('🪨 보관',s.stone)}${itemCard('🍖 보관',s.food)}${itemCard('🥕 보관',s.crop)}</div><button class="choice" data-worker ${state.workers>=WORKER_MAX?'disabled':''}><span>🧑‍🌾 노비 구매 (${state.workers}/${WORKER_MAX})</span><b>${WORKER_PRICE}골드</b></button><p class="panel-note">3분마다 노비 1명당 식량 10을 먹어. 먹일 식량이 부족한 노비는 굶어 죽어.</p>`;ui.panelBody.querySelector('[data-worker]')?.addEventListener('click',buyWorker)}
 function buyWorker(){if(state.workers>=WORKER_MAX){toast('노비는 최대 3명이야');return}if(state.coins<WORKER_PRICE){toast('골드가 부족해');return}state.coins-=WORKER_PRICE;state.workers++;saveSoon();updateHUD();renderWorkerShop();toast('🧑‍🌾 노비가 일을 시작했어')}
-function openDecor(){const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.innerHTML=`<div class="choice-grid">${opts.map(o=>`<button class="choice" data-dec="${o.id}" ${state.decor.includes(o.id)?'disabled':''}><span>${o.i} ${o.n}</span><b>${state.decor.includes(o.id)?'배치됨':o.c+'골드'}</b></button>`).join('')}</div>`;ui.panel.showModal();ui.panelBody.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click',()=>{const o=opts.find(x=>x.id===b.dataset.dec);if(!o||state.coins<o.c)return toast('골드가 부족해');state.coins-=o.c;state.decor.push(o.id);saveSoon();updateHUD();ui.panel.close();toast('꾸미기 완료')}))}
+function openDecor(){ // 보존: 옛 세이브 호환용 UI, 전략 게임에서는 호출되지 않는다.const opts=[{id:'rug',n:'포근 러그',i:'🟩',c:30},{id:'plant',n:'화분',i:'🪴',c:45},{id:'lamp',n:'조명',i:'🏮',c:60}];ui.panelTitle.textContent='우리 집 꾸미기';ui.panelBody.innerHTML=`<div class="choice-grid">${opts.map(o=>`<button class="choice" data-dec="${o.id}" ${state.decor.includes(o.id)?'disabled':''}><span>${o.i} ${o.n}</span><b>${state.decor.includes(o.id)?'배치됨':o.c+'골드'}</b></button>`).join('')}</div>`;ui.panel.showModal();ui.panelBody.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click',()=>{const o=opts.find(x=>x.id===b.dataset.dec);if(!o||state.coins<o.c)return toast('골드가 부족해');state.coins-=o.c;state.decor.push(o.id);saveSoon();updateHUD();ui.panel.close();toast('꾸미기 완료')}))}
 function usePlot(index,tool){const p=state.plots[index];if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.inventory.crop++;state.inventory.food+=10;saveSoon();toast('🥕 농작물 +1 · 🍖 식량 +10');return}if(p.state==='empty'){if(tool!=='seed')return toast('씨앗을 선택해');if(state.inventory.seeds<=0)return toast('씨앗이 없어');state.inventory.seeds--;p.state='growing';p.watered=false;p.wateredAt=0;p.ready=false;saveSoon();toast('🌱 씨앗을 심었어');return}if(!p.watered){if(tool!=='water')return toast('물뿌리개를 선택해');p.watered=true;p.wateredAt=Date.now();saveSoon();toast('💧 물을 줬어 · 20초');return}toast('🌱 자라는 중')}
 function updateCrops(){const now=Date.now();for(const p of state.plots)if(p.state==='growing'&&p.watered&&!p.ready&&p.wateredAt&&now-p.wateredAt>=FARM_GROW_MS)p.ready=true}
 function expandIsland(){if(state.coins<120){toast('120골드가 필요해');return}state.coins-=120;state.expanded=true;saveSoon();updateHUD();toast('🏝️ 동쪽 야생지대가 크게 열렸어!')}
@@ -208,7 +249,7 @@ function startFishing(){if(fishing)return;fishing={pos:0,dir:1,speed:.7};pressed
 function catchFish(){if(!fishing)return;const ok=fishing.pos>=42&&fishing.pos<=62;stopFishing();if(ok){state.inventory.fish++;saveSoon();toast('🐟 물고기 +1')}else toast('놓쳤어')}
 function stopFishing(){fishing=null;cancelAnimationFrame(fishingFrame);fishingFrame=0;if(ui.fishing.open)ui.fishing.close()}
 
-function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer+=dt;
+function updateWorkers(dt){ // 보존: 옛 세이브 호환용, 새 전략 루프에서는 호출하지 않는다.if(state.workers<=0){state.workerFeedTimer=0;state.workerWorkTimer=0;return}state.workerWorkTimer+=dt;state.workerDeliveryTimer+=dt;state.workerFeedTimer+=dt;
   for(const p of state.plots){if(p.state==='growing'&&!p.watered){p.watered=true;p.wateredAt=Date.now()}if(p.ready){p.state='empty';p.watered=false;p.wateredAt=0;p.ready=false;state.workerStorage.food+=10;state.workerStorage.crop+=1}}
   while(state.workerWorkTimer>=WORK_TICK){state.workerWorkTimer-=WORK_TICK;state.workerStorage.wood+=state.workers;state.workerStorage.stone+=state.workers}
   if(state.workerDeliveryTimer>=DELIVERY_INTERVAL){state.workerDeliveryTimer%=DELIVERY_INTERVAL;const s=state.workerStorage;state.inventory.wood+=s.wood;state.inventory.stone+=s.stone;state.inventory.food+=s.food;state.inventory.crop+=s.crop;const total=s.wood+s.stone+s.food+s.crop;if(total)toast(`🧺 노비 작업물 지급 · 나무${s.wood} 돌${s.stone} 식량${s.food} 농작물${s.crop}`);state.workerStorage={wood:0,stone:0,food:0,crop:0};saveSoon()}
@@ -216,16 +257,148 @@ function updateWorkers(dt){if(state.workers<=0){state.workerFeedTimer=0;state.wo
 }
 function feedWorkers(){let survivors=0;for(let i=0;i<state.workers;i++){if(state.inventory.food>=FEED_COST){state.inventory.food-=FEED_COST;survivors++}}const dead=state.workers-survivors;state.workers=survivors;saveSoon();if(dead>0)toast(`⚠️ 식량 부족으로 노비 ${dead}명이 굶어 죽었어`);else toast(`🍖 노비 급식 -${survivors*FEED_COST}`)}
 
+
+// 적 영주도 식량·군대·금화를 생산해 전략적으로 출병한다.
+// 마을회관 파괴 즉시 해당 영주가 패배하고 3개 모두 점령 시 게임 승리.
+const ENEMY_BLUEPRINTS=[
+ {id:'iron',name:'철혈 영주',x:3090,y:430,focus:'rush',color:'#b64e39'},
+ {id:'stone',name:'석벽 영주',x:4060,y:680,focus:'defense',color:'#8b8c80'},
+ {id:'gold',name:'황금 영주',x:3590,y:1560,focus:'trade',color:'#d5ac52'}
+];
+let fieldEnemies=[],offensiveTarget=null;
+function getEnemyLords(){
+ if(!Array.isArray(state.enemyLordsV5))state.enemyLordsV5=ENEMY_BLUEPRINTS.map((d,i)=>({
+  ...d,hp:230+i*80,maxHp:230+i*80,wallHp:110+i*85,maxWallHp:110+i*85,
+  wood:15,stone:15,food:60,coins:50,troops:3+i*2,
+  economyClock:0,decisionClock:0,defeated:false,buildings:3+i*2
+ }));
+ return state.enemyLordsV5;
+}
+function advanceEnemyLords(dt){
+ const lords=getEnemyLords();let attacker=null;
+ for(const lord of lords){
+   if(lord.defeated)continue;
+   lord.economyClock=(Number(lord.economyClock)||0)+dt;
+   lord.decisionClock=(Number(lord.decisionClock)||0)+dt;
+   if(lord.economyClock>=8){
+     lord.economyClock%=8;
+     const harvest=lord.focus==='trade'?9:lord.focus==='defense'?5:6;
+     lord.wood+=harvest;lord.stone+=lord.focus==='defense'?7:4;
+     lord.food+=10;lord.coins+=lord.focus==='trade'?10:5;
+     if(lord.food>=7&&lord.coins>=5&&lord.troops<30){
+       lord.food-=7;lord.coins-=5;lord.troops+=lord.focus==='rush'?3:2;
+     }
+     if(lord.focus==='defense'&&lord.stone>=9&&lord.wallHp<lord.maxWallHp){
+       lord.stone-=9;lord.wallHp=Math.min(lord.maxWallHp,lord.wallHp+28);
+     }
+   }
+   const threshold=lord.focus==='rush'?9:lord.focus==='trade'?18:23;
+   if(!attacker&&lord.troops>=threshold&&lord.decisionClock>(lord.focus==='rush'?65:95)&&!offensiveTarget){
+     lord.decisionClock=0;attacker=lord;
+   }
+ }
+ return attacker;
+}
+function showGameResult(title,description){
+ const el=document.querySelector('#gameResult');
+ if(!el)return;el.hidden=false;
+ el.querySelector('h2').textContent=title;
+ el.querySelector('p').textContent=description;
+}
+function openWar(){
+ if(ui.panel.open||ui.fishing.open)return;
+ ui.panelTitle.textContent='⚔️ 전쟁 지도 · 적 영주';
+ renderWar();ui.panel.showModal();
+}
+function renderWar(){
+ const lords=getEnemyLords();
+ const army=allies.filter(u=>u.hp>0);
+ ui.panelBody.innerHTML='<p class="panel-note">병영에서 검병·궁수를 모집해 적 영주 성에 출병. 성벽부터 파괴하고 마을회관을 무너뜨리면 영주가 즉시 패배한다.</p>'+
+ '<div class="realm-enemy-grid">'+lords.map(l=>'<article class="realm-lord">'+
+ '<h3>🏰 '+l.name+(l.defeated?' · 점령':'')+'</h3>'+
+ '<p>🏛️ 성채 '+Math.ceil(l.hp)+'/'+l.maxHp+' · 🧱 성벽 '+Math.ceil(l.wallHp)+' · ⚔️ 주둔 '+l.troops+'</p>'+
+ '<button class="realm-main-command" type="button" data-lord="'+l.id+'" '+(l.defeated||!state.barracksBuilt||army.length<1||offensiveTarget?'disabled':'')+'>'+(l.defeated?'✅ 점령 완료':offensiveTarget===''+l.id?'공성 진행 중':'⚔️ 출병 명령')+'</button>'+
+ '<button class="realm-look" type="button" data-look="'+l.id+'">🗺️ 적 성 보기</button></article>').join('')+'</div>'+
+ '<button class="realm-main-command" type="button" data-home>🏰 내 성으로 돌아가기</button>'+
+ '<p class="panel-note">현재 군대 '+army.length+'명 · 병영 건설과 식량 생산이 전쟁 준비의 핵심</p>';
+ ui.panelBody.querySelectorAll('[data-lord]').forEach(b=>b.addEventListener('click',()=>{
+   const lord=lords.find(l=>l.id===b.dataset.lord);
+   if(!lord||!state.barracksBuilt||!army.length||offensiveTarget)return;
+   offensiveTarget=lord.id;game.offensiveTarget=lord.id;
+   fieldEnemies=Array.from({length:Math.min(5,Math.max(2,Math.ceil(lord.troops/5)))},(_,i)=>{
+     const u=createUnit(i%2?'archer':'soldier',true);
+     u.x=lord.x-130+i*22;u.y=lord.y-90+(i%3)*35;u.hp=u.maxHp=40+10*(lord.focus==='defense');
+     u.attack=6;u.range=i%2?170:60;return u;
+   });
+   game.fieldEnemies=fieldEnemies;
+   for(const u of army)u._expedition=true;
+   ui.panel.close();
+   renderer.viewFocus={x:lord.x-450,y:lord.y};renderer.viewZoom=.55;
+   toast('🚩 '+lord.name+' 성채로 부대 출병!');
+ }));
+ ui.panelBody.querySelectorAll('[data-look]').forEach(b=>b.addEventListener('click',()=>{
+   const lord=lords.find(l=>l.id===b.dataset.look);
+   if(lord){renderer.viewFocus={x:lord.x,y:lord.y};renderer.viewZoom=.65;ui.panel.close()}
+ }));
+ ui.panelBody.querySelector('[data-home]')?.addEventListener('click',()=>{
+   renderer.centerCamera();ui.panel.close();
+ });
+}
+function updateOffensive(dt){
+ if(!offensiveTarget)return;
+ const lord=getEnemyLords().find(l=>l.id===offensiveTarget);if(!lord||lord.defeated)return;
+ const fighters=allies.filter(u=>u.hp>0&&u._expedition);
+ if(!fighters.length){toast('⚔️ 원정군 전멸 · 재모집 필요');offensiveTarget=null;game.offensiveTarget=null;fieldEnemies=[];return}
+ for(const enemy of fieldEnemies.filter(u=>u.hp>0)){
+   const t=nearestLiving(enemy,fighters);if(!t)continue;
+   const distance=Math.hypot(enemy.x-t.x,enemy.y-t.y);
+   if(distance<enemy.range){enemy.cool-=dt;if(enemy.cool<=0){t.hp-=enemy.attack;enemy.cool=1.25}}
+ }
+ for(const unit of fighters){
+   if(unit.hp<=0)continue;
+   const defender=nearestLiving(unit,fieldEnemies);
+   const distDef=defender?Math.hypot(unit.x-defender.x,unit.y-defender.y):Infinity;
+   if(defender&&distDef<330){
+     if(distDef>unit.range)moveToward(unit,defender.x,defender.y,dt);
+     else{unit.cool-=dt;if(unit.cool<=0){defender.hp-=unit.attack;unit.cool=unit.kind==='archer'?1.25:.85}}
+     continue;
+   }
+   const dst=Math.hypot(unit.x-lord.x,unit.y-lord.y),reach=unit.kind==='archer'?230:95;
+   if(dst>reach)moveToward(unit,lord.x,lord.y,dt);
+   else{
+     unit.cool-=dt;
+     if(unit.cool<=0){
+       const amount=unit.attack*(unit.kind==='archer'?.85:1);
+       if(lord.wallHp>0)lord.wallHp=Math.max(0,lord.wallHp-amount);
+       else lord.hp=Math.max(0,lord.hp-amount);
+       unit.cool=unit.kind==='archer'?1.12:.75;
+     }
+   }
+ }
+ allies=allies.filter(u=>u.hp>0);fieldEnemies=fieldEnemies.filter(u=>u.hp>0);game.fieldEnemies=fieldEnemies;game.allies=allies;
+ if(lord.hp<=0){
+   lord.hp=0;lord.defeated=true;offensiveTarget=null;game.offensiveTarget=null;fieldEnemies=[];
+   for(const u of allies)delete u._expedition;
+   state.coins+=120;state.inventory.wood+=20;state.inventory.stone+=16;saveSoon();
+   const remaining=getEnemyLords().filter(l=>!l.defeated);
+   if(!remaining.length)showGameResult('🏆 승리 · 모든 적 영주 격파','모든 적 마을회관을 파괴하고 왕국을 통일했어.');
+   else toast('🏰 '+lord.name+' 마을회관 파괴! 적 영주 패배 · 영지 점령');
+ }
+}
+
 function updateRaid(dt){
   const fort=getFort();
   if(!raidActive){
-    state.raidTimer+=dt;
+    // 임의 주기 습격을 중단하고 적 영주의 군사력과 공격 판단을 사용한다.
+    const attacker=advanceEnemyLords(dt);
+    if(attacker){startRaid(attacker);return;}
+    /*state.raidTimer+=dt;
     const remaining=raidInterval()-state.raidTimer;
     if(remaining>30)raidWarningShown=false;
     if(!raidWarningShown&&remaining<=30&&remaining>0&&!fort?.siegeRequested){
       raidWarningShown=true;toast('🔔 정찰대 경보! 30초 뒤 습격이 시작돼');
     }
-    if(fort?.siegeRequested || state.raidTimer>=raidInterval())startRaid();
+    if(fort?.siegeRequested || state.raidTimer>=raidInterval())startRaid();*/
     return;
   }
   if(grandSiege){
@@ -236,6 +409,8 @@ function updateRaid(dt){
   }
   updateRaidCombat(dt);
   if(game.siegeSurrendered){
+    state.keepDestroyed=true;
+    game.keepDestroyed=true;showGameResult('패배 · 마을회관 함락','적군이 성채를 점령했어. 세이브를 새로 시작해야 해.');
     enemies=[];game.enemies=enemies;game.siegeSurrendered=false;
     raidActive=false;game.raidActive=false;grandSiege=null;game.grandSiege=null;
     state.raidTimer=0;saveSoon();toast('🏰 성채가 함락됐어! 성벽과 성채를 수리해');
@@ -247,26 +422,32 @@ function updateRaid(dt){
     state.raidTimer=0;saveSoon();toast('✅ 습격 방어 성공');
   }
 }
-function startRaid(){
+function startRaid(attacker=null){
   const fort=getFort(),auto=fort?.siegeAuto||'off';
   const siegeEnabled=!!fort?.siegeRequested||(!!fort&&fort.siegeAuto==='always')||
     (!!fort&&auto==='third'&&state.raidNumber===2);
   if(fort)fort.siegeRequested=false;
   state.raidTimer=0;raidWarningShown=false;state.raidNumber=(state.raidNumber%3)+1;
   raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];
-  // 기존 일반 습격/특수 습격 로직을 그대로 실행한다.
-  if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
+  // 적 영주 출병: 해당 영주의 인구와 생산량으로 병력을 편성한다.
+  if(attacker){
+    const size=Math.min(18,Math.max(3,Math.floor(attacker.troops)));
+    for(let i=0;i<size;i++){const u=createUnit(i%4===0?'archer':'soldier',true);
+      u.x=1550+i*12;u.y=400+(i%6)*80;enemies.push(u)}
+    attacker.troops=Math.max(0,attacker.troops-size);attacker.food=Math.max(0,attacker.food-size*2);
+    toast('⚔️ '+attacker.name+' 군세 출병! 성문과 마을회관을 방어해');
+  } else if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
   else if(state.raidNumber===2){
     for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
     for(let i=0;i<2;i++)enemies.push(createUnit('archer',true));
   }else enemies.push(createUnit('soldier',true,true));
-  if(siegeEnabled && fort?.wallTier && state.villageDevelopment?.townHallBuilt){
+  if(!attacker&&siegeEnabled && fort?.wallTier && state.villageDevelopment?.townHallBuilt){
     grandSiege={wave:0,elapsed:0,nextWaveAt:.6,spawned:0};
     game.grandSiege=grandSiege;
     toast('🚩 대공성전 개시! 성문과 성벽을 방어해');
   }else{
     grandSiege=null;game.grandSiege=null;
-    toast(state.raidNumber===3?'👹 보스 습격!':`⚠️ ${state.raidNumber}차 습격!`);
+    if(!attacker)toast(state.raidNumber===3?'👹 보스 습격!':`⚠️ ${state.raidNumber}차 습격!`);
   }
   game.enemies=enemies;saveSoon();
 }
@@ -367,8 +548,8 @@ function updateHUD(){
     `🏰 ${grandSiege.wave}/6차 · 적 ${enemies.length} · 성채 ${Math.ceil(getFort()?.keepHp??900)} · 사기 ${getFort()?.morale??65}`:
     `⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;
   else{
-    const r=Math.max(0,Math.ceil(raidInterval()-state.raidTimer));
-    ui.raid.textContent=`⏱️ 습격 ${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`;
+    const living=getEnemyLords().filter(l=>!l.defeated);
+    ui.raid.textContent=living.length?'🏰 적 영주 '+living.length+'명 · '+(game.offensiveTarget?'공성 중':'영지 방어'):'🏆 왕국 통일';
   }
 }
 // 메인: 방향키는 영지 지도를 이동한다. 캐릭터 이동은 하지 않는다.
@@ -382,6 +563,6 @@ function updateCameraControl(dt){
 function updateHint(){
   ui.hint.textContent=raidActive?'공성전 진행 · 병영과 성채에서 전술 명령':'드래그: 이동 · 부지 터치: 건설 · 공성: 출전';
 }
-function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open){updateCameraControl(dt);advanceClock(dt);updateCrops();updateWorkers(dt);updateRaid(dt);if(!raidActive){updatePeaceAllies(dt);updateWolves(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
+function frame(now){const dt=Math.min(.05,Math.max(0,(now-lastFrame)/1000));lastFrame=now;game.timeNow=Date.now();if(!runtime.paused&&!ui.panel.open&&!ui.fishing.open&&!state.keepDestroyed){updateCameraControl(dt);advanceClock(dt);updateRaid(dt);updateOffensive(dt);if(!raidActive&&!game.offensiveTarget){updatePeaceAllies(dt)}}game.allies=allies;game.enemies=enemies;game.raidActive=raidActive;game.selectedWolfId=selectedWolfId;updateHUD();updateHint();renderer.draw(game);requestAnimationFrame(frame)}
 
 allies=state.army.map(x=>createUnit(x.kind,false));game.allies=allies;updateHUD();requestAnimationFrame(frame);
