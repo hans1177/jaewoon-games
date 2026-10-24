@@ -135,3 +135,64 @@ body.addEventListener('click',async e=>{
   await peerAction(op,id,value);
  }catch(error){message('오류: '+String(error.message||error).slice(0,180))}
 });
+
+// 무료 실시간 WebRTC: 서버 없이 방코드를 직접 교환한다. 전체 월드 동기화가 아닌 성채 대전·보급.
+let peer,wire,peerRole='',peerMode='duel',peerStatus='연결 전',myCode='';
+const duel={own:600,theirs:600,soldier:0,archer:0,shield:false};
+function send(m){if(wire?.readyState==='open')wire.send(JSON.stringify({v:1,...m}))}
+function peerUpdate(){if(dialog.open&&section==='multiplayer')render()}
+function wireUp(c){
+ wire=c;
+ c.onopen=()=>{peerStatus='연결 성공';send({type:'status',hp:duel.own});peerUpdate()};
+ c.onclose=()=>{peerStatus='연결 종료';peerUpdate()};
+ c.onerror=()=>{peerStatus='통신 오류';peerUpdate()};
+ c.onmessage=e=>{
+  let m;try{m=JSON.parse(e.data)}catch{return}
+  if(m?.v!==1)return;
+  if(m.type==='status'){duel.theirs=Math.max(0,Math.min(600,Number(m.hp)||0))}
+  if(m.type==='attack'&&peerMode==='duel'){
+   const s=Math.max(0,Math.min(12,Math.floor(Number(m.soldier)||0)));
+   const a=Math.max(0,Math.min(10,Math.floor(Number(m.archer)||0)));
+   const dmg=Math.floor((s*16+a*25)*(duel.shield?.56:1));
+   duel.own=Math.max(0,duel.own-dmg);duel.shield=false;
+   send({type:'status',hp:duel.own});
+   window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'attack',title:'상대가 공격했습니다'}}));
+  }
+  if(m.type==='gift'&&peerMode==='ally'&&['wood','stone','food'].includes(m.item)){
+   const amount=Math.max(0,Math.min(20,Math.floor(Number(m.amount)||0)));
+   api.state.inventory[m.item]=(Number(api.state.inventory[m.item])||0)+amount;api.save();
+  }
+  peerUpdate();
+ };
+}
+function freshPeer(){
+ if(!window.RTCPeerConnection)throw Error('이 브라우저는 WebRTC를 지원하지 않습니다.');
+ peer?.close();peer=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+ peer.ondatachannel=e=>wireUp(e.channel);
+ peer.onconnectionstatechange=()=>{peerStatus=peer.connectionState;peerUpdate()};
+ return peer;
+}
+async function gathered(pc){
+ if(pc.iceGatheringState==='complete')return;
+ await Promise.race([
+  new Promise(resolve=>pc.addEventListener('icegatheringstatechange',function check(){
+   if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',check);resolve()}
+  })),
+  new Promise(resolve=>setTimeout(resolve,7000))
+ ]);
+}
+function renderMultiplayer(){
+ const connected=wire?.readyState==='open',code=myCode;
+ body.innerHTML='<p class="ks-note"><b>무료 P2P 1대1 시험 기능</b>. 상대와 초대 코드·답장 코드를 직접 교환해 연결합니다. 일부 통신망에서는 연결할 수 없습니다. 현재 대전은 성채 체력전이며 전체 왕국 맵 동기화는 아직 개발 중입니다.</p>'+
+  '<label class="ks-field">연결 방식<select id="ks-mode"><option value="duel" '+(peerMode==='duel'?'selected':'')+'>⚔️ 성채 1대1 대전</option><option value="ally" '+(peerMode==='ally'?'selected':'')+'>🤝 자원 보급 동맹</option></select></label>'+
+  '<p class="ks-note">연결: '+peerStatus+'</p>'+
+  '<div class="ks-peer-buttons">'+button('host','① 방 만들기')+button('guest','② 초대 수락')+button('answer','③ 답장 입력')+button('leave','연결 해제')+'</div>'+
+  '<label class="ks-field">내 방 코드<textarea id="ks-local" readonly>'+code+'</textarea></label>'+button('copy','📋 복사',!code)+
+  '<label class="ks-field">상대에게 받은 코드<textarea id="ks-remote" placeholder="상대의 초대 또는 답장 코드를 붙여넣으세요"></textarea></label>'+
+  (connected&&peerMode==='duel'?
+   '<div class="ks-duel"><b>내 성채 '+duel.own+'/600</b><b>상대 성채 '+duel.theirs+'/600</b>'+
+   '<small>원정군 ⚔️'+duel.soldier+' · 🏹'+duel.archer+'</small></div>'+
+   button('recruit:soldier','검병 모집 · 식량 6')+button('recruit:archer','궁수 모집 · 식량 9')+
+   button('strike','⚔️ 적 마을회관 공격',!(duel.soldier+duel.archer))+button('shield','🛡️ 성채 방어'):
+   connected?button('gift:wood','나무 10 전달')+button('gift:stone','돌 10 전달')+button('gift:food','식량 10 전달'):'');
+}
