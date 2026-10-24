@@ -75,7 +75,7 @@ const copy=s=>structuredClone(s);
 export function newGame(captainId="eleanor"){
  const hero=CAPTAINS.find(c=>c.id===captainId)||CAPTAINS[0],home=PORTS.find(p=>p.id===hero.port);
  return {
-  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,eventClock:0,eventSerial:0,speed:1,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
+  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,eventClock:0,eventSerial:0,speed:1,autoCombat:true,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
   version:1,day:1,elapsed:0,coins:3400,discovered:[hero.port],visits:{[hero.port]:1},homePort:hero.port,captain:hero.name,crewRoster:[hero.id],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
   ship:{x:home.x,z:home.z+2,heading:0,velocity:0,rudder:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0,gear:{sail:'standard',figurehead:'none'},regionalMods:[],cannonType:'bronze',armor:0,holdLevel:0,rudderLevel:0,hullLevel:0},
   fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
@@ -110,7 +110,7 @@ export function restoreGame(raw){
   for(const field of ['discoveries','reported','completedStories','completedOffice','treasureClues','clearedCamps'])s[field]=Array.isArray(s[field])?[...new Set(s[field].filter(v=>typeof v==='string'))].slice(0,100):[];
   s.officeQuests=Array.isArray(s.officeQuests)?s.officeQuests.filter(q=>OFFICE_QUESTS.some(o=>o.id===q)).slice(0,4):[];
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
-  s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;
+  s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;s.autoCombat=obj.autoCombat!==false;
   s.event=s.event&&SEA_EVENTS.some(e=>e.id===s.event.id)?s.event:null;
   s.expedition=s.expedition&&SITES.some(e=>e.id===s.expedition.id)?s.expedition:null;
   s.job=JOBS.some(j=>j.id===s.job)?s.job:'adventurer';s.shipType=SHIP_TYPES.some(t=>t.id===s.shipType)?s.shipType:'caravel';
@@ -263,24 +263,36 @@ export function cancelDestination(state){const s=copy(state);s.destination=null;
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 export function stepSea(state,input={},seconds=.05){
  if(state.event||state.landBattle)return state;
- const s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
+ let s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
  const ship=s.ship;
  if(ship.hull<=0)return s;
  const sailGear=SAIL_EQUIPMENT.find(g=>g.id===ship.gear.sail)||SAIL_EQUIPMENT[0],figure=FIGUREHEADS.find(g=>g.id===ship.gear.figurehead)||FIGUREHEADS[0],shipDesign=SHIP_TYPES.find(t=>t.id===s.shipType)||SHIP_TYPES[0],climate=WEATHER.find(w=>w.id===s.climate.kind)||WEATHER[0],wind=Math.sin(s.day*.7+s.elapsed*.03)*.4;
+ // 메인: 적을 발견하면 항로를 유지한 채 측면 포격 위치를 잡는다. 직접 조타는 우선한다.
  let turn=clamp(Number(input.turn)||0,-1,1),throttle=clamp(Number(input.throttle)||0,-1,1);
- if(s.route.length&&input.manual!==true){
-  const target=s.route[0],d=dist(ship,target);
-  if(d<.001){s.route.shift();if(!s.route.length){s.destination=null;ship.velocity=0;note(s,s.autoMode==='frontier'?'미개척 해역의 경계야. 조타 스틱으로 새로운 항로를 열어.':'개척 항로 목적지에 도착했어.');s.autoMode=null;}}
+ const gun=CANNON_TYPES.find(g=>g.id===ship.cannonType)||CANNON_TYPES[0];
+ const hostile=s.pirates.filter(p=>p.hull>0&&(!p.neutral||s.diplomacy[p.faction]<0)&&dist(ship,p)<Math.max(42,gun.range*1.25)).sort((a,b)=>dist(ship,a)-dist(ship,b));
+ const combatTarget=s.autoCombat?hostile[0]:null;
+ if(combatTarget&&input.manual!==true){
+  const bearing=Math.atan2(combatTarget.x-ship.x,combatTarget.z-ship.z),distance=dist(ship,combatTarget);
+  const starboard=Math.abs(wrap(bearing+Math.PI/2-ship.heading))<=Math.abs(wrap(bearing-Math.PI/2-ship.heading))?1:-1;
+  const preferred=Math.min(24,Math.max(11,gun.range*.65));
+  const desired=bearing+starboard*(distance>preferred*1.15?.58:distance<preferred*.72?2.12:Math.PI/2);
+  turn=clamp(wrap(desired-ship.heading)*2.1,-1,1);
+  throttle=distance<preferred*.72?.74:distance>preferred*1.2?1:.83;
+ }else if(s.route.length&&input.manual!==true){
+  if(dist(ship,s.route[0])<Math.max(1.4,Math.abs(ship.velocity)*dt*1.15)){
+   s.route.shift();
+   if(!s.route.length){s.destination=null;ship.velocity=0;note(s,s.autoMode==='frontier'?'미개척 해역의 경계야. 조타 스틱으로 새로운 항로를 열어.':'개척 항로 목적지에 도착했어.');s.autoMode=null;}
+  }
   if(s.route.length){
    const r=s.route[0],desired=Math.atan2(r.x-ship.x,r.z-ship.z);
-   turn=clamp(wrap(desired-ship.heading)*1.8,-1,1);
-   throttle=1;ship.heading=desired;ship.rudder=0;turn=0;
+   turn=clamp(wrap(desired-ship.heading)*2,-1,1);throttle=1;
   }
  }
  ship.rudder=clamp((Number(ship.rudder)||0)+(turn-(Number(ship.rudder)||0))*Math.min(1,dt*4),-1,1);ship.heading=wrap(ship.heading+ship.rudder*dt*(.8+ship.sail*.06)*(1+(ship.rudderLevel||0)*.15)*(shipDesign.turn||1)*(sailGear.turn||1)*(figure.turn||1)*(ship.regionalMods.includes('brest-rudder')?1.1:1));
  const laden=1-cargoWeight(s)/Math.max(1,ship.cargoLimit*s.fleet)*.18;
  const speed=(2.1+ship.sail*1.15)*(shipDesign.speed||1)*(sailGear.speed||1)*(figure.speed||1)*(ship.gear.figurehead!=='none'&&ship.regionalMods.includes('venice-carving')?1.02:1)*(1+assignedPower(s,'sailing','navigation')/600)*(1+wind*.24)*(ship.gear.sail==='stormcloth'?Math.max(.93,climate.speed):climate.speed)*laden*(ship.hull/ship.maxHull*.6+.4);
- const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
+ const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
  const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,-1020,900);
  if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}else{ship.velocity=0;if(s.destination){s.route=[];s.destination=null;note(s,'얕은 해안이야. 해도에서 해상 항로를 다시 설정해.');}}
  ship.cooldown=Math.max(0,ship.cooldown-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
@@ -302,7 +314,9 @@ export function stepSea(state,input={},seconds=.05){
   if(enemy.hull<=0||enemy.neutral&&!(s.diplomacy[enemy.faction]<0))continue;
   const d=dist(ship,enemy);
   const angle=Math.atan2(ship.x-enemy.x,ship.z-enemy.z);
-  enemy.heading=wrap(enemy.heading+clamp(wrap(angle-enemy.heading),-dt*.4,dt*.4));
+  const flank=Math.abs(wrap(angle+Math.PI/2-enemy.heading))<Math.abs(wrap(angle-Math.PI/2-enemy.heading))?1:-1;
+  const enemyCourse=d<26?angle+flank*Math.PI/2:angle;
+  enemy.heading=wrap(enemy.heading+clamp(wrap(enemyCourse-enemy.heading),-dt*.55,dt*.55));
   if(d<40&&d>15){
    const nx=enemy.x+Math.sin(enemy.heading)*dt*1.2,nz=enemy.z+Math.cos(enemy.heading)*dt*1.2;if(!isLand(nx,nz)){enemy.x=nx;enemy.z=nz;}
   }
@@ -312,23 +326,31 @@ export function stepSea(state,input={},seconds=.05){
    enemy.cooldown=9;s.combatFx={serial:++s.fxSerial,type:'cannon',gun:'bronze',speed:180,from:{x:enemy.x,z:enemy.z},to:{x:ship.x,z:ship.z},damage:previousHull-ship.hull,enemy:true};note(s,'해적 함포에 피격! 선체 내구도 '+Math.round(ship.hull));
   }
  }
+ // 자동·수동 모두 동일한 포문·피해·장전·포탄 규칙을 사용한다.
+ if(combatTarget&&ship.cooldown<=0&&s.supplies.ammo>0){
+  const bearing=Math.atan2(combatTarget.x-ship.x,combatTarget.z-ship.z);
+  if(dist(ship,combatTarget)<gun.range&&Math.abs(Math.cos(wrap(bearing-ship.heading)))<.55){
+   const volley=fireCannons(s,combatTarget.id);
+   if(volley.ok)s=volley.state;
+  }
+ }
  return s;
 }
-export function fireCannons(state){
+export function fireCannons(state,targetId=null){
  if(state.landBattle)return fail(state,'먼저 육지 전투를 마치고 출항해.');
  const s=copy(state),ship=s.ship;
  if(ship.cooldown>0||ship.hull<=0)return {state,ok:false,message:'장전 중이거나 전투 불가능해.'};
  if(s.supplies.ammo<=0)return fail(state,'포탄이 없어. 조선소에서 보급해.');
  const gun=CANNON_TYPES.find(g=>g.id===ship.cannonType)||CANNON_TYPES[0];
- const target=s.pirates.filter(p=>p.hull>0&&(!p.neutral||s.diplomacy[p.faction]<0)).map(p=>({p,d:dist(p,ship)})).filter(v=>v.d<gun.range).sort((a,b)=>a.d-b.d)[0];
+ const target=s.pirates.filter(p=>p.hull>0&&(!p.neutral||s.diplomacy[p.faction]<0)&&(targetId===null||p.id===targetId)).map(p=>({p,d:dist(p,ship)})).filter(v=>v.d<gun.range).sort((a,b)=>a.d-b.d)[0];
  if(!target)return {state,ok:false,message:'사거리 내 해적선이 없어.'};
  const enemy=target.p,oldHull=target.p.hull;
  const angle=Math.atan2(enemy.x-ship.x,enemy.z-ship.z);
- if(Math.abs(wrap(angle-ship.heading))<.45){
+ if(Math.abs(Math.cos(wrap(angle-ship.heading)))>=.55){
   return {state,ok:false,message:'측면 포격이야. 배를 회전시켜 해적을 좌우 측면에 둬.'};
  }
  enemy.hull=Math.max(0,enemy.hull-Math.round(ship.cannons*(3+ship.crew/30)*gun.power*(ship.gear.figurehead==='lion'?1.08:1)*(1+assignedPower(s,'gunnery','gunnery')/500)*Math.max(.6,1-target.d/80)));
- ship.cooldown=gun.reload;s.supplies.ammo--;s.score+=10;s.combatFx={serial:++s.fxSerial,type:'cannon',gun:gun.id,speed:gun.speed,from:{x:ship.x,z:ship.z},to:{x:enemy.x,z:enemy.z},damage:oldHull-enemy.hull,enemy:false};
+ ship.cooldown=gun.reload;s.supplies.ammo--;s.score+=10;s.combatFx={serial:++s.fxSerial,type:'cannon',gun:gun.id,speed:gun.speed,count:ship.cannons,from:{x:ship.x,z:ship.z},to:{x:enemy.x,z:enemy.z},damage:oldHull-enemy.hull,enemy:false};
  note(s,'함포 명중! 적 내구도 '+Math.round(enemy.hull));
  if(enemy.hull===0){s.coins+=400+enemy.id*120;s.victories++;s.score+=250;note(s,'해적 함선 격침! 전리품 획득');}
  if(enemy.hull===0){s.fame+=8;s.xp+=60;}
