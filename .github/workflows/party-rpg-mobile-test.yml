@@ -117,6 +117,36 @@ jobs:
               return !!s.story.scenes.council&&!!saved?.story?.scenes?.council;
             });
             if(!persisted)throw new Error('PARTY_RPG_SCENE_SAVE_NOT_PERSISTED');
+            // 새 제국 지구는 2막 완료 후에만 열리며 살인 사건 조사가 교전으로 이어진다.
+            await page.locator('#archiveBack').click();
+            await page.locator('#modalClose').click();
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState(),st=game.state.story;
+              st.choices.ending='release';
+              for(let i=1;i<=6;i++)st.act2.completed[i]=true;
+              game.p.x=700;game.p.y=520;
+            });
+            await page.locator('#systemBtn').click();
+            await page.locator('#systemTravel').click();
+            const ancient=page.locator('[data-zone="7"]');
+            if(await ancient.isDisabled())throw new Error('IMPERIAL_REGION_DID_NOT_UNLOCK');
+            await ancient.click();
+            await page.locator('#mapBtn').click();
+            if(!(await page.locator('.mapMarker.imperial').count()))throw new Error('IMPERIAL_CASE_MAP_MISSING');
+            await page.locator('#mapBack').click();
+            await page.evaluate(()=>{const p=window.partyRpgVibeState().p;p.x=1190;p.y=610;});
+            await page.locator('#prompt.on').waitFor({timeout:15000});
+            await page.locator('#interactBtn').click();
+            await page.locator('[data-imperial-choice="1"]').click();
+            await page.locator('#modal[data-mode="event"] #eventSkip').click();
+            const investigation=await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              return {zone:game.state.zone,record:game.state.story.imperialCases.arena_murder,
+                      foes:game.enemies.filter(e=>!e.dead&&e.storyTag==='imperial:arena_murder').length};
+            });
+            if(investigation.zone!==7||investigation.record?.path!=='1'||investigation.foes<2)
+              throw new Error('IMPERIAL_INVESTIGATION_DID_NOT_START '+JSON.stringify(investigation));
+            console.log('PARTY_RPG_ANCIENT_EMPIRE_REGION_AND_MURDER_CASE=PASS');
             await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
             if(errors.length)throw new Error('PARTY_RPG_BROWSER_ERRORS: '+errors.join(' | '));
             console.log('PARTY_RPG_MOBILE_EVENT_RECRUIT_AND_SAVE=PASS');

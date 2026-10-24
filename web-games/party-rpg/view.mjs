@@ -118,7 +118,11 @@ buildWorld(live){
   {sky:0x626568,fog:0x777572,far:58,light:0xd5d8ca,intensity:1.2},
   {sky:0x5e5146,fog:0x675e51,far:72,light:0xffd4a0,intensity:2.0},
   {sky:0x556166,fog:0x657479,far:66,light:0xe2f0ff,intensity:1.6},
-  {sky:0x514652,fog:0x68535d,far:52,light:0xe4a3a0,intensity:1.1}
+  {sky:0x514652,fog:0x68535d,far:52,light:0xe4a3a0,intensity:1.1},
+  {sky:0x69493b,fog:0x78604e,far:73,light:0xffd3a0,intensity:1.55},
+  {sky:0x384b51,fog:0x516363,far:59,light:0xb7d9d0,intensity:1.13},
+  {sky:0x6e5941,fog:0x796952,far:65,light:0xeed1a3,intensity:1.58},
+  {sky:0x524358,fog:0x655774,far:58,light:0xcdbfe7,intensity:1.19}
  ][zone]||{sky:0x68705f,fog:0x707761,far:70,light:0xffd6a6,intensity:1.5};
  this.scene.background=new THREE.Color(mood.sky);
  this.scene.fog.color.setHex(mood.fog);this.scene.fog.near=13;this.scene.fog.far=mood.far;
@@ -134,7 +138,7 @@ buildWorld(live){
   const x=65+random(i+1)*(live.worldW-130),y=65+random(i+202)*(live.worldH-130);
   if(dungeon){if(i%3===0)rocks.push([x,y,.6+random(i+35)*.75,random(i+48)*6]);continue;}
   if((zone===0&&Math.abs(x-700)<205&&Math.abs(y-500)<245)||Math.hypot(x-live.p.x,y-live.p.y)<110)continue;
-  if([3,4,5,6].includes(zone)){
+  if([3,4,5,6,7,8,9,10].includes(zone)){
    if(i%2===0)rocks.push([x,y,.48+random(i+50)*.85,random(i+50)*6]);
    else if(zone===5&&i%3===0)high.push([x,y,1.9+random(i+52)*1.1,random(i+55)*6]);
    else pebbles.push([x,y,.22+random(i+26)*.4,random(i+63)*6]);
@@ -197,6 +201,27 @@ buildWorld(live){
   this.instances(zone>=3?'wall-broken':'wall',ruins.map(([x,y],i)=>[x,y,zone===4?1.6:2.2,i*Math.PI/2]));
   this.instances('pillar-stone',ruins.map(([x,y],i)=>[x+50,y+30,1.7+random(i+550),i]));
   this.instances('fence',[[455,640,1.0,0],[500,640,1.0,0],[890,340,1.0,0]]);
+  if(zone>=7){
+    // 옛 제국 도시 유산: 기존 무료 GLB 건축 모델을 로마식 회랑과 원형경기장으로 재배열.
+    if(zone===7){
+      const arena=[[720,320],[950,320],[1110,445],[950,600],[720,600],[570,445]];
+      this.instances('wall-arch',arena.map(([x,y],i)=>[x,y,3.3,i*Math.PI/3]));
+      this.instances('pillar-stone',[[680,420,3,0],[1090,420,3,0],[680,560,3,0],[1090,560,3,0]]);
+    }else if(zone===8){
+      this.instances('wall-arch',[[370,440,2.9,Math.PI/2],[620,440,2.9,Math.PI/2],[870,440,2.9,Math.PI/2],[1120,440,2.9,Math.PI/2],[1370,440,2.9,Math.PI/2]]);
+      this.instances('pillar-stone',[[340,760,2.8,0],[690,760,2.8,0],[1040,760,2.8,0],[1390,760,2.8,0]]);
+      this.instances('wall-broken',[[475,710,2.8,0],[845,710,2.8,0],[1220,710,2.8,0]]);
+    }else if(zone===9){
+      this.instances('wall-arch',[[460,480,3.5,0],[650,480,3.5,0],[840,480,3.5,0],[1030,480,3.5,0]]);
+      this.instances('pillar-stone',[[450,740,3,0],[660,740,3,0],[870,740,3,0],[1080,740,3,0]]);
+      this.staticModel('fountain-round',960,630,2.1);
+      this.instances('lantern',[[520,680,1.7,0],[730,680,1.7,0],[1150,700,1.8,0]]);
+    }else{
+      this.instances('wall-arch',[[430,450,3.1,0],[570,450,3.1,0],[710,450,3.1,0],[850,450,3.1,0],[990,450,3.1,0],[1130,450,3.1,0],[1270,450,3.1,0]]);
+      this.instances('pillar-stone',[[430,630,3.9,0],[710,630,3.9,0],[990,630,3.9,0],[1270,630,3.9,0]]);
+      this.instances('lantern',[[570,690,1.6,0],[850,690,1.6,0],[1130,690,1.6,0]]);
+    }
+  }
   if(zone===2||zone===3||zone===6){
    this.staticModel('wall-arch',870,630,2.7,Math.PI/2);
    this.staticModel('lantern',895,620,1.4);
@@ -248,7 +273,7 @@ buildWorld(live){
   }
  }
 }
- modelRole(kind,obj,live){if(kind==='player')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(live.state.player.classId)]||'warrior';if(kind==='ai')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(obj.classId)]||HEROES[(Number(obj.id?.slice(2))||0)%5];const name=obj.name||'';if(/슬라임/.test(name))return'slime';if(/토끼/.test(name))return'bunny';if(/골렘|수호자/.test(name))return'golem';if(/망령/.test(name))return'ghost';if(/박쥐|마수/.test(name))return'winged';return'orc';}
+ modelRole(kind,obj,live){if(kind==='player')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(live.state.player.classId)]||'warrior';if(kind==='ai')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(obj.classId)]||HEROES[(Number(obj.id?.slice(2))||0)%5];const name=obj.name||'';if(/슬라임/.test(name))return'slime';if(/토끼/.test(name))return'bunny';if(/골렘|수호자|청동|도금|인형/.test(name))return'golem';if(/망령|유령|원혼|월식/.test(name))return'ghost';if(/박쥐|마수|키메라/.test(name))return'winged';return'orc';}
  // 기존 인물 GLB에 직업 장비만 더해 리깅과 애니메이션을 보존한다.
  dressActor(root,role){
   const armor=new THREE.MeshStandardMaterial({color:0x555c5d,roughness:.82,metalness:.36});
@@ -334,7 +359,7 @@ buildWorld(live){
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
   const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);if(this.weather){this.weather.position.set(this.focus.x+Math.sin(now*.00045)*.24,0,this.focus.z);this.weather.rotation.y=Math.sin(now*.00018)*.08;}this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
   const activeMarker=live.evidence||live.council;this.evidenceBeacon.visible=!!activeMarker;
-  this.evidenceLabel.textContent=live.recruit?'◆ 동료 영입 단서':live.evidence?'◆ 조사할 단서':'◆ 북문 기록실';
+  this.evidenceLabel.textContent=live.imperial?'◆ 제국 사건 조사':live.recruit?'◆ 동료 영입 단서':live.evidence?'◆ 조사할 단서':'◆ 북문 기록실';
   if(activeMarker){const site=activeMarker;this.evidenceBeacon.position.set(site.x*SCALE,.015,site.y*SCALE);this.evidenceBeacon.rotation.y=now*.00025;const v=new THREE.Vector3(site.x*SCALE,1.5,site.y*SCALE).project(this.camera);this.evidenceLabel.hidden=Math.abs(v.x)>.95||Math.abs(v.y)>.95;if(!this.evidenceLabel.hidden)this.evidenceLabel.style.transform='translate('+Math.round((v.x+1)*this.width/2)+'px,'+Math.round((1-v.y)*this.height/2)+'px)';}
   else this.evidenceLabel.hidden=true;
   const visible=[['player',live.p,'player']];for(const a of live.state.ai)if(live.dungeon?a.party:a.party||(a.zone===live.state.zone&&live.visibleCompanions?.includes(a.id)))visible.push(['ai',a,a.id]);
