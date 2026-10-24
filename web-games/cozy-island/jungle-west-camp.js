@@ -483,6 +483,7 @@ const originalDrawObjects = rendererProto.drawObjects;
 
 rendererProto.draw = function drawWithJungleWestCamp(game) {
   currentGame = game;
+  game.jungleCampEnemies=enemies; // 원본 적 객체를 3D 표현에 읽기 전용으로 연결
   ensureState(game.state);
   const result = originalDraw.call(this, game);
   applyDefeatedState();

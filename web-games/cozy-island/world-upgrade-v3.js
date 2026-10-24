@@ -127,5 +127,5 @@ function drawJungleObjects(ctx,game){const jungle=ensureState(game.state);if(!ju
 
 setupJungleUnlockButton();
 document.querySelector('#healingCenterButton')?.remove();
-function worldTick(){const now=performance.now(),dt=Math.min(.1,Math.max(0,(now-lastTick)/1000));lastTick=now;if(!currentGame||document.hidden||activeRuntime?.paused)return;updateBoars(dt);assistWolf(dt);returnHome(dt);if(now-lastUi>250){lastUi=now;patchUI();}}
+function worldTick(){const now=performance.now(),dt=Math.min(.1,Math.max(0,(now-lastTick)/1000));lastTick=now;if(!currentGame||document.hidden||activeRuntime?.paused)return;currentGame.boars=boars;updateBoars(dt);assistWolf(dt);returnHome(dt);if(now-lastUi>250){lastUi=now;patchUI();}}
 setInterval(worldTick,50);
