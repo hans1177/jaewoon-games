@@ -968,8 +968,8 @@ export class IslandRendererV3 {
     const zoom=this.viewZoom??this.defaultStrategyZoom();
     const x=(Math.cos(ISO_YAW)*dx+Math.sin(ISO_YAW)*dy/Math.sin(ISO_PITCH))/zoom;
     const y=(-Math.sin(ISO_YAW)*dx+Math.cos(ISO_YAW)*dy/Math.sin(ISO_PITCH))/zoom;
-    this.viewFocus.x=Math.max(-3000,Math.min(7800,this.viewFocus.x-x));
-    this.viewFocus.y=Math.max(-1100,Math.min(2600,this.viewFocus.y-y));
+    this.viewFocus.x=Math.max(-4200,Math.min(6500,this.viewFocus.x-x));
+    this.viewFocus.y=Math.max(-4450,Math.min(3400,this.viewFocus.y-y));
   }
   screenDirectionToWorld(dx,dy){
     const x=Math.cos(ISO_YAW)*dx+Math.sin(ISO_YAW)*dy/Math.sin(ISO_PITCH);
