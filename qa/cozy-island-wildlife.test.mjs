@@ -109,3 +109,30 @@ test('포근섬은 2D 월드 출력 없이 WebGL 3D만 표시하고 기존 입�
   assert.match(game,/runtime\.loadProgress\(DEFAULT_STATE\)/);
   assert.match(game,/runtime\.queueSaveProgress\(state\)/);
 });
+
+test('포근섬 스트롱홀드식 저폴리 성채는 기존 WebGL 장면과 건설 상태에만 연결된다',()=>{
+  const renderer=read('web-games/cozy-island/render-v3.js');
+  const css=read('web-games/cozy-island/style.css');
+  const game=read('web-games/cozy-island/game-v3.js');
+  // 같은 WebGL 렌더러의 지오메트리/재질을 재사용하며 별도 2D 월드를 만들지 않는다.
+  assert.match(renderer,/this\.fortGeometry=\{/);
+  assert.match(renderer,/new THREE\.BoxGeometry\(1,1,1\)/);
+  assert.match(renderer,/new THREE\.ConeGeometry\(1,1,4\)/);
+  assert.match(renderer,/new THREE\.CylinderGeometry\(1,1,1,6\)/);
+  assert.match(renderer,/flatShading:true/);
+  assert.match(renderer,/if\(kind\.startsWith\('fort-'\)\)/);
+  for(const name of ['fort-road','fort-wall','fort-watchtower','fort-gatehouse',
+    'fort-keep','fort-cottage','fort-barracks','fort-workshop','fort-market']){
+    assert.ok(renderer.includes("kind==='"+name+"'"),'3D 구조물 제작 누락: '+name);
+  }
+  for(const ref of ["put('home','fort-cottage'","put('market','fort-market'",
+    "put('defense-tower','fort-watchtower'","put('townhall','fort-keep'",
+    "put('barracks',game.state.barracksBuilt?'fort-barracks'",
+    "if(village.townHallBuilt)","if(village.defenseTowerBuilt&&village.townHallBuilt)"]){
+    assert.ok(renderer.includes(ref),'기존 상태 연결 누락: '+ref);
+  }
+  assert.match(renderer,/this\.gl\.render\(this\.scene3,this\.camera3\)/);
+  assert.match(css,/#game\s*\{[^}]*opacity\s*:\s*0\s*;/);
+  assert.match(game,/runtime\.queueSaveProgress\(state\)/);
+  assert.doesNotMatch(renderer,/localStorage\.|state\.coins\s*[-+]=|state\.inventory\s*=/);
+});
