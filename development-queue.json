@@ -57319,9 +57319,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:32:36.568Z",
-      "updatedAt": "2026-10-24T16:30:59.987Z",
+      "updatedAt": "2026-10-24T16:41:26.605Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -57331,9 +57331,9 @@
         "capturedAt": "2026-10-12T02:33:59.216Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
-      "robloxSourceCandidateBranch": "development/roblox-seed-idle-growth-rpg-crystal-bloom-40102713409-1",
-      "robloxSourceCandidateReadyAt": "2026-10-24T15:26:51.705Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-24T16:41:26.605Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
@@ -57378,9 +57378,9 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "2347f4a77dd184e1d1a4f73e437a40fd1178d341",
+      "robloxSourceCommit": "71a752b337f98060e46c2bae8c9785813d9844c1",
       "robloxSourceBootstrapPassedAt": "2026-10-23T13:02:00.587Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -57886,13 +57886,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "2347f4a77dd184e1d1a4f73e437a40fd1178d341",
+      "robloxQualityBuildUpSourceRevision": "71a752b337f98060e46c2bae8c9785813d9844c1",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "sourceRevision": "2347f4a77dd184e1d1a4f73e437a40fd1178d341",
-        "sourceTreeSha": "c88e69c4b0883b23961fbdaacae1c9097fbc3a82",
+        "sourceRevision": "71a752b337f98060e46c2bae8c9785813d9844c1",
+        "sourceTreeSha": "30cec955176ef88ebff5a8dfaa3f3ffb25875b1c",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -57907,8 +57907,8 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "538999f53ca9ebc6e40094f72d9cf5edda6a545ea66e14c387cf29d12a4a88b3",
-          "baselineFingerprint": "2894ecdb5017d3506ea7e4fc85df6513b7c5ad8cf05192f3a183c6bd020d903e",
+          "libraryFingerprint": "5d0abeeac69a88bccd4c2b036329951f6d09731a2f36c893ee076f9a3c80f993",
+          "baselineFingerprint": "33b018a04e4bb3ab7aa525de99f8d985c349efe2bcc325ceb7d57bde00f99261",
           "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
         },
         "qualityFailureKinds": [
@@ -57960,8 +57960,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40090206579,
-        "testedAt": "2026-10-24T12:18:33.557Z"
+        "workflowRunId": 40111586852,
+        "testedAt": "2026-10-24T16:41:26.605Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -78530,7 +78530,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-24T16:41:11.210Z",
+  "updatedAt": "2026-10-24T16:41:26.605Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
