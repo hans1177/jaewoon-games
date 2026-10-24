@@ -24,7 +24,10 @@ function categoryFor(game){
   return 'CASUAL';
 }
 function platformFor(game){
+  // Owner-created HTML/CSS/JavaScript games retain WEB identity. Do not send them to Unity.
+  if(game?.ownerWebIntakeEngine==='HTML_CSS_JAVASCRIPT'&&game?.web3dRedevelopmentRequired===true)return 'WEB';
   const value=clean(game?.selectedPlatform||game?.preferredPlatform||game?.productionTarget||game?.canonical?.production?.selectedPlatform).toUpperCase();
+  if(value==='WEB'||value==='GENERAL_WEB'||value==='HTML_JS_WEBGL')return 'WEB';
   if(value.includes('ROBLOX'))return 'ROBLOX';
   if(value.includes('FORTNITE')||value.includes('UEFN'))return 'FORTNITE_UEFN';
   return 'UNITY';
