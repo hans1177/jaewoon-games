@@ -101,7 +101,12 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const places=[['market','교역소',.18,.35,'#9d6750'],['fleet','조선소',.77,.63,'#596f70'],['crew','선술집',.22,.60,'#ae7546'],['palace','왕궁 · 총독부',.72,.29,'#726b8d'],['quests','탐험가 사무실',.72,.47,'#497c72'],['jobs','직업 길드',.25,.79,'#74694a']];
  function building(x,y,bw,bh,label,color){rect(x-3,y+bh-2,bw+6,6,'#493d2f');rect(x,y,bw,bh,'#d0b78b');rect(x-5,y-12,bw+10,14,color);rect(x+2,y-19,bw-4,9,color);rect(x+7,y+10,13,13,'#3e5960');rect(x+bw-20,y+10,13,13,'#3e5960');rect(x+bw/2-7,y+bh-23,14,23,'#634b36');rect(x+bw/2-2,y+bh-13,2,3,'#e7c27d');rect(x-8,y+bh+6,bw+16,20,'#332e28');text(label,x+bw/2,y+bh+20,11,'#f2d7a1','center');}
  function town(){
-  if(townArt.complete&&townArt.naturalWidth){ctx.drawImage(townArt,0,75,w,h-75);hit=[];for(const [id,label,px,py,color] of places){const row=id==='market'||id==='palace'?0:id==='crew'||id==='quests'?1:2,x=w*(px<.5?.23:.77),y=75+(h-75)*[.25,.455,.65][row];rect(x-52,y,104,21,'#2b2c2de8');text(label,x,y+14,11,C.gold,'center');hit.push({x:x-64,y:y-(h-75)*.15,w:128,h:(h-75)*.19,building:id});}const p=PORTS.find(p=>Math.hypot(p.x-state.ship.x,p.z-state.ship.z)<4);rect(w/2-100,91,200,25,'#263335de');text((p?.name||'항구')+' · 시설을 눌러 들어가',w/2,108,12,C.gold,'center');return;}
+  if(townArt.complete&&townArt.naturalWidth){ctx.drawImage(townArt,0,75,w,h-75);
+   const townPort=PORTS.find(p=>Math.hypot(p.x-state.ship.x,p.z-state.ship.z)<5)||PORTS[0];
+   const shades={'영국 왕실':'#284c6750','포르투갈 상단':'#86602b44','북해 상인연맹':'#4b72824b','프랑스 항구동맹':'#526b9450','이베리아 왕실':'#9a76424a','지중해 공화국':'#81704b44'};
+   rect(0,75,w,h-75,shades[townPort.faction]||'#55726a40');
+   rect(0,75,w,48,'#162e37cd');text(townPort.name+' 항구 · '+townPort.region,w/2,97,15,'#ffe4aa','center');text(townPort.faction+' | 1590',w/2,113,10,'#e4caa7','center');
+   hit=[];for(const [id,label,px,py,color] of places){const row=id==='market'||id==='palace'?0:id==='crew'||id==='quests'?1:2,x=w*(px<.5?.23:.77),y=75+(h-75)*[.25,.455,.65][row];rect(x-52,y,104,21,'#2b2c2de8');text(label,x,y+14,11,C.gold,'center');hit.push({x:x-64,y:y-(h-75)*.15,w:128,h:(h-75)*.19,building:id});}rect(w/2-122,128,244,22,'#263335cb');text('교역 · 선술집 · 조선소 · 왕궁',w/2,144,11,C.gold,'center');return;}
   rect(0,0,w,h,'#7c8b68');for(let y=90;y<h;y+=16)for(let x=0;x<w;x+=16)rect(x+((y/16)%2?8:0),y,2,2,'#657c5b');
   rect(w*.41,105,w*.19,h-140,'#b6a27a');rect(0,h*.49,w,h*.09,'#b6a27a');
   for(let y=110;y<h-90;y+=12){rect(w*.44,y,15,1,'#8f815e');rect(w*.53,y+5,16,1,'#d0b88b');}
@@ -137,7 +142,30 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   if(b.phase==='won')text('승리 · 유적을 조사할 수 있어',w/2,h*.52,16,'#ffe6a4','center');
  }
  function drawImpact(){const fx=state.combatFx,rawAge=(performance.now()-fxStarted)/1000;if(!fx||rawAge>1.4)return;let age=rawAge;const seaFx=fx.type==='cannon';let at;
-  if(seaFx){if(mode!=='sea')return;const x=v=>w/2+(v-state.ship.x)*zoom,z=v=>h/2+(v-state.ship.z)*zoom;at={x:x(fx.to.x),y:z(fx.to.z)};const from={x:x(fx.from.x),y:z(fx.from.z)},flight=Math.max(.08,Math.min(.5,Math.hypot(at.x-from.x,at.y-from.y)/(fx.speed||180)));if(age<flight){const ratio=age/flight,px=from.x+(at.x-from.x)*ratio,py=from.y+(at.y-from.y)*ratio;ctx.strokeStyle='#ffe4a2';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px-(at.x-from.x)*.12,py-(at.y-from.y)*.12);ctx.lineTo(px,py);ctx.stroke();rect(px-2,py-2,fx.gun==='bombard'?6:4,fx.gun==='bombard'?6:4,'#fff1b1');return;}age-=flight;}
+  if(seaFx){
+   if(mode!=='sea')return;
+   const x=v=>w/2+(v-state.ship.x)*zoom,z=v=>h/2+(v-state.ship.z)*zoom;
+   at={x:x(fx.to.x),y:z(fx.to.z)};
+   const from={x:x(fx.from.x),y:z(fx.from.z)};
+   const count=Math.min(8,Math.max(2,Math.round((fx.count||4)/2)));
+   const flight=Math.max(.12,Math.min(.65,Math.hypot(at.x-from.x,at.y-from.y)/(fx.speed||180)));
+   const strength=fx.gun==='bombard'?1.45:fx.gun==='falconet'?.8:1;
+   ctx.save();
+   for(let i=0;i<count;i++){
+    const delay=i*.045,progress=(age-delay)/flight;
+    if(progress<0||progress>1)continue;
+    const spread=(i-(count-1)/2)*3.2,dX=at.x-from.x,dY=at.y-from.y,magnitude=Math.max(1,Math.hypot(dX,dY));
+    const sideX=-dY/magnitude*spread,sideY=dX/magnitude*spread;
+    const px=from.x+dX*progress+sideX,py=from.y+dY*progress+sideY;
+    ctx.strokeStyle=i%2?'#ffe2a4':'#fff9d4';ctx.lineWidth=1.2*strength;
+    ctx.beginPath();ctx.moveTo(px-dX*.04,py-dY*.04);ctx.lineTo(px,py);ctx.stroke();
+    rect(px-2*strength,py-2*strength,3*strength,3*strength,'#fff3bf');
+   }
+   const muzzleAge=age;
+   if(muzzleAge<.23){const glow=Math.max(0,1-muzzleAge/.23);ctx.globalAlpha=glow*.85;ctx.fillStyle='#fff3ac';ctx.beginPath();ctx.arc(from.x,from.y,3+18*glow*strength,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ccbdae';for(let i=0;i<6;i++){ctx.globalAlpha=glow*.2;ctx.beginPath();ctx.arc(from.x+Math.sin(i*2.4)*12,from.y-Math.cos(i)*7-muzzleAge*24,6+muzzleAge*33,0,Math.PI*2);ctx.fill();}}
+   ctx.restore();
+   if(age<flight)return;age-=flight;
+  }
   else{if(mode!=='battle')return;at=unitPoint(fx.side||'enemy',fx.target||0);at.y-=18;}
   const fade=Math.max(0,1-age);
   ctx.save();ctx.globalAlpha=fade;
@@ -147,8 +175,20 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  }
 
  function weatherOverlay(){const weather=state.climate?.kind,phase=(state.elapsed||0)/16;if(phase>.72||phase<.12){ctx.fillStyle=phase>.72?'#081a4b45':'#d8a25a20';ctx.fillRect(0,0,w,h);}if(mode!=='sea')return;if(weather==='rain'||weather==='storm'){ctx.strokeStyle='#c5e1e455';ctx.lineWidth=1;ctx.beginPath();for(let i=0;i<(weather==='storm'?60:30);i++){const x=(i*83+time*23)%w,y=(i*73+time*110)%h;ctx.moveTo(x,y);ctx.lineTo(x-3,y+8);}ctx.stroke();}if(weather==='fog'){ctx.fillStyle='#bdccbf30';ctx.fillRect(0,0,w,h);}if(weather==='storm'){ctx.fillStyle='#15293f30';ctx.fillRect(0,0,w,h);}}
- function minimap(){const landscape=canvas.clientHeight<500,mw=landscape?94:128,mh=landscape?76:104,mx=landscape?w/2-mw/2:w-mw-8,my=landscape?h-mh-12:h-(canvas.clientHeight<700?255:290);ctx.save();ctx.translate(mx,my);const miniScale=landscape?.15:.20;drawGeography(ctx,mw,mh,75,-550,miniScale);drawFog(ctx,mw,mh,75,-550,miniScale,state.charted);ctx.strokeStyle='#ebd3a1';ctx.strokeRect(0,0,mw,mh);const x=mw/2+(state.ship.x-75)*miniScale,y=mh/2+(state.ship.z+550)*miniScale;ctx.fillStyle='#fff3b6';ctx.fillRect(x-2,y-2,4,4);if(state.destination){const p=PORTS.find(p=>p.id===state.destination);ctx.fillStyle='#f49367';ctx.fillRect(mw/2+(p.x-75)*miniScale-2,mh/2+(p.z+550)*miniScale-2,4,4);}text('유럽 · 현재 위치',mw/2,mh+13,9,C.gold,'center');ctx.restore();}
- function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:33))return;last=now;time=now/1000;
+ // 미니맵도 지형·미개척 구역은 변경 시에만 다시 그린다.
+ function minimap(){
+  const landscape=canvas.clientHeight<500,mw=landscape?94:128,mh=landscape?76:104;
+  const mx=landscape?w/2-mw/2:w-mw-8,my=landscape?h-mh-12:h-(canvas.clientHeight<700?255:290);
+  const miniScale=landscape?.15:.20,key=mw+':'+mh+':'+state.charted.length;
+  if(miniKey!==key){miniLayer.width=mw;miniLayer.height=mh;miniCtx.imageSmoothingEnabled=false;drawGeography(miniCtx,mw,mh,75,-550,miniScale);drawFog(miniCtx,mw,mh,75,-550,miniScale,state.charted);miniKey=key;}
+  ctx.save();ctx.translate(mx,my);ctx.drawImage(miniLayer,0,0);
+  ctx.strokeStyle='#ebd3a1';ctx.strokeRect(0,0,mw,mh);
+  const x=mw/2+(state.ship.x-75)*miniScale,y=mh/2+(state.ship.z+550)*miniScale;
+  ctx.fillStyle='#fff3b6';ctx.fillRect(x-3,y-3,6,6);
+  if(state.destination){const p=PORTS.find(p=>p.id===state.destination);if(p){ctx.fillStyle='#f49367';ctx.fillRect(mw/2+(p.x-75)*miniScale-2,mh/2+(p.z+550)*miniScale-2,4,4);}}
+  text('유럽 · 항로도',mw/2,mh+13,9,C.gold,'center');ctx.restore();
+ }
+ function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:20))return;last=now;time=now/1000;
  const width=Math.min(560,Math.max(320,Math.round(canvas.clientWidth/1.4))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w;canvas.height=h;}ctx.imageSmoothingEnabled=false;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();}
  canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
