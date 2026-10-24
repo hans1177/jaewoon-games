@@ -33,10 +33,71 @@
 .journalEntry{background:linear-gradient(145deg,#2a3031,#1e2424);border:1px solid #565e5a;box-shadow:inset 0 1px #ffffff09}
 @media(max-width:700px){#start{background:linear-gradient(140deg,#141a1b,#22282a)}}
 
+
+/* Mobile-first landing: initial controls are always reachable, including iPhone SE and landscape. */
+#start{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#startCard{overflow:visible;max-height:none}
+#audioBtn{min-width:60px}
+@media(max-width:700px){
+ #start{display:block;height:100dvh;min-height:100%;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+ #startCard{width:100%;margin:0 auto;padding:0;max-height:none;overflow:visible}
+ #introMenu{display:flex;flex-direction:column;gap:12px;padding:6px 6px 22px;align-items:stretch}
+ .introCopy{order:0;width:100%;text-align:center}
+ .introCopy h1{font-size:clamp(30px,9vw,42px);margin:8px 0;line-height:1.17}
+ .introCopy p{margin:7px auto;line-height:1.48}
+ .introCopy .eyebrow{font-size:9px;letter-spacing:1px}
+ .introMenuButtons{width:min(100%,310px);margin:12px auto 8px;gap:7px}
+ .introMenuButtons button{min-height:48px}
+ .titleLine{margin:10px auto}
+ #introPortrait{order:1;margin:0 auto;max-width:164px;width:38vw}
+ #loadStatus{min-height:18px}
+ #creator{padding:7px 8px 22px}
+ .creatorFooter{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+ #commandBar{gap:3px;bottom:calc(245px + env(safe-area-inset-bottom));left:5px;right:5px;padding:4px}
+ #commandBar button{font-size:clamp(9px,2.5vw,11px);padding:5px 1px;min-width:0}
+ #partyCards{bottom:calc(118px + env(safe-area-inset-bottom));}
+ #partyInspect{bottom:calc(208px + env(safe-area-inset-bottom));}
+ #actions{bottom:max(12px,env(safe-area-inset-bottom));}
+ #joystick{bottom:max(12px,env(safe-area-inset-bottom));}
+}
+@media(max-width:700px) and (max-height:680px){
+ #introPortrait{display:none}
+ #introMenu{padding-top:2px;gap:5px}
+ .introCopy h1{font-size:clamp(28px,8vw,36px);margin:6px 0}
+ .introCopy p{margin:5px auto}
+ .introMenuButtons{margin:10px auto 5px}
+ #commandBar{bottom:calc(201px + env(safe-area-inset-bottom));}
+ #partyCards{bottom:calc(94px + env(safe-area-inset-bottom));}
+ #partyInspect{bottom:calc(168px + env(safe-area-inset-bottom));}
+ #prompt{bottom:calc(242px + env(safe-area-inset-bottom));}
+}
+@media(max-height:500px) and (orientation:landscape){
+ #start{display:block;overflow-y:auto;padding:7px max(10px,env(safe-area-inset-right)) 16px max(10px,env(safe-area-inset-left))}
+ #introMenu{display:flex;flex-direction:row;gap:12px;align-items:flex-start}
+ #introPortrait{display:none}
+ .introCopy{max-width:610px;width:100%;text-align:left}
+ .introCopy h1{font-size:33px;margin:4px 0}
+ .introCopy p{font-size:11px;margin:5px 0}
+ .titleLine{margin:5px 0}
+ .introMenuButtons{display:flex;width:100%;max-width:440px;margin:9px 0;gap:7px}
+ .introMenuButtons button{flex:1;min-height:38px;font-size:12px}
+ #commandBar{bottom:max(5px,env(safe-area-inset-bottom));left:26%;right:26%}
+ #commandBar button{min-height:31px;font-size:9px}
+ #partyCards{bottom:47px;left:100px;right:100px}
+ .partyCard{width:44px}
+ #partyInspect{bottom:107px}
+ #joystick{width:80px;height:80px}
+ #knob{left:20px;top:20px;width:36px;height:36px}
+ #actions{grid-template-columns:50px 50px;gap:3px}
+ .act{min-height:36px;font-size:10px}
+ #objective{top:60px;max-width:230px;max-height:65px;overflow:hidden}
+ #cameraTools{top:58px}
+}
+
 </style>
 </head>
 <body>
-<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="autoBtn" aria-pressed="true">자동 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button></div><button id="partyInspect">선택한 인물 보기</button>
+<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="autoBtn" aria-pressed="true">자동 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button></div><button id="partyInspect">선택한 인물 보기</button>
 <div id="hud">
   <div id="stats" class="panel">
     <div id="statsTop">
@@ -84,9 +145,14 @@
 <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 <script type="module">
 import {PartyView} from "./view.mjs";
+import {PartyAudio} from "./audio.mjs";
 (function(){
 "use strict";
 var SAVE_KEY="party-rpg-v1";
+var sound=new PartyAudio(),audioBtn=document.getElementById("audioBtn");
+function syncAudioButton(){audioBtn.textContent=sound.muted?"소리 끔":"소리 켬";audioBtn.setAttribute("aria-pressed",String(!sound.muted));audioBtn.setAttribute("aria-label",sound.muted?"배경 음악 및 효과음 켜기":"배경 음악 및 효과음 끄기");}
+syncAudioButton();audioBtn.onclick=function(){sound.setMuted(!sound.muted);syncAudioButton();};
+document.addEventListener("click",function(e){if(e.target.closest("button")){sound.start();sound.effect("ui");}},{passive:true});
 var MAX_PARTY_SIZE=4;
 var ZONES=[
  {name:"마을",sub:"휴식과 준비",color:"#5f8f58",lv:1,mons:[]},
