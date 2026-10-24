@@ -146,7 +146,7 @@ export function restoreGame(raw){
   s.officeQuests=Array.isArray(s.officeQuests)?s.officeQuests.filter(q=>OFFICE_QUESTS.some(o=>o.id===q)).slice(0,4):[];
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
   s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;s.autoCombat=obj.autoCombat!==false;
-  s.event=s.event&&SEA_EVENTS.some(e=>e.id===s.event.id)?s.event:null;
+  s.event=s.event&&(SEA_EVENTS.some(e=>e.id===s.event.id)||(s.event.id==='merchant_meeting'&&MERCHANT_CAPTAINS.some(c=>c.id===s.event.merchantId)))?s.event:null;
    s.scene=s.scene&&s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)?s.scene:null;
    const ships=Array.isArray(obj.merchants)?obj.merchants:[];
    s.merchants=merchantRoster().map(base=>{const old=ships.find(x=>x?.id===base.id);return old?{...base,from:PORTS.some(p=>p.id===old.from)?old.from:base.from,to:PORTS.some(p=>p.id===old.to)?old.to:base.to,progress:clamp(Number(old.progress)||0,0,1),coins:clamp(Number(old.coins)||0,0,1e8),cargo:GOODS.some(g=>g.id===old.cargo)?old.cargo:base.cargo,count:clamp(Math.floor(Number(old.count)||0),0,12),voyages:clamp(Math.floor(Number(old.voyages)||0),0,1e7),met:clamp(Math.floor(Number(old.met)||0),0,100),lastMeetingDay:Number.isFinite(old.lastMeetingDay)?old.lastMeetingDay:-10,lastProfit:clamp(Math.floor(Number(old.lastProfit)||0),-1e6,1e6)}:base;});
@@ -309,6 +309,37 @@ export function hailMerchant(state,id){
  if(state.event||state.landBattle)return fail(state,'진행 중인 사건을 먼저 해결해.');
  const s=copy(state);s.event={id:'merchant_meeting',merchantId:id};return success(s,captain.name+' 선장의 상선에 다가갔어.');
 }
+// 선장과의 교신: 화물은 실제 선장의 화물창에서 이동하고, 인연은 항해일 기준으로 진행한다.
+export function resolveMerchantEncounter(state,choice){
+ const event=state.event,leader=MERCHANT_CAPTAINS.find(c=>c.id===event?.merchantId);
+ const m=state.merchants?.find(x=>x.id===leader?.id);
+ if(event?.id!=='merchant_meeting'||!leader||!m||![0,1,2,3].includes(choice))return fail(state,'현재 교신할 상선이 없어.');
+ if(choice===2&&(m.met<2||state.crewRoster.includes(leader.id)))return fail(state,'서로 다른 날에 두 번 이야기를 나누고 신뢰를 쌓아야 해.');
+ if(choice===2&&state.crewRoster.length>=6)return fail(state,'승선 인원은 선장 포함 6명까지야.');
+ const s=copy(state),ship=s.merchants.find(v=>v.id===leader.id),captain=CREW.find(c=>c.id===leader.id);
+ let msg='';
+ if(choice===0){
+  const item=GOODS.find(g=>g.id===ship.cargo),price=priceAt(ship.from,ship.cargo,s.day,'buy');
+  if(ship.count<1)return fail(state,'상선 화물창이 비어 있어. 다른 항구에서 교역 후 다시 만나.');
+  if(s.coins<price)return fail(state,'구매할 금화가 부족해.');
+  if(cargoWeight(s)+item.weight>s.ship.cargoLimit*s.fleet)return fail(state,'구매할 화물칸이 부족해.');
+  ship.count--;ship.coins+=price;s.coins-=price;s.cargo[item.id]=(s.cargo[item.id]||0)+1;msg=captain.name+'에게 '+item.name+' 1개 구매 · '+price+' G';
+ }else if(choice===1){
+  const talks=[
+   leader.name+' : '+leader.story,
+   leader.name+' : '+({lorenzo:'선박 설계도에 같은 인장이 두 번 찍혀 있었어. 똑같은 배가 다른 이름으로 팔린 거야.',marten:'암스테르담과 런던의 환어음에 같은 서명이 남아 있어. 누군가 두 시장의 시세를 조작하고 있어.',etienne:'브레스트의 등대는 분명 꺼져 있었는데, 우편선은 밤새 그 불빛을 따라갔다고 해.'}[leader.id]),
+   leader.name+' : 이제 장부와 항로를 함께 대조하자. 내 실력도 네 항해에 보탤 수 있어.'
+  ];
+  if(ship.lastMeetingDay!==s.day){ship.met=Math.min(3,ship.met+1);ship.lastMeetingDay=s.day;}
+  msg=talks[Math.min(ship.met-1,2)]||talks[0];
+  s.scene={kind:'merchant',merchantId:ship.id,title:'바다 위의 약속 · '+leader.name,text:msg};
+ }else if(choice===2){
+  s.crewRoster.push(leader.id);s.crewJoinedAt[leader.id]=s.xp;s.companionBonds[leader.id]=1;
+  msg=leader.name+'이(가) 독립 상선 항해를 마치고 동료로 합류했어. 담당 직책에 배치할 수 있어.';
+  s.scene={kind:'merchant',merchantId:leader.id,title:'새로운 항해사 · '+leader.name,text:msg};
+ }else{msg=leader.name+'과(와) 인사를 나누고 항로로 돌아왔어.';}
+ s.event=null;return success(s,msg);
+}
 export function stepSea(state,input={},seconds=.05){
  if(state.event||state.landBattle)return state;
  let s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
@@ -346,7 +377,7 @@ export function stepSea(state,input={},seconds=.05){
  advanceMerchantFleet(s,dt);
  ship.cooldown=Math.max(0,ship.cooldown-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
  s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
- if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
+ if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
   s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-(assignedPower(s,'quartermaster','trade')>=75?1:2));
   if(ship.provisions===0){ship.hull=Math.max(1,ship.hull-4);ship.crew=Math.max(1,ship.crew-1);note(s,'식량 부족으로 선원과 선체가 약해졌어.');}
