@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 파일명: web-games/party-rpg/index.html -->
+<!-- 파일명: web-games/party-rpg/index.html · 실시간 디앤디 판정 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -39,7 +39,7 @@
   </div>
   <div id="zone" class="panel"><b id="zoneName">마을</b><span id="zoneSub">휴식과 준비</span></div>
 </div>
-<div id="objective" class="panel">AI 유저를 3번 클릭하면 파티에 초대할 수 있어.</div>
+<div id="objective" class="panel">동료와 실시간으로 탐험해. 명중·내성·기술은 주사위 판정으로 결정돼.</div>
 <div id="prompt"></div>
 <div id="joystick"><div id="knob"></div></div>
 <div id="actions">
@@ -58,7 +58,7 @@
 <div id="start" class="overlay">
  <div id="startCard" class="card">
   <section id="introMenu">
-   <div class="introCopy"><span class="eyebrow">잊힌 사람들의 도시 · 실시간 파티 모험</span><h1>잊힌 길의<br>서약</h1><div class="titleLine"></div><p>지도에서 사라진 길.<br>네 필체로 남겨진 이름 모를 편지.<br>함께 돌아갈 사람들을 선택해.</p><div class="introMenuButtons"><button id="startBtn">여정 시작</button><button id="createBtn" class="goldButton secondary">주인공 만들기</button></div><div id="loadStatus" role="status">새 자산 불러오는 중</div><p class="note">탭으로 이동 · 드래그로 시점 이동 · 두 손가락으로 확대<br>실시간 자동 전투 · 언제든 일시정지</p></div>
+   <div class="introCopy"><span class="eyebrow">잊힌 사람들의 도시 · 실시간 디앤디 파티 모험</span><h1>잊힌 길의<br>서약</h1><div class="titleLine"></div><p>지도에서 사라진 길.<br>네 필체로 남겨진 이름 모를 편지.<br>함께 돌아갈 사람들을 선택해.</p><div class="introMenuButtons"><button id="startBtn">여정 시작</button><button id="createBtn" class="goldButton secondary">주인공 만들기</button></div><div id="loadStatus" role="status">새 자산 불러오는 중</div><p class="note">탭으로 이동 · 드래그로 시점 이동 · 두 손가락으로 확대<br>실시간 자동 전투 · 언제든 일시정지</p></div>
    <div id="introPortrait"><span class="portrait" style="background-position:0% 0%" aria-hidden="true"></span></div>
   </section>
   <section id="creator" hidden>
@@ -212,9 +212,19 @@ var COMPANION_SECRETS=[
 function storyInit(){
  var s=state.story;if(!s||typeof s!=="object"||Array.isArray(s))s={};
  ['visited','cleared','choices','companions'].forEach(function(k){if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k]))s[k]={};});
- s.version=1;s.intro=!!s.intro;state.story=s;
+ s.version=2;s.intro=!!s.intro;for(var key of ["quests","checks"]){if(!s[key]||typeof s[key]!=="object"||Array.isArray(s[key]))s[key]={};}state.story=s;
 }
-function storyVisit(zone){if(zone<1||zone>6||state.story.visited[zone])return;state.story.visited[zone]=true;save();toast('여정 기록: '+STORY_NOTES[zone-1][0]);}
+function storyVisit(zone){
+ if(zone<1||zone>6)return;
+ if(!state.story.visited[zone]){state.story.visited[zone]=true;toast('여정 기록: '+STORY_NOTES[zone-1][0]);}
+ state.ai.forEach(function(a){
+  var q=state.story.quests[a.id];
+  if(q&&!q.complete&&q.zone===zone&&a.party){
+   q.complete=true;toast(a.name+'의 개인 의뢰 완료 · '+(q.path==='truth'?'잊힌 증언 확보':'증인 보호 성공'));
+  }
+ });
+ save();
+}
 function storyRecruit(a){if(state.story.companions[a.id])return;state.story.companions[a.id]=true;save();toast(a.name+'의 이야기가 여정 기록에 열렸어.');}
 function storyClear(index){state.story.cleared[index]=true;save();}
 function storyObjective(){var s=state.story;if(!s.intro)return '여정 기록에서 잊힌 길의 서막을 읽어 봐.';for(var z=1;z<=2;z++)if(!s.visited[z])return ZONES[z].name+'에서 지워진 길의 단서를 찾아.';if(!s.cleared[0])return '동료와 고블린 요새를 조사해 인장의 비밀을 찾아.';if(!s.choices.fort)return '여정 기록에서 요새 포로의 증언을 결정해.';for(var z=3;z<=4;z++)if(!s.visited[z])return ZONES[z].name+'에서 맹약의 대가를 조사해.';if(!s.cleared[1])return '고대 신전에서 맹약의 원문을 찾아.';if(!s.choices.temple)return '여정 기록에서 맹약의 진실을 누구에게 전할지 결정해.';for(var z=5;z<=6;z++)if(!s.visited[z])return ZONES[z].name+'에서 마지막 길을 찾아.';if(!s.cleared[2])return '마왕 성의 왕좌에서 이름을 지키는 자를 만나.';if(!s.choices.ending)return '여정 기록에서 잊힌 도시의 운명을 결정해.';return '맹약은 끝났어. 동료들과 남은 길을 자유롭게 탐험해.';}
@@ -222,12 +232,12 @@ function storyReady(key){var s=state.story;return key==='fort'?s.cleared[0]&&s.v
 function storyChoice(key,value){var allowed={fort:['witness','refuge'],temple:['reveal','prepare'],ending:['release','keeper']};if(!allowed[key]||!allowed[key].includes(value)||!storyReady(key)||state.story.choices[key])return;state.story.choices[key]=value;save();storyJournal();}
 function storyJournal(){
  var s=state.story,h='<p class="gold">잊힌 길의 서약 · 오리지널 캠페인</p><p>'+storyObjective()+'</p>';
- h+='<p>전투와 선택 사이에는 제한 시간이 없어. 기록은 자동 저장돼. 기록을 닫으면 모험이 이어져.</p><h3>서막 · 지도가 잊은 마을</h3><p>장례식 날, 마을의 지도에서 길 하나가 사라졌다. 아무도 그 길을 기억하지 못했다. 너의 주머니에서 발견된 편지에는 단 한 문장만 적혀 있었다. “나를 찾지 마. 내 이름을 찾아 줘.” 편지에는 네 필체로 서명이 되어 있었다.</p>';
+ h+='<p>전투는 실시간이고 일시정지할 수 있어. 능력 판정은 d20을 사용하며 여정은 자동 저장돼.</p><h3>서막 · 지도가 잊은 마을</h3><p>장례식 날, 마을의 지도에서 길 하나가 사라졌다. 아무도 그 길을 기억하지 못했다. 너의 주머니에서 발견된 편지에는 단 한 문장만 적혀 있었다. “나를 찾지 마. 내 이름을 찾아 줘.” 편지에는 네 필체로 서명이 되어 있었다.</p>';
  STORY_NOTES.forEach(function(n,i){h+='<section class="journalEntry"><h3>'+(i+1)+'. '+n[0]+'</h3><p>'+(s.visited[i+1]?n[1]:'아직 발견하지 못한 기록 · '+ZONES[i+1].name)+'</p></section>';});
  var options=[['fort','요새 · 포로의 증언','요새의 적들은 마을에서 추방된 사람들이었다. 루카는 포로를 광장에 세워 증언하게 하자고 한다. 미나는 먼저 안전한 은신처가 필요하다고 말한다.',['witness','증언을 공개한다'],['refuge','포로를 먼저 보호한다']],['temple','신전 · 풍년의 대가','신전의 문서에는 마을과 지워진 도시가 하나였다고 적혀 있었다. 진실을 즉시 알릴까, 돌아올 사람들의 거처부터 마련할까?',['reveal','마을에 진실을 알린다'],['prepare','귀환할 이들을 준비한다']],['ending','왕좌 · 마지막 이름','왕은 칼을 내려놓았다. “나는 괴물을 막는 자가 아니다. 너희가 잊은 이들을 기억하는 자다.” 맹약을 끊으면 도시가 돌아오고 마을의 풍년은 끝난다. 맹약을 새로 쓰면 이름은 돌아오지만 누군가는 경계에 남아야 한다.',['release','맹약을 끊고 모두 돌려보낸다'],['keeper','경계의 수호자로 남는다']]];
  options.forEach(function(o){h+='<section class="journalEntry"><h3>'+o[1]+'</h3>';if(storyReady(o[0])){h+='<p>'+o[2]+'</p>';if(s.choices[o[0]]){var selected=o.slice(3).find(function(v){return v[0]===s.choices[o[0]];});h+='<p class="gold">선택: '+(selected?selected[1]:'기록됨')+'</p>';}else o.slice(3).forEach(function(v){h+='<button class="menuBtn" data-story="'+o[0]+'" data-value="'+v[0]+'">'+v[1]+'</button>';});}else h+='<p>이전 장의 선택과 해당 지역 조사·던전 클리어 후 열려.</p>';h+='</section>';});
  if(s.choices.ending){h+='<h3>종장 · '+(s.choices.ending==='release'?'모두의 아침':'경계에 켜진 등불')+'</h3><p>'+(s.choices.ending==='release'?'풍년은 끝났다. 돌아온 이들은 빈 밭을 함께 갈았다. 마을의 지도에는 길이 다시 네 개가 되었다. 너의 편지는 더 이상 사라지지 않았다.':'너는 경계에 등불을 걸었다. 사람들은 두 도시를 오가며, 떠나는 이의 이름을 소리 내어 불렀다. 누군가 너를 잊을 때마다 동료들이 등불 곁으로 돌아왔다.')+'</p><p>'+(s.choices.fort==='witness'?'광장의 증언은 잊힌 사람들의 권리를 되찾는 첫 기록이 되었다.':'네가 마련한 은신처는 두 도시를 잇는 첫 여관이 되었다.')+' '+(s.choices.temple==='reveal'?'진실을 들은 마을은 오랜 논쟁 끝에 새 약속을 적었다.':'미리 마련한 집들에는 돌아온 가족의 불빛이 하나씩 켜졌다.')+'</p>';}
- h+='<h3>동료의 고백</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id])h+='<p><b>'+a.name+'</b> · '+COMPANION_SECRETS[i]+'</p>';});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
+ h+='<h3>동료의 고백과 개인 의뢰</h3>';state.ai.forEach(function(a,i){if(s.companions[a.id]){var q=s.quests[a.id];h+='<section class="journalEntry"><b>'+a.name+'</b><p>'+COMPANION_SECRETS[i]+'</p>';if(q)h+='<p class="gold">'+(q.path==='truth'?'잊힌 기록을 밝힌다':'증인을 안전하게 지킨다')+' · '+ZONES[q.zone].name+' · '+(q.complete?'완료':a.party?'이 동료와 함께 방문해야 해.':'동료로 데려가야 진행돼.')+'</p>';else h+='<p>동료 대화에서 사건의 진실을 선택할 수 있어.</p>';h+='</section>';}});if(!Object.keys(s.companions).length)h+='<p>동료를 파티에 초대하면 그 사람의 이야기가 열려.</p>';
  openModal('잊힌 길의 서약',h);modalBody.querySelectorAll('[data-story]').forEach(function(b){b.onclick=function(){storyChoice(b.dataset.story,b.dataset.value);};});
 }
 
@@ -290,8 +300,38 @@ function companionMenu(selected){
  var html='<div class="rosterLayout"><nav class="rosterList" aria-label="동료 목록">'+list+'</nav><article class="companionDetail">'+portraitMarkup(index,'companionPortrait')+'<span class="eyebrow">'+info.position+'</span><h2>'+chosen.name+' <small>'+role(chosen).name+'</small></h2><p>'+info.desc+'</p><div class="ruleStats"><span>레벨 <b>'+chosen.level+'</b></span><span>체력 <b>'+Math.ceil(chosen.hp)+' / '+chosen.maxHp+'</b></span><span>방어 등급 <b>'+ac(chosen)+'</b></span></div><h3>고유 전술</h3><p class="gold">'+info.skill+'</p><h3>'+(secret?'동료의 고백':'아직 말하지 않은 이야기')+'</h3><p>'+(secret?COMPANION_SECRETS[index]:'함께 길을 걷기로 약속하면 이 사람의 과거를 들을 수 있어.')+'</p><div class="companionButtons"><button class="menuBtn" id="recruitCompanion" '+(!chosen.party&&partyCount()>=3?'disabled':'')+'>'+(chosen.party?'파티에서 쉬게 한다':partyCount()>=3?'파티 정원 4명':'동행을 요청한다')+'</button><button class="menuBtn secondary" id="talkCompanion">이야기를 나눈다</button><button class="textBtn" id="focusCompanion">카메라로 찾기</button></div></article></div>';
  openModal('동료 · '+(partyCount()+1)+' / 4명',html);modal.dataset.mode='roster';modalBody.querySelectorAll('[data-companion]').forEach(function(b){b.onclick=function(){companionMenu(b.dataset.companion);};});document.getElementById('recruitCompanion').onclick=function(){toggleParty(chosen);companionMenu(chosen.id);partyHud();};document.getElementById('talkCompanion').onclick=function(){companionDialogue(chosen);};document.getElementById('focusCompanion').onclick=function(){if(!chosen.party&&(dungeon||chosen.zone!==state.zone)){toast('현재 지역에 없는 동료야. '+(ZONES[chosen.zone]?.name||'다른 지역')+'에서 찾을 수 있어.');return;}closeModal();view.selection=chosen.id;view.center(chosen.id);};
 }
-function companionDialogue(a){var idx=portraitIndex(a),unlocked=!!state.story.companions[a.id];openModal(a.name+'와의 대화','<div class="dialogueLayout">'+portraitMarkup(idx,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+role(a).name+' · '+CLASS_INFO[a.classId].title+'</span><h2>'+a.name+'</h2><p>'+(unlocked?COMPANION_SECRETS[idx]:'“이 길을 혼자 걸을 생각이야? 함께라면 서로의 빈 곳을 채울 수 있을 거야.”')+'</p><blockquote>'+(unlocked?'“내 이야기를 기억해 줘. 나도 네 이름을 잊지 않을게.”':'“어디로 가든, 먼저 서로를 믿는 것부터 시작하자.”')+'</blockquote><button class="menuBtn" id="dialogueReturn">동료 화면으로 돌아간다</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('dialogueReturn').onclick=function(){companionMenu(a.id);};}
-function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타야.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=bagMenu;document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
+// 능력 판정: d20 + 숙련 + 직업 능력 보정, 자연 1 실패 / 자연 20 성공.
+function checkAbility(kind,dc){
+ var talent={door:{fighter:3,rogue:1},trap:{rogue:3,ranger:1},persuade:{cleric:3,wizard:1}}[kind]||{};
+ var people=[{u:state.player}].concat(partyMembers().map(function(a){return{u:a};})).filter(function(a){return a.u.hp>0;});
+ people.sort(function(a,b){return proficiency(b.u)+role(b.u).mod+(talent[b.u.classId]||0)-proficiency(a.u)-role(a.u).mod-(talent[a.u.classId]||0);});
+ var u=people.length?people[0].u:state.player,roll=die(20),total=roll+proficiency(u)+role(u).mod+(talent[u.classId]||0),success=roll===20||(roll!==1&&total>=dc);
+ battleLog((u.name||'나')+' · '+({door:'문 열기',trap:'함정 해제',persuade:'설득'}[kind]||kind)+' d20 '+roll+' → '+total+' / 난이도 '+dc+' · '+(success?'성공':'실패'));
+ return{success:success,roll:roll,total:total};
+}
+function companionQuestChoice(a,path){
+ if(!state.story.companions[a.id]||state.story.quests[a.id])return;
+ var index=portraitIndex(a),result=path==='truth'?checkAbility('persuade',12+index%4):{success:true};
+ var chosen=path==='truth'&&result.success?'truth':'guard';
+ state.story.quests[a.id]={path:chosen,zone:1+(index+(chosen==='guard'?2:0))%6,complete:false};
+ save();toast(path==='truth'&&!result.success?'설득 실패 · 대신 증인을 보호하기로 했어.':'동료 개인 의뢰가 시작됐어.');companionDialogue(a);
+}
+function companionDialogue(a){
+ var idx=portraitIndex(a),unlocked=!!state.story.companions[a.id],quest=state.story.quests[a.id];
+ var html='<div class="dialogueLayout">'+portraitMarkup(idx,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">'+role(a).name+' · '+CLASS_INFO[a.classId].title+'</span><h2>'+a.name+'</h2><p>'+(unlocked?COMPANION_SECRETS[idx]:'“이 길을 혼자 걸을 생각이야? 함께라면 서로의 빈 곳을 채울 수 있을 거야.”')+'</p><blockquote>'+(unlocked?'“내 이야기를 기억해 줘. 나도 네 이름을 잊지 않을게.”':'“어디로 가든, 먼저 서로를 믿는 것부터 시작하자.”')+'</blockquote>';
+ if(unlocked&&!quest){
+  html+='<h3>동료 개인 의뢰</h3><p>진실을 밝혀 지워진 기록을 복원할지, 위험해진 증인을 안전하게 지킬지 선택해.</p>';
+  html+='<button class="menuBtn" data-companion-choice="truth">설득 판정 · 진실을 밝히자</button>';
+  html+='<button class="menuBtn secondary" data-companion-choice="guard">비밀을 지키고 증인을 보호하자</button>';
+ }else if(quest){
+  html+='<h3>선택에 따른 의뢰</h3><p class="gold">'+(quest.path==='truth'?'지워진 이름의 증거를 찾는 길':'증인을 보호하고 피난처를 찾는 길')+' · '+ZONES[quest.zone].name+' · '+(quest.complete?'완료':'진행 중')+'</p><p>'+(quest.complete?(quest.path==='truth'?'동료는 자신의 이야기를 사람들이 읽을 수 있게 기록했어.':'동료는 증인을 안전하게 지키고 귀환을 약속했어.'):'이 동료와 함께 해당 지역을 탐험하면 이야기가 이어져.')+'</p>';
+ }else html+='<p>파티에 합류하면 개인 의뢰가 열려.</p>';
+ html+='<button class="menuBtn" id="dialogueReturn">동료 화면으로 돌아간다</button></div></div>';
+ openModal(a.name+'와의 대화',html);modal.dataset.mode='dialogue';
+ modalBody.querySelectorAll('[data-companion-choice]').forEach(function(b){b.onclick=function(){companionQuestChoice(a,b.dataset.companionChoice);};});
+ document.getElementById('dialogueReturn').onclick=function(){companionMenu(a.id);};
+}
+function characterSheet(){var u=state.player;openModal(u.name+' · 인물 기록','<div class="dialogueLayout">'+portraitMarkup(u.portraitId,'dialoguePortrait')+'<div class="dialogueText"><span class="eyebrow">주인공 · '+role(u).name+'</span><h2>'+escapeText(u.name)+'</h2><div class="ruleStats"><span>레벨 <b>'+u.level+'</b></span><span>공격력 <b>'+playerAtk()+'</b></span><span>방어 등급 <b>'+ac(u)+'</b></span><span>숙련 보너스 <b>+'+proficiency(u)+'</b></span></div><p>'+CLASS_INFO[u.classId].desc+'</p><p class="gold">'+CLASS_INFO[u.classId].skill+'</p><p>실시간 디앤디식 판정 · 명중: d20 + 숙련 + 주 능력 보정 ≥ 적 방어 등급. 자연 1은 실패, 자연 20은 치명타. 동료와 함께 문 열기·함정 해제·설득 능력 판정도 할 수 있어.</p><button class="menuBtn" id="sheetBag">장비와 소지품</button><button class="menuBtn secondary" id="replayIntro">서막 다시 보기</button></div></div>');modal.dataset.mode='dialogue';document.getElementById('sheetBag').onclick=bagMenu;document.getElementById('replayIntro').onclick=function(){showIntro(0);};}
 
 storyInit();
 
@@ -371,7 +411,7 @@ function startDungeon(i){
  state.zone=0;p.x=150;p.y=310;enemies=[];worldW=980;worldH=620;spawnDungeonRoom();
 }
 function spawnDungeonRoom(){
- enemies=[];dungeon.door=false;dungeon.portal=false;p.x=145;p.y=310;partyMembers().forEach(function(a,k){a.x=p.x-36-k*24;a.y=p.y+40+(k%2)*26;});var d=dungeon.def;
+ enemies=[];dungeon.door=false;dungeon.portal=false;dungeon.roomPuzzle={trapDone:false,trapAttempted:false,doorDone:false,doorAttempted:false};dungeon.hiddenOpen=false;p.x=145;p.y=310;partyMembers().forEach(function(a,k){a.x=p.x-36-k*24;a.y=p.y+40+(k%2)*26;});var d=dungeon.def;
  if(dungeon.room<d.rooms.length){var count=d.rooms[dungeon.room];for(var i=0;i<count;i++){var elite=Math.random()<0.18;spawnEnemy(d.mob,d.mobHp+dungeon.room*22,d.mobAtk+dungeon.room*3,0,0,elite,false,420+(i%3)*120,205+Math.floor(i/3)*150);}}
  else spawnEnemy(d.boss,d.bossHp,d.bossAtk,0,0,false,true,720,310);
 }
@@ -491,11 +531,40 @@ function updatePlayer(dt){
  if(dungeon){if(dungeon.door&&p.x>worldW-72&&Math.abs(p.y-worldH/2)<90)advanceDungeon();if(dungeon.portal&&Math.hypot(p.x-(worldW-135),p.y-worldH/2)<58)returnFromDungeon();}
 }
 function updateInteractions(){
- currentInteract=null;if(dungeon){prompt.classList.remove("on");return;}
- if(state.zone===0){var objs=[{x:390,y:300,name:"무기상점",kind:"weapon"},{x:1010,y:300,name:"방어구상점",kind:"armor"},{x:700,y:300,name:"회복의 샘",kind:"heal"},{x:700,y:690,name:"판매상점",kind:"sell"}],best=null,bd=75*75;objs.forEach(function(o){var dx=o.x-p.x,dy=o.y-p.y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=o;}});if(best){currentInteract=best;prompt.textContent=best.name+" · 상호작용";prompt.classList.add("on");return;}}
- prompt.classList.remove("on");
+ currentInteract=null;
+ if(dungeon&&!dungeon.complete){
+  var puzzle=dungeon.roomPuzzle,best=null,bd=85*85;
+  if(puzzle){
+   var landmarks=[{x:310,y:405,name:'룬 함정 · 해제 판정',kind:'trap'},{x:825,y:445,name:'숨겨진 석문 · 문 열기 판정',kind:'door'}];
+   landmarks.forEach(function(o){
+    if(o.kind==='trap'&&puzzle.trapAttempted||o.kind==='door'&&puzzle.doorAttempted)return;
+    var d=(o.x-p.x)**2+(o.y-p.y)**2;if(d<bd){bd=d;best=o;}
+   });
+  }
+  if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
+ }else if(state.zone===0){
+  var objs=[{x:390,y:300,name:'무기상점',kind:'weapon'},{x:1010,y:300,name:'방어구상점',kind:'armor'},{x:700,y:300,name:'회복의 샘',kind:'heal'},{x:700,y:690,name:'판매상점',kind:'sell'}],best=null,bd=75*75;
+  objs.forEach(function(o){var d=(o.x-p.x)**2+(o.y-p.y)**2;if(d<bd){bd=d;best=o;}});
+  if(best){currentInteract=best;prompt.textContent=best.name+' · 상호작용';prompt.classList.add('on');return;}
+ }
+ prompt.classList.remove('on');
 }
-function interact(){if(modalOpen)return;if(currentInteract){if(currentInteract.kind==="heal"){state.player.hp=state.player.maxHp;partyMembers().forEach(function(a){a.hp=a.maxHp;});toast("모두 회복했어.");save();}else if(currentInteract.kind==="sell")sellMenu();else shopMenu(currentInteract.kind);return;}toast("상호작용할 대상이 없어.");}
+function interact(){
+ if(modalOpen)return;
+ if(!currentInteract){toast('상호작용할 대상이 없어.');return;}
+ if(dungeon&&(currentInteract.kind==='trap'||currentInteract.kind==='door')){
+  var kind=currentInteract.kind,puzzle=dungeon.roomPuzzle;if(!puzzle)return;
+  var test=checkAbility(kind,12+dungeon.index*2);
+  if(kind==='trap'){puzzle.trapAttempted=true;puzzle.trapDone=test.success;}
+  else{puzzle.doorAttempted=true;puzzle.doorDone=test.success;dungeon.hiddenOpen=test.success;}
+  var key=dungeon.index+':'+dungeon.room+':'+kind;
+  if(!state.story.checks[key])state.story.checks[key]={success:test.success,roll:test.roll,total:test.total};
+  save();toast(test.success?(kind==='trap'?'함정 해제 성공 · 사라진 인장 발견':'문 열기 성공 · 숨겨진 기록 발견'):'판정 실패 · 이 방에서는 다시 시도할 수 없어.');
+  updateInteractions();return;
+ }
+ if(currentInteract.kind==='heal'){state.player.hp=state.player.maxHp;partyMembers().forEach(function(a){a.hp=a.maxHp;});toast('모두 회복했어.');save();}
+ else if(currentInteract.kind==='sell')sellMenu();else shopMenu(currentInteract.kind);
+}
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
 function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj,now=performance.now();view.selection=best.id;if(clickMemory.id===best.id&&now-clickMemory.t<1200)clickMemory.count++;else clickMemory.count=1;clickMemory.id=best.id;clickMemory.t=now;if(clickMemory.count>=3){clickMemory.count=0;toggleParty(best);}else toast(best.name+' · '+clickMemory.count+'/3 터치로 파티 초대/해체');return;}if(hit&&hit.kind==='enemy'){view.selection=hit.key;moveTarget={x:hit.obj.x,y:hit.obj.y};return;}var point=view.screenToWorld(clientX,clientY);if(point){moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
