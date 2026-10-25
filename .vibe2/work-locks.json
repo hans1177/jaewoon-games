@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1apy9tt",
+      "worker": "vibe2",
+      "taskId": "chess-battle-existing-web-assessment-v1",
+      "gameId": "chess-battle",
+      "files": [
+        "web-games/chess-battle/index.html"
+      ],
+      "baseSha": "5d3836f25d73e2378827721464ada2b405d0b663",
+      "runId": "40172102261",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-25T07:32:55.410Z",
+      "expiresAt": "2026-10-25T08:17:55.410Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:chess-battle-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
