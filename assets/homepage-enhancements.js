@@ -507,7 +507,7 @@ function bindDirectGameLaunch(){
   document.documentElement.dataset.directGameLaunchBound='1';
   document.getElementById('mobileFavoritesButton')?.addEventListener('click',()=>setFavoritesOpen(document.getElementById('mobileFavoritesPanel')?.hidden===true));
   document.getElementById('mobileFavoritesClose')?.addEventListener('click',()=>setFavoritesOpen(false));
-  document.addEventListener('keydown',event=>{if(event.key==='Escape')setFavoritesOpen(false);});
+  document.addEventListener('keyup',event=>{if(event.key==='Escape')setFavoritesOpen(false);});
   document.addEventListener('pointerdown',event=>{
     const panel=document.getElementById('mobileFavoritesPanel');
     if(panel&&!panel.hidden&&!event.target.closest('#mobileFavoritesPanel,#mobileFavoritesButton'))setFavoritesOpen(false);
