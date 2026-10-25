@@ -221,6 +221,17 @@ local PRESETS = table.freeze({
       MINERAL_STAIN = table.freeze({material = Enum.Material.Rock, color = Color3.fromRGB(127, 111, 92), reflectance = 0.00}),
     }),
   }),
+  -- [브릭 장난감 재질] 상표/텍스처를 복제하지 않은 공용 플라스틱 표면.
+  -- 연결 돌기와 조립 구조는 별도 CC0 메시에서 처리하고 파츠를 추가하지 않는다.
+  TOY_PLASTIC = table.freeze({
+    defaultVariant = "SATIN",
+    variants = table.freeze({
+      SATIN = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(215, 103, 73), reflectance = 0.035}),
+      GLOSSY = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(232, 180, 75), reflectance = 0.085}),
+      MATTE = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(95, 159, 127), reflectance = 0.015}),
+      DARK = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(59, 71, 91), reflectance = 0.025}),
+    }),
+  }),
   STYLE_VARIANT = table.freeze({
     defaultVariant = "FANTASY",
     variants = table.freeze({
@@ -228,6 +239,7 @@ local PRESETS = table.freeze({
       INDUSTRIAL = table.freeze({material = Enum.Material.DiamondPlate, color = Color3.fromRGB(95, 101, 106), reflectance = 0.06}),
       COZY = table.freeze({material = Enum.Material.WoodPlanks, color = Color3.fromRGB(154, 112, 76), reflectance = 0.00}),
       HORROR = table.freeze({material = Enum.Material.Slate, color = Color3.fromRGB(61, 57, 62), reflectance = 0.00}),
+      TOY_BRICK = table.freeze({material = Enum.Material.SmoothPlastic, color = Color3.fromRGB(216, 126, 82), reflectance = 0.04}),
     }),
   })
 
@@ -361,6 +373,21 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  if not part:IsA("BasePart") or part.Transparency>=1 or part:GetAttribute("PreserveAuthoredMaterial")==true then return false end
  if part:IsA("MeshPart") and (part:FindFirstChildOfClass("SurfaceAppearance") or part.TextureID~="")then return false end
  if part.MaterialVariant~=""then return false end
+ -- [브릭 스타일 선택 적용] 게임별 명시적 선택에서만 장난감 플라스틱 외형을 입힌다.
+ -- 실제 CC0 MeshPart의 아틀라스/리깅/UV/텍스처는 유지한다. 노멀맵이 없는 돌기를 가짜로 생성하지 않는다.
+ if style=="TOY_BRICK"then
+  if part:IsA("MeshPart") or part:GetAttribute("MaterialStyle")=="TOY_BRICK"then return false end
+  local name=string.lower(part.Name)
+  local variant=(name:find("metal",1,true)or name:find("iron",1,true)or name:find("stone",1,true))
+   and "DARK" or (name:find("grass",1,true)or name:find("leaf",1,true)or name:find("crop",1,true))
+   and "MATTE" or "SATIN"
+  local authoredColor=part.Color
+  RobloxCommonMaterials.Apply(part,"TOY_PLASTIC",{variant=variant,tint=authoredColor,tintStrength=1,preservePhysics=true})
+  part:SetAttribute("MaterialSourceId","NATIVE_TOY_PLASTIC_NO_IMPORTED_PBR")
+  part:SetAttribute("MaterialStyle","TOY_BRICK")
+  part:SetAttribute("ToyBrickGeometryState","CC0_MESH_AND_STUD_TOPOLOGY_INDEPENDENT_QA_REQUIRED")
+  return true
+ end
  local materialName=part.Material.Name
  local atom=part:GetAttribute("SurfaceRole") or ROLE_MATERIALS[materialName]
  if not atom or not PRESETS[atom]then return false end
@@ -385,9 +412,9 @@ function RobloxCommonMaterials.Audit()
     packId = "roblox-common-materials-v1",
     atoms = table.freeze({
       "WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL", "BRICK", "ICE", "ASPHALT",
-      "SKIN", "BONE", "WATER", "MUD", "SAND", "SNOW", "MOSS", "EMISSIVE", "CORROSION", "DIRT", "WET_DRY", "DAMAGE", "WEATHERING", "STYLE_VARIANT"
+      "SKIN", "BONE", "WATER", "MUD", "SAND", "SNOW", "MOSS", "EMISSIVE", "CORROSION", "DIRT", "WET_DRY", "DAMAGE", "WEATHERING", "TOY_PLASTIC", "STYLE_VARIANT"
     }),
-    atomCount = 25,
+    atomCount = 26,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
