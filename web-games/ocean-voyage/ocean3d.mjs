@@ -1,6 +1,6 @@
 // 파일명: ocean3d.mjs · 항해 해도·항구·시설과 실제 GLB 해상 전투 렌더러
 // 임포트: 실제 해안선과 게임 규칙 공유. 저장·경제 규칙은 엔진이 담당한다.
-import {PORTS,SHIP_TYPES,PORT_SCENES,MERCHANT_CAPTAINS,merchantPosition,portStatus,SITES,CREW,windAt} from './engine.mjs';
+import {PORTS,SHIP_TYPES,PORT_SCENES,MERCHANT_CAPTAINS,merchantPosition,portStatus,canDock,SITES,CREW,windAt} from './engine.mjs';
 import {COUNTRIES} from './assets/countries.mjs';
 import {LAND} from './assets/world.mjs';
 const HARBOR_VIEWS=[[0,0,1,1],[0,0,.96,.90],[.03,0,.94,.94],[0,.025,1,.88],[.02,.015,.96,.93],[.01,0,.98,.96]];
@@ -522,7 +522,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const places=[['market','교역소',.22,.22,'#9d6750'],['fleet','조선소',.77,.60,'#596f70'],['crew','선술집',.22,.39,'#ae7546'],['palace','왕궁 · 총독부',.77,.22,'#726b8d'],['quests','탐험가 사무실',.77,.39,'#497c72'],['jobs','직업 길드',.22,.62,'#74694a']];
  // 도시마다 실제 입점 시설과 거리를 다르게 배치한다.
  function cityPlaces(){
-  const current=PORTS.find(p=>Math.hypot(p.x-state.ship.x,p.z-state.ship.z)<5)||PORTS[0],profile=PORT_SCENES[current.id]||PORT_SCENES.dawn;
+  const current=canDock(state)||PORTS[0],profile=PORT_SCENES[current.id]||PORT_SCENES.dawn;
   const facilities=places.filter(p=>profile.facilities.includes(p[0]));
   if(profile.layout%2)facilities.reverse();
   const [x,y,cw,ch]=HARBOR_VIEWS[profile.layout];
@@ -531,7 +531,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  function building(x,y,bw,bh,label,color){rect(x-3,y+bh-2,bw+6,6,'#493d2f');rect(x,y,bw,bh,'#d0b78b');rect(x-5,y-12,bw+10,14,color);rect(x+2,y-19,bw-4,9,color);rect(x+7,y+10,13,13,'#3e5960');rect(x+bw-20,y+10,13,13,'#3e5960');rect(x+bw/2-7,y+bh-23,14,23,'#634b36');rect(x+bw/2-2,y+bh-13,2,3,'#e7c27d');rect(x-8,y+bh+6,bw+16,20,'#332e28');text(label,x+bw/2,y+bh+20,11,'#f2d7a1','center');}
  function town(){
   if(townArt.complete&&townArt.naturalWidth){
-   const townPort=PORTS.find(p=>Math.hypot(p.x-state.ship.x,p.z-state.ship.z)<5)||PORTS[0];
+   const townPort=canDock(state)||PORTS[0];
    const profile=PORT_SCENES[townPort.id],crop=HARBOR_VIEWS[profile.layout];
    ctx.drawImage(townArt,crop[0]*townArt.naturalWidth,crop[1]*townArt.naturalHeight,crop[2]*townArt.naturalWidth,crop[3]*townArt.naturalHeight,0,75,w,h-75);
    const shades={'영국 왕실':'#284c6750','포르투갈 상단':'#86602b44','북해 상인연맹':'#4b72824b','프랑스 항구동맹':'#526b9450','이베리아 왕실':'#9a76424a','지중해 공화국':'#81704b44'};
@@ -550,7 +550,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   rect(0,h-135,w,135,C.sea);rect(w*.4,h-143,w*.2,82,'#78573b');for(let y=h-140;y<h-65;y+=8)rect(w*.4,y,w*.2,1,'#bd9666');ship(w*.5,h-56,0,state.shipType,false,1.1);
   hit=[];for(const [id,label,px,py,color] of cityPlaces()){const bw=Math.min(96,w*.27),bh=45,row=id==='market'||id==='palace'?0:id==='crew'||id==='quests'?1:2,x=w*(px<.5?.23:.77)-bw/2,y=150+Math.max(190,h-370)*row/2;building(x,y,bw,bh,label,color);hit.push({x:x-8,y:y-23,w:bw+16,h:bh+55,building:id});}
   for(let i=0;i<7;i++){const x=w*.48+Math.sin(time*.2+i)*w*.12,y=150+(i*61)%(h-300);rect(x,y,5,5,'#dbb288');rect(x-1,y+5,7,8,['#704e47','#426271','#b18a51'][i%3]);rect(x,y+13,2,4,'#3c3930');rect(x+4,y+13,2,4,'#3c3930');}
-  const p=PORTS.find(p=>Math.hypot(p.x-state.ship.x,p.z-state.ship.z)<4);text((p?.name||'항구')+' · 시설을 눌러 들어가',w/2,109,13,'#fff0cb','center');
+  const p=canDock(state);text((p?.name||'항구')+' · 시설을 눌러 들어가',w/2,109,13,'#fff0cb','center');
  }
  function interior(){
   if(townArt.complete&&townArt.naturalWidth){const crops={market:[.02,.10,.44,.24],crew:[.02,.28,.44,.24],jobs:[.02,.47,.44,.25],palace:[.55,.10,.44,.25],quests:[.55,.29,.44,.24],fleet:[.55,.46,.44,.27]},r=crops[facility]||crops.market;ctx.drawImage(townArt,r[0]*townArt.naturalWidth,r[1]*townArt.naturalHeight,r[2]*townArt.naturalWidth,r[3]*townArt.naturalHeight,0,75,w,h-75);rect(0,75,w,h-75,'#15252d44');text({market:'교역소 · 특산품 거래',crew:'선술집 · 동료와 소문',jobs:'길드 · 전직',palace:'왕궁 · 총독부',quests:'탐험가 사무실',fleet:'조선소 · 선박과 포대'}[facility]||'항구 시설',w/2,111,14,'#fff0c9','center');return;}
