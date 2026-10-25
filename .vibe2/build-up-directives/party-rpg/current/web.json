@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "party-rpg-build-up-g9-de829883d13e",
-  "directiveFingerprint": "de829883d13ea39e4f945fb58c4820a157704323b1aa345103d4925ef1a60ec4",
-  "previousDirectiveFingerprint": "48c0d0372c849942b2c9cc3dfe8f57781f59a6312925abb0a4b193740f930326",
-  "forbiddenRepeatFingerprint": "48c0d0372c849942b2c9cc3dfe8f57781f59a6312925abb0a4b193740f930326",
+  "directiveId": "party-rpg-build-up-g10-92450dd9a01a",
+  "directiveFingerprint": "92450dd9a01af201662e34d923c3169f35001e9c9d6589e3db308c6ee1e47359",
+  "previousDirectiveFingerprint": "de829883d13ea39e4f945fb58c4820a157704323b1aa345103d4925ef1a60ec4",
+  "forbiddenRepeatFingerprint": "de829883d13ea39e4f945fb58c4820a157704323b1aa345103d4925ef1a60ec4",
   "gameId": "party-rpg",
   "gameName": "파티 RPG",
-  "generation": 9,
+  "generation": 10,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/party-rpg",
-  "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+  "sourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
   "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+        "sourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
-    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+    "sourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+    "sourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4327,15 +4327,15 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 475,
-      "progression": 442,
-      "ai": 114,
-      "save": 101,
+      "combat": 533,
+      "progression": 457,
+      "ai": 140,
+      "save": 105,
       "multiplayer": 1,
-      "animation": 37,
-      "motionStates": 687,
-      "gameFeel": 13,
-      "vfx": 112,
+      "animation": 54,
+      "motionStates": 771,
+      "gameFeel": 19,
+      "vfx": 118,
       "camera": 40,
       "audio": 56,
       "audioDynamics": 6,
@@ -4344,31 +4344,31 @@
       "entryFlow": 0,
       "loadingFlow": 0,
       "input": 117,
-      "map": 989,
-      "landmark": 102,
+      "map": 999,
+      "landmark": 103,
       "interaction": 152,
       "inventory": 80,
       "equipment": 119,
       "settings": 7,
       "feedback": 142,
-      "session": 24,
-      "content": 758,
-      "choice": 297,
+      "session": 26,
+      "content": 847,
+      "choice": 307,
       "connection": 1,
-      "performance": 21,
-      "lighting": 96,
-      "primitive": 7,
+      "performance": 22,
+      "lighting": 103,
+      "primitive": 8,
       "todo": 0,
       "errorRecovery": 18
     },
     "topFiles": [
       {
         "file": "web-games/party-rpg/index.html",
-        "score": 1324
+        "score": 1340
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "score": 160
+        "score": 248
       },
       {
         "file": "web-games/party-rpg/audio.mjs",
@@ -4376,14 +4376,6 @@
       }
     ],
     "sourceAnchors": [
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2170,
-        "kind": "FUNCTION",
-        "symbol": "draw",
-        "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
-        "score": 418
-      },
       {
         "file": "web-games/party-rpg/index.html",
         "line": 1330,
@@ -4394,15 +4386,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2035,
-        "kind": "FUNCTION",
-        "symbol": "updateEnemies",
-        "context": "function updateEnemies(dt){",
-        "score": 330
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2167,
+        "line": 2196,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "context": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -4410,7 +4394,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2168,
+        "line": 2197,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "context": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -4418,18 +4402,18 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2172,
-        "kind": "FUNCTION",
-        "symbol": "loop",
-        "context": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
-        "score": 282
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
         "line": 1415,
         "kind": "FUNCTION",
         "symbol": "portraitIndex",
         "context": "function portraitIndex(u){return u===state.player?state.player.portraitId:Math.max(0,Math.min(9,Number(String(u.id).slice(2))||0));}",
+        "score": 274
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 2199,
+        "kind": "FUNCTION",
+        "symbol": "draw",
+        "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
         "score": 274
       },
       {
@@ -4474,11 +4458,19 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 749,
+        "line": 2004,
         "kind": "FUNCTION",
-        "symbol": "aiWeaponPower",
-        "context": "function aiWeaponPower(a){if(a.specialWeapon&&DROPS[a.specialWeapon])return DROPS[a.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===a.weapon;});return w?w.powe",
-        "score": 218
+        "symbol": "damageEnemy",
+        "context": "function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.target='enemy'+e.id;c.v",
+        "score": 226
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 2033,
+        "kind": "FUNCTION",
+        "symbol": "attackPlayer",
+        "context": "function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=orderedEnemy(p.x,p.y,r.range);if(!target){if(automa",
+        "score": 226
       },
       {
         "file": "web-games/party-rpg/index.html",
@@ -4486,6 +4478,22 @@
         "kind": "FUNCTION",
         "symbol": "nearestEnemy",
         "context": "function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(function(e){if(e.dead)return;var dx=e.x-x,dy=e.y-y,dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=e;}});return be",
+        "score": 226
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 2035,
+        "kind": "FUNCTION",
+        "symbol": "updateEnemies",
+        "context": "function updateEnemies(dt){",
+        "score": 226
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 749,
+        "kind": "FUNCTION",
+        "symbol": "aiWeaponPower",
+        "context": "function aiWeaponPower(a){if(a.specialWeapon&&DROPS[a.specialWeapon])return DROPS[a.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===a.weapon;});return w?w.powe",
         "score": 218
       },
       {
@@ -4498,18 +4506,18 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
+        "line": 2005,
+        "kind": "FUNCTION",
+        "symbol": "killEnemy",
+        "context": "function killEnemy(e,killer){",
+        "score": 210
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
         "line": 1424,
         "kind": "FUNCTION",
         "symbol": "confirmCharacter",
         "context": "function confirmCharacter(){var name=document.getElementById('heroName').value.trim().slice(0,16)||'여행자';state.player.name=name;state.player.classId=uiDraft.classId;state.player.po",
-        "score": 202
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2033,
-        "kind": "FUNCTION",
-        "symbol": "attackPlayer",
-        "context": "function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=orderedEnemy(p.x,p.y,r.range);if(!target){if(automa",
         "score": 202
       },
       {
@@ -4519,14 +4527,6 @@
         "symbol": "createActor",
         "context": "createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObj",
         "score": 192
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2004,
-        "kind": "FUNCTION",
-        "symbol": "damageEnemy",
-        "context": "function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.visualUntil=performance",
-        "score": 186
       },
       {
         "file": "web-games/party-rpg/index.html",
@@ -4570,19 +4570,11 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2005,
+        "line": 1225,
         "kind": "FUNCTION",
-        "symbol": "killEnemy",
-        "context": "function killEnemy(e,killer){",
-        "score": 170
-      },
-      {
-        "file": "web-games/party-rpg/view.mjs",
-        "line": 426,
-        "kind": "METHOD",
-        "symbol": "animate",
-        "context": "animate(entry,moving,combat,dt,now){",
-        "score": 112
+        "symbol": "battleLog",
+        "context": "function battleLog(t){combatLines.push(t);if(combatLines.length>4)combatLines.shift();document.getElementById('combatLog').textContent=combatLines.join('\\n');}",
+        "score": 162
       },
       {
         "file": "web-games/party-rpg/view.mjs",
@@ -4634,7 +4626,7 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 415,
+        "line": 464,
         "kind": "FUNCTION",
         "symbol": "named",
         "context": "const named=regex=>[...actions].find(([name])=>regex.test(name))?.[1]||null;",
@@ -4642,7 +4634,15 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 501,
+        "line": 481,
+        "kind": "METHOD",
+        "symbol": "animate",
+        "context": "animate(entry,moving,combat,dt,now){",
+        "score": 64
+      },
+      {
+        "file": "web-games/party-rpg/view.mjs",
+        "line": 708,
         "kind": "METHOD",
         "symbol": "removeActor",
         "context": "removeActor(key,entry){if(entry.pixel){entry.pixel.geometry.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheR",
@@ -4650,7 +4650,7 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 630,
+        "line": 924,
         "kind": "METHOD",
         "symbol": "render",
         "context": "render(live){",
@@ -4698,19 +4698,19 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 497,
-        "kind": "METHOD",
-        "symbol": "reactToHit",
-        "context": "reactToHit(key,power=1){",
-        "score": 48
-      },
-      {
-        "file": "web-games/party-rpg/view.mjs",
-        "line": 555,
+        "line": 849,
         "kind": "METHOD",
         "symbol": "popDamage",
         "context": "popDamage(x,y,amount,critical=false,miss=false){",
         "score": 48
+      },
+      {
+        "file": "web-games/party-rpg/view.mjs",
+        "line": 728,
+        "kind": "FUNCTION",
+        "symbol": "makeMaterial",
+        "context": "const makeMaterial=(opacity=.85)=>new THREE.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});",
+        "score": 42
       },
       {
         "file": "web-games/party-rpg/view.mjs",
@@ -4729,6 +4729,22 @@
         "score": 40
       },
       {
+        "file": "web-games/party-rpg/view.mjs",
+        "line": 845,
+        "kind": "METHOD",
+        "symbol": "clearEffects",
+        "context": "clearEffects(){",
+        "score": 40
+      },
+      {
+        "file": "web-games/party-rpg/view.mjs",
+        "line": 729,
+        "kind": "FUNCTION",
+        "symbol": "attach",
+        "context": "const attach=(geo,mat,x=0,y=0,z=0)=>{const mesh=new THREE.Mesh(geo,mat);mesh.position.set(x,y,z);mesh.userData.fade=mat.opacity;group.add(mesh);return mesh;};",
+        "score": 34
+      },
+      {
         "file": "web-games/party-rpg/audio.mjs",
         "line": 13,
         "kind": "METHOD",
@@ -4743,31 +4759,15 @@
         "symbol": "start",
         "context": "start(){",
         "score": 32
-      },
-      {
-        "file": "web-games/party-rpg/audio.mjs",
-        "line": 36,
-        "kind": "METHOD",
-        "symbol": "setMuted",
-        "context": "setMuted(value){",
-        "score": 32
-      },
-      {
-        "file": "web-games/party-rpg/audio.mjs",
-        "line": 61,
-        "kind": "METHOD",
-        "symbol": "update",
-        "context": "update(zone,dungeon,fighting,climate=null){",
-        "score": 32
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 8,
-    "previousSourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
-    "currentSourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+    "previousGeneration": 9,
+    "previousSourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+    "currentSourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5850,9 +5850,9 @@
   ],
   "primaryFocus": "CORE_FUN",
   "thisLoopPrimaryGoal": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"파티 RPG\", 현재 책임 소스는 web-games/party-rpg/index.html::draw, web-games/party-rpg/index.html::partyHud, web-games/party-rpg/index.html::updateEnemies, web-games/party-rpg/index.html::toggleParty, web-games/party-rpg/index.html::onCanvasTap, web-games/party-rpg/index.html::loop, web-games/party-rpg/index.html::portraitIndex, web-games/party-rpg/index.html::playerAtk이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 CORE_FUN를 우선한다. 게임 고유 앵커는 \"파티 RPG\", 현재 책임 소스는 web-games/party-rpg/index.html::partyHud, web-games/party-rpg/index.html::toggleParty, web-games/party-rpg/index.html::onCanvasTap, web-games/party-rpg/index.html::portraitIndex, web-games/party-rpg/index.html::draw, web-games/party-rpg/index.html::playerAtk, web-games/party-rpg/index.html::accessoryBonus, web-games/party-rpg/index.html::playerWeaponPower이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/party-rpg/index.html::draw, web-games/party-rpg/index.html::partyHud, web-games/party-rpg/index.html::updateEnemies, web-games/party-rpg/index.html::toggleParty, web-games/party-rpg/index.html::onCanvasTap, web-games/party-rpg/index.html::loop, web-games/party-rpg/index.html::portraitIndex, web-games/party-rpg/index.html::playerAtk에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/party-rpg/index.html::partyHud, web-games/party-rpg/index.html::toggleParty, web-games/party-rpg/index.html::onCanvasTap, web-games/party-rpg/index.html::portraitIndex, web-games/party-rpg/index.html::draw, web-games/party-rpg/index.html::playerAtk, web-games/party-rpg/index.html::accessoryBonus, web-games/party-rpg/index.html::playerWeaponPower에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "파티 RPG를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "퀘스트와 인물 관계 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5907,8 +5907,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 364135,
-        "largestFileBytes": 283456,
+        "sourceBytes": 393167,
+        "largestFileBytes": 285579,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5939,9 +5939,9 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 9,
-    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
+    "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+    "themeDepth": 1,
+    "selectedThemeReason": "2 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5949,7 +5949,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 1,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
@@ -5962,7 +5962,8 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -5973,14 +5974,13 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 1,
+      "distinctCovered": 2,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -5988,7 +5988,6 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -5996,17 +5995,17 @@
     },
     "scoredThemes": [
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 58,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 46,
         "gapDomains": [
           "MULTIPLAYER_AND_SYNC",
+          "SYSTEM_CONNECTION"
+        ]
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 40,
+        "gapDomains": [
           "SYSTEM_CONNECTION"
         ]
       },
@@ -6037,13 +6036,13 @@
       }
     ],
     "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+      "DERIVED_GAMEPLAY_RULE: 승인된 기존 규칙을 깨지 않으면서 환경·적 관계·아이템 조합·퀘스트 상태·지역 접근 같은 새 상호작용 규칙을 만든다.",
+      "TRIGGER_CONDITION: 규칙이 언제 발동하고 언제 끝나는지 명확히 한다.",
+      "PLAYER_DECISION_EFFECT: 규칙이 실제 선택·위험·경로·장비·협동 방식 중 하나 이상을 바꾸게 한다.",
+      "EVENT_VARIATION: 랜덤 숫자만 바꾸지 말고 조우·목표·경로·보상 구조를 변주한다.",
+      "FAILURE_AND_RECOVERY: 실패 시 손실·복구·재도전이 이해 가능하고 진행을 무의미하게 되감지 않게 한다.",
+      "MULTIPLAYER_INTERACTION_WHEN_APPLICABLE: 협동·경쟁이면 역할 분담·권한·동기화·보상 규칙을 실제 2인 이상 상태와 연결한다.",
+      "SYSTEM_CONSEQUENCE: 규칙 결과가 퀘스트·지역·보상·NPC·다음 세션 중 관련 시스템에 남는다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -6109,11 +6108,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 9,
-    "previousGeneration": 8,
+    "generation": 10,
+    "previousGeneration": 9,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
-    "priorSourceFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "sourceFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
+    "priorSourceFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6132,7 +6131,7 @@
     "version": 1,
     "gameId": "party-rpg",
     "platform": "WEB",
-    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+    "sourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6280,7 +6279,8 @@
         "id": "SHOP",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "web-games/party-rpg/index.html"
+          "web-games/party-rpg/index.html",
+          "web-games/party-rpg/view.mjs"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6446,8 +6446,10 @@
       },
       {
         "id": "SKILL_VFX",
-        "state": "NOT_APPLICABLE_WITHOUT_SOURCE",
-        "responsibleFiles": [],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "web-games/party-rpg/view.mjs"
+        ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
         "createPlaceholderUi": false,
@@ -6524,7 +6526,9 @@
         "web-games/party-rpg/index.html",
         "web-games/party-rpg/audio.mjs"
       ],
-      "SKILL_VFX": [],
+      "SKILL_VFX": [
+        "web-games/party-rpg/view.mjs"
+      ],
       "NETWORK": [],
       "INTERACTION": [
         "web-games/party-rpg/index.html",
@@ -6540,7 +6544,8 @@
         "web-games/party-rpg/audio.mjs"
       ],
       "SHOP": [
-        "web-games/party-rpg/index.html"
+        "web-games/party-rpg/index.html",
+        "web-games/party-rpg/view.mjs"
       ]
     },
     "uiModeSelection": {
@@ -6735,6 +6740,29 @@
         "gameSourceMutationPerformed": false,
         "passed": false,
         "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "web-games/party-rpg/view.mjs",
+          "web-games/party-rpg/index.html",
+          "web-games/party-rpg/audio.mjs"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
       }
     ],
     "sharedAssetSelection": {
@@ -6817,7 +6845,7 @@
     "gameId": "party-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+    "sourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7159,15 +7187,6 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2170,
-        "kind": "FUNCTION",
-        "symbol": "draw",
-        "currentBehavior": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
-        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
         "line": 1330,
         "kind": "FUNCTION",
         "symbol": "partyHud",
@@ -7177,16 +7196,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2035,
-        "kind": "FUNCTION",
-        "symbol": "updateEnemies",
-        "currentBehavior": "function updateEnemies(dt){",
-        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateEnemies의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2167,
+        "line": 2196,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "currentBehavior": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -7195,20 +7205,11 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2168,
+        "line": 2197,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "currentBehavior": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
         "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 onCanvasTap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2172,
-        "kind": "FUNCTION",
-        "symbol": "loop",
-        "currentBehavior": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
-        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 loop의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7222,30 +7223,45 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
+        "line": 2199,
+        "kind": "FUNCTION",
+        "symbol": "draw",
+        "currentBehavior": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
+        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
         "line": 748,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
         "currentBehavior": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
         "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerAtk의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 745,
+        "kind": "FUNCTION",
+        "symbol": "accessoryBonus",
+        "currentBehavior": "function accessoryBonus(u,stat){return ACCESSORIES.filter(it=>it.id===u.ring||it.id===u.necklace).reduce((total,it)=>total+(it[stat]||0),0);}",
+        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 accessoryBonus의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 746,
+        "kind": "FUNCTION",
+        "symbol": "playerWeaponPower",
+        "currentBehavior": "function playerWeaponPower(){if(state.player.specialWeapon&&DROPS[state.player.specialWeapon])return DROPS[state.player.specialWeapon].power||0;var w=WEAPONS.find(function(x){retur",
+        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerWeaponPower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
         "file": "web-games/party-rpg/index.html",
-        "symbol": "draw",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
         "symbol": "partyHud",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "symbol": "updateEnemies",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7263,19 +7279,31 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "symbol": "loop",
-        "role": "SHARED_MODULE_OR_STATE",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
         "symbol": "portraitIndex",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "web-games/party-rpg/index.html",
+        "symbol": "draw",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
         "symbol": "playerAtk",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "symbol": "accessoryBonus",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "symbol": "playerWeaponPower",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7358,18 +7386,6 @@
     "sourceAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2170,
-        "kind": "FUNCTION",
-        "symbol": "draw",
-        "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
-        "score": 418,
-        "currentBehavior": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
-        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/party-rpg/index.html::draw이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
         "line": 1330,
         "kind": "FUNCTION",
         "symbol": "partyHud",
@@ -7382,19 +7398,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2035,
-        "kind": "FUNCTION",
-        "symbol": "updateEnemies",
-        "context": "function updateEnemies(dt){",
-        "score": 330,
-        "currentBehavior": "function updateEnemies(dt){",
-        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 updateEnemies의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/party-rpg/index.html::updateEnemies이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2167,
+        "line": 2196,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "context": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -7406,7 +7410,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2168,
+        "line": 2197,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "context": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -7414,18 +7418,6 @@
         "currentBehavior": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
         "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 onCanvasTap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/party-rpg/index.html::onCanvasTap이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 2172,
-        "kind": "FUNCTION",
-        "symbol": "loop",
-        "context": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
-        "score": 282,
-        "currentBehavior": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
-        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 loop의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/party-rpg/index.html::loop이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
@@ -7442,6 +7434,18 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
+        "line": 2199,
+        "kind": "FUNCTION",
+        "symbol": "draw",
+        "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
+        "score": 274,
+        "currentBehavior": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
+        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 draw의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/party-rpg/index.html::draw이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
         "line": 748,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
@@ -7450,6 +7454,30 @@
         "currentBehavior": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
         "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerAtk의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/party-rpg/index.html::playerAtk이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 745,
+        "kind": "FUNCTION",
+        "symbol": "accessoryBonus",
+        "context": "function accessoryBonus(u,stat){return ACCESSORIES.filter(it=>it.id===u.ring||it.id===u.necklace).reduce((total,it)=>total+(it[stat]||0),0);}",
+        "score": 258,
+        "currentBehavior": "function accessoryBonus(u,stat){return ACCESSORIES.filter(it=>it.id===u.ring||it.id===u.necklace).reduce((total,it)=>total+(it[stat]||0),0);}",
+        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 accessoryBonus의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/party-rpg/index.html::accessoryBonus이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 746,
+        "kind": "FUNCTION",
+        "symbol": "playerWeaponPower",
+        "context": "function playerWeaponPower(){if(state.player.specialWeapon&&DROPS[state.player.specialWeapon])return DROPS[state.player.specialWeapon].power||0;var w=WEAPONS.find(function(x){retur",
+        "score": 258,
+        "currentBehavior": "function playerWeaponPower(){if(state.player.specialWeapon&&DROPS[state.player.specialWeapon])return DROPS[state.player.specialWeapon].power||0;var w=WEAPONS.find(function(x){retur",
+        "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 playerWeaponPower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/party-rpg/index.html::playerWeaponPower이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "web-games/party-rpg/index.html에 실제 source delta가 있고 관련 QA/runtime에서 CORE_FUN 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7538,7 +7566,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+      "sourceTreeFingerprint": "3d0b1456f0e41229405ffbcb0a5135b2ca7dad4d7eefa23c629c34adf1f2cadf",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7597,7 +7625,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 10,
+    "nextGeneration": 11,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7660,5 +7688,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T03:56:16.878Z"
+  "generatedAt": "2026-10-25T05:12:15.089Z"
 }
