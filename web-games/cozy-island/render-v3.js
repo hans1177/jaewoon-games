@@ -287,6 +287,7 @@ export class IslandRendererV3 {
     this.ctx = canvas.getContext('2d', { alpha: true });
     this.models3d=new Map();this.instances3d=new Map();this.signTextures3d=new Map();this.native3d=false;
     this.viewFocus={x:925,y:630};this.viewZoom=null;this.last3dPaint=0;
+    this.displayFocus={x:925,y:630};this.lastCameraFrame=0;
     this.pixelTextures=new Map();this.pixelScale=2;
     this.init3d();this.resize();
   }
@@ -299,10 +300,12 @@ export class IslandRendererV3 {
       this.gl=new THREE.WebGLRenderer({canvas:layer,antialias:false,powerPreference:'high-performance'});
       this.gl.outputColorSpace=THREE.SRGBColorSpace;
       this.scene3=new THREE.Scene();this.scene3.background=new THREE.Color(0x6c9799);
+      this.daySky3=new THREE.Color(0x92b9ad);this.nightSky3=new THREE.Color(0x263b49);
       this.camera3=new THREE.OrthographicCamera(-10,10,10,-10,.1,700);
-      this.scene3.add(new THREE.HemisphereLight(0xffefcf,0x454c36,1.7));
-      const sun=new THREE.DirectionalLight(0xffecc9,1.7);sun.position.set(-35,65,24);
-      this.scene3.add(sun);
+      this.ambient3=new THREE.HemisphereLight(0xffedcd,0x4e5142,1.52);
+      this.scene3.add(this.ambient3);
+      this.sun3=new THREE.DirectionalLight(0xffe8bb,1.5);
+      this.sun3.position.set(-35,65,24);this.scene3.add(this.sun3);
       const ground=(w,d,x,y,color,elevation)=>{
         const kind=elevation<=-1?'water':color===0x414958?'rock':
           color===0x846964?'rock':elevation<-.5?'sand':'grass';
@@ -544,13 +547,13 @@ export class IslandRendererV3 {
   // 입체 건물은 기존 픽셀 라이브러리의 2D 성벽 그림보다 확실한 높이와 형태를 제공한다.
   makeFort3d(kind,height){
     const g=new THREE.Group(),m={
-      wall:new THREE.MeshLambertMaterial({color:0xbcb29d}),
-      light:new THREE.MeshLambertMaterial({color:0xd2c4a3}),
-      stone:new THREE.MeshLambertMaterial({color:0x77766c}),
-      wood:new THREE.MeshLambertMaterial({color:0x725037}),
-      trim:new THREE.MeshLambertMaterial({color:0xad8753}),
-      roof:new THREE.MeshLambertMaterial({color:0x654b43}),
-      tile:new THREE.MeshLambertMaterial({color:0x98734e}),
+      wall:new THREE.MeshLambertMaterial({color:0xd1c5a7}),
+      light:new THREE.MeshLambertMaterial({color:0xe1d2ad}),
+      stone:new THREE.MeshLambertMaterial({color:0x817c70}),
+      wood:new THREE.MeshLambertMaterial({color:0x76513b}),
+      trim:new THREE.MeshLambertMaterial({color:0xb38b5e}),
+      roof:new THREE.MeshLambertMaterial({color:0x775248}),
+      tile:new THREE.MeshLambertMaterial({color:0x9e7655}),
       dark:new THREE.MeshLambertMaterial({color:0x303a34}),
       flag:new THREE.MeshLambertMaterial({color:0xa34538,side:THREE.DoubleSide}),
       earth:new THREE.MeshLambertMaterial({color:0x958262}),
@@ -563,7 +566,21 @@ export class IslandRendererV3 {
       water:new THREE.MeshLambertMaterial({color:0x54a6aa})
     };
     const style=BUILDING_SIGNS[kind];
-    if(style){m.roof.color.set(style[1]);m.tile.color.set(style[1]);}
+    if(style){
+      // 같은 색 재질을 씌우는 대신 산업=암갈색 목재, 식량=석회벽, 주류=황토, 군사=청회색을 사용한다.
+      m.roof.color.set(style[1]);m.tile.color.set(style[1]).lerp(new THREE.Color(0xd4b58b),.23);
+      if(['fort-lumber','fort-quarry','fort-iron','fort-stockpile'].includes(kind)){
+        m.wall.color.set(0xb9aa93);m.wood.color.set(0x654532);
+      }else if(['fort-wheat','fort-orchard','fort-dairy','fort-mill','fort-bakery','fort-granary'].includes(kind)){
+        m.wall.color.set(0xe0d0ae);
+      }else if(['fort-vineyard','fort-winery','fort-hops','fort-brewery','fort-tavern'].includes(kind)){
+        m.wall.color.set(0xcdbc9d);m.wood.color.set(0x684836);
+      }else if(['fort-smith','fort-armory','fort-fletcher','fort-knight-hall','fort-prison','fort-barracks'].includes(kind)){
+        m.wall.color.set(0xbabcb7);m.stone.color.set(0x686c6b);
+      }
+    }
+    // 소품은 해당 건물 메시 안에만 만들며 생산량·저장 값과 관계가 없다.
+    g.userData.flags=[];g.userData.smoke=[];
     const add=(geo,mat,x,y,z)=>{const item=new THREE.Mesh(geo,m[mat]);item.position.set(x,y,z);g.add(item);return item};
     const box=(w,h,d,mat,x=0,y=0,z=0)=>add(new THREE.BoxGeometry(w,h,d),mat,x,y,z);
     const cyl=(r,h,mat,x=0,y=0,z=0)=>add(new THREE.CylinderGeometry(r,r,h,8),mat,x,y,z);
@@ -571,18 +588,51 @@ export class IslandRendererV3 {
     const log=(x,y,z)=>{const p=cyl(.21,1.5,'wood',x,y,z);p.rotation.z=Math.PI/2;};
     const barrel=(x,z)=>{cyl(.34,.74,'wood',x,.38,z);
       cyl(.36,.07,'metal',x,.16,z);cyl(.36,.07,'metal',x,.63,z);};
-    const gable=(w,d,y,mat='roof')=>{for(const side of [-1,1]){
-      const p=box(w*.59,.16,d+.22,mat,side*w*.264,y,0);p.rotation.z=side*.58;}};
+    const chimney=(x,z,h=2.55)=>{
+      box(.6,1.35,.64,'stone',x,h-.2,z);
+      box(.81,.13,.83,'light',x,h+.51,z);
+      for(let i=0;i<2;i++){
+        const puff=new THREE.Mesh(new THREE.IcosahedronGeometry(.23+i*.08,0),
+          new THREE.MeshBasicMaterial({color:0xcfc9b8,transparent:true,opacity:.28,depthWrite:false}));
+        puff.position.set(x,h+.84+i*.46,z);g.add(puff);
+        g.userData.smoke.push({mesh:puff,x,y:h+.84+i*.46,z,phase:i*.5});
+      }
+    };
+    const signShield=(x,y,z)=>{
+      box(.84,.94,.15,'wood',x,y,z);
+      box(.62,.73,.18,'metal',x,y,z+.1);
+      box(.22,.49,.19,'flag',x,y,z+.21);
+    };
+    const gable=(w,d,y,mat='roof')=>{
+      for(const side of [-1,1]){
+        const p=box(w*.59,.16,d+.22,mat,side*w*.264,y,0);p.rotation.z=side*.58;
+        // 목조 트러스: 평평한 지붕 대신 중세 목재 서까래와 용마루를 표시한다.
+        for(const z of [-d*.43,d*.43]){
+          const beam=box(w*.58,.09,.1,'wood',side*w*.264,y+.04,z);
+          beam.rotation.z=side*.58;
+        }
+      }
+      box(.13,.13,d+.34,'trim',0,y+.38,0);
+    };
     const hut=(w=3,d=2.5,mat='wall')=>{
       box(w,1.55,d,mat,0,.78,0);gable(w,d,1.88);
-      box(.6,1.05,.1,'dark',0,.53,d/2+.04);};
+      box(.6,1.05,.1,'dark',0,.53,d/2+.04);
+      for(const x of [-w*.43,w*.43]){box(.13,1.56,.15,'wood',x,.78,d/2+.07);
+        box(.42,.45,.08,'dark',x*.53,1.08,d/2+.06);
+        box(.08,.45,.11,'trim',x*.53,1.08,d/2+.13);}
+      box(w,.12,.17,'wood',0,1.54,d/2+.08);
+    };
     const crest=(w,d,h)=>{
       for(let x=-w/2+.2;x<w/2;x+=.5)for(const z of [-d/2,d/2])
         box(.31,.34,.28,'light',x,h+.18,z);
       for(let z=-d/2+.2;z<d/2;z+=.5)for(const x of [-w/2,w/2])
         box(.28,.34,.31,'light',x,h+.18,z);
     };
-    const banner=(x,y,z)=>{box(.065,1.5,.065,'trim',x,y,z);box(.94,.46,.07,'flag',x+.5,y+.43,z)};
+    const banner=(x,y,z)=>{
+      box(.065,1.5,.065,'trim',x,y,z);
+      const cloth=box(.94,.46,.07,'flag',x+.5,y+.43,z);
+      g.userData.flags.push({mesh:cloth,phase:x+z});
+    };
     if(kind==='fort-road'){
       for(let z=-.84;z<=.84;z+=.42)for(let x=-.84;x<=.84;x+=.42)
         box(.38,.065,.38,Math.round((x+z)*100)%3===0?'stone':'wall',x,.035,z);
@@ -642,7 +692,9 @@ export class IslandRendererV3 {
         const win=box(.2,.47,.08,'dark',Math.sin(a)*.78,h*.54,Math.cos(a)*.78);
         win.rotation.y=a;
       }
-      cyl(.89,.2,'stone',0,.13,0);banner(0,h+1,0);return g;
+      cyl(.89,.2,'stone',0,.13,0);
+      for(let y=.7;y<h*.77;y+=.65)box(.11,.12,.5,'trim',.61,y,.15);
+      banner(0,h+1,0);return g;
     }
     if(kind==='fort-gatehouse'){
       const h=Math.max(3.3,height);
@@ -658,6 +710,8 @@ export class IslandRendererV3 {
         }
         box(.18,.42,.08,'dark',x,h*.6,.84);
       }
+      box(3.6,.14,1.56,'stone',0,.17,0);
+      for(const x of [-1.05,1.05])box(.24,.46,.15,'metal',x,h*.5,.94);
       crest(3.5,1.3,h*.75);return g;
     }
     if(kind==='fort-keep'){
@@ -673,6 +727,9 @@ export class IslandRendererV3 {
       }
       box(1.1,h*.35,.15,'dark',0,h*.2,1.83);
       for(const x of [-1,1])box(.27,.59,.12,'dark',x,h*.46,1.82);
+      // 성채 앞 정문과 왕국 고유 깃발 색을 강조한다.
+      box(1.27,.14,.22,'trim',0,h*.4,1.94);
+      for(const x of [-.37,.37])box(.11,h*.34,.14,'metal',x,h*.2,1.94);
       banner(0,h*1.1,0);return g;
     }
 
@@ -683,6 +740,10 @@ export class IslandRendererV3 {
       for(const side of [-1,1]){const p=box(.75,.13,2.5,'tile',-1+side*.43,1.51,-.65);p.rotation.z=side*.58;}
       for(let i=0;i<3;i++)for(const z of [-.7,-.2])log(.97,.3+i*.46,z);
       for(let i=0;i<5;i++)box(1.55,.1,.3,'trim',1.1,.18+i*.14,1.12);
+      // 벌목용 두꺼운 목재 톱질대와 겹친 도끼 표식.
+      box(1.88,.16,.65,'wood',-.55,.47,1.42);
+      for(const x of [-1.27,.16])box(.13,.54,.12,'wood',x,.24,1.42);
+      const saw=box(.12,1.16,.1,'metal',-.52,1.13,1.47);saw.rotation.z=.6;
       box(.19,1.1,.19,'metal',-1.8,.6,1);return g;
     }
     if(kind==='fort-quarry'){
@@ -692,7 +753,12 @@ export class IslandRendererV3 {
       for(const [x,z,r] of [[-1.6,-1.15,.61],[-1.62,1,.6],[.5,-1.55,.46],[1.57,.8,.69]]){
         const b=add(new THREE.DodecahedronGeometry(r,0),'stone',x,r*.55,z);b.rotation.y=x;}
       box(.17,2.45,.17,'wood',1.44,1.28,-.8);box(2,.18,.18,'wood',.5,2.38,-.8);
-      box(.08,1.2,.09,'metal',-.44,1.77,-.8);box(.71,.4,.67,'stone',-.44,.98,-.8);return g;
+      // 채석장 크레인 추와 광차 레일.
+      const crane=box(.15,1.25,.13,'metal',-.46,1.7,-.8);
+      g.userData.workArm=crane;
+      box(.71,.4,.67,'stone',-.44,.98,-.8);
+      for(const x of [.74,1.65])box(.09,.06,2.2,'metal',x,.13,1.15);
+      box(.9,.42,.9,'wood',1.22,.38,1.2);return g;
     }
     if(kind==='fort-iron'){
       box(3.6,2.4,2.2,'stone',-.4,1.2,-.55);
@@ -700,7 +766,13 @@ export class IslandRendererV3 {
       for(const x of [-1.13,.42])box(.2,1.7,.19,'wood',x,.87,.72);
       box(1.78,.2,.22,'wood',-.35,1.75,.72);
       for(let i=0;i<6;i++)box(.5,.29,.43,'metal',.46+(i%3)*.51,
-        .27+Math.floor(i/3)*.28,1.52);return g;
+        .27+Math.floor(i/3)*.28,1.52);
+      // 광산 갱도 입구 목조 아치·수레와 철광석 더미.
+      for(const x of [-1.18,.5])box(.14,1.98,.2,'wood',x,1,.79);
+      box(1.88,.15,.24,'wood',-.34,2.04,.83);
+      box(.94,.38,.96,'wood',1.35,.36,1.14);
+      for(const x of [1,1.6])cyl(.22,.15,'dark',x,.17,1.65).rotation.z=Math.PI/2;
+      return g;
     }
     if(['fort-wheat','fort-vineyard','fort-hops','fort-orchard'].includes(kind)){
       box(4.7,.12,3.92,'soil',0,.06,0);
@@ -709,6 +781,8 @@ export class IslandRendererV3 {
           box(4.32,.15,.47,'earth',0,.19,z);
           for(let i=0;i<6;i++){const x=-1.83+i*.73;
             box(.09,.67,.09,'leaf',x,.58,z);cone(.19,.48,'crop',x,1.12,z);}}
+        for(const x of [-1.5,1.5])box(.19,.9,.18,'wood',x,.5,1.8);
+        box(3.2,.09,.13,'wood',0,.95,1.8);
       }else if(kind==='fort-vineyard'){
         for(const z of [-1.17,0,1.17]){
           for(const x of [-1.8,0,1.8])box(.11,1.7,.11,'wood',x,.89,z);
@@ -716,6 +790,7 @@ export class IslandRendererV3 {
           for(const x of [-1.2,0,1.2]){
             box(.99,.35,.48,'leaf',x,1.39,z);
             for(const side of [-1,1])cyl(.16,.36,'grape',x+side*.3,1.05,z+.14);}}
+        barrel(1.36,1.9);
       }else if(kind==='fort-hops'){
         for(const x of [-1.53,-.52,.5,1.5]){
           for(const z of [-1.25,1.25])box(.1,2.73,.1,'wood',x,1.41,z);
@@ -727,7 +802,9 @@ export class IslandRendererV3 {
         for(const [x,z] of [[-1.37,-1],[1.37,-1],[-1.37,1],[1.37,1]]){
           cyl(.16,1.18,'wood',x,.63,z);
           add(new THREE.IcosahedronGeometry(.73,0),'leaf',x,1.49,z);
-          box(.2,.19,.2,'flag',x+.4,1.38,z+.2);}
+          box(.2,.19,.2,'flag',x+.4,1.38,z+.2);
+          // 과수원 나무마다 붉은 사과를 달아 다른 농지와 구분한다.
+          for(const dx of [-.33,.3])add(new THREE.IcosahedronGeometry(.19,0),'flag',x+dx,1.47,z+.43);}
         box(1,.65,.78,'wood',0,.34,0);
       }
       return g;
@@ -742,12 +819,18 @@ export class IslandRendererV3 {
         blade.rotation.z=-a;rotor.add(blade);}
       const hub=new THREE.Mesh(new THREE.CylinderGeometry(.26,.26,.4,8),m.wood);
       hub.rotation.x=Math.PI/2;rotor.add(hub);g.userData.windmillRotor=rotor;
-      box(.65,1.15,.11,'dark',0,.62,1.16);return g;
+      // 뒷문 곡식 자루와 작은 채광창.
+      box(.65,1.15,.11,'dark',0,.62,1.16);
+      for(const x of [-1.4,-.82])box(.43,.59,.37,'crop',x,.32,1.25);
+      box(.42,.42,.12,'dark',.95,2.12,.83);return g;
     }
     if(kind==='fort-granary'){
       cyl(1.2,2.95,'wood',0,1.5,-.3);cone(1.65,1.53,'tile',0,3.63,-.3);
       for(let i=0;i<5;i++)box(.75,.46,.6,'crop',-1.25+(i%2)*.85,
-        .32+Math.floor(i/2)*.41,1.34);return g;
+        .32+Math.floor(i/2)*.41,1.34);
+      // 식량 보관 창고의 환기구와 곡물 포대.
+      for(const x of [-.6,0,.6])box(.24,.5,.1,'dark',x,2.2,.9);
+      return g;
     }
     if(kind==='fort-stockpile'){
       box(4.8,.12,3.9,'earth',0,.06,0);
@@ -756,13 +839,21 @@ export class IslandRendererV3 {
       gable(4.12,3.08,2.22,'tile');
       for(let i=0;i<4;i++)log(-1,.31+i*.36,.3);
       for(let i=0;i<5;i++)box(.76,.49,.52,'stone',
-        .41+(i%2)*.79,.3+Math.floor(i/2)*.44,.72);return g;
+        .41+(i%2)*.79,.3+Math.floor(i/2)*.44,.72);
+      // 물자 집결지의 손수레.
+      box(1,.18,.85,'wood',1.6,.53,1.7);
+      for(const x of [1.2,1.94])cyl(.17,.12,'dark',x,.3,1.98).rotation.z=Math.PI/2;
+      return g;
     }
     if(kind==='fort-well'){
       cyl(1.05,.95,'stone',0,.5,0);cyl(.79,.95,'water',0,.52,0);
       for(const x of [-1.17,1.17])box(.15,2.13,.15,'wood',x,1.1,0);
       box(2.5,.16,.21,'wood',0,2.19,0);
-      cyl(.22,.46,'metal',0,1.44,0);return g;
+      const bucket=cyl(.22,.46,'metal',0,1.44,0);
+      g.userData.bucket=bucket;
+      box(.07,.6,.07,'wood',0,1.93,0);
+      const rim=add(new THREE.TorusGeometry(.81,.055,4,16),'light',0,1.02,0);
+      rim.rotation.x=Math.PI/2;return g;
     }
     if(kind==='fort-smith'){
       box(3.45,1.54,2.51,'stone',-.25,.79,-.35);gable(3.75,2.7,1.9);
@@ -770,7 +861,11 @@ export class IslandRendererV3 {
       box(1.35,.91,1.04,'dark',1.12,.49,1.44);
       box(.9,.52,.15,'fire',1.12,.59,1.98);
       box(.98,.25,.49,'metal',-1.04,1.03,1.52);
-      box(.35,.99,.3,'metal',-1.04,.51,1.52);return g;
+      box(.35,.99,.3,'metal',-1.04,.51,1.52);
+      // 대장간 주황 화덕·큰 연돌. 연기는 화면 표시만 한다.
+      chimney(1.1,-.87,3.03);
+      for(let i=0;i<3;i++)box(.23,.1,.18,'fire',1.02+i*.26,.6,2.03);
+      return g;
     }
     if(['fort-winery','fort-brewery','fort-bakery','fort-dairy',
         'fort-tavern','fort-fletcher'].includes(kind)){
@@ -781,39 +876,54 @@ export class IslandRendererV3 {
         cyl(.83,.31,'wood',1.31,.51,1.46);
         box(.91,.24,.8,'grape',1.31,.81,1.46);
         box(.14,1.42,.14,'wood',1.31,1.4,1.46);
+        box(1.3,.09,.6,'grape',0,1.45,1.77);
       }else if(kind==='fort-brewery'){
         for(const x of [-1.4,-.56,.28])barrel(x,1.73);
         cyl(.74,1.12,'metal',1.25,.67,1.39);
         box(.83,.2,.75,'fire',1.25,.17,1.39);
         box(.58,2,.54,'stone',1.05,2.37,-.73);
+        chimney(1.06,-.73,3.12);
       }else if(kind==='fort-bakery'){
         box(1.34,1.05,1.11,'stone',1.46,.53,1.35);
         box(.88,.44,.13,'fire',1.46,.48,1.97);
         box(.55,2.17,.55,'stone',.9,2.3,-.72);
         for(let i=0;i<3;i++)box(.42,.15,.28,'crop',-.95+i*.46,.42,1.54);
+        chimney(.93,-.72,3.03);
+        for(let i=0;i<3;i++)box(.3,.12,.3,'crop',-.96+i*.43,.7,1.78);
       }else if(kind==='fort-dairy'){
         box(1.28,.81,.66,'light',1.15,.75,1.91);
         box(.49,.55,.51,'light',1.72,.77,1.95);
         for(const x of [.71,1.48])for(const z of [1.63,2.15])
           box(.17,.51,.19,'dark',x,.3,z);
         for(let i=0;i<3;i++)cyl(.18,.27,'light',-.94+i*.32,.14,1.49);
+        box(.52,.3,.38,'light',-1.1,.8,1.68);
       }else if(kind==='fort-tavern'){
         box(3.7,.14,1.46,'flag',0,1.84,2.07);
         for(const x of [-1.51,1.51])box(.12,1.75,.12,'wood',x,.91,2.7);
         for(const x of [-1.2,0,1.2])barrel(x,1.58);
+        for(const x of [-1,0,1])box(.5,.12,.45,'light',x,1.34,2.02);
+        const flag=box(.94,.27,.12,'crop',0,2.38,2.26);
+        g.userData.flags.push({mesh:flag,phase:2});
       }else{
         for(let i=0;i<7;i++)box(.07,1.42,.08,'wood',
           -1.5+i*.18,.85,1.56);
         cyl(.62,.12,'crop',1.31,1.14,1.67).rotation.x=Math.PI/2;
         cyl(.39,.13,'flag',1.31,1.14,1.79).rotation.x=Math.PI/2;
         box(.14,1.89,.16,'wood',1.31,.97,1.51);
+        // 화살 묶음과 훈련 표적이 눈에 띄는 활 제작소.
+        box(.9,.12,.35,'wood',-.57,.65,2.05);
+        for(let i=0;i<4;i++)box(.06,1.2,.07,'trim',-.84+i*.19,.87,1.82);
       }
       return g;
     }
     if(kind==='fort-hovel'){
       box(2.5,1.45,2.2,'wood',0,.74,0);gable(2.9,2.4,1.85,'crop');
       box(.59,1,.11,'dark',0,.51,1.16);
-      box(1.17,.58,.66,'wood',1.14,.31,-.73);return g;
+      box(1.17,.58,.66,'wood',1.14,.31,-.73);
+      // 주민 오두막: 목조 외벽, 화분, 굴뚝으로 작은 집 특유의 실루엣.
+      for(const x of [-1,1]){box(.13,1.43,.13,'trim',x,.72,1.14);
+        box(.54,.31,.35,'leaf',x,.32,1.36);}
+      chimney(.83,-.68,2.5);return g;
     }
     if(kind==='fort-armory'){
       box(4.1,2.35,3.0,'stone',0,1.18,0);gable(4.3,3.2,2.66);
@@ -822,6 +932,9 @@ export class IslandRendererV3 {
         cyl(.43,.17,'metal',x,1.47,1.57).rotation.x=Math.PI/2;
         for(let i=0;i<3;i++)box(.1,2.3,.1,'metal',
           x+(i-1)*.3,1.32,1.9);}
+      // 군사 무기고: 방패와 정렬된 창이 정면에 드러난다.
+      signShield(-1.13,1.18,1.65);
+      signShield(1.13,1.18,1.65);
       banner(1.65,3.25,-1);return g;
     }
     const h=Math.max(2.3,height*.74);
@@ -851,15 +964,29 @@ export class IslandRendererV3 {
       banner(1.83,2.6,d/2+.56);
       for(let i=0;i<4;i++)box(.09,1.42,.09,'metal',
         1.13+i*.21,.79,d/2+1.49);
+      signShield(-1.75,1.02,d/2+.3);
     }
-    if(kind==='fort-market')for(const x of [-1.35,0,1.35]){
-      box(1.15,.12,1.18,'tile',x,1.45,d/2+.9);
+    if(kind==='fort-market')for(const [i,x] of [-1.35,0,1.35].entries()){
+      // 천막 좌판을 붉은색·황토색·짙은 녹색으로 교차하여 중세 시장의 천 질감을 만든다.
+      const awning=box(1.15,.12,1.18,i===0?'flag':i===1?'tile':'leaf',x,1.45,d/2+.9);
+      awning.rotation.z=i===1?0:.08;
       box(.99,.6,.5,'trim',x,.35,d/2+.86);
       for(const px of [x-.48,x+.48])box(.07,1.35,.07,'wood',px,.72,d/2+.86);
+      for(let j=0;j<3;j++)box(.23,.22,.22,i===0?'crop':i===1?'leaf':'grape',
+        x-.29+j*.28,.73,d/2+1.13);
     }
     if(kind==='fort-workshop'){
       box(.36,1.7,.4,'stone',w*.3,h*.9,-d*.2);
       box(.46,.17,.46,'wall',w*.3,h*1.71,-d*.2);
+    }
+    if(kind==='fort-cottage'){
+      // 배경 민가는 농가와 구별되는 나무 기둥·화분·작은 출입 계단.
+      for(const x of [-w*.42,w*.42]){
+        box(.14,h*.65,.13,'wood',x,h*.34,d/2+.14);
+        box(.5,.26,.4,'leaf',x,.35,d/2+.36);
+      }
+      box(.75,.13,.55,'stone',0,.09,d/2+.38);
+      chimney(w*.3,-d*.2,h*.89);
     }
     return g;
   }
@@ -928,7 +1055,18 @@ export class IslandRendererV3 {
       // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
       const focus=game.siegeOverview?this.viewFocus:player;
       const zoom=game.siegeOverview?(this.viewZoom??this.defaultStrategyZoom()):(this.width<600?.68:.82);
-      if(this.camera3.zoom!==zoom){this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix()}
+      // 카메라 중심과 확대 비율을 짧게 감속시켜 드래그와 지역 전환의 끊김을 줄인다.
+      const frameDt=Math.min(.08,Math.max(.016,(now-(this.lastCameraFrame||now-33))/1000));
+      this.lastCameraFrame=now;
+      const smoothing=1-Math.exp(-frameDt*12);
+      this.displayFocus.x+=(focus.x-this.displayFocus.x)*smoothing;
+      this.displayFocus.y+=(focus.y-this.displayFocus.y)*smoothing;
+      if(Math.abs(this.camera3.zoom-zoom)>.0005){
+        this.camera3.zoom+=(zoom-this.camera3.zoom)*smoothing;
+        this.camera3.updateProjectionMatrix();
+      }else if(this.camera3.zoom!==zoom){
+        this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix();
+      }
       const halfWidth=this.width/(2*zoom),halfDepth=this.height/(2*zoom*Math.sin(ISO_PITCH));
       const reachX=Math.cos(ISO_YAW)*halfWidth+Math.sin(ISO_YAW)*halfDepth+240;
       const reachY=Math.sin(ISO_YAW)*halfWidth+Math.cos(ISO_YAW)*halfDepth+240;
@@ -943,7 +1081,7 @@ export class IslandRendererV3 {
           this.release3d(item);this.instances3d.delete(id);item=null;
         }
         if(!item){const mesh=this.make3d(kind,height);mesh.userData.buildingId=id;
-          this.scene3.add(mesh);item={mesh,kind,loaded,height};this.instances3d.set(id,item)}
+          this.scene3.add(mesh);item={mesh,kind,loaded,height,createdAt:now};this.instances3d.set(id,item)}
         const asset=this.models3d.get(kind),sprite=item.mesh.children[0];
         if(asset?.frames&&sprite?.material?.map){
           const dx=x-(item.lastX??x),dy=y-(item.lastY??y);
@@ -957,9 +1095,24 @@ export class IslandRendererV3 {
           sprite.material.map.offset.set(column/asset.columns,1-((asset.row||0)+1)/asset.rows);
         }
         item.lastX=x;item.lastY=y;
-        item.mesh.position.set(x*SC,.03,y*SC);
+        // 살짝 등장하는 모션으로 카메라 이동 시 튀어나오는 건물 현상을 줄인다.
+        const age=Math.min(1,(now-(item.createdAt||now))/340),ease=1-(1-age)*(1-age);
+        const isBuilding=kind.startsWith('fort-')&&!['fort-wall','fort-wall-side','fort-road'].includes(kind);
+        item.mesh.position.set(x*SC,isBuilding?-.12*(1-ease)+.03:.03,y*SC);
+        const size=isBuilding?.91+.09*ease:1;
+        item.mesh.scale.setScalar(size);
         item.mesh.rotation.y=kind==='fort-wall-side'?0:rotation;
-        if(item.mesh.userData.windmillRotor)item.mesh.userData.windmillRotor.rotation.z=now*.00076;
+        const motion=item.mesh.userData;
+        if(motion.windmillRotor)motion.windmillRotor.rotation.z=now*.00064;
+        if(motion.workArm)motion.workArm.rotation.z=Math.sin(now*.0012)*.075;
+        if(motion.bucket)motion.bucket.position.y=1.44+Math.sin(now*.001)*.10;
+        for(const flag of motion.flags||[])flag.mesh.rotation.y=Math.sin(now*.0017+flag.phase)*.12;
+        for(const smoke of motion.smoke||[]){
+          const t=(now*.00032+smoke.phase)%1;
+          smoke.mesh.position.set(smoke.x+.12*Math.sin(now*.0008+smoke.phase),smoke.y+t*1.05,smoke.z);
+          smoke.mesh.scale.setScalar(.8+t*.8);
+          smoke.mesh.material.opacity=.27*(1-t);
+        }
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
       // 외곽 사막은 기본적으로 보여 주되 기존 유료 확장 지역의 해금 판정은 유지한다.
@@ -1270,14 +1423,18 @@ export class IslandRendererV3 {
         this.release3d(item);this.instances3d.delete(id);
       }
       // 메인: 원작의 2:1 사선 구도. 같은 카메라를 터치·드래그·이동 변환에 사용한다.
-      const focusX=focus.x*SC,focusZ=focus.y*SC;
+      const focusX=this.displayFocus.x*SC,focusZ=this.displayFocus.y*SC;
       const distance=95,groundDistance=distance*Math.cos(ISO_PITCH);
       this.camera3.position.set(focusX+Math.sin(ISO_YAW)*groundDistance,
         distance*Math.sin(ISO_PITCH),focusZ+Math.cos(ISO_YAW)*groundDistance);
       this.camera3.lookAt(focusX,0,focusZ);
       this.camera3.updateMatrixWorld();
-      const hour=game.state.minutes/60;
-      this.scene3.background.setHex(hour<6||hour>20?0x35494d:0x6c9799);
+      // 새벽·해질녘 조명과 하늘색을 자연스럽게 보간한다.
+      const hour=((Number(game.state.minutes)||0)/60)%24;
+      const night=hour<7?Math.max(0,Math.min(1,(7-hour)/2)):
+        hour>18?Math.max(0,Math.min(1,(hour-18)/2)):0;
+      this.scene3.background.copy(this.daySky3).lerp(this.nightSky3,night);
+      this.ambient3.intensity=1.5-night*.45;this.sun3.intensity=1.5-night*.7;
       this.gl.render(this.scene3,this.camera3);
     }catch(error){
       console.error('포근섬 3D 렌더링 실패',error);
