@@ -10,7 +10,8 @@ const SCALE=56, MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=3
 const mat=(hex,emissive=hex)=>new THREE.MeshStandardMaterial({
   color:hex,emissive,emissiveIntensity:.27,metalness:.12,roughness:.58
 });
-const SPECIES=['slime','bat','beetle','brute','hound','shaman','knight','boss','spider','bomber','archer','frost','wisp','summoner'];
+const SPECIES=['slime','bat','beetle','brute','hound','shaman','knight','boss','spider','bomber','archer','frost','wisp','summoner','sprinter','sentinel','plague','ember','mirror','voidling','bossCavern','bossGarden','bossForge','bossFrost','bossAbyss'];
+const BOSS_BY_STAGE={cavern:'bossCavern',garden:'bossGarden',forge:'bossForge',frost:'bossFrost',abyss:'bossAbyss'};
 const vec=(x,y,z)=>new THREE.Vector3(x,y,z);
 export async function createGem3d({canvas}){
  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'});
@@ -27,6 +28,14 @@ export async function createGem3d({canvas}){
   new THREE.MeshStandardMaterial({color:'#14303c',roughness:1,metalness:.02,side:THREE.DoubleSide}));
  floor.rotation.x=-Math.PI/2;scene.add(floor);
  const grid=new THREE.GridHelper(28,28,'#2a786c','#1a514f');scene.add(grid);
+ // 서로 다른 환경 조형물은 GPU 인스턴싱으로 모바일 화면에서도 그린다.
+ function poolEnvironment(geometry,count,color){
+  const mesh=new THREE.InstancedMesh(geometry,new THREE.MeshStandardMaterial({color,roughness:.8,metalness:.12,emissive:color,emissiveIntensity:.09}),count);
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.frustumCulled=false;mesh.count=0;scene.add(mesh);return mesh;
+ }
+ const landmarks=poolEnvironment(new THREE.ConeGeometry(.55,2.9,7),176,'#84cfe2');
+ const shrubs=poolEnvironment(new THREE.DodecahedronGeometry(.65,0),208,'#4fb19c');
+ const runestones=poolEnvironment(new THREE.CylinderGeometry(.38,.43,1.5,6),104,'#93a8c1');
  const crystals=new THREE.Group();scene.add(crystals);
  const crystalGeo=new THREE.OctahedronGeometry(.7,0);
  const crystalMat=mat('#4fe6c4','#166c72');
@@ -54,14 +63,15 @@ export async function createGem3d({canvas}){
   return bigger;
  }
  // 몬스터: 저장소 CC0 원본을 사용하고 기존 게임 판정은 그대로 유지한다.
- const authoredIds=[7,15,17,18,21,26,31,35,41,47,49,53,56,31],objLoader=new OBJLoader(),textureLoader=new THREE.TextureLoader();
- const enemyMeshes=new Map();
+ const authoredIds=[7,15,17,18,21,26,31,35,41,47,49,53,56,31,17,49,21,56,7,35,53,41,18,26,47],objLoader=new OBJLoader(),textureLoader=new THREE.TextureLoader();
+ const enemyMeshes=new Map(),prefabCache=new Map();
  await Promise.all(SPECIES.map(async(kind,index)=>{
   const id=authoredIds[index],base=new URL('../../assets/shared/forest/',import.meta.url);
-  const [object,texture]=await Promise.all([
+  if(!prefabCache.has(id))prefabCache.set(id,Promise.all([
    objLoader.loadAsync(new URL('monster-'+id+'.obj',base).href),
    textureLoader.loadAsync(new URL('monster-'+id+'.png',base).href)
-  ]);
+  ]));
+  const [object,texture]=await prefabCache.get(id);
   texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.NearestFilter;
   object.updateMatrixWorld(true);
   const box=new THREE.Box3().setFromObject(object),size=box.getSize(new THREE.Vector3());
@@ -81,7 +91,7 @@ export async function createGem3d({canvas}){
   color:'#b4f7ff',transparent:true,opacity:.68,depthWrite:false,blending:THREE.AdditiveBlending}),MAX_PROJECTILES);
  let orbitTrails=pool(new THREE.TorusGeometry(1,.035,4,24,Math.PI*.5),new THREE.MeshBasicMaterial({color:'#96daff',transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending}),5);
  const bubbles=pool(new THREE.SphereGeometry(1,5,4),mat('#9bf26b'),168);
- const halos=pool(new THREE.RingGeometry(.72,1,24),new THREE.MeshBasicMaterial({
+ let halos=pool(new THREE.RingGeometry(.72,1,24),new THREE.MeshBasicMaterial({
   color:'#ffffff',transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}),64);
  // 환경: 기존 CC0 돌길 원본을 작은 경로 표식으로 재사용한다.
  const stone=await objLoader.loadAsync(new URL('../../assets/shared/homely-house/cobblestones.obj',import.meta.url).href);
@@ -95,7 +105,10 @@ export async function createGem3d({canvas}){
  let blades=pool(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:'#e3fcff'}),5);
  const pools=pool(new THREE.CylinderGeometry(1,1,.015,24),new THREE.MeshStandardMaterial({
   color:'#61d86a',emissive:'#256d31',emissiveIntensity:.25,transparent:true,opacity:.4,depthWrite:false}),28);
- const lightning=pool(new THREE.CylinderGeometry(.025,.025,1,5),mat('#a1f9ff'),144);
+ let lightning=pool(new THREE.CylinderGeometry(.025,.025,1,5),mat('#a1f9ff'),144);
+ // 고유 기술은 독립 입체 파편과 소용돌이 광륜으로 표현한다.
+ let skillShards=pool(new THREE.TetrahedronGeometry(.23,0),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}),256);
+ let bossCrowns=pool(new THREE.ConeGeometry(.26,1.35,5),new THREE.MeshStandardMaterial({color:'#ffffff',metalness:.3,roughness:.25,emissive:'#b58cff',emissiveIntensity:.45}),56);
  // 효과: 인스턴스 색과 방사형 감쇠를 사용해 외부 후처리 없이 발광을 표현한다.
  const glowMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,
   blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
@@ -190,6 +203,25 @@ export async function createGem3d({canvas}){
     gem.position.set(world.width/SCALE/2+Math.cos(angle)*radius,.5,world.height/SCALE/2+Math.sin(angle)*radius);
     gem.scale.set(stage.id==='garden'?.5:.9,stage.id==='forge'?2.8:1.5,.8);
    });
+   // 기본 바닥만 반복하지 않고 무대마다 주변 사물의 높이·형태·색·밀도를 바꾼다.
+   const palettes={cavern:['#5ebcde','#447c9c','#76b8c9'],garden:['#78c87a','#377c51','#baa687'],forge:['#e77f50','#874343','#c68b62'],frost:['#b2f4ff','#70bfcf','#d0eafa'],abyss:['#b777ed','#60438e','#cc9bd5']};
+   const palette=palettes[stage.id]||palettes.cavern;
+   for(const [layer,mesh] of [landmarks,shrubs,runestones].entries()){
+    mesh.material.color.set(palette[layer]);mesh.material.emissive.set(palette[layer]);
+    const count=layer===0?160:layer===1?180:92;
+    for(let i=0;i<count;i++){
+     const sx=((i*73+layer*159+17)%977)/977,sz=((i*197+layer*311+23)%991)/991;
+     const x=2+sx*(world.width/SCALE-4),z=2+sz*(world.height/SCALE-4);
+     const nearCenter=Math.hypot(x-world.width/SCALE/2,z-world.height/SCALE/2)<3.4;
+     const jitter=.65+((i*29+layer*11)%19)/19;
+     dummy.position.set(x,layer===0?(1.45*jitter):layer===1?.20*jitter:.72*jitter,z);
+     dummy.rotation.set(0,i*2.399,0);
+     const size=nearCenter?.1:stage.id==='forge'&&layer===0?1.6:stage.id==='garden'&&layer===1?1.2:stage.id==='frost'&&layer===0?1.35:1;
+     dummy.scale.set((layer===1?1.1:.65)*size*jitter,(layer===0?1.35:layer===1?.6:1)*size*jitter,(layer===1?1.05:.6)*size*jitter);
+     dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
+    }
+    mesh.count=count;mesh.instanceMatrix.needsUpdate=true;
+   }
    for(const path of paths){
     path.material.color.set(stage.id==='forge'?'#a58a80':stage.id==='garden'?'#9eaa8c':'#668ba2');
     for(let i=0;i<160;i++){
@@ -211,7 +243,7 @@ export async function createGem3d({canvas}){
   const visible=view(state,world);
   for(const e of enemyActors){
    if(e.x<visible.left-100||e.x>visible.right+100||e.y<visible.top-100||e.y>visible.bottom+100)continue;
-   const kind=buckets.has(e.type)?e.type:'slime';buckets.get(kind).push(e);
+   const kind=e.boss?BOSS_BY_STAGE[stage.id]||'boss':buckets.has(e.type)?e.type:'slime';buckets.get(kind).push(e);
   }
   let clipped=0;
   for(const [kind,list] of buckets){
@@ -223,6 +255,7 @@ export async function createGem3d({canvas}){
      d.position.set(e.x/SCALE,.02+(kind==='bat'?.45+Math.sin(phase)*.12:Math.abs(Math.sin(phase))*.035),e.y/SCALE);
      d.scale.setScalar(radius);d.rotation.y=Math.atan2(state.x-e.x,state.y-e.y);
      d.rotation.z=kind==='bat'?Math.sin(phase)*.15:Math.sin(phase)*.045;
+     if(e.boss){d.scale.multiplyScalar(1.34+Math.sin(now*.002)*.025);d.position.y+=.16;d.rotation.y+=now*.00035;}
      if(e.hit>0)d.scale.multiplyScalar(1.06);
     });
    }
@@ -267,16 +300,36 @@ export async function createGem3d({canvas}){
    d.position.set(p.x/SCALE,.45,p.y/SCALE);d.scale.set(.55,.07,.14);
    d.rotation.y=now*.008+i*.4;
   });
+  const skillFX=active.filter(x=>x.kind==='skillCast'||x.kind==='bossPulse');
+  const shards=skillFX.flatMap(fx=>Array.from({length:fx.kind==='skillCast'?32:26},(_,i)=>({...fx,i})));
+  skillShards=growPool(skillShards,shards.length);
+  write(skillShards,shards,skillShards.instanceMatrix.count,(fx,i,d)=>{
+   const progress=1-fx.life/fx.max,angle=fx.i*2.399963+now*.003*(fx.hero==='rogue'?3:1.4),radius=(fx.kind==='bossPulse'?1.8:fx.hero==='wizard'?2.5:1.6)*(0.4+progress*1.3);
+   d.position.set(fx.x/SCALE+Math.cos(angle)*radius,.2+Math.sin(fx.i*4.1+now*.011)*.25+progress*2,fx.y/SCALE+Math.sin(angle)*radius);
+   const fade=Math.max(.08,1-progress);d.scale.setScalar((fx.kind==='bossPulse'?.48:.24)*fade*(1+fx.i%3*.33));
+   d.rotation.set(now*.004+fx.i,now*.005,fx.i);
+  });
+  const crowns=enemyActors.filter(e=>e.boss).flatMap(e=>Array.from({length:8},(_,i)=>({e,i,color:['#6ee8ff','#7fe08e','#ff8163','#a6efff','#e4b3ff'][['cavern','garden','forge','frost','abyss'].indexOf(stage.id)]})));
+  bossCrowns=growPool(bossCrowns,crowns.length);
+  write(bossCrowns,crowns,bossCrowns.instanceMatrix.count,(row,i,d)=>{
+   const e=row.e,angle=row.i*Math.PI/4+now*.0007,r=Math.max(.5,e.r/SCALE)*1.45;
+   d.position.set(e.x/SCALE+Math.cos(angle)*r,1.0+Math.sin(angle*2+now*.004)*.18,e.y/SCALE+Math.sin(angle)*r);
+   d.scale.setScalar(e.hp/e.maxHp<.5?.8:.55);d.rotation.y=angle;
+  });
   const strikes=[];
   for(const fx of active.filter(x=>x.kind==='lightning')){
-   let x=fx.x1,y=fx.y1;
-   for(let segment=1;segment<=6;segment++){
-    const t=segment/6,bend=segment===6?0:Math.sin(now*.07+segment*13)*12;
-    const nx=fx.x1+(fx.x2-fx.x1)*t+bend,ny=fx.y1+(fx.y2-fx.y1)*t-bend;
-    strikes.push({x1:x,y1:y,x2:nx,y2:ny});x=nx;y=ny;
+   for(let fork=0;fork<3;fork++){
+    let x=fx.x1,y=fx.y1;
+    for(let segment=1;segment<=8;segment++){
+     const t=segment/8,fan=fork-1,jitter=segment===8?0:Math.sin(now*.05+segment*15+fork*7+fx.x1)*17;
+     const nx=fx.x1+(fx.x2-fx.x1)*t+(fan*16+jitter)*(1-t);
+     const ny=fx.y1+(fx.y2-fx.y1)*t+(fan*12-jitter)*(1-t);
+     strikes.push({x1:x,y1:y,x2:nx,y2:ny});x=nx;y=ny;
+    }
    }
   }
-  write(lightning,strikes,144,(fx,i,d)=>{
+  lightning=growPool(lightning,strikes.length);
+  write(lightning,strikes,lightning.instanceMatrix.count,(fx,i,d)=>{
    const start=vec(fx.x1/SCALE,.45,fx.y1/SCALE),end=vec(fx.x2/SCALE,.45,fx.y2/SCALE);
    const delta=end.sub(start),length=Math.max(.01,delta.length());
    d.position.copy(start).addScaledVector(delta,.5);d.scale.set(1,length,1);
@@ -285,12 +338,18 @@ export async function createGem3d({canvas}){
   const rings=enemyActors.filter(e=>e.boss&&e.charge<.7).map(e=>({x:e.x,y:e.y,r:e.r/SCALE*(1.3+(.7-e.charge)*1.4),color:'#ff4965'}));
   for(const ally of [state,...allies])if(ally.shield>0||ally.hp<=0)rings.push({x:ally.x,y:ally.y,r:ally.hp<=0?1.2:1.5,color:ally.hp<=0?'#ffb063':'#87eaff'});
   for(const fx of active)if(fx.kind==='death'||fx.kind==='impact')rings.push({x:fx.x,y:fx.y,r:fx.r/SCALE*(1+(1-fx.life/fx.max)*(fx.kind==='death'?3:1.5)),color:fx.color});
+  for(const fx of skillFX)for(let layer=0;layer<3;layer++){
+   const progress=1-fx.life/fx.max,radius=fx.r/SCALE*(.3+progress*(1.25+layer*.28));
+   rings.push({x:fx.x,y:fx.y,r:radius,color:fx.color});
+  }
   for(const p of poison)rings.push({x:p.x,y:p.y,r:p.r/SCALE*(.85+Math.sin(now*.008)*.12),color:'#a6ff63'});
-  write(halos,rings,64,(e,i,d)=>{
+  halos=growPool(halos,rings.length);
+  write(halos,rings,halos.instanceMatrix.count,(e,i,d)=>{
    d.position.set(e.x/SCALE,.035,e.y/SCALE);d.rotation.x=-Math.PI/2;d.scale.setScalar(e.r);
   });
   const flashes=[{x:state.x,y:state.y,r:1.4,color:state.inv>0?'#ffbca3':'#55d5ff'}];
   for(const fx of active){
+   if(fx.kind==='skillCast'||fx.kind==='bossPulse')flashes.push({x:fx.x,y:fx.y,r:2+3*(fx.life/fx.max),color:fx.color});
    if(fx.kind==='lightning')flashes.push({x:fx.x2,y:fx.y2,r:2.1,color:'#a0dcff'});
    else flashes.push({x:fx.x,y:fx.y,r:Math.max(.25,fx.r/SCALE*4*fx.life/fx.max),color:fx.color||'#bdfdff'});
   }

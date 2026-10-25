@@ -11,7 +11,7 @@ const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
 test('gem survivor uses actual 3D renderer, authored model, bounded native geometry',()=>{
  assert.ok(script,'gameplay module must exist');
  assert.match(html,/data-render-target="webgl-3d"/);
- assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs\?v=20261025-coop-5'/);
+ assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs\?v=20261025-monster-vfx-6'/);
  assert.doesNotMatch(script,/\bgetContext\s*\(\s*['"]2d['"]/);
  assert.doesNotMatch(script,/\bctx\./);
  assert.match(native,/new THREE\.WebGLRenderer\(/);
@@ -197,4 +197,34 @@ test('two simulated clients share stage, boss health, inputs and revival; guest 
  const prior=g.state().player.hp;g.state().receiveNetwork({type:'event',userId:'guest',action:'gem-frame',seq:999,part:0,total:1,data:'{}'});assert.equal(g.state().player.hp,prior);
  const ally=h.state().net.peers.get('guest');ally.hp=0;ally.x=h.state().player.x;ally.y=h.state().player.y;h.state().enemies.length=0;
  for(let i=0;i<95;i++)h.state().update(.033);assert(ally.hp>0,'nearby living teammate revives a downed ally');
+});
+
+test('six new monsters and five boss silhouettes reuse local CC0 models without changing core stats',()=>{
+ for(const type of ['sprinter','sentinel','plague','ember','mirror','voidling'])assert.match(script,new RegExp(' '+type+':\\{name:'));
+ for(const model of ['bossCavern','bossGarden','bossForge','bossFrost','bossAbyss'])assert.ok(native.includes(model));
+ assert.match(native,/const BOSS_BY_STAGE=/);
+ assert.match(native,/prefabCache=new Map\(\)/);
+ assert.match(native,/poolEnvironment\(/);
+ assert.match(native,/skillShards=pool/);
+ assert.match(script,/kind:'skillCast'/);
+ assert.match(script,/kind:'bossPulse'/);
+});
+test('battlefield tap casts a skill without covering joystick or bypassing cooldown',async()=>{
+ const game=harness();await new Promise(setImmediate);game.node('startBtn').onclick();
+ const state=game.state();assert.equal(state.player.skillCd,0);
+ game.node('game').dispatch('pointerdown',{pointerId:91});
+ assert.ok(state.player.skillCd>0,'tapping game canvas must cast hero skill');
+ const cd=state.player.skillCd;
+ game.node('game').dispatch('pointerdown',{pointerId:92});
+ assert.equal(state.player.skillCd,cd,'second tap must respect cooldown');
+ assert.match(html,/#heroSkill\{[^}]*border-radius:50%/);
+ assert.match(html,/#heroSkill\{[^}]*175px/);
+});
+test('bosses gain stage-specific noncontact attacks and preserve campaign progression',async()=>{
+ const game=harness();await new Promise(setImmediate);game.node('startBtn').onclick();
+ const state=game.state();state.spawnBoss();const boss=state.enemies.find(e=>e.boss);
+ assert.equal(boss.ability,5);
+ const before=state.projectiles.length;state.update(5.1);
+ assert.ok(state.projectiles.length>before,'cavern boss must fire additional crystal shots');
+ assert.ok(state.enemies.some(e=>e.boss));
 });
