@@ -306,7 +306,7 @@ function evaluateConstraints(task = {}) {
 
 // 메인 · 기존 A/B/C/D/@ 외 설계 수정은 원래 Game Designer AI 책임으로 인계한다.
 // 디자인 브리프와 게임 ID만 넘기며 엔진 소스·밸런스·저장 규칙은 변경하지 않는다.
-function existingDesignerHandoff(task = {}) {
+function existingDesignerHandoff(task = {}, executionContext = 'IMPLEMENTATION') {
   const requested=task.designChange===true || clean(task.type).toLowerCase()==='design'
     || clean(task.department).toLowerCase()==='design';
   const fields=[
@@ -316,7 +316,9 @@ function existingDesignerHandoff(task = {}) {
   ].map(row=>typeof row==='string'?clean(row):clean(row?.path||row?.field||row?.scope)).filter(Boolean);
   const insideGrammar=field=>/^(?:MAIN|A|B|C|D|@|ABCD\+@)(?:$|[.\/[ ])/i.test(field)
     ||/^creativeGrammar[.\/](?:mainIdentity|a|b|cThemes|cGenres|cGenreInterlock|cWorldAndGameplayEffect|dCreations|delveDiscoveries|delveGrowthRule)(?:$|[.\/[ ])/i.test(field);
-  const required=requested&&(!fields.length||fields.some(field=>!insideGrammar(field)));
+  // 설계 조직이 이미 작성 중인 후보는 자기 자신에게 다시 접수하지 않는다.
+  const authoring=executionContext==='GAME_DESIGNER_AUTHORING';
+  const required=!authoring&&requested&&(!fields.length||fields.some(field=>!insideGrammar(field)));
   const gameId=clean(task.gameId),requestId=clean(task.id||task.taskId),goal=clean(task.goal);
   const ready=/^[a-z0-9][a-z0-9-]{0,79}$/.test(gameId)
     &&/^[a-zA-Z0-9_.:-]{1,100}$/.test(requestId)
@@ -330,7 +332,7 @@ function existingDesignerHandoff(task = {}) {
     owner:'EXISTING_GAME_DESIGNER',
     existingModule:'tools/company-design-cycle.mjs',
     existingWorkflow:'.github/workflows/company-seed-design-runtime.yml',
-    designCycleExecuted:false,requestPersisted:false,sourceMutationAuthorized:false,
+    designCycleExecuted:authoring,requestPersisted:false,sourceMutationAuthorized:false,
     authorityExpanded:false,runtimeVerified:false
   });
 }
@@ -690,12 +692,12 @@ export function evaluateVibeReferenceCapabilities(input={}){
     evidenceOnly:true,authorityExpanded:false,sourceMutationAuthorized:false});
 }
 
-export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {} } = {}) {
+export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience = {}, executionContext = 'IMPLEMENTATION' } = {}) {
   const referenceCapabilities=evaluateVibeReferenceCapabilities(task.referenceStudy||{});
   const stability = evaluateStabilityTriage(task);
   const defectOwnership = evaluateDefectOwnership(task, stability);
   const designer = evaluateDesigner(task);
-  const designerHandoff = existingDesignerHandoff(task);
+  const designerHandoff = existingDesignerHandoff(task, executionContext);
   const blueprint = evaluateBlueprint(task, designer);
   const integrity = evaluateDesignIntegrity(task);
   const diversity = evaluateContentDiversity(task);
@@ -717,7 +719,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const implementation = stage('IMPLEMENTATION', hardBlockers.length ? 'BLOCKED' : 'READY', {
     allowed:hardBlockers.length === 0,
     blockers:freezeList(hardBlockers),
-    sourceMutationAuthorized:hardBlockers.length === 0,
+    sourceMutationAuthorized:executionContext!=='GAME_DESIGNER_AUTHORING'&&hardBlockers.length === 0,
     protectedGameplayMutationAutomatic:false
   });
   const evidence = task.designEvidence || {};

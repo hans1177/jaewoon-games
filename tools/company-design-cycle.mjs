@@ -2000,7 +2000,7 @@ const intelligenceTask={
   responsibleFiles:Array.isArray(designDraft.implementationTraceability)?designDraft.implementationTraceability.map(row=>clean(row?.responsibleSystem)).filter(Boolean):[],
   authorityExpanded:false
 };
-const designIntelligence=buildVibeDesignIntelligence({task:intelligenceTask,plan:{target:clean(seed.INITIAL_TARGET_PLATFORM)},experience:{records:designLearningContext.recent}});
+const designIntelligence=buildVibeDesignIntelligence({executionContext:'GAME_DESIGNER_AUTHORING',task:intelligenceTask,plan:{target:clean(seed.INITIAL_TARGET_PLATFORM)},experience:{records:designLearningContext.recent}});
 writeJson(path.join(base,'design-intelligence.json'),{version:2,gameId,date,source:'tools/vibe2-design-intelligence.mjs',brief:designEvolutionBrief,assetLibraryContext:designAssetLibraryContext,report:designIntelligence});
 if(!designIntelligence.implementationGate.allowed){
   designCheckpoint.status='DESIGN_INTELLIGENCE_BLOCKED';

@@ -591,3 +591,17 @@ test('R01-R10 permitted reference observations require rights, measured gameplay
   assert.ok(Object.values(missing.requirements).every(row=>row.status==='BLOCKED'));
   assert.deepEqual(missing.nextImprovementCandidates,[]);
 });
+
+// 설계 조직 내부 검수는 재접수 대신 후보를 검사하며 구현 권한을 부여하지 않는다.
+test('designer authoring never re-enqueues itself and still enforces candidate constraints',()=>{
+  const task={id:'design-cycle:cozy-island:2026-10-25',gameId:'cozy-island',target:'ROBLOX',type:'design',goal:'기존 포근섬의 최신 설계 후보를 검수한다'};
+  const authored=buildVibeDesignIntelligence({task,executionContext:'GAME_DESIGNER_AUTHORING'});
+  assert.equal(authored.designerHandoff.required,false);
+  assert.equal(authored.designerHandoff.designCycleExecuted,true);
+  assert.equal(authored.implementationGate.blockers.includes('DESIGNER_HANDOFF_REQUIRED'),false);
+  assert.equal(authored.stages.find(row=>row.name==='IMPLEMENTATION').sourceMutationAuthorized,false);
+  const protectedCandidate=buildVibeDesignIntelligence({task:{...task,protectedChange:true},executionContext:'GAME_DESIGNER_AUTHORING'});
+  assert.equal(protectedCandidate.implementationGate.allowed,false);
+  assert.ok(protectedCandidate.implementationGate.blockers.includes('PROTECTED_GAMEPLAY_CHANGE_REQUIRES_OWNER_APPROVAL'));
+  assert.equal(buildVibeDesignIntelligence({task}).designerHandoff.required,true);
+});
