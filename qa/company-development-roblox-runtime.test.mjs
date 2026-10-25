@@ -762,7 +762,7 @@ test('Roblox runtime checkpoint writers recover dirty Git LFS checkouts without 
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const writers=[
     ['Persist Roblox source-bind state to company runtime','roblox-runtime-persist'],
-    ['Persist Roblox F0 checkpoint','roblox-f0-persist-${safe}'],
+    ['Persist successful F0 checkpoint immediately per game','roblox-f0-persist-${safe}'],
     ['Persist exact Roblox build package evidence','roblox-technical-persist'],
   ];
   for(const [step,branch] of writers){
