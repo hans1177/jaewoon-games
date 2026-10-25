@@ -120,7 +120,7 @@ export class JaewoonMultiplayerClient extends EventTarget {
     return result;
   }
 
-  // 보석 생존전만 이메일 없이 입장한다. 다른 게임의 기존 계정용 친구방 API는 보존한다.
+  // 메인: 보석 생존전과 신규 협동 게임은 같은 한 자리 번호 시스템을 사용한다. 기존 계정 방식은 보존한다.
   async createGemRoom(autoConnectRoom = true) {
     if (this.guestToken) await this.leaveGemRoom();
     const result = await this.request('/gem-survivor/create', { method: 'POST', auth: false });
@@ -140,24 +140,44 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   applyGemRoom(data = {}, autoConnectRoom = true) {
-    if (!data.guestToken || !data.roomId || data.gameId !== 'gem-survivor') return;
+    if (!data.guestToken || !data.roomId || !['gem-survivor', 'ocean-voyage', 'cozy-island', 'party-rpg'].includes(data.gameId)) return;
     this.guestToken = data.guestToken;
     this.currentMode = 'coop';
-    this.currentGameId = 'gem-survivor';
+    this.currentGameId = data.gameId;
     this.emit('friend_room_joined', data);
     if (autoConnectRoom) this.connectRoom(data.roomId);
   }
 
   async leaveGemRoom() {
     const token = this.guestToken;
+    const roomId = this.currentRoomId;
+    const gameId = this.currentGameId;
     this.disconnectRoom();
     this.guestToken = '';
     this.currentMode = '';
     this.currentGameId = 'default';
     if (!token) return { ok: true, status: 200, data: {} };
-    return this.request('/gem-survivor/leave', {
-      method: 'POST', body: { guestToken: token }, auth: false,
+    return this.request(gameId === 'gem-survivor' ? '/gem-survivor/leave' : '/guest/leave', {
+      method: 'POST', body: { guestToken: token, roomId }, auth: false,
     });
+  }
+
+  async createNumberRoomForGame(gameId, autoConnectRoom = true) {
+    if (!['ocean-voyage', 'cozy-island', 'party-rpg', 'gem-survivor'].includes(gameId)) return { ok: false, status: 400, data: { error: 'invalid_game' } };
+    if (this.guestToken) await this.leaveGemRoom();
+    const result = await this.request('/guest/create', { method: 'POST', body: { gameId }, auth: false });
+    if (result.ok) this.applyGemRoom(result.data, autoConnectRoom);
+    return result;
+  }
+
+  async joinNumberRoomForGame(gameId, number, autoConnectRoom = true) {
+    if (!['ocean-voyage', 'cozy-island', 'party-rpg', 'gem-survivor'].includes(gameId)) return { ok: false, status: 400, data: { error: 'invalid_game' } };
+    const inviteCode = String(number ?? '').trim();
+    if (!/^[0-9]$/.test(inviteCode)) return { ok: false, status: 400, data: { error: 'invalid_room_number' } };
+    if (this.guestToken) await this.leaveGemRoom();
+    const result = await this.request('/guest/join', { method: 'POST', body: { gameId, inviteCode }, auth: false });
+    if (result.ok) this.applyGemRoom(result.data, autoConnectRoom);
+    return result;
   }
 
   async createFriendRoom(mode = 'coop', autoConnectRoom = true) {
