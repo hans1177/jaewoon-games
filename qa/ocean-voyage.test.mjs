@@ -322,11 +322,12 @@ test('chart ship marker stays visible after pan, and helm screen direction match
  assert.match(view,/e\.root\.rotation\.set\([^\n]*r\.heading\+Math\.PI/);
  const port=PORTS.find(p=>p.id==='dawn'),base=newGame();
  // The actual map centre must resolve to the ship coordinates for either scale.
+ assert.match(main,/scale:\(mapWorld\?\.12:\.35\)\*mapZoom/);
  for(const world of [false,true]){
   const originX=world?300:75,originZ=world?-210:-550;
   const panX=base.ship.x-originX,panZ=base.ship.z-originZ;
-  const px=480+(base.ship.x-(originX+panX))*(world?.24:.70);
-  const py=270+(base.ship.z-(originZ+panZ))*(world?.24:.70);
+  const px=480+(base.ship.x-(originX+panX))*(world?.12:.35);
+  const py=270+(base.ship.z-(originZ+panZ))*(world?.12:.35);
   assert.equal(px,480);assert.equal(py,270);
  }
  // Manual right must rotate starboard from the chase camera, independent
@@ -521,4 +522,43 @@ test('town rendering follows the nearby port even before touching its center',()
  assert.match(view,/const current=canDock\(state\)\|\|PORTS\[0\]/);
  assert.match(view,/const townPort=canDock\(state\)\|\|PORTS\[0\]/);
  assert.match(view,/const p=canDock\(state\)/);
+});
+
+test('wide ocean reaches twice the prior world limits without resetting saves',()=>{
+ const game=fs.readFileSync('web-games/ocean-voyage/engine.mjs','utf8');
+ assert.match(game,/export const WORLD_LIMIT=4320/);
+ assert.match(game,/WORLD_Z_MIN=-2040, WORLD_Z_MAX=1800/);
+ assert.match(game,/size=WORLD_LIMIT\*2\+1,zero=WORLD_LIMIT/);
+ const old=newGame(),restored=restoreGame(serializeGame(old));
+ assert.deepEqual(restored.ship,old.ship);
+ const far=structuredClone(old);far.ship.x=-3600;far.ship.z=-1450;far.ship.heading=Math.PI/2;
+ far.ship.velocity=0;far.pirates=[];far.merchants=[];far.discovered=PORTS.map(p=>p.id);
+ const updated=stepSea(far,{manual:true,throttle:1},1);
+ assert.ok(updated.ship.x< -3400,'boat can sail beyond the old 2160 longitude limit');
+ assert.ok(updated.ship.z<=-1020,'boat can sail beyond the old southern latitude limit');
+ assert.deepEqual(restoreGame(serializeGame(updated)).ship,updated.ship);
+});
+test('both 45 degree sea cameras keep the full ship visible at twice previous distance',()=>{
+ const view=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ assert.match(view,/seaCamera='chase',cameraDistance=56/);
+ assert.match(view,/camera\.position\.copy\(position\); \/\/ 지연 추적으로/);
+ assert.match(view,/cameraDistance=Math\.max\(40,Math\.min\(96,cameraDistance\*scale\)\)/);
+ assert.match(view,/const miniScale=landscape\?\.14:\.185/);
+ const start=view.indexOf('    const ex=enemy?enemy.x-origin.x:15,ez=');
+ const body=view.slice(start,view.indexOf('    ring.visible=',start));
+ const frame=new Function('camera','enemy','origin','mode','world','targetLook','THREE','battleFraming','cameraDistance','seaCamera',body);
+ for(const aspect of [.42,.58,.75,1.8])for(const heading of [0,Math.PI/2,Math.PI])for(const viewMode of ['chase','angle']){
+  const camera=new THREE.PerspectiveCamera(44,aspect,.1,350),world={fog:{near:110,far:300}};
+  camera.position.set(900,300,800);
+  frame(camera,null,{heading},'sea',world,new THREE.Vector3(),THREE,true,56,viewMode);
+  camera.updateMatrixWorld();
+  const center=new THREE.Vector3(0,2.2,0).project(camera);
+  assert.ok(Math.abs(center.x)<.001&&Math.abs(center.y)<.001,'ship center must be visible after combat-to-sailing transition');
+  const range=camera.position.distanceTo(new THREE.Vector3(0,2.2,0));
+  assert.ok(range>=56,'camera distance must be twice the former 28');
+  for(const x of [-4,4])for(const z of [-8,8]){
+   const point=new THREE.Vector3(x,2,z).project(camera);
+   assert.ok(Math.abs(point.x)<.95&&Math.abs(point.y)<.95,'full hull must remain on screen at any aspect');
+  }
+ }
 });

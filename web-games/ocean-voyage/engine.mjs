@@ -149,7 +149,9 @@ export function recruitCompanion(state,id){
 
 // 항구 접근 상호작용 범위
 export const PORT_RADIUS=18;
-export const WORLD_LIMIT=2160;
+// 원양 항해 가능 지도: 이전 한계의 가로·세로 두 배. 기존 항구와 저장 좌표는 보존.
+export const WORLD_LIMIT=4320;
+export const WORLD_Z_MIN=-2040, WORLD_Z_MAX=1800;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const rand=(seed)=>{let n=(seed>>>0)||1;return ()=>{n^=n<<13;n^=n>>>17;n^=n<<5;return (n>>>0)/4294967296;}};
@@ -365,7 +367,7 @@ export function navigationRoute(from,to,segment=false){
  if(!to||!Number.isFinite(to.x)||!Number.isFinite(to.z))return [];
  const med=p=>p.x>-60&&p.z>-564&&p.z<-336;
  if(!segment&&med(from)!==med(to)){let gates=[{x:-144,z:-540},{x:-132,z:-432},{x:-72,z:-429.6},{x:-48,z:-429.6},{x:24,z:-456}];if(med(from))gates.reverse();let at=from,out=[];for(const target of [...gates,to]){const part=navigationRoute(at,target,true);if(!part.length)return [];out.push(...part);at=target;}return out;}
- const cell=1,size=4321,zero=2160;
+ const cell=1,size=WORLD_LIMIT*2+1,zero=WORLD_LIMIT;
  const coord=v=>clamp(Math.round(v/cell)+zero,0,size-1);
  const sx=coord(from.x),sz=coord(from.z),tx=coord(to.x),tz=coord(to.z);
  const key=(x,z)=>x+z*size,goal=key(tx,tz),start=key(sx,sz);
@@ -545,14 +547,14 @@ export function stepSea(state,input={},seconds=.05){
   const windDrive=rig==='oars'?.93+tail*.025:rig==='lateen'?.90+tail*.11+cross*.14:.91+tail*.22+cross*.04;
   const speed=(2.1+ship.sail*1.15)*(shipDesign.speed||1)*(sailGear.speed||1)*(figure.speed||1)*(ship.gear.figurehead!=='none'&&ship.regionalMods.includes('venice-carving')?1.02:1)*(1+assignedPower(s,'sailing','navigation')/600)*clamp(windDrive*(.94+wind.strength*.13),.58,1.28)*(ship.gear.sail==='stormcloth'?Math.max(.93,climate.speed):climate.speed)*laden*(ship.hull/ship.maxHull*.6+.4);
  const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget&&!input.navalBattle)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const travelHeading=s.route.length&&input.manual!==true&&!combatTarget&&!input.navalBattle?Math.atan2(s.route[0].x-ship.x,s.route[0].z-ship.z):ship.heading;const dx=Math.sin(travelHeading)*ship.velocity*dt,dz=Math.cos(travelHeading)*ship.velocity*dt;
- const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,-1020,900);
+ const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,WORLD_Z_MIN,WORLD_Z_MAX);
  if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}
  else{
   // 얕은 연안에서 회전 반경으로 항로 밖으로 나갈 때만 현재 경유점 쪽으로 조타를 보정한다.
   const wp=s.route.length&&input.manual!==true&&!combatTarget?s.route[0]:null;
   const course=wp?Math.atan2(wp.x-ship.x,wp.z-ship.z):ship.heading;
   const sidestepX=clamp(ship.x+Math.sin(course)*ship.velocity*dt,-WORLD_LIMIT,WORLD_LIMIT);
-  const sidestepZ=clamp(ship.z+Math.cos(course)*ship.velocity*dt,-1020,900);
+  const sidestepZ=clamp(ship.z+Math.cos(course)*ship.velocity*dt,WORLD_Z_MIN,WORLD_Z_MAX);
   if(wp&&(!isLand(sidestepX,sidestepZ)||PORTS.some(p=>Math.hypot(p.x-sidestepX,p.z-sidestepZ)<5))){
    ship.x=sidestepX;ship.z=sidestepZ;ship.heading=course;ship.rudder=0;
   }else{
