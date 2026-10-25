@@ -303,3 +303,33 @@ test('Roblox model-free native GUI coding is bounded to a real client GuiButton 
   fs.writeFileSync(path.join(root,file),next);
   assert.equal(deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file]}),null,'no duplicate bindings or infinite styling cycles');
 });
+
+
+test('Roblox no-model repair extracts the existing survival world save without bypassing read verification',t=>{
+  const live=fs.readFileSync('roblox-games/survival/server/Game.server.luau','utf8');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-no-model-world-save-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const file='server/Game.server.luau';
+  fs.writeFileSync(path.join(root,file),live);
+  const args={order:{target:'roblox',goal:'save stability shutdown repair'},sourceRoot:root,responsibleFiles:[file]};
+  const proposal=deterministicRobloxNativeRepairCandidate(args);
+  assert.equal(proposal?.deterministicRobloxNativeRepair,'GUARDED_WORLD_SAVE_ON_SHUTDOWN');
+  assert.equal(proposal?.edits.length,2);
+  assert.equal(proposal?.edits.every(edit=>edit.path===file),true);
+  let next=live;
+  for(const edit of proposal.edits){
+    assert.equal(next.split(edit.find).length,2,'each source anchor must be unique');
+    next=next.replace(edit.find,edit.replace);
+  }
+  assert.equal((next.match(/store:UpdateAsync\("player:"/g)||[]).length,
+    (live.match(/store:UpdateAsync\("player:"/g)||[]).length,'original write routine is not duplicated');
+  assert.match(next,/if verifiedSaveRead\[player\] == true then/);
+  assert.match(next,/merged\.WorldObjects\s*=\s*objects/);
+  assert.match(next,/Players\.PlayerRemoving:Connect\(savePlayer\)/);
+  assert.match(next,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  fs.writeFileSync(path.join(root,file),next);
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'idempotent after repair');
+  fs.writeFileSync(path.join(root,file),live.replace('if verifiedSaveRead[player] == true then','if true then'));
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'unverified save read must remain blocked');
+});
