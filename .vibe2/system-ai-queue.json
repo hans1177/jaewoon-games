@@ -153332,7 +153332,7 @@
     },
     {
       "id": "recovery-recovery-f84bbc96c4af1596274e",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153376,7 +153376,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/vibe2-candidate-release.yml:89d15f267bcd6d85e48209adb3f91a0bc1db8b13:unresolved-run-39067647976"
       ],
-      "retries": 129,
+      "retries": 130,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_RETURN_REJECTED_CANDIDATE_TO_CANONICAL_QUEUE_WITHOUT_GLOBAL_SERIALIZATIO",
       "failureSignature": "FAIL",
@@ -153390,12 +153390,12 @@
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40188998256:1",
-      "reservedAt": "2026-10-25T11:32:34.505Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -153842,7 +153842,15 @@
         "actions-run:40187453977",
         "system-ai-handoff-to-reservation:system-ai:40188353447:1",
         "actions-run:40188353447",
-        "system-ai-handoff-to-reservation:system-ai:40188998256:1"
+        "system-ai-handoff-to-reservation:system-ai:40188998256:1",
+        "actions-run:40188998256",
+        "external-ai-raw-output-sha256:966ea688e5206b211afc212d22c821df839b9b335c9a3b5e51b7c870978086da",
+        "selected-strategy:strategy-concurrency-group-refinement",
+        "system-ai-critic-decision-sha256:50c9d25a044bd0deaa3bbc37c2d50df2f7073563a70d0a8541f623b502841a5c",
+        "system-ai-applied-answer-sha256:c85e2b279d6dd6b698da739b2a72a8369d0b530cf21c45973e517dea9d4f5cfc",
+        "repair-strategy-fingerprint:ce9bb29ce6ae51be838b0ce45bdf78bace5b4478679b57edc2cbad922308998d",
+        "failed-strategy-fingerprint:ce9bb29ce6ae51be838b0ce45bdf78bace5b4478679b57edc2cbad922308998d",
+        "model-output-sha256:966ea688e5206b211afc212d22c821df839b9b335c9a3b5e51b7c870978086da"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1534,
@@ -153857,7 +153865,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:02:09.727Z",
-      "updatedAt": "2026-10-25T11:32:34.505Z"
+      "updatedAt": "2026-10-25T11:35:36.148Z"
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
