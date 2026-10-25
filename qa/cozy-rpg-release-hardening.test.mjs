@@ -39,6 +39,34 @@ test('포근섬 기본섬에는 NPC와 실제 공격 가능한 몹이 존재한�
  assert.ok(cozyLaunch.releaseGates.includes('home-island roaming mobs'));
 });
 
+test('포근섬 NPC·몹은 실제 바닥을 기준으로 발끝을 접지하고 CC0 외형도 같은 바닥에 놓는다',()=>{
+ assert.match(cozyServer,/local function placeActorOnGround\(rootPart,islandTopY\)/);
+ assert.match(cozyServer,/FilterType=Enum\.RaycastFilterType\.Include/);
+ assert.match(cozyServer,/workspace:Raycast\(/);
+ assert.match(cozyServer,/item\.Name=="VillagePlaza"/);
+ assert.match(cozyServer,/item\.Name=="VillageGreen"/);
+ assert.match(cozyServer,/item\.Name=="BarracksYard"/);
+ assert.match(cozyServer,/math\.abs\(frame\.RightVector\.Y\)\*size\.X/);
+ assert.match(cozyServer,/floorY-lowestY\+\.04/);
+ assert.match(cozyServer,/placeActorOnGround\(r,pos\.Y-6\)/);
+ assert.match(cozyServer,/placeActorOnGround\(r,islandTopY\)/);
+ assert.match(cozyServer,/spawnMob\(kind,pos,visualIndex,islandTopY\)/);
+ assert.match(cozyServer,/spawnMob\(kind,pos,visualIndex,islandTopY\)end end/);
+ assert.match(cozyServer,/floorY-bottomY\+\.04/);
+ assert.match(cozyServer,/CozyGroundStatus/);
+ assert.match(cozyServer,/UNVERIFIED_FLOOR/);
+ assert.doesNotMatch(cozyServer,/CozyActorRuntimeGroundingVerified",true/);
+});
+
+test('검증되지 않은 조립 곰은 출시 월드에 등장하거나 CC0 통과로 처리되지 않는다',()=>{
+ assert.match(cozyServer,/CozyBearCC0Status","BLOCKED_UNVERIFIED_SOURCE"/);
+ assert.match(cozyServer,/VillageBearCount",0/);
+ assert.doesNotMatch(cozyServer,/Wildlife\.Spawn\("BEAR"/);
+ assert.doesNotMatch(cozyServer,/spawnVillageBear\(/);
+ assert.match(cozyServer,/spawnMob\("BOAR"/);
+ assert.match(cozyServer,/spawnMob\("RAIDER"/);
+});
+
 test('포근섬은 주민 자동생산과 5거점 정복 루프를 유지한다',()=>{
  assert.match(cozyServer,/AutomationTickSeconds/);
  assert.match(cozyServer,/WoodWorkers/);
