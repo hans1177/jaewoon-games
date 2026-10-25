@@ -353,6 +353,22 @@ test('real survival2 uses guarded read-safe merged save across leave and shutdow
   }),null,'existing corrected game cannot receive a duplicate patch');
 });
 
+test('real gem survivor also preserves verified-read DataStore semantics without extra save keys',()=>{
+  const source=fs.readFileSync('roblox-games/gem-survivor/server/Game.server.luau','utf8');
+  assert.match(source,/local verifiedSaveLoad = \{\}/);
+  assert.match(source,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(source,/if verifiedSaveLoad\[player\] ~= true then return end/);
+  assert.match(source,/store:UpdateAsync\("player:" \.\. player.UserId, function\(current\)/);
+  assert.match(source,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
+  assert.match(source,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*verifiedSaveLoad\[player\] = nil/);
+  assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  assert.doesNotMatch(source,/game:BindToClose\(function\(\) end\)/);
+  assert.equal(deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'save stability shutdown'},
+    sourceRoot:'roblox-games/gem-survivor',responsibleFiles:['server/Game.server.luau']
+  }),null);
+});
+
 test('Roblox no-model repair extracts the existing survival world save without bypassing read verification',t=>{
   const live=fs.readFileSync('roblox-games/survival/server/Game.server.luau','utf8');
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-no-model-world-save-'));
