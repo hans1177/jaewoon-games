@@ -167,12 +167,61 @@ jobs:
           console.log('COZY_OWNER_SOURCE_REVISION='+String(r.sourceRevision||''));
           NODE
 
+      - name: Verify exact published Cozy Island Place version after deployment
+        working-directory: main
+        shell: bash
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {probeRobloxOpenCloudEngine} from './tools/company-development-roblox-runtime-foundation.mjs';
+          const publication=JSON.parse(fs.readFileSync('/tmp/cozy-owner-publish/cozy-island.result.json','utf8'));
+          const revision=String(process.env.GITHUB_SHA||'');
+          const universeId=String(publication.universeId||'');
+          const placeId=String(publication.placeId||'');
+          const versionNumber=Number(publication.versionNumber);
+          const identityValid=publication.pass===true&&publication.published===true&&publication.private===true
+            &&publication.sourceRevision===revision&&/^[a-f0-9]{40}$/i.test(revision)
+            &&universeId==='10767445741'&&placeId==='116850096561713'
+            &&Number.isInteger(versionNumber)&&versionNumber>0;
+          let proof={},failure='';
+          if(!identityValid)failure='POST_PUBLISH_IDENTITY_OR_PRIVATE_TARGET_MISMATCH';
+          else{
+            try{
+              proof=await probeRobloxOpenCloudEngine({
+                universeId,placeId,versionNumber,apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+                maxPolls:24,pollIntervalMs:1000
+              });
+            }catch(e){failure=String(e?.message||e).slice(0,200);}
+          }
+          const pass=identityValid&&proof.engineExecuted===true&&proof.exactPlace===true
+            &&proof.exactVersion===true&&proof.serverContextExecuted===true;
+          const evidence={
+            gameId:'cozy-island',sourceRevision:revision,universeId,placeId,versionNumber,
+            published:true,private:true,exactPublishedVersionVerified:pass,
+            pass,postPublishHeadlessQaPassed:pass,serverBootObserved:proof.serverBootObserved===true,
+            realPlayerGameplayVerified:false,mobileInputVerified:false,
+            multiplayerVerified:false,saveRejoinVerified:false,
+            authority:'roblox-open-cloud-exact-place-version-luau-task',
+            state:proof.state||'UNVERIFIED',error:failure||proof.error||null,
+            checkedAt:new Date().toISOString()
+          };
+          fs.writeFileSync('/tmp/cozy-owner-publish/cozy-island.post-publish-qa.json',JSON.stringify(evidence,null,2)+'\n');
+          console.log('COZY_POST_PUBLISH_EXACT_PLACE_VERSION_QA='+(pass?'PASS':'UNVERIFIED'));
+          console.log('COZY_POST_PUBLISH_VERSION='+versionNumber);
+          if(!pass)throw new Error('COZY_POST_PUBLISH_QA_UNVERIFIED_NO_NEXT_F0');
+          NODE
+
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: owner-cozy-island-publish
           path: |
             /tmp/cozy-owner-publish/cozy-island.result.json
             /tmp/cozy-owner-publish/build.sha256
+            /tmp/cozy-owner-publish/cozy-island.post-publish-qa.json
             /tmp/cozy-cc0-audit.json
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
