@@ -70,7 +70,7 @@ const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).disp
 const activeLifecycle=row=>{
   const id=gameIdOf(row);
   if(!id||row?.ownerDevelopmentStopped===true||['OWNER_STOPPED','STOPPED','WITHDRAWN','ARCHIVED','DELETED'].includes(String(lifecycleOf(row).state||row?.lifecycleState||'').toUpperCase()))return false;
-  if(!['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase()))return false;
+  const lifecycle=String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase();
   const web=sourcesOf(row).web||{},state=String(web.state||row?.ownerWebSourceState||'').toUpperCase();
   if(state==='NON_GAME_SURFACE')return false;
   // 로블록스 서버에 배포된 기록은 웹 개발 중단·중지 상태와 독립적으로 표시한다.
@@ -80,6 +80,7 @@ const activeLifecycle=row=>{
   const deployedRoblox=/^[1-9][0-9]*$/.test(placeId)
     &&robloxUrl===`https://www.roblox.com/games/${placeId}`
     &&(roblox?.executionAvailable===true||roblox?.historicalInternalRelease===true||roblox?.internalReleaseReady===true);
+  if(!['ACTIVE','REBUILD'].includes(lifecycle))return deployedRoblox;
   const haltedWeb=row?.ownerWebDevelopmentStopped===true||web.developmentStopped===true
     ||['DEVELOPMENT_STOPPED','DEVELOPMENT_PAUSED','OWNER_STOPPED','STOPPED','PAUSED','WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state);
   if(haltedWeb)return deployedRoblox;
