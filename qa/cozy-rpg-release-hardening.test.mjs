@@ -55,6 +55,11 @@ test('포근섬 NPC·몹은 실제 바닥을 기준으로 발끝을 접지하고
  assert.match(cozyServer,/floorY-bottomY\+\.04/);
  assert.match(cozyServer,/CozyGroundStatus/);
  assert.match(cozyServer,/UNVERIFIED_FLOOR/);
+ assert.match(cozyServer,/CozyActorGroundingGeometryAligned/);
+ assert.match(cozyServer,/CozyActorGroundingUnverified/);
+ assert.match(cozyServer,/CozyActorGroundingGeometryCheck/);
+ assert.match(cozyServer,/expected==19 and aligned==expected and unverified==0/);
+ assert.match(cozyServer,/foundationCheckpoint\("NPC_MONSTER_GROUND_GEOMETRY"/);
  assert.doesNotMatch(cozyServer,/CozyActorRuntimeGroundingVerified",true/);
 });
 
