@@ -314,7 +314,7 @@ function openTerritoryMenu(){
   const target=b.dataset.realmMenu;ui.panel.close();
   if(target==='resource'){openInventory();return;}
   if(target==='market'){window.dispatchEvent(new Event('cozy:open-trade'));return;}
-  window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:target==='policy'?'civic':'industry'}}));
+  window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:target==='policy'?'town':'industry'}}));
  }));
 }
 function openMilitaryMenu(){
