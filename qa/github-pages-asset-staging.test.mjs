@@ -343,3 +343,26 @@ test('the complete canonical async staging program builds independent game route
   assert.match(result.stdout,/PAGES_GAME_COPY_PARALLELISM=8/);assert.match(result.stdout,/PAGES_ASSET_IO_PARALLELISM=8/);
  }finally{fs.rmSync(directory,{recursive:true,force:true});}
 });
+
+// 늦게 끝난 구형 빌드가 새 게시본 뒤에서 1GB 아티팩트를 업로드하지 않도록 회귀 방지.
+test('superseded Pages snapshot never uploads or enters the official publish job',()=>{
+ const branch=workflow.slice(workflow.indexOf('      - name: Publish gh-pages without force'),workflow.indexOf('      - name: Prepare retained Pages artifact'));
+ const early=branch.indexOf('PAGES_OLDER_SHARED_WRITE_SKIPPED=');
+ const retainedCopy=branch.indexOf('rsync -a "$GITHUB_WORKSPACE/_site/"');
+ assert.ok(early>0&&retainedCopy>early,'superseded source must exit before full site copy');
+ assert.match(branch.slice(0,retainedCopy),/artifact_ready=false/);
+ assert.match(branch.slice(0,retainedCopy),/exit 0/);
+ assert.match(branch,/artifact_ready=true/);
+ assert.match(branch,/id: pages_branch_publish/);
+ const header=workflow.split('  deploy:')[1].split('    steps:')[0];
+ assert.match(header,/artifact_ready: \\$\\{\\{ steps\\.pages_branch_publish\\.outputs\\.artifact_ready \\}\\}/);
+ for(const name of ['Prepare retained Pages artifact without Git history','Upload GitHub Pages artifact using official free Action']){
+  const from=workflow.indexOf('      - name: '+name);
+  assert.ok(from>0,name);
+  const guard=workflow.slice(from,from+300);
+  assert.match(guard,/steps\\.pages_branch_publish\\.outputs\\.artifact_ready == 'true'/);
+ }
+ const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
+ assert.match(publish,/needs\\.deploy\\.outputs\\.artifact_ready == 'true'/);
+ assert.match(publish,/uses: actions\\/deploy-pages@v4/);
+});
