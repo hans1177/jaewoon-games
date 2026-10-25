@@ -256,7 +256,7 @@ test('parallel builds cannot push an older shared branch over a newer source',()
 
 test('shared-branch admission executes ancestry checks and rejects unknown or diverged sources',()=>{
  const from=workflow.indexOf('            retained_source="$(node -p');
- const to=workflow.indexOf('            # Preserve remaining games;',from);
+ const to=workflow.indexOf('            # A superseded candidate must not repeat',from);
  assert(from>0&&to>from);const decision=workflow.slice(from,to);
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'pages-parallel-ancestry-'));
  try{
@@ -315,6 +315,42 @@ test('continuous main commits admit only strictly forward Pages snapshots',()=>{
  assert.match(workflow,/uses: actions\/deploy-pages@v4/);
 });
 
+test('obsolete parallel candidate exits before copying or uploading its large snapshot',()=>{
+ const start=workflow.indexOf('      - name: Publish gh-pages without force');
+ const end=workflow.indexOf('      - name: Prepare retained Pages artifact',start);
+ const commit=workflow.slice(start,end);
+ const reject=commit.indexOf('if [ "$shared_write_skipped" = true ]');
+ const copy=commit.indexOf('rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"');
+ const push=commit.indexOf('push origin HEAD:gh-pages');
+ assert(reject>=0&&reject<copy&&copy<push,'old candidate should not copy over newer site');
+ assert.match(commit,/echo 'ready=false'/);assert.match(commit,/echo 'ready=true'/);
+ assert.match(commit,/merge-base --is-ancestor HEAD FETCH_HEAD/);
+ const header=workflow.split('  deploy:')[1].split('    steps:')[0];
+ assert.match(header,/publish_ready:.*atomic_snapshot/);
+ const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
+ assert.match(publish,/needs\.deploy\.outputs\.publish_ready == 'true'/);
+});
+test('one exact atomic snapshot is uploaded without duplicating all retained game bytes',()=>{
+ const start=workflow.indexOf('      - name: Prepare retained Pages artifact');
+ const end=workflow.indexOf('  publish-pages:',start);
+ const artifact=workflow.slice(start,end);
+ assert.match(artifact,/steps\.atomic_snapshot\.outputs\.ready == 'true'/);
+ assert.match(artifact,/WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA/);
+ assert.match(artifact,/rm -rf -- "\$retained\/\.git"/);
+ assert.match(artifact,/test ! -e "\$retained\/\.git"/);
+ assert.match(artifact,/jaewoon-pages-publish/);
+ assert.doesNotMatch(artifact,/cp -a|jaewoon-pages-artifact/);
+});
+test('official release rechecks that staged manifest matches its exact uploaded artifact',()=>{
+ const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
+ const staged=publish.indexOf('if [ "$staged" != "$GITHUB_SHA" ]');
+ const latest=publish.indexOf('if [ "$latest" = "$GITHUB_SHA" ]');
+ const deploy=publish.indexOf('uses: actions/deploy-pages@v4');
+ assert(staged>=0&&staged<latest&&latest<deploy);
+ assert.match(publish,/PAGES_SUPERSEDED_ATOMIC_ARTIFACT_SKIPPED/);
+ assert.match(publish,/PAGES_STAGED_SOURCE_DIVERGED=FAIL/);
+ assert.match(publish,/if: steps\.latest_main\.outputs\.publish == 'true'/);
+});
 test('the complete canonical async staging program builds independent game routes and exact source assets',()=>{
  const start=workflow.indexOf("          node <<'NODE'",workflow.indexOf('      - name: Prepare all registered game routes'));
  const stop=workflow.indexOf('\n          NODE',start);assert(start>0&&stop>start);
