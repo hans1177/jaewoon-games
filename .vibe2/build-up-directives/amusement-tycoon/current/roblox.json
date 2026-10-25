@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g55-fcbc321df58f",
-  "directiveFingerprint": "fcbc321df58f2a6c514f5a6701eaee7e3a30c74403b0479f7502acae3281d530",
-  "previousDirectiveFingerprint": "ca1d5af2d67cfad5d8d50899721a53208c8ee0a009afccf8339565c0a2f8eeb3",
-  "forbiddenRepeatFingerprint": "ca1d5af2d67cfad5d8d50899721a53208c8ee0a009afccf8339565c0a2f8eeb3",
+  "directiveId": "amusement-tycoon-build-up-g56-991f659ee168",
+  "directiveFingerprint": "991f659ee16834dac79ad38b15c14726c023bac3f54de3f6720b900887f2ebc0",
+  "previousDirectiveFingerprint": "fcbc321df58f2a6c514f5a6701eaee7e3a30c74403b0479f7502acae3281d530",
+  "forbiddenRepeatFingerprint": "fcbc321df58f2a6c514f5a6701eaee7e3a30c74403b0479f7502acae3281d530",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 55,
+  "generation": 56,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+  "sourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
   "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "손님과 직원 운영의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+        "sourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
-    "sourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+    "sourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -491,6 +491,11 @@
           },
           {
             "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "savePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
             "symbol": "buildPathTile",
             "kind": "FUNCTION"
           }
@@ -584,6 +589,11 @@
           },
           {
             "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "savePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
             "symbol": "buildPathTile",
             "kind": "FUNCTION"
           }
@@ -671,6 +681,11 @@
           },
           {
             "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "savePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
             "symbol": "buildPathTile",
             "kind": "FUNCTION"
           }
@@ -753,6 +768,11 @@
           {
             "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
             "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "savePlayer",
             "kind": "FUNCTION"
           },
           {
@@ -872,7 +892,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+    "sourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4393,17 +4413,17 @@
       "combat": 99,
       "progression": 460,
       "ai": 47,
-      "save": 88,
+      "save": 102,
       "multiplayer": 24,
       "animation": 45,
-      "motionStates": 645,
+      "motionStates": 647,
       "gameFeel": 35,
       "vfx": 43,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 13,
       "ui": 870,
-      "uiFlow": 1119,
+      "uiFlow": 1123,
       "entryFlow": 32,
       "loadingFlow": 0,
       "input": 120,
@@ -4413,7 +4433,7 @@
       "inventory": 241,
       "equipment": 65,
       "settings": 25,
-      "feedback": 99,
+      "feedback": 100,
       "session": 47,
       "content": 455,
       "choice": 1666,
@@ -4435,7 +4455,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "score": 209
+        "score": 232
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
@@ -4525,6 +4545,14 @@
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 368,
+        "kind": "FUNCTION",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
         "score": 90
       },
       {
@@ -4721,7 +4749,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 557,
+        "line": 570,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -4769,7 +4797,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 459,
+        "line": 472,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationCharacter",
         "context": "local function bindNativeFoundationCharacter(character)",
@@ -4830,33 +4858,97 @@
         "symbol": "setNumber",
         "context": "local function setNumber(player, name, value)",
         "score": 42
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "line": 29,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
-        "score": 34
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 54,
-    "previousSourceTreeFingerprint": "03f43cdfd9b91aa004d5592e6dcefe1c8b625f59bfa4a058d09c64df7908dfaf",
-    "currentSourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+    "previousGeneration": 55,
+    "previousSourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+    "currentSourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "d059d567335300e2448ad193d244e98e99c60d50",
+      "artifactIdentity": null,
+      "staticContract": {
+        "pass": false,
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED",
+          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        ]
+      },
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 40169661399,
+      "testedAt": "2026-10-25T07:09:09.390Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        },
+        {
+          "id": "CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+      "CONFIG_GENRE_PROFILE_REQUIRED",
+      "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+      "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+      "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+      "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+      "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -5946,9 +6038,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"놀이공원 타이쿤\", 현재 책임 소스는 roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::buildPathTile, roblox-games/amusement-tycoon/server/Game.server.luau::buildThemeParkWorld, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer, roblox-games/amusement-tycoon/server/Game.server.luau::startParkDay이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"놀이공원 타이쿤\", 현재 책임 소스는 roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/server/Game.server.luau::savePlayer, roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::buildPathTile, roblox-games/amusement-tycoon/server/Game.server.luau::buildThemeParkWorld, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::buildPathTile, roblox-games/amusement-tycoon/server/Game.server.luau::buildThemeParkWorld, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer, roblox-games/amusement-tycoon/server/Game.server.luau::startParkDay에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/amusement-tycoon/server/Game.server.luau::initializePlayer, roblox-games/amusement-tycoon/server/Game.server.luau::savePlayer, roblox-games/amusement-tycoon/client/Game.client.luau::render, roblox-games/amusement-tycoon/client/Game.client.luau::reportNativeFoundationReady, roblox-games/amusement-tycoon/server/Game.server.luau::buildPathTile, roblox-games/amusement-tycoon/server/Game.server.luau::buildThemeParkWorld, roblox-games/amusement-tycoon/server/Game.server.luau::markAction, roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "놀이공원 타이쿤를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "시설 건설과 공간 배치 × 후원과 인맥 관계가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"시설 건설과 공간 배치: 시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정하면서 관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6003,7 +6095,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 394507,
+        "sourceBytes": 395170,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6036,8 +6128,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "MID_LATE_ENDGAME_COMPLETION",
-    "themeDepth": 2,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=MID_LATE_ENDGAME_COMPLETION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=0.",
+    "themeDepth": 3,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=MID_LATE_ENDGAME_COMPLETION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=0.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6046,13 +6138,12 @@
         "QUEST_STORY_PROGRESSION_CHAIN": 9,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 10,
-        "MID_LATE_ENDGAME_COMPLETION": 2,
+        "MID_LATE_ENDGAME_COMPLETION": 3,
         "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
@@ -6062,6 +6153,7 @@
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
+        "MID_LATE_ENDGAME_COMPLETION",
         "MID_LATE_ENDGAME_COMPLETION",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
@@ -6086,7 +6178,7 @@
     "scoredThemes": [
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 158,
+        "score": 140,
         "gapDomains": []
       },
       {
@@ -6200,11 +6292,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 55,
-    "previousGeneration": 54,
+    "generation": 56,
+    "previousGeneration": 55,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
-    "priorSourceFingerprint": "03f43cdfd9b91aa004d5592e6dcefe1c8b625f59bfa4a058d09c64df7908dfaf",
+    "sourceFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
+    "priorSourceFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6223,7 +6315,7 @@
     "version": 1,
     "gameId": "amusement-tycoon",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+    "sourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7113,7 +7205,7 @@
     "gameId": "amusement-tycoon",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+    "sourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7536,6 +7628,15 @@
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 368,
+        "kind": "FUNCTION",
+        "symbol": "savePlayer",
+        "currentBehavior": "local function savePlayer(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 savePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
         "line": 374,
         "kind": "FUNCTION",
@@ -7588,21 +7689,18 @@
         "currentBehavior": "local function spawnCustomer(player)",
         "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnCustomer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 242,
-        "kind": "FUNCTION",
-        "symbol": "startParkDay",
-        "currentBehavior": "local function startParkDay(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 startParkDay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
         "symbol": "initializePlayer",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "symbol": "savePlayer",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -7639,12 +7737,6 @@
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
         "symbol": "spawnCustomer",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "symbol": "startParkDay",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7742,6 +7834,18 @@
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 368,
+        "kind": "FUNCTION",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
+        "score": 90,
+        "currentBehavior": "local function savePlayer(player)",
+        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 savePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::savePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
         "line": 374,
         "kind": "FUNCTION",
@@ -7811,18 +7915,6 @@
         "currentBehavior": "local function spawnCustomer(player)",
         "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnCustomer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::spawnCustomer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 242,
-        "kind": "FUNCTION",
-        "symbol": "startParkDay",
-        "context": "local function startParkDay(player)",
-        "score": 66,
-        "currentBehavior": "local function startParkDay(player)",
-        "intendedBehavior": "STABILITY primary goal \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 startParkDay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/amusement-tycoon/server/Game.server.luau::startParkDay이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/amusement-tycoon/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7942,12 +8034,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "REGRESSION",
+      "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "6f3e48f130284c6f20603351ff9cad5695add5cb3574eae1400c27441e8adaec",
+      "sourceTreeFingerprint": "34c84b79d21428ec001a1a23d55b4721b5ca2a1e3cb9ad19979eaac3625ec935",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -7962,8 +8054,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8006,7 +8098,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 56,
+    "nextGeneration": 57,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8068,5 +8160,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T05:22:15.339Z"
+  "generatedAt": "2026-10-25T09:28:59.566Z"
 }

@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "realistic-builder-build-up-g6-7b603a15aa37",
-  "directiveFingerprint": "7b603a15aa377b07a058e0dfbcf236c258282bac838b2b9cdf8762dfa83e880f",
-  "previousDirectiveFingerprint": "acefc987a7935e6556c110f6f815658d416ba9945ffa8be8e3d0cd4add7425ac",
-  "forbiddenRepeatFingerprint": "acefc987a7935e6556c110f6f815658d416ba9945ffa8be8e3d0cd4add7425ac",
+  "directiveId": "realistic-builder-build-up-g7-a79854cb3166",
+  "directiveFingerprint": "a79854cb3166dde7dbf9f44c94d348cbb660a20101510d555e2446a65570dec0",
+  "previousDirectiveFingerprint": "7b603a15aa377b07a058e0dfbcf236c258282bac838b2b9cdf8762dfa83e880f",
+  "forbiddenRepeatFingerprint": "7b603a15aa377b07a058e0dfbcf236c258282bac838b2b9cdf8762dfa83e880f",
   "gameId": "realistic-builder",
   "gameName": "현실 건축가",
-  "generation": 6,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/realistic-builder",
-  "sourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+  "sourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
   "designFingerprint": "f1d959dc9dc9908d3578ce66370701d93c03d9159c65c7a295028a85a03ccd75",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+        "sourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "f1d959dc9dc9908d3578ce66370701d93c03d9159c65c7a295028a85a03ccd75",
-    "sourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+    "sourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+    "sourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4555,17 +4555,17 @@
       "combat": 178,
       "progression": 526,
       "ai": 62,
-      "save": 117,
+      "save": 131,
       "multiplayer": 43,
       "animation": 45,
-      "motionStates": 691,
+      "motionStates": 693,
       "gameFeel": 36,
       "vfx": 44,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 38,
       "ui": 898,
-      "uiFlow": 1145,
+      "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
       "input": 153,
@@ -4575,7 +4575,7 @@
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
-      "feedback": 169,
+      "feedback": 170,
       "session": 30,
       "content": 518,
       "choice": 1662,
@@ -4597,7 +4597,7 @@
       },
       {
         "file": "roblox-games/realistic-builder/server/Game.server.luau",
-        "score": 270
+        "score": 293
       },
       {
         "file": "roblox-games/realistic-builder/client/Game.client.luau",
@@ -4744,6 +4744,14 @@
         "symbol": "sync",
         "context": "local function sync(state)",
         "score": 98
+      },
+      {
+        "file": "roblox-games/realistic-builder/server/Game.server.luau",
+        "line": 354,
+        "kind": "FUNCTION",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
+        "score": 90
       },
       {
         "file": "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
@@ -4992,33 +5000,52 @@
         "symbol": "flush",
         "context": "local function flush()",
         "score": 26
-      },
-      {
-        "file": "roblox-games/realistic-builder/client/MaterialPresentation.client.luau",
-        "line": 20,
-        "kind": "FUNCTION",
-        "symbol": "enqueue",
-        "context": "local function enqueue(instance)",
-        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "현실 건축가. 서사시의 추방과 귀환·민속 금기와 전염 생존. 현실 건축가에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "8e47cb663944abfb73aa4630047bc2908e3e3685a23682c57359a8059b52e108",
-    "currentSourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+    "currentSourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "d059d567335300e2448ad193d244e98e99c60d50",
+      "artifactIdentity": null,
+      "staticContract": {
+        "pass": false,
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED"
+        ]
+      },
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 40169661399,
+      "testedAt": "2026-10-25T07:09:09.390Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+      "CONFIG_GENRE_PROFILE_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6165,7 +6192,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 400844,
+        "sourceBytes": 430865,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6198,8 +6225,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 7,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6209,9 +6236,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 7
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6252,7 +6280,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 138,
+        "score": 120,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6366,11 +6394,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 6,
-    "previousGeneration": 5,
+    "generation": 7,
+    "previousGeneration": 6,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
-    "priorSourceFingerprint": "8e47cb663944abfb73aa4630047bc2908e3e3685a23682c57359a8059b52e108",
+    "sourceFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
+    "priorSourceFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6389,7 +6417,7 @@
     "version": 1,
     "gameId": "realistic-builder",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+    "sourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7294,7 +7322,7 @@
     "gameId": "realistic-builder",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+    "sourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7485,8 +7513,8 @@
     "responsibleSourceCandidates": [
       "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
-      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
+      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/default.project.json",
       "roblox-games/realistic-builder/client/MaterialPresentation.client.luau"
@@ -7700,8 +7728,8 @@
     "responsibleFiles": [
       "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
-      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
+      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/default.project.json",
       "roblox-games/realistic-builder/client/MaterialPresentation.client.luau"
@@ -7903,8 +7931,8 @@
     "files": [
       "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
-      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
+      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/default.project.json",
       "roblox-games/realistic-builder/client/MaterialPresentation.client.luau"
@@ -8050,8 +8078,8 @@
     "plannedFiles": [
       "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
-      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
+      "roblox-games/realistic-builder/shared/RobloxCommonUI.luau",
       "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
       "roblox-games/realistic-builder/default.project.json",
       "roblox-games/realistic-builder/client/MaterialPresentation.client.luau"
@@ -8128,7 +8156,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "1b263f0a3594122b562c3a1f62363189190046f683158268cc4af3038071731e",
+      "sourceTreeFingerprint": "2c266a959ef1017974f011f0b743bd3b7c2df2c01475da15c76e6cc6c624483c",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8187,7 +8215,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8249,5 +8277,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T20:44:56.929Z"
+  "generatedAt": "2026-10-25T09:29:00.831Z"
 }

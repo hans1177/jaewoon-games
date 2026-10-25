@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "exorcist-office-build-up-g6-a1878eb88bfd",
-  "directiveFingerprint": "a1878eb88bfd197db3b1f14940fb9a7556d8fb4b99e5b195e92dfaee25aa83c7",
-  "previousDirectiveFingerprint": "46b0e6b7b2c24c5c449ee1f739545e2efa9402de12fb2ec1f6fad3bf46fa01ee",
-  "forbiddenRepeatFingerprint": "46b0e6b7b2c24c5c449ee1f739545e2efa9402de12fb2ec1f6fad3bf46fa01ee",
+  "directiveId": "exorcist-office-build-up-g7-8479bfb4ab99",
+  "directiveFingerprint": "8479bfb4ab9911ed2971f3d1af18abcf87d8492dec903e8abc7e79bc1f83bed1",
+  "previousDirectiveFingerprint": "a1878eb88bfd197db3b1f14940fb9a7556d8fb4b99e5b195e92dfaee25aa83c7",
+  "forbiddenRepeatFingerprint": "a1878eb88bfd197db3b1f14940fb9a7556d8fb4b99e5b195e92dfaee25aa83c7",
   "gameId": "exorcist-office",
   "gameName": "퇴마 사무소",
-  "generation": 6,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/exorcist-office",
-  "sourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+  "sourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
   "designFingerprint": "2f22bd86c5e1700181bfdfa08e0e37f86c725c540985b25532105c36b6778c4c",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "봉인과 단서 해독의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+        "sourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "2f22bd86c5e1700181bfdfa08e0e37f86c725c540985b25532105c36b6778c4c",
-    "sourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+    "sourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+    "sourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4504,17 +4504,17 @@
       "combat": 154,
       "progression": 545,
       "ai": 62,
-      "save": 119,
+      "save": 133,
       "multiplayer": 42,
       "animation": 45,
-      "motionStates": 691,
+      "motionStates": 693,
       "gameFeel": 36,
       "vfx": 44,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 30,
       "ui": 897,
-      "uiFlow": 1145,
+      "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
       "input": 155,
@@ -4524,7 +4524,7 @@
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
-      "feedback": 164,
+      "feedback": 165,
       "session": 30,
       "content": 502,
       "choice": 1655,
@@ -4546,7 +4546,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/server/Game.server.luau",
-        "score": 219
+        "score": 242
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
@@ -4685,6 +4685,14 @@
         "symbol": "sync",
         "context": "local function sync(state)",
         "score": 98
+      },
+      {
+        "file": "roblox-games/exorcist-office/server/Game.server.luau",
+        "line": 317,
+        "kind": "FUNCTION",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
+        "score": 90
       },
       {
         "file": "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
@@ -4941,33 +4949,52 @@
         "symbol": "enqueue",
         "context": "local function enqueue(instance)",
         "score": 26
-      },
-      {
-        "file": "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
-        "line": 236,
-        "kind": "FUNCTION",
-        "symbol": "clamp",
-        "context": "local function clamp(value, minValue, maxValue)",
-        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "ae11f7665e95f4cc47b64cd8771ae6813a3de27f6ab937d71776ada2b0d47868",
-    "currentSourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+    "currentSourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
+    "studioQualityFailure": {
+      "sourceRevision": "ab9da20ff38f7178dadd38b7f4bf1f2943367219",
+      "artifactIdentity": null,
+      "staticContract": {
+        "pass": false,
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED"
+        ]
+      },
+      "runtimeVerified": false,
+      "productionVerified": false,
+      "authority": "roblox-source-static-contract-failure",
+      "workflowRunId": 40165825346,
+      "testedAt": "2026-10-25T05:58:32.392Z",
+      "repairSurfaces": [
+        "SOURCE_CONTRACT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+          "repairSurface": "SOURCE_CONTRACT",
+          "priority": "P0",
+          "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.",
+          "observed": "{}"
+        }
+      ]
+    },
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+      "CONFIG_GENRE_PROFILE_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6057,9 +6084,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"퇴마 사무소\", 현재 책임 소스는 roblox-games/exorcist-office/client/Game.client.luau::reportNativeFoundationReady, roblox-games/exorcist-office/client/Game.client.luau::render, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler1, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler2, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler3, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler4, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler5, roblox-games/exorcist-office/server/Game.server.luau::initializePlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"퇴마 사무소\", 현재 책임 소스는 roblox-games/exorcist-office/client/Game.client.luau::reportNativeFoundationReady, roblox-games/exorcist-office/client/Game.client.luau::render, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler1, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler2, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler3, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler4, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler5, roblox-games/exorcist-office/server/Game.server.luau::savePlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/exorcist-office/client/Game.client.luau::reportNativeFoundationReady, roblox-games/exorcist-office/client/Game.client.luau::render, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler1, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler2, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler3, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler4, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler5, roblox-games/exorcist-office/server/Game.server.luau::initializePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/exorcist-office/client/Game.client.luau::reportNativeFoundationReady, roblox-games/exorcist-office/client/Game.client.luau::render, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler1, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler2, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler3, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler4, roblox-games/exorcist-office/server/Game.server.luau::scopeHandler5, roblox-games/exorcist-office/server/Game.server.luau::savePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "퇴마 사무소를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "위협 탐지와 잠입 × 증언과 합의된 현실가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"위협 탐지와 잠입: 소리와 흔적을 관찰해 숨어 이동할 시점과 경로를 선택하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6114,7 +6141,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 398289,
+        "sourceBytes": 428315,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6147,8 +6174,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 7,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6158,9 +6185,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 7
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6201,7 +6229,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 138,
+        "score": 120,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6315,11 +6343,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 6,
-    "previousGeneration": 5,
+    "generation": 7,
+    "previousGeneration": 6,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
-    "priorSourceFingerprint": "ae11f7665e95f4cc47b64cd8771ae6813a3de27f6ab937d71776ada2b0d47868",
+    "sourceFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
+    "priorSourceFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6338,7 +6366,7 @@
     "version": 1,
     "gameId": "exorcist-office",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+    "sourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7243,7 +7271,7 @@
     "gameId": "exorcist-office",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+    "sourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7434,8 +7462,8 @@
     "responsibleSourceCandidates": [
       "roblox-games/exorcist-office/client/Game.client.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
       "roblox-games/exorcist-office/default.project.json",
       "roblox-games/exorcist-office/client/MaterialPresentation.client.luau"
@@ -7649,8 +7677,8 @@
     "responsibleFiles": [
       "roblox-games/exorcist-office/client/Game.client.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
       "roblox-games/exorcist-office/default.project.json",
       "roblox-games/exorcist-office/client/MaterialPresentation.client.luau"
@@ -7721,11 +7749,11 @@
       },
       {
         "file": "roblox-games/exorcist-office/server/Game.server.luau",
-        "line": 145,
+        "line": 317,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "savePlayer",
+        "currentBehavior": "local function savePlayer(player)",
+        "intendedBehavior": "STABILITY primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 savePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/exorcist-office/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7774,7 +7802,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/server/Game.server.luau",
-        "symbol": "initializePlayer",
+        "symbol": "savePlayer",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7852,8 +7880,8 @@
     "files": [
       "roblox-games/exorcist-office/client/Game.client.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
       "roblox-games/exorcist-office/default.project.json",
       "roblox-games/exorcist-office/client/MaterialPresentation.client.luau"
@@ -7945,14 +7973,14 @@
       },
       {
         "file": "roblox-games/exorcist-office/server/Game.server.luau",
-        "line": 145,
+        "line": 317,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
-        "score": 82,
-        "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "STABILITY primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/exorcist-office/server/Game.server.luau::initializePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
+        "score": 90,
+        "currentBehavior": "local function savePlayer(player)",
+        "intendedBehavior": "STABILITY primary goal \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 savePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"퇴마 사무소. 증언과 합의된 현실·민속 금기와 전염 호러. 퇴마 사무소에서 위협 탐지와 잠입 × 증언과 합의된 현실과 봉인과 단서 해독 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 호러·사회극의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/exorcist-office/server/Game.server.luau::savePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/exorcist-office/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7999,8 +8027,8 @@
     "plannedFiles": [
       "roblox-games/exorcist-office/client/Game.client.luau",
       "roblox-games/exorcist-office/server/Game.server.luau",
-      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/GameConfig.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonUI.luau",
       "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
       "roblox-games/exorcist-office/default.project.json",
       "roblox-games/exorcist-office/client/MaterialPresentation.client.luau"
@@ -8077,7 +8105,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "7cd3a1141c79532e5db9fba7d8bf4bb4f239d866d27b3ee63eeceacbef574f3e",
+      "sourceTreeFingerprint": "2f6cad7b14a622d4a94365dfa76277637a0229a66b816d145af65dfe1b4d63db",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8136,7 +8164,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8198,5 +8226,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T20:44:55.721Z"
+  "generatedAt": "2026-10-25T09:29:00.614Z"
 }

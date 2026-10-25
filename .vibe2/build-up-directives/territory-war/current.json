@@ -4925,13 +4925,20 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "abf0926c291ff390dbf65950e8ab346fb79b9852",
+      "sourceRevision": "5d3836f25d73e2378827721464ada2b405d0b663",
       "artifactIdentity": null,
+      "staticContract": {
+        "pass": false,
+        "blockers": [
+          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
+        ]
+      },
       "runtimeVerified": false,
       "productionVerified": false,
       "authority": "roblox-source-static-contract-failure",
-      "workflowRunId": 40160955425,
-      "testedAt": "2026-10-25T04:46:27.750Z",
+      "workflowRunId": 40171707481,
+      "testedAt": "2026-10-25T07:52:27.182Z",
       "repairSurfaces": [
         "SOURCE_CONTRACT"
       ],

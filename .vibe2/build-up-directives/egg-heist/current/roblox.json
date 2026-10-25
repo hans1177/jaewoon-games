@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "egg-heist-build-up-g12-c0ebfb311044",
-  "directiveFingerprint": "c0ebfb311044000a91431a23a35b9221157ce91c4fc2be6567c8d10ddf1695cf",
-  "previousDirectiveFingerprint": "0d590614821d372e7ce2da6ed5e39c0fe04f01528d61012b3ec1c9054f7864e9",
-  "forbiddenRepeatFingerprint": "0d590614821d372e7ce2da6ed5e39c0fe04f01528d61012b3ec1c9054f7864e9",
+  "directiveId": "egg-heist-build-up-g13-59d60ac0a505",
+  "directiveFingerprint": "59d60ac0a5053c8d1efee2be396b3149f250965d3fd9781fde765a089f8509af",
+  "previousDirectiveFingerprint": "c0ebfb311044000a91431a23a35b9221157ce91c4fc2be6567c8d10ddf1695cf",
+  "forbiddenRepeatFingerprint": "c0ebfb311044000a91431a23a35b9221157ce91c4fc2be6567c8d10ddf1695cf",
   "gameId": "egg-heist",
   "gameName": "알 도둑 대작전",
-  "generation": 12,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/egg-heist",
-  "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+  "sourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
   "designFingerprint": "b11b4e12eada31ffc33079c6917cb51568952de85f1b67261a4692b046ceb778",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+        "sourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "b11b4e12eada31ffc33079c6917cb51568952de85f1b67261a4692b046ceb778",
-    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+    "sourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+    "sourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4511,17 +4511,17 @@
       "combat": 154,
       "progression": 566,
       "ai": 62,
-      "save": 119,
+      "save": 133,
       "multiplayer": 42,
       "animation": 45,
-      "motionStates": 692,
+      "motionStates": 694,
       "gameFeel": 36,
       "vfx": 44,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 30,
       "ui": 897,
-      "uiFlow": 1149,
+      "uiFlow": 1153,
       "entryFlow": 18,
       "loadingFlow": 0,
       "input": 155,
@@ -4531,7 +4531,7 @@
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
-      "feedback": 164,
+      "feedback": 165,
       "session": 30,
       "content": 502,
       "choice": 1655,
@@ -4553,7 +4553,7 @@
       },
       {
         "file": "roblox-games/egg-heist/server/Game.server.luau",
-        "score": 219
+        "score": 242
       },
       {
         "file": "roblox-games/egg-heist/client/Game.client.luau",
@@ -4692,6 +4692,14 @@
         "symbol": "sync",
         "context": "local function sync(state)",
         "score": 98
+      },
+      {
+        "file": "roblox-games/egg-heist/server/Game.server.luau",
+        "line": 317,
+        "kind": "FUNCTION",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
+        "score": 90
       },
       {
         "file": "roblox-games/egg-heist/shared/RobloxCommonUI.luau",
@@ -4863,7 +4871,7 @@
       },
       {
         "file": "roblox-games/egg-heist/server/Game.server.luau",
-        "line": 326,
+        "line": 341,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -4948,23 +4956,15 @@
         "symbol": "flush",
         "context": "local function flush()",
         "score": 26
-      },
-      {
-        "file": "roblox-games/egg-heist/client/MaterialPresentation.client.luau",
-        "line": 20,
-        "kind": "FUNCTION",
-        "symbol": "enqueue",
-        "context": "local function enqueue(instance)",
-        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 11,
-    "previousSourceTreeFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
-    "currentSourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+    "currentSourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6064,9 +6064,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"알 도둑 대작전\", 현재 책임 소스는 roblox-games/egg-heist/client/Game.client.luau::reportNativeFoundationReady, roblox-games/egg-heist/client/Game.client.luau::render, roblox-games/egg-heist/server/Game.server.luau::scopeHandler1, roblox-games/egg-heist/server/Game.server.luau::scopeHandler2, roblox-games/egg-heist/server/Game.server.luau::scopeHandler3, roblox-games/egg-heist/server/Game.server.luau::scopeHandler4, roblox-games/egg-heist/server/Game.server.luau::scopeHandler5, roblox-games/egg-heist/server/Game.server.luau::initializePlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"알 도둑 대작전\", 현재 책임 소스는 roblox-games/egg-heist/client/Game.client.luau::reportNativeFoundationReady, roblox-games/egg-heist/client/Game.client.luau::render, roblox-games/egg-heist/server/Game.server.luau::scopeHandler1, roblox-games/egg-heist/server/Game.server.luau::scopeHandler2, roblox-games/egg-heist/server/Game.server.luau::scopeHandler3, roblox-games/egg-heist/server/Game.server.luau::scopeHandler4, roblox-games/egg-heist/server/Game.server.luau::scopeHandler5, roblox-games/egg-heist/server/Game.server.luau::savePlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/egg-heist/client/Game.client.luau::reportNativeFoundationReady, roblox-games/egg-heist/client/Game.client.luau::render, roblox-games/egg-heist/server/Game.server.luau::scopeHandler1, roblox-games/egg-heist/server/Game.server.luau::scopeHandler2, roblox-games/egg-heist/server/Game.server.luau::scopeHandler3, roblox-games/egg-heist/server/Game.server.luau::scopeHandler4, roblox-games/egg-heist/server/Game.server.luau::scopeHandler5, roblox-games/egg-heist/server/Game.server.luau::initializePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/egg-heist/client/Game.client.luau::reportNativeFoundationReady, roblox-games/egg-heist/client/Game.client.luau::render, roblox-games/egg-heist/server/Game.server.luau::scopeHandler1, roblox-games/egg-heist/server/Game.server.luau::scopeHandler2, roblox-games/egg-heist/server/Game.server.luau::scopeHandler3, roblox-games/egg-heist/server/Game.server.luau::scopeHandler4, roblox-games/egg-heist/server/Game.server.luau::scopeHandler5, roblox-games/egg-heist/server/Game.server.luau::savePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "알 도둑 대작전를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "사회관계 선택 × 그리스 비극의 자기실현 예언가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 회피 선택도 세계 상태를 바꾸며 특정 조건을 충족시키는 역설적 진행을 만든다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6121,7 +6121,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 428529,
+        "sourceBytes": 429192,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6153,14 +6153,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 12,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=6.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6179,7 +6179,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6190,12 +6191,11 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 1,
+      "distinctCovered": 2,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6203,7 +6203,6 @@
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -6212,16 +6211,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 38,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -6233,6 +6222,16 @@
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 24,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 20,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -6256,13 +6255,13 @@
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -6328,11 +6327,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 12,
-    "previousGeneration": 11,
+    "generation": 13,
+    "previousGeneration": 12,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
-    "priorSourceFingerprint": "ad95a2b3ed410c18ce53690b4dcfa7c2ef14ef90045307063d703c5e3b904506",
+    "sourceFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
+    "priorSourceFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6351,7 +6350,7 @@
     "version": 1,
     "gameId": "egg-heist",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+    "sourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7256,7 +7255,7 @@
     "gameId": "egg-heist",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+    "sourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7734,11 +7733,11 @@
       },
       {
         "file": "roblox-games/egg-heist/server/Game.server.luau",
-        "line": 145,
+        "line": 317,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "USABILITY primary goal \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "symbol": "savePlayer",
+        "currentBehavior": "local function savePlayer(player)",
+        "intendedBehavior": "USABILITY primary goal \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 savePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/egg-heist/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7787,7 +7786,7 @@
       },
       {
         "file": "roblox-games/egg-heist/server/Game.server.luau",
-        "symbol": "initializePlayer",
+        "symbol": "savePlayer",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -7958,14 +7957,14 @@
       },
       {
         "file": "roblox-games/egg-heist/server/Game.server.luau",
-        "line": 145,
+        "line": 317,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
-        "score": 82,
-        "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "USABILITY primary goal \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/egg-heist/server/Game.server.luau::initializePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
+        "score": 90,
+        "currentBehavior": "local function savePlayer(player)",
+        "intendedBehavior": "USABILITY primary goal \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 savePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"알 도둑 대작전. 그리스 비극의 자기실현 예언·순교와 집단 결속 생활. 알 도둑 대작전에서 사회관계 선택 × 그리스 비극의 자기실현 예언과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/egg-heist/server/Game.server.luau::savePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/egg-heist/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -8090,7 +8089,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "306f1152dc9b089df92d7a3f4cfffc028a5dd72b669665963dff3d9134d5429b",
+      "sourceTreeFingerprint": "1131f93101b4fb39fdc94ef7a553ecb4784bb44f7b7cae0e63608352062ec041",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
@@ -8149,7 +8148,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 13,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8211,5 +8210,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T05:22:17.289Z"
+  "generatedAt": "2026-10-25T09:29:01.198Z"
 }
