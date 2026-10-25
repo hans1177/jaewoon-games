@@ -488,7 +488,7 @@ buildWorld(live){
    for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(bounds.u0,bounds.u1,uv.getX(i)),THREE.MathUtils.lerp(bounds.v0,bounds.v1,uv.getY(i)));
    uv.needsUpdate=true;pixelRest=geometry.attributes.position.array.slice();geometry.translate(0,.5,0);
    pixel=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({map:this.actorArt,transparent:true,alphaTest:.12,depthWrite:false,toneMapped:false,side:THREE.DoubleSide}));
-   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=.035;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);model.visible=false;
+   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=.035;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);
   }
   // 기존 리깅 클립을 모든 직업·동료 NPC·몬스터가 공유하는 운동 상태로 선택한다.
    const named=regex=>[...actions].find(([name])=>regex.test(name))?.[1]||null;
