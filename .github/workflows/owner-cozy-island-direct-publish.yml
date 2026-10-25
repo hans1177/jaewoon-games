@@ -241,9 +241,11 @@ jobs:
           # Only a successful real Place/version post-publish probe reaches this step.
           gh workflow run company-roblox-source-drift-sync.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id=cozy-island -f restart_from_f0=true
           echo 'COZY_POST_PUBLISH_NEXT_F0=DISPATCHED'
-          # Refill the existing Vibe2 game-primary work queue; do not create a second pipeline.
-          gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary
-          echo 'COZY_POST_PUBLISH_NEXT_BUILD_UP=EXISTING_VIBE2_WAKE_DISPATCHED'
+          # Web-style build-up restarts the existing Vibe2 PLANNER first.
+          # The 24H runner itself creates game-specific BUILD_UP directives and fans out
+          # verified tasks to the canonical game-primary source workers.
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'COZY_POST_PUBLISH_NEXT_BUILD_UP=EXISTING_VIBE2_PLANNER_DISPATCHED'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
