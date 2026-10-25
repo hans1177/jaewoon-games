@@ -138,6 +138,9 @@ test('Vibe minimum authoring rejects empty creative intake and never overrides a
 });
 
 test('an owner brief marked for V5 cannot enter Vibe development with a legacy minimum design',()=>{
+  const previous=process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
   const design=base();
   const ownerSeed={GAMEPLAY_SKETCH:{version:1},novelGrammarBackfill:{version:5,authoringPending:true}};
   const verdict=evaluateMinimumDesignContract(design,{seed:ownerSeed});
@@ -153,6 +156,10 @@ test('an owner brief marked for V5 cannot enter Vibe development with a legacy m
     assert.equal(result.created,false);
     assert.equal(result.reason,'DESIGN_GRAMMAR_DESIGNER_SEED_PENDING');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+  }finally{
+    if(previous===undefined)delete process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH=previous;
+  }
 });
 
 
