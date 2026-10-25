@@ -161,7 +161,17 @@ test('lock F0 to F9 real verification and pre-F9 publication restrictions',()=>{
   assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.serverDeployment.numericalScoreBlocksVerifiedDeployment,false);
   assert.equal(policy.roblox.deploymentControl.verifiedCyclePublication.publicationDispatchRequirementScope,'ALL_GAMES_AFTER_VERIFIED_F9');
   assert.equal(policy.changeRecord.ownerEveryGameF9Publish20261018.publicationClassificationGate,false);
-  assert.ok(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.includes('DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION'));
+  const exactPublication=policy.roblox.deploymentControl.verifiedCyclePublication;
+  assert.deepEqual(exactPublication.sequence,[
+    'EVOLUTION_SOURCE_MUTATION','F0_SOURCE_INTEGRITY','F1_TO_F8_CODE_AND_STATIC_QA',
+    'F9_EXACT_FINAL_REVIEW','DISPATCH_EXACT_F9_ARTIFACT',
+    'CONFIRM_CANONICAL_PLACE_VERSION_PUBLISHED',
+    'POST_PUBLISH_EXACT_PLACE_VERSION_HEADLESS_QA',
+    'PERSIST_SAME_CYCLE_POST_PUBLISH_QA',
+    'DISPATCH_NEXT_GAME_F0_FROM_CURRENT_MAIN_AFTER_QA_PASS'
+  ]);
+  assert.equal(exactPublication.postPublishQaRequiredForNextF0,true);
+  assert.equal(exactPublication.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
   assert.ok(!policy.roblox.deploymentControl.verifiedCyclePublication.sequence.includes('DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH'));
   assert.equal(policy.developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck,'GitHub Pages');
   assert.deepEqual(f.sequence,[

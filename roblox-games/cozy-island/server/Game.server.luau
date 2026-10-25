@@ -294,7 +294,7 @@ end
 
 -- 메인: 공용 GLB 몬스터 외형 10종. 기존 체력·공격·보상·저장 규칙은 그대로 사용한다.
 -- Only role-matched, source-verified CC0 KayKit skeletons for raider actors.
--- No wolf/snake/spider placeholder imports from unknown license or unrelated species.
+-- Reject wolf/snake/spider imports without provenance or species-role alignment.
 -- 유틸: 공용 자산은 외형만 소유한다. 기존 뿌리 파트가 이동과 공격 판정을 계속 담당한다.
 local function bindMonsterAppearance(rootPart,assetInfo)
  if not assetInfo or not rootPart.Parent then return end

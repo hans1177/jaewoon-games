@@ -136,7 +136,22 @@ jobs:
         run: |
           set -euo pipefail
           node tools/company-shared-context.mjs --output=/tmp/roblox-f9-worker-context.json
-          node -e "const x=require('/tmp/roblox-f9-worker-context.json');if(x.pass!==true||x.architectureProjection?.valid!==true)process.exit(1)"
+          node tools/company-constitution-enforcer.mjs --phase=roblox-f9
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {compileOwnerCanonicalConstitution,compileCentralArchitectureProjection} from './tools/company-shared-context.mjs';
+          const integrity=JSON.parse(fs.readFileSync('/tmp/roblox-f9-worker-context.json','utf8'));
+          if(integrity.pass!==true||integrity.scope!=='RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY'
+              ||integrity.policyAuthorityVerified!==false||integrity.sourceWriteAuthorized!==false
+              ||integrity.releaseAuthorized!==false)throw new Error('ROBLOX_F9_RETAINED_DOCUMENT_INTEGRITY_INVALID');
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const constitution=compileOwnerCanonicalConstitution(policy);
+          const architecture=compileCentralArchitectureProjection(policy);
+          if(constitution.valid!==true)throw new Error('ROBLOX_F9_CANONICAL_CONSTITUTION_INVALID:'+constitution.errors.join('|'));
+          if(architecture.valid!==true)throw new Error('ROBLOX_F9_CANONICAL_ARCHITECTURE_INVALID:'+architecture.errors.join('|'));
+          console.log('ROBLOX_F9_CANONICAL_CONSTITUTION=VERIFIED:'+constitution.fingerprint);
+          console.log('ROBLOX_F9_ARCHITECTURE_PROJECTION=VERIFIED:'+architecture.fingerprint);
+          NODE
           echo 'ROBLOX_F9_SHARED_CONTEXT=PASS'
 
       - name: Verify only F9 executable syntax

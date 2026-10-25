@@ -20,6 +20,18 @@ test('F9 workflow uses canonical same-identity dedupe and exact-candidate review
   assert.doesNotMatch(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
 });
 
+test('F9 preflight compiles canonical policy authority instead of trusting retained summaries', () => {
+  const preflight=workflow.split('      - name: Synchronize constitution central policy and compiled architecture')[1]?.split('      - name: ')[0];
+  assert.ok(preflight,'ROBLOX_F9_CANONICAL_PREFLIGHT_REQUIRED');
+  assert.match(preflight,/node tools\/company-shared-context\.mjs --output=/);
+  assert.match(preflight,/node tools\/company-constitution-enforcer\.mjs --phase=roblox-f9/);
+  assert.match(preflight,/compileOwnerCanonicalConstitution\(policy\)/);
+  assert.match(preflight,/compileCentralArchitectureProjection\(policy\)/);
+  assert.match(preflight,/integrity\.policyAuthorityVerified!==false/);
+  assert.match(preflight,/integrity\.releaseAuthorized!==false/);
+  assert.doesNotMatch(preflight,/integrity\.architectureProjection\?\.valid/);
+});
+
 test('legacy design normalization remains grounded and fail-closed in the canonical evaluator', () => {
   assert.match(evaluator, /repairPersistedDesignForPromotion/);
   assert.match(evaluator, /FINAL_REVIEW_LEGACY_NORMALIZATION/);
