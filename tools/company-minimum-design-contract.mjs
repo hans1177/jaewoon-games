@@ -73,9 +73,14 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
     Number(seed?.novelGrammarBackfill?.version||0),
     Number(record?.gameplaySketchVersion||0)
   )>=5;
-  const grammarSeed=grammarRequired&&Number(seed?.GAMEPLAY_SKETCH?.version||0)<5&&Number(seed?.novelGrammarBackfill?.version||0)<5
-    ?{...seed,novelGrammarBackfill:{...(seed?.novelGrammarBackfill||{}),version:5,authoringPending:true}}
-    :seed;
+  const currentStandard=roadmap?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod?.version;
+  // 오래된 무버전 설계로 역행해 최신 A/B 계약을 생략하지 않는다.
+  const grammarSeed=grammarRequired?{
+    ...seed,
+    designGrammarStandardVersion:currentStandard,
+    ...(Number(seed?.GAMEPLAY_SKETCH?.version||0)<5&&Number(seed?.novelGrammarBackfill?.version||0)<5
+      ?{novelGrammarBackfill:{...(seed?.novelGrammarBackfill||{}),version:5,authoringPending:true}}:{})
+  }:seed;
   const grammarFailures=grammarRequired?validateDesignAuthoringContent({
     design:content,seed:grammarSeed,fields:['creativeGrammar','signatureSystems']
   }):[];

@@ -168,6 +168,11 @@ test('legacy migration cannot reapprove a standard design by dropping its seed',
     const noSeed=evaluateMinimumDesignContract(record);
     assert.equal(noSeed.pass,false);
     assert.ok(noSeed.blockers.includes('DESIGN_A_NAMED_REFERENCE_GAME_REQUIRED'));
+    const legacy=structuredClone(record);delete legacy.content.creativeGrammar.standardVersion;
+    const legacyGate=evaluateMinimumDesignContract(legacy,{seed:{novelGrammarBackfill:{version:5}}});
+    assert.equal(legacyGate.pass,false);
+    assert.ok(legacyGate.blockers.includes('DESIGN_A_NAMED_REFERENCE_GAME_REQUIRED'));
+    assert.ok(legacyGate.blockers.includes('DESIGN_STANDARD_CLASSIFICATION_INVALID'));
     const put=(file,value)=>{fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),JSON.stringify(value));};
     put(source,record);
     const original=fs.readFileSync(path.join(root,source),'utf8');
