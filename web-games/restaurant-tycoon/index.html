@@ -47,7 +47,7 @@ btn.append(title,detail,bar);btn.onclick=()=>interact(g.id);root.append(btn);
 if(!guests.length){const p=document.createElement('div');p.className='chip';p.textContent='🍴 손님을 기다리는 중...';root.append(p)}
 }
 function interact(id){let g=guests.find(x=>x.id===id);if(!g)return;if(g.phase==='order'){g.phase='cooking';g.timer=dishes[g.dish].time;say(dishes[g.dish].name+' 요리 시작!')}else if(g.phase==='ready')serve(g);updateOrders()}
-function serve(g){data.cash+=dishes[g.dish].price;data.served++;const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);if(g.person)scene.remove(g.person);say('+'+dishes[g.dish].price+'원! 손님이 맛있게 먹었어!');save();updateTables();hud()}
+function serve(g){data.cash+=dishes[g.dish].price;data.served++;const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);if(g.person){scene.remove(g.person);people.splice(people.indexOf(g.person),1)}say('+'+dishes[g.dish].price+'원! 손님이 맛있게 먹었어!');save();updateTables();hud()}
 function spawn(){if(guests.length>=data.tables)return;const seat=[...Array(data.tables).keys()].find(n=>!guests.some(g=>g.seat===n));if(seat===undefined)return;const dish=Math.floor(Math.random()*count());let g={id:++idCounter,seat,dish,phase:'order',timer:0,patience:22,person:null};guests.push(g);if(scene)g.person=createGuest(g);say(dishes[dish].icon+' '+dishes[dish].name+' 주문이 들어왔어!')}
 $('tableBtn').onclick=()=>{if(data.tables>=8||data.cash<priceTable())return;data.cash-=priceTable();data.tables++;updateTables();hud();save();say('테이블이 추가됐어!')};
 $('cookBtn').onclick=()=>{if(data.cooks>=3||data.cash<priceCook())return;data.cash-=priceCook();data.cooks++;hud();save();say('요리사 고용! 주문을 자동으로 처리해!')};
@@ -55,7 +55,7 @@ $('menuBtn').onclick=()=>say(dishes.map((x,i)=>x.icon+x.name+' '+x.price+'원'+(
 $('start').onclick=()=>{data.started=true;$('intro').classList.add('hidden');save();say('영업 시작! 손님의 주문 카드를 눌러봐.')};
 if(data.started)$('intro').classList.add('hidden');
 // 그래픽: 기존 웹게임처럼 Three.js 실제 3D 메시 렌더링
-let scene=null,camera=null,renderer=null,models=[],people=[],clockMesh,chefModels=[];
+let scene=null,camera=null,renderer=null,models=[],people=[],chefModels=[];let updateTables=()=>{};
 const canvas=$('scene');
 if(window.THREE){
 scene=new THREE.Scene();scene.background=new THREE.Color(0xb9eada);scene.fog=new THREE.Fog(0xb9eada,25,45);
@@ -78,7 +78,7 @@ function addTable(n){const p=tablePos(n),group=new THREE.Group();scene.add(group
 box(0,.8,0,2.1,.2,1.5,0xba8054,group);box(-.8,.39,-.55,.14,.78,.14,0x694d3c,group);box(.8,.39,-.55,.14,.78,.14,0x694d3c,group);box(-.8,.39,.55,.14,.78,.14,0x694d3c,group);box(.8,.39,.55,.14,.78,.14,0x694d3c,group);
 for(let side of [-1,1]){box(0,.46,side*1.1,1.15,.17,.65,0x77b4a3,group);box(0,.8,side*1.39,1.15,.75,.15,0x629c8c,group)}
 ball(0,1.03,0,.22,0xfff6e0,group);models.push(group)}
-function updateTables(){while(models.length<data.tables)addTable(models.length)}
+updateTables=function(){while(models.length<data.tables)addTable(models.length)}
 window.createGuest=function(g){const p=tablePos(g.seat);let a=new THREE.Group();scene.add(a);a.position.set(p.x,.1,p.z+1.1);const shirt=[0xffa7a4,0x83b9e9,0xeabd74,0xc2a5e3,0x82c5ad][g.id%5];box(0,.57,0,.55,.8,.38,shirt,a);ball(0,1.2,0,.32,0xeec3a1,a);const hair=ball(0,1.43,-.06,.32,0x5e4432,a);hair.scale.y=.42;box(-.17,.12,0,.17,.32,.16,0x535366,a);box(.17,.12,0,.17,.32,.16,0x535366,a);a.userData={t:Math.random()*6.3};people.push(a);return a};
 for(let i=0;i<3;i++){const c=new THREE.Group();c.position.set(-2.5+i*2.5,0,-5.4);scene.add(c);box(0,.8,0,.7,1,.4,0xffffff,c);ball(0,1.55,0,.34,0xf0c59e,c);box(0,1.83,0,.72,.16,.3,0xffffff,c);chefModels.push(c)}
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;const wide=w>h;camera.position.set(wide?12:16,wide?17:22,wide?22:27);camera.lookAt(0,0,wide?0:0);camera.updateProjectionMatrix()}
@@ -87,7 +87,7 @@ window.addEventListener('resize',resize);resize();updateTables();
 function frame(now){const dt=Math.min(.06,Math.max(0,(now-last)/1000));last=now;if(data.started){
 const prev=data.elapsed;data.elapsed+=dt;if(prev<120&&data.elapsed>=120){say('🎉 피자와 초밥 2종이 해금됐어!');save()}
 spawnClock-=dt;if(spawnClock<=0){spawn();spawnClock=5.5+Math.random()*3.5}
-for(const g of [...guests]){if(g.phase==='order'){g.patience-=dt;if(g.patience<=0){const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);if(scene&&g.person)scene.remove(g.person);say('손님이 오래 기다려서 나갔어!')}}else if(g.phase==='cooking'){g.timer-=dt;if(g.timer<=0)g.phase='ready'}}
+for(const g of [...guests]){if(g.phase==='order'){g.patience-=dt;if(g.patience<=0){const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);if(scene&&g.person){scene.remove(g.person);people.splice(people.indexOf(g.person),1)}say('손님이 오래 기다려서 나갔어!')}}else if(g.phase==='cooking'){g.timer-=dt;if(g.timer<=0)g.phase='ready'}}
 autoClock-=dt;if(autoClock<=0){autoClock=1.0;if(data.cooks){const pending=guests.filter(g=>g.phase==='order'||g.phase==='ready');for(const g of pending.slice(0,data.cooks)){if(g.phase==='order'){g.phase='cooking';g.timer=dishes[g.dish].time}else serve(g)}}}
 saveClock+=dt;if(saveClock>5){saveClock=0;save()}
 }
