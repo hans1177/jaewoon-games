@@ -183,6 +183,59 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      for(let y=.4;y<1.2;y+=.22)for(const side of [-1,1]){const plank=new THREE.Mesh(new THREE.BoxGeometry(.04,.038,length*.64),y<.7?wood:trim);plank.position.set(side*beam*.96,y,0);root.add(plank);}
      const lampMat=new THREE.MeshStandardMaterial({color:'#ffcc88',emissive:'#935621',emissiveIntensity:.38});
      for(const side of [-1,1]){const lantern=new THREE.Mesh(new THREE.BoxGeometry(.22,.34,.22),lampMat);lantern.position.set(side*beam*.65,2.13,length*.45);root.add(lantern);}
+     // 선종 고유 실루엣: 느린 코그의 높은 선루, 카락의 이중 성곽, 플루트의 화물 선미 등.
+     const addBox=(x,y,z,sx,sy,sz,material)=>{
+      const obj=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),material);
+      obj.position.set(x,y,z);obj.castShadow=true;obj.receiveShadow=true;root.add(obj);return obj;
+     };
+     const lowerDeck=galley?1.35:large?1.85:1.55;
+     if(/cog/.test(type)){
+      addBox(0,lowerDeck,length*.36,beam*1.65,.86,2,wood);
+      addBox(0,lowerDeck+.53,length*.37,beam*1.78,.17,2.25,trim);
+      addBox(0,1.58,-length*.44,beam*1.38,.57,1.15,wood);
+     }
+     if(/carrack|iberian-galleon/.test(type)){
+      addBox(0,2.3,length*.38,beam*1.67,1.18,2.35,trim);
+      addBox(0,3.03,length*.38,beam*1.4,.14,2.45,brass);
+      addBox(0,1.75,-length*.42,beam*1.45,1.04,length*.15,wood);
+      for(let i=-2;i<=2;i++){
+       const pane=addBox(i*beam*.29,2.50,length*.38+1.23,.22,.3,.05,brass);
+       pane.castShadow=false;
+      }
+     }
+     if(/dutch-fluyt/.test(type)){
+      const barrelMaterial=new THREE.MeshStandardMaterial({color:'#98724b',roughness:1});
+      for(let i=-1;i<=1;i++)for(const side of [-1,1]){
+       const load=new THREE.Mesh(new THREE.CylinderGeometry(.32,.36,.85,8),barrelMaterial);
+       load.rotation.z=Math.PI/2;load.position.set(side*(.35+i*.48),1.65,-length*.16);root.add(load);
+      }
+      addBox(0,2.23,length*.40,beam*1.45,.53,1.65,trim);
+     }
+     if(/french-frigate|english-racer/.test(type)){
+      for(const side of [-1,1]){
+       addBox(side*beam*.88,1.63,0,.17,.2,length*.72,brass);
+       for(let i=0;i<10;i++)addBox(side*beam*.86,1.41,-length*.34+i*length*.075,.06,.31,.08,wood);
+      }
+      addBox(0,1.75,length*.40,beam*1.1,.24,2.15,trim);
+     }
+     if(galley){
+      const benches=9;
+      for(let i=0;i<benches;i++){const z=-length*.38+i*length*.086;addBox(0,1.48,z,beam*1.9,.12,.19,trim);}
+      addBox(0,1.65,-length*.42,beam*.62,.54,1,wood);
+     }
+     if(/caravel/.test(type)){
+      addBox(0,1.43,length*.42,beam*1.35,.47,1.45,trim);
+      for(const side of [-1,1])addBox(side*beam*.86,1.62,-length*.05,.1,.19,length*.5,wood);
+     }
+     // 선체 손상 시 검게 그을린 판재를 시각화하고 돛의 색조가 미묘하게 어두워진다.
+     if(id==='player'){
+      const damage=new THREE.Group(),scorch=new THREE.MeshBasicMaterial({color:'#332822',transparent:true,opacity:.78});
+      for(const side of [-1,1])for(let i=0;i<4;i++){
+       const patch=new THREE.Mesh(new THREE.BoxGeometry(.045,.14+i*.045,.24+i*.09),scorch);
+       patch.position.set(side*(beam+.04),.75+i*.13,-length*.27+i*length*.18);damage.add(patch);
+      }
+      root.add(damage);entry.damage=damage;
+     }
      // 바다 항적: 불투명한 흰 사각형 대신 속도에 따라 벌어지는 V형 물보라 조각.
      const wake=new THREE.Group();
      const foamMaterial=new THREE.MeshBasicMaterial({color:'#d5f2e8',transparent:true,opacity:.58,side:THREE.DoubleSide,depthWrite:false});
@@ -205,7 +258,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     const merchants=mode==='sea'?(state.merchants||[]).filter(m=>!state.crewRoster.includes(m.id)).map(m=>({...m,...merchantPosition(m)})).filter(m=>Math.hypot(m.x-origin.x,m.z-origin.z)<85):[];
     const rows=[{id:'player',x:origin.x,z:origin.z,heading:origin.heading,type:state.shipType,hull:origin.hull,maxHull:origin.maxHull},...hostiles.map(e=>({...e,type:e.neutral?'cog':'galleon',enemy:!e.neutral})),...merchants.map(m=>({id:'merchant-'+m.id,x:m.x,z:m.z,heading:m.heading,type:'dutch-fluyt',enemy:false}))];
     const ids=new Set(rows.map(r=>r.id));for(const [id,e]of vessels){e.root.visible=ids.has(id);}
-    const wind=windAt(state);for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);for(const cloth of e.sails){cloth.rotation.y=Math.sin(wind.heading-r.heading)*.15;cloth.rotation.z=Math.sin(wind.heading-r.heading)*.035+Math.sin(t*1.5)*.012;}if(e.wake){e.wake.visible=r.id==='player'?Math.abs(origin.velocity)>.5:true;e.wake.scale.setScalar(.7+Math.min(1.3,Math.abs(r.id==='player'?origin.velocity:3)*.13));e.wake.position.y=.02+Math.sin(t*3)*.015;}}
+    const wind=windAt(state);for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);for(const cloth of e.sails){cloth.rotation.y=Math.sin(wind.heading-r.heading)*.15;cloth.rotation.z=Math.sin(wind.heading-r.heading)*.035+Math.sin(t*1.5)*.012;}if(e.wake){e.wake.visible=r.id==='player'?Math.abs(origin.velocity)>.5:true;e.wake.scale.setScalar(.7+Math.min(1.3,Math.abs(r.id==='player'?origin.velocity:3)*.13));e.wake.position.y=.02+Math.sin(t*3)*.015;}if(e.damage)e.damage.visible=r.id==='player'&&origin.hull/Math.max(1,origin.maxHull)<.53;}
     const enemy=hostiles.sort((a,b)=>Math.hypot(a.x-origin.x,a.z-origin.z)-Math.hypot(b.x-origin.x,b.z-origin.z))[0];
     const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(95,Math.max(27,Math.hypot(ex,ez)*.85)*Math.max(1,.7/camera.aspect));
     if(mode==='naval'){camera.position.lerp(new THREE.Vector3(ex*.5+span*.58,span*.83,ez*.5+span*.97),.065);targetLook.set(ex*.5,1.5,ez*.5);camera.lookAt(targetLook);}else{const bearing=origin.heading+cameraOrbit;camera.position.lerp(new THREE.Vector3(-Math.sin(bearing)*cameraDistance,4+cameraDistance*cameraHeight,-Math.cos(bearing)*cameraDistance),.13);targetLook.set(Math.sin(origin.heading)*3,2.5,Math.cos(origin.heading)*3);camera.lookAt(targetLook);}
