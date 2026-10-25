@@ -379,6 +379,14 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
 #attackBtn::before,#skillBtn::before,#interactBtn::before,#pauseBtn::before,#tacticsBtn::before,#fieldMenu>summary::before,#rosterBtn::before,#journalBtn::before,#heroSheetBtn::before,#bagBtn::before,#mapBtn::before,#systemBtn::before,#audioBtn::before,#partyInspect::before{content:"";display:block;width:21px;height:21px;flex-shrink:0;background:currentColor;mask:var(--ui-icon) center/contain no-repeat;-webkit-mask:var(--ui-icon) center/contain no-repeat;opacity:.92}
 #attackBtn::before{width:30px;height:30px}#skillBtn::before{width:25px;height:25px}#interactBtn::before{width:18px;height:18px}#commandBar button::before{width:18px;height:18px}
 @media(max-width:360px),(max-width:700px) and (max-height:640px),(max-height:500px) and (orientation:landscape){#skillBtn::before{width:18px;height:18px}.act{gap:3px;padding:3px}}
+/* 협동 숫자방: 이메일 없이 메뉴에서 바로 접근하고 모바일 터치영역 보존 */
+#partyCoopPanel{position:fixed;z-index:80;top:calc(84px + env(safe-area-inset-top));right:8px;width:min(330px,calc(100vw - 16px));padding:13px;background:#251f1af5;color:#f8e3b6;border:2px solid #a98954;border-radius:12px;box-shadow:0 12px 36px #0009}
+#partyCoopPanel[hidden]{display:none}
+#partyCoopPanel .coopRow{display:flex;gap:6px;align-items:center;margin:9px 0}
+#partyCoopPanel button,#partyCoopPanel input{min-height:44px;padding:8px;border:1px solid #ab8d5b;background:#403629;color:#fff;border-radius:7px}
+#partyCoopPanel button{flex:1}
+#partyCoopPanel input{width:75px;text-align:center;font-size:20px}
+#partyCoopStatus{font-size:12px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -387,7 +395,7 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
 <header id="adventureHud" aria-label="모험 정보">
  <div id="hud"><div id="stats" class="panel"><div id="statsTop"><span class="pill" id="lvText">Lv.1</span><span class="pill" id="hpText">HP 110/110</span><span class="pill" id="atkText">공격 12</span><span class="pill" id="defText">방어 0</span><span class="pill" id="goldText">80G</span><span class="pill" id="partyText">파티 1+0/4</span></div><div class="bar"><div class="fill" id="hpFill"></div></div><div class="bar"><div class="fill" id="xpFill"></div></div></div><div id="zone" class="panel"><b id="zoneName">마을</b><span id="zoneSub">휴식과 준비</span></div></div>
  <div id="travelLine"><div id="timeWeather" role="status" aria-live="off"><span id="timeOfDay">1일째 · 오전 8:00</span><span id="weatherOfDay">☀ 맑음</span><button id="autoBtn" type="button" aria-pressed="true" aria-label="자동 기술 항상 켜짐" disabled>자동 기술 켜짐</button></div>
- <details id="fieldMenu"><summary aria-label="여정 메뉴">메뉴</summary><div class="fieldMenuBody"><strong class="fieldMenuTitle">여행자의 수첩</strong><div id="objective">동료와 실시간으로 탐험해. 명중·내성·기술은 주사위 판정으로 결정돼.</div><div class="fieldMenuGrid"><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button><button id="bagBtn" aria-label="공용 소모품과 파티 인벤토리">가방</button><button id="mapBtn">큰 지도</button><button id="systemBtn" type="button">설정</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="partyInspect">선택한 인물 보기</button></div><div id="cameraTools" aria-label="시점 조절"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div></div></details></div>
+ <details id="fieldMenu"><summary aria-label="여정 메뉴">메뉴</summary><div class="fieldMenuBody"><strong class="fieldMenuTitle">여행자의 수첩</strong><div id="objective">동료와 실시간으로 탐험해. 명중·내성·기술은 주사위 판정으로 결정돼.</div><div class="fieldMenuGrid"><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button><button id="bagBtn" aria-label="공용 소모품과 파티 인벤토리">가방</button><button id="mapBtn">큰 지도</button><button id="systemBtn" type="button">설정</button><button id="partyCoopOpen" type="button">협동 방</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="partyInspect">선택한 인물 보기</button></div><div id="cameraTools" aria-label="시점 조절"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div></div></details></div>
  <button id="nextQuest" type="button" aria-live="off"><b>다음 여정</b><span id="nextQuestText">이야기 확인 중</span></button>
 </header>
 <div id="partyCards" aria-label="파티 상태"></div>
@@ -396,6 +404,12 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
 <div id="prompt"></div><div id="joystick" aria-label="이동 조이스틱"><div id="knob"></div></div>
 <div id="actions"><button class="act primary" id="attackBtn">공격</button><button class="act" id="skillBtn" type="button" aria-label="현재 직업 기술 사용">직업 기술</button><button class="act gold" id="interactBtn">상호작용</button></div>
 <div id="toast"></div>
+<section id="partyCoopPanel" hidden aria-label="파티 RPG 협동 방">
+ <div class="coopRow"><strong>친구와 모험 · 최대 4명</strong><button id="partyCoopClose" type="button">닫기</button></div>
+ <div class="coopRow"><button id="partyCoopCreate" type="button">방 만들기</button></div>
+ <div class="coopRow"><input id="partyCoopNumber" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="0~9" aria-label="방 번호"><button id="partyCoopJoin" type="button">방 참가</button><button id="partyCoopLeave" type="button">나가기</button></div>
+ <p id="partyCoopStatus" role="status">이메일 없이 숫자 한 자리로 같은 방에 참가해.</p>
+ </section>
 <div id="modal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
   <div class="card">
     <div class="head"><h2 id="modalTitle">메뉴</h2><button class="close" id="modalClose">×</button></div>
@@ -419,6 +433,7 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
 <script type="module">
 import {PartyView} from "./view.mjs";
 import {PartyAudio} from "./audio.mjs";
+import {JaewoonMultiplayerClient} from "../../multiplayer/multiplayer-client.js";
 (function(){
 "use strict";
 var SAVE_KEY="party-rpg-v1";
@@ -2196,7 +2211,60 @@ function interact(){
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
 function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))return;view.selection=best.id;if(Math.hypot(best.x-p.x,best.y-p.y)>140){moveTarget={x:best.x,y:best.y};toast(best.name+' 가까이 가면 말을 걸 수 있어.');}else companionMenu(best.id);return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var landmark=nearbyLandmark();if(landmark&&Math.hypot(point.x-landmark.x,point.y-landmark.y)<72){if(Math.hypot(p.x-landmark.x,p.y-landmark.y)<125){recordLandmark(landmark);return;}moveTarget={x:landmark.x,y:landmark.y};toast('수상한 기록을 향해 이동해.');return;}var crime=imperialCaseAtLocation();if(crime&&Math.hypot(point.x-crime.x,point.y-crime.y)<86){if(Math.hypot(p.x-crime.x,p.y-crime.y)<125){imperialCaseInvestigate();return;}moveTarget={x:crime.x,y:crime.y};toast('사건 현장으로 이동해.');return;}var side=pendingRecruitQuest(),sideSite=side?RECRUIT_ARCS[portraitIndex(side)].site:null;if(sideSite&&Math.hypot(point.x-sideSite.x,point.y-sideSite.y)<80){if(Math.hypot(p.x-sideSite.x,p.y-sideSite.y)<115){completeRecruitQuest();return;}moveTarget={x:sideSite.x,y:sideSite.y};toast('영입 단서로 이동해.');return;}var storySite=pendingStoryEncounter();if(storySite&&Math.hypot(point.x-storySite.site.x,point.y-storySite.site.y)<75){if(Math.hypot(p.x-storySite.site.x,p.y-storySite.site.y)<120){inspectAct2();return;}moveTarget={x:storySite.site.x,y:storySite.site.y};toast('사건 현장으로 이동');return;}var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
-function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW,worldH,combat,environment:gameEnvironment(),cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site||(nearbyLandmark()?{x:nearbyLandmark().x,y:nearbyLandmark().y}:null),recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),paused:tacticalPaused||modalOpen,council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
+// 메인: 온라인 동료의 실시간 위치는 저장에 들어가지 않고 렌더러에만 전달한다.
+const coop={client:null,id:'',roster:[],peers:new Map(),number:'',lastSent:0};
+const coopStatus=message=>{document.getElementById('partyCoopStatus').textContent=message;};
+function coopClient(){
+ if(coop.client)return coop.client;
+ const client=coop.client=new JaewoonMultiplayerClient();
+ client.on('message_received',event=>{
+  const message=event.detail||{};
+  if(message.type==='connected'||message.type==='presence'){
+   if(message.type==='connected')coop.id=message.userId;
+   coop.roster=Array.isArray(message.players)?message.players.slice(0,4):[];
+   for(const [id] of coop.peers)if(!coop.roster.some(p=>p.userId===id))coop.peers.delete(id);
+   coopStatus('방 '+coop.number+' · '+coop.roster.length+'/4명 · 친구 위치 공유 중');
+  }
+  if(message.type!=='event'||message.action!=='party-rpg-hero'||message.userId===coop.id||!coop.roster.some(p=>p.userId===message.userId))return;
+  const x=Number(message.x),y=Number(message.y),zone=Number(message.zone);
+  if(![x,y,zone].every(Number.isFinite)||Math.abs(x)>20000||Math.abs(y)>20000||!Number.isInteger(zone)||zone<0||zone>=ZONES.length)return;
+  const classId=classIds.includes(message.classId)?message.classId:'fighter';
+  coop.peers.set(message.userId,{id:message.userId,name:'친구 모험가',classId,x,y,zone,dungeon:!!message.dungeon});
+ });
+ client.on('websocket_disconnected',()=>{coop.peers.clear();coopStatus('멀티 서버 재연결 중…')});
+ return client;
+}
+document.getElementById('partyCoopOpen').onclick=()=>{const panel=document.getElementById('partyCoopPanel');panel.hidden=!panel.hidden;};
+document.getElementById('partyCoopClose').onclick=()=>{document.getElementById('partyCoopPanel').hidden=true;};
+document.getElementById('partyCoopNumber').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9]/g,'').slice(0,1);});
+async function partyCoopRoom(mode){
+ const number=document.getElementById('partyCoopNumber').value.trim();
+ if(mode==='join'&&!/^[0-9]$/.test(number)){coopStatus('방 번호는 0~9 한 자리만 입력해.');return;}
+ const create=document.getElementById('partyCoopCreate'),join=document.getElementById('partyCoopJoin');
+ create.disabled=true;join.disabled=true;coopStatus('협동 방 연결 중…');
+ try{
+  const client=coopClient();
+  const response=mode==='create'?await client.createNumberRoomForGame('party-rpg'):await client.joinNumberRoomForGame('party-rpg',number);
+  if(!response.ok){
+   const errors={rooms_full:'숫자방 10개가 모두 사용 중이야.',room_not_found:'그 번호의 방이 없어.',room_full:'방 정원 4명이 모두 찼어.',network_error:'멀티 서버에 접속할 수 없어.'};
+   coopStatus(errors[response.data?.error]||'방 연결 실패 · 서버를 확인해.');return;
+  }
+  coop.number=String(response.data.inviteCode);document.getElementById('partyCoopNumber').value=coop.number;coop.peers.clear();
+  coopStatus('방 번호 '+coop.number+' · 친구에게 숫자 하나만 알려 줘.');
+ }finally{create.disabled=false;join.disabled=false;}
+}
+document.getElementById('partyCoopCreate').onclick=()=>partyCoopRoom('create');
+document.getElementById('partyCoopJoin').onclick=()=>partyCoopRoom('join');
+document.getElementById('partyCoopLeave').onclick=async()=>{
+ await coop.client?.leaveGemRoom();coop.id='';coop.number='';coop.roster=[];coop.peers.clear();
+ coopStatus('방에서 나왔어. 혼자 계속 모험할 수 있어.');
+};
+function sendPartyCoop(now){
+ if(!coop.client?.isRoomConnected()||now-coop.lastSent<250)return;
+ coop.lastSent=now;
+ coop.client.sendEvent({action:'party-rpg-hero',x:p.x,y:p.y,zone:state.zone,dungeon:!!dungeon,classId:state.player.classId});
+}
+function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,coopPlayers:[...coop.peers.values()],worldW,worldH,combat,environment:gameEnvironment(),cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site||(nearbyLandmark()?{x:nearbyLandmark().x,y:nearbyLandmark().y}:null),recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),paused:tacticalPaused||modalOpen,council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
 function loop(now){
  var dt=Math.min(.04,(now-last)/1000);last=now;
@@ -2221,7 +2289,7 @@ function loop(now){
  }
  interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}
  hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}
- draw();requestAnimationFrame(loop);
+ sendPartyCoop(now);draw();requestAnimationFrame(loop);
 }
 
 // 여정 메뉴는 기존 기능을 호출하고, 바깥 터치 시 닫는다. 게임 상태·저장은 바꾸지 않는다.
