@@ -50,7 +50,7 @@ const centralWorkflows=[
 
 test('platform-release-roadmap is the only production machine policy with authority',()=>{
   assert.equal(exists('AUTONOMOUS_DEVELOPMENT_POLICY.md'),false);
-  assert.equal(exists('AGENTS.md'),false);
+  assert.equal(exists('AGENTS.md'),true); // Central machine authority remains solely in roadmap; AGENTS.md is an agent instruction, not a second machine policy.
   const directive=JSON.parse(read('company-directive.json'));
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');

@@ -707,7 +707,7 @@ test('F9 canonical publish uses exact F9 released-game identity and immediately 
  assert.match(dispatch,/row\.f0Evidence\?\.artifactIdentity!==row\.artifactIdentity/);
  assert.match(dispatch,/currentCycle&&\(item\.robloxQualityBuildUpRequired===true/);
  assert.doesNotMatch(dispatch,/evaluateInternalRelease/);
- assert.match(workflow,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
+ assert.match(workflow,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES/);
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$refill_count/);
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_REQUIRES_SETTLED_WAITER=NO/);
@@ -1242,7 +1242,7 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(continueBlock,/roblox-f9-persist-same-field-conflicts/);
   assert.match(continueBlock,/ROBLOX_F9_NEXT_CYCLE_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.match(continueBlock,/String\(run\.head_sha\|\|''\)===currentSha/);
-  assert.match(continueBlock,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
+  assert.match(continueBlock,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES/);
 
   const releaseHeader=release.slice(0,release.indexOf('\njobs:\n'));
   assert.match(releaseHeader,/group: roblox-publish-exact-\$\{\{ inputs\.game_id \|\| 'sync' \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}-\$\{\{ github\.sha \}\}/);

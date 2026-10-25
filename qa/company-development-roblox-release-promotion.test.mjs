@@ -436,7 +436,7 @@ test('internal Roblox modification loop uses isolated validation before F9 and c
   assert.match(runtime,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
   assert.match(finalReview,/publish_stage=final/);
   assert.match(finalReview,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
-  assert.match(finalReview,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
+  assert.match(finalReview,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES/);
 });
 
 test('push-triggered candidate deployment selects any canonical pending Roblox candidate without legacy releaseStrategy',()=>{

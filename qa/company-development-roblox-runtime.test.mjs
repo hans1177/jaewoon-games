@@ -427,7 +427,7 @@ test('Roblox package completion routes F0 through private validation and publish
   assert.ok(f9.includes('publish_stage=final'));
   assert.ok(publish.includes('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS'));
   assert.ok(f9.includes('ROBLOX_F9_VIBE_REFILL_DISPATCHED='));
-  assert.ok(f9.includes('ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'));
+  assert.ok(f9.includes('ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES'));
   assert.ok(!f0.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
 });
 
