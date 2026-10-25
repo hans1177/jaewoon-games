@@ -321,9 +321,9 @@ test('central policy requires perpetual F0-F9 cycles and canonical publish only 
   assert.equal(cycle.perpetualRepeat,true);
   assert.equal(cycle.canonicalGameTargetPublishBeforeF9Forbidden,true);
   assert.equal(cycle.preF9ValidationMustUseSeparateTarget,true);
-  assert.equal(cycle.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,false);
-  assert.equal(cycle.nextCycleStartsAfterPublishDispatch,true);
-  assert.equal(cycle.publicationOutcomeBlocksEvolution,false);
+  assert.equal(cycle.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
+  assert.equal(cycle.nextCycleStartsAfterPublishDispatch,false);
+  assert.equal(cycle.publicationOutcomeBlocksEvolution,true);
   assert.equal(cycle.publicationFailureMustRemainRetryTracked,true);
   assert.equal(cycle.publicationRetryMode,'AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH');
   assert.equal(cycle.publicationRetryMustPreserveExactFailedCycleIdentity,true);
@@ -572,3 +572,27 @@ test('final publication dedupe keeps distinct immutable cycles independent',()=>
   assert.match(guard,/String\(r\.display_title\|\|''\)===title/);
 });
 
+
+test('Roblox F9 canonical deploy, post-publish QA, and next F0 run in this exact order',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+ const final=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const sync=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+ const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ assert.match(final,/Immediately continue each successfully persisted Roblox F9 game\n        if: false/);
+ assert.match(workflow,/name: Verify canonical Place after publish then restart Roblox F0/);
+ assert.match(workflow,/needs: release/);
+ assert.match(workflow,/cycle.status!=='PUBLISHED'/);
+ assert.match(workflow,/probeRobloxOpenCloudEngine/);
+ assert.match(workflow,/proof.exactPlace===true/);
+ assert.match(workflow,/proof.exactVersion===true/);
+ assert.match(workflow,/roblox-post-publish-qa\.json/);
+ assert.match(workflow,/entry.postPublishQaPassed=result.pass|cycle.postPublishQaPassed=result.pass/);
+ assert.match(workflow,/steps.verify.outputs.pass == 'true'/);
+ assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml[^\n]*trigger_source=ROBLOX_POST_PUBLISH_VERIFIED_NEXT_F0/);
+ assert.match(sync,/FORCE_F0_RESTART/);
+ const p=policy.roblox.deploymentControl.verifiedCyclePublication;
+ assert.equal(p.postPublishQaRequiredForNextF0,true);
+ assert.equal(p.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
+ assert.equal(p.perpetualRepeat,true);
+ assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.ownerRequestedVibeOneShotPatch.robloxExecution.postPublishQaBeforeNextF0,true);
+});

@@ -1238,6 +1238,115 @@ jobs:
             echo 'ROBLOX_METADATA_SYNC=PASS_OR_NOT_REQUIRED'
           fi
 
+  post-publish-qa:
+    name: Verify canonical Place after publish then restart Roblox F0
+    needs: release
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_stage == 'final' && inputs.thumbnail_only != true && needs.release.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check exact published version with Roblox Open Cloud
+        id: verify
+        working-directory: main
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          CYCLE_ID: ${{ inputs.publish_cycle_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {probeRobloxOpenCloudEngine} from './tools/company-development-roblox-runtime-foundation.mjs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          const cycle=(item?.robloxCanonicalPublishQueue||[]).find(x=>x.cycleId===process.env.CYCLE_ID);
+          if(!cycle||cycle.status!=='PUBLISHED'||cycle.published!==true||
+            cycle.finalReviewPassed!==true||cycle.f9ReleaseRegressionPassed!==true||
+            cycle.cycleId!==cycle.sourceRevision+':'+cycle.artifactIdentity||
+            !(Number(cycle.versionNumber)>0))throw Error('ROBLOX_EXACT_F9_PUBLISHED_CYCLE_REQUIRED');
+          let proof={},error='';
+          try{proof=await probeRobloxOpenCloudEngine({
+            universeId:String(cycle.universeId),placeId:String(cycle.placeId),
+            versionNumber:Number(cycle.versionNumber),apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+            maxPolls:24,pollIntervalMs:1000
+          });}catch(e){error=String(e?.message||e);}
+          const pass=proof.engineExecuted===true&&proof.exactPlace===true&&
+            proof.exactVersion===true&&proof.serverContextExecuted===true;
+          const result={gameId:item.gameId,cycleId:cycle.cycleId,sourceRevision:cycle.sourceRevision,
+            artifactIdentity:cycle.artifactIdentity,universeId:String(cycle.universeId),
+            placeId:String(cycle.placeId),versionNumber:Number(cycle.versionNumber),
+            pass,headlessExactVersionVerified:pass,liveGameplayVerified:false,
+            mobileVerified:false,serverBootVerified:proof.serverBootObserved===true,
+            state:proof.state||'UNVERIFIED',error:error.slice(0,400),checkedAt:new Date().toISOString()};
+          fs.writeFileSync('/tmp/roblox-post-publish-qa.json',JSON.stringify(result,null,2));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
+          console.log('ROBLOX_POST_PUBLISH_QA='+(pass?'PASS':'UNVERIFIED'));
+          NODE
+      - name: Keep exact post-publish evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-post-publish-qa-${{ inputs.game_id }}
+          path: /tmp/roblox-post-publish-qa.json
+          if-no-files-found: warn
+      - name: Persist exact post-publish QA for this publication cycle
+        if: always() && steps.verify.outcome == 'success'
+        working-directory: runtime
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          CYCLE_ID: ${{ inputs.publish_cycle_id }}
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-postpublish'
+          git config user.email 'actions@users.noreply.github.com'
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin company-runtime
+            git reset --hard origin/company-runtime
+            node <<'NODE'
+          const fs=require('fs');
+          const result=JSON.parse(fs.readFileSync('/tmp/roblox-post-publish-qa.json','utf8'));
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===result.gameId);
+          const cycle=(item?.robloxCanonicalPublishQueue||[]).find(x=>x.cycleId===result.cycleId);
+          if(!cycle||cycle.status!=='PUBLISHED'||cycle.sourceRevision!==result.sourceRevision||
+            cycle.artifactIdentity!==result.artifactIdentity||
+            String(cycle.universeId)!==result.universeId||String(cycle.placeId)!==result.placeId||
+            Number(cycle.versionNumber)!==result.versionNumber)throw Error('ROBLOX_POST_PUBLISH_STALE_CYCLE');
+          cycle.postPublishQaEvidence=result;
+          cycle.postPublishQaPassed=result.pass;
+          if(item.robloxSourceCommit===result.sourceRevision&&item.robloxBuildArtifactIdentity===result.artifactIdentity)
+            item.robloxPostPublishQaEvidence=result;
+          item.updatedAt=new Date().toISOString();q.updatedAt=item.updatedAt;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            if git diff --cached --quiet; then pushed=1; break; fi
+            git commit -m "runtime: exact post-publish Roblox QA $GAME_ID [skip ci]"
+            if git push origin HEAD:company-runtime; then pushed=1; break; fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = 1
+          echo 'ROBLOX_POST_PUBLISH_QA_RUNTIME_EVIDENCE=PERSISTED'
+      - name: Restart F0 using the existing source sync after verified publication
+        if: steps.verify.outputs.pass == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
+        run: |
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" -f trigger_source=ROBLOX_POST_PUBLISH_VERIFIED_NEXT_F0
+          echo "ROBLOX_POST_PUBLISH_NEXT_F0_DISPATCHED=$GAME_ID"
+
   thumbnail-sync:
     name: sync canonical Roblox and homepage thumbnails
     needs: release

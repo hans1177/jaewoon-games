@@ -125,7 +125,7 @@ test('F9 runtime persistence retries from latest company-runtime with a field-sc
   assert.doesNotMatch(workflow,/group:.*company-runtime-writer/);
 });
 
-test('F9 fan-in repeats development without requiring publication',()=>{
+test('F9 retains proven learning fan-in while the next F0 waits for actual publish QA',()=>{
   const fanin=workflow.slice(workflow.indexOf('proof_tsv=/tmp/roblox-f9-vibe-fanin.tsv'));
   assert.match(fanin,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxF9ReleaseRegressionPassed!==true/);
   assert.doesNotMatch(fanin,/item\.robloxInternalReleaseReady!==true/);
@@ -176,4 +176,15 @@ test('F9 automatically retries Roblox canonical server dispatch without bypassin
   assert.match(publisher,/await publishRobloxPlace\(\{plan/);
   assert.match(publisher,/ROBLOX_CANONICAL_FINAL_OPEN_CLOUD_PUBLISH=PASS/);
   assert.match(publisher,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
+});
+
+test('F9 does not dispatch next F0 before canonical publish and post-publish version verification',()=>{
+ const source=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const publish=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+ const guard=source.indexOf('      - name: Immediately continue each successfully persisted Roblox F9 game');
+ assert.ok(guard>0);
+ assert.match(source.slice(guard,guard+210),/if: false/);
+ assert.match(publish,/steps.verify.outputs.pass == 'true'/);
+ assert.match(publish,/ROBLOX_POST_PUBLISH_NEXT_F0_DISPATCHED/);
+ assert.match(publish,/ROBLOX_POST_PUBLISH_QA_RUNTIME_EVIDENCE=PERSISTED/);
 });

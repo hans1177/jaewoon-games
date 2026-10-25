@@ -818,6 +818,7 @@ jobs:
           echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_COUNT=$count"
 
       - name: Immediately continue each successfully persisted Roblox F9 game
+        if: false # Next F0 dispatch moved to exact canonical post-publish QA in the existing release workflow.
         env:
           GH_TOKEN: ${{ github.token }}
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
@@ -897,7 +898,7 @@ jobs:
           echo "ROBLOX_F9_NEXT_CYCLE_CANDIDATE_COUNT=$next_count"
           echo "ROBLOX_F9_NEXT_CYCLE_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_F9_NEXT_CYCLE_DEDUPED_COUNT=$deduped_count"
-          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
+          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES'
 
       - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks
         env:
@@ -1036,6 +1037,6 @@ jobs:
           echo "ROBLOX_F9_VIBE_REFILL_DISPATCHED=$refill_count"
           echo 'ROBLOX_F9_VIBE_REFILL_REQUIRES_SETTLED_WAITER=NO'
           echo 'ROBLOX_F9_VIBE_FANIN=PASS'
-          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
+          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=YES'
 
 
