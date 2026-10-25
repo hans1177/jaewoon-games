@@ -2,8 +2,29 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {runInNewContext} from "node:vm";
+import * as THREE from "../assets/roblox/world-ghosts/native/mesh/three/three.module.js";
 
 const html = fs.readFileSync(new URL("../web-games/party-rpg/index.html", import.meta.url), "utf8");
+
+test("밤·안개·던전에서 날씨 갱신이 캐릭터를 안개로 지우지 않음",()=>{
+ const source=fs.readFileSync(new URL('../web-games/party-rpg/view.mjs',import.meta.url),'utf8');
+ const body=source.slice(source.indexOf(' applyEnvironment(live,dt,now){')+' applyEnvironment(live,dt,now){'.length,source.indexOf('\n render(live){'));
+ const distance=Number(source.match(/const CAMERA_DISTANCE=(\d+);/)[1]);
+ const update=runInNewContext('(function(live,dt,now){'+body.trim().slice(0,-1)+'})',{THREE,CAMERA_DISTANCE:distance,SCALE:1/36});
+ for(const inside of [false,true])for(const weather of ['clear','fog','rain','snow','dust','ash'])for(const minutes of [0,510,720,1200]){
+  const terrain={color:new THREE.Color(0xffffff)};
+  const view={worldMood:{sky:0x3c4548,fog:0x4e5653,far:inside?55:52,light:0xffdaa3,intensity:1.75},
+   scene:{background:new THREE.Color(),fog:new THREE.Fog(0x49514f,12,58)},
+   sun:{color:new THREE.Color(),intensity:1,position:new THREE.Vector3()},skyLight:{color:new THREE.Color(),intensity:1},
+   gl:{toneMappingExposure:.83},groundMaterial:()=>terrain,torchLights:[],torchFlames:[],banners:[],qualityPreset:'auto'};
+  const live={state:{zone:0},dungeon:inside?{}:null,environment:{minutes,weather,quality:'auto'}};
+  for(let frame=0;frame<300;frame++)update.call(view,live,1/30,frame*1000/30);
+  assert.ok(view.scene.fog.near>distance,'카메라 중심의 캐릭터는 안개 밖에 있어야 함');
+  assert.ok(view.scene.fog.far>=view.scene.fog.near+24,'날씨 전환 후에도 안개 깊이가 뒤집히지 않아야 함');
+ }
+ assert.match(source,/PlaneGeometry\(w\+80,h\+80\)/);
+});
 
 function block(start, end) {
   const a = html.indexOf(start);
