@@ -2749,7 +2749,7 @@ test('generic creature torso requirement can choose company-common base',()=>{
   assert.equal(loadout.selections[0].assetId,'common-biped-torso');
 });
 
-test('company-common materials v5 preserves old atoms and expands to twenty-five',()=>{
+test('company-common materials v5 preserves old atoms and exposes 26 toy-compatible presets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-materials-v1');
@@ -2757,9 +2757,10 @@ test('company-common materials v5 preserves old atoms and expands to twenty-five
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT','SKIN','BONE','WATER','MUD','SAND','SNOW','MOSS','EMISSIVE','CORROSION','DIRT','WET_DRY','DAMAGE','WEATHERING','STYLE_VARIANT'];
+  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT','SKIN','BONE','WATER','MUD','SAND','SNOW','MOSS','EMISSIVE','CORROSION','DIRT','WET_DRY','DAMAGE','WEATHERING','TOY_PLASTIC','STYLE_VARIANT'];
   assert.equal(catalog.version,5);
-  assert.equal(catalog.atoms.length,25);
+  assert.equal(catalog.atoms.length,26);
+  assert.deepEqual(catalog.atoms.find(row=>row.atomId==='TOY_PLASTIC').variants,['SATIN','GLOSSY','MATTE','DARK']);
   for(const atomId of atoms){
     assert.ok(source.includes(atomId),atomId);
     assert.ok(catalog.atoms.some(row=>row.atomId===atomId),atomId+':catalog');
@@ -2770,7 +2771,7 @@ test('company-common materials v5 preserves old atoms and expands to twenty-five
   assert.equal(materialRefs.length>0,true);
   assert.equal(materialRefs.every(value=>allowed.has(value)),true);
 
-  assert.ok(source.includes('atomCount = 25'));
+  assert.ok(source.includes('atomCount = 26'));
   assert.ok(source.includes('part.CustomPhysicalProperties = physicalBefore'));
   assert.equal(/\.(CanCollide|CanTouch|CanQuery)\s*=/.test(source),false);
   assert.equal(quality.staticAuthoringChecklist.score,100);
