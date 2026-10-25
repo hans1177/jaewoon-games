@@ -158,3 +158,20 @@ test('공용 브릭 재질은 선택형이며 실제 메시·물리·원본 모�
   assert.match(bootstrap,/common-materials-v1\/RobloxCommonMaterials\.luau/);
   assert.equal(catalog.toyBrickStyle.gameSpecificOptIn??catalog.toyBrickStyle.optInByGame,true);
 });
+
+// [전체 Roblox 공용 재질] 기존 게임별 재질 복사본은 회사 원본과 일치해야 한다.
+// 기본 스타일은 유지하며 선택형 TOY_BRICK 추가만 허용한다.
+test('기존 모든 로블록스 게임에 브릭 재질은 선택 가능하지만 자동 강제 적용하지 않는다',()=>{
+  const base=read('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau');
+  const games=fs.readdirSync('roblox-games',{withFileTypes:true}).filter(row=>row.isDirectory());
+  const copies=games.map(row=>'roblox-games/'+row.name+'/shared/RobloxCommonMaterials.luau')
+    .filter(file=>fs.existsSync(file));
+  assert.equal(copies.length,46,'이미 있는 공용 재질 소비자를 임의로 빼먹으면 안 된다');
+  for(const file of copies){
+    assert.equal(read(file),base,file+': 공용 재질 최신 원본과 달라진 복사본');
+    if(!file.includes('/cozy-island/')){
+      const styleFile=file.replace('/shared/RobloxCommonMaterials.luau','/shared/VisualStyle.luau');
+      if(fs.existsSync(styleFile))assert.doesNotMatch(read(styleFile),/MaterialStyle\s*=\s*["']TOY_BRICK["']/,'기존 게임의 스타일을 강제 변경하지 않는다');
+    }
+  }
+});
