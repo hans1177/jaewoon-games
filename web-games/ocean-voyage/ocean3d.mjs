@@ -4,16 +4,60 @@ import {PORTS,SHIP_TYPES,PORT_SCENES,MERCHANT_CAPTAINS,merchantPosition,portStat
 import {COUNTRIES} from './assets/countries.mjs';
 import {LAND} from './assets/world.mjs';
 const C={sea:'#22566c',deep:'#173e55',shore:'#dbc899',land:'#768564',dark:'#283f3c',gold:'#f0d398',wood:'#583c30',roof:'#954f42'};
-export function drawGeography(ctx,w,h,cx,cz,scale){
- ctx.fillStyle=C.sea;ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(w/2-cx*scale,h/2-cz*scale);ctx.scale(scale,scale);
- const left=cx-w/2/scale,right=cx+w/2/scale,top=cz-h/2/scale,bottom=cz+h/2/scale;
- for(const ring of LAND){if(ring.box[2]<left||ring.box[0]>right||ring.box[3]<top||ring.box[1]>bottom)continue;ctx.beginPath();ring.points.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.closePath();ctx.lineJoin='round';ctx.lineWidth=2.4/scale;ctx.strokeStyle=C.shore;ctx.stroke();ctx.fillStyle=C.land;ctx.fill();}
- ctx.strokeStyle='#c8d8a450';ctx.lineWidth=.7/scale;ctx.setLineDash([2/scale,2/scale]);
- for(const c of COUNTRIES){for(const ring of c.rings){ctx.beginPath();ring.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.stroke();}}
+export function drawGeography(ctx,w,h,cx,cz,scale,style='sea'){
+ const parchment=style==='chart';
+ const base=ctx.createLinearGradient(0,0,0,h);
+ if(parchment){base.addColorStop(0,'#e8d9b8');base.addColorStop(.56,'#d9c7a5');base.addColorStop(1,'#bda581');}
+ else{base.addColorStop(0,'#2c7181');base.addColorStop(.48,'#236077');base.addColorStop(1,'#173d58');}
+ ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
+ const left=cx-w/(2*scale),right=cx+w/(2*scale),top=cz-h/(2*scale),bottom=cz+h/(2*scale);
+ ctx.save();ctx.translate(w/2-cx*scale,h/2-cz*scale);ctx.scale(scale,scale);
+ // 실제 해도 좌표와 결합된 위·경도 격자: 지도 이동 시 흔들리지 않고 항로 눈금을 유지한다.
+ const grid=parchment?40:32;
+ ctx.beginPath();for(let x=Math.ceil(left/grid)*grid;x<=right;x+=grid){ctx.moveTo(x,top);ctx.lineTo(x,bottom);}
+ for(let z=Math.ceil(top/grid)*grid;z<=bottom;z+=grid){ctx.moveTo(left,z);ctx.lineTo(right,z);}
+ ctx.strokeStyle=parchment?'#715e4440':'#bad3c326';ctx.lineWidth=.8/scale;ctx.stroke();
+ // 수심 소용돌이·해풍 선은 지리 좌표를 기준으로 결정적 배치한다.
+ if(scale>=.5){const stride=parchment?32:26;ctx.lineWidth=(parchment?.75:1)/scale;
+  for(let ix=Math.floor(left/stride);ix<=Math.ceil(right/stride);ix++)for(let iz=Math.floor(top/stride);iz<=Math.ceil(bottom/stride);iz++){
+   const seed=(ix*173+iz*109+ix*iz*7)>>>0;if(seed%5>1)continue;
+   const px=ix*stride+((seed*17)%19),pz=iz*stride+((seed*11)%17);
+   const rr=3/scale+(seed%4)*1.8/scale;ctx.beginPath();ctx.ellipse(px,pz,rr*2,rr*.4,seed%3*.35,0,Math.PI*1.5);
+   ctx.strokeStyle=parchment?'#83694e42':'#b8ecdd44';ctx.stroke();
+  }
+ }
+ // 자연 해안 폴리곤의 원지형 보존 + 얕은 물띠 + 밝은 포말 + 육지 음영의 삼중 윤곽.
+ for(const ring of LAND){
+  if(ring.box[2]<left||ring.box[0]>right||ring.box[3]<top||ring.box[1]>bottom)continue;
+  ctx.beginPath();ring.points.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.closePath();ctx.lineJoin='round';
+  ctx.lineWidth=(parchment?11:12)/scale;ctx.strokeStyle=parchment?'#ae916744':'#79b7b465';ctx.stroke();
+  ctx.lineWidth=(parchment?5:5.2)/scale;ctx.strokeStyle=parchment?'#cfb78d':'#82b5b0';ctx.stroke();
+  ctx.fillStyle=parchment?'#ac9f77':'#748866';ctx.fill();
+  ctx.lineWidth=1.5/scale;ctx.strokeStyle=parchment?'#6f6146':'#3f645d';ctx.stroke();
+  if(scale>1.1){ctx.save();ctx.clip();ctx.strokeStyle=parchment?'#665a3752':'#c9d4a32b';ctx.lineWidth=.7/scale;
+   const span=9/scale;ctx.beginPath();
+   for(let z=Math.ceil(top/span)*span;z<bottom;z+=span){ctx.moveTo(left,z);ctx.lineTo(right,z-9/scale);}
+   ctx.stroke();ctx.restore();
+  }
+ }
+ ctx.strokeStyle=parchment?'#77624955':'#b8d7a05a';ctx.lineWidth=.8/scale;ctx.setLineDash([2/scale,3/scale]);
+ for(const country of COUNTRIES)for(const ring of country.rings){ctx.beginPath();ring.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.stroke();}
  ctx.setLineDash([]);ctx.restore();
- if(scale>.5){ctx.font='bold '+(w<200?7:11)+'px system-ui';ctx.fillStyle='#f4e1ad';ctx.textAlign='center';for(const c of COUNTRIES){const x=w/2+(c.lon-cx)*scale,y=h/2+(c.z-cz)*scale;if(x>10&&x<w-10&&y>20&&y<h-20)ctx.fillText(c.name,x,y);}ctx.textAlign='left';}
+ if(scale>.5){ctx.save();ctx.font='bold '+(w<200?7:11)+'px Georgia,serif';ctx.textAlign='center';
+  for(const country of COUNTRIES){const x=w/2+(country.lon-cx)*scale,y=h/2+(country.z-cz)*scale;
+   if(x>15&&x<w-15&&y>25&&y<h-25){ctx.strokeStyle=parchment?'#dfd2b1b0':'#1c3d4666';ctx.lineWidth=2;ctx.strokeText(country.name,x,y);ctx.fillStyle=parchment?'#584a35':'#efe0b5';ctx.fillText(country.name,x,y);}
+  }ctx.restore();
+ }
 }
-export function drawFog(ctx,w,h,cx,cz,scale,charted){const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;ctx.fillStyle='#071a2deB';ctx.beginPath();for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++)if(!known.has(gx+':'+gz))ctx.rect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);ctx.fill();}
+export function drawFog(ctx,w,h,cx,cz,scale,charted,style='sea'){
+ const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;
+ ctx.fillStyle=style==='chart'?'#4e4336e6':'#071a2de0';ctx.beginPath();
+ for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++){
+  if(known.has(gx+':'+gz))continue;
+  ctx.rect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);
+ }
+ ctx.fill();
+}
 export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{},onMerchant=()=>{},onMap=()=>{}}={}){
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
