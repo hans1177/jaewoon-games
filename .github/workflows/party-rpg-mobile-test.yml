@@ -204,16 +204,16 @@ jobs:
               throw new Error('DUNGEON_EQUIPMENT_TRANSFER_DUPLICATED '+JSON.stringify(transferCheck));
             await page.locator('#modalClose').click();
             console.log('PARTY_RPG_INVENTORY_CONSUMABLE_COMPANION_EQUIPMENT_TRANSFER=PASS');
-            // 픽셀 캐릭터는 낮은 원본 해상도를 유지하고 렌더 이동은 기존 세계 좌표로 부드럽게 보간한다.
+            // 고밀도 전신 원화와 분절 메시를 검증하고 자동 기술의 기존 상시 사용 규칙을 보존한다.
             await page.waitForFunction(()=>!!window.partyRpgVibeState().view.actors.get('player')?.pixel,null,{timeout:12000});
             const pixelStatus=await page.evaluate(()=>{
               const game=window.partyRpgVibeState(),actor=game.view.actors.get('player');
               const button=document.getElementById('autoBtn');
-              return {sprite:!!actor?.pixel,width:actor?.pixel?.material?.map?.image?.width,
+              return {sprite:!!actor?.pixel?.isMesh,shared:actor?.pixel?.material?.map===game.view.actorArt,width:actor?.pixel?.material?.map?.image?.width,
                 height:actor?.pixel?.material?.map?.image?.height,autoDisabled:button.disabled,
                 autoPressed:button.getAttribute('aria-pressed'),modelHidden:actor?.model?.visible===false};
             });
-            if(!pixelStatus.sprite||pixelStatus.width!==96||pixelStatus.height!==32
+            if(!pixelStatus.sprite||!pixelStatus.shared||pixelStatus.width<1024||pixelStatus.height<768
               ||!pixelStatus.autoDisabled||pixelStatus.autoPressed!=='true'||!pixelStatus.modelHidden)
               throw new Error('PIXEL_CHARACTERS_OR_ALWAYS_AUTO_SKILLS_MISSING '+JSON.stringify(pixelStatus));
             const effectCheck=await page.evaluate(()=>{
