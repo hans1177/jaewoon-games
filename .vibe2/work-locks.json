@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-n4b559",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-existing-web-assessment-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "web-games/daechung-rpg/index.html"
+      ],
+      "baseSha": "ca7213461b51b0dd3ec8326781cd32a5abf34f0c",
+      "runId": "40154461157",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-25T02:56:47.176Z",
+      "expiresAt": "2026-10-25T03:41:47.176Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
