@@ -153,16 +153,21 @@ local function prompt(target,objectText,actionText)
 end
 -- 유틸: 실제 걸을 수 있는 표면만 레이캐스트하고, 보이는 발끝을 그 높이에 맞춘다.
 -- 건물 지붕·장식 파츠를 지면으로 오판하거나 고정 Y로 공중에 띄우지 않는다.
+local floorPartsCache=nil
 local function placeActorOnGround(rootPart,islandTopY)
- local floorParts={}
- for _,item in ipairs(world:GetDescendants())do
-  if item:IsA("BasePart")and
-   (item.Name==Style.Regions[1].Name or item.Name=="VillagePlaza"
-    or item.Name=="VillageGreen"or item.Name=="FarmPlot"
-    or item.Name=="BarracksYard"or item.Name=="Path"or item.Name=="Dock")then
-   table.insert(floorParts,item)
+ -- 유틸: 월드 바닥은 한 번만 수집하고 모든 NPC/몬스터와 리스폰에서 재사용한다.
+ if not floorPartsCache then
+  floorPartsCache={}
+  for _,item in ipairs(world:GetDescendants())do
+   if item:IsA("BasePart")and
+    (item.Name==Style.Regions[1].Name or item.Name=="VillagePlaza"
+     or item.Name=="VillageGreen"or item.Name=="FarmPlot"
+     or item.Name=="BarracksYard"or item.Name=="Path"or item.Name=="Dock")then
+    table.insert(floorPartsCache,item)
+   end
   end
  end
+ local floorParts=floorPartsCache
  local params=RaycastParams.new()
  params.FilterType=Enum.RaycastFilterType.Include
  params.FilterDescendantsInstances=floorParts
@@ -475,6 +480,7 @@ local function spawnMob(kind,pos,visualIndex,islandTopY)
 end
 
 local function buildWorld()
+ floorPartsCache=nil
  workspace:SetAttribute("CozyActorGroundingGeometryAligned",0)
  workspace:SetAttribute("CozyActorGroundingUnverified",0)
  workspace:SetAttribute("CozyActorGroundingGeometryCheck","IN_PROGRESS")
@@ -739,10 +745,10 @@ RunService.Heartbeat:Connect(function(dt)
     r.CFrame=CFrame.lookAt(nextPos,nextPos+delta.Unit)
    end
    if nearest and range<=5.5 and now-npc.lastAttack>1.1 then
-    npc.lastAttack=now;npc.actionUntil=now+.45
+    npc.lastAttack=now;npc.actionUntil=now+.45;npc.motionHold="ATTACK"
     nearest.takeHit(9,nil)
    end
-   local state=now<npc.actionUntil and "ATTACK" or moving and "WALK" or "IDLE"
+   local state=now<npc.actionUntil and (npc.motionHold or "ATTACK") or moving and "WALK" or "IDLE"
    if r:GetAttribute("CozyMotionState")~=state then r:SetAttribute("CozyMotionState",state)end
    local speed=moving and 7 or 0
    if r:GetAttribute("CozyMotionSpeed")~=speed then r:SetAttribute("CozyMotionSpeed",speed)end
@@ -785,13 +791,13 @@ RunService.Heartbeat:Connect(function(dt)
      local npcPart=targetNpc.part
      npcPart:SetAttribute("HP",targetNpc.hp)
      npcPart:SetAttribute("CozyMotionState",targetNpc.hp==0 and "DEATH" or "HIT")
-     targetNpc.actionUntil=now+.4
+     targetNpc.actionUntil=now+.4;targetNpc.motionHold=targetNpc.hp==0 and "DEATH" or "HIT"
      if targetNpc.hp==0 then
       npcPart:SetAttribute("CozyMotionSpeed",0)
       for _,promptObj in ipairs(npcPart:GetChildren())do if promptObj:IsA("ProximityPrompt")then promptObj.Enabled=false end end
       task.delay(C.HomeIslandMobs.RespawnSeconds,function()
        if npcPart.Parent then
-        targetNpc.hp=100;targetNpc.lastAttack=0;targetNpc.actionUntil=0
+        targetNpc.hp=100;targetNpc.lastAttack=0;targetNpc.actionUntil=0;targetNpc.motionHold=nil
         npcPart.CFrame=CFrame.new(targetNpc.spawn)
         npcPart:SetAttribute("HP",100);npcPart:SetAttribute("CozyMotionState","IDLE")
         for _,promptObj in ipairs(npcPart:GetChildren())do if promptObj:IsA("ProximityPrompt")then promptObj.Enabled=true end end
