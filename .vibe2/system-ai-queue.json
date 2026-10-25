@@ -163352,7 +163352,7 @@
     },
     {
       "id": "recovery-recovery-27cb1dd15ebd263ddd6c",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -163410,12 +163410,12 @@
       "sourceMutationBaseline": "fdf582b0edf1dd10e7b6ed43d7640974ea18576f",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40191900507:1",
+      "reservedAt": "2026-10-25T12:13:25.127Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:40069045059:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -163515,11 +163515,11 @@
         "dependencyCentrality": 1,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
-        "ageHours": 29.71,
+        "ageHours": 29.8,
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T06:25:11.496Z",
-      "updatedAt": "2026-10-25T12:11:31.311Z"
+      "updatedAt": "2026-10-25T12:13:25.127Z"
     },
     {
       "id": "recovery-recovery-06705b142351260e706c",
