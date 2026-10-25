@@ -1,5 +1,8 @@
 // 파일명: multiplayer/worker.js
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8' };
+// 메인: 보석 생존전 전용 한 자리 숫자 게스트 방. 기존 계정·매칭 규칙은 유지한다.
+const GEM_GAME_ID = 'gem-survivor';
+const GEM_ROOM_TTL_MS = 60 * 60 * 1000;
 
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data), {
@@ -92,6 +95,22 @@ export default {
       return json({ ok: true, service: 'jaewoon-multiplayer', version: 1 }, 200, headers);
     }
 
+    // 보석 생존전만 이메일 없이 게스트 방을 생성·참가한다. Durable Object가 중복 번호를 관리한다.
+    if (['/gem-survivor/create', '/gem-survivor/join', '/gem-survivor/leave'].includes(url.pathname) && request.method === 'POST') {
+      const origin = request.headers.get('Origin') || '';
+      if (origin && origin !== allowedOrigin(request, env)) return json({ error: 'origin_denied' }, 403, headers);
+      const body = await readJson(request);
+      const id = env.MATCHMAKER.idFromName('global');
+      const response = await env.MATCHMAKER.get(id).fetch('https://matchmaker' + url.pathname, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const forwardedHeaders = new Headers(response.headers);
+      for (const [key, value] of Object.entries(headers)) forwardedHeaders.set(key, value);
+      return new Response(response.body, { status: response.status, headers: forwardedHeaders });
+    }
+
     if (url.pathname === '/auth/signup' && request.method === 'POST') {
       const body = await readJson(request);
       const email = String(body.email || '').trim();
@@ -176,17 +195,32 @@ export default {
     }
 
     if (url.pathname.startsWith('/room/')) {
-      const user = await requireUser(request, env);
-      if (!user) return json({ error: 'unauthorized' }, 401, headers);
       if (request.headers.get('Upgrade') !== 'websocket') return json({ error: 'websocket_required' }, 426, headers);
       const roomId = decodeURIComponent(url.pathname.slice('/room/'.length));
       if (!roomId) return json({ error: 'room_required' }, 400, headers);
+      const guestToken = url.searchParams.get('guestToken') || '';
+      let user;
+      if (guestToken) {
+        const origin = request.headers.get('Origin') || '';
+        if (origin && origin !== allowedOrigin(request, env)) return json({ error: 'origin_denied' }, 403, headers);
+        const matcher = env.MATCHMAKER.get(env.MATCHMAKER.idFromName('global'));
+        const authorized = await matcher.fetch('https://matchmaker/gem-survivor/authorize', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ roomId, guestToken }),
+        });
+        if (!authorized.ok) return json({ error: 'guest_room_unauthorized' }, 401, headers);
+        user = (await authorized.json()).user;
+      } else {
+        user = await requireUser(request, env);
+      }
+      if (!user) return json({ error: 'unauthorized' }, 401, headers);
       const id = env.ROOMS.idFromName(roomId);
       const forwarded = new Request('https://room/connect', request);
       const h = new Headers(forwarded.headers);
       h.set('x-user-id', user.id);
       h.set('x-user-name', user.nickname);
       h.set('x-room-id', roomId);
+      if (guestToken) h.set('x-guest-game', GEM_GAME_ID);
       return env.ROOMS.get(id).fetch(new Request(forwarded, { headers: h }));
     }
 
@@ -206,7 +240,72 @@ export class Matchmaker {
     if (url.pathname === '/matchmake') return this.matchmake(body);
     if (url.pathname === '/friend/create') return this.friendCreate(body);
     if (url.pathname === '/friend/join') return this.friendJoin(body);
+    if (url.pathname === '/gem-survivor/create') return this.gemCreate();
+    if (url.pathname === '/gem-survivor/join') return this.gemJoin(body);
+    if (url.pathname === '/gem-survivor/authorize') return this.gemAuthorize(body);
+    if (url.pathname === '/gem-survivor/leave') return this.gemLeave(body);
     return json({ error: 'not_found' }, 404);
+  }
+
+  // 메인: 같은 숫자는 동시에 한 방만 사용한다. 서버 측 보관 60분·정원 4명.
+  async gemRooms() {
+    const now = Date.now();
+    const rooms = (await this.ctx.storage.get('gemRooms')) || {};
+    for (const [code, room] of Object.entries(rooms)) {
+      if (!room || now - room.createdAt >= GEM_ROOM_TTL_MS) delete rooms[code];
+    }
+    return rooms;
+  }
+
+  async gemCreate() {
+    const rooms = await this.gemRooms();
+    const free = Array.from({ length: 10 }, (_, i) => String(i)).filter(code => !rooms[code]);
+    if (!free.length) return json({ error: 'rooms_full', message: '열 개의 방이 모두 사용 중이야.' }, 409);
+    const index = crypto.getRandomValues(new Uint32Array(1))[0] % free.length;
+    const inviteCode = free[index];
+    const roomId = crypto.randomUUID();
+    const guestToken = crypto.randomUUID() + crypto.randomUUID();
+    const userId = crypto.randomUUID();
+    rooms[inviteCode] = { roomId, createdAt: Date.now(), players: [{ userId, guestToken }] };
+    await this.ctx.storage.put('gemRooms', rooms);
+    return json({ roomId, inviteCode, gameId: GEM_GAME_ID, mode: 'coop', maxPlayers: 4, players: 1, guestToken });
+  }
+
+  async gemJoin({ inviteCode }) {
+    const code = String(inviteCode ?? '').trim();
+    if (!/^[0-9]$/.test(code)) return json({ error: 'invalid_room_number' }, 400);
+    const rooms = await this.gemRooms();
+    const room = rooms[code];
+    if (!room) return json({ error: 'room_not_found' }, 404);
+    if (room.players.length >= 4) return json({ error: 'room_full' }, 409);
+    const guestToken = crypto.randomUUID() + crypto.randomUUID();
+    const userId = crypto.randomUUID();
+    room.players.push({ userId, guestToken });
+    await this.ctx.storage.put('gemRooms', rooms);
+    return json({ roomId: room.roomId, inviteCode: code, gameId: GEM_GAME_ID, mode: 'coop', maxPlayers: 4, players: room.players.length, guestToken });
+  }
+
+  async gemAuthorize({ roomId, guestToken }) {
+    if (typeof guestToken !== 'string' || !/^[0-9a-f-]{72}$/.test(guestToken)) return json({ error: 'unauthorized' }, 401);
+    const rooms = await this.gemRooms();
+    const room = Object.values(rooms).find(row => row.roomId === roomId);
+    const player = room?.players.find(row => row.guestToken === guestToken);
+    if (!player) return json({ error: 'unauthorized' }, 401);
+    return json({ user: { id: player.userId, nickname: '동료 ' + (room.players.indexOf(player) + 1) } });
+  }
+
+  async gemLeave({ guestToken }) {
+    if (typeof guestToken !== 'string' || !/^[0-9a-f-]{72}$/.test(guestToken)) return json({ error: 'unauthorized' }, 401);
+    const rooms = await this.gemRooms();
+    for (const [code, room] of Object.entries(rooms)) {
+      const before = room.players.length;
+      room.players = room.players.filter(row => row.guestToken !== guestToken);
+      if (room.players.length === before) continue;
+      if (!room.players.length) delete rooms[code];
+      await this.ctx.storage.put('gemRooms', rooms);
+      return json({ ok: true });
+    }
+    return json({ error: 'room_not_found' }, 404);
   }
 
   async matchmake({ user, mode, maxPlayers, gameId = 'default' }) {
@@ -270,6 +369,13 @@ export class GameRoom {
     const userId = request.headers.get('x-user-id') || crypto.randomUUID();
     const nickname = request.headers.get('x-user-name') || 'player';
     const roomId = request.headers.get('x-room-id') || '';
+    // 게스트 방은 WebSocket 중복 접속을 정리하고 실제 동시 참가도 4명으로 제한한다.
+    if (request.headers.get('x-guest-game') === GEM_GAME_ID) {
+      for (const ws of this.ctx.getWebSockets()) {
+        if (ws.deserializeAttachment()?.userId === userId) ws.close(1000, 'reconnected');
+      }
+      if (this.ctx.getWebSockets().length >= 4) return json({ error: 'room_full' }, 409);
+    }
     server.serializeAttachment({ userId, nickname, roomId });
     this.ctx.acceptWebSocket(server);
     this.broadcast({ type: 'presence', action: 'join', userId, nickname, players: this.players() });
