@@ -1325,39 +1325,55 @@ export class IslandRendererV3 {
       // 인부는 더 이상 성문 앞에서 제자리 회전하지 않는다.
       // 실제 창고↔생산시설 최단 경로를 왕복하며 닫힌 성문·성벽을 우회한다.
       const economyJobs=game.state.economyV4?.buildings||{};
-      const destinations=[
-        ...Object.entries(economyJobs)
-         .filter(([id,b])=>b?.count>0&&!['stockpile','granary','hovel','well','market','armory'].includes(id))
-         .flatMap(([id,b])=>(b?.sites||[]).slice(0,b.count).map(p=>({id,x:p.x,y:p.y})))
-      ];
-      const workerCount=Math.min(12,destinations.length*2);
+      // 실제 가동 중인 건물에 배치된 일꾼만 표시한다.
+      const staffMap=game.economyStaffCounts||{};
+      const destinations=Object.entries(economyJobs)
+        .filter(([id,b])=>b?.count>0&&(staffMap[id]||0)>0)
+        .flatMap(([id,b])=>(b.sites||[]).slice(0,Math.min(b.count,staffMap[id]))
+          .map((p,i)=>({id:id+':'+i,kind:id,x:p.x,y:p.y})));
+      const depots=Object.entries(economyJobs)
+        .filter(([id,b])=>b?.count>0&&(id==='stockpile'||id==='granary'))
+        .flatMap(([id,b])=>(b.sites||[]).slice(0,b.count).map(p=>({x:p.x,y:p.y,kind:id})));
       const wallMap=(fort.structures||[]).filter(w=>w.hp>0&&['wall','gate','tower'].includes(w.kind));
-      const signature=wallMap.map(w=>w.kind+':'+w.x+':'+w.y+':'+w.open).join('|');
-      if(!this.workerPathCache||this.workerPathCache.signature!==signature){
+      const signature=wallMap.map(w=>w.kind+':'+w.x+':'+w.y+':'+w.open+':'+w.hp).join('|')+'|'+
+        depots.map(p=>p.kind+':'+p.x+':'+p.y).join('|');
+      if(!this.workerPathCache||this.workerPathCache.signature!==signature)
         this.workerPathCache={signature,routes:new Map()};
-      }
+      const workerCount=Math.min(12,destinations.length);
       for(let i=0;i<workerCount;i++){
-        const dest=destinations[i%destinations.length],routeKey=dest.id+':'+dest.x+':'+dest.y;
+        const dest=destinations[i],routeKey=dest.id+':'+dest.x+':'+dest.y;
         let path=this.workerPathCache.routes.get(routeKey);
         if(!path){
-          path=findWorkerRoute({x:390,y:820},dest,wallMap);
+          const food=['orchard','dairy','wheat','mill','bakery'].includes(dest.kind);
+          const candidates=depots.filter(p=>p.kind===(food?'granary':'stockpile'));
+          if(!candidates.length)candidates.push({x:390,y:820,kind:'stockpile'});
+          let best=null,cost=Infinity;
+          // 창고마다 길찾기를 비교하되 건물·성벽 변동까지 경로를 캐싱한다.
+          for(const depot of candidates){
+            const test=findWorkerRoute(depot,dest,wallMap);
+            if(test.length&&test.length<cost){best=test;cost=test.length;}
+          }
+          path=best||[];
           this.workerPathCache.routes.set(routeKey,path);
+        }
+        // 바로 옆 창고와 같은 격자에 있는 시설도 실제 배정 인부가 보인다.
+        if(path.length===1){
+          put('economic-worker:'+dest.id,'npc',dest.x,dest.y,1.75);
+          continue;
         }
         if(path.length<2)continue;
         const lengths=[0];
-        for(let p=1;p<path.length;p++)lengths.push(lengths[p-1]+Math.hypot(
-          path[p].x-path[p-1].x,path[p].y-path[p-1].y));
-        const total=lengths[lengths.length-1];
-        if(total<=0)continue;
+        for(let j=1;j<path.length;j++)
+          lengths.push(lengths[j-1]+Math.hypot(path[j].x-path[j-1].x,path[j].y-path[j-1].y));
+        const total=lengths[lengths.length-1];if(total<=0)continue;
         const travel=((game.timeNow/1000+i*7)*78)%(total*2);
         const current=travel>total?2*total-travel:travel;
         let j=1;while(j<lengths.length-1&&lengths[j]<current)j++;
-        const delta=Math.max(1,lengths[j]-lengths[j-1]);
-        const f=(current-lengths[j-1])/delta;
+        const f=(current-lengths[j-1])/Math.max(1,lengths[j]-lengths[j-1]);
         const x=path[j-1].x+(path[j].x-path[j-1].x)*f;
         const y=path[j-1].y+(path[j].y-path[j-1].y)*f;
-        put('economic-worker:'+i,'npc',x,y,1.75);
-        if(i%3===0)put('worker-wagon:'+i,'package',x+14,y+16,.83);
+        put('economic-worker:'+dest.id,'npc',x,y,1.75);
+        if(i%3===0)put('worker-wagon:'+dest.id,'package',x+14,y+16,.83);
       }
       // 신규 병과/공성기: 기존 메시에 연계, 모바일에서 카메라 밖 메시 생성 최소화.
       const friendlyBudget=this.width<600?65:110;

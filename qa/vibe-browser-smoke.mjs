@@ -352,6 +352,10 @@ try{
     {kind:'wall',x:360,y:810,hp:140}
   ]).ok,false,'COZY_WALL_ALLOWED_BLOCKED_STOCKPILE');
   console.log('COZY_LAYOUT_WORKER_GATE_PATH_POSTDEPLOY=PASS');
+   // 저장 호환/생산 자동화: 빈 옛 영지는 식량원이 생성되고 작업 인원을 실제로 배치한다.
+   const economySource=await page.request.get(liveBase+'web-games/cozy-island/production-buildings.js');
+   assert.ok(economySource.ok(),'COZY_ECONOMY_LIVE_MODULE_MISSING');
+   assert.match(await economySource.text(),/foodSupplyInitialized/,'COZY_STARTER_FOOD_MIGRATION_MISSING');
    const northAttack=castle.siegeTargetForUnit({_siegePoint:{key:'north',x:790,y:245}});
    const eastAttack=castle.siegeTargetForUnit({_siegeLane:610});
    assert.deepEqual(northAttack,{key:'north',x:790,y:245},'COZY_LORD_NORTH_ENTRY_WRONG');

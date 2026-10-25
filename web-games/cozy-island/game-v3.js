@@ -317,7 +317,33 @@ function openGuide(){
     else openWorkerShop();
   }));
 }
-function openInventory(){if(ui.fishing.open)return;ui.panelTitle.textContent='영지 자원';const i=state.inventory;ui.panelBody.innerHTML=`<div class="inventory-grid">${itemCard('🪵 나무',i.wood)}${itemCard('🪨 돌',i.stone)}${itemCard('🍖 식량',i.food)}${itemCard('🌼 꽃',i.flower)}${itemCard('🐟 물고기',i.fish)}${itemCard('🥕 농작물',i.crop)}${itemCard('🌱 씨앗',i.seeds)}</div><p class="panel-note">노비 ${state.workers}/${WORKER_MAX} · 병사 ${countKind('soldier')}/${SOLDIER_MAX} · 궁수 ${countKind('archer')}/${ARCHER_MAX}</p><p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. <a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>`;ui.panel.showModal()}
+function openInventory(){
+ if(ui.fishing.open)return;
+ ui.panelTitle.textContent='영지 자원 · 생산 보고';
+ const inv=state.inventory||{},e=getEconomy(state),last=e.lastCycle||{},produced=last.produced||{};
+ const goods=[
+   ['🪵 나무','wood'],['🪨 돌','stone'],['🍖 식량','food'],['🪙 금화','coins'],
+   ['⛏️ 철','iron'],['🌾 밀','wheat'],['⚙️ 밀가루','flour'],['🍇 포도','grapes'],
+   ['🍷 포도주','wine'],['🌿 홉','hops'],['🍺 맥주','ale'],
+   ['🏹 활','bows'],['⚔️ 검','swords'],['🌼 꽃','flower'],
+   ['🐟 물고기','fish'],['🥕 농작물','crop'],['🌱 씨앗','seeds']
+ ];
+ const amount=key=>key==='coins'?state.coins:inv[key];
+ const producedFood=Number(produced.food)||0,usedFood=Number(last.foodRations)||0;
+ const gained=Number(last.coinIncome)||0;
+ const log=last.at?
+  '최근 6초: 식량 생산 +'+producedFood+' / 주민 배급 -'+usedFood+
+  ' / 식량 순증 '+((producedFood-usedFood)>=0?'+':'')+(producedFood-usedFood)+
+  ' · 금화 수입 +'+gained+' (세금 '+(Number(last.taxIncome)||0)+')':
+  '첫 생산 주기까지 약 6초 · 건설 메뉴에서 일꾼 배정과 생산시설 확인';
+ ui.panelBody.innerHTML='<div class="inventory-grid">'+goods.map(([name,key])=>itemCard(name,amount(key))).join('')+
+   '</div><p class="panel-note">'+log+'</p>'+
+   '<p class="panel-note">식량이 늘지 않으면 생산량보다 주민 배급이 많은지 확인해. · 가동 일꾼 '+
+   (Number(last.staffed)||economyStaff(state).assigned)+'/'+(Number(last.capacity)||economyStaff(state).capacity)+'</p>'+
+   '<p class="panel-note">중세 아트: SketchyLogic · Yar · Seth Galbraith · rubberduck · feudalwars. '+
+   '<a href="../../assets/shared/medieval/license.txt" target="_blank" rel="noopener">출처·라이선스</a></p>';
+ ui.panel.showModal();
+}
 function countKind(kind){return allies.filter(u=>u.kind===kind&&u.hp>0).length}
 
 // 과거 수동 채집·물주기·집 꾸미기 상호작용을 전략 명령으로 교체한다.
@@ -1120,7 +1146,13 @@ function updateHUD(){
   ui.time.textContent=`${pm?'오후':'오전'} ${h12}:${String(m).padStart(2,'0')}`;
   ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';
   ui.coins.textContent=String(state.coins);
-  if(ui.economy)ui.economy.textContent=`🪵 ${Math.floor(state.inventory.wood)} · 🪨 ${Math.floor(state.inventory.stone)} · 🍖 ${Math.floor(state.inventory.food)} · 👷 ${economyStaff(state).assigned} · ⚔️ ${allies.length}`;
+  const workers=economyStaff(state);
+ game.economyStaffCounts=workers.staff; // 3D 운송 인부는 실제 배정 인원과 일치한다.
+ const lastCycle=state.economyV4?.lastCycle,delta=Number(lastCycle?.foodNet)||0;
+ if(ui.economy){
+   const label=`🪵 ${Math.floor(state.inventory.wood)} · 🪨 ${Math.floor(state.inventory.stone)} · 🍖 ${Math.floor(state.inventory.food)} (${delta>=0?'+':''}${delta}) · 👷 ${workers.assigned}/${workers.capacity} · ⚔️ ${allies.length}`;
+   if(ui.economy.textContent!==label)ui.economy.textContent=label;
+ }
   if(raidActive){
     const fort=getFort(),walls=fort?.walls||{};
     const invader=enemies.find(u=>u.hp>0&&(u._lordRaid||u._grandSiege));
