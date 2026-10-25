@@ -4,6 +4,7 @@ import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three
 import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
 import {clone as cloneRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 const SCALE=1/36;
+const CAMERA_DISTANCE=48;
 const HEROES=['warrior','rogue','cleric','wizard','ranger'];
 const PROPS=['tree','tree-high','tree-crooked','rock-large','rock-small','rock-wide','wall','wall-wood','wall-door','wall-window-shutters','roof','roof-gable','roof-gable-end','chimney','fountain-round','cart','stall','lantern','pillar-stone','wall-broken','wall-arch','road','fence'];
 const MONSTERS=['slime','orc','bunny','golem','ghost','winged'];
@@ -203,7 +204,8 @@ buildWorld(live){
  this.sun.color.setHex(mood.light);this.sun.intensity=mood.intensity*.75;
  this.skyLight.intensity=dungeon?.45:zone===6?.55:zone===2?.7:.82;
  this.gl.toneMappingExposure=dungeon?.68:zone===6?.72:zone===5?.91:.83;
- const floor=new THREE.Mesh(new THREE.PlaneGeometry(w,h),this.groundMaterial(zone,dungeon));floor.receiveShadow=true;
+ // 화면 가장자리에서도 지형이 끊기지 않도록 표현 바닥만 확장한다. 이동 경계는 그대로 둔다.
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(w+80,h+80),this.groundMaterial(zone,dungeon));floor.receiveShadow=true;
  floor.userData.ownedGeometry=true;floor.rotation.x=-Math.PI/2;floor.position.set(w/2,0,h/2);this.staticRoot.add(floor);
  const random=n=>{const t=Math.sin(n*127.1+zone*13+(dungeon?live.dungeon.index:0)*51)*43758.5453;return t-Math.floor(t);};
  const grove=[],high=[],crooked=[],rocks=[],pebbles=[],fences=[];
@@ -942,9 +944,10 @@ buildWorld(live){
    this.scene.background.lerp(targetSky,smoothing);
    this.scene.fog.color.lerp(targetFog,smoothing);
   }
-  const targetFar=m.far*(1-fogBoost)*(inside?1:(.83+.17*daylight));
-  this.scene.fog.far+=(targetFar-this.scene.fog.far)*smoothing;
-  this.scene.fog.near=inside?13:weather==='fog'?8:12;
+  // 안개 깊이는 카메라 기준이다. 밤·안개에도 주인공과 가까운 동료는 안개 시작점 앞에 둔다.
+  this.scene.fog.near=CAMERA_DISTANCE+8;
+  const targetFar=this.scene.fog.near+Math.max(24,m.far*(1-fogBoost)*(inside?1:(.83+.17*daylight)));
+  this.scene.fog.far=Math.max(this.scene.fog.near+24,this.scene.fog.far+(targetFar-this.scene.fog.far)*smoothing);
   const warm=new THREE.Color(0xffaf69),moon=new THREE.Color(0x91acd8);
   const sunColor=new THREE.Color(m.light).lerp(moon,darkness*.64).lerp(warm,twilight*.44);
   this.sun.color.lerp(sunColor,smoothing);
@@ -994,7 +997,7 @@ buildWorld(live){
   if(signature!==this.worldSignature){const worldKey=live.state.zone+':'+(live.dungeon?live.dungeon.index+':'+live.dungeon.room:'field');const changed=this.worldKey!==worldKey;this.worldKey=worldKey;if(changed){this.clearEffects();this.focus.set(live.p.x*SCALE,0,live.p.y*SCALE);this.offset.set(0,0);this.follow='player';}this.worldSignature=signature;this.buildWorld(live);}
   this.applyEnvironment(live,dt,now);
   this.yaw+=(this.targetYaw-this.yaw)*(1-Math.exp(-dt*7));this.zoom+=(this.targetZoom-this.zoom)*(1-Math.exp(-dt*9));
-  const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=48,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);if(this.cameraImpact>.001){this.camera.position.x+=Math.sin(now*.11)*this.cameraImpact;this.camera.position.y+=Math.cos(now*.14)*this.cameraImpact*.5;this.cameraImpact*=Math.exp(-dt*14);}else this.cameraImpact=0;if(this.weather){this.weather.position.set(this.focus.x+Math.sin(now*.00045)*.24,0,this.focus.z);this.weather.rotation.y=Math.sin(now*.00018)*.08;}this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
+  const focus=this.follow==='player'?live.p:live.state.ai.find(a=>a.id===this.follow)||live.p;const goal=new THREE.Vector3((focus.x+this.offset.x)*SCALE,0,(focus.y+this.offset.y)*SCALE);this.focus.lerp(goal,1-Math.exp(-dt*9));const distance=CAMERA_DISTANCE,span=distance*Math.cos(this.pitch);this.camera.position.set(this.focus.x+Math.sin(this.yaw)*span,distance*Math.sin(this.pitch),this.focus.z+Math.cos(this.yaw)*span);this.camera.lookAt(this.focus);if(this.cameraImpact>.001){this.camera.position.x+=Math.sin(now*.11)*this.cameraImpact;this.camera.position.y+=Math.cos(now*.14)*this.cameraImpact*.5;this.cameraImpact*=Math.exp(-dt*14);}else this.cameraImpact=0;if(this.weather){this.weather.position.set(this.focus.x+Math.sin(now*.00045)*.24,0,this.focus.z);this.weather.rotation.y=Math.sin(now*.00018)*.08;}this.camera.zoom=this.zoom;this.camera.updateProjectionMatrix();this.camera.updateMatrixWorld();
   const activeMarker=live.evidence||live.council;this.evidenceBeacon.visible=!!activeMarker;
   this.evidenceLabel.textContent=live.imperial?'◆ 제국 사건 조사':live.recruit?'◆ 동료 영입 단서':live.evidence?'◆ 조사할 단서':'◆ 북문 기록실';
   if(activeMarker){const site=activeMarker;this.evidenceBeacon.position.set(site.x*SCALE,.015,site.y*SCALE);this.evidenceBeacon.rotation.y=now*.00025;const v=new THREE.Vector3(site.x*SCALE,1.5,site.y*SCALE).project(this.camera);this.evidenceLabel.hidden=Math.abs(v.x)>.95||Math.abs(v.y)>.95;if(!this.evidenceLabel.hidden)this.evidenceLabel.style.transform='translate('+Math.round((v.x+1)*this.width/2)+'px,'+Math.round((1-v.y)*this.height/2)+'px)';}
