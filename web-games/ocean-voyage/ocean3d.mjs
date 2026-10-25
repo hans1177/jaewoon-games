@@ -127,7 +127,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     const design=SHIP_TYPES.find(t=>t.id===type)||SHIP_TYPES[0],large=/galleon|frigate|carrack|fluyt|racer/.test(type),galley=design.rig==='oars';
     const file=enemy?'ship-pirate-medium':large?'ship-large':/sloop|caravel/.test(type)?'ship-small':'ship-medium';
     let entry=vessels.get(id);if(entry?.type===type&&entry.enemy===enemy&&(id!=='player'||entry.gunCount===state.ship.cannons))return entry;if(entry)world.remove(entry.root);
-    const root=new THREE.Group();world.add(root);entry={root,file,type,enemy,loaded:true,sails:[],wake:null,gunCount:id==='player'?state.ship.cannons:large?12:6};vessels.set(id,entry);
+    const root=new THREE.Group();world.add(root);entry={root,file,type,enemy,loaded:false,sails:[],wake:null,gunCount:id==='player'?state.ship.cannons:large?12:6};vessels.set(id,entry);
     // GLB 준비 중에도 3D 범선이 즉시 보인다. 모델 오류가 해전 전체를 2D로 강등시키지 않는다.
     const length=large?14:galley?13:10,beam=(large?2.5:1.75)*(design.width||1);
     const hullShape=new THREE.Shape();
@@ -149,7 +149,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
       const refine=m=>{if(!m)return m;const mat=m.clone();if('roughness' in mat)mat.roughness=.87;if('metalness' in mat)mat.metalness=.025;
        if(mat.map){mat.map.magFilter=THREE.NearestFilter;mat.map.minFilter=THREE.NearestMipmapNearestFilter;mat.map.needsUpdate=true;}return mat;};
       o.material=Array.isArray(o.material)?o.material.map(refine):refine(o.material);}});
-     root.remove(hullMesh,deckMesh);hullMesh.geometry.dispose();deckMesh.geometry.dispose();root.add(copy);
+     root.remove(hullMesh,deckMesh);hullMesh.geometry.dispose();deckMesh.geometry.dispose();root.add(copy);entry.loaded=true;
     }).catch(e=>{console.warn('선박 모델 불러오기 실패 — 자체 3D 범선 선체 유지',file,e);});
      const trim=new THREE.MeshStandardMaterial({color:enemy?'#bc7463':design.color||'#c5a06d',roughness:.68});
      const wood=new THREE.MeshStandardMaterial({color:'#f5e5d2',map:pixelWood,roughness:1,metalness:0});
@@ -280,7 +280,6 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
       bow.position.set(side*(beam*.48+i*.23),.06,-length*.48+i*.39);wake.add(bow);
      }
      root.add(wake);entry.wake=wake;
-     entry.loaded=true;
     return entry;
    }
    const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#302c26'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#b7b7aa',transparent:true,opacity:.43,depthWrite:false}),
