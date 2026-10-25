@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "party-rpg-build-up-g8-48c0d0372c84",
-  "directiveFingerprint": "48c0d0372c849942b2c9cc3dfe8f57781f59a6312925abb0a4b193740f930326",
-  "previousDirectiveFingerprint": "8c46ffe4de4719fdd0cdec9da1ff57f042448481403b0c99b8e94a4f144abe62",
-  "forbiddenRepeatFingerprint": "8c46ffe4de4719fdd0cdec9da1ff57f042448481403b0c99b8e94a4f144abe62",
+  "directiveId": "party-rpg-build-up-g9-de829883d13e",
+  "directiveFingerprint": "de829883d13ea39e4f945fb58c4820a157704323b1aa345103d4925ef1a60ec4",
+  "previousDirectiveFingerprint": "48c0d0372c849942b2c9cc3dfe8f57781f59a6312925abb0a4b193740f930326",
+  "forbiddenRepeatFingerprint": "48c0d0372c849942b2c9cc3dfe8f57781f59a6312925abb0a4b193740f930326",
   "gameId": "party-rpg",
   "gameName": "파티 RPG",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/party-rpg",
-  "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+  "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
   "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+        "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
-    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4327,48 +4327,48 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 451,
-      "progression": 440,
-      "ai": 117,
+      "combat": 475,
+      "progression": 442,
+      "ai": 114,
       "save": 101,
       "multiplayer": 1,
       "animation": 37,
-      "motionStates": 643,
+      "motionStates": 687,
       "gameFeel": 13,
-      "vfx": 102,
+      "vfx": 112,
       "camera": 40,
       "audio": 56,
-      "audioDynamics": 4,
-      "ui": 484,
-      "uiFlow": 372,
+      "audioDynamics": 6,
+      "ui": 496,
+      "uiFlow": 373,
       "entryFlow": 0,
       "loadingFlow": 0,
       "input": 117,
       "map": 989,
       "landmark": 102,
-      "interaction": 146,
+      "interaction": 152,
       "inventory": 80,
       "equipment": 119,
       "settings": 7,
       "feedback": 142,
       "session": 24,
-      "content": 754,
+      "content": 758,
       "choice": 297,
       "connection": 1,
       "performance": 21,
-      "lighting": 94,
+      "lighting": 96,
       "primitive": 7,
       "todo": 0,
-      "errorRecovery": 20
+      "errorRecovery": 18
     },
     "topFiles": [
       {
         "file": "web-games/party-rpg/index.html",
-        "score": 1315
+        "score": 1324
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "score": 140
+        "score": 160
       },
       {
         "file": "web-games/party-rpg/audio.mjs",
@@ -4378,7 +4378,7 @@
     "sourceAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2140,
+        "line": 2170,
         "kind": "FUNCTION",
         "symbol": "draw",
         "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
@@ -4386,15 +4386,15 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1310,
+        "line": 1330,
         "kind": "FUNCTION",
         "symbol": "partyHud",
         "context": "function partyHud(){",
-        "score": 394
+        "score": 378
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2005,
+        "line": 2035,
         "kind": "FUNCTION",
         "symbol": "updateEnemies",
         "context": "function updateEnemies(dt){",
@@ -4402,7 +4402,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2137,
+        "line": 2167,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "context": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -4410,7 +4410,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2138,
+        "line": 2168,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "context": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -4418,7 +4418,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2142,
+        "line": 2172,
         "kind": "FUNCTION",
         "symbol": "loop",
         "context": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
@@ -4426,7 +4426,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1395,
+        "line": 1415,
         "kind": "FUNCTION",
         "symbol": "portraitIndex",
         "context": "function portraitIndex(u){return u===state.player?state.player.portraitId:Math.max(0,Math.min(9,Number(String(u.id).slice(2))||0));}",
@@ -4434,7 +4434,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 739,
+        "line": 748,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
         "context": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
@@ -4442,7 +4442,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 736,
+        "line": 745,
         "kind": "FUNCTION",
         "symbol": "accessoryBonus",
         "context": "function accessoryBonus(u,stat){return ACCESSORIES.filter(it=>it.id===u.ring||it.id===u.necklace).reduce((total,it)=>total+(it[stat]||0),0);}",
@@ -4450,7 +4450,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 737,
+        "line": 746,
         "kind": "FUNCTION",
         "symbol": "playerWeaponPower",
         "context": "function playerWeaponPower(){if(state.player.specialWeapon&&DROPS[state.player.specialWeapon])return DROPS[state.player.specialWeapon].power||0;var w=WEAPONS.find(function(x){retur",
@@ -4458,7 +4458,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 738,
+        "line": 747,
         "kind": "FUNCTION",
         "symbol": "playerArmorDef",
         "context": "function playerArmorDef(){if(state.player.specialArmor&&DROPS[state.player.specialArmor])return (DROPS[state.player.specialArmor].def||0)+accessoryBonus(state.player,'def');var a=A",
@@ -4466,15 +4466,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1309,
-        "kind": "FUNCTION",
-        "symbol": "updateCombat",
-        "context": "function updateCombat(dt){battleTime+=dt;var threat=enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<260;});if(!threat)contactTriggered=false;else if(!contactTr",
-        "score": 258
-      },
-      {
-        "file": "web-games/party-rpg/index.html",
-        "line": 1394,
+        "line": 1414,
         "kind": "FUNCTION",
         "symbol": "escapeText",
         "context": "function escapeText(value){return String(value).replace(/[&<>\"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c];});}",
@@ -4482,7 +4474,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 740,
+        "line": 749,
         "kind": "FUNCTION",
         "symbol": "aiWeaponPower",
         "context": "function aiWeaponPower(a){if(a.specialWeapon&&DROPS[a.specialWeapon])return DROPS[a.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===a.weapon;});return w?w.powe",
@@ -4490,7 +4482,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2004,
+        "line": 2034,
         "kind": "FUNCTION",
         "symbol": "nearestEnemy",
         "context": "function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(function(e){if(e.dead)return;var dx=e.x-x,dy=e.y-y,dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=e;}});return be",
@@ -4498,7 +4490,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1399,
+        "line": 1419,
         "kind": "FUNCTION",
         "symbol": "renderCreator",
         "context": "function renderCreator(){",
@@ -4506,7 +4498,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1404,
+        "line": 1424,
         "kind": "FUNCTION",
         "symbol": "confirmCharacter",
         "context": "function confirmCharacter(){var name=document.getElementById('heroName').value.trim().slice(0,16)||'여행자';state.player.name=name;state.player.classId=uiDraft.classId;state.player.po",
@@ -4514,7 +4506,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2003,
+        "line": 2033,
         "kind": "FUNCTION",
         "symbol": "attackPlayer",
         "context": "function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=orderedEnemy(p.x,p.y,r.range);if(!target){if(automa",
@@ -4530,7 +4522,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1974,
+        "line": 2004,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "context": "function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.visualUntil=performance",
@@ -4538,7 +4530,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1397,
+        "line": 1417,
         "kind": "FUNCTION",
         "symbol": "portraitMarkup",
         "context": "function portraitMarkup(index,extra){return '<span class=\"portrait '+(extra||'')+'\" style=\"'+portraitStyle(index)+'\" aria-hidden=\"true\"></span>';}",
@@ -4546,7 +4538,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1398,
+        "line": 1418,
         "kind": "FUNCTION",
         "symbol": "showCreator",
         "context": "function showCreator(){uiDraft.classId=state.player.classId;uiDraft.portraitId=state.player.portraitId;document.getElementById('introMenu').hidden=true;document.getElementById('cre",
@@ -4554,7 +4546,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1405,
+        "line": 1425,
         "kind": "FUNCTION",
         "symbol": "beginAdventure",
         "context": "function beginAdventure(){sound.start();if(!state.player.identityCreated){showCreator();return;}gameStarted=true;document.getElementById('start').hidden=true;keys={};joy.x=joy.y=0;",
@@ -4562,7 +4554,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1406,
+        "line": 1426,
         "kind": "FUNCTION",
         "symbol": "showIntro",
         "context": "function showIntro(step){",
@@ -4570,11 +4562,27 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1937,
+        "line": 1967,
         "kind": "FUNCTION",
         "symbol": "spawnFieldBatch",
         "context": "function spawnFieldBatch(){",
         "score": 170
+      },
+      {
+        "file": "web-games/party-rpg/index.html",
+        "line": 2005,
+        "kind": "FUNCTION",
+        "symbol": "killEnemy",
+        "context": "function killEnemy(e,killer){",
+        "score": 170
+      },
+      {
+        "file": "web-games/party-rpg/view.mjs",
+        "line": 426,
+        "kind": "METHOD",
+        "symbol": "animate",
+        "context": "animate(entry,moving,combat,dt,now){",
+        "score": 112
       },
       {
         "file": "web-games/party-rpg/view.mjs",
@@ -4626,7 +4634,15 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 474,
+        "line": 415,
+        "kind": "FUNCTION",
+        "symbol": "named",
+        "context": "const named=regex=>[...actions].find(([name])=>regex.test(name))?.[1]||null;",
+        "score": 66
+      },
+      {
+        "file": "web-games/party-rpg/view.mjs",
+        "line": 501,
         "kind": "METHOD",
         "symbol": "removeActor",
         "context": "removeActor(key,entry){if(entry.pixel){entry.pixel.geometry.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheR",
@@ -4634,7 +4650,7 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 603,
+        "line": 630,
         "kind": "METHOD",
         "symbol": "render",
         "context": "render(live){",
@@ -4682,15 +4698,7 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 418,
-        "kind": "METHOD",
-        "symbol": "animate",
-        "context": "animate(entry,moving,combat,dt,now){",
-        "score": 48
-      },
-      {
-        "file": "web-games/party-rpg/view.mjs",
-        "line": 470,
+        "line": 497,
         "kind": "METHOD",
         "symbol": "reactToHit",
         "context": "reactToHit(key,power=1){",
@@ -4698,7 +4706,7 @@
       },
       {
         "file": "web-games/party-rpg/view.mjs",
-        "line": 528,
+        "line": 555,
         "kind": "METHOD",
         "symbol": "popDamage",
         "context": "popDamage(x,y,amount,critical=false,miss=false){",
@@ -4751,23 +4759,15 @@
         "symbol": "update",
         "context": "update(zone,dungeon,fighting,climate=null){",
         "score": 32
-      },
-      {
-        "file": "web-games/party-rpg/audio.mjs",
-        "line": 97,
-        "kind": "METHOD",
-        "symbol": "step",
-        "context": "step(surface){",
-        "score": 32
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
-    "currentSourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "currentSourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5907,8 +5907,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 358301,
-        "largestFileBytes": 280752,
+        "sourceBytes": 364135,
+        "largestFileBytes": 283456,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5940,20 +5940,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
+    "themeDepth": 9,
+    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -5996,7 +5997,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 76,
+        "score": 58,
         "gapDomains": [
           "SYSTEM_CONNECTION"
         ]
@@ -6108,11 +6109,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 8,
-    "previousGeneration": 7,
+    "generation": 9,
+    "previousGeneration": 8,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
-    "priorSourceFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+    "sourceFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
+    "priorSourceFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6131,7 +6132,7 @@
     "version": 1,
     "gameId": "party-rpg",
     "platform": "WEB",
-    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6816,7 +6817,7 @@
     "gameId": "party-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7158,7 +7159,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2140,
+        "line": 2170,
         "kind": "FUNCTION",
         "symbol": "draw",
         "currentBehavior": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
@@ -7167,7 +7168,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1310,
+        "line": 1330,
         "kind": "FUNCTION",
         "symbol": "partyHud",
         "currentBehavior": "function partyHud(){",
@@ -7176,7 +7177,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2005,
+        "line": 2035,
         "kind": "FUNCTION",
         "symbol": "updateEnemies",
         "currentBehavior": "function updateEnemies(dt){",
@@ -7185,7 +7186,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2137,
+        "line": 2167,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "currentBehavior": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -7194,7 +7195,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2138,
+        "line": 2168,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "currentBehavior": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -7203,7 +7204,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2142,
+        "line": 2172,
         "kind": "FUNCTION",
         "symbol": "loop",
         "currentBehavior": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
@@ -7212,7 +7213,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1395,
+        "line": 1415,
         "kind": "FUNCTION",
         "symbol": "portraitIndex",
         "currentBehavior": "function portraitIndex(u){return u===state.player?state.player.portraitId:Math.max(0,Math.min(9,Number(String(u.id).slice(2))||0));}",
@@ -7221,7 +7222,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 739,
+        "line": 748,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
         "currentBehavior": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
@@ -7357,7 +7358,7 @@
     "sourceAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2140,
+        "line": 2170,
         "kind": "FUNCTION",
         "symbol": "draw",
         "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
@@ -7369,11 +7370,11 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1310,
+        "line": 1330,
         "kind": "FUNCTION",
         "symbol": "partyHud",
         "context": "function partyHud(){",
-        "score": 394,
+        "score": 378,
         "currentBehavior": "function partyHud(){",
         "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 partyHud의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/party-rpg/index.html::partyHud이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7381,7 +7382,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2005,
+        "line": 2035,
         "kind": "FUNCTION",
         "symbol": "updateEnemies",
         "context": "function updateEnemies(dt){",
@@ -7393,7 +7394,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2137,
+        "line": 2167,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "context": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -7405,7 +7406,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2138,
+        "line": 2168,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "context": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -7417,7 +7418,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2142,
+        "line": 2172,
         "kind": "FUNCTION",
         "symbol": "loop",
         "context": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
@@ -7429,7 +7430,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1395,
+        "line": 1415,
         "kind": "FUNCTION",
         "symbol": "portraitIndex",
         "context": "function portraitIndex(u){return u===state.player?state.player.portraitId:Math.max(0,Math.min(9,Number(String(u.id).slice(2))||0));}",
@@ -7441,7 +7442,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 739,
+        "line": 748,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
         "context": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
@@ -7537,7 +7538,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+      "sourceTreeFingerprint": "678c0c724088d6dbe6b7577c29168e8dad7de333182ccd31f59a987e48af7dcf",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7596,7 +7597,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7659,5 +7660,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T03:17:36.642Z"
+  "generatedAt": "2026-10-25T03:56:16.878Z"
 }

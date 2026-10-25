@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fifty-days-build-up-g17-ab9dbd7bebd2",
-  "directiveFingerprint": "ab9dbd7bebd2038083c58931921ec59bed66bb116e463ccb3dd1d173cd5d53ca",
-  "previousDirectiveFingerprint": "bc34b8c3661caf5501723085e5d126f966450bdc1513d0544229865a51cd52de",
-  "forbiddenRepeatFingerprint": "bc34b8c3661caf5501723085e5d126f966450bdc1513d0544229865a51cd52de",
+  "directiveId": "fifty-days-build-up-g18-0c5b345e3b0a",
+  "directiveFingerprint": "0c5b345e3b0ae153cf09aaff66c65747a3d92a02c9a076207cd1a1d016f309d4",
+  "previousDirectiveFingerprint": "ab9dbd7bebd2038083c58931921ec59bed66bb116e463ccb3dd1d173cd5d53ca",
+  "forbiddenRepeatFingerprint": "ab9dbd7bebd2038083c58931921ec59bed66bb116e463ccb3dd1d173cd5d53ca",
   "gameId": "fifty-days",
   "gameName": "50일",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fifty-days",
-  "sourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+  "sourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
   "designFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+        "sourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -385,7 +385,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "08f9cb043d029ede76a3bd65d99aeb5eb44df901ab3859077e685a2436e49c97",
-    "sourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+    "sourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -932,7 +932,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+    "sourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4535,8 +4535,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 182,
-      "progression": 525,
+      "combat": 180,
+      "progression": 527,
       "ai": 62,
       "save": 119,
       "multiplayer": 43,
@@ -4546,12 +4546,12 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 26,
+      "audioDynamics": 28,
       "ui": 898,
       "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 151,
+      "input": 153,
       "map": 290,
       "landmark": 36,
       "interaction": 287,
@@ -4989,34 +4989,19 @@
   "previousVersionDelta": {
     "previousGoal": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 16,
-    "previousSourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
-    "currentSourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+    "previousGeneration": 17,
+    "previousSourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+    "currentSourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
     "blockers": [
-      "roblox-f0-gameplay-product-readiness-failed",
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
+      "roblox-build-package-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6163,7 +6148,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 430826,
+        "sourceBytes": 430815,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6196,13 +6181,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 6,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=USABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 5,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 6,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6218,7 +6203,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -6256,7 +6241,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 114,
+        "score": 96,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6370,11 +6355,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 17,
-    "previousGeneration": 16,
+    "generation": 18,
+    "previousGeneration": 17,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
-    "priorSourceFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
+    "sourceFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
+    "priorSourceFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6393,7 +6378,7 @@
     "version": 1,
     "gameId": "fifty-days",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+    "sourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7298,7 +7283,7 @@
     "gameId": "fifty-days",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+    "sourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8127,16 +8112,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "50일. 서사시의 추방과 귀환·민속 금기와 전염 생존. 50일에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2bfa29abd735a86f19ef8ca0725fa6f480fa2180706f94ab8be3da0f4f50658e",
+      "sourceTreeFingerprint": "69b798f4a004b335956d65f26a50c6c2708db422ee04b0b0b7b52be21392062a",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8147,8 +8132,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8191,7 +8176,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8253,5 +8238,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-24T21:18:44.268Z"
+  "generatedAt": "2026-10-25T03:56:15.432Z"
 }
