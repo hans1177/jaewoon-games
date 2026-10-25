@@ -303,3 +303,33 @@ test('naval encounter suspends route steering while preserving saves and combat 
  assert.deepEqual(restoreGame(serializeGame(held)).route,s.route);
  const sailing=stepSea(s,{},.5);assert.ok(Math.hypot(sailing.ship.x-s.ship.x,sailing.ship.z-s.ship.z)>0);
 });
+
+
+test('chart ship marker stays visible after pan, and helm screen direction matches 3D vessel',()=>{
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ const view=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ assert.match(main,/function centerChartOnShip\(\)/);
+ assert.match(main,/if\(active==='chart'\)centerChartOnShip\(\)/);
+ assert.match(main,/mapZoom=1;centerChartOnShip\(\)/);
+ assert.match(main,/offscreen=px<24\|\|px>cw-24\|\|py<24\|\|py>ch-24/);
+ assert.match(main,/const tag=offscreen\?'내 선박 · 화면 밖':'내 선박'/);
+ assert.match(main,/ctx\.rotate\(Math\.PI-state\.ship\.heading\)/);
+ assert.match(main,/Number\(left\)-Number\(right\)-stick\.x/);
+ assert.match(view,/e\.root\.rotation\.set\([^\n]*r\.heading\+Math\.PI/);
+ const port=PORTS.find(p=>p.id==='dawn'),base=newGame();
+ // The actual map centre must resolve to the ship coordinates for either scale.
+ for(const world of [false,true]){
+  const originX=world?300:75,originZ=world?-210:-550;
+  const panX=base.ship.x-originX,panZ=base.ship.z-originZ;
+  const px=480+(base.ship.x-(originX+panX))*(world?.29:1.38);
+  const py=270+(base.ship.z-(originZ+panZ))*(world?.29:1.38);
+  assert.equal(px,480);assert.equal(py,270);
+ }
+ // Manual right must rotate starboard from the chase camera, independent
+ // of the route/autopilot yaw convention used inside stepSea.
+ const right=stepSea(base,{turn:-1,throttle:0,manual:true},.1);
+ const left=stepSea(base,{turn:1,throttle:0,manual:true},.1);
+ assert.ok(right.ship.heading<base.ship.heading);
+ assert.ok(left.ship.heading>base.ship.heading);
+ assert.equal(base.ship.x,port.x);
+});
