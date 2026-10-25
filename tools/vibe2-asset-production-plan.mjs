@@ -2935,6 +2935,8 @@ function inferRequestedConcept(task={},request=''){
     ['DESERT_CIVILIZATION',/DESERT.?CIVIL|사막.?문명/],['DESERT_FANTASY',/DESERT.?FANTASY|사막.?판타지/],['SNOW_KINGDOM',/SNOW.?KINGDOM|설원.?왕국/],['JUNGLE_RUINS',/JUNGLE.?RUIN|밀림.?유적/],
     ['UNDERWATER_FANTASY',/UNDERWATER.?FANTASY|수중.?판타지|해저.?판타지/],['UNDERGROUND',/UNDERGROUND|지하.?세계/],['UNDEAD',/UNDEAD|언데드/],['MECHANICAL_CIVILIZATION',/MECHANICAL.?CIVIL|기계.?문명/],
     ['INK_WASH',/INK.?WASH|SUMI|수묵|먹화|먹선/],['WATERCOLOR',/WATERCOLOR|수채화?|수채풍?/],['TOON_NOIR',/TOON.?NOIR|카툰.?누아르/],['NOIR',/NOIR|누아르/],
+    // [브릭 장난감 스타일] 공용 재질에서 선택 가능한 토이 플라스틱. 기존 게임에는 강제하지 않는다.
+    ['TOY_BRICK',/TOY.?BRICK|BRICK.?TOY|레고.?재질|브릭.?장난감|브릭.?재질|조립식.?장난감/],
     ['COZY',/COZY|코지|아늑/],['PAPER_CRAFT',/PAPER.?CRAFT|PAPER.?CUT|페이퍼.?크래프트|종이.?공예|종이.?컷/],['VOXEL',/VOXEL|복셀/],
     ['SPACE_OPERA',/SPACE.?OPERA|스페이스.?오페라/]
   ];
