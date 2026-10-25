@@ -376,7 +376,7 @@
       "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
       "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-25T14:42:38.993Z",
+      "updatedAt": "2026-10-25T14:44:04.283Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -394,17 +394,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
       "robloxBuildArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-      "robloxBuildPassedAt": "2026-10-25T14:42:38.993Z",
+      "robloxBuildPassedAt": "2026-10-25T14:44:04.283Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-25T14:42:38.993Z",
+      "robloxBuildPreflightPassedAt": "2026-10-25T14:44:04.283Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-25T14:41:45.324Z",
+        "checkedAt": "2026-10-25T14:42:49.325Z",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "secondaryOwnerFocus": false,
@@ -442,7 +442,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "Exact deterministic package identity checks passed, source validation passed, and build or package passed. Eligible to start runtime testing."
+            "note": "Exact deterministic package identity checks have passed, source validation is confirmed, and build/package steps are successful. Immutable package is approved to start runtime testing."
           }
         ],
         "blockers": [],
@@ -456,12 +456,12 @@
         "gameId": "fantasy-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-25T14:41:45.864Z",
+        "checkedAt": "2026-10-25T14:42:50.094Z",
         "sourcePath": "roblox-games/fantasy-survival",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "rebuiltArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-        "artifactRunId": 40202227637,
+        "artifactRunId": 40203086768,
         "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
         "assetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
         "observedAssetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
@@ -769,12 +769,12 @@
         "gameId": "fantasy-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-25T14:41:45.864Z",
+        "checkedAt": "2026-10-25T14:42:50.094Z",
         "sourcePath": "roblox-games/fantasy-survival",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "rebuiltArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-        "artifactRunId": 40202227637,
+        "artifactRunId": 40203086768,
         "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
         "assetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
         "observedAssetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
@@ -1122,8 +1122,8 @@
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 40202227637,
-        "testedAt": "2026-10-25T14:42:38.993Z",
+        "workflowRunId": 40203086768,
+        "testedAt": "2026-10-25T14:44:04.283Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -5322,7 +5322,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-25T14:43:30.619Z",
+  "updatedAt": "2026-10-25T14:44:04.283Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -5388,5 +5388,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
