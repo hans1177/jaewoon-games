@@ -83,13 +83,13 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:21:30.243Z"
       },
-      "updatedAt": "2026-10-25T14:49:44.266Z",
+      "updatedAt": "2026-10-25T14:57:11.512Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceBootstrapFailedAt": "2026-10-25T14:49:44.266Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-25T14:57:11.512Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -134,10 +134,55 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
-      ]
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH"
+      ],
+      "robloxSourceCommit": "1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d",
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d",
+      "robloxQualityFailureClass": "SOURCE_CONTRACT",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "sourceRevision": "1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d",
+        "sourceTreeSha": "9bef29605a79f784bde87bb0266bb56787173fd2",
+        "artifactIdentity": null,
+        "authority": "roblox-source-static-contract-failure",
+        "staticContract": {
+          "pass": false,
+          "blockers": [
+            "ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH"
+          ]
+        },
+        "assetRepairContext": {
+          "libraryFingerprint": "1e7d0507dbb14024fdf95ee5ed752d8c2b203c0dc7d8e802d9802d171df3e40d",
+          "baselineFingerprint": "351de21471549257fe4858e635659b2f2f62f376d6371962901fba8df56c66d6",
+          "validatorFingerprint": "b9335a6e0b17a108964d77b1f655d5ad440d9fe9739067f8de22c6afd3bdde61"
+        },
+        "qualityFailureKinds": [
+          "ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH"
+        ],
+        "repairSurfaces": [
+          "SOURCE_CONTRACT"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "observed": {
+              "currentVariant": "OBJECTIVE_GOAL",
+              "expectedVariant": "PROGRESSION_RISK",
+              "currentNativeVersion": 7,
+              "generatorNativeVersion": 6
+            },
+            "hint": "Inspect the exact approved design and current native client. Resolve the semantic mismatch in existing responsible source or existing design flow. Preserve newer native behavior, gameplay rules, balance, rewards, saves and server authority. Do not downgrade the native block or relabel a variant to manufacture PASS."
+          }
+        ],
+        "workflowRunId": 40204292026,
+        "testedAt": "2026-10-25T14:57:11.512Z"
+      }
     },
     {
       "gameId": "cozy-island",
@@ -221,13 +266,13 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-25T14:40:55.072Z",
+      "updatedAt": "2026-10-25T14:57:11.512Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceBootstrapFailedAt": "2026-10-25T14:40:55.072Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-25T14:57:11.512Z",
       "robloxRuntimePassed": false,
       "robloxHeadlessFastMvpPassed": false,
       "robloxInternalReleaseReady": false,
@@ -278,14 +323,14 @@
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxReleasePublishedAt": null,
-      "robloxSourceCommit": "a43ed477296059f252951aa8378a0a07e4d4940a",
+      "robloxSourceCommit": "1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "a43ed477296059f252951aa8378a0a07e4d4940a",
+      "robloxQualityBuildUpSourceRevision": "1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "cozy-island",
-        "sourceRevision": "a43ed477296059f252951aa8378a0a07e4d4940a",
+        "sourceRevision": "1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d",
         "sourceTreeSha": "408cf91d45764294cdc181c2bac88637676bd18d",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -298,7 +343,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "1e7d0507dbb14024fdf95ee5ed752d8c2b203c0dc7d8e802d9802d171df3e40d",
           "baselineFingerprint": "fd3d08e512debded2b76a95eb869591c83b726b3d977be08c84a0efeeed4db8a",
-          "validatorFingerprint": "8b98824e561ce92b352632913a1e535d62f6f8c29f686a4dbb1f4cdd587575ca"
+          "validatorFingerprint": "b9335a6e0b17a108964d77b1f655d5ad440d9fe9739067f8de22c6afd3bdde61"
         },
         "qualityFailureKinds": [
           "CONFIG_GENRE_PROFILE_REQUIRED"
@@ -314,8 +359,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40202227637,
-        "testedAt": "2026-10-25T14:40:55.072Z"
+        "workflowRunId": 40204292026,
+        "testedAt": "2026-10-25T14:57:11.512Z"
       }
     },
     {
@@ -5322,7 +5367,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-25T14:56:02.479Z",
+  "updatedAt": "2026-10-25T14:57:11.512Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -5388,5 +5433,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
