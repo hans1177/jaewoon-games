@@ -221,7 +221,7 @@ export default {
       h.set('x-user-id', user.id);
       h.set('x-user-name', user.nickname);
       h.set('x-room-id', roomId);
-      if (guestToken) h.set('x-guest-game', GEM_GAME_ID);
+      if (guestToken) h.set('x-guest-game', user.gameId);
       return env.ROOMS.get(id).fetch(new Request(forwarded, { headers: h }));
     }
 
@@ -270,12 +270,13 @@ export class Matchmaker {
     if (!free.length) return json({ error: 'rooms_full', message: '열 개의 방이 모두 사용 중이야.' }, 409);
     const index = crypto.getRandomValues(new Uint32Array(1))[0] % free.length;
     const inviteCode = free[index];
+    const maxPlayers = gameId === 'cozy-island' ? 2 : 4;
     const roomId = gameId === GEM_GAME_ID ? crypto.randomUUID() : gameId + ':' + crypto.randomUUID();
     const guestToken = crypto.randomUUID() + crypto.randomUUID();
     const userId = crypto.randomUUID();
     rooms[inviteCode] = { roomId, createdAt: Date.now(), players: [{ userId, guestToken }] };
     await this.ctx.storage.put(gameId === GEM_GAME_ID ? 'gemRooms' : 'guestRooms:' + gameId, rooms);
-    return json({ roomId, inviteCode, gameId, mode: 'coop', maxPlayers: 4, players: 1, guestToken });
+    return json({ roomId, inviteCode, gameId, mode: 'coop', maxPlayers, players: 1, guestToken });
   }
 
   async gemJoin({ inviteCode, gameId = GEM_GAME_ID }) {
@@ -285,12 +286,13 @@ export class Matchmaker {
     const rooms = await this.gemRooms(gameId);
     const room = rooms[code];
     if (!room) return json({ error: 'room_not_found' }, 404);
-    if (room.players.length >= 4) return json({ error: 'room_full' }, 409);
+    const maxPlayers = gameId === 'cozy-island' ? 2 : 4;
+    if (room.players.length >= maxPlayers) return json({ error: 'room_full' }, 409);
     const guestToken = crypto.randomUUID() + crypto.randomUUID();
     const userId = crypto.randomUUID();
     room.players.push({ userId, guestToken });
     await this.ctx.storage.put(gameId === GEM_GAME_ID ? 'gemRooms' : 'guestRooms:' + gameId, rooms);
-    return json({ roomId: room.roomId, inviteCode: code, gameId, mode: 'coop', maxPlayers: 4, players: room.players.length, guestToken });
+    return json({ roomId: room.roomId, inviteCode: code, gameId, mode: 'coop', maxPlayers, players: room.players.length, guestToken });
   }
 
   async gemAuthorize({ roomId, guestToken }) {
@@ -301,7 +303,7 @@ export class Matchmaker {
     const room = Object.values(rooms).find(row => row.roomId === roomId);
     const player = room?.players.find(row => row.guestToken === guestToken);
     if (!player) return json({ error: 'unauthorized' }, 401);
-    return json({ user: { id: player.userId, nickname: '동료 ' + (room.players.indexOf(player) + 1) } });
+    return json({ user: { id: player.userId, nickname: '동료 ' + (room.players.indexOf(player) + 1), gameId } });
   }
 
   async gemLeave({ guestToken, roomId = '' }) {
@@ -380,9 +382,10 @@ export class GameRoom {
     const nickname = request.headers.get('x-user-name') || 'player';
     const roomId = request.headers.get('x-room-id') || '';
     // 게스트 방은 같은 손님의 재접속을 허용하면서 다른 손님은 4명까지만 수용한다.
-    if (request.headers.get('x-guest-game') === GEM_GAME_ID) {
-      const active = this.ctx.getWebSockets();
-      if (active.filter(ws => ws.deserializeAttachment()?.userId !== userId).length >= 4) return json({ error: 'room_full' }, 409);
+    const guestGame = request.headers.get('x-guest-game') || '';
+    if (NUMBER_ROOM_GAMES.has(guestGame)) {
+      const active = this.ctx.getWebSockets(), limit = guestGame === 'cozy-island' ? 2 : 4;
+      if (active.filter(ws => ws.deserializeAttachment()?.userId !== userId).length >= limit) return json({ error: 'room_full' }, 409);
       for (const ws of active) if (ws.deserializeAttachment()?.userId === userId) ws.close(1000, 'reconnected');
     }
     const pair = new WebSocketPair();
