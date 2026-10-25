@@ -558,8 +558,16 @@ buildWorld(live){
    }
   }
  // 실제 체력/충돌과 무관한 짧은 타격 반응. 렌더 대상에 없는 몬스터도 안전하다.
- reactToHit(key,power=1){
-  const entry=this.actors.get(key);if(entry){entry.hitAt=performance.now();entry.hitPower=power;}
+ reactToHit(key,power=1,fromX=null,fromY=null){
+  const entry=this.actors.get(key);
+  if(entry){
+   entry.hitAt=performance.now();entry.hitPower=power;
+   // 공격자 방향의 반대쪽으로 짧게 밀리는 시각 반응. 충돌·좌표·실제 피해는 변경하지 않는다.
+   if(Number.isFinite(fromX)&&Number.isFinite(fromY)){
+    const angle=Math.atan2(fromX-entry.lastX,fromY-entry.lastY)-entry.model.rotation.y;
+    entry.hitSide=Math.sin(angle)||0;
+   }else entry.hitSide=0;
+  }
   if(key==='player'||power>1)this.cameraImpact=Math.min(.12,this.cameraImpact+(power>1?.052:.025));
  }
  removeActor(key,entry){if(entry.pixel){entry.pixel.geometry.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
