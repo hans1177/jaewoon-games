@@ -143,13 +143,14 @@ test('포근섬 스트롱홀드식 저폴리 성채는 기존 WebGL 장면과 �
   const renderer=read('web-games/cozy-island/render-v3.js');
   const css=read('web-games/cozy-island/style.css');
   const game=read('web-games/cozy-island/game-v3.js');
-  // 같은 WebGL 렌더러의 지오메트리/재질을 재사용하며 별도 2D 월드를 만들지 않는다.
-  assert.match(renderer,/this\.fortGeometry=\{/);
-  assert.match(renderer,/new THREE\.BoxGeometry\(1,1,1\)/);
-  assert.match(renderer,/new THREE\.ConeGeometry\(1,1,4\)/);
-  assert.match(renderer,/new THREE\.CylinderGeometry\(1,1,1,6\)/);
-  assert.match(renderer,/flatShading:true/);
-  assert.match(renderer,/if\(kind\.startsWith\('fort-'\)\)/);
+  // 실제 원본 3D 렌더러는 도형별 크기를 직접 생성해 메시를 조립한다.
+  // 존재하지 않는 구버전 저폴리 캐시가 아니라 현행 생성 함수와 재질을 검증한다.
+  assert.match(renderer,/makeFort3d\(kind,height\)/);
+  assert.match(renderer,/new THREE\.BoxGeometry\(w,h,d\)/);
+  assert.match(renderer,/new THREE\.ConeGeometry\(r,h,7\)/);
+  assert.match(renderer,/new THREE\.CylinderGeometry\(r,r,h,8\)/);
+  assert.match(renderer,/new THREE\.MeshLambertMaterial/);
+  assert.match(renderer,/Object\.values\(ECONOMY_3D_LOOK\)\]\.includes\(kind\)/);
   for(const name of ['fort-road','fort-wall','fort-watchtower','fort-gatehouse',
     'fort-keep','fort-cottage','fort-barracks','fort-workshop','fort-market']){
     assert.ok(renderer.includes("kind==='"+name+"'"),'3D 구조물 제작 누락: '+name);
