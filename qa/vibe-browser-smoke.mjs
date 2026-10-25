@@ -26,13 +26,14 @@ try{
   for(const viewport of [{width:390,height:844},{width:844,height:390}]){
    const context=await browser.newContext({viewport,isMobile:true,hasTouch:true});
    const ocean=await context.newPage(),faults=[];ocean.on('pageerror',e=>faults.push(e.message));
+   await ocean.addInitScript(()=>{const raw=sessionStorage.getItem('ocean-smoke-next-save');if(raw){localStorage.setItem('jg-ocean-voyage-v1',raw);sessionStorage.removeItem('ocean-smoke-next-save');}});
    try{
     await ocean.goto(liveBase+'web-games/ocean-voyage/',{waitUntil:'networkidle'});
     await ocean.evaluate(async()=>{
      const e=await import('./engine.mjs'),s=e.newGame();s.heroChosen=true;s.autoCombat=false;
      s.ship.x=-87;s.ship.z=-576;s.ship.heading=0;s.ship.cooldown=0;
      s.pirates=[{id:1,x:-75,z:-576,heading:1.7,hull:1,maxHull:62,cooldown:999}];
-     localStorage.setItem(e.SAVE_KEY,e.serializeGame(s));
+     sessionStorage.setItem('ocean-smoke-next-save',e.serializeGame(s));
     });
     await ocean.reload({waitUntil:'domcontentloaded'});
     await ocean.locator('#navalEncounter').waitFor({state:'visible',timeout:20000});
@@ -50,7 +51,7 @@ try{
     assert.equal(saved.victories,1,'OCEAN_VICTORY_NOT_SAVED');assert.equal(saved.supplies.ammo,39,'OCEAN_AMMO_RULE_CHANGED');
     await ocean.reload({waitUntil:'networkidle'});assert.equal(await ocean.locator('#navalEncounter').isVisible(),false,'OCEAN_VICTORY_RELOAD_REENTERS_BATTLE');
     // 같은 세이브로 조타 이탈을 실제로 실행한다. 전투 중 위치를 조작하지 않는다.
-    await ocean.evaluate(async()=>{const e=await import('./engine.mjs'),s=e.newGame();s.heroChosen=true;s.autoCombat=false;s.ship.x=-116;s.ship.z=-576;s.ship.heading=-Math.PI/2;s.ship.velocity=5;s.pirates=[{id:1,x:-75,z:-576,heading:0,hull:62,maxHull:62,cooldown:999}];localStorage.setItem(e.SAVE_KEY,e.serializeGame(s));});
+    await ocean.evaluate(async()=>{const e=await import('./engine.mjs'),s=e.newGame();s.heroChosen=true;s.autoCombat=false;s.ship.x=-116;s.ship.z=-576;s.ship.heading=-Math.PI/2;s.ship.velocity=5;s.pirates=[{id:1,x:-75,z:-576,heading:0,hull:62,maxHull:62,cooldown:999}];sessionStorage.setItem('ocean-smoke-next-save',e.serializeGame(s));});
     await ocean.reload({waitUntil:'domcontentloaded'});await ocean.locator('#navalEncounter').waitFor({state:'visible',timeout:15000});
     await ocean.locator('#navalRetreat').click();await ocean.keyboard.down('ArrowUp');
     await ocean.locator('#navalEncounter').waitFor({state:'hidden',timeout:25000});await ocean.keyboard.up('ArrowUp');
