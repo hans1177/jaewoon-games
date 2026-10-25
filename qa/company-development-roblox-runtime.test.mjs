@@ -758,6 +758,27 @@ test('Roblox runtime persist writers refetch and reapply instead of using a canc
 });
 
 
+test('Roblox runtime checkpoint writers recover dirty Git LFS checkouts without bypassing evidence gates',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const writers=[
+    ['Persist Roblox source-bind state to company runtime','roblox-runtime-persist'],
+    ['Persist Roblox F0 checkpoint','roblox-f0-persist-${safe}'],
+    ['Persist exact Roblox build package evidence','roblox-technical-persist'],
+  ];
+  for(const [step,branch] of writers){
+    const start=workflow.indexOf('      - name: '+step);
+    assert.ok(start>=0,'missing runtime checkpoint writer: '+step);
+    const fragment=workflow.slice(start,start+24000);
+    assert.match(fragment,/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" main/);
+    assert.ok(fragment.includes('git checkout --force -B "'+branch+'" "origin/$COMPANY_RUNTIME_BRANCH"')
+      ||fragment.includes('git checkout --force -B '+branch+' "origin/$COMPANY_RUNTIME_BRANCH"'),
+      'dirty local checkout must not block runtime checkpoint: '+step);
+  }
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_COUNT=/);
+  assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
+});
+
 test('dedicated Roblox QA-only changes do not launch the full runtime pipeline',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const pushBlock=runtime.slice(runtime.indexOf('on:'),runtime.indexOf('workflow_call:'));
