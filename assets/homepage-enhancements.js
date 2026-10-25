@@ -365,7 +365,8 @@ function installStyles(){
 .foldGameCompletion a{display:inline-flex;min-height:36px;align-items:center;color:#1264c4}
 .foldGameCompletion ol{margin:4px 0;padding-left:20px}
 .foldGameTitleRow,.homeFocusTitleRow{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.foldGameTitleRow h3,.homeFocusTitleRow h1{min-width:0;flex:1;margin:0}
+.foldGameTitleRow h3,.homeFocusTitleRow h1{min-width:0;flex:1;margin:0;overflow-wrap:anywhere}
+.homeFocusTitleRow{width:min(100%,660px)}
 .homeFavoriteToggle{flex:0 0 44px;width:44px;height:44px;border:1px solid #d5e1ec;border-radius:12px;background:#f1f6fb;color:#8292a2;font-size:26px;line-height:1;cursor:pointer;touch-action:manipulation}
 .homeFavoriteToggle[aria-pressed="true"]{background:#fff3d5;color:#bd7900;border-color:#f2d38c}
 .homeFavoriteToggle:focus-visible{outline:2px solid #1677ff;outline-offset:2px}
