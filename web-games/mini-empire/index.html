@@ -1,0 +1,244 @@
+<!doctype html>
+<!-- 파일명: web-games/mini-empire/index.html -->
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#132b39">
+<title>미니 제국 전쟁 · 재운게임즈</title>
+<style>
+/* 화면: 모바일 우선 3차원 전장 */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#132b39;color:#fff;font-family:system-ui,"Noto Sans KR",sans-serif;touch-action:none}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(#10334b50,transparent 24%,transparent 69%,#071d2c88)}
+.glass{background:#102838e9;border:1px solid #a1d1e852;box-shadow:0 4px 18px #00152255;border-radius:14px;backdrop-filter:blur(8px)}
+#top{position:fixed;top:max(8px,env(safe-area-inset-top));left:8px;right:8px;display:flex;align-items:start;gap:7px;z-index:5;pointer-events:none}
+#brand{padding:9px 12px;min-width:115px;pointer-events:auto}#brand b{display:block;font-size:14px;letter-spacing:-.5px;color:#ffe29a}#brand small{font-size:9px;color:#b8dfeb;letter-spacing:1px}
+#stats{display:flex;justify-content:flex-end;align-items:center;gap:5px;flex-wrap:wrap;margin-left:auto;padding:7px;pointer-events:auto}
+.stat{white-space:nowrap;font-size:11px;font-weight:900;background:#ffffff10;border-radius:9px;padding:6px 7px}
+.stat i{font-style:normal;color:#ffdb76}
+#objective{position:fixed;top:78px;left:8px;max-width:min(300px,62vw);padding:10px 12px;font-size:11px;line-height:1.45;z-index:4;pointer-events:none}
+#objective strong{color:#ffdf8a;font-size:12px}#objective span{display:block;color:#bedbe4;margin-top:2px}
+#zoom{position:fixed;right:8px;top:83px;display:grid;gap:6px;z-index:5}
+#zoom button{width:43px;height:42px;background:#122d3fdc;border:1px solid #ffffff55;color:#fff;border-radius:12px;font-weight:900;font-size:19px}
+#target{position:fixed;left:50%;top:24%;transform:translateX(-50%);font-size:11px;white-space:nowrap;padding:8px 12px;z-index:4;pointer-events:none}
+#bottom{position:fixed;bottom:0;left:0;right:0;z-index:10;background:linear-gradient(#0b2537f0,#0a1d2cf9);border-top:1px solid #89bdd055;padding:7px 8px max(9px,env(safe-area-inset-bottom))}
+#tabs{display:flex;gap:6px;margin-bottom:7px}
+#tabs button{flex:1;min-height:37px;border-radius:10px;border:1px solid #799eb055;background:#244256;color:#c7e1e9;font-size:12px;font-weight:900}
+#tabs button.on{background:#e9b95d;color:#172c35;border-color:#ffe4a1}
+#actions{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:1px 0 4px}
+#actions::-webkit-scrollbar{display:none}
+.action{flex:0 0 auto;min-width:88px;min-height:62px;border-radius:11px;border:1px solid #a3cadd44;background:#25516b;color:#fff;padding:7px 9px;text-align:left}
+.action strong{display:block;font-size:11px}.action small{display:block;margin-top:4px;color:#b7dce9;font-size:9px;white-space:nowrap}
+.action.on{background:#267c97;border-color:#ffe09a;box-shadow:inset 0 0 0 1px #ffde8b}
+.action:disabled{opacity:.5}
+#guide{font-size:10px;color:#a8ccdc;padding:4px 3px 0;min-height:18px}
+#toast{position:fixed;top:33%;left:50%;transform:translate(-50%,-12px);border:1px solid #fff4bb99;background:#102b3bf5;padding:10px 15px;border-radius:12px;z-index:60;opacity:0;pointer-events:none;transition:.18s;max-width:90vw;text-align:center;font-size:12px;font-weight:800}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#modal{position:fixed;inset:0;background:#051521ca;z-index:30;display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto}
+#modal[hidden]{display:none}
+.card{background:linear-gradient(150deg,#1b4b5a,#102938);border:1px solid #aed0d8a0;border-radius:20px;box-shadow:0 20px 80px #0009;padding:23px 20px;width:min(440px,100%);text-align:center}
+.card .emblem{font-size:41px;line-height:1}.card h1{margin:8px 0;font-size:25px;letter-spacing:-1.3px;color:#ffe2a0}
+.card p{font-size:12px;line-height:1.8;color:#c7e2e6}
+.card button{width:100%;min-height:48px;border-radius:11px;border:0;background:#f0bd64;color:#173141;font-weight:1000;font-size:14px;margin-top:12px}
+.card .alt{background:#285c70;color:#fff;border:1px solid #6ca6b5}
+.card small{display:block;color:#91bfcc;font-size:10px;line-height:1.5;margin-top:12px}
+#selected{position:fixed;z-index:8;bottom:165px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:8px;padding:9px 10px;max-width:95vw;font-size:11px}
+#selected.on{display:flex}#selected b{color:#ffda87}#selected button{min-height:32px;background:#246e85;color:white;border:1px solid #badce5;border-radius:8px;white-space:nowrap;font-weight:800;font-size:11px}
+#selected button:disabled{opacity:.4}
+#selectedClose{max-width:35px}
+@media(max-width:450px){#brand{min-width:88px;padding:8px}#brand b{font-size:12px}#stats{padding:4px;gap:3px}.stat{font-size:9px;padding:6px 5px}#objective{top:74px;font-size:10px;max-width:60vw}#zoom{top:78px}#target{top:24%}.action{min-width:83px}}
+@media(max-height:570px){#objective{top:64px;padding:6px 8px}#zoom{top:67px}#selected{bottom:150px}.action{min-height:54px}}
+</style></head><body>
+<canvas id="scene" aria-label="3차원 제국 전투 지도"></canvas><div id="shade"></div>
+<div id="top"><div id="brand" class="glass"><small>JA E WOON GAMES</small><b>미니 제국 전쟁</b></div>
+<div id="stats" class="glass"><span class="stat">💰 <i id="money">0</i></span><span class="stat">⚙ <i id="metal">0</i></span><span class="stat">🪖 <i id="army">0</i></span><span class="stat">🏰 <i id="land">0/3</i></span></div></div>
+<div id="objective" class="glass"><strong id="mission">작전: 첫 거점 점령</strong><span id="detail">건물을 건설하고 병력을 보내.</span></div>
+<div id="zoom"><button id="plus" aria-label="확대">+</button><button id="minus" aria-label="축소">−</button><button id="save" aria-label="저장">⎙</button></div>
+<div id="target" class="glass">작전 목표: <b id="targetText">북부 초소</b></div>
+<div id="selected" class="glass"><span id="selInfo"></span><button id="upgrade">강화</button><button id="selectedClose">닫기</button></div>
+<div id="bottom"><div id="tabs"><button data-tab="build" class="on">🏗 건설</button><button data-tab="army">⚔ 군대</button><button data-tab="map">🗺 작전</button></div><div id="actions"></div><div id="guide">빈 땅을 눌러 건물을 설치해. 드래그로 카메라 회전.</div></div>
+<div id="toast"></div>
+<div id="modal"><div class="card"><div class="emblem">🏰</div><h1>미니 제국 전쟁</h1>
+<p>나만의 국가를 건설해 자원을 생산하고,<br>보병·전차·헬기를 이끌어 <b>3개 거점</b>을 점령해.<br>적군은 수도를 공격하니 방어 시설도 필요해.</p>
+<button id="start">전쟁 시작</button><button class="alt" id="reset">처음부터</button>
+<small>터치: 건설·목표 지정 / 드래그: 회전 / 두 손가락: 확대 · 축소<br>진행 상황은 이 기기에 자동 저장돼.</small></div></div>
+<script>
+/* 파일명: web-games/mini-empire/index.html */
+/* 게임 설정·저장 */
+(function(){
+"use strict";
+const KEY="jaewoon_mini_empire_v1", W=18, H=14, TAU=Math.PI*2;
+const $=id=>document.getElementById(id), canvas=$("scene");
+const defs={
+house:{name:"주택",icon:"🏠",cost:180,metal:0,income:13,info:"세금 +13",color:"#ffbc79"},
+farm:{name:"농장",icon:"🌾",cost:260,metal:0,income:22,info:"생산 +22",color:"#e9ca79"},
+mine:{name:"제철소",icon:"⚙",cost:420,metal:20,income:0,alloy:10,info:"강철 +10",color:"#819fb1"},
+barracks:{name:"병영",icon:"🪖",cost:380,metal:15,income:0,info:"보병 모집",color:"#8aaec3"},
+factory:{name:"전차 공장",icon:"🛞",cost:670,metal:70,income:0,info:"전차 생산",color:"#94b9bd"},
+tower:{name:"방어 포탑",icon:"🎯",cost:590,metal:50,income:0,info:"자동 방어",color:"#e3a474"}
+};
+const kinds={
+inf:{name:"보병 3명",icon:"🪖",cost:130,metal:0,amount:3,hp:60,damage:10,range:1.4,speed:1.0},
+tank:{name:"전차 1대",icon:"🛞",cost:330,metal:55,amount:1,hp:240,damage:42,range:2.7,speed:.75,needs:"factory"},
+heli:{name:"헬기 1대",icon:"🚁",cost:530,metal:90,amount:1,hp:125,damage:27,range:3.5,speed:1.45,needs:"factory"}
+};
+const campsBase=[
+{id:0,name:"북부 초소",x:9,z:3,hp:200,max:200,owner:"neutral"},
+{id:1,name:"동부 광산",x:11,z:10,hp:260,max:260,owner:"neutral"},
+{id:2,name:"적군 사령부",x:15,z:6,hp:490,max:490,owner:"enemy"}
+];
+function fresh(){return {money:1250,metal:130,baseHp:800,structures:[{x:2,z:7,k:"hq",lv:1},{x:3,z:5,k:"house",lv:1},{x:4,z:9,k:"farm",lv:1}],units:[],enemies:[],camps:campsBase.map(x=>Object.assign({},x)),kills:0,target:0,tick:0,raids:0,last:Date.now(),victory:false,defeat:false}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(!s||!Array.isArray(s.structures)||!Array.isArray(s.camps)||s.camps.length!==3)return fresh();const v=fresh();v.money=Math.max(0,Math.min(1e10,Number(s.money)||0));v.metal=Math.max(0,Math.min(1e10,Number(s.metal)||0));v.baseHp=Math.max(0,Math.min(800,Number(s.baseHp)||800));v.structures=s.structures.filter(b=>Number.isInteger(b.x)&&Number.isInteger(b.z)&&b.x>=1&&b.x<=6&&b.z>=1&&b.z<=12&&(defs[b.k]||b.k==="hq")).map(b=>({x:b.x,z:b.z,k:b.k,lv:Math.max(1,Math.min(5,Number(b.lv)||1))}));if(!v.structures.some(b=>b.k==="hq"))v.structures.unshift({x:2,z:7,k:"hq",lv:1});v.camps=campsBase.map((b,i)=>Object.assign({},b,{owner:s.camps[i]?.owner==="player"?"player":b.owner,hp:Math.max(0,Math.min(b.max,Number(s.camps[i]?.hp)||b.max))}));v.target=[0,1,2].includes(s.target)?s.target:0;v.kills=Math.max(0,Number(s.kills)||0);v.tick=Math.max(0,Number(s.tick)||0);v.victory=!!s.victory;v.defeat=!!s.defeat;if(!v.defeat&&!v.victory){const seconds=Math.max(0,Math.min(7200,(Date.now()-(s.last||Date.now()))/1000));const rounds=Math.floor(seconds/4);v.money+=rounds*income(v);v.metal+=rounds*alloy(v);}return v}catch(e){return fresh()}}
+function income(v){let n=38;for(const b of v.structures){n+=(defs[b.k]?.income||0)*b.lv}if(v.camps[0].owner==="player")n+=22;if(v.camps[2].owner==="player")n+=60;return n}
+function alloy(v){let n=2;for(const b of v.structures)n+=(defs[b.k]?.alloy||0)*b.lv;if(v.camps[1].owner==="player")n+=18;return n}
+let S=load(),mode="build",placing=null,selected=null,hover=null,started=false,flash=0;
+function persist(){S.last=Date.now();try{const copy={money:S.money,metal:S.metal,baseHp:S.baseHp,structures:S.structures,camps:S.camps,kills:S.kills,target:S.target,tick:S.tick,victory:S.victory,defeat:S.defeat,last:S.last};localStorage.setItem(KEY,JSON.stringify(copy))}catch(e){notify("저장 공간 확인 필요")}}
+let toastTimer=null;function notify(t){$("toast").textContent=t;$("toast").classList.add("on");clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.remove("on"),2600)}
+function cash(n){return Math.floor(n).toLocaleString("ko-KR")}
+function has(k){return S.structures.some(b=>b.k===k)}
+function activeTarget(){if(S.camps[S.target]?.owner!=="player")return S.target;const i=S.camps.findIndex(c=>c.owner!=="player");return i<0?2:i}
+function sync(){S.target=activeTarget();$("money").textContent=cash(S.money);$("metal").textContent=cash(S.metal);$("army").textContent=S.units.length;$("land").textContent=S.camps.filter(c=>c.owner==="player").length+"/3";$("targetText").textContent=S.camps[S.target].name;
+$("mission").textContent=S.defeat?"수도가 함락됐어":S.victory?"모든 거점 점령 성공!":"작전: "+S.camps[S.target].name+" 점령";
+$("detail").textContent=S.defeat?"처음부터 버튼으로 다시 도전해.":S.victory?"국가 통일에 성공했어.":("수도 체력 "+Math.ceil(S.baseHp)+"/800 · 4초마다 돈 +"+income(S)+" / 강철 +"+alloy(S));}
+const actions=$("actions");
+function button(txt,desc,id,enabled=true,on=false){const b=document.createElement("button");b.className="action"+(on?" on":"");b.type="button";b.disabled=!enabled;const a=document.createElement("strong"),s=document.createElement("small");a.textContent=txt;s.textContent=desc;b.append(a,s);b.addEventListener("click",()=>action(id));actions.append(b)}
+function menu(){actions.replaceChildren();if(mode==="build"){for(const [k,d] of Object.entries(defs)){button(d.icon+" "+d.name,cash(d.cost)+"원"+(d.metal?" / 강철 "+d.metal:""),"b:"+k,!S.defeat,!(!placing||placing!==k));}}
+else if(mode==="army"){for(const [k,d] of Object.entries(kinds)){button(d.icon+" "+d.name,cash(d.cost)+"원"+(d.metal?" / 강철 "+d.metal:""),"a:"+k,!S.defeat&&(!d.needs||has(d.needs)));}button("📢 총공격","현재 작전 목표로","order",S.units.length>0)}
+else{S.camps.forEach((c,i)=>button((c.owner==="player"?"✅ ":"🎯 ")+c.name,c.owner==="player"?"점령 완료":"체력 "+Math.ceil(c.hp),"t:"+i,true,S.target===i));button("💾 저장","현재 진행 저장","save");button("🔄 새 게임","처음부터 시작","restart");}}
+function action(id){if(id.startsWith("b:")){placing=id.slice(2);mode="build";selected=null;$("selected").classList.remove("on");notify(defs[placing].name+" 설치: 왼쪽 영토의 빈 땅을 눌러.");menu();return}
+if(id.startsWith("a:")){recruit(id.slice(2));return}
+if(id.startsWith("t:")){const i=Number(id.slice(2));if(S.camps[i].owner==="player"){notify("이미 점령한 지역이야.");return}S.target=i;placing=null;S.units.forEach(u=>u.target=i);notify(S.camps[i].name+" 공격 명령!");sync();menu();persist();return}
+if(id==="order"){S.units.forEach(u=>u.target=S.target);notify("전체 병력, "+S.camps[S.target].name+"로 진격!");return}
+if(id==="save"){persist();notify("전황을 저장했어.");return}
+if(id==="restart"){if(confirm("모든 진행을 지우고 다시 시작할까?")){S=fresh();persist();menu();sync();notify("새 전쟁을 시작했어.")}}}
+function recruit(k){const d=kinds[k];if(!d)return;if(d.needs&&!has(d.needs)){notify("전차 공장을 먼저 지어.");return}if(S.units.length+d.amount>35){notify("병력은 최대 35명까지 유지할 수 있어.");return}if(S.money<d.cost||S.metal<d.metal){notify("돈이나 강철이 부족해.");return}S.money-=d.cost;S.metal-=d.metal;
+for(let i=0;i<d.amount;i++){S.units.push({id:Math.random(),k,x:3.2+(Math.random()-.5)*1.2,z:7+(Math.random()-.5)*2,hp:d.hp,target:S.target,cool:Math.random(),faction:"player"})}
+notify(d.name+" 출격!");sync();persist()}
+function build(x,z){if(!placing||!defs[placing])return;
+if(x<1||x>6||z<1||z>12){notify("파란색 영토에만 건설할 수 있어.");return}
+if(S.structures.some(b=>Math.abs(b.x-x)<1.5&&Math.abs(b.z-z)<1.5)){notify("다른 건물과 겹쳐. 빈 땅을 골라.");return}
+const d=defs[placing];if(S.money<d.cost||S.metal<d.metal){notify("자원이 부족해.");return}
+S.money-=d.cost;S.metal-=d.metal;S.structures.push({x,z,k:placing,lv:1});notify(d.name+" 완공!");placing=null;selected=S.structures[S.structures.length-1];showSelection();sync();menu();persist()}
+function showSelection(){const box=$("selected");if(!selected){box.classList.remove("on");return}const d=defs[selected.k];if(!d){box.classList.remove("on");return}
+const cost=Math.floor(d.cost*.66*selected.lv),metal=Math.floor(d.metal*.55*selected.lv);
+$("selInfo").innerHTML="";$("selInfo").textContent=d.name+" Lv."+selected.lv+" · "+d.info+" / 강화 "+cash(cost)+"원"+(metal?" / 강철 "+metal:"");
+$("upgrade").disabled=selected.lv>=5||S.money<cost||S.metal<metal;box.classList.add("on")}
+$("upgrade").addEventListener("click",()=>{if(!selected)return;const d=defs[selected.k];const cost=Math.floor(d.cost*.66*selected.lv),metal=Math.floor(d.metal*.55*selected.lv);if(selected.lv>=5||S.money<cost||S.metal<metal){notify("강화 자원 부족 또는 최대 레벨");return}S.money-=cost;S.metal-=metal;selected.lv++;notify(d.name+" 강화 성공!");showSelection();sync();persist()});
+$("selectedClose").addEventListener("click",()=>{selected=null;showSelection()});
+document.querySelectorAll("#tabs button").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.tab;placing=null;selected=null;showSelection();document.querySelectorAll("#tabs button").forEach(q=>q.classList.toggle("on",q===b));menu()}));
+$("plus").addEventListener("click",()=>{zoom=Math.max(13,zoom-2)});
+$("minus").addEventListener("click",()=>{zoom=Math.min(42,zoom+2)});
+$("save").addEventListener("click",()=>{persist();notify("저장했어.")});
+$("start").addEventListener("click",()=>{started=true;$("modal").hidden=true;notify("건설하고 군대를 뽑아 거점을 점령해!")});
+$("reset").addEventListener("click",()=>{if(!confirm("이전 저장을 삭제할까?"))return;S=fresh();persist();sync();menu();started=true;$("modal").hidden=true;notify("새 전쟁 시작!")});
+/* 전투: 병력 이동, 자동 교전, 포탑, 거점 */
+function distance(a,b){return Math.hypot(a.x-b.x,a.z-b.z)}
+function hit(t,damage){t.hp=Math.max(0,t.hp-damage);flash=.11}
+function attackUnit(u,t,damage){hit(t,damage);shots.push({x:u.x,z:u.z,x2:t.x,z2:t.z,k:u.faction==="enemy"?"enemy":"ally",life:.23});if(t.hp<=0&&t.faction==="enemy"){S.kills++;S.money+=20}}
+let shots=[],smoke=[],spawnClock=0,bankClock=0,refreshClock=0;
+function simulate(dt){if(S.victory||S.defeat)return;S.tick+=dt;bankClock+=dt;spawnClock+=dt;
+if(bankClock>=4){const n=Math.floor(bankClock/4);bankClock-=n*4;S.money+=n*income(S);S.metal+=n*alloy(S);sync();persist();}
+if(spawnClock>=17){spawnClock=0;S.raids++;if(S.enemies.length<15){const n=2+Math.min(3,Math.floor(S.raids/3));for(let i=0;i<n;i++)S.enemies.push({id:Math.random(),x:15+(Math.random()-.5)*2,z:6+(Math.random()-.5)*3,hp:65,damage:7,cool:Math.random(),faction:"enemy",k:"inf"});notify("적군 정찰대가 수도로 진격 중!");}}
+for(const u of S.units){u.cool-=dt;const foe=S.enemies.filter(e=>e.hp>0).sort((a,b)=>distance(a,u)-distance(b,u))[0];const d=kinds[u.k];if(foe&&distance(foe,u)<d.range){if(u.cool<=0){attackUnit(u,foe,d.damage);u.cool=u.k==="tank"?1.35:u.k==="heli"?.85:1.1;}continue}
+const ci=S.camps[u.target]?.owner!=="player"?u.target:activeTarget(),c=S.camps[ci];u.target=ci;
+const dx=c.x-u.x,dz=c.z-u.z,dist=Math.hypot(dx,dz);
+if(dist>d.range+.45){const step=Math.min(dist,d.speed*dt);u.x+=dx/dist*step;u.z+=dz/dist*step}
+else if(u.cool<=0){c.hp=Math.max(0,c.hp-d.damage);u.cool=u.k==="tank"?1.3:u.k==="heli"?.85:1.1;shots.push({x:u.x,z:u.z,x2:c.x,z2:c.z,k:"ally",life:.23});if(c.hp<=0){c.owner="player";c.hp=0;S.money+=750;S.metal+=120;notify("🏴 "+c.name+" 점령! 보상 +750원 / 강철 +120");if(S.camps.every(b=>b.owner==="player")){S.victory=true;notify("전쟁 승리! 모든 거점을 점령했어!")}else{S.target=activeTarget();S.units.forEach(v=>v.target=S.target)}sync();menu();persist()}}}
+for(const e of S.enemies){if(e.hp<=0)continue;e.cool-=dt;const target=S.units.filter(u=>u.hp>0&&distance(u,e)<3.0).sort((a,b)=>distance(a,e)-distance(b,e))[0];
+if(target&&distance(target,e)<1.3){if(e.cool<=0){attackUnit(e,target,e.damage);e.cool=1.05;}continue}
+const dst=target||{x:2,z:7};let dx=dst.x-e.x,dz=dst.z-e.z,dist=Math.hypot(dx,dz);
+if(dist>(target?1.25:1.6)){const step=Math.min(dist,dt*.66);e.x+=dx/dist*step;e.z+=dz/dist*step}
+else if(!target&&e.cool<=0){S.baseHp=Math.max(0,S.baseHp-12);e.cool=1.1;shots.push({x:e.x,z:e.z,x2:2,z2:7,k:"enemy",life:.23});if(!S.baseHp){S.defeat=true;notify("수도 함락! 새 게임으로 다시 도전해.");persist();}sync()}}
+for(const b of S.structures.filter(b=>b.k==="tower")){b.cool=(b.cool||0)-dt;const e=S.enemies.filter(e=>e.hp>0&&distance(b,e)<3.3).sort((a,c)=>distance(b,a)-distance(b,c))[0];if(e&&b.cool<=0){hit(e,22*b.lv);b.cool=.72;shots.push({x:b.x,z:b.z,x2:e.x,z2:e.z,k:"ally",life:.25})}}
+S.units=S.units.filter(u=>u.hp>0);S.enemies=S.enemies.filter(e=>e.hp>0&&e.x>-.5);
+shots=shots.filter(s=>(s.life-=dt)>0);smoke=smoke.filter(s=>(s.life-=dt)>0);
+refreshClock+=dt;if(refreshClock>1.0){refreshClock=0;sync();if(selected)showSelection()}}
+/* 3차원 렌더러: 메시 삼각형, 깊이 검사, 원근 카메라 */
+const gl=canvas.getContext("webgl",{antialias:true,alpha:false,powerPreference:"high-performance"});
+if(!gl){$("modal").querySelector("p").textContent="이 기기는 웹지엘을 지원하지 않아 3차원 전장을 표시할 수 없어.";$("start").disabled=true;return}
+const vert='attribute vec3 p;attribute vec3 c;uniform mat4 matrix;varying vec3 color;void main(){color=c;gl_Position=matrix*vec4(p,1.0);}';
+const frag='precision mediump float;varying vec3 color;void main(){gl_FragColor=vec4(color,1.0);}';
+function shader(type,src){const sh=gl.createShader(type);gl.shaderSource(sh,src);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(sh));return sh}
+const program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vert));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,frag));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));gl.useProgram(program);
+const pLoc=gl.getAttribLocation(program,"p"),cLoc=gl.getAttribLocation(program,"c"),matLoc=gl.getUniformLocation(program,"matrix");
+const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.enableVertexAttribArray(pLoc);gl.enableVertexAttribArray(cLoc);gl.vertexAttribPointer(pLoc,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(cLoc,3,gl.FLOAT,false,24,12);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
+const palette={grass:"#5caf66",green:"#68bb73",dark:"#438b59",water:"#318db0",road:"#a9a68e",white:"#e6edeb",blue:"#3e98d5",red:"#e76b6e",gold:"#f1c66a",glass:"#79cbdc",stone:"#6d8393",roof:"#35566d"};
+function col(h){h=h.replace("#","");return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255]}
+const cache={};function rgb(h){return cache[h]||(cache[h]=col(h))}
+let verts=[],pv=null,camYaw=.48,camPitch=.70,zoom=28,now=0,renderCount=0;
+const faces=[
+[[0,4,6,2],.64],[[1,3,7,5],.79],[[0,1,5,4],.72],[[2,6,7,3],.85],[[4,5,7,6],1.0],[[0,2,3,1],.55]
+];
+function tri(a,b,c,r){for(const q of [a,b,c])verts.push(q[0],q[1],q[2],r[0],r[1],r[2])}
+function box(x,y,z,w,h,d,color){const x0=x-w/2,x1=x+w/2,y0=y,y1=y+h,z0=z-d/2,z1=z+d/2;
+const v=[[x0,y0,z0],[x1,y0,z0],[x0,y0,z1],[x1,y0,z1],[x0,y1,z0],[x1,y1,z0],[x0,y1,z1],[x1,y1,z1]];
+const c=rgb(color);for(const [f,shade] of faces){const color=[Math.min(1,c[0]*shade),Math.min(1,c[1]*shade),Math.min(1,c[2]*shade)];tri(v[f[0]],v[f[1]],v[f[2]],color);tri(v[f[0]],v[f[2]],v[f[3]],color)}}
+function tileToWorld(x,z){return [x-8.5,z-6.5]}
+function cube(x,z,w,h,d,c,y=0){box(x-8.5,y,z-6.5,w,h,d,c)}
+function tree(x,z,scale=1){cube(x,z,.18*scale,.75*scale,.18*scale,"#755a46",.03);cube(x,z,.9*scale,.5*scale,.9*scale,"#357a55",.55*scale);cube(x,z,.66*scale,.5*scale,.66*scale,"#45975b",.94*scale);cube(x,z,.4*scale,.38*scale,.4*scale,"#65ac62",1.35*scale)}
+function baseRoads(){for(let z=2;z<=11;z++)cube(2,z,.45,.018,.85,palette.road,.02);for(let x=2;x<=15;x++)cube(x,7,.88,.024,.45,palette.road,.01);for(let z=3;z<=10;z++)cube(11,z,.46,.018,.85,palette.road,.01)}
+function renderStructure(b){const x=b.x,z=b.z,level=b.lv||1,k=b.k,height=.13*level;
+cube(x,z,1.6,.16,1.6,k==="hq"?"#8ea3aa":"#58777e",.02);
+if(k==="hq"){cube(x,z,1.25,1.35,1.22,"#d3d9d1",.16);cube(x,z,.83,.18,.85,"#4d7498",1.51);cube(x,z,.5,.66,.12,"#4c90b7",.51);cube(x,z,.45,.4,.48,"#e3bd67",1.74);cube(x-.48,z-.42,.14,1.95,.14,"#cad9d8",.07);cube(x-.48,z-.42,.5,.26,.08,"#4d9fdd",1.7);}
+else if(k==="house"){cube(x,z,1.08,.83+height,1.0,"#e9d0ad",.17);cube(x,z,1.28,.27,1.21,"#b95b4d",1.0+height);cube(x-.30,z+.52,.24,.34,.08,"#4b9fc4",.55);cube(x+.29,z+.52,.24,.34,.08,"#4b9fc4",.55)}
+else if(k==="farm"){cube(x,z,1.17,.57+height,1.08,"#efdb92",.15);cube(x,z,1.35,.26,1.2,"#a45d4b",.74+height);for(let i=-2;i<=2;i++)cube(x+i*.22,z+1.0,.12,.22,.62,"#b9b95c",.02)}
+else if(k==="mine"){cube(x,z,1.4,.8+height,1.15,"#879daa",.14);cube(x,z,1.4,.17,1.2,"#b2cbd2",.94+height);cube(x-.42,z-.3,.31,1.1+height,.32,"#677986",.95);cube(x+.45,z+.58,.5,.38,.12,"#2e647e",.38)}
+else if(k==="barracks"){cube(x,z,1.38,.78+height,1.25,"#729e9f",.18);cube(x,z,1.45,.18,1.3,"#4d7a82",1.0+height);for(let i=-1;i<=1;i++)cube(x+i*.4,z+.65,.22,.35,.07,"#234c68",.52)}
+else if(k==="factory"){cube(x,z,1.46,.89+height,1.35,"#798f9c",.16);cube(x,z,1.6,.25,1.51,"#355a73",1.02+height);cube(x-.44,z-.4,.32,1.22,.32,"#526b79",1.1);cube(x+.35,z+.72,.61,.48,.08,"#64bdd6",.47)}
+else if(k==="tower"){cube(x,z,1.06,.94+height,1.06,"#7b8c8f",.2);cube(x,z,1.32,.26,1.32,"#bd986d",1.18+height);cube(x,z,.47,.44,.48,"#556c77",1.4+height);cube(x,z+.62,.2,.18,.85,"#344952",1.6+height)}
+if(level>1)cube(x+.7,z+.7,.16,.20+level*.13,.16,"#f6d582",.07)}
+function campScene(c){const mine=c.id===1,enemy=c.id===2;
+cube(c.x,c.z,2.3,.25,2.3,enemy?"#885760":c.owner==="player"?"#287eaa":"#888678",.01);
+if(mine){cube(c.x,c.z,1.1,1.0,1.16,c.owner==="player"?"#64a7c8":"#979ba0",.3);cube(c.x-.6,c.z+.6,.45,.37,.5,"#6e7f89",.28);cube(c.x+.72,c.z-.4,.33,.7,.33,"#e0bd72",.25)}
+else{cube(c.x,c.z,1.25,1.26+(enemy?.35:0),1.25,enemy?"#ad6d7b":"#adc1c0",.24);cube(c.x,c.z,1.54,.28,1.54,enemy?"#77394e":"#536d7b",1.48+(enemy?.35:0));
+for(const d of [-.8,.8]){cube(c.x+d,c.z-.55,.34,1.3,.34,enemy?"#744452":"#7794a0",.26);cube(c.x+d,c.z-.55,.46,.25,.48,"#d7bb87",1.56)}}
+cube(c.x,c.z-.95,.11,1.7,.1,"#cedce2",.29);cube(c.x+.39,c.z-.95,.75,.42,.06,c.owner==="player"?palette.blue:c.owner==="enemy"?palette.red:"#e9c66d",1.64);
+if(c.hp>0){cube(c.x,c.z+1.23,1.8,.12,.17,"#5b4145",.04);cube(c.x-.9+.9*c.hp/c.max,c.z+1.23,1.8*c.hp/c.max,.13,.18,"#70d6a4",.05)}}
+function drawUnit(u){let x=u.x,z=u.z,enemy=u.faction==="enemy",c=enemy?"#e27473":"#50afe0",speed=Math.sin(now*5+u.id*9);
+if(u.k==="tank"){cube(x,z,.86,.27,1.35,enemy?"#ad5656":"#497f73",.12);cube(x,z,.6,.25,.65,c,.39);cube(x,z+.63,.14,.13,.96,"#323c49",.53);
+for(const d of [-.49,.49])cube(x+d,z,.17,.35,1.3,"#323b40",.04)}
+else if(u.k==="heli"){const y=1.45+Math.sin(now*3+u.id*5)*.09;cube(x,z,.70,.35,1.12,c,y);cube(x,z-.76,.1,.12,.95,"#d6e0dc",y+.15);cube(x,z,.1,.08,2.5,"#d6edf0",y+.48);cube(x,z,2.5,.08,.10,"#d6edf0",y+.51);
+cube(x,z+.30,.50,.15,.10,"#253b4a",y+.22)}
+else{cube(x,z,.30,.49,.32,c,.16+speed*.015);cube(x,z,.26,.26,.25,enemy?"#c7a9a3":"#f4cbad",.68);cube(x,z,.37,.13,.37,enemy?"#87434c":"#306885",.9);cube(x+.2,z+.2,.12,.13,.47,"#273840",.48);
+cube(x-.12,z+.03,.10,.21,.13,"#3f5762",.02);cube(x+.12,z+.03,.10,.21,.13,"#3f5762",.02)}
+cube(x,z,.6,.025,.42,enemy?"#584044":"#355b65",.018)}
+function drawScene(){verts=[];const wave=Math.sin(now*.3);
+box(0,-.50,0,26,.14,20,"#2a819c");
+for(let z=0;z<H;z++)for(let x=0;x<W;x++){const xx=x-8.5,zz=z-6.5;const p=((x*37+z*17)%11),base=x<7?(p<3?"#65ae70":"#6ebe78"):x<13?(p<3?"#83ba77":"#75bd7d"):(p<3?"#95b17a":"#8dbb84");box(xx,-.30,zz,1.025,.28,1.025,base);
+if(x===6||x===7||x===12)box(xx,-.004,zz,.13,.018,1.0,x===6?"#5cd2fc":"#d6cf8a");
+if(p===4&&(z<2||z>11||x>7&&x<12)&&!S.camps.some(c=>Math.hypot(c.x-x,c.z-z)<2)&&!S.structures.some(b=>Math.hypot(b.x-x,b.z-z)<1.4))tree(x,z,.55+((x*3+z)%5)*.07)}
+baseRoads();for(const b of S.structures)renderStructure(b);for(const c of S.camps)campScene(c);
+for(const u of S.enemies)drawUnit(u);for(const u of S.units)drawUnit(u);
+if(placing&&hover){cube(hover.x,hover.z,1.4,.02,1.4,hover.x<=6?"#f7d971":"#cc6871",.055)}
+for(const s of shots){const midx=(s.x+s.x2)/2,midz=(s.z+s.z2)/2;cube(midx,midz,.1,.08,Math.hypot(s.x-s.x2,s.z-s.z2)<.5?.5:.12,s.k==="ally"?"#ffea8b":"#ff6d5d",.83);cube(s.x2,s.z2,.3,.4,.3,s.k==="ally"?"#ffdf86":"#f66e68",.36)}
+if(S.defeat||S.victory)cube(2,7,1.5,.05,1.5,S.victory?"#fcdf6f":"#ff635b",2.2);
+gl.clearColor(.28,.67,.85,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+const data=new Float32Array(verts);gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,data,gl.DYNAMIC_DRAW);gl.vertexAttribPointer(pLoc,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(cLoc,3,gl.FLOAT,false,24,12);
+gl.uniformMatrix4fv(matLoc,false,pv);gl.drawArrays(gl.TRIANGLES,0,data.length/6);renderCount++}
+function matMul(a,b){const o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++){let v=0;for(let k=0;k<4;k++)v+=a[k*4+r]*b[c*4+k];o[c*4+r]=v}return o}
+function perspective(fov,asp,near,far){const f=1/Math.tan(fov/2),out=new Float32Array(16);out[0]=f/asp;out[5]=f;out[10]=(far+near)/(near-far);out[11]=-1;out[14]=2*far*near/(near-far);return out}
+function lookAt(eye,target){const norm=a=>{const n=Math.hypot(...a)||1;return a.map(v=>v/n)};const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];const z=norm(eye.map((a,i)=>a-target[i])),x=norm(cross([0,1,0],z)),y=cross(z,x);const m=new Float32Array(16);m[0]=x[0];m[1]=y[0];m[2]=z[0];m[4]=x[1];m[5]=y[1];m[6]=z[1];m[8]=x[2];m[9]=y[2];m[10]=z[2];m[12]=-x.reduce((s,v,i)=>s+v*eye[i],0);m[13]=-y.reduce((s,v,i)=>s+v*eye[i],0);m[14]=-z.reduce((s,v,i)=>s+v*eye[i],0);m[15]=1;return m}
+function camera(){const rect=canvas.getBoundingClientRect(),w=Math.max(1,rect.width),h=Math.max(1,rect.height),pixel=Math.min(devicePixelRatio||1,1.75);if(canvas.width!==Math.floor(w*pixel)||canvas.height!==Math.floor(h*pixel)){canvas.width=Math.floor(w*pixel);canvas.height=Math.floor(h*pixel);gl.viewport(0,0,canvas.width,canvas.height)}
+const r=zoom,eye=[Math.sin(camYaw)*Math.cos(camPitch)*r,Math.sin(camPitch)*r,Math.cos(camYaw)*Math.cos(camPitch)*r];
+const target=[0,0,0];pv=matMul(perspective(Math.PI/3.3,w/h,.1,200),lookAt(eye,target));}
+function project(x,z){const a=[x-8.5,0,z-6.5,1],p=[0,0,0,0];for(let row=0;row<4;row++)for(let i=0;i<4;i++)p[row]+=pv[i*4+row]*a[i];return {x:(p[0]/p[3]*.5+.5)*canvas.clientWidth,y:(1-(p[1]/p[3]*.5+.5))*canvas.clientHeight,w:p[3]}}
+/* 입력: 모바일 탭, 드래그, 두 손가락 확대 */
+const points=new Map();let down=null,pinch=null;
+function picked(px,py){let tile=null,best=1e6;for(let z=0;z<H;z++)for(let x=0;x<W;x++){const q=project(x,z),d=Math.hypot(q.x-px,q.y-py);if(q.w>0&&d<best){best=d;tile={x,z}}}return best<Math.max(30,canvas.clientWidth/22)?tile:null}
+function clickTile(x,y){if(S.defeat||S.victory)return;const t=picked(x,y);if(!t)return;hover=t;
+if(placing){build(t.x,t.z);return}
+const b=S.structures.find(b=>Math.abs(b.x-t.x)<.9&&Math.abs(b.z-t.z)<.9);if(b&&defs[b.k]){selected=b;showSelection();return}
+const c=S.camps.find(c=>Math.hypot(c.x-t.x,c.z-t.z)<2);if(c){if(c.owner==="player"){notify(c.name+"은 우리 거점이야.");return}S.target=c.id;S.units.forEach(u=>u.target=c.id);sync();menu();persist();notify("목표: "+c.name);return}selected=null;showSelection()}
+canvas.addEventListener("pointerdown",e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===1)down={x:e.clientX,y:e.clientY,moved:false};if(points.size===2){const pts=[...points.values()];pinch=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);down=null}});
+canvas.addEventListener("pointermove",e=>{if(!points.has(e.pointerId))return;const old=points.get(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===2){const pts=[...points.values()],d=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);if(pinch)zoom=Math.max(13,Math.min(43,zoom*pinch/d));pinch=d;return}if(down){const dx=e.clientX-old.x,dy=e.clientY-old.y;if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>9)down.moved=true;if(down.moved){camYaw+=dx*.008;camPitch=Math.max(.37,Math.min(1.30,camPitch+dy*.004))}}});
+canvas.addEventListener("pointerup",e=>{if(!points.has(e.pointerId))return;points.delete(e.pointerId);if(down&&!down.moved)clickTile(e.clientX-canvas.getBoundingClientRect().left,e.clientY-canvas.getBoundingClientRect().top);down=null;if(points.size<2)pinch=null});
+canvas.addEventListener("pointercancel",e=>{points.delete(e.pointerId);down=null;pinch=null});
+canvas.addEventListener("wheel",e=>{e.preventDefault();zoom=Math.max(13,Math.min(43,zoom+Math.sign(e.deltaY)*2))},{passive:false});
+window.addEventListener("keydown",e=>{if(e.key==="Escape"){placing=null;selected=null;showSelection();menu()}if(e.key==="+"||e.key==="=")zoom=Math.max(13,zoom-2);if(e.key==="-")zoom=Math.min(43,zoom+2)});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)persist()});window.addEventListener("pagehide",persist);
+/* 메인 루프 */
+let prev=0;function frame(ms){const dt=Math.min(.06,(ms-prev)/1000||.016);prev=ms;now=ms/1000;camera();if(started)simulate(dt);try{drawScene()}catch(e){console.error("미니 제국 렌더 오류",e)}requestAnimationFrame(frame)}
+sync();menu();requestAnimationFrame(frame);
+})();
+</script></body></html>
