@@ -197,6 +197,9 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',pr
     sourceSubgenreRefinementAllowed,
     sourceProfile,
     semanticVariant,
+    expectedSemanticVariant:clean(expectedLearning.semanticVariant),
+    nativeVariantRepairRequired:clientNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
+      &&Boolean(semanticVariant)&&semanticVariant!==clean(expectedLearning.semanticVariant),
     mappingCount,
     gameSpecificMappingsPresent,
     learningDispositionsPresent,
@@ -318,6 +321,28 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
       results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:clean(item.robloxSourceCommit),sourceTreeSha,
         sourceRepairPending:true,blockers:[...(item.robloxQualityBuildUpEvidence.staticContract||item.robloxQualityBuildUpEvidence.assetThreshold).blockers],
         failure:'existing-source-package-asset-repair-required',authority:item.robloxQualityBuildUpEvidence.authority});
+      continue;
+    }
+    if(learningState.nativeVariantRepairRequired===true){
+      // 최신 게임 소스와 설계의 유형 충돌은 구형 학습 재바인딩 반복으로 해결하지 않는다.
+      // 기존 소스 책임 작업에 정확한 실패를 넘기고 실제 네이티브 구현을 보존한다.
+      const blockers=['ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH'];
+      const repairable=sha40(currentRevision)&&sha40(sourceTreeSha);
+      results.push({
+        gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,
+        sourceDrift:!sourceBind,saveRequired:false,blockers,
+        failure:'existing-source-static-revalidation-failed',sourceContractRepairRequired:repairable,
+        sourceContractRepairEvidence:repairable?{
+          version:1,gameId:item.gameId,sourceRevision:currentRevision,sourceTreeSha,artifactIdentity:null,
+          authority:'roblox-source-static-contract-failure',staticContract:{pass:false,blockers},
+          assetRepairContext:robloxPackageAssetRepairContext({assetLibrary,baseline}),
+          qualityFailureKinds:blockers,repairSurfaces:['SOURCE_CONTRACT'],
+          qualityFailureDetails:[{id:blockers[0],repairSurface:'SOURCE_CONTRACT',priority:'P0',
+            observed:{currentVariant:learningState.semanticVariant,expectedVariant:learningState.expectedSemanticVariant,
+              currentNativeVersion:learningState.clientNativeBindingVersion,generatorNativeVersion:learningState.expectedNativeBindingVersion},
+            hint:'Inspect the exact approved design and current native client. Resolve the semantic mismatch in existing responsible source or existing design flow. Preserve newer native behavior, gameplay rules, balance, rewards, saves and server authority. Do not downgrade the native block or relabel a variant to manufacture PASS.'}]
+        }:null
+      });
       continue;
     }
     if(learningState.refreshRequired===true){

@@ -2099,3 +2099,10 @@ test('maximizes internal algorithms through authorized Vibe and AI collaboration
   const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(worker, /preserve=\$\{\(d\.preserveConstraints\|\|\[\]\)/);
 });
+
+
+test('keeps every explicitly assigned responsibility beyond the discovery context limit',()=>{
+  const responsibleFiles=Array.from({length:24},(_,i)=>`roblox-games/simple-rpg/client/Feature${i}.luau`);
+  const d=buildGameSpecificBuildUpDirective({gameId:'simple-rpg',platform:'ROBLOX',designRecord:design(),responsibleFiles});
+  assert.deepEqual(d.responsibleSystemsAndFiles.files,responsibleFiles);
+});

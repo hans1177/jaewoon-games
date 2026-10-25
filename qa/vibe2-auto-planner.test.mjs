@@ -3593,7 +3593,7 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
   assert.equal(tasks.length,5);
   assert.deepEqual(new Set(tasks.map(row=>row.studioQualityEvolution.focusPillar)),new Set(['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']));
-  assert.ok(tasks.every(row=>row.responsibleFiles.length>0&&row.responsibleFiles.length<=2));
+  assert.ok(tasks.every(row=>row.responsibleFiles.length===5));
   assert.equal(new Set(tasks.map(row=>row.buildUpDirectiveId)).size,1);
   assert.equal(new Set(tasks.map(row=>row.buildUpDirective?.directiveFingerprint)).size,1);
   assert.equal(new Set(tasks.map(row=>JSON.stringify(row.buildUpDirective))).size,1);
@@ -5799,4 +5799,23 @@ test('catalog existing web sources continue even when legacy archive flag is fal
   assert.equal(findWebRecurringBuildUpTask(rows.find(p=>p.gameId==='live-b'&&p.engine==='web'),root,{tasks:[]}),null,
     'released web archive is not an ordinary development target');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 집중 작업은 같은 게임의 실제 파일 범위를 2개로 자르지 않는다.
+test('focused Roblox build-up keeps every eligible responsibility file while ordinary work stays scoped',()=>{
+  const root=tempRepo(),gameId='focused-unbounded';
+  try{
+    const folder=path.join(root,'roblox-games',gameId,'client');
+    fs.mkdirSync(folder,{recursive:true});
+    const files=Array.from({length:12},(_,index)=>'Feature'+index+'.client.luau');
+    for(const file of files)fs.writeFileSync(path.join(folder,file),'local camera = workspace.CurrentCamera\nlocal view = Instance.new("Frame")\nview.Visible = true\n');
+    const project={gameId,name:'집중 작업',engine:'roblox',target:'roblox',projectPath:'roblox-games/'+gameId,releaseState:'development-confirmed',existing:true};
+    const focused=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+    assert.ok(focused);
+    assert.equal(focused.responsibleFiles.length,files.length);
+    assert.ok(files.every(file=>focused.responsibleFiles.includes('client/'+file)||focused.responsibleFiles.includes('roblox-games/'+gameId+'/client/'+file)));
+    const normal=findStudioContinuousImprovementTask(project,root,{tasks:[]});
+    assert.ok(normal);
+    assert.ok(normal.responsibleFiles.length<=6);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

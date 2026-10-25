@@ -3237,8 +3237,9 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     if(robloxGameplayFocus&&/(?:^|\/)shared\//.test(value))score+=24;
     return score;
   };
-  const responsibleFileLimit=requestedFocus?2:6;
-  const responsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b)).slice(0,responsibleFileLimit);
+  // 집중 작업은 게임의 실제 책임 범위를 개수로 자르지 않는다.
+  const rankedResponsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b));
+  const responsibleFiles=requestedFocus?rankedResponsibleFiles:rankedResponsibleFiles.slice(0,6);
   const responsibleFileFingerprints=responsibleFiles.map(file=>{
     try{
       const sourcePath=path.join(repoRoot,file);
@@ -4387,7 +4388,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     if(!webSeed&&!distinctSeed&&!focusedSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
     const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
-    const remaining=webSeed||distinctSeed||focusedSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
+    const remaining=webSeed||distinctSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
     const candidates=findSafeTasks(project,repoRoot,queue,assetRegistryCache).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
     let packageTasks=selectPackageCandidates(candidates.map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;

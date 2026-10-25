@@ -2634,7 +2634,7 @@ export function buildGameSpecificBuildUpDirective({
     :baseStates;
   const gaps=states.filter(x=>x.state==='GAP');
   const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,focus,depthInfo});
-  const topFiles=uniq([...(responsibleFiles||[]),...(source?.topFiles||[]).map(x=>x.file)]).slice(0,16);
+  const topFiles=uniq([...(responsibleFiles||[]),...(source?.topFiles||[]).map(x=>x.file)]).slice(0,Math.max(16,uniq(responsibleFiles||[]).length));
   const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8);
   const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
   const expectedEffect=expectedPlayerEffect({focus,identity,anchor,secondary});

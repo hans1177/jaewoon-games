@@ -1375,3 +1375,33 @@ test('current static source failure goes to existing Vibe repair and rejects sta
     assert.ok(workflow.includes('robloxQualityBuildUpEvidence:{...result.sourceContractRepairEvidence'));
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
+
+// 회귀: 최신 네이티브 유형 충돌은 동일 실패 학습 갱신 대신 기존 책임 소스 복구로 인계한다.
+test('newer native semantic mismatch enters causal source repair without rewriting game source',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-native-variant-repair-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const clientFile=path.join(root,'client','Game.client.luau');
+    fs.writeFileSync(clientFile,fs.readFileSync(clientFile,'utf8').replace(
+      /(VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*)6\b/,'$17'));
+    initGitRepo(tmp);
+    const files=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau'];
+    const before=files.map(file=>fs.readFileSync(path.join(root,file),'utf8'));
+    const revised={...baseline,content:{...baseline.content,robloxBuildProfile:{...robloxBuildProfileFromBaseline(baseline),genre:'Action',subgenre:'Battlegrounds & fighting'}}};
+    const sourceRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'TARGET_PLATFORM_SOURCE_BIND'};
+    const [row]=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision,
+      loadBaseline:()=>revised,playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary,requestedGameId:gameId});
+    assert.equal(row.pass,false);
+    assert.equal(row.failure,'existing-source-static-revalidation-failed');
+    assert.equal(row.sourceContractRepairRequired,true);
+    assert.deepEqual(row.blockers,['ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH']);
+    assert.equal(row.verifiedExternalLearningRefreshRequired,undefined);
+    assert.equal(row.sourceContractRepairEvidence.authority,'roblox-source-static-contract-failure');
+    const observed=row.sourceContractRepairEvidence.qualityFailureDetails[0].observed;
+    assert.notEqual(observed.currentVariant,observed.expectedVariant);
+    assert.ok(observed.currentNativeVersion>observed.generatorNativeVersion);
+    assert.deepEqual(files.map(file=>fs.readFileSync(path.join(root,file),'utf8')),before);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
