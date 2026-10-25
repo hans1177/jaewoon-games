@@ -33,7 +33,7 @@ export function drawGeography(ctx,w,h,cx,cz,scale,style='sea'){
   ctx.lineWidth=(parchment?11:12)/scale;ctx.strokeStyle=parchment?'#ae916744':'#79b7b465';ctx.stroke();
   ctx.lineWidth=(parchment?5:5.2)/scale;ctx.strokeStyle=parchment?'#cfb78d':'#82b5b0';ctx.stroke();
   ctx.fillStyle=parchment?'#ac9f77':'#748866';ctx.fill();
-  ctx.lineWidth=1.5/scale;ctx.strokeStyle=parchment?'#6f6146':'#3f645d';ctx.stroke();
+  ctx.lineWidth=5.2;ctx.strokeStyle=parchment?'#d9c7a5':'#236077';ctx.stroke();
   if(scale>1.1){ctx.save();ctx.clip();ctx.strokeStyle=parchment?'#665a3752':'#c9d4a32b';ctx.lineWidth=.7/scale;
    const span=9/scale;ctx.beginPath();
    for(let z=Math.ceil(top/span)*span;z<bottom;z+=span){ctx.moveTo(left,z);ctx.lineTo(right,z-9/scale);}
@@ -62,7 +62,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0,miniHit=null;
- let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=4.8,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraOrbit=0,cameraHeight=.32,cameraDistance=22;
+ let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=3.2,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraOrbit=0,cameraHeight=.32,cameraDistance=32;
  const mobileGPU=!!(window.matchMedia?.('(pointer:coarse)')?.matches&&window.innerWidth<900);
  // 기존 CC0 범선 GLB를 조명·파도·포격과 함께 근접 전투 장면에 사용한다.
  let naval=null,navalLoading=false,navalError=false;
@@ -279,7 +279,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#302c26'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#b7b7aa',transparent:true,opacity:.43,depthWrite:false}),
     flashGeo=new THREE.IcosahedronGeometry(.45,0),flashMat=new THREE.MeshBasicMaterial({color:'#ffb74d',transparent:true,opacity:.92,depthWrite:false}),
     splashGeo=new THREE.RingGeometry(.45,.84,14),splashMat=new THREE.MeshBasicMaterial({color:'#e3f7ec',transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false});
-   let serial=0,shotTime=0,sw=0,sh=0;
+   let serial=0,shotTime=0,sw=0,sh=0,battleFraming=false;
    const targetLook=new THREE.Vector3(),skyLow=new THREE.Color(),skyHigh=new THREE.Color();
    naval={surface,renderer,world,camera,vessels,render(t){
     const cw=canvas.clientWidth,ch=canvas.clientHeight;if(cw!==sw||ch!==sh){sw=cw;sh=ch;renderer.setSize(cw,ch,false);camera.aspect=cw/ch;camera.updateProjectionMatrix();}
@@ -293,8 +293,19 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      // Rotate the visible hull into the same heading as its actual travel.
      e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading+Math.PI,Math.sin(t*1.2+Number(r.enemy))*.035);for(const cloth of e.sails){cloth.rotation.y=Math.sin(wind.heading-r.heading)*.15;cloth.rotation.z=Math.sin(wind.heading-r.heading)*.035+Math.sin(t*1.5)*.012;}if(e.wake){e.wake.visible=r.id==='player'?Math.abs(origin.velocity)>.5:true;e.wake.scale.setScalar(.7+Math.min(1.3,Math.abs(r.id==='player'?origin.velocity:3)*.13));e.wake.position.y=.02+Math.sin(t*3)*.015;}if(e.damage)e.damage.visible=r.id==='player'&&origin.hull/Math.max(1,origin.maxHull)<.53;}
     const enemy=hostiles.sort((a,b)=>Math.hypot(a.x-origin.x,a.z-origin.z)-Math.hypot(b.x-origin.x,b.z-origin.z))[0];
-    const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(95,Math.max(27,Math.hypot(ex,ez)*.85)*Math.max(1,.7/camera.aspect));
-    if(mode==='naval'){camera.position.lerp(new THREE.Vector3(ex*.5+span*.58,span*.83,ez*.5+span*.97),.065);targetLook.set(ex*.5,1.5,ez*.5);camera.lookAt(targetLook);}else{const bearing=origin.heading+cameraOrbit;camera.position.lerp(new THREE.Vector3(-Math.sin(bearing)*cameraDistance,4+cameraDistance*cameraHeight,-Math.cos(bearing)*cameraDistance),.13);targetLook.set(Math.sin(origin.heading)*3,2.5,Math.cos(origin.heading)*3);camera.lookAt(targetLook);}
+    const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0;
+    if(mode==='naval'){
+     // 메인: 두 선체와 UI 여백을 함께 담는다. 세로 화면의 수평 시야각이 거리 기준이다.
+     const halfFov=Math.atan(Math.tan(camera.fov*Math.PI/360)*Math.min(1,camera.aspect));
+     const radius=Math.hypot(ex,ez)*.5+14,distance=radius/Math.sin(halfFov*.70);
+     targetLook.set(ex*.5,1.5,ez*.5);
+     const position=targetLook.clone().add(new THREE.Vector3(.32,.86,.62).normalize().multiplyScalar(distance));
+     world.fog.near=distance+radius;world.fog.far=distance+radius*4;
+     camera.far=Math.max(350,distance+radius*3);camera.updateProjectionMatrix();
+     if(!battleFraming)camera.position.copy(position);else camera.position.lerp(position,.14);
+     camera.lookAt(targetLook);
+    }else{const bearing=origin.heading+cameraOrbit;camera.position.lerp(new THREE.Vector3(-Math.sin(bearing)*cameraDistance,4+cameraDistance*cameraHeight,-Math.cos(bearing)*cameraDistance),.13);targetLook.set(Math.sin(origin.heading)*3,2.5,Math.cos(origin.heading)*3);camera.lookAt(targetLook);}
+    battleFraming=mode==='naval';if(!battleFraming){world.fog.near=110;world.fog.far=300;}
     ring.visible=mode==='naval';ring.position.x=ex;ring.position.z=ez;
     const storm=state.climate?.kind==='storm',rain=state.climate?.kind==='rain';
      const a=water.geometry.attributes.position;
@@ -342,10 +353,11 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  function navalSea(){
   hit=[];miniHit=null;const gradient=ctx.createLinearGradient(0,0,0,h);gradient.addColorStop(0,'#8ebbc8');gradient.addColorStop(.2,'#245d73');gradient.addColorStop(1,'#102f48');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
   const enemies=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)&&Math.hypot(e.x-state.ship.x,e.z-state.ship.z)<65);
-  const foe=enemies[0],distance=foe?Math.hypot(foe.x-state.ship.x,foe.z-state.ship.z):20,scale=Math.min(6,Math.max(2.2,(w-85)/(distance+20)));
+  const foe=enemies[0],distance=foe?Math.hypot(foe.x-state.ship.x,foe.z-state.ship.z):20,scale=Math.min(3.2,(w-80)/(distance+32),(h*.48)/(distance+32));
   for(let i=0;i<40;i++){ctx.strokeStyle='#b3e0de22';ctx.beginPath();const y=(i*43+time*9)%h;ctx.ellipse((i*97)%w,y,20+i%5*4,3,0,0,Math.PI*2);ctx.stroke();}
-  ship(w*.35,h*.57,state.ship.heading,state.shipType,false,2.6,state.ship.cannons);
-  for(const e of enemies)ship(w*.35+(e.x-state.ship.x)*scale,h*.57+(e.z-state.ship.z)*scale,e.heading,'galleon',true,2.6,10);
+  const centerX=(foe?foe.x-state.ship.x:0)*.5,centerZ=(foe?foe.z-state.ship.z:0)*.5;
+  ship(w*.5-centerX*scale,h*.56-centerZ*scale,state.ship.heading,state.shipType,false,1.55,state.ship.cannons);
+  for(const e of enemies)ship(w*.5+(e.x-state.ship.x-centerX)*scale,h*.56+(e.z-state.ship.z-centerZ)*scale,e.heading,'galleon',true,1.55,10);
   if(!navalError){prepareNaval();text('입체 함대 장면 준비 중',w/2,h*.35,12,C.gold,'center');}
  }
  // 성능: 변경 없는 해안선·국경·미개척 안개는 오프스크린 해도에서 재사용한다.
@@ -582,5 +594,5 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(12,Math.min(62,cameraDistance+Math.sign(e.deltaY)*2));}},{passive:false});
  canvas.addEventListener('click',e=>{if(mode==='sea'&&seaCamera!=='chart')return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);if(mode==='sea'&&!target&&miniHit&&x>=miniHit.x&&x<=miniHit.x+miniHit.w&&y>=miniHit.y&&y<=miniHit.y+miniHit.h)onMap();});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
- return {setCameraMode(v){seaCamera=['chase','orbit','chart'].includes(v)?v:'chase';if(seaCamera==='chase')cameraOrbit=0;return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(12,Math.min(62,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||4.8));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.renderer.dispose();naval.surface.remove();}}};
+ return {setCameraMode(v){seaCamera=['chase','orbit','chart'].includes(v)?v:'chase';if(seaCamera==='chase')cameraOrbit=0;return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(12,Math.min(62,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||3.2));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.renderer.dispose();naval.surface.remove();}}};
 }

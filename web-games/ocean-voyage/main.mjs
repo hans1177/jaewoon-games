@@ -92,10 +92,10 @@ function gotoPanel(name){if(state.landBattle&&name!=='system'){enterBattle();ret
  if(active==='chart')centerChartOnShip();
  if(active)renderPanel();
 }
-function enterTown(){if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
-function openFacility(id){const home=canDock(state);if(!home){note('먼저 항구에 입항해.');return;}if(!portHasFacility(home.id,id)&&id!=='port'&&id!=='journal'){note(home.name+'에는 해당 시설이 없어. 다른 항구로 항해해.');return;}town=true;active=id;document.body.classList.add('in-town');$('townbar').hidden=false;scene.setMode('town',id);view.details.classList.add('open');switchMusicScene(id==='palace'?'palace':id==='quests'?'explore':'harbor');renderPanel();}
-function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';view.details.classList.remove('open');scene.setMode(town?'town':navalTarget!==null?'naval':'sea');if(town)switchMusicScene('harbor');}
-function depart(){if(state.landBattle){enterBattle();return;}if(!state.route.length)state.ship.heading=departureHeading(state);sailCruise=true;clearMotionSample();syncSails();town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();note('출항했어. 자동으로 전진해. 왼쪽 바다를 밀어서 조타하고 ■ 멈춤으로 정지할 수 있어.');}
+function enterTown(){document.body.classList.remove('in-facility');if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
+function openFacility(id){const home=canDock(state);if(!home){note('먼저 항구에 입항해.');return;}if(!portHasFacility(home.id,id)&&id!=='port'&&id!=='journal'){note(home.name+'에는 해당 시설이 없어. 다른 항구로 항해해.');return;}town=true;active=id;document.body.classList.add('in-town','in-facility');$('townbar').hidden=false;scene.setMode('town',id);view.details.classList.add('open');switchMusicScene(id==='palace'?'palace':id==='quests'?'explore':'harbor');renderPanel();}
+function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';document.body.classList.remove('in-facility');view.details.classList.remove('open');scene.setMode(town?'town':navalTarget!==null?'naval':'sea');if(town)switchMusicScene('harbor');}
+function depart(){if(state.landBattle){enterBattle();return;}if(!state.route.length)state.ship.heading=departureHeading(state);sailCruise=true;clearMotionSample();syncSails();town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town','in-facility');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();note('출항했어. 자동으로 전진해. 왼쪽 바다를 밀어서 조타하고 ■ 멈춤으로 정지할 수 있어.');}
 // 홈: 화면만 전환해 기존 진행 데이터는 선장 확정 전까지 보존한다.
 function openHome(){
  if(!ready)return;
@@ -426,7 +426,7 @@ function renderPanel(){
  if(!active)return;const savedScroll=renderedPanel===active?view.body.scrollTop:0;renderedPanel=active;
  const titles={battle:'육지 전투',jobs:'직업 길드',palace:'왕궁 · 총독부',port:'항구 · 선술집 · 조선소',crew:'선장과 항해사',inventory:'항해 가방과 화물',chart:'세계 해도',market:'항구 교역소',fleet:'함대와 조선소',quests:'계약과 탐험',journal:'항해 기록',menu:'전체 메뉴',system:'시스템'};
  view.head.textContent=titles[active];
- view.body.innerHTML=({battle:battlePanel,palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal,menu,system}[active]||chart)();if(active==='chart')drawChart(mapWorld);view.body.scrollTop=savedScroll;
+ view.body.innerHTML=({battle:battlePanel,palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal,menu,system}[active]||chart)();if(town&&PORT_SCENES[canDock(state)?.id]?.facilities.includes(active)){const p=canDock(state),focus={market:'20% 17%',crew:'20% 36%',jobs:'20% 58%',palace:'80% 17%',quests:'80% 36%',fleet:'80% 58%'}[active];view.body.insertAdjacentHTML('afterbegin','<figure class="facility-panorama"><img src="./assets/harbor.webp" alt="'+escapeHtml(p.name+' '+titles[active])+'" style="object-position:'+focus+'"><figcaption>'+escapeHtml(p.name+' · '+PORT_SCENES[p.id].district+' · '+titles[active])+'</figcaption></figure>');}if(active==='chart')drawChart(mapWorld);view.body.scrollTop=savedScroll;
 }
 function apply(result){
  if(result.ok){const priorFx=state.combatFx?.serial;state=result.state;save();scene.setState(state);if(state.landBattle){if(active!=='battle')enterBattle();else renderPanel();}else renderPanel();summary();renderEvent();if(state.combatFx?.serial!==priorFx)impactSound();}
@@ -616,7 +616,10 @@ function renderEvent(){
  const key=JSON.stringify(e)+':'+(meeting?state.merchants.find(m=>m.id===meeting.merchantId)?.met||0:0);
  if(renderedEvent===key)return;renderedEvent=key;
  let title='',body='',options=[],face=null,caption='';
- if(story){
+ if(story?.kind==='port-discovery'){
+  title=story.title;body=story.text;caption=port(story.portId).name+' · '+PORT_SCENES[story.portId].district;
+  options=[['해도에 기록하고 항해 계속',0,false]];
+ }else if(story){
   const captain=story.kind==='story'?CAPTAINS.find(c=>c.id===story.captainId):MERCHANT_CAPTAINS.find(c=>c.id===story.merchantId);
   title=story.title;body=story.text;caption=story.kind==='story'?'항해사의 이야기 · 장면 기록':'바다 위에서 이어지는 인연';
   face=story.kind==='story'?CREW.find(c=>c.id===captain?.id):CREW.find(c=>c.id===story.merchantId);
@@ -637,7 +640,9 @@ function renderEvent(){
   art.classList.add('show');
   art.innerHTML='<span class="scene-caption">'+escapeHtml(caption)+'</span><div class="event-person">'+portrait(face)+'</div>';
  }else{
-  art.classList.remove('show');art.innerHTML='';
+  art.classList.add('show');
+  const discovery=story?.kind==='port-discovery',image=discovery?'./assets/harbor.webp':$('sea').toDataURL('image/jpeg',.75);
+  art.innerHTML='<img class="event-view" src="'+image+'" alt="'+escapeHtml(discovery?caption:'현재 항해 해역')+'"><span class="scene-caption">'+escapeHtml(caption)+'</span>';
  }
 }
 
