@@ -45,8 +45,13 @@ test('Only verified CC0 actors replace Cozy village/raider visuals, originals an
 });
 
 test('GitHub publishing refuses ungranted/outdated CC0 originals and reuses exact Cozy private Place',()=>{
-  assert.match(workflow,/assets\/roblox\/\*\*/);
-  assert.match(workflow,/assets\/shared\/\*\*/);
+  assert.match(workflow,/^  workflow_dispatch:\s*$/m);
+  assert.doesNotMatch(workflow,/^  push:\s*$/m,'a source push must not bypass F9 publication');
+  assert.match(workflow,/enforceConstitution\(\{policy,phase:'cozy-direct-publish-preflight'\}\)/);
+  assert.match(workflow,/owner\.gameIds\.includes\('cozy-island'\)/);
+  assert.match(workflow,/COZY_DIRECT_PUBLISH_NO_OWNER_EXCEPTION_USE_F9_CANONICAL_RELEASE_PROMOTION/);
+  assert.match(workflow,/owner\.canonicalPrivateTargetOnly===true/);
+  assert.match(workflow,/owner\.preserveCurrentPrivateVisibility===true/);
   assert.match(workflow,/node --test qa\/cozy-rpg-release-hardening\.test\.mjs qa\/cozy-cc0-library-audit\.test\.mjs/);
   assert.match(workflow,/node tools\/cozy-cc0-library-audit\.mjs --grant/);
   assert.match(workflow,/test "\$REUSE_UNIVERSE_ID" = "10767445741"/);
