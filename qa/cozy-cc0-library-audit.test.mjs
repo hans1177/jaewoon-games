@@ -89,7 +89,11 @@ test('Cozy owner publish is publish-first regression-after, then existing F0 and
   assert.match(workflow.slice(regression,post),/node --test qa\/cozy-rpg-release-hardening\.test\.mjs/);
   assert.match(workflow.slice(post,next),/if\(!pass\)throw new Error\('COZY_POST_PUBLISH_QA_UNVERIFIED_NO_NEXT_F0'\)/);
   assert.match(workflow.slice(next,artifact),/gh workflow run company-roblox-source-drift-sync\.yml.*restart_from_f0=true/);
-  assert.match(workflow.slice(next,artifact),/gh workflow run vibe2-24h-runner\.yml.*--ref main/);
+  assert.match(workflow.slice(next,artifact),/COZY_POST_PUBLISH_NEXT_BUILD_UP=PLANNER_AFTER_F0_RUNTIME_SYNC/);
+  assert.doesNotMatch(workflow.slice(next,artifact),/gh workflow run vibe2-24h-runner\.yml/);
+  const sync=read('.github/workflows/company-roblox-source-drift-sync.yml');
+  assert.match(sync,/name: Refill existing Web-style BUILD_UP planner after proven Roblox F0 restart/);
+  assert.match(sync,/gh workflow run vibe2-24h-runner\.yml.*--ref main/);
   assert.doesNotMatch(workflow.slice(next,artifact),/gh workflow run vibe2-continuous-core\.yml/);
   assert.match(workflow.slice(next,artifact),/SUPERSEDED_BY_NEWER_GAME_SOURCE/);
   assert.match(workflow,/permissions:\s+contents: read\s+actions: write/);
