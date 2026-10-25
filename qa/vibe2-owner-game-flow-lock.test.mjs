@@ -58,13 +58,16 @@ test('lock original seed -> verified design -> promotion -> exact Vibe2 handoff'
     'node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_sha"',
     'gh workflow run company-development-confirmed-runtime.yml',
     'gh workflow run vibe2-24h-runner.yml',
-    'OWNER_HELD_UNITY_DISPATCH=NO'
+    'OWNER_HELD_UNITY_DISPATCH=NO',
+    'VIBE2_VERIFIED_DESIGN_INTAKE=PASS'
   ]);
   const planner=workflow('vibe2-24h-runner.yml');
   contains(planner,[
     'runtime_design_sha=',
-    'node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"',
-    'VIBE2_VERIFIED_DESIGN_INTAKE=PASS'
+    'git -C /tmp/vibe2-main show "$runtime_design_sha:development-queue.json"',
+    'for runtime_design_path in design game-seed-state.json; do',
+    'git -C /tmp/vibe2-main checkout "$runtime_design_sha" -- "$runtime_design_path"',
+    'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
   ]);
   const handoff=read('tools/vibe2-verified-design-handoff.mjs');
   contains(handoff,['evaluateMinimumDesignContract','strictQaPassClaimed:false,releasePassClaimed:false']);
