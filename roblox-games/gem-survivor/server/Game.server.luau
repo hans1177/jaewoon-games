@@ -319,11 +319,13 @@ local handlers = {
   ["scope-mobileux-dc1239c515"] = scopeHandler6,
 }
 
+local verifiedSaveLoad = {}
 Players.PlayerAdded:Connect(function(player)
   bindFoundationPlayer(player)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
   end)
+  verifiedSaveLoad[player] = ok and (saved == nil or typeof(saved) == "table")
   if ok and typeof(saved) == "table" then
     for key, fallback in pairs(Config.InitialState) do
       local value = saved[key]
@@ -349,15 +351,27 @@ remote.OnServerEvent:Connect(function(player, actionId)
   lastAction[player] = now
   handler(player)
 end)
-Players.PlayerRemoving:Connect(function(player)
+local function savePlayer(player)
+  if verifiedSaveLoad[player] ~= true then return end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
-  pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
+  local ok, err = pcall(function()
+    store:UpdateAsync("player:" .. player.UserId, function(current)
+      local merged = typeof(current) == "table" and current or {}
+      for key, value in pairs(snapshot) do merged[key] = value end
+      return merged
+    end)
   end)
+  if not ok then warn("GEM_SURVIVOR_SAVE_FAILED", player.UserId, tostring(err)) end
+end
+Players.PlayerRemoving:Connect(function(player)
+  savePlayer(player)
+  verifiedSaveLoad[player] = nil
   lastAction[player] = nil
 end)
-game:BindToClose(function() end)
+game:BindToClose(function()
+  for _, player in ipairs(Players:GetPlayers()) do savePlayer(player) end
+end)
 
 -- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_BEGIN
 local function studioAssetFamily(family)
