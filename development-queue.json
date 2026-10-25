@@ -50619,10 +50619,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-25T05:29:23.638Z",
+      "updatedAt": "2026-10-25T05:30:47.610Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -50681,8 +50681,8 @@
       "routingBlockers": [
         "roblox-build-package-revalidation-pending"
       ],
-      "robloxSourceCommit": "cb733094647aaf264685ae4e8be6f915a0cbc2f4",
-      "robloxSourceBootstrapPassedAt": "2026-10-25T05:13:22.335Z",
+      "robloxSourceCommit": "2c09126d86556a4d4bbf8b3e40ad17f59ceab913",
+      "robloxSourceBootstrapPassedAt": "2026-10-25T05:30:47.610Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -54604,9 +54604,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "d05ef7acbb1f5cee5e875ae30181d4c47650273e",
-        "newSourceRevision": "cb733094647aaf264685ae4e8be6f915a0cbc2f4",
-        "invalidatedAt": "2026-10-25T05:13:22.335Z"
+        "previousSourceRevision": "cb733094647aaf264685ae4e8be6f915a0cbc2f4",
+        "newSourceRevision": "2c09126d86556a4d4bbf8b3e40ad17f59ceab913",
+        "invalidatedAt": "2026-10-25T05:30:47.610Z"
       }
     },
     {
@@ -59742,7 +59742,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T05:29:23.638Z",
+  "updatedAt": "2026-10-25T05:30:47.610Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
