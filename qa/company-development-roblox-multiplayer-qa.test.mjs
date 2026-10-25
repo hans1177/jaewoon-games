@@ -210,7 +210,8 @@ test('all four games use independent numeric rooms with the original per-game pl
   assert.equal((await mm.gemJoin({gameId,inviteCode:room.inviteCode})).status,409);
   assert.equal((await mm.gemAuthorize({roomId:room.roomId,guestToken:room.guestToken})).status,200);
  }
- assert.equal(new Set(samples.map(row=>row.inviteCode)).size,1,'each game gets a separate one-digit room namespace');
+ assert.equal(store.has('gemRooms'),true);
+ for(const id of ['ocean-voyage','cozy-island','party-rpg'])assert.equal(store.has('guestRooms:'+id),true,'game room namespace must be isolated');
  assert.notEqual(samples[0].roomId,samples[1].roomId);
  assert.equal((await mm.gemAuthorize({roomId:samples[1].roomId,guestToken:samples[2].guestToken})).status,401);
  assert.equal((await mm.gemLeave({roomId:samples[1].roomId,guestToken:samples[1].guestToken})).status,200);
