@@ -587,7 +587,7 @@ buildWorld(live){
   const arrow=family==='ranger',arcane=family==='wizard',holy=family==='cleric',shadow=family==='rogue';
   const impact=defense||healing||type==='monster_specter'||type==='monster_charger'?{x:sx,y:sy}:{x:tx,y:ty};
   const distanceToTarget=Math.hypot(tx-sx,ty-sy)*SCALE;
-  const projectile=!(defense||healing||area||warning)&&distanceToTarget>.46&&(arrow||arcane||holy||shadow||monster&&['winged','ghost','specter'].includes(monsterStyle));
+  const projectile=!(defense||healing||area||warning)&&distanceToTarget>.46&&(arrow||arcane||holy||monster&&['winged','ghost','specter'].includes(monsterStyle));
   const buildup=projectile?.37:defense||healing||warning?0:.20;
   group.position.set(impact.x*SCALE,.10,impact.y*SCALE);
   const makeMaterial=(opacity=.85)=>new THREE.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
@@ -654,9 +654,10 @@ buildWorld(live){
    const sprite=attach(arrow?new THREE.ConeGeometry(.095,.38,6):new THREE.IcosahedronGeometry(monster?.21:.16,0),makeMaterial(.98));
    sprite.userData.flight=flight;
    if(arrow){
-    sprite.rotation.x=Math.PI*.5;
+    const shot=new THREE.Vector3((tx-sx)*SCALE,0,(ty-sy)*SCALE).normalize();
+    sprite.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),shot);
     const trail=attach(new THREE.CylinderGeometry(.012,.024,.38,5),makeMaterial(.65));
-    trail.userData.flight={...flight,tail:true};trail.rotation.x=Math.PI*.5;
+    trail.userData.flight={...flight,tail:true};trail.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),shot);
    }
   }
      // 몬스터 전용 기술 동작: 같은 피해/재사용 시간이라도 종족마다 발동 형태를 다르게 표현.
