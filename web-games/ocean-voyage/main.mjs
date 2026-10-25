@@ -1,6 +1,6 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion} from './engine.mjs';
+import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,boardEnemy,dailyProvisions,SEA_LANDMARKS,observeSeaLandmark,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -21,7 +21,7 @@ function save(){
 }
 const scene=createOceanView($('sea'),{
  onReady(){ready=true;scene.setState(state);if(state.heroChosen){if(state.landBattle)enterBattle();view.loading.classList.add('hide');note('항구 아이콘을 누르면 항로를 정할 수 있어. 입항 후에는 마을을 걸으며 시설을 골라.');}else showCaptains();},
- onBuilding(id){openFacility(id);},onMerchant(id){apply(hailMerchant(state,id));},onMap(){gotoPanel('chart');},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
+ onBuilding(id){openFacility(id);},onLandmark(id){apply(observeSeaLandmark(state,id));},onMerchant(id){apply(hailMerchant(state,id));},onMap(){gotoPanel('chart');},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
  onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}
 });
 $('start').addEventListener('click',()=>{if(ready)showCaptains();});
@@ -35,7 +35,18 @@ function summary(){
  const canHail=nearby&&Math.hypot(state.ship.x-nearby.p.x,state.ship.z-nearby.p.z)<=20;$('hail').hidden=!canHail;if(canHail){$('hail').dataset.merchant=nearby.id;$('hail').title=MERCHANT_CAPTAINS.find(c=>c.id===nearby.id).name+' 상선 교신';}
  $('autoBattle').textContent=state.autoCombat?'자동해전 켬':'자동해전 끔';$('autoBattle').setAttribute('aria-pressed',String(state.autoCombat));
  $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:state.exploreTarget?' · 직접 탐색 → '+port(state.exploreTarget).name:'');
- $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
+ $('dock').disabled=!location;
+ const battle=state.navalCombat,enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];
+ $('battleStatus').hidden=!battle;document.body.classList.toggle('naval-engaged',!!battle&&!town);
+ if(battle){const foe=state.pirates.find(e=>e.id===battle.enemyId);
+  const limit=Math.max(0,36-Math.hypot(state.ship.x-battle.x,state.ship.z-battle.z));
+  $('battleStatus').textContent='⚔ 해전 '+(foe?.name||'해적선')+' · 선원 '+state.ship.crew+' 대 '+(foe?.crew??Math.round((foe?.maxHull||80)*.32))+' · 경계까지 '+limit.toFixed(0)+' · 밖으로 항해하면 퇴각';
+ }
+ $('board').hidden=!battle;$('board').disabled=!battle||!enemy||enemy.id!==battle.enemyId||enemy.d>7||state.ship.crew<6||state.ship.boardingCooldown>0;
+ const sight=SEA_LANDMARKS.filter(t=>!state.seaDiscoveries.includes(t.id)).sort((a,b)=>Math.hypot(a.x-state.ship.x,a.z-state.ship.z)-Math.hypot(b.x-state.ship.x,b.z-state.ship.z))[0];
+ const canObserve=sight&&Math.hypot(sight.x-state.ship.x,sight.z-state.ship.z)<=8&&!battle;
+ $('observe').hidden=!canObserve;if(canObserve){$('observe').dataset.landmark=sight.id;$('observe').textContent='관측 · '+sight.name;}
+ $('foodStatus').textContent='식량 '+state.ship.provisions+' (약 '+Math.floor(state.ship.provisions/dailyProvisions(state))+'일) · 선원 '+state.ship.crew+'/'+state.ship.maxCrew+' · 포탄 '+state.supplies.ammo;
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
 function gotoPanel(name){if(state.landBattle){enterBattle();return;}
@@ -59,8 +70,16 @@ function travelCard(p){
  const d=Math.round(Math.hypot(state.ship.x-p.x,state.ship.z-p.z));
  return '<div class="row"><div class="desc"><strong>'+(reached?'⚓ ':'◈ ')+escapeHtml(p.name)+'</strong><small>'+escapeHtml(p.region)+' · '+(reached?'발견':'미발견')+' · '+d+'해리</small></div><button class="action sub" data-route="'+p.id+'">'+(reached?'개척 항로 자동항해':'미개척 경계까지')+'</button></div>';
 }
+// 해도와 탐험가 사무실에서 해양 발견 상태를 함께 확인한다.
+function maritimeSites(){
+ return '<h3>해양 명소 · 해상 관측</h3><p class="info">목표 해역까지 항해한 뒤 8거리 안에서 관측해. 식량 2를 사용해.</p>'+
+ SEA_LANDMARKS.map(t=>{
+  const found=state.seaDiscoveries.includes(t.id),reported=state.seaReported.includes(t.id),d=Math.hypot(state.ship.x-t.x,state.ship.z-t.z);
+  return '<div class="sea-landmark"><h4>'+escapeHtml(t.name)+(found?' · 발견':'')+'</h4><p>'+escapeHtml(t.lore)+'</p><small>'+escapeHtml(t.kind)+' · '+escapeHtml(t.relic)+(reported?' · 보고 완료':'')+' · 거리 '+Math.round(d)+'</small><div class="stack"><button class="action" data-sea-observe="'+t.id+'" '+(found||d>8||state.ship.provisions<2||state.navalCombat?'disabled':'')+'>'+(found?'관측 완료':'망원경 관측 · 식량 2')+'</button><button class="action sub" data-route="'+t.port+'">근처 항구 항로</button></div></div>';
+ }).join('');
+}
 function chart(){
- return '<p class="info">해도에서 발견한 항구를 누르면 자동항로가 설정돼. 개척 해역은 자동항해하고, 미개척 구간은 직접 조타해. 미개척 목적지는 밝혀진 바다의 끝에서 자동으로 멈춰. 실제 지형 해도야. 1차 유럽 항구 13곳이 연결돼. 어두운 미개척 해역은 직접 지나가면 영구적으로 밝혀져. 다른 대륙은 주인공 출신 배경이며 상세 플레이는 추후 확장돼. 자동항해는 육지를 피해 가며, 먼 항로는 2·4배속을 사용할 수 있어. 긴 항로에는 보급이 필요해.</p><canvas id="chartMap" width="640" height="400" aria-label="실제 유럽 및 세계 해안선"></canvas><div class="stack"><button class="action sub" data-map="europe">유럽·국가 지도</button><button class="action sub" data-map="world">세계 위치 보기</button></div><h3>보물 수색</h3>'+TREASURES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+(!state.treasureClues.includes(t.id)?'선술집에서 해도 단서를 구해.':t.clue)+'</p><button class="action" data-search="'+t.id+'" '+(!state.treasureClues.includes(t.id)||state.treasures.includes(t.id)?'disabled':'')+'>'+ (state.treasures.includes(t.id)?'발견 완료':'이 위치에서 수색')+'</button></div>').join('')+roamingMerchants()+'<button class="action sub" data-action="cancel">항로 취소</button>'+PORTS.map(travelCard).join('');
+ return '<p class="info">해도에서 발견한 항구를 누르면 자동항로가 설정돼. 개척 해역은 자동항해하고, 미개척 구간은 직접 조타해. 미개척 목적지는 밝혀진 바다의 끝에서 자동으로 멈춰. 실제 지형 해도야. 1차 유럽 항구 13곳이 연결돼. 어두운 미개척 해역은 직접 지나가면 영구적으로 밝혀져. 다른 대륙은 주인공 출신 배경이며 상세 플레이는 추후 확장돼. 자동항해는 육지를 피해 가며, 먼 항로는 2·4배속을 사용할 수 있어. 긴 항로에는 보급이 필요해.</p><canvas id="chartMap" width="640" height="400" aria-label="실제 유럽 및 세계 해안선"></canvas><div class="stack"><button class="action sub" data-map="europe">유럽·국가 지도</button><button class="action sub" data-map="world">세계 위치 보기</button></div>'+maritimeSites()+'<h3>보물 수색</h3>'+TREASURES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+(!state.treasureClues.includes(t.id)?'선술집에서 해도 단서를 구해.':t.clue)+'</p><button class="action" data-search="'+t.id+'" '+(!state.treasureClues.includes(t.id)||state.treasures.includes(t.id)?'disabled':'')+'>'+ (state.treasures.includes(t.id)?'발견 완료':'이 위치에서 수색')+'</button></div>').join('')+roamingMerchants()+'<button class="action sub" data-action="cancel">항로 취소</button>'+PORTS.map(travelCard).join('');
 }
 // 해도: 발견한 항구·개척 항로·현재 선박 위치를 같이 보여준다.
 let mapWorld=false;
@@ -74,6 +93,7 @@ function drawChart(world=false){
  for(let xx=0;xx<=640;xx+=40){ctx.beginPath();ctx.moveTo(xx,0);ctx.lineTo(xx,400);ctx.stroke();}
  for(let yy=0;yy<=400;yy+=40){ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(640,yy);ctx.stroke();}
  ctx.restore();
+ for(const t of SEA_LANDMARKS){const px=x(t.x),py=y(t.z);if(px<0||px>640||py<0||py>400)continue;ctx.fillStyle=state.seaDiscoveries.includes(t.id)?'#91d5c2':'#f1c183';ctx.fillRect(px-3,py-3,6,6);ctx.font='10px system-ui';ctx.fillText(t.name,px+6,py+11);}
  if(state.route.length){ctx.save();ctx.strokeStyle='#ffe09f';ctx.lineWidth=2;ctx.setLineDash([7,4]);ctx.beginPath();ctx.moveTo(x(state.ship.x),y(state.ship.z));for(const p of state.route)ctx.lineTo(x(p.x),y(p.z));ctx.stroke();ctx.restore();}
  drawFog(ctx,640,400,cx,cz,scale,state.charted);
  for(const p of PORTS){
@@ -174,10 +194,10 @@ function transportQuests(){
 }
 function quests(){
  const ex=state.expedition,site=SITES.find(t=>t.id===ex?.id),home=canDock(state),encounter=LAND_EVENTS.find(e=>e.id===ex?.event);
- return portNpc('quests')+'<h3>탐험가 사무실</h3><p class="info">유적을 직접 조사하고 발견물을 보고해. 보고한 유물은 도감에 남고 왕궁 명성과 주인공 이야기에도 연결돼.</p><button class="action" data-action="report">미보고 발견물 '+state.discoveries.filter(x=>!state.reported.includes(x)).length+'건 보고</button>'+
+ return portNpc('quests')+'<h3>탐험가 사무실</h3><p class="info">유적을 직접 조사하고 발견물을 보고해. 보고한 유물은 도감에 남고 왕궁 명성과 주인공 이야기에도 연결돼.</p><button class="action" data-action="report">미보고 발견물 '+(state.discoveries.filter(x=>!state.reported.includes(x)).length+state.seaDiscoveries.filter(x=>!state.seaReported.includes(x)).length)+'건 보고</button>'+
  (encounter?'<div class="scene-card"><h3>'+encounter.title+'</h3><p>'+encounter.text+'</p>'+encounter.options.map((t,i)=>'<button class="action" data-site-event="'+i+'">'+t+'</button>').join('')+'</div>':'')+
  (site&&!encounter?'<div class="scene-card"><h3>'+site.name+' · 조사 '+(ex.step+1)+'/3</h3><p>'+site.lore+'</p><p>행동력 '+ex.energy+' · '+escapeHtml(ex.notes.at(-1)||'단서를 관찰하고 다음 행동을 골라.')+'</p><button class="action" data-explore="0">'+site.choices[ex.step]+'</button><button class="action sub" data-explore="1">'+['다른 조사 방법을 택한다','동료와 현장을 재검토한다','반대 방향에서 기록을 맞춘다'][ex.step]+'</button></div>':'')+
- '<h3>육지 탐험지</h3>'+SITES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+port(t.port).name+' · '+t.kind+'</p><p class="info">'+t.lore+'</p><button class="action" data-site="'+t.id+'" '+(home?.id!==t.port||state.discoveries.includes(t.id)||ex?'disabled':'')+'>'+(state.discoveries.includes(t.id)?t.relic+' 발견':'식량 6 · 상륙 조사')+'</button> <button class="action sub" data-route="'+t.port+'">항구로 항해</button></div>').join('')+
+ maritimeSites()+'<h3>육지 탐험지</h3>'+SITES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+port(t.port).name+' · '+t.kind+'</p><p class="info">'+t.lore+'</p><button class="action" data-site="'+t.id+'" '+(home?.id!==t.port||state.discoveries.includes(t.id)||ex?'disabled':'')+'>'+(state.discoveries.includes(t.id)?t.relic+' 발견':'식량 6 · 상륙 조사')+'</button> <button class="action sub" data-route="'+t.port+'">항구로 항해</button></div>').join('')+
  '<h3>사무실 의뢰</h3>'+OFFICE_QUESTS.map(q=>'<div class="scene-card"><strong>'+q.name+'</strong><p>'+q.text+' · '+officeProgress(state,q)+' / '+q.need+' · '+q.reward+' G</p><button class="action" data-office="'+q.id+'" '+(!home||state.completedOffice.includes(q.id)?'disabled':'')+'>'+(state.completedOffice.includes(q.id)?'완료':state.officeQuests.includes(q.id)?'보상 수령':'수주')+'</button></div>').join('')+transportQuests();
 }
 function palace(){
@@ -266,6 +286,8 @@ $('close').addEventListener('click',leaveFacility);
 $('dock').addEventListener('click',()=>{if(canDock(state))enterTown();});
 $('hail').addEventListener('click',()=>{const id=$('hail').dataset.merchant;if(id)apply(hailMerchant(state,id));});
 $('fire').addEventListener('click',()=>apply(fireCannons(state)));
+$('board').addEventListener('click',()=>apply(boardEnemy(state)));
+$('observe').addEventListener('click',()=>{const id=$('observe').dataset.landmark;if(id)apply(observeSeaLandmark(state,id));});
 view.body.addEventListener('click',e=>{
  if(e.target.id==='chartMap'){
   const c=e.target,r=c.getBoundingClientRect(),mx=(e.clientX-r.left)/r.width*640,my=(e.clientY-r.top)/r.height*400;
@@ -274,8 +296,9 @@ view.body.addEventListener('click',e=>{
   if(best&&best.d<24&&state.discovered.includes(best.p.id)){state=setDestination(state,best.p.id);save();scene.setState(state);renderPanel();note(best.p.name+' 항로 설정');}
   return;
  }
- const b=e.target.closest('[data-hail],[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy],[data-invest],[data-talk],[data-target],[data-land],[data-cannon],[data-site-event],[data-ship-gear],[data-refine],[data-contact],[data-gift],[data-info],[data-bond],[data-bench],[data-fleet-tab]');
+ const b=e.target.closest('[data-sea-observe],[data-hail],[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy],[data-invest],[data-talk],[data-target],[data-land],[data-cannon],[data-site-event],[data-ship-gear],[data-refine],[data-contact],[data-gift],[data-info],[data-bond],[data-bench],[data-fleet-tab]');
  if(!b)return;
+ if(b.dataset.seaObserve){apply(observeSeaLandmark(state,b.dataset.seaObserve));return;}
  if(b.dataset.hail){apply(hailMerchant(state,b.dataset.hail));return;}
  if(b.dataset.panelOpen){openFacility(b.dataset.panelOpen);return;}
  if(b.dataset.fleetTab){fleetTab=b.dataset.fleetTab;view.body.scrollTop=0;renderPanel();return;}
@@ -437,7 +460,7 @@ function run(now){
  if(panelTick>13){panelTick=0;save();}
  if(state.ship.hull<=0){
   note('선체가 파괴됐어. 항구에서 수리를 받거나 새 항해를 시작할 수 있어.');
-  state.ship.hull=1;const safe=port(state.homePort)||PORTS[0];state.ship.x=safe.x;state.ship.z=safe.z+2;state.destination=null;state.route=[];state.coins=Math.max(200,state.coins-500);save();
+  state.ship.hull=1;const safe=port(state.homePort)||PORTS[0];state.ship.x=safe.x;state.ship.z=safe.z+2;state.destination=null;state.route=[];state.navalCombat=null;state.navalEscapeCooldown=18;state.coins=Math.max(200,state.coins-500);save();
  }
 }
 $('speed').textContent=state.speed+'배속';summary();renderEvent();requestAnimationFrame(run);
