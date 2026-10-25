@@ -163060,7 +163060,7 @@
     },
     {
       "id": "recovery-recovery-d125e3cbc61b39ee3f05",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -163118,8 +163118,8 @@
       "sourceMutationBaseline": "cf5d0f4379c443bee5b465f922cf1450bf80b181",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40173578930:1",
+      "reservedAt": "2026-10-25T07:44:45.389Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -163147,13 +163147,26 @@
         "game-repair-save-migration:NOT_APPLICABLE",
         "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
         "learning-route:existing-vibe-learning-motor",
-        "primary-ai-collaboration-task:recovery-recovery-d125e3cbc61b39ee3f05"
+        "primary-ai-collaboration-task:recovery-recovery-d125e3cbc61b39ee3f05",
+        "system-ai-impact-score:1467",
+        "system-ai-blocked-task-count:22",
+        "system-ai-common-bottleneck:YES",
+        "system-ai-representative-canary:WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 0,
-      "impactComponents": null,
+      "impactScore": 1467,
+      "impactComponents": {
+        "severity": 4,
+        "blockedTaskCount": 22,
+        "recurrenceCount": 21,
+        "dependencyCentrality": 1,
+        "criticalPathDepth": 0,
+        "transitiveBlockedTaskCount": 0,
+        "ageHours": 25.71,
+        "repairRisk": 1
+      },
       "createdAt": "2026-10-24T06:01:56.913Z",
-      "updatedAt": "2026-10-24T06:01:56.913Z"
+      "updatedAt": "2026-10-25T07:44:45.389Z"
     },
     {
       "id": "recovery-recovery-27cb1dd15ebd263ddd6c",
