@@ -45,8 +45,11 @@ test('Only verified CC0 actors replace Cozy village/raider visuals, originals an
   assert.match(source,/task\.spawn\(applyCC0Appearance,r,licenseAsset/);
   assert.match(source,/task\.spawn\(applyCC0Appearance,r,selected\.id/);
   assert.match(source,/Materials\.ApplyAuthoredSurface\(x,"COZY"\)/);
-  assert.match(source,/if child~=group and child:IsA\("BasePart"\)then child\.Transparency=1 end/);
-  assert.match(source,/piece\.CanCollide=false;piece\.CanTouch=false;piece\.CanQuery=false;piece\.Massless=true/);
+  assert.match(source,/if child:IsA\("BasePart"\)then child:Destroy\(\)end/);
+  assert.match(source,/joint\.Name="CozyVisualJoint"\.\.roots/);
+  assert.match(source,/while loadingAssets\[id\] do/);
+  assert.match(source,/piece\.CanCollide=false;piece\.CanTouch=false;piece\.CanQuery=false/);
+  assert.match(source,/piece\.Massless=true;piece\.CastShadow=false/);
   assert.match(source,/GetDataStore\("cozy-island-conquest-v3"\)/);
   assert.match(source,/CC0LicensedAssetId/);
   assert.match(source,/COZY_CC0_KAYKIT_NATIVE_V10/);
