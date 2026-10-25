@@ -516,6 +516,31 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   const interactables=[];
   const undeadActors=new Map();
   const nativeCreatureActors=new Map();
+  // 메인 · 3D 도감 이름표: 등록한 종에만 기존 몬스터 머리 위 이름을 표시한다.
+  const nameTextures=new Map();
+  function syncBestiaryName(actor,e,state,height){
+    if(!state.bestiary?.[e.type?.id]||actor.nameLabel)return;
+    let texture=nameTextures.get(e.type.id);
+    if(!texture){
+      const surface=document.createElement('canvas');surface.width=512;surface.height=80;
+      const pen=surface.getContext('2d');
+      pen.fillStyle='rgba(8,24,16,.84)';pen.fillRect(5,4,502,72);
+      pen.strokeStyle='#a7ddb4';pen.lineWidth=3;pen.strokeRect(5,4,502,72);
+      pen.fillStyle='#f5fff7';pen.font='bold 34px sans-serif';pen.textAlign='center';pen.textBaseline='middle';
+      pen.fillText(e.type.name,256,40,475);
+      texture=new THREE.CanvasTexture(surface);texture.colorSpace=THREE.SRGBColorSpace;
+      nameTextures.set(e.type.id,texture);
+    }
+    const material=new THREE.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false});
+    const label=new THREE.Sprite(material);
+    label.scale.set(Math.min(4.8,Math.max(2.2,e.type.name.length*.38)),.65,1);
+    label.position.y=height+.55;label.renderOrder=30;
+    actor.anchor.add(label);actor.nameLabel=label;
+  }
+  // 메인 · 기존 건축 청사진을 3D 월드 위에서 직접 미리 보여준다.
+  const blueprintMaterial=new THREE.MeshBasicMaterial({color:0x80f5a3,transparent:true,opacity:.48,depthWrite:false});
+  const blueprintGhost=new THREE.Mesh(new THREE.BoxGeometry(2,.7,2),blueprintMaterial);
+  blueprintGhost.visible=false;blueprintGhost.renderOrder=12;scene.add(blueprintGhost);
   // 메인: 기존 CC0 석재 메시를 공유하여 산성 구슬을 GPU 한 번의 배치로 렌더링한다.
   let acidBatch=null,acidBatchCapacity=0;
   const acidTransform=new THREE.Object3D();
@@ -581,11 +606,12 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         actor.anchor.rotation.y+=Math.atan2(Math.sin(turnTo-actor.anchor.rotation.y),Math.cos(turnTo-actor.anchor.rotation.y))*turnEase;
       }
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      syncBestiaryName(actor,e,state,2.35);
       // The game owns the tap-target/attack decision. Native skinned surfaces only
       // provide the correct original world coordinates to its existing handler.
       actor.model.traverse(child=>{
         if(!child.isMesh)return;
-        child.userData.worldPoint={x:e.x,y:e.y};
+        child.userData.worldPoint={x:e.x,y:e.y,monsterId:e.netId};
         interactables.push(child);
       });
       // 이동/공격 상태를 실제 좌표와 공격 시각으로 검출한다. 제자리 문워크와 반복 공격 무동작 방지.
@@ -618,7 +644,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const [key,actor] of undeadActors){
       if(actor.seen===stamp)continue;
       actor.mixer?.stopAllAction();
-      scene.remove(actor.anchor);
+      scene.remove(actor.anchor);actor.nameLabel?.material.dispose();
       undeadActors.delete(key);
     }
   }
@@ -699,9 +725,10 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         if(actor.anchor.scale)actor.anchor.scale.y=.70;
       }else{actor.anchor.rotation.z=0;if(actor.anchor.scale)actor.anchor.scale.y=1}
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      syncBestiaryName(actor,e,state,Math.max(1.5,source.height*model.scale.y)+.2);
       if(actor.anchor.visible)actor.model.traverse(child=>{
         if(!child.isMesh)return;
-        child.userData.worldPoint={x:e.x,y:e.y};
+        child.userData.worldPoint={x:e.x,y:e.y,monsterId:e.netId};
         interactables.push(child);
       });
       // 몬스터 실제 이동량을 쓰므로 벽에 걸렸을 때 이동 애니메이션이 계속 나오지 않는다.
@@ -733,7 +760,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     for(const [key,actor] of nativeCreatureActors){
       if(actor.seen===stamp)continue;
       actor.mixer?.stopAllAction();
-      scene.remove(actor.anchor);nativeCreatureActors.delete(key);
+      scene.remove(actor.anchor);actor.nameLabel?.material.dispose();nativeCreatureActors.delete(key);
     }
     return unsafeUnmappedEncounter;
   }
@@ -1156,6 +1183,14 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
       mesh.visible=true;visibleBoltCount++;
     }
     for(let i=visibleBoltCount;i<mageBoltEffects.length;i++)mageBoltEffects[i].visible=false;
+    const bp=state.area==='surface'?state.blueprint:null;
+    blueprintGhost.visible=!!bp;
+    if(bp){
+      blueprintGhost.position.set(bp.x*SCALE,.38,bp.y*SCALE);
+      blueprintGhost.rotation.y=bp.vertical?Math.PI/2:0;
+      blueprintGhost.scale.set(bp.id==='wood-wall'||bp.id==='wood-door'?1.8:1,1,1);
+      blueprintMaterial.color.setHex(bp.canPlace?0x80f5a3:0xff7373);
+    }
     renderer.render(scene,camera);
     active=true;canvas.hidden=false;fallbackReason='';
     if(!extraModelsStarted){
@@ -1183,10 +1218,13 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
     disposed=true;heroLoadVersion++;active=false;canvas.hidden=true;
     if(hero){heroMixer?.stopAllAction();scene.remove(hero.avatar);
       hero.model.traverse(object=>{if(object.isMesh){object.geometry?.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];for(const mat of mats)mat?.dispose()}})}
-    for(const actor of undeadActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
+    for(const actor of undeadActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor);actor.nameLabel?.material.dispose()}
     undeadActors.clear();
-    for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
+    for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor);actor.nameLabel?.material.dispose()}
     nativeCreatureActors.clear();
+    for(const texture of nameTextures.values())texture.dispose();
+    nameTextures.clear();
+    scene.remove(blueprintGhost);blueprintGhost.geometry.dispose();blueprintMaterial.dispose();
     disposeEquippedVisual();swingArc.parent?.remove(swingArc);swingRing.parent?.remove(swingRing);
     swingArc.geometry.dispose();swingArc.material.dispose();swingRing.geometry.dispose();swingRing.material.dispose();
     if(acidBatch)scene.remove(acidBatch);
