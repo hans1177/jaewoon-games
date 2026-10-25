@@ -84,7 +84,7 @@ function kitchenAction(station,index){
  }else if(station==='plate'&&g.step==='plate'){
   g.phase='ready';g.step='ready';say('🍽️ '+r.finish+' 완료! 주문 카드를 눌러 서빙해!');
  }else{say('아직 이 단계가 아니야!');return}
- updateOrders();updateKitchen();
+ moveCook(station);updateOrders();updateKitchen();
 }
 let lastKitchenView='';
 function updateKitchen(){
@@ -133,7 +133,7 @@ function updateOrders(){
 function interact(id){
  const g=guests.find(x=>x.id===id);if(!g)return;
  if(g.phase==='order'){g.phase='prep';g.step='store';g.got={};g.thawed={};g.cut={};g.busy=-1;g.timer=0;g.actions=0;g.heatOn=false;say('창고에서 '+dishes[g.dish].name+' 재료부터 꺼내!')}
- if(g.phase==='prep')selectedId=g.id;
+ if(g.phase==='prep'){selectedId=g.id;moveCook(g.step==='store'?'store':g.step)}
  else if(g.phase==='ready')serve(g);
  else say('직원이 조리하고 있어!');
  updateOrders();updateKitchen();
@@ -156,7 +156,7 @@ $('menuBtn').onclick=()=>say(dishes.map((x,i)=>x.icon+x.name+' '+x.price+'원'+(
 $('start').onclick=()=>{data.started=true;$('intro').classList.add('hidden');save();say('영업 시작! 손님의 주문 카드를 눌러봐.')};
 if(data.started)$('intro').classList.add('hidden');
 // 그래픽: 기존 웹게임처럼 Three.js 실제 3D 메시 렌더링
-let scene=null,camera=null,renderer=null,models=[],people=[],chefModels=[];let updateTables=()=>{};let animateKitchen=()=>{};
+let scene=null,camera=null,renderer=null,models=[],people=[],chefModels=[];let updateTables=()=>{};let animateKitchen=()=>{};let moveCook=()=>{};
 const canvas=$('scene');
 if(window.THREE){
 scene=new THREE.Scene();scene.background=new THREE.Color(0xb9eada);scene.fog=new THREE.Fog(0xb9eada,25,45);
@@ -212,6 +212,19 @@ const plating=station('plate',5.45,-3.9,1.45);
 const whitePlate=ball(0,.84,0,.54,0xf7ede1,plating);whitePlate.scale.y=.15;
 const preparedFood=ball(0,.92,0,.30,0xf2d2a2,plating);preparedFood.scale.y=.18;preparedFood.visible=false;
 for(const group of stations)group.traverse(mesh=>{if(mesh.isMesh){mesh.userData.station=group.userData.station;stationMeshes.push(mesh)}});
+// 모션: 선택한 주방 설비로 요리사가 걸어가서 재료를 조작해
+const playerChef=new THREE.Group();scene.add(playerChef);playerChef.position.set(-1,0,-2.8);
+box(0,.82,0,.65,.98,.40,0xffffff,playerChef);
+box(0,.86,.22,.52,.72,.10,0xe7b970,playerChef);
+ball(0,1.56,0,.35,0xf0c4a1,playerChef);
+box(0,1.9,0,.78,.17,.47,0xfafbf4,playerChef);
+box(0,2.07,0,.48,.26,.39,0xfafbf4,playerChef);
+const feet=[box(-.2,.19,0,.18,.38,.22,0x475156,playerChef),box(.2,.19,0,.18,.38,.22,0x475156,playerChef)];
+const cookSpots={store:[-6.6,-1.6],thaw:[-3,-2.6],cut:[-.55,-2.6],heat:[2,-2.6],plate:[5.45,-2.4]};
+const cookTarget=[-1,-2.8];
+moveCook=station=>{const p=cookSpots[station];if(p){cookTarget[0]=p[0];cookTarget[1]=p[1]}};
+const foodPieces=[];
+for(let i=0;i<3;i++)foodPieces.push(ball(i*.30-.30,1.17,-4.35,.19,0x8db667));
 let pressX=0,pressY=0,litStation='';
 canvas.addEventListener('pointerdown',event=>{pressX=event.clientX;pressY=event.clientY});
 canvas.addEventListener('pointerup',event=>{
@@ -223,6 +236,14 @@ canvas.addEventListener('pointerup',event=>{
 });
 animateKitchen=t=>{
  const g=active(),needed=g?.step||'';
+ const dx=cookTarget[0]-playerChef.position.x,dz=cookTarget[1]-playerChef.position.z,moving=Math.hypot(dx,dz)>.08;
+ playerChef.position.x+=dx*.075;playerChef.position.z+=dz*.075;
+ feet.forEach((f,i)=>{f.rotation.x=moving?Math.sin(t*9+i*Math.PI)*.42:0});
+ for(let i=0;i<foodPieces.length;i++){
+  const piece=foodPieces[i];piece.visible=!!g&&g.step!=='store'&&g.step!=='plate'&&i<recipes[g.dish].items.length;
+  if(piece.visible){const p={thaw:[-3,.98,-4.35],cut:[-.55,.98,-4.35],heat:[2,1.20,-4.35]}[g.step]||[-3,.98,-4.35];piece.position.set(p[0]+(i-1)*.27,p[1],p[2]);piece.material.color.setHex([0xb8d091,0xc27963,0x8dbc70][i]);}
+ }
+
  if(litStation!==needed){
   litStation=needed;
   for(const group of stations)for(const child of group.children)if(child.isMesh&&child.material.emissive)child.material.emissive.setHex(group.userData.station===needed?0x291a04:0x000000);
