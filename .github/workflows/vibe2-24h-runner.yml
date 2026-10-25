@@ -549,6 +549,7 @@ jobs:
                 node --test qa/vibe-studio-asset-universe.test.mjs 2>&1 | tee /tmp/vibe2-asset-library-qa.log
               fi
                 node --test qa/vibe3-roblox-distillation.test.mjs
+                node --test qa/company-web-contract-adapter.test.mjs
                 node --test qa/company-development-web-runtime.test.mjs
               fi
 
