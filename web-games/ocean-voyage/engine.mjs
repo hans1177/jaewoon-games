@@ -415,6 +415,21 @@ function advanceMerchantFleet(s,dt){
   s.worldLog=s.worldLog.slice(-20);
  }
 }
+// 이동 상선 교신은 실제 항해 위치에서만 시작한다.
+export function hailMerchant(state,id){
+ const merchant=state.merchants?.find(m=>m.id===id&&!state.crewRoster.includes(m.id));
+ const captain=MERCHANT_CAPTAINS.find(c=>c.id===id);
+ if(!merchant||!captain)return fail(state,'교신할 수 있는 상선이 없어.');
+ if(state.scene||state.event||state.landBattle||state.navalCombat)return fail(state,'진행 중인 사건이나 해전을 먼저 마쳐.');
+ if(dist(state.ship,merchantPosition(merchant))>20)return fail(state,'상선에 더 가까이 접근해야 교신할 수 있어.');
+ const s=copy(state);s.event={id:'merchant_meeting',merchantId:id};
+ return success(s,captain.name+' 상선과 교신을 시작했어.');
+}
+export function dismissStoryScene(state){
+ if(!state.scene)return fail(state,'진행 중인 이야기가 없어.');
+ const s=copy(state);s.scene=null;
+ return success(s,'이야기를 마치고 항해를 이어가.');
+}
 export function resolveMerchantEncounter(state,choice){
  const event=state.event,leader=MERCHANT_CAPTAINS.find(c=>c.id===event?.merchantId);
  const m=state.merchants?.find(x=>x.id===leader?.id);
