@@ -3,8 +3,67 @@
   "kind": "platform-suitability",
   "authority": "PRIMARY_AI_AND_VIBE_JOINT_WITH_DEPARTMENT_EVIDENCE",
   "policy": "ROBLOX_UNITY_CONCURRENT_SUITABILITY_DISPLAY_ONLY",
-  "generatedAt": "2026-10-25T14:20:29.096Z",
+  "generatedAt": "2026-10-25T14:34:17.932Z",
   "games": [
+    {
+      "gameId": "horror-escape-room",
+      "gameName": "심야 대탈출",
+      "executionMode": "ROBLOX_UNITY_CONCURRENT",
+      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+      "ROBLOX": {
+        "score": 70,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 70,
+          "development": 68,
+          "graphics": 68,
+          "audio": 70,
+          "qa": 72,
+          "balance": 70,
+          "growthMarketing": 72
+        },
+        "adaptationProfile": "SOCIAL_FAST_SESSION",
+        "direction": [
+          "FAST_ENTRY",
+          "MOBILE_FIRST",
+          "SOCIAL_AND_MULTIPLAYER",
+          "SHORT_REPEATABLE_GOALS",
+          "SERVER_AUTHORITATIVE_SYNC",
+          "ROBLOX_NATIVE_SERVICES"
+        ]
+      },
+      "UNITY": {
+        "score": 75,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 72,
+          "development": 77,
+          "graphics": 82,
+          "audio": 80,
+          "qa": 72,
+          "balance": 74,
+          "growthMarketing": 70
+        },
+        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+        "direction": [
+          "DEEP_SYSTEM_PRESENTATION",
+          "RICHER_VISUALS",
+          "CAMERA_AND_CINEMATIC_LANGUAGE",
+          "LONGER_SESSION_SUPPORT",
+          "DETAILED_CONTROLS",
+          "PERFORMANCE_SCALING",
+          "IMMERSIVE_AUDIO"
+        ]
+      },
+      "signals": {
+        "genre": "심야 대탈출",
+        "playMode": "UNSPECIFIED",
+        "multiplayer": false,
+        "deepSystemGenre": false,
+        "socialGenre": false
+      },
+      "lowerSuitabilityDoesNotDisableDevelopment": true
+    },
     {
       "gameId": "cozy-island",
       "gameName": "포근섬",
