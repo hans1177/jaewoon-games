@@ -873,7 +873,7 @@ export class IslandRendererV3 {
       const player=game.player,visibleIds=new Set();
       // 그래픽 최적화: 대공성전 전체 보기에서는 성문을 중심으로 월드 좌표를 선별한다.
       const focus=game.siegeOverview?this.viewFocus:player;
-      const zoom=game.siegeOverview?(this.viewZoom??this.defaultStrategyZoom()):(this.width<600?.68:.82);
+      const zoom=game.siegeOverview?(this.viewZoom??this.defaultStrategyZoom()):(this.width<600?(this.height>this.width?.58:.68):.82);
       if(this.camera3.zoom!==zoom){this.camera3.zoom=zoom;this.camera3.updateProjectionMatrix()}
       const halfWidth=this.width/(2*zoom),halfDepth=this.height/(2*zoom*Math.sin(ISO_PITCH));
       const reachX=Math.cos(ISO_YAW)*halfWidth+Math.sin(ISO_YAW)*halfDepth+240;
@@ -1250,11 +1250,11 @@ export class IslandRendererV3 {
       this.camera3.left=-this.width*SC/2;this.camera3.right=this.width*SC/2;
       this.camera3.top=this.height*SC/2;this.camera3.bottom=-this.height*SC/2;
       // 시야: 모바일도 성곽과 건물 배치가 보이도록 넓히되 성능·저장 로직은 건드리지 않는다.
-      this.camera3.zoom=this.width<600?.68:.82;
+      this.camera3.zoom=this.width<600?(this.height>this.width?.58:.68):.82;
       this.camera3.updateProjectionMatrix();
     }
   }
-  defaultStrategyZoom(){return this.width<600?.6:.88}
+  defaultStrategyZoom(){return this.width<600?(this.height>this.width?.5:.6):.88}
   panCamera(dx,dy){
     const zoom=this.viewZoom??this.defaultStrategyZoom();
     const x=(Math.cos(ISO_YAW)*dx+Math.sin(ISO_YAW)*dy/Math.sin(ISO_PITCH))/zoom;
