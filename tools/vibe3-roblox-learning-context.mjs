@@ -80,12 +80,16 @@ function selectDistilled(records=[],{gameId='',terms=[],designAxes={}}={}){
     const compatibility=transformativeRecipeCompatibility({id:row.id,designAxes:row.designAxes,featureBlend:[...patterns,...principles]},{gameId,terms,designAxes});
     let score=compatibility.score;
     if(!compatibility.eligible)return{row,score:0,tie:''};
-    if(clean(row.gameId)===clean(gameId)&&row.sourceKind==='internal-roblox-source-runtime')score+=12;
+    // 검증된 같은 게임 학습을 우선 적용한다. 무관한 게임의 높은 키워드 점수가
+    // 해당 게임의 정확한 플레이·저장·네트워크 경험을 앞질러서는 안 된다.
+    const sameGameVerified=clean(gameId)!==''&&clean(row.gameId)===clean(gameId)
+      &&row.sourceKind==='internal-roblox-source-runtime';
+    if(sameGameVerified)score+=12;
     if(row.sourceKind==='internal-roblox-source-runtime')score+=3;
     const applicable=new Set(compatibility.featureBlend);
-    return{row:{...row,patterns:patterns.filter(value=>applicable.has(value)),principles:principles.filter(value=>applicable.has(value))},score,tie:stableHash(clean(gameId)+'|'+clean(row.id))};
+    return{row:{...row,patterns:patterns.filter(value=>applicable.has(value)),principles:principles.filter(value=>applicable.has(value))},sameGameVerified,score,tie:stableHash(clean(gameId)+'|'+clean(row.id))};
   }).filter(x=>x.score>0)
-    .sort((a,b)=>b.score-a.score||a.tie.localeCompare(b.tie));
+    .sort((a,b)=>Number(b.sameGameVerified)-Number(a.sameGameVerified)||b.score-a.score||a.tie.localeCompare(b.tie));
   const selected=scored.map(x=>x.row);
   return Object.freeze({
     ids:Object.freeze(selected.map(row=>clean(row.id)).filter(Boolean)),
