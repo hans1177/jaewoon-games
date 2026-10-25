@@ -50,19 +50,21 @@ try{
    gem.on('pageerror',e=>gemErrors.push(e.message));
    gem.on('console',msg=>{if(msg.type()==='error'&&/THREE|shader|WebGL/i.test(msg.text()))gemErrors.push(msg.text())});
    try{
-    for(const stage of ['cavern','garden','forge']){
+    for(const hero of ['guardian','ranger','wizard','rogue','cleric']){
      const route=await gem.goto(liveBase+'web-games/gem-survivor/',{waitUntil:'domcontentloaded'});
      assert.ok(route?.ok(),'GEM_ROUTE_HTTP');
      await gem.locator('#startBtn').waitFor({state:'visible'});
      await gem.waitForFunction(()=>!document.getElementById('startBtn').disabled,null,{timeout:60000});
-     await gem.locator('button[data-stage="'+stage+'"]').click();
-     assert.equal(await gem.locator('button[data-stage="'+stage+'"]').getAttribute('aria-pressed'),'true');
+     const stage='cavern';
+     assert.equal(await gem.locator('[data-stage]').count(),0,'GEM_MAP_PICKER_REMOVED');
+     await gem.locator('button[data-hero="'+hero+'"]').click();
+     assert.equal(await gem.locator('button[data-hero="'+hero+'"]').getAttribute('aria-pressed'),'true');
      await gem.locator('#startBtn').click();
      await gem.waitForFunction(id=>document.getElementById('game').dataset.stage===id,stage);
      const canvas=gem.locator('#game');
      assert.equal(await canvas.getAttribute('data-world-width'),'4200');
      assert.equal(await canvas.getAttribute('data-world-height'),'3200');
-     assert.equal(await canvas.getAttribute('data-authored-monster-kinds'),'8');
+     assert.equal(await canvas.getAttribute('data-authored-monster-kinds'),'14');
      assert.equal(await canvas.getAttribute('data-player-hp'),'200');
      assert.ok(Number(await canvas.getAttribute('data-glow-instances'))>0);
      assert.ok(Number(await canvas.getAttribute('data-glow-instances'))<=256);
@@ -85,10 +87,16 @@ try{
      await gem.keyboard.down('d');await gem.waitForTimeout(200);await gem.keyboard.up('d');
      assert.equal(Number(await canvas.getAttribute('data-player-x')),paused,'GEM_PAUSE_MOVEMENT');
      await gem.locator('#resumeBtn').click();
+     await gem.locator('#heroSkill').click();
+     assert.ok(await gem.evaluate(()=>window.gemSurvivorState().player.skillCd>0),'GEM_HERO_SKILL_COOLDOWN');
+     if(hero==='guardian')for(const id of ['garden','forge','frost','abyss']){
+      await gem.evaluate(()=>{const g=window.gemSurvivorState();g.spawnBoss();const boss=g.enemies.find(e=>e.boss);g.killEnemy(boss,g.enemies.indexOf(boss));g.nextStage();});
+      await gem.waitForFunction(expected=>document.getElementById('game').dataset.stage===expected,id);
+     }
      assert.equal(await canvas.getAttribute('data-rendered-frame'),'true');
      assert.equal(await canvas.getAttribute('data-fallback-enemy-assets'),'0');
      assert.deepEqual(gemErrors,[],'GEM_RUNTIME_ERRORS');
-     console.log('GEM_SURVIVOR_PUBLIC_PLAY_PASS '+JSON.stringify({sourceSha:process.env.GITHUB_SHA,mobile,stage,first,moved}));
+     console.log('GEM_SURVIVOR_PUBLIC_PLAY_PASS '+JSON.stringify({sourceSha:process.env.GITHUB_SHA,mobile,hero,stage,first,moved}));
     }
    }finally{await context.close()}
   }
