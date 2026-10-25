@@ -86,8 +86,12 @@ function kitchenAction(station,index){
  }else{say('아직 이 단계가 아니야!');return}
  updateOrders();updateKitchen();
 }
+let lastKitchenView='';
 function updateKitchen(){
- const g=active();$('kitchen').classList.toggle('open',!!g);if(!g)return;
+ const g=active();$('kitchen').classList.toggle('open',!!g);
+ if(!g){lastKitchenView='';return}
+ const fingerprint=JSON.stringify([g.id,g.step,g.got,g.thawed,g.cut,g.busy,g.heatOn,g.actions,Math.ceil(g.timer)]);
+ if(fingerprint===lastKitchenView)return;lastKitchenView=fingerprint;
  const r=recipes[g.dish],root=$('actions');root.replaceChildren();
  $('workName').textContent=dishes[g.dish].icon+' '+dishes[g.dish].name+' 직접 요리';
  $('recipeText').textContent='재료: '+r.items.map((a,i)=>a[1]+a[0]+(g.got[i]?' ✓':'')).join(' · ');
@@ -107,8 +111,12 @@ function updateKitchen(){
   else add('🔥 조리 완료까지 '+Math.ceil(g.timer)+'초','heat',null,true,true);
  }else if(g.step==='plate')add('🍽️ '+r.finish,'plate',null);
 }
+let lastOrderView='';
 function updateOrders(){
- const root=$('orders');root.replaceChildren();
+ const root=$('orders');
+ const fingerprint=JSON.stringify([selectedId,guests.map(g=>[g.id,g.phase,g.step,Math.ceil(g.timer),Math.ceil(g.patience)])]);
+ if(fingerprint===lastOrderView)return;lastOrderView=fingerprint;
+ root.replaceChildren();
  for(const g of guests){
   const d=dishes[g.dish],btn=document.createElement('button');btn.className='order '+(g.phase==='cooking'?'cooking':g.phase==='ready'?'ready':'');
   if(g.id===selectedId)btn.style.borderColor='#d37637';
