@@ -29,6 +29,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      source_current: ${{ steps.source_admission.outputs.current }}
     permissions:
       contents: write
       actions: write
@@ -38,8 +40,36 @@ jobs:
       # 홀수·짝수 레인마다 실행 1건 + 최신 대기 1건만 유지한다. 전체 빌드 실행 상한은 2건.
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     steps:
+      # GitHub Actions의 2개 빌드 레인은 유지. 이미 뒤처진 main 커밋이라면
+      # 1GB 이상 원본을 다시 해시/복사/업로드하지 않고, 최신 main 배포를 확보한다.
+      - name: Reject superseded main before any large asset staging
+        id: source_admission
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)"
+          [[ "$latest" =~ ^[a-f0-9]{40}$ ]] || { echo 'PAGES_MAIN_REVISION_INVALID' >&2; exit 1; }
+          if [ "$latest" = "$GITHUB_SHA" ]; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+            echo "PAGES_BUILD_ADMITTED_LATEST_MAIN=$GITHUB_SHA"
+          else
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+            echo "PAGES_OBSOLETE_HEAVY_BUILD_SKIPPED=$GITHUB_SHA CURRENT_MAIN=$latest"
+            # Token 작성 커밋은 push 워크플로가 생기지 않을 수 있다. 최신 배포가
+            # 없다면 기존 워크플로만 안전하게 재요청하고 중복은 만들지 않는다.
+            active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?head_sha=$latest&per_page=30"               --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="requested" or .status=="pending")] | length')"
+            if [ "$active" = '0' ]; then
+              gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo "PAGES_OBSOLETE_RUN_LATEST_MAIN_REQUEUED=$latest"
+            else
+              echo "PAGES_OBSOLETE_RUN_LATEST_MAIN_ACTIVE=$latest"
+            fi
+          fi
       - name: Prune superseded owner PR builds from the existing Pages queue
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -106,6 +136,7 @@ jobs:
           }
           NODE
       - name: Checkout exact main source without hydrating large unused assets
+        if: github.event_name == 'pull_request' || steps.source_admission.outputs.current == 'true'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
@@ -184,11 +215,13 @@ jobs:
         run: node --test qa/github-pages-asset-staging.test.mjs
 
       - name: Resolve canonical asset tree cache identity
+        if: github.event_name == 'pull_request' || steps.source_admission.outputs.current == 'true'
         id: asset_tree
         shell: bash
         run: echo "sha=$(git rev-parse HEAD:assets)" >> "$GITHUB_OUTPUT"
 
       - name: Restore reusable source asset bytes
+        if: github.event_name == 'pull_request' || steps.source_admission.outputs.current == 'true'
         id: source_assets
         uses: actions/cache/restore@v4
         continue-on-error: true
@@ -201,6 +234,7 @@ jobs:
             pages-source-assets-v1-${{ runner.os }}-
 
       - name: Prepare all registered game routes and necessary shared assets
+        if: github.event_name == 'pull_request' || steps.source_admission.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -490,7 +524,7 @@ jobs:
           NODE
 
       - name: Cache verified source asset bytes for following development deployments
-        if: github.ref == 'refs/heads/main' && steps.source_assets.outputs.cache-hit != 'true'
+        if: github.ref == 'refs/heads/main' && steps.source_admission.outputs.current == 'true' && steps.source_assets.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         continue-on-error: true
         with:
@@ -498,6 +532,7 @@ jobs:
           key: ${{ steps.source_assets.outputs.cache-primary-key }}
 
       - name: Generate deterministic Vibe engine asset profiles for every published game
+        if: github.event_name == 'pull_request' || steps.source_admission.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -514,6 +549,7 @@ jobs:
 
       # Generation is necessary to materialize the homepage; product QA is not a post-merge gate.
       - name: Assemble existing canonical homepage for automatic static publication
+        if: github.event_name == 'pull_request' || steps.source_admission.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -545,7 +581,7 @@ jobs:
           echo "PAGES_OFFICIAL_HOME_RENDER_QA=PASS"
 
       - name: Publish gh-pages without force or deleting earlier games
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -619,7 +655,7 @@ jobs:
           echo "WEB_PAGES_SOURCE_SHA=$GITHUB_SHA"
 
       - name: Prepare retained Pages artifact without Git history
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -652,14 +688,14 @@ jobs:
           NODE
 
       - name: Upload GitHub Pages artifact using official free Action
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ runner.temp }}/jaewoon-pages-artifact
 
   publish-pages:
     needs: deploy
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && needs.deploy.outputs.source_current == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 15
     concurrency:
