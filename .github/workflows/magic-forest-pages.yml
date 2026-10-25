@@ -56,16 +56,28 @@ jobs:
             echo 'current=true' >> "$GITHUB_OUTPUT"
             echo "PAGES_BUILD_ADMITTED_LATEST_MAIN=$GITHUB_SHA"
           else
-            echo 'current=false' >> "$GITHUB_OUTPUT"
-            echo "PAGES_OBSOLETE_HEAVY_BUILD_SKIPPED=$GITHUB_SHA CURRENT_MAIN=$latest"
-            # Token 작성 커밋은 push 워크플로가 생기지 않을 수 있다. 최신 배포가
-            # 없다면 기존 워크플로만 안전하게 재요청하고 중복은 만들지 않는다.
-            active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?head_sha=$latest&per_page=30"               --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="requested" or .status=="pending")] | length')"
-            if [ "$active" = '0' ]; then
-              gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
-              echo "PAGES_OBSOLETE_RUN_LATEST_MAIN_REQUEUED=$latest"
+            # Continuous main commits used to starve Pages: every 90s build became
+            # "stale" before it could publish. Accept an intermediate, strictly
+            # forward-only main snapshot when it is newer than the retained site.
+            # This does not bypass the final official Pages deployment or QA.
+            staged="$(gh api "repos/$GITHUB_REPOSITORY/contents/web-games/publish-manifest.json?ref=gh-pages"               --jq .content | base64 --decode | node -e "let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>{let m=JSON.parse(s);if(!/^[a-f0-9]{40}$/.test(m.sourceSha||''))process.exit(1);process.stdout.write(m.sourceSha)})")"
+            newer_relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$latest" --jq .status)"
+            retained_relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$staged...$GITHUB_SHA" --jq .status)"
+            if [ "$newer_relation" = ahead ] && [ "$retained_relation" = ahead ]; then
+              echo 'current=true' >> "$GITHUB_OUTPUT"
+              echo "PAGES_MONOTONIC_BUILD_ADMITTED=$GITHUB_SHA RETAINED=$staged MAIN=$latest"
             else
-              echo "PAGES_OBSOLETE_RUN_LATEST_MAIN_ACTIVE=$latest"
+              echo 'current=false' >> "$GITHUB_OUTPUT"
+              echo "PAGES_OBSOLETE_HEAVY_BUILD_SKIPPED=$GITHUB_SHA RETAINED=$staged MAIN=$latest MAIN_REL=$newer_relation RETAINED_REL=$retained_relation"
+              # Token 작성 커밋은 push 워크플로가 생기지 않을 수 있다. 최신 배포가
+              # 없다면 기존 워크플로만 안전하게 재요청하고 중복은 만들지 않는다.
+              active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?head_sha=$latest&per_page=30"                 --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="requested" or .status=="pending")] | length')"
+              if [ "$active" = '0' ]; then
+                gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+                echo "PAGES_OBSOLETE_RUN_LATEST_MAIN_REQUEUED=$latest"
+              else
+                echo "PAGES_OBSOLETE_RUN_LATEST_MAIN_ACTIVE=$latest"
+              fi
             fi
           fi
       - name: Prune superseded owner PR builds from the existing Pages queue
@@ -727,7 +739,15 @@ jobs:
             # 게임·에셋·홈페이지·배포 입력이 바뀌면 기존 최신판 보호를 유지한다.
             # 작업자/검사만 앞서간 경우에는 이미 준비한 동일 게시물을 즉시 사용한다.
             gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$latest" > "$RUNNER_TEMP/pages-main-diff.json"
-            if node --input-type=module - "$RUNNER_TEMP/pages-main-diff.json" <<'NODE'
+            # If newer main changes keep arriving, release the completed candidate
+            # only when gh-pages staging still points to this exact candidate SHA.
+            # Both the ancestry relation and shared branch monotonicity remain checked.
+            staged="$(gh api "repos/$GITHUB_REPOSITORY/contents/web-games/publish-manifest.json?ref=gh-pages"               --jq .content | base64 --decode | node -e "let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>{let m=JSON.parse(s);if(!/^[a-f0-9]{40}$/.test(m.sourceSha||''))process.exit(1);process.stdout.write(m.sourceSha)})")"
+            candidate_ahead="$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).status==='ahead'" "$RUNNER_TEMP/pages-main-diff.json")"
+            if [ "$staged" = "$GITHUB_SHA" ] && [ "$candidate_ahead" = true ]; then
+              echo "PAGES_MONOTONIC_STAGED_SOURCE=PASS SOURCE=$GITHUB_SHA LATEST=$latest"
+              echo 'publish=true' >> "$GITHUB_OUTPUT"
+            elif node --input-type=module - "$RUNNER_TEMP/pages-main-diff.json" <<'NODE'
           import fs from 'node:fs';
           const diff=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
           const unpublished=file=>file==='AGENTS.md'||/^roblox-games\//.test(file)||/^qa\//.test(file)||/^(?:tools\/(?:web-vibe-worker|web-vibe-organization|pwa-command-vibe2-task)\.mjs|README\.md)$/.test(file);
