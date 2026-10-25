@@ -57,7 +57,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -83,12 +83,25 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-25T14:06:04.904Z",
+      "updatedAt": "2026-10-25T14:06:21.274Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
-      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
+      "robloxSourceBootstrapFailedAt": "2026-10-25T14:06:21.274Z",
+      "robloxRuntimePassed": false,
+      "robloxHeadlessFastMvpPassed": false,
+      "robloxInternalReleaseReady": false,
+      "robloxInternalReleasePublished": false,
+      "robloxPublicReleaseReady": false,
+      "robloxPublicRelease": false,
+      "robloxReleaseClaim": false,
+      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "routingBlockers": [
+        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED"
+      ]
     },
     {
       "gameId": "fantasy-survival",
@@ -5004,7 +5017,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-25T14:06:04.904Z",
+  "updatedAt": "2026-10-25T14:06:21.274Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
