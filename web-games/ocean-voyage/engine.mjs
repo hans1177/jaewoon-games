@@ -1002,6 +1002,9 @@ export function itemLibrary(){
   ...GOODS.map(i=>({...i,category:'cargo',description:'단위 중량 '+i.weight+' · 항구별 시세와 재고에 따라 교역',source:'각 항구 교역소'})),
   ...SAIL_EQUIPMENT.map(i=>({...i,category:'sails',source:i.port?portById(i.port).name+' 조선소':'기본 장비'})),
   ...FIGUREHEADS.filter(i=>i.id!=='none').map(i=>({...i,category:'figureheads',source:portById(i.port).name+' 조선소'})),
-  ...CANNON_TYPES.map(i=>({...i,category:'cannons',description:i.description+' · 위력 배율 '+i.power+' · 재장전 '+i.reload+'초',source:'조선소 함포 교체'}))
+  ...CANNON_TYPES.map(i=>({...i,category:'cannons',description:i.description+' · 위력 배율 '+i.power+' · 재장전 '+i.reload+'초',source:'조선소 함포 교체'})),
+  ...SPECIAL_DOCKS.map(i=>({...i,category:'refits',source:portById(i.port).name+' 특수 조선소'})),
+  ...SITES.map(i=>({id:i.id,name:i.relic,category:'relics',description:i.kind+' · 조사 후 탐험가 사무실에 보고',source:portById(i.port).name+' 근해 · '+i.name})),
+  ...TREASURES.map(i=>({id:i.id,name:i.relic,category:'treasures',description:'선술집에서 유료 단서를 얻고 해도 표시 지점에서 인양',source:i.name}))
  ];
 }

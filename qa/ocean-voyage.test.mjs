@@ -457,12 +457,14 @@ test('new voyage supplies migrate, charge once, respect caps and preserve failed
 });
 
 test('item encyclopedia uses canonical prices and local verified art in each category',()=>{
- const library=itemLibrary();assert.equal(library.length,39);assert.equal(new Set(library.map(i=>i.category+':'+i.id)).size,39);
+ const library=itemLibrary();assert.equal(library.length,53);assert.equal(new Set(library.map(i=>i.category+':'+i.id)).size,53);
+ for(const [category,entries] of [['refits',5],['relics',6],['treasures',3]])assert.equal(library.filter(i=>i.category===category).length,entries);
  for(const c of CONSUMABLES){const item=library.find(i=>i.category==='supplies'&&i.id===c.id);assert.equal(item.cost,c.cost);assert.equal(item.description,c.description);}
  const source=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');const body=source.slice(source.indexOf('const ITEM_ICONS='),source.indexOf("let renderedPanel='';"));
  const state=newGame(),before=serializeGame(state);
  const html=runInNewContext(body+';inventory();',{state,itemLibrary,canDock,SHIP_TYPES,cargoWeight,SITES,TREASURES,escapeHtml:String,fmt:String});
- assert.ok(!html.includes('undefined'));assert.equal((html.match(/class="row item-row"/g)||[]).length,39);
+ assert.ok(!html.includes('undefined'));assert.equal((html.match(/class="row item-row"/g)||[]).length,53);
+ assert.match(html,/유적 유물/);assert.match(html,/해저 보물/);assert.match(html,/특수 개조/);
  for(const match of html.matchAll(/src="\.\/assets\/cc0\/items\/([^"\/]+)"/g))assert.ok(fs.existsSync('web-games/ocean-voyage/assets/cc0/items/'+match[1]));
  assert.equal(serializeGame(state),before);
 });
