@@ -7656,7 +7656,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }
   // 무모델 후보도 기존 정밀 편집·Luau 컴파일·인과 검증을 거친다.
   // 소스에서 유일하게 확인된 원본 책임 함수만 직접 교체한다.
+  // 학습 원칙이 게임 소스에 실제로 적용돼야 하는 주문은 단순 교정으로 충족했다고 주장하지 않는다.
   const deterministicNative=target==='roblox'&&!allowFullRewrite
+    &&verifiedExternalLearningContract.required!==true
     ?deterministicRobloxNativeRepairCandidate({order,sourceRoot,responsibleFiles}):null;
   if(!generated&&deterministicNative){
     try{
@@ -7685,6 +7687,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(!generated&&deterministicRobloxRequired){
     const error=new Error('DETERMINISTIC_ROBLOX_BUILDUP_REQUIRED:NO_VALID_LOCAL_CANDIDATE');
     error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
+    throw error;
+  }
+  if(!generated&&target==='roblox'&&clean(process.env.VIBE2_ROBLOX_NO_MODEL_ONLY).toLowerCase()==='true'
+    &&!responseFile&&!(Array.isArray(responseFiles)&&responseFiles.some(Boolean))){
+    const error=new Error('ROBLOX_NO_MODEL_SOURCE_REPAIR_UNAVAILABLE: verified responsible-source edit required; never fabricate or publish a model-free candidate');
+    error.vibe2GenerationFailureClass='NO_MODEL_SOURCE_REPAIR_UNAVAILABLE';
     throw error;
   }
   if(!generated){
