@@ -525,8 +525,8 @@ buildWorld(live){
  playSkillEffect(kind,sx,sy,tx=sx,ty=sy){
   if(!this.ready||this.effects.length>=(this.mobile?11:24))return;
   const type=String(kind),family=type.startsWith('fighter')?'fighter':type.startsWith('rogue')?'rogue':type.startsWith('cleric')?'cleric':type.startsWith('wizard')?'wizard':type.startsWith('ranger')?'ranger':type;
-   const monster=type.startsWith('monster_'),monsterStyle=monster?type.replace(/^monster_(boss_)?(warn_)?/,''):null;
-   const warning=type.startsWith('monster_warn_'),boss=type.startsWith('monster_boss_');
+   const monster=type.startsWith('monster_'),monsterStyle=monster?type.replace(/^monster_(?:(?:boss|warn|combo)_)*/,''):null;
+   const warning=type.startsWith('monster_warn_'),boss=type.startsWith('monster_boss_'),combo=type.includes('_combo_')||type.startsWith('monster_combo_');
   const colors={fighter:0xe0b56b,rogue:0xc48dbd,cleric:0xf4d898,wizard:0x82b4ff,ranger:0x96dba3,guard:0x91d5e6,strike:0xffd2a0};
   const monsterColors={slime:0x80cbb7,bunny:0xeec99d,orc:0xe2a075,golem:0xb9aa87,ghost:0xa9a5ed,winged:0x95b8d5,hunter:0xcf9b7e,skitter:0xaaad79,specter:0x9d93e4,charger:0xe3a368,ritual:0xddbf83,bulwark:0xb2bdca};
    const color=monster?monsterColors[monsterStyle]||0xc8ae8a:colors[family]||colors.strike,group=new THREE.Group();
@@ -538,7 +538,7 @@ buildWorld(live){
   group.position.set(impact.x*SCALE,.10,impact.y*SCALE);
   const makeMaterial=(opacity=.85)=>new THREE.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
   const attach=(geo,mat,x=0,y=0,z=0)=>{const mesh=new THREE.Mesh(geo,mat);mesh.position.set(x,y,z);mesh.userData.fade=mat.opacity;group.add(mesh);return mesh;};
-  const base=monster?(boss?.96:warning?.72:monsterStyle==='golem'?.84:.56):defense?.67:area?.82:.46;
+  const base=monster?(boss?.96:warning?.72:combo?.78:monsterStyle==='golem'?.84:.56):defense?.67:area?.82:.46;
   const floor=attach(new THREE.RingGeometry(base*.7,base,24),makeMaterial(.82),0,.012,0);floor.rotation.x=-Math.PI/2;
   if(defense||healing){
    for(let i=0;i<(this.mobile?2:3);i++){
@@ -608,7 +608,14 @@ buildWorld(live){
      slash.rotation.set(1.15,.38,.45);
     }
    }
-   this.scene.add(group);this.effects.push({group,born:performance.now(),duration:monster?(warning?700:boss?800:610):healing?920:defense?880:area?670:590,spin:monster?.7:arcane?2.7:shadow?-2.3:1.3,area});
+   // 세 번째 기본 공격은 같은 실제 공격을 넓은 궤적·충격파로 강조한다.
+   if(monster&&combo){
+    const wave=attach(new THREE.RingGeometry(base*.65,base*.92,20),makeMaterial(.86),0,.035,0);
+    wave.rotation.x=-Math.PI/2;
+    const arc=attach(new THREE.TorusGeometry(.57,.06,5,18,Math.PI*1.5),makeMaterial(.83),0,.64,0);
+    arc.rotation.set(1.2,0,.5);
+   }
+   this.scene.add(group);this.effects.push({group,born:performance.now(),duration:monster?(warning?700:boss?800:combo?720:610):healing?920:defense?880:area?670:590,spin:monster?.7:arcane?2.7:shadow?-2.3:1.3,area});
  }
  clearEffects(){
   for(const fx of this.effects){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}
