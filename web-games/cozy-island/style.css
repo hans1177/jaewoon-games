@@ -324,6 +324,28 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
  .system-tabs button{font-size:11px}
 }
 
+/* 가로모드: 기존 가로 6버튼, 시스템 버튼과 5개 탭을 좁은 높이에서도 유지. */
+@media (orientation:landscape) and (max-height:600px) and (max-width:900px){
+ .hud{left:6px;right:6px;gap:4px;flex-direction:row;align-items:flex-start}
+ .hud-main{width:auto;max-width:none;min-width:0;overflow:visible;flex:0 1 auto;gap:5px;padding:5px 7px}
+ .hud-main.right{width:auto;max-width:none;min-width:max-content;flex:0 0 auto;gap:4px}
+ .hud-main.right .small-button{white-space:nowrap;min-height:36px;padding:5px 7px}
+ #systemCommand{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-height:36px}
+ .strategy-bar{grid-template-columns:repeat(6,minmax(0,1fr));width:min(100%,680px)}
+ .strategy-button{min-height:42px}
+ .system-dialog{width:min(94vw,740px);max-height:92dvh;display:none;flex-direction:column;overflow:hidden}
+ .system-dialog[open]{display:flex}
+ .system-dialog header{flex:0 0 auto}
+ .system-tabs{flex:0 0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+ .system-tabs button{min-height:37px;font-size:11px}
+ .system-body{flex:1 1 auto;min-height:0;max-height:none;overflow:auto;overscroll-behavior:contain}
+}
+@media (orientation:landscape) and (max-width:540px){
+ .hud-main:not(.right) #weatherText{display:none}
+ .hud-main{font-size:10px}
+ .hud-main.right .small-button{font-size:10px;padding-inline:5px}
+}
+
 /* 포근섬 RTS: 건설 트리·시스템 홈·모바일 조작을 기존 패널에서 직접 정리 */
 .realm-tech-tree{margin:12px 0;padding:10px;background:#dfd4b9;border:1px solid #b9a179;border-radius:9px}
 .realm-tech-tree h3{margin:0 0 7px;font-size:15px}
