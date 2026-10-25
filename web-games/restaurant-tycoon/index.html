@@ -148,7 +148,7 @@ $('menuBtn').onclick=()=>say(dishes.map((x,i)=>x.icon+x.name+' '+x.price+'원'+(
 $('start').onclick=()=>{data.started=true;$('intro').classList.add('hidden');save();say('영업 시작! 손님의 주문 카드를 눌러봐.')};
 if(data.started)$('intro').classList.add('hidden');
 // 그래픽: 기존 웹게임처럼 Three.js 실제 3D 메시 렌더링
-let scene=null,camera=null,renderer=null,models=[],people=[],chefModels=[];let updateTables=()=>{};
+let scene=null,camera=null,renderer=null,models=[],people=[],chefModels=[];let updateTables=()=>{};let animateKitchen=()=>{};
 const canvas=$('scene');
 if(window.THREE){
 scene=new THREE.Scene();scene.background=new THREE.Color(0xb9eada);scene.fog=new THREE.Fog(0xb9eada,25,45);
@@ -174,6 +174,56 @@ ball(0,1.03,0,.22,0xfff6e0,group);models.push(group)}
 updateTables=function(){while(models.length<data.tables)addTable(models.length)}
 window.createGuest=function(g){const p=tablePos(g.seat);let a=new THREE.Group();scene.add(a);a.position.set(p.x,.1,p.z+1.1);const shirt=[0xffa7a4,0x83b9e9,0xeabd74,0xc2a5e3,0x82c5ad][g.id%5];box(0,.57,0,.55,.8,.38,shirt,a);ball(0,1.2,0,.32,0xeec3a1,a);const hair=ball(0,1.43,-.06,.32,0x5e4432,a);hair.scale.y=.42;box(-.17,.12,0,.17,.32,.16,0x535366,a);box(.17,.12,0,.17,.32,.16,0x535366,a);a.userData={t:Math.random()*6.3};people.push(a);return a};
 for(let i=0;i<3;i++){const c=new THREE.Group();c.position.set(-2.5+i*2.5,0,-5.4);scene.add(c);box(0,.8,0,.7,1,.4,0xffffff,c);ball(0,1.55,0,.34,0xf0c59e,c);box(0,1.83,0,.72,.16,.3,0xffffff,c);chefModels.push(c)}
+// 그래픽: 실제 3D 창고·해동대·도마·불판·접시. 모바일 화면을 눌러 작업할 수 있어.
+const stationMeshes=[],stations=[];
+function station(kind,x,z,w){
+ const group=new THREE.Group();group.position.set(x,0,z);group.userData.station=kind;scene.add(group);stations.push(group);
+ box(0,.62,0,w,.18,1.25,kind==='store'?0xb5b7b4:0xc6a884,group);
+ for(const dx of [-w*.40,w*.40])box(dx,.28,0,.12,.56,.14,0x725a47,group);
+ return group;
+}
+const storage=station('store',-7,-3.1,2.0);
+box(0,1.68,-.36,1.8,2.1,.6,0x9cbdc9,storage);
+box(0,1.82,-.02,1.65,.07,.1,0xf7f7e8,storage);
+box(-.52,1.12,.35,.56,.55,.45,0xeac892,storage);
+ball(.4,1.08,.35,.34,0x70aa72,storage);
+const sink=station('thaw',-3,-4.35,1.5);
+box(0,.76,0,1.25,.1,1.05,0x88a3ac,sink);
+box(0,.80,0,.90,.045,.68,0x4e8fb3,sink);
+box(.45,1.08,-.32,.12,.46,.12,0xc9dce0,sink);
+ball(.45,1.32,-.31,.10,0xdaeef4,sink);
+const chopping=station('cut',-.55,-4.35,1.45);
+box(0,.82,0,1.30,.12,.91,0xaa7446,chopping);
+box(.35,.9,0,.14,.05,.70,0xe9e9dc,chopping);
+const cooker=station('heat',2,-4.35,1.55);
+box(0,.81,0,1.45,.14,.95,0x4e6060,cooker);
+const flame=ball(0,.95,0,.19,0xe38b37,cooker);flame.scale.set(1.75,.30,1.5);
+const frying=ball(0,1.06,0,.42,0x313536,cooker);frying.scale.y=.2;
+box(.55,1.06,0,.60,.12,.17,0x535552,cooker);
+const plating=station('plate',5.45,-3.9,1.45);
+const whitePlate=ball(0,.84,0,.54,0xf7ede1,plating);whitePlate.scale.y=.15;
+const preparedFood=ball(0,.92,0,.30,0xf2d2a2,plating);preparedFood.scale.y=.18;preparedFood.visible=false;
+for(const group of stations)group.traverse(mesh=>{if(mesh.isMesh){mesh.userData.station=group.userData.station;stationMeshes.push(mesh)}});
+let pressX=0,pressY=0,litStation='';
+canvas.addEventListener('pointerdown',event=>{pressX=event.clientX;pressY=event.clientY});
+canvas.addEventListener('pointerup',event=>{
+ if(!data.started||Math.hypot(event.clientX-pressX,event.clientY-pressY)>18)return;
+ const rect=canvas.getBoundingClientRect();
+ const pointer=new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,-((event.clientY-rect.top)/rect.height*2-1));
+ const ray=new THREE.Raycaster();ray.setFromCamera(pointer,camera);
+ const hit=ray.intersectObjects(stationMeshes,false)[0];if(hit)kitchenAction(hit.object.userData.station,null);
+});
+animateKitchen=t=>{
+ const g=active(),needed=g?.step||'';
+ if(litStation!==needed){
+  litStation=needed;
+  for(const group of stations)for(const child of group.children)if(child.isMesh&&child.material.emissive)child.material.emissive.setHex(group.userData.station===needed?0x291a04:0x000000);
+ }
+ flame.visible=!!g&&g.step==='heat'&&g.heatOn;
+ if(flame.visible)flame.scale.y=.30+Math.sin(t*11)*.06;
+ preparedFood.visible=!!g&&g.step==='plate';
+ if(preparedFood.visible)preparedFood.material.color.setHex([0xddbb6f,0x9a5938,0xb45d41,0xe37b48,0xf2d8a3][g.dish]);
+};
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;const wide=w>h;camera.position.set(wide?12:16,wide?17:22,wide?22:27);camera.lookAt(0,0,wide?0:0);camera.updateProjectionMatrix()}
 window.addEventListener('resize',resize);resize();updateTables();
 }else{canvas.style.background='linear-gradient(#b8ecdd,#ffe7b7)';say('3D 화면을 불러오지 못했어. 연결을 확인해줘.')}
@@ -192,7 +242,7 @@ for(const g of [...guests]){
 autoClock-=dt;if(autoClock<=0){autoClock=1.0;if(data.cooks){const pending=guests.filter(g=>g.phase==='order'||g.phase==='ready');for(const g of pending.slice(0,data.cooks)){if(g.phase==='order'){g.phase='cooking';g.timer=dishes[g.dish].time}else serve(g)}}}
 saveClock+=dt;if(saveClock>5){saveClock=0;save()}
 }
-if(scene){const t=now/1000;for(const a of people)if(a.parent){a.rotation.y=Math.sin(t*.8+a.userData.t)*.12;a.position.y=.1+Math.sin(t*2+a.userData.t)*.024}chefModels.forEach((c,i)=>c.rotation.y=Math.sin(t+i)*.15);renderer.render(scene,camera)}
+if(scene){const t=now/1000;for(const a of people)if(a.parent){a.rotation.y=Math.sin(t*.8+a.userData.t)*.12;a.position.y=.1+Math.sin(t*2+a.userData.t)*.024}chefModels.forEach((c,i)=>c.rotation.y=Math.sin(t+i)*.15);animateKitchen(t);renderer.render(scene,camera)}
 if(noticeClock>0)noticeClock-=dt;
 if(Math.floor(now/300)!==Math.floor((now-dt*1000)/300)){hud();updateOrders();updateKitchen()}
 requestAnimationFrame(frame)}
