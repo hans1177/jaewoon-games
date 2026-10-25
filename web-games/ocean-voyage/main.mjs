@@ -5,7 +5,7 @@ import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const view={head:$('panelTitle'),body:$('content'),details:$('details'),message:$('message'),loading:$('loading')};
-let state=loadGame(localStorage),active='',town=false,choosing=false,battleTarget=0,enemyTimer=null,last=performance.now(),tick=0,panelTick=0,ready=false;
+let state=loadGame(localStorage),active='',town=false,choosing=false,homeFromTown=false,battleTarget=0,enemyTimer=null,last=performance.now(),tick=0,panelTick=0,ready=false;
 let buttons={left:false,right:false,ahead:false,astern:false},keys=new Set(),stick={x:0,y:0};
 const escapeHtml=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const port=id=>PORTS.find(p=>p.id===id);
@@ -20,11 +20,13 @@ function save(){
  catch{note('저장 공간을 사용할 수 없어. 브라우저 설정을 확인해.');return false;}
 }
 const scene=createOceanView($('sea'),{
- onReady(){ready=true;scene.setState(state);if(state.heroChosen){if(state.landBattle)enterBattle();view.loading.classList.add('hide');note('항구 아이콘을 누르면 항로를 정할 수 있어. 입항 후에는 마을을 걸으며 시설을 골라.');}else showCaptains();},
+ onReady(){ready=true;scene.setState(state);$('start').disabled=false;openHome();},
  onBuilding(id){openFacility(id);},onMerchant(id){apply(hailMerchant(state,id));},onMap(){gotoPanel('chart');},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
  onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}
 });
-$('start').addEventListener('click',()=>{if(ready)showCaptains();});
+$('start').addEventListener('click',continueGame);
+$('newGame').addEventListener('click',restartGame);
+$('captainBack').addEventListener('click',openHome);
 // 교전 화면은 실제 항해 좌표·내구도·포탄을 그대로 사용한다.
 let navalTarget=null;
 function syncNavalBattle(){
@@ -64,7 +66,7 @@ function summary(){
  $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
-function gotoPanel(name){if(state.landBattle){enterBattle();return;}
+function gotoPanel(name){if(state.landBattle&&name!=='system'){enterBattle();return;}
  if(name==='port'){if(canDock(state)){enterTown();return;}name='chart';}
  if(town&&['market','fleet','crew','quests','palace','jobs'].includes(name)){openFacility(name);return;}
  active=active===name?'':name;
@@ -76,9 +78,40 @@ function enterTown(){if(state.landBattle){enterBattle();return;}town=true;active
 function openFacility(id){const home=canDock(state);if(!home){note('먼저 항구에 입항해.');return;}if(!portHasFacility(home.id,id)&&id!=='port'&&id!=='journal'){note(home.name+'에는 해당 시설이 없어. 다른 항구로 항해해.');return;}town=true;active=id;document.body.classList.add('in-town');$('townbar').hidden=false;scene.setMode('town',id);view.details.classList.add('open');switchMusicScene(id==='palace'?'palace':id==='quests'?'explore':'harbor');renderPanel();}
 function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';view.details.classList.remove('open');scene.setMode(town?'town':navalTarget!==null?'naval':'sea');if(town)switchMusicScene('harbor');}
 function depart(){if(state.landBattle){enterBattle();return;}town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();}
+// 홈: 화면만 전환해 기존 진행 데이터는 선장 확정 전까지 보존한다.
+function openHome(){
+ if(!ready)return;
+ if(state.heroChosen)save();
+ homeFromTown=town;
+ active='';view.details.classList.remove('open');
+ $('captains').hidden=true;choosing=false;
+ $('start').textContent=state.heroChosen?'이어하기':'항해 시작';
+ $('newGame').hidden=!state.heroChosen;
+ view.loading.querySelector('p').textContent=state.heroChosen?'기존 항해를 이어하거나 새로운 선장을 골라 출발할 수 있어.':'선장을 선택하고 항해를 시작해.';
+ view.loading.classList.remove('hide');
+}
+function continueGame(){
+ if(!ready)return;
+ if(!state.heroChosen){showCaptains();return;}
+ $('captains').hidden=true;choosing=false;view.loading.classList.add('hide');
+ scene.setState(state);
+ if(state.landBattle)enterBattle();
+ else if(homeFromTown&&canDock(state))enterTown();
+ else{town=false;active='';document.body.classList.remove('in-town','in-battle');$('townbar').hidden=true;scene.setMode('sea');switchMusicScene('sea');}
+ summary();renderEvent();
+}
+function restartGame(){
+ if(state.heroChosen&&!confirm('처음부터 새 항해를 시작할까? 새 선장을 선택하면 기존 저장 기록이 교체돼.'))return;
+ clearTimeout(enemyTimer);
+ town=false;homeFromTown=false;active='';navalTarget=null;
+ document.body.classList.remove('in-town','in-battle','naval-battle');
+ $('townbar').hidden=true;$('navalEncounter').hidden=true;
+ view.details.classList.remove('open');
+ showCaptains();
+}
 function showCaptains(){choosing=true;view.loading.classList.add('hide');$('captains').hidden=false;$('captainCards').innerHTML=CAPTAINS.map(c=>'<article class="hero-card"><div class="hero-face '+(c.maleFace!==undefined?'male':'')+'" style="background-position:'+(c.maleFace!==undefined?c.maleFace:c.face)*25+'% center"></div><div><small>'+c.region+' · '+c.nation+' · '+(c.origin?c.origin+' 출신 → ':'')+port(c.port).name+' 본편 시작</small><h2>'+c.name+'</h2><p>'+c.goal+'</p><p class="info">'+c.intro+'</p><button class="action" data-captain="'+c.id+'">이 인물로 항해</button></div></article>').join('');}
 $('captainCards').addEventListener('click',e=>{const b=e.target.closest('[data-captain]');if(!b)return;state=newGame(b.dataset.captain);state.heroChosen=true;choosing=false;$('captains').hidden=true;save();scene.setState(state);summary();enterTown();});
-$('depart').addEventListener('click',depart);$('townJournal').addEventListener('click',()=>{active='journal';view.details.classList.add('open');renderPanel();});$('townBack').addEventListener('click',leaveFacility);
+$('depart').addEventListener('click',depart);$('townJournal').addEventListener('click',()=>gotoPanel('menu'));$('townBack').addEventListener('click',leaveFacility);
 
 function travelCard(p){
  const reached=state.discovered.includes(p.id);
@@ -216,6 +249,27 @@ function palace(){
 }
 function jobs(){return '<h3>직업 길드 · 경험 '+state.xp+'</h3><p class="info">직업을 바꿔도 선박·동료·진행 기록은 유지돼. 전직 시 경험을 소모하지 않아.</p>'+JOBS.map(j=>'<div class="scene-card"><strong>'+j.name+'</strong><p>'+j.description+' · 필요 경험 '+j.need+'</p><button class="action" data-job="'+j.id+'" '+(state.job===j.id?'disabled':'')+'>'+(state.job===j.id?'현재 직업':'전직')+'</button></div>').join('');}
 function storyCard(){const {hero,chapter,ready}=storyStatus(state);return '<div class="scene-card"><strong>'+hero.goal+'</strong><p>'+hero.intro+'</p>'+(chapter?'<h3>제'+(state.storyChapter+1)+'장 · '+chapter[1]+'</h3><p>'+chapter[2]+'</p><p class="info">'+(state.storyChapter===2?'발견 보고 1건을 마치고 ':'')+port(chapter[0]).name+'에서 단서를 확인해.</p><button class="action sub" data-route="'+chapter[0]+'">목표 항구로</button> <button class="action" data-action="story" '+(!ready?'disabled':'')+'>이야기 진행</button>':'<h3>유럽 1부 완료</h3><p>고향으로 보낼 기록을 정리했어. 다음 바다로 향할 단서가 남아 있어.</p>')+'</div>';}
+// 메인: 자주 쓰는 세 가지만 노출하고 나머지는 기존 화면으로 연결한다.
+function menu(){
+ const p=canDock(state);
+ const entries=[['crew','동료·선원','선원 배치와 소문'],['inventory','가방·발견','화물과 소모품'],['market','교역','시세와 거래'],['fleet','조선소','선박 장비와 수리'],['quests','탐험·의뢰','유적과 보상'],['chart','세계 해도','항로와 보물'],['jobs','직업','직업 변경'],['palace','왕궁·외교','동맹과 투자'],['journal','이야기·기록','저장과 지난 기록']];
+ return '<p class="info">필요한 메뉴만 선택해. 항구 시설은 가까운 항구에 입항해야 이용할 수 있어.</p><div class="quick-menu">'+entries.map(([id,label,desc])=>{
+  const facility=['market','fleet','quests','jobs','palace'].includes(id);
+  const disabled=facility&&(!p||!portHasFacility(p.id,id));
+  return '<button class="action '+(disabled?'sub':'')+'" data-menu-to="'+id+'" '+(disabled?'disabled':'')+'>'+label+'<small>'+(disabled?'입항 후 이용':desc)+'</small></button>';
+ }).join('')+'</div>';
+}
+function system(){
+ return '<p class="info">항해 기록은 자동 저장돼. 홈으로 이동해도 진행 상황은 유지돼.</p>'+
+ '<div class="system-actions"><button class="action sub wide" data-action="home">⌂ 홈으로 · 이어하기 화면</button>'+
+ '<button class="action sub" data-action="save">지금 저장</button><button class="action sub" data-menu-to="journal">저장·불러오기</button>'+
+ '<button class="action" data-action="music">음악 켜기·끄기</button><button class="action" data-action="sound">효과음 '+(soundEnabled?'끄기':'켜기')+'</button>'+
+ '<button class="action sub" data-action="speed">항해 속도 '+state.speed+'배</button><button class="action sub" data-action="auto">자동 해전 '+(state.autoCombat?'켬':'끔')+'</button>'+
+ '<button class="action sub" data-action="zoom-in">지도 확대 ＋</button><button class="action sub" data-action="zoom-out">지도 축소 －</button>'+
+ '<button class="action sub" data-action="repair">긴급 수리</button><button class="action sub" data-menu-to="inventory">소모품 가방</button>'+
+ '<button class="action wide" data-action="reset">처음부터 · 새 선장 선택</button></div>'+
+ '<p class="info">처음부터는 확인 후 선장을 다시 선택해. 선택 전에는 기존 저장을 지우지 않아.</p>';
+}
 function journal(){return '<h3>기상·세계 정세</h3><p>'+WEATHER.find(w=>w.id===state.climate.kind).name+' · '+WEATHER.find(w=>w.id===state.climate.kind).description+'</p><p>동맹: '+(state.alliance||'없음')+' · 개척 해역 '+state.charted.length+'구역</p>'+state.worldLog.slice().reverse().map(t=>'<div class="scene-card">'+escapeHtml(t)+'</div>').join('')+storyCard()+'<h3>항해 기록</h3>'+[...state.log].reverse().map(t=>'<div class="row"><small>'+escapeHtml(t)+'</small></div>').join('')+'<h3>휴대폰 저장 관리</h3><p class="info">자동 저장돼. 저장 문자열을 복사해 다른 기기로 옮길 수 있고, 검증값으로 손상 여부를 확인해. 원문을 수정하면 복구되지 않아.</p><div class="stack"><button class="action sub" data-action="save">지금 저장</button><button class="action" data-action="export">저장 복사</button><button class="action sub" data-action="import">저장 가져오기</button><button class="action" data-action="reset">새 항해</button></div><textarea id="saveText" aria-label="저장 내보내기 및 가져오기 문자열" placeholder="저장 복사에 실패하면 여기서 길게 눌러 복사해. 가져올 때는 여기에 붙여넣어."></textarea><h3>자료와 제작</h3><p class="info">Natural Earth 공개 지형 · 기존 Kenney/Buch CC0 자산 · 독자 인물·스토리·절차 작곡 음악. 원작의 음악·인물·대사를 사용하지 않아.</p>';}
 
 const kennyMap='./assets/cc0/map/';
@@ -279,15 +333,16 @@ function battlePanel(){
 }
 function renderPanel(){
  if(!active)return;const savedScroll=renderedPanel===active?view.body.scrollTop:0;renderedPanel=active;
- const titles={battle:'육지 전투',jobs:'직업 길드',palace:'왕궁 · 총독부',port:'항구 · 선술집 · 조선소',crew:'선장과 항해사',inventory:'항해 가방과 화물',chart:'세계 해도',market:'항구 교역소',fleet:'함대와 조선소',quests:'계약과 탐험',journal:'항해 기록'};
+ const titles={battle:'육지 전투',jobs:'직업 길드',palace:'왕궁 · 총독부',port:'항구 · 선술집 · 조선소',crew:'선장과 항해사',inventory:'항해 가방과 화물',chart:'세계 해도',market:'항구 교역소',fleet:'함대와 조선소',quests:'계약과 탐험',journal:'항해 기록',menu:'전체 메뉴',system:'시스템'};
  view.head.textContent=titles[active];
- view.body.innerHTML=({battle:battlePanel,palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal}[active]||chart)();if(active==='chart')drawChart(false);view.body.scrollTop=savedScroll;
+ view.body.innerHTML=({battle:battlePanel,palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal,menu,system}[active]||chart)();if(active==='chart')drawChart(false);view.body.scrollTop=savedScroll;
 }
 function apply(result){
  if(result.ok){const priorFx=state.combatFx?.serial;state=result.state;save();scene.setState(state);if(state.landBattle){if(active!=='battle')enterBattle();else renderPanel();}else renderPanel();summary();renderEvent();if(state.combatFx?.serial!==priorFx)impactSound();}
  note(result.message);
 }
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>gotoPanel(b.dataset.panel)));
+$('systemOpen').addEventListener('click',()=>gotoPanel('system'));
 $('close').addEventListener('click',leaveFacility);
 $('dock').addEventListener('click',()=>{if(canDock(state))enterTown();});
 $('hail').addEventListener('click',()=>{const id=$('hail').dataset.merchant;if(id)apply(hailMerchant(state,id));});
@@ -300,9 +355,10 @@ view.body.addEventListener('click',e=>{
   if(best&&best.d<24&&state.discovered.includes(best.p.id)){state=setDestination(state,best.p.id);save();scene.setState(state);renderPanel();note(best.p.name+' 항로 설정');}
   return;
  }
- const b=e.target.closest('[data-hail],[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy],[data-invest],[data-talk],[data-target],[data-land],[data-cannon],[data-site-event],[data-ship-gear],[data-refine],[data-contact],[data-gift],[data-info],[data-bond],[data-bench],[data-fleet-tab]');
+ const b=e.target.closest('[data-hail],[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open],[data-job],[data-refit],[data-site],[data-explore],[data-office],[data-map],[data-clue],[data-search],[data-buy-supply],[data-use-supply],[data-diplomacy],[data-invest],[data-talk],[data-target],[data-land],[data-cannon],[data-site-event],[data-ship-gear],[data-refine],[data-contact],[data-gift],[data-info],[data-bond],[data-bench],[data-fleet-tab],[data-menu-to]');
  if(!b)return;
- if(b.dataset.hail){apply(hailMerchant(state,b.dataset.hail));return;}
+ if(b.dataset.menuTo){gotoPanel(b.dataset.menuTo);return;}
+  if(b.dataset.hail){apply(hailMerchant(state,b.dataset.hail));return;}
  if(b.dataset.panelOpen){openFacility(b.dataset.panelOpen);return;}
  if(b.dataset.fleetTab){fleetTab=b.dataset.fleetTab;view.body.scrollTop=0;renderPanel();return;}
  if(b.dataset.shipGear){apply(buyShipEquipment(state,b.dataset.gearSlot,b.dataset.shipGear));return;}
@@ -347,7 +403,15 @@ view.body.addEventListener('click',e=>{
   case 'export':{const data=exportSave(state);$('saveText').value=data;(navigator.clipboard?navigator.clipboard.writeText(data):Promise.reject()).then(()=>note('저장 문자열을 복사했어.')).catch(()=>note('아래 저장 문자열을 길게 눌러 복사해.'));break;}
   case 'import':{const next=importSave($('saveText').value.trim());if(!next){note('저장 문자열이나 검증값이 올바르지 않아.');break;}if(confirm('현재 항해를 가져온 기록으로 바꿀까?')){state=next;state.heroChosen=true;save();scene.setState(state);depart();summary();note('저장 기록을 불러왔어.');}break;}
   case 'save':note(save()?'진행 상황을 저장했어.':'저장 실패');break;
-  case 'reset':if(confirm('이 게임의 항해 기록만 지우고 처음부터 시작할까?')){depart();showCaptains();}break;
+  case 'reset':restartGame();break;
+   case 'home':openHome();break;
+   case 'music':$('music-toggle').click();renderPanel();break;
+   case 'sound':$('sfx-toggle').click();renderPanel();break;
+   case 'speed':$('speed').click();renderPanel();break;
+   case 'auto':$('autoBattle').click();renderPanel();break;
+   case 'zoom-in':$('zoomIn').click();break;
+   case 'zoom-out':$('zoomOut').click();break;
+   case 'repair':$('quickRepair').click();break;
  }
 });
 view.body.addEventListener('change',e=>{if(e.target.matches('select[data-role]'))apply(assignCrew(state,e.target.dataset.role,e.target.value));});
@@ -442,7 +506,7 @@ function run(now){
  requestAnimationFrame(run);
  if(now-last<24)return;
  const dt=Math.min(.06,Math.max(0,(now-last)/1000));last=now;
- if(!ready||choosing||document.hidden)return;
+ if(!ready||choosing||!view.loading.classList.contains('hide')||document.hidden)return;
  if(view.details.classList.contains('open')||town)return;
  if(state.event||state.scene){renderEvent();return;}
  const left=buttons.left||keys.has('a')||keys.has('arrowleft');

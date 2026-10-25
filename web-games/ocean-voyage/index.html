@@ -71,18 +71,70 @@
 .event-art .scene-caption{max-width:52%;line-height:1.55}
 @media(max-width:740px){.event-art .event-person .hero-face.small,.event-art .event-person .crew-face,.event-art .event-person .cc0-portrait{width:73px;height:83px}.event-art .event-person{min-width:73px}}
 #navalEncounter{position:fixed;z-index:5;top:calc(78px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 24px));padding:10px 12px;background:linear-gradient(120deg,#122a35f5,#203e49f0);border:1px solid #bc9c64;box-shadow:0 5px 24px #0007;display:grid;gap:5px;border-radius:6px;color:#f5e4c2}#navalEncounter small{font-size:9px;letter-spacing:2px;color:#c7ac79}#navalTitle{font-family:serif;font-size:18px}#navalTargetHull{width:100%;height:7px;accent-color:#ca745d}#navalReadout{font-size:11px;line-height:1.5}#navalRetreat{position:absolute;right:8px;top:6px;padding:8px;font-size:11px}.naval-battle #nav,.naval-battle #compass,.naval-battle #battleStatus,.naval-battle #hint{display:none}.naval-battle #tools{top:calc(207px + env(safe-area-inset-top))}.naval-battle #dock{display:none}#naval3d{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}.naval-battle #veil{z-index:2}@media(max-height:500px){#navalEncounter{top:70px;width:55vw;padding:5px 10px;gap:2px}#navalTitle{font-size:14px}#navalEncounter small{display:none}.naval-battle #tools{top:77px}#navalRetreat{top:3px}}
+
+/* 모바일 조작: 빠른 메뉴와 상단 시스템 창. 기존 게임/저장 기능 유지 */
+#systemOpen{flex:0 0 auto;min-width:80px;padding:7px 8px;border-color:#ba9d61;background:#314b52;font-weight:700;font-size:12px}
+.home-buttons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.home-buttons .action{min-width:120px;font-size:15px}
+#loading p{line-height:1.7;max-width:320px;margin:12px auto}
+.quick-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.quick-menu button{min-height:64px;padding:10px 7px;text-align:left;font-size:14px}
+.quick-menu small{display:block;opacity:.8;font-size:11px;margin-top:4px}
+.system-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
+.system-actions .action{min-width:0;min-height:48px;margin:0;white-space:normal}
+.system-actions .wide{grid-column:1/-1}
+@media(max-width:740px){
+ #top{min-height:62px;padding:calc(5px + env(safe-area-inset-top)) 7px 6px;gap:5px}
+ #brand strong{font-size:15px;letter-spacing:0}
+ #brand small{display:none}
+ #status{gap:5px;margin-left:auto}
+ .stat{gap:1px}
+ .stat small{font-size:9px}
+ .stat b{font-size:10px}
+ #systemOpen{min-width:70px;min-height:44px;padding:5px;font-size:11px}
+ #nav{left:7px;right:7px;top:calc(69px + env(safe-area-inset-top));bottom:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;max-height:none;overflow:visible}
+ #nav .nav{display:flex;min-width:0;width:auto;justify-content:center;gap:5px;min-height:44px;padding:5px;font-size:13px;white-space:nowrap;border-radius:7px}
+ #nav .nav span{font-size:17px;width:auto}
+ #tools{display:flex;grid-template-columns:none;top:calc(120px + env(safe-area-inset-top));right:7px;left:auto}
+ #tools button:not(#hail){display:none}
+ #tools #hail{width:auto;min-width:77px;min-height:42px;padding:5px;font-size:11px}
+ #compass{top:calc(123px + env(safe-area-inset-top));left:7px;transform:none;max-width:calc(100vw - 105px);font-size:10px;padding:6px}
+ #details{left:6px;right:6px;width:auto;top:calc(119px + env(safe-area-inset-top));bottom:calc(106px + env(safe-area-inset-bottom))}
+ #details:has(#chartMap){top:calc(76px + env(safe-area-inset-top));bottom:calc(80px + env(safe-area-inset-bottom))}
+ .in-town #details{top:calc(72px + env(safe-area-inset-top));bottom:calc(77px + env(safe-area-inset-bottom))}
+ #controls{left:8px;right:8px}
+ #music-toggle{display:none}
+ #battleStatus{top:calc(166px + env(safe-area-inset-top));max-width:94vw}
+ #navalEncounter{top:calc(168px + env(safe-area-inset-top))}
+ #townbar{gap:6px;left:6px;right:6px}
+ #townTitle{max-width:31vw}
+ #captainBack{margin:15px auto;display:block}
+ #loading{padding:18px}
+}
+@media(max-height:600px) and (max-width:740px){
+ #nav{top:calc(63px + env(safe-area-inset-top))}
+ #tools{top:calc(111px + env(safe-area-inset-top))}
+ #compass{top:calc(110px + env(safe-area-inset-top))}
+ #details{top:calc(110px + env(safe-area-inset-top));bottom:72px}
+ .in-town #details{top:calc(65px + env(safe-area-inset-top));bottom:74px}
+ #battleStatus{top:calc(155px + env(safe-area-inset-top))}
+ #navalEncounter{top:calc(155px + env(safe-area-inset-top))}
+}
 </style><script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head><body>
 <canvas id="sea" aria-label="실제 해안선을 사용하는 픽셀 항해 지도와 항구 마을"></canvas><div id="veil"></div>
-<header id="top"><div id="brand"><small>다섯 바다의 약속 · 1590</small><strong>푸른 항로</strong></div><div id="status"><span class="stat"><small>항해일</small><b id="day">1일</b></span><span class="stat"><small>금화</small><b id="gold">0</b></span><span class="stat"><small>선체</small><b id="hull">100%</b></span><span class="stat extra"><small>식량 / 선원</small><b id="supplies"></b></span></div></header>
-<div id="compass"></div><div id="foodStatus"></div><div id="battleStatus" hidden role="status"></div><nav id="nav" aria-label="게임 메뉴"><button class="nav" data-panel="port" aria-label="항구 입항"><span>♜</span>항구와 도시</button><button class="nav" data-panel="crew" aria-label="동료와 소문"><span>♙</span>동료와 소문</button><button class="nav" data-panel="inventory" aria-label="가방과 발견 도감"><span>◈</span>가방·발견</button><button class="nav" data-panel="chart" aria-label="해도와 보물"><span>⌖</span>해도·보물</button><button class="nav" data-panel="market" aria-label="교역소"><span>⚖</span>교역소</button><button class="nav" data-panel="fleet" aria-label="조선소"><span>⚓</span>조선소</button><button class="nav" data-panel="quests" aria-label="탐험과 의뢰"><span>✦</span>탐험·의뢰</button><button class="nav" data-panel="journal" aria-label="이야기와 저장"><span>☷</span>이야기·저장</button></nav>
+<header id="top"><div id="brand"><small>다섯 바다의 약속 · 1590</small><strong>푸른 항로</strong></div><div id="status"><span class="stat"><small>항해일</small><b id="day">1일</b></span><span class="stat"><small>금화</small><b id="gold">0</b></span><span class="stat"><small>선체</small><b id="hull">100%</b></span><span class="stat extra"><small>식량 / 선원</small><b id="supplies"></b></span></div><button id="systemOpen" aria-label="시스템 메뉴 열기">⚙ 시스템</button></header>
+<div id="compass"></div><div id="foodStatus"></div><div id="battleStatus" hidden role="status"></div><nav id="nav" aria-label="빠른 메뉴">
+<button class="nav" data-panel="port" aria-label="항구 입항 또는 항구 찾기"><span>⚓</span>항구</button>
+<button class="nav" data-panel="chart" aria-label="항해 지도 열기"><span>⌖</span>해도</button>
+<button class="nav" data-panel="menu" aria-label="전체 메뉴 열기"><span>☰</span>메뉴</button></nav>
 <div id="tools"><button id="zoomIn" aria-label="지도 확대">확대</button><button id="zoomOut" aria-label="지도 축소">축소</button><button id="speed">1배속</button><button id="autoBattle" aria-label="해전 자동 조타 및 자동 포격 켜고 끄기" aria-pressed="true">자동해전 켬</button><button id="hail" hidden aria-label="가까운 무역선과 교신">상선 교신</button><button id="quickRepair" aria-label="수리 목재 즉시 사용">수리</button><button id="allySupport" aria-label="동맹 함대 지원 요청">동맹</button><button id="sfx-toggle" aria-label="효과음 켜기 끄기">효과음 켬</button><button id="quickBag" aria-label="선박과 소모품 가방">가방</button></div>
 <aside id="details" aria-label="시설과 정보"><div id="panelHead"><h2 id="panelTitle"></h2><button id="close" aria-label="시설 닫기">✕</button></div><div id="content"></div></aside>
 <div id="message" role="status" aria-live="polite">항해를 준비하고 있어.</div><div id="hint">방향키 / WASD 조타 · E 입항 · M 해도 · 스페이스 포격</div>
 <div id="controls"><div class="group"><div id="joystick" role="group" aria-label="항해 조타 스틱"><div id="joystickRim"><div id="joystickHandle"></div></div><span id="joystickLabel">조타 스틱</span></div></div><div class="group"><button id="dock" class="pad"><b>⚓</b>입항</button><button id="fire" class="pad fire"><b>✹</b>포격</button><button id="music-toggle" class="pad" aria-label="음악 켜기 끄기"><b>♫</b>음악</button></div></div>
-<div id="townbar" hidden><strong id="townTitle"></strong><button id="townBack">마을</button><button id="townJournal">기록·저장</button><button id="depart">출항</button></div>
-<section id="loading"><div><h1>푸른 항로</h1><p>다섯 바다에서 항해하는 여덟 선장의 이야기.<br>픽셀 해도로 유럽 13개 항구를 항해해.</p><button id="start" class="action">항해 준비</button></div></section>
-<section id="captains" hidden aria-label="주인공 선택"><header><h1>다섯 바다의 약속</h1><p>출신 지역·출발 항구·항해 목적이 다른 여덟 주인공.<br>유럽 1부: 교역·상륙 탐험·왕실·동료 이야기를 따라 항로를 열어.<br>출신 지역은 도입 이야기로 소개되고, 본편은 각자 다른 유럽 항구에서 시작해. 실시간 다중 접속 기능은 없어.</p></header><div id="captainCards"></div></section>
+<div id="townbar" hidden><strong id="townTitle"></strong><button id="townBack">마을</button><button id="townJournal">메뉴</button><button id="depart">출항</button></div>
+<section id="loading"><div><h1>푸른 항로</h1><p>다섯 바다에서 항해하는 여덟 선장의 이야기.<br>픽셀 해도로 유럽 13개 항구를 항해해.</p><div class="home-buttons"><button id="start" class="action" disabled>항해 준비</button><button id="newGame" class="action sub" hidden>처음부터</button></div></div></section>
+<section id="captains" hidden aria-label="주인공 선택"><header><h1>다섯 바다의 약속</h1><p>출신 지역·출발 항구·항해 목적이 다른 여덟 주인공.<br>유럽 1부: 교역·상륙 탐험·왕실·동료 이야기를 따라 항로를 열어.<br>출신 지역은 도입 이야기로 소개되고, 본편은 각자 다른 유럽 항구에서 시작해. 실시간 다중 접속 기능은 없어.</p></header><div id="captainCards"></div><button id="captainBack" class="action sub">홈으로 돌아가기</button></section>
 <section id="seaEvent" hidden aria-label="항해 중 사건"><article><small>항해 중 발견한 이야기</small><div id="eventArt" class="event-art" aria-hidden="true"></div><h2 id="eventTitle"></h2><p id="eventText"></p><div id="eventChoices"></div></article></section>
 <script type="module" src="./main.mjs"></script><section id="navalEncounter" aria-label="해상 전투" hidden><small>ENGAGEMENT / 해상 교전</small><strong id="navalTitle">해상 교전</strong><progress id="navalTargetHull" max="1" value="1" aria-label="적함 내구도"></progress><span id="navalReadout" role="status"></span><button id="navalRetreat">이탈 조타</button></section>
 </body></html>
