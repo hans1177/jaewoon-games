@@ -54,6 +54,30 @@ test('owner reset intake materializes canonical DESIGN_ONLY seeds without duplic
 });
 
 
+test('same owner revision restores the verified B source without resetting developed gameplay',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-b-system-'));
+  try{
+    const source='design/cozy-island/2026-09-22/design-revised.json';
+    const original=path.join(dir,source);
+    fs.mkdirSync(path.dirname(original),{recursive:true});
+    fs.writeFileSync(original,JSON.stringify({gameId:'cozy-island',content:{signatureSystems:[
+      {name:'직접 채집',purpose:'플레이어가 나무와 식량 노드에 직접 상호작용하여 자원을 획득한다.'}
+    ]}}));
+    const queue=path.join(dir,'queue.json');
+    fs.writeFileSync(queue,JSON.stringify({requests:[{revision:'COZY-R1',gameId:'cozy-island',gameName:'포근섬',status:'ACTIVE',designRequest:{
+      topicMode:'VIBE_FREE_TOPIC',originalPlatform:'ROBLOX',multiplayerMode:'COOP',instruction:'기존 저장과 전투 규칙을 보존하며 설계를 다시 검증한다.',
+      bSystemReference:{scope:'B_SUPPORTING_REFERENCE_ONLY',source}
+    }}]}));
+    const existing={gameId:'cozy-island',seedId:'OWNER-DESIGN-COZY-ISLAND',ownerResetRevision:'COZY-R1',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',saveSchemaVersion:7,checkpoint:{wave:5},promotion:{source:'existing'}};
+    const state={seeds:[structuredClone(existing)]};
+    const first=ensureOwnerDesignResetSeed(state,'cozy-island',{file:queue});
+    assert.equal(first.changed,true);
+    assert.deepEqual(state.seeds[0].B_SYSTEM_REFERENCE,{scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:'직접 채집',playerChoice:'플레이어가 나무와 식량 노드에 직접 상호작용하여 자원을 획득한다.',source});
+    for(const [key,value] of Object.entries(existing))assert.deepEqual(state.seeds[0][key],value,'existing state preserved: '+key);
+    assert.equal(ensureOwnerDesignResetSeed(state,'cozy-island',{file:queue}).changed,false,'idempotent after source hydration');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
 test('all-games reset workflow binds expected reset set to current DESIGN_ONLY catalog instead of hardcoded count',()=>{
   const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
   assert.doesNotMatch(workflow,/OWNER_ALL_GAMES_DESIGN_RESET_COUNT=19/);

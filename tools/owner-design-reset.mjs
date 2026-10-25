@@ -120,7 +120,14 @@ export function ensureOwnerDesignResetSeed(state,gameId,{file=OWNER_DESIGN_RESET
   const index=state.seeds.findIndex(seed=>clean(seed?.gameId)===clean(gameId));
   if(index<0){state.seeds.push(reset);return {seed:reset,changed:true};}
   const current=state.seeds[index];
-  if(clean(current?.ownerResetRevision)===clean(reset.ownerResetRevision))return {seed:current,changed:false};
+  if(clean(current?.ownerResetRevision)===clean(reset.ownerResetRevision)){
+    // 동일 개정의 기존 개발 상태는 보존하되 실제 원본에서 검증해 읽은 B 참조 누락만 복구한다.
+    if(reset.B_SYSTEM_REFERENCE&&!current.B_SYSTEM_REFERENCE){
+      current.B_SYSTEM_REFERENCE=clone(reset.B_SYSTEM_REFERENCE);
+      return {seed:current,changed:true};
+    }
+    return {seed:current,changed:false};
+  }
   state.seeds[index]=reset;
   return {seed:reset,changed:true};
 }
