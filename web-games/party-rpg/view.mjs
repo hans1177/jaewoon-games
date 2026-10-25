@@ -433,6 +433,7 @@ buildWorld(live){
     motionPhase:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:3)*1.61,
     creature:kind!=='enemy'?'human':role==='slime'?'gel':role==='bunny'?'hopper':role==='golem'?'stone':role==='ghost'?'spirit':role==='winged'?'flyer':/늑대|마수|키메라/.test(obj.name||'')?'hunter':/거미|전갈/.test(obj.name||'')?'skitter':'fighter',
     specialUntil:0,specialKind:null,deadAt:0,hitAt:0,hitPower:0,hitSide:0,flashMaterials,
+    stepDistance:0,visualSpeed:0,stepStride:kind!=='enemy'?94:role==='bunny'?68:role==='slime'?63:role==='orc'?91:role==='golem'?118:87,
     idleSeed:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:11)*.713,
     idleAttention:0,lookYaw:0,stance:0,faceTarget:null,visualStyle:'strike',npcRoutine:obj.routine||null};
   this.scene.add(root);return result;
@@ -450,7 +451,9 @@ buildWorld(live){
     if(hitStart)entry.lastHitAt=entry.hitAt;
    const speedBase=entry.kind==='enemy'?90:155,blend=1-Math.exp(-dt*11);
    entry.motion+=(Math.min(1,entry.speed/speedBase)-entry.motion)*blend;
-   entry.walkPhase+=dt*(entry.role==='golem'?7:entry.role==='bunny'?14:10.5)*Math.max(.12,entry.speed/speedBase);
+   // 보행 클립과 보조 걸음 움직임을 동일한 실측 이동거리로 구동한다.
+   // 스톱/코너/프레임 제한에서도 땅 위를 미끄러지듯 계속 걷는 문제 방지.
+   if(entry.stepDistance>0)entry.walkPhase+=entry.stepDistance/entry.stepStride*Math.PI*2;
    const attackProgress=attack?Math.min(1,(now-entry.attackAt)/Math.max(1,entry.attackDuration*1000)):0;
    // 공격 준비 → 강한 타격 → 자세 회복을 시각적으로 구분한다.
     const windup=attack?Math.max(0,1-Math.abs(attackProgress-.16)/.16):0;
@@ -514,15 +517,18 @@ buildWorld(live){
    }
    if(entry.gestureAction&&now>=entry.gestureUntil){entry.gestureAction.fadeOut(.18);entry.gestureAction=null;}
    entry.gestureBlend+=((entry.gestureAction?1:0)-entry.gestureBlend)*(1-Math.exp(-dt*16));
-   const activity=THREE.MathUtils.clamp(entry.speed/16,0,1);
-   const runBlend=entry.clips.run?THREE.MathUtils.smoothstep(entry.speed,entry.kind==='enemy'?95:105,entry.kind==='enemy'?165:185):0;
+   const activity=THREE.MathUtils.clamp(entry.motion*3.8,0,1);
+   const runBlend=entry.clips.run?THREE.MathUtils.smoothstep(entry.visualSpeed,entry.kind==='enemy'?95:105,entry.kind==='enemy'?165:185):0;
    const locoWeight=1-entry.gestureBlend*.88;
    if(entry.clips.idle)entry.clips.idle.setEffectiveWeight((1-activity)*locoWeight);
    if(entry.clips.walk)entry.clips.walk.setEffectiveWeight(activity*(entry.clips.run?1-runBlend:1)*locoWeight);
    if(entry.clips.run)entry.clips.run.setEffectiveWeight(activity*(entry.clips.walk?runBlend:1)*locoWeight);
    if(!entry.clips.walk&&!entry.clips.run&&entry.clips.idle)entry.clips.idle.setEffectiveWeight(locoWeight);
-   if(entry.clips.walk)entry.clips.walk.setEffectiveTimeScale(THREE.MathUtils.clamp(entry.speed/78,.68,1.9));
-   if(entry.clips.run)entry.clips.run.setEffectiveTimeScale(THREE.MathUtils.clamp(entry.speed/160,.78,1.6));
+   // THREE.AnimationAction의 clip time은 초 단위이므로, 이동한 거리/한 주기 보폭에
+   // 클립 길이를 곱하면 걷기·달리기가 지면상의 실제 속도와 같은 박자로 진행한다.
+   const cyclesPerSecond=entry.stepDistance/Math.max(.001,dt)/entry.stepStride;
+   if(entry.clips.walk)entry.clips.walk.setEffectiveTimeScale(Math.max(0,cyclesPerSecond*entry.clips.walk.getClip().duration));
+   if(entry.clips.run)entry.clips.run.setEffectiveTimeScale(Math.max(0,cyclesPerSecond*entry.clips.run.getClip().duration));
    // 피격 직후 잠깐 멈칫하는 시각 효과. 전투 판정·타이머는 그대로 유지한다.
    entry.mixer.update(hit>.81?dt*.23:dt);
    // 보행 클립 위에 호흡·상체 관성·타격 후 젖힘·몬스터별 부유를 미세하게 더한다.
@@ -806,16 +812,22 @@ buildWorld(live){
     if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}
     const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,travel=Math.hypot(dx,dy);
     entry.lastX=obj.x;entry.lastY=obj.y;
-    // 워프·좌표 보정은 실제 보행으로 오인하지 않는다.
-    const instantSpeed=travel>260?0:Math.min(250,travel/Math.max(.016,dt));
-    entry.speed+=(instantSpeed-entry.speed)*(1-Math.exp(-dt*(instantSpeed>entry.speed?11:16)));
-    const moving=entry.speed>3||travel>.12;
-    if(!entry.visualInitialized){entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.visualInitialized=true;}
+    // 위치 추종의 잔여 미끄러짐을 없애 실제 게임 좌표에 발을 붙인다.
+    // 모바일 30FPS 때도 한 렌더 프레임에 실제 이동한 거리를 보폭에 적용한다.
+    const teleport=!entry.visualInitialized||travel>260;
+    const oldX=entry.root.position.x,oldZ=entry.root.position.z;
+    entry.root.position.x=obj.x*SCALE;entry.root.position.z=obj.y*SCALE;
+    if(teleport){entry.root.position.y=.015;entry.visualInitialized=true;}
+    const traveled=teleport?0:Math.hypot(entry.root.position.x-oldX,entry.root.position.z-oldZ)/SCALE;
+    entry.stepDistance=traveled<.02?0:Math.min(traveled,230*Math.max(.016,dt));
+    entry.visualSpeed=entry.stepDistance/Math.max(.001,dt);
+    if(teleport){entry.speed=0;entry.motion=0;}
     else{
-     const follow=1-Math.exp(-dt*(kind==='enemy'?18:23));
-     entry.root.position.x+=(obj.x*SCALE-entry.root.position.x)*follow;
-     entry.root.position.z+=(obj.y*SCALE-entry.root.position.z)*follow;
+     const targetSpeed=entry.visualSpeed<3?0:entry.visualSpeed;
+     entry.speed+=(targetSpeed-entry.speed)*(1-Math.exp(-dt*(targetSpeed?13:22)));
+     if(!targetSpeed&&entry.speed<1)entry.speed=0;
     }
+    const moving=entry.stepDistance>.02;
     const beat=live.cinematic?.info?.beats?.[live.cinematic.step];
     const reacting=!!(beat&&(beat.speaker===obj.name||(kind==='enemy'&&live.cinematic.info.key.startsWith('boss:')&&obj.boss)));
     const poseY=reacting?.095+Math.sin(now*.006)*.045:.015;
