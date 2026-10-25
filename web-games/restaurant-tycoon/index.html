@@ -42,7 +42,7 @@ const key='jaewoon-restaurant-tycoon-v1';
 let data={cash:100,tables:2,cooks:0,served:0,elapsed:0,started:false};
 try{let old=JSON.parse(localStorage.getItem(key)||'null');if(old&&typeof old==='object')for(const k of Object.keys(data))if(typeof old[k]===typeof data[k])data[k]=old[k]}catch(e){}
 data.tables=Math.min(8,Math.max(2,data.tables));data.cooks=Math.min(3,Math.max(0,data.cooks));data.elapsed=Math.max(0,data.elapsed);
-let guests=[],spawnClock=2,autoClock=0,saveClock=0,idCounter=0,last=performance.now(),noticeClock=0;
+let guests=[],spawnClock=2,autoClock=0,saveClock=0,idCounter=0,last=performance.now(),noticeClock=0,selectedId=null;
 const $=id=>document.getElementById(id);
 function save(){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}}
 function say(t){$('notice').textContent=t;noticeClock=5}
@@ -56,20 +56,92 @@ $('tablePrice').textContent=data.tables>=8?'최대 8개':priceTable().toLocaleSt
 $('tableBtn').disabled=data.tables>=8||data.cash<priceTable();$('cookBtn').disabled=data.cooks>=3||data.cash<priceCook();$('menuCount').textContent=count()+'종 영업 중';
 $('status').textContent='영업 '+Math.floor(data.elapsed/60)+'분 '+Math.floor(data.elapsed%60)+'초 · 좌석 '+guests.length+'/'+data.tables+' · 요리사 '+data.cooks+'명';
 }
+// 메인: 주문 한 건에 대해 창고·해동·칼질·가열·플레이팅 진행
+function active(){return guests.find(g=>g.id===selectedId&&g.phase==='prep')}
+function advance(g){
+ const r=recipes[g.dish],items=r.items;
+ if(g.step==='store'&&items.every((x,i)=>g.got[i]))g.step=items.some(x=>x[2])?'thaw':items.some(x=>x[3])?'cut':r.heat?'heat':'plate';
+ if(g.step==='thaw'&&g.busy<0&&items.every((x,i)=>!x[2]||g.thawed[i]))g.step=items.some(x=>x[3])?'cut':r.heat?'heat':'plate';
+ if(g.step==='cut'&&items.every((x,i)=>!x[3]||g.cut[i]>=2))g.step=r.heat?'heat':'plate';
+}
+function kitchenAction(station,index){
+ const g=active();if(!g){say('먼저 손님 주문을 선택해!');return}
+ const r=recipes[g.dish],items=r.items;
+ if(station==='store'&&g.step==='store'){
+  const i=index==null?items.findIndex((x,i)=>!g.got[i]):index;
+  if(i<0||!items[i]||g.got[i])return;g.got[i]=1;say('📦 '+items[i][0]+' 창고에서 꺼냈어');advance(g);
+ }else if(station==='thaw'&&g.step==='thaw'&&g.busy<0){
+  const i=index==null?items.findIndex((x,i)=>x[2]&&!g.thawed[i]):index;
+  if(i<0||!items[i]||!items[i][2]||g.thawed[i])return;g.busy=i;g.timer=2.2;say('💧 '+items[i][0]+' 해동 시작!');
+ }else if(station==='cut'&&g.step==='cut'){
+  const i=index==null?items.findIndex((x,i)=>x[3]&&(g.cut[i]||0)<2):index;
+  if(i<0||!items[i]||!items[i][3]||(g.cut[i]||0)>=2)return;
+  g.cut[i]=(g.cut[i]||0)+1;say('🔪 '+items[i][0]+' '+g.cut[i]+'/2 썰었어');advance(g);
+ }else if(station==='heat'&&g.step==='heat'){
+  if(!g.heatOn){g.heatOn=true;g.timer=dishes[g.dish].time;g.actions=0;say('🔥 '+r.heat+' 시작!')}
+  else if(g.actions<r.moves){g.actions++;say('🍳 '+r.motion+' '+g.actions+'/'+r.moves)}
+  if(g.timer<=0&&g.actions>=r.moves){g.step='plate';say('조리 완료! 접시에 담아!')}
+ }else if(station==='plate'&&g.step==='plate'){
+  g.phase='ready';g.step='ready';say('🍽️ '+r.finish+' 완료! 주문 카드를 눌러 서빙해!');
+ }else{say('아직 이 단계가 아니야!');return}
+ updateOrders();updateKitchen();
+}
+function updateKitchen(){
+ const g=active();$('kitchen').classList.toggle('open',!!g);if(!g)return;
+ const r=recipes[g.dish],root=$('actions');root.replaceChildren();
+ $('workName').textContent=dishes[g.dish].icon+' '+dishes[g.dish].name+' 직접 요리';
+ $('recipeText').textContent='재료: '+r.items.map((a,i)=>a[1]+a[0]+(g.got[i]?' ✓':'')).join(' · ');
+ const stepLabel={store:'📦 ① 창고에서 재료를 하나씩 가져와',thaw:'💧 ② 냉동 재료를 해동해',cut:'🔪 ③ 도마에서 두 번씩 썰어',heat:'🔥 ④ '+r.heat,plate:'🍽️ ⑤ 접시에 담고 서빙해'};
+ $('stepText').textContent=stepLabel[g.step]||'조리 중';
+ const add=(label,station,i,hot=false,disabled=false)=>{
+  const b=document.createElement('button');b.type='button';b.textContent=label;b.className=hot?'hot':'';b.disabled=disabled;b.addEventListener('click',()=>kitchenAction(station,i));root.append(b)
+ };
+ if(g.step==='store')r.items.forEach((a,i)=>{if(!g.got[i])add('📦 '+a[1]+a[0]+' 가져오기','store',i)});
+ else if(g.step==='thaw'){
+  if(g.busy>=0)add('💧 '+r.items[g.busy][0]+' '+Math.ceil(g.timer)+'초','thaw',null,false,true);
+  else r.items.forEach((a,i)=>{if(a[2]&&!g.thawed[i])add('💧 '+a[0]+' 해동','thaw',i)});
+ }else if(g.step==='cut')r.items.forEach((a,i)=>{if(a[3]&&(g.cut[i]||0)<2)add('🔪 '+a[0]+' '+(g.cut[i]||0)+'/2','cut',i)});
+ else if(g.step==='heat'){
+  if(!g.heatOn)add('🔥 '+r.heat+' 시작','heat',null,true);
+  else if(g.actions<r.moves)add('🍳 '+r.motion+' '+g.actions+'/'+r.moves,'heat',null,true);
+  else add('🔥 조리 완료까지 '+Math.ceil(g.timer)+'초','heat',null,true,true);
+ }else if(g.step==='plate')add('🍽️ '+r.finish,'plate',null);
+}
 function updateOrders(){
-const root=$('orders');root.replaceChildren();
-for(const g of guests){
-const d=dishes[g.dish],btn=document.createElement('button');btn.className='order '+(g.phase==='cooking'?'cooking':g.phase==='ready'?'ready':'');
-const title=document.createElement('b');title.textContent=d.icon+' '+d.name+' · '+d.price+'원';
-const detail=document.createElement('small');detail.textContent=g.phase==='order'?'👆 눌러 요리 시작':g.phase==='cooking'?'🔥 조리 중 '+Math.ceil(g.timer)+'초':g.phase==='ready'?'✅ 눌러 서빙하기':'🧍 자리 이동 중';
-const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';fill.style.width=(g.phase==='order'?Math.max(0,g.patience/22)*100:g.phase==='cooking'?Math.max(0,1-g.timer/d.time)*100:100)+'%';bar.append(fill);
-btn.append(title,detail,bar);btn.onclick=()=>interact(g.id);root.append(btn);
+ const root=$('orders');root.replaceChildren();
+ for(const g of guests){
+  const d=dishes[g.dish],btn=document.createElement('button');btn.className='order '+(g.phase==='cooking'?'cooking':g.phase==='ready'?'ready':'');
+  if(g.id===selectedId)btn.style.borderColor='#d37637';
+  const title=document.createElement('b');title.textContent=d.icon+' '+d.name+' · '+d.price+'원';
+  const detail=document.createElement('small');
+  const stepNames={store:'창고',thaw:'해동',cut:'칼질',heat:'불판',plate:'담기'};
+  detail.textContent=g.phase==='order'?'👆 눌러 재료 준비':g.phase==='prep'?'👩‍🍳 '+stepNames[g.step]+' 진행 · 눌러 계속':g.phase==='cooking'?'🔥 요리사 조리 '+Math.ceil(g.timer)+'초':'✅ 눌러 서빙하기';
+  const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';
+  const progress=g.phase==='order'?Math.max(0,g.patience/22)*100:g.phase==='cooking'?Math.max(0,1-g.timer/d.time)*100:g.phase==='prep'?Math.max(10,(['store','thaw','cut','heat','plate'].indexOf(g.step)+1)*18):100;
+  fill.style.width=progress+'%';bar.append(fill);btn.append(title,detail,bar);btn.onclick=()=>interact(g.id);root.append(btn);
+ }
+ if(!guests.length){const p=document.createElement('div');p.className='chip';p.textContent='🍴 손님을 기다리는 중...';root.append(p)}
 }
-if(!guests.length){const p=document.createElement('div');p.className='chip';p.textContent='🍴 손님을 기다리는 중...';root.append(p)}
+function interact(id){
+ const g=guests.find(x=>x.id===id);if(!g)return;
+ if(g.phase==='order'){g.phase='prep';g.step='store';g.got={};g.thawed={};g.cut={};g.busy=-1;g.timer=0;g.actions=0;g.heatOn=false;say('창고에서 '+dishes[g.dish].name+' 재료부터 꺼내!')}
+ if(g.phase==='prep')selectedId=g.id;
+ else if(g.phase==='ready')serve(g);
+ else say('직원이 조리하고 있어!');
+ updateOrders();updateKitchen();
 }
-function interact(id){let g=guests.find(x=>x.id===id);if(!g)return;if(g.phase==='order'){g.phase='cooking';g.timer=dishes[g.dish].time;say(dishes[g.dish].name+' 요리 시작!')}else if(g.phase==='ready')serve(g);updateOrders()}
-function serve(g){data.cash+=dishes[g.dish].price;data.served++;const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);if(g.person){scene.remove(g.person);people.splice(people.indexOf(g.person),1)}say('+'+dishes[g.dish].price+'원! 손님이 맛있게 먹었어!');save();updateTables();hud()}
-function spawn(){if(guests.length>=data.tables)return;const seat=[...Array(data.tables).keys()].find(n=>!guests.some(g=>g.seat===n));if(seat===undefined)return;const dish=Math.floor(Math.random()*count());let g={id:++idCounter,seat,dish,phase:'order',timer:0,patience:22,person:null};guests.push(g);if(scene)g.person=createGuest(g);say(dishes[dish].icon+' '+dishes[dish].name+' 주문이 들어왔어!')}
+function serve(g){
+ data.cash+=dishes[g.dish].price;data.served++;const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);
+ if(selectedId===g.id)selectedId=null;
+ if(g.person&&scene){scene.remove(g.person);const n=people.indexOf(g.person);if(n>=0)people.splice(n,1)}
+ say('+'+dishes[g.dish].price+'원! 손님이 맛있게 먹었어!');save();updateTables();hud();updateOrders();updateKitchen();
+}
+function spawn(){
+ if(guests.length>=data.tables)return;
+ const seat=[...Array(data.tables).keys()].find(n=>!guests.some(g=>g.seat===n));if(seat===undefined)return;
+ const dish=Math.floor(Math.random()*count()),g={id:++idCounter,seat,dish,phase:'order',timer:0,patience:22,person:null};
+ guests.push(g);if(scene)g.person=createGuest(g);say(dishes[dish].icon+' '+dishes[dish].name+' 주문이 들어왔어!');
+}
 $('tableBtn').onclick=()=>{if(data.tables>=8||data.cash<priceTable())return;data.cash-=priceTable();data.tables++;updateTables();hud();save();say('테이블이 추가됐어!')};
 $('cookBtn').onclick=()=>{if(data.cooks>=3||data.cash<priceCook())return;data.cash-=priceCook();data.cooks++;hud();save();say('요리사 고용! 주문을 자동으로 처리해!')};
 $('menuBtn').onclick=()=>say(dishes.map((x,i)=>x.icon+x.name+' '+x.price+'원'+(i>=count()?' 🔒':'')).join(' · '));
