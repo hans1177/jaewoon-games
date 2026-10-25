@@ -1523,12 +1523,43 @@ function serverSource({gameId,saveRequired,actions,profile,learning={}}){
   const multiplayerAfterAction=profile.multiplayerRequired?`\n  local participants = Players:GetPlayers()\n  if Config.CoopRequired then\n    local shared = 0\n    for _, participant in ipairs(participants) do\n      shared += readNumber(participant, "Progress", 0)\n    end\n    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end\n  end\n  if Config.CompetitiveRequired then\n    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)\n  end\n  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}\n  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)\n`:``;
   const handlers=actions.map((action,index)=>`local function scopeHandler${index+1}(player)\n${serverHandlerBody(action.kind,index)}\n  player:SetAttribute("LastApprovedScope", ${luauString(action.id)})\n${`  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)\n  player:SetAttribute("LastLearningPattern", ${luauString(action.learningPattern||'')})\n`}${multiplayerAfterAction}end`).join('\n\n');
   const mapRows=actions.map((action,index)=>`  [${luauString(action.id)}] = scopeHandler${index+1},`).join('\n');
-  const datastoreHead=saveRequired?`local DataStoreService = game:GetService("DataStoreService")\nlocal store = nil\nlocal storeOk, storeResult = pcall(function()\n  return DataStoreService:GetDataStore(${luauString(`${gameId}-development-v1`)})\nend)\nif storeOk then store = storeResult end\n`:'';
-  const loadBlock=saveRequired?`  local ok, saved = pcall(function()\n    return store:GetAsync("player:" .. player.UserId)\n  end)\n  if ok and typeof(saved) == "table" then\n    for key, fallback in pairs(Config.InitialState) do\n      local value = saved[key]\n      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end\n    end\n  else\n    initializePlayer(player)\n  end\n`:`  initializePlayer(player)\n`;
-  const saveBlock=saveRequired?`  local snapshot = {}\n  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end\n  pcall(function()\n    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)\n  end)\n`:'';
+  const datastoreHead=saveRequired?`local DataStoreService = game:GetService("DataStoreService")\nlocal store = nil\nlocal storeOk, storeResult = pcall(function()\n  return DataStoreService:GetDataStore(${luauString(`${gameId}-development-v1`)})\nend)\nif storeOk then store = storeResult end\nlocal verifiedSaveLoad = {}\n`:'';
+  const loadBlock=saveRequired?`  local ok, saved = pcall(function()\n    return store:GetAsync("player:" .. player.UserId)\n  end)\n  verifiedSaveLoad[player] = ok and (saved == nil or typeof(saved) == "table")\n  if ok and typeof(saved) == "table" then\n    for key, fallback in pairs(Config.InitialState) do\n      local value = saved[key]\n      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end\n    end\n  else\n    initializePlayer(player)\n  end\n`:`  initializePlayer(player)\n`;
+  const saveBlock=saveRequired?[
+"  if verifiedSaveLoad[player] ~= true then return end",
+"  local snapshot = {}",
+"  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end",
+"  local ok, err = pcall(function()",
+"    store:UpdateAsync(\"player:\" .. player.UserId, function(current)",
+"      if current ~= nil and typeof(current) ~= \"table\" then return nil end",
+"      local merged = typeof(current) == \"table\" and table.clone(current) or {}",
+"      for key, value in pairs(snapshot) do merged[key] = value end",
+"      return merged",
+"    end)",
+"  end)",
+"  if not ok then warn(\"ROBLOX_BOOTSTRAP_SAVE_FAILED\", player.UserId, tostring(err)) end"
+  ].join('\n'):'';
+  const saveRuntimeTail=saveRequired?[
+"local function savePlayer(player)",
+"__SAVE_BODY__",
+"end",
+"Players.PlayerRemoving:Connect(function(player)",
+"  savePlayer(player)",
+"  verifiedSaveLoad[player] = nil",
+"  lastAction[player] = nil",
+"end)",
+"game:BindToClose(function()",
+"  for _, player in ipairs(Players:GetPlayers()) do savePlayer(player) end",
+"end)"
+  ].join('\n').replace('__SAVE_BODY__',saveBlock):[
+"Players.PlayerRemoving:Connect(function(player)",
+"  lastAction[player] = nil",
+"end)",
+"game:BindToClose(function() end)"
+  ].join('\n');
   return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\n-- native-foundation-sentinel-v1\nlocal foundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")\nif foundationRemote and not foundationRemote:IsA("RemoteEvent") then foundationRemote:Destroy(); foundationRemote = nil end\nif not foundationRemote then\n  foundationRemote = Instance.new("RemoteEvent")\n  foundationRemote.Name = "RuntimeFoundationReport"\n  foundationRemote.Parent = ReplicatedStorage\nend\nlocal foundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")\nif not foundationSpawn then\n  foundationSpawn = Instance.new("SpawnLocation")\n  foundationSpawn.Name = "NativeFoundationSpawn"\n  foundationSpawn.Size = Vector3.new(8, 1, 8)\n  foundationSpawn.Position = Vector3.new(0, 3, 0)\n  foundationSpawn.Neutral = true\n  foundationSpawn.Anchored = true\n  foundationSpawn.CanCollide = true\n  foundationSpawn.Parent = workspace\nend\n${foundationCharacterSource("bindFoundationCharacter","foundationSpawn")}\nlocal function bindFoundationPlayer(player)\n  if player.Character then task.defer(bindFoundationCharacter, player.Character) end\n  player.CharacterAdded:Connect(bindFoundationCharacter)\nend\nfoundationRemote.OnServerEvent:Connect(function(player, signal)\n  if typeof(signal) ~= "string" then return end\n  player:SetAttribute("NativeFoundationReadyAt", os.time())\nend)\n\nlocal lastAction = {}\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end\n  player:SetAttribute("LastApprovedScope", "ready")\n  player:SetAttribute("LearningOperator", Config.LearningContext.Operator)
   player:SetAttribute("LastLearningPattern", "")
-  player:SetAttribute("ActionSequence", 0)\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n  bindFoundationPlayer(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    bindFoundationPlayer(player)\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\ngame:BindToClose(function() end)\n`;
+  player:SetAttribute("ActionSequence", 0)\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n  bindFoundationPlayer(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    bindFoundationPlayer(player)\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\n${saveRuntimeTail}\n`;
 }
 
 function clientSource({profile,learning={},studioAssets={},studioAssetFamilyStatus={}}){
