@@ -100997,11 +100997,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_173e6f936f575f361eb6beed",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10127",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "526d0b3b29d3cbedf9978ed95cee34799a32e240",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10127,
+        "baseBranch": "main",
+        "headBranch": "feat/ocean-trade",
+        "baseSha": "526d0b3b29d3cbedf9978ed95cee34799a32e240",
+        "headSha": "a08bd405e5f87c4afc5fd6f7c71887a0cd7fd3d4",
+        "mergeCommitSha": "5d3836f25d73e2378827721464ada2b405d0b663",
+        "mergedAt": "2026-10-25T07:08:56Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8595359b9f96eed874c87b6c64809bbf49d678a69bce02af89d881774101dee2",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/ocean-trade",
+        "candidateSha": "a08bd405e5f87c4afc5fd6f7c71887a0cd7fd3d4"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 81,
+        "deletedLineCount": 18,
+        "changedFiles": [
+          "qa/ocean-voyage.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/ocean-voyage.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs",
+          "web-games/ocean-voyage/ocean3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10127",
+        "merge-commit:5d3836f25d73e2378827721464ada2b405d0b663",
+        "base-main:526d0b3b29d3cbedf9978ed95cee34799a32e240"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 794
+    "total": 795
   }
 }
