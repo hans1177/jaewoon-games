@@ -1004,7 +1004,7 @@ buildWorld(live){
   else this.evidenceLabel.hidden=true;
   const visible=[['player',live.p,'player']];for(const a of live.state.ai)if(live.dungeon?a.party:a.party||(a.zone===live.state.zone&&live.visibleCompanions?.includes(a.id)))visible.push(['ai',a,a.id]);
   // 멀티 동료는 임시 시각 객체로만 추가해 기존 파티/저장·전투 판정에서 제외한다.
-  for(const ally of live.coopPlayers||[])if(ally.zone===live.state.zone&&Boolean(ally.dungeon)===Boolean(live.dungeon))visible.push(['friend',ally,'friend-'+ally.id]);
+  for(const ally of live.coopPlayers||[])if(ally.zone===live.state.zone&&Boolean(ally.dungeon)===Boolean(live.dungeon)&&(!live.dungeon||ally.dungeonKey===live.dungeon.index+':'+live.dungeon.room))visible.push(['friend',ally,'friend-'+ally.id]);
   const enemies=live.enemies.filter(e=>!e.dead).sort((a,b)=>(a.x-live.p.x)**2+(a.y-live.p.y)**2-(b.x-live.p.x)**2-(b.y-live.p.y)**2).slice(0,this.mobile?16:44);for(const e of enemies)visible.push(['enemy',e,'enemy'+e.id]);
    const used=new Set();
    for(const [kind,obj,key] of visible){

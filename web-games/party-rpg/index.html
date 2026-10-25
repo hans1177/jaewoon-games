@@ -419,7 +419,7 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
 <div id="start" class="overlay">
  <div id="startCard" class="card">
   <section id="introMenu">
-   <div class="introCopy"><span class="eyebrow">잊힌 사람들의 도시 · 정통 중세 판타지 · 실시간 일시정지 파티 모험</span><h1>잊힌 길의<br>서약</h1><div class="titleLine"></div><p>지도에서 사라진 길.<br>네 필체로 남겨진 이름 모를 편지.<br>함께 돌아갈 사람들을 선택해.</p><div class="introMenuButtons"><button id="startBtn">여정 시작</button><button id="createBtn" class="goldButton secondary">주인공 만들기</button></div><div id="loadStatus" role="status">새 자산 불러오는 중</div><p class="note">탭으로 이동 · 드래그로 시점 이동 · 두 손가락으로 확대<br>실시간 자동 전투 · 언제든 일시정지</p></div>
+   <div class="introCopy"><span class="eyebrow">잊힌 사람들의 도시 · 정통 중세 판타지 · 실시간 일시정지 파티 모험</span><h1>잊힌 길의<br>서약</h1><div class="titleLine"></div><p>지도에서 사라진 길.<br>네 필체로 남겨진 이름 모를 편지.<br>함께 돌아갈 사람들을 선택해.</p><div class="introMenuButtons"><button id="startBtn">여정 시작</button><button id="createBtn" class="goldButton secondary">주인공 만들기</button><button id="partyCoopStartOpen" type="button" class="goldButton secondary">친구와 협동 방</button></div><div id="loadStatus" role="status">새 자산 불러오는 중</div><p class="note">탭으로 이동 · 드래그로 시점 이동 · 두 손가락으로 확대<br>실시간 자동 전투 · 언제든 일시정지</p></div>
    <div id="introPortrait"><span class="portrait" style="background-position:0% 0%" aria-hidden="true"></span></div>
   </section>
   <section id="creator" hidden>
@@ -2229,12 +2229,13 @@ function coopClient(){
   const x=Number(message.x),y=Number(message.y),zone=Number(message.zone);
   if(![x,y,zone].every(Number.isFinite)||Math.abs(x)>20000||Math.abs(y)>20000||!Number.isInteger(zone)||zone<0||zone>=ZONES.length)return;
   const classId=classIds.includes(message.classId)?message.classId:'fighter';
-  coop.peers.set(message.userId,{id:message.userId,name:'친구 모험가',classId,x,y,zone,dungeon:!!message.dungeon});
+  coop.peers.set(message.userId,{id:message.userId,name:'친구 모험가',classId,x,y,zone,dungeon:!!message.dungeon,dungeonKey:String(message.dungeonKey||'').slice(0,20)});
  });
  client.on('websocket_disconnected',()=>{coop.peers.clear();coopStatus('멀티 서버 재연결 중…')});
  return client;
 }
 document.getElementById('partyCoopOpen').onclick=()=>{const panel=document.getElementById('partyCoopPanel');panel.hidden=!panel.hidden;};
+document.getElementById('partyCoopStartOpen').onclick=()=>{document.getElementById('partyCoopPanel').hidden=false;};
 document.getElementById('partyCoopClose').onclick=()=>{document.getElementById('partyCoopPanel').hidden=true;};
 document.getElementById('partyCoopNumber').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9]/g,'').slice(0,1);});
 async function partyCoopRoom(mode){
@@ -2262,7 +2263,7 @@ document.getElementById('partyCoopLeave').onclick=async()=>{
 function sendPartyCoop(now){
  if(!coop.client?.isRoomConnected()||now-coop.lastSent<250)return;
  coop.lastSent=now;
- coop.client.sendEvent({action:'party-rpg-hero',x:p.x,y:p.y,zone:state.zone,dungeon:!!dungeon,classId:state.player.classId});
+ coop.client.sendEvent({action:'party-rpg-hero',x:p.x,y:p.y,zone:state.zone,dungeon:!!dungeon,dungeonKey:dungeon?dungeon.index+':'+dungeon.room:'',classId:state.player.classId});
 }
 function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,coopPlayers:[...coop.peers.values()],worldW,worldH,combat,environment:gameEnvironment(),cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site||(nearbyLandmark()?{x:nearbyLandmark().x,y:nearbyLandmark().y}:null),recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),paused:tacticalPaused||modalOpen,council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
