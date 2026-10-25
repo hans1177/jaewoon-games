@@ -164,10 +164,19 @@ RunService.PreSimulation:Connect(function(dt)
       local name=joint.Name
       local arm=name:find("Arm",1,true)~=nil
       local leg=name:find("Leg",1,true)~=nil
+      local visual=name:find("CozyVisualJoint",1,true)~=nil
       local side=name:find("LJoint",1,true)and 1 or name:find("RJoint",1,true)and -1 or joint.Part1.Position.X<actor.Position.X and 1 or -1
-      if arm or leg then
-       local angle=(arm and -side or side)*stride+(arm and attack or 0)+hit+death
-       joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,arm and side*attack*.22 or 0),math.clamp(step*16,0,1))
+      if arm or leg or visual then
+       local angle
+       local roll
+       if visual then
+        angle=stride*.08+attack*.18+hit*.12+death*.3
+        roll=stride*.025
+       else
+        angle=(arm and -side or side)*stride+(arm and attack or 0)+hit+death
+        roll=arm and side*attack*.22 or 0
+       end
+       joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,roll),math.clamp(step*16,0,1))
       end
      end
     end

@@ -100,11 +100,30 @@ local function stripAsset(root)
  end
  return root
 end
+-- 유틸: 원본 로딩은 ID마다 한 번만 실행하고 실패한 요청은 잠시 뒤 재시도한다.
+local loadingAssets={}
+local assetFailureUntil={}
 local function loadAsset(id)
- if assetCache[id]~=nil then return assetCache[id] or nil end
+ if assetCache[id] then return assetCache[id] end
+ if assetFailureUntil[id] and os.clock()<assetFailureUntil[id] then return nil end
+ while loadingAssets[id] do
+  task.wait(.06)
+  if assetCache[id] then return assetCache[id] end
+  if assetFailureUntil[id] and os.clock()<assetFailureUntil[id] then return nil end
+ end
+ loadingAssets[id]=true
  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
- if not ok or not result then assetCache[id]=false;return nil end
- stripAsset(result);result.Parent=nil;assetCache[id]=result;return result
+ if ok and result then
+  stripAsset(result)
+  result.Parent=nil
+  assetCache[id]=result
+  assetFailureUntil[id]=nil
+ else
+  assetFailureUntil[id]=os.clock()+30
+  warn("[포근섬][원본자산] 로딩 실패 assetId="..tostring(id))
+ end
+ loadingAssets[id]=nil
+ return assetCache[id]
 end
 local function assetProp(parent,assetId,keywords,pos,scale,seed)
  local asset=loadAsset(assetId);if not asset then return nil end
@@ -201,20 +220,31 @@ local function applyCC0Appearance(rootPart,assetId,maxHeight)
   group:PivotTo(group:GetPivot()+Vector3.new(0,floorY-bottomY+.04,0))
  end
  group.Parent=rootPart
- -- 원본 리깅 모터는 보존하고 루트만 월드 판정 파츠에 연결한다.
- local rigChildren={}
+ -- 메인: 원본 Motor6D/Weld 연결을 보존하고 독립적인 메시에만 게임용 관절을 연결한다.
+ local connected={}
  for _,joint in ipairs(group:GetDescendants())do
-  if joint:IsA("Motor6D")and joint.Part1 then rigChildren[joint.Part1]=true end
- end
- for _,piece in ipairs(pieces)do
-  piece.Anchored=false;piece.CanCollide=false;piece.CanTouch=false;piece.CanQuery=false;piece.Massless=true
-  if not rigChildren[piece] then
-   local weld=Instance.new("WeldConstraint");weld.Part0=rootPart;weld.Part1=piece;weld.Parent=piece
+  if (joint:IsA("JointInstance") or joint:IsA("WeldConstraint"))and joint.Part1 then
+   connected[joint.Part1]=true
   end
  end
- for _,child in ipairs(rootPart:GetChildren())do
-  if child~=group and child:IsA("BasePart")then child.Transparency=1 end
+ local roots=0
+ for _,piece in ipairs(pieces)do
+  piece.Anchored=false;piece.CanCollide=false;piece.CanTouch=false;piece.CanQuery=false
+  piece.Massless=true;piece.CastShadow=false
+  if not connected[piece] then
+   roots+=1
+   local joint=Instance.new("Motor6D")
+   joint.Name="CozyVisualJoint"..roots
+   joint.Part0=rootPart;joint.Part1=piece
+   joint.C0=rootPart.CFrame:ToObjectSpace(piece.CFrame)
+   joint.C1=CFrame.identity;joint.Parent=rootPart
+  end
  end
+ -- 원형/기본 도형은 원본이 준비되면 투명 처리만 하지 않고 완전히 제거한다.
+ for _,child in ipairs(rootPart:GetChildren())do
+  if child:IsA("BasePart")then child:Destroy()end
+ end
+ rootPart:SetAttribute("CozyOriginalVisualJoints",roots)
  rootPart:SetAttribute("CC0LicensedAssetId",assetId)
  rootPart:SetAttribute("CC0VisualReady",true)
  cc0VisualCount+=1
