@@ -13238,10 +13238,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-25T13:43:56.079Z",
+      "updatedAt": "2026-10-25T13:45:35.887Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -13320,12 +13320,12 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-restart-build-package-pending"
       ],
-      "robloxSourceCommit": "8d0b350236f5f870906d1190ed8c45b91ac4ce24",
-      "robloxSourceBootstrapPassedAt": "2026-10-25T13:29:27.679Z",
+      "robloxSourceCommit": "214a3aa521959ec836c2ebc465a7e4a688b50a8e",
+      "robloxSourceBootstrapPassedAt": "2026-10-25T13:45:35.887Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -13914,10 +13914,10 @@
       "robloxEvidenceInvalidatedBySourceChange": null,
       "robloxRuntimeRetryCount": 0,
       "robloxEvidenceInvalidatedByF0Restart": {
-        "sourceRevision": "1557bd2f5cb47f334b0957cf2f615c2e4783783d",
-        "previousSourceRevision": "9897609d4ddec17c97bf4ccbc6c1abb45338705f",
+        "sourceRevision": "214a3aa521959ec836c2ebc465a7e4a688b50a8e",
+        "previousSourceRevision": "8d0b350236f5f870906d1190ed8c45b91ac4ce24",
         "previousArtifactIdentity": null,
-        "restartedAt": "2026-10-25T12:24:24.493Z",
+        "restartedAt": "2026-10-25T13:45:35.887Z",
         "authority": "canonical-main-f0-restart"
       }
     },
@@ -56739,7 +56739,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T13:45:30.279Z",
+  "updatedAt": "2026-10-25T13:45:35.887Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
