@@ -5393,3 +5393,36 @@ test('active game missing individual creature roles reuses matching CC0 and sour
  });
  assert.equal(generic.missingRoleCount,0);
 });
+
+test('포근섬 primitive NPC/몹은 같은 역할의 CC0 원본 파생 교체를 자동 요청하고 PASS로 위장하지 않는다',()=>{
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ for(const [family,role,expected] of [['CREATURE','Pig','quaternius-cute:Pig'],['CHARACTER','Worker_Male','quaternius-characters:Worker_Male']]){
+  const placeholder={id:'cozy-placeholder-'+family,family,role,platform:'ROBLOX',status:'REPO_ASSET',
+    license:'CC0-1.0',consumerGameIds:['cozy-island'],primitiveOnly:true,
+    visualDebtSignals:['PRIMITIVE_ONLY']};
+  const result=buildAssetSupplyDecisionSummary({gameId:'cozy-island',target:'roblox',request:'replace '+role,
+    requirements:[{family,role}],repoRoot:root,registry:{assets:[placeholder],externalSources:[]}});
+  const row=result.nextActions.find(x=>x.reason==='CURRENT_GAME_PRIMITIVE_CC0_REPLACEMENT');
+  assert.ok(row,'real primitive must get an automatic CC0 source request: '+role);
+  assert.equal(row.action,'ACQUIRE_ADAPT');
+  assert.equal(row.externalAcquisition.downloaded,true);
+  assert.equal(row.externalAcquisition.sourceId,'cc0-actor-'+expected.replace(':','-'));
+  assert.equal(row.automaticReplacementAuthorized,true);
+  assert.equal(row.primitiveVisualDebt,true);
+  assert.equal(row.materialRefinement.mode,'STYLE_MATCHED_CC0_DERIVATIVE');
+  assert.ok(row.materialRefinement.allowedAxes.includes('SILHOUETTE_ADAPT'));
+  assert.ok(row.materialRefinement.allowedAxes.includes('RIG_PREPARATION'));
+  assert.equal(row.materialRefinement.originalImmutable,true);
+  assert.equal(row.assetization.runtimeVerified,false);
+  assert.equal(result.primitiveReplacementAutoRequested,1);
+  assert.equal(result.runtimeVerificationGranted,false);
+  assert.equal(result.cc0OriginalModifiedInPlace,false);
+ }
+ const missing=buildAssetSupplyDecisionSummary({gameId:'cozy-island',target:'roblox',
+   requirements:[{family:'CREATURE',role:'never_existing_fantasy_creature'}],
+   registry:{assets:[{id:'primitive-unknown',family:'CREATURE',role:'never_existing_fantasy_creature',
+     platform:'ROBLOX',license:'CC0',status:'REPO_ASSET',consumerGameIds:['cozy-island'],primitiveOnly:true}],externalSources:[]},repoRoot:root});
+ assert.ok(missing.nextActions.some(x=>x.reason==='PRIMITIVE_CC0_REPLACEMENT_SOURCE_NOT_VERIFIED'));
+ assert.equal(missing.unresolvedPrimitiveVisualDebt,true);
+ assert.equal(missing.productionVerificationGranted,false);
+});

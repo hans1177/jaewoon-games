@@ -154,3 +154,23 @@ test('downloaded CC0 converter selects full building assemblies and real button 
   assert.match(uploader, /common-registered-external-assets-v1\.json/);
   assert.match(uploader, /old\.approvedUniverseIds\?\.includes\('10770997776'\)/);
 });
+
+test('Vibe auto-acquisition requests only existing pinned CC0 originals through the canonical downloader',()=>{
+ const downloader=readFileSync(new URL('../tools/simple-rpg-priority-cc0-download.py',import.meta.url),'utf8');
+ const owner=readFileSync(new URL('../.github/workflows/owner-simple-rpg-direct-publish.yml',import.meta.url),'utf8');
+ const core=readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+ assert.match(downloader,/ONLY_PACK not in \{row\[1\] for row in PACKS\}/);
+ assert.match(downloader,/UNAPPROVED_CC0_TARGET_ONLY/);
+ assert.match(owner,/requested_priority_pack:/);
+ assert.match(owner,/VIBE_CC0_ONLY_PACK:.*inputs\.requested_priority_pack/);
+ assert.match(owner,/name: Propose verified priority CC0 downloads for permanent repository archive/);
+ assert.match(core,/Request missing manifest-pinned CC0 original through existing download flow/);
+ assert.match(core,/PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED/);
+ assert.match(core,/externalAcquisition/);
+ assert.match(core,/sourceHash/);
+ assert.match(core,/gh workflow run owner-simple-rpg-direct-publish\.yml/);
+ assert.match(core,/VIBE2_CC0_DOWNLOAD_REQUEST=DEDUPED_RECENT/);
+ assert.match(core,/VIBE2_CC0_DOWNLOAD_REQUEST=PENDING_REVIEW/);
+ assert.match(core,/VIBE2_CC0_DOWNLOAD_REQUEST=REQUESTED_SOURCE_ONLY/);
+ assert.doesNotMatch(core,/curl.*-o .*vibe2.*asset/);
+});

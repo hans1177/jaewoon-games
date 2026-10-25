@@ -254,7 +254,9 @@ PACKS = [
 # 좁은 범위만 다운로드: 명시적으로 검증한 CC0 개미만 선택한다.
 # 기존 56종 원본과 매니페스트를 다시 다운로드하거나 덮어쓰지 않는다.
 ONLY_PACK = os.environ.get("VIBE_CC0_ONLY_PACK", "").strip()
-if ONLY_PACK not in ("", "ant-rigged.blend"):
+# [선택한 원본만 요청] 기존 PACKS에 출처/원본명/라이선스 증거가 선언된 항목만 허용한다.
+# 업스트림 URL이나 파일명은 외부 요청에서 직접 지정하지 않는다.
+if ONLY_PACK and ONLY_PACK not in {row[1] for row in PACKS}:
     raise SystemExit("UNAPPROVED_CC0_TARGET_ONLY:" + ONLY_PACK)
 prior_manifest_file = DEST / "manifest.json"
 prior_manifest = json.loads(prior_manifest_file.read_text("utf-8")) if ONLY_PACK and prior_manifest_file.exists() else {}

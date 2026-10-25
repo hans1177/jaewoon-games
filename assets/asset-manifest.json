@@ -1,7 +1,11 @@
 {
   "version": 4,
   "policy": {
-    "licensePriority": ["CC0", "CC0-1.0", "CC0 1.0 Universal"],
+    "licensePriority": [
+      "CC0",
+      "CC0-1.0",
+      "CC0 1.0 Universal"
+    ],
     "cc0Only": true,
     "licenseScope": "GAME_CONTENT_ASSETS_NOT_ENGINE_OR_SOFTWARE_CODE",
     "blocked": [
@@ -2529,5 +2533,45 @@
         "gameApplied": false
       }
     ]
+  },
+  "robloxOriginalAssetLibrary": {
+    "version": 1,
+    "sourceOfTruth": "assets/roblox/actors/manifest.json#sourceLibraryIndex",
+    "originalActor3dSources": 86,
+    "actorArchivesNotExpanded": 12,
+    "sharedDownloadedOriginalArchives": 111,
+    "sharedArchiveSource": "assets/asset-manifest.json#sharedOriginalArchives",
+    "archiveCategoryCounts": {
+      "png": 2,
+      "model": 1,
+      "monster": 5,
+      "01-insects": 1,
+      "02-wildlife-prehistoric": 3,
+      "03-equipment": 10,
+      "04-npc-buildings": 10,
+      "05-environment-sfx": 12,
+      "06-arthropods": 1,
+      "07-wildlife": 3,
+      "08-npc": 5,
+      "09-buildings": 3,
+      "10-npc-expanded": 3,
+      "11-unique-bosses": 1,
+      "12-dungeon-interiors": 4,
+      "wildlife": 15,
+      "aquatic": 2,
+      "insect": 5,
+      "prehistoric": 8,
+      "invertebrate": 1,
+      "item-icons": 3,
+      "special-icons": 6,
+      "vfx": 2,
+      "characters-npc": 5
+    },
+    "originalsRemainImmutable": true,
+    "licenseEligibility": "PACK_SOURCE_CC0_CLAIM_VERIFIED_WITH_OFFICIAL_SOURCE_LISTINGS_FOR_QUATERNIUS_AND_KENNEY; EACH_NEW_PACK_REQUIRES_LICENSE_PROOF",
+    "inGameUse": "ONLY_AFTER_SPECIFIC_ROBLOX_IMPORT_PERMISSION_STYLE_AND_RUNTIME_QA",
+    "runtimeVerified": false,
+    "unverifiedArchiveImportForbidden": true,
+    "canonicalVibeAssetSelectionMustNotTreatSourceOnlyAsPublishedAsset": true
   }
 }

@@ -1297,6 +1297,11 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   // 기존 원장만 조회한다. 소스 선정은 후보 계획이며 다운/변형/등록은 기존 ASSET_DEVELOPMENT에서 한다.
   const externalSources=Array.isArray(registry?.externalSources)?registry.externalSources:[];
   const platform=clean(target).toUpperCase();
+  // [공용 CC0 원본] 기존 배우 원본 인덱스를 직접 재사용한다. 원본/다운로드 파일의 존재와 SHA가 일치하지 않으면 공급 후보에서 제외한다.
+  const actorIndex=platform==='ROBLOX'
+    ?readJson(path.join(repoRoot,'assets/roblox/actors/manifest.json'),{}).sourceLibraryIndex?.source3dAssets||[]
+    :[];
+  const indexedCc0Originals=Array.isArray(actorIndex)?actorIndex:[];
   const spatialFamilies=new Set(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
   const publicHttps=value=>{
     try{
@@ -1312,6 +1317,36 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     // 음악·효과음·UI·이미지·VFX도 3D와 동일한 검증 원본 취득 대상이다.
     // ZIP/BLEND 원본 확보는 게임 적용이나 네이티브 QA PASS를 뜻하지 않는다.
     const seenSourceHashes=new Set();
+    // [자동 요청] 캐릭터/NPC/몹은 동일 종·역할명만 연결한다. CC0 파생은 게임별 스타일에 맞춰 별도 제작하며 원본은 보호한다.
+    if(platform==='ROBLOX'&&['CHARACTER','CREATURE','PROP'].includes(family)){
+      const normalizedRoles=unique(roles).map(value=>value.toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_')).filter(Boolean);
+      for(const row of indexedCc0Originals){
+        if(row?.category!==family||row?.license!=='CC0-1.0'||row?.sourceState!=='LOCAL_ORIGINAL_PRESENT'||row?.gameApplied!==false)continue;
+        const relative=clean(row.sourcePath).replaceAll('\\','/'),sha=clean(row.sourceSha256).toLowerCase();
+        if(!/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.(?:fbx|glb)$/i.test(relative)||relative.split('/').includes('..')
+          ||!/^[a-f0-9]{64}$/.test(sha)||!publicHttps(row.licenseEvidenceUrl))continue;
+        const label=clean(row.displayName).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_');
+        const known=unique([label,...(row.roles||[]).map(role=>clean(role).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_'))]);
+        const matchedRoles=normalizedRoles.filter(role=>role==='generic'||known.includes(role));
+        if(normalizedRoles.length&&!matchedRoles.length)continue;
+        try{
+          const real=path.resolve(repoRoot,relative),info=fs.lstatSync(real);
+          if(!real.startsWith(path.resolve(repoRoot)+path.sep)||!info.isFile()||info.isSymbolicLink()||info.size<=256||info.size>95*1024*1024)continue;
+          if(crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex')!==sha)continue;
+        }catch{continue;}
+        if(seenSourceHashes.has(sha))continue;
+        seenSourceHashes.add(sha);
+        candidates.push(freeze({
+          sourceId:'cc0-actor-'+clean(row.id).replace(/[^a-zA-Z0-9_-]+/g,'-'),sourceName:clean(row.displayName),
+          family,license:'CC0-1.0',sourceUrl:clean(row.licenseEvidenceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
+          downloadUrl:null,sourcePath:relative,sourceHash:sha,archiveBytes:null,downloaded:true,
+          acquisitionState:'ACQUIRED_ORIGINAL_FILES',matchedRoles:freezeList(matchedRoles),
+          roleCompatibilityRequiresSourceInspection:true,categoryMatchVerified:true,runtimeVerified:false,
+          originalImmutable:true,sourceNativeImportRequired:true,rawRedistributionAllowed:false,
+          roleScore:200+matchedRoles.length*15,spatial3dSourceRequired:true
+        }));
+      }
+    }
     for(const row of Array.isArray(sharedOriginalArchives)?sharedOriginalArchives:[]){
       const relative=clean(row?.sourcePath).replaceAll('\\','/');
       const declaredHash=clean(row?.sha256).toLowerCase();
@@ -1448,6 +1483,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     return evidence;
   };
   const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map(),currentRolesByFamily=new Map(),unclassifiedNativeByFamily=new Map();
+  const primitiveFallbackByFamily=new Map();
   let intendedOnlyCount=0;
   // [다운로드 원본 우선] 역할·권리·플랫폼 필터를 통과한 확보 원본을 우선한다.
   // 출처 URL과 해시 외에 실제 파일이 없는 카탈로그 메타데이터는 우선하지 않는다.
@@ -1496,6 +1532,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const roleFit=roleEvidence(asset);
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const current=currentConsumerIds.includes(id);
+    // [원형 시각 결손] 기존 원형/캡슐 NPC·몹은 3D 원본 파일이 아직 없으므로
+    // 일반 재사용 자격을 통과할 수 없다. 재사용 허가 없이 교체 수요로만 추적한다.
+    if(current&&spatialFamilies.has(family)&&internalAssetHardBlockReason(asset)==='ROUND_PRIMITIVE_VISUAL_FORBIDDEN'
+      &&asset?.securityBlocked!==true&&asset?.quarantined!==true
+      &&asset?.practiceOnly!==true&&asset?.practiceArtifact!==true
+      &&!/(?:NC|UNKNOWN|FORBIDDEN|QUARANTIN)/i.test(clean(asset?.license))){
+      const rows=primitiveFallbackByFamily.get(family)||[];
+      rows.push(asset);primitiveFallbackByFamily.set(family,rows);
+      currentFamilyCounts.set(family,(currentFamilyCounts.get(family)||0)+1);
+      if(!currentPrimaryByFamily.has(family))currentPrimaryByFamily.set(family,asset);
+      continue;
+    }
     if(current&&assetSupplyCandidateAllowed(asset,target)){
       currentAssets.push(asset);
       currentAssetIds.add(assetId);
@@ -1637,7 +1685,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           replacesCandidateAssetId:clean(previousAssetId)||null,
           gameSourceComparisonRequired:true,
           downloadedOriginalPreferred:true,
-          automaticReplacementAuthorized:false,
+          automaticReplacementAuthorized:reason==='CURRENT_GAME_PRIMITIVE_CC0_REPLACEMENT'&&selected.matchedRoles.length>0,
+          primitiveVisualDebt:reason==='CURRENT_GAME_PRIMITIVE_CC0_REPLACEMENT',
           replacementRequiresMeasuredSourceRoleIdentityQualityAndRuntimePass:true,
           roleEvidence:freeze({requestedRoles:freezeList(roles),matchedRoles:selected.matchedRoles,
             verifiedRoleMatch:false,requiresActualSourceInspection:true}),
@@ -1654,14 +1703,15 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
             staticMeshQaRequired:spatialFamilies.has(family),nativePlatformConversionRequired:true
           }),
           materialRefinement:freeze({
-            mode:pbrApplicable?'SUBTLE_CONTEXT_PBR_REAUTHOR':'NATIVE_FAMILY_ADAPT_NO_PBR',
+            mode:pbrApplicable?'STYLE_MATCHED_CC0_DERIVATIVE':'NATIVE_FAMILY_ADAPT_NO_PBR',
             sourceMaterialModificationPerformed:false,
-            allowedAxes:freezeList(pbrApplicable?['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']:[]),
+            allowedAxes:freezeList(pbrApplicable?['SILHOUETTE_ADAPT','PART_RECOMPOSITION','PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR','RIG_PREPARATION','MOBILE_LOD']:[]),
             availableSemanticAtoms:freezeList(pbrApplicable?(registry?.baseMaterialLibrary?.families?.MATERIAL||[]):[]),
             paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
             derivedAssetPathRequired:true,derivedParentSourceId:selected.sourceId,
             sourceAndDerivativeSha256Required:true,
-            geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true,
+            originalImmutable:true,derivativeOutputRequired:true,
+            gameplayHitboxBalanceSaveAndNetworkPreserved:true,mobileTextureMeshBudgetRequired:true,
             modelMetadataIsNotProducedFile:true
           }),
           assetization:freeze({
@@ -1726,6 +1776,21 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
     }
     if(usedCount){
+      // [전 공용 라이브러리 원형/구/큐브 제거] 모델 출처·역할·권리 검증 전에는 원형을 최종 외형으로 인정하지 않는다.
+      // 실제 같은 역할의 CC0 원본이 있으면 기존 ACQUIRE_ADAPT로 연결한다. 없는 경우 게임은 보존하고 시각 결손으로 남긴다.
+      const primitiveRows=primitiveFallbackByFamily.get(family)||[];
+      if(primitiveRows.length){
+        const current=primitiveRows[0];
+        const primitiveRoles=unique([...(requestedRolesByFamily.get(family)||[]),current.role,current.subfamily,current.speciesId])
+          .map(value=>value.toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_')).filter(v=>v&&v!=='generic'&&v!==family.toLowerCase());
+        const primitivePlanned=planOriginalAcquisition(family,primitiveRoles,'CURRENT_GAME_PRIMITIVE_CC0_REPLACEMENT',current.id);
+        if(!primitivePlanned)pushAction({
+          action:'HOLD',assetId:clean(current.id),family,
+          reason:'PRIMITIVE_CC0_REPLACEMENT_SOURCE_NOT_VERIFIED',
+          primitiveVisualDebt:true,gameplayAndSavePreserved:true,runtimeVerificationGranted:false
+        });
+        continue;
+      }
       // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
       // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
       // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
@@ -1787,7 +1852,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const asset=bestReusableByFamily.get(family);
     // 포괄적 family 힌트만으로 멀쩡한 공용 소스를 버리거나 무작정 원본을 다운로드하지 않는다.
     // 정확한 역할 수요가 있으면 다운로드 원본을 우선 제작 후보로 배정하되 내부 후보도 남긴다.
-    const originalRequested=(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
+    // 이름·역할·원본 모델/해시가 이미 확인된 재사용 후보가 있으면 동일 원본을
+    // 다시 수급하도록 요청하지 않는다. 기존 Native import/런타임 QA는 그대로 필요하다.
+    const existingNativeMatch=Boolean(asset
+      &&roleEvidenceById.get(clean(asset.id))?.matchedRoles?.length
+      &&/\.(?:glb|gltf|fbx|obj)$/i.test(clean(asset.masterGlb||asset.path))
+      &&/^[a-f0-9]{64}$/i.test(clean(asset.masterGlbHash||asset.sourceSha256||asset.sourceHash)));
+    const originalRequested=!existingNativeMatch&&(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
       family,sourceRoles,asset?'REUSABLE_LIBRARY_VS_DOWNLOADED_ORIGINAL':'ORIGINAL_SOURCE_FIRST_ON_DEMAND',
       asset?.id||''
     );
@@ -1837,6 +1908,9 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
     selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
+    unresolvedPrimitiveVisualDebt:actions.some(row=>row.primitiveVisualDebt===true||row.reason==='PRIMITIVE_CC0_REPLACEMENT_SOURCE_NOT_VERIFIED'),
+    primitiveReplacementAutoRequested:actions.filter(row=>row.reason==='CURRENT_GAME_PRIMITIVE_CC0_REPLACEMENT').length,
+    cc0OriginalModifiedInPlace:false,
     externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
@@ -3787,6 +3861,24 @@ function internalAssetHardBlockReason(asset={}){
   if(!/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license))return'CC0_ORIGINAL_LICENSE_REQUIRED';
   const family=clean(asset?.family||asset?.category).toUpperCase();
   if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
+    // [전체 공용 3D 라이브러리] 둥근 기본 Part를 메시 자산으로 위장한 등록은 즉시 차단한다.
+    // 콜라이더와 플레이 규칙을 임의 삭제하지 않고 기존 제작 책임에서 실제 파생 메시로 교체해야 한다.
+    const primitiveSignals=[asset?.visualState,asset?.renderMode,asset?.geometryType,
+      asset?.geometryKind,asset?.presentationState,asset?.shape,asset?.partShape,
+      ...(Array.isArray(asset?.visualDebtSignals)?asset.visualDebtSignals:[])];
+    const primitiveLabels=new Set(['PRIMITIVE_ONLY','PRIMITIVE_FALLBACK','GEOMETRIC_PLACEHOLDER','PLACEHOLDER',
+      'SPHERE','BALL','ROUND','CUBE','BLOCK','CYLINDER','CAPSULE','SINGLE_PART_MANNEQUIN']);
+    const partRows=[...(Array.isArray(asset?.visualParts)?asset.visualParts:[]),
+      ...(Array.isArray(asset?.appearanceParts)?asset.appearanceParts:[])];
+    const primitivePart=partRows.some(row=>{
+      if(row?.visible===false||row?.transparency===1)return false;
+      const shape=clean(row?.shape||row?.partType||row?.primitiveShape).toUpperCase().split('.').pop();
+      return ['BALL','SPHERE','ROUND','CYLINDER','CAPSULE','BLOCK','CUBE'].includes(shape)
+        &&row?.isMeshPart!==true&&row?.meshSourceVerified!==true;
+    });
+    if(asset?.primitiveOnly===true||asset?.isPrimitiveFallback===true||asset?.placeholder===true
+      ||primitivePart||primitiveSignals.some(v=>primitiveLabels.has(clean(v).toUpperCase())))
+      return'ROUND_PRIMITIVE_VISUAL_FORBIDDEN';
     const models=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
       ...(asset?.nativeArtifacts||[]),...(asset?.sourceFiles||[]),...(asset?.fileRoles?.models||[])];
     if(!models.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file))))
@@ -6719,7 +6811,7 @@ export function assetProductionGuidance(plan={}){
         externalAcquisition:row.externalAcquisition,
         materialRefinement:row.materialRefinement,assetization:row.assetization
       })+
-      '. 현재 게임의 실제 결손만 회사 원장에 등록된 출처에서 보충한다. 원본 소스 페이지가 실제 다운로드 링크가 아니면 공식 다운로드 링크 확인 전에는 취득 성공을 주장하지 않는다. 다운 전 최신 라이선스·상업 이용/수정/재배포 조건·출처와 해시를 확인한다. 불분명하거나 NC/ND 또는 스크립트/실행파일 포함 위험 자산은 차단한다. 캐릭터·생물·건물·환경·무기·소품은 실제 3D 메시와 재질이 있는 파일만 받고 정적 구조와 모바일 예산을 검사한다. 기존 원본은 불변으로 보관하고 3D 공간 자산에 한해 기존 ASSET_DEVELOPMENT의 assets/native-authoring/build-game-visual.py를 재사용한다. 다운로드한 로컬 3D 파일은 task.assetAuthoring.sourceModel, 권리는 sourceLicense, 필요 시 출처 표기는 sourceCredit으로 기존 Blender 제작 레시피에 입력한다. 해당 원본은 불변으로 보관하고 실제 PBR 색상·거칠기·금속성·사용감만 현재 게임 Style Lock에 맞춰 소폭 바꾼 별도 파생 모델을 생성한다. 오디오·UI·일반 텍스처 등 비공간 자산은 블렌더 모델로 위장하지 말고 기존 해당 family 원본 처리·네이티브 변형 책임에서 처리한다. 원본·파생 SHA256, 출처·라이선스 증거, 부모 sourceId, 변경 이력, 네이티브 산출물을 확인한 후 기존 GRAPHICS_PRODUCTION의 원장 동기화 책임에서만 company-asset-library.json에 PREPARED 후보로 등록한다. 개별 게임 소스 워커는 중앙 자산 원장을 직접 수정하지 않는다. 다운로드 또는 실제 3D 파생 파일이 없다면 자산을 등록하거나 생성 성공으로 표시하지 않는다. 파일이 생겼더라도 기존 실제 게임 담당 C#/Luau 렌더러와 프리팹에 연결하고 독립 모바일·런타임·회귀 검증 전에는 productionVerified나 품질 PASS로 승격하지 않는다. 역할 호환이 안 되면 다른 검증 후보를 검토한 후에만 신규 제작으로 진행한다. 게임 판정·밸런스·저장·네트워크 권한을 변경하지 않고 새 파이프라인/큐/래퍼 없이 기존 Vibe 제작 경로를 그대로 사용한다.'),
+      '. 원형·구·큐브·캡슐로 된 임시 캐릭터/NPC/몬스터는 동일 역할과 종의 출처 검증 CC0 실물 원본으로 자동 교체 요청한다. 이용자는 원본 CC0를 실루엣/재질/파츠/리그/LOD로 수정한 별도 파생 모델을 사용할 수 있지만 기존 원본은 덮어쓰지 않는다. 수급 계획만으로 실제 게임 반영을 주장하지 않는다. 현재 게임의 실제 결손만 회사 원장에 등록된 출처에서 보충한다. 원본 소스 페이지가 실제 다운로드 링크가 아니면 공식 다운로드 링크 확인 전에는 취득 성공을 주장하지 않는다. 다운 전 최신 라이선스·상업 이용/수정/재배포 조건·출처와 해시를 확인한다. 불분명하거나 NC/ND 또는 스크립트/실행파일 포함 위험 자산은 차단한다. 캐릭터·생물·건물·환경·무기·소품은 실제 3D 메시와 재질이 있는 파일만 받고 정적 구조와 모바일 예산을 검사한다. 기존 원본은 불변으로 보관하고 3D 공간 자산에 한해 기존 ASSET_DEVELOPMENT의 assets/native-authoring/build-game-visual.py를 재사용한다. 다운로드한 로컬 3D 파일은 task.assetAuthoring.sourceModel, 권리는 sourceLicense, 필요 시 출처 표기는 sourceCredit으로 기존 Blender 제작 레시피에 입력한다. 해당 원본은 불변으로 보관하고 실제 PBR 색상·거칠기·금속성·사용감만 현재 게임 Style Lock에 맞춰 소폭 바꾼 별도 파생 모델을 생성한다. 오디오·UI·일반 텍스처 등 비공간 자산은 블렌더 모델로 위장하지 말고 기존 해당 family 원본 처리·네이티브 변형 책임에서 처리한다. 원본·파생 SHA256, 출처·라이선스 증거, 부모 sourceId, 변경 이력, 네이티브 산출물을 확인한 후 기존 GRAPHICS_PRODUCTION의 원장 동기화 책임에서만 company-asset-library.json에 PREPARED 후보로 등록한다. 개별 게임 소스 워커는 중앙 자산 원장을 직접 수정하지 않는다. 다운로드 또는 실제 3D 파생 파일이 없다면 자산을 등록하거나 생성 성공으로 표시하지 않는다. 파일이 생겼더라도 기존 실제 게임 담당 C#/Luau 렌더러와 프리팹에 연결하고 독립 모바일·런타임·회귀 검증 전에는 productionVerified나 품질 PASS로 승격하지 않는다. 역할 호환이 안 되면 다른 검증 후보를 검토한 후에만 신규 제작으로 진행한다. 게임 판정·밸런스·저장·네트워크 권한을 변경하지 않고 새 파이프라인/큐/래퍼 없이 기존 Vibe 제작 경로를 그대로 사용한다.'),
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',

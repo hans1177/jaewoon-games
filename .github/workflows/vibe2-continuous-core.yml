@@ -1700,6 +1700,54 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
+      - name: Request missing manifest-pinned CC0 original through existing download flow
+        if: steps.order.outputs.run == 'true' && env.VIBE2_EXECUTION_LANE == 'asset-development'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # [자동 요청] 새 다운로드 워커나 큐 없이 이미 존재하는 CC0 검증 워크플로에 1개씩 요청한다.
+          # 임의 URL/파일명은 전달하지 않는다. 메타데이터만으로 원본이나 게임 PASS를 주장하지 않는다.
+          pack="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const actions=order?.assetProduction?.assetSupplySummary?.nextActions||[];
+          for(const row of actions){
+            const ac=row?.externalAcquisition;
+            if(row?.action!=='ACQUIRE_ADAPT'||ac?.acquisitionState!=='PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED')continue;
+            if(ac.downloaded!==false||!/^[a-f0-9]{64}$/.test(String(ac.sourceHash||'')))continue;
+            const path=String(ac.localSourcePath||'');
+            if(!/^assets\/external\/simple-rpg\/priority-v1\/[a-zA-Z0-9._-]+$/.test(path))continue;
+            console.log(path.split('/').pop());
+            break;
+          }
+          NODE
+          )"
+          if [ -z "$pack" ]; then
+            echo 'VIBE2_CC0_DOWNLOAD_REQUEST=NO_CURRENT_PINNED_GAP'
+            exit 0
+          fi
+          if ! gh workflow view owner-simple-rpg-direct-publish.yml --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'VIBE2_CC0_DOWNLOAD_REQUEST=SOURCE_WORKFLOW_UNAVAILABLE'
+            exit 1
+          fi
+          export CC0_PACK="$pack"
+          if gh run list --repo "$GITHUB_REPOSITORY" --workflow owner-simple-rpg-direct-publish.yml --limit 60 --json displayTitle,createdAt \
+             | node -e "let s='';process.stdin.on('data',x=>s+=x).on('end',()=>{const now=Date.now(),p=process.env.CC0_PACK;const ok=JSON.parse(s).some(x=>String(x.displayTitle||'')==='CC0 source · '+p&&now-Date.parse(x.createdAt)<86400000);process.exit(ok?0:1);})"; then
+            echo "VIBE2_CC0_DOWNLOAD_REQUEST=DEDUPED_RECENT:$pack"
+            exit 0
+          fi
+          if gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json title \
+             | node -e "let s='';process.stdin.on('data',x=>s+=x).on('end',()=>process.exit(JSON.parse(s).some(x=>String(x.title||'').includes('review verified CC0 priority originals'))?0:1))"; then
+            echo "VIBE2_CC0_DOWNLOAD_REQUEST=PENDING_REVIEW:$pack"
+            exit 0
+          fi
+          gh workflow run owner-simple-rpg-direct-publish.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f download_priority_cc0_assets=true -f "requested_priority_pack=$pack"
+          echo "VIBE2_CC0_DOWNLOAD_REQUEST=REQUESTED_SOURCE_ONLY:$pack"
+
       - name: Hand non-ABCD design request to canonical Game Designer
         if: steps.order.outputs.reason == 'DESIGNER_HANDOFF_REQUIRED' && matrix.variant == 'primary'
         env:

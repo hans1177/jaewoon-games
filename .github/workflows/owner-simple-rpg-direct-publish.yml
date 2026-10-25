@@ -5,7 +5,7 @@
 # Retry one original CC0 animated humanoid archive with the upstream _0 filename verified on OGA.
 # 오너 직접배포: 기존 Roblox 전용 Place 120884036900477 재사용. 게임별 오너 지시 실행.
 name: Owner 대충알피지 Direct Publish
-run-name: Owner 대충알피지 publish · ${{ github.sha }}
+run-name: ${{ github.event_name == 'workflow_dispatch' && inputs.requested_priority_pack != '' && format('CC0 source · {0}', inputs.requested_priority_pack) || format('Owner 대충알피지 publish · {0}', github.sha) }}
 
 on:
   push:
@@ -46,6 +46,11 @@ on:
         type: boolean
         required: false
         default: false
+      requested_priority_pack:
+        description: '기존 우선순위 원본 중 정확한 파일명 하나만 요청 (CC0 화이트리스트 적용)'
+        type: string
+        required: false
+        default: ''
       upload_actor_assets:
         description: '검증된 캐릭터·스켈레톤 CC0 GLB 9개만 등록 (범용 대체 모델 제외)'
         type: boolean
@@ -422,7 +427,7 @@ jobs:
       - name: Download priority assets in requested order
         shell: bash
         env:
-          VIBE_CC0_ONLY_PACK: ${{ contains(github.event.head_commit.message, '[priority-cc0-ant-download]') && 'ant-rigged.blend' || '' }}
+          VIBE_CC0_ONLY_PACK: ${{ github.event_name == 'workflow_dispatch' && inputs.requested_priority_pack != '' && inputs.requested_priority_pack || (contains(github.event.head_commit.message, '[priority-cc0-ant-download]') && 'ant-rigged.blend' || '') }}
         run: |
           set -euo pipefail
           python3 tools/simple-rpg-priority-cc0-download.py
@@ -448,7 +453,8 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs priority
   upload_actor_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
+    # 출처 목록(manifest.json)만 변경된 경우 외부 업로드가 자동 발동하지 않도록 실제 이진 원본/파생 경로만 감지한다.
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/native/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/native/') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/sources/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/sources/'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
