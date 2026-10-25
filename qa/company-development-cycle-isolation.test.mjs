@@ -14,10 +14,11 @@ test('central policy keeps v496 per-game failure isolation in current revisions'
   assert.equal(isolation.failedGameMayNotCancelSiblingGames,true);
   assert.equal(isolation.parentCycleMustReopenAfterAllPerGameOutcomes,true);
   assert.equal(isolation.globalCycleStopOnSingleGameFailureForbidden,true);
-  assert.deepEqual(isolation.ownerExcludedGameIds,['horror-escape-room']);
+  assert.ok(Array.isArray(isolation.ownerExcludedGameIds));
+  assert.equal(isolation.ownerExcludedGameIds.includes('horror-escape-room'),false);
 });
 
-test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps midnight excluded',()=>{
+test('DEVELOPMENT_CONFIRMED workflow keeps explicit exclusions and permits resumed Midnight Escape',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   assert.match(workflow,/const ownerExcludedGameIds=new Set\(roadmap\?\.developmentSpeedExecution\?\.perGameFailureIsolation\?\.ownerExcludedGameIds\|\|\[\]\)/);
   assert.match(workflow,/!ownerExcludedGameIds\.has\(item\.gameId\)/);
@@ -35,6 +36,30 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO/);
 });
 
+
+test('the actual native planner admits resumed Midnight Escape and still honors explicit exclusions',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const start=workflow.indexOf('          const q=JSON.parse');
+  const end=workflow.indexOf('\n          NODE',start);
+  const code=workflow.slice(start,end);
+  const run=roadmap=>{
+    let output='';
+    const item={gameId:'horror-escape-room',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'};
+    const fsMock={
+      readFileSync:file=>JSON.stringify(file==='/tmp/development-queue.json'?{items:[item]}:
+        file==='company-learning/platform-release-roadmap.json'?roadmap:{workflow_runs:[]}),
+      appendFileSync:(_file,text)=>output+=text
+    };
+    vm.runInNewContext(code,{fs:fsMock,process:{cwd:()=>'.',env:{REQUESTED_GAME_ID:'horror-escape-room',CURRENT_CONTROL_SHA:'a'.repeat(40),GITHUB_OUTPUT:'test'}},
+      platformDevelopmentEligible:()=>true,classifyUpperPlatformAdmission:()=>({state:'UPPER_PLATFORM'}),console:{log:()=>{}}});
+    return output;
+  };
+  assert.match(run(policy),/roblox_json=\["horror-escape-room"\]/);
+  const held=structuredClone(policy);
+  held.developmentSpeedExecution.perGameFailureIsolation.ownerExcludedGameIds.push('horror-escape-room');
+  assert.match(run(held),/roblox_json=\[\]/);
+});
 
 test('director is independent from native game scheduler',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
@@ -72,11 +97,11 @@ test('Roblox active source-plan owners suppress duplicate game dispatch across m
     fs:{readFileSync:()=>JSON.stringify({workflow_runs:cases})},
     console:{log:()=>{}}
   };
-  const ids=vm.runInNewContext(scan+"\n[...activeIds('fixture','Roblox runtime · ','current')].sort()",context);
+  const ids=vm.runInNewContext(scan+"\n[...activeIds('fixture','Roblox runtime · ','current')].sort()",{...context});
   assert.deepEqual(Array.from(ids),[
     'bug-defense','fantasy-survival','seed-puzzle-chromatic-cascade','survival'
   ]);
-  const unscoped=vm.runInNewContext(scan+"\n[...activeIds('fixture','Roblox runtime · ')].sort()",context);
+  const unscoped=vm.runInNewContext(scan+"\n[...activeIds('fixture','Roblox runtime · ')].sort()",{...context});
   assert.deepEqual(Array.from(unscoped),[
     'bug-defense','fantasy-survival','seed-puzzle-chromatic-cascade','survival','survival2'
   ]);
@@ -148,23 +173,21 @@ test('source-plan dedupe favors a waiting owner instead of indefinitely cancelli
   assert.match(development,/cancel-in-progress: false/);
 });
 
-test('owner Web edit wakes only affected Roblox game ids, not unrelated global batch',()=>{
+test('owner Web edits preserve independent native floor cycles without dispatching unrelated games',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-owner-web-edit-propagation.yml','utf8');
-  assert.ok(workflow.includes('policy.permanentProjectRemoval?.ids'));
-  assert.ok(workflow.includes('entry.platformTargets.includes(\'ROBLOX\')'));
-  assert.ok(workflow.includes('!removed.has(id)'));
-  assert.ok(workflow.includes('for game_id in "${roblox_game_ids[@]}"'));
-  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"'));
-  assert.ok(!workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main\n'));
+  assert.match(workflow,/WEB_EDIT_ROBLOX_DISPATCH=DENIED/);
+  assert.match(workflow,/WEB_EDIT_UNITY_DISPATCH=DENIED/);
+  assert.doesNotMatch(workflow,/gh workflow run|development-queue\.json/);
 });
 
-test('owner web intent uses the immutable main policy after runtime branch checkout',()=>{
+test('owner Web audit observes exact source changes without mutating native policy or runtime state',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-owner-web-edit-propagation.yml','utf8');
-  const save=workflow.indexOf('cp company-learning/platform-release-roadmap.json /tmp/owner-web-edit-main-policy.json');
-  const branch=workflow.indexOf('git checkout -B owner-web-edit-runtime');
-  const read=workflow.indexOf("fs.readFileSync('/tmp/owner-web-edit-main-policy.json','utf8')");
-  assert.ok(save>=0&&branch>save&&read>branch);
+  assert.match(workflow,/contents: read/);
+  assert.match(workflow,/WEB_CHANGED_CONTENT_SHA256_BEGIN/);
+  assert.match(workflow,/WEB_EDIT_NATIVE_QUEUE_MUTATION=DENIED/);
+  assert.doesNotMatch(workflow,/contents: write|actions: write|git push|git checkout -B owner-web-edit-runtime/);
 });
+
 
 
 test('superseded exact-game Roblox plan reuses a live current-main run without touching other games or completed evidence',()=>{

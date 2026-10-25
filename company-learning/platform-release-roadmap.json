@@ -1,5 +1,5 @@
 {
-  "version": 594,
+  "version": 595,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-25",
@@ -1349,9 +1349,7 @@
       "successfulGamesContinueWithoutWaitingForFailedGameRepair": true,
       "globalCycleStopOnSingleGameFailureForbidden": true,
       "cronRoleRemainsWatchdogOnly": true,
-      "ownerExcludedGameIds": [
-        "horror-escape-room"
-      ]
+      "ownerExcludedGameIds": []
     },
     "controlPlaneQueueBacklogMitigation": {
       "version": 3,
