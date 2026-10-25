@@ -9685,9 +9685,9 @@
       "seedId": "OWNER-DESIGN-COZY-ISLAND",
       "gameId": "cozy-island",
       "gameName": "포근섬",
-      "designInputMode": "OWNER_BRIEF_AND_ORIGINAL_ONLY",
+      "designInputMode": "DESIGNER_SELF_SEED",
       "designTopicMode": "VIBE_FREE_TOPIC",
-      "OWNER_LATEST_DESIGN_REQUEST": "오너 요청 2026-10-12: 포근섬의 기존 기본설계를 새 표준으로 교체한다. 공식 원본 company-learning/platform-release-roadmap.json의 ownerBasicDesignMethod와 company-learning/game-design-grammar.md 분류표를 사용한다. MAIN = A + B + C + D + @. A는 대표 게임 장르의 중심 시스템과 소재 대분류, B는 보조 세부 게임 장르 시스템과 소재 중분류이며 A 중심·B 보조다. C는 게임 장르가 아니라 소설·영화식 주 장르와 보조 장르다. D는 C 두 장르와 소분류 소재의 정확한 분류 경로로 세계·존재·사건·규칙을 창작한다. @는 D를 바탕으로 단서→실험→발견→새 선택→다음 의문을 최소 4개부터 상한 없이 확장한다. MAIN은 마지막에 모든 요소의 결과로 도출한다. 별도 시드표 작성과 옛 MAIN×A×B×C 문법을 요구하지 않는다. 표준 분류표는 열린 초기 기준으로 사용하며 고정 후보 99개의 문장 조합으로 새 문법 충족을 주장하지 않는다. Vibe 디자이너가 서로 다른 창작 후보를 비교하고 반복 플레이·육하원칙·인과·모순을 검수한다. 이전 시드·설계·점수·체크포인트를 새 요청의 결과로 재사용하지 않는다. 다른 개발 작업, 기존 게임 소스·저장·보상·밸런스·멀티 권한·배포는 유지한다. 기존 Vibe2/Vibe3 및 DESIGN_ONLY 정식 흐름만 사용한다. 실행기에서 D·분류 계층이 지원되지 않으면 실제 미지원 항목과 실패를 보고하고 옛 결과를 새 표준 통과로 처리하지 않는다.",
+      "OWNER_LATEST_DESIGN_REQUEST": "Revise Cozy Island original design under the current native Roblox V5 grammar contract. Preserve existing RPG source, saves, economy, characters, multiplayer and balance. Correct A named reference, B source reference and all validation failures through the canonical designer review. Prioritize large connected islands, native traversal, NPC and mob animation, mobile gameplay and existing mechanics. Do not fabricate proof.",
       "DESIGN_BASELINE_SOURCE": null,
       "GAME_CATEGORY": "CASUAL",
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -10033,7 +10033,7 @@
         ]
       },
       "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": true,
       "originalDesignContext": {
         "source": null,
         "version": null,
@@ -10180,7 +10180,10 @@
         "systemFamily": "직접 채집",
         "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
         "source": "design/cozy-island/2026-09-22/design-revised.json"
-      }
+      },
+      "ownerRequestInstanceId": "VIBE2:cozy-island-v5-native-design-contract-repair-20261025",
+      "ownerRequestAt": "2026-10-25T13:42:45.754Z",
+      "ownerDesignRevisionAt": "2026-10-25T13:42:45.754Z"
     },
     {
       "version": 1,
