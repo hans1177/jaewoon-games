@@ -64,7 +64,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0,miniHit=null;
  let coopShips=[];
- let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=.625,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraDistance=56;
+ let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=.3125,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraDistance=112;
  const mobileGPU=!!(window.matchMedia?.('(pointer:coarse)')?.matches&&window.innerWidth<900);
  // 기존 CC0 범선 GLB를 조명·파도·포격과 함께 근접 전투 장면에 사용한다.
  let naval=null,navalLoading=false,navalError=false;
@@ -625,7 +625,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   const landscape=canvas.clientHeight<500,mw=landscape?94:128,mh=landscape?76:104;
   const mx=landscape?w/2-mw/2:w-mw-8,my=Math.max(110,landscape?h-mh-12:h-(canvas.clientHeight<700?270:310));
   miniHit={x:mx,y:my,w:mw,h:mh};
-  const miniScale=landscape?.14:.185,miniCx=Math.round(state.ship.x/24)*24,miniCz=Math.round(state.ship.z/24)*24;
+  const miniScale=landscape?.07:.0925,miniCx=Math.round(state.ship.x/24)*24,miniCz=Math.round(state.ship.z/24)*24;
   const key=mw+':'+mh+':'+state.charted.length+':'+miniCx+':'+miniCz;
   if(miniKey!==key){miniLayer.width=mw;miniLayer.height=mh;miniCtx.imageSmoothingEnabled=false;drawGeography(miniCtx,mw,mh,miniCx,miniCz,miniScale);drawFog(miniCtx,mw,mh,miniCx,miniCz,miniScale,state.charted);miniKey=key;}
   ctx.save();ctx.translate(mx,my);ctx.drawImage(miniLayer,0,0);
@@ -649,8 +649,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   if(show)try{naval.render(time);}catch(err){console.warn('3D 항해 프레임 복구: 2D 렌더로 자동 전환',err);navalError=true;naval.surface.hidden=true;}}
 }
  // 메인: 오른쪽 회전 조작은 45도 고정 시점으로 대체한다. 왼쪽 조타는 그대로 유지한다.
- canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(40,Math.min(96,cameraDistance+Math.sign(e.deltaY)*4));}},{passive:false});
+ canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(80,Math.min(192,cameraDistance+Math.sign(e.deltaY)*8));}},{passive:false});
  canvas.addEventListener('click',e=>{if(mode==='sea'&&seaCamera!=='chart')return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);if(mode==='sea'&&!target&&miniHit&&x>=miniHit.x&&x<=miniHit.x+miniHit.w&&y>=miniHit.y&&y<=miniHit.y+miniHit.h)onMap();});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
- return {setCoopShips(list){coopShips=Array.isArray(list)?list.slice(0,3).filter(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.z)&&Number.isFinite(p.heading)):[];},setCameraMode(v){seaCamera=['chase','angle','chart'].includes(v)?v:'chase';return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(40,Math.min(96,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||2.2));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
+ return {setCoopShips(list){coopShips=Array.isArray(list)?list.slice(0,3).filter(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.z)&&Number.isFinite(p.heading)):[];},setCameraMode(v){seaCamera=['chase','angle','chart'].includes(v)?v:'chase';return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(80,Math.min(192,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.16,Math.min(16,Number(v)||.3125));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
 }

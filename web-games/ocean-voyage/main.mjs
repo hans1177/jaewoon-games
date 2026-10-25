@@ -40,6 +40,15 @@ const scene=createOceanView($('sea'),{
 // 메인: 기존 항해 규칙과 저장 구조를 유지한 채 친구 배의 현재 위치만 교환한다.
 const coop={client:null,id:'',members:[],ships:new Map(),lastSent:0,number:''};
 const coopStatus=message=>{$('coopStatus').textContent=message;};
+function setCoopPanel(open){
+ $('coopPanel').hidden=!open;$('coopShade').hidden=!open;
+ $('coopOpen').setAttribute('aria-expanded',String(open));
+ if(open&&coop.number)$('coopStatus').textContent='방 번호 '+coop.number+' · '+Math.max(1,coop.members.length)+'/4명 · 친구에게 이 숫자 하나만 알려 줘.';
+}
+function showCoopRoom(){
+ $('coopLeave').hidden=!coop.number;
+ $('coopOpen').textContent=coop.number?'멀티 '+coop.number:'멀티';
+}
 function coopClient(){
  if(coop.client)return coop.client;
  const client=coop.client=new JaewoonMultiplayerClient();
@@ -50,7 +59,7 @@ function coopClient(){
    coop.members=Array.isArray(message.players)?message.players.slice(0,4):[];
    for(const [id] of coop.ships)if(!coop.members.some(p=>p.userId===id))coop.ships.delete(id);
    scene.setCoopShips([...coop.ships.values()]);
-   coopStatus('방 '+coop.number+' · '+coop.members.length+'/4명 · 동료 선박 위치 공유');
+   coopStatus('방 번호 '+coop.number+' · '+coop.members.length+'/4명 · 같은 바다에서 동료 선박 위치 공유');showCoopRoom();
   }
   if(message.type==='event'&&message.action==='ocean-ship'&&message.userId!==coop.id&&coop.members.some(p=>p.userId===message.userId)){
    const x=Number(message.x),z=Number(message.z),heading=Number(message.heading);
@@ -63,8 +72,9 @@ function coopClient(){
  client.on('websocket_disconnected',()=>{coopStatus('서버 재연결 중 · 기존 방 유지');coop.ships.clear();scene.setCoopShips([])});
  return client;
 }
-$('coopOpen').onclick=()=>{$('coopPanel').hidden=!$('coopPanel').hidden;};
-$('coopClose').onclick=()=>{$('coopPanel').hidden=true;};
+$('coopOpen').onclick=()=>setCoopPanel($('coopPanel').hidden);
+$('coopClose').onclick=()=>setCoopPanel(false);
+$('coopShade').onclick=()=>setCoopPanel(false);
 $('coopNumber').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9]/g,'').slice(0,1);});
 async function coopRoom(action){
  const code=$('coopNumber').value.trim();
@@ -78,14 +88,15 @@ async function coopRoom(action){
    coopStatus(messages[result.data?.error]||'방 연결 실패 · 서버 연결을 확인해.');return;
   }
   coop.number=String(result.data.inviteCode);$('coopNumber').value=coop.number;coop.ships.clear();scene.setCoopShips([]);
-  coopStatus('방 번호 '+coop.number+' · 친구에게 이 숫자만 알려 줘.');
+  showCoopRoom();coopStatus('방 번호 '+coop.number+' · 친구에게 이 숫자 하나만 알려 줘.');
+ }catch(error){coopStatus('연결하지 못했어. 인터넷 연결이나 서버 상태를 확인해.');
  }finally{$('coopCreate').disabled=false;$('coopJoin').disabled=false;}
 }
 $('coopCreate').onclick=()=>coopRoom('create');
 $('coopJoin').onclick=()=>coopRoom('join');
 $('coopLeave').onclick=async()=>{
  await coop.client?.leaveGemRoom();coop.id='';coop.number='';coop.members=[];coop.ships.clear();scene.setCoopShips([]);
- coopStatus('방에서 나왔어. 혼자 항해할 수 있어.');
+ showCoopRoom();coopStatus('방에서 나왔어. 방 만들기 또는 숫자 한 자리로 다시 참가할 수 있어.');
 };
 function sendCoopShip(now){
  if(!coop.client?.isRoomConnected()||now-coop.lastSent<250)return;
@@ -199,7 +210,7 @@ function chart(){
 }
 // 해도: 발견한 항구·개척 항로·현재 선박 위치를 같이 보여준다.
 let mapWorld=false,mapZoom=1,mapPanX=0,mapPanZ=0,mapPointer=null,mapDragged=false,mapIgnoreClick=false;
-const chartViewport=()=>({cx:(mapWorld?300:75)+mapPanX,cz:(mapWorld?-210:-550)+mapPanZ,scale:(mapWorld?.12:.35)*mapZoom});
+const chartViewport=()=>({cx:(mapWorld?300:75)+mapPanX,cz:(mapWorld?-210:-550)+mapPanZ,scale:(mapWorld?.06:.175)*mapZoom});
 // The chart should open and re-center on the actual vessel, not an old map origin.
 function centerChartOnShip(){mapPanX=state.ship.x-(mapWorld?300:75);mapPanZ=state.ship.z-(mapWorld?-210:-550);}
 function drawChart(world=mapWorld){
