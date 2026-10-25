@@ -1789,7 +1789,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       if(from>=0&&to>from&&to-from<1800&&source.indexOf(start,from+1)<0
         &&source.split(close).length===2&&source.includes('local Players = game:GetService("Players")')
         // GetAsync 실패 후 기본값으로 덮어쓰는 위험이 있으면 단순 종료 저장 패치 금지.
-        &&!source.includes('return store:GetAsync("player:" .. player.UserId)')
+        &&!/\bGetAsync\s*\(/.test(source)
         &&!/\blocal function savePlayer\s*\(/.test(source)){
         const original=source.slice(from,to+1+close.length),removal=source.slice(from,to);
         const body=removal.slice(start.length,-'end)'.length);
