@@ -45,9 +45,22 @@ export function auditCozyCC0({root=process.cwd()}={}){
   const registry=getJson(path.join(root,'assets/roblox/common-registered-external-assets-v1.json'));
   const ledger=getJson(path.join(root,'assets/asset-license-ledger.json'));
   const original=fs.readFileSync(path.join(root,'roblox-games/cozy-island/shared/CozyCC0Library.luau'),'utf8');
+  const server=fs.readFileSync(path.join(root,'roblox-games/cozy-island/server/Game.server.luau'),'utf8');
+  // 곰 전용 원본이 등록되지 않았으므로 절차상 CC0로 취급하거나 조립 곰을 생성하면 거부한다.
+  const verifiedBear=(registry.registeredAssets||[]).some(row=>
+    /(?:^|[-_ ])bear(?:$|[-_ ])/i.test(String(row.key||''))&&
+    row.family==='actor'&&isCC0(row.license)&&
+    /^[a-f0-9]{40}$/.test(row.gitBlobSha||'')&&
+    String(row.originalPath||'').startsWith('assets/roblox/actors/sources/')
+  );
+  const proceduralBearSpawn=/\b(?:Wildlife|Factory)\.(?:Spawn|create)\(\s*["']BEAR["']|\bspawnVillageBear\s*\(/.test(server);
+  if(proceduralBearSpawn)throw Error('COZY_UNVERIFIED_PROCEDURAL_BEAR_SPAWN');
+  if(!verifiedBear&&(!server.includes('CozyBearCC0Status","BLOCKED_UNVERIFIED_SOURCE"')
+    ||!server.includes('VillageBearCount",0')))throw Error('COZY_UNLICENSED_BEAR_MUST_BE_BLOCKED');
   const report={gameId:'cozy-island',universeId:EXPECTED_UNIVERSE,originalLibraries:FAMILIES.length,
     libraryFamilies:{},externalRecords:(registry.registeredAssets||[]).length,licenseLedgerEntries:(ledger.entries||[]).length,
     originalSourceInventory:{},licensedPbrAvailable:false,
+    bearOriginalVerified:verifiedBear,bearSpawnBlocked:!verifiedBear&&!proceduralBearSpawn,
     acceptedCC0Models:[],blockedAssets:[],sourceDigestsVerified:0};
   if(registry.rules?.requireSourceDigestForReuse!==true||
     registry.rules?.requireUniverseGrantForEachGame!==true||
