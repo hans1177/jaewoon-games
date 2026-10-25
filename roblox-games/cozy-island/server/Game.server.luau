@@ -11,7 +11,6 @@ local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
 local CC0=require(Shared:WaitForChild("CozyCC0Library"))
 local Materials=require(Shared:WaitForChild("RobloxCommonMaterials"))
-local Wildlife=require(Shared:WaitForChild("SurvivalWildlife"))
 local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
 
 local store
@@ -40,7 +39,6 @@ local world
 local foundationSpawn
 local lastRequest,battling,gatherCooldown,qaCaptureLast,movementProbeStart={},{},{},{},{}
 local mobs={}
-local villageBears={}
 local assetCache={}
 local dataLoaded={}
 -- Asset pack IDs without CC0 provenance and current-universe grants are not loaded.
@@ -126,6 +124,43 @@ end
 local function prompt(target,objectText,actionText)
  local pr=Instance.new("ProximityPrompt");pr.ObjectText=objectText;pr.ActionText=actionText;pr.MaxActivationDistance=10;pr.HoldDuration=.15;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
 end
+-- 유틸: 실제 걸을 수 있는 표면만 레이캐스트하고, 보이는 발끝을 그 높이에 맞춘다.
+-- 건물 지붕·장식 파츠를 지면으로 오판하거나 고정 Y로 공중에 띄우지 않는다.
+local function placeActorOnGround(rootPart,islandTopY)
+ local floorParts={}
+ for _,item in ipairs(world:GetDescendants())do
+  if item:IsA("BasePart")and
+   (item.Name==Style.Regions[1].Name or item.Name=="VillagePlaza"
+    or item.Name=="VillageGreen"or item.Name=="FarmPlot"
+    or item.Name=="BarracksYard"or item.Name=="Path"or item.Name=="Dock")then
+   table.insert(floorParts,item)
+  end
+ end
+ local params=RaycastParams.new()
+ params.FilterType=Enum.RaycastFilterType.Include
+ params.FilterDescendantsInstances=floorParts
+ params.IgnoreWater=true
+ local hit=workspace:Raycast(
+  Vector3.new(rootPart.Position.X,islandTopY+24,rootPart.Position.Z),
+  Vector3.new(0,-80,0),params)
+ local floorY=hit and hit.Position.Y or islandTopY
+ local lowestY=math.huge
+ for _,item in ipairs({rootPart,table.unpack(rootPart:GetDescendants())})do
+  if item:IsA("BasePart")then
+   local frame=item.CFrame;local size=item.Size
+   local extent=(math.abs(frame.RightVector.Y)*size.X
+    +math.abs(frame.UpVector.Y)*size.Y+math.abs(frame.LookVector.Y)*size.Z)*.5
+   lowestY=math.min(lowestY,item.Position.Y-extent)
+  end
+ end
+ if lowestY==math.huge then rootPart:SetAttribute("CozyGroundStatus","NO_VISUAL_GEOMETRY");return end
+ rootPart.CFrame=rootPart.CFrame+Vector3.new(0,floorY-lowestY+.04,0)
+ rootPart:SetAttribute("CozyGroundSurfaceY",floorY)
+ rootPart:SetAttribute("CozyGroundStatus",hit and "GEOMETRY_ALIGNED"or "UNVERIFIED_FLOOR")
+ if not hit then
+  workspace:SetAttribute("CozyActorGroundingUnverified",(workspace:GetAttribute("CozyActorGroundingUnverified")or 0)+1)
+ end
+end
 -- Vibe2 Roblox native CC0 adaptation: scale only verified library model instances.
 -- Original GLB remains immutable; server controls hitboxes, prompts, damage and persistence.
 local cc0VisualCount=0
@@ -148,6 +183,12 @@ local function applyCC0Appearance(rootPart,assetId,maxHeight)
  if maxSize<=.01 then group:Destroy();rootPart:SetAttribute("CC0VisualFailure","MODEL_SIZE");return end
  group:ScaleTo(math.clamp((maxHeight or 6)/maxSize,.12,2.5))
  group:PivotTo(rootPart.CFrame)
+ local floorY=rootPart:GetAttribute("CozyGroundSurfaceY")
+ if typeof(floorY)=="number"then
+  local bounds,visualSize=group:GetBoundingBox()
+  local bottomY=bounds.Position.Y-visualSize.Y*.5
+  group:PivotTo(group:GetPivot()+Vector3.new(0,floorY-bottomY+.04,0))
+ end
  group.Parent=rootPart
  for _,piece in ipairs(pieces)do
   piece.Anchored=false;piece.CanCollide=false;piece.CanTouch=false;piece.CanQuery=false;piece.Massless=true
@@ -202,6 +243,7 @@ local function figure(parent,name,pos,color,accent,scale)
   add("VillagerPouch",Vector3.new(.9,1.05,.62),Vector3.new(1.2,-.85,.4),Color3.fromRGB(135,96,64),Enum.Material.Fabric,Enum.PartType.Ball)
  end
  -- Replace stylized block actors by role-matched CC0 KayKit original models.
+ placeActorOnGround(r,pos.Y-6)
  local licenseAsset=CC0.Npc[name]
  if licenseAsset then task.spawn(applyCC0Appearance,r,licenseAsset,6*scale)end
  return r
@@ -219,17 +261,6 @@ end
 
 local function gather(p,key,amount,text)
  local now=os.clock();gatherCooldown[p]=gatherCooldown[p]or{};local last=gatherCooldown[p][key]or 0
- for index=#villageBears,1,-1 do
-  local entry=villageBears[index]
-  local bear=entry.model
-  if not bear or not bear.Parent or not bear.PrimaryPart then table.remove(villageBears,index)
-  else
-   local angle=now*entry.angular+entry.phase
-   local pos=entry.center+Vector3.new(math.cos(angle)*entry.radiusX,0,math.sin(angle)*entry.radiusZ)
-   local tangent=Vector3.new(-math.sin(angle)*entry.radiusX,0,math.cos(angle)*entry.radiusZ)
-   if tangent.Magnitude>.001 then bear:PivotTo(CFrame.lookAt(pos,pos+tangent.Unit))else bear:PivotTo(CFrame.new(pos))end
-  end
- end
  if now-last<C.GatherCooldownSeconds then return end;gatherCooldown[p][key]=now
  s(p,key,n(p,key,0)+amount);msg(p,text.." +"..amount);feedback(p,"RESOURCE")
 end
@@ -324,7 +355,7 @@ local function bindMonsterAppearance(rootPart,assetInfo)
  rootPart:SetAttribute("SharedMonsterVisualReady",true)
 end
 
-local function spawnMob(kind,pos,visualIndex)
+local function spawnMob(kind,pos,visualIndex,islandTopY)
  local folder=world:FindFirstChild("HomeMobs")or Instance.new("Folder");folder.Name="HomeMobs";folder.Parent=world
  local isRaider=kind=="RAIDER";local hp=isRaider and C.HomeIslandMobs.RaiderHP or C.HomeIslandMobs.BoarHP
  local damage=isRaider and C.HomeIslandMobs.RaiderDamage or C.HomeIslandMobs.BoarDamage
@@ -359,6 +390,7 @@ local function spawnMob(kind,pos,visualIndex)
   attach(r,"TuskL",Vector3.new(.34,.34,1.15),Vector3.new(-.92,1.92,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
   attach(r,"TuskR",Vector3.new(.34,.34,1.15),Vector3.new(.92,1.92,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
  end
+ placeActorOnGround(r,islandTopY)
  local selected=isRaider and {id=CC0.Raider[((visualIndex or 1)-1)%#CC0.Raider+1],name="섬 약탈병"} or nil
  label(r,selected and selected.name or (isRaider and"섬 약탈병"or"멧돼지"),isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
  if selected then task.spawn(applyCC0Appearance,r,selected.id,6)end
@@ -369,38 +401,10 @@ local function spawnMob(kind,pos,visualIndex)
   if e.hp<=0 then
    if kind=="RAIDER"then s(p,"Coins",n(p,"Coins",0)+8);s(p,"Wood",n(p,"Wood",0)+2);msg(p,"약탈병 처치 · 코인+8 나무+2")
    else s(p,"Food",n(p,"Food",0)+4);msg(p,"멧돼지 처치 · 식량+4")end
-   r:Destroy();task.delay(C.HomeIslandMobs.RespawnSeconds,function()if world and world.Parent then spawnMob(kind,pos,visualIndex)end end)
+   r:Destroy();task.delay(C.HomeIslandMobs.RespawnSeconds,function()if world and world.Parent then spawnMob(kind,pos,visualIndex,islandTopY)end end)
   end
  end)
  return e
-end
-
-local VILLAGE_BEAR_COUNT=5
-local VILLAGE_BEAR_SKINS={"DARK_BROWN","BLACK","CINNAMON","DARK_BROWN","BLACK"}
-
-local function spawnVillageBear(parent,index,topY)
- local angle=(index-1)/VILLAGE_BEAR_COUNT*math.pi*2
- local center=Vector3.new(63,topY+3.25,35)
- local radiusX=20+(index%2)*4
- local radiusZ=15+((index+1)%2)*3
- local pos=center+Vector3.new(math.cos(angle)*radiusX,0,math.sin(angle)*radiusZ)
- local bear=Wildlife.Spawn("BEAR",VILLAGE_BEAR_SKINS[index],CFrame.new(pos),parent)
- bear.Name="VillageBear"..index
- bear:SetAttribute("CozyVillageBear",true)
- bear:SetAttribute("NonHostile",true)
- bear:SetAttribute("VillageBearIndex",index)
- Wildlife.SetDesiredSpeed(bear,4.8+(index-1)*.45)
- Wildlife.SetMotionState(bear,"LOCOMOTION")
- table.insert(villageBears,{model=bear,center=center,radiusX=radiusX,radiusZ=radiusZ,phase=angle,angular=.14+index*.012})
- return bear
-end
-
-local function spawnVillageBears(parent,topY)
- table.clear(villageBears)
- local folder=Instance.new("Folder");folder.Name="VillageWildlife";folder.Parent=parent
- for index=1,VILLAGE_BEAR_COUNT do spawnVillageBear(folder,index,topY)end
- workspace:SetAttribute("VillageBearCount",VILLAGE_BEAR_COUNT)
- workspace:SetAttribute("VillageWildlifeAnimated",true)
 end
 
 local function buildWorld()
@@ -469,12 +473,15 @@ end)
    local captain=figure(npcs,"Captain",Vector3.new(36,topY+6,-12),Color3.fromRGB(111,87,75),Color3.fromRGB(68,66,70),.95);label(captain,"병영대장",Color3.fromRGB(235,194,153),26);prompt(captain,"병영대장","병영 강화").Triggered:Connect(upgradeBarracks)
    for i=1,5 do local a=i/5*math.pi*2;local vill=figure(npcs,"Villager"..i,Vector3.new(math.cos(a)*31,topY+6,27+math.sin(a)*22),Color3.fromRGB(100+i*9,120+i*5,93+i*4),Color3.fromRGB(65,70,61),.78);label(vill,"주민",Color3.fromRGB(235,238,225),18)end
 
-    spawnVillageBears(world,topY)
-   for i=1,5 do spawnMob("BOAR",Vector3.new(-72+i*20,topY+4,78+(i%2)*8),i)end
-   for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14),5+i)end
+   -- 검증된 CC0 곰 원본과 게임별 사용 권한이 없어 비인증 곰 5마리는 생성하지 않는다.
+   workspace:SetAttribute("VillageBearCount",0)
+   workspace:SetAttribute("VillageWildlifeAnimated",false)
+   workspace:SetAttribute("CozyBearCC0Status","BLOCKED_UNVERIFIED_SOURCE")
+   for i=1,5 do spawnMob("BOAR",Vector3.new(-72+i*20,topY+4,78+(i%2)*8),i,topY)end
+   for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14),5+i,topY)end
    -- 기존 여덟 몬스터는 보존하고 추가 두 종류만 외곽에서 등장한다.
-   spawnMob("RAIDER",Vector3.new(98,topY+5,88),9)
-   spawnMob("RAIDER",Vector3.new(110,topY+5,72),10)
+   spawnMob("RAIDER",Vector3.new(98,topY+5,88),9,topY)
+   spawnMob("RAIDER",Vector3.new(110,topY+5,72),10,topY)
   elseif index==2 then
    for i=1,18 do local a=i/18*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*40,topY-r.Pos.Y,math.sin(a)*40),.7+(i%3)*.14,Color3.fromRGB(86,91,101))end
    for i=1,7 do part(world,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-35+i*10,topY+3,r.Pos.Z+27),Color3.fromRGB(145,158,171),Enum.Material.Metal)end
