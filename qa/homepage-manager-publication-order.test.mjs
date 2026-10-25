@@ -579,7 +579,7 @@ test('homepage manager binds official images to exact dedicated games and fills 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('homepage front door requests only the three runtime snapshots needed for its visible content',async()=>{
+test('homepage front door requests exactly four required runtime snapshots including public game revision manifest',async()=>{
  const {runInNewContext}=await import('node:vm');
  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
  const requests=[];let renders=0;
@@ -589,7 +589,7 @@ test('homepage front door requests only the three runtime snapshots needed for i
   normalizePlatform:String,document:{getElementById:()=>null,querySelector:()=>null,documentElement:{dataset:{}}},
   updateLiveSummary:()=>{},buildFocus:()=>{renders++;},buildGameCenter:()=>{},buildRecentUpdates:()=>{}
  });
- await refresh();assert.deepEqual(requests,['/game-catalog.json','/company-status.json','/homepage-platform-exposure.json']);
+ await refresh();assert.deepEqual(requests,['/game-catalog.json','/company-status.json','/homepage-platform-exposure.json','/web-games/publish-manifest.json']);
  await refresh();assert.equal(renders,1);
 });
 
