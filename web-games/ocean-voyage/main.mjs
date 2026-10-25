@@ -128,7 +128,7 @@ function restartGame(){
  showCaptains();
 }
 function showCaptains(){choosing=true;view.loading.classList.add('hide');$('captains').hidden=false;$('captainCards').innerHTML=CAPTAINS.map(c=>'<article class="hero-card"><div class="hero-face '+(c.maleFace!==undefined?'male':'')+'" style="background-position:'+(c.maleFace!==undefined?c.maleFace:c.face)*25+'% center"></div><div><small>'+c.region+' · '+c.nation+' · '+(c.origin?c.origin+' 출신 → ':'')+port(c.port).name+' 본편 시작</small><h2>'+c.name+'</h2><p>'+c.goal+'</p><p class="info">'+c.intro+'</p><button class="action" data-captain="'+c.id+'">이 인물로 항해</button></div></article>').join('');}
-$('captainCards').addEventListener('click',e=>{const b=e.target.closest('[data-captain]');if(!b)return;state=newGame(b.dataset.captain);state.heroChosen=true;choosing=false;$('captains').hidden=true;save();scene.setState(state);summary();enterTown();});
+$('captainCards').addEventListener('click',e=>{const b=e.target.closest('[data-captain]');if(!b)return;state=newGame(b.dataset.captain);state.heroChosen=true;state.scene={kind:'prologue',captainId:b.dataset.captain,step:0};choosing=false;$('captains').hidden=true;save();scene.setState(state);summary();enterTown();renderEvent();});
 $('depart').addEventListener('click',depart);$('townJournal').addEventListener('click',()=>openFacility('port'));$('townBack').addEventListener('click',leaveFacility);
 
 function travelCard(p){
@@ -280,8 +280,8 @@ function fleet(){
  // 선박창: 선종별 선체·범장·선루·노·포문을 후보 목록까지 동일한 도면으로 그린다.
  function shipPortrait(t,mini=false){
   const galley=t.rig==='oars',lateen=t.rig==='lateen'||t.id.includes('caravel'),large=/galleon|carrack|fluyt|frigate|racer/.test(t.id);
-  const width=t.width||1,length=t.length||1,masts=galley?[320]:large?[214,320,426]:[268,385];
-  const l=320-165*length,r=320+165*length,deck=201,guns=t.id===state.shipType?s.cannons:(t.cannons||4),hull=t.color||'#95623b';
+  const width=t.width||1,length=t.length||1,masts=t.masts===1?[320]:t.masts===3?[214,320,426]:[268,385];
+  const l=320-165*length,r=320+165*length,deck=201,guns=t.id===state.shipType?s.cannons:(t.cannons||4),hull=t.hullColor||t.color||'#95623b';
   const cloth=masts.map((x,i)=>{const y=large&&i===1?36:53,w=(large?44:60)*width;
    return '<path d="M'+x+' 33 V205" stroke="#63452e" stroke-width="7"/>'+
    (lateen||galley?'<path d="M'+(x+12)+' '+y+' L'+(x-w)+' 180 L'+(x+w*.55)+' 171 Z" fill="#e9dec0" stroke="#ae936b" stroke-width="3"/>':
@@ -396,7 +396,7 @@ function portScene(){
  '<div class="scene-card"><strong>지역 명산품 · '+PORT_MARKETS[p.id].produces.map(id=>escapeHtml(GOODS.find(g=>g.id===id).name)).join(' · ')+'</strong><p class="info">교역소 시세 '+state.day+'일 기준 · 매일 재고·가격 갱신</p>'+(priceAlert.length?priceAlert.map(v=>'<small>'+escapeHtml(v.g.name)+' '+v.q.percent+'%'+(v.q.event?' · '+v.q.event:'')+'</small>').join(' · '):'<small>시세 안정</small>')+'</div>'+
  scene.facilities.map(id=>'<div class="row"><div class="desc"><strong>'+buildings[id][0]+'</strong><small>'+buildings[id][1]+'</small></div><button class="action" data-panel-open="'+id+'">방문</button></div>').join('')+
  (!scene.facilities.includes('fleet')?'<div class="scene-card"><strong>일반 부두 · 긴급 보급</strong><p>정식 조선소는 없어. 보급과 응급 수리만 이용할 수 있어.</p><button class="action sub" data-upgrade="provisions">식량 보급</button><button class="action sub" data-upgrade="repair">선체 수리</button><button class="action sub" data-upgrade="crew">선원 모집</button></div>':'')+
- (p.id==='dawn'?'<div class="scene-card"><h3>제1장 · 여왕의 해도</h3><p>엘리너 그레이 선장은 런던 왕립항에서 출항 허가를 받았다. 첫 번째 목표는 플리머스의 교역망을 확보하는 것이다.</p><button class="action sub" data-route="coral">플리머스 항로 설정</button></div>':'');
+ storyCard();
 }
 function relationshipPanel(id){const rel=relationStatus(state,id);return '<div class="social-box"><strong>친밀도 '+rel.trust+'/100 · '+(rel.bond?'마음을 나눈 인연':rel.trust>=35?'믿을 만한 사이':'서로 알아가는 중')+'</strong><p class="info">하루 대화 1회·선물 1회. 친밀도 35부터 고급 정보, 80과 이야기 1장부터 마음을 전할 수 있어.</p><div class="stack"><button class="action sub" data-contact="'+id+'" '+(rel.lastTalk===state.day?'disabled':'')+'>이야기 나누기</button>'+GIFTS.map(g=>'<button class="action" data-gift="'+g.id+'" data-person="'+id+'" '+(rel.lastGift===state.day||!canDock(state)?'disabled':'')+'>'+g.name+(g.cost?' '+g.cost+' G':'')+'</button>').join('')+'<button class="action sub" data-info="'+id+'" '+(rel.trust<35||rel.lastInfo===state.day?'disabled':'')+'>고급 정보</button><button class="action sub" data-bond="'+id+'" '+(rel.bond||rel.trust<80||!state.completedStories.length?'disabled':'')+'>마음 전하기</button></div></div>';}
 function statsLine(c){const s=crewStats(state,c.id);return '<p class="crew-stats">레벨 '+s.level+' · 항해 '+s.navigation+' · 교역 '+s.trade+' · 포술 '+s.gunnery+' · 학술 '+s.scholarship+' · 의술 '+s.medicine+'</p>';}
@@ -630,7 +630,12 @@ function renderEvent(){
  const key=JSON.stringify(e)+':'+(meeting?state.merchants.find(m=>m.id===meeting.merchantId)?.met||0:0);
  if(renderedEvent===key)return;renderedEvent=key;
  let title='',body='',options=[],face=null,caption='';
- if(story?.kind==='port-discovery'){
+ if(story?.kind==='prologue'){
+  const captain=CAPTAINS.find(c=>c.id===story.captainId)||CAPTAINS[0],step=Math.max(0,Math.min(2,Number(story.step)||0)),first=captain.chapters[0];
+  title=['서막 · 떠나야 하는 이유','서막 · 선장의 맹세','제1장 · 첫 번째 단서'][step];
+  body=[captain.intro,captain.goal+' 항구를 잇는 교역으로 자금을 모으고, 동료들과 기록의 진실을 찾아가자.',port(first[0]).name+'에 첫 단서가 있어. '+first[2]+' 출항 전 식량과 선체를 점검하자.'][step];
+  caption=captain.name+' · '+(step+1)+'/3';face=captain;options=[[step<2?'다음 장면':'항구에서 첫 항해 준비',0,false]];
+ }else if(story?.kind==='port-discovery'){
   title=story.title;body=story.text;caption=port(story.portId).name+' · '+PORT_SCENES[story.portId].district;
   options=[['해도에 기록하고 항해 계속',0,false]];
  }else if(story){
