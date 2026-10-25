@@ -24,9 +24,9 @@
       </div>
       <div class="hud-main right">
         <span>🪙 <b id="coinText">40</b></span>
-        <button id="inventoryButton" class="small-button" type="button">자원</button>
-        <button id="helpCommand" class="small-button" type="button">건설목록</button>
-
+        <!-- 기존 자원·안내 기능은 영지 및 건설 메뉴에 통합한다. -->
+        <button id="inventoryButton" class="small-button" type="button" hidden>자원</button>
+        <button id="helpCommand" class="small-button" type="button" hidden>건설목록</button>
       </div>
     </section>
 
@@ -44,14 +44,15 @@
 
     <section class="controls" aria-label="조작 버튼">
       <nav class="strategy-bar" aria-label="영지 관리와 전술 명령">
-        <button id="castleCommand" class="strategy-button" type="button">🏗️<small>건설</small></button>
-        <button id="barracksCommand" class="strategy-button" type="button">⚔️<small>병영</small></button>
-        <button id="workersCommand" class="strategy-button" type="button">🪓<small>산업</small></button>
-        <button id="fishingCommand" class="strategy-button" type="button">⚔️<small>전쟁</small></button>
-        <button id="tradeCommand" class="strategy-button" type="button" aria-label="상선 무역과 경제 관리">⚖️<small>시장</small></button>
-        <button id="centerCommand" class="strategy-button" type="button">🗺️<small>지도</small></button>
-        <button id="systemCommand" class="strategy-button" type="button">⚙️<small>시스템</small></button>
+        <button id="castleCommand" class="strategy-button" type="button" aria-label="건설 및 성곽 관리">🏗️<small>건설</small></button>
+        <button id="workersCommand" class="strategy-button" type="button" aria-label="영지, 산업, 자원 및 시장">🌾<small>영지</small></button>
+        <button id="barracksCommand" class="strategy-button" type="button" aria-label="병영, 전쟁 및 공성">⚔️<small>군사</small></button>
+        <button id="centerCommand" class="strategy-button" type="button" aria-label="왕국 지도 및 외교">🗺️<small>왕국</small></button>
+        <button id="systemCommand" class="strategy-button" type="button" aria-label="저장 및 게임 설정">⚙️<small>설정</small></button>
       </nav>
+      <!-- 구버전 버튼 선택자 연결만 유지하며 중복 메뉴는 표시하지 않는다. -->
+      <button id="fishingCommand" type="button" hidden aria-hidden="true"></button>
+      <button id="tradeCommand" type="button" hidden aria-hidden="true"></button>
     </section>
 
     <dialog id="panel" class="panel">

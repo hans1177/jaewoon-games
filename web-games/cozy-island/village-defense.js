@@ -340,6 +340,12 @@ const BUILD_GROUPS=[
  ['town','🏘️ 도시'],['military','⚔️ 군수'],['defense','🏰 성벽·함정']
 ];
 let activeBuildGroup='industry';
+let buildSearch='',favoritesOnly=false;
+const buildingFavorites=new Set();
+try{
+ const saved=JSON.parse(localStorage.getItem('cozy-island:building-favorites')||'[]');
+ if(Array.isArray(saved))for(const id of saved.slice(0,32))if(typeof id==='string')buildingFavorites.add(id);
+}catch{} 
 // 전략 건설: 성벽 연속 선택 · 성문 자동 정렬 · 보급/인부 이동로 검증.
 function fortBuildingSites(state){
  const b=state.economyV4?.buildings||{};
@@ -442,11 +448,14 @@ function renderConstruction(group=activeBuildGroup){
  const tabs=BUILD_GROUPS.map(([id,name])=>'<button class="realm-tab '+(group===id?'selected':'')+'" type="button" data-realm-tab="'+id+'">'+name+'</button>').join('');
  let html='<div class="realm-overview"><div><strong>👷 '+assigned+'/'+capacity+'</strong><small>자동 배치 일꾼</small></div><div><strong>🪵 '+format(inv.wood)+'</strong><small>목재</small></div><div><strong>🪨 '+format(inv.stone)+'</strong><small>석재</small></div><div><strong>🪙 '+format(state.coins)+'</strong><small>금화</small></div></div>';
  html+='<div class="realm-tabs" role="group" aria-label="건설 종류">'+tabs+'</div>';
+ html+='<div class="realm-build-tools"><input id="realmBuildSearch" type="search" autocomplete="off" placeholder="건물 이름 검색" aria-label="건물 이름 검색">'+
+  '<button id="realmBuildFavoritesOnly" type="button" aria-pressed="'+favoritesOnly+'">'+
+  (favoritesOnly?'⭐ 즐겨찾기만':'☆ 즐겨찾기')+'</button></div><p id="realmBuildEmpty" class="realm-build-empty" hidden>조건에 맞는 건물이 없어.</p>';
  if(group==='defense'){
    html+='<p class="realm-help">성벽 연속 설치·성문 자동 연결. 상위 함정은 개발 트리에서 해금하고, 설치한 함정은 지도를 눌러 수리·재장전합니다.</p>';
    html+='<div class="realm-build-grid">'+FORT_BUILDINGS.map(d=>
      '<article class="realm-build-card"><div class="realm-build-title"><span class="realm-icon">'+d.icon+'</span><div><b>'+d.name+'</b><small>'+d.desc+'</small></div><strong>HP '+d.hp+'</strong></div>'+
-     '<div class="realm-build-meta"><span>🪵 '+d.wood+'</span><span>🪨 '+d.stone+'</span><span>건설 '+fort.structures.filter(p=>p.kind===d.id&&p.hp>0).length+'</span></div>'+
+     '<div class="realm-build-meta"><span class="'+(Number(inv.wood)<d.wood?'realm-shortage':'')+'">🪵 '+d.wood+'</span><span class="'+(Number(inv.stone)<d.stone?'realm-shortage':'')+'">🪨 '+d.stone+'</span><span>건설 '+fort.structures.filter(p=>p.kind===d.id&&p.hp>0).length+'</span></div>'+
      '<div class="realm-build-actions"><button data-build-fort="'+d.id+'" type="button" '+((Number(inv.wood)||0)<d.wood||(Number(inv.stone)||0)<d.stone||!economyTechStatus(state,d.id).unlocked?'disabled':'')+'>'+(economyTechStatus(state,d.id).unlocked?'지도에서 배치':'🔒 '+economyTechStatus(state,d.id).missing.join(' · '))+'</button></div></article>').join('')+'</div>';
    html+='<button class="realm-main-command" type="button" data-realm-legacy>🏰 성벽 · 함정 · 대공성전 관리 열기</button>';
    html+='<button class="realm-main-command" type="button" data-realm-barracks>⚔️ 병영 모집과 주둔 명령</button>';
@@ -456,7 +465,9 @@ function renderConstruction(group=activeBuildGroup){
    html+='<div class="realm-build-grid">'+list.map(d=>{
      const entry=e.buildings[d.id]||{count:0,level:1},n=entry.count||0;
      const affordable=(Number(inv.wood)||0)>=d.wood&&(Number(inv.stone)||0)>=d.stone&&(Number(state.coins)||0)>=d.gold;
-     const cost=['🪵 '+d.wood,'🪨 '+d.stone,...(d.gold?['🪙 '+d.gold]:[])].join(' · ');
+     const cost=['<span class="'+(Number(inv.wood)<d.wood?'realm-shortage':'')+'">🪵 '+d.wood+'</span>',
+      '<span class="'+(Number(inv.stone)<d.stone?'realm-shortage':'')+'">🪨 '+d.stone+'</span>',
+      ...(d.gold?['<span class="'+(Number(state.coins)<d.gold?'realm-shortage':'')+'">🪙 '+d.gold+'</span>']:[])].join(' · ');
      const product=d.out?d.out+' +'+d.amount*(entry.level||1)+'/주기':'영지 기능';
      const buildable=n<d.max&&affordable;
      return '<article class="realm-build-card"><div class="realm-build-title"><span class="realm-icon">'+d.icon+'</span><div><b>'+d.name+'</b><small>'+d.desc+'</small></div><strong>'+n+'/'+d.max+'</strong></div>'+
@@ -494,7 +505,43 @@ function renderConstruction(group=activeBuildGroup){
  }
  html+='</div><button type="button" class="realm-legacy-entry" data-realm-legacy>🏰 기존 성채 상세 관리 · 성벽 수리·함정·병력 배치</button>';
  body.innerHTML=html;
- body.querySelectorAll('[data-realm-tab]').forEach(b=>b.addEventListener('click',()=>renderConstruction(b.dataset.realmTab)));
+ // 유틸: 건설 목록의 검색·즐겨찾기는 UI 설정만 저장하며 게임 저장·경제와 분리한다.
+ const cards=[...body.querySelectorAll('.realm-build-card')];
+ const search=body.querySelector('#realmBuildSearch'),favOnly=body.querySelector('#realmBuildFavoritesOnly');
+ search.value=buildSearch;
+ const filterCards=()=>{
+  const needle=buildSearch.trim().toLocaleLowerCase('ko-KR');let visible=0;
+  for(const card of cards){
+   const name=card.querySelector('.realm-build-title b')?.textContent||'';
+   const id=card.querySelector('[data-build-fort]')?.dataset.buildFort||
+    card.querySelector('[data-build-economy]')?.dataset.buildEconomy;
+   const show=(!needle||name.toLocaleLowerCase('ko-KR').includes(needle))&&
+    (!favoritesOnly||buildingFavorites.has(id));
+   card.hidden=!show;if(show)visible++;
+  }
+  const empty=body.querySelector('#realmBuildEmpty');if(empty)empty.hidden=visible>0;
+ };
+ for(const card of cards){
+  const id=card.querySelector('[data-build-fort]')?.dataset.buildFort||
+   card.querySelector('[data-build-economy]')?.dataset.buildEconomy;
+  if(!id)continue;
+  const actions=card.querySelector('.realm-build-actions');
+  const star=document.createElement('button');star.type='button';star.className='realm-favorite';
+  const redraw=()=>{star.textContent=buildingFavorites.has(id)?'★ 저장됨':'☆ 즐겨찾기';
+   star.setAttribute('aria-pressed',String(buildingFavorites.has(id)))};
+  redraw();star.addEventListener('click',()=>{
+   if(buildingFavorites.has(id))buildingFavorites.delete(id);else buildingFavorites.add(id);
+   try{localStorage.setItem('cozy-island:building-favorites',JSON.stringify([...buildingFavorites].slice(0,32)))}catch{}
+   redraw();filterCards();
+  });
+  actions?.append(star);
+ }
+ search.addEventListener('input',()=>{buildSearch=search.value;filterCards()});
+ favOnly.addEventListener('click',()=>{favoritesOnly=!favoritesOnly;
+  favOnly.textContent=favoritesOnly?'⭐ 즐겨찾기만':'☆ 즐겨찾기';
+  favOnly.setAttribute('aria-pressed',String(favoritesOnly));filterCards()});
+ filterCards();
+ body.querySelectorAll('[data-realm-tab]').forEach(b=>b.addEventListener('click',()=>{buildSearch='';renderConstruction(b.dataset.realmTab)}));
  body.querySelectorAll('[data-build-economy]').forEach(b=>b.addEventListener('click',()=>{
    const id=b.dataset.buildEconomy;document.querySelector('#panel')?.close();
    window.dispatchEvent(new CustomEvent('cozy:place-building',{detail:{id}}));
@@ -515,7 +562,8 @@ function renderConstruction(group=activeBuildGroup){
    document.querySelector('#panelTitle').textContent='성채 · 병력 · 무역 관리';renderCastle();
  }));
  body.querySelectorAll('[data-realm-barracks]').forEach(b=>b.addEventListener('click',()=>{
-   document.querySelector('#panel')?.close();document.querySelector('#barracksCommand')?.click();
+   document.querySelector('#panel')?.close();
+   window.dispatchEvent(new Event('cozy:open-barracks'));
  }));
 }
 window.addEventListener('cozy:open-construction',e=>{
