@@ -44,12 +44,26 @@ export class PartyView{
    const pixels=context.getImageData(0,0,canvas.width,canvas.height).data;
    for(let n=0;n<12;n++){
     const left=Math.round(n%4*canvas.width/4),right=Math.round((n%4+1)*canvas.width/4),top=Math.round(Math.floor(n/4)*canvas.height/3),bottom=Math.round((Math.floor(n/4)+1)*canvas.height/3);
-    // 옆 셀에서 넘어온 한두 픽셀이나 미세한 알파 먼지는 몸체 경계에 넣지 않는다.
-    const columns=new Uint16Array(right-left),rows=new Uint16Array(bottom-top);
-    for(let y=top;y<bottom;y++)for(let x=left;x<right;x++)if(pixels[(y*canvas.width+x)*4+3]>64){columns[x-left]++;rows[y-top]++;}
+    // 몸체와 주요 장비의 연결 영역만 경계 계산에 사용해 옆 셀의 칼끝을 제외한다.
+    const width=right-left,height=bottom-top,visited=new Uint8Array(width*height),stack=new Int32Array(width*height),parts=[];
+    for(let start=0;start<visited.length;start++){
+     if(visited[start])continue;visited[start]=1;
+     const sx=start%width,sy=Math.floor(start/width);
+     if(pixels[((top+sy)*canvas.width+left+sx)*4+3]<=64)continue;
+     let count=0,depth=1,x0=sx,x1=sx,y0=sy,y1=sy;stack[0]=start;
+     while(depth){
+      const id=stack[--depth],x=id%width,y=Math.floor(id/width);count++;x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+       if(!dx&&!dy)continue;const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height)continue;
+       const next=ny*width+nx;if(visited[next])continue;visited[next]=1;
+       if(pixels[((top+ny)*canvas.width+left+nx)*4+3]>64)stack[depth++]=next;
+      }
+     }
+     parts.push({count,x0,x1,y0,y1});
+    }
+    const largest=Math.max(0,...parts.map(p=>p.count));
     let x0=right,y0=bottom,x1=left,y1=top;
-    for(let x=left;x<right;x++)if(columns[x-left]>=8){x0=Math.min(x0,x);x1=x;}
-    for(let y=top;y<bottom;y++)if(rows[y-top]>=8){y0=Math.min(y0,y);y1=y;}
+    for(const part of parts)if(part.count>=Math.max(16,largest*.025)){x0=Math.min(x0,left+part.x0);x1=Math.max(x1,left+part.x1);y0=Math.min(y0,top+part.y0);y1=Math.max(y1,top+part.y1);}
     if(x1<x0||y1<y0)throw new Error('전신 원화 셀이 비어 있어: '+n);
     this.actorBounds.push({u0:x0/canvas.width,u1:(x1+1)/canvas.width,v0:1-(y1+1)/canvas.height,v1:1-y0/canvas.height,aspect:(x1-x0+1)/(y1-y0+1)});
    }
