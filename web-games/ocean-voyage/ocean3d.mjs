@@ -77,8 +77,26 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    renderer.setPixelRatio(Math.min(.95,Math.max(.68,1/(devicePixelRatio||1)+.2)));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
    const world=new THREE.Scene();world.background=new THREE.Color('#87b9c7');world.fog=new THREE.Fog('#87b9c7',110,300);
    const camera=new THREE.PerspectiveCamera(44,1,.1,350);camera.position.set(25,28,39);
+   // 항해 시점 수평선을 채우는 대기 하늘: 바람·악천후에 따라 천정/수평선 조명 변화.
+   const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,
+    uniforms:{horizon:{value:new THREE.Color('#b4d6d2')},zenith:{value:new THREE.Color('#32789e')}},
+    vertexShader:'varying float h; void main(){h=normalize(position).y;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+    fragmentShader:'uniform vec3 horizon;uniform vec3 zenith;varying float h;void main(){float t=smoothstep(-0.10,0.85,h);gl_FragColor=vec4(mix(horizon,zenith,t),1.0);}'});
+   const sky=new THREE.Mesh(new THREE.SphereGeometry(275,28,16),skyMat);sky.renderOrder=-100;world.add(sky);
    world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:150});sun.shadow.bias=-.0004;world.add(sun);
-   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,52,52),new THREE.MeshStandardMaterial({color:'#237189',roughness:.46,metalness:.12}));water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
+   // 가까운 바다는 16px 손그림 점묘 질감, 먼 바다는 광택 잔물결로 구별한다.
+   const waterTiles=document.createElement('canvas');waterTiles.width=128;waterTiles.height=128;
+   const tile=waterTiles.getContext('2d');tile.fillStyle='#3b8997';tile.fillRect(0,0,128,128);
+   for(let y=0;y<128;y+=8)for(let x=0;x<128;x+=8){
+    const v=(x*59+y*37+x*y)%13;tile.fillStyle=['#347c8d','#408f9b','#569baa','#2c7387','#368796'][v%5];tile.fillRect(x,y,8,8);
+    if(v%3===0){tile.fillStyle='#91b9b8';tile.fillRect(x+2,y+3,Math.min(6,2+v%5),1);}
+   }
+   const waterTex=new THREE.CanvasTexture(waterTiles);waterTex.wrapS=THREE.RepeatWrapping;waterTex.wrapT=THREE.RepeatWrapping;waterTex.repeat.set(18,18);
+   waterTex.magFilter=THREE.NearestFilter;waterTex.minFilter=THREE.NearestMipmapNearestFilter;waterTex.colorSpace=THREE.SRGBColorSpace;
+   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,60,60),new THREE.MeshStandardMaterial({color:'#d6eff0',map:waterTex,roughness:.43,metalness:.08,flatShading:false}));
+   water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
+   const whitecaps=new Float32Array(64*6),capGeometry=new THREE.BufferGeometry();capGeometry.setAttribute('position',new THREE.BufferAttribute(whitecaps,3));
+   const crests=new THREE.LineSegments(capGeometry,new THREE.LineBasicMaterial({color:'#dff7ee',transparent:true,opacity:.39,depthWrite:false}));world.add(crests);
    const ring=new THREE.Mesh(new THREE.RingGeometry(58.8,59.1,128),new THREE.MeshBasicMaterial({color:'#eed49c',transparent:true,opacity:.36,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;world.add(ring);
    // 64픽셀 게임 내 자체 제작 나무·돛 질감. 최근접 텍스처로 판재와 천 올을 살린다.
    function pixelTexture(wood){
@@ -180,7 +198,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    }
    const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#ffe4a0'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#c8c5b5',transparent:true,opacity:.45,depthWrite:false});
    let serial=0,shotTime=0,sw=0,sh=0;
-   const targetLook=new THREE.Vector3();
+   const targetLook=new THREE.Vector3(),skyLow=new THREE.Color(),skyHigh=new THREE.Color();
    naval={surface,renderer,world,camera,vessels,render(t){
     const cw=canvas.clientWidth,ch=canvas.clientHeight;if(cw!==sw||ch!==sh){sw=cw;sh=ch;renderer.setSize(cw,ch,false);camera.aspect=cw/ch;camera.updateProjectionMatrix();}
     const origin=state.ship,hostiles=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)&&Math.hypot(e.x-origin.x,e.z-origin.z)<70);
@@ -198,6 +216,20 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      a.needsUpdate=true;
      if(Math.round(t*12)%2===0)water.geometry.computeVertexNormals();
      const tint=storm?'#477486':rain?'#7096a5':'#87b9c7';world.background.set(tint);world.fog.color.set(tint);sun.intensity=storm?1.7:rain?2.4:3.1;
+     sky.position.copy(camera.position);
+     skyLow.set(storm?'#6c8492':rain?'#b1bfc2':'#b7d7cf');
+     skyHigh.set(storm?'#273c53':rain?'#5c7a88':'#327ca0');
+     skyMat.uniforms.horizon.value.copy(skyLow);skyMat.uniforms.zenith.value.copy(skyHigh);
+     water.material.roughness=storm?.60:rain?.51:.43;crests.material.opacity=storm?.72:rain?.52:.35;
+     // 64개의 짧은 비균일 포말선: 물결 속도·파향에 따라 해면에서 이동한다.
+     for(let i=0;i<64;i++){
+      const gx=((i*71+(t*(1+wind.strength)*4))%230+230)%230-115,gz=((i*113+t*2)%220+220)%220-110;
+      const surge=Math.sin(gx*.11+t*1.3)*.27+Math.sin(gz*.16+t*.8)*.22;
+      const yy=Math.max(.12,surge*.8)+.12,half=.25+(i%4)*.24;
+      const dx=Math.sin(wind.heading)*half,dz=Math.cos(wind.heading)*half,j=i*6;
+      whitecaps[j]=gx-dx;whitecaps[j+1]=yy;whitecaps[j+2]=gz-dz;whitecaps[j+3]=gx+dx;whitecaps[j+4]=yy;whitecaps[j+5]=gz+dz;
+     }
+     capGeometry.attributes.position.needsUpdate=true;capGeometry.computeBoundingSphere();
     const fx=state.combatFx;if(fx?.type==='cannon'&&fx.serial!==serial){serial=fx.serial;shotTime=t;
      for(const o of shots)world.remove(o);shots.length=0;
      for(let i=0;i<5;i++){const ball=new THREE.Mesh(ballGeo,ballMat);ball.userData={from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(ball);world.add(ball);const puff=new THREE.Mesh(smokeGeo,smokeMat);puff.userData={smoke:true,from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(puff);world.add(puff);}
