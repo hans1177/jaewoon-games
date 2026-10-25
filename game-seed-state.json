@@ -38605,9 +38605,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-HORROR-BASIC-GRAMMAR-20261025-1",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -38615,7 +38615,43 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
-      }
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX"
+      ],
+      "platformExecutionMode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+        "date": "2026-10-25"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_ROBLOX_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/horror-escape-room"
+        },
+        "designBaselineSource": "design/horror-escape-room/2026-10-25/design-revised.json",
+        "designDate": "2026-10-25",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-25T14:21:30.243Z"
+      },
+      "updatedAt": "2026-10-25T14:21:30.243Z"
     },
     {
       "version": 2,
@@ -103726,7 +103762,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-25T14:11:05.504Z",
+  "updatedAt": "2026-10-25T14:21:30.243Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -103882,5 +103918,6 @@
       "zombie-survival",
       "forgotten-continent"
     ]
-  }
+  },
+  "policyAuthority": "company-learning/platform-release-roadmap.json"
 }

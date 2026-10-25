@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-25T14:12:47.391Z",
+  "generatedAt": "2026-10-25T14:21:42.309Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -365,7 +365,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-25T14:04:58.247Z"
+      "updatedAt": "2026-10-25T14:21:30.243Z"
     },
     {
       "gameId": "cat-step",
@@ -952,7 +952,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-25T14:04:58.247Z"
+      "updatedAt": "2026-10-25T14:21:30.243Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -1914,49 +1914,42 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "WAITING_SOURCE",
+          "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
-          "internalReleaseReady": false,
+          "internalReleaseReady": true,
           "releaseReadiness": {
             "version": 1,
-            "ready": false,
-            "homepageReady": false,
+            "ready": true,
+            "homepageReady": true,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
-            "ownerConfirmed": false,
-            "basis": "PENDING_EVIDENCE",
-            "experience": "DEVELOPMENT",
+            "ownerConfirmed": true,
+            "basis": "OWNER_CONFIRMED",
+            "experience": "LOBBY",
             "checks": {
-              "design": false,
-              "publication": false,
+              "design": true,
+              "publication": true,
               "exactRuntime": false,
               "lobby": false,
               "movement": false,
               "noRuntimeErrors": false
             },
-            "blockers": [
-              "design",
-              "publication",
-              "exactRuntime",
-              "lobby",
-              "movement",
-              "noRuntimeErrors"
-            ],
+            "blockers": [],
             "sourceRevision": null,
             "artifactIdentity": null,
             "verifiedAt": null
           },
-          "executionAvailable": false,
-          "historicalInternalRelease": false,
-          "internalReleaseState": "NOT_READY",
+          "executionAvailable": true,
+          "historicalInternalRelease": true,
+          "internalReleaseState": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
           "publicReleaseReady": false,
           "publicRelease": false,
           "publicReleaseState": "INTERNAL_ONLY",
-          "placeId": null,
-          "internalUrl": null,
+          "placeId": "98222620265768",
+          "internalUrl": "https://www.roblox.com/games/98222620265768",
           "publicUrl": null,
           "internalLinkSuppressedReason": null
         },
@@ -1981,13 +1974,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1995,7 +1988,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -2014,7 +2006,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-24T12:39:34.953Z"
+      "updatedAt": "2026-10-25T14:21:30.243Z"
     },
     {
       "gameId": "human-go",
