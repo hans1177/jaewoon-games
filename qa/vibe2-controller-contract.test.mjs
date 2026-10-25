@@ -678,8 +678,9 @@ test('24H safety-net push ignores QA-only and descriptive document churn',()=>{
 });
 
 test('game reserve safety net wakes independently of the 24H singleton',()=>{
-  assert.match(workflow,/schedule:\n\s+- cron: '\*\/5 \* \* \* \*'/);
-  assert.match(workflow,/github\.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake'/);
+  for(const row of ['0,30','5,35','10,40','15,45','20,50','25,55'])
+    assert.ok(workflow.includes("cron: '"+row+" * * * *'"),row);
+  assert.match(workflow,/github\.event_name == 'schedule' && format\('vibe2-scheduled-game-primary-wake-\{0\}', github\.event\.schedule\)/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/VIBE2_EXECUTION_LANE: \$\{\{ inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary' \}\}/);
 });

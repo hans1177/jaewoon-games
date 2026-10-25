@@ -48,3 +48,18 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.doesNotMatch(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.run_id,/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
+
+test('game reserve schedule maintains six independent pending cohorts without adding execution capacity',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('  schedule:'),workflow.indexOf('  push:'));
+  const rows=[...block.matchAll(/cron: '([0-9,]+) \* \* \* \*'/g)].map(row=>row[1]);
+  assert.deepEqual(rows,['0,30','5,35','10,40','15,45','20,50','25,55']);
+  assert.deepEqual(rows.flatMap(row=>row.split(',').map(Number)).sort((a,b)=>a-b),
+    Array.from({length:12},(_,i)=>i*5));
+  assert.equal(new Set(rows).size,6);
+  assert.match(workflow,/github\.event_name == 'schedule' && format\('vibe2-scheduled-game-primary-wake-\{0\}', github\.event\.schedule\)/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/vibe2-main-push-game-primary-wake/);
+  assert.match(workflow,/VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'/);
+  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill'/);
+});
