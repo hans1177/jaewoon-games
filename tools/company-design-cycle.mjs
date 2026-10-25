@@ -1276,13 +1276,13 @@ function computeVibeNativeDesign(){
   // 메인: 기존 게임 B 시스템이 접수 메타데이터에서 빠졌다면 실제 Luau 서버 입력·처리부터 확인한다.
   // 패링·회피·인벤토리 명칭만 흉내 낸 설계를 허용하지 않는다. 원본 이벤트 처리 증거가 모두 있어야 한다.
   // 게임명보다 실제 원본의 장르 선언을 우선한다. 구형 CASUAL 접수값은 설계 장르 증거가 아니다.
-  const nativeConfigPath=path.join('roblox-games',gameId,'shared','GameConfig.luau');
-  const nativeConfig=fs.existsSync(nativeConfigPath)?fs.readFileSync(nativeConfigPath,'utf8'):'';
+  const nativeConfigPath=`roblox-games/${gameId}/shared/GameConfig.luau`;
+  const nativeConfig=typeof fs!=='undefined'&&fs.existsSync(nativeConfigPath)?fs.readFileSync(nativeConfigPath,'utf8'):'';
   const sourceRpgGenre=/\bGenre\s*=\s*["'](?:RPG|Action RPG)["']/.test(nativeConfig);
   const authoredCategory=!ownerFreeTopic&&clean(seed.GAME_CATEGORY).toUpperCase()==='CASUAL'&&sourceRpgGenre
     ?'RPG':seed.GAME_CATEGORY;
-  const nativeServerPath=path.join('roblox-games',gameId,'server','Game.server.luau');
-  const nativeServer=fs.existsSync(nativeServerPath)?fs.readFileSync(nativeServerPath,'utf8'):'';
+  const nativeServerPath=`roblox-games/${gameId}/server/Game.server.luau`;
+  const nativeServer=typeof fs!=='undefined'&&fs.existsSync(nativeServerPath)?fs.readFileSync(nativeServerPath,'utf8'):'';
   const nativeCombatVerified=[
     'parryEvent.OnServerEvent:Connect',
     'dodgeEvent.OnServerEvent:Connect',
