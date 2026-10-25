@@ -196,6 +196,17 @@
 }
 @media(max-width:740px) and (max-height:620px){#movementReadout{bottom:calc(127px + env(safe-area-inset-bottom))}#joystickRim{width:97px;height:97px}#joystickHandle{width:43px;height:43px}}
 @media(prefers-reduced-motion:reduce){#joystickHandle,#sailToggle{transition:none!important}}
+
+/* 항구: 시설별 전체 화면과 발견 장면. 기존 시설 행동과 저장 흐름 유지. */
+.in-facility #details{left:6px;right:6px;transform:none;width:auto;top:calc(72px + env(safe-area-inset-top));bottom:calc(76px + env(safe-area-inset-bottom))}
+.facility-panorama{position:relative;margin:-8px -10px 14px;height:clamp(190px,34vh,350px);overflow:hidden;background:#203d45;border-bottom:3px double #977347}
+.facility-panorama img{width:100%;height:100%;object-fit:cover;transform:scale(1.7)}
+.facility-panorama figcaption{position:absolute;inset:auto 0 0;padding:12px;background:#142b36e8;color:#f5dfac;font:700 15px Georgia,serif}
+#seaEvent{overflow:auto;overscroll-behavior:contain}#seaEvent article{max-height:calc(100dvh - 40px);overflow:auto}
+.event-art:has(.event-view){position:relative;display:block;padding:0;height:clamp(150px,26vh,260px);overflow:hidden;background:#1d4556}
+.event-view{width:100%;height:100%;object-fit:cover;object-position:center 68%}
+.event-art:has(.event-view) .scene-caption{position:absolute;inset:auto 0 0;max-width:none;background:#102633c9}
+@media(max-width:740px){#navalEncounter{top:calc(72px + env(safe-area-inset-top));gap:3px;padding:8px 10px}#navalTitle{font-size:15px;padding-right:78px}#navalReadout{font-size:10px}.naval-battle #tools{top:calc(185px + env(safe-area-inset-top))}.naval-battle #windStatus{display:none}.in-facility #content{padding:8px 10px 24px}}
 </style><script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head><body>
 <canvas id="sea" aria-label="실제 해안선을 사용하는 픽셀 항해 지도와 항구 마을"></canvas><div id="veil"></div>

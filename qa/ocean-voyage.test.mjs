@@ -4,7 +4,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand} from '../web-games/ocean-voyage/engine.mjs';
+import * as THREE from '../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import {LAND} from '../web-games/ocean-voyage/assets/world.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand,dismissStoryScene} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -90,6 +92,7 @@ test('port discoverability, provisions and periodic economy remain stable',()=>{
  const harbor=PORTS.find(p=>p.id==='coral');s.ship.x=harbor.x;s.ship.z=harbor.z;
  s=stepSea(s,{manual:true},.1);
  assert.ok(s.discovered.includes('coral'));
+ assert.equal(s.scene.kind,'port-discovery');s=dismissStoryScene(s).state;
  const day=s.day;for(let i=0;i<20;i++)s=stepSea(s,{manual:true},1);
  assert.ok(s.day>day);assert.ok(s.ship.provisions<80);
 });
@@ -131,7 +134,7 @@ test('legacy Kenney GLB sources are preserved while pixel renderer uses geograph
  assert.match(html,/id="joystickRim"/);
  assert.match(html,/id="joystickHandle"/);
  assert.match(render,/drawGeography/);assert.match(render,/drawFog/);
- assert.doesNotMatch(render,/new THREE\.BoxGeometry/);
+ assert.match(render,/GLTFLoader/);assert.match(render,/loader.loadAsync/);
 });
 
 
@@ -171,7 +174,7 @@ test('analogue helm changes heading and inertia persists after stick release',()
 test('mobile pixel interface has inventory, joystick and independent scene audio',()=>{
  const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8'),main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
  for(const id of ['joystickRim','joystickHandle','captains','seaEvent','townbar'])assert.ok(html.includes('id="'+id+'"'));
- assert.match(html,/data-panel="inventory"/);assert.match(main,/joystick.setPointerCapture/);assert.match(main,/createOscillator/);
+ assert.match(main,/\['inventory','가방·발견'/);assert.match(main,/data-menu-to="inventory"/);assert.match(main,/document.addEventListener\('pointermove'/);assert.match(main,/function endStick/);assert.match(main,/createOscillator/);
  assert.doesNotMatch(html,/cdn.jsdelivr.net/);
 });
 
@@ -274,7 +277,7 @@ test('personal skill names are distinct and land consumables are actually spent'
 });
 
 test('charted sea routes sail automatically while unknown routes stop at exploration frontier',()=>{
- const start=newGame(),p=PORTS.find(p=>p.id==='coral');let first=setDestination(start,p.id);assert.equal(first.autoMode,'frontier');assert.equal(first.exploreTarget,p.id);let known=structuredClone(start);known.discovered.push(p.id);for(const point of navigationRoute(start.ship,p))known.charted=revealCells(known.charted,point.x,point.z);known=setDestination(known,p.id);assert.equal(known.autoMode,'known');assert.equal(known.exploreTarget,null);for(let i=0;i<2000&&known.destination;i++){if(known.event)known=resolveSeaEvent(known,1).state;known=stepSea(known,{},.1);}assert.equal(canDock(known).id,p.id);
+ const start=newGame(),p=PORTS.find(p=>p.id==='coral');let first=setDestination(start,p.id);assert.equal(first.autoMode,'frontier');assert.equal(first.exploreTarget,p.id);let known=structuredClone(start);known.discovered.push(p.id);for(const point of navigationRoute(start.ship,p))known.charted=revealCells(known.charted,point.x,point.z);known=setDestination(known,p.id);assert.equal(known.autoMode,'known');assert.equal(known.exploreTarget,null);for(let i=0;i<2000&&known.destination;i++){if(known.scene)known=dismissStoryScene(known).state;if(known.event)known=resolveSeaEvent(known,1).state;known=stepSea(known,{},.1);}assert.equal(canDock(known).id,p.id);
 });
 test('land event requires a choice and resolves once without blocking the next exploration step',()=>{
  let s=newGame('amani');s.clearedCamps.push('roman');s=startExpedition(s,'roman').state;s=exploreChoice(s,0).state;s=exploreChoice(s,0).state;assert.ok(LAND_EVENTS.some(e=>e.id===s.expedition.event));assert.equal(exploreChoice(s,1).ok,false);s=resolveLandEvent(s,1).state;assert.equal(s.expedition.eventResolved,true);assert.equal(resolveLandEvent(s,1).ok,false);assert.equal(exploreChoice(s,1).ok,true);
@@ -332,4 +335,61 @@ test('chart ship marker stays visible after pan, and helm screen direction match
  assert.ok(right.ship.heading<base.ship.heading);
  assert.ok(left.ship.heading>base.ship.heading);
  assert.equal(base.ship.x,port.x);
+});
+
+
+test('portrait battle camera contains both complete ships at every battle bearing',()=>{
+ const render=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ const start=render.indexOf('    const ex=enemy?enemy.x-origin.x:15,ez=');
+ const body=render.slice(start,render.indexOf('    ring.visible=',start));
+ const frame=new Function('camera','enemy','origin','mode','world','targetLook','THREE','battleFraming','cameraOrbit','cameraHeight','cameraDistance',body);
+ for(const aspect of [.46,.70,1.8])for(const distance of [8,33,65])for(const bearing of [0,Math.PI/2,Math.PI,Math.PI*1.5]){
+  const camera=new THREE.PerspectiveCamera(44,aspect,.1,350),enemy={x:Math.sin(bearing)*distance,z:Math.cos(bearing)*distance};
+  const world={fog:{near:110,far:300}};
+  frame(camera,enemy,{x:0,z:0,heading:0},'naval',world,new THREE.Vector3(),THREE,false,0,.32,32);
+  camera.updateMatrixWorld();
+  for(const ship of [{x:0,z:0},enemy])for(const x of [-10,10])for(const z of [-10,10]){
+   const point=new THREE.Vector3(ship.x+x,3,ship.z+z).project(camera);
+   assert.ok(Math.abs(point.x)<.92&&Math.abs(point.y)<.92,'full hull must fit the initial battle frame');
+  }
+  assert.ok(world.fog.near>camera.position.length()-distance*.5,'battle fog must stay behind nearby hulls');
+ }
+});
+
+test('new harbor discovery has one persisted image scene and preserves its reward',()=>{
+ const p=PORTS.find(p=>p.id==='coral');let s=newGame();s.ship.x=p.x;s.ship.z=p.z;
+ const score=s.score;s=stepSea(s,{manual:true},.01);
+ assert.equal(s.scene.kind,'port-discovery');assert.equal(s.scene.portId,p.id);assert.equal(s.score,score+100);
+ const restored=restoreGame(serializeGame(s));assert.equal(restored.scene.portId,p.id);
+ s=dismissStoryScene(restored).state;s=stepSea(s,{manual:true},.01);
+ assert.equal(s.scene,null);assert.equal(s.score,score+100);
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ assert.match(main,/event-view/);assert.match(main,/facility-panorama/);
+});
+
+test('routine sailing events wait two real minutes even at four times sailing speed',()=>{
+ for(const speed of [1,4]){
+  let s=newGame();s.ship.x=-600;s.ship.z=-100;s.ship.heading=0;s.ship.provisions=10000;s.speed=speed;s.pirates=[];s.merchants=[];s.discovered=PORTS.map(p=>p.id);
+  for(let i=0;i<119;i++)for(let tick=0;tick<speed;tick++){s.ship.x=-400;s.ship.z=-300;s=stepSea(s,{manual:true,throttle:1},1);}
+  assert.equal(s.event,null,'no repeated popup during the first real minute');
+  assert.ok(s.eventClock<120);
+  for(let i=0;i<5&&!s.event;i++)for(let tick=0;tick<speed&&!s.event;tick++){s.ship.x=-400;s.ship.z=-300;s=stepSea(s,{manual:true,throttle:1},1);}
+  assert.ok(s.event,'routine events must remain available after their cooldown');
+ }
+});
+
+
+test('wider coastal water opens real passage without allowing deep inland sailing',()=>{
+ let widened=0;
+ for(let x=0;x<25;x++)for(let z=-625;z<-600;z++){
+  let originalLand=false;
+  for(const ring of LAND)for(let i=0,j=ring.points.length-1;i<ring.points.length;j=i++){
+   const [ax,az]=ring.points[i],[bx,bz]=ring.points[j];
+   if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)originalLand=!originalLand;
+  }
+  if(originalLand&&!isLand(x,z))widened++;
+ }
+ assert.ok(widened>10,'the Thames coast must gain usable water cells');
+ assert.equal(isLand(100,-600),true,'deep land remains blocked');
+ assert.equal(isLand(-400,-300),false,'open Atlantic remains navigable');
 });
