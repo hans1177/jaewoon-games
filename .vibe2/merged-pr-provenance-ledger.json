@@ -101622,11 +101622,157 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_2cbdc0feeb8c905c1b13d972",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10178",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "12fa7836a7e8d99d7058cb67a7192aa3f51e42fc",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10178,
+        "baseBranch": "main",
+        "headBranch": "fix/cozy-island-source-bind-and-runtime-persist-20261025",
+        "baseSha": "12fa7836a7e8d99d7058cb67a7192aa3f51e42fc",
+        "headSha": "db0296e01584a8000029e2a831a6dcd40a7fce4f",
+        "mergeCommitSha": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
+        "mergedAt": "2026-10-25T11:26:52Z",
+        "authorLogin": "hans1177",
+        "titleHash": "47aa07a51ff44233d19265d1fe7f2e491c31e125ce4cb98af5af9d4194913dee",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/cozy-island-source-bind-and-runtime-persist-20261025",
+        "candidateSha": "db0296e01584a8000029e2a831a6dcd40a7fce4f"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 16,
+        "addedLineCount": 245,
+        "deletedLineCount": 187,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "qa/company-development-roblox-final-review-revalidation.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/vibe2-owner-game-flow-lock.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/GameConfig.luau",
+          "roblox-games/gem-survivor/client/Game.client.luau",
+          "roblox-games/gem-survivor/roblox-source-bootstrap.json",
+          "roblox-games/gem-survivor/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "qa/company-development-roblox-final-review-revalidation.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/vibe2-owner-game-flow-lock.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/GameConfig.luau",
+          "roblox-games/gem-survivor/client/Game.client.luau",
+          "roblox-games/gem-survivor/roblox-source-bootstrap.json",
+          "roblox-games/gem-survivor/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10178",
+        "merge-commit:2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
+        "base-main:12fa7836a7e8d99d7058cb67a7192aa3f51e42fc"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 799
+    "total": 800
   }
 }
