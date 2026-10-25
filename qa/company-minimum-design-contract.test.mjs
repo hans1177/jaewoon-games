@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {migrateDirectNativeRuntime} from '../tools/company-direct-native-design-migration.mjs';
 import {evaluateMinimumDesignContract,materializeVibeMinimumDesign} from '../tools/company-minimum-design-contract.mjs';
 
 // Exercise the actual current verified-policy contract; never substitute a stub.
@@ -154,3 +155,32 @@ test('an owner brief marked for V5 cannot enter Vibe development with a legacy m
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+// 회귀: 레거시 변환에서도 원본 문법과 게임별 B 참조 검증을 보존한다.
+test('legacy migration cannot reapprove a standard design by dropping its seed',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'native-design-contract-'));
+  const source='design/cozy-island/2026-10-20/design-revised.json';
+  const record=base();
+  record.content.creativeGrammar={standardVersion:1,a:{system:'old A'},b:{system:'old B'}};
+  const previous=process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
+    const noSeed=evaluateMinimumDesignContract(record);
+    assert.equal(noSeed.pass,false);
+    assert.ok(noSeed.blockers.includes('DESIGN_A_NAMED_REFERENCE_GAME_REQUIRED'));
+    const put=(file,value)=>{fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),JSON.stringify(value));};
+    put(source,record);
+    const original=fs.readFileSync(path.join(root,source),'utf8');
+    put('development-queue.json',{items:[{gameId:'cozy-island',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',designBaselineSource:source}]});
+    put('game-seed-state.json',{seeds:[{gameId:'cozy-island',novelGrammarBackfill:{version:5},B_SYSTEM_REFERENCE:{scope:'B_EXISTING_GAME_SYSTEMS',systemFamily:'직접 채집',playerChoice:'월드 노드에서 직접 상호작용한다',source:'design/cozy-island/2026-09-22/design-revised.json'}}]});
+    put('autonomous-portfolio.json',{projects:[]});put('game-catalog.json',{games:[]});
+    const result=migrateDirectNativeRuntime(root);
+    assert.equal(result.blocked.length,1);
+    assert.ok(result.blocked[0].blockers.includes('DESIGN_B_EXISTING_SYSTEM_BASELINE_REQUIRED'));
+    assert.equal(result.alreadyReady.includes('cozy-island'),false);
+    assert.equal(fs.readFileSync(path.join(root,source),'utf8'),original);
+  }finally{
+    if(previous===undefined)delete process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH;else process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH=previous;
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});

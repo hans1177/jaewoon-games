@@ -67,8 +67,8 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   if(!roblox)blockers.push('ROBLOX_PLATFORM_PROFILE_INCOMPLETE');
   if(unityRequired&&!unity)blockers.push('UNITY_PLATFORM_PROFILE_INCOMPLETE');
   if(unityRequired&&roblox&&unity&&!distinct)blockers.push('PLATFORM_PROFILES_MUST_DIFFER');
-  // 기본 설계도 v5 MAIN × A × B × C + @ 문법과 실제 상태 연결이 있어야 한다.
-  const grammarRequired=requireGrammar||Math.max(
+  // 원본에 표준 문법이 있으면 시드 누락 호출도 최신 계약 검사를 생략하지 않는다.
+  const grammarRequired=requireGrammar||Number(content?.creativeGrammar?.standardVersion||0)>=1||Math.max(
     Number(seed?.GAMEPLAY_SKETCH?.version||0),
     Number(seed?.novelGrammarBackfill?.version||0),
     Number(record?.gameplaySketchVersion||0)

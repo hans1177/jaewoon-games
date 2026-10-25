@@ -313,17 +313,17 @@
       }
     },
     {
-      "revision": "OWNER-COZY-STANDARD-DESIGN-20261012-7",
+      "revision": "OWNER-COZY-STANDARD-DESIGN-20261025-8",
       "gameId": "cozy-island",
       "gameName": "포근섬",
       "status": "ACTIVE",
-      "requestedAt": "2026-10-12T17:05:55+09:00",
+      "requestedAt": "2026-10-25T22:50:00+09:00",
       "designRequest": {
         "originalPlatform": "ROBLOX",
         "baselineSource": "",
         "topicMode": "VIBE_FREE_TOPIC",
         "multiplayerMode": "COOP",
-        "instruction": "오너 요청 2026-10-12: 포근섬의 기존 기본설계를 새 표준으로 교체한다. 공식 원본 company-learning/platform-release-roadmap.json의 ownerBasicDesignMethod와 company-learning/game-design-grammar.md 분류표를 사용한다. MAIN = A + B + C + D + @. A는 대표 게임 장르의 중심 시스템과 소재 대분류, B는 보조 세부 게임 장르 시스템과 소재 중분류이며 A 중심·B 보조다. C는 게임 장르가 아니라 소설·영화식 주 장르와 보조 장르다. D는 C 두 장르와 소분류 소재의 정확한 분류 경로로 세계·존재·사건·규칙을 창작한다. @는 D를 바탕으로 단서→실험→발견→새 선택→다음 의문을 최소 4개부터 상한 없이 확장한다. MAIN은 마지막에 모든 요소의 결과로 도출한다. 별도 시드표 작성과 옛 MAIN×A×B×C 문법을 요구하지 않는다. 표준 분류표는 열린 초기 기준으로 사용하며 고정 후보 99개의 문장 조합으로 새 문법 충족을 주장하지 않는다. Vibe 디자이너가 서로 다른 창작 후보를 비교하고 반복 플레이·육하원칙·인과·모순을 검수한다. 이전 시드·설계·점수·체크포인트를 새 요청의 결과로 재사용하지 않는다. 다른 개발 작업, 기존 게임 소스·저장·보상·밸런스·멀티 권한·배포는 유지한다. 기존 Vibe2/Vibe3 및 DESIGN_ONLY 정식 흐름만 사용한다. 실행기에서 D·분류 계층이 지원되지 않으면 실제 미지원 항목과 실패를 보고하고 옛 결과를 새 표준 통과로 처리하지 않는다.\n\n2026-10-12 추가 사용자 지시: 기본 문법 A·B·C·D+@로 출력한다. B의 중심 시스템은 새 문법으로 생성하고, 기존 게임 시스템은 B 안의 보조 참조로만 사용한다. 기존 시스템으로 A 또는 B의 중심을 대체하지 않는다.",
+        "instruction": "오너 요청: 포근섬 반복 빌드업의 설계 검증 병목을 기존 설계 조직에서 해결한다. 최신 main 중앙정책 ownerBasicDesignMethod의 MAIN = A + B + C + D + @ 계약으로 기존 원본을 재검증하고 실패 필드를 실제 설계로 수정한다. A에는 이름 있는 참고 게임의 실제 시스템·플레이어 선택·출처를 작성한다. B는 bSystemReference.source 원본의 실제 시스템·선택을 보존하는 B_EXISTING_GAME_SYSTEMS이며 범용 모바일 루프나 B 보조 참조로 대체하지 않는다. 최신 분류 버전과 PLAN_A/PLAN_B의 abIntegration을 일치시킨다. 기존 포근섬 Roblox 게임 코드·규칙·저장 키·진행·경제·보상·밸런스·멀티 권한을 보존한다. 기존 섬 탐험·이동·NPC·몬스터·모바일 조작을 기준으로 구체적인 상태 연결과 실패·취소·복구를 작성한다. 과거 점수나 필드 표식으로 통과시키지 않으며 최신 최소 설계·엄격 검증 결과를 구분한다. 검증된 정확한 설계 리비전만 기존 승격→Vibe 빌드업→F0~F9→게시→동일 버전 게시 후 검증→다음 F0 경로로 전달한다. 새 파이프라인이나 검증 우회는 금지한다.",
         "bSystemReference": {
           "scope": "B_SUPPORTING_REFERENCE_ONLY",
           "source": "design/cozy-island/2026-09-22/design-revised.json"

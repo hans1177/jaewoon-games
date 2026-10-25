@@ -84,18 +84,19 @@ export function migrateDirectNativeRuntime(root='.'){
     const source=clean(item.designBaselineSource||item.minimumDesignContract?.source);
     if(!source||!fs.existsSync(path.join(root,source))){blocked.push({gameId,reason:'DESIGN_BASELINE_SOURCE_MISSING'});continue;}
     const file=path.join(root,source);
+    const seed=seedState.seeds.find(x=>clean(x.gameId)===gameId);
+    const contractOptions={seed:seed||{}};
     let design=read(file);
-    let gate=evaluateMinimumDesignContract(design);
+    let gate=evaluateMinimumDesignContract(design,contractOptions);
     const designAlreadyReady=gate.pass===true;
     if(!gate.pass){
       design=migrateOne(design,gameId);
-      gate=evaluateMinimumDesignContract(design);
+      gate=evaluateMinimumDesignContract(design,contractOptions);
       if(!gate.pass){blocked.push({gameId,reason:'MINIMUM_DESIGN_STILL_INCOMPLETE',blockers:gate.blockers});continue;}
       write(file,design);
       migrated.push(gameId);
     }else alreadyReady.push(gameId);
 
-    const seed=seedState.seeds.find(x=>clean(x.gameId)===gameId);
     const project=portfolio.projects.find(x=>clean(x.slug)===gameId);
     const game=catalog.games.find(x=>clean(x.id)===gameId);
     // 메인: 검증된 현재 승격 계약은 레거시 변환으로 다시 덮어쓰지 않는다.
