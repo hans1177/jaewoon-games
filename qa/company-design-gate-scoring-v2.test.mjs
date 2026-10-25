@@ -666,6 +666,9 @@ for(const item of [
 {
   const generator=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
   assert.ok(generator.includes('const freeTopicMode=ownerFreeTopic;'));
+  assert.ok(generator.includes('const nativeConfigPath=path.join(\'roblox-games\',gameId,\'shared\',\'GameConfig.luau\');'));
+  assert.ok(generator.includes('category:authoredCategory,platform:seed.INITIAL_TARGET_PLATFORM'));
+  assert.ok(generator.includes("?'RPG':seed.GAME_CATEGORY;"));
   assert.ok(!generator.includes('const freeTopicMode=ownerFreeTopic||Boolean(bSystemReference);'));
   assert.ok(generator.includes('trigger:shorten(`\${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,400)'));
   assert.ok(generator.includes('trigger:shorten(`\${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,400)'));
