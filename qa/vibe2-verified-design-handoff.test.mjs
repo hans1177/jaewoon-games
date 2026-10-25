@@ -56,3 +56,19 @@ test('no active development-confirmed seed creates no fabricated promotion or re
   assert.equal(result.pass,true);
   assert.deepEqual(result.verified,[]);
 });
+
+test('Vibe2 planner detects stale Cozy native design and dispatches only the existing designer without bypassing verification',async()=>{
+  const wf=(await import('node:fs')).readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const start=wf.indexOf('            # Refuse stale design authority; route the exact failed owner');
+  const end=wf.indexOf('            for runtime_design_path in design game-seed-state.json;',start);
+  assert.ok(start>=0&&end>start);
+  const section=wf.slice(start,end);
+  assert.match(section,/vibe2-verified-design-handoff\.mjs --runtime-sha/);
+  assert.match(section,/VIBE2_VERIFIED_DESIGN_BLOCKER=cozy-island:DESIGN_CONTRACT_NOT_PASSED/);
+  assert.match(section,/seed\.ownerRequestInstanceId==='VIBE2:'/);
+  assert.match(section,/gh workflow run company-seed-design-runtime\.yml --repo/);
+  assert.match(section,/-f game_id=cozy-island -f request_id=/);
+  assert.match(section,/VIBE2_VERIFIED_DESIGN_GATE=BLOCKED_UNTIL_AUTHORED_REVALIDATION/);
+  assert.match(section,/exit 1/);
+  assert.doesNotMatch(section,/VIBE2_VERIFIED_DESIGN_INTAKE=PASS.*echo|gh workflow run vibe2-continuous-core\.yml/);
+});
