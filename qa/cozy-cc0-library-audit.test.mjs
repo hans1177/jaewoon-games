@@ -166,7 +166,7 @@ test('기존 모든 로블록스 게임에 브릭 재질은 선택 가능하지�
   const games=fs.readdirSync('roblox-games',{withFileTypes:true}).filter(row=>row.isDirectory());
   const copies=games.map(row=>'roblox-games/'+row.name+'/shared/RobloxCommonMaterials.luau')
     .filter(file=>fs.existsSync(file));
-  assert.equal(copies.length,46,'이미 있는 공용 재질 소비자를 임의로 빼먹으면 안 된다');
+  assert.ok(copies.length>=46,'기존 공용 재질 소비자를 임의로 빼먹으면 안 된다');
   for(const file of copies){
     assert.equal(read(file),base,file+': 공용 재질 최신 원본과 달라진 복사본');
     if(!file.includes('/cozy-island/')){
