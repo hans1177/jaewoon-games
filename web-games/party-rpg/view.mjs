@@ -44,12 +44,26 @@ export class PartyView{
    const pixels=context.getImageData(0,0,canvas.width,canvas.height).data;
    for(let n=0;n<12;n++){
     const left=Math.round(n%4*canvas.width/4),right=Math.round((n%4+1)*canvas.width/4),top=Math.round(Math.floor(n/4)*canvas.height/3),bottom=Math.round((Math.floor(n/4)+1)*canvas.height/3);
-    // 옆 셀에서 넘어온 한두 픽셀이나 미세한 알파 먼지는 몸체 경계에 넣지 않는다.
-    const columns=new Uint16Array(right-left),rows=new Uint16Array(bottom-top);
-    for(let y=top;y<bottom;y++)for(let x=left;x<right;x++)if(pixels[(y*canvas.width+x)*4+3]>64){columns[x-left]++;rows[y-top]++;}
+    // 몸체와 주요 장비의 연결 영역만 경계 계산에 사용해 옆 셀의 칼끝을 제외한다.
+    const width=right-left,height=bottom-top,visited=new Uint8Array(width*height),stack=new Int32Array(width*height),parts=[];
+    for(let start=0;start<visited.length;start++){
+     if(visited[start])continue;visited[start]=1;
+     const sx=start%width,sy=Math.floor(start/width);
+     if(pixels[((top+sy)*canvas.width+left+sx)*4+3]<=64)continue;
+     let count=0,depth=1,x0=sx,x1=sx,y0=sy,y1=sy;stack[0]=start;
+     while(depth){
+      const id=stack[--depth],x=id%width,y=Math.floor(id/width);count++;x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+       if(!dx&&!dy)continue;const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height)continue;
+       const next=ny*width+nx;if(visited[next])continue;visited[next]=1;
+       if(pixels[((top+ny)*canvas.width+left+nx)*4+3]>64)stack[depth++]=next;
+      }
+     }
+     parts.push({count,x0,x1,y0,y1});
+    }
+    const largest=Math.max(0,...parts.map(p=>p.count));
     let x0=right,y0=bottom,x1=left,y1=top;
-    for(let x=left;x<right;x++)if(columns[x-left]>=8){x0=Math.min(x0,x);x1=x;}
-    for(let y=top;y<bottom;y++)if(rows[y-top]>=8){y0=Math.min(y0,y);y1=y;}
+    for(const part of parts)if(part.count>=Math.max(16,largest*.025)){x0=Math.min(x0,left+part.x0);x1=Math.max(x1,left+part.x1);y0=Math.min(y0,top+part.y0);y1=Math.max(y1,top+part.y1);}
     if(x1<x0||y1<y0)throw new Error('전신 원화 셀이 비어 있어: '+n);
     this.actorBounds.push({u0:x0/canvas.width,u1:(x1+1)/canvas.width,v0:1-(y1+1)/canvas.height,v1:1-y0/canvas.height,aspect:(x1-x0+1)/(y1-y0+1)});
    }
@@ -393,9 +407,9 @@ buildWorld(live){
   if(this.actorArt&&bounds){
    const geometry=new THREE.PlaneGeometry(1,1,12,20),uv=geometry.attributes.uv;
    for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(bounds.u0,bounds.u1,uv.getX(i)),THREE.MathUtils.lerp(bounds.v0,bounds.v1,uv.getY(i)));
-   uv.needsUpdate=true;pixelRest=geometry.attributes.position.array.slice();
+   uv.needsUpdate=true;pixelRest=geometry.attributes.position.array.slice();geometry.translate(0,.5,0);
    pixel=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({map:this.actorArt,transparent:true,alphaTest:.12,depthWrite:false,toneMapped:false,side:THREE.DoubleSide}));
-   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=height*.5;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);model.visible=false;
+   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=.035;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);model.visible=false;
   }
   const result={root,model,ring,mixer,actions,action:null,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,wasAttacking:false,attackAt:0,lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials:[]};
   this.scene.add(root);return result;
@@ -422,13 +436,13 @@ buildWorld(live){
     if(gel){px*=1+Math.sin(phase+now*.003)*.035;py-=Math.sin(phase+now*.003)*.018*t;}
     if(spirit)px+=Math.sin(now*.004+t*4)*.014*(1-t);
     if(attack&&Math.abs(x)>.22&&t>.35&&t<.84){px+=strike*.035;py+=strike*(entry.role==='wizard'||entry.role==='cleric'?.055:.015);}
-    positions.setXY(i,px,py);
+    positions.setXY(i,px,py+.5);
    }
    positions.needsUpdate=true;
    entry.pixel.quaternion.copy(this.camera.quaternion);
    entry.pixel.scale.x=entry.pixelWidth*entry.facing;
    const bob=spirit?Math.sin(now*.0033)*.045:gel?0:Math.abs(Math.sin(phase))*entry.motion*(heavy?.009:.018);
-   entry.pixel.position.y+=(entry.height*.5+bob+hit*.035-entry.pixel.position.y)*blend;
+   entry.pixel.position.y+=(.035+bob+hit*.035-entry.pixel.position.y)*blend;
    entry.pixel.material.color.setRGB(1,1-hit*.4,1-hit*.45);
    return;
   }
@@ -611,7 +625,7 @@ buildWorld(live){
   }
   this.gl.render(this.scene,this.camera);this.frameCost=this.frameCost*.94+(performance.now()-started)*.06;
   if(now-this.qualityAt>2200){this.qualityAt=now;const q=this.frameCost>24?Math.max(.72,this.quality-.1):this.frameCost<13?Math.min(1,this.quality+.05):this.quality;if(Math.abs(q-this.quality)>.01){this.quality=q;this.resize();}}
-  if(now-this.lastLabelsAt>110){this.lastLabelsAt=now;const labels=[];for(const [kind,obj,key] of visible){const entry=this.actors.get(key);if(!entry)continue;const v=new THREE.Vector3(obj.x*SCALE,entry.height+.2,obj.y*SCALE).project(this.camera);if(Math.abs(v.x)>1.1||Math.abs(v.y)>1.1)continue;const hp=kind==='player'?live.state.player:obj;labels.push({key,text:kind==='player'?live.state.player.name||'나':obj.name,x:(v.x+1)*this.width/2,y:(1-v.y)*this.height/2,hp:Math.max(0,Math.min(1,(hp.hp||0)/(hp.maxHp||1))),kind});}
+  if(now-this.lastLabelsAt>110){this.lastLabelsAt=now;const labels=[];for(const [kind,obj,key] of visible){const entry=this.actors.get(key);if(!entry)continue;const v=(entry.pixel?entry.pixel.localToWorld(new THREE.Vector3(0,1.13,0)):new THREE.Vector3(obj.x*SCALE,entry.height+.2,obj.y*SCALE)).project(this.camera);if(Math.abs(v.x)>1.1||Math.abs(v.y)>1.1)continue;const hp=kind==='player'?live.state.player:obj;labels.push({key,text:kind==='player'?live.state.player.name||'나':obj.name,x:(v.x+1)*this.width/2,y:(1-v.y)*this.height/2,hp:Math.max(0,Math.min(1,(hp.hp||0)/(hp.maxHp||1))),kind});}
    while(this.labels.length<labels.length){const node=document.createElement('div');node.className='world-label';node.innerHTML='<span></span><i><b></b></i>';this.labelRoot.append(node);this.labels.push(node);}
    this.labels.forEach((node,i)=>{const d=labels[i];node.hidden=!d;if(!d)return;node.style.transform=`translate(${Math.round(d.x)}px,${Math.round(d.y)}px)`;node.dataset.kind=d.kind;node.firstElementChild.textContent=d.text;node.querySelector('b').style.width=(d.hp*100)+'%';});
   }
