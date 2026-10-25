@@ -372,7 +372,14 @@ jobs:
             await utilityClick('#mapBtn');
             if(!(await page.locator('.mapMarker.imperial').count()))throw new Error('IMPERIAL_CASE_MAP_MISSING');
             await page.locator('#mapBack').click();
-            await page.evaluate(()=>{const p=window.partyRpgVibeState().p;p.x=1190;p.y=610;});
+            await page.evaluate(()=>{
+              const game=window.partyRpgVibeState();
+              // 사건 UI 검사는 무작위 필드 조우의 자동 정지와 분리한다.
+              game.state.tactics.autoPause=false;
+              game.enemies.forEach(e=>{e.x=1850;e.y=1140;});
+              if(game.tacticalPaused)document.getElementById('pauseBtn').click();
+              game.p.x=1190;game.p.y=610;
+            });
             await page.locator('#prompt.on').waitFor({timeout:15000});
             await page.locator('#interactBtn').click();
             await page.locator('[data-imperial-choice="1"]').click();
