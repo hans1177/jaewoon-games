@@ -604,6 +604,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
           artifactIdentity:currentPackageAssetFailure?null:clean(item.robloxBuildArtifactIdentity),
           ...(currentPackageAssetFailure?{
             assetThreshold:packageAssetFailure.assetThreshold,
+            staticContract:packageAssetFailure.staticContract,
             assetRepairPolicy:packageAssetFailure.assetRepairPolicy,
             runtimeVerified:false,productionVerified:false
           }:{}),

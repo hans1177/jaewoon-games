@@ -5571,6 +5571,8 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
     queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
   const contractTask=contractResult.tasks.find(row=>row.gameId===gameId&&row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.authority===contractEvidence.authority);
   assert.ok(contractTask,'static contract failure must reach actual existing Vibe source repair');
+  assert.deepEqual(contractTask.buildUpDirective.playtestRuntimeFindings.studioQualityFailure.staticContract,contractEvidence.staticContract,
+    'the source worker must receive the exact failed static contract and blockers');
   assert.equal(contractTask.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
   assert.equal(contractTask.buildUpNextAction,'CAUSAL_REPAIR');
   for(const owner of ['server','client','shared'])assert.ok(contractTask.responsibleFiles.includes(`roblox-games/${gameId}/${owner}/${owner==='shared'?'GameConfig':'Game.'+owner}.luau`));
