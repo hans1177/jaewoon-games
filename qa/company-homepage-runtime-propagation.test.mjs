@@ -28,10 +28,11 @@ test('paused Unity Web never generates build probes or launch links',()=>{
 // 실제 GitHub Pages 게시 검증은 기존 Web Release 파이프라인 책임이다.
 test('internal web game links use the registered source path without a score gate',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},platformLinks,buildCard,playableWebHref,sourceWebHref})',{
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},setRoutes(routes){publishedWebRoutes=new Set(routes)},platformLinks,buildCard,playableWebHref,sourceWebHref})',{
     document:{readyState:'loading',addEventListener(){}},Date,Intl
   });
   api.setExposure({games:[]});
+  api.setRoutes(['web-games/fantasy-survival/']);
   const row=(id,state,archive=true)=>({id,canonical:{
     identity:{gameId:id,name:id},
     lifecycle:{state:'ACTIVE'},
@@ -102,13 +103,15 @@ test('바이브가 원본 카탈로그에 새 게임을 추가하면 다음 원�
   syncPublishedWebRoutes({catalog,manifest:published,sourceTreeShaOf});
   assert.equal(JSON.stringify(catalog.games),snapshot,'repeated Vibe run must not create duplicate game buttons or commits');
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({playableWebHref})',{
+  const api=vm.runInNewContext(renderer+';({playableWebHref,setRoutes(routes){publishedWebRoutes=new Set(routes)}})',{
     document:{readyState:'loading',addEventListener(){}},Date,Intl});
   const withCanonical={...catalog.games[1],canonical:{
     identity:{gameId:'new-game'},lifecycle:{state:'ACTIVE'},
     sources:{web:{path:'web-games/new-game',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
     publication:{web:{route:catalog.games[1].webPublishedRoute,sourceTreeSha:catalog.games[1].webPublishedSourceTreeSha}}
   }};
+  assert.equal(api.playableWebHref(withCanonical),'','without a published manifest route, a game cannot claim to launch');
+  api.setRoutes(published.routes);
   assert.equal(api.playableWebHref(withCanonical),'https://hans1177.github.io/jaewoon-games/web-games/new-game/');
   syncPublishedWebRoutes({catalog,manifest:first,sourceTreeShaOf});
   assert.equal(catalog.games[1].webPublishedRoute,'','missing next release disables the new button, not the game card');
