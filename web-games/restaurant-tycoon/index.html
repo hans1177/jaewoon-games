@@ -11,7 +11,7 @@
 <button class="primary" id="tableBtn">🪑 테이블 추가<br><span id="tablePrice">300원</span></button><button id="cookBtn">👨‍🍳 요리사 고용<br><span id="cookPrice">500원</span></button><button class="full" id="menuBtn">📋 메뉴판<br><span id="menuCount">3종 영업 중</span></button>
 </div></div>
 <div id="intro"><div class="card"><div style="font-size:56px">🍽️</div><h1>식당 타이쿤</h1><p>손님 주문을 눌러 요리를 시작하고<br>완성되면 다시 눌러 서빙해!<br>돈을 벌어 테이블과 요리사를 늘려봐.<br><strong>플레이 2분 뒤 메뉴 2종 추가!</strong></p><button id="start">영업 시작!</button><div class="tiny">진행 상황은 이 기기에 자동 저장돼.</div></div></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.158.0/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 <script>
 (()=>{
 'use strict';
@@ -59,7 +59,7 @@ let scene=null,camera=null,renderer=null,models=[],people=[],chefModels=[];let u
 const canvas=$('scene');
 if(window.THREE){
 scene=new THREE.Scene();scene.background=new THREE.Color(0xb9eada);scene.fog=new THREE.Fog(0xb9eada,25,45);
-renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputEncoding=THREE.sRGBEncoding;
 camera=new THREE.PerspectiveCamera(42,1,.1,90);camera.position.set(13,18,23);camera.lookAt(0,0,0);
 scene.add(new THREE.HemisphereLight(0xffffff,0xa1a98b,2));
 const sun=new THREE.DirectionalLight(0xffe6b5,2.4);sun.position.set(-8,17,8);scene.add(sun);
