@@ -246,6 +246,81 @@ test('model-free action authoring handles many distinct controls with one indexe
 });
 
 
+test('model-free Roblox coder supports a separate native shutdown hook without touching the world renderer',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-no-model-separated-shutdown-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const relative='server/Game.server.luau';
+  const original=[
+    'local Players = game:GetService("Players")',
+    'local store',
+    'Players.PlayerAdded:Connect(function(player)',
+    '  local ok, saved = pcall(function()',
+    '    return store:GetAsync("player:" .. player.UserId)',
+    '  end)',
+    '  if ok and typeof(saved) == "table" then',
+    '    initializePlayer(player)',
+    '  else',
+    '    initializePlayer(player)',
+    '  end',
+    'end)',
+    'Players.PlayerRemoving:Connect(function(player)',
+    '  local snapshot = {}',
+    '  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end',
+    '  pcall(function()',
+    '    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)',
+    '  end)',
+    '  lastAction[player] = nil',
+    'end)',
+    '-- Existing authored game-world geometry and logic must be untouched.',
+    'local worldIdentity = "AMUSEMENT_WORLD"',
+    'game:BindToClose(function() end)'
+  ].join('\n');
+  fs.writeFileSync(path.join(root,relative),original);
+  const args={order:{target:'roblox',goal:'save stability and server shutdown'},sourceRoot:root,responsibleFiles:[relative]};
+  const candidate=deterministicRobloxNativeRepairCandidate(args);
+  assert.equal(candidate?.deterministicRobloxNativeRepair,'GUARDED_MERGED_SAVE_WITH_SEPARATE_SHUTDOWN');
+  assert.equal(candidate.edits.length,4);
+  let modified=original;
+  for(const edit of candidate.edits){
+    assert.equal(modified.split(edit.find).length,2,'every responsible source anchor must be unique');
+    modified=modified.replace(edit.find,edit.replace);
+  }
+  assert.match(modified,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(modified,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/);
+  assert.match(modified,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
+  assert.match(modified,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  assert.match(modified,/local worldIdentity = "AMUSEMENT_WORLD"/);
+  assert.equal((modified.match(/store:UpdateAsync\(/g)||[]).length,1);
+  assert.equal((modified.match(/store:GetAsync\(/g)||[]).length,1);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),original,'candidate generation must never write original');
+  fs.writeFileSync(path.join(root,relative),modified);
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'already migrated source stays unchanged');
+  fs.writeFileSync(path.join(root,relative),original.replace('return store:GetAsync','return unverifiedStore:GetAsync'));
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'unverified read source cannot be patched as if verified');
+});
+
+test('model-free Roblox save migrations preserve existing five games without repeated overwrite',()=>{
+  for(const id of ['egg-heist','exorcist-office','human-go','realistic-builder','amusement-tycoon']){
+    const relative='roblox-games/'+id+'/server/Game.server.luau';
+    const source=fs.readFileSync(relative,'utf8');
+    assert.match(source,/local verifiedSaveLoad = \{\}/,id);
+    assert.match(source,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/,id);
+    assert.match(source,/if verifiedSaveLoad\[player\] ~= true then return end/,id);
+    assert.match(source,/store:UpdateAsync\("player:" \.\. player.UserId, function\(current\)/,id);
+    assert.match(source,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/,id);
+    assert.match(source,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/,id);
+    assert.match(source,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*verifiedSaveLoad\[player\] = nil/,id);
+    assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/,id);
+    assert.equal((source.match(/store:UpdateAsync\("player:"/g)||[]).length,1,id);
+    assert.match(source,/local handler = handlers\[actionId\]/,id);
+    assert.equal(deterministicRobloxNativeRepairCandidate({
+      order:{target:'roblox',goal:'save shutdown stability'},
+      sourceRoot:'roblox-games/'+id,responsibleFiles:['server/Game.server.luau']
+    }),null,'source is already migrated: '+id);
+  }
+});
+
 test('Roblox model-free coding reuses exact existing save logic for shutdown with no save-schema changes',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-model-free-save-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
