@@ -104,6 +104,7 @@ env:
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API
+  VIBE2_ROBLOX_NO_MODEL_ONLY: ${{ vars.VIBE2_ROBLOX_NO_MODEL_ONLY || 'false' }}
   VIBE2_GEMINI_MODEL: gemini-3.8-flash
   VIBE2_GEMINI_BACKUP_MODEL: gemini-3.5-flash-lite
   VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
@@ -1897,6 +1898,7 @@ jobs:
           model_calls=1
           deterministic_source="${{ steps.order.outputs.deterministic_source }}"
           if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
+          if [ "$target" = 'roblox' ] && [ "$VIBE2_ROBLOX_NO_MODEL_ONLY" = 'true' ]; then model_calls=0; fi
           node "$contract_root/tools/free-budget-telemetry.mjs" \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
@@ -2014,6 +2016,10 @@ jobs:
           if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
             echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'
             echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
+            echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
+          elif [ "$TARGET" = 'roblox' ] && [ "$VIBE2_ROBLOX_NO_MODEL_ONLY" = 'true' ]; then
+            echo 'VIBE2_ROBLOX_SOURCE_MODE=VERIFIED_NO_MODEL_CODING'
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_NATIVE_SOURCE'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           else
             # 자체 생성·진단 후보를 먼저 검증한다. 키 검사는 실제 모델 요청 함수가 맡는다.
