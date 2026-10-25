@@ -132,13 +132,13 @@
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 0,
-      "deterministic_pre_gate": 22,
-      "designer_pre_gate_repair_1": 0,
-      "deterministic_pre_gate_after_repair_1": 23,
-      "designer_pre_gate_repair_2": 0,
-      "deterministic_pre_gate_after_repair_2": 20,
-      "deterministic_department_evidence": 0
+      "designer_draft": 262,
+      "deterministic_pre_gate": 20,
+      "designer_pre_gate_repair_1": 243,
+      "deterministic_pre_gate_after_repair_1": 17,
+      "designer_pre_gate_repair_2": 253,
+      "deterministic_pre_gate_after_repair_2": 17,
+      "deterministic_department_evidence": 5
     },
     "phaseBudgetMs": {
       "designer_draft": 180000,
@@ -174,7 +174,7 @@
     "checkpoint": {
       "contractVersion": 4,
       "engineDigest": "2b756570adb02b543a4df13cacafedd4acf56cbb69afb40c35f4a74c1173e146",
-      "reused": true,
+      "reused": false,
       "completedPhases": 7,
       "cachedTasks": 11
     },
@@ -330,7 +330,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-10-25T23:51:49.730Z"
+    "checkedAt": "2026-10-25T23:58:01.982Z"
   },
   "artbookUi": {
     "status": "WAITING",
