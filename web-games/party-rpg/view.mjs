@@ -401,15 +401,36 @@ buildWorld(live){
  createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}const flashMaterials=[];model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();for(const m of Array.isArray(p.material)?p.material:[p.material])if(m.emissive)flashMaterials.push({material:m,red:m.emissive.r,green:m.emissive.g,blue:m.emissive.b});}});root.add(model);// 픽셀 스프라이트가 직업 의복·장비 실루엣을 직접 그리므로 3D 장식은 중복 생성하지 않는다.
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
   const mixer=new THREE.AnimationMixer(model),actions=new Map();for(const clip of original.animations){const action=mixer.clipAction(clip);actions.set(clip.name,action);}
-  // 리깅된 상체·목·머리만 보조 동작을 더한다. 클립이 없는 몬스터에도 적용 가능.
+  // GLB마다 다른 뼈 이름을 정규화한다. 관절이 없는 개체는 보정하지 않고 원본 리깅 유지.
+  // Quaternius/Mixamo 계열: 골반 → 척추 → 쇄골/어깨 → 상완 → 전완 → 손,
+  // 대퇴 → 정강이 → 발목 → 발끝, 목 → 머리를 각각 부드럽게 보정한다.
   const bones={};
   model.traverse(node=>{
    if(!node.isBone||!node.name)return;
-   const name=node.name.toLowerCase();
-   let part=/head/.test(name)?'head':/neck/.test(name)?'neck':/spine2|chest|upperchest/.test(name)?'chest':null;
+   const name=node.name.toLowerCase().replace(/[^a-z0-9]/g,'').replace(/mixamorig/g,'');
+   const left=/left|l(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe)/.test(name);
+   const right=/right|r(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe)/.test(name);
+   let part=null;
+   if(/head/.test(name))part='head';
+   else if(/neck/.test(name))part='neck';
+   else if(/spine2|spine3|chest|thorax/.test(name))part='chest';
+   else if(/spine/.test(name))part='spine';
+   else if(/hips|pelvis/.test(name))part='pelvis';
+   else if(left||right){
+    const side=left?'left':'right';
+    if(/toe/.test(name))part=side+'Toe';
+    else if(/foot|ankle/.test(name))part=side+'Foot';
+    else if(/shin|calf|lowerleg|leglower|knee/.test(name))part=side+'Shin';
+    else if(/thigh|upperleg|upleg|legupper/.test(name))part=side+'Thigh';
+    else if(/shoulder|clavicle|collar/.test(name))part=side+'Shoulder';
+    else if(/forearm|lowerarm|armlower|elbow/.test(name))part=side+'Forearm';
+    else if(/wrist|hand/.test(name))part=side+'Hand';
+    else if(/upperarm|arm/.test(name))part=side+'Arm';
+   }
    if(part&&!bones[part]){
-    const tracked=original.animations.some(clip=>clip.tracks.some(track=>track.name.includes(node.name)));
-    bones[part]={node,rest:node.rotation.clone(),tracked};
+    const tracked=original.animations.some(clip=>clip.tracks.some(track=>
+     track.name.includes(node.name)&&/quaternion|rotation/.test(track.name)));
+    bones[part]={node,rest:node.rotation.clone(),tracked,offset:{x:0,y:0,z:0}};
    }
   });
   // 지지발 미세 고정: 뼈대에 양쪽 발이 있는 경우에만 적용한다.
@@ -568,13 +589,45 @@ buildWorld(live){
     entry.model.rotation.x+=(spirit?-load*.15:Math.sin(phase)*load*.045)*settle;
     if(spirit)entry.model.position.y+=(Math.sin(elapsed*4.1)*.03+strike*(creature==='flyer'?.16:.08))*settle;
    }
-   // 팔/머리 애니메이션은 원본 클립 위에 작게 덧씌우고 매 프레임 기준 자세로 복귀한다.
+   // 원본 Walk/Run/Attack의 키프레임을 보존한 채 전신 관절에 델타 포즈만 합성한다.
+   // 실제 이동거리에 묶인 양발 위상, 서로 반대인 팔 스윙, 어깨/팔꿈치/손목
+   // 후행, 골반/척추의 미세 회전을 감쇠 보간해 로봇 같은 관절 꺾임을 방지한다.
+   const authored=hasWalk?.36:1,lead=pace*Math.min(1,entry.visualSpeed/75);
+   const rightSide=attack&&(entry.role==='warrior'||entry.role==='rogue'||entry.kind==='enemy');
+   const upperHit=hit>.02?Math.min(.18,hit*.085*entry.hitPower):0;
+   const turn=THREE.MathUtils.clamp(entry.turnLean,-.10,.10);
    for(const [part,bone] of Object.entries(entry.bones||{})){
+    const left=part.startsWith('left'),right=part.startsWith('right');
+    const side=left||right?(left?1:-1):0;
+    const angle=phase+(right?Math.PI:0),step=Math.sin(angle)*lead,swing=Math.sin(angle-.32)*lead;
+    const lift=Math.max(0,Math.sin(angle+.1))*lead;
+    const walkArm=-step*(hasWalk?.11:.28);
+    const attackHand=(right||!rightSide&&left)?windup*.13-strike*(castStyle?-.18:bowStyle?-.11:.30):windup*.025;
+    const slow=part.endsWith('Hand')||part.endsWith('Toe')?8:part.endsWith('Forearm')||part.endsWith('Shin')?10:part==='head'?7:12;
+    let x=0,y=0,z=0;
+    if(part==='pelvis'){x=-Math.sin(phase*2)*lead*.018;y=turn*.32;z=Math.sin(phase)*lead*.023*authored;}
+    else if(part==='spine'){x=breath*.9+windup*.028;y=turn*.45;z=Math.sin(phase)*lead*.018*authored;}
+    else if(part==='chest'){x=breath*1.8+cast*.12-windup*.03;y=turn*.38+watch*.19;z=-Math.sin(phase)*lead*.025*authored;}
+    else if(part==='neck'){x=breath*.55+greeting*.18;y=watch*.2-turn*.14;z=-turn*.17;}
+    else if(part==='head'){x=greeting+Math.sin(elapsed*.77)*.016+upperHit*.28;y=watch*.77-turn*.24+Math.sin(elapsed*.31)*.026*resting;z=Math.sin(elapsed*.49)*.015*resting+turn*.31;}
+    else if(part.endsWith('Shoulder')){x=walkArm*.22+breath*.85+windup*.025;y=-side*turn*.19;z=side*(.014+breath*.48)-upperHit*.15;}
+    else if(part.endsWith('Arm')){x=walkArm*.68+attackHand*.72;y=side*(castStyle&&attack?.06:0);z=side*(windup*.04+breath*.28);}
+    else if(part.endsWith('Forearm')){x=-swing*(hasWalk?.055:.16)+Math.max(0,step)*(hasWalk?.04:.12)+attackHand*.66;y=side*strike*(bowStyle?.05:.018);z=side*.016*resting;}
+    else if(part.endsWith('Hand')){x=-Math.sin(angle-.55)*lead*(hasWalk?.018:.055)+attackHand*.26;y=side*Math.sin(elapsed*1.2)*.009;z=side*(castStyle&&attack?.065:.012*resting);}
+    else if(part.endsWith('Thigh')){x=step*(hasWalk?.06:.34)+strike*.025;y=-side*turn*.07;z=side*lift*.022;}
+    else if(part.endsWith('Shin')){x=Math.max(0,-swing)*(hasWalk?.045:.27)-step*(hasWalk?.018:.06);z=side*lift*.009;}
+    else if(part.endsWith('Foot')){x=-step*(hasWalk?.028:.12)+lift*(hasWalk?.018:.06);z=side*turn*.06;}
+    else if(part.endsWith('Toe')){x=Math.max(0,-swing)*(hasWalk?.018:.07);}
+    // 리깅된 뼈는 원본 애니메이션이 매 프레임 쓴 회전에서, 없는 채널은
+    // 초기 바인드 포즈에서 시작한다. 자기 자신의 이전 오프셋 누적 금지.
     const base=bone.tracked?bone.node.rotation:bone.rest;
-    const x=part==='head'?greeting+Math.sin(elapsed*.77)*.018:part==='neck'?breath*.6:breath*1.6+cast*.10;
-    const y=part==='head'?watch*.8+Math.sin(elapsed*.31)*.05*resting:part==='neck'?watch*.2:0;
-    const z=part==='head'?Math.sin(elapsed*.49)*.025*resting+entry.turnLean*.3:part==='neck'?0:entry.turnLean*.18;
-    bone.node.rotation.set(base.x+x,base.y+y,base.z+z);
+    const ox=bone.offset||{x:0,y:0,z:0};
+    const follow=1-Math.exp(-dt*slow);
+    const intensity=part==='head'||part==='neck'||part==='chest'||part==='spine'?1:
+     hasWalk?.76:1;
+    ox.x+=(x*intensity-ox.x)*follow;ox.y+=(y*intensity-ox.y)*follow;ox.z+=(z*intensity-ox.z)*follow;
+    bone.offset=ox;
+    bone.node.rotation.set(base.x+ox.x,base.y+ox.y,base.z+ox.z);
    }
    // 땅에 닿은 발은 월드 좌표에 짧게 붙이고, 반대편 발이 들리면 고정을 푼다.
    // 두 발이 없는 몬스터(슬라임/망령/날짐승)는 이 구간을 안전하게 건너뛴다.
