@@ -643,7 +643,7 @@ $('speed').addEventListener('click',()=>{state.speed=state.speed===1?2:state.spe
 // 메인: 회전식 카메라 대신 선박 중심 45도 위 시점을 제공한다.
 $('viewMode').addEventListener('click',()=>{const options=['chase','angle','chart'],next=options[(options.indexOf(scene.getCameraMode())+1)%options.length];scene.setCameraMode(next);$('viewMode').textContent=next==='chase'?'시점: 추적':next==='angle'?'시점: 45도':'시점: 해도';note(next==='chart'?'해도 시점으로 전환했어. 지도 위 항구를 눌러 항로를 설정해.':next==='angle'?'45도 위에서 선박을 내려다보는 고정 시점이야.':'선박을 중앙에 두고 45도 위에서 따라가.');});
 $('autoBattle').addEventListener('click',()=>{state.autoCombat=!state.autoCombat;save();summary();note(state.autoCombat?'자동 해전 켬 · 적을 만나면 측면을 잡고 자동 사격해.':'자동 해전 끔 · 수동 조타와 포격을 사용해.');});
-$('zoomIn').addEventListener('click',()=>scene.getCameraMode()==='chart'?scene.setZoom(scene.getZoom()*1.35):scene.setCameraDistance(.85));$('zoomOut').addEventListener('click',()=>scene.getCameraMode()==='chart'?scene.setZoom(scene.getZoom()/1.35):scene.setCameraDistance(1.15));
+$('zoomIn').addEventListener('click',()=>{scene.setZoom(scene.getZoom()*1.35);if(scene.getCameraMode()!=='chart')scene.setCameraDistance(.85);});$('zoomOut').addEventListener('click',()=>{scene.setZoom(scene.getZoom()/1.35);if(scene.getCameraMode()!=='chart')scene.setCameraDistance(1.15);});
 $('eventChoices').addEventListener('click',e=>{
  const button=e.target.closest('[data-event]');if(!button)return;
  const choice=Number(button.dataset.event);
