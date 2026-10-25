@@ -473,7 +473,7 @@ end)
 
    decorateHomeAssets(world,topY)
    local npcs=Instance.new("Folder");npcs.Name="HomeNPCs";npcs.Parent=world
-   local chief=figure(npcs,"Chief",Vector3.new(0,topY+6,8),Color3.fromRGB(157,109,73),Color3.fromRGB(77,67,57),1);label(chief,"마을 이장",Color3.fromRGB(255,221,145),30);prompt(chief,"마을 이장","주민 고용").Triggered:Connect(hire)
+   local chief=figure(npcs,"Chief",Vector3.new(17,topY+6,12),Color3.fromRGB(157,109,73),Color3.fromRGB(77,67,57),1);label(chief,"마을 이장",Color3.fromRGB(255,221,145),30);prompt(chief,"마을 이장","주민 고용").Triggered:Connect(hire)
    local lumber=figure(npcs,"LumberMaster",Vector3.new(-32,topY+6,14),Color3.fromRGB(86,126,78),Color3.fromRGB(67,76,58),.9);label(lumber,"벌목반장",Color3.fromRGB(202,239,189),26);prompt(lumber,"벌목반장","주민 배치").Triggered:Connect(function(p)job(p,"WoodWorkers")end)
    local farmer=figure(npcs,"Farmer",Vector3.new(-30,topY+6,-12),Color3.fromRGB(168,139,73),Color3.fromRGB(83,76,55),.9);label(farmer,"농장주",Color3.fromRGB(242,226,151),26);prompt(farmer,"농장주","주민 배치").Triggered:Connect(function(p)job(p,"Farmers")end)
    local captain=figure(npcs,"Captain",Vector3.new(36,topY+6,-12),Color3.fromRGB(111,87,75),Color3.fromRGB(68,66,70),.95);label(captain,"병영대장",Color3.fromRGB(235,194,153),26);prompt(captain,"병영대장","병영 강화").Triggered:Connect(upgradeBarracks)
@@ -487,7 +487,7 @@ end)
    for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14),5+i,topY)end
    -- 기존 여덟 몬스터는 보존하고 추가 두 종류만 외곽에서 등장한다.
    spawnMob("RAIDER",Vector3.new(98,topY+5,88),9,topY)
-   spawnMob("RAIDER",Vector3.new(110,topY+5,72),10,topY)
+   spawnMob("RAIDER",Vector3.new(105,topY+5,72),10,topY)
   elseif index==2 then
    for i=1,18 do local a=i/18*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*40,topY-r.Pos.Y,math.sin(a)*40),.7+(i%3)*.14,Color3.fromRGB(86,91,101))end
    for i=1,7 do part(world,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-35+i*10,topY+3,r.Pos.Z+27),Color3.fromRGB(145,158,171),Enum.Material.Metal)end
