@@ -408,19 +408,19 @@ buildWorld(live){
   model.traverse(node=>{
    if(!node.isBone||!node.name)return;
    const name=node.name.toLowerCase().replace(/[^a-z0-9]/g,'').replace(/mixamorig/g,'');
-   const left=/left|l(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe)/.test(name);
-   const right=/right|r(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe)/.test(name);
+   const left=/left|l(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)/.test(name)||/(?:shoulder|clavicle|upperarm|lowerarm|forearm|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)l$/.test(name);
+   const right=/right|r(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)/.test(name)||/(?:shoulder|clavicle|upperarm|lowerarm|forearm|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)r$/.test(name);
    let part=null;
    if(/head/.test(name))part='head';
    else if(/neck/.test(name))part='neck';
-   else if(/spine2|spine3|chest|thorax/.test(name))part='chest';
+   else if(/spine0?[2-9]|spine1$|chest|thorax/.test(name))part='chest';
    else if(/spine/.test(name))part='spine';
    else if(/hips|pelvis/.test(name))part='pelvis';
    else if(left||right){
     const side=left?'left':'right';
-    if(/toe/.test(name))part=side+'Toe';
+    if(/toe|ball/.test(name))part=side+'Toe';
     else if(/foot|ankle/.test(name))part=side+'Foot';
-    else if(/shin|calf|lowerleg|leglower|knee/.test(name))part=side+'Shin';
+    else if(/shin|calf|lowerleg|leglower|knee|(?:left|right)leg$/.test(name))part=side+'Shin';
     else if(/thigh|upperleg|upleg|legupper/.test(name))part=side+'Thigh';
     else if(/shoulder|clavicle|collar/.test(name))part=side+'Shoulder';
     else if(/forearm|lowerarm|armlower|elbow/.test(name))part=side+'Forearm';
