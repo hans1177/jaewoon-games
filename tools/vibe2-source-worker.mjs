@@ -1785,6 +1785,66 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       }
     }
     if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
+      // 게임 소스 뒤쪽의 네이티브 월드/로비 코드 때문에 종료 핸들러가 분리된 형태도 지원한다.
+      // 학습이나 모델의 추측이 아니라 GameConfig 저장 원본 1개 + 비어 있는 종료 훅 1개만 교정한다.
+      const start='Players.PlayerAdded:Connect(function(player)';
+      const check='  if ok and typeof(saved) == "table" then';
+      const oldLeave=[
+        'Players.PlayerRemoving:Connect(function(player)',
+        '  local snapshot = {}',
+        '  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end',
+        '  pcall(function()',
+        '    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)',
+        '  end)',
+        '  lastAction[player] = nil',
+        'end)'
+      ].join('\n');
+      const shutdown='game:BindToClose(function() end)';
+      if(source.includes('local store\n')
+        &&source.includes('return store:GetAsync("player:" .. player.UserId)')
+        &&source.includes('local Players = game:GetService("Players")')
+        &&!source.includes('verifiedSaveLoad')
+        &&!/(?:local\s+function\s+savePlayer\s*\(|savePlayer\s*=)/.test(source)
+        &&source.split(start).length===2
+        &&source.split(check).length===2
+        &&source.split(oldLeave).length===2
+        &&source.split(shutdown).length===2
+        &&source.indexOf(shutdown)>source.indexOf(oldLeave)+oldLeave.length){
+        const newLeave=[
+          'local function savePlayer(player)',
+          '  if verifiedSaveLoad[player] ~= true then return end',
+          '  local snapshot = {}',
+          '  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end',
+          '  local ok, err = pcall(function()',
+          '    store:UpdateAsync("player:" .. player.UserId, function(current)',
+          '      if current ~= nil and typeof(current) ~= "table" then return nil end',
+          '      local merged = typeof(current) == "table" and table.clone(current) or {}',
+          '      for key, value in pairs(snapshot) do merged[key] = value end',
+          '      return merged',
+          '    end)',
+          '  end)',
+          '  if not ok then warn("VIBE2_ROBLOX_SAVE_FAILED", player.UserId, tostring(err)) end',
+          'end',
+          'Players.PlayerRemoving:Connect(function(player)',
+          '  savePlayer(player)',
+          '  verifiedSaveLoad[player] = nil',
+          '  lastAction[player] = nil',
+          'end)'
+        ].join('\n');
+        return{
+          summary:'Roblox no-model separated native shutdown safe save repair',
+          expectedEffect:'Protect the original GameConfig save keys and preserve distinct native world code between leave and shutdown',
+          edits:[
+            {path:relative,find:start,replace:'local verifiedSaveLoad = {}\n'+start},
+            {path:relative,find:check,replace:'  verifiedSaveLoad[player] = ok and (saved == nil or typeof(saved) == "table")\n'+check},
+            {path:relative,find:oldLeave,replace:newLeave},
+            {path:relative,find:shutdown,replace:'game:BindToClose(function()\n  for _, player in ipairs(Players:GetPlayers()) do savePlayer(player) end\nend)'}
+          ],newFiles:[],replaceFiles:[],tests:[],
+          deterministicRobloxNativeRepair:'GUARDED_MERGED_SAVE_WITH_SEPARATE_SHUTDOWN'
+        };
+      }
+    }
+    if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
       const start='Players.PlayerRemoving:Connect(function(player)';
       const close='game:BindToClose(function() end)';
       const from=source.indexOf(start),to=source.indexOf('\n'+close,from+start.length);
