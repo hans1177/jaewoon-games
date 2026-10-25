@@ -76,7 +76,7 @@ foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
 local function part(parent,name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
  x.TopSurface=Enum.SurfaceType.Smooth;x.BottomSurface=Enum.SurfaceType.Smooth;x.Parent=parent
- Materials.ApplyAuthoredSurface(x,"COZY")
+ Materials.ApplyAuthoredSurface(x,Style.MaterialStyle or "COZY")
  return x
 end
 local function attach(rootPart,name,size,offset,color,material,shape,rotation)
@@ -85,7 +85,7 @@ local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  local rot=rotation or Vector3.zero
  x.CFrame=rootPart.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
  if shape then x.Shape=shape end;x.Parent=rootPart
- Materials.ApplyAuthoredSurface(x,"COZY")
+ Materials.ApplyAuthoredSurface(x,Style.MaterialStyle or "COZY")
  if name:match("Arm[LR]$")or name:match("Leg[LR]$")or name=="BoarLeg" then
   local m=Instance.new("Motor6D");m.Name=name.."Joint";m.Part0=rootPart;m.Part1=x;m.C0=rootPart.CFrame:ToObjectSpace(x.CFrame);m.C1=CFrame.identity;m.Parent=rootPart
  else
