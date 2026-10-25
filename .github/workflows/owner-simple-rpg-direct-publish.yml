@@ -453,7 +453,8 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs priority
   upload_actor_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
+    # 출처 목록(manifest.json)만 변경된 경우 외부 업로드가 자동 발동하지 않도록 실제 이진 원본/파생 경로만 감지한다.
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/native/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/native/') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/sources/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/sources/'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
