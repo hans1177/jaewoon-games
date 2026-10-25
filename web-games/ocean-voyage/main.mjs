@@ -158,20 +158,26 @@ function drawChart(world=false){
 }
 
 // 항구 인물: 기존 CC0 초상 시트를 재사용하는 시설별 안내인.
+// 시설 안내인: 각 항구 × 조선소/교역소/왕궁/선술집/탐험/길드의 반실사 반신 초상화.
 function portNpc(kind){
  const p=canDock(state);if(!p)return '';
- const profile=PORT_SCENES[p.id];
+ const profile=PORT_SCENES[p.id],host=TAVERN_HOSTS.find(h=>h.port===p.id);
  const info={market:[profile.marketNpc||'교역소 상인','물품을 사고팔기 전에 현지 시세부터 살펴봐.'],
  fleet:[profile.fleetNpc||'항구 조선 장인','선체, 돛, 함포와 선수상을 먼저 확인해.'],
  palace:[profile.palaceNpc||'항만 행정관','이 항구의 동맹과 투자 현황을 확인해.'],
- crew:[TAVERN_HOSTS.find(h=>h.port===p.id)?.name||'선술집 주인','여행객들의 이야기에 새로운 항로가 숨어 있어.'],
+ crew:[host?.name||'선술집 주인','여행객들의 이야기에 새로운 항로가 숨어 있어.'],
  quests:['유적 기록관','기록된 항로와 발견물을 함께 검토하자.'],
  jobs:['길드 직업 교관','항해 경험에 맞는 직책을 알려줄게.']}[kind];
  if(!info)return '';
- const personIndex=(PORTS.indexOf(p)+['market','fleet','palace','crew','quests','jobs'].indexOf(kind)*3)%12;
- const bx=personIndex%4*33.333,by=Math.floor(personIndex/4)*50;
- return '<div class="npc-dialog '+kind+'"><div class="npc-portrait" style="background-position:'+bx+'% '+by+'%" aria-hidden="true"></div><div><small>⚜ '+escapeHtml(p.name)+' · '+escapeHtml(profile.district)+'</small><strong>'+escapeHtml(info[0])+'</strong><p>“'+escapeHtml(info[1])+'”</p></div></div>';
+ const occupations=['market','fleet','palace','crew','quests','jobs'],position=occupations.indexOf(kind);
+ const portIndex=PORTS.indexOf(p);
+ const sets={market:'captains',fleet:'crew',palace:'captains',crew:'innkeepers',quests:'crew',jobs:'captains'};
+ const atlas=sets[kind],slot=kind==='crew'&&host?Number(host.face)||0:(portIndex*3+position*2)%5;
+ const tint=kind==='fleet'?'#685037':kind==='market'?'#96744d':kind==='palace'?'#594251':kind==='crew'?'#a07849':kind==='quests'?'#516c69':'#61523d';
+ const role={market:'무역과 물류',fleet:'조선·선박 수리',palace:'왕실·행정',crew:'여관·정보',quests:'탐험·고고학',jobs:'직업·기술'}[kind];
+ return '<div class="npc-dialog npc-half '+kind+'" style="--npc-tint:'+tint+'"><div class="npc-frame"><span class="npc-half-face" role="img" aria-label="'+escapeHtml(info[0])+'의 반실사 반신 초상화" style="background-image:url(./assets/'+atlas+'.webp);background-position:'+(slot*25)+'% center"></span><span class="npc-medallion" aria-hidden="true">'+['⚖','⚒','♛','✦','✧','✥'][position]+'</span></div><div class="npc-copy"><small>⚜ '+escapeHtml(p.name)+' · '+escapeHtml(profile.district)+'</small><strong>'+escapeHtml(info[0])+'</strong><em>'+role+'</em><p>“'+escapeHtml(info[1])+'”</p></div></div>';
 }
+
 // 교역소: 상품별 재고·현재 시세·7일 추세·수요/공급·지역 사건을 모바일에서 한눈에 확인한다.
 function market(){
  const p=canDock(state);
