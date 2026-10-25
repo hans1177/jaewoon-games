@@ -1771,7 +1771,8 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           &&/typeof\(current\)\s*~=\s*"table"/.test(body)
           &&/lastAction\[player\]\s*=\s*nil/.test(body)
           &&/verifiedSaveRead\[player\]\s*=\s*nil/.test(body)
-          &&body.trim().endsWith('end')){
+          &&/worldObjectStates\[player\]\s*=\s*nil/.test(body)
+          &&body.trim().endsWith('playerLoadStarted[player] = nil')){
           const shared='local function savePlayer(player)'+body+'end\nPlayers.PlayerRemoving:Connect(savePlayer)';
           const onShutdown='game:BindToClose(function()\n'
             +'  for _, player in ipairs(Players:GetPlayers()) do\n'
