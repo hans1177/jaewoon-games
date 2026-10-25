@@ -373,10 +373,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-25T14:24:22.140Z",
+      "updatedAt": "2026-10-25T14:42:38.993Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -394,17 +394,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
       "robloxBuildArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-      "robloxBuildPassedAt": "2026-10-24T18:55:13.713Z",
+      "robloxBuildPassedAt": "2026-10-25T14:42:38.993Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-24T18:55:13.713Z",
+      "robloxBuildPreflightPassedAt": "2026-10-25T14:42:38.993Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-24T18:48:40.384Z",
+        "checkedAt": "2026-10-25T14:41:45.324Z",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "secondaryOwnerFocus": false,
@@ -442,7 +442,7 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "Exact deterministic package identity checks passed, source validation is true, and build/package passed."
+            "note": "Exact deterministic package identity checks passed, source validation passed, and build or package passed. Eligible to start runtime testing."
           }
         ],
         "blockers": [],
@@ -456,12 +456,12 @@
         "gameId": "fantasy-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-24T18:48:41.115Z",
+        "checkedAt": "2026-10-25T14:41:45.864Z",
         "sourcePath": "roblox-games/fantasy-survival",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "rebuiltArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-        "artifactRunId": 40121477710,
+        "artifactRunId": 40202227637,
         "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
         "assetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
         "observedAssetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
@@ -544,19 +544,8 @@
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+              "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
               "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
@@ -565,10 +554,22 @@
               "pass": false
             },
             {
-              "index": 2,
-              "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "index": 1,
+              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "COMBAT",
+                "EQUIPMENT"
               ],
               "pass": false
             }
@@ -579,25 +580,6 @@
               "name": "마력숲 생존기",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-              "capabilities": [
-                "SESSION_FLOW",
-                "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
@@ -606,13 +588,36 @@
               "pass": false
             },
             {
-              "index": 3,
-              "name": "금기와 기회의 교차",
+              "index": 1,
+              "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
               "capabilities": [
-                "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
-                "ENEMY_AI"
+                "ENEMY_AI",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "제작과 방어 거점 관리 × 공성전",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
               ],
               "pass": false
             }
@@ -703,7 +708,7 @@
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+          "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
           "antiSkeletonPassed": false,
           "designGenre": "Survival",
           "sourceGenre": "Survival",
@@ -764,12 +769,12 @@
         "gameId": "fantasy-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-24T18:48:41.115Z",
+        "checkedAt": "2026-10-25T14:41:45.864Z",
         "sourcePath": "roblox-games/fantasy-survival",
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "rebuiltArtifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
-        "artifactRunId": 40121477710,
+        "artifactRunId": 40202227637,
         "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
         "assetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
         "observedAssetSelectionFingerprint": "4408eaaee66d8a0c4a957aac3459d8909bd52f66d9bc3d59bb10a83d45257fff",
@@ -852,19 +857,8 @@
           "coreLoopTrace": [
             {
               "index": 0,
-              "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+              "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
               "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
@@ -873,10 +867,22 @@
               "pass": false
             },
             {
-              "index": 2,
-              "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "index": 1,
+              "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
               "capabilities": [
-                "CONTENT_ENTITY"
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+              "capabilities": [
+                "COMBAT",
+                "EQUIPMENT"
               ],
               "pass": false
             }
@@ -887,25 +893,6 @@
               "name": "마력숲 생존기",
               "capabilities": [
                 "WORLD",
-                "CONTENT_ENTITY"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-              "capabilities": [
-                "SESSION_FLOW",
-                "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
@@ -914,13 +901,36 @@
               "pass": false
             },
             {
-              "index": 3,
-              "name": "금기와 기회의 교차",
+              "index": 1,
+              "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
               "capabilities": [
-                "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
-                "ENEMY_AI"
+                "ENEMY_AI",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "제작과 방어 거점 관리 × 공성전",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "EQUIPMENT"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+              "capabilities": [
+                "SESSION_FLOW",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT"
               ],
               "pass": false
             }
@@ -1011,7 +1021,7 @@
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+          "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
           "antiSkeletonPassed": false,
           "designGenre": "Survival",
           "sourceGenre": "Survival",
@@ -1112,8 +1122,8 @@
         "sourceRevision": "530868b3d76bb35e06da0198cef24923718d3a7b",
         "artifactIdentity": "sha256:7247034dad202bf79fbe6322776e6c02576b624f27af93afcd5265f4fe8afae4",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 40121477710,
-        "testedAt": "2026-10-24T18:55:13.713Z",
+        "workflowRunId": 40202227637,
+        "testedAt": "2026-10-25T14:42:38.993Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -1195,19 +1205,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1216,10 +1215,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -1230,25 +1241,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1257,13 +1249,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -1354,7 +1369,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -1418,19 +1433,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1439,10 +1443,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -1453,25 +1469,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1480,13 +1477,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -1577,7 +1597,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -1641,19 +1661,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1662,10 +1671,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -1676,25 +1697,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1703,13 +1705,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -1800,7 +1825,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -1864,19 +1889,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1885,10 +1899,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -1899,25 +1925,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -1926,13 +1933,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2023,7 +2053,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -2087,19 +2117,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2108,10 +2127,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2122,25 +2153,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2149,13 +2161,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2246,7 +2281,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -2310,19 +2345,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2331,10 +2355,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2345,25 +2381,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2372,13 +2389,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2469,7 +2509,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -2533,19 +2573,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2554,10 +2583,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2568,25 +2609,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2595,13 +2617,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2692,7 +2737,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -2756,19 +2801,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2777,10 +2811,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2791,25 +2837,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -2818,13 +2845,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -2915,7 +2965,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -2979,19 +3029,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3000,10 +3039,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3014,25 +3065,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3041,13 +3073,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3138,7 +3193,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -3202,19 +3257,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3223,10 +3267,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3237,25 +3293,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3264,13 +3301,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3361,7 +3421,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -3425,19 +3485,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3446,10 +3495,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3460,25 +3521,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3487,13 +3529,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3584,7 +3649,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -3648,19 +3713,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3669,10 +3723,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3683,25 +3749,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3710,13 +3757,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3807,7 +3877,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -3871,19 +3941,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3892,10 +3951,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -3906,25 +3977,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -3933,13 +3985,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -4030,7 +4105,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4094,19 +4169,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -4115,10 +4179,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -4129,25 +4205,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -4156,13 +4213,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -4253,7 +4333,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4317,19 +4397,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -4338,10 +4407,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -4352,25 +4433,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -4379,13 +4441,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -4476,7 +4561,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -4540,19 +4625,8 @@
               "coreLoopTrace": [
                 {
                   "index": 0,
-                  "step": "환경 탐색과 자원 확보: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
+                  "step": "전투와 획득 장비의 조합 운용: 적 특성과 획득한 장비를 비교해 전투 방식과 다음 탐험 준비를 선택한다하면서 선택의 책임: 정해진 역할을 따르거나 다른 행동을 택한다. 자신이 선택한 이유와 결과를 인정함일 때 인물의 관계와 이후 목표가 달라진다",
                   "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -4561,10 +4635,22 @@
                   "pass": false
                 },
                 {
-                  "index": 2,
-                  "step": "환경 탐색과 자원 확보로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "index": 1,
+                  "step": "제작과 방어 거점 관리: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 공성탑: 탑을 이동시키거나 성문을 우회한다. 이동로가 확보되고 방어 위치를 확인함일 때 성벽의 공격과 진입 방향이 바뀐다",
                   "capabilities": [
-                    "CONTENT_ENTITY"
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "step": "전투와 획득 장비의 조합 운용로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
+                  "capabilities": [
+                    "COMBAT",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -4575,25 +4661,6 @@
                   "name": "마력숲 생존기",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "제작과 방어 거점 관리 × 민속 금기와 전염",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
                     "ENEMY_AI",
@@ -4602,13 +4669,36 @@
                   "pass": false
                 },
                 {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
+                  "index": 1,
+                  "name": "전투와 획득 장비의 조합 운용 × 철학·사상",
                   "capabilities": [
-                    "WORLD",
                     "CONTENT_ENTITY",
                     "COMBAT",
-                    "ENEMY_AI"
+                    "ENEMY_AI",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 2,
+                  "name": "제작과 방어 거점 관리 × 공성전",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "EQUIPMENT"
+                  ],
+                  "pass": false
+                },
+                {
+                  "index": 3,
+                  "name": "암호문: 독립된 단서가 같은 의미를 지지함의 성립",
+                  "capabilities": [
+                    "SESSION_FLOW",
+                    "CONTENT_ENTITY",
+                    "COMBAT",
+                    "ENEMY_AI",
+                    "EQUIPMENT"
                   ],
                   "pass": false
                 }
@@ -4699,7 +4789,7 @@
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
-              "designFingerprint": "dc2b6667f7dcfdb4d226cd9ab9f21f723e8a5f8570c945ab78ff89e2b9d6863b",
+              "designFingerprint": "ece1338de9ee7756e00e2908590b48487dc102dc666ba6fe31995a2526f50c8c",
               "antiSkeletonPassed": false,
               "designGenre": "Survival",
               "sourceGenre": "Survival",
@@ -5232,7 +5322,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-25T14:42:05.462Z",
+  "updatedAt": "2026-10-25T14:42:38.993Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -5298,5 +5388,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
