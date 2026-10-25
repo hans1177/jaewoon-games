@@ -44,7 +44,7 @@ test('Only verified CC0 actors replace Cozy village/raider visuals, originals an
   assert.match(source,/local selected=isRaider and \{id=CC0\.Raider\[/);
   assert.match(source,/task\.spawn\(applyCC0Appearance,r,licenseAsset/);
   assert.match(source,/task\.spawn\(applyCC0Appearance,r,selected\.id/);
-  assert.match(source,/Materials\.ApplyAuthoredSurface\(x,"COZY"\)/);
+  assert.match(source,/Materials\.ApplyAuthoredSurface\(x,Style\.MaterialStyle or "COZY"\)/);
   assert.match(source,/if child:IsA\("BasePart"\)then child:Destroy\(\)end/);
   assert.match(source,/joint\.Name="CozyVisualJoint"\.\.roots/);
   assert.match(source,/while loadingAssets\[id\] do/);
@@ -126,4 +126,35 @@ test('grant validates exact prechecked universe and treats server permission err
   assert.deepEqual(received.body.requests,[{assetId:70786111181272,grantToDependencies:true}]);
   await assert.rejects(()=>grantCozyCC0({report:{...report,universeId:'wrong'},apiKey:'mock-test-key',cookie:'',fetchImpl}),/CC0_AUDIT_REQUIRED/);
   await assert.rejects(()=>grantCozyCC0({report,apiKey:'mock-test-key',cookie:'',fetchImpl:async()=>({ok:false,status:403,json:async()=>({})})}),/GRANT_FAILED/);
+});
+
+test('공용 브릭 재질은 선택형이며 실제 메시·물리·원본 모델을 보존한다',()=>{
+  const common=read('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau');
+  const cozy=read('roblox-games/cozy-island/shared/RobloxCommonMaterials.luau');
+  const catalog=JSON.parse(read('assets/roblox/common-materials-v1/catalog.json'));
+  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
+  const client=read('roblox-games/cozy-island/client/MaterialPresentation.client.luau');
+  const bootstrap=read('tools/company-development-roblox-bootstrap.mjs');
+  const vibePlan=read('tools/vibe2-asset-production-plan.mjs');
+  assert.match(vibePlan,/TOY_BRICK.*레고/,'기존 바이브 스타일 추론에서 게임별 브릭 스타일 선택 지원');
+  assert.equal(common,cozy,'게임별 재질 복사본은 공용 원본과 일치해야 한다');
+  assert.equal(catalog.atoms.length,26);
+  assert.equal(catalog.systemDepthContract.currentAssetCount,26);
+  assert.deepEqual(catalog.atoms.find(row=>row.atomId==='TOY_PLASTIC').variants,['SATIN','GLOSSY','MATTE','DARK']);
+  assert.ok(catalog.atoms.find(row=>row.atomId==='STYLE_VARIANT').variants.includes('TOY_BRICK'));
+  assert.equal(catalog.toyBrickStyle.productionVerified,false,'재질 카탈로그만으로 런타임 검증 불가');
+  assert.equal(catalog.toyBrickStyle.runtimeVerified,false);
+  assert.match(common,/TOY_PLASTIC = table\.freeze/);
+  assert.match(common,/if style=="TOY_BRICK"then/);
+  assert.match(common,/if part:IsA\("MeshPart"\) or part:GetAttribute\("MaterialStyle"\)=="TOY_BRICK"then return false end/);
+  assert.match(common,/RobloxCommonMaterials\.Apply\(part,"TOY_PLASTIC",\{variant=variant,tint=authoredColor,tintStrength=1,preservePhysics=true\}\)/);
+  assert.match(common,/part:SetAttribute\("ToyBrickGeometryState","CC0_MESH_AND_STUD_TOPOLOGY_INDEPENDENT_QA_REQUIRED"\)/);
+  assert.match(common,/if preservePhysics and physicalBefore then[\s\S]*?part\.CustomPhysicalProperties = physicalBefore/);
+  assert.match(common,/if part:IsA\("MeshPart"\) and \(part:FindFirstChildOfClass\("SurfaceAppearance"\) or part\.TextureID~=""\)then return false end/);
+  assert.doesNotMatch(common,/Instance\.new\(["'](?:Part|WedgePart|MeshPart)["']\)/,'신규 외형 파츠를 발명하지 않는다');
+  assert.match(style,/MaterialStyle="TOY_BRICK"/);
+  assert.match(source,/Materials\.ApplyAuthoredSurface\(x,Style\.MaterialStyle or "COZY"\)/);
+  assert.match(client,/local style=Style\.MaterialStyle or "COZY"/);
+  assert.match(bootstrap,/common-materials-v1\/RobloxCommonMaterials\.luau/);
+  assert.equal(catalog.toyBrickStyle.gameSpecificOptIn??catalog.toyBrickStyle.optInByGame,true);
 });
