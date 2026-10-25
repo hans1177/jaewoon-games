@@ -674,7 +674,7 @@ for(const item of [
   assert.ok(generator.includes('const nativeConfigPath=`roblox-games/${gameId}/shared/GameConfig.luau`;'));
   assert.ok(generator.includes("typeof fs!=='undefined'&&fs.existsSync(nativeConfigPath)"));
   assert.ok(generator.includes('category:authoredCategory,platform:seed.INITIAL_TARGET_PLATFORM'));
-  assert.ok(generator.includes("?'RPG':seed.GAME_CATEGORY;"));
+  assert.ok(generator.includes("?sourceRpgGenre?'RPG':sourceKingdomGenre?'KINGDOM':seed.GAME_CATEGORY"));
   assert.ok(!generator.includes('const freeTopicMode=ownerFreeTopic||Boolean(bSystemReference);'));
   assert.ok(generator.includes('trigger:shorten(`\${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,400)'));
   assert.ok(generator.includes('trigger:shorten(`\${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,400)'));
@@ -686,4 +686,30 @@ for(const item of [
   assert.ok(generator.includes('const sourceGroundedCombat=nativeCombatVerified?{'));
   assert.ok(generator.includes('}:null;'));
   console.log('DESIGN_EXISTING_GAME_IDENTITY_AND_TRIGGER_LIMIT=PASS');
+}
+
+
+// 메인: 원본 RPG/왕국 게임에 B 기존 시스템을 붙여도 MAIN 정체성이 바뀌지 않는다.
+{
+  const method=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+    .continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
+  for(const [category,gameName,system] of [
+    ['RPG','대충알피지','패링·회피·인벤토리 연동 전투'],
+    ['KINGDOM','포근섬','직접 채집']
+  ]){
+    const design=computeVibeSeedProposal({
+      requestId:'source-game-'+category,category,gameName,platform:'ROBLOX',materials:[],
+      designTopicMode:'ORIGINAL_CONTEXT',basicDesignMethod:method,
+      bSystemReference:{
+        scope:'B_EXISTING_GAME_SYSTEMS',systemFamily:system,
+        playerChoice:'기존 상태를 확인하고 다음 행동을 선택한다.',
+        source:'roblox-games/source-game/server/Game.server.luau'
+      }
+    });
+    assert.equal(design.gameName,gameName,'원본 이름 유지: '+category);
+    assert.equal(design.gameplaySketch.novelGameGrammar.existingGameSystemRole,'B_EXISTING_GAME_SYSTEMS');
+    assert.equal(design.gameplaySketch.novelGameGrammar.existingSystemReference.systemFamily,system);
+    assert.ok(design.referenceGames.length>0,'대표 참고 게임 근거 필수: '+category);
+  }
+  console.log('DESIGN_NATIVE_RPG_KINGDOM_IDENTITY_CONTRACT=PASS');
 }
