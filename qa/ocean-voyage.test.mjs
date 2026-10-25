@@ -322,12 +322,12 @@ test('chart ship marker stays visible after pan, and helm screen direction match
  assert.match(view,/e\.root\.rotation\.set\([^\n]*r\.heading\+Math\.PI/);
  const port=PORTS.find(p=>p.id==='dawn'),base=newGame();
  // The actual map centre must resolve to the ship coordinates for either scale.
- assert.match(main,/scale:\(mapWorld\?\.12:\.35\)\*mapZoom/);
+ assert.match(main,/scale:\(mapWorld\?\.06:\.175\)\*mapZoom/);
  for(const world of [false,true]){
   const originX=world?300:75,originZ=world?-210:-550;
   const panX=base.ship.x-originX,panZ=base.ship.z-originZ;
-  const px=480+(base.ship.x-(originX+panX))*(world?.12:.35);
-  const py=270+(base.ship.z-(originZ+panZ))*(world?.12:.35);
+  const px=480+(base.ship.x-(originX+panX))*(world?.06:.175);
+  const py=270+(base.ship.z-(originZ+panZ))*(world?.06:.175);
   assert.equal(px,480);assert.equal(py,270);
  }
  // Manual right must rotate starboard from the chase camera, independent
@@ -540,25 +540,57 @@ test('wide ocean reaches twice the prior world limits without resetting saves',(
 });
 test('both 45 degree sea cameras keep the full ship visible at twice previous distance',()=>{
  const view=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
- assert.match(view,/seaCamera='chase',cameraDistance=56/);
+ assert.match(view,/seaCamera='chase',cameraDistance=112/);
  assert.match(view,/camera\.position\.copy\(position\); \/\/ 지연 추적으로/);
- assert.match(view,/cameraDistance=Math\.max\(40,Math\.min\(96,cameraDistance\*scale\)\)/);
- assert.match(view,/const miniScale=landscape\?\.14:\.185/);
+ assert.match(view,/cameraDistance=Math\.max\(80,Math\.min\(192,cameraDistance\*scale\)\)/);
+ assert.match(view,/const miniScale=landscape\?\.07:\.0925/);
  const start=view.indexOf('    const ex=enemy?enemy.x-origin.x:15,ez=');
  const body=view.slice(start,view.indexOf('    ring.visible=',start));
  const frame=new Function('camera','enemy','origin','mode','world','targetLook','THREE','battleFraming','cameraDistance','seaCamera',body);
  for(const aspect of [.42,.58,.75,1.8])for(const heading of [0,Math.PI/2,Math.PI])for(const viewMode of ['chase','angle']){
   const camera=new THREE.PerspectiveCamera(44,aspect,.1,350),world={fog:{near:110,far:300}};
   camera.position.set(900,300,800);
-  frame(camera,null,{heading},'sea',world,new THREE.Vector3(),THREE,true,56,viewMode);
+  frame(camera,null,{heading},'sea',world,new THREE.Vector3(),THREE,true,112,viewMode);
   camera.updateMatrixWorld();
   const center=new THREE.Vector3(0,2.2,0).project(camera);
   assert.ok(Math.abs(center.x)<.001&&Math.abs(center.y)<.001,'ship center must be visible after combat-to-sailing transition');
   const range=camera.position.distanceTo(new THREE.Vector3(0,2.2,0));
-  assert.ok(range>=56,'camera distance must be twice the former 28');
+  assert.ok(range>=112,'camera distance remains extended as chart scale doubles');
   for(const x of [-4,4])for(const z of [-8,8]){
    const point=new THREE.Vector3(x,2,z).project(camera);
    assert.ok(Math.abs(point.x)<.95&&Math.abs(point.y)<.95,'full hull must remain on screen at any aspect');
   }
  }
+});
+
+test('ocean multiplayer has a permanent top-bar entry and only one-digit create/join flow',()=>{
+ const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ const client=fs.readFileSync('multiplayer/multiplayer-client.js','utf8');
+ const top=html.slice(html.indexOf('<header id="top">'),html.indexOf('</header>'));
+ assert.match(top,/<button id="coopOpen"[^>]+>멀티<\/button>/);
+ assert.doesNotMatch(html,/<div id="tools"><button id="coopOpen"/);
+ assert.match(html,/#top #coopOpen\{/);
+ assert.match(html,/id="coopPanel" hidden role="dialog"/);
+ assert.match(html,/id="coopShade" hidden/);
+ assert.match(html,/id="coopNumber" inputmode="numeric" autocomplete="off" maxlength="1" pattern="\[0-9\]"/);
+ assert.match(html,/id="coopCreate"[^>]*>방 만들기/);
+ assert.match(html,/id="coopJoin"[^>]*>방 참가/);
+ assert.match(html,/id="coopLeave" type="button" hidden/);
+ assert.match(main,/function setCoopPanel\(open\)/);
+ assert.match(main,/createNumberRoomForGame\('ocean-voyage'\)/);
+ assert.match(main,/joinNumberRoomForGame\('ocean-voyage',code\)/);
+ assert.match(main,/function sendCoopShip\(now\)/);
+ assert.match(client,/\/guest\/create/);
+ assert.match(client,/\/guest\/join/);
+});
+test('sea and overview chart show twice the area without enlarging player hull geometry',()=>{
+ const view=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ assert.match(view,/zoom=\.3125,quality='pixel'/);
+ assert.match(view,/seaCamera='chase',cameraDistance=112/);
+ assert.match(view,/zoom=Math\.max\(\.16,Math\.min\(16,Number\(v\)\|\|\.3125\)\)/);
+ assert.match(main,/scale:\(mapWorld\?\.06:\.175\)\*mapZoom/);
+ assert.match(view,/function vessel\(id,type,enemy\)/);
+ assert.match(view,/const rows=\[\{id:'player'/);
 });
