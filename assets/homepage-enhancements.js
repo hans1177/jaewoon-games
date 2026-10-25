@@ -235,7 +235,8 @@ function platformLinks(game){
   const candidate=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||'').trim();
   const placeId=String(rp.placeId||'').trim();
   // 검증된 Roblox Place ID와 링크가 일치할 때만 표시한다.
-  const roblox=/^[1-9][0-9]*$/.test(placeId)&&new RegExp('^https://www\\.roblox\\.com/games/'+placeId+'(?:/|\\?|$)').test(candidate)?candidate:'';
+  const matchedPlace=/^https:\/\/www\.roblox\.com\/games\/([1-9][0-9]*)(?:\/|\?|$)/.exec(candidate);
+  const roblox=matchedPlace&&(placeId?matchedPlace[1]===placeId:rp.executionAvailable===true||rp.publicRelease===true)?candidate:'';
   const unity=String((game?.unityBuildVerified===true?game?.unityBuildUrl:'')||(up.publicRelease===true?up.publicUrl:up.internalUrl)||'').trim();
   const web=playableWebHref(game);
   const webSource=sourceWebHref(game);
