@@ -303,3 +303,22 @@ jobs:
             done
             echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT_COUNT:$passed"
           fi
+
+      # Existing-source BUILD_UP: only after exact same-game F0 reset is stored
+      # and the canonical native runtime was dispatched. The standard 24H
+      # planner selects a fresh improvement task and routes it to Vibe2 workers.
+      - name: Refill existing Web-style BUILD_UP planner after proven Roblox F0 restart
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.restart_from_f0 == true && steps.changed.outputs.game_ids != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -s /tmp/roblox-drift-eligible-game-ids.txt ]; then
+            echo 'ROBLOX_POST_PUBLISH_BUILD_UP=NO_VALIDATED_GAME_SKIP'
+            exit 0
+          fi
+          # The scheduler is shared with Web; do not dispatch workers directly or
+          # create per-game shadow planning queues.
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'ROBLOX_POST_PUBLISH_BUILD_UP=EXISTING_VIBE2_PLANNER_AFTER_PERSISTED_F0'

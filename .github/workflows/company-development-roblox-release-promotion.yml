@@ -1348,10 +1348,8 @@ jobs:
           set -euo pipefail
           gh workflow run company-roblox-source-drift-sync.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game_id=$GAME_ID" -f "restart_from_f0=true"
           echo "ROBLOX_POST_PUBLISH_NEXT_F0_DISPATCHED=$GAME_ID"
-          # Re-enter the same planner used by Web development; do not wake
-          # already-reserved workers without first planning fresh BUILD_UP work.
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo "ROBLOX_POST_PUBLISH_NEXT_BUILD_UP=EXISTING_VIBE2_PLANNER_DISPATCHED:$GAME_ID"
+          # Source-sync owns the Web-style planner wake after durable F0/runtime handoff.
+          echo "ROBLOX_POST_PUBLISH_NEXT_BUILD_UP=PLANNER_AFTER_F0_RUNTIME_SYNC:$GAME_ID"
 
   thumbnail-sync:
     name: sync canonical Roblox and homepage thumbnails

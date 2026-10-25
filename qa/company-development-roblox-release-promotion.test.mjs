@@ -8,8 +8,11 @@ test('verified Roblox final publication restarts the same Vibe2 BUILD_UP planner
   const step=source.slice(restart,end);
   assert.match(step,/if: steps\.verify\.outputs\.pass == 'true'/);
   assert.match(step,/restart_from_f0=true/);
-  assert.match(step,/gh workflow run vibe2-24h-runner\.yml.*--ref main/);
-  assert.ok(step.indexOf('restart_from_f0=true')<step.indexOf('gh workflow run vibe2-24h-runner.yml'));
+  assert.match(step,/ROBLOX_POST_PUBLISH_NEXT_BUILD_UP=PLANNER_AFTER_F0_RUNTIME_SYNC/);
+  assert.doesNotMatch(step,/gh workflow run vibe2-24h-runner\.yml/);
+  const sync=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.ok(sync.indexOf('Persist runtime synchronization')<sync.indexOf('Refill existing Web-style BUILD_UP planner'));
+  assert.match(sync,/gh workflow run vibe2-24h-runner\.yml.*--ref main/);
   const planner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   assert.match(planner,/tools\/vibe2-auto-planner\.mjs/);
   assert.match(planner,/uses: \.\/\.github\/workflows\/vibe2-continuous-core\.yml/);

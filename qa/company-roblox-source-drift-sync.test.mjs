@@ -453,3 +453,17 @@ test('multi-game source drift dispatches only exact changed games and excludes p
   assert.ok(!step.includes('ROBLOX_CANONICAL_RUNTIME_REDISPATCH=BATCH'));
   assert.ok(step.includes('ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT_COUNT:'));
 });
+
+test('post-publication F0 restart invokes Web BUILD_UP planner only after persisted game runtime dispatch',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  const persist=workflow.indexOf('      - name: Persist runtime synchronization');
+  const runtime=workflow.indexOf('      - name: Dispatch canonical Roblox runtime for fresh build');
+  const planner=workflow.indexOf('      - name: Refill existing Web-style BUILD_UP planner after proven Roblox F0 restart');
+  assert.ok(persist>=0&&runtime>persist&&planner>runtime);
+  const step=workflow.slice(planner);
+  assert.match(step,/inputs\.restart_from_f0 == true/);
+  assert.match(step,/steps\.changed\.outputs\.game_ids != ''/);
+  assert.match(step,/! -s \/tmp\/roblox-drift-eligible-game-ids\.txt/);
+  assert.match(step,/gh workflow run vibe2-24h-runner\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.doesNotMatch(step,/gh workflow run vibe2-continuous-core\.yml/);
+});
