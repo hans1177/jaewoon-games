@@ -892,6 +892,14 @@ jobs:
           # The existing smoke launches headless Chromium without a browser channel.
           npx playwright install --with-deps --only-shell chromium
           node qa/vibe-browser-smoke.mjs
+      - name: Keep naval battle mobile render evidence
+        if: ${{ always() && steps.live_revision.outputs.exact == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocean-naval-mobile-render
+          path: ocean-naval-*.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Register post-publication WebGL smoke failure
         if: ${{ always() && steps.live_revision.outputs.exact == 'true' && steps.forest_native_3d_live_qa.outcome == 'failure' }}
         env:

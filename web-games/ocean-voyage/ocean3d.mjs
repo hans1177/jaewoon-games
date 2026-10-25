@@ -57,14 +57,14 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     const enemy=hostiles.sort((a,b)=>Math.hypot(a.x-origin.x,a.z-origin.z)-Math.hypot(b.x-origin.x,b.z-origin.z))[0];
     const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(66,Math.max(27,Math.hypot(ex,ez)*.85));
     camera.position.lerp(new THREE.Vector3(ex*.32+span*.58,span*.83,ez*.32+span*.97),.065);targetLook.set(ex*.32,1.5,ez*.32);camera.lookAt(targetLook);
-    ring.position.x=ex*.5;ring.position.z=ez*.5;
+    ring.position.x=ex;ring.position.z=ez;
     const a=water.geometry.attributes.position;for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,Math.sin(x*.12+t*1.3)*.32+Math.sin(y*.16+t*.8)*.22);}a.needsUpdate=true;
     const fx=state.combatFx;if(fx?.type==='cannon'&&fx.serial!==serial){serial=fx.serial;shotTime=t;
      for(const o of shots)world.remove(o);shots.length=0;
      for(let i=0;i<5;i++){const ball=new THREE.Mesh(ballGeo,ballMat);ball.userData={from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(ball);world.add(ball);const puff=new THREE.Mesh(smokeGeo,smokeMat);puff.userData={smoke:true,from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(puff);world.add(puff);}
     }
     const age=t-shotTime;for(const o of shots){const d=o.userData,progress=Math.min(1,age/.55);o.visible=age<1.3;if(d.smoke){o.position.set(d.from.x-origin.x+d.offset,1.8+age,d.from.z-origin.z);o.scale.setScalar(.5+age*1.5);}else{o.visible=age<.55;o.position.set(d.from.x+(d.to.x-d.from.x)*progress-origin.x+d.offset,1.5+Math.sin(progress*Math.PI)*2,d.from.z+(d.to.z-d.from.z)*progress-origin.z);}}
-    renderer.render(world,camera);surface.dataset.ready=String(rows.every(r=>vessels.get(r.id)?.loaded));
+    renderer.render(world,camera);surface.dataset.ready=String(rows.every(r=>vessels.get(r.id)?.loaded));surface.dataset.models=String(rows.filter(r=>vessels.get(r.id)?.loaded).length);surface.dataset.triangles=String(renderer.info.render.triangles);surface.dataset.shot=String(serial);surface.dataset.playerX=String(origin.x);surface.dataset.playerZ=String(origin.z);
    }};
   }catch(e){navalError=true;console.warn('해상 3D 장면 초기화 실패',e);}finally{navalLoading=false;}
  }

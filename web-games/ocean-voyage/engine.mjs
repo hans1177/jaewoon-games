@@ -491,7 +491,7 @@ export function stepSea(state,input={},seconds=.05){
  ship.rudder=clamp((Number(ship.rudder)||0)+(turn-(Number(ship.rudder)||0))*Math.min(1,dt*4),-1,1);ship.heading=wrap(ship.heading+ship.rudder*dt*(.8+ship.sail*.06)*(1+(ship.rudderLevel||0)*.15)*(shipDesign.turn||1)*(sailGear.turn||1)*(figure.turn||1)*(ship.regionalMods.includes('brest-rudder')?1.1:1));
  const laden=1-cargoWeight(s)/Math.max(1,ship.cargoLimit*s.fleet)*.18;
  const speed=(2.1+ship.sail*1.15)*(shipDesign.speed||1)*(sailGear.speed||1)*(figure.speed||1)*(ship.gear.figurehead!=='none'&&ship.regionalMods.includes('venice-carving')?1.02:1)*(1+assignedPower(s,'sailing','navigation')/600)*(1+wind*.24)*(ship.gear.sail==='stormcloth'?Math.max(.93,climate.speed):climate.speed)*laden*(ship.hull/ship.maxHull*.6+.4);
- const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
+ const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget&&!input.navalBattle)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
  const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,-1020,900);
  if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}
  else{
