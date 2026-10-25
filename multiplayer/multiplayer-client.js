@@ -1,3 +1,5 @@
+// 파일명: multiplayer/multiplayer-client.js
+// 메인: 기존 계정 방식과 보석 생존전 게스트 숫자방의 동일 WebSocket 전송 유지.
 export class JaewoonMultiplayerClient extends EventTarget {
   static DEFAULT_BASE_URL = 'https://jaewoon-multiplayer.anyanguy12.workers.dev';
 
@@ -8,6 +10,7 @@ export class JaewoonMultiplayerClient extends EventTarget {
     this.reconnectDelayMs = Number(options.reconnectDelayMs || 1500);
 
     this.accessToken = '';
+    this.guestToken = '';
     this.refreshToken = '';
     this.currentUser = null;
     this.currentRoomId = '';
@@ -117,6 +120,46 @@ export class JaewoonMultiplayerClient extends EventTarget {
     return result;
   }
 
+  // 보석 생존전만 이메일 없이 입장한다. 다른 게임의 기존 계정용 친구방 API는 보존한다.
+  async createGemRoom(autoConnectRoom = true) {
+    if (this.guestToken) await this.leaveGemRoom();
+    const result = await this.request('/gem-survivor/create', { method: 'POST', auth: false });
+    if (result.ok) this.applyGemRoom(result.data, autoConnectRoom);
+    return result;
+  }
+
+  async joinGemRoom(number, autoConnectRoom = true) {
+    const inviteCode = String(number ?? '').trim();
+    if (!/^[0-9]$/.test(inviteCode)) return { ok: false, status: 400, data: { error: 'invalid_room_number' } };
+    if (this.guestToken) await this.leaveGemRoom();
+    const result = await this.request('/gem-survivor/join', {
+      method: 'POST', body: { inviteCode }, auth: false,
+    });
+    if (result.ok) this.applyGemRoom(result.data, autoConnectRoom);
+    return result;
+  }
+
+  applyGemRoom(data = {}, autoConnectRoom = true) {
+    if (!data.guestToken || !data.roomId || data.gameId !== 'gem-survivor') return;
+    this.guestToken = data.guestToken;
+    this.currentMode = 'coop';
+    this.currentGameId = 'gem-survivor';
+    this.emit('friend_room_joined', data);
+    if (autoConnectRoom) this.connectRoom(data.roomId);
+  }
+
+  async leaveGemRoom() {
+    const token = this.guestToken;
+    this.disconnectRoom();
+    this.guestToken = '';
+    this.currentMode = '';
+    this.currentGameId = 'default';
+    if (!token) return { ok: true, status: 200, data: {} };
+    return this.request('/gem-survivor/leave', {
+      method: 'POST', body: { guestToken: token }, auth: false,
+    });
+  }
+
   async createFriendRoom(mode = 'coop', autoConnectRoom = true) {
     return this.createFriendRoomForGame(mode, 'default', autoConnectRoom);
   }
@@ -153,7 +196,7 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   connectRoom(roomId) {
-    if (!this.accessToken || !roomId) return false;
+    if ((!this.accessToken && !this.guestToken) || !roomId) return false;
     this.currentRoomId = String(roomId);
     this.manualDisconnect = false;
     this.clearReconnectTimer();
@@ -247,13 +290,14 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   openSocket() {
-    if (!this.currentRoomId || !this.accessToken) return;
+    if (!this.currentRoomId || (!this.accessToken && !this.guestToken)) return;
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       try { this.socket.close(1000, 'reconnect'); } catch {}
     }
 
     const wsBase = this.baseUrl.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
-    const url = `${wsBase}/room/${encodeURIComponent(this.currentRoomId)}?token=${encodeURIComponent(this.accessToken)}`;
+    const credential = this.guestToken ? 'guestToken=' + encodeURIComponent(this.guestToken) : 'token=' + encodeURIComponent(this.accessToken);
+    const url = `${wsBase}/room/${encodeURIComponent(this.currentRoomId)}?${credential}`;
     const socket = new WebSocket(url);
     this.socket = socket;
 
@@ -302,11 +346,11 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   scheduleReconnect() {
-    if (!this.autoReconnect || this.manualDisconnect || !this.currentRoomId || !this.accessToken) return;
+    if (!this.autoReconnect || this.manualDisconnect || !this.currentRoomId || (!this.accessToken && !this.guestToken)) return;
     if (this.reconnectTimer) return;
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      if (!this.manualDisconnect && this.currentRoomId && this.accessToken) this.openSocket();
+      if (!this.manualDisconnect && this.currentRoomId && (this.accessToken || this.guestToken)) this.openSocket();
     }, this.reconnectDelayMs);
   }
 
