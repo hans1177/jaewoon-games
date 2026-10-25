@@ -177,12 +177,13 @@ runtime.bindKeyboard({
 });
 runtime.bindTouchButton(ui.inventory,openInventory);
 runtime.bindTouchButton(ui.help,openGuide);
-runtime.bindTouchButton(ui.castle,()=>document.querySelector('#castleManageButton')?.click());
-runtime.bindTouchButton(ui.barracks,openBarracks);
-runtime.bindTouchButton(ui.workers,()=>window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'industry'}})));
+runtime.bindTouchButton(ui.castle,()=>window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'defense'}})));
+runtime.bindTouchButton(ui.barracks,openMilitaryMenu);
+runtime.bindTouchButton(ui.workers,openTerritoryMenu);
 runtime.bindTouchButton(ui.fishingCommand,openWar);
 runtime.bindTouchButton(ui.trade,()=>window.dispatchEvent(new Event('cozy:open-trade')));
-runtime.bindTouchButton(ui.center,()=>{game.siegeOverview=true;renderer.centerCamera();toast('🏰 성채 전장 전체 보기')});
+runtime.bindTouchButton(ui.center,()=>window.dispatchEvent(new CustomEvent('cozy:open-system',{detail:{tab:'map'}})));
+window.addEventListener('cozy:open-barracks',openBarracks);
 runtime.bindTouchButton(ui.zoomIn,()=>{game.siegeOverview=true;renderer.changeZoom(1.2)});
 runtime.bindTouchButton(ui.zoomOut,()=>{game.siegeOverview=true;renderer.changeZoom(1/1.2)});
 runtime.bindTouchButton(ui.panelClose,()=>ui.panel.close());
@@ -292,6 +293,54 @@ canvas.addEventListener('pointerup',e=>{
 canvas.addEventListener('wheel',e=>{e.preventDefault();game.siegeOverview=true;renderer.changeZoom(e.deltaY<0?1.16:1/1.16)},{passive:false});
 
 // 도움말: 건설/생산/군사 명령을 기존 조작 패널로 연결한다.
+// 메인: 중복 메뉴를 영지·군사 두 개의 분류 패널로 직접 통합한다.
+// 기존 생산·전투 함수와 저장 데이터는 변경하지 않는다.
+function openTerritoryMenu(){
+ if(ui.panel.open||ui.fishing.open)return;
+ const e=getEconomy(state),staff=economyStaff(state);
+ ui.panelTitle.textContent='🌾 영지 운영';
+ ui.panelBody.innerHTML='<p class="panel-note">건설·자원·일꾼·시장을 한곳에서 관리해.</p>'+
+  '<div class="inventory-grid">'+itemCard('🪵 목재',state.inventory.wood)+
+  itemCard('🪨 석재',state.inventory.stone)+itemCard('🍖 식량',state.inventory.food)+
+  itemCard('👷 가동 일꾼',staff.assigned)+'</div>'+
+  '<div class="choice-grid realm-menu-links">'+
+  '<button class="choice" data-realm-menu="industry">🪓 산업·농업·생산 건물</button>'+
+  '<button class="choice" data-realm-menu="resource">📦 자원 현황·생산 보고</button>'+
+  '<button class="choice" data-realm-menu="market">⚖️ 시장·무역</button>'+
+  '<button class="choice" data-realm-menu="policy">📜 주민·세금·식량 정책</button>'+
+  '</div>';
+ ui.panel.showModal();
+ ui.panelBody.querySelectorAll('[data-realm-menu]').forEach(b=>b.addEventListener('click',()=>{
+  const target=b.dataset.realmMenu;ui.panel.close();
+  if(target==='resource'){openInventory();return;}
+  if(target==='market'){window.dispatchEvent(new Event('cozy:open-trade'));return;}
+  window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:target==='policy'?'civic':'industry'}}));
+ }));
+}
+function openMilitaryMenu(){
+ if(ui.panel.open||ui.fishing.open)return;
+ const unitCount=allies.filter(u=>u.hp>0).length;
+ ui.panelTitle.textContent='⚔️ 군사·전쟁';
+ ui.panelBody.innerHTML='<p class="panel-note">모집, 부대 명령, 공성전과 군사 건설을 한곳에서 실행해.</p>'+
+  '<div class="inventory-grid">'+itemCard('⚔️ 주둔 병력',unitCount)+
+  itemCard('🍖 비축 식량',state.inventory.food)+'</div>'+
+  '<div class="choice-grid realm-menu-links">'+
+  '<button class="choice" data-military-menu="recruit">🏹 병영·병과 모집</button>'+
+  '<button class="choice" data-military-menu="war">⚔️ 전쟁·공성·전술 명령</button>'+
+  '<button class="choice" data-military-menu="build">🏰 성벽·함정·군사시설</button>'+
+  '<button class="choice" data-military-menu="knight">⚜️ 기사단·기사 성장</button>'+
+  '<button class="choice" data-military-menu="prison">🔒 감옥·포로 관리</button>'+
+  '</div>';
+ ui.panel.showModal();
+ ui.panelBody.querySelectorAll('[data-military-menu]').forEach(b=>b.addEventListener('click',()=>{
+  const target=b.dataset.militaryMenu;ui.panel.close();
+  if(target==='recruit')return openBarracks();
+  if(target==='war')return openWar();
+  if(target==='knight')return openKnightHall();
+  if(target==='prison')return openPrison();
+  window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'military'}}));
+ }));
+}
 function openGuide(){
   // 도움말은 마을회관의 건설 카탈로그를 연다.
   window.dispatchEvent(new Event('cozy:open-construction'));return;
@@ -311,8 +360,8 @@ function openGuide(){
   ui.panel.showModal();
   ui.panelBody.querySelectorAll('[data-guide]').forEach(button=>button.addEventListener('click',()=>{
     const target=button.dataset.guide;ui.panel.close();
-    if(target==='castle')document.querySelector('#castleManageButton')?.click();
-    else if(target==='barracks')openBarracks();
+    if(target==='castle')window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'defense'}}));
+    else if(target==='barracks')openMilitaryMenu();
     else if(target==='fish')startFishing();
     else openWorkerShop();
   }));
