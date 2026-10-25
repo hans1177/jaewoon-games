@@ -860,29 +860,33 @@ function runFortification(dt){
     // 해자는 후속 적군 이동을 늦추며, 도개교가 내려오면 성문 방향 진입이 가능하다.
     if(enemy._grandSiege||enemy._lordRaid)enemy._siegeMoatFactor=fort.moatBuilt&&enemy.x>1390&&
       enemy.x<1590&&enemy.y>280&&enemy.y<970?.5:1;
-    if(enemy.hp>0&&!enemy._fortClimbed&&enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
+    if(enemy.hp>0&&!enemy._fortClimbed&&(enemy._grandSiege||enemy._lordRaid)&&
+       enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
       const lane=enemy._siegeLane??enemy.y,key=lane<520?'north':lane>730?'south':'gate';
-      if(fort.walls[key]>0&&(key!=='gate'||fort.drawbridgeClosed)){
+      const openGate=key==='gate'&&(fort.drawbridgeClosed===false||
+        fort.structures.some(s=>s?.kind==='gate'&&s.hp>0&&s.open!==false));
+      if(fort.walls[key]>0&&!openGate){
         enemy.x=Math.max(enemy.x,1350);
-        // 사다리 보병/공성탑은 벽 체력을 무시하는 대신 일정 시간 등반해야 한다.
+        // 사다리/공성탑은 등반, 다른 적 병력은 실제 성문/벽 체력을 공격한다.
         if(enemy.kind==='ladder'||enemy.kind==='siegeTower'){
           enemy._fortClimbTimer=(enemy._fortClimbTimer||0)+dt;
           if(enemy._fortClimbTimer>=(enemy.kind==='siegeTower'?5.5:3.7)){
             enemy._fortClimbed=true;enemy.x=1285;damaged=true;
           }
-        }else if(['ram','sapper','trebuchet'].includes(enemy.kind)||enemy._lordRaid){
+        }else{
           enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
-          const attackEvery=Number(enemy.siegeCooldown)||1.2;
+          const attackEvery=Math.max(.4,Number(enemy.siegeCooldown)||Number(enemy.rate)||1.2);
           if(enemy._fortSiegeTimer>=attackEvery){
             enemy._fortSiegeTimer%=attackEvery;
-            const damage=Math.max(10,Number(enemy.siegeDamage)||10);
+            // 보병은 원래 공격력, 공성 병기는 원래 공성 피해를 그대로 쓴다.
+            const damage=Math.max(1,Number(enemy.siegeDamage)||Number(enemy.attack)||1);
             fort.walls[key]=Math.max(0,fort.walls[key]-damage);
             damaged=true;
           }
         }
       }
     }
-    // 돌파·등반한 유닛이 성채에 도달하면 병종에 상관없이 내성을 깎는다.
+        // 돌파·등반한 유닛이 성채에 도달하면 병종에 상관없이 내성을 깎는다.
     // 성벽 안으로 진입한 공성 병기가 성채를 파괴하면 대공성전 패배 처리.
     if((enemy._grandSiege||enemy._lordRaid)&&enemy.hp>0&&enemy.x<1160&&enemy.y>890){
       enemy._fortKeepTimer=(enemy._fortKeepTimer||0)+dt;
