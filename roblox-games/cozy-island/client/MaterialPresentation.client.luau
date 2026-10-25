@@ -1,9 +1,10 @@
 -- 공용 재질을 실제 월드 오브젝트에 적용한다. 네이티브 PBR 없이는 통과로 기록하지 않는다.
 local Shared=game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Materials=require(Shared:WaitForChild("RobloxCommonMaterials"))
+local Style=require(Shared:WaitForChild("VisualStyle"))
 local queue={}
 local scheduled=false
-local style="COZY"
+local style=Style.MaterialStyle or "COZY"
 local function flush()
  local head=1
  while head<=#queue do
