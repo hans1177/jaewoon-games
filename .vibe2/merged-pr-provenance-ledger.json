@@ -102132,11 +102132,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b499bb49bd4740e5f8c53d94",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10192",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ec6490d4c11352196cf97874b846950ec27d1abe",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10192,
+        "baseBranch": "main",
+        "headBranch": "fix/cozy-web-buildup-post-f0-sync-20261025",
+        "baseSha": "ec6490d4c11352196cf97874b846950ec27d1abe",
+        "headSha": "ba1f004829062e1fe8c8cab17d460c656f209d4f",
+        "mergeCommitSha": "6217dc7c00974dd72f4a527593cb61ac814a6258",
+        "mergedAt": "2026-10-25T12:19:06Z",
+        "authorLogin": "hans1177",
+        "titleHash": "27c980a34f3c256aef3fcc89d9f28898af2ec720b1c24092fdef34b8207e6ea8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/cozy-web-buildup-post-f0-sync-20261025",
+        "candidateSha": "ba1f004829062e1fe8c8cab17d460c656f209d4f"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 48,
+        "deletedLineCount": 12,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-roblox-source-drift-sync.yml",
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/cozy-cc0-library-audit.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          ".github/workflows/company-roblox-source-drift-sync.yml",
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/cozy-cc0-library-audit.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10192",
+        "merge-commit:6217dc7c00974dd72f4a527593cb61ac814a6258",
+        "base-main:ec6490d4c11352196cf97874b846950ec27d1abe"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 803
+    "total": 804
   }
 }
