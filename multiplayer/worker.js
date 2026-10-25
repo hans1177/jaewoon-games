@@ -2,6 +2,7 @@
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8' };
 // 메인: 보석 생존전 전용 한 자리 숫자 게스트 방. 기존 계정·매칭 규칙은 유지한다.
 const GEM_GAME_ID = 'gem-survivor';
+const NUMBER_ROOM_GAMES = new Set(['gem-survivor', 'ocean-voyage', 'cozy-island', 'party-rpg']);
 const GEM_ROOM_TTL_MS = 60 * 60 * 1000;
 
 function json(data, status = 200, extra = {}) {
@@ -96,7 +97,7 @@ export default {
     }
 
     // 보석 생존전만 이메일 없이 게스트 방을 생성·참가한다. Durable Object가 중복 번호를 관리한다.
-    if (['/gem-survivor/create', '/gem-survivor/join', '/gem-survivor/leave'].includes(url.pathname) && request.method === 'POST') {
+    if (['/gem-survivor/create', '/gem-survivor/join', '/gem-survivor/leave', '/guest/create', '/guest/join', '/guest/leave'].includes(url.pathname) && request.method === 'POST') {
       const origin = request.headers.get('Origin') || '';
       if (origin && origin !== allowedOrigin(request, env)) return json({ error: 'origin_denied' }, 403, headers);
       const body = await readJson(request);
@@ -244,65 +245,76 @@ export class Matchmaker {
     if (url.pathname === '/gem-survivor/join') return this.gemJoin(body);
     if (url.pathname === '/gem-survivor/authorize') return this.gemAuthorize(body);
     if (url.pathname === '/gem-survivor/leave') return this.gemLeave(body);
+    if (url.pathname === '/guest/create') return this.gemCreate(body.gameId);
+    if (url.pathname === '/guest/join') return this.gemJoin(body);
+    if (url.pathname === '/guest/leave') return this.gemLeave(body);
     return json({ error: 'not_found' }, 404);
   }
 
   // 메인: 같은 숫자는 동시에 한 방만 사용한다. 서버 측 보관 60분·정원 4명.
-  async gemRooms() {
-    const now = Date.now();
-    const rooms = (await this.ctx.storage.get('gemRooms')) || {};
+  async gemRooms(gameId = GEM_GAME_ID) {
+    if (!NUMBER_ROOM_GAMES.has(gameId)) return null;
+    const now = Date.now(), key = gameId === GEM_GAME_ID ? 'gemRooms' : 'guestRooms:' + gameId;
+    const rooms = (await this.ctx.storage.get(key)) || {};
     for (const [code, room] of Object.entries(rooms)) {
       if (!room || now - room.createdAt >= GEM_ROOM_TTL_MS) delete rooms[code];
     }
+    await this.ctx.storage.put(key, rooms);
     return rooms;
   }
 
-  async gemCreate() {
-    const rooms = await this.gemRooms();
+  async gemCreate(gameId = GEM_GAME_ID) {
+    if (!NUMBER_ROOM_GAMES.has(gameId)) return json({ error: 'invalid_game' }, 400);
+    const rooms = await this.gemRooms(gameId);
     const free = Array.from({ length: 10 }, (_, i) => String(i)).filter(code => !rooms[code]);
     if (!free.length) return json({ error: 'rooms_full', message: '열 개의 방이 모두 사용 중이야.' }, 409);
     const index = crypto.getRandomValues(new Uint32Array(1))[0] % free.length;
     const inviteCode = free[index];
-    const roomId = crypto.randomUUID();
+    const roomId = gameId === GEM_GAME_ID ? crypto.randomUUID() : gameId + ':' + crypto.randomUUID();
     const guestToken = crypto.randomUUID() + crypto.randomUUID();
     const userId = crypto.randomUUID();
     rooms[inviteCode] = { roomId, createdAt: Date.now(), players: [{ userId, guestToken }] };
-    await this.ctx.storage.put('gemRooms', rooms);
-    return json({ roomId, inviteCode, gameId: GEM_GAME_ID, mode: 'coop', maxPlayers: 4, players: 1, guestToken });
+    await this.ctx.storage.put(gameId === GEM_GAME_ID ? 'gemRooms' : 'guestRooms:' + gameId, rooms);
+    return json({ roomId, inviteCode, gameId, mode: 'coop', maxPlayers: 4, players: 1, guestToken });
   }
 
-  async gemJoin({ inviteCode }) {
+  async gemJoin({ inviteCode, gameId = GEM_GAME_ID }) {
     const code = String(inviteCode ?? '').trim();
+    if (!NUMBER_ROOM_GAMES.has(gameId)) return json({ error: 'invalid_game' }, 400);
     if (!/^[0-9]$/.test(code)) return json({ error: 'invalid_room_number' }, 400);
-    const rooms = await this.gemRooms();
+    const rooms = await this.gemRooms(gameId);
     const room = rooms[code];
     if (!room) return json({ error: 'room_not_found' }, 404);
     if (room.players.length >= 4) return json({ error: 'room_full' }, 409);
     const guestToken = crypto.randomUUID() + crypto.randomUUID();
     const userId = crypto.randomUUID();
     room.players.push({ userId, guestToken });
-    await this.ctx.storage.put('gemRooms', rooms);
-    return json({ roomId: room.roomId, inviteCode: code, gameId: GEM_GAME_ID, mode: 'coop', maxPlayers: 4, players: room.players.length, guestToken });
+    await this.ctx.storage.put(gameId === GEM_GAME_ID ? 'gemRooms' : 'guestRooms:' + gameId, rooms);
+    return json({ roomId: room.roomId, inviteCode: code, gameId, mode: 'coop', maxPlayers: 4, players: room.players.length, guestToken });
   }
 
   async gemAuthorize({ roomId, guestToken }) {
     if (typeof guestToken !== 'string' || !/^[0-9a-f-]{72}$/.test(guestToken)) return json({ error: 'unauthorized' }, 401);
-    const rooms = await this.gemRooms();
+    const gameId = String(roomId || '').includes(':') ? String(roomId).split(':', 1)[0] : GEM_GAME_ID;
+    if (!NUMBER_ROOM_GAMES.has(gameId)) return json({ error: 'unauthorized' }, 401);
+    const rooms = await this.gemRooms(gameId);
     const room = Object.values(rooms).find(row => row.roomId === roomId);
     const player = room?.players.find(row => row.guestToken === guestToken);
     if (!player) return json({ error: 'unauthorized' }, 401);
     return json({ user: { id: player.userId, nickname: '동료 ' + (room.players.indexOf(player) + 1) } });
   }
 
-  async gemLeave({ guestToken }) {
+  async gemLeave({ guestToken, roomId = '' }) {
     if (typeof guestToken !== 'string' || !/^[0-9a-f-]{72}$/.test(guestToken)) return json({ error: 'unauthorized' }, 401);
-    const rooms = await this.gemRooms();
+    const gameId = String(roomId || '').includes(':') ? String(roomId).split(':', 1)[0] : GEM_GAME_ID;
+    if (!NUMBER_ROOM_GAMES.has(gameId)) return json({ error: 'invalid_game' }, 400);
+    const rooms = await this.gemRooms(gameId);
     for (const [code, room] of Object.entries(rooms)) {
       const before = room.players.length;
       room.players = room.players.filter(row => row.guestToken !== guestToken);
       if (room.players.length === before) continue;
       if (!room.players.length) delete rooms[code];
-      await this.ctx.storage.put('gemRooms', rooms);
+      await this.ctx.storage.put(gameId === GEM_GAME_ID ? 'gemRooms' : 'guestRooms:' + gameId, rooms);
       return json({ ok: true });
     }
     return json({ error: 'room_not_found' }, 404);
