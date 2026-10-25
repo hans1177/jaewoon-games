@@ -33,7 +33,12 @@ for(const [index,game] of catalog.games.entries()){
   assert.equal(c.identity.gameId,game.id);
   assert.equal(c.production.class,String(game.productionClass||'DESIGN_ONLY').toUpperCase());
   assert.equal(c.lifecycle.state,String(game.lifecycleState||'ACTIVE').toUpperCase());
-  assert.equal(c.homepage.runtime.authority,'company-runtime');
+  // 원본 제작만 확인된 웹게임의 출처를 서버 실행 검증으로 가장하지 않는다.
+  assert.equal(c.homepage.runtime.authority,game.homepageInfo?.authority||'company-runtime');
+  if(c.homepage.runtime.authority==='OWNER_DIRECT_SOURCE'){
+    assert.equal(game.homepageWebPlayable,false,'unverified owner source must not claim playable');
+    assert.equal(c.publication?.web?.route||'', '', 'unverified owner source must not claim publication');
+  }
   assert.equal(game.catalogOrder,index+1);
   assert.equal(c.catalogOrder,index+1);
   assert.equal(c.homepage.category,game.homepageCategory);
