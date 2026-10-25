@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -163374,7 +163374,7 @@
     },
     {
       "id": "recovery-recovery-27cb1dd15ebd263ddd6c",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -163418,7 +163418,7 @@
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:fdf582b0edf1dd10e7b6ed43d7640974ea18576f:fantasy-survival"
       ],
-      "retries": 32,
+      "retries": 33,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
       "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
@@ -163432,12 +163432,12 @@
       "sourceMutationBaseline": "fdf582b0edf1dd10e7b6ed43d7640974ea18576f",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:40193959297:1",
-      "reservedAt": "2026-10-25T12:42:22.664Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "deployment-failure-run:40069045059:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -163535,7 +163535,8 @@
         "actions-run:40192842491",
         "system-ai-impact-score:1779",
         "system-ai-blocked-task-count:33",
-        "actions-run:40193332184"
+        "actions-run:40193332184",
+        "actions-run:40193959297"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1779,
@@ -163550,7 +163551,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T06:25:11.496Z",
-      "updatedAt": "2026-10-25T12:42:22.664Z"
+      "updatedAt": "2026-10-25T12:49:47.093Z"
     },
     {
       "id": "recovery-recovery-06705b142351260e706c",
@@ -167431,6 +167432,5 @@
       "createdAt": "2026-10-25T12:29:08.684Z",
       "updatedAt": "2026-10-25T12:29:08.684Z"
     }
-  ],
-  "updatedAt": "2026-10-25T12:48:45.598Z"
+  ]
 }
