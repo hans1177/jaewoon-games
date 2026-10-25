@@ -1275,6 +1275,12 @@ function computeVibeNativeDesign(){
   const existingLoop=Array.isArray(original.coreLoop)&&original.coreLoop.length?original.coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[];
   // 메인: 기존 게임 B 시스템이 접수 메타데이터에서 빠졌다면 실제 Luau 서버 입력·처리부터 확인한다.
   // 패링·회피·인벤토리 명칭만 흉내 낸 설계를 허용하지 않는다. 원본 이벤트 처리 증거가 모두 있어야 한다.
+  // 게임명보다 실제 원본의 장르 선언을 우선한다. 구형 CASUAL 접수값은 설계 장르 증거가 아니다.
+  const nativeConfigPath=path.join('roblox-games',gameId,'shared','GameConfig.luau');
+  const nativeConfig=fs.existsSync(nativeConfigPath)?fs.readFileSync(nativeConfigPath,'utf8'):'';
+  const sourceRpgGenre=/\\bGenre\\s*=\\s*["'](?:RPG|Action RPG)["']/.test(nativeConfig);
+  const authoredCategory=!ownerFreeTopic&&clean(seed.GAME_CATEGORY).toUpperCase()==='CASUAL'&&sourceRpgGenre
+    ?'RPG':seed.GAME_CATEGORY;
   const nativeServerPath=path.join('roblox-games',gameId,'server','Game.server.luau');
   const nativeServer=fs.existsSync(nativeServerPath)?fs.readFileSync(nativeServerPath,'utf8'):'';
   const nativeCombatVerified=[
@@ -1300,7 +1306,7 @@ function computeVibeNativeDesign(){
   // 기존 게임의 B 원본 시스템은 자유 주제 설계 허가가 아니다. 오너의 자유 주제 요청만 허용한다.
   const freeTopicMode=ownerFreeTopic;
   const computed=computeVibeSeedProposal({
-    requestId:gameId,category:seed.GAME_CATEGORY,platform:seed.INITIAL_TARGET_PLATFORM,
+    requestId:gameId,category:authoredCategory,platform:seed.INITIAL_TARGET_PLATFORM,
     gameName:freeTopicMode?'':clean(seed.gameName||game.name),
     ownerBrief:freeTopicMode?'':clean(seed.OWNER_LATEST_DESIGN_REQUEST||seed.OWNER_DESIGN_INTENT),
     gameDescription:freeTopicMode?'':clean(game.description),
