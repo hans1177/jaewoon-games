@@ -35,7 +35,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .eyebrow{font-size:11px;letter-spacing:.12em;color:#6ef0c9;font-weight:950}
 .panel h1,.panel h2{margin:4px 0 8px}
 .panel p{margin:0 0 15px;color:#b8c9dc;font-size:13px;line-height:1.5}
-.heroes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.heroes button{min-height:65px;border:1px solid #537466;border-radius:12px;background:#102b32;color:#cbe5de;text-align:left;padding:10px}.heroes button[aria-pressed="true"]{border-color:#7dffce;background:#205d50;color:#fff}.heroNote{display:block;font-size:11px;margin-top:3px;color:#b8c9dc}.netRow{display:flex;gap:6px;margin:8px 0}.netRow input{min-width:0;width:100%;padding:11px;background:#071321;color:#fff;border:1px solid #537466;border-radius:9px}.netRow button{padding:10px;background:#164c52;color:white;border:1px solid #6aa798;border-radius:9px;min-height:44px}#netStatus{font-size:12px;color:#a7efd9;line-height:1.5;margin:8px 0}#heroSkill{position:fixed;right:20px;bottom:calc(env(safe-area-inset-bottom) + 35px);z-index:8;width:110px;height:70px;border:2px solid #7df6db;border-radius:20px;background:#123f59e8;color:#fff;font-weight:900}#heroSkill:disabled{opacity:.55}#worldPosition{position:fixed;right:12px;bottom:28px;z-index:4;padding:6px 9px;border-radius:9px;background:#071321cf;color:#c5e4db;font-size:10px;pointer-events:none}
+.heroes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.heroes button{min-height:65px;border:1px solid #537466;border-radius:12px;background:#102b32;color:#cbe5de;text-align:left;padding:10px}.heroes button[aria-pressed="true"]{border-color:#7dffce;background:#205d50;color:#fff}.heroNote{display:block;font-size:11px;margin-top:3px;color:#b8c9dc}.netRow{display:flex;gap:6px;margin:8px 0}.netRow input{min-width:0;width:100%;padding:11px;background:#071321;color:#fff;border:1px solid #537466;border-radius:9px}.netRow button{padding:10px;background:#164c52;color:white;border:1px solid #6aa798;border-radius:9px;min-height:44px}#netStatus{font-size:12px;color:#a7efd9;line-height:1.5;margin:8px 0}#heroSkill{position:fixed;right:calc(env(safe-area-inset-right) + 17px);bottom:calc(env(safe-area-inset-bottom) + 175px);z-index:8;width:94px;height:94px;border:3px solid #a9ffec;border-radius:50%;background:radial-gradient(circle at 35% 25%,#3d9fbd,#17466b 68%,#071b3f);box-shadow:0 0 23px #4eedc15c,inset 0 0 16px #8ff9ee2a;color:#fff;font-size:12px;line-height:1.35;font-weight:950;text-align:center;padding:12px;white-space:normal;touch-action:manipulation}#heroSkill:disabled{opacity:.55;box-shadow:none}#heroSkill:not(:disabled):active{transform:scale(.94);filter:brightness(1.3)}@media(max-width:370px){#heroSkill{width:83px;height:83px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 158px);font-size:11px}}#worldPosition{position:fixed;right:12px;bottom:28px;z-index:4;padding:6px 9px;border-radius:9px;background:#071321cf;color:#c5e4db;font-size:10px;pointer-events:none}
 .wide,.choice{width:100%;border:1px solid #8be4cd44;border-radius:16px;color:#fff;font-weight:900}
 .wide{min-height:56px;background:#187d6c;font-size:15px}
 .choices{display:grid;gap:9px}
@@ -60,16 +60,16 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
   <div><div class="label"><span>다음 능력</span><span id="gemText">0 / 3</span></div><div class="bar gem"><i id="gemBar"></i></div></div>
  </div>
 </div>
-<div id="phase" class="phase">기본 적 4종 등장 중</div>
+<div id="phase" class="phase">수정 동굴 · 몬스터 무리</div>
 <div id="bossHud" class="bossHud"><div class="label"><span>보석 포식자</span><span id="bossHpText"></span></div><div class="bar"><i id="bossHpBar"></i></div></div>
 <button id="pauseBtn" class="pause" aria-label="일시정지">Ⅱ</button>
 <div id="joystick" class="joystick" aria-label="이동 조이스틱"><div id="stick" class="stick"></div></div>
 <div id="worldPosition" aria-live="off"></div>
-<button id="heroSkill" aria-label="캐릭터 고유 기술">고유 기술</button><div class="tip">자동 공격 · Q 고유 기술 · 동료 곁에서 3초 부활</div>
+<button id="heroSkill" aria-label="캐릭터 고유 기술 · 전장 탭으로도 사용">고유 기술</button><div class="tip">화면 탭 / 원형 버튼 / Q 스킬 · 자동 공격</div>
 
 <div id="startOverlay" class="overlay show"><div class="panel">
  <div class="eyebrow">5스테이지 연속 도전 · 최대 4인 협동</div><h1>보석 생존전</h1>
- <p>수정 동굴 → 폐허 정원 → 화산 채굴장 → 서리 성채 → 심연 왕좌. 각 스테이지에서 5분을 버티고 보스를 잡아. 능력은 다음 스테이지에도 유지돼. 고유 기술은 오른쪽 버튼이나 Q키로 사용해.</p>
+ <p>수정 동굴 → 폐허 정원 → 화산 채굴장 → 서리 성채 → 심연 왕좌. 각 스테이지에서 5분을 버티고 보스를 잡아. 능력은 다음 스테이지에도 유지돼. 고유 기술은 오른쪽 원형 버튼이나 전장 탭, Q키로 사용해.</p>
  <div id="heroes" class="heroes" role="group" aria-label="캐릭터 선택"></div>
  <details open><summary>온라인 협동 · 친구와 함께</summary>
  <p>이메일 없이 방을 만들거나 숫자 한 자리(0~9)를 입력해 참가해. 최대 4명이 함께 플레이하고 방장이 시작해. 같은 번호는 동시에 한 방만 사용해.</p>
@@ -92,7 +92,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 
 <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 <script type="module">
-import {createGem3d} from './gem3d.mjs?v=20261025-coop-5';
+import {createGem3d} from './gem3d.mjs?v=20261025-monster-vfx-6';
 import {JaewoonMultiplayerClient} from '../../multiplayer/multiplayer-client.js';
 (()=>{
 'use strict';
@@ -161,7 +161,13 @@ const ENEMY_TYPES={
  frost:{name:'서리 정령',stage:3,unlock:0,hp:165,speed:62,damage:21,r:17,gems:5,color:'#a1eeff',weight:17,behavior:'frost'},
  wisp:{name:'심연 추적령',stage:4,unlock:0,hp:190,speed:130,damage:25,r:16,gems:5,color:'#dc9aff',weight:19,behavior:'weave'},
  summoner:{name:'균열 소환사',stage:4,unlock:80,hp:310,speed:42,damage:24,r:23,gems:8,color:'#a1f0b6',weight:11,behavior:'summon'},
- knight:{name:'보석 기사',unlock:PHASE_THREE_SECONDS,hp:320,speed:66,damage:32,r:24,gems:6,color:'#4fa7ff',weight:10}
+ knight:{name:'보석 기사',unlock:PHASE_THREE_SECONDS,hp:320,speed:66,damage:32,r:24,gems:6,color:'#4fa7ff',weight:10},
+ sprinter:{name:'수정 질주충',unlock:45,hp:45,speed:160,damage:11,r:11,gems:2,color:'#8ff9f2',weight:15,behavior:'dash'},
+ sentinel:{name:'수정 감시자',unlock:90,hp:155,speed:49,damage:22,r:21,gems:4,color:'#86baff',weight:10,behavior:'ranged'},
+ plague:{name:'포자 잠복자',stage:1,unlock:40,hp:110,speed:78,damage:17,r:17,gems:4,color:'#b7e879',weight:14,behavior:'web'},
+ ember:{name:'용암 돌격병',stage:2,unlock:42,hp:135,speed:110,damage:25,r:18,gems:5,color:'#ff694d',weight:14,behavior:'dash'},
+ mirror:{name:'빙결 환영',stage:3,unlock:55,hp:118,speed:128,damage:20,r:16,gems:5,color:'#9decff',weight:16,behavior:'orbit'},
+ voidling:{name:'공허 파수꾼',stage:4,unlock:30,hp:240,speed:88,damage:27,r:21,gems:7,color:'#d29bff',weight:13,behavior:'ranged'}
 };
 
 const ABILITIES=[
@@ -260,7 +266,7 @@ function spawnBoss(){
  if(bossSpawned)return;
  bossSpawned=true;const p=edgeSpawn(80);
  boss={type:'boss',name:'보석 포식자',x:p.x,y:p.y,r:42,hp:2600,maxHp:2600,speed:48,damage:38,gems:0,color:'#ef476f',hit:0,dot:0,dotTick:0,dotDamage:0,orbitHit:0,boss:true,charge:2.5};
- boss.name=['보석 포식자','가시 정원지기','용암 파괴자','서리 여왕','심연의 보석왕'][stageIndex];boss.hp*=1+stageIndex*.6+(actors().length-1)*.5;boss.maxHp=boss.hp;boss.damage*=1+stageIndex*.12;
+ boss.name=['보석 포식자','가시 정원지기','용암 파괴자','서리 여왕','심연의 보석왕'][stageIndex];boss.color=['#62e5ff','#9de68a','#ff7558','#a5f0ff','#df8aff'][stageIndex];boss.ability=5;boss.hp*=1+stageIndex*.6+(actors().length-1)*.5;boss.maxHp=boss.hp;boss.damage*=1+stageIndex*.12;
  enemies.push(boss);ui.bossHud.classList.add('show');ui.phase.textContent='스테이지 '+(stageIndex+1)+' · '+boss.name+' 등장!';tone(85,.5,'sawtooth',.05)
 }
 function dropGems(e){
@@ -352,6 +358,7 @@ function useHeroSkill(unit=player){
   const targets=enemies.filter(e=>dist2(e,unit)<(unit.hero==='wizard'?650:unit.hero==='cleric'?260:190)**2).sort((a,b)=>dist2(a,unit)-dist2(b,unit)).slice(0,unit.hero==='wizard'?8:200);
   for(const e of targets){const index=enemies.indexOf(e);if(index<0)continue;damageEnemy(e,unit.hero==='wizard'?95:unit.hero==='cleric'?60:70);if(effects.length<160)effects.push({kind:'lightning',x1:unit.x,y1:unit.y,x2:e.x,y2:e.y,life:.35,max:.35,color:hero.color});if(unit.hero==='guardian'){const a=Math.atan2(e.y-unit.y,e.x-unit.x);e.x+=Math.cos(a)*90;e.y+=Math.sin(a)*90;}if(e.hp<=0)killEnemy(e,index);}
  }
+ if(effects.length<155)effects.push({kind:'skillCast',hero:unit.hero,x:unit.x,y:unit.y,r:unit.hero==='wizard'?390:unit.hero==='cleric'?260:185,life:.8,max:.8,color:hero.color});
  burst(unit.x,unit.y,hero.color,32);tone(600,.13,'triangle',.025)
 }
 function nextStage(){
@@ -478,6 +485,23 @@ function update(dt){
     const aa=Math.atan2(player.y-e.y,player.x-e.x);
     e.x+=Math.cos(aa)*70;e.y+=Math.sin(aa)*70;screenShake=10
    }
+   // 다섯 보스는 돌진 외에 탄막, 소환, 빙결 특수기를 사용한다.
+   e.ability=(e.ability??5)-dt;
+   if(e.ability<=0){
+    const phase=stageIndex,half=e.hp/e.maxHp<.5,aim=Math.atan2(player.y-e.y,player.x-e.x);
+    e.ability=Math.max(2.8,6-phase*.3-(half?1.25:0));
+    if(effects.length<150)effects.push({kind:'bossPulse',x:e.x,y:e.y,r:100,life:.72,max:.72,color:e.color});
+    if((phase===1||phase===4)&&enemies.length<210){
+     const count=phase===4?4:3;
+     for(let n=0;n<count;n++){spawnEnemy(phase===4?(n%2?'voidling':'mirror'):'plague');const minion=enemies[enemies.length-1];minion.x=clamp(e.x+Math.cos(n*Math.PI*2/count)*85,20,WORLD.width-20);minion.y=clamp(e.y+Math.sin(n*Math.PI*2/count)*85,20,WORLD.height-20);}
+    }
+    const count=phase===2?14:phase===4?18:phase===3?11:phase===0?9:6;
+    for(let n=0;n<count&&projectiles.length<440;n++){
+     const bearing=(phase===2||phase===4?n*Math.PI*2/count:aim+(n-(count-1)/2)*(phase===3?.17:.23));
+     const speed=phase===3?155:phase===4?210:185;
+     projectiles.push({kind:'enemy',hostile:true,x:e.x,y:e.y,vx:Math.cos(bearing)*speed,vy:Math.sin(bearing)*speed,r:phase===2?12:9,damage:e.damage*(half?1:.75),life:3.5,color:e.color,slow:phase===3});
+    }
+   }
   }
 
   const target=actors().filter(a=>a.hp>0).sort((a,b)=>dist2(a,e)-dist2(b,e))[0]||player;
@@ -492,6 +516,8 @@ function update(dt){
     }
    }
    if(e.behavior==='weave')a+=Math.sin(elapsed*4+e.x*.003)*.65;
+   if(e.behavior==='orbit')a+=distance>180?.62:1.38;
+   if(e.behavior==='dash'){if(e.aiTimer<=0){e.aiTimer=2.1;e.dashFor=.42;}if(e.dashFor>0){e.dashFor-=dt;move=2.5;}}
    if(e.behavior==='bomb'&&(distance<95||e.fuse>0)){e.fuse+=dt;move=0;e.hit=.05;if(e.fuse>.9){for(const ally of actors())if(dist2(ally,e)<140*140)hurt(e.damage,ally);if(effects.length<160)effects.push({kind:'death',x:e.x,y:e.y,r:65,life:.5,max:.5,color:e.color});enemies.splice(i,1);continue;}}
   }
   e.x+=Math.cos(a)*e.speed*move*dt;e.y+=Math.sin(a)*e.speed*move*dt;
@@ -535,11 +561,12 @@ function updateUi(){
  ui.gemBar.style.width=(clamp(player.gems/player.gemNeed,0,1)*100)+'%';
 
  if(!bossSpawned){
-  if(elapsed<PHASE_TWO_SECONDS)ui.phase.textContent='스테이지 '+(stageIndex+1)+'/5 · '+(stageIndex?'새로운 몬스터 등장':'기본 적 4종 등장 중');
-  else if(elapsed<PHASE_THREE_SECONDS)ui.phase.textContent='2:00 · 새로운 적 2종 추가';
-  else ui.phase.textContent='3:30 · 강한 적 1종 추가'
+  if(elapsed<PHASE_TWO_SECONDS)ui.phase.textContent='스테이지 '+(stageIndex+1)+'/5 · 다양한 적 출현 중';
+  else if(elapsed<PHASE_THREE_SECONDS)ui.phase.textContent='2:00 · 강화 몬스터 등장';
+  else ui.phase.textContent='3:30 · 정예 적 출현'
  }
  if(boss){
+  const label=$('bossHud').querySelector?.('.label span');if(label)label.textContent=['보석 포식자','가시 정원지기','용암 파괴자','서리 여왕','심연의 보석왕'][stageIndex];
   ui.bossHpText.textContent=Math.ceil(Math.max(0,boss.hp))+' / '+boss.maxHp;
   ui.bossHpBar.style.width=(clamp(boss.hp/boss.maxHp,0,1)*100)+'%'
  }
@@ -588,6 +615,8 @@ addEventListener('blur',function(){releaseInputs();if(running&&!paused)setPause(
 function inputDirection(){let x=joy.dx+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),y=joy.dy+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);const length=Math.max(1,Math.hypot(x,y));return{x:x/length,y:y/length};}
 function requestSkill(){if(!running||paused||player.hp<=0)return;if(!isHost()){net.skillRequest++;return;}useHeroSkill();}
 $('heroSkill').onclick=requestSkill;
+// 실제 전장만 탭하면 스킬 사용. HUD·조이스틱·선택 화면은 제외.
+canvas.addEventListener('pointerdown',()=>{if(running&&!paused)requestSkill();});
 for(const [id,hero] of Object.entries(HEROES)){const button=document.createElement('button');button.dataset.hero=id;button.setAttribute('aria-pressed',String(id===selectedHero));button.innerHTML='<b>'+hero.name+'</b><span class="heroNote">'+hero.skill+' · '+hero.desc+'</span>';button.onclick=()=>{if(running)return;selectedHero=id;player.hero=id;document.querySelectorAll('[data-hero]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hero===id)));};$('heroes').appendChild(button);}
 function networkStatus(message){$('netStatus').textContent=message;}
 function syncRoster(list){
