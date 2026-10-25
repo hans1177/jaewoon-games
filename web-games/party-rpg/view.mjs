@@ -624,6 +624,31 @@ buildWorld(live){
   if(arrow||slow){const tip=attach(new THREE.ConeGeometry(.13,.42,5),makeMaterial(.9),0,.72,0);tip.rotation.x=arrow?Math.PI/2:0;}
   if(arcane){const core=attach(new THREE.IcosahedronGeometry(.19,0),makeMaterial(.96),0,.76,0);core.rotation.y=.2;}
   if(holy){const disk=attach(new THREE.RingGeometry(.24,.29,16),makeMaterial(.9),0,1.32,0);disk.rotation.y=.5;}
+  // 공격 직업마다 서로 다른 읽기 쉬운 실루엣. 실제 스킬 효과량에는 손대지 않는다.
+  if(!monster&&!defense&&!healing){
+   if(family==='fighter'){
+    const swipe=attach(new THREE.TorusGeometry(.64,.049,5,22,Math.PI*1.6),makeMaterial(.80),0,.64,0);
+    swipe.rotation.set(1.07,.32,.55);
+   }else if(family==='rogue'){
+    for(const side of [-1,1]){
+     const streak=attach(new THREE.ConeGeometry(.065,.68,4),makeMaterial(.76),side*.17,.7,.03);
+     streak.rotation.z=side*.62;
+    }
+   }else if(family==='wizard'){
+    const glyph=attach(new THREE.TorusGeometry(.44,.024,4,24),makeMaterial(.72),0,.95,0);
+    glyph.rotation.set(.9,.33,.28);
+   }else if(family==='cleric'){
+    const ray=attach(new THREE.BoxGeometry(.09,.96,.045),makeMaterial(.74),0,.77,0);
+    ray.rotation.z=.45;
+   }else if(family==='ranger'){
+    const quiver=attach(new THREE.ConeGeometry(.10,.38,5),makeMaterial(.72),0,.78,0);
+    quiver.rotation.x=.83;
+   }
+   if(/frost|snare|smoke|veil/.test(type)){
+    const haze=attach(new THREE.RingGeometry(.65,.73,20),makeMaterial(.57),0,.046,0);
+    haze.rotation.x=-Math.PI/2;
+   }
+  }
   if(projectile){
    const flight={x:(sx-impact.x)*SCALE,z:(sy-impact.y)*SCALE};
    const sprite=attach(arrow?new THREE.ConeGeometry(.095,.38,6):new THREE.IcosahedronGeometry(monster?.21:.16,0),makeMaterial(.98));
