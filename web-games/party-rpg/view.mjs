@@ -405,7 +405,7 @@ buildWorld(live){
   if(!dungeon&&zone!==0&&i<2)this.staticModel('lantern',x,y,1.7);
  }
 }
- modelRole(kind,obj,live){if(kind==='player')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(live.state.player.classId)]||'warrior';if(kind==='ai')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(obj.classId)]||HEROES[(Number(obj.id?.slice(2))||0)%5];const name=obj.name||'';if(/슬라임/.test(name))return'slime';if(/토끼/.test(name))return'bunny';if(/골렘|수호자|청동|도금|인형/.test(name))return'golem';if(/망령|유령|원혼|월식/.test(name))return'ghost';if(/박쥐|마수|키메라/.test(name))return'winged';return'orc';}
+ modelRole(kind,obj,live){if(kind==='player')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(live.state.player.classId)]||'warrior';if(kind==='ai'||kind==='friend')return HEROES[['fighter','rogue','cleric','wizard','ranger'].indexOf(obj.classId)]||HEROES[(Number(obj.id?.slice(2))||0)%5];const name=obj.name||'';if(/슬라임/.test(name))return'slime';if(/토끼/.test(name))return'bunny';if(/골렘|수호자|청동|도금|인형/.test(name))return'golem';if(/망령|유령|원혼|월식/.test(name))return'ghost';if(/박쥐|마수|키메라/.test(name))return'winged';return'orc';}
  // 기존 인물 GLB에 직업 장비만 더해 리깅과 애니메이션을 보존한다.
  dressActor(root,role){
   const armor=new THREE.MeshStandardMaterial({color:0x555c5d,roughness:.82,metalness:.36});
@@ -1003,6 +1003,8 @@ buildWorld(live){
   if(activeMarker){const site=activeMarker;this.evidenceBeacon.position.set(site.x*SCALE,.015,site.y*SCALE);this.evidenceBeacon.rotation.y=now*.00025;const v=new THREE.Vector3(site.x*SCALE,1.5,site.y*SCALE).project(this.camera);this.evidenceLabel.hidden=Math.abs(v.x)>.95||Math.abs(v.y)>.95;if(!this.evidenceLabel.hidden)this.evidenceLabel.style.transform='translate('+Math.round((v.x+1)*this.width/2)+'px,'+Math.round((1-v.y)*this.height/2)+'px)';}
   else this.evidenceLabel.hidden=true;
   const visible=[['player',live.p,'player']];for(const a of live.state.ai)if(live.dungeon?a.party:a.party||(a.zone===live.state.zone&&live.visibleCompanions?.includes(a.id)))visible.push(['ai',a,a.id]);
+  // 멀티 동료는 임시 시각 객체로만 추가해 기존 파티/저장·전투 판정에서 제외한다.
+  for(const ally of live.coopPlayers||[])if(ally.zone===live.state.zone&&Boolean(ally.dungeon)===Boolean(live.dungeon))visible.push(['friend',ally,'friend-'+ally.id]);
   const enemies=live.enemies.filter(e=>!e.dead).sort((a,b)=>(a.x-live.p.x)**2+(a.y-live.p.y)**2-(b.x-live.p.x)**2-(b.y-live.p.y)**2).slice(0,this.mobile?16:44);for(const e of enemies)visible.push(['enemy',e,'enemy'+e.id]);
    const used=new Set();
    for(const [kind,obj,key] of visible){
@@ -1052,7 +1054,7 @@ buildWorld(live){
     const turning=Math.abs(difference),turnRate=moving?(turning>.85?20:15):attacking?12:7;
     entry.model.rotation.y+=difference*(1-Math.exp(-dt*turnRate));
     entry.turnLean+=(THREE.MathUtils.clamp(difference,-1,1)*entry.motion*.07-entry.turnLean)*(1-Math.exp(-dt*8));
-    entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);
+    entry.ring.visible=kind==='player'||kind==='friend'||key===this.selection||(kind==='ai'&&obj.party);
     entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];
     if(kind==='enemy'){entry.specialUntil=obj.specialVisualUntil||0;entry.specialKind=obj.trait||null;}
     if(!live.paused)this.animate(entry,moving,currentCombat,dt,now);
