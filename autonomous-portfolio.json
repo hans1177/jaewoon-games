@@ -428,16 +428,14 @@
       "name": "포근섬",
       "sourcePath": "roblox-games/cozy-island",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cozy-island",
-        "UNITY": "unity-games/cozy-island"
+        "ROBLOX": "roblox-games/cozy-island"
       },
       "developmentFocus": {
         "total": 0
@@ -445,11 +443,20 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/cozy-island/2026-10-25/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-25T16:52:46.489Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-fantasy-survival",
@@ -457,16 +464,14 @@
       "name": "마력숲 생존기",
       "sourcePath": "roblox-games/fantasy-survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival",
-        "UNITY": "unity-games/fantasy-survival"
+        "ROBLOX": "roblox-games/fantasy-survival"
       },
       "developmentFocus": {
         "total": 0
@@ -474,11 +479,20 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/fantasy-survival/2026-10-25/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/fantasy-survival/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-25T16:52:46.489Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-horror-escape-room",
@@ -486,16 +500,14 @@
       "name": "심야 대탈출",
       "sourcePath": "roblox-games/horror-escape-room",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_ROBLOX_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
+        "ROBLOX"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
+        "ROBLOX": "roblox-games/horror-escape-room"
       },
       "developmentFocus": {
         "total": 0
@@ -503,11 +515,20 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "mode": "ROBLOX_ONLY_OWNER_ACTIVE",
+      "targetEngine": "ROBLOX",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/horror-escape-room/2026-10-25/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        }
+      },
+      "updatedAt": "2026-10-25T16:52:46.489Z",
+      "productionTier": 2
     }
   ],
   "productionClassState": {
@@ -719,5 +740,6 @@
         "sourceReady": true
       }
     ]
-  }
+  },
+  "updatedAt": "2026-10-25T16:52:46.489Z"
 }
