@@ -398,7 +398,37 @@ buildWorld(live){
    add(new THREE.BoxGeometry(.11,.6,.09),leather,.3,1,-.21,.3);
   }
  }
- createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}const flashMaterials=[];model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();for(const m of Array.isArray(p.material)?p.material:[p.material])if(m.emissive)flashMaterials.push({material:m,red:m.emissive.r,green:m.emissive.g,blue:m.emissive.b});}});root.add(model);// 픽셀 스프라이트가 직업 의복·장비 실루엣을 직접 그리므로 3D 장식은 중복 생성하지 않는다.
+ createActor(role,kind,obj){
+  // 메인: 로딩 중이거나 일부 GLB가 실패해도 월드의 주인공·동료가 사라지지 않는다.
+  let original=this.models.get(role);
+  const provisional=!original;
+  if(provisional){
+   const figure=new THREE.Group(),human=kind!=='enemy';
+   const clothColors={warrior:0x657985,rogue:0x59614f,cleric:0xa39a82,wizard:0x626b98,ranger:0x667956,orc:0x81654d,bunny:0xa69e87,slime:0x648c72,golem:0x87847c,ghost:0x8b91a9,winged:0x755f72};
+   const cloth=new THREE.MeshStandardMaterial({color:clothColors[role]||0x777c73,roughness:.9,side:THREE.DoubleSide});
+   const skin=new THREE.MeshStandardMaterial({color:human?0xc69b7e:clothColors[role]||0x887c6e,roughness:.94});
+   const gear=new THREE.MeshStandardMaterial({color:0x4b4943,roughness:.73,metalness:.24});
+   const part=(geometry,material,x,y,z=0)=>{const mesh=new THREE.Mesh(geometry,material);mesh.position.set(x,y,z);figure.add(mesh);};
+   if(role==='slime'){
+    part(new THREE.SphereGeometry(.45,12,8),cloth,0,.47);
+   }else{
+    part(new THREE.CylinderGeometry(human?.31:.4,human?.35:.45,.78,9),cloth,0,.91);
+    part(new THREE.SphereGeometry(human?.25:.31,10,8),skin,0,1.48);
+    if(human){
+     part(new THREE.CylinderGeometry(.11,.13,.72,7),cloth,-.43,.9);
+     part(new THREE.CylinderGeometry(.11,.13,.72,7),cloth,.43,.9);
+     part(new THREE.CylinderGeometry(.13,.16,.69,7),gear,-.19,.35);
+     part(new THREE.CylinderGeometry(.13,.16,.69,7),gear,.19,.35);
+     if(role==='warrior')part(new THREE.BoxGeometry(.6,.12,.48),gear,0,1.38);
+     if(role==='wizard')part(new THREE.ConeGeometry(.34,.48,8),cloth,0,1.84);
+    }else{
+     part(new THREE.ConeGeometry(.15,.5,7),cloth,-.21,1.85);
+     part(new THREE.ConeGeometry(.15,.5,7),cloth,.21,1.85);
+    }
+   }
+   original={scene:figure,animations:[]};
+  }
+  const root=new THREE.Group(),model=provisional?original.scene:cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}const flashMaterials=[];model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();for(const m of Array.isArray(p.material)?p.material:[p.material])if(m.emissive)flashMaterials.push({material:m,red:m.emissive.r,green:m.emissive.g,blue:m.emissive.b});}});root.add(model);// 픽셀 스프라이트가 직업 의복·장비 실루엣을 직접 그리므로 3D 장식은 중복 생성하지 않는다.
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
   const mixer=new THREE.AnimationMixer(model),actions=new Map();for(const clip of original.animations){const action=mixer.clipAction(clip);actions.set(clip.name,action);}
   // GLB마다 다른 뼈 이름을 정규화한다. 관절이 없는 개체는 보정하지 않고 원본 리깅 유지.
@@ -453,19 +483,19 @@ buildWorld(live){
   // 전신 표현: 실제 고밀도 원화 + 경량 분절 메시. 3D 판정 모델은 그대로 둔다.
   let pixel=null,pixelRest=null,pixelWidth=0;
   const bounds=this.actorBounds[ACTOR_ART.indexOf(role)];
-  if(this.actorArt&&bounds&&!original.animations.length){
+  if(provisional&&this.actorArt&&bounds){
    const geometry=new THREE.PlaneGeometry(1,1,12,20),uv=geometry.attributes.uv;
    for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(bounds.u0,bounds.u1,uv.getX(i)),THREE.MathUtils.lerp(bounds.v0,bounds.v1,uv.getY(i)));
    uv.needsUpdate=true;pixelRest=geometry.attributes.position.array.slice();geometry.translate(0,.5,0);
    pixel=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({map:this.actorArt,transparent:true,alphaTest:.12,depthWrite:false,toneMapped:false,side:THREE.DoubleSide}));
-   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=.035;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);model.visible=false;
+   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=.035;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);
   }
   // 기존 리깅 클립을 모든 직업·동료 NPC·몬스터가 공유하는 운동 상태로 선택한다.
    const named=regex=>[...actions].find(([name])=>regex.test(name))?.[1]||null;
    const clips={idle:named(/idle/i)||named(/^walk|_walk/i)||named(/^run|_run/i),walk:named(/^walk|_walk/i),run:named(/^run|_run/i),attack:named(/^(?!.*idle).*?(attack|spell|shoot|punch|bite|slash|headbutt)/i),hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i),death:named(/death|die|dying/i)};
    if(clips.attack===clips.idle)clips.attack=null;
    for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))action.reset().play().setEffectiveWeight(0);
-   const result={root,model,ring,mixer,actions,clips,bones,feet,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
+   const result={root,model,ring,mixer,actions,clips,bones,feet,role,kind,provisional,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
     wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,lastSpecialUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
     lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,modelRestScaleX:model.scale.x,modelRestScaleZ:model.scale.z,
     motionPhase:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:3)*1.61,
@@ -705,7 +735,7 @@ buildWorld(live){
   }
   if(key==='player'||power>1)this.cameraImpact=Math.min(.12,this.cameraImpact+(power>1?.052:.025));
  }
- removeActor(key,entry){if(entry.pixel){entry.pixel.geometry.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
+ removeActor(key,entry){if(entry.pixel){entry.pixel.geometry.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh){if(entry.provisional)p.geometry.dispose();for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();}});this.actors.delete(key);}
  // 직업·기술별 색, 궤적, 보호막, 투사체, 마법 파편을 조합한 경량 3D 이펙트.
  // 게임 피해 판정과 분리하고 휴대폰은 효과/파편 개수를 제한한다.
  playSkillEffect(kind,sx,sy,tx=sx,ty=sy){
@@ -937,7 +967,7 @@ buildWorld(live){
    const used=new Set();
    for(const [kind,obj,key] of visible){
     used.add(key);const role=this.modelRole(kind,obj,live);let entry=this.actors.get(key);
-    if(entry&&entry.role!==role){this.removeActor(key,entry);entry=null;}
+    if(entry&&(entry.role!==role||(entry.provisional&&this.models.has(role))||(entry.provisional&&!entry.pixel&&this.actorArt&&this.actorBounds.length))){this.removeActor(key,entry);entry=null;}
     if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}
     const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,travel=Math.hypot(dx,dy);
     entry.lastX=obj.x;entry.lastY=obj.y;
