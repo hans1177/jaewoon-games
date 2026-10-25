@@ -124,14 +124,17 @@ test('verified design promotion wakes the existing Vibe scheduler only after run
   assert.match(promotion,/VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES/);
 });
 
-test('the Vibe scheduler verifies exact persisted runtime design sources before planning',()=>{
+test('canonical promotion verifies exact design once and the scheduler consumes the same runtime snapshot',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const handoff=fs.readFileSync('tools/vibe2-verified-design-handoff.mjs','utf8');
   assert.match(promotion,/Verify exact promoted runtime design handoff for Vibe/);
   assert.ok(promotion.indexOf('Verify exact promoted runtime design handoff for Vibe')>promotion.indexOf('Persist promoted state to company runtime branch'));
   assert.ok(promotion.indexOf('Verify exact promoted runtime design handoff for Vibe')<promotion.indexOf('Dispatch native development and immediate Vibe planner refill'));
-  assert.ok(runner.includes('node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"'));
-  assert.ok(runner.includes('VIBE2_VERIFIED_DESIGN_INTAKE=PASS'));
+  assert.ok(promotion.includes('node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_sha"'));
+  assert.ok(promotion.includes('VIBE2_VERIFIED_DESIGN_INTAKE=PASS'));
+  assert.ok(runner.includes('git -C /tmp/vibe2-main show "$runtime_design_sha:development-queue.json"'));
+  assert.ok(runner.includes('git -C /tmp/vibe2-main checkout "$runtime_design_sha" -- "$runtime_design_path"'));
+  assert.ok(!runner.includes('VIBE2_VERIFIED_DESIGN_GATE=BLOCKED_UNTIL_AUTHORED_REVALIDATION'));
   assert.ok(handoff.includes('evaluateMinimumDesignContract'));
   assert.ok(handoff.includes("item?.minimumDesignContract?.pass!==true"));
   assert.ok(handoff.includes('strictQaPassClaimed:false,releasePassClaimed:false'));
