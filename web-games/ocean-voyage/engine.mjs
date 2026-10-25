@@ -462,22 +462,22 @@ export function resolveMerchantEncounter(state,choice){
 }
 // 출항 전 안전한 물길 자동 선택: 항구 가까이서 선체가 육지에 막혀 서는 현상을 방지한다.
 // 기존 좌표, 항구, 충돌·세이브는 그대로 두고 출항 시각에만 방향을 추천한다.
+// 이동이 정지한 범선의 안전한 재출항 방향. 기존 항구/물리 속도와 밸런스는 변경하지 않는다.
 export function departureHeading(state){
  const ship=state.ship,port=PORTS.reduce((best,p)=>dist(ship,p)<dist(ship,best)?p:best,PORTS[0]);
- if(dist(ship,port)>8||Math.abs(ship.velocity)>.5||state.route.length)return ship.heading;
+ if(Math.abs(ship.velocity)>.7||state.route.length)return ship.heading;
  let best=ship.heading,bestScore=-Infinity;
- // 해안의 작은 만과 곶 사이에서 5·8칸 점검만 하면 육지에 부딪힐 수 있으므로
- // 출항 지점부터 매 1칸씩 확인하고 실제 열린 물길이 긴 방향을 우선한다.
- for(let i=0;i<32;i++){
-  const heading=ship.heading+i*Math.PI/16,fx=Math.sin(heading),fz=Math.cos(heading);
+ // 해안이나 좁은 수로에 끼였을 때 한 칸씩 육지 충돌을 검사한다.
+ for(let i=0;i<48;i++){
+  const heading=ship.heading+i*Math.PI/24,fx=Math.sin(heading),fz=Math.cos(heading);
   let clearance=0;
-  for(let d=1;d<=32;d++){
+  for(let d=.5;d<=38;d+=.5){
    const x=ship.x+fx*d,z=ship.z+fz*d;
    if(isLand(x,z)&&!PORTS.some(p=>Math.hypot(p.x-x,p.z-z)<5))break;
    clearance=d;
   }
   const away=(fx*(ship.x-port.x)+fz*(ship.z-port.z))/Math.max(1,dist(ship,port));
-  const score=clearance+away*.25-Math.abs(wrap(heading-ship.heading))*.03;
+  const score=clearance+(dist(ship,port)<12?away*.22:0)-Math.abs(wrap(heading-ship.heading))*.03;
   if(score>bestScore){best=heading;bestScore=score;}
  }
  return wrap(best);

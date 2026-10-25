@@ -6,7 +6,18 @@ import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const view={head:$('panelTitle'),body:$('content'),details:$('details'),message:$('message'),loading:$('loading')};
 let state=loadGame(localStorage),active='',town=false,choosing=false,homeFromTown=false,battleTarget=0,enemyTimer=null,last=performance.now(),tick=0,panelTick=0,ready=false;
-let buttons={left:false,right:false,ahead:false,astern:false},keys=new Set(),stick={x:0,y:0},sailCruise=false;
+let buttons={left:false,right:false,ahead:false,astern:false},keys=new Set(),stick={x:0,y:0},sailCruise=false,stuckFor=0,travelDistance=0,travelSample={x:state.ship.x,z:state.ship.z};
+const mobileSailing=()=>window.matchMedia?.('(pointer:coarse)')?.matches&&window.innerWidth<900;
+function clearMotionSample(){stuckFor=0;travelSample={x:state.ship.x,z:state.ship.z};}
+function showMotion(){
+ const el=$('movementReadout');if(!el)return;
+ el.dataset.stuck=String(stuckFor>1);
+ if(town||choosing||!view.loading.classList.contains('hide')){el.hidden=true;return;}
+ el.hidden=false;
+ if(state.event||state.scene){el.textContent='항해 일시정지 · 사건 진행';return;}
+ el.textContent=stuckFor>1.1?'⚠ 얕은 물 · 재출항 방향 탐색 중':
+  (sailCruise||Math.abs(state.ship.velocity)>.12?'⛵ 항속 '+Math.abs(state.ship.velocity).toFixed(1):'⏸ 정박 · ▶ 항해')+' · 이동 '+Math.round(travelDistance);
+}
 function syncSails(){const control=$('sailToggle');if(!control)return;control.textContent=sailCruise?'■ 멈춤':'▶ 항해';control.setAttribute('aria-pressed',String(sailCruise));}
 const escapeHtml=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const port=id=>PORTS.find(p=>p.id===id);
@@ -83,7 +94,7 @@ function gotoPanel(name){if(state.landBattle&&name!=='system'){enterBattle();ret
 function enterTown(){if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
 function openFacility(id){const home=canDock(state);if(!home){note('먼저 항구에 입항해.');return;}if(!portHasFacility(home.id,id)&&id!=='port'&&id!=='journal'){note(home.name+'에는 해당 시설이 없어. 다른 항구로 항해해.');return;}town=true;active=id;document.body.classList.add('in-town');$('townbar').hidden=false;scene.setMode('town',id);view.details.classList.add('open');switchMusicScene(id==='palace'?'palace':id==='quests'?'explore':'harbor');renderPanel();}
 function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';view.details.classList.remove('open');scene.setMode(town?'town':navalTarget!==null?'naval':'sea');if(town)switchMusicScene('harbor');}
-function depart(){if(state.landBattle){enterBattle();return;}if(!state.route.length)state.ship.heading=departureHeading(state);sailCruise=true;syncSails();town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();note('출항했어. 자동으로 전진해. 왼쪽 바다를 밀어서 조타하고 ■ 멈춤으로 정지할 수 있어.');}
+function depart(){if(state.landBattle){enterBattle();return;}if(!state.route.length)state.ship.heading=departureHeading(state);sailCruise=true;clearMotionSample();syncSails();town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();note('출항했어. 자동으로 전진해. 왼쪽 바다를 밀어서 조타하고 ■ 멈춤으로 정지할 수 있어.');}
 // 홈: 화면만 전환해 기존 진행 데이터는 선장 확정 전까지 보존한다.
 function openHome(){
  if(!ready)return;
@@ -103,7 +114,7 @@ function continueGame(){
  scene.setState(state);
  if(state.landBattle)enterBattle();
  else if(homeFromTown&&canDock(state))enterTown();
- else{town=false;active='';sailCruise=true;syncSails();document.body.classList.remove('in-town','in-battle');$('townbar').hidden=true;scene.setMode('sea');switchMusicScene('sea');}
+ else{town=false;active='';sailCruise=true;clearMotionSample();syncSails();document.body.classList.remove('in-town','in-battle');$('townbar').hidden=true;scene.setMode('sea');switchMusicScene('sea');}
  summary();renderEvent();
 }
 function restartGame(){
@@ -513,7 +524,7 @@ document.addEventListener('keydown',e=>{
  if(k==='e'&&canDock(state))enterTown();
 });
 document.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-window.addEventListener('blur',()=>{keys.clear();buttons={left:false,right:false,ahead:false,astern:false};stick={x:0,y:0};});
+window.addEventListener('blur',()=>{keys.clear();buttons={left:false,right:false,ahead:false,astern:false};stick={x:0,y:0};clearMotionSample();});
 window.addEventListener('pagehide',save);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')save();});
 
@@ -617,8 +628,8 @@ function renderEvent(){
 
 function run(now){
  requestAnimationFrame(run);
- if(now-last<24)return;
- const dt=Math.min(.06,Math.max(0,(now-last)/1000));last=now;
+ if(now-last<(mobileSailing()?33:24))return;
+ const dt=Math.min(.08,Math.max(0,(now-last)/1000));last=now;
  if(!ready||choosing||!view.loading.classList.contains('hide')||document.hidden)return;
  if(view.details.classList.contains('open')||town)return;
  if(state.event||state.scene){renderEvent();return;}
@@ -635,17 +646,30 @@ function run(now){
  syncNavalBattle();
  // 높은 배속도 작은 물리 간격으로 나누어 해안 충돌과 항로·사건을 보존한다.
  let remaining=dt*(navalTarget!==null?1:state.speed);
+ const beforeX=state.ship.x,beforeZ=state.ship.z;
  while(remaining>0){const step=Math.min(.08,remaining);state=stepSea(state,{turn,throttle,manual,navalBattle:navalTarget!==null},step);remaining-=step;if(state.event||state.scene||state.landBattle)break;}
+ const moved=Math.hypot(state.ship.x-beforeX,state.ship.z-beforeZ);
+ travelDistance+=moved;
+ // 자동 순항만 해안 좌초를 복구한다. 수동 조타·자동항로·해전에서는 선장의 입력을 우선한다.
+ if(sailCruise&&throttle>.25&&!manual&&!state.route.length&&navalTarget===null&&moved<.006&&Math.abs(state.ship.velocity)<.18){
+  stuckFor+=dt;
+  if(stuckFor>1.55){
+   const safer=departureHeading(state),delta=Math.abs(Math.atan2(Math.sin(safer-state.ship.heading),Math.cos(safer-state.ship.heading)));
+   if(delta>.04){state.ship.heading=safer;state.ship.rudder=0;note('얕은 물길을 피해 항로를 다시 잡았어.');}
+   else if(stuckFor>3){note('해안이 막혔어. 조타 스틱을 왼쪽이나 오른쪽으로 밀어.');}
+   stuckFor=0; // 좌초 복구 방향을 시도한 후 재평가한다.
+  }
+ }else stuckFor=0;
  syncNavalBattle();
  if(state.combatFx&&state.combatFx.serial!==oldFx)impactSound();
  if(state.event){save();renderEvent();}
  scene.setState(state);
  tick+=dt;panelTick+=dt;
- if(tick>1){tick=0;summary();}
+ if(tick>1){tick=0;summary();showMotion();}
  if(panelTick>13){panelTick=0;save();}
  if(state.ship.hull<=0){
   note('선체가 파괴됐어. 항구에서 수리를 받거나 새 항해를 시작할 수 있어.');
   state.ship.hull=1;const safe=port(state.homePort)||PORTS[0];state.ship.x=safe.x;state.ship.z=safe.z+2;state.destination=null;state.route=[];state.coins=Math.max(200,state.coins-500);save();
  }
 }
-$('speed').textContent=state.speed+'배';summary();renderEvent();requestAnimationFrame(run);
+$('speed').textContent=state.speed+'배';summary();showMotion();renderEvent();requestAnimationFrame(run);
