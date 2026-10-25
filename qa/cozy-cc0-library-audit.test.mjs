@@ -26,6 +26,17 @@ test('Vibe2 coerces CC0 originals through entire source+license+model+PBR librar
   assert.equal(result.acceptedCC0Models.every(row=>row.license==='CC0-1.0'&&row.permissionMustBeGrantedTo==='10767445741'),true);
 });
 
+test('bear CC0 evidence cannot be inferred from a procedural wildlife generator or global library label',()=>{
+ const result=auditCozyCC0();
+ assert.equal(result.bearOriginalVerified,false,'no registered bear original with exact source digest exists');
+ assert.equal(result.bearSpawnBlocked,true);
+ assert.match(source,/CozyBearCC0Status","BLOCKED_UNVERIFIED_SOURCE"/);
+ assert.doesNotMatch(source,/Wildlife\.Spawn\("BEAR"/);
+ const auditSource=read('tools/cozy-cc0-library-audit.mjs');
+ assert.match(auditSource,/COZY_UNVERIFIED_PROCEDURAL_BEAR_SPAWN/);
+ assert.match(auditSource,/COZY_UNLICENSED_BEAR_MUST_BE_BLOCKED/);
+});
+
 test('Only verified CC0 actors replace Cozy village/raider visuals, originals and save flow are preserved',()=>{
   assert.match(source,/require\(Shared:WaitForChild\("CozyCC0Library"\)\)/);
   assert.match(source,/require\(Shared:WaitForChild\("RobloxCommonMaterials"\)\)/);
