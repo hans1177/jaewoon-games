@@ -1754,6 +1754,39 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         }
       }
     }
+    if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
+      // 저장 읽기 실패 시 쓰기 금지 + 기존 레코드 병합 등 저장 정책을 한 글자도 변경하지 않는다.
+      // 생존형 서버의 기존 PlayerRemoving 전체 본문만 재사용한다.
+      const start='Players.PlayerRemoving:Connect(function(player)';
+      const shutdown='game:BindToClose(function() end)';
+      const from=source.indexOf(start),closeAt=source.indexOf('\nend)',from+start.length);
+      if(from>=0&&closeAt>from&&closeAt-from<5000
+        &&source.indexOf(start,from+1)<0&&source.split(shutdown).length===2
+        &&!/\blocal function savePlayer\s*\(/.test(source)
+        &&source.includes('local Players = game:GetService("Players")')){
+        const original=source.slice(from,closeAt+5);
+        const body=original.slice(start.length,-'end)'.length);
+        if(/\bverifiedSaveRead\[player\]\s*==\s*true/.test(body)
+          &&/\bstore:UpdateAsync\("player:"\s*\.\.\s*player\.UserId/.test(body)
+          &&/typeof\(current\)\s*~=\s*"table"/.test(body)
+          &&/lastAction\[player\]\s*=\s*nil/.test(body)
+          &&/verifiedSaveRead\[player\]\s*=\s*nil/.test(body)
+          &&body.trim().endsWith('end')){
+          const shared='local function savePlayer(player)'+body+'end\nPlayers.PlayerRemoving:Connect(savePlayer)';
+          const onShutdown='game:BindToClose(function()\n'
+            +'  for _, player in ipairs(Players:GetPlayers()) do\n'
+            +'    savePlayer(player)\n'
+            +'  end\nend)';
+          return {
+            summary:'Roblox native verified-read-safe world save on server shutdown',
+            expectedEffect:'Reuse the existing guarded DataStore merge and world-object save without introducing new save keys',
+            edits:[{path:relative,find:original,replace:shared},{path:relative,find:shutdown,replace:onShutdown}],
+            newFiles:[],replaceFiles:[],tests:[],
+            deterministicRobloxNativeRepair:'GUARDED_WORLD_SAVE_ON_SHUTDOWN'
+          };
+        }
+      }
+    }
     if(inputWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
       // 실행 라인에 시작하는 실제 연결만 교체하고 문자열·주석·리터럴은 건드리지 않는다.
       for(const match of source.matchAll(/^[ \t]*([A-Za-z_][A-Za-z_0-9]*)\.MouseButton1Click:Connect\(/gm)){
