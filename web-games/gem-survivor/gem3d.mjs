@@ -3,13 +3,14 @@
 // collisions, gem prices, abilities, spawn schedules, and boss-victory authority.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 import { OBJLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/OBJLoader.js';
+import {clone as cloneRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 import { GLTFLoader } from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
 
 const SCALE=56, MAX_EACH=110, MAX_PROJECTILES=280, MAX_GEMS=380, MAX_PARTICLES=360;
 const mat=(hex,emissive=hex)=>new THREE.MeshStandardMaterial({
   color:hex,emissive,emissiveIntensity:.27,metalness:.12,roughness:.58
 });
-const SPECIES=['slime','bat','beetle','brute','hound','shaman','knight','boss'];
+const SPECIES=['slime','bat','beetle','brute','hound','shaman','knight','boss','spider','bomber','archer','frost','wisp','summoner'];
 const vec=(x,y,z)=>new THREE.Vector3(x,y,z);
 export async function createGem3d({canvas}){
  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'});
@@ -53,7 +54,7 @@ export async function createGem3d({canvas}){
   return bigger;
  }
  // 몬스터: 저장소 CC0 원본을 사용하고 기존 게임 판정은 그대로 유지한다.
- const authoredIds=[7,15,17,18,21,26,31,35],objLoader=new OBJLoader(),textureLoader=new THREE.TextureLoader();
+ const authoredIds=[7,15,17,18,21,26,31,35,41,47,49,53,56,31],objLoader=new OBJLoader(),textureLoader=new THREE.TextureLoader();
  const enemyMeshes=new Map();
  await Promise.all(SPECIES.map(async(kind,index)=>{
   const id=authoredIds[index],base=new URL('../../assets/shared/forest/',import.meta.url);
@@ -78,7 +79,7 @@ export async function createGem3d({canvas}){
  }));
  const trails=pool(new THREE.CylinderGeometry(1,1,1,5),new THREE.MeshBasicMaterial({
   color:'#b4f7ff',transparent:true,opacity:.68,depthWrite:false,blending:THREE.AdditiveBlending}),MAX_PROJECTILES);
- const orbitTrails=pool(new THREE.TorusGeometry(1,.035,4,24,Math.PI*.5),new THREE.MeshBasicMaterial({color:'#96daff',transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending}),5);
+ let orbitTrails=pool(new THREE.TorusGeometry(1,.035,4,24,Math.PI*.5),new THREE.MeshBasicMaterial({color:'#96daff',transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending}),5);
  const bubbles=pool(new THREE.SphereGeometry(1,5,4),mat('#9bf26b'),168);
  const halos=pool(new THREE.RingGeometry(.72,1,24),new THREE.MeshBasicMaterial({
   color:'#ffffff',transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}),64);
@@ -91,7 +92,7 @@ export async function createGem3d({canvas}){
  let projectiles=pool(new THREE.OctahedronGeometry(1,0),mat('#e5ffff'),MAX_PROJECTILES);
  let gems=pool(crystalGeo,new THREE.MeshBasicMaterial({color:'#72ffde'}),MAX_GEMS);
  const particles=pool(new THREE.TetrahedronGeometry(1,0),mat('#ffffff'),MAX_PARTICLES);
- const blades=pool(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:'#e3fcff'}),5);
+ let blades=pool(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:'#e3fcff'}),5);
  const pools=pool(new THREE.CylinderGeometry(1,1,.015,24),new THREE.MeshStandardMaterial({
   color:'#61d86a',emissive:'#256d31',emissiveIntensity:.25,transparent:true,opacity:.4,depthWrite:false}),28);
  const lightning=pool(new THREE.CylinderGeometry(.025,.025,1,5),mat('#a1f9ff'),144);
@@ -115,31 +116,33 @@ export async function createGem3d({canvas}){
  const healthBack=new THREE.Mesh(new THREE.PlaneGeometry(1.65,.16),new THREE.MeshBasicMaterial({color:'#121725',depthTest:false}));
  const healthFill=new THREE.Mesh(new THREE.PlaneGeometry(1.55,.1),new THREE.MeshBasicMaterial({color:'#5cff9c',depthTest:false}));
  healthBack.renderOrder=10;healthFill.renderOrder=11;scene.add(healthBack,healthFill);
- const player=new THREE.Group();scene.add(player);
- let model,modelRestY=0,clips=[],mixer=null,action=null,actionName='';
- try{
-  const gltf=await new GLTFLoader().loadAsync(
-   new URL('../../assets/roblox/actors/native/knight.glb',import.meta.url).href);
-  model=gltf.scene;clips=gltf.animations||[];
-  const bbox=new THREE.Box3().setFromObject(model);
-  const height=Math.max(.01,bbox.max.y-bbox.min.y),scale=1.6/height;
-  model.scale.setScalar(scale);
-  modelRestY=-bbox.min.y*scale;
-  model.position.set(-(bbox.min.x+bbox.max.x)*scale*.5,modelRestY,
-   -(bbox.min.z+bbox.max.z)*scale*.5);
-  player.add(model);
-  if(clips.length)mixer=new THREE.AnimationMixer(model);
- }catch(error){
-  renderer.dispose();throw Error('GEM_3D_AUTHORED_KNIGHT_UNAVAILABLE: '+String(error?.message||error));
+ // 캐릭터: 기존 등록 GLB와 리깅을 재사용하며 협동 인물은 독립 믹서를 갖는다.
+ const heroSources=new Map(),heroActors=new Map(),heroLoader=new GLTFLoader();
+ await Promise.all(['guardian','ranger','wizard','rogue','cleric'].map(async id=>{
+  const path=id==='guardian'?'../../assets/roblox/actors/native/knight.glb':'../../assets/shared/party/'+id+'.glb';
+  const gltf=await heroLoader.loadAsync(new URL(path,import.meta.url).href);heroSources.set(id,gltf);
+ }));
+ function heroActor(key,kind){
+  const previous=heroActors.get(key);if(previous?.kind===kind)return previous;
+  if(previous){scene.remove(previous.root);previous.mixer?.stopAllAction();previous.mixer?.uncacheRoot(previous.model);}
+  const source=heroSources.get(kind)||heroSources.get('guardian'),model=cloneRig(source.scene),root=new THREE.Group();
+  const box=new THREE.Box3().setFromObject(model),scale=1.6/Math.max(.01,box.max.y-box.min.y);model.scale.setScalar(scale);
+  const restY=-box.min.y*scale;model.position.set(-(box.min.x+box.max.x)*scale*.5,restY,-(box.min.z+box.max.z)*scale*.5);root.add(model);scene.add(root);
+  const entry={kind,root,model,restY,clips:source.animations||[],mixer:new THREE.AnimationMixer(model),action:null,actionName:'',x:NaN,y:NaN};heroActors.set(key,entry);return entry;
  }
- function animate(name){
-  if(!mixer)return;
-  const clip=clips.find(a=>(name==='walk'?/walk|run/i:name==='attack'?/attack|slash/i:/idle|stand|rest/i).test(a.name))
-   ||(name==='idle'?clips[0]:null);
-  if(!clip||clip.name===actionName)return;
-  action?.fadeOut(.12);action=mixer.clipAction(clip);action.reset().fadeIn(.12).play();actionName=clip.name;
+ function animateHero(entry,state,now,dt,key){
+  const dx=state.x-entry.x,dz=state.y-entry.y,walking=Number.isFinite(dx)&&Math.hypot(dx,dz)>.1;
+  const goal=vec(state.x/SCALE,state.hp<=0?.05:state.inv>0?.07:0,state.y/SCALE);
+  if(!Number.isFinite(entry.x)||key==='self')entry.root.position.copy(goal);else entry.root.position.lerp(goal,1-Math.exp(-dt*15));
+  if(walking)entry.root.rotation.y=Math.atan2(dx,dz);
+  entry.x=state.x;entry.y=state.y;
+  entry.root.rotation.z=state.hp<=0?Math.PI*.38:0;
+  const term=walking?'walk':state.skillVisual>0||state.attackVisual>0?'attack':'idle';
+  const clip=entry.clips.find(a=>(term==='walk'?/walk|run/i:term==='attack'?/attack|slash|spell|shoot/i:/idle|stand|rest/i).test(a.name))||entry.clips[0];
+  if(clip&&clip.name!==entry.actionName){entry.action?.fadeOut(.12);entry.action=entry.mixer.clipAction(clip);entry.action.reset().fadeIn(.12).play();entry.actionName=clip.name;}
+  entry.mixer.update(dt);entry.model.position.y=entry.restY+(walking?Math.sin(now*.016)*.015:Math.sin(now*.002)*.006);
  }
- let width=1,height=1,last=0,prevX=NaN,prevZ=NaN,disposed=false;
+ let width=1,height=1,last=0,disposed=false;
  const tempColor=new THREE.Color(),axis=new THREE.Vector3(0,1,0);
  function resize(){
   width=Math.max(1,innerWidth);height=Math.max(1,innerHeight);
@@ -169,7 +172,7 @@ export async function createGem3d({canvas}){
   const cy=world.height>halfH*2?THREE.MathUtils.clamp(state.y,halfH,world.height-halfH):world.height/2;
   return {left:cx-halfW,right:cx+halfW,top:cy-halfH,bottom:cy+halfH,cx,cy};
  }
- function render({player:state,enemies:enemyActors=[],projectiles:shots=[],gems:drops=[],
+ function render({player:state,allies=[],enemies:enemyActors=[],projectiles:shots=[],gems:drops=[],
     particles:sparks=[],poisonPools:poison=[],orbitBlades:orbit=[],effects:active=[],
     world={width:width,height:height},stage={id:'cavern',floor:'#14303c',sky:'#07101b',accent:'#4fe6c4'}},now=0){
   if(!state||disposed)return;
@@ -199,14 +202,11 @@ export async function createGem3d({canvas}){
     path.count=160;path.instanceMatrix.needsUpdate=true;
    }
   }
-  const px=state.x/SCALE,pz=state.y/SCALE,dx=px-prevX,dz=pz-prevZ;
-  player.position.set(px,state.inv>0?.07:0,pz);
-  const walking=Number.isFinite(dx)&&Math.hypot(dx,dz)>.002;
-  if(walking)player.rotation.y=Math.atan2(dx,dz);
-  prevX=px;prevZ=pz;
-  animate(walking?'walk':shots.some(b=>b.kind==='basic')?'attack':'idle');
-  mixer?.update(dt);
-  model.position.y=modelRestY+(!mixer&&walking?Math.sin(now*.016)*.025:0);
+  const px=state.x/SCALE,pz=state.y/SCALE;
+  animateHero(heroActor('self',state.hero||'guardian'),state,now,dt,'self');
+  const used=new Set(['self']);
+  for(const ally of allies){const key=ally.netId;if(!key)continue;used.add(key);animateHero(heroActor(key,ally.hero||'guardian'),ally,now,dt,key);}
+  for(const [key,entry] of heroActors)if(!used.has(key)){scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);heroActors.delete(key);}
   const buckets=new Map(SPECIES.map(type=>[type,[]]));
   const visible=view(state,world);
   for(const e of enemyActors){
@@ -257,11 +257,13 @@ export async function createGem3d({canvas}){
   write(bubbles,droplets,168,(p,i,d)=>{
    const phase=(now*.0015+p.i*.17)%1;d.position.set(p.x/SCALE,.05+phase*.4,p.y/SCALE);d.scale.setScalar(.035*(1-phase));
   });
-  write(orbitTrails,orbit,5,(p,i,d)=>{
-   const radius=Math.hypot(p.x-state.x,p.y-state.y)/SCALE;
-   d.position.set(state.x/SCALE,.45,state.y/SCALE);d.rotation.set(-Math.PI/2,0,-Math.atan2(p.y-state.y,p.x-state.x));d.scale.setScalar(radius);
+  orbitTrails=growPool(orbitTrails,orbit.length);
+  write(orbitTrails,orbit,orbitTrails.instanceMatrix.count,(p,i,d)=>{
+   const radius=Math.hypot(p.x-(p.cx??state.x),p.y-(p.cy??state.y))/SCALE;
+   d.position.set((p.cx??state.x)/SCALE,.45,(p.cy??state.y)/SCALE);d.rotation.set(-Math.PI/2,0,-Math.atan2(p.y-(p.cy??state.y),p.x-(p.cx??state.x)));d.scale.setScalar(radius);
   });
-  clipped+=write(blades,orbit,5,(p,i,d)=>{
+  blades=growPool(blades,orbit.length);
+  clipped+=write(blades,orbit,blades.instanceMatrix.count,(p,i,d)=>{
    d.position.set(p.x/SCALE,.45,p.y/SCALE);d.scale.set(.55,.07,.14);
    d.rotation.y=now*.008+i*.4;
   });
@@ -281,6 +283,7 @@ export async function createGem3d({canvas}){
    d.quaternion.setFromUnitVectors(axis,delta.normalize());
   });
   const rings=enemyActors.filter(e=>e.boss&&e.charge<.7).map(e=>({x:e.x,y:e.y,r:e.r/SCALE*(1.3+(.7-e.charge)*1.4),color:'#ff4965'}));
+  for(const ally of [state,...allies])if(ally.shield>0||ally.hp<=0)rings.push({x:ally.x,y:ally.y,r:ally.hp<=0?1.2:1.5,color:ally.hp<=0?'#ffb063':'#87eaff'});
   for(const fx of active)if(fx.kind==='death'||fx.kind==='impact')rings.push({x:fx.x,y:fx.y,r:fx.r/SCALE*(1+(1-fx.life/fx.max)*(fx.kind==='death'?3:1.5)),color:fx.color});
   for(const p of poison)rings.push({x:p.x,y:p.y,r:p.r/SCALE*(.85+Math.sin(now*.008)*.12),color:'#a6ff63'});
   write(halos,rings,64,(e,i,d)=>{
@@ -301,7 +304,7 @@ export async function createGem3d({canvas}){
   canvas.dataset.glowInstances=String(glows.count);canvas.dataset.particleInstances=String(particles.count);
   canvas.dataset.authoredMonsterKinds=String(enemyMeshes.size);
   canvas.dataset.stage=stage.id;canvas.dataset.worldWidth=String(world.width);canvas.dataset.worldHeight=String(world.height);
-  canvas.dataset.nativeHeroArt='knight.glb';
+  canvas.dataset.nativeHeroArt=(state.hero||'guardian')+'.glb';canvas.dataset.coopActors=String(heroActors.size);canvas.dataset.hero=state.hero||'guardian';
   document.body.dataset.nativeArtCoverage='authored-static-monsters';
   const bounds=view(state,world),cx=bounds.cx/SCALE,cz=bounds.cy/SCALE;
   camera.position.set(cx,25,cz+Math.sqrt(275));camera.lookAt(cx,0,cz);
@@ -316,6 +319,7 @@ export async function createGem3d({canvas}){
  }
  function dispose(){
   disposed=true;removeEventListener('resize',onResize);canvas.removeEventListener('webglcontextlost',onLoss);
+  for(const entry of heroActors.values()){entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);}
   scene.traverse(o=>{
    o.geometry?.dispose?.();if(o.material){for(const m of Array.isArray(o.material)?o.material:[o.material])m?.dispose?.();}
   });renderer.dispose();
