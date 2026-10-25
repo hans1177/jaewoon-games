@@ -1279,8 +1279,10 @@ function computeVibeNativeDesign(){
   const nativeConfigPath=`roblox-games/${gameId}/shared/GameConfig.luau`;
   const nativeConfig=typeof fs!=='undefined'&&fs.existsSync(nativeConfigPath)?fs.readFileSync(nativeConfigPath,'utf8'):'';
   const sourceRpgGenre=/\bGenre\s*=\s*["'](?:RPG|Action RPG)["']/.test(nativeConfig);
-  const authoredCategory=!ownerFreeTopic&&clean(seed.GAME_CATEGORY).toUpperCase()==='CASUAL'&&sourceRpgGenre
-    ?'RPG':seed.GAME_CATEGORY;
+  const sourceKingdomGenre=/\bGenre\s*=\s*["']Strategy["']/.test(nativeConfig)
+    &&nativeConfig.includes('BarracksLevel=')&&nativeConfig.includes('CapturedBases=');
+  const authoredCategory=clean(seed.GAME_CATEGORY).toUpperCase()==='CASUAL'
+    ?sourceRpgGenre?'RPG':sourceKingdomGenre?'KINGDOM':seed.GAME_CATEGORY:seed.GAME_CATEGORY;
   const nativeServerPath=`roblox-games/${gameId}/server/Game.server.luau`;
   const nativeServer=typeof fs!=='undefined'&&fs.existsSync(nativeServerPath)?fs.readFileSync(nativeServerPath,'utf8'):'';
   const nativeCombatVerified=[
@@ -1303,8 +1305,10 @@ function computeVibeNativeDesign(){
     gameGenre:clean(existingSystem?.gameGenre||original.creativeGrammar?.a?.gameGenre),
     source:clean(existingSystem?.source||seed.DESIGN_BASELINE_SOURCE||seed.originalDesignContext?.source||seed.seedId)
   }:null;
-  // 기존 게임의 B 원본 시스템은 자유 주제 설계 허가가 아니다. 오너의 자유 주제 요청만 허용한다.
-  const freeTopicMode=ownerFreeTopic;
+  // 원본 구현을 보유한 게임의 재설계는 실제 게임 정체성을 유지한다. 명시적 교체 지시만 예외다.
+  const nativeGameVerified=/\bGameId\s*=/.test(nativeConfig)&&nativeConfig.includes(`"${gameId}"`)
+    &&nativeServer.length>0;
+  const freeTopicMode=ownerFreeTopic&&(!nativeGameVerified||seed.REPLACE_EXISTING_GAME_IDENTITY===true);
   const computed=computeVibeSeedProposal({
     requestId:gameId,category:authoredCategory,platform:seed.INITIAL_TARGET_PLATFORM,
     gameName:freeTopicMode?'':clean(seed.gameName||game.name),
