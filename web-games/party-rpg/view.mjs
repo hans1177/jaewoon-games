@@ -412,6 +412,19 @@ buildWorld(live){
     bones[part]={node,rest:node.rotation.clone(),tracked};
    }
   });
+  // 지지발 미세 고정: 뼈대에 양쪽 발이 있는 경우에만 적용한다.
+  // 원래 애니메이션의 무릎/보행 리깅은 유지하고, 지지발의 수평 흔들림만 제한한다.
+  const feet=[];
+  model.traverse(node=>{
+   if(!node.isBone||!node.name)return;
+   const name=node.name.toLowerCase();
+   const left=/(left.*(?:foot|ankle)|(?:foot|ankle).*left|(?:foot|ankle)[._-]?l$|lfoot|l_foot)/.test(name);
+   const right=/(right.*(?:foot|ankle)|(?:foot|ankle).*right|(?:foot|ankle)[._-]?r$|rfoot|r_foot)/.test(name);
+   if((left||right)&&!feet.some(f=>f.side===(left?'left':'right'))){
+    const animatesPosition=original.animations.some(clip=>clip.tracks.some(t=>t.name===node.name+'.position'));
+    feet.push({node,side:left?'left':'right',rest:node.position.clone(),animatesPosition,anchor:null});
+   }
+  });
   // 전신 표현: 실제 고밀도 원화 + 경량 분절 메시. 3D 판정 모델은 그대로 둔다.
   let pixel=null,pixelRest=null,pixelWidth=0;
   const bounds=this.actorBounds[ACTOR_ART.indexOf(role)];
@@ -427,7 +440,7 @@ buildWorld(live){
    const clips={idle:named(/idle/i)||named(/^walk|_walk/i)||named(/^run|_run/i),walk:named(/^walk|_walk/i),run:named(/^run|_run/i),attack:named(/^(?!.*idle).*?(attack|spell|shoot|punch|bite|slash|headbutt)/i),hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i),death:named(/death|die|dying/i)};
    if(clips.attack===clips.idle)clips.attack=null;
    for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))action.reset().play().setEffectiveWeight(0);
-   const result={root,model,ring,mixer,actions,clips,bones,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
+   const result={root,model,ring,mixer,actions,clips,bones,feet,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
     wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,lastSpecialUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
     lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,
     motionPhase:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:3)*1.61,
@@ -530,6 +543,8 @@ buildWorld(live){
    if(entry.clips.walk)entry.clips.walk.setEffectiveTimeScale(Math.max(0,cyclesPerSecond*entry.clips.walk.getClip().duration));
    if(entry.clips.run)entry.clips.run.setEffectiveTimeScale(Math.max(0,cyclesPerSecond*entry.clips.run.getClip().duration));
    // 피격 직후 잠깐 멈칫하는 시각 효과. 전투 판정·타이머는 그대로 유지한다.
+   // 지지발 보정 위치는 매 프레임 원본 리깅 위치에서 다시 계산해 누적 변형을 방지.
+   for(const foot of entry.feet)if(!foot.animatesPosition)foot.node.position.copy(foot.rest);
    entry.mixer.update(hit>.81?dt*.23:dt);
    // 보행 클립 위에 호흡·상체 관성·타격 후 젖힘·몬스터별 부유를 미세하게 더한다.
    const sway=Math.sin(phase)*(creature==='skitter'?.065:creature==='hunter'?.045:heavy?.014:.028)*pace;
@@ -557,6 +572,26 @@ buildWorld(live){
     const y=part==='head'?watch*.8+Math.sin(elapsed*.31)*.05*resting:part==='neck'?watch*.2:0;
     const z=part==='head'?Math.sin(elapsed*.49)*.025*resting+entry.turnLean*.3:part==='neck'?0:entry.turnLean*.18;
     bone.node.rotation.set(base.x+x,base.y+y,base.z+z);
+   }
+   // 땅에 닿은 발은 월드 좌표에 짧게 붙이고, 반대편 발이 들리면 고정을 푼다.
+   // 두 발이 없는 몬스터(슬라임/망령/날짐승)는 이 구간을 안전하게 건너뛴다.
+   if(entry.feet.length&&hasWalk){
+    const grounded=entry.stepDistance>.04&&entry.visualSpeed>9&&!attack&&hit<.45;
+    entry.root.updateMatrixWorld(true);
+    for(const foot of entry.feet){
+     const phase=(entry.walkPhase+(foot.side==='right'?Math.PI:0))%(Math.PI*2);
+     const stance=grounded&&Math.cos(phase)>.2;
+     if(!stance){foot.anchor=null;continue;}
+     const point=foot.node.getWorldPosition(new THREE.Vector3());
+     if(!foot.anchor){foot.anchor=point.clone();continue;}
+     const local=foot.node.parent.worldToLocal(foot.anchor.clone());
+     let dx=local.x-foot.node.position.x,dz=local.z-foot.node.position.z;
+     const size=Math.hypot(dx,dz);
+     const maxCorrection=.10/Math.max(.15,Math.abs(entry.model.scale.x));
+     if(size>maxCorrection){dx*=maxCorrection/size;dz*=maxCorrection/size;}
+     foot.node.position.x+=dx*.72;foot.node.position.z+=dz*.72;
+     entry.root.updateMatrixWorld(true);
+    }
    }
    for(const f of entry.flashMaterials){
     const glow=hit*(entry.kind==='enemy'?.7:.42);
@@ -848,7 +883,9 @@ buildWorld(live){
     entry.stance=kind==='ai'&&obj.party&&live.enemies.some(e=>!e.dead&&Math.hypot(e.x-obj.x,e.y-obj.y)<240)?1:0;
     entry.visualStyle=currentCombat?.visualStyle||'strike';
     const difference=Math.atan2(Math.sin(entry.turnYaw-entry.model.rotation.y),Math.cos(entry.turnYaw-entry.model.rotation.y));
-    entry.model.rotation.y+=difference*(1-Math.exp(-dt*(moving?9:6)));
+    // 이동 방향에 몸통이 늦게 따라와 옆으로 미끄러져 보이던 현상을 완화.
+    const turning=Math.abs(difference),turnRate=moving?(turning>.85?25:18):8;
+    entry.model.rotation.y+=difference*(1-Math.exp(-dt*turnRate));
     entry.turnLean+=(THREE.MathUtils.clamp(difference,-1,1)*entry.motion*.07-entry.turnLean)*(1-Math.exp(-dt*8));
     entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);
     entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];
