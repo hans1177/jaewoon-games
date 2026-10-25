@@ -1,5 +1,5 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
-import { snapFort,wallLine,applyGateAxes,validateWallLayout } from './castle-layout.js';
+import { snapFort,wallLine,applyGateAxes,validateWallLayout,siegeTargetForUnit,siegeBarrierClosed } from './castle-layout.js';
 import { IslandRendererV3 } from './render-v3.js';
 import { assignWorker, returnWorkerToFarm, buildLumberyard, buildMine, upgradeProduction, ECONOMY_BUILDINGS, getEconomy, economyStaff, constructEconomyBuilding, upgradeEconomyBuilding, setEconomyPolicy, economyTechStatus, ECONOMY_TECH_TREE } from './production-buildings.js';
 
@@ -860,35 +860,41 @@ function runFortification(dt){
     // 해자는 후속 적군 이동을 늦추며, 도개교가 내려오면 성문 방향 진입이 가능하다.
     if(enemy._grandSiege||enemy._lordRaid)enemy._siegeMoatFactor=fort.moatBuilt&&enemy.x>1390&&
       enemy.x<1590&&enemy.y>280&&enemy.y<970?.5:1;
-    if(enemy.hp>0&&!enemy._fortClimbed&&(enemy._grandSiege||enemy._lordRaid)&&
-       enemy.x<1395&&enemy.x>1310&&enemy.y>280&&enemy.y<960){
-      const lane=enemy._siegeLane??enemy.y,key=lane<520?'north':lane>730?'south':'gate';
-      const openGate=key==='gate'&&(fort.drawbridgeClosed===false||
-        fort.structures.some(s=>s?.kind==='gate'&&s.hp>0&&s.open!==false));
-      if(fort.walls[key]>0&&!openGate){
-        enemy.x=Math.max(enemy.x,1350);
-        // 사다리/공성탑은 등반, 다른 적 병력은 실제 성문/벽 체력을 공격한다.
-        if(enemy.kind==='ladder'||enemy.kind==='siegeTower'){
-          enemy._fortClimbTimer=(enemy._fortClimbTimer||0)+dt;
-          if(enemy._fortClimbTimer>=(enemy.kind==='siegeTower'?5.5:3.7)){
-            enemy._fortClimbed=true;enemy.x=1285;damaged=true;
-          }
-        }else{
-          enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
-          const attackEvery=Math.max(.4,Number(enemy.siegeCooldown)||Number(enemy.rate)||1.2);
-          if(enemy._fortSiegeTimer>=attackEvery){
-            enemy._fortSiegeTimer%=attackEvery;
-            // 보병은 원래 공격력, 공성 병기는 원래 공성 피해를 그대로 쓴다.
-            const damage=Math.max(1,Number(enemy.siegeDamage)||Number(enemy.attack)||1);
-            fort.walls[key]=Math.max(0,fort.walls[key]-damage);
-            damaged=true;
-          }
-        }
-      }
-    }
-        // 돌파·등반한 유닛이 성채에 도달하면 병종에 상관없이 내성을 깎는다.
+    if(enemy.hp>0&&!enemy._fortClimbed&&(enemy._grandSiege||enemy._lordRaid)){
+       const target=siegeTargetForUnit(enemy),key=target.key;
+       if(Math.hypot(enemy.x-target.x,enemy.y-target.y)<=85&&siegeBarrierClosed(fort,target)){
+         // 동쪽 성문과 북부 영주 성벽 침공을 같은 판정으로 계산한다.
+         if(!enemy._siegePoint)enemy.x=Math.max(enemy.x,1350);
+         if(enemy.kind==='ladder'||enemy.kind==='siegeTower'){
+           enemy._fortClimbTimer=(enemy._fortClimbTimer||0)+dt;
+           if(enemy._fortClimbTimer>=(enemy.kind==='siegeTower'?5.5:3.7)){
+             enemy._fortClimbed=true;
+             if(key==='north')enemy.y=Math.max(enemy.y,300);
+             else enemy.x=1285;
+             damaged=true;
+           }
+         }else{
+           enemy._fortSiegeTimer=(enemy._fortSiegeTimer||0)+dt;
+           const attackEvery=Math.max(.4,Number(enemy.siegeCooldown)||Number(enemy.rate)||1.2);
+           if(enemy._fortSiegeTimer>=attackEvery){
+             enemy._fortSiegeTimer%=attackEvery;
+             const damage=Math.max(1,Number(enemy.siegeDamage)||Number(enemy.attack)||1);
+             const previous=fort.walls[key];
+             fort.walls[key]=Math.max(0,previous-damage);damaged=true;
+             if(previous>0&&fort.walls[key]===0){
+               const name={gate:'동쪽 성문',north:'북쪽 성벽',south:'남쪽 성벽'}[key];
+               toast('⚠️ '+name+' 붕괴! 적군이 진입해');
+               window.dispatchEvent(new CustomEvent('cozy:war-event',{
+                 detail:{type:'breach',title:name+' 돌파'}}));
+             }
+           }
+         }
+       }
+     }
+     // 돌파·등반한 유닛이 성채에 도달하면 병종에 상관없이 내성을 깎는다.
     // 성벽 안으로 진입한 공성 병기가 성채를 파괴하면 대공성전 패배 처리.
-    if((enemy._grandSiege||enemy._lordRaid)&&enemy.hp>0&&enemy.x<1160&&enemy.y>890){
+    if((enemy._grandSiege||enemy._lordRaid)&&enemy.hp>0&&
+        Math.hypot(enemy.x-TOWN_HALL.x,enemy.y-TOWN_HALL.y)<=145){
       enemy._fortKeepTimer=(enemy._fortKeepTimer||0)+dt;
       if(enemy._fortKeepTimer>=1){
         enemy._fortKeepTimer%=1;

@@ -352,6 +352,18 @@ try{
     {kind:'wall',x:360,y:810,hp:140}
   ]).ok,false,'COZY_WALL_ALLOWED_BLOCKED_STOCKPILE');
   console.log('COZY_LAYOUT_WORKER_GATE_PATH_POSTDEPLOY=PASS');
+   const northAttack=castle.siegeTargetForUnit({_siegePoint:{key:'north',x:790,y:245}});
+   const eastAttack=castle.siegeTargetForUnit({_siegeLane:610});
+   assert.deepEqual(northAttack,{key:'north',x:790,y:245},'COZY_LORD_NORTH_ENTRY_WRONG');
+   assert.deepEqual(eastAttack,{key:'gate',x:1355,y:610},'COZY_LORD_EAST_GATE_ENTRY_WRONG');
+   assert.equal(castle.siegeBarrierClosed({
+     walls:{gate:300},drawbridgeClosed:true,structures:[{kind:'gate',open:true,hp:320}]
+   },eastAttack),true,'COZY_REMOTE_GATE_BYPASS');
+   assert.equal(castle.siegeBarrierClosed({walls:{gate:300},drawbridgeClosed:false},eastAttack),
+     false,'COZY_OPEN_BRIDGE_BLOCKED');
+   assert.equal(castle.siegeBarrierClosed({walls:{north:0}},northAttack),
+     false,'COZY_NORTH_WALL_BREACH_BLOCKED');
+   console.log('COZY_LORD_ASSAULT_BREACH_RULES_POSTDEPLOY=PASS');
   const expected=String(process.env.GITHUB_SHA||'').trim();
   assert.match(expected,/^[0-9a-f]{40}$/i,'COZY_RTS_REVISION_REQUIRED');
   const res=await page.request.get(liveBase+'web-games/publish-manifest.json');

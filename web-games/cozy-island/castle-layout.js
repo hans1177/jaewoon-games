@@ -98,3 +98,16 @@ export function findWorkerRoute(from,to,structures=[]){
  }
  return path.reverse();
 }
+
+export function siegeTargetForUnit(unit){
+  const assigned=unit?._siegePoint;
+  if(assigned&&['gate','north','south'].includes(assigned.key)&&
+    Number.isFinite(assigned.x)&&Number.isFinite(assigned.y))return assigned;
+  const lane=Number.isFinite(unit?._siegeLane)?unit._siegeLane:610;
+  return {key:lane<520?'north':lane>730?'south':'gate',x:1355,y:lane};
+}
+export function siegeBarrierClosed(fort,point){
+  if(!point||!['gate','north','south'].includes(point.key))return false;
+  return (Number(fort?.walls?.[point.key])||0)>0&&
+    !(point.key==='gate'&&fort?.drawbridgeClosed===false);
+}

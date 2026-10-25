@@ -1,6 +1,6 @@
 import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
 import { IslandRendererV3 } from './render-v3.js';
-import { snapFort,wallLine } from './castle-layout.js';
+import { snapFort,wallLine,siegeTargetForUnit,siegeBarrierClosed } from './castle-layout.js';
 import { ECONOMY_BUILDINGS,getEconomy,constructEconomyBuilding,upgradeEconomyBuilding,economyStaff,economyTechStatus } from './production-buildings.js';
 
 const GAME_ID='cozy-island';
@@ -854,9 +854,17 @@ function renderWar(){
 }
 function updateOffensive(dt){
  if(!offensiveTarget)return;
- const lord=getEnemyLords().find(l=>l.id===offensiveTarget);if(!lord||lord.defeated)return;
+ const lord=getEnemyLords().find(l=>l.id===offensiveTarget);
+  if(!lord||lord.defeated){
+    offensiveTarget=null;game.offensiveTarget=null;fieldEnemies=[];game.fieldEnemies=[];
+    for(const ally of allies)delete ally._expedition;
+    return;
+  }
  const fighters=allies.filter(u=>u.hp>0&&u._expedition);
- if(!fighters.length){toast('⚔️ 원정군 전멸 · 재모집 필요');offensiveTarget=null;game.offensiveTarget=null;fieldEnemies=[];return}
+ if(!fighters.length){toast('⚔️ 원정군 전멸 · 재모집 필요');
+    offensiveTarget=null;game.offensiveTarget=null;fieldEnemies=[];game.fieldEnemies=[];
+    for(const ally of allies)delete ally._expedition;
+    saveSoon();return}
  for(const enemy of fieldEnemies.filter(u=>u.hp>0)){
    const t=nearestLiving(enemy,fighters);if(!t)continue;
    const distance=Math.hypot(enemy.x-t.x,enemy.y-t.y);
@@ -965,14 +973,20 @@ function startRaid(attacker=null){
   raidActive=true;game.raidActive=true;selectedWolfId=null;enemies=[];
   // 적 영주 출병: 해당 영주의 인구와 생산량으로 병력을 편성한다.
   if(attacker){
-    const size=Math.min(18,Math.max(3,Math.floor(attacker.troops)));
-    for(let i=0;i<size;i++){const u=createUnit(i===0&&size>=8?'knight':i%4===0?'archer':'soldier',true);
-      u.x=attacker.x+(i%5)*28;u.y=attacker.y+(i%4)*24;
-      u.speed=Math.max(u.speed,165); // 적 영주 성에서 실제 진군
-    u._lordId=attacker.id;u._lordRaid=true;u._siegeLane=u.y<520?440:u.y>730?800:610;
-    u.siegeDamage=12+(attacker.focus==='rush'?8:0);u.siegeCooldown=1.4;
-    enemies.push(u)}
-    attacker.troops=Math.max(0,attacker.troops-size);attacker.food=Math.max(0,attacker.food-size*2);
+     const size=Math.min(18,Math.max(3,Math.floor(attacker.troops)));
+     // 공성군 출신 방향과 실제 성곽 위치가 일치해야 한다.
+     const entry=attacker.id==='gold'?{key:'north',x:775,y:245}:
+       attacker.id==='stone'?{key:'north',x:1030,y:245}:{key:'gate',x:1355,y:610};
+     for(let i=0;i<size;i++){
+       const u=createUnit(i===0&&size>=8?'knight':i%4===0?'archer':'soldier',true);
+       u.x=attacker.x+(i%5)*28;u.y=attacker.y+(i%4)*24;
+       u.speed=Math.max(u.speed,165);
+       u._lordId=attacker.id;u._lordRaid=true;u._siegeLane=entry.y;
+       u._siegePoint={key:entry.key,x:entry.x+(i%5-2)*14,y:entry.y};
+       u.siegeDamage=12+(attacker.focus==='rush'?8:0);u.siegeCooldown=1.4;
+       enemies.push(u);
+     }
+     attacker.troops=Math.max(0,attacker.troops-size);attacker.food=Math.max(0,attacker.food-size*2);
     toast('⚔️ '+attacker.name+' 군세 출병! 성문과 마을회관을 방어해');
      window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'attack',title:attacker.name+' 침공'}}));
   } else if(state.raidNumber===1)for(let i=0;i<3;i++)enemies.push(createUnit('soldier',true));
@@ -1032,39 +1046,37 @@ function updateRaidCombat(dt){
  game.allies=allies;game.enemies=enemies;saveArmyIfChanged();
 }
 function updateCombatUnit(u,targets,dt,hostile){
+  if(u.hp<=0)return;
   u.cool=Math.max(0,u.cool-dt);
   // 메인: 기존 공격력·사거리·재장전 간격은 유지하고 주둔 병사의 이동만 고정한다.
   if(!hostile&&u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y}
   // 공성 병기는 병사 공격이 아니라 성문/벽 돌파를 우선하며, 기존 일반 습격 전투는 유지한다.
   if(hostile&&(u._grandSiege||u._lordRaid)){
-    const fort=getFort(),walls=fort?.walls||{},lane=u._siegeLane??610;
-    const key=lane<520?'north':lane>730?'south':'gate';
-    // 열린 도개교·자유 설치 성문은 길을 막지 않는다.
-    const openGate=key==='gate'&&(fort?.drawbridgeClosed===false||
-      fort?.structures?.some(s=>s?.kind==='gate'&&s.hp>0&&s.open!==false));
-    const blocked=fort&&state.villageDevelopment?.townHallBuilt&&
-      (Number(walls[key])||0)>0&&!openGate&&!u._fortClimbed;
-    // 공성 중이라도 근처 수비병을 무시하고 멍하니 서 있지 않는다.
+    const fort=getFort(),point=siegeTargetForUnit(u);
+    const blocked=!!state.villageDevelopment?.townHallBuilt&&
+      siegeBarrierClosed(fort,point)&&!u._fortClimbed;
     const defender=u.attack>0?nearestLiving(u,targets):null;
     const canFight=!!defender&&Math.hypot(defender.x-u.x,defender.y-u.y)<=u.range;
-    if(u.kind==='trebuchet'&&u.ammo>0){
-      // 투석기는 바깥에서 포격하며 탄약을 사용한다.
-      if(u.x>1770)moveToward(u,1760,lane,dt);
+    if(u.kind==='trebuchet'){
+      if(u.ammo>0){
+        if(u.x>1770)moveToward(u,1760,point.y,dt);
+        return;
+      }
+      // 탄약 소진 공성기는 철수해 다음 웨이브 종료를 막지 않는다.
+      if(Math.hypot(u.x-1970,u.y-point.y)<15)u.hp=0;
+      else moveToward(u,1970,point.y,dt);
       return;
     }
-    if(blocked){
-      // 동쪽·서쪽 어느 방향에서 와도 성문까지 이동한다.
-      if(!canFight){
-        if(Math.hypot(u.x-1355,u.y-lane)>22)moveToward(u,1355,lane,dt);
-        return; // 기존 마을 방어 코드가 이 위치에서 성문 HP를 깎는다.
-      }
-    }else if(!canFight){
-      // 문이 열리거나 파괴되면 일반 보병도 마을회관으로 진입한다.
+    if(blocked&&!canFight){
+      if(Math.hypot(u.x-point.x,u.y-point.y)>14)moveToward(u,point.x,point.y,dt);
+      return;
+    }
+    if(!blocked&&!canFight){
       moveToward(u,1010,1050,dt);
       return;
     }
   }
-    const t=nearestLiving(u,targets);
+  const t=nearestLiving(u,targets);
   if(!t&&hostile){moveToward(u,barracks.x,barracks.y,dt);return}
   if(!t)return;
   const d=Math.hypot(t.x-u.x,t.y-u.y)||1;
@@ -1109,10 +1121,19 @@ function updateHUD(){
   ui.weather.textContent=state.weather==='비'?'🌧️ 비':'☀️ 맑음';
   ui.coins.textContent=String(state.coins);
   if(ui.economy)ui.economy.textContent=`🪵 ${Math.floor(state.inventory.wood)} · 🪨 ${Math.floor(state.inventory.stone)} · 🍖 ${Math.floor(state.inventory.food)} · 👷 ${economyStaff(state).assigned} · ⚔️ ${allies.length}`;
-  if(raidActive)ui.raid.textContent=grandSiege?
-    `🏰 ${grandSiege.wave}/6차 · 적 ${enemies.length} · 성채 ${Math.ceil(getFort()?.keepHp??900)} · 사기 ${getFort()?.morale??65}`:
-    `⚔️ 습격 ${state.raidNumber} · 적 ${enemies.length}`;
-  else{
+  if(raidActive){
+    const fort=getFort(),walls=fort?.walls||{};
+    const invader=enemies.find(u=>u.hp>0&&(u._lordRaid||u._grandSiege));
+    const key=invader?siegeTargetForUnit(invader).key:'gate';
+    const targetName={gate:'성문',north:'북벽',south:'남벽'}[key];
+    const wallHealth=Math.max(0,Math.ceil(Number(walls[key])||0));
+    const keepHealth=Math.max(0,Math.ceil(Number(fort?.keepHp)||0));
+    const id=enemies.find(u=>u.hp>0&&u._lordId)?._lordId;
+    const label=id?({iron:'철혈',stone:'석벽',gold:'황금'}[id]||'적')+' 군세':
+      grandSiege?'공성전 '+grandSiege.wave+'/'+SIEGE_WAVE_SIZES.length+'파':'습격';
+    ui.raid.textContent='⚔️ '+label+' · 적 '+enemies.length+
+      ' · '+targetName+' '+wallHealth+' · 성채 '+keepHealth;
+  }else{
     const living=getEnemyLords().filter(l=>!l.defeated);
     ui.raid.textContent=living.length?'🏰 적 영주 '+living.length+'명 · '+(game.offensiveTarget?'공성 중':'영지 방어'):'🏆 왕국 통일';
   }
