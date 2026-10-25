@@ -4893,8 +4893,15 @@ function handleWorldTap(e){
  if(state.area==='surface'&&!state.giantCrocEggTaken&&dist(wx,wy,GIANT_CROC_EGG.x,GIANT_CROC_EGG.y)<60){doubleTapTarget('giant-croc-egg',now,()=>{if(state.giantCrocEggTaken)return;state.giantCrocEggTaken=true;addInv('giant-croc-egg',1);state.dirty=true;showNotice('거대 악어 알 획득 · 부화기에서 10분 부화');saveGame(false)});return}
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
- let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=70;
- if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(cd,(Number(m.type.r)||20)+22)){closest=m;cd=d}}
+ let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null;
+ if(!closest){
+  // 가장 가까운 몬스터만 선택해 다른 종의 도감 등록과 공격이 뒤섞이지 않도록 한다.
+  let nearest=Infinity;
+  for(const m of visible){
+   const d=dist(wx,wy,m.x,m.y),tapRadius=Math.max(70,(Number(m.type?.r)||20)+22);
+   if(d<=tapRadius&&d<nearest){closest=m;nearest=d}
+  }
+ }
  if(closest){
   // 터치 즉시 기존 공격 함수로 연결한다. 창/활/마법 피해와 판정 권한은 attack() 그대로 사용.
   // 기존 활 3회 탭 조준 보너스와 몬스터 도감 두 번 탭도 보존한다.
