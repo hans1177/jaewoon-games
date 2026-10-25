@@ -148,7 +148,7 @@ function drawChart(world=false){
    else if(shipyard){ctx.beginPath();ctx.moveTo(-5,-5);ctx.lineTo(4,-5);ctx.lineTo(1,3);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillRect(-1,-8,1.5,13);}
    else{ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();}}
   ctx.restore();
-  if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#fff0c8';ctx.fillText(p.name,px+7,py-6);const eventGoods=GOODS.find(g=>marketQuote(state,p.id,g.id).event);if(eventGoods){ctx.font='bold 10px system-ui';ctx.fillStyle='#f3ad86';ctx.fillText('⚑ '+marketQuote(state,p.id,eventGoods.id).event,px+7,py+8);}}
+  if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#f8e4b7';ctx.fillText(p.name,px+7,py-6);const eventGoods=GOODS.find(g=>marketQuote(state,p.id,g.id).event);if(eventGoods){ctx.font='bold 10px system-ui';ctx.fillStyle='#f3ad86';ctx.fillText('⚑ '+marketQuote(state,p.id,eventGoods.id).event,px+7,py+8);}}
  }
  for(const m of state.merchants||[]){
   if(state.crewRoster.includes(m.id))continue;
@@ -163,7 +163,7 @@ function drawChart(world=false){
  ctx.lineWidth=1;ctx.strokeStyle='#d7bc83bb';ctx.strokeRect(10,10,620,380);
  for(const [xx,yy,dx,dy] of [[12,12,1,1],[628,12,-1,1],[12,388,1,-1],[628,388,-1,-1]]){
   ctx.beginPath();ctx.moveTo(xx+dx*22,yy);ctx.lineTo(xx,yy);ctx.lineTo(xx,yy+dy*22);ctx.stroke();}
- const roseX=582,roseY=329;ctx.translate(roseX,roseY);
+ const roseX=574,roseY=85;ctx.translate(roseX,roseY);
  ctx.strokeStyle='#5e492f';ctx.fillStyle='#a77c42';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
  for(let i=0;i<16;i++){const a=i*Math.PI/8;ctx.beginPath();ctx.moveTo(Math.sin(a)*19,Math.cos(a)*19);ctx.lineTo(Math.sin(a)*26,Math.cos(a)*26);ctx.stroke();}
  for(let i=0;i<8;i++){const a=i*Math.PI/4,r=i%2?16:24;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.sin(a-.13)*r,Math.cos(a-.13)*r);ctx.lineTo(Math.sin(a+.13)*r,Math.cos(a+.13)*r);ctx.closePath();ctx.fillStyle=i%2?'#5f775f':'#6b4930';ctx.fill();}
@@ -246,12 +246,23 @@ function fleet(){
   const gunSlots=Math.max(2,Math.min(10,Math.ceil(guns/2)));
   const ports=Array.from({length:gunSlots},(_,i)=>'<rect x="'+(l+32+i*(r-l-64)/Math.max(1,gunSlots-1))+'" y="219" width="13" height="9" rx="2" fill="#172c34" stroke="#c49d69" stroke-width="2"/>').join('');
   const oars=galley?Array.from({length:8},(_,i)=>'<path d="M'+(l+26+i*(r-l-52)/8)+' 205 l-22 44" stroke="#d9b780" stroke-width="4"/>').join(''):'';
+  const rigging=masts.map((x,i)=>'<path d="M'+l+' 204 L'+x+' 35 L'+r+' 204 M'+x+' 35 L'+(x+28)+' 110 L'+(x-25)+' 151" fill="none" stroke="#564432" stroke-width="1.3" opacity=".8"/>'+
+   '<path d="M'+(x-49)+' 180 V'+(75+i*5)+' M'+(x+47)+' 177 V'+(78+i*5)+'" fill="none" stroke="#e2c89a" stroke-width="1.5"/>').join('');
+  const banners=masts.map((x,i)=>'<path d="M'+x+' 32 L'+(x+27)+' '+(34+i*2)+' L'+x+' 42Z" fill="'+(t.color||'#ae674a')+'" stroke="#a18a69" stroke-width="1.5"/>').join('');
+  const foam=Array.from({length:19},(_,i)=>'<path d="M'+(i*38-30)+' '+(236+i%3*7)+' l'+(10+i%4*5)+' 0" stroke="'+(i%3?'#acd2d1':'#e9f0dc')+'" stroke-width="'+(1+i%3)+'" opacity=".68"/>').join('');
   const gallery=large?'<path d="M'+(r-75)+' 198 L'+(r-65)+' 151 L'+(r-10)+' 151 L'+r+' 198 Z" fill="#65402d" stroke="#bd9769" stroke-width="3"/><rect x="'+(r-50)+'" y="163" width="14" height="15" fill="#e9d3a1"/>':'';
   return '<div class="ship-preview'+(mini?' ship-mini':'')+'"><svg viewBox="0 0 640 275" role="img" aria-label="'+escapeHtml(t.name)+' 선체와 돛·포문 미리보기">'+
-   '<rect width="640" height="275" fill="#416d82"/><path d="M0 223 Q120 215 240 225 T480 223 T640 225 V275 H0Z" fill="#1c526a"/>'+
-   cloth+'<path d="M'+l+' 195 L'+r+' 195 L'+(r-24)+' 247 Q320 271 '+(l+24)+' 247 Z" fill="'+hull+'" stroke="#dfb57d" stroke-width="5"/>'+
+   '<defs><linearGradient id="shipSky-'+t.id+'" x2="0" y2="1"><stop stop-color="#8aafb4"/><stop offset=".61" stop-color="#d7bfa0"/><stop offset="1" stop-color="#436f80"/></linearGradient>'+
+   '<linearGradient id="shipHull-'+t.id+'" x2="0" y2="1"><stop stop-color="#d6b586"/><stop offset=".26" stop-color="'+hull+'"/><stop offset="1" stop-color="#372c2b"/></linearGradient>'+
+   '<linearGradient id="shipSea-'+t.id+'" x2="0" y2="1"><stop stop-color="#447d88"/><stop offset="1" stop-color="#123b50"/></linearGradient></defs>'+
+   '<rect width="640" height="275" fill="url(#shipSky-'+t.id+')"/><circle cx="488" cy="78" r="48" fill="#fae9c2" opacity=".43"/>'+
+   '<path d="M0 178 Q130 166 280 176 T640 174 V217 H0Z" fill="#33566b" opacity=".35"/>'+
+   '<path d="M0 222 Q120 211 240 222 T480 222 T640 224 V275 H0Z" fill="url(#shipSea-'+t.id+')"/>'+
+   '<path d="M0 221 Q110 213 240 224 T480 223 T640 221" stroke="#9cc5bb" fill="none" stroke-width="2" opacity=".78"/>'+foam+
+   rigging+cloth+banners+'<path d="M'+l+' 195 L'+r+' 195 L'+(r-24)+' 247 Q320 271 '+(l+24)+' 247 Z" fill="url(#shipHull-'+t.id+')" stroke="#dfb57d" stroke-width="5"/>'+
    Array.from({length:7},(_,i)=>'<path d="M'+(l+16)+' '+(207+i*5)+' Q320 '+(219+i*5)+' '+(r-16)+' '+(207+i*5)+'" fill="none" stroke="#edc68d" opacity=".35"/>').join('')+
    '<path d="M'+l+' 202 Q320 212 '+r+' 202" stroke="#d4ad75" stroke-width="8" fill="none"/>'+gallery+ports+oars+
+   Array.from({length:10},(_,i)=>'<circle cx="'+(l+27+i*(r-l-50)/10)+'" cy="'+(214+i%2*5)+'" r="1.4" fill="#f2ce87" opacity=".75"/>').join('')+
    '<path d="M'+l+' 197 L'+(l-58)+' 171" stroke="#d5af79" stroke-width="5"/>'+
    '<text x="20" y="27" fill="#fff2d0" font-size="19" font-family="serif">'+escapeHtml(t.name)+'</text>'+
    (!mini?'<text x="20" y="48" fill="#d9e7e2" font-size="13">돛 '+s.sail+' · 포문 '+s.cannons+' · 장갑 '+(s.armor||0)+' · 적재 '+s.cargoLimit+'</text>':'')+'</svg></div>';
