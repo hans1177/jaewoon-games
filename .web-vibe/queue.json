@@ -56,7 +56,7 @@
       "goal": "오너 직접 지시: 마력숲 이슈 #9801 신규 생물 3D 렌더러를 실제 소스에 반영. 이번 작업은 크기 350KB 제한에 걸린 index.html은 건드리지 말고, web-games/fantasy-survival/world3d.mjs 한 파일에서만 구현. NATIVE_CREATURE_MODELS의 수정 바이터(crystalbiter)와 크리스털 리자드(crystallizard) 실존 소스 종별 매핑을 추가해 생물이 생성됐을 때 WebGL에 실제 표시되어야 함. 수정 바이터·리자드는 똑같은 모델로 복붙하지 말고 각각 가장 유사한 기존 라이선스 기록 원본 모델 선택. 크리스털 리자드 평상시 은신/발동 3초 은신 중에는 렌더링의 액터/관련 그림자·인터랙션 대상까지 숨기고 복귀 때 다시 표시. 단 판정 공격금지는 gameplay 소스에서 처리하도록 본 렌더러에서 게임 권한 변경하지 말 것. 수정 바이터 3연속 돌진 2x/3x/4x 방향전환/탈진 상태 e.crystal... 데이터를 자연스러운 움직임에 반영할 기반 구성. 기존 visible unmapped monster 차단과 3D 동작 품질, 다른 종 표현, 모바일 로딩을 보존. 오직 기존 WEB Vibe 소스변경→QA→PR; 사전/후 실제 3D 검증 전에는 완료 주장 금지. 앞선 전체 작업 #9801은 index.html 1.28MB라 WEB_VIBE_SOURCE_SIZE_OUT_OF_SCOPE 오류로 차단됐으므로 이 작은 책임파일만 선행 패치.",
       "responsibleFiles": [],
       "priority": "owner-immediate",
-      "status": "queued",
+      "status": "blocked",
       "ownerDirective": true,
       "evidence": [
         "web-vibe-independent:v1",
@@ -64,10 +64,10 @@
         "qa-required-before-pr-merge",
         "web-vibe-recovery-failure:needs-source-or-provider-recheck"
       ],
-      "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-10-25T01:47:36.587Z",
-      "recoveryNextAt": "2026-10-25T02:47:36.587Z",
-      "blocker": null
+      "recoveryAttempts": 3,
+      "recoveryLastFailureAt": "2026-10-25T06:53:06.167Z",
+      "recoveryNextAt": null,
+      "blocker": "WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW"
     },
     {
       "id": "pwa-641a328c-4677-49f1-8d99-7cf652b2498a",
