@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 import {runInNewContext} from 'node:vm';
 import * as THREE from '../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 import {LAND} from '../web-games/ocean-voyage/assets/world.mjs';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand,dismissStoryScene,PORT_SCENES} from '../web-games/ocean-voyage/engine.mjs';
+import {itemLibrary,CONSUMABLES,buyConsumable,useConsumable,TREASURES,PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand,dismissStoryScene,PORT_SCENES} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -179,10 +179,10 @@ test('mobile pixel interface has inventory, joystick and independent scene audio
  assert.doesNotMatch(html,/cdn.jsdelivr.net/);
 });
 
-test('all 15 imported CC0 media files are original SHA1-verified real binaries, not placeholders',()=>{
+test('all imported CC0 media files are original SHA1-verified real binaries, not placeholders',()=>{
  const manifest=JSON.parse(fs.readFileSync('web-games/ocean-voyage/assets/cc0/manifest.json','utf8'));
  assert.equal(manifest.license,'CC0-1.0');
- assert.equal(manifest.assets.length,15);
+ assert.equal(manifest.assets.length,34);
  const paths=new Set();
  for(const item of manifest.assets){
   assert.ok(!paths.has(item.path),'duplicate '+item.path);paths.add(item.path);
@@ -434,4 +434,35 @@ test('captain prologue persists each scene and completes without spending or adv
   }
   assert.equal(s.scene,null);assert.equal(s.coins,gold);assert.equal(s.storyChapter,chapter);
  }
+});
+
+
+test('new voyage supplies migrate, charge once, respect caps and preserve failed actions',()=>{
+ let s=newGame();const legacy=JSON.parse(serializeGame(s));for(const id of ['water','repairkit','tonic','survey','camp'])delete legacy.supplies[id];
+ s=restoreGame(JSON.stringify(legacy));for(const id of ['water','repairkit','tonic','survey','camp'])assert.equal(s.supplies[id],0);
+ for(const [id,field,value,expected] of [['water','provisions',130,140],['repairkit','hull',80,100],['tonic','crew',50,55]]){
+  const cost=CONSUMABLES.find(i=>i.id===id).cost,coins=s.coins;
+  s=buyConsumable(s,id).state;assert.equal(s.coins,coins-(s.job==='merchant'?Math.ceil(cost*.9):cost));assert.equal(s.supplies[id],1);
+  s.ship[field]=value;const result=useConsumable(s,id);assert.ok(result.ok);s=result.state;
+  assert.equal(s.ship[field],expected);assert.equal(s.supplies[id],0);
+  s.supplies[id]=1;const before=serializeGame(s);assert.equal(useConsumable(s,id).ok,false);assert.equal(serializeGame(s),before);
+ }
+ s=buyConsumable(s,'survey').state;const ports=s.discovered.length,score=s.score;const surveyed=useConsumable(s,'survey');assert.ok(surveyed.ok);s=surveyed.state;
+ assert.equal(s.charted.length,25);assert.equal(s.discovered.length,ports);assert.equal(s.score,score);
+ s.supplies.survey=1;assert.equal(useConsumable(s,'survey').ok,false);assert.equal(s.supplies.survey,1);
+ s.supplies.camp=2;assert.equal(useConsumable(s,'camp').ok,false);
+ s.expedition={id:SITES[0].id,step:0,energy:7,notes:[]};s=useConsumable(s,'camp').state;assert.equal(s.expedition.energy,8);assert.equal(s.supplies.camp,1);
+ assert.deepEqual(restoreGame(serializeGame(s)).supplies,s.supplies);
+ s.ship.x=700;s.ship.z=300;assert.equal(buyConsumable(s,'water').ok,false);
+});
+
+test('item encyclopedia uses canonical prices and local verified art in each category',()=>{
+ const library=itemLibrary();assert.equal(library.length,39);assert.equal(new Set(library.map(i=>i.category+':'+i.id)).size,39);
+ for(const c of CONSUMABLES){const item=library.find(i=>i.category==='supplies'&&i.id===c.id);assert.equal(item.cost,c.cost);assert.equal(item.description,c.description);}
+ const source=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');const body=source.slice(source.indexOf('const ITEM_ICONS='),source.indexOf("let renderedPanel='';"));
+ const state=newGame(),before=serializeGame(state);
+ const html=runInNewContext(body+';inventory();',{state,itemLibrary,canDock,SHIP_TYPES,cargoWeight,SITES,TREASURES,escapeHtml:String,fmt:String});
+ assert.ok(!html.includes('undefined'));assert.equal((html.match(/class="row item-row"/g)||[]).length,39);
+ for(const match of html.matchAll(/src="\.\/assets\/cc0\/items\/([^"\/]+)"/g))assert.ok(fs.existsSync('web-games/ocean-voyage/assets/cc0/items/'+match[1]));
+ assert.equal(serializeGame(state),before);
 });

@@ -1,6 +1,6 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion,windAt,departureHeading} from './engine.mjs';
+import {itemLibrary,PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion,windAt,departureHeading} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -270,7 +270,7 @@ function market(){
  '<h3>교역 항로 정보</h3><p class="info">실제 배에 실은 상품은 다른 항구에서 팔 수 있어. 예상 최고 매각가는 현재 공개된 해도 기준이야.</p>'+
  GOODS.filter(g=>state.cargo[g.id]>0).map(g=>'<div class="row"><div class="desc"><strong>'+escapeHtml(g.name)+'</strong><small>'+bestSale(g.id)+'</small></div></div>').join('');
 }
-function consumables(buy){return CONSUMABLES.map(c=>'<div class="row"><div class="desc"><strong>'+c.name+' ×'+state.supplies[c.id]+'</strong><small>'+c.description+'</small></div><div class="stack">'+(buy?'<button class="action sub" data-buy-supply="'+c.id+'">'+(state.job==='merchant'?Math.ceil(c.cost*.9):c.cost)+' G 구매</button>':'')+(c.id!=='ammo'?'<button class="action" data-use-supply="'+c.id+'" '+(!state.supplies[c.id]?'disabled':'')+'>사용</button>':'')+'</div></div>').join('');}
+function consumables(buy){return CONSUMABLES.map(c=>'<div class="row item-row">'+itemImage({...c,category:'supplies'})+'<div class="desc"><strong>'+c.name+' ×'+state.supplies[c.id]+'</strong><small>'+c.description+'</small></div><div class="stack">'+(buy?'<button class="action sub" data-buy-supply="'+c.id+'">'+(state.job==='merchant'?Math.ceil(c.cost*.9):c.cost)+' G 구매</button>':'')+(c.id!=='ammo'?'<button class="action" data-use-supply="'+c.id+'" '+(!state.supplies[c.id]?'disabled':'')+'>사용</button>':'')+'</div></div>').join('');}
 function bestSale(id){const places=PORTS.filter(p=>state.discovered.includes(p.id));if(!places.length)return '아직 알려진 항구 없음';const best=places.reduce((a,b)=>marketQuote(state,a.id,id).sell>marketQuote(state,b.id,id).sell?a:b);return escapeHtml(best.name)+' 예상 '+fmt(marketQuote(state,best.id,id).sell)+' G';}
 let fleetTab='ships';
 function fleet(){
@@ -418,13 +418,33 @@ function companions(){
  '<h3>이 항구에서 만날 수 있는 인물</h3>'+
  (home?CREW.filter(c=>c.port===home.id&&!state.crewRoster.includes(c.id)&&!state.reserveCrew.includes(c.id)).map(c=>'<div class="crew-card">'+portrait(c)+'<div><div class="crew-name">'+escapeHtml(c.name)+'</div><div class="crew-detail">'+escapeHtml(c.nation)+' · '+escapeHtml(c.role)+'</div><p class="crew-lore">'+escapeHtml(c.story)+'</p>'+statsLine(c)+'<p class="info">'+companionObjective(state,c).text+'</p><p>'+escapeHtml((RECRUIT_STORIES[c.id]||[c.story,'함께 항해할 준비가 됐어.'])[Math.min(1,state.recruitScenes[c.id]||0)])+'</p>'+((state.recruitScenes[c.id]||0)<2?'<button class="action" data-talk="'+c.id+'">이야기 듣기 '+((state.recruitScenes[c.id]||0)+1)+'/2</button>':'<button class="action" data-recruit="'+c.id+'" '+(!companionObjective(state,c).ready?'disabled':'')+'>약속을 지키고 영입</button>')+'</div></div>').join('')||'<p class="info">이곳에서 새로 영입할 동료는 없어.</p>':'<p class="info">항구에 정박하면 여관에서 항해사를 만날 수 있어.</p>');
 }
+const ITEM_ICONS={"repair":"generic-0018","medicine":"pirate-0107","ammo":"pirate-0105","smoke":"pirate-0107","rations":"pirate-0110","water":"pirate-0102","repairkit":"pirate-0103","tonic":"pirate-0107","survey":"generic-0038","camp":"pirate-0090","tools":"pirate-0118","telescope":"pirate-0118","rapier":"pirate-0123","chart":"generic-0032","compass":"pirate-0118","cargo":"pirate-0119","grain":"pirate-0110","wood":"pirate-0065","spice":"pirate-0090","silk":"pirate-0108","ore":"pirate-0109","tea":"pirate-0090","wine":"pirate-0107","wool":"pirate-0108","glass":"pirate-0107","amber":"pirate-0119","cotton":"pirate-0108","ivorycraft":"pirate-0119","porcelain":"pirate-0121","sails":"pirate-0108","figureheads":"pirate-0122","cannons":"pirate-0104"};
+let itemCategory='all';
+const itemCategories={all:'전체',supplies:'항해 보급',tools:'항해 도구',cargo:'교역품',sails:'범포',figureheads:'선수상',cannons:'함포'};
+function itemImage(item){
+ const file=ITEM_ICONS[item.id]||ITEM_ICONS[item.category]||ITEM_ICONS.tools;
+ return '<img class="item-icon" src="./assets/cc0/items/'+file+'.png" alt="" width="40" height="40" loading="lazy">';
+}
+function itemOwned(item){
+ if(item.category==='supplies')return Number(state.supplies[item.id])||0;
+ if(item.category==='cargo')return state.cargo[item.id]||0;
+ if(item.category==='sails')return Number(state.ship.gear.sail===item.id);
+ if(item.category==='figureheads')return Number(state.ship.gear.figurehead===item.id);
+ if(item.category==='cannons')return Number(state.ship.cannonType===item.id);
+ return Number(state.equipment?.[item.id])||0;
+}
 function inventory(){
- return '<h3>기함 상세</h3><p>'+SHIP_TYPES.find(t=>t.id===state.shipType).name+' · 선체 '+Math.round(state.ship.hull)+' / '+state.ship.maxHull+' · 돛 '+state.ship.sail+' · 함포 '+state.ship.cannons+' · 선원 '+state.ship.crew+' / '+state.ship.maxCrew+'</p><p>장갑 '+state.ship.armor+'단계 · 화물실 '+state.ship.holdLevel+'단계 · 타륜 '+state.ship.rudderLevel+'단계 · 선체 보강 '+state.ship.hullLevel+'단계</p><h3>소모품 가방</h3>'+consumables(false)+ '<div class="kpi"><div>화물 적재<b>'+cargoWeight(state)+' / '+(state.ship.cargoLimit*state.fleet)+'</b></div><div>보유 금화<b>'+fmt(state.coins)+' G</b></div></div>'+
- '<h3>발견 도감</h3>'+SITES.filter(t=>state.discoveries.includes(t.id)).map(t=>'<div class="scene-card"><strong>'+t.relic+'</strong><p>'+t.name+' · '+(state.reported.includes(t.id)?'보고 완료':'미보고')+'</p><small>'+t.lore+'</small></div>').join('')+TREASURES.filter(t=>state.treasures.includes(t.id)).map(t=>'<div class="scene-card"><strong>'+t.relic+'</strong><p>'+t.name+'</p></div>').join('')+'<h3>개인 장비 · 발견물</h3>'+
- EQUIPMENT.map(item=>'<div class="row"><div class="desc"><strong>'+escapeHtml(item.name)+'</strong><small>'+escapeHtml(item.group)+' · '+escapeHtml(item.description)+'</small></div><strong class="cargo-badge">×'+(item.id==='medicine'?state.supplies.medicine:Math.max(0,Number(state.equipment?.[item.id])||0))+'</strong></div>').join('')+
- '<h3>선박 화물창</h3>'+
- GOODS.map(item=>'<div class="row"><div class="desc"><strong>'+escapeHtml(item.name)+'</strong><small>단위 중량 '+item.weight+' · 항구에서 사고팔 수 있음</small></div><strong class="cargo-badge">×'+(state.cargo[item.id]||0)+'</strong></div>').join('')+
- '<h3>항해 보급품</h3><div class="row"><strong>식량</strong><b>'+state.ship.provisions+'</b></div><div class="row"><strong>선원</strong><b>'+state.ship.crew+'</b></div>';
+ const library=itemLibrary(),dock=canDock(state);
+ const rows=library.filter(i=>itemCategory==='all'||i.category===itemCategory).map(item=>{
+  const count=itemOwned(item),cost=state.job==='merchant'&&item.category==='supplies'?Math.ceil(item.cost*.9):item.cost;
+  let actions='';
+  if(item.category==='supplies')actions=(dock?'<button class="action sub" data-buy-supply="'+item.id+'" '+(state.coins<cost?'disabled':'')+'>'+cost+' G 구매</button>':'')+(item.id!=='ammo'?'<button class="action" data-use-supply="'+item.id+'" '+(!count?'disabled':'')+'>사용</button>':'');
+  else if(['sails','figureheads','cannons'].includes(item.category))actions='<button class="action sub" data-panel-open="fleet">조선소에서 장착</button>';
+  else if(item.category==='cargo')actions='<button class="action sub" data-panel-open="market">교역소 시세</button>';
+  return '<div class="row item-row">'+itemImage(item)+'<div class="desc"><small>'+itemCategories[item.category]+' · '+(count?'보유 '+count:'미보유')+'</small><strong>'+escapeHtml(item.name)+'</strong><small>'+escapeHtml(item.description)+'</small><small>입수: '+escapeHtml(item.source)+'</small></div><div class="stack">'+actions+'</div></div>';
+ }).join('');
+ return '<h3>기함 상세 · '+SHIP_TYPES.find(t=>t.id===state.shipType).name+'</h3><p>선체 '+Math.round(state.ship.hull)+' / '+state.ship.maxHull+' · 선원 '+state.ship.crew+' / '+state.ship.maxCrew+' · 돛 '+state.ship.sail+' · 함포 '+state.ship.cannons+'문</p><h3>항해 아이템 도감 · '+library.length+'종</h3><p>보유 수량과 장착 상태는 현재 저장 기록 기준이야. 교역품은 화물창, 보급품은 별도 가방에 보관해.</p><div class="ship-tabs">'+Object.entries(itemCategories).map(([id,label])=>'<button class="action '+(id===itemCategory?'':'sub')+'" data-item-category="'+id+'" aria-pressed="'+(id===itemCategory)+'">'+label+'</button>').join('')+'</div><div class="kpi"><div>화물 적재<b>'+cargoWeight(state)+' / '+state.ship.cargoLimit*state.fleet+'</b></div><div>보유 금화<b>'+fmt(state.coins)+' G</b></div><div>항해 보급<b>'+state.ship.provisions+' / 140</b></div></div>'+rows+
+ '<h3>발견 기록</h3>'+SITES.filter(t=>state.discoveries.includes(t.id)).map(t=>'<div class="scene-card"><strong>'+t.relic+'</strong><p>'+t.name+' · '+(state.reported.includes(t.id)?'보고 완료':'미보고')+'</p><small>'+t.lore+'</small></div>').join('')+TREASURES.filter(t=>state.treasures.includes(t.id)).map(t=>'<div class="scene-card"><strong>'+t.relic+'</strong><p>'+t.name+'</p></div>').join('');
 }
 
 let renderedPanel='';
@@ -468,6 +488,7 @@ view.body.addEventListener('click',e=>{
  if(b.dataset.menuTo){gotoPanel(b.dataset.menuTo);return;}
   if(b.dataset.hail){apply(hailMerchant(state,b.dataset.hail));return;}
  if(b.dataset.panelOpen){openFacility(b.dataset.panelOpen);return;}
+ if(b.dataset.itemCategory){if(itemCategories[b.dataset.itemCategory])itemCategory=b.dataset.itemCategory;renderPanel();return;}
  if(b.dataset.fleetTab){fleetTab=b.dataset.fleetTab;view.body.scrollTop=0;renderPanel();return;}
  if(b.dataset.shipGear){apply(buyShipEquipment(state,b.dataset.gearSlot,b.dataset.shipGear));return;}
  if(b.dataset.refine){apply(refineShip(state,b.dataset.refine));return;}
