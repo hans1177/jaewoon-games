@@ -515,3 +515,10 @@ test('chase keeps 45 degree bearing fixed, with near port visuals and quick dock
  assert.match(main,/const near=closest\.d<=50/);
  assert.match(main,/if\(tick>\.25\)/);
 });
+
+test('town rendering follows the nearby port even before touching its center',()=>{
+ const view=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ assert.match(view,/const current=canDock\(state\)\|\|PORTS\[0\]/);
+ assert.match(view,/const townPort=canDock\(state\)\|\|PORTS\[0\]/);
+ assert.match(view,/const p=canDock\(state\)/);
+});
