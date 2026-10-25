@@ -463,7 +463,9 @@ buildWorld(live){
    entry.wasAttacking=attack;if(combat)entry.lastVisualUntil=combat.visualUntil;
     if(hitStart)entry.lastHitAt=entry.hitAt;
    const speedBase=entry.kind==='enemy'?90:155,blend=1-Math.exp(-dt*11);
-   entry.motion+=(Math.min(1,entry.speed/speedBase)-entry.motion)*blend;
+   // 정지할 때 발 움직임이 계속 남지 않도록 걸음 가중치를 빠르게 가라앉힌다.
+    const stopBlend=entry.stepDistance>.02?blend:1-Math.exp(-dt*25);
+    entry.motion+=(Math.min(1,entry.speed/speedBase)-entry.motion)*stopBlend;
    // 보행 클립과 보조 걸음 움직임을 동일한 실측 이동거리로 구동한다.
    // 스톱/코너/프레임 제한에서도 땅 위를 미끄러지듯 계속 걷는 문제 방지.
    if(entry.stepDistance>0)entry.walkPhase+=entry.stepDistance/entry.stepStride*Math.PI*2;
@@ -547,16 +549,17 @@ buildWorld(live){
    for(const foot of entry.feet)if(!foot.animatesPosition)foot.node.position.copy(foot.rest);
    entry.mixer.update(hit>.81?dt*.23:dt);
    // 보행 클립 위에 호흡·상체 관성·타격 후 젖힘·몬스터별 부유를 미세하게 더한다.
-   const sway=Math.sin(phase)*(creature==='skitter'?.065:creature==='hunter'?.045:heavy?.014:.028)*pace;
-   const bob=spirit?Math.sin(elapsed*2.5)*.066+Math.sin(elapsed*4.3)*.012+Math.abs(Math.sin(phase))*pace*.016:
-    gel?Math.sin(phase)*pace*.035:landing+bounce+Math.abs(Math.sin(phase))*pace*(heavy?.006:.012);
+   const sway=Math.sin(phase)*(creature==='skitter'?.065:creature==='hunter'?.045:heavy?.014:.028)*pace*(hasWalk?.24:1);
+   // 원본 Walk/Run에는 이미 착지와 상하 움직임이 있으므로 추가 바운스를 중복 적용하지 않는다.
+    const bob=hasWalk?0:spirit?Math.sin(elapsed*2.5)*.066+Math.sin(elapsed*4.3)*.012+Math.abs(Math.sin(phase))*pace*.016:
+     gel?Math.sin(phase)*pace*.035:landing+bounce+Math.abs(Math.sin(phase))*pace*(heavy?.006:.012);
    const settle=1-Math.exp(-dt*11);
    const posture=(creature==='hunter'?.13:creature==='skitter'?.21:creature==='stone'?.045:0)+(entry.stance||0)*.055;
    const cast=(special&&(entry.specialKind==='ritual'||entry.specialKind==='specter')||attack&&castStyle)?Math.sin(attackProgress*Math.PI)*.15:0;
    const attackLean=attack?(heavyStrike?.18:bowStyle?-.045:castStyle?-.12:.095)*strike:0;
    const npcSurvey=entry.kind==='ai'&&!entry.npcInParty?watch+greeting:0;
    entry.model.rotation.x+=(posture+breath*.4+windup*.11+attackLean-cast-recoil*.13+greeting*.44-entry.model.rotation.x)*settle;
-   entry.model.rotation.z+=(sway+entry.turnLean+breath-recoil*entry.hitSide*.15+npcSurvey*.36+(creature==='flyer'?Math.sin(elapsed*9+phase)*.07:0)-entry.model.rotation.z)*settle;
+   entry.model.rotation.z+=(sway+entry.turnLean*(hasWalk?.35:1)+breath-recoil*entry.hitSide*.15+npcSurvey*.36+(creature==='flyer'?Math.sin(elapsed*9+phase)*.07:0)-entry.model.rotation.z)*settle;
    entry.model.position.y+=(entry.modelRestY+bob-windup*.02+strike*(creature==='hopper'?.045:.028)+hit*.065-entry.model.position.y)*settle;
    entry.model.scale.y+=(entry.modelRestScaleY*(gel?1-Math.sin(phase)*pace*.085:creature==='hopper'?1-Math.abs(Math.sin(phase))*pace*.026:1)-entry.model.scale.y)*settle;
    entry.model.position.z+=(entry.modelRestZ-windup*.055+strike*(heavyStrike?.17:bowStyle?-.035:castStyle?.035:.12)-recoil*.11-entry.model.position.z)*settle;
