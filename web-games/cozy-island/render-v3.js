@@ -680,6 +680,27 @@ export class IslandRendererV3 {
         box(.38,.065,.38,Math.round((x+z)*100)%3===0?'stone':'wall',x,.035,z);
       return g;
     }
+    // 중세 마을 생활 소품: 도로 주변의 횃불과 실제 바퀴가 있는 물자 수레.
+    if(kind==='fort-lantern'){
+      cyl(.3,.17,'stone',0,.11,0);
+      box(.14,2.1,.14,'wood',0,1.13,0);
+      box(.64,.12,.64,'metal',0,2.17,0);
+      cone(.27,.59,'fire',0,2.49,0);
+      box(.38,.07,.38,'metal',0,2.87,0);
+      return g;
+    }
+    if(kind==='fort-wagon'){
+      box(2.15,.18,1.38,'wood',0,.76,0);
+      for(const x of [-.79,.79])for(const z of [-.73,.73]){
+        const wheel=cyl(.35,.13,'dark',x,.42,z);wheel.rotation.x=Math.PI/2;
+        const hub=cyl(.1,.15,'metal',x,.42,z+.09);hub.rotation.x=Math.PI/2;
+      }
+      box(1.89,.58,.16,'wood',0,1.06,-.59);
+      box(1.89,.58,.16,'wood',0,1.06,.59);
+      for(let i=0;i<4;i++)box(.62,.54,.53,'crop',-.67+(i%2)*.82,1.12,-.26+Math.floor(i/2)*.56);
+      box(.19,.14,1.24,'wood',0,.65,1.25);
+      return g;
+    }
     // 기사단 회관: 훈련마당·왕실 깃발·검상, 감옥: 철창과 감시탑을 3D로 구분한다.
     if(kind==='fort-knight-hall'){
       box(4.3,.2,3.65,'earth',0,.08,0);
@@ -1037,7 +1058,7 @@ export class IslandRendererV3 {
     return g;
   }
   make3d(kind,height){
-    if(['fort-knight-hall','fort-prison','fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind)){
+    if(['fort-knight-hall','fort-prison','fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site','fort-lantern','fort-wagon',...Object.values(ECONOMY_3D_LOOK)].includes(kind)){
       const group=this.makeFort3d(kind,height),sign=BUILDING_SIGNS[kind];
       if(sign){
         let texture=this.signTextures3d.get(kind);
@@ -1190,6 +1211,11 @@ export class IslandRendererV3 {
       put('hamlet-south','fort-cottage',1145,800,3.25);
       put('hamlet-west','fort-cottage',440,680,3.15);
       put('hamlet-crossroad','fort-market',715,660,2.5);
+      // 서양 중세 거리의 소품은 렌더링 전용이며 실제 건축·통행·자원 위치는 바꾸지 않는다.
+      put('merchant-wagon','fort-wagon',590,680,2.4,Math.PI/4);
+      put('timber-wagon','fort-wagon',320,895,2.4,-Math.PI/4);
+      for(const [i,x,y] of [[0,680,420],[1,790,550],[2,830,810],[3,510,605],[4,1110,940]])
+        put('village-torch:'+i,'fort-lantern',x,y,2.6);
       for(let i=0;i<11;i++)put('village-street:'+i,'fort-road',730,255+i*59,.06);
       for(let i=0;i<6;i++)put('village-link:'+i,'fort-road',530+i*57,630,.06);
       for(let i=0;i<6;i++)put('farm-street:'+i,'fort-road',970+i*49,730,.06);
