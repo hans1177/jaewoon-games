@@ -210,6 +210,11 @@ jobs:
             pass,postPublishHeadlessQaPassed:pass,serverBootObserved:proof.serverBootObserved===true,
             realPlayerGameplayVerified:false,mobileInputVerified:false,
             multiplayerVerified:false,saveRejoinVerified:false,
+            npcMonsterGroundContactVerified:false,
+            actorGroundingRuntimeQaState:'UNVERIFIED_NON_SIMULATING_OPEN_CLOUD',
+            unlicensedBearBlockedBySource:true,
+            verifiedCC0BearInGame:false,
+            completeGameplayQaPassed:false,
             authority:'roblox-open-cloud-exact-place-version-luau-task',
             state:proof.state||'UNVERIFIED',error:failure||proof.error||null,
             checkedAt:new Date().toISOString()
@@ -217,6 +222,8 @@ jobs:
           fs.writeFileSync('/tmp/cozy-owner-publish/cozy-island.post-publish-qa.json',JSON.stringify(evidence,null,2)+'\n');
           console.log('COZY_POST_PUBLISH_EXACT_PLACE_VERSION_QA='+(pass?'PASS':'UNVERIFIED'));
           console.log('COZY_POST_PUBLISH_VERSION='+versionNumber);
+          console.log('COZY_NPC_MONSTER_GROUNDING_RUNTIME_QA=UNVERIFIED_REQUIRES_SIMULATED_SERVER');
+          console.log('COZY_BEAR_CC0_RUNTIME_QA=BLOCKED_UNVERIFIED_SOURCE');
           if(!pass)throw new Error('COZY_POST_PUBLISH_QA_UNVERIFIED_NO_NEXT_F0');
           NODE
 
