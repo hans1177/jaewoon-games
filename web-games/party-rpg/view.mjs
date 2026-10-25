@@ -431,7 +431,7 @@ buildWorld(live){
     wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,lastSpecialUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
     lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,
     motionPhase:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:3)*1.61,
-    creature:kind!=='enemy'?'human':/늑대|마수|키메라/.test(obj.name||'')?'hunter':/거미|전갈/.test(obj.name||'')?'skitter':role==='slime'?'gel':role==='bunny'?'hopper':role==='golem'?'stone':role==='ghost'?'spirit':role==='winged'?'flyer':'fighter',
+    creature:kind!=='enemy'?'human':role==='slime'?'gel':role==='bunny'?'hopper':role==='golem'?'stone':role==='ghost'?'spirit':role==='winged'?'flyer':/늑대|마수|키메라/.test(obj.name||'')?'hunter':/거미|전갈/.test(obj.name||'')?'skitter':'fighter',
     specialUntil:0,specialKind:null,deadAt:0,hitAt:0,hitPower:0,hitSide:0,flashMaterials,
     idleSeed:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:11)*.713,
     idleAttention:0,lookYaw:0,stance:0,faceTarget:null,visualStyle:'strike',npcRoutine:obj.routine||null};
@@ -530,7 +530,7 @@ buildWorld(live){
    const bob=spirit?Math.sin(elapsed*2.5)*.066+Math.sin(elapsed*4.3)*.012+Math.abs(Math.sin(phase))*pace*.016:
     gel?Math.sin(phase)*pace*.035:landing+bounce+Math.abs(Math.sin(phase))*pace*(heavy?.006:.012);
    const settle=1-Math.exp(-dt*11);
-   const posture=creature==='hunter'?.13:creature==='skitter'?.21:creature==='stone'?.045:0;
+   const posture=(creature==='hunter'?.13:creature==='skitter'?.21:creature==='stone'?.045:0)+(entry.stance||0)*.055;
    const cast=(special&&(entry.specialKind==='ritual'||entry.specialKind==='specter')||attack&&castStyle)?Math.sin(attackProgress*Math.PI)*.15:0;
    const attackLean=attack?(heavyStrike?.18:bowStyle?-.045:castStyle?-.12:.095)*strike:0;
    const npcSurvey=entry.kind==='ai'&&!entry.npcInParty?watch+greeting:0;
@@ -558,8 +558,16 @@ buildWorld(live){
    }
   }
  // 실제 체력/충돌과 무관한 짧은 타격 반응. 렌더 대상에 없는 몬스터도 안전하다.
- reactToHit(key,power=1){
-  const entry=this.actors.get(key);if(entry){entry.hitAt=performance.now();entry.hitPower=power;}
+ reactToHit(key,power=1,fromX=null,fromY=null){
+  const entry=this.actors.get(key);
+  if(entry){
+   entry.hitAt=performance.now();entry.hitPower=power;
+   // 공격자 방향의 반대쪽으로 짧게 밀리는 시각 반응. 충돌·좌표·실제 피해는 변경하지 않는다.
+   if(Number.isFinite(fromX)&&Number.isFinite(fromY)){
+    const angle=Math.atan2(fromX-entry.lastX,fromY-entry.lastY)-entry.model.rotation.y;
+    entry.hitSide=Math.sin(angle)||0;
+   }else entry.hitSide=0;
+  }
   if(key==='player'||power>1)this.cameraImpact=Math.min(.12,this.cameraImpact+(power>1?.052:.025));
  }
  removeActor(key,entry){if(entry.pixel){entry.pixel.geometry.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
@@ -579,7 +587,7 @@ buildWorld(live){
   const arrow=family==='ranger',arcane=family==='wizard',holy=family==='cleric',shadow=family==='rogue';
   const impact=defense||healing||type==='monster_specter'||type==='monster_charger'?{x:sx,y:sy}:{x:tx,y:ty};
   const distanceToTarget=Math.hypot(tx-sx,ty-sy)*SCALE;
-  const projectile=!(defense||healing||area||warning)&&distanceToTarget>.46&&(arrow||arcane||holy||shadow||monster&&['winged','ghost','specter'].includes(monsterStyle));
+  const projectile=!(defense||healing||area||warning)&&distanceToTarget>.46&&(arrow||arcane||holy||monster&&['winged','ghost','specter'].includes(monsterStyle));
   const buildup=projectile?.37:defense||healing||warning?0:.20;
   group.position.set(impact.x*SCALE,.10,impact.y*SCALE);
   const makeMaterial=(opacity=.85)=>new THREE.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
@@ -616,14 +624,40 @@ buildWorld(live){
   if(arrow||slow){const tip=attach(new THREE.ConeGeometry(.13,.42,5),makeMaterial(.9),0,.72,0);tip.rotation.x=arrow?Math.PI/2:0;}
   if(arcane){const core=attach(new THREE.IcosahedronGeometry(.19,0),makeMaterial(.96),0,.76,0);core.rotation.y=.2;}
   if(holy){const disk=attach(new THREE.RingGeometry(.24,.29,16),makeMaterial(.9),0,1.32,0);disk.rotation.y=.5;}
+  // 공격 직업마다 서로 다른 읽기 쉬운 실루엣. 실제 스킬 효과량에는 손대지 않는다.
+  if(!monster&&!defense&&!healing){
+   if(family==='fighter'){
+    const swipe=attach(new THREE.TorusGeometry(.64,.049,5,22,Math.PI*1.6),makeMaterial(.80),0,.64,0);
+    swipe.rotation.set(1.07,.32,.55);
+   }else if(family==='rogue'){
+    for(const side of [-1,1]){
+     const streak=attach(new THREE.ConeGeometry(.065,.68,4),makeMaterial(.76),side*.17,.7,.03);
+     streak.rotation.z=side*.62;
+    }
+   }else if(family==='wizard'){
+    const glyph=attach(new THREE.TorusGeometry(.44,.024,4,24),makeMaterial(.72),0,.95,0);
+    glyph.rotation.set(.9,.33,.28);
+   }else if(family==='cleric'){
+    const ray=attach(new THREE.BoxGeometry(.09,.96,.045),makeMaterial(.74),0,.77,0);
+    ray.rotation.z=.45;
+   }else if(family==='ranger'){
+    const quiver=attach(new THREE.ConeGeometry(.10,.38,5),makeMaterial(.72),0,.78,0);
+    quiver.rotation.x=.83;
+   }
+   if(/frost|snare|smoke|veil/.test(type)){
+    const haze=attach(new THREE.RingGeometry(.65,.73,20),makeMaterial(.57),0,.046,0);
+    haze.rotation.x=-Math.PI/2;
+   }
+  }
   if(projectile){
    const flight={x:(sx-impact.x)*SCALE,z:(sy-impact.y)*SCALE};
    const sprite=attach(arrow?new THREE.ConeGeometry(.095,.38,6):new THREE.IcosahedronGeometry(monster?.21:.16,0),makeMaterial(.98));
    sprite.userData.flight=flight;
    if(arrow){
-    sprite.rotation.x=Math.PI*.5;
+    const shot=new THREE.Vector3((tx-sx)*SCALE,0,(ty-sy)*SCALE).normalize();
+    sprite.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),shot);
     const trail=attach(new THREE.CylinderGeometry(.012,.024,.38,5),makeMaterial(.65));
-    trail.userData.flight={...flight,tail:true};trail.rotation.x=Math.PI*.5;
+    trail.userData.flight={...flight,tail:true};trail.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),shot);
    }
   }
      // 몬스터 전용 기술 동작: 같은 피해/재사용 시간이라도 종족마다 발동 형태를 다르게 표현.
@@ -799,6 +833,7 @@ buildWorld(live){
     else if(travel>.09)entry.turnYaw=Math.atan2(dx,dy);
     entry.idleAttention=kind==='ai'&&!obj.party&&target===live.p?1:0;
     entry.npcInParty=!!obj.party;entry.npcRoutine=obj.routine||null;
+    entry.stance=kind==='ai'&&obj.party&&live.enemies.some(e=>!e.dead&&Math.hypot(e.x-obj.x,e.y-obj.y)<240)?1:0;
     entry.visualStyle=currentCombat?.visualStyle||'strike';
     const difference=Math.atan2(Math.sin(entry.turnYaw-entry.model.rotation.y),Math.cos(entry.turnYaw-entry.model.rotation.y));
     entry.model.rotation.y+=difference*(1-Math.exp(-dt*(moving?9:6)));
@@ -830,7 +865,11 @@ buildWorld(live){
    }
   this.marker.visible=!!this.destination;if(this.destination)this.marker.position.set(this.destination.x*SCALE,.06,this.destination.y*SCALE);
   for(let i=this.effects.length-1;i>=0;i--){
-   const fx=this.effects[i],phase=(now-fx.born)/fx.duration;
+   const fx=this.effects[i];
+   // 전투/메뉴 정지 중에는 화살·마법탄·타격 잔상의 시각 타이머도 멈춘다.
+   if(live.paused){if(!fx.pausedAt)fx.pausedAt=now;continue;}
+   if(fx.pausedAt){fx.born+=now-fx.pausedAt;fx.pausedAt=0;}
+   const phase=(now-fx.born)/fx.duration;
    if(phase>=1){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});this.effects.splice(i,1);continue;}
    // 예비동작 → 비행 → 충돌 파편 → 복귀. 이펙트만 지연되며 피해 판정은 건드리지 않는다.
    const phaseAfterHit=THREE.MathUtils.clamp((phase-fx.buildup)/(1-fx.buildup),0,1);
