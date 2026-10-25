@@ -769,7 +769,7 @@ jobs:
           while true; do
             attempt=$((attempt+1))
             git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
-            git checkout -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            git checkout --force -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
             echo "ROBLOX_SOURCE_PERSIST_ATTEMPT=$attempt"
             node <<'NODE'
           const fs=require('fs');
@@ -1687,7 +1687,7 @@ jobs:
           while true; do
             attempt=$((attempt+1))
             git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
-            git checkout -B "roblox-f0-persist-${safe}" "origin/$COMPANY_RUNTIME_BRANCH"
+            git checkout --force -B "roblox-f0-persist-${safe}" "origin/$COMPANY_RUNTIME_BRANCH"
             GAME_ID="$GAME_ID" RESULT_FILE="$result" node <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
@@ -1874,7 +1874,7 @@ jobs:
           while true; do
             attempt=$((attempt+1))
             git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
-            git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            git checkout --force -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
             echo "ROBLOX_TECHNICAL_PERSIST_ATTEMPT=$attempt"
             node <<'NODE'
           const fs=require('fs');
