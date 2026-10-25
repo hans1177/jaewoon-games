@@ -966,6 +966,25 @@ test('Roblox F0 integrity failure reenters the canonical source worker without w
   assert.match(bootstrap,/gameplayAuthorityChanged:false/);
 });
 
+test('new native Roblox games generate guarded merged DataStore saves without any model calls',()=>{
+  const compiled=compileRobloxSource({gameId:'save-safe-demo',gameName:'Save Safe Demo',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks()});
+  const server=compiled.result.serverCode;
+  assert.equal(compiled.modelUsed,false);
+  assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+  assert.equal(requiresPersistentSave(baseline),true);
+  assert.match(server,/local verifiedSaveLoad = \{\}/);
+  assert.match(server,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(server,/local function savePlayer\(player\)/);
+  assert.match(server,/if verifiedSaveLoad\[player\] ~= true then return end/);
+  assert.match(server,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/);
+  assert.match(server,/local merged = typeof\(current\) == "table" and table\.clone\(current\) or \{\}/);
+  assert.match(server,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
+  assert.match(server,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*verifiedSaveLoad\[player\] = nil/);
+  assert.match(server,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  assert.equal((server.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.doesNotMatch(server,/game:BindToClose\(function\(\) end\)/);
+});
+
 test('new Roblox compiler output contains the F0 foundation contract from first source build',()=>{
   const compiled=compileRobloxSource({gameId:'foundation-demo',gameName:'Foundation Demo',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks()});
   assert.match(compiled.result.serverCode,/native-foundation-sentinel-v1/);
