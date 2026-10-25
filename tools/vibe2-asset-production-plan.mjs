@@ -1538,6 +1538,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const roleFit=roleEvidence(asset);
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const current=currentConsumerIds.includes(id);
+    // [원형 시각 결손] 기존 원형/캡슐 NPC·몹은 3D 원본 파일이 아직 없으므로
+    // 일반 재사용 자격을 통과할 수 없다. 재사용 허가 없이 교체 수요로만 추적한다.
+    if(current&&spatialFamilies.has(family)&&isPrimitiveFallback(asset)
+      &&asset?.securityBlocked!==true&&asset?.quarantined!==true
+      &&asset?.practiceOnly!==true&&asset?.practiceArtifact!==true
+      &&!/(?:NC|UNKNOWN|FORBIDDEN|QUARANTIN)/i.test(clean(asset?.license))){
+      const rows=primitiveFallbackByFamily.get(family)||[];
+      rows.push(asset);primitiveFallbackByFamily.set(family,rows);
+      currentFamilyCounts.set(family,(currentFamilyCounts.get(family)||0)+1);
+      if(!currentPrimaryByFamily.has(family))currentPrimaryByFamily.set(family,asset);
+      continue;
+    }
     if(current&&assetSupplyCandidateAllowed(asset,target)){
       if(spatialFamilies.has(family)&&isPrimitiveFallback(asset)){
         const rows=primitiveFallbackByFamily.get(family)||[];
@@ -1850,7 +1862,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const asset=bestReusableByFamily.get(family);
     // 포괄적 family 힌트만으로 멀쩡한 공용 소스를 버리거나 무작정 원본을 다운로드하지 않는다.
     // 정확한 역할 수요가 있으면 다운로드 원본을 우선 제작 후보로 배정하되 내부 후보도 남긴다.
-    const originalRequested=(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
+    // 이름·역할·원본 모델/해시가 이미 확인된 재사용 후보가 있으면 동일 원본을
+    // 다시 수급하도록 요청하지 않는다. 기존 Native import/런타임 QA는 그대로 필요하다.
+    const existingNativeMatch=Boolean(asset
+      &&roleEvidenceById.get(clean(asset.id))?.matchedRoles?.length
+      &&/\.(?:glb|gltf|fbx|obj)$/i.test(clean(asset.masterGlb||asset.path))
+      &&/^[a-f0-9]{64}$/i.test(clean(asset.masterGlbHash||asset.sourceSha256||asset.sourceHash)));
+    const originalRequested=!existingNativeMatch&&(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
       family,sourceRoles,asset?'REUSABLE_LIBRARY_VS_DOWNLOADED_ORIGINAL':'ORIGINAL_SOURCE_FIRST_ON_DEMAND',
       asset?.id||''
     );
