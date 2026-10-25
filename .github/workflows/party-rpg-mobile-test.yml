@@ -48,6 +48,13 @@ jobs:
             await page.locator('#startBtn').click();
             await page.locator('#confirmHero').click();
             await page.locator('#introSkip').click();
+            // 실제 필드 전신 원화 적재와 분절 메시를 검사한다. 초상화 검사가 아니다.
+            await page.waitForFunction(()=>{
+              const v=window.partyRpgVibeState().view,a=v.actors.get('player');
+              return v.actorBounds.length===12&&v.actorArt?.image?.width>=1024&&a?.pixel?.isMesh&&a.pixel.geometry.attributes.position.count>100;
+            },null,{timeout:45000});
+            await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
+            console.log('PARTY_RPG_FIELD_FULL_BODY_ART_AND_RIG=PASS');
             // 실제 렌더러에서 정오 → 밤 햇빛 변화, 지역 비 입자, 시계 저장을 검사.
             await page.evaluate(()=>{
               const game=window.partyRpgVibeState();
@@ -56,7 +63,7 @@ jobs:
             await page.waitForTimeout(500);
             const midday=await page.evaluate(()=>window.partyRpgVibeState().view.sun.intensity);
             await page.evaluate(()=>{window.partyRpgVibeState().state.environment.minutes=60;});
-            await page.waitForTimeout(1000);
+            await page.waitForFunction(threshold=>window.partyRpgVibeState().view.sun.intensity<threshold,midday*.63,{timeout:20000});
             const night=await page.evaluate(()=>{
               const g=window.partyRpgVibeState();
               return {sun:g.view.sun.intensity,phase:g.gameEnvironment().phase,readout:document.getElementById('timeOfDay').textContent};
