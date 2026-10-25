@@ -145,6 +145,21 @@
 .ship-mini{max-width:100%;margin:8px 0;border-width:2px}.ship-mini svg{max-height:146px;image-rendering:pixelated}
 .ship-preview:not(.ship-mini) svg{image-rendering:pixelated}
 @media(max-width:740px){.crew-card{gap:9px}.crew-card .portrait-real{width:77px;height:100px;flex-basis:77px}.event-art .event-person .portrait-real{width:70px;height:85px;flex-basis:70px}}
+
+/* 전 시설 반신 초상화: 실제 보유 반실사 시트를 절제된 중세 패널로 통일 */
+.npc-dialog.npc-half{align-items:stretch;min-height:165px;padding:9px;gap:13px;background:linear-gradient(125deg,var(--npc-tint,#795d45) -35%,#d3b994 33%,#ead6b3 100%);border:2px solid #755736;box-shadow:inset 0 0 0 2px #e5c792,0 6px 16px #2b241b30}
+.npc-half .npc-frame{position:relative;flex:0 0 116px;align-self:stretch;min-height:146px;max-height:165px;overflow:hidden;border:4px double #9b783f;border-radius:4px;background:#47392e;box-shadow:0 0 0 1px #6a4c2e,inset 0 0 15px #1d2018}
+.npc-half .npc-half-face{position:absolute;inset:0;background-size:500% 100%;background-repeat:no-repeat;image-rendering:auto;filter:contrast(1.065) saturate(.86)}
+.npc-half .npc-frame::after{position:absolute;inset:0;content:"";pointer-events:none;box-shadow:inset 0 0 17px 8px #201a1670;background:linear-gradient(135deg,#f7e4af25,transparent 55%,#101a2140)}
+.npc-half .npc-medallion{position:absolute;left:3px;bottom:3px;z-index:2;width:26px;height:26px;display:grid;place-items:center;border:1px solid #dfbb76;border-radius:50%;background:#493926dd;color:#f6d78f;font:18px Georgia,serif}
+.npc-half .npc-copy{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.npc-half .npc-copy strong{font:700 17px Georgia,"Malgun Gothic",serif;color:#422d21}
+.npc-half .npc-copy small{line-height:1.5}
+.npc-half .npc-copy em{font-size:11px;font-style:normal;letter-spacing:1px;color:#6b462c}
+.npc-half .npc-copy p{font-size:12px;line-height:1.7;color:#4e392c}
+@media(max-width:740px){.npc-dialog.npc-half{min-height:125px;gap:8px;padding:6px}.npc-half .npc-frame{flex-basis:89px;min-height:123px;max-height:139px}.npc-half .npc-copy strong{font-size:14px}.npc-half .npc-copy p{font-size:11px;line-height:1.55}.npc-half .npc-medallion{width:23px;height:23px;font-size:15px}}
+/* 해도: 해안선·위도선과 나침반 원판을 또렷하게 유지 */
+#chartMap{background:#d8c69f;border:5px double #977449;box-shadow:inset 0 0 34px #4b302965,0 4px 12px #48352655;image-rendering:auto}
 </style><script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head><body>
 <canvas id="sea" aria-label="실제 해안선을 사용하는 픽셀 항해 지도와 항구 마을"></canvas><div id="veil"></div>
