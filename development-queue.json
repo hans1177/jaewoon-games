@@ -13238,10 +13238,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-25T13:47:26.303Z",
+      "updatedAt": "2026-10-25T13:48:53.365Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -13324,8 +13324,8 @@
       "routingBlockers": [
         "roblox-f0-restart-build-package-pending"
       ],
-      "robloxSourceCommit": "214a3aa521959ec836c2ebc465a7e4a688b50a8e",
-      "robloxSourceBootstrapPassedAt": "2026-10-25T13:45:35.887Z",
+      "robloxSourceCommit": "06a2d73883f8439b684e90ab2541d1bcf84b1e23",
+      "robloxSourceBootstrapPassedAt": "2026-10-25T13:48:53.365Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -13914,10 +13914,10 @@
       "robloxEvidenceInvalidatedBySourceChange": null,
       "robloxRuntimeRetryCount": 0,
       "robloxEvidenceInvalidatedByF0Restart": {
-        "sourceRevision": "214a3aa521959ec836c2ebc465a7e4a688b50a8e",
-        "previousSourceRevision": "8d0b350236f5f870906d1190ed8c45b91ac4ce24",
+        "sourceRevision": "06a2d73883f8439b684e90ab2541d1bcf84b1e23",
+        "previousSourceRevision": "214a3aa521959ec836c2ebc465a7e4a688b50a8e",
         "previousArtifactIdentity": null,
-        "restartedAt": "2026-10-25T13:45:35.887Z",
+        "restartedAt": "2026-10-25T13:48:53.365Z",
         "authority": "canonical-main-f0-restart"
       }
     },
@@ -56739,7 +56739,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T13:48:24.304Z",
+  "updatedAt": "2026-10-25T13:48:53.365Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
