@@ -18,7 +18,7 @@ test('separate save key, valid round trip, invalid save stays isolated',()=>{
  assert.equal(restoreGame('{"version":999}').coins,3400);
 });
 test('European ports and specialty goods have finite independent prices',()=>{
- assert.equal(PORTS.length,13);assert.equal(new Set(PORTS.map(p=>p.id)).size,PORTS.length);
+ assert.equal(PORTS.length,18);assert.equal(new Set(PORTS.map(p=>p.id)).size,PORTS.length);
  assert.equal(GOODS.length,13);
  for(const p of PORTS)for(const g of GOODS){
   const buy=priceAt(p.id,g.id,2,'buy'),sell=priceAt(p.id,g.id,2,'sell');
@@ -260,7 +260,7 @@ test('national ship traditions require local shipyard and have distinct cargo an
 });
 
 test('sustained raids can change port control while preserving facilities and investments',()=>{
- let s=newGame();s.pirates=[];const owners=Object.fromEntries(PORTS.map(p=>[p.id,p.faction]));for(let day=1;day<=50;day++){s.day=day;s.elapsed=15.99;s=stepSea(s,{},.02);}assert.ok(PORTS.some(p=>portStatus(s,p.id).owner!==owners[p.id]));assert.equal(s.worldLog.length<=20,true);assert.equal(PORTS.length,13);
+ let s=newGame();s.pirates=[];const owners=Object.fromEntries(PORTS.map(p=>[p.id,p.faction]));for(let day=1;day<=50;day++){s.day=day;s.elapsed=15.99;s=stepSea(s,{},.02);}assert.ok(PORTS.some(p=>portStatus(s,p.id).owner!==owners[p.id]));assert.equal(s.worldLog.length<=20,true);assert.equal(PORTS.length,18);
 });
 
 test('land battle alternates party and enemy turns and unlocks exploration without duplicate reward',()=>{
@@ -325,8 +325,8 @@ test('chart ship marker stays visible after pan, and helm screen direction match
  for(const world of [false,true]){
   const originX=world?300:75,originZ=world?-210:-550;
   const panX=base.ship.x-originX,panZ=base.ship.z-originZ;
-  const px=480+(base.ship.x-(originX+panX))*(world?.29:1.38);
-  const py=270+(base.ship.z-(originZ+panZ))*(world?.29:1.38);
+  const px=480+(base.ship.x-(originX+panX))*(world?.24:.70);
+  const py=270+(base.ship.z-(originZ+panZ))*(world?.24:.70);
   assert.equal(px,480);assert.equal(py,270);
  }
  // Manual right must rotate starboard from the chase camera, independent
@@ -490,4 +490,28 @@ test('item encyclopedia uses canonical prices and local verified art in each cat
  assert.match(html,/유적 유물/);assert.match(html,/해저 보물/);assert.match(html,/특수 개조/);
  for(const match of html.matchAll(/src="\.\/assets\/cc0\/items\/([^"\/]+)"/g))assert.ok(fs.existsSync('web-games/ocean-voyage/assets/cc0/items/'+match[1]));
  assert.equal(serializeGame(state),before);
+});
+test('broad ocean routes and usable harbor radius survive existing saves',()=>{
+ const outer=['azores','canary','alexandria','istanbul','reykjavik'];
+ for(const id of outer){
+  const port=PORTS.find(p=>p.id===id);
+  assert.ok(port,'missing distant destination '+id);
+  assert.ok(priceAt(id,'grain',3,'buy')>0);
+  assert.ok(PORT_SCENES[id]?.facilities.includes('market'));
+ }
+ let s=newGame(),p=PORTS.find(v=>v.id==='dawn');
+ s.ship.x=p.x+16;s.ship.z=p.z;
+ assert.equal(canDock(s)?.id,'dawn');
+ assert.equal(canDock(restoreGame(serializeGame(s)))?.id,'dawn');
+ s.ship.x=p.x+19;assert.equal(canDock(s),null);
+});
+test('chase keeps 45 degree bearing fixed, with near port visuals and quick dock refresh',()=>{
+ const source=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ assert.match(source,/const bearing=seaCamera==='angle'\?Math\.PI\/4:-Math\.PI\/4/);
+ assert.match(source,/const harborMarkers=PORTS\.map/);
+ assert.match(source,/root\.position\.set\(dx,0,dz\)/);
+ assert.match(source,/miniCx=Math\.round\(state\.ship\.x\/24\)\*24/);
+ assert.match(main,/const near=closest\.d<=50/);
+ assert.match(main,/if\(tick>\.25\)/);
 });
