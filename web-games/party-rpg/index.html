@@ -7,153 +7,186 @@
 <meta name="theme-color" content="#211a14">
 <title>잊힌 길의 서약 | 중세 판타지 파티 RPG</title>
 <style>
-/* 파일명: web-games/party-rpg/index.html · 고전 판타지 UI */
-:root{color-scheme:dark;--gold:#d6b471;--bright:#f7e7bd;--edge:#9c7d49;--ink:#15120f;--paper:#e6d7b6;--muted:#b8a98d}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);font-family:system-ui,-apple-system,sans-serif;touch-action:auto}button,input,select{font:inherit;color:inherit}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}button:focus-visible,input:focus-visible{outline:2px solid var(--bright);outline-offset:3px}button{transition:background .15s,border-color .15s}button:hover:not(:disabled){border-color:var(--bright)}[hidden]{display:none!important}#game{position:fixed;inset:0;width:100%;height:100%;touch-action:none}.panel,.card{width:min(94vw,900px);max-height:90dvh;overflow:auto;overscroll-behavior:contain;scrollbar-color:#977642 #211912;background-image:radial-gradient(ellipse at 85% 8%,#b88b4124,transparent 42%),linear-gradient(145deg,#332a21f5,#1c1b17f7 72%)}.portrait{display:block;flex-shrink:0;aspect-ratio:1;background-image:url('../../assets/shared/party/portraits.webp');background-size:500% 200%;background-repeat:no-repeat;background-color:#453b2a;border:1px solid #b39963;box-shadow:inset 0 0 15px #0005}.eyebrow{display:block;font-size:11px;letter-spacing:3px;color:var(--gold);line-height:1.8}.gold{color:var(--gold)}.good{color:#9bbf93}h1,h2,h3,blockquote{font-family:Georgia,'Batang',serif;font-weight:500}h2{color:var(--bright);font-size:25px;margin:8px 0 16px}h3{color:var(--gold);font-size:16px}p{line-height:1.85}.note{font-size:11px;color:var(--muted);line-height:1.8}.textBtn{background:none;border:0;padding:10px;color:var(--muted);font-size:12px;text-decoration:underline;text-underline-offset:4px}.menuBtn,.row button,#startBtn,.goldButton{min-height:46px;padding:10px 16px;border:1px solid #c39c57;background:linear-gradient(165deg,#5a4931,#32271e 80%);box-shadow:inset 0 0 0 2px #221a13,inset 0 2px 0 #d3ac6260,0 3px 8px #0007;color:#f6e6bb;letter-spacing:.5px;border-radius:3px;text-shadow:0 1px 2px #000}.menuBtn{display:block;width:100%;margin-top:10px}.secondary{background:linear-gradient(#38352c,#211e19);border-color:#86704a}.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px;background:#070d0bdc;touch-action:pan-x pan-y}.card{width:min(94vw,900px);max-height:90dvh;overflow:auto;overscroll-behavior:contain;scrollbar-color:#806c46 #17221b}.head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:linear-gradient(110deg,#4b3b27,#242018);border-bottom:2px solid #a78a53;box-shadow:0 3px 12px #0007}.head h2{margin:0;font-size:20px;letter-spacing:.6px;font-family:Georgia,'Batang',serif;color:#f2dba3;text-shadow:0 1px 2px #000}.close{width:40px;height:40px;background:#30251b;border:1px solid #af8e55;border-radius:4px;font-size:23px;color:#efce85}.body{padding:22px;font-size:13px;line-height:1.8}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-bottom:1px solid #b9935140;background:linear-gradient(90deg,#c89f2e05,transparent)}.row b,.row small{display:block}.row small{color:var(--muted);margin-top:4px}.row button{white-space:nowrap;min-width:65px}.tag{font-size:10px;padding:2px 5px;border:1px solid #8e7d4b;color:var(--gold);margin-left:5px}.journalEntry{padding:14px 9px;border-top:1px solid #ae8e5948;border-left:2px solid #8a6a3b44;background:linear-gradient(90deg,#c6a56a09,transparent)}.journalEntry p{color:#d4ceb9}.ruleStats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:18px 0}.ruleStats span{font-size:10px;padding:10px 7px;border:1px solid #b58f5473;background:#1e1d1766;color:var(--muted);text-align:center;box-shadow:inset 0 1px 0 #dfbd7a18}.ruleStats b{display:block;font-size:16px;color:var(--bright);margin-top:4px}
-/* 시작 · 인물 생성 */
-#start{background:radial-gradient(ellipse at 22% 38%,#76532f6b,transparent 55%),radial-gradient(ellipse at 92% 60%,#39442e66,transparent 52%),repeating-linear-gradient(35deg,#ffffff05 0 1px,transparent 1px 24px),linear-gradient(90deg,#100d0bee,#1c1e15eb);padding:24px}#startCard{width:min(1120px,100%);padding:0;border:0;background:none;box-shadow:none;max-height:94dvh}#introMenu{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:20px 35px}.introCopy h1{font-family:Georgia,'Batang',serif;font-size:clamp(42px,6vw,76px);font-weight:500;line-height:1.25;letter-spacing:-3px;color:var(--bright);margin:25px 0;text-shadow:0 3px 20px #000}.titleLine{width:80px;height:1px;background:var(--gold);margin:25px 0}.introCopy p{max-width:400px;color:#bfc2ad;font-size:14px}.introMenuButtons{display:grid;gap:12px;margin:28px 0 18px;max-width:320px}.introMenuButtons button{width:100%;margin:0}#loadStatus{color:#aaa88d;font-size:11px;line-height:1.8}#introPortrait{position:relative;max-width:420px;transform:rotate(2deg);padding:9px;border:3px ridge #c8a665;background:#251d13;box-shadow:0 0 0 4px #1c1711,0 0 0 6px #a2824d,0 25px 80px #000c}#introPortrait .portrait{width:100%;border:0}#introPortrait:after{content:'길을 잃어도, 이름은 잊지 않기를.';position:absolute;bottom:22px;left:0;right:0;text-align:center;font-family:serif;font-size:13px;padding:35px 10px 10px;background:linear-gradient(transparent,#16100be8);color:#f0d99c}.creatorHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #89703e;padding-bottom:12px}.creatorHead h2{margin:4px 0}.creatorLayout{display:grid;grid-template-columns:260px 1fr;gap:35px}.largePortrait{width:100%;border:1px solid #b29662;box-shadow:0 0 0 5px #16231b,0 0 0 6px #7e673b}.heroIdentity{padding-top:20px}.heroIdentity label{display:block;color:var(--gold);font-size:12px;margin-bottom:8px}#heroName{width:100%;font-size:16px;padding:13px;background:#121d17;border:1px solid var(--edge);outline-offset:2px}.portraitGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0 24px}.portraitChoice{background:#18231b;border:1px solid #655a3f;padding:3px;min-width:0}.portraitChoice .portrait{width:100%;border:0}.chosen{border-color:#e8cd8d!important;box-shadow:0 0 0 1px #e8cd8d,inset 0 0 20px #cfb87522!important}.classGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0 20px}.classChoice{padding:12px 3px;min-height:95px;background:linear-gradient(#2d3b2d,#17251c);border:1px solid #756644}.classChoice>span{display:block;font-family:serif;font-size:22px;color:var(--gold)}.classChoice b{display:block;font-size:12px;margin:4px 0}.classChoice small{font-size:9px;color:var(--muted)}#classDetail p{font-size:13px;color:#c7cbb7}#classDetail h2{font-size:24px;margin:5px 0}#creator{padding:18px 25px}.creatorFooter{display:flex;align-items:center;gap:18px;margin-top:20px;border-top:1px solid #8b77444d;padding-top:18px}.creatorFooter button{min-width:180px}.creatorFooter .note{margin:0}#classSelect{display:none}
-/* 동료 · 대화 */
-.rosterLayout{display:grid;grid-template-columns:240px 1fr;gap:25px}.rosterList{max-height:64dvh;overflow:auto;scrollbar-color:#806c46 #17221b}.rosterRow{display:flex;align-items:center;gap:10px;width:100%;padding:7px;background:#2c241be9;border:1px solid #a78a5644;margin-bottom:6px;text-align:left}.rosterRow .portrait{width:52px}.rosterRow b{font-family:serif;font-size:16px;font-weight:500;color:#e5d6b4}.rosterRow small{display:block;color:#aaa992;font-size:10px;margin-top:3px}.rosterRow i{margin-left:auto;font-size:9px;font-style:normal;color:#cbb578}.companionDetail{min-width:0}.companionPortrait{float:right;width:145px;margin:0 0 16px 22px}.companionDetail h2{font-size:30px;margin:8px 0}.companionDetail h2 small{display:block;font-family:system-ui;font-size:12px;margin-top:6px;color:var(--muted)}.companionDetail .ruleStats{clear:both}.companionButtons{clear:both}.dialogueLayout{display:grid;grid-template-columns:250px 1fr;gap:30px;align-items:start}.dialoguePortrait{width:100%;box-shadow:0 0 0 4px #16211a,0 0 0 5px #7e6a43}.dialogueText p{font-size:14px;line-height:2;color:#d0d0bb}.dialogueText blockquote{font-size:19px;line-height:1.8;color:var(--bright);border-left:3px solid #b4955b;padding-left:18px;margin:24px 0;background:linear-gradient(90deg,#bba16916,transparent)}.dialogueFooter{display:flex;gap:20px;align-items:center;color:var(--gold);font-size:12px}.dialogueFooter .menuBtn{flex:1;margin:0}.dialogueText .eyebrow{letter-spacing:1px}#modal[data-mode=dialogue] .body{padding:30px}
-/* 탐험 화면 */
-#hud{position:fixed;top:max(10px,env(safe-area-inset-top));left:12px;right:12px;z-index:20;display:flex;gap:12px;pointer-events:none;filter:drop-shadow(0 2px 5px #0009)}#stats{padding:10px 14px;max-width:500px;flex:1;background:linear-gradient(110deg,#302419e8,#1a1b15f0)}#statsTop{display:flex;flex-wrap:wrap;gap:7px;font-size:11px}.pill{padding:2px 5px;border-right:1px solid #a88e5144;color:#f4e1b7;font-family:Georgia,'Batang',serif}#zone{padding:10px 16px;min-width:120px;margin-left:auto;text-align:right;background:linear-gradient(110deg,#27261fe8,#392b1be9)}#zone b{display:block;font-family:Georgia,'Batang',serif;font-size:19px;color:var(--bright);text-shadow:0 1px 2px #090806}#zone span{display:block;font-size:10px;color:var(--muted);margin-top:4px}.bar{height:4px;background:#0b120e;margin-top:5px;box-shadow:0 0 0 1px #8b794133}.fill{height:100%;transition:width .15s}#hpFill{background:linear-gradient(90deg,#7a382e,#b96951)}#xpFill{background:linear-gradient(90deg,#5d7052,#abac70)}#objective{position:fixed;top:103px;left:12px;max-width:min(60vw,340px);font-size:11px;line-height:1.7;padding:12px;z-index:20;pointer-events:none;border-left:3px solid #b99453}#objective:before{content:'✧ 여정의 기록';display:block;color:var(--gold);font-family:Georgia,'Batang',serif;font-size:14px;margin-bottom:5px}#cameraTools{position:fixed;top:103px;right:12px;z-index:25;display:grid;grid-template-columns:42px 42px;gap:4px}#cameraTools button{min-height:38px;border:1px solid #b79a60;background:linear-gradient(#483826ed,#211d18e8);font-size:11px;border-radius:3px;box-shadow:inset 0 0 0 1px #14120c}#commandBar{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:30;display:flex;gap:5px;padding:6px;border:2px ridge #aa8a51;background:linear-gradient(#46331ff0,#1f1d18f7);box-shadow:inset 0 0 0 2px #21170d,0 8px 18px #0009;border-radius:4px}#commandBar button{min-height:36px;min-width:68px;font-size:11px;border:1px solid #998050;background:linear-gradient(#5a4630,#2d281f);border-radius:3px;color:#f3dbab}#pauseBtn[aria-pressed=true]{background:#675235;border-color:#e0bd71}#joystick{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));width:112px;height:112px;border-radius:50%;border:2px solid #b99c66;background:radial-gradient(#84715340,#21190dbb);box-shadow:inset 0 0 0 5px #2f261f98,0 0 0 3px #8e724866;z-index:30;touch-action:none}#knob{position:absolute;left:31px;top:31px;width:48px;height:48px;border-radius:50%;background:radial-gradient(at 30% 25%,#d7be86,#746044);border:1px solid #e6c789;box-shadow:0 2px 6px #0008}#actions{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:grid;grid-template-columns:66px 66px;gap:6px;z-index:30}.act{min-height:49px;border:1px solid #b49459;background:linear-gradient(135deg,#4b3926e8,#23211aef);border-radius:3px;box-shadow:inset 0 0 0 2px #241e17,0 3px 7px #0009;font-size:11px;color:#f3ddae;text-shadow:0 1px 2px #000}.act.primary{background:linear-gradient(135deg,#80452f,#3d2520)}#partyCards{position:fixed;bottom:80px;left:145px;right:165px;z-index:25;display:flex;justify-content:center;gap:8px;pointer-events:none}.partyCard{position:relative;display:flex;flex-direction:column;align-items:center;width:76px;flex-shrink:0;padding:4px;border:2px ridge #b99a5b;box-shadow:inset 0 0 0 1px #281b10,0 0 0 2px #0b0d08,0 8px 15px #000a;background:linear-gradient(#4b3725ed,#241e17fa);pointer-events:auto;white-space:normal;border-radius:3px}.partyCard .portrait{width:100%;border:0}.partyCard.selected{border-color:#f9dca4;box-shadow:0 0 0 2px #ad8a4b,0 0 12px #ebcb7a55}.partyName{font-size:11px;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.partyRole{font-size:9px;color:#b6b79b;margin:2px 0}.partyHealth{width:100%;height:4px;background:#3e261f}.partyHealth i{display:block;height:100%;background:#93a377}.partyCooldown{font-size:9px;color:#d3bb7f;margin-top:3px}#partyInspect{position:fixed;bottom:214px;left:50%;transform:translateX(-50%);z-index:25;background:linear-gradient(#483927ef,#231e17ef);border:1px solid #b79c64;color:#f3d999;font-size:10px;min-height:30px;padding:6px 14px}#combatLog{position:fixed;left:12px;bottom:155px;max-width:300px;white-space:pre-line;z-index:20;font-size:10px;color:#e7d0a0;text-shadow:0 1px 3px #000;pointer-events:none;line-height:1.8;padding:6px 9px;border-left:2px solid #c4a269;background:#1b1814cc}#worldLabels{position:fixed;inset:0;pointer-events:none;z-index:5}.world-label{position:absolute;top:0;left:0;text-align:center;font-size:10px;color:#ece6c7;text-shadow:0 1px 3px #000;white-space:nowrap}.world-label span{display:block;transform:translate(-50%,-100%)}.world-label i{position:absolute;left:-22px;top:0;width:44px;height:3px;background:#1b2319}.world-label b{display:block;height:100%;background:#8faa75}.world-label[data-kind=enemy] b{background:#bd6b59}#prompt{position:fixed;bottom:255px;left:50%;transform:translateX(-50%);padding:9px 16px;border:2px ridge #b69760;background:#272117f5;z-index:25;opacity:0;font-size:12px;pointer-events:none;color:#f0d7a0}#prompt.on{opacity:1}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);z-index:110;padding:12px 18px;background:#111c16f2;border:1px solid #a29365;opacity:0;pointer-events:none;font-size:12px;max-width:90vw;text-align:center}#toast.on{opacity:1}#viewStatus{position:fixed;top:40%;left:10%;right:10%;padding:16px;background:#211b19;z-index:99}
-@media(max-width:700px){.overlay{padding:10px}.card{width:100%;max-height:92dvh}.body{padding:16px}.head{padding:10px 14px}.head h2{font-size:17px}#start{padding:16px}#introMenu{display:flex;flex-direction:column-reverse;gap:25px;padding:15px 10px}.introCopy{text-align:center}.introCopy h1{font-size:39px;letter-spacing:-2px;margin:13px 0}.introCopy .eyebrow{font-size:9px;letter-spacing:2px}.introCopy p{font-size:12px;margin:12px auto}.titleLine{margin:15px auto}.introMenuButtons{margin:18px auto 10px;width:260px}#introPortrait{width:clamp(140px,33vw,200px);transform:none}#introPortrait:after{font-size:9px;bottom:9px;padding-top:20px}#loadStatus{text-align:center}.creatorLayout{grid-template-columns:1fr;gap:22px}.heroIdentity{display:grid;grid-template-columns:115px 1fr;gap:18px;align-items:center;padding-top:4px}#heroPreview{width:115px}.creatorHead h2{font-size:23px}#creator{padding:4px 7px}.portraitGrid{gap:6px;margin:12px 0 20px}.classGrid{gap:5px}.classChoice{min-height:88px;padding:8px 1px}.classChoice small{font-size:8px}.classChoice b{font-size:11px}.creatorFooter{flex-direction:column;gap:10px}.creatorFooter button{width:100%}.creatorFooter .note{font-size:10px}.rosterLayout{grid-template-columns:1fr;gap:20px}.rosterList{display:flex;gap:6px;max-height:none;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 8px}.rosterRow{flex-direction:column;min-width:78px;width:78px;text-align:center;scroll-snap-align:start;gap:3px;padding:5px}.rosterRow .portrait{width:62px}.rosterRow b{font-size:14px}.rosterRow small{font-size:9px}.rosterRow i{margin:0;font-size:9px;min-height:12px}.companionPortrait{width:125px}.dialogueLayout{grid-template-columns:1fr;gap:20px}.dialoguePortrait{width:150px;margin:auto}.dialogueText h2{font-size:24px}.dialogueText p{font-size:13px;line-height:1.95}.dialogueText blockquote{font-size:17px;margin:18px 0}#modal[data-mode=dialogue] .body{padding:22px}.ruleStats{margin:15px 0}.ruleStats b{font-size:14px}#hud{gap:6px;left:8px;right:8px;top:max(8px,env(safe-area-inset-top))}#stats{padding:8px}#statsTop{font-size:9px;gap:3px}#zone{padding:8px;min-width:88px}#zone b{font-size:16px}#zone span{font-size:9px}#objective{top:98px;left:8px;font-size:10px;padding:10px;max-width:68vw}#objective:before{font-size:12px}#cameraTools{top:98px;right:8px;grid-template-columns:35px 35px;gap:3px}#cameraTools button{min-height:33px;font-size:10px}#partyCards{bottom:132px;left:12px;right:12px;gap:7px}.partyCard{width:65px;padding:3px}.partyName{font-size:10px}.partyRole{font-size:8px}.partyCooldown{font-size:8px}#commandBar{bottom:255px;left:12px;right:12px;transform:none;justify-content:center;padding:5px;gap:4px}#commandBar button{min-width:0;flex:1;font-size:10px;min-height:34px}#partyInspect{bottom:218px;min-height:28px;padding:5px 12px}#combatLog{display:none}#prompt{bottom:304px;max-width:90vw;white-space:nowrap;font-size:11px}#toast{top:30%}}
-@media(max-height:550px) and (min-width:701px){#introMenu{grid-template-columns:1fr 250px;gap:30px;padding:10px 25px}.introCopy h1{font-size:40px;margin:12px 0}.introCopy p{font-size:12px;margin:8px 0}.titleLine{margin:12px 0}.introMenuButtons{margin:15px 0 5px}#introPortrait{max-width:240px}#partyCards{bottom:68px}.partyCard{width:56px}.partyRole{display:none}#partyInspect{bottom:170px}#objective{top:88px;max-width:250px;font-size:10px}#cameraTools{top:88px}#combatLog{display:none}.creatorLayout{grid-template-columns:190px 1fr;gap:20px}.dialoguePortrait{max-width:200px}.dialogueLayout{grid-template-columns:200px 1fr;gap:25px}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-
-/* GRIM CRPG: iron, ash, canvas, parchment; narrow square edges instead of playful cards. */
-:root{--gold:#a99878;--bright:#d4ccb7;--edge:#625e50;--ink:#171b1c;--paper:#c8c3b7;--muted:#8f9391}
+/* 파일명: web-games/party-rpg/index.html · 가죽·청동·양피지 공통 화면 */
+:root{color-scheme:dark;--gold:#c6a570;--bright:#f2e3c5;--edge:#806442;--ink:#171410;--paper:#ded3bc;--muted:#ac9d84;--leather:#2b241d;--line:#ad89514d;--safe-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);font-family:system-ui,-apple-system,sans-serif;touch-action:manipulation}
+button,input,select,summary{font:inherit;color:inherit}button,summary{cursor:pointer}button{transition:background .15s,border-color .15s}button:disabled{opacity:.5;cursor:default}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid #eed19b;outline-offset:3px}button:hover:not(:disabled){border-color:#e5c692}[hidden]{display:none!important}
+#game{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+h1,h2,h3,blockquote{font-family:Georgia,'Batang',serif;font-weight:500}h2{font-size:25px;color:var(--bright);margin:8px 0 16px}h3{font-size:16px;color:var(--gold)}p{line-height:1.8}
+.eyebrow{display:block;font-size:10px;letter-spacing:2px;color:var(--gold);line-height:1.8}.gold{color:var(--gold)}.good{color:#a9c493}.note{font-size:12px;color:var(--muted);line-height:1.75}
+.panel,.card{background:radial-gradient(ellipse at 90% 0,#a47c3b16,transparent 65%),linear-gradient(145deg,#30281ff5,#1d1b17fa);border:1px solid var(--edge);box-shadow:inset 0 0 0 3px #16120e,0 9px 28px #0008}
+.card{width:min(94vw,900px);max-height:90dvh;overflow:auto;overscroll-behavior:contain;scrollbar-color:#a38555 #201b15;border-radius:8px 3px}
+.portrait{display:block;flex-shrink:0;aspect-ratio:1;background:url('../../assets/shared/party/portraits.webp') no-repeat #453b2a;background-size:500% 200%;border:1px solid #a38b60;box-shadow:inset 0 0 12px #0005;filter:saturate(.85) contrast(1.06)}
+.menuBtn,.row button,#startBtn,.goldButton{min-height:46px;padding:11px 16px;border:1px solid #a68652;border-radius:5px 2px;background:linear-gradient(160deg,#695333,#372c20);color:#f2e1bc;box-shadow:inset 0 1px #f4d39b35,inset 0 0 0 3px #22190d66,0 3px 7px #0006;letter-spacing:.3px;text-shadow:0 1px #0009}
+.menuBtn{display:block;width:100%;margin-top:10px}.secondary{background:linear-gradient(#3e3b30,#28251e);border-color:#77684c}.textBtn{min-height:44px;padding:10px;background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;text-underline-offset:4px}
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px;background:#0c0b09df;touch-action:pan-y}
+.head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:repeating-linear-gradient(0deg,#4d301006 0 1px,transparent 1px 4px),linear-gradient(115deg,#d4c19a,#b59a6b);border-bottom:3px double #665037;box-shadow:0 3px 12px #0006}
+.head h2{margin:0;color:#302319;font-size:21px;font-weight:600;text-shadow:0 1px #f5e5bf66}.close{width:44px;height:44px;flex-shrink:0;background:#30271f;border:1px solid #6a5132;border-radius:4px;color:#e9d5ad;font-size:25px}
+.body{padding:22px;font-size:13px;line-height:1.8;overflow-wrap:anywhere}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 8px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#c29b4808,transparent)}.row button{min-width:65px;white-space:nowrap}.row b,.row small{display:block}.row small{color:var(--muted);margin-top:4px}.tag{font-size:10px;padding:2px 5px;border:1px solid #8e784d;color:var(--gold);margin-left:5px}
+.ruleStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:18px 0}.ruleStats span{font-size:11px;padding:10px 6px;border:1px solid var(--line);background:#15140f88;color:var(--muted);text-align:center}.ruleStats b{display:block;font-size:16px;color:var(--bright);margin-top:4px}
+/* 기존 대화·이벤트·인벤토리 표현 */
+.journalEntry{padding:14px 9px;border-top:1px solid #ae8e5948;border-left:2px solid #8a6a3b44;background:linear-gradient(90deg,#c6a56a09,transparent)}
+.journalEntry p{color:#d4ceb9}
+#start{background:radial-gradient(ellipse at 22% 38%,#76532f6b,transparent 55%),radial-gradient(ellipse at 92% 60%,#39442e66,transparent 52%),repeating-linear-gradient(35deg,#ffffff05 0 1px,transparent 1px 24px),linear-gradient(90deg,#100d0bee,#1c1e15eb);padding:24px}
+#startCard{width:min(1120px,100%);padding:0;border:0;background:none;box-shadow:none;max-height:94dvh}
+#introMenu{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:20px 35px}
+.introCopy h1{font-family:Georgia,'Batang',serif;font-size:clamp(42px,6vw,76px);font-weight:500;line-height:1.25;letter-spacing:-3px;color:var(--bright);margin:25px 0;text-shadow:0 3px 20px #000}
+.titleLine{width:80px;height:1px;background:var(--gold);margin:25px 0}
+.introCopy p{max-width:400px;color:#bfc2ad;font-size:14px}
+.introMenuButtons{display:grid;gap:12px;margin:28px 0 18px;max-width:320px}
+.introMenuButtons button{width:100%;margin:0}
+#loadStatus{color:#aaa88d;font-size:11px;line-height:1.8}
+#introPortrait{position:relative;max-width:420px;transform:rotate(2deg);padding:9px;border:3px ridge #c8a665;background:#251d13;box-shadow:0 0 0 4px #1c1711,0 0 0 6px #a2824d,0 25px 80px #000c}
+#introPortrait .portrait{width:100%;border:0}
+#introPortrait:after{content:'길을 잃어도, 이름은 잊지 않기를.';position:absolute;bottom:22px;left:0;right:0;text-align:center;font-family:serif;font-size:13px;padding:35px 10px 10px;background:linear-gradient(transparent,#16100be8);color:#f0d99c}
+.creatorHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #89703e;padding-bottom:12px}
+.creatorHead h2{margin:4px 0}
+.creatorLayout{display:grid;grid-template-columns:260px 1fr;gap:35px}
+.largePortrait{width:100%;border:1px solid #b29662;box-shadow:0 0 0 5px #16231b,0 0 0 6px #7e673b}
+.heroIdentity{padding-top:20px}
+.heroIdentity label{display:block;color:var(--gold);font-size:12px;margin-bottom:8px}
+#heroName{width:100%;font-size:16px;padding:13px;background:#121d17;border:1px solid var(--edge);outline-offset:2px}
+.portraitGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0 24px}
+.portraitChoice{background:#18231b;border:1px solid #655a3f;padding:3px;min-width:0}
+.portraitChoice .portrait{width:100%;border:0}
+.chosen{border-color:#e8cd8d!important;box-shadow:0 0 0 1px #e8cd8d,inset 0 0 20px #cfb87522!important}
+.classGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0 20px}
+.classChoice{padding:12px 3px;min-height:95px;background:linear-gradient(#2d3b2d,#17251c);border:1px solid #756644}
+.classChoice>span{display:block;font-family:serif;font-size:22px;color:var(--gold)}
+.classChoice b{display:block;font-size:12px;margin:4px 0}
+.classChoice small{font-size:9px;color:var(--muted)}
+#classDetail p{font-size:13px;color:#c7cbb7}
+#classDetail h2{font-size:24px;margin:5px 0}
+#creator{padding:18px 25px}
+.creatorFooter{display:flex;align-items:center;gap:18px;margin-top:20px;border-top:1px solid #8b77444d;padding-top:18px}
+.creatorFooter button{min-width:180px}
+.creatorFooter .note{margin:0}
+#classSelect{display:none}
+.rosterLayout{display:grid;grid-template-columns:240px 1fr;gap:25px}
+.rosterList{max-height:64dvh;overflow:auto;scrollbar-color:#806c46 #17221b}
+.rosterRow{display:flex;align-items:center;gap:10px;width:100%;padding:7px;background:#2c241be9;border:1px solid #a78a5644;margin-bottom:6px;text-align:left}
+.rosterRow .portrait{width:52px}
+.rosterRow b{font-family:serif;font-size:16px;font-weight:500;color:#e5d6b4}
+.rosterRow small{display:block;color:#aaa992;font-size:10px;margin-top:3px}
+.rosterRow i{margin-left:auto;font-size:9px;font-style:normal;color:#cbb578}
+.companionDetail{min-width:0}
+.companionPortrait{float:right;width:145px;margin:0 0 16px 22px}
+.companionDetail h2{font-size:30px;margin:8px 0}
+.companionDetail h2 small{display:block;font-family:system-ui;font-size:12px;margin-top:6px;color:var(--muted)}
+.companionDetail .ruleStats{clear:both}
+.companionButtons{clear:both}
+.dialogueLayout{display:grid;grid-template-columns:250px 1fr;gap:30px;align-items:start}
+.dialoguePortrait{width:100%;box-shadow:0 0 0 4px #16211a,0 0 0 5px #7e6a43}
+.dialogueText p{font-size:14px;line-height:2;color:#d0d0bb}
+.dialogueText blockquote{font-size:19px;line-height:1.8;color:var(--bright);border-left:3px solid #b4955b;padding-left:18px;margin:24px 0;background:linear-gradient(90deg,#bba16916,transparent)}
+.dialogueFooter{display:flex;gap:20px;align-items:center;color:var(--gold);font-size:12px}
+.dialogueFooter .menuBtn{flex:1;margin:0}
+.dialogueText .eyebrow{letter-spacing:1px}
+#modal[data-mode=dialogue] .body{padding:30px}
+#hpFill{background:linear-gradient(90deg,#7a382e,#b96951)}
+#xpFill{background:linear-gradient(90deg,#5d7052,#abac70)}
+#worldLabels{position:fixed;inset:0;pointer-events:none;z-index:5}
+.world-label{position:absolute;top:0;left:0;text-align:center;font-size:10px;color:#ece6c7;text-shadow:0 1px 3px #000;white-space:nowrap}
+.world-label span{display:block;transform:translate(-50%,-100%)}
+.world-label i{position:absolute;left:-22px;top:0;width:44px;height:3px;background:#1b2319}
+.world-label b{display:block;height:100%;background:#8faa75}
+.world-label[data-kind=enemy] b{background:#bd6b59}
+@media(max-width:700px){#start{padding:16px}
+#introMenu{display:flex;flex-direction:column-reverse;gap:25px;padding:15px 10px}
+.introCopy{text-align:center}
+.introCopy h1{font-size:39px;letter-spacing:-2px;margin:13px 0}
+.introCopy .eyebrow{font-size:9px;letter-spacing:2px}
+.introCopy p{font-size:12px;margin:12px auto}
+.titleLine{margin:15px auto}
+.introMenuButtons{margin:18px auto 10px;width:260px}
+#introPortrait{width:clamp(140px,33vw,200px);transform:none}
+#introPortrait:after{font-size:9px;bottom:9px;padding-top:20px}
+#loadStatus{text-align:center}
+.creatorLayout{grid-template-columns:1fr;gap:22px}
+.heroIdentity{display:grid;grid-template-columns:115px 1fr;gap:18px;align-items:center;padding-top:4px}
+#heroPreview{width:115px}
+.creatorHead h2{font-size:23px}
+#creator{padding:4px 7px}
+.portraitGrid{gap:6px;margin:12px 0 20px}
+.classGrid{gap:5px}
+.classChoice{min-height:88px;padding:8px 1px}
+.classChoice small{font-size:8px}
+.classChoice b{font-size:11px}
+.creatorFooter{flex-direction:column;gap:10px}
+.creatorFooter button{width:100%}
+.creatorFooter .note{font-size:10px}
+.rosterLayout{grid-template-columns:1fr;gap:20px}
+.rosterList{display:flex;gap:6px;max-height:none;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 8px}
+.rosterRow{flex-direction:column;min-width:78px;width:78px;text-align:center;scroll-snap-align:start;gap:3px;padding:5px}
+.rosterRow .portrait{width:62px}
+.rosterRow b{font-size:14px}
+.rosterRow small{font-size:9px}
+.rosterRow i{margin:0;font-size:9px;min-height:12px}
+.companionPortrait{width:125px}
+.dialogueLayout{grid-template-columns:1fr;gap:20px}
+.dialoguePortrait{width:150px;margin:auto}
+.dialogueText h2{font-size:24px}
+.dialogueText p{font-size:13px;line-height:1.95}
+.dialogueText blockquote{font-size:17px;margin:18px 0}
+#modal[data-mode=dialogue] .body{padding:22px}}
+@media(max-height:550px) and (min-width:701px){#introMenu{grid-template-columns:1fr 250px;gap:30px;padding:10px 25px}
+.introCopy h1{font-size:40px;margin:12px 0}
+.introCopy p{font-size:12px;margin:8px 0}
+.titleLine{margin:12px 0}
+.introMenuButtons{margin:15px 0 5px}
+#introPortrait{max-width:240px}
+.creatorLayout{grid-template-columns:190px 1fr;gap:20px}
+.dialoguePortrait{max-width:200px}
+.dialogueLayout{grid-template-columns:200px 1fr;gap:25px}}
 #start{background:radial-gradient(ellipse at 23% 44%,#49443b6b,transparent 51%),linear-gradient(125deg,#101517f5,#282b2de8 55%,#101417f5)}
-.panel,.card{background:linear-gradient(145deg,#303232f4,#171b1dfb);border-color:#636358;box-shadow:0 10px 35px #000b,inset 0 0 0 1px #ffffff07}
-.menuBtn,.row button,#startBtn,.goldButton{border:1px solid #68665a;border-radius:0;background:linear-gradient(170deg,#46453e,#262a29);color:#d0c7b0;text-shadow:0 1px 1px #000;box-shadow:inset 0 1px #ffffff15,0 2px 6px #0008}
-.menuBtn:hover,.row button:hover{background:linear-gradient(#545248,#303331)}
-.portrait{filter:saturate(.54) contrast(1.12) brightness(.84);border:2px solid #55554b;border-radius:0}
-#hud .panel,#objective,#combatLog{background:linear-gradient(140deg,#202629ee,#131718f0);border:1px solid #5b625b;color:#caccc1}
-.eyebrow{color:#b2a58e}.gold{color:#b1a083}
 .dialogueLayout blockquote{border-left:2px solid #777666;color:#d1c7af;background:#202526a8}
 .journalEntry{background:linear-gradient(145deg,#2a3031,#1e2424);border:1px solid #565e5a;box-shadow:inset 0 1px #ffffff09}
 @media(max-width:700px){#start{background:linear-gradient(140deg,#141a1b,#22282a)}}
-
-
-/* Mobile-first landing: initial controls are always reachable, including iPhone SE and landscape. */
 #start{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 #startCard{overflow:visible;max-height:none}
-#audioBtn{min-width:60px}
-@media(max-width:700px){
- #start{display:block;height:100dvh;min-height:100%;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
- #startCard{width:100%;margin:0 auto;padding:0;max-height:none;overflow:visible}
- #introMenu{display:flex;flex-direction:column;gap:12px;padding:6px 6px 22px;align-items:stretch}
- .introCopy{order:0;width:100%;text-align:center}
- .introCopy h1{font-size:clamp(30px,9vw,42px);margin:8px 0;line-height:1.17}
- .introCopy p{margin:7px auto;line-height:1.48}
- .introCopy .eyebrow{font-size:9px;letter-spacing:1px}
- .introMenuButtons{width:min(100%,310px);margin:12px auto 8px;gap:7px}
- .introMenuButtons button{min-height:48px}
- .titleLine{margin:10px auto}
- #introPortrait{order:1;margin:0 auto;max-width:164px;width:38vw}
- #loadStatus{min-height:18px}
- #creator{padding:7px 8px 22px}
- .creatorFooter{padding-bottom:max(12px,env(safe-area-inset-bottom))}
- #commandBar{gap:3px;bottom:calc(245px + env(safe-area-inset-bottom));left:5px;right:5px;padding:4px}
- #commandBar button{font-size:clamp(9px,2.5vw,11px);padding:5px 1px;min-width:0}
- #partyCards{bottom:calc(118px + env(safe-area-inset-bottom));}
- #partyInspect{bottom:calc(208px + env(safe-area-inset-bottom));}
- #actions{bottom:max(12px,env(safe-area-inset-bottom));}
- #joystick{bottom:max(12px,env(safe-area-inset-bottom));}
-}
-@media(max-width:700px) and (max-height:680px){
- #introPortrait{display:none}
- #introMenu{padding-top:2px;gap:5px}
- .introCopy h1{font-size:clamp(28px,8vw,36px);margin:6px 0}
- .introCopy p{margin:5px auto}
- .introMenuButtons{margin:10px auto 5px}
- #commandBar{bottom:calc(201px + env(safe-area-inset-bottom));}
- #partyCards{bottom:calc(94px + env(safe-area-inset-bottom));}
- #partyInspect{bottom:calc(168px + env(safe-area-inset-bottom));}
- #prompt{bottom:calc(242px + env(safe-area-inset-bottom));}
-}
-@media(max-height:500px) and (orientation:landscape){
- #start{display:block;overflow-y:auto;padding:7px max(10px,env(safe-area-inset-right)) 16px max(10px,env(safe-area-inset-left))}
- #introMenu{display:flex;flex-direction:row;gap:12px;align-items:flex-start}
- #introPortrait{display:none}
- .introCopy{max-width:610px;width:100%;text-align:left}
- .introCopy h1{font-size:33px;margin:4px 0}
- .introCopy p{font-size:11px;margin:5px 0}
- .titleLine{margin:5px 0}
- .introMenuButtons{display:flex;width:100%;max-width:440px;margin:9px 0;gap:7px}
- .introMenuButtons button{flex:1;min-height:38px;font-size:12px}
- #commandBar{bottom:max(5px,env(safe-area-inset-bottom));left:26%;right:26%}
- #commandBar button{min-height:31px;font-size:9px}
- #partyCards{bottom:47px;left:100px;right:100px}
- .partyCard{width:44px}
- #partyInspect{bottom:107px}
- #joystick{width:80px;height:80px}
- #knob{left:20px;top:20px;width:36px;height:36px}
- #actions{grid-template-columns:50px 50px;gap:3px}
- .act{min-height:36px;font-size:10px}
- #objective{top:60px;max-width:230px;max-height:65px;overflow:hidden}
- #cameraTools{top:58px}
-}
-
-
-/* Tactical CRPG readability: combat feedback, environmental depth, compact party orders. */
-#atmosphere{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 51% 45%,transparent 30%,#050c125c 100%),linear-gradient(to bottom,#12151a40,transparent 27%,transparent 75%,#10111545)}
+@media(max-width:700px){#start{display:block;height:100dvh;min-height:100%;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+#startCard{width:100%;margin:0 auto;padding:0;max-height:none;overflow:visible}
+#introMenu{display:flex;flex-direction:column;gap:12px;padding:6px 6px 22px;align-items:stretch}
+.introCopy{order:0;width:100%;text-align:center}
+.introCopy h1{font-size:clamp(30px,9vw,42px);margin:8px 0;line-height:1.17}
+.introCopy p{margin:7px auto;line-height:1.48}
+.introCopy .eyebrow{font-size:9px;letter-spacing:1px}
+.introMenuButtons{width:min(100%,310px);margin:12px auto 8px;gap:7px}
+.introMenuButtons button{min-height:48px}
+.titleLine{margin:10px auto}
+#introPortrait{order:1;margin:0 auto;max-width:164px;width:38vw}
+#loadStatus{min-height:18px}
+#creator{padding:7px 8px 22px}
+.creatorFooter{padding-bottom:max(12px,env(safe-area-inset-bottom))}}
+@media(max-width:700px) and (max-height:680px){#introPortrait{display:none}
+#introMenu{padding-top:2px;gap:5px}
+.introCopy h1{font-size:clamp(28px,8vw,36px);margin:6px 0}
+.introCopy p{margin:5px auto}
+.introMenuButtons{margin:10px auto 5px}}
+@media(max-height:500px) and (orientation:landscape){#start{display:block;overflow-y:auto;padding:7px max(10px,env(safe-area-inset-right)) 16px max(10px,env(safe-area-inset-left))}
+#introMenu{display:flex;flex-direction:row;gap:12px;align-items:flex-start}
+#introPortrait{display:none}
+.introCopy{max-width:610px;width:100%;text-align:left}
+.introCopy h1{font-size:33px;margin:4px 0}
+.introCopy p{font-size:11px;margin:5px 0}
+.titleLine{margin:5px 0}
+.introMenuButtons{display:flex;width:100%;max-width:440px;margin:9px 0;gap:7px}
+.introMenuButtons button{flex:1;min-height:38px;font-size:12px}}
 #combatFeedback{position:fixed;inset:0;pointer-events:none;z-index:19;overflow:hidden}
 .damageFloat{position:absolute;font:bold 13px Georgia,serif;color:#ded0b4;text-shadow:0 1px 3px #000,0 2px 9px #090707;white-space:nowrap;animation:damageRise .85s ease-out both;will-change:transform,opacity}
-.damageFloat.critical{font-size:16px;color:#ebbb81}.damageFloat.miss{color:#94a5a8;font-size:11px}
+.damageFloat.critical{font-size:16px;color:#ebbb81}
+.damageFloat.miss{color:#94a5a8;font-size:11px}
 @keyframes damageRise{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-43px)}}
-#tacticsBtn[aria-pressed=true]{border-color:#ba9e73;background:linear-gradient(#5b5650,#2e3436)}
 .tacticsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}
 .tacticsGrid button{min-width:0;font-size:12px;text-align:left;min-height:57px;padding:8px;white-space:normal}
 .tacticsGrid .selectedOrder{border-color:#c7ae80;color:#eee1c7;background:linear-gradient(#4e5149,#292d2b)}
 .tacticsHint{font-size:12px;color:#aab2b0;line-height:1.7}
-@media(max-width:700px){#commandBar button{padding:6px 1px;font-size:9px;letter-spacing:-.15px}.tacticsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
+@media(max-width:700px){.tacticsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .evidence-label{position:absolute;top:0;left:0;white-space:nowrap;pointer-events:none;font:12px Georgia,serif;color:#d7c39a;text-shadow:0 1px 5px #000;letter-spacing:.5px;animation:cluePulse 2.6s ease-in-out infinite}
 @keyframes cluePulse{0%,100%{opacity:.74}50%{opacity:1}}
 @media(max-width:700px){.evidence-label{font-size:10px}}
-
-/* 모바일 전술 HUD: 터치 입력과 파티 상태가 서로 겹치지 않도록 재배치 */
-#skillBtn{border-color:#95846a!important;color:#ebdec3!important}
-.partyCard[data-class-id="fighter"]{border-left-color:#a6a8a4}.partyCard[data-class-id="rogue"]{border-left-color:#82938e}.partyCard[data-class-id="cleric"]{border-left-color:#b6a67f}.partyCard[data-class-id="wizard"]{border-left-color:#8195b0}.partyCard[data-class-id="ranger"]{border-left-color:#8a9b78}
-#atmosphere{transition:background .6s ease}
-body[data-scene="2"] #atmosphere{background:radial-gradient(ellipse at 50% 42%,transparent 20%,#03110da8 100%),linear-gradient(#07131465,transparent 45%,#06110f55)}
-body[data-scene="5"] #atmosphere{background:radial-gradient(ellipse at 50% 44%,transparent 25%,#0b172078 100%),linear-gradient(#d4e1e31a,transparent 45%)}
-body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{background:radial-gradient(ellipse at 52% 44%,transparent 20%,#05070db8 100%),linear-gradient(#13121d80,transparent 42%,#17121c78)}
-@media(max-width:700px){
- #hud{top:max(5px,env(safe-area-inset-top));left:6px;right:6px;gap:5px}
- #stats{min-width:0;padding:7px 6px}#statsTop{font-size:9px;gap:2px;line-height:1.6}
- #zone{min-width:76px;padding:7px 5px}#zone b{font-size:14px}
- #objective{top:83px;left:6px;max-width:calc(100vw - 108px);max-height:65px;overflow:auto;font-size:10px;padding:6px 8px;pointer-events:auto;overscroll-behavior:contain}
- #objective:before{font-size:11px;margin-bottom:2px}
- #cameraTools{top:83px;right:6px;grid-template-columns:32px 32px}
- #cameraTools button{min-height:32px;padding:2px;font-size:10px}
- #commandBar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;left:6px;right:6px;bottom:calc(202px + env(safe-area-inset-bottom));padding:4px;transform:none}
- #commandBar button{min-width:0;width:100%;min-height:34px;padding:5px 1px;font-size:clamp(9px,2.6vw,11px);white-space:normal}
- #partyCards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;left:7px;right:7px;bottom:calc(133px + env(safe-area-inset-bottom))}
- .partyCard{display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-rows:16px 13px 5px 12px;column-gap:3px;width:100%;min-width:0;height:55px;padding:3px}
- .partyCard .portrait{grid-column:1;grid-row:1/5;width:30px;height:38px;aspect-ratio:auto}
- .partyName{grid-column:2;grid-row:1;margin:0;font-size:10px}
- .partyRole{grid-column:2;grid-row:2;margin:0;font-size:8px}
- .partyHealth{grid-column:2;grid-row:3}
- .partyCooldown{grid-column:2;grid-row:4;font-size:8px;white-space:nowrap;overflow:hidden}
- #partyInspect{display:none}
- #joystick{width:100px;height:100px;left:max(10px,env(safe-area-inset-left));bottom:max(13px,env(safe-area-inset-bottom))}
- #knob{left:28px;top:28px;width:42px;height:42px}
- #actions{right:max(9px,env(safe-area-inset-right));bottom:max(13px,env(safe-area-inset-bottom));grid-template-columns:64px 64px}
- .act{min-height:44px}#prompt{bottom:calc(289px + env(safe-area-inset-bottom));max-width:86vw;white-space:normal;padding:6px 9px}
-}
-@media(max-width:360px){.partyCard{grid-template-columns:25px minmax(0,1fr);column-gap:2px}.partyCard .portrait{width:25px}.partyName{font-size:9px}.partyCooldown{font-size:7px}#actions{grid-template-columns:58px 58px}#joystick{width:91px;height:91px}#knob{left:25px;top:25px;width:38px;height:38px}}
-@media(max-height:500px) and (orientation:landscape){
- #commandBar{display:flex;flex-wrap:nowrap;left:20%;right:20%;bottom:max(4px,env(safe-area-inset-bottom));overflow-x:auto;max-width:60vw;gap:2px}
- #commandBar button{width:auto;flex:0 0 auto;min-height:30px;padding:3px 5px;font-size:9px}
- #partyCards{display:flex;justify-content:center;bottom:52px;left:110px;right:110px;gap:4px}
- .partyCard{width:75px;height:48px;grid-template-columns:25px minmax(0,1fr)}.partyCard .portrait{width:25px;height:34px}
- #objective{top:54px;max-height:55px}#cameraTools{top:54px}
- #joystick{width:80px;height:80px}#knob{left:20px;top:20px;width:36px;height:36px}
- #actions{grid-template-columns:50px 50px;gap:3px}.act{min-height:35px}#prompt{bottom:116px}
-}
-
-/* 중간 이벤트씬 · 기존 대화창을 확장해 사건·인물·던전 장면을 모바일에서 읽기 쉽게 표시한다. */
 #modal[data-mode="event"]{background:radial-gradient(ellipse at center,#070b0cb2,#030508ef);backdrop-filter:blur(1px)}
 #modal[data-mode="event"] .card{width:min(95vw,790px);max-height:min(91dvh,760px);overflow:hidden;border:1px solid #918069;background:#101617;box-shadow:0 20px 80px #000e}
 #modal[data-mode="event"] .body{padding:0;max-height:calc(91dvh - 55px);overflow:auto;overscroll-behavior:contain}
@@ -175,46 +208,47 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
 .eventSigil{position:absolute;right:36px;top:25px;font-size:44px;color:#d9c49d9a;animation:eventGlint 3s ease-in-out infinite}
 .eventDialogue{display:grid;grid-template-columns:128px minmax(0,1fr);gap:20px;padding:22px 28px}
 .eventPortrait{width:128px;height:128px;border:3px ridge #918066}
-.eventWords{min-width:0}.eventWords p{font-size:14px;line-height:1.75;margin:7px 0 14px}
+.eventWords{min-width:0}
+.eventWords p{font-size:14px;line-height:1.75;margin:7px 0 14px}
 .eventWords blockquote{border-left:2px solid #998463;background:#8f83681c;padding:11px 13px;margin:0;color:#e5d8bc;line-height:1.6;font-size:15px}
 .eventControls{display:flex;align-items:center;gap:10px;padding:5px 28px 22px}
-.eventControls .menuBtn{margin:0;max-width:210px;flex:1}.eventControls .textBtn{margin-left:auto}
+.eventControls .menuBtn{margin:0;max-width:210px;flex:1}
+.eventControls .textBtn{margin-left:auto}
 .eventControls>span{color:#aa9b87;font-size:12px;min-width:45px}
-@keyframes eventMist{to{transform:translateX(65px)}}@keyframes eventGlint{50%{opacity:.35;transform:scale(.92)}}
-@media(max-width:700px){#modal[data-mode="event"]{padding:8px}#modal[data-mode="event"] .card{width:100%;max-height:94dvh}#modal[data-mode="event"] .body{max-height:calc(94dvh - 50px)}.eventVista{min-height:130px;padding:20px 16px 17px}.eventVista h2{font-size:23px}.eventVista .eyebrow{font-size:10px;letter-spacing:1px}.eventSigil{top:13px;right:18px;font-size:29px}.eventDialogue{grid-template-columns:76px minmax(0,1fr);gap:12px;padding:16px 14px}.eventPortrait{width:76px;height:76px}.eventWords p{font-size:12px;line-height:1.7}.eventWords blockquote{font-size:12px;padding:8px}.eventControls{padding:3px 12px max(12px,env(safe-area-inset-bottom));gap:6px}.eventControls .menuBtn{min-height:44px;font-size:12px}.eventControls .textBtn{font-size:11px;padding:8px}}
-@media(max-height:500px) and (orientation:landscape){.eventVista{min-height:70px;padding:6px 12px}.eventVista h2{font-size:18px;margin:3px 0}.eventDialogue{grid-template-columns:55px 1fr;padding:6px 12px;gap:10px}.eventPortrait{width:55px;height:55px}.eventWords p{margin:2px 0 5px;font-size:11px}.eventWords blockquote{font-size:11px}.eventControls{padding:3px 10px 8px}}
+@keyframes eventMist{to{transform:translateX(65px)}}
+@keyframes eventGlint{50%{opacity:.35;transform:scale(.92)}}
+@media(max-width:700px){#modal[data-mode="event"]{padding:8px}
+#modal[data-mode="event"] .card{width:100%;max-height:94dvh}
+#modal[data-mode="event"] .body{max-height:calc(94dvh - 50px)}
+.eventVista{min-height:130px;padding:20px 16px 17px}
+.eventVista h2{font-size:23px}
+.eventVista .eyebrow{font-size:10px;letter-spacing:1px}
+.eventSigil{top:13px;right:18px;font-size:29px}
+.eventDialogue{grid-template-columns:76px minmax(0,1fr);gap:12px;padding:16px 14px}
+.eventPortrait{width:76px;height:76px}
+.eventWords p{font-size:12px;line-height:1.7}
+.eventWords blockquote{font-size:12px;padding:8px}
+.eventControls{padding:3px 12px max(12px,env(safe-area-inset-bottom));gap:6px}
+.eventControls .menuBtn{min-height:44px;font-size:12px}
+.eventControls .textBtn{font-size:11px;padding:8px}}
+@media(max-height:500px) and (orientation:landscape){.eventVista{min-height:70px;padding:6px 12px}
+.eventVista h2{font-size:18px;margin:3px 0}
+.eventDialogue{grid-template-columns:55px 1fr;padding:6px 12px;gap:10px}
+.eventPortrait{width:55px;height:55px}
+.eventWords p{margin:2px 0 5px;font-size:11px}
+.eventWords blockquote{font-size:11px}
+.eventControls{padding:3px 10px 8px}}
 @media(prefers-reduced-motion:reduce){.eventVista:before,.eventSigil{animation:none}}
-
-/* HUD 버그: .panel 공통 너비 94vw가 지역 표시판에 상속되던 문제 차단 */
-#hud{right:auto;width:auto;max-width:calc(100vw - 24px);align-items:flex-start}
-#hud #stats,#hud #zone{width:auto;min-width:0;max-height:none;overflow:hidden;flex-shrink:0}
-#hud #stats{flex:0 1 480px;width:min(47vw,480px);max-width:480px}
-#hud #zone{flex:0 0 auto;width:clamp(90px,13vw,156px);margin:0;padding:8px 10px;text-align:center}
-#hud #zone b{font-size:clamp(13px,1.6vw,17px);white-space:nowrap}
-#hud #zone span{white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
-#hud .panel{max-height:75px}
 .mapCanvas{position:relative;isolation:isolate;width:100%;height:clamp(240px,49dvh,440px);overflow:hidden;border:2px solid #827054;background:radial-gradient(ellipse at 40% 35%,#6b75542f,transparent 65%),repeating-linear-gradient(30deg,#ffffff09 0 1px,transparent 2px 45px),linear-gradient(135deg,#384b40,#252d2e);cursor:crosshair;touch-action:manipulation}
 .mapCanvas:before{content:'';position:absolute;inset:7px;border:1px dashed #c6a98244;pointer-events:none}
 .mapCanvas:after{content:'북 ↑';position:absolute;right:12px;top:9px;color:#e2d2ac;font:12px Georgia,serif;pointer-events:none}
 .mapMarker{position:absolute;z-index:2;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;pointer-events:none;color:#e4c88f;font-size:17px;text-shadow:0 2px 4px #000}
 .mapMarker small{font:9px system-ui,sans-serif;white-space:nowrap;background:#182320c7;padding:1px 3px;color:#e4ddce}
-.mapMarker.shop{color:#c4d2c0}.mapMarker.route{color:#a4cde0}.mapMarker.here{color:#fff4c4;font-size:23px;z-index:4}
-#systemBtn{border-color:#af9472!important}
-@media(max-width:700px){
- #hud{left:6px;right:auto;max-width:calc(100vw - 12px);gap:5px}
- #hud #stats{width:calc(100vw - 104px);max-width:none;flex:0 1 auto}
- #hud #zone{width:86px;max-width:86px;padding:8px 4px;flex:0 0 86px}
- #hud #zone b{font-size:13px}
- #hud #zone span{font-size:9px}
- #objective{top:73px}
- #cameraTools{top:73px}
- #commandBar{grid-template-columns:repeat(5,minmax(0,1fr));bottom:calc(202px + env(safe-area-inset-bottom))}
- #commandBar button{font-size:clamp(8px,2.45vw,10px)}
- .mapCanvas{height:clamp(245px,46dvh,400px)}
-}
-@media(max-height:500px) and (orientation:landscape){#objective{top:54px}#cameraTools{top:54px}#hud #stats{width:38vw}#hud #zone{width:90px}.mapCanvas{height:56dvh;min-height:170px}}
-
-/* 이벤트 인물 표현: 기존 초상화 유지, 장면별 표정 인상과 미세 동작으로 전달 */
+.mapMarker.shop{color:#c4d2c0}
+.mapMarker.route{color:#a4cde0}
+.mapMarker.here{color:#fff4c4;font-size:23px;z-index:4}
+@media(max-width:700px){.mapCanvas{height:clamp(245px,46dvh,400px)}}
+@media(max-height:500px) and (orientation:landscape){.mapCanvas{height:56dvh;min-height:170px}}
 .eventPortrait{position:relative;transform-origin:50% 88%;animation:eventBreathing 2.8s ease-in-out infinite;box-shadow:inset 0 0 0 1px #ffffff16,0 7px 16px #0007;filter:saturate(.76) contrast(1.13)}
 .eventScene[data-emotion="grave"] .eventPortrait{filter:grayscale(.37) brightness(.68) contrast(1.25);animation:eventShiver 2.4s ease-in-out infinite}
 .eventScene[data-emotion="resolve"] .eventPortrait{filter:saturate(.95) brightness(1.08) sepia(.08);box-shadow:0 0 0 1px #d2b97f90,0 0 23px #d9bc7633}
@@ -224,78 +258,134 @@ body[data-scene="6"] #atmosphere,body[data-scene="dungeon"] #atmosphere{backgrou
 @keyframes eventShiver{20%,80%{transform:translateX(-1px)}50%{transform:translateX(1px) rotate(-.3deg)}}
 @keyframes eventFade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.eventPortrait,.eventWords blockquote{animation:none}}
-
-/* 여정 기록 버튼 아래에 다음 목표, 터치로 지도/동료/사건으로 바로 안내 */
-#nextQuest{position:fixed;right:12px;bottom:calc(248px + env(safe-area-inset-bottom));z-index:21;display:flex;flex-direction:column;gap:2px;width:min(280px,42vw);max-height:66px;overflow:hidden;padding:6px 9px;background:#121a1ade;border:1px solid #857553;border-radius:8px;box-shadow:0 2px 12px #0008;cursor:pointer;pointer-events:auto}
-#nextQuest b{font-size:10px;color:#cbb786;letter-spacing:.7px}
-#nextQuest span{font-size:11px;line-height:1.3;color:#e0e3d6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .journalEntry.nextStep{border-left:3px solid #c3a571;background:#bbaa7b11;padding:12px;margin-bottom:16px}
 .journalEntry.nextStep .menuBtn{margin:7px 0 0}
-@media(max-width:700px){
- #nextQuest{left:6px;right:auto;bottom:calc(245px + env(safe-area-inset-bottom));width:min(220px,55vw);padding:5px 7px;max-height:52px}
- #nextQuest b{font-size:9px}#nextQuest span{font-size:9px;line-height:1.23}
-}
-@media(max-height:500px) and (orientation:landscape){
- #nextQuest{left:calc(50% - 110px);bottom:85px;width:220px;max-height:38px;padding:2px 5px}
- #nextQuest b{display:none}#nextQuest span{font-size:9px;-webkit-line-clamp:2}
-}
-
-/* 인물 퀘스트는 기존 UI와 지도에 표시, 가까워지면 터치로 즉시 조사한다. */
-#prompt.on{pointer-events:auto;cursor:pointer;border-color:#ecd6a0;box-shadow:0 0 12px #d5bc7545;animation:hintPulse 1.5s ease-in-out infinite}
-#prompt:focus-visible{outline:3px solid #efcb77}#interactBtn.near{border:2px solid #edcc80;box-shadow:0 0 17px #dfb75b66;filter:brightness(1.18)}
+#interactBtn.near{border:2px solid #edcc80;box-shadow:0 0 17px #dfb75b66;filter:brightness(1.18)}
 .mapMarker.recruit{color:#f4c976}
 @keyframes hintPulse{50%{box-shadow:0 0 25px #d5bc7588}}
-@media(max-width:700px){#prompt.on{left:50%;bottom:calc(315px + env(safe-area-inset-bottom));max-width:75vw;font-size:11px;white-space:normal;text-align:center;padding:7px 12px}}
-@media(prefers-reduced-motion:reduce){#prompt.on{animation:none}}
-/* 중세 필사본 스타일의 시각·날씨 패널. 기존 지역 HUD의 폭을 늘리지 않는다. */
-#timeWeather{position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:21;display:flex;flex-direction:column;align-items:center;min-width:158px;max-width:min(220px,40vw);gap:2px;pointer-events:none;padding:6px 12px;border:1px solid #9c8051a5;border-radius:3px;background:linear-gradient(125deg,#1f211fed,#473a2bdc,#1c1f20f0);box-shadow:inset 0 0 0 1px #231c19,0 4px 15px #070b0b80;color:#f1e0b8;font-family:Georgia,'Batang',serif;text-align:center;text-shadow:0 1px 3px #000}
-#timeWeather:before,#timeWeather:after{content:'❖';position:absolute;top:12px;font-size:11px;color:#bc965b}
-#timeWeather:before{left:5px}#timeWeather:after{right:5px}
-#timeOfDay{font-size:11px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
-#weatherOfDay{font-size:10px;color:#d2c1a7;white-space:nowrap}
-body[data-time-phase=night] #timeWeather{background:linear-gradient(130deg,#101a28f0,#26263ade,#111821ef);border-color:#7488a08c}
-body[data-time-phase=dawn] #timeWeather,body[data-time-phase=dusk] #timeWeather{border-color:#e7a16b;background:linear-gradient(135deg,#35251eea,#553527dc,#241d20ea)}
-#atmosphere{pointer-events:none}
-body[data-time-phase=night] #atmosphere:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 48% 35%,transparent 32%,#07132328 100%);mix-blend-mode:multiply}
-body[data-time-phase=dusk] #atmosphere:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(150deg,#e8953310,transparent 44%,#281e3217)}
-body[data-weather=rain] #atmosphere{box-shadow:inset 0 0 120px #43586816}
-body[data-weather=fog] #atmosphere{box-shadow:inset 0 0 130px #aeb9aa16}
-body[data-time-phase=night] #zone{border-color:#6e7f9b}
-body[data-time-phase=dusk] #zone{border-color:#ca9155}
-@media(max-width:700px){#timeWeather{top:calc(82px + env(safe-area-inset-top));min-width:112px;width:max-content;padding:3px 10px;max-width:145px;box-shadow:0 2px 7px #0008}#timeOfDay{font-size:9px}#weatherOfDay{font-size:9px}#timeWeather:before,#timeWeather:after{top:7px;font-size:8px}}
-@media(max-width:480px){#timeWeather{top:calc(90px + env(safe-area-inset-top));left:58%;}}
-@media(max-height:500px) and (orientation:landscape){#timeWeather{top:calc(44px + env(safe-area-inset-top));padding:2px 7px}}
-.mapMarker.landmark{border-color:#cda96a;color:#ffe5a0}.mapMarker.landmark b{font-size:17px}.mapMarker.landmark small{max-width:120px}.journalEntry .note{line-height:1.65}
-.inventoryTabs{display:flex;gap:5px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:thin}.inventoryTabs button{min-height:48px;min-width:90px;flex:0 0 auto;padding:6px 9px;background:#29251f;border:1px solid #806b47;color:#e1d1aa}.inventoryTabs button.chosen{border-color:#f1c778;color:#f7dc9d}.inventorySummary{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:3px 0 12px;padding:12px;border:1px solid #907c5555;background:#141a17bb}.inventorySummary .portrait{width:56px;height:56px}.inventorySummary div{flex:1;min-width:125px}.inventorySummary small{display:block;color:#c8b796;font-size:11px}.inventorySection{border-top:1px solid #846d494a;margin:17px 0 0;padding-top:7px}.inventorySection h3{margin:6px 0 10px}.inventoryActions{display:flex;gap:5px;justify-content:end;flex-wrap:wrap}.inventoryActions button{min-width:55px;min-height:40px;font-size:11px;padding:6px 9px}.inventoryItem{min-width:0}.inventoryItem b{overflow-wrap:anywhere}.inventoryEmpty{font-size:12px;color:#b7a98f;padding:10px}.inventorySection .row{align-items:flex-start}@media(max-width:390px){.inventoryTabs button{min-width:73px;font-size:11px;padding:5px}.inventorySection .row{padding:9px 4px}.inventoryActions button{min-width:48px;padding:6px}.inventorySummary{padding:8px}}
+.mapMarker.landmark{border-color:#cda96a;color:#ffe5a0}
+.mapMarker.landmark b{font-size:17px}
+.mapMarker.landmark small{max-width:120px}
+.journalEntry .note{line-height:1.65}
+.inventoryTabs{display:flex;gap:5px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:thin}
+.inventoryTabs button{min-height:48px;min-width:90px;flex:0 0 auto;padding:6px 9px;background:#29251f;border:1px solid #806b47;color:#e1d1aa}
+.inventoryTabs button.chosen{border-color:#f1c778;color:#f7dc9d}
+.inventorySummary{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:3px 0 12px;padding:12px;border:1px solid #907c5555;background:#141a17bb}
+.inventorySummary .portrait{width:56px;height:56px}
+.inventorySummary div{flex:1;min-width:125px}
+.inventorySummary small{display:block;color:#c8b796;font-size:11px}
+.inventorySection{border-top:1px solid #846d494a;margin:17px 0 0;padding-top:7px}
+.inventorySection h3{margin:6px 0 10px}
+.inventoryActions{display:flex;gap:5px;justify-content:end;flex-wrap:wrap}
+.inventoryActions button{min-width:55px;min-height:40px;font-size:11px;padding:6px 9px}
+.inventoryItem{min-width:0}
+.inventoryItem b{overflow-wrap:anywhere}
+.inventoryEmpty{font-size:12px;color:#b7a98f;padding:10px}
+.inventorySection .row{align-items:flex-start}
+@media(max-width:390px){.inventoryTabs button{min-width:73px;font-size:11px;padding:5px}
+.inventorySection .row{padding:9px 4px}
+.inventoryActions button{min-width:48px;padding:6px}
+.inventorySummary{padding:8px}}
+
+/* 탐험 정보: 하나의 상단 프레임 안에서 정렬해 겹침을 없앤다. */
+#adventureHud{position:fixed;z-index:24;top:max(8px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));width:min(580px,calc(100vw - 24px));display:grid;gap:6px;pointer-events:none}
+#hud{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:7px;pointer-events:none}
+#stats,#zone{width:auto;min-width:0;max-height:none;overflow:hidden;padding:8px 10px;border-radius:6px 2px;box-shadow:inset 0 1px #d7b27120,0 3px 12px #0006}
+#statsTop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px 5px;font-size:11px;line-height:16px}
+.pill{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e7d9bd}#lvText,#hpText{grid-column:span 2}#lvText{color:#f4e6ca;font-weight:700}#hpText{text-align:right;color:#e4b5a0}#goldText{color:#e6c27a}#partyText{text-align:right}
+.bar{height:4px;background:#0e100c;border:1px solid #806d3e33;margin-top:5px;overflow:hidden}.fill{height:100%;transition:width .15s}#hpFill{background:linear-gradient(90deg,#884334,#bd7961)}#xpFill{background:linear-gradient(90deg,#5e7051,#b1ac71)}
+#zone{display:flex;flex-direction:column;justify-content:center;text-align:center}#zone b{font:17px Georgia,'Batang',serif;color:#f1dfb8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#zone span{font-size:10px;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#travelLine{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;pointer-events:none}
+#timeWeather{display:flex;align-items:center;gap:9px;min-width:0;padding:5px 9px;color:#ddcaaa;background:#181711d9;border-left:2px solid #937345;font-size:11px;text-shadow:0 1px #000;pointer-events:none}
+#timeOfDay{white-space:nowrap}#weatherOfDay{white-space:nowrap;color:#baad92}#autoBtn{padding:0 0 0 8px;border:0;border-left:1px solid #8a744b66;min-width:0;background:none;color:#a5b78c;font-size:10px;opacity:1;white-space:nowrap}
+body[data-time-phase=night] #timeWeather{border-left-color:#8e9db5;color:#b9c7d6}body[data-time-phase=dusk] #timeWeather{border-left-color:#cf9868}
+#nextQuest{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:8px;width:100%;min-height:44px;padding:7px 12px;text-align:left;border:1px solid #8e73454f;border-left:3px solid #b39460;border-radius:2px 5px;background:linear-gradient(100deg,#2d281fdb,#1b1a16c9);color:#d8cbb0;pointer-events:auto;box-shadow:0 2px 7px #0004}
+#nextQuest b{font:11px Georgia,'Batang',serif;color:#d5b77e}#nextQuest span{font-size:11px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* 여정 메뉴: 보조 기능과 시점 조절은 기존 버튼 그대로 한곳에 모은다. */
+#fieldMenu{position:relative;pointer-events:auto;flex-shrink:0}#fieldMenu>summary{display:flex;align-items:center;justify-content:center;gap:6px;list-style:none;min-width:70px;min-height:44px;padding:6px 10px;border:1px solid #98784c;border-radius:5px;background:linear-gradient(155deg,#5c4830,#2c251c);color:#ecd8b0;font-size:12px;box-shadow:inset 0 1px #ddbf8430,0 3px 8px #0005}
+#fieldMenu>summary::-webkit-details-marker{display:none}#fieldMenu[open]>summary{border-color:#e5c17e;background:#5d4a30}
+.fieldMenuBody{position:absolute;top:calc(100% + 7px);right:0;width:min(330px,calc(100vw - 24px));max-height:calc(100dvh - 160px);overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:13px;background:linear-gradient(145deg,#342b21fa,#191813fd);border:1px solid #b4935b;border-radius:5px;box-shadow:inset 0 0 0 3px #15110c,0 14px 35px #000c}
+.fieldMenuTitle{font:16px Georgia,'Batang',serif;color:#e5c796;display:block;margin:2px 0 9px;border-bottom:1px solid var(--line);padding-bottom:8px}
+#objective{width:auto;max-height:95px;overflow:auto;padding:8px 10px;margin-bottom:10px;border:1px solid #81704b4a;border-left:2px solid #a58b59;font-size:11px;line-height:1.6;background:#14150f88;box-shadow:none;pointer-events:auto}
+.fieldMenuGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.fieldMenuGrid button,#cameraTools button{display:flex;align-items:center;gap:8px;min-width:0;min-height:46px;padding:8px 10px;background:linear-gradient(#44392b,#29241c);border:1px solid #8f754a88;border-radius:3px;font-size:12px;color:#e8d5af;text-align:left}
+#cameraTools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}#cameraTools button{justify-content:center;min-height:44px;padding:6px 2px;font-size:11px}#partyInspect{grid-column:1/-1}
+/* 하단 조작: 공격·직업 기술·상호작용만 오른쪽에, 이동은 왼쪽에 고정한다. */
+#joystick{position:fixed;z-index:30;left:max(16px,env(safe-area-inset-left));bottom:calc(16px + var(--safe-bottom));width:112px;height:112px;border-radius:50%;border:2px solid #b2925a;background:radial-gradient(circle,#9a80552b 0 35%,#231d15ba 36% 65%,#8a6b3929 66%);box-shadow:inset 0 0 0 5px #211b13,0 0 0 2px #463620,0 5px 14px #0008;touch-action:none}
+#joystick:before{content:'';position:absolute;inset:9px;border:1px dashed #b0905366;border-radius:50%;pointer-events:none}#knob{position:absolute;left:31px;top:31px;width:46px;height:46px;border-radius:50%;border:1px solid #d5ba80;background:radial-gradient(at 35% 25%,#cbb483,#84704b 65%,#493c29);box-shadow:inset 0 0 0 4px #4c3d2770,0 4px 7px #0009}
+#actions{position:fixed;z-index:30;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + var(--safe-bottom));display:grid;grid-template-columns:70px 82px;grid-template-rows:58px 48px;grid-template-areas:'skill attack' 'interact attack';gap:6px}
+.act{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;min-width:0;min-height:44px;padding:4px;line-height:1.2;border:1px solid #b08a50;border-radius:9px 3px;background:radial-gradient(at 40% 0,#c49b4c24,transparent 60%),linear-gradient(150deg,#5c4830,#29231b);color:#ead5ac;box-shadow:inset 0 0 0 3px #241a1266,inset 0 1px #ebd09b33,0 4px 9px #0008;font-size:12px;text-shadow:0 1px #000}
+#attackBtn{grid-area:attack;background:radial-gradient(at 30% 10%,#bd8d5244,transparent 65%),linear-gradient(145deg,#794b37,#33251e);border-color:#c19263;font-weight:700;font-size:13px}#skillBtn{grid-area:skill;color:#ded1aa}#interactBtn{grid-area:interact;font-size:11px;gap:2px;padding:3px}
+#interactBtn.near{border-color:#efd59a;box-shadow:0 0 0 1px #dec08a,0 0 13px #c9a56055}body[data-hero-class=wizard] #skillBtn{color:#b7c6f0}body[data-hero-class=cleric] #skillBtn{color:#f0db9e}body[data-hero-class=rogue] #skillBtn{color:#d2b2dc}body[data-hero-class=ranger] #skillBtn{color:#b8d1a0}
+#commandBar{position:fixed;z-index:30;bottom:calc(26px + var(--safe-bottom));left:calc(50% - 22px);transform:translateX(-50%);display:flex;gap:5px;padding:4px;background:#1a1711e8;border:1px solid #8d744746;border-radius:5px}
+#commandBar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:46px;min-height:48px;padding:4px 1px;border:1px solid #8b754d;background:linear-gradient(#4b3c29,#29251c);border-radius:3px;font-size:10px;color:#e3cc9f}
+#pauseBtn[aria-pressed=true],#tacticsBtn[aria-pressed=true]{border-color:#c7b37c;background:linear-gradient(#62704a,#343a29)}
+#partyCards{position:fixed;z-index:25;bottom:calc(150px + var(--safe-bottom));left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:min(520px,calc(100vw - 24px));pointer-events:none}
+.partyCard{position:relative;display:grid;grid-template-columns:38px minmax(0,1fr);grid-template-rows:18px 14px 5px 12px;column-gap:6px;min-width:0;min-height:60px;padding:5px;border:1px solid #9a7c4d;border-left:3px solid #b9a07a;border-radius:5px 2px;background:linear-gradient(145deg,#3b3024f2,#211e17f2);color:#e6d6b7;text-align:left;box-shadow:inset 0 1px #e2bd7220,0 4px 9px #0007;pointer-events:auto}
+.partyCard .portrait{grid-column:1;grid-row:1/5;width:38px;height:46px;aspect-ratio:auto;border:1px solid #826c46}.partyName{grid-column:2;grid-row:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.partyRole{grid-column:2;grid-row:2;font-size:9px;color:#b5a68c}.partyHealth{grid-column:2;grid-row:3;display:block;width:100%;height:4px;background:#492d24}.partyHealth i{display:block;height:100%;background:#a4b481}.partyCooldown{grid-column:2;grid-row:4;font-size:9px;color:#c7b075;white-space:nowrap;overflow:hidden}
+.partyCard.selected{border-color:#e8cb8f;box-shadow:0 0 0 1px #c7a76b,0 0 14px #bb98512b}.partyCard[data-class-id=fighter]{border-left-color:#bd8d76}.partyCard[data-class-id=rogue]{border-left-color:#b09bbb}.partyCard[data-class-id=cleric]{border-left-color:#c7b681}.partyCard[data-class-id=wizard]{border-left-color:#91a7ca}.partyCard[data-class-id=ranger]{border-left-color:#9faf84}
+#prompt{position:fixed;z-index:26;left:50%;bottom:calc(224px + var(--safe-bottom));transform:translateX(-50%);max-width:min(80vw,400px);min-height:44px;padding:10px 14px;border:1px solid #b59b66;border-radius:4px;background:#2b2418f2;color:#ecd6a7;font-size:12px;line-height:1.5;text-align:center;opacity:0;pointer-events:none}
+#prompt.on{opacity:1;pointer-events:auto;cursor:pointer;border-color:#e6cd94;box-shadow:0 3px 14px #0007}#toast{position:fixed;left:50%;top:26%;transform:translateX(-50%);z-index:110;padding:12px 18px;max-width:90vw;border:1px solid #b19561;border-radius:4px;background:#232419f5;color:#e9d7b2;font-size:12px;opacity:0;pointer-events:none;text-align:center}#toast.on{opacity:1}
+#viewStatus{position:fixed;z-index:99;top:38%;left:10%;right:10%;padding:16px;background:#2b241f;border:1px solid #b38a56;font-size:13px;line-height:1.6}
+#combatLog{position:fixed;z-index:20;left:12px;bottom:220px;max-width:290px;padding:6px 9px;border-left:2px solid #9e8254;background:#1b1814bb;white-space:pre-line;font-size:10px;color:#d5c09a;line-height:1.7;pointer-events:none}
+#atmosphere{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 38%,#17110d35 100%)}#combatFeedback{position:fixed;inset:0;z-index:19;pointer-events:none;overflow:hidden}
+body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background:radial-gradient(ellipse at 50% 45%,transparent 30%,#080a124f)}body[data-time-phase=night] #atmosphere{background:radial-gradient(ellipse at 50% 40%,transparent 35%,#0c18213d)}
+/* 휴대폰: 조작 영역을 세 부분으로 나누고, 가운데 전투 시야를 확보한다. */
+@media(max-width:700px){
+ .overlay{padding:8px}.card{width:100%;max-height:94dvh}.body{padding:16px}.head{padding:9px 12px}.head h2{font-size:19px}
+ .row{gap:8px;padding:10px 4px}.row button{padding:8px 10px;min-height:44px}.ruleStats{gap:5px;margin:14px 0}.ruleStats span{padding:8px 4px;font-size:10px}.ruleStats b{font-size:14px}
+ #adventureHud{left:max(8px,env(safe-area-inset-left));width:calc(100vw - 16px);gap:5px}#hud{grid-template-columns:minmax(0,1fr) 80px;gap:5px}#stats,#zone{padding:7px 7px}#statsTop{font-size:10px;gap:2px 4px;line-height:15px}#zone b{font-size:14px}#zone span{font-size:9px}
+ #travelLine{gap:6px}#timeWeather{padding:4px 7px;gap:7px;font-size:10px}#autoBtn{font-size:9px;padding-left:6px}#fieldMenu>summary{min-width:62px;min-height:44px;font-size:11px;padding:4px 7px}#nextQuest{grid-template-columns:54px minmax(0,1fr);padding:6px 9px;min-height:42px}#nextQuest b{font-size:10px}#nextQuest span{font-size:10px}
+ #joystick{left:max(10px,env(safe-area-inset-left));bottom:calc(12px + var(--safe-bottom));width:100px;height:100px}#knob{left:28px;top:28px;width:40px;height:40px}
+ #actions{right:max(10px,env(safe-area-inset-right));bottom:calc(12px + var(--safe-bottom));grid-template-columns:62px 72px;grid-template-rows:53px 44px;gap:5px}.act{font-size:11px}#attackBtn{font-size:12px}
+ #commandBar{bottom:calc(26px + var(--safe-bottom));gap:4px;padding:3px}#commandBar button{width:44px;min-height:46px}
+ #partyCards{bottom:calc(127px + var(--safe-bottom));width:calc(100vw - 16px);gap:4px}.partyCard{grid-template-columns:27px minmax(0,1fr);grid-template-rows:15px 12px 4px 10px;column-gap:4px;min-height:52px;padding:4px 3px}.partyCard .portrait{width:27px;height:39px}.partyName{font-size:10px}.partyRole,.partyCooldown{font-size:8px}
+ #prompt{bottom:calc(191px + var(--safe-bottom));max-width:82vw;font-size:11px;padding:8px 11px}#combatLog{display:none}.fieldMenuBody{max-height:calc(100dvh - 155px)}
+}
+@media(max-width:360px),(max-width:700px) and (max-height:640px){
+ #stats,#zone{padding:5px 6px}#statsTop{font-size:9px;line-height:13px}#hud{grid-template-columns:minmax(0,1fr) 72px}#zone b{font-size:12px}#zone span{font-size:8px}.bar{margin-top:4px;height:3px}#timeWeather{font-size:9px;gap:5px}#autoBtn{font-size:8px}#nextQuest{min-height:34px;grid-template-columns:48px minmax(0,1fr)}#nextQuest span{font-size:9px}#fieldMenu>summary{min-width:56px}
+ #joystick{left:8px;width:84px;height:84px;bottom:calc(10px + var(--safe-bottom))}#knob{left:23px;top:23px;width:34px;height:34px}#actions{right:8px;grid-template-columns:52px 62px;grid-template-rows:44px 44px;gap:4px;bottom:calc(10px + var(--safe-bottom))}#actions button{font-size:10px}
+ #commandBar{left:calc(50% - 18px);bottom:calc(20px + var(--safe-bottom));gap:3px;padding:2px}#commandBar button{width:44px;min-height:44px;font-size:9px}#partyCards{bottom:calc(111px + var(--safe-bottom))}.partyCard{grid-template-columns:24px minmax(0,1fr);column-gap:3px;padding:3px 2px;min-height:48px}.partyCard .portrait{width:24px;height:37px}.partyName{font-size:9px}.partyCooldown{font-size:7px}#prompt{bottom:calc(170px + var(--safe-bottom))}
+}
+@media(max-height:500px) and (orientation:landscape){
+ #adventureHud{top:max(5px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));width:min(440px,calc(100vw - 16px));gap:4px}#hud{grid-template-columns:minmax(0,1fr) 84px}#stats,#zone{padding:4px 7px}#statsTop{font-size:9px;line-height:12px}.bar{height:3px;margin-top:3px}#zone b{font-size:13px}#zone span{font-size:8px}
+ #travelLine{gap:6px}#timeWeather{font-size:9px;gap:8px;padding:3px 7px}#fieldMenu{position:fixed;top:max(7px,env(safe-area-inset-top));right:max(9px,env(safe-area-inset-right))}#fieldMenu>summary{min-width:66px;min-height:44px}.fieldMenuBody{max-height:calc(100dvh - 65px);width:min(320px,calc(100vw - 24px))}#nextQuest{min-height:34px;width:100%;grid-template-columns:54px 1fr;padding:3px 8px}#nextQuest span{font-size:10px}
+ #joystick{width:84px;height:84px;left:max(10px,env(safe-area-inset-left));bottom:calc(10px + var(--safe-bottom))}#knob{left:23px;top:23px;width:34px;height:34px}#actions{grid-template-columns:54px 66px;grid-template-rows:44px 44px;gap:4px;right:max(10px,env(safe-area-inset-right));bottom:calc(10px + var(--safe-bottom))}#commandBar{left:50%;bottom:calc(8px + var(--safe-bottom));padding:3px}#commandBar button{width:44px;min-height:44px}#partyCards{width:min(360px,calc(100vw - 245px));bottom:calc(68px + var(--safe-bottom));gap:4px}.partyCard{min-height:48px;grid-template-columns:24px minmax(0,1fr);column-gap:3px;padding:3px}.partyCard .portrait{width:24px;height:35px}.partyName{font-size:9px}.partyRole,.partyCooldown{font-size:7px}#prompt{bottom:calc(126px + var(--safe-bottom));font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+
+/* 문양 아이콘: 외부 폰트·추가 이미지 요청 없이 표시한다. */
+#attackBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%203l14%2014M3%205l14%2014M15%203l6%206M3%2015l6%206M17%205L5%2017M4%2016l4%204M16%204l4%204%22%2F%3E%3C%2Fsvg%3E")}
+#skillBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M13%202L5%2014h6l-1%208%209-13h-6z%22%2F%3E%3C%2Fsvg%3E")}
+#interactBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%204h18v12H11l-6%205v-5H3zM7%209h10%22%2F%3E%3C%2Fsvg%3E")}
+#pauseBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205v14M16%205v14%22%2F%3E%3C%2Fsvg%3E")}
+#tacticsBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%203l8%204v6c0%204-8%208-8%208s-8-4-8-8V7zM8%2010h8M12%207v9%22%2F%3E%3C%2Fsvg%3E")}
+#fieldMenu>summary{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%205c4-2%207-2%209%200%202-2%205-2%209%200v15c-4-2-7-2-9%200-2-2-5-2-9%200zM12%205v15%22%2F%3E%3C%2Fsvg%3E")}
+#rosterBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%2011a4%204%200%201%200%200-8%204%204%200%200%200%200%208zM2%2021v-3a6%206%200%200%201%2012%200v3M17%205a3%203%200%200%201%200%206M17%2015a5%205%200%200%201%205%205%22%2F%3E%3C%2Fsvg%3E")}
+#journalBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%203h15v18H5zM9%207h7M9%2011h7M9%2015h5M3%206h4M3%2012h4M3%2018h4%22%2F%3E%3C%2Fsvg%3E")}
+#heroSheetBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2012a4%204%200%201%200%200-8%204%204%200%200%200%200%208zM4%2021v-2a8%208%200%200%201%2016%200v2%22%2F%3E%3C%2Fsvg%3E")}
+#bagBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%207V5a5%205%200%200%201%2010%200v2M5%207h14l2%2014H3zM8%2012h8M10%2011v4h4v-4%22%2F%3E%3C%2Fsvg%3E")}
+#mapBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%205l6-2%206%202%206-2v16l-6%202-6-2-6%202zM9%203v16M15%205v16%22%2F%3E%3C%2Fsvg%3E")}
+#systemBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%203v3M12%2018v3M3%2012h3M18%2012h3M6%206l2%202M16%2016l2%202M6%2018l2-2M16%208l2-2M16%2012a4%204%200%201%201-8%200%204%204%200%200%201%208%200%22%2F%3E%3C%2Fsvg%3E")}
+#audioBtn{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M4%209h4l5-5v16l-5-5H4zM17%208a6%206%200%200%201%200%208M20%205a10%2010%200%200%201%200%2014%22%2F%3E%3C%2Fsvg%3E")}
+#partyInspect{--ui-icon:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%2012s3-7%209-7%209%207%209%207-3%207-9%207-9-7-9-7zM15%2012a3%203%200%201%201-6%200%203%203%200%200%201%206%200%22%2F%3E%3C%2Fsvg%3E")}
+#attackBtn::before,#skillBtn::before,#interactBtn::before,#pauseBtn::before,#tacticsBtn::before,#fieldMenu>summary::before,#rosterBtn::before,#journalBtn::before,#heroSheetBtn::before,#bagBtn::before,#mapBtn::before,#systemBtn::before,#audioBtn::before,#partyInspect::before{content:"";display:block;width:21px;height:21px;flex-shrink:0;background:currentColor;mask:var(--ui-icon) center/contain no-repeat;-webkit-mask:var(--ui-icon) center/contain no-repeat;opacity:.92}
+#attackBtn::before{width:30px;height:30px}#skillBtn::before{width:25px;height:25px}#interactBtn::before{width:18px;height:18px}#commandBar button::before{width:18px;height:18px}
+@media(max-width:360px),(max-width:700px) and (max-height:640px),(max-height:500px) and (orientation:landscape){#skillBtn::before{width:18px;height:18px}.act{gap:3px;padding:3px}}
 </style>
 </head>
 <body>
-<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas><div id="viewStatus" hidden></div><div id="combatLog"></div><div id="combatFeedback" aria-hidden="true"></div><div id="atmosphere" aria-hidden="true"></div><div id="partyCards"></div><div id="cameraTools"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div><div id="commandBar"><button id="pauseBtn" aria-pressed="false">일시정지</button><button id="tacticsBtn" type="button" aria-label="파티 대형과 전투 지시">전술</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="autoBtn" type="button" aria-pressed="true" aria-label="자동 기술 항상 켜짐" disabled>자동 기술 상시 켬</button><button id="skillBtn" type="button" aria-label="현재 직업 기술 사용">직업 기술</button><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button><button id="systemBtn" type="button">설정 ⚙</button></div><div id="nextQuest" role="status" aria-live="off"><b>다음 여정</b><span id="nextQuestText">이야기 확인 중</span></div><button id="partyInspect">선택한 인물 보기</button>
-<div id="timeWeather" role="status" aria-live="off"><span id="timeOfDay">1일째 · 오전 8:00</span><span id="weatherOfDay">☀ 맑음</span></div>
-<div id="hud">
-  <div id="stats" class="panel">
-    <div id="statsTop">
-      <span class="pill" id="lvText">Lv.1</span>
-      <span class="pill" id="hpText">HP 110/110</span>
-      <span class="pill" id="atkText">공격 12</span>
-      <span class="pill" id="defText">방어 0</span>
-      <span class="pill" id="goldText">80G</span>
-      <span class="pill" id="partyText">파티 1+0/4</span>
-    </div>
-    <div class="bar"><div class="fill" id="hpFill"></div></div>
-    <div class="bar"><div class="fill" id="xpFill"></div></div>
-  </div>
-  <div id="zone" class="panel"><b id="zoneName">마을</b><span id="zoneSub">휴식과 준비</span></div>
-</div>
-<div id="objective" class="panel">동료와 실시간으로 탐험해. 명중·내성·기술은 주사위 판정으로 결정돼.</div>
-<div id="prompt"></div>
-<div id="joystick"><div id="knob"></div></div>
-<div id="actions">
-  <button class="act primary" id="attackBtn">공격</button>
-  <button class="act gold" id="interactBtn">상호작용</button>
-  <button class="act blue" id="mapBtn">큰 지도</button>
-  <button class="act" id="bagBtn" aria-label="공용 소모품과 파티 인벤토리">가방</button>
-</div>
+<canvas id="game" aria-label="실시간 파티 RPG 월드"></canvas>
+<div id="viewStatus" hidden></div><div id="combatLog"></div><div id="combatFeedback" aria-hidden="true"></div><div id="atmosphere" aria-hidden="true"></div>
+<header id="adventureHud" aria-label="모험 정보">
+ <div id="hud"><div id="stats" class="panel"><div id="statsTop"><span class="pill" id="lvText">Lv.1</span><span class="pill" id="hpText">HP 110/110</span><span class="pill" id="atkText">공격 12</span><span class="pill" id="defText">방어 0</span><span class="pill" id="goldText">80G</span><span class="pill" id="partyText">파티 1+0/4</span></div><div class="bar"><div class="fill" id="hpFill"></div></div><div class="bar"><div class="fill" id="xpFill"></div></div></div><div id="zone" class="panel"><b id="zoneName">마을</b><span id="zoneSub">휴식과 준비</span></div></div>
+ <div id="travelLine"><div id="timeWeather" role="status" aria-live="off"><span id="timeOfDay">1일째 · 오전 8:00</span><span id="weatherOfDay">☀ 맑음</span><button id="autoBtn" type="button" aria-pressed="true" aria-label="자동 기술 항상 켜짐" disabled>자동 기술 켜짐</button></div>
+ <details id="fieldMenu"><summary aria-label="여정 메뉴">메뉴</summary><div class="fieldMenuBody"><strong class="fieldMenuTitle">여행자의 수첩</strong><div id="objective">동료와 실시간으로 탐험해. 명중·내성·기술은 주사위 판정으로 결정돼.</div><div class="fieldMenuGrid"><button id="rosterBtn">동료</button><button id="journalBtn">여정 기록</button><button id="heroSheetBtn">주인공</button><button id="bagBtn" aria-label="공용 소모품과 파티 인벤토리">가방</button><button id="mapBtn">큰 지도</button><button id="systemBtn" type="button">설정</button><button id="audioBtn" type="button" aria-label="배경 음악 및 효과음 끄기" aria-pressed="true">소리 켬</button><button id="partyInspect">선택한 인물 보기</button></div><div id="cameraTools" aria-label="시점 조절"><button id="zoomIn" aria-label="확대">＋</button><button id="zoomOut" aria-label="축소">－</button><button id="rotateView">회전</button><button id="centerView">나에게</button></div></div></details></div>
+ <button id="nextQuest" type="button" aria-live="off"><b>다음 여정</b><span id="nextQuestText">이야기 확인 중</span></button>
+</header>
+<div id="partyCards" aria-label="파티 상태"></div>
+<div id="commandBar" aria-label="전투 지휘"><button id="pauseBtn" aria-pressed="false" aria-label="일시정지">정지</button><button id="tacticsBtn" type="button" aria-label="파티 대형과 전투 지시">전술</button></div>
+<div id="prompt"></div><div id="joystick" aria-label="이동 조이스틱"><div id="knob"></div></div>
+<div id="actions"><button class="act primary" id="attackBtn">공격</button><button class="act" id="skillBtn" type="button" aria-label="현재 직업 기술 사용">직업 기술</button><button class="act gold" id="interactBtn">상호작용</button></div>
 <div id="toast"></div>
 <div id="modal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
   <div class="card">
@@ -1519,8 +1609,10 @@ function updateHud(){
  document.getElementById('weatherOfDay').textContent=(climate.weather==='clear'?'☀':climate.weather==='rain'?'☂':climate.weather==='snow'?'❄':climate.weather==='fog'?'☁':climate.weather==='dust'?'≈':climate.weather==='ash'?'✧':'♜')+' '+descriptions[climate.weather];
  document.body.dataset.timePhase=climate.phase;document.body.dataset.weather=climate.weather;
  document.body.dataset.scene=dungeon?'dungeon':String(state.zone);
+ document.body.dataset.heroClass=state.player.classId||'fighter';
  var skillButton=document.getElementById('skillBtn'),info=CLASS_INFO[state.player.classId]||CLASS_INFO.fighter,remaining=Math.max(0,Math.ceil(combat(state.player).skillAt-battleTime));
- skillButton.textContent=remaining?'기술 '+remaining+'초':(CLASSES[state.player.classId]||CLASSES.fighter).name+' 기술';
+ skillButton.textContent=remaining?'기술 '+remaining+'초':'기술 사용';
+ skillButton.title=(CLASSES[state.player.classId]||CLASSES.fighter).name+' · '+info.skill;
  skillButton.setAttribute('aria-label',info.skill+(remaining?' · '+remaining+'초 후 사용 가능':' · 누르면 사용'));
  skillButton.disabled=remaining>0;
  var next=storyNext();document.getElementById('nextQuestText').textContent=next.label;document.getElementById('interactBtn').classList.toggle('near',!!currentInteract);
@@ -1529,7 +1621,11 @@ function updateHud(){
  if(dungeon){zoneName.textContent=dungeon.def.name;zoneSub.textContent="방 "+(dungeon.room+1)+"/"+(dungeon.def.rooms.length+1);if(dungeon.complete)objective.textContent="던전 클리어! 빛에 닿으면 마을로 귀환해.";else if(dungeon.room<dungeon.def.rooms.length)objective.textContent="방의 몬스터를 모두 처치해야 다음 방이 열려. 남은 적 "+aliveEnemies();else objective.textContent="보스 처치가 클리어 조건. 보스 체력을 많이 깎을수록 기여도가 올라.";}
  else{var z=ZONES[state.zone];zoneName.textContent=z.name;zoneSub.textContent=z.sub;objective.textContent=state.zone===0?"동료 메뉴에서 일행을 구성해. 인물 초상화를 누르면 카메라가 따라가.":"엘리트 몬스터는 더 강하지만 경험치와 골드를 더 많이 줘.";}objective.textContent+=" · "+storyObjective();
 }
-function openModal(title,html){if(!modalOpen)lastModalFocus=document.activeElement;modal.dataset.mode="menu";modalTitle.textContent=title;modalBody.innerHTML=html;modal.hidden=false;modalOpen=true;keys={};joy.x=joy.y=0;document.getElementById("modalClose").focus();}
+function openModal(title,html){
+ var menu=document.getElementById('fieldMenu');
+ if(!modalOpen)lastModalFocus=menu.contains(document.activeElement)?menu.querySelector('summary'):document.activeElement;
+ menu.open=false;modal.dataset.mode="menu";modalTitle.textContent=title;modalBody.innerHTML=html;modal.hidden=false;modalOpen=true;keys={};joy.x=joy.y=0;document.getElementById("modalClose").focus();
+}
 function closeModal(){if(activeEventScene){finishEventScene();return;}if(introStep>=0){state.story.intro=true;introStep=-1;save();}modal.hidden=true;modalOpen=false;keys={};if(lastModalFocus&&lastModalFocus.isConnected&&lastModalFocus.focus)lastModalFocus.focus();}
 document.getElementById("modalClose").onclick=closeModal;
 
@@ -2045,6 +2141,11 @@ function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),mai
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
 function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})),gameEnvironment());}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
 
+// 여정 메뉴는 기존 기능을 호출하고, 바깥 터치 시 닫는다. 게임 상태·저장은 바꾸지 않는다.
+var fieldMenu=document.getElementById('fieldMenu');
+fieldMenu.addEventListener('click',function(e){if(e.target.closest('button'))fieldMenu.open=false;});
+document.addEventListener('pointerdown',function(e){if(fieldMenu.open&&!fieldMenu.contains(e.target))fieldMenu.open=false;});
+document.addEventListener('keydown',function(e){if(e.code==='Escape'&&fieldMenu.open){fieldMenu.open=false;fieldMenu.querySelector('summary').focus();}});
 document.getElementById("attackBtn").onclick=attackPlayer;
 document.getElementById("skillBtn").onclick=useClassSkill;
 document.getElementById("interactBtn").onclick=interact;

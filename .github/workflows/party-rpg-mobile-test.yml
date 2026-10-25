@@ -34,6 +34,11 @@ jobs:
               baseURL:'http://127.0.0.1:8765'
             });
             const page = await context.newPage();
+            // 기존 버튼은 여정 메뉴 안으로 이동했다. 실제 메뉴를 열어 같은 기능을 누른다.
+            async function utilityClick(selector){
+              if(!(await page.locator(selector).isVisible()))await page.locator('#fieldMenu > summary').click();
+              await page.locator(selector).click();
+            }
             const errors = [];
             page.on('pageerror',error=>errors.push(error.message));
             page.on('response',response=>{
@@ -55,6 +60,34 @@ jobs:
             },null,{timeout:45000});
             await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
             console.log('PARTY_RPG_FIELD_FULL_BODY_ART_AND_RIG=PASS');
+            // 작은 세로 화면부터 가로 화면까지 실제 버튼 사각형과 메뉴 접근성을 검증한다.
+            for(const viewport of [{width:320,height:568},{width:390,height:844},{width:844,height:390}]){
+              await page.setViewportSize(viewport);
+              const layout=await page.evaluate(()=>{
+                const rect=id=>{const r=document.getElementById(id).getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom};};
+                const ids=['hud','travelLine','nextQuest','joystick','actions','commandBar','partyCards'];
+                const boxes=Object.fromEntries(ids.map(id=>[id,rect(id)]));
+                const controls=['attackBtn','skillBtn','interactBtn','pauseBtn','tacticsBtn'].map(id=>({id,...rect(id)}));
+                return{width:innerWidth,height:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,boxes,controls};
+              });
+              if(layout.overflow)throw new Error('PARTY_UI_HORIZONTAL_OVERFLOW '+JSON.stringify(layout));
+              for(const [id,r] of Object.entries(layout.boxes))if(r.x<-.5||r.y<-.5||r.right>layout.width+.5||r.bottom>layout.height+.5)
+                throw new Error('PARTY_UI_CLIPPED '+id+' '+JSON.stringify({viewport,r}));
+              for(const r of layout.controls)if(r.w<43.5||r.h<43.5)throw new Error('PARTY_UI_TOUCH_TOO_SMALL '+JSON.stringify(r));
+              const ids=['joystick','actions','commandBar','partyCards'];
+              for(let a=0;a<ids.length;a++)for(let b=a+1;b<ids.length;b++){
+                const x=layout.boxes[ids[a]],y=layout.boxes[ids[b]];
+                if(Math.min(x.right,y.right)-Math.max(x.x,y.x)>1&&Math.min(x.bottom,y.bottom)-Math.max(x.y,y.y)>1)
+                  throw new Error('PARTY_UI_CONTROLS_OVERLAP '+ids[a]+' '+ids[b]+' '+JSON.stringify(layout));
+              }
+              await page.locator('#fieldMenu > summary').click();
+              await page.locator('#bagBtn').waitFor({state:'visible'});
+              await page.locator('#fieldMenu > summary').click();
+            }
+            await page.setViewportSize({width:393,height:851});
+            await page.screenshot({path:'party-rpg-mobile.png',fullPage:true});
+            console.log('PARTY_RPG_MOBILE_LAYOUT_320_390_LANDSCAPE=PASS');
+
             // 실제 렌더러에서 정오 → 밤 햇빛 변화, 지역 비 입자, 시계 저장을 검사.
             await page.evaluate(()=>{
               const game=window.partyRpgVibeState();
@@ -83,7 +116,7 @@ jobs:
               throw new Error('MOBILE_RAIN_PARTICLES_MISSING '+JSON.stringify(precipitation));
             console.log('PARTY_RPG_DYNAMIC_DAY_NIGHT_WEATHER=PASS');
             // 첫 시작 시 한 명만 소개되고 영입은 반드시 서브퀘·이벤트를 거친다.
-            await page.locator('#rosterBtn').click();
+            await utilityClick('#rosterBtn');
             const visibleCount=await page.locator('.rosterRow').count();
             if(visibleCount!==1)throw new Error('RECRUIT_DISCOVERY_NOT_STAGED '+visibleCount);
             await page.locator('#recruitCompanion').click();
@@ -126,7 +159,7 @@ jobs:
             await page.locator('#dialogueReturn').click();
             await page.locator('#modalClose').click();
             // 파티 공용 소모품, 동료별 장비, 실제 소유권 전달을 모바일 탭으로 검증한다.
-            await page.locator('#bagBtn').click();
+            await utilityClick('#bagBtn');
             if(!(await page.locator('[data-bag-person="ai0"]').count()))throw new Error('PARTY_INVENTORY_MEMBER_TAB_MISSING');
             await page.locator('#inventorySupplyShop').click();
             await page.locator('[data-supply-buy="bandage"]').click();
@@ -195,7 +228,7 @@ jobs:
               const state=window.partyRpgVibeState().state;
               state.player.level=20;state.player.gold=8000;state.player.masteries.axe=24;
             });
-            await page.locator('#bagBtn').click();
+            await utilityClick('#bagBtn');
             await page.locator('#inventorySkillBook').click();
             await page.locator('[data-learn="fighter_wall"]').click();
             await page.locator('[data-learn="fighter_cleave"]').click();
@@ -274,7 +307,7 @@ jobs:
             });
             if(hud.zoneWidth>150||hud.zoneHeight>90)throw new Error('OVERSIZED_TOWN_HUD '+JSON.stringify(hud));
             if(hud.worldWidth!==2000)throw new Error('FIELD_NOT_EXPANDED '+JSON.stringify(hud));
-            await page.locator('#systemBtn').click();
+            await utilityClick('#systemBtn');
             await page.locator('#systemQuality').click();
             const lowMode=await page.evaluate(()=>window.partyRpgVibeState().state.environment.quality);
             if(lowMode!=='low')throw new Error('QUALITY_SETTING_NOT_WORKING '+lowMode);
@@ -296,7 +329,7 @@ jobs:
             const mapWidth=await page.locator('#mapCanvas').evaluate(el=>el.getBoundingClientRect().width);
             if(mapWidth<250||mapWidth>hud.viewport)throw new Error('MOBILE_MAP_SIZE_INVALID '+mapWidth);
             await page.locator('#mapCanvas').click({position:{x:mapWidth*.72,y:130}});
-            await page.locator('#systemBtn').click();
+            await utilityClick('#systemBtn');
             await page.locator('#systemHome').click();
             if(!(await page.locator('#startBtn').isVisible()))throw new Error('SYSTEM_HOME_DID_NOT_SHOW_TITLE');
             await page.locator('#startBtn').click();
@@ -331,12 +364,12 @@ jobs:
               for(let i=1;i<=6;i++)st.act2.completed[i]=true;
               game.p.x=700;game.p.y=520;
             });
-            await page.locator('#systemBtn').click();
+            await utilityClick('#systemBtn');
             await page.locator('#systemTravel').click();
             const ancient=page.locator('[data-zone="7"]');
             if(await ancient.isDisabled())throw new Error('IMPERIAL_REGION_DID_NOT_UNLOCK');
             await ancient.click();
-            await page.locator('#mapBtn').click();
+            await utilityClick('#mapBtn');
             if(!(await page.locator('.mapMarker.imperial').count()))throw new Error('IMPERIAL_CASE_MAP_MISSING');
             await page.locator('#mapBack').click();
             await page.evaluate(()=>{const p=window.partyRpgVibeState().p;p.x=1190;p.y=610;});
@@ -353,7 +386,7 @@ jobs:
               throw new Error('IMPERIAL_INVESTIGATION_DID_NOT_START '+JSON.stringify(investigation));
             console.log('PARTY_RPG_ANCIENT_EMPIRE_REGION_AND_MURDER_CASE=PASS');
             // 야외 탐험 기록은 실제 필드에서 다가가 조사해야 하며 보상이 중복되지 않는다.
-            await page.locator('#systemBtn').click();
+            await utilityClick('#systemBtn');
             await page.locator('#systemTravel').click();
             await page.locator('[data-zone="1"]').click();
             await page.evaluate(()=>{
@@ -371,7 +404,7 @@ jobs:
             });
             if(!found.done||found.gold<=explorerGold)throw new Error('FIELD_LANDMARK_REWARD_MISSING '+JSON.stringify(found));
             await page.locator('#modalClose').click();
-            await page.locator('#journalBtn').click();
+            await utilityClick('#journalBtn');
             await page.getByText('빗물에 잠긴 군번표').first().waitFor();
             await page.locator('#modalClose').click();
             console.log('PARTY_RPG_EXPLORATION_NOTE_REWARD_AND_JOURNAL=PASS');
@@ -381,7 +414,7 @@ jobs:
               g.state.player.hp=Math.floor(g.state.player.maxHp*.35);
               g.enemies.forEach(e=>{e.x=1850;e.y=1140;});
             });
-            await page.locator('#systemBtn').click();
+            await utilityClick('#systemBtn');
             await page.locator('#systemCamp').click();
             const campButton=page.locator('#campRest');
             if(await campButton.isDisabled())throw new Error('SAFE_CAMP_WRONGLY_BLOCKED');
@@ -398,7 +431,7 @@ jobs:
             });
             if(!(afterCamp.gold<beforeCamp.gold&&afterCamp.hp>beforeCamp.hp&&afterCamp.camps>0&&afterCamp.found))
               throw new Error('CAMP_HEAL_SAVE_OR_COST_FAILED '+JSON.stringify({beforeCamp,afterCamp}));
-            await page.locator('#systemBtn').click();
+            await utilityClick('#systemBtn');
             await page.locator('#systemCamp').click();
             if(!(await page.locator('#campRest').isDisabled()))throw new Error('DUPLICATE_DAILY_CAMP_ALLOWED');
             await page.locator('#modalClose').click();

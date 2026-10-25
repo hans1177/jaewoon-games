@@ -119,3 +119,14 @@ test("열 명의 동료가 고유한 말투와 반응을 유지한다", () => {
  assert.ok(html.includes("companionResponse(a,quest.path)"));
  assert.ok(html.includes("const participants=partyMembers()"));
 });
+
+// 화면 정리는 기존 조작·저장·각 기능의 책임 이벤트를 보존한다.
+test('모바일 여정 메뉴가 기존 기능 버튼을 중복 없이 보존한다',()=>{
+ const body=html.slice(html.indexOf('<body>'),html.indexOf('<script type="importmap">'));
+ const ids=[...body.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size);
+ const menu=body.slice(body.indexOf('<details id="fieldMenu">'),body.indexOf('</details>')+10);
+ for(const id of ['rosterBtn','journalBtn','heroSheetBtn','bagBtn','mapBtn','systemBtn','audioBtn','partyInspect','zoomIn','zoomOut','rotateView','centerView'])assert(menu.includes('id="'+id+'"'),id);
+ for(const id of ['attackBtn','skillBtn','interactBtn','pauseBtn','tacticsBtn','joystick','nextQuest','timeWeather','autoBtn','partyCards'])assert(ids.includes(id),id);
+ assert.match(html,/menu\.contains\(document\.activeElement\)\?menu\.querySelector\('summary'\)/);
+ assert.match(html,/fieldMenu\.addEventListener\('click'/);assert.match(html,/document\.body\.dataset\.heroClass=state\.player\.classId/);
+});
