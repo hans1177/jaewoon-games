@@ -1,12 +1,13 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion,windAt} from './engine.mjs';
+import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion,windAt,departureHeading} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const view={head:$('panelTitle'),body:$('content'),details:$('details'),message:$('message'),loading:$('loading')};
 let state=loadGame(localStorage),active='',town=false,choosing=false,homeFromTown=false,battleTarget=0,enemyTimer=null,last=performance.now(),tick=0,panelTick=0,ready=false;
-let buttons={left:false,right:false,ahead:false,astern:false},keys=new Set(),stick={x:0,y:0};
+let buttons={left:false,right:false,ahead:false,astern:false},keys=new Set(),stick={x:0,y:0},sailCruise=false;
+function syncSails(){const control=$('sailToggle');if(!control)return;control.textContent=sailCruise?'■ 멈춤':'▶ 항해';control.setAttribute('aria-pressed',String(sailCruise));}
 const escapeHtml=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const port=id=>PORTS.find(p=>p.id===id);
 const good=id=>GOODS.find(g=>g.id===id);
@@ -78,7 +79,7 @@ function gotoPanel(name){if(state.landBattle&&name!=='system'){enterBattle();ret
 function enterTown(){if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
 function openFacility(id){const home=canDock(state);if(!home){note('먼저 항구에 입항해.');return;}if(!portHasFacility(home.id,id)&&id!=='port'&&id!=='journal'){note(home.name+'에는 해당 시설이 없어. 다른 항구로 항해해.');return;}town=true;active=id;document.body.classList.add('in-town');$('townbar').hidden=false;scene.setMode('town',id);view.details.classList.add('open');switchMusicScene(id==='palace'?'palace':id==='quests'?'explore':'harbor');renderPanel();}
 function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';view.details.classList.remove('open');scene.setMode(town?'town':navalTarget!==null?'naval':'sea');if(town)switchMusicScene('harbor');}
-function depart(){if(state.landBattle){enterBattle();return;}town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();}
+function depart(){if(state.landBattle){enterBattle();return;}if(!state.route.length)state.ship.heading=departureHeading(state);sailCruise=true;syncSails();town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();}
 // 홈: 화면만 전환해 기존 진행 데이터는 선장 확정 전까지 보존한다.
 function openHome(){
  if(!ready)return;
@@ -98,7 +99,7 @@ function continueGame(){
  scene.setState(state);
  if(state.landBattle)enterBattle();
  else if(homeFromTown&&canDock(state))enterTown();
- else{town=false;active='';document.body.classList.remove('in-town','in-battle');$('townbar').hidden=true;scene.setMode('sea');switchMusicScene('sea');}
+ else{town=false;active='';sailCruise=true;syncSails();document.body.classList.remove('in-town','in-battle');$('townbar').hidden=true;scene.setMode('sea');switchMusicScene('sea');}
  summary();renderEvent();
 }
 function restartGame(){
@@ -495,19 +496,49 @@ window.addEventListener('blur',()=>{keys.clear();buttons={left:false,right:false
 window.addEventListener('pagehide',save);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')save();});
 
-const joystick=$('joystickRim'),knob=$('joystickHandle');
-let pointer=null;
+const joystick=$('joystickRim'),knob=$('joystickHandle'),stickDock=$('joystick');
+let pointer=null,floatingStick=false;
 const resetStick=()=>{stick={x:0,y:0};knob.style.transform='translate(-50%,-50%)';};
 function updateStick(e){
  const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
- const radius=Math.max(1,(Math.min(r.width,r.height)-51)/2),dx=e.clientX-cx,dy=e.clientY-cy,length=Math.hypot(dx,dy);
+ const radius=Math.max(22,(Math.min(r.width,r.height)-46)/2),dx=e.clientX-cx,dy=e.clientY-cy,length=Math.hypot(dx,dy);
  const scale=Math.min(1,length/radius)/(length||1),x=dx*scale,y=dy*scale;
  stick.x=Math.max(-1,Math.min(1,x/radius));stick.y=Math.max(-1,Math.min(1,-y/radius));
  knob.style.transform='translate(calc(-50% + '+(stick.x*radius)+'px),calc(-50% - '+(stick.y*radius)+'px))';
 }
-joystick.addEventListener('pointerdown',e=>{e.preventDefault();pointer=e.pointerId;joystick.setPointerCapture(e.pointerId);updateStick(e);});
-joystick.addEventListener('pointermove',e=>{if(pointer===e.pointerId){e.preventDefault();updateStick(e);}});
-for(const k of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(k,()=>{pointer=null;resetStick();});
+// 화면 왼쪽 바다 어디서든 스틱 생성. UI/지도/메뉴 터치는 가로채지 않는다.
+function startStick(e){
+ if(pointer!==null||e.isPrimary===false||e.clientX>window.innerWidth*.54||town||choosing||!ready||
+    !view.loading.classList.contains('hide')||view.details.classList.contains('open')||state.landBattle||state.scene||state.event)return;
+ if(e.target.closest?.('button,a,input,select,textarea,#nav,#top,#tools,#townbar,#details,#navalEncounter,#seaEvent'))return;
+ const anchored=stickDock.contains(e.target);
+ if(!anchored&&scene.getCameraMode()==='chart')return;
+ if(!anchored&&e.target!==$('sea')&&!e.target.closest?.('#veil,#compass,#windStatus,#foodStatus'))return;
+ pointer=e.pointerId;floatingStick=!anchored;
+ if(floatingStick){
+  const w=joystick.offsetWidth||102,h=joystick.offsetHeight||102;
+  stickDock.style.position='fixed';stickDock.style.left=Math.max(5,Math.min(window.innerWidth-w-5,e.clientX-w/2))+'px';
+  stickDock.style.top=Math.max(7,Math.min(window.innerHeight-h-16,e.clientY-h/2))+'px';
+  stickDock.style.bottom='auto';stickDock.style.right='auto';stickDock.style.zIndex='15';
+ }
+ resetStick();updateStick(e);
+ e.preventDefault();
+}
+function endStick(e){
+ if(pointer===null||e&&e.pointerId!==undefined&&e.pointerId!==pointer)return;
+ pointer=null;resetStick();
+ if(floatingStick){
+  for(const key of ['position','left','top','bottom','right','zIndex'])stickDock.style[key]='';
+ }
+ floatingStick=false;
+}
+document.addEventListener('pointerdown',startStick,{capture:true});
+document.addEventListener('pointermove',e=>{if(e.pointerId===pointer){e.preventDefault();updateStick(e);}},{passive:false});
+document.addEventListener('pointerup',endStick);
+document.addEventListener('pointercancel',endStick);
+window.addEventListener('blur',()=>endStick());
+$('sailToggle').addEventListener('click',()=>{sailCruise=!sailCruise;syncSails();note(sailCruise?'돛을 올렸어. 조타 스틱을 밀어 방향을 바꿔.':'돛을 내리고 감속하고 있어.');});
+syncSails();
 // 음악: 원작 음원을 쓰지 않는 짧은 르네상스 선법의 독자 절차 작곡. 기기 오디오로 재생한다.
 let audio=null,musicEnabled=false,soundEnabled=true,musicTimer=null,musicScene='sea',musicBeat=0;
 const motifs={sea:[0,4,7,9,7,4,2,4,7,11,9,7,4,2,0,-1],harbor:[0,2,4,7,4,2,0,-3,0,4,5,7,5,4,2,0],palace:[0,7,4,2,0,4,7,11,9,7,5,4,2,4,2,0],explore:[0,2,3,7,5,3,2,-2,0,3,5,7,8,7,3,2]};
@@ -575,7 +606,8 @@ function run(now){
  const ahead=buttons.ahead||keys.has('w')||keys.has('arrowup');
  const astern=buttons.astern||keys.has('s')||keys.has('arrowdown');
  const turn=Math.max(-1,Math.min(1,Number(right)-Number(left)+stick.x));
- const throttle=Math.max(-1,Math.min(1,Number(ahead)-Number(astern)+stick.y));
+ const userThrottle=Number(ahead)-Number(astern)+stick.y;
+ const throttle=Math.max(-1,Math.min(1,Math.abs(userThrottle)>.08?userThrottle:sailCruise?.94:0));
  const manual=left||right||ahead||astern||Math.abs(stick.x)>.08||Math.abs(stick.y)>.08;
  if(manual&&state.destination){state=cancelDestination(state);}
  const oldFx=state.combatFx?.serial;

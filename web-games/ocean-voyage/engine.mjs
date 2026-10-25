@@ -460,6 +460,26 @@ export function resolveMerchantEncounter(state,choice){
  }else{msg=leader.name+'과(와) 인사를 나누고 항로로 돌아왔어.';}
  s.event=null;return success(s,msg);
 }
+// 출항 전 안전한 물길 자동 선택: 항구 가까이서 선체가 육지에 막혀 서는 현상을 방지한다.
+// 기존 좌표, 항구, 충돌·세이브는 그대로 두고 출항 시각에만 방향을 추천한다.
+export function departureHeading(state){
+ const ship=state.ship,port=PORTS.reduce((best,p)=>dist(ship,p)<dist(ship,best)?p:best,PORTS[0]);
+ if(dist(ship,port)>8||Math.abs(ship.velocity)>.5||state.route.length)return ship.heading;
+ let best=ship.heading,bestScore=-Infinity;
+ const angles=Array.from({length:24},(_,i)=>ship.heading+i*Math.PI/12);
+ for(const heading of angles){
+  let score=0;const facingX=Math.sin(heading),facingZ=Math.cos(heading);
+  for(const distance of [5,8,12,18,26]){
+   const x=ship.x+facingX*distance,z=ship.z+facingZ*distance;
+   if(!isLand(x,z)||PORTS.some(p=>Math.hypot(p.x-x,p.z-z)<5))score+=1+distance*.015;
+   else{score-=3;break;}
+  }
+  const away=(facingX*(ship.x-port.x)+facingZ*(ship.z-port.z))/Math.max(1,dist(ship,port));
+  score+=away*.5-Math.abs(wrap(heading-ship.heading))*.015;
+  if(score>bestScore){best=heading;bestScore=score;}
+ }
+ return wrap(best);
+}
 // 바람: 항해 위치와 게임 시각으로 결정한다. 별도 저장값 없이 기존 세이브와 호환된다.
 export function windAt(s){
  const heading=Math.atan2(Math.sin(s.day*.29+s.elapsed*.018)*.85+Math.cos(s.ship.x*.009)*.28,.65+Math.cos(s.day*.17+s.ship.z*.006)*.38);
