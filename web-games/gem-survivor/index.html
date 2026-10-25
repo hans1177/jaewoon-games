@@ -71,13 +71,11 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
  <div class="eyebrow">5스테이지 연속 도전 · 최대 4인 협동</div><h1>보석 생존전</h1>
  <p>수정 동굴 → 폐허 정원 → 화산 채굴장 → 서리 성채 → 심연 왕좌. 각 스테이지에서 5분을 버티고 보스를 잡아. 능력은 다음 스테이지에도 유지돼. 고유 기술은 오른쪽 버튼이나 Q키로 사용해.</p>
  <div id="heroes" class="heroes" role="group" aria-label="캐릭터 선택"></div>
- <details><summary>온라인 협동 · 친구와 함께</summary>
- <p>기존 멀티 계정으로 로그인해 방을 만들거나 초대 코드를 입력해. 방장이 출발하고 보석·능력 선택을 함께 공유해. 쓰러진 동료 옆에 3초 머물면 부활해.</p>
- <div class="netRow"><input id="netEmail" type="email" autocomplete="username" placeholder="이메일" aria-label="멀티 계정 이메일"></div>
- <div class="netRow"><input id="netPassword" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="멀티 계정 비밀번호"><button id="netLogin">로그인</button></div>
- <div class="netRow"><button id="netCreate">친구방 만들기</button><button id="netMatch">빠른 협동</button></div>
- <div class="netRow"><input id="netCode" maxlength="8" placeholder="초대 코드" aria-label="초대 코드"><button id="netJoin">참가</button><button id="netLeave">나가기</button></div>
- <div id="netStatus" role="status">혼자 플레이 가능 · 온라인 협동은 로그인 후 연결돼.</div>
+ <details open><summary>온라인 협동 · 친구와 함께</summary>
+ <p>이메일 없이 방을 만들거나 숫자 한 자리(0~9)를 입력해 참가해. 최대 4명이 함께 플레이하고 방장이 시작해. 같은 번호는 동시에 한 방만 사용해.</p>
+ <div class="netRow"><button id="netCreate" type="button">방 만들기</button></div>
+ <div class="netRow"><input id="netCode" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" placeholder="방 번호 0~9" aria-label="한 자리 숫자 방 번호"><button id="netJoin" type="button">방 참가</button><button id="netLeave" type="button">나가기</button></div>
+ <div id="netStatus" role="status">혼자 시작하거나 한 자리 숫자로 협동 방에 참가해.</div>
  </details>
  <button id="startBtn" class="wide">게임 시작</button>
 </div></div>
@@ -642,16 +640,28 @@ function networkTick(now){
 function multiplayer(){
  if(net.client)return net.client;const client=net.client=new JaewoonMultiplayerClient();client.on('message_received',event=>receiveNetwork(event.detail));client.on('websocket_disconnected',()=>{net.connected=false;running=false;paused=true;releaseInputs();$('startOverlay').classList.add('show');networkStatus('연결이 끊겼어. 재접속을 기다리거나 나가기를 눌러 혼자 시작해.');});return client;
 }
+// 메인: 기존 협동 전투 동기화는 유지하고 입장만 이메일 없는 숫자방으로 바꾼다.
 async function roomAction(action){
- const client=multiplayer();if(!client.accessToken){networkStatus('먼저 기존 멀티 계정으로 로그인해.');return;}
- networkStatus('협동 방 연결 중…');const result=action==='create'?await client.createFriendRoomForGame('coop','gem-survivor'):action==='match'?await client.matchCoopForGame('gem-survivor'):await client.joinFriendRoom($('netCode').value,false);
- if(!result.ok){networkStatus('방 연결 실패: '+(result.data?.error||'네트워크 오류'));return;}
- if(action==='join'){if(result.data?.gameId!=='gem-survivor'){networkStatus('보석 생존전 초대 코드를 입력해.');return;}client.connectRoom(result.data.roomId);}
- if(result.data.inviteCode){$('netCode').value=result.data.inviteCode;networkStatus('초대 코드 '+result.data.inviteCode+' · 친구에게 이 코드를 알려 줘.');}
+ const code=$('netCode').value.trim();
+ if(action==='join'&&!/^[0-9]$/.test(code)){networkStatus('0~9 중 숫자 한 자리만 입력해.');return;}
+ const client=multiplayer();
+ $('netCreate').disabled=true;$('netJoin').disabled=true;
+ networkStatus('협동 방 연결 중…');
+ try{
+  const result=action==='create'?await client.createGemRoom():await client.joinGemRoom(code);
+  if(!result.ok){
+   const errors={rooms_full:'방 번호 10개가 모두 사용 중이야.',room_full:'방이 가득 찼어.',room_not_found:'그 번호의 방이 없어.',invalid_room_number:'숫자 한 자리만 입력해.',network_error:'협동 서버에 연결할 수 없어.'};
+   networkStatus(errors[result.data?.error]||'방 연결 실패 · 서버 상태를 확인해.');
+   return;
+  }
+  if(result.data?.gameId!=='gem-survivor'){networkStatus('보석 생존전 방이 아니야.');return;}
+  $('netCode').value=String(result.data.inviteCode);
+  networkStatus('방 번호 '+result.data.inviteCode+' · 친구에게 숫자 하나만 알려 줘.');
+ }finally{$('netCreate').disabled=false;$('netJoin').disabled=false;}
 }
-$('netLogin').onclick=async()=>{networkStatus('로그인 중…');const result=await multiplayer().login($('netEmail').value,$('netPassword').value);$('netPassword').value='';networkStatus(result.ok?'로그인됐어. 친구방 만들기 또는 참가를 눌러.':'로그인 실패 · 계정과 서버 연결을 확인해.');};
-$('netCreate').onclick=()=>roomAction('create');$('netMatch').onclick=()=>roomAction('match');$('netJoin').onclick=()=>roomAction('join');
-$('netLeave').onclick=()=>{net.client?.disconnectRoom();net.connected=false;net.peers.clear();net.inputs.clear();net.chunks.clear();net.lastFrame=0;running=false;paused=true;$('startOverlay').classList.add('show');$('startBtn').disabled=!gem3d;$('restartBtn').disabled=false;networkStatus('방에서 나왔어. 혼자 시작할 수 있어.');};
+$('netCode').addEventListener('input',event=>{event.target.value=event.target.value.replace(/[^0-9]/g,'').slice(0,1);});
+$('netCreate').onclick=()=>roomAction('create');$('netJoin').onclick=()=>roomAction('join');
+$('netLeave').onclick=async()=>{await net.client?.leaveGemRoom();net.connected=false;net.roster=[];net.host='';net.id='';net.peers.clear();net.inputs.clear();net.chunks.clear();net.lastFrame=0;running=false;paused=true;$('startOverlay').classList.add('show');$('startBtn').disabled=!gem3d;$('restartBtn').disabled=false;networkStatus('방에서 나왔어. 혼자 시작할 수 있어.');};
 window.gemSurvivorState=()=>({player,enemies,projectiles,gems,abilityLv,stageIndex,stageId,stageCleared,net,running,paused,reset,nextStage,spawnBoss,spawnEnemy,useHeroSkill,damageEnemy,killEnemy,update,receiveNetwork,networkTick,selectAbility,availableTypes});
 $('startBtn').disabled=true;
 createGem3d({canvas}).then(renderer=>{

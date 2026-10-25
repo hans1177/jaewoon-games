@@ -63,7 +63,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0,miniHit=null;
- let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=2.2,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraDistance=44;
+ let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=1.25,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraDistance=28;
  const mobileGPU=!!(window.matchMedia?.('(pointer:coarse)')?.matches&&window.innerWidth<900);
  // 기존 CC0 범선 GLB를 조명·파도·포격과 함께 근접 전투 장면에 사용한다.
  let naval=null,navalLoading=false,navalError=false;
@@ -287,6 +287,17 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     splashGeo=new THREE.RingGeometry(.45,.84,14),splashMat=new THREE.MeshBasicMaterial({color:'#e3f7ec',transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false});
    let serial=0,shotTime=0,sw=0,sh=0,battleFraming=false;
    const targetLook=new THREE.Vector3(),skyLow=new THREE.Color(),skyHigh=new THREE.Color();
+   // 확대된 항로의 항구는 실제 좌표에 간단한 등대를 세워 추적 시점에서도 거리가 드러난다.
+   const portWood=new THREE.MeshStandardMaterial({color:'#90714b',roughness:.92});
+   const portStone=new THREE.MeshStandardMaterial({color:'#e2c89a',roughness:.89});
+   const portGlow=new THREE.MeshBasicMaterial({color:'#ffe0a0'});
+   const harborMarkers=PORTS.map(port=>{
+    const root=new THREE.Group();world.add(root);
+    const pier=new THREE.Mesh(new THREE.BoxGeometry(7,.5,10),portWood);pier.position.y=.35;root.add(pier);
+    const tower=new THREE.Mesh(new THREE.CylinderGeometry(.7,1.2,8,8),portStone);tower.position.set(0,4.45,-2);root.add(tower);
+    const light=new THREE.Mesh(new THREE.SphereGeometry(.9,8,6),portGlow);light.position.set(0,9,-2);root.add(light);
+    return {port,root};
+   });
    const gulls=new THREE.Group();world.add(gulls);
    for(let i=0;i<6;i++){
     const wing=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-.7,0,0),new THREE.Vector3(0,.18,0),new THREE.Vector3(.7,0,0)]);
@@ -300,6 +311,11 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     const merchants=mode==='sea'?(state.merchants||[]).filter(m=>!state.crewRoster.includes(m.id)).map(m=>({...m,...merchantPosition(m)})).filter(m=>Math.hypot(m.x-origin.x,m.z-origin.z)<85):[];
     const rows=[{id:'player',x:origin.x,z:origin.z,heading:origin.heading,type:state.shipType,hull:origin.hull,maxHull:origin.maxHull},...hostiles.map(e=>({...e,type:e.neutral?'cog':'galleon',enemy:!e.neutral})),...merchants.map(m=>({id:'merchant-'+m.id,x:m.x,z:m.z,heading:m.heading,type:'dutch-fluyt',enemy:false}))];
     const ids=new Set(rows.map(r=>r.id));for(const [id,e]of vessels){e.root.visible=ids.has(id);}
+    for(const {port,root} of harborMarkers){
+     const dx=port.x-origin.x,dz=port.z-origin.z;
+     root.visible=mode==='sea'&&Math.hypot(dx,dz)<170;
+     if(root.visible)root.position.set(dx,0,dz);
+    }
     gulls.visible=mode!=='naval'&&PORTS.some(p=>Math.hypot(p.x-origin.x,p.z-origin.z)<65);
     if(gulls.visible)gulls.children.forEach((bird,i)=>{
      const angle=t*.25+i*1.05,radius=11+i*1.8;
@@ -323,15 +339,15 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      if(!battleFraming)camera.position.copy(position);else camera.position.lerp(position,.14);
      camera.lookAt(targetLook);
      }else{
-     // 메인: 추적과 45도 고정 시점 모두 선박을 화면 중앙에 둔다. 세로 화면은 거리로 시야를 보정한다.
-     const bearing=seaCamera==='angle'?-Math.PI/4:origin.heading;
-     const distance=cameraDistance/Math.max(.58,Math.min(1,camera.aspect));
+     // 추적 카메라는 선박을 따라 이동하지만 방위는 고정한다. 두 각도 모두 45도 위 부감.
+     const bearing=seaCamera==='angle'?Math.PI/4:-Math.PI/4;
+     const distance=cameraDistance*Math.max(1,Math.min(1.25,.75/Math.max(.35,camera.aspect)));
      const offset=distance/Math.sqrt(2);
      const position=new THREE.Vector3(-Math.sin(bearing)*offset,2.2+offset,-Math.cos(bearing)*offset);
      targetLook.set(0,2.2,0);
      camera.position.lerp(position,.24);
      camera.lookAt(targetLook);
-     world.fog.near=Math.max(110,distance+45);world.fog.far=world.fog.near+190;
+     world.fog.near=Math.max(90,distance+48);world.fog.far=world.fog.near+190;
     }
     battleFraming=mode==='naval';
     ring.visible=mode==='naval';ring.position.x=ex;ring.position.z=ez;
@@ -601,14 +617,15 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   const landscape=canvas.clientHeight<500,mw=landscape?94:128,mh=landscape?76:104;
   const mx=landscape?w/2-mw/2:w-mw-8,my=Math.max(110,landscape?h-mh-12:h-(canvas.clientHeight<700?270:310));
   miniHit={x:mx,y:my,w:mw,h:mh};
-  const miniScale=landscape?.15:.20,key=mw+':'+mh+':'+state.charted.length;
-  if(miniKey!==key){miniLayer.width=mw;miniLayer.height=mh;miniCtx.imageSmoothingEnabled=false;drawGeography(miniCtx,mw,mh,75,-550,miniScale);drawFog(miniCtx,mw,mh,75,-550,miniScale,state.charted);miniKey=key;}
+  const miniScale=landscape?.28:.37,miniCx=Math.round(state.ship.x/24)*24,miniCz=Math.round(state.ship.z/24)*24;
+  const key=mw+':'+mh+':'+state.charted.length+':'+miniCx+':'+miniCz;
+  if(miniKey!==key){miniLayer.width=mw;miniLayer.height=mh;miniCtx.imageSmoothingEnabled=false;drawGeography(miniCtx,mw,mh,miniCx,miniCz,miniScale);drawFog(miniCtx,mw,mh,miniCx,miniCz,miniScale,state.charted);miniKey=key;}
   ctx.save();ctx.translate(mx,my);ctx.drawImage(miniLayer,0,0);
   ctx.strokeStyle='#ebd3a1';ctx.strokeRect(0,0,mw,mh);
-  const x=mw/2+(state.ship.x-75)*miniScale,y=mh/2+(state.ship.z+550)*miniScale;
+  const x=mw/2+(state.ship.x-miniCx)*miniScale,y=mh/2+(state.ship.z-miniCz)*miniScale;
   ctx.fillStyle='#fff3b6';ctx.fillRect(x-3,y-3,6,6);
-  if(state.destination){const p=PORTS.find(p=>p.id===state.destination);if(p){ctx.fillStyle='#f49367';ctx.fillRect(mw/2+(p.x-75)*miniScale-2,mh/2+(p.z+550)*miniScale-2,4,4);}}
-  text('유럽 · 항로도',mw/2,mh+13,9,C.gold,'center');ctx.restore();
+  if(state.destination){const p=PORTS.find(p=>p.id===state.destination);if(p){ctx.fillStyle='#f49367';ctx.fillRect(mw/2+(p.x-miniCx)*miniScale-2,mh/2+(p.z-miniCz)*miniScale-2,4,4);}}
+  text('현재 해역 · 추적',mw/2,mh+13,9,C.gold,'center');ctx.restore();
  }
  function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?60:mobileGPU?33:20))return;last=now;time=now/1000;
  const width=Math.min(mobileGPU?540:720,Math.max(mobileGPU?300:390,Math.round(canvas.clientWidth))),height=Math.round(width*canvas.clientHeight/Math.max(1,canvas.clientWidth));
@@ -624,8 +641,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   if(show)try{naval.render(time);}catch(err){console.warn('3D 항해 프레임 복구: 2D 렌더로 자동 전환',err);navalError=true;naval.surface.hidden=true;}}
 }
  // 메인: 오른쪽 회전 조작은 45도 고정 시점으로 대체한다. 왼쪽 조타는 그대로 유지한다.
- canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(34,Math.min(62,cameraDistance+Math.sign(e.deltaY)*2));}},{passive:false});
+ canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(20,Math.min(48,cameraDistance+Math.sign(e.deltaY)*2));}},{passive:false});
  canvas.addEventListener('click',e=>{if(mode==='sea'&&seaCamera!=='chart')return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);if(mode==='sea'&&!target&&miniHit&&x>=miniHit.x&&x<=miniHit.x+miniHit.w&&y>=miniHit.y&&y<=miniHit.y+miniHit.h)onMap();});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
- return {setCameraMode(v){seaCamera=['chase','angle','chart'].includes(v)?v:'chase';return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(34,Math.min(62,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||2.2));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
+ return {setCameraMode(v){seaCamera=['chase','angle','chart'].includes(v)?v:'chase';return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(20,Math.min(48,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||2.2));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
 }

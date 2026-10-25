@@ -16,7 +16,12 @@ export const PORTS=Object.freeze([
   {id:'genoa',name:'제노바',x:105.6,z:-529.2,region:'리구리아',faction:'지중해 공화국',rates:{grain:1.4,wood:1.2,spice:1.15,silk:.8,ore:1.1,tea:1.4}},
   {id:'venice',name:'베네치아',x:151.2,z:-542.4,region:'아드리아해',faction:'지중해 공화국',rates:{grain:1.5,wood:1.4,spice:.8,silk:.75,ore:1.3,tea:1.6}},
   {id:'athens',name:'아테네',x:288.0,z:-451.2,region:'에게해',faction:'지중해 공화국',rates:{grain:.85,wood:1.5,spice:1.2,silk:1.4,ore:.9,tea:1.7}},
-  {id:'copenhagen',name:'코펜하겐',x:153.6,z:-667.2,region:'발트해',faction:'북해 상인연맹',rates:{grain:1.3,wood:.7,spice:1.7,silk:1.6,ore:.9,tea:1.5}}
+  {id:'copenhagen',name:'코펜하겐',x:153.6,z:-667.2,region:'발트해',faction:'북해 상인연맹',rates:{grain:1.3,wood:.7,spice:1.7,silk:1.6,ore:.9,tea:1.5}},
+  {id:'azores',name:'폰타델가다',x:-308,z:-452.8,region:'아조레스 제도',faction:'포르투갈 상단',rates:{grain:1.1,wood:1.2,spice:1.1}},
+  {id:'canary',name:'라스팔마스',x:-184.9,z:-337.4,region:'카나리아 제도',faction:'이베리아 왕실',rates:{grain:1.1,wood:1.2,spice:1.1}},
+  {id:'alexandria',name:'알렉산드리아',x:359,z:-374.4,region:'이집트 지중해',faction:'동방 항로 연맹',rates:{grain:1.1,wood:1.2,spice:1.1}},
+  {id:'istanbul',name:'이스탄불',x:347.8,z:-492.1,region:'보스포루스 해협',faction:'동방 항로 연맹',rates:{grain:1.1,wood:1.2,spice:1.1}},
+  {id:'reykjavik',name:'레이캬비크',x:-263.3,z:-769.7,region:'북대서양',faction:'북해 상인연맹',rates:{grain:1.1,wood:1.2,spice:1.1}}
 ]);
 // 항구: 유럽 도시의 행정·상업·조선·탐험 시설 배치(저장과 선박 능력치는 독립).
 // 항구에 없는 시설은 건물 버튼에도, 도시 내 메뉴에도 표시하지 않는다.
@@ -33,7 +38,12 @@ export const PORT_SCENES=Object.freeze({
  genoa:{district:'리구리아 금융 항만',layout:3,facilities:['market','fleet','jobs'],marketNpc:'제노바 상업 은행가',fleetNpc:'리구리아 범선 도제'},
  venice:{district:'대운하와 총독궁',layout:5,facilities:['market','fleet','crew','palace','quests','jobs'],marketNpc:'유리 공예품 경매인',fleetNpc:'아드리아해 돛 제작자',palaceNpc:'베네치아 총독 서기관'},
  athens:{district:'에게해 고대 항구',layout:2,facilities:['market','quests'],marketNpc:'에게해 도자기 상인'},
- copenhagen:{district:'외레순 해협 항구',layout:4,facilities:['market','quests'],marketNpc:'북방 곡물 상인'}
+ copenhagen:{district:'외레순 해협 항구',layout:4,facilities:['market','quests'],marketNpc:'북방 곡물 상인'},
+ azores:{district:'해외 항로 선창',layout:0,facilities:['market','fleet','crew','quests'],marketNpc:'원양 상인'},
+ canary:{district:'해외 항로 선창',layout:1,facilities:['market','fleet','crew','quests'],marketNpc:'원양 상인'},
+ alexandria:{district:'해외 항로 선창',layout:2,facilities:['market','fleet','crew','quests'],marketNpc:'원양 상인'},
+ istanbul:{district:'해외 항로 선창',layout:3,facilities:['market','fleet','crew','quests'],marketNpc:'원양 상인'},
+ reykjavik:{district:'해외 항로 선창',layout:4,facilities:['market','fleet','crew','quests'],marketNpc:'원양 상인'}
 });
 export const portHasFacility=(portId,facility)=>Boolean(PORT_SCENES[portId]?.facilities.includes(facility));
 export const GOODS=Object.freeze([
@@ -66,7 +76,12 @@ export const PORT_MARKETS=Object.freeze({
  genoa:{produces:['glass','silk'],imports:['wine','ore','wood'],demand:['grain','wool','amber']},
  venice:{produces:['glass','silk','spice'],imports:['grain','wood'],demand:['wool','amber','tea']},
  athens:{produces:['grain','ore'],imports:['wine','silk'],demand:['wood','glass','tea']},
- copenhagen:{produces:['amber','wood','wool'],imports:['grain','ore'],demand:['wine','spice','silk']}
+ copenhagen:{produces:['amber','wood','wool'],imports:['grain','ore'],demand:['wine','spice','silk']},
+ azores:{produces:['grain','wine'],imports:['wood','ore'],demand:['spice','tea','wool']},
+ canary:{produces:['grain','wine'],imports:['wood','ore'],demand:['spice','tea','wool']},
+ alexandria:{produces:['grain','wine'],imports:['wood','ore'],demand:['spice','tea','wool']},
+ istanbul:{produces:['grain','wine'],imports:['wood','ore'],demand:['spice','tea','wool']},
+ reykjavik:{produces:['grain','wine'],imports:['wood','ore'],demand:['spice','tea','wool']}
 });
 export const TRADE_GROUPS=Object.freeze({grain:'식료',wood:'원자재',spice:'향신료',silk:'직물',ore:'광석',tea:'차',wine:'주류',wool:'직물',glass:'공예품',amber:'보석',cotton:'직물',ivorycraft:'공예품',porcelain:'공예품'});
 // 항구 사이를 실제로 이동하는 독립 교역 선장
@@ -132,7 +147,8 @@ export function recruitCompanion(state,id){
  const s=copy(state);s.crewRoster.push(id);s.companionBonds[id]=1;s.crewJoinedAt[id]=s.xp;note(s,c.name+' 동료 합류');return {state:s,ok:true,message:c.name+'이(가) 함대에 합류했어.'};
 }
 
-export const PORT_RADIUS=3.8;
+// 항구 접근 상호작용 범위
+export const PORT_RADIUS=18;
 export const WORLD_LIMIT=2160;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);

@@ -79,7 +79,7 @@ function summary(){
  const canHail=nearby&&Math.hypot(state.ship.x-nearby.p.x,state.ship.z-nearby.p.z)<=20;$('hail').hidden=!canHail;if(canHail){$('hail').dataset.merchant=nearby.id;$('hail').title=MERCHANT_CAPTAINS.find(c=>c.id===nearby.id).name+' 상선 교신';}
  $('autoBattle').textContent=state.autoCombat?'자동해전 켬':'자동해전 끔';$('autoBattle').setAttribute('aria-pressed',String(state.autoCombat));
  $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:state.exploreTarget?' · 직접 탐색 → '+port(state.exploreTarget).name:'');
- $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' (최소 '+Math.floor(state.ship.provisions/2)+'일) · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
+ const near=closest.d<=50;$('dock').disabled=!location&&!near;$('dock').innerHTML='<b>⚓</b>'+(location?location.name+' 입항':near?closest.port.name+' 접근':'입항');$('dock').title=location?location.name+' 입항 가능':near?closest.port.name+' 부두까지 자동 접근':'항구에 다가가면 입항 가능';const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' (최소 '+Math.floor(state.ship.provisions/2)+'일) · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
  const wind=windAt(state),bearing=(wind.heading*180/Math.PI+360)%360,apparent=Math.cos(wind.heading-state.ship.heading),kind=apparent>.35?'순풍':apparent<-.35?'역풍':'횡풍';$('windStatus').textContent='바람 '+Math.round(bearing)+'° · '+kind+' · 항속 '+Math.abs(state.ship.velocity).toFixed(1)+(sailCruise?' · 순항':'');
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
@@ -92,7 +92,7 @@ function gotoPanel(name){if(state.landBattle&&name!=='system'){enterBattle();ret
  if(active==='chart')centerChartOnShip();
  if(active)renderPanel();
 }
-function enterTown(){document.body.classList.remove('in-facility');if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
+function enterTown(){if(!canDock(state)){note('먼저 항구에 접근해.');return;}state.ship.velocity=0;document.body.classList.remove('in-facility');if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
 function openFacility(id){const home=canDock(state);if(!home){note('먼저 항구에 입항해.');return;}if(!portHasFacility(home.id,id)&&id!=='port'&&id!=='journal'){note(home.name+'에는 해당 시설이 없어. 다른 항구로 항해해.');return;}town=true;active=id;document.body.classList.add('in-town','in-facility');$('townbar').hidden=false;scene.setMode('town',id);view.details.classList.add('open');switchMusicScene(id==='palace'?'palace':id==='quests'?'explore':'harbor');renderPanel();}
 function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';document.body.classList.remove('in-facility');view.details.classList.remove('open');scene.setMode(town?'town':navalTarget!==null?'naval':'sea');if(town)switchMusicScene('harbor');}
 function depart(){if(state.landBattle){enterBattle();return;}if(!state.route.length)state.ship.heading=departureHeading(state);sailCruise=true;clearMotionSample();syncSails();town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town','in-facility');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();note('출항했어. 자동으로 전진해. 왼쪽 바다를 밀어서 조타하고 ■ 멈춤으로 정지할 수 있어.');}
@@ -141,7 +141,7 @@ function chart(){
 }
 // 해도: 발견한 항구·개척 항로·현재 선박 위치를 같이 보여준다.
 let mapWorld=false,mapZoom=1,mapPanX=0,mapPanZ=0,mapPointer=null,mapDragged=false,mapIgnoreClick=false;
-const chartViewport=()=>({cx:(mapWorld?300:75)+mapPanX,cz:(mapWorld?-210:-550)+mapPanZ,scale:(mapWorld?.29:1.38)*mapZoom});
+const chartViewport=()=>({cx:(mapWorld?300:75)+mapPanX,cz:(mapWorld?-210:-550)+mapPanZ,scale:(mapWorld?.24:.70)*mapZoom});
 // The chart should open and re-center on the actual vessel, not an old map origin.
 function centerChartOnShip(){mapPanX=state.ship.x-(mapWorld?300:75);mapPanZ=state.ship.z-(mapWorld?-210:-550);}
 function drawChart(world=mapWorld){
@@ -476,7 +476,7 @@ function apply(result){
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>gotoPanel(b.dataset.panel)));
 $('systemOpen').addEventListener('click',()=>gotoPanel('system'));
 $('close').addEventListener('click',leaveFacility);
-$('dock').addEventListener('click',()=>{if(canDock(state))enterTown();});
+$('dock').addEventListener('click',()=>{const near=nearestPort(state);if(canDock(state)){enterTown();return;}if(near.d<=50){state=setDestination(state,near.port.id);save();scene.setState(state);note(near.port.name+' 부두로 접근 중 · 가까워지면 입항해.');}else note('항구 가까이 접근해.');});
 $('hail').addEventListener('click',()=>{const id=$('hail').dataset.merchant;if(id)apply(hailMerchant(state,id));});
 $('fire').addEventListener('click',()=>apply(fireCannons(state,navalTarget)));
 view.body.addEventListener('click',e=>{
@@ -520,7 +520,7 @@ view.body.addEventListener('click',e=>{
  if(b.dataset.office){apply(officeContract(state,b.dataset.office));return;}
  if(b.dataset.map){mapWorld=b.dataset.map==='world';mapZoom=1;centerChartOnShip();drawChart(mapWorld);return;}
   if(b.dataset.mapView){if(b.dataset.mapView==='center'){mapZoom=1;centerChartOnShip();}
-   else mapZoom=Math.max(.65,Math.min(3.2,mapZoom*(b.dataset.mapView==='zoom-in'?1.33:1/1.33)));
+   else mapZoom=Math.max(.42,Math.min(4.2,mapZoom*(b.dataset.mapView==='zoom-in'?1.33:1/1.33)));
    drawChart(mapWorld);return;}
  if(b.dataset.clue){apply(takeTreasureClue(state,b.dataset.clue));return;}
  if(b.dataset.search){apply(searchTreasure(state,b.dataset.search));return;}
@@ -641,7 +641,7 @@ function impactSound(){if(!soundEnabled)return;try{if(!audio)audio=new (window.A
 $('sfx-toggle').addEventListener('click',()=>{soundEnabled=!soundEnabled;$('sfx-toggle').textContent=soundEnabled?'효과음 켬':'효과음 끔';});
 $('speed').addEventListener('click',()=>{state.speed=state.speed===1?2:state.speed===2?4:state.speed===4?8:state.speed===8?12:state.speed===12?16:1;$('speed').textContent=state.speed+'배';save();if(active==='system')renderPanel();});
 // 메인: 회전식 카메라 대신 선박 중심 45도 위 시점을 제공한다.
-$('viewMode').addEventListener('click',()=>{const options=['chase','angle','chart'],next=options[(options.indexOf(scene.getCameraMode())+1)%options.length];scene.setCameraMode(next);$('viewMode').textContent=next==='chase'?'시점: 추적':next==='angle'?'시점: 45도':'시점: 해도';note(next==='chart'?'해도 시점으로 전환했어. 지도 위 항구를 눌러 항로를 설정해.':next==='angle'?'45도 위에서 선박을 내려다보는 고정 시점이야.':'선박을 중앙에 두고 45도 위에서 따라가.');});
+$('viewMode').addEventListener('click',()=>{const options=['chase','angle','chart'],next=options[(options.indexOf(scene.getCameraMode())+1)%options.length];scene.setCameraMode(next);$('viewMode').textContent=next==='chase'?'시점: 추적':next==='angle'?'시점: 45도':'시점: 해도';note(next==='chart'?'해도 시점으로 전환했어. 지도 위 항구를 눌러 항로를 설정해.':next==='angle'?'반대 방향 45도 고정 시점이야.':'선박을 가운데에 고정하고 따라가. 배가 선회해도 카메라는 돌지 않아.');});
 $('autoBattle').addEventListener('click',()=>{state.autoCombat=!state.autoCombat;save();summary();note(state.autoCombat?'자동 해전 켬 · 적을 만나면 측면을 잡고 자동 사격해.':'자동 해전 끔 · 수동 조타와 포격을 사용해.');});
 $('zoomIn').addEventListener('click',()=>{scene.setZoom(scene.getZoom()*1.35);if(scene.getCameraMode()!=='chart')scene.setCameraDistance(.85);});$('zoomOut').addEventListener('click',()=>{scene.setZoom(scene.getZoom()/1.35);if(scene.getCameraMode()!=='chart')scene.setCameraDistance(1.15);});
 $('eventChoices').addEventListener('click',e=>{
@@ -735,7 +735,7 @@ function run(now){
  if(state.event){save();renderEvent();}
  scene.setState(state);
  tick+=dt;panelTick+=dt;
- if(tick>1){tick=0;summary();showMotion();}
+ if(tick>.25){tick=0;summary();showMotion();}
  if(panelTick>13){panelTick=0;save();}
  if(state.ship.hull<=0){
   note('선체가 파괴됐어. 항구에서 수리를 받거나 새 항해를 시작할 수 있어.');
