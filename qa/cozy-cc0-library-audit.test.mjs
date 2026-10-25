@@ -132,6 +132,8 @@ test('공용 브릭 재질은 선택형이며 실제 메시·물리·원본 모�
   const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
   const client=read('roblox-games/cozy-island/client/MaterialPresentation.client.luau');
   const bootstrap=read('tools/company-development-roblox-bootstrap.mjs');
+  const vibePlan=read('tools/vibe2-asset-production-plan.mjs');
+  assert.match(vibePlan,/TOY_BRICK.*레고/,'기존 바이브 스타일 추론에서 게임별 브릭 스타일 선택 지원');
   assert.equal(common,cozy,'게임별 재질 복사본은 공용 원본과 일치해야 한다');
   assert.equal(catalog.atoms.length,26);
   assert.equal(catalog.systemDepthContract.currentAssetCount,26);
