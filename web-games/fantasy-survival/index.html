@@ -2252,13 +2252,24 @@ function snapBlueprintPosition(bp,x,y){
 }
 function moveBlueprint(x,y){
  const bp=state.blueprint;if(!bp)return null;
- const p=snapBlueprintPosition(bp,x,y);bp.x=p.x;bp.y=p.y;state.dirty=true;return p
+ const p=snapBlueprintPosition(bp,x,y);bp.x=p.x;bp.y=p.y;bp.canPlace=blueprintPlacementValid(bp);state.dirty=true;return p
 }
 function startBlueprint(r){
  const p=state.player,fx=Number(p.faceX)||1,fy=Number(p.faceY)||0,d=Math.hypot(fx,fy)||1;
  state.blueprint={id:r.id,x:clamp(p.x+fx/d*115,55,WORLD.w-55),y:clamp(p.y+fy/d*115,55,WORLD.h-55),vertical:Math.abs(fx)>=Math.abs(fy)};
- moveBlueprint(state.blueprint.x,state.blueprint.y);
- ui.sheet.classList.remove('open');updateHud();showNotice(r.name+' 청사진 · 위치를 옮긴 뒤 건설 버튼을 눌러 배치');state.dirty=true
+ // 메인 · 설치 가능한 빈 땅을 우선 선택한다.
+ const directions=[[fx/d,fy/d],[0,1],[1,0],[0,-1],[-1,0],[.707,.707],[-.707,.707],[.707,-.707],[-.707,-.707]];
+ let found=false;
+ for(const radius of [115,170,230,290]){
+  for(const [dx,dy] of directions){
+   moveBlueprint(clamp(p.x+dx*radius,55,WORLD.w-55),clamp(p.y+dy*radius,55,WORLD.h-55));
+   if(state.blueprint.canPlace){found=true;break}
+  }
+  if(found)break;
+ }
+ ui.sheet.classList.remove('open');updateHud();
+ showNotice(found?r.name+' 청사진 · 땅을 눌러 위치 이동 후 건설':r.name+' 청사진 · 다른 빈 땅을 눌러 배치해');
+ state.dirty=true
 }
 function blueprintPlacementValid(bp,x=bp?.x,y=bp?.y){
  if(!bp||state.area!=='surface'||!Number.isFinite(x)||!Number.isFinite(y))return false;
@@ -3395,9 +3406,11 @@ function receiveGiftItem(payload){
 }
 function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.classList.remove('open')}
 function resourceNodes(){return[...state.trees,...state.rocks,...state.fibers,...state.irons,...state.golds,...state.essences,...state.crystals,...state.carrots,...state.poisonStones,...state.sunstones,...state.swampTrees,...state.flowerGiantFlowers]}
+// 메인 · 큰 나무의 3D 외형과 채집 거리를 일치시킨다.
+function resourceGatherRange(n){return AUTO_GATHER_RANGE+(n?.kind==='swamptree'?75:n?.kind==='tree'?25:0)}
 function nearestGatherResource(range=AUTO_GATHER_RANGE){
- const p=state.player;let best=null,bestD=range;
- for(const n of resourceNodes()){if(n.dead)continue;const d=dist(p.x,p.y,n.x,n.y);if(d<bestD){best=n;bestD=d}}
+ const p=state.player;let best=null,bestD=Infinity;
+ for(const n of resourceNodes()){if(n.dead)continue;const d=dist(p.x,p.y,n.x,n.y);if(d<Math.max(range,resourceGatherRange(n))&&d<bestD){best=n;bestD=d}}
  return best
 }
 function resourceGatherName(n){return n?.kind==='tree'?'나무':n?.kind==='rock'?'돌':n?.kind==='fiber'?'섬유':n?.kind==='iron'?'철광석':n?.kind==='gold'?'화산 금':n?.kind==='essence'?'정수':n?.kind==='crystal'?'수정':n?.kind==='carrot'?'당근':n?.kind==='poisonstone'?'독점석':n?.kind==='sunstone'?'태양석 광맥':n?.kind==='swamptree'?'늪 거목':n?.kind==='giantflower'?'거대 꽃':'자원'}
@@ -3406,7 +3419,7 @@ function gather(target=null,silent=false){
  const p=state.player,now=performance.now();if(p.downedUntil){if(!silent)showNotice('쓰러진 상태야');return false}if(now<(p.stunnedUntil||0)){if(!silent)showNotice('기절 중');return false}if(state.area!=='surface'){if(!silent)showNotice('지하에는 채집할 자원이 없어');return false}
  let best=null;
  if(target&&!target.dead){
-  if(dist(p.x,p.y,target.x,target.y)<AUTO_GATHER_RANGE)best=target;
+  if(dist(p.x,p.y,target.x,target.y)<resourceGatherRange(target))best=target;
   else{if(!silent)showNotice('지정한 자원 가까이 가');return false}
  }
  if(!best)best=nearestGatherResource();
@@ -3445,8 +3458,14 @@ function updateAutoGather(now){
  const g=state.gathering,p=state.player;g.auto=true;
  if(state.area!=='surface'||p.downedUntil||playerCombatActive()||now<(p.stunnedUntil||0)||now<(p.grabbedUntil||0)){g.target=null;return}
  if(now<(g.blockedUntil||0)||now<(g.nextAt||0))return;
- const candidates=resourceNodes().filter(n=>!n.dead&&dist(p.x,p.y,n.x,n.y)<AUTO_GATHER_RANGE)
+ const candidates=resourceNodes().filter(n=>!n.dead&&dist(p.x,p.y,n.x,n.y)<resourceGatherRange(n))
   .sort((a,b)=>dist(p.x,p.y,a.x,a.y)-dist(p.x,p.y,b.x,b.y));
+ // 메인 · 직접 지정한 거목이 채집 범위 안에 있으면 우선한다.
+ if(g.manualTarget){
+  const index=candidates.indexOf(g.manualTarget);
+  if(index>=0){candidates.splice(index,1);candidates.unshift(g.manualTarget)}
+  else g.manualTarget=null;
+ }
  g.target=null;g.nextAt=now+AUTO_GATHER_INTERVAL_MS;
  for(const target of candidates){
   const gathered=gather(target,true);
@@ -3850,7 +3869,7 @@ function hostGatherResource(payload){
  const playerId=String(payload.playerId||''),remote=multiplayer.remote.get(playerId);
  if(!remote||remote.area!=='surface'||performance.now()-(remote.seenAt||0)>2000)return;
  const kind=String(payload.kind||''),node=(kind==='sunstone'?state.sunstones:state.swampTrees).find(n=>n.id===String(payload.nodeId||''));
- if(!node||node.dead||dist(Number(remote.x)||0,Number(remote.y)||0,node.x,node.y)>AUTO_GATHER_RANGE+30)return;
+ if(!node||node.dead||dist(Number(remote.x)||0,Number(remote.y)||0,node.x,node.y)>resourceGatherRange(node)+30)return;
  if(kind==='swamptree'&&!equippedAxeId(remote))return;
  if(kind==='sunstone'&&!['monopoly-pick','sunstone-pick'].includes(remote.tool))return;
  node.hp=Math.max(0,node.hp-1);
@@ -4450,7 +4469,7 @@ function regionPassages(){
  return rows;
 }
 function doubleTapTarget(id,now,action){
- if(lastWorldTap.target===id&&now-lastWorldTap.at<430){lastWorldTap={target:null,at:0};action();return true}
+ if(lastWorldTap.target===id&&now-lastWorldTap.at<(String(id).startsWith('monster:')?850:430)){lastWorldTap={target:null,at:0};action();return true}
  lastWorldTap={target:id,at:now};return false
 }
 function rootAvailable(){return Date.now()>=(state.rootRespawnAt||0)}
@@ -4874,15 +4893,16 @@ function handleWorldTap(e){
  if(state.area==='surface'&&!state.giantCrocEggTaken&&dist(wx,wy,GIANT_CROC_EGG.x,GIANT_CROC_EGG.y)<60){doubleTapTarget('giant-croc-egg',now,()=>{if(state.giantCrocEggTaken)return;state.giantCrocEggTaken=true;addInv('giant-croc-egg',1);state.dirty=true;showNotice('거대 악어 알 획득 · 부화기에서 10분 부화');saveGame(false)});return}
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
- let closest=null,cd=70;
- for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<cd){closest=m;cd=d}}
+ let closest=worldPoint?.monsterId?visible.find(m=>String(m.netId)===String(worldPoint.monsterId)):null,cd=70;
+ if(!closest)for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<Math.max(cd,(Number(m.type.r)||20)+22)){closest=m;cd=d}}
  if(closest){
   // 터치 즉시 기존 공격 함수로 연결한다. 창/활/마법 피해와 판정 권한은 attack() 그대로 사용.
   // 기존 활 3회 탭 조준 보너스와 몬스터 도감 두 번 탭도 보존한다.
   const eligible=closest.type.mood!=='harmless'||!!closest.type.huntable;
   const interactable=!(closest.type.labBoss&&now<(closest.submergedUntil||0))&&!(closest.type.burrower&&!closest.emerged);
   if(!eligible||!interactable){doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));return}
-  doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));
+  // 도감 두 번 누르기가 공격보다 우선한다.
+  if(doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id)))return;
   const w=currentWeapon(),range=currentRange(),dx=closest.x-state.player.x,dy=closest.y-state.player.y;
   if(!w){showNotice('가방에서 무기를 장착해');return}
   if(Math.hypot(dx,dy)>range+(Number(closest.type.r)||0)){showNotice(closest.type.name+' · 공격 사거리 밖');return}
@@ -4901,7 +4921,7 @@ function handleWorldTap(e){
     return
    }
    let gatherTarget=null,gatherTapD=Infinity;for(const n of resourceNodes()){if(n.dead)continue;const d=dist(wx,wy,n.x,n.y),tapRange=n.kind==='swamptree'?115:n.kind==='giantflower'?75:58;if(d<tapRange&&d<gatherTapD){gatherTarget=n;gatherTapD=d}}
-   if(gatherTarget){showNotice('자동 채집 · '+resourceGatherName(gatherTarget)+' 가까이 이동해');return}
+   if(gatherTarget){state.gathering.manualTarget=gatherTarget;showNotice('자동 채집 대상 · '+resourceGatherName(gatherTarget)+' 가까이 이동해');return}
    if(dist(wx,wy,SURVIVOR.x,SURVIVOR.y)<65){if(!doubleTapTarget('survivor',now,survivorInteract))showNotice(state.story.treated?'생존자를 한 번 더 눌러 대화':'생존자를 한 번 더 눌러 치료');return}
    if(dist(wx,wy,CRYSTAL_HEART.x,CRYSTAL_HEART.y)<CRYSTAL_HEART.r+35){if(state.story.stage==='touch-crystal'&&!state.story.crystalTouched){if(!doubleTapTarget('story-crystal-touch',now,touchStoryCrystal))showNotice('큰 수정을 한 번 더 눌러 만지기')}else activateCrystalSeal(now);return}
    if(dist(wx,wy,LAB_RECORDER.x,LAB_RECORDER.y)<75){primeLabRecorderAudio();if(!doubleTapTarget('lab-record',now,playLabRecorder))showNotice('녹음기를 한 번 더 눌러 재생');return}
@@ -7288,7 +7308,8 @@ function drawCreature(e,cx,cy){
  drawEnemyCombatVfx(e,x,y,now);
  if(state.arrowAim?.targetId===e.netId&&currentWeapon()?.ranged==='bow'){ctx.save();ctx.strokeStyle='#fff3a8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r+14,0,Math.PI*2);ctx.stroke();for(let a=0;a<4;a++){const ang=a*Math.PI/2,inner=e.type.r+7,outer=e.type.r+22;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*inner,y+Math.sin(ang)*inner);ctx.lineTo(x+Math.cos(ang)*outer,y+Math.sin(ang)*outer);ctx.stroke()}ctx.fillStyle='#fff3a8';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('조준',x,y-e.type.r-28);ctx.restore()}
  if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
- ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.worldtreeRoots?e.type.name+' · 3티어':e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.outpostPrimitive||(e.type.desert&&!e.type.noTierLabel)||e.type.id==='jungletiger'||e.type.tigerLeader)?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
+ // 메인 · 도감에 등록된 종만 머리 위에 이름 표시.
+  if(state.bestiary[e.type.id]){ctx.fillStyle='#f4fff7';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText(e.type.name,x,y-e.type.r-27)}
 }
 function drawSporeClouds(cx,cy){const now=performance.now();for(const g of state.sporeClouds){if(g.area!==state.area||now>=g.until)continue;const x=g.x-cx,y=g.y-cy,life=Math.max(0,Math.min(1,(g.until-now)/3000));ctx.save();ctx.globalAlpha=.18+.18*life;ctx.fillStyle='#8c68a9';ctx.beginPath();ctx.arc(x,y,g.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c99be5';ctx.lineWidth=2;ctx.stroke();ctx.restore()}for(const e of state.enemies){if(e.area!==state.area||!e.type.mushroomGas||now>=(e.sporeGasUntil||0))continue;const x=e.x-cx,y=e.y-cy;ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#7d5c94';ctx.beginPath();ctx.arc(x,y,145,0,Math.PI*2);ctx.fill();ctx.restore()}}
 function drawProjectiles(cx,cy){
