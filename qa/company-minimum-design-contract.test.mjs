@@ -8,9 +8,18 @@ import {evaluateMinimumDesignContract,materializeVibeMinimumDesign} from '../too
 
 // Exercise the actual current verified-policy contract; never substitute a stub.
 const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
-test.before(()=>{process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');});
-test.after(()=>{if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
-  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;});
+const previousDesignPolicyPath=process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH;
+test.before(()=>{
+  const verifiedPath=path.resolve('company-learning/platform-release-roadmap.json');
+  process.env.COMPANY_VERIFIED_POLICY_PATH=verifiedPath;
+  process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH=verifiedPath;
+});
+test.after(()=>{
+  if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;
+  if(previousDesignPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH=previousDesignPolicyPath;
+});
 
 const base=()=>({
   content:{

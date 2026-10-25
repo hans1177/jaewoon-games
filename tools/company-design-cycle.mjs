@@ -1273,7 +1273,30 @@ function computeVibeNativeDesign(){
   const materials=(seedState.seedMaterials||[]).filter(row=>materialIds.has(row.materialId));
   // 메인: A는 대표 참고게임의 시스템, B는 기존 원본 시스템이다. 원본 출처와 선택을 보존한다.
   const existingLoop=Array.isArray(original.coreLoop)&&original.coreLoop.length?original.coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[];
-  const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE;
+  // 메인: 기존 게임 B 시스템이 접수 메타데이터에서 빠졌다면 실제 Luau 서버 입력·처리부터 확인한다.
+  // 패링·회피·인벤토리 명칭만 흉내 낸 설계를 허용하지 않는다. 원본 이벤트 처리 증거가 모두 있어야 한다.
+  // 게임명보다 실제 원본의 장르 선언을 우선한다. 구형 CASUAL 접수값은 설계 장르 증거가 아니다.
+  const nativeConfigPath=`roblox-games/${gameId}/shared/GameConfig.luau`;
+  const nativeConfig=typeof fs!=='undefined'&&fs.existsSync(nativeConfigPath)?fs.readFileSync(nativeConfigPath,'utf8'):'';
+  const sourceRpgGenre=/\bGenre\s*=\s*["'](?:RPG|Action RPG)["']/.test(nativeConfig);
+  const sourceKingdomGenre=/\bGenre\s*=\s*["']Strategy["']/.test(nativeConfig)
+    &&nativeConfig.includes('BarracksLevel=')&&nativeConfig.includes('CapturedBases=');
+  const authoredCategory=clean(seed.GAME_CATEGORY).toUpperCase()==='CASUAL'
+    ?sourceRpgGenre?'RPG':sourceKingdomGenre?'KINGDOM':seed.GAME_CATEGORY:seed.GAME_CATEGORY;
+  const nativeServerPath=`roblox-games/${gameId}/server/Game.server.luau`;
+  const nativeServer=typeof fs!=='undefined'&&fs.existsSync(nativeServerPath)?fs.readFileSync(nativeServerPath,'utf8'):'';
+  const nativeCombatVerified=[
+    'parryEvent.OnServerEvent:Connect',
+    'dodgeEvent.OnServerEvent:Connect',
+    'syncInventoryEvent:FireClient'
+  ].every(marker=>nativeServer.includes(marker))
+    &&nativeServer.includes('DataStoreService:GetDataStore');
+  const sourceGroundedCombat=nativeCombatVerified?{
+    systemFamily:'패링·회피·인벤토리 연동 전투',
+    playerChoice:'기존 서버 판정의 패링과 회피 시점을 선택하고 인벤토리 상태를 확인해 다음 전투 대응을 정한다.',
+    source:nativeServerPath
+  }:null;
+  const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE||sourceGroundedCombat;
   const existingGameDesign=Boolean(seed.originalDesignContext||existingSystem||seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION||(typeof catalogGame!=='undefined'&&catalogGame));
   const bSystemReference=typeof basicDesignMethod!=='undefined'&&basicDesignMethod&&existingGameDesign&&!(seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE')?{
     scope:Number(basicDesignMethod.version)>=2?'B_EXISTING_GAME_SYSTEMS':'B_SUPPORTING_REFERENCE_ONLY',
@@ -1282,9 +1305,12 @@ function computeVibeNativeDesign(){
     gameGenre:clean(existingSystem?.gameGenre||original.creativeGrammar?.a?.gameGenre),
     source:clean(existingSystem?.source||seed.DESIGN_BASELINE_SOURCE||seed.originalDesignContext?.source||seed.seedId)
   }:null;
-  const freeTopicMode=ownerFreeTopic||Boolean(bSystemReference);
+  // 원본 구현을 보유한 게임의 재설계는 실제 게임 정체성을 유지한다. 명시적 교체 지시만 예외다.
+  const nativeGameVerified=/\bGameId\s*=/.test(nativeConfig)&&nativeConfig.includes(`"${gameId}"`)
+    &&nativeServer.length>0;
+  const freeTopicMode=ownerFreeTopic&&(!nativeGameVerified||seed.REPLACE_EXISTING_GAME_IDENTITY===true);
   const computed=computeVibeSeedProposal({
-    requestId:gameId,category:seed.GAME_CATEGORY,platform:seed.INITIAL_TARGET_PLATFORM,
+    requestId:gameId,category:authoredCategory,platform:seed.INITIAL_TARGET_PLATFORM,
     gameName:freeTopicMode?'':clean(seed.gameName||game.name),
     ownerBrief:freeTopicMode?'':clean(seed.OWNER_LATEST_DESIGN_REQUEST||seed.OWNER_DESIGN_INTENT),
     gameDescription:freeTopicMode?'':clean(game.description),
@@ -1418,12 +1444,12 @@ function computeVibeNativeDesign(){
   }));
   if(!abilities.length)abilities.push(
     {id:'VIBE_CHOOSE',name:'첫 시스템의 경로 선택',kind:'INTERACTION',ownerId:'PLAYER',ruleId:roles.A.id,
-      trigger:`${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,range:0,rangeUnit:'선택 입력',resource:'행동 기회',cost:0,cooldownSeconds:0,
+      trigger:shorten(`${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,400),range:0,rangeUnit:'선택 입력',resource:'행동 기회',cost:0,cooldownSeconds:0,
       telegraph:'선택지의 변화 조건과 현재 위험을 화면에 알린다.',avoidance:'다른 경로를 선택하거나 실행하지 않고 되돌아간다.',
       effect:'선택 경로와 반응 위험을 계획 상태에 반영한다.',stateInputs:[roles.A.stateInputs[0]],stateOutputs:[roles.A.stateOutputs[0]],
       source:'시드 인과문법 A의 설계 계약 (실제 구현 전)',rangeKey:'',costKey:'',cooldownKey:''},
     {id:'VIBE_RESPOND',name:'두 번째 시스템의 대응 선택',kind:'INTERACTION',ownerId:'PLAYER',ruleId:roles.B.id,
-      trigger:`${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,range:0,rangeUnit:'선택 입력',resource:'행동 기회',cost:0,cooldownSeconds:0,
+      trigger:shorten(`${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,400),range:0,rangeUnit:'선택 입력',resource:'행동 기회',cost:0,cooldownSeconds:0,
       telegraph:'상대의 다음 반응과 예상되는 선택 비용을 알린다.',avoidance:'대응을 취소하고 이전 안전 단계로 돌아간다.',
       effect:'대응 결과를 다음 A의 계획 조건으로 되돌려 보낸다.',stateInputs:[roles.B.stateInputs[0]],stateOutputs:[roles.B.stateOutputs[0]],
       source:'시드 인과문법 B의 설계 계약 (실제 구현 전)',rangeKey:'',costKey:'',cooldownKey:''}
@@ -1513,7 +1539,7 @@ function computeVibeNativeDesign(){
       when:`${roles[role].stateInputs.join('·')} 입력이 확정되고 ${axis.playerChoice}의 선행 조건을 만족할 때.`,
       where:`${regions[index].name}: ${regions[index].traversal}`,
       what:`${creativeGrammar[role.toLowerCase()].system}에 ${creativeGrammar[role.toLowerCase()].material} 소재를 결합한다. ${roles[role].playerChoice}`,
-      how:freeTopicMode?`입력과 판정: ${axis.playerChoice} ${axis.materialRule}`:`입력과 판정: ${axis.playerChoice}. ${axis.materialRule} ${creativeGrammar[role.toLowerCase()].stateChange}`,
+      how:freeTopicMode?`입력과 판정: ${axis.playerChoice} ${axis.materialRule}`:`입력 ${roles[role].stateInputs.join('·')} 확인 → ${axis.playerChoice}. 판정: ${axis.materialRule} 출력 ${roles[role].stateOutputs.join('·')}을 확정하면 ${roles[next].id}의 후속 선택 조건을 갱신한다.`,
       why:`${axis.purpose} ${role}의 결정을 다음 ${next}의 조건으로 전달하는 이유: ${creativeGrammar.abEvolution[role==='A'?'aChangesB':'bChangesA']}`,
       result:stateResult(role),linkedElements:[role,next],ruleIds:[roles[role].id,roles[next].id],regionIds:[regions[index].id]
     })),
