@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1u5u41a",
+      "worker": "vibe2",
+      "taskId": "island-village-roblox-library-cc0-replacement-v1",
+      "gameId": "island-village",
+      "files": [
+        "roblox-games/island-village/client/Game.client.luau",
+        "roblox-games/island-village/shared/GameConfig.luau",
+        "roblox-games/island-village/server/Game.server.luau"
+      ],
+      "baseSha": "ce4fc3937d7163eb4803644e422566145e3406c4",
+      "runId": "40174086288",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-25T08:06:00.626Z",
+      "expiresAt": "2026-10-25T08:51:00.626Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:island-village-roblox-library-cc0-replacement-v1"
+      ]
+    }
+  ]
 }
