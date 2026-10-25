@@ -563,7 +563,10 @@ export class IslandRendererV3 {
       grape:new THREE.MeshLambertMaterial({color:0x643878}),
       metal:new THREE.MeshLambertMaterial({color:0x667b88}),
       fire:new THREE.MeshLambertMaterial({color:0xff9a35,emissive:0x4e1c00}),
-      water:new THREE.MeshLambertMaterial({color:0x54a6aa})
+      water:new THREE.MeshLambertMaterial({color:0x54a6aa}),
+      mortar:new THREE.MeshLambertMaterial({color:0x746e62}),
+      slate:new THREE.MeshLambertMaterial({color:0x54463b}),
+      window:new THREE.MeshLambertMaterial({color:0xc6a15b,emissive:0x3f280c})
     };
     const style=BUILDING_SIGNS[kind];
     if(style){
@@ -603,24 +606,63 @@ export class IslandRendererV3 {
       box(.62,.73,.18,'metal',x,y,z+.1);
       box(.22,.49,.19,'flag',x,y,z+.21);
     };
+    // 유틸: 단일 평면 지붕 대신 서까래·겹기와·용마루를 가진 경사진 중세 지붕.
     const gable=(w,d,y,mat='roof')=>{
       for(const side of [-1,1]){
-        const p=box(w*.59,.16,d+.22,mat,side*w*.264,y,0);p.rotation.z=side*.58;
-        // 목조 트러스: 평평한 지붕 대신 중세 목재 서까래와 용마루를 표시한다.
+        const p=box(w*.59,.19,d+.24,mat,side*w*.264,y,0);p.rotation.z=side*.58;
         for(const z of [-d*.43,d*.43]){
-          const beam=box(w*.58,.09,.1,'wood',side*w*.264,y+.04,z);
+          const beam=box(w*.58,.115,.105,'wood',side*w*.264,y+.055,z);
           beam.rotation.z=side*.58;
         }
+        for(let row=0;row<5;row++){
+          const z=-d*.39+row*d*.195;
+          const seam=box(w*.55,.05,.075,'slate',side*w*.267,y+.135,z);
+          seam.rotation.z=side*.58;
+        }
+        for(let i=0;i<3;i++){
+          const edge=box(.07,.08,d*.18,'trim',side*(w*.11+i*w*.12),y+.23-i*.13,0);
+          edge.rotation.z=side*.58;
+        }
       }
-      box(.13,.13,d+.34,'trim',0,y+.38,0);
+      box(.18,.16,d+.35,'slate',0,y+.4,0);
     };
+    // 메인: 회벽·노출 골조·목재 X버팀목·창틀·돌기단·철장식을 집 몸체에 일체형으로 만든다.
     const hut=(w=3,d=2.5,mat='wall')=>{
-      box(w,1.55,d,mat,0,.78,0);gable(w,d,1.88);
-      box(.6,1.05,.1,'dark',0,.53,d/2+.04);
-      for(const x of [-w*.43,w*.43]){box(.13,1.56,.15,'wood',x,.78,d/2+.07);
-        box(.42,.45,.08,'dark',x*.53,1.08,d/2+.06);
-        box(.08,.45,.11,'trim',x*.53,1.08,d/2+.13);}
-      box(w,.12,.17,'wood',0,1.54,d/2+.08);
+      box(w+.15,.25,d+.19,'stone',0,.16,0);
+      box(w,1.55,d,mat,0,.87,0);gable(w,d,1.99);
+      for(const face of [-1,1]){
+        box(w,.13,.13,'wood',0,1.63,face*(d/2+.09));
+        box(w,.115,.13,'wood',0,.3,face*(d/2+.09));
+        for(const x of [-w*.44,0,w*.44]){
+          box(.13,1.48,.16,'wood',x,.91,face*(d/2+.08));
+        }
+      }
+      for(const x of [-w*.42,w*.42]){
+        for(const z of [-d*.43,d*.43])box(.15,1.6,.15,'wood',x,.85,z);
+        const brace=box(.12,.87,.095,'trim',x*.75,1.1,d/2+.14);
+        brace.rotation.z=x>0?-.46:.46;
+        box(.44,.45,.1,'window',x*.57,1.11,d/2+.13);
+        for(const shift of [-.26,.26])box(.13,.56,.12,'wood',x*.57+shift,1.11,d/2+.22);
+        box(.65,.1,.23,'stone',x*.57,.84,d/2+.19);
+      }
+      box(.7,1.21,.12,'dark',0,.73,d/2+.17);
+      box(.77,.11,.22,'trim',0,1.35,d/2+.19);
+      box(.08,.08,.055,'metal',.24,.74,d/2+.26);
+      box(.92,.13,.53,'stone',0,.12,d/2+.34);
+    };
+    // 유틸: 돌벽 앞면에 줄눈을 실제 입체로 올려 무늬 없는 네모 블록을 제거한다.
+    const masonry=(w,d,h)=>{
+      const rows=Math.max(2,Math.min(6,Math.floor(h/.6)));
+      for(let row=1;row<rows;row++){
+        const y=h*row/rows;
+        for(const sign of [-1,1]){
+          box(w-.08,.035,.062,'mortar',0,y,sign*(d/2+.033));
+          for(let col=1;col<5;col++){
+            const x=-w/2+col*w/5+(row%2?w/10:0);
+            if(x<w/2-.13)box(.046,h/rows*.6,.065,'mortar',x,y+h/(rows*3),sign*(d/2+.035));
+          }
+        }
+      }
     };
     const crest=(w,d,h)=>{
       for(let x=-w/2+.2;x<w/2;x+=.5)for(const z of [-d/2,d/2])
@@ -678,7 +720,7 @@ export class IslandRendererV3 {
     }
     if(kind==='fort-wall'||kind==='fort-wall-side'){
       const w=kind==='fort-wall'?3:.78,d=kind==='fort-wall'?.78:3,h=Math.max(1.6,height*.83);
-      box(w,h,d,'wall',0,h/2,0);
+      box(w,h,d,'wall',0,h/2,0);masonry(w,d,h);
       box(w+.09,.17,d+.09,'stone',0,h-.08,0);crest(w,d,h);
       return g;
     }
@@ -716,8 +758,13 @@ export class IslandRendererV3 {
     }
     if(kind==='fort-keep'){
       const h=Math.max(5,height);
-      box(4.6,h*.62,3.55,'wall',0,h*.31,0);
+      box(4.6,h*.62,3.55,'wall',0,h*.31,0);masonry(4.6,3.55,h*.62);
       box(4.8,.19,3.75,'stone',0,h*.62,0);
+      for(const y of [h*.17,h*.38])for(const x of [-1.08,1.08]){
+        box(.27,.59,.08,'dark',x,y,1.85);
+        box(.41,.09,.18,'trim',x,y+.32,1.9);
+      }
+      for(const x of [-2.3,2.3])box(.18,h*.62,.2,'stone',x,h*.31,1.81);
       crest(4.6,3.55,h*.63);
       for(const x of [-1.72,1.72])for(const z of [-1.25,1.25]){
         cyl(.64,h*.9,'wall',x,h*.45,z);
@@ -726,6 +773,8 @@ export class IslandRendererV3 {
           box(.25,.32,.24,'light',x+Math.sin(a)*.7,h*.99,z+Math.cos(a)*.7)}
       }
       box(1.1,h*.35,.15,'dark',0,h*.2,1.83);
+      for(let i=0;i<5;i++)box(.07,h*.29,.05,'wood',-.43+i*.21,h*.2,1.96);
+      for(const y of [h*.14,h*.26])box(1.12,.08,.09,'metal',0,y,1.96);
       for(const x of [-1,1])box(.27,.59,.12,'dark',x,h*.46,1.82);
       // 성채 앞 정문과 왕국 고유 깃발 색을 강조한다.
       box(1.27,.14,.22,'trim',0,h*.4,1.94);
@@ -917,13 +966,11 @@ export class IslandRendererV3 {
       return g;
     }
     if(kind==='fort-hovel'){
-      box(2.5,1.45,2.2,'wood',0,.74,0);gable(2.9,2.4,1.85,'crop');
-      box(.59,1,.11,'dark',0,.51,1.16);
+      hut(2.7,2.45,'wall');
       box(1.17,.58,.66,'wood',1.14,.31,-.73);
-      // 주민 오두막: 목조 외벽, 화분, 굴뚝으로 작은 집 특유의 실루엣.
-      for(const x of [-1,1]){box(.13,1.43,.13,'trim',x,.72,1.14);
-        box(.54,.31,.35,'leaf',x,.32,1.36);}
-      chimney(.83,-.68,2.5);return g;
+      // 주민 오두막: 회벽과 짙은 목조 골조·꽃상자·작은 굴뚝.
+      for(const x of [-1,1])box(.54,.31,.35,'leaf',x,.37,1.55);
+      chimney(.83,-.68,2.58);return g;
     }
     if(kind==='fort-armory'){
       box(4.1,2.35,3.0,'stone',0,1.18,0);gable(4.3,3.2,2.66);
@@ -941,10 +988,9 @@ export class IslandRendererV3 {
     const w=kind==='fort-barracks'?4.6:kind==='fort-market'?3.9:kind==='fort-workshop'?3.5:2.8;
     const d=kind==='fort-barracks'?3.1:2.75;
     box(w,h*.68,d,kind==='fort-workshop'?'stone':'wall',0,h*.34,0);
-    for(const sign of [-1,1]){
-      const slab=box(w*.59,.18,d+.28,kind==='fort-barracks'?'roof':'tile',sign*w*.265,h*.84,0);
-      slab.rotation.z=sign*.57;
-    }
+    box(w+.12,.19,d+.12,'stone',0,.1,0);
+    masonry(w,d,h*.68);
+    gable(w,d,h*.84,kind==='fort-barracks'?'roof':'tile');
     for(const x of [-w*.42,w*.42])box(.16,h*.68,.16,'wood',x,h*.34,d/2+.05);
     box(.57,.95,.08,'dark',0,.5,d/2+.06);
     for(const x of [-w*.29,w*.29]){
@@ -1001,13 +1047,15 @@ export class IslandRendererV3 {
           ctx.fillStyle='#24271e';ctx.fillRect(0,0,256,64);
           ctx.fillStyle=sign[1];ctx.fillRect(4,4,248,56);
           ctx.strokeStyle='#f2dcaa';ctx.lineWidth=3;ctx.strokeRect(5,5,246,54);
-          ctx.font='bold 28px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.font='bold 23px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
           ctx.fillStyle='#fff9e2';ctx.fillText(sign[0],128,34,236);
           texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
           texture.magFilter=THREE.LinearFilter;this.signTextures3d.set(kind,texture);
         }
         const label=new THREE.Sprite(new THREE.SpriteMaterial({map:texture.clone(),transparent:true,depthWrite:false}));
-        label.scale.set(3.1,.77,1);label.position.y=Math.max(height+1.1,kind==='fort-mill'?5.35:4.05);
+        label.scale.set(1.85,.43,1);
+        label.position.y=Math.max(height+.65,kind==='fort-mill'?5.05:3.65);
+        label.userData.isBuildingLabel=true;group.userData.buildingLabel=label;
         group.add(label);
       }
       return group;
@@ -1082,6 +1130,8 @@ export class IslandRendererV3 {
         }
         if(!item){const mesh=this.make3d(kind,height);mesh.userData.buildingId=id;
           this.scene3.add(mesh);item={mesh,kind,loaded,height,createdAt:now};this.instances3d.set(id,item)}
+        const nameLabel=item.mesh.userData.buildingLabel;
+        if(nameLabel)nameLabel.visible=zoom>=.62;
         const asset=this.models3d.get(kind),sprite=item.mesh.children[0];
         if(asset?.frames&&sprite?.material?.map){
           const dx=x-(item.lastX??x),dy=y-(item.lastY??y);
