@@ -28,10 +28,11 @@ test('paused Unity Web never generates build probes or launch links',()=>{
 // 실제 GitHub Pages 게시 검증은 기존 Web Release 파이프라인 책임이다.
 test('internal web game links use the registered source path without a score gate',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},platformLinks,buildCard,playableWebHref,sourceWebHref})',{
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},setRoutes(value){publishedWebRoutes=new Set(value)},platformLinks,buildCard,playableWebHref,sourceWebHref})',{
     document:{readyState:'loading',addEventListener(){}},Date,Intl
   });
   api.setExposure({games:[]});
+  api.setRoutes(['web-games/fantasy-survival/']);
   const row=(id,state,archive=true)=>({id,canonical:{
     identity:{gameId:id,name:id},
     lifecycle:{state:'ACTIVE'},
@@ -43,7 +44,7 @@ test('internal web game links use the registered source path without a score gat
   assert.equal(api.playableWebHref(eligible),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/');
   const unpublished={...eligible,canonical:{...eligible.canonical,publication:{web:{}}}};
   assert.equal(api.playableWebHref(unpublished),'','unpublished route must not claim verified play');
-  assert.equal(api.sourceWebHref(unpublished),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/','original source links always work without a manifest');
+  assert.equal(api.sourceWebHref(unpublished),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/','original source link stays available when the published route is verified');
   assert.match(api.buildCard(unpublished),/원본 게임 · 열기/);
   assert.equal(api.platformLinks(eligible).web,api.playableWebHref(eligible));
   assert.match(api.buildCard(eligible),/일반 웹게임 · 플레이/);
@@ -102,13 +103,14 @@ test('바이브가 원본 카탈로그에 새 게임을 추가하면 다음 원�
   syncPublishedWebRoutes({catalog,manifest:published,sourceTreeShaOf});
   assert.equal(JSON.stringify(catalog.games),snapshot,'repeated Vibe run must not create duplicate game buttons or commits');
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({playableWebHref})',{
+  const api=vm.runInNewContext(renderer+';({setRoutes(value){publishedWebRoutes=new Set(value)},playableWebHref})',{
     document:{readyState:'loading',addEventListener(){}},Date,Intl});
   const withCanonical={...catalog.games[1],canonical:{
     identity:{gameId:'new-game'},lifecycle:{state:'ACTIVE'},
     sources:{web:{path:'web-games/new-game',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
     publication:{web:{route:catalog.games[1].webPublishedRoute,sourceTreeSha:catalog.games[1].webPublishedSourceTreeSha}}
   }};
+  api.setRoutes(['web-games/first-game/','web-games/new-game/']);
   assert.equal(api.playableWebHref(withCanonical),'https://hans1177.github.io/jaewoon-games/web-games/new-game/');
   syncPublishedWebRoutes({catalog,manifest:first,sourceTreeShaOf});
   assert.equal(catalog.games[1].webPublishedRoute,'','missing next release disables the new button, not the game card');
@@ -229,7 +231,7 @@ test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게�
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows})',{document:{readyState:'loading',addEventListener(){}}});
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows,hasRunnableHomepageTarget,hasInternalRelease})',{document:{readyState:'loading',addEventListener(){}}});
   api.setExposure(exposure);
   const available=api.internalReleaseRows(catalog,{});
   const present=new Set(available.map(row=>row.id));
@@ -238,7 +240,16 @@ test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게�
     !['RETIRED','REMOVED','ARCHIVED'].includes(String(game.canonical?.lifecycle?.state||game.lifecycleState||'').toUpperCase())
     &&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.canonical?.production?.class||game.productionClass||'').toUpperCase())
   );
-  const shouldList=game=>game.canonical?.homepage?.runtime?.developmentActive===true&&String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE';
+  const shouldList=game=>{
+    const webState=String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase();
+    const life=String(game.canonical?.lifecycle?.state||game.lifecycleState||'').toUpperCase();
+    if(game.ownerDevelopmentStopped===true||['OWNER_STOPPED','STOPPED'].includes(life))return false;
+    if(game.canonical?.homepage?.runtime?.developmentActive!==true||webState==='NON_GAME_SURFACE')return false;
+    // 정식 네이티브 배포가 없는 영구 철회 웹시제품은 오너 요청에 따라 숨긴다.
+    if(['WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','PERMANENTLY_REMOVED_REJECTED_TEST','DEVELOPMENT_STOPPED','DEVELOPMENT_PAUSED','OWNER_STOPPED','STOPPED','PAUSED'].includes(webState))return api.hasInternalRelease(game);
+    if(game.ownerWebDevelopmentStopped===true||game.canonical?.sources?.web?.developmentStopped===true)return api.hasInternalRelease(game);
+    return true;
+  };
   const expected=eligible.filter(shouldList);
   assert.deepEqual([...present].sort(),expected.map(row=>row.id).sort(),'정식 게임은 유지하고 출처만 있는 미검증 시제품은 제외한다');
   assert.ok(expected.length>3,'집중 개발 밖의 정상 게임도 노출한다');
@@ -260,10 +271,10 @@ test('개발 확정 게임은 게시하되 철회된 테스트의 플레이 버�
   const realWeb=row('real-web','UNITY_WEB_VERIFICATION_REQUIRED');
   const native=row('verified-native','WITHDRAWN_SIMPLE_PROTOTYPE');
   api.setExposure({unityWebEnabled:true,games:[{gameId:'verified-native',platforms:[{
-    platform:'ROBLOX',executionAvailable:true,internalUrl:'https://www.roblox.com/games/123456789'
+    platform:'ROBLOX',placeId:'123456789',executionAvailable:true,internalUrl:'https://www.roblox.com/games/123456789'
   }]}]});
   const visible=api.developmentRows({games:[clickOnly,invalid,realWeb,native]},{});
-  assert.deepEqual(Array.from(visible,game=>game.id),['click-only','missing-entry','real-web','verified-native']);
+  assert.deepEqual(Array.from(visible,game=>game.id),['real-web','verified-native']);
   assert.equal(api.hasRunnableHomepageTarget(native),true);
   assert.match(api.buildCard(native),/https:\/\/www\.roblox\.com\/games\/123456789/);
   assert.equal(api.hasRunnableHomepageTarget(clickOnly),false);
@@ -701,7 +712,7 @@ test('canonical Pages publisher removes stopped and rejected routes from retaine
 });
 
 // 기존 준비 코드를 실제 임시 Git 저장소에서 실행해 캐시가 원본 검증을 우회하지 못하게 한다.
-test('Pages source cache restores only changed bytes and rejects unverified output',()=>{
+test('Pages source cache restores only changed bytes and rejects unverified output',async()=>{
  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  const cleanStart=workflow.indexOf("          const cacheDirectories=['assets'];");
  const cleanEnd=workflow.indexOf('          const catalog=',cleanStart);
@@ -719,20 +730,20 @@ test('Pages source cache restores only changed bytes and rejects unverified outp
   const assetBlobs=new Map(Object.entries(bytes).map(([file,value])=>[file,crypto.createHash('sha1').update(Buffer.from('blob '+value.length+'\0')).update(value).digest('hex')]));
   const restores=[];
   const cp={execFileSync(command,args,options){restores.push(Array.from(args).slice(args.indexOf('--')+1));return execFileSync(command,args,options);}};
-  const run=(executor=cp)=>vm.runInNewContext(code,{fs,path,crypto,Buffer,cp:executor,assetBlobs,refs:new Set(Object.keys(bytes)),site:'_site',console:{log(){}}});
+  const run=(executor=cp)=>vm.runInNewContext('(async()=>{'+code+'})()',{fs,path,crypto,Buffer,cp:executor,assetBlobs,refs:new Set(Object.keys(bytes)),site:'_site',console:{log(){}}});
   fs.writeFileSync('assets/old-untracked.bin','obsolete cached bytes');
-  run();assert.deepEqual(restores,[],'unchanged cache must avoid all source downloads');
+  await run();assert.deepEqual(restores,[],'unchanged cache must avoid all source downloads');
   assert.equal(fs.existsSync('assets/old-untracked.bin'),false,'deleted source must not return through old cache');
   fs.writeFileSync('assets/change.bin','poisoned cache');fs.unlinkSync('assets/missing.bin');
-  run();assert.deepEqual(restores,[['assets/change.bin','assets/missing.bin']]);
+  await run();assert.deepEqual(restores,[['assets/change.bin','assets/missing.bin']]);
   for(const [file,value] of Object.entries(bytes))assert.deepEqual(fs.readFileSync('_site/'+file),value);
   fs.writeFileSync('outside.txt','protected original');fs.unlinkSync('assets/change.bin');
   fs.symlinkSync(path.resolve('outside.txt'),'assets/change.bin');
-  run();assert.equal(fs.readFileSync('outside.txt','utf8'),'protected original');
+  await run();assert.equal(fs.readFileSync('outside.txt','utf8'),'protected original');
   assert.equal(fs.lstatSync('assets/change.bin').isSymbolicLink(),false);
   fs.writeFileSync('assets/change.bin','unrepaired poison');
-  assert.throws(()=>run({execFileSync(){}}),/GITHUB_PAGES_ASSET_SOURCE_MISMATCH/);
-  restores.length=0;fs.rmSync('assets',{recursive:true,force:true});run();
+  await assert.rejects(()=>run({execFileSync(){}}),/GITHUB_PAGES_ASSET_SOURCE_MISMATCH/);
+  restores.length=0;fs.rmSync('assets',{recursive:true,force:true});await run();
   assert.deepEqual(restores,[Object.keys(bytes).sort()],'a cache miss must use the unchanged canonical Git fallback');
  }finally{process.chdir(before);fs.rmSync(root,{recursive:true,force:true});}
 });
