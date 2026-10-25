@@ -1707,7 +1707,6 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   return null;
 }
 
-// 파일명: tools/vibe2-source-worker.mjs
 // 무모델 Roblox 코딩: 이미 구현된 네이티브 소스의 검증 가능한 책임 함수를 직접 보수한다.
 // 신규 규칙/보상/저장 키를 만들거나 확인되지 않은 UI·서버 API를 추측하지 않는다.
 export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot='',responsibleFiles=[]}={}){
@@ -1756,16 +1755,16 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       }
     }
     if(inputWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
-      for(const match of source.matchAll(/\b([A-Za-z_][A-Za-z_0-9]*)\.MouseButton1Click:Connect\(/g)){
-        const variable=match[1],statement=match[0],line=source.slice(source.lastIndexOf('\n',match.index)+1,match.index);
-        if(/--/.test(line))continue;
+      // 실행 라인에 시작하는 실제 연결만 교체하고 문자열·주석·리터럴은 건드리지 않는다.
+      for(const match of source.matchAll(/^[ \t]*([A-Za-z_][A-Za-z_0-9]*)\.MouseButton1Click:Connect\(/gm)){
+        const variable=match[1],statement=match[0];
         const declare=new RegExp('\\blocal\\s+'+variable+'\\s*=\\s*Instance\\.new\\(["\\x27](?:TextButton|ImageButton)["\\x27]\\)');
         if(!declare.test(source)||source.includes(variable+'.Activated:Connect('))continue;
         if(source.split(statement).length!==2)continue;
         return {
           summary:'Roblox native multi-device GUI activation repair',
           expectedEffect:'Use GuiButton.Activated for existing click handler on touch, controller and mouse without altering game action',
-          edits:[{path:relative,find:statement,replace:variable+'.Activated:Connect('}],
+          edits:[{path:relative,find:statement,replace:statement.slice(0,statement.indexOf(variable))+variable+'.Activated:Connect('}],
           newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'GUI_BUTTON_NATIVE_ACTIVATED'
         };
       }
