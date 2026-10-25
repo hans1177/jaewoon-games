@@ -101886,11 +101886,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b70ae58bb97dfb464ae932aa",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10186",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9897609d4ddec17c97bf4ccbc6c1abb45338705f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10186,
+        "baseBranch": "main",
+        "headBranch": "fix/cozy-publish-qa-next-buildup-20261025",
+        "baseSha": "9897609d4ddec17c97bf4ccbc6c1abb45338705f",
+        "headSha": "06140702b0321b0b1c0c716485a1d6322f341ed4",
+        "mergeCommitSha": "6709402bfd1a7bf69c93e9af8c226547b82c9857",
+        "mergedAt": "2026-10-25T11:58:31Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f2eb6d8434b23227ffffdc01f2eef59ba094b1da6b36f1d3b77955a44b4d820f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/cozy-publish-qa-next-buildup-20261025",
+        "candidateSha": "06140702b0321b0b1c0c716485a1d6322f341ed4"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 118,
+        "deletedLineCount": 71,
+        "changedFiles": [
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          "qa/cozy-cc0-library-audit.test.mjs",
+          "roblox-games/human-go/client/Game.client.luau",
+          "roblox-games/human-go/roblox-source-bootstrap.json",
+          "roblox-games/human-go/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-cozy-island-direct-publish.yml",
+          "qa/cozy-cc0-library-audit.test.mjs",
+          "roblox-games/human-go/client/Game.client.luau",
+          "roblox-games/human-go/roblox-source-bootstrap.json",
+          "roblox-games/human-go/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10186",
+        "merge-commit:6709402bfd1a7bf69c93e9af8c226547b82c9857",
+        "base-main:9897609d4ddec17c97bf4ccbc6c1abb45338705f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 801
+    "total": 802
   }
 }
