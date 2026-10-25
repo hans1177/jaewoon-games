@@ -337,12 +337,17 @@ remote.OnServerEvent:Connect(function(player, actionId)
   lastAction[player] = now
   handler(player)
 end)
-Players.PlayerRemoving:Connect(function(player)
+local function savePlayer(player)
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
   pcall(function()
     store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
   end)
   lastAction[player] = nil
+end
+Players.PlayerRemoving:Connect(savePlayer)
+game:BindToClose(function()
+  for _, player in ipairs(Players:GetPlayers()) do
+    savePlayer(player)
+  end
 end)
-game:BindToClose(function() end)
