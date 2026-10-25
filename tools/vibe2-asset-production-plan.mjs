@@ -1484,12 +1484,6 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   };
   const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map(),currentRolesByFamily=new Map(),unclassifiedNativeByFamily=new Map();
   const primitiveFallbackByFamily=new Map();
-  const isPrimitiveFallback=asset=>{
-    const tokens=[asset?.visualState,asset?.renderMode,asset?.geometryType,asset?.geometryKind,asset?.presentationState,
-      ...(Array.isArray(asset?.visualDebtSignals)?asset.visualDebtSignals:[])].map(v=>clean(v).toUpperCase());
-    return asset?.primitiveOnly===true||asset?.isPrimitiveFallback===true||asset?.placeholder===true
-      ||tokens.some(v=>['PRIMITIVE_ONLY','PRIMITIVE_FALLBACK','GEOMETRIC_PLACEHOLDER','PLACEHOLDER','SPHERE','BALL','CUBE','CYLINDER','CAPSULE','SINGLE_PART_MANNEQUIN'].includes(v));
-  };
   let intendedOnlyCount=0;
   // [다운로드 원본 우선] 역할·권리·플랫폼 필터를 통과한 확보 원본을 우선한다.
   // 출처 URL과 해시 외에 실제 파일이 없는 카탈로그 메타데이터는 우선하지 않는다.
@@ -1540,7 +1534,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const current=currentConsumerIds.includes(id);
     // [원형 시각 결손] 기존 원형/캡슐 NPC·몹은 3D 원본 파일이 아직 없으므로
     // 일반 재사용 자격을 통과할 수 없다. 재사용 허가 없이 교체 수요로만 추적한다.
-    if(current&&spatialFamilies.has(family)&&isPrimitiveFallback(asset)
+    if(current&&spatialFamilies.has(family)&&internalAssetHardBlockReason(asset)==='ROUND_PRIMITIVE_VISUAL_FORBIDDEN'
       &&asset?.securityBlocked!==true&&asset?.quarantined!==true
       &&asset?.practiceOnly!==true&&asset?.practiceArtifact!==true
       &&!/(?:NC|UNKNOWN|FORBIDDEN|QUARANTIN)/i.test(clean(asset?.license))){
@@ -1551,7 +1545,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       continue;
     }
     if(current&&assetSupplyCandidateAllowed(asset,target)){
-      if(spatialFamilies.has(family)&&isPrimitiveFallback(asset)){
+      if(spatialFamilies.has(family)&&internalAssetHardBlockReason(asset)==='ROUND_PRIMITIVE_VISUAL_FORBIDDEN'){
         const rows=primitiveFallbackByFamily.get(family)||[];
         rows.push(asset);primitiveFallbackByFamily.set(family,rows);
       }
@@ -1786,7 +1780,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
     }
     if(usedCount){
-      // [원형/구/큐브 자동 교체] 명시된 임시 외형을 유지/합격으로 선언하지 않는다.
+      // [전 공용 라이브러리 원형/구/큐브 제거] 모델 출처·역할·권리 검증 전에는 원형을 최종 외형으로 인정하지 않는다.
       // 실제 같은 역할의 CC0 원본이 있으면 기존 ACQUIRE_ADAPT로 연결한다. 없는 경우 게임은 보존하고 시각 결손으로 남긴다.
       const primitiveRows=primitiveFallbackByFamily.get(family)||[];
       if(primitiveRows.length){
@@ -3871,6 +3865,24 @@ function internalAssetHardBlockReason(asset={}){
   if(!/^(?:CC0(?:-1\.0)?|CC0 1\.0 UNIVERSAL)$/.test(license))return'CC0_ORIGINAL_LICENSE_REQUIRED';
   const family=clean(asset?.family||asset?.category).toUpperCase();
   if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
+    // [전체 공용 3D 라이브러리] 둥근 기본 Part를 메시 자산으로 위장한 등록은 즉시 차단한다.
+    // 콜라이더와 플레이 규칙을 임의 삭제하지 않고 기존 제작 책임에서 실제 파생 메시로 교체해야 한다.
+    const primitiveSignals=[asset?.visualState,asset?.renderMode,asset?.geometryType,
+      asset?.geometryKind,asset?.presentationState,asset?.shape,asset?.partShape,
+      ...(Array.isArray(asset?.visualDebtSignals)?asset.visualDebtSignals:[])];
+    const primitiveLabels=new Set(['PRIMITIVE_ONLY','PRIMITIVE_FALLBACK','GEOMETRIC_PLACEHOLDER','PLACEHOLDER',
+      'SPHERE','BALL','ROUND','CUBE','BLOCK','CYLINDER','CAPSULE','SINGLE_PART_MANNEQUIN']);
+    const partRows=[...(Array.isArray(asset?.visualParts)?asset.visualParts:[]),
+      ...(Array.isArray(asset?.appearanceParts)?asset.appearanceParts:[])];
+    const primitivePart=partRows.some(row=>{
+      if(row?.visible===false||row?.transparency===1)return false;
+      const shape=clean(row?.shape||row?.partType||row?.primitiveShape).toUpperCase().split('.').pop();
+      return ['BALL','SPHERE','ROUND','CYLINDER','CAPSULE','BLOCK','CUBE'].includes(shape)
+        &&row?.isMeshPart!==true&&row?.meshSourceVerified!==true;
+    });
+    if(asset?.primitiveOnly===true||asset?.isPrimitiveFallback===true||asset?.placeholder===true
+      ||primitivePart||primitiveSignals.some(v=>primitiveLabels.has(clean(v).toUpperCase())))
+      return'ROUND_PRIMITIVE_VISUAL_FORBIDDEN';
     const models=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
       ...(asset?.nativeArtifacts||[]),...(asset?.sourceFiles||[]),...(asset?.fileRoles?.models||[])];
     if(!models.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file))))
