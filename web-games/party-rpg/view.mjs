@@ -7,9 +7,11 @@ const SCALE=1/36;
 const HEROES=['warrior','rogue','cleric','wizard','ranger'];
 const PROPS=['tree','tree-high','tree-crooked','rock-large','rock-small','rock-wide','wall','wall-wood','wall-door','wall-window-shutters','roof','roof-gable','roof-gable-end','chimney','fountain-round','cart','stall','lantern','pillar-stone','wall-broken','wall-arch','road','fence'];
 const MONSTERS=['slime','orc','bunny','golem','ghost','winged'];
+// 게임 내 전신 원화 순서. 초상화와 저장 데이터는 사용하지 않는다.
+const ACTOR_ART=['warrior','rogue','cleric','wizard','ranger','slime','orc','bunny','golem','ghost','winged','civilian'];
 export class PartyView{
  constructor(canvas,{onLoad=()=>{}}={}){
-  this.canvas=canvas;this.models=new Map();this.actors=new Map();this.staticRoot=new THREE.Group();this.worldSignature='';this.assetRevision=0;
+  this.canvas=canvas;this.models=new Map();this.actors=new Map();this.actorArt=null;this.actorBounds=[];this.staticRoot=new THREE.Group();this.worldSignature='';this.assetRevision=0;
   this.targetYaw=Math.PI/4;this.yaw=this.targetYaw;this.pitch=.73;this.zoom=1;this.targetZoom=1;this.offset=new THREE.Vector2();this.focus=new THREE.Vector3();this.follow='player';this.selection='player';this.destination=null;
   this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);this.hit=new THREE.Vector3();this.lastAt=0;this.frameCost=16;this.quality=1;this.qualityAt=0;this.labels=[];this.lastLabelsAt=0;this.ready=false;this.worldMood=null;this.torchLights=[];this.torchFlames=[];this.climateParticles=null;this.weatherKind='clear';this.qualityPreset='auto';this.banners=[];this.terrainTint=new THREE.Color();
   try{
@@ -32,6 +34,26 @@ export class PartyView{
   }catch(error){const status=document.getElementById('viewStatus');if(status){status.textContent='3D 화면을 시작하지 못했어. WebGL을 지원하는 브라우저에서 열어 줘.';status.hidden=false;}console.error('파티 RPG 새 렌더러 초기화 실패',error);}
  }
  async load(onLoad){
+  // 원화 한 장을 공유한다. 배우마다 이미지·대형 프레임 텍스처를 복제하지 않는다.
+  try{
+   const art=await new THREE.TextureLoader().loadAsync(new URL('../../assets/shared/party/actors.webp',import.meta.url).href);
+   art.colorSpace=THREE.SRGBColorSpace;art.magFilter=THREE.NearestFilter;art.minFilter=THREE.LinearMipmapLinearFilter;art.generateMipmaps=true;
+   this.actorArt=art;
+   const canvas=document.createElement('canvas');canvas.width=art.image.width;canvas.height=art.image.height;
+   const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(art.image,0,0);
+   const pixels=context.getImageData(0,0,canvas.width,canvas.height).data;
+   for(let n=0;n<12;n++){
+    const left=Math.round(n%4*canvas.width/4),right=Math.round((n%4+1)*canvas.width/4),top=Math.round(Math.floor(n/4)*canvas.height/3),bottom=Math.round((Math.floor(n/4)+1)*canvas.height/3);
+    // 옆 셀에서 넘어온 한두 픽셀이나 미세한 알파 먼지는 몸체 경계에 넣지 않는다.
+    const columns=new Uint16Array(right-left),rows=new Uint16Array(bottom-top);
+    for(let y=top;y<bottom;y++)for(let x=left;x<right;x++)if(pixels[(y*canvas.width+x)*4+3]>64){columns[x-left]++;rows[y-top]++;}
+    let x0=right,y0=bottom,x1=left,y1=top;
+    for(let x=left;x<right;x++)if(columns[x-left]>=8){x0=Math.min(x0,x);x1=x;}
+    for(let y=top;y<bottom;y++)if(rows[y-top]>=8){y0=Math.min(y0,y);y1=y;}
+    if(x1<x0||y1<y0)throw new Error('전신 원화 셀이 비어 있어: '+n);
+    this.actorBounds.push({u0:x0/canvas.width,u1:(x1+1)/canvas.width,v0:1-(y1+1)/canvas.height,v1:1-y0/canvas.height,aspect:(x1-x0+1)/(y1-y0+1)});
+   }
+  }catch(error){this.actorArt=null;this.actorBounds=[];console.warn('파티 전신 원화 적재 실패 · 기존 3D 모델 유지',error);}
   const order=[...HEROES,'tree','rock-large','wall','roof','stall','fountain-round',...MONSTERS,...PROPS.filter(k=>!['tree','rock-large','wall','roof','stall','fountain-round'].includes(k))];let completed=0,next=0;const loader=new GLTFLoader();
   const worker=async()=>{while(next<order.length){const key=order[next++];try{
    const model=await loader.loadAsync(new URL('../../assets/shared/party/'+key+'.glb',import.meta.url).href);model.scene.updateMatrixWorld(true);
@@ -365,67 +387,49 @@ buildWorld(live){
  createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();}});root.add(model);// 픽셀 스프라이트가 직업 의복·장비 실루엣을 직접 그리므로 3D 장식은 중복 생성하지 않는다.
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
   const mixer=new THREE.AnimationMixer(model),actions=new Map();for(const clip of original.animations){const action=mixer.clipAction(clip);actions.set(clip.name,action);}
-  // 픽셀 원화: 64×80 해상도, 8개 보행 포즈. 판정·저장·능력치는 원본 유지.
-  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=80;
-  const ctx=canvas.getContext('2d',{alpha:true});ctx.imageSmoothingEnabled=false;
-  const palettes={warrior:['#253449','#647d99','#c6d9e4','#e8b98b','#bd833e'],rogue:['#29243e','#65547d','#b29fca','#ddb28e','#ba6682'],cleric:['#454a56','#b8b5a0','#fff0c5','#f1c49d','#d6a744'],wizard:['#252c54','#596baa','#b9c9f0','#e5b894','#b59ae9'],ranger:['#243f35','#557653','#b2c78a','#dfb78c','#ba8753'],orc:['#344333','#789251','#c0cb88','#c2b190','#986d45'],golem:['#303e4c','#647d89','#acbbc0','#80e1e4','#bd985e'],bunny:['#66525d','#bfa9a0','#f7e5cf','#eba7b0','#957b66'],ghost:['#293951','#657f9f','#c5e5ef','#a5fff4','#7f95cc'],winged:['#3d253e','#935577','#e3abc2','#ffd2a7','#b380c9'],slime:['#254754','#3b9e99','#9bede0','#e5fff2','#6bbbc9']};
-  const c=palettes[role]||palettes.warrior,ink='#17202e';
-  const rect=(color,x,y,w,h)=>{ctx.fillStyle=color;ctx.fillRect(Math.round(x),Math.round(y),w,h);};
-  const shape=(color,points)=>{ctx.fillStyle=color;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(Math.round(x),Math.round(y)):ctx.moveTo(Math.round(x),Math.round(y)));ctx.closePath();ctx.fill();};
-  for(let frame=0;frame<8;frame++){
-   ctx.save();ctx.translate(frame*64,0);
-   const phase=frame*Math.PI/4,step=Math.round(Math.sin(phase)*3),lift=Math.round(Math.cos(phase)*1),enemy=kind==='enemy';
-   if(role==='slime'){
-    shape(ink,[[7,66],[8,53],[16,39+lift],[27,34],[39,35],[49,44-lift],[57,60],[55,69],[43,74],[19,74]]);
-    shape(c[1],[[9,65],[11,53],[20,41+lift],[31,37],[42,40],[51,51],[54,65],[44,70],[20,71]]);
-    shape(c[2],[[14,52],[22,42],[33,40],[43,45],[46,53],[36,57],[22,56]]);
-    rect(c[0],17,64,29,4);rect(c[3],20,44,7,3);rect(c[3],16,49,4,3);rect(ink,23,55,4,6);rect(ink,39,55,4,6);rect(c[3],24,55,1,2);rect(c[3],40,55,1,2);rect(c[4],30,64,6,2);
-   }else if(role==='ghost'){
-    shape(ink,[[17,72],[19,34],[15,24],[20,12],[31,7],[43,12],[49,25],[45,37],[51,69],[43,66],[37,75],[29,68],[23,75]]);
-    shape(c[1],[[20,68],[22,32],[19,24],[24,14],[32,11],[42,16],[45,26],[42,36],[47,65],[39,63],[36,70],[29,64],[24,69]]);
-    shape(c[2],[[23,26],[27,17],[36,16],[42,25],[38,33],[28,34]]);rect(ink,26,24,4,6);rect(ink,36,24,4,6);rect(c[3],27,25,2,3);rect(c[3],37,25,2,3);shape(c[2],[[23,38],[28,42],[27,59],[23,64]]);rect(c[0],32,44,3,16);
-   }else{
-    if(role==='winged')for(const flip of [false,true]){ctx.save();if(flip){ctx.translate(64,0);ctx.scale(-1,1);}shape(ink,[[23,36],[9,17+step],[2,25],[4,51],[17,60],[24,49]]);shape(c[1],[[21,39],[10,23+step],[6,28],[7,47],[17,55]]);shape(c[2],[[10,28+step],[12,43],[18,48],[8,43]]);ctx.restore();}
-    if(role==='bunny'){shape(ink,[[21,23],[16,4],[22,1],[29,21]]);shape(ink,[[35,22],[39,1],[46,4],[42,25]]);rect(c[2],20,5,4,15);rect(c[3],21,7,2,10);rect(c[2],39,5,4,15);rect(c[3],40,7,2,10);}
-    // 아웃라인, 발 접지, 의복 주름과 재질별 밝은 면.
-    rect(ink,21,59+step,10,17);rect(ink,35,59-step,10,17);rect(c[0],23,60+step,6,12);rect(c[1],36,60-step,6,12);rect(ink,18,73+step,13,4);rect(ink,35,73-step,13,4);rect(c[4],20,73+step,9,2);rect(c[4],37,73-step,9,2);
-    shape(ink,[[22,30],[41,30],[49,39],[46,61],[39,65],[22,64],[16,56],[16,40]]);
-    shape(c[0],[[23,33],[40,33],[45,40],[42,60],[24,61],[19,54],[20,40]]);
-    shape(c[1],[[24,34],[37,34],[41,42],[38,57],[25,57],[22,45]]);
-    rect(c[2],24,35,3,15);rect(c[0],31,40,3,15);rect(c[4],21,56,23,3);rect(c[2],30,56,5,4);
-    rect(ink,12,37+step,9,21);rect(c[1],14,39+step,5,14);rect(c[3],14,53+step,5,5);rect(ink,43,37-step,9,21);rect(c[1],45,39-step,5,14);rect(c[3],45,53-step,5,5);
-    shape(ink,[[22,11],[39,10],[45,17],[44,28],[39,35],[25,34],[19,27],[18,18]]);
-    shape(role==='golem'?c[1]:c[3],[[24,14],[38,14],[41,19],[40,28],[36,32],[26,30],[22,25],[22,18]]);
-    rect(role==='golem'?c[2]:'#f9d9ae',25,17,3,7);rect('#a47168',25,28,4,2);rect(ink,25,23,4,3);rect(ink,36,23,4,3);rect('#f5f6ea',26,23,1,1);rect('#f5f6ea',37,23,1,1);rect('#9b6458',32,26,2,3);rect(ink,30,31,6,1);
-    if(role==='wizard'){shape(ink,[[16,16],[25,12],[29,1],[36,4],[40,13],[48,18],[39,21],[23,20]]);shape(c[1],[[20,16],[28,13],[31,4],[35,7],[38,15],[43,17]]);rect(c[4],24,16,16,2);shape(c[0],[[23,42],[20,67],[32,65],[44,67],[40,42]]);rect(c[4],28,45,2,18);rect(c[2],32,57,2,3);}
-    else if(role==='cleric'){shape(c[2],[[20,15],[24,6],[39,6],[44,17],[40,20],[23,19]]);rect(c[4],29,7,4,10);rect(c[4],26,11,10,3);shape(c[2],[[25,38],[22,64],[30,64],[32,44],[36,64],[43,64],[39,38]]);rect(c[4],25,41,2,20);rect(c[4],38,41,2,20);}
-    else if(role==='warrior'){shape(c[1],[[20,20],[21,12],[27,7],[38,8],[43,13],[44,21],[39,18],[24,17]]);rect(c[2],24,11,14,3);rect(c[4],31,9,3,11);rect(c[2],16,36,8,5);rect(c[2],40,36,9,5);rect(c[2],27,40,11,3);rect(c[0],28,44,9,2);}
-    else if(role==='ranger'||role==='rogue'){shape(c[0],[[17,26],[19,14],[26,6],[36,6],[44,15],[46,30],[40,29],[39,17],[27,15],[22,28]]);shape(c[1],[[20,20],[24,12],[32,9],[39,13],[40,17],[29,13]]);rect(c[4],24,33,16,4);if(role==='ranger')shape(c[2],[[40,12],[47,3],[48,12],[42,17]]);else rect(c[4],24,28,16,4);}
-    else if(role==='orc'){shape(c[1],[[18,20],[14,15],[14,26],[23,27]]);shape(c[1],[[42,20],[50,15],[49,26],[41,27]]);rect(c[2],24,15,15,4);rect('#fff0c4',25,29,3,5);rect('#fff0c4',37,29,3,5);rect(c[4],20,37,9,8);}
-    else if(role==='golem'){rect(c[2],19,13,8,9);rect(c[0],32,13,2,8);rect(c[3],25,23,4,3);rect(c[3],36,23,4,3);rect(c[2],12,37,11,9);rect(c[2],42,37,11,9);rect(c[0],26,45,12,2);rect(c[3],30,40,5,5);}
-    if(role==='ranger'){shape(ink,[[53,27],[59,36],[60,49],[55,63],[52,61],[56,48],[55,37],[51,29]]);shape(c[4],[[54,30],[57,38],[58,49],[54,59],[56,48],[55,38]]);rect(c[2],53,31,1,29);rect(c[4],47,47-step,14,2);}
-    else if(role==='wizard'||role==='cleric'){rect(ink,53,25,5,47);rect(c[4],54,26,2,44);shape(ink,[[49,25],[51,18],[57,18],[61,25],[57,31],[52,31]]);shape(c[2],[[51,25],[54,20],[58,25],[55,29]]);rect(c[4],51,31,8,3);}
-    else if(['warrior','rogue','orc'].includes(role)){const bladeY=28-step*2;shape(ink,[[53,bladeY-5],[58,bladeY],[57,52],[60,53],[60,56],[56,56],[56,63],[52,63],[52,56],[49,56],[49,53],[52,52]]);rect(c[1],53,bladeY,3,25);rect(c[2],54,bladeY,1,24);rect(c[4],50,53,9,2);rect(c[4],53,57,2,5);if(role==='warrior'){shape(ink,[[8,43],[16,40],[23,44],[22,58],[16,64],[9,59]]);shape(c[1],[[10,45],[16,43],[21,46],[20,57],[16,61],[11,57]]);rect(c[4],15,45,2,14);rect(c[4],11,49,9,2);}}
-    if(enemy&&frame===4){rect('#ffdbb0',26,23,2,2);rect('#ffdbb0',37,23,2,2);}
-   }
-   ctx.restore();
+  // 전신 표현: 실제 고밀도 원화 + 경량 분절 메시. 3D 판정 모델은 그대로 둔다.
+  let pixel=null,pixelRest=null,pixelWidth=0;
+  const bounds=this.actorBounds[ACTOR_ART.indexOf(role)];
+  if(this.actorArt&&bounds){
+   const geometry=new THREE.PlaneGeometry(1,1,12,20),uv=geometry.attributes.uv;
+   for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(bounds.u0,bounds.u1,uv.getX(i)),THREE.MathUtils.lerp(bounds.v0,bounds.v1,uv.getY(i)));
+   uv.needsUpdate=true;pixelRest=geometry.attributes.position.array.slice();
+   pixel=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({map:this.actorArt,transparent:true,alphaTest:.12,depthWrite:false,toneMapped:false,side:THREE.DoubleSide}));
+   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=height*.5;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);model.visible=false;
   }
-  const texture=new THREE.CanvasTexture(canvas);texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestFilter;texture.generateMipmaps=false;texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.ClampToEdgeWrapping;texture.repeat.set(1/8,1);
-  const pixel=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,transparent:true,alphaTest:.08,depthWrite:false,toneMapped:false}));
-  pixel.position.y=height*.55;pixel.scale.set(height*.81,height*1.07,1);root.add(pixel);model.visible=false;
-  const result={root,model,ring,mixer,actions,action:null,role,kind,pixel,pixelFrame:-1,lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials:[]};
+  const result={root,model,ring,mixer,actions,action:null,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,wasAttacking:false,attackAt:0,lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials:[]};
   this.scene.add(root);return result;
  }
  // 애니메이션: GLB 실제 걷기/공격 클립을 크로스페이드, 클립 없는 적도 관성·공격 반동·피격 경직 처리.
  animate(entry,moving,combat,dt,now){
   const attack=combat?.visualUntil>now,hit=entry.hitAt>0?Math.max(0,1-(now-entry.hitAt)/280):0;
   if(entry.pixel){
-   const frame=attack?Math.floor(now/72)%8:moving?Math.floor(now/90)%8:0;
-   if(entry.pixelFrame!==frame){entry.pixelFrame=frame;entry.pixel.material.map.offset.x=frame/8;}
-   const bob=moving?Math.sin(now*.017+entry.height)*.055:Math.sin(now*.003+entry.height)*.015;
-   const thrust=attack?Math.sin(now*.026)*.07:0;
-   entry.pixel.position.y+=(entry.height*.55+bob+thrust+hit*.08-entry.pixel.position.y)*(1-Math.exp(-dt*16));
-   entry.pixel.material.color.setRGB(1,1-hit*.45,1-hit*.48);
+   const blend=1-Math.exp(-dt*12);entry.motion+=((moving?1:0)-entry.motion)*blend;
+   entry.walkPhase+=dt*(entry.role==='golem'?7:entry.role==='bunny'?15:11)*entry.motion;
+   const phase=entry.walkPhase,breath=Math.sin(now*.0027+entry.height)*.007;
+   if(attack&&!entry.wasAttacking)entry.attackAt=now;
+   entry.wasAttacking=attack;
+   const strike=attack?Math.sin(Math.min(1,(now-entry.attackAt)/420)*Math.PI):0;
+   if(moving){const direction=Math.sin(entry.model.rotation.y-this.yaw);if(Math.abs(direction)>.16)entry.facing=direction>0?1:-1;}
+   const spirit=entry.role==='ghost'||entry.role==='winged',gel=entry.role==='slime',heavy=entry.role==='golem';
+   const positions=entry.pixel.geometry.attributes.position,rest=entry.pixelRest;
+   for(let i=0;i<positions.count;i++){
+    const x=rest[i*3],y=rest[i*3+1],t=y+.5,leg=Math.max(0,1-t/.34),side=x<0?-1:1;
+    const sway=Math.sin(phase)*entry.motion*(heavy?.009:.018);
+    const foot=Math.sin(phase+side*Math.PI*.5)*entry.motion;
+    let px=x+sway*t+strike*t*t*(heavy?.055:.095),py=y+breath*t;
+    if(!spirit&&!gel){px+=foot*leg*.025;py+=Math.max(0,foot)*leg*.025;}
+    if(gel){px*=1+Math.sin(phase+now*.003)*.035;py-=Math.sin(phase+now*.003)*.018*t;}
+    if(spirit)px+=Math.sin(now*.004+t*4)*.014*(1-t);
+    if(attack&&Math.abs(x)>.22&&t>.35&&t<.84){px+=strike*.035;py+=strike*(entry.role==='wizard'||entry.role==='cleric'?.055:.015);}
+    positions.setXY(i,px,py);
+   }
+   positions.needsUpdate=true;
+   entry.pixel.quaternion.copy(this.camera.quaternion);
+   entry.pixel.scale.x=entry.pixelWidth*entry.facing;
+   const bob=spirit?Math.sin(now*.0033)*.045:gel?0:Math.abs(Math.sin(phase))*entry.motion*(heavy?.009:.018);
+   entry.pixel.position.y+=(entry.height*.5+bob+hit*.035-entry.pixel.position.y)*blend;
+   entry.pixel.material.color.setRGB(1,1-hit*.4,1-hit*.45);
    return;
   }
   const term=attack?'attack':moving?'walk':'idle',names=[...entry.actions.keys()];
@@ -453,7 +457,7 @@ buildWorld(live){
   const entry=this.actors.get(key);if(entry){entry.hitAt=performance.now();entry.hitPower=power;}
   if(key==='player'||power>1)this.cameraImpact=Math.min(.12,this.cameraImpact+(power>1?.052:.025));
  }
- removeActor(key,entry){if(entry.pixel){entry.pixel.material.map.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
+ removeActor(key,entry){if(entry.pixel){entry.pixel.geometry.dispose();entry.pixel.material.dispose();}this.scene.remove(entry.root);entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.model);entry.root.traverse(o=>{if(o.userData.classGear){o.geometry.dispose();o.material.dispose();}});entry.model.traverse(p=>{if(p.isMesh)for(const m of Array.isArray(p.material)?p.material:[p.material])m.dispose();});this.actors.delete(key);}
  // 직업·기술별 색, 궤적, 보호막, 투사체, 마법 파편을 조합한 경량 3D 이펙트.
  // 게임 피해 판정과 분리하고 휴대폰은 효과/파편 개수를 제한한다.
  playSkillEffect(kind,sx,sy,tx=sx,ty=sy){
