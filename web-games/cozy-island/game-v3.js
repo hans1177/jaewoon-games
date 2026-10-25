@@ -1037,24 +1037,34 @@ function updateCombatUnit(u,targets,dt,hostile){
   if(!hostile&&u._fortPost){u.x=u._fortPost.x;u.y=u._fortPost.y}
   // 공성 병기는 병사 공격이 아니라 성문/벽 돌파를 우선하며, 기존 일반 습격 전투는 유지한다.
   if(hostile&&(u._grandSiege||u._lordRaid)){
-    const fort=getFort(),walls=fort?.walls||{},lane=u._siegeLane||610;
+    const fort=getFort(),walls=fort?.walls||{},lane=u._siegeLane??610;
     const key=lane<520?'north':lane>730?'south':'gate';
+    // 열린 도개교·자유 설치 성문은 길을 막지 않는다.
+    const openGate=key==='gate'&&(fort?.drawbridgeClosed===false||
+      fort?.structures?.some(s=>s?.kind==='gate'&&s.hp>0&&s.open!==false));
+    const blocked=fort&&state.villageDevelopment?.townHallBuilt&&
+      (Number(walls[key])||0)>0&&!openGate&&!u._fortClimbed;
+    // 공성 중이라도 근처 수비병을 무시하고 멍하니 서 있지 않는다.
+    const defender=u.attack>0?nearestLiving(u,targets):null;
+    const canFight=!!defender&&Math.hypot(defender.x-u.x,defender.y-u.y)<=u.range;
     if(u.kind==='trebuchet'&&u.ammo>0){
-      // 투석기는 성벽 밖에서 실제 포격하며 유한 탄약을 소모한다.
+      // 투석기는 바깥에서 포격하며 탄약을 사용한다.
       if(u.x>1770)moveToward(u,1760,lane,dt);
       return;
     }
-    if(fort&&state.villageDevelopment?.townHallBuilt&&(Number(walls[key])||0)>0&&
-      (key!=='gate'||fort.drawbridgeClosed!==false)&&!u._fortClimbed){
-      if(u.x>1353||Math.abs(u.y-lane)>25)moveToward(u,1355,lane,dt);
-      return;
-    }
-    if(u._lordRaid||SIEGE_MACHINES.has(u.kind)||u.kind==='ladder'||u._fortClimbed){
+    if(blocked){
+      // 동쪽·서쪽 어느 방향에서 와도 성문까지 이동한다.
+      if(!canFight){
+        if(Math.hypot(u.x-1355,u.y-lane)>22)moveToward(u,1355,lane,dt);
+        return; // 기존 마을 방어 코드가 이 위치에서 성문 HP를 깎는다.
+      }
+    }else if(!canFight){
+      // 문이 열리거나 파괴되면 일반 보병도 마을회관으로 진입한다.
       moveToward(u,1010,1050,dt);
       return;
     }
   }
-  const t=nearestLiving(u,targets);
+    const t=nearestLiving(u,targets);
   if(!t&&hostile){moveToward(u,barracks.x,barracks.y,dt);return}
   if(!t)return;
   const d=Math.hypot(t.x-u.x,t.y-u.y)||1;
@@ -1076,7 +1086,8 @@ function moveToward(u,x,y,dt){
   const dx=x-u.x,dy=y-u.y,d=Math.hypot(dx,dy)||1;
   // 해자 이동 감소는 새 대공성전 병력에만 적용. 기존 유닛 속도는 건드리지 않는다.
   const speed=u.speed*(u._grandSiege?(u._siegeMoatFactor||1):1);
-  const step=u._grandSiege?Math.min(d,speed*dt):speed*dt;
+  // 목표 지점에서 튕기는 진동을 막는 공통 도착 거리 제한.
+  const step=Math.min(d,speed*dt);
   u.x+=dx/d*step;u.y+=dy/d*step;
 }
 function saveArmyIfChanged(){const alive=allies.filter(u=>u.hp>0);if(alive.length!==state.army.length)saveSoon()}
