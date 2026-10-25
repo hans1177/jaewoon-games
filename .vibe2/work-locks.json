@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1k122iq",
+      "worker": "vibe2",
+      "taskId": "egg-heist-existing-web-assessment-v1",
+      "gameId": "egg-heist",
+      "files": [
+        "web-games/egg-heist/index.html"
+      ],
+      "baseSha": "a43ed477296059f252951aa8378a0a07e4d4940a",
+      "runId": "40203517800",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-25T15:00:45.663Z",
+      "expiresAt": "2026-10-25T15:45:45.663Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:egg-heist-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
