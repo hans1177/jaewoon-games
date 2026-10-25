@@ -470,7 +470,7 @@ export function stepSea(state,input={},seconds=.05){
  let turn=clamp(Number(input.turn)||0,-1,1),throttle=clamp(Number(input.throttle)||0,-1,1);
  const gun=CANNON_TYPES.find(g=>g.id===ship.cannonType)||CANNON_TYPES[0];
  const hostile=s.pirates.filter(p=>p.hull>0&&(!p.neutral||s.diplomacy[p.faction]<0)&&dist(ship,p)<Math.max(42,gun.range*1.25)).sort((a,b)=>dist(ship,a)-dist(ship,b));
- const combatTarget=s.autoCombat&&!s.route.length?hostile[0]:null;
+ const combatTarget=s.autoCombat&&(!s.route.length||input.navalBattle)?hostile[0]:null;
  if(combatTarget&&input.manual!==true){
   const bearing=Math.atan2(combatTarget.x-ship.x,combatTarget.z-ship.z),distance=dist(ship,combatTarget);
   const starboard=Math.abs(wrap(bearing+Math.PI/2-ship.heading))<=Math.abs(wrap(bearing-Math.PI/2-ship.heading))?1:-1;
@@ -478,7 +478,7 @@ export function stepSea(state,input={},seconds=.05){
   const desired=bearing+starboard*(distance>preferred*1.15?.58:distance<preferred*.72?2.12:Math.PI/2);
   turn=clamp(wrap(desired-ship.heading)*2.1,-1,1);
   throttle=distance<preferred*.72?.74:distance>preferred*1.2?1:.83;
- }else if(s.route.length&&input.manual!==true){
+ }else if(s.route.length&&input.manual!==true&&!input.navalBattle){
   if(dist(ship,s.route[0])<Math.max(1.4,Math.abs(ship.velocity)*dt*1.15)){
    s.route.shift();
    if(!s.route.length){s.destination=null;ship.velocity=0;note(s,s.autoMode==='frontier'?'미개척 해역의 경계야. 조타 스틱으로 새로운 항로를 열어.':'개척 항로 목적지에 도착했어.');s.autoMode=null;}

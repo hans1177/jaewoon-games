@@ -25,6 +25,32 @@ const scene=createOceanView($('sea'),{
  onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}
 });
 $('start').addEventListener('click',()=>{if(ready)showCaptains();});
+// 교전 화면은 실제 항해 좌표·내구도·포탄을 그대로 사용한다.
+let navalTarget=null;
+function syncNavalBattle(){
+ if(town||choosing||state.landBattle)return;
+ const enemies=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0));
+ const current=enemies.find(e=>e.id===navalTarget);
+ const nearest=enemies.filter(e=>Math.hypot(e.x-state.ship.x,e.z-state.ship.z)<42).sort((a,b)=>Math.hypot(a.x-state.ship.x,a.z-state.ship.z)-Math.hypot(b.x-state.ship.x,b.z-state.ship.z))[0];
+ const target=current&&Math.hypot(current.x-state.ship.x,current.z-state.ship.z)<60?current:nearest;
+ if(target&&navalTarget===null){
+  navalTarget=target.id;scene.setMode('naval');document.body.classList.add('naval-battle');
+  $('navalTitle').textContent='해상 교전 · '+(target.name||'해적 함대');
+  note('해상 전투 진입 · 좌우 측면에 적을 두고 포격해. 거리를 벌리면 이탈해.');
+ }else if(!target&&navalTarget!==null){
+  const sunk=state.pirates.find(e=>e.id===navalTarget)?.hull<=0;
+  navalTarget=null;scene.setMode('sea');document.body.classList.remove('naval-battle');
+  note(sunk?'적함 격침 · 항해 화면으로 복귀했어.':'교전 해역 이탈 · 항해를 재개해.');save();
+ }else if(target)navalTarget=target.id;
+ $('navalEncounter').hidden=navalTarget===null;
+ if(target){
+  const gun=CANNON_TYPES.find(g=>g.id===state.ship.cannonType)||CANNON_TYPES[0],distance=Math.hypot(target.x-state.ship.x,target.z-state.ship.z);
+  const angle=Math.atan2(target.x-state.ship.x,target.z-state.ship.z)-state.ship.heading;
+  $('navalTargetHull').value=target.hull/target.maxHull;
+  $('navalReadout').textContent='적 내구 '+Math.ceil(target.hull)+' / '+target.maxHull+' · 거리 '+Math.round(distance)+' · '+(distance>=gun.range?'사거리 밖':Math.abs(Math.cos(angle))<.55?'측면 사격 가능':'좌우 측면을 맞춰')+' · '+(state.ship.cooldown>0?'장전 '+state.ship.cooldown.toFixed(1)+'초':'장전 완료');
+ }
+}
+$('navalRetreat').addEventListener('click',()=>{state.autoCombat=false;summary();note('자동 교전을 해제했어. 조타 스틱으로 적과 60 이상 거리를 벌려 이탈해.');});
 function summary(){
  $('day').textContent=fmt(state.day)+'일';
  $('gold').textContent=fmt(state.coins)+' G';
@@ -48,8 +74,8 @@ function gotoPanel(name){if(state.landBattle){enterBattle();return;}
 }
 function enterTown(){if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
 function openFacility(id){const home=canDock(state);if(!home){note('먼저 항구에 입항해.');return;}if(!portHasFacility(home.id,id)&&id!=='port'&&id!=='journal'){note(home.name+'에는 해당 시설이 없어. 다른 항구로 항해해.');return;}town=true;active=id;document.body.classList.add('in-town');$('townbar').hidden=false;scene.setMode('town',id);view.details.classList.add('open');switchMusicScene(id==='palace'?'palace':id==='quests'?'explore':'harbor');renderPanel();}
-function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';view.details.classList.remove('open');scene.setMode(town?'town':'sea');if(town)switchMusicScene('harbor');}
-function depart(){if(state.landBattle){enterBattle();return;}town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();}
+function leaveFacility(){if(state.landBattle){note('전투 행동이나 퇴각을 선택해.');return;}active='';view.details.classList.remove('open');scene.setMode(town?'town':navalTarget!==null?'naval':'sea');if(town)switchMusicScene('harbor');}
+function depart(){if(state.landBattle){enterBattle();return;}town=false;active='';view.details.classList.remove('open');document.body.classList.remove('in-town');$('townbar').hidden=true;navalTarget=null;document.body.classList.remove('naval-battle');$('navalEncounter').hidden=true;scene.setMode('sea');switchMusicScene('sea');save();}
 function showCaptains(){choosing=true;view.loading.classList.add('hide');$('captains').hidden=false;$('captainCards').innerHTML=CAPTAINS.map(c=>'<article class="hero-card"><div class="hero-face '+(c.maleFace!==undefined?'male':'')+'" style="background-position:'+(c.maleFace!==undefined?c.maleFace:c.face)*25+'% center"></div><div><small>'+c.region+' · '+c.nation+' · '+(c.origin?c.origin+' 출신 → ':'')+port(c.port).name+' 본편 시작</small><h2>'+c.name+'</h2><p>'+c.goal+'</p><p class="info">'+c.intro+'</p><button class="action" data-captain="'+c.id+'">이 인물로 항해</button></div></article>').join('');}
 $('captainCards').addEventListener('click',e=>{const b=e.target.closest('[data-captain]');if(!b)return;state=newGame(b.dataset.captain);state.heroChosen=true;choosing=false;$('captains').hidden=true;save();scene.setState(state);summary();enterTown();});
 $('depart').addEventListener('click',depart);$('townJournal').addEventListener('click',()=>{active='journal';view.details.classList.add('open');renderPanel();});$('townBack').addEventListener('click',leaveFacility);
@@ -428,7 +454,9 @@ function run(now){
  const manual=left||right||ahead||astern||Math.abs(stick.x)>.08||Math.abs(stick.y)>.08;
  if(manual&&state.destination){state=cancelDestination(state);}
  const oldFx=state.combatFx?.serial;
- state=stepSea(state,{turn,throttle,manual},dt*state.speed);
+ syncNavalBattle();
+ state=stepSea(state,{turn,throttle,manual,navalBattle:navalTarget!==null},dt*(navalTarget!==null?1:state.speed));
+ syncNavalBattle();
  if(state.combatFx&&state.combatFx.serial!==oldFx)impactSound();
  if(state.event){save();renderEvent();}
  scene.setState(state);

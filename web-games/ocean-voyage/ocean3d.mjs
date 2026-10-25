@@ -19,6 +19,64 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0,miniHit=null;
  let state=null,mode='sea',facility='',frame=0,last=0,zoom=4.8,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720;
+ // 기존 CC0 범선 GLB를 조명·파도·포격과 함께 근접 전투 장면에 사용한다.
+ let naval=null,navalLoading=false,navalError=false;
+ async function prepareNaval(){
+  if(naval||navalLoading||navalError)return;navalLoading=true;
+  try{
+   const THREE=await import('three');
+   const {GLTFLoader}=await import('../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js');
+   if(destroyed)return;
+   const surface=document.createElement('canvas');surface.id='naval3d';surface.setAttribute('aria-hidden','true');surface.hidden=true;canvas.after(surface);
+   let renderer;try{renderer=new THREE.WebGLRenderer({canvas:surface,antialias:true,alpha:false,powerPreference:'high-performance'});}catch(e){surface.remove();throw e;}
+   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+   const world=new THREE.Scene();world.background=new THREE.Color('#87b9c7');world.fog=new THREE.Fog('#87b9c7',95,245);
+   const camera=new THREE.PerspectiveCamera(44,1,.1,350);camera.position.set(25,28,39);
+   world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);world.add(sun);
+   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,80,80),new THREE.MeshStandardMaterial({color:'#247181',roughness:.3,metalness:.38}));water.rotation.x=-Math.PI/2;world.add(water);
+   const ring=new THREE.Mesh(new THREE.RingGeometry(58.8,59.1,128),new THREE.MeshBasicMaterial({color:'#eed49c',transparent:true,opacity:.36,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;world.add(ring);
+   const loader=new GLTFLoader(),templates=new Map(),vessels=new Map();
+   // GLB는 공유하고 개별 배의 자세·피격·침몰 표현만 독립적으로 움직인다.
+   async function template(file){if(!templates.has(file))templates.set(file,loader.loadAsync('./assets/'+file+'.glb').then(g=>g.scene));return templates.get(file);}
+   function vessel(id,type,enemy){
+    const large=/galleon|frigate|carrack|fluyt/.test(type),file=enemy?'ship-pirate-medium':large?'ship-large':/sloop|caravel/.test(type)?'ship-small':'ship-medium';
+    let entry=vessels.get(id);if(entry?.file===file)return entry;if(entry){world.remove(entry.root);}
+    const root=new THREE.Group();world.add(root);entry={root,file,enemy,loaded:false};vessels.set(id,entry);
+    template(file).then(model=>{if(destroyed||vessels.get(id)!==entry)return;const copy=model.clone(true),box=new THREE.Box3().setFromObject(copy),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3()),scale=10/Math.max(size.x,size.z);copy.position.set(-center.x*scale,-box.min.y*scale-.55,-center.z*scale);copy.scale.setScalar(scale);root.add(copy);entry.loaded=true;copy.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.roughness=.78;o.material.metalness=.04;}});}).catch(()=>{navalError=true;});
+    return entry;
+   }
+   const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#ffe4a0'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#c8c5b5',transparent:true,opacity:.45,depthWrite:false});
+   let serial=0,shotTime=0,sw=0,sh=0;
+   const targetLook=new THREE.Vector3();
+   naval={surface,renderer,world,camera,vessels,render(t){
+    const cw=canvas.clientWidth,ch=canvas.clientHeight;if(cw!==sw||ch!==sh){sw=cw;sh=ch;renderer.setSize(cw,ch,false);camera.aspect=cw/ch;camera.updateProjectionMatrix();}
+    const origin=state.ship,hostiles=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)&&Math.hypot(e.x-origin.x,e.z-origin.z)<70);
+    const rows=[{id:'player',x:origin.x,z:origin.z,heading:origin.heading,type:state.shipType,hull:origin.hull,maxHull:origin.maxHull},...hostiles.map(e=>({...e,type:'galleon',enemy:true}))];
+    const ids=new Set(rows.map(r=>r.id));for(const [id,e]of vessels){e.root.visible=ids.has(id);}
+    for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);}
+    const enemy=hostiles.sort((a,b)=>Math.hypot(a.x-origin.x,a.z-origin.z)-Math.hypot(b.x-origin.x,b.z-origin.z))[0];
+    const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(66,Math.max(27,Math.hypot(ex,ez)*.85));
+    camera.position.lerp(new THREE.Vector3(ex*.32+span*.58,span*.83,ez*.32+span*.97),.065);targetLook.set(ex*.32,1.5,ez*.32);camera.lookAt(targetLook);
+    ring.position.x=ex*.5;ring.position.z=ez*.5;
+    const a=water.geometry.attributes.position;for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,Math.sin(x*.12+t*1.3)*.32+Math.sin(y*.16+t*.8)*.22);}a.needsUpdate=true;
+    const fx=state.combatFx;if(fx?.type==='cannon'&&fx.serial!==serial){serial=fx.serial;shotTime=t;
+     for(const o of shots)world.remove(o);shots.length=0;
+     for(let i=0;i<5;i++){const ball=new THREE.Mesh(ballGeo,ballMat);ball.userData={from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(ball);world.add(ball);const puff=new THREE.Mesh(smokeGeo,smokeMat);puff.userData={smoke:true,from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(puff);world.add(puff);}
+    }
+    const age=t-shotTime;for(const o of shots){const d=o.userData,progress=Math.min(1,age/.55);o.visible=age<1.3;if(d.smoke){o.position.set(d.from.x-origin.x+d.offset,1.8+age,d.from.z-origin.z);o.scale.setScalar(.5+age*1.5);}else{o.visible=age<.55;o.position.set(d.from.x+(d.to.x-d.from.x)*progress-origin.x+d.offset,1.5+Math.sin(progress*Math.PI)*2,d.from.z+(d.to.z-d.from.z)*progress-origin.z);}}
+    renderer.render(world,camera);surface.dataset.ready=String(rows.every(r=>vessels.get(r.id)?.loaded));
+   }};
+  }catch(e){navalError=true;console.warn('해상 3D 장면 초기화 실패',e);}finally{navalLoading=false;}
+ }
+ function navalSea(){
+  hit=[];miniHit=null;const gradient=ctx.createLinearGradient(0,0,0,h);gradient.addColorStop(0,'#8ebbc8');gradient.addColorStop(.2,'#245d73');gradient.addColorStop(1,'#102f48');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
+  const enemies=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)&&Math.hypot(e.x-state.ship.x,e.z-state.ship.z)<65);
+  const foe=enemies[0],distance=foe?Math.hypot(foe.x-state.ship.x,foe.z-state.ship.z):20,scale=Math.min(6,Math.max(2.2,(w-85)/(distance+20)));
+  for(let i=0;i<40;i++){ctx.strokeStyle='#b3e0de22';ctx.beginPath();const y=(i*43+time*9)%h;ctx.ellipse((i*97)%w,y,20+i%5*4,3,0,0,Math.PI*2);ctx.stroke();}
+  ship(w*.35,h*.57,state.ship.heading,state.shipType,false,2.6,state.ship.cannons);
+  for(const e of enemies)ship(w*.35+(e.x-state.ship.x)*scale,h*.57+(e.z-state.ship.z)*scale,e.heading,'galleon',true,2.6,10);
+  if(!navalError){prepareNaval();text('해상 전투 장면 준비 중',w/2,h*.35,12,C.gold,'center');}
+ }
  // 성능: 변경 없는 해안선·국경·미개척 안개는 오프스크린 해도에서 재사용한다.
  const seaLayer=document.createElement('canvas'),seaCtx=seaLayer.getContext('2d');
  const miniLayer=document.createElement('canvas'),miniCtx=miniLayer.getContext('2d');
@@ -36,6 +94,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   ctx.fillStyle='#242e30';ctx.beginPath();ctx.moveTo(0,-length-9);ctx.bezierCurveTo(-beam-3,-length*.5,-beam-5,length*.68,-beam*.55,length+3);ctx.quadraticCurveTo(0,length+10,beam*.55,length+3);ctx.bezierCurveTo(beam+5,length*.68,beam+3,-length*.5,0,-length-9);ctx.closePath();ctx.fill();
   ctx.fillStyle=hull;ctx.beginPath();ctx.moveTo(0,-length-5);ctx.bezierCurveTo(-beam,-length*.5,-beam,length*.6,-beam*.45,length);ctx.quadraticCurveTo(0,length+6,beam*.45,length);ctx.bezierCurveTo(beam,length*.6,beam,-length*.5,0,-length-5);ctx.closePath();ctx.fill();
   rect(-beam+2,-length*.45,beam*2-4,length*1.14,enemy?'#745c4d':'#a27b4f');rect(-beam+3,-length*.3,beam*2-6,2,trim);
+  ctx.strokeStyle='#593d2870';ctx.lineWidth=.55;for(let py=-length*.4;py<length*.7;py+=2){ctx.beginPath();ctx.moveTo(-beam+2,py);ctx.lineTo(beam-2,py);ctx.stroke();}
+  ctx.strokeStyle=trim;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(-beam+1,length*.7);ctx.lineTo(-beam+1,-length*.5);ctx.lineTo(0,-length-5);ctx.lineTo(beam-1,-length*.5);ctx.lineTo(beam-1,length*.7);ctx.stroke();
   if(large){rect(-beam+1,length*.45,beam*2-2,9,'#4f372f');rect(-beam+2,length*.50,beam*2-4,3,trim);rect(-beam*.6,-length*.74,beam*1.2,5,'#b28b57');}
   const holes=Math.max(2,Math.min(10,Math.round(ports/2)));
   for(let i=0;i<holes;i++){const py=-length*.56+i*(length*1.33)/Math.max(1,holes-1);rect(-beam-1,py,4,3,'#1b2629');rect(beam-3,py,4,3,'#1b2629');}
@@ -45,8 +105,9 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    const sy=masts[i];rect(-1,sy-10,2,20,'#4c3528');
    if(rig==='lateen'||galley||(!enemy&&type===state.shipType&&state.ship.gear.sail==='lateen'&&i===masts.length-1)){
     ctx.fillStyle=sail;ctx.beginPath();ctx.moveTo(-1,sy-13);ctx.lineTo(-beam-7,sy+10);ctx.lineTo(beam+6,sy+8);ctx.closePath();ctx.fill();rect(-beam-7,sy+9,beam*2+13,1,'#b6a27d');
-   }else{const width=large?beam+5:beam+3;rect(-width,sy-8,width*2,11,sail);rect(-width+2,sy+3,width*2-4,2,enemy?'#927e70':'#b2aa91');rect(-width-2,sy-9,width*2+4,2,'#694a34');}
+   }else{const width=large?beam+5:beam+3;ctx.fillStyle=sail;ctx.beginPath();ctx.moveTo(-width,sy-8);ctx.quadraticCurveTo(0,sy-4+Math.sin(time*2+i)*1.5,width,sy-8);ctx.lineTo(width-1,sy+3);ctx.quadraticCurveTo(0,sy+7,-width+1,sy+3);ctx.closePath();ctx.fill();ctx.strokeStyle='#aa927055';ctx.lineWidth=.6;for(let seam=-width+4;seam<width;seam+=4){ctx.beginPath();ctx.moveTo(seam,sy-6);ctx.lineTo(seam,sy+3);ctx.stroke();}rect(-width+2,sy+3,width*2-4,2,enemy?'#927e70':'#b2aa91');rect(-width-2,sy-9,width*2+4,2,'#694a34');}
   }
+  ctx.strokeStyle='#dac49c80';ctx.lineWidth=.55;for(const sy of masts){ctx.beginPath();ctx.moveTo(-beam,length*.85);ctx.lineTo(0,sy-10);ctx.lineTo(beam,length*.85);ctx.moveTo(0,sy-10);ctx.lineTo(0,-length-6);ctx.stroke();}
   rect(-2,-length-8,4,4,enemy?'#db8167':'#ead2a0');rect(1,-length-7,6,2,enemy?'#c66d54':design.color||'#cd9867');
   if(!enemy&&state.ship.gear.figurehead!=='none'){rect(-3,-length-12,6,5,'#e2bb72');rect(-1,-length-15,2,4,'#f4de9c');}
   ctx.restore();
@@ -209,8 +270,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   text('유럽 · 항로도',mw/2,mh+13,9,C.gold,'center');ctx.restore();
  }
  function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:20))return;last=now;time=now/1000;
- const width=Math.min(560,Math.max(320,Math.round(canvas.clientWidth/1.4))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w;canvas.height=h;}ctx.imageSmoothingEnabled=false;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();}
+ const width=Math.min(720,Math.max(390,Math.round(canvas.clientWidth))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w*2;canvas.height=h*2;}ctx.setTransform(2,0,0,2,0,0);ctx.imageSmoothingEnabled=true;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='naval'?navalSea():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();if(naval){naval.surface.hidden=mode!=='naval'||navalError;if(mode==='naval'&&!navalError)naval.render(time);}}
  canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);if(mode==='sea'&&!target&&miniHit&&x>=miniHit.x&&x<=miniHit.x+miniHit.w&&y>=miniHit.y&&y<=miniHit.y+miniHit.h)onMap();});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
- return {setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||4.8));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);}};
+ return {setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||4.8));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.renderer.dispose();naval.surface.remove();}}};
 }
