@@ -372,8 +372,9 @@ export function getEconomy(state){
    e={version:1,timer:0,policy:{ration:'normal',tax:'normal',autoTrade:'off'},satisfaction:65,buildings:{
      lumber:{count:1,level:Math.max(1,Number(p.lumberLevel)||1),sites:[{x:245,y:850}]},
      quarry:{count:1,level:Math.max(1,Number(p.mineLevel)||1),sites:[{x:785,y:965}]},
-     stockpile:{count:1,level:1,sites:[{x:390,y:820}]},granary:{count:1,level:1,sites:[{x:870,y:480}]},hovel:{count:1,level:1,sites:[{x:610,y:335}]}
-   }};
+     stockpile:{count:1,level:1,sites:[{x:390,y:820}]},granary:{count:1,level:1,sites:[{x:870,y:480}]},hovel:{count:1,level:1,sites:[{x:610,y:335}]},
+     orchard:{count:2,level:1,sites:[{x:460,y:480},{x:555,y:480}]}
+   },foodSupplyInitialized:true};
    state.economyV4=e;
    state.inventory=state.inventory||{};
    state.inventory.wood=Math.max(8,Number(state.inventory.wood)||0);
@@ -393,6 +394,26 @@ export function getEconomy(state){
  e.policy=e.policy&&typeof e.policy==='object'?e.policy:{ration:'normal',tax:'normal',autoTrade:'off'};
  e.satisfaction=Math.max(0,Math.min(100,Number(e.satisfaction)||65));
  e.buildings=e.buildings&&typeof e.buildings==='object'?e.buildings:{};
+ // 옛 세이브에 식량원이 없으면 기존 재고·건축물을 유지하고 1회만 기초 과수원을 복구한다.
+ if(!e.foodSupplyInitialized){
+   const hasFood=['orchard','dairy','bakery'].some(id=>(Number(e.buildings[id]?.count)||0)>0);
+   if(!hasFood){
+     const orchard=e.buildings.orchard||{count:0,level:1,sites:[]};
+     const occupied=Object.values(e.buildings).flatMap(b=>b?.sites||[]);
+     const candidates=[{x:460,y:480},{x:555,y:480},{x:460,y:575},{x:555,y:575},{x:375,y:475}];
+     orchard.sites=Array.isArray(orchard.sites)?orchard.sites:[];
+     for(const pos of candidates){
+       if(orchard.sites.length>=2)break;
+       if(occupied.every(p=>Math.hypot(p.x-pos.x,p.y-pos.y)>=80)&&
+          orchard.sites.every(p=>Math.hypot(p.x-pos.x,p.y-pos.y)>=80))
+         orchard.sites.push(pos);
+     }
+     while(orchard.sites.length<2)orchard.sites.push(candidates[orchard.sites.length]);
+     orchard.count=2;orchard.level=Math.max(1,Number(orchard.level)||1);
+     e.buildings.orchard=orchard;
+   }
+   e.foodSupplyInitialized=true;
+ }
  for(const def of ECONOMY_BUILDINGS){
    const entry=e.buildings[def.id];
    if(entry)e.buildings[def.id]={...entry,
@@ -403,20 +424,32 @@ export function getEconomy(state){
  }
  return e;
 }
+// 식량 및 생산 체인의 초입부터 순환 배치해 유휴·기아와 작업장 쏠림을 줄인다.
 export function economyStaff(state){
  const e=getEconomy(state),capacity=6+(e.buildings.hovel?.count||0)*4;
  let open=capacity;
- const staff={};
- for(const def of ECONOMY_BUILDINGS){
-   const count=e.buildings[def.id]?.count||0;
-   const staffed=def.jobs?Math.min(count,Math.floor(open/def.jobs)):count;
-   staff[def.id]=staffed;
-   open-=staffed*def.jobs;
+ const staff=Object.fromEntries(ECONOMY_BUILDINGS.map(def=>[def.id,0]));
+ const byId=new Map(ECONOMY_BUILDINGS.map(def=>[def.id,def]));
+ const priority=['orchard','dairy','wheat','mill','bakery','lumber','quarry',
+   'iron','vineyard','winery','hops','brewery','tavern','fletcher','smith'];
+ const all=[...priority,...ECONOMY_BUILDINGS.filter(d=>!priority.includes(d.id)).map(d=>d.id)];
+ const max=Math.max(0,...ECONOMY_BUILDINGS.map(d=>Number(e.buildings[d.id]?.count)||0));
+ for(let round=0;round<max;round++){
+   for(const id of all){
+     const def=byId.get(id),count=Number(e.buildings[id]?.count)||0;
+     if(!def||count<=round)continue;
+     if(!def.jobs){staff[id]=count;continue}
+     if(open>=def.jobs){staff[id]++;open-=def.jobs;}
+   }
  }
  return {capacity,assigned:capacity-open,available:open,staff};
 }
-function cash(state,key){return key==='coins'?state.coins:Number(state.inventory?.[key]||0)}
-function grant(state,key,amount){if(key==='coins')state.coins+=amount;else state.inventory[key]=(Number(state.inventory[key])||0)+amount}
+function cash(state,key){return key==='coins'?(Number(state.coins)||0):Number(state.inventory?.[key]||0)}
+function grant(state,key,amount){
+ if(!Number.isFinite(amount)||!amount)return;
+ if(key==='coins')state.coins=(Number(state.coins)||0)+amount;
+ else {state.inventory=state.inventory||{};state.inventory[key]=(Number(state.inventory[key])||0)+amount;}
+}
 export function constructEconomyBuilding(id,site=null){
  const state=currentGame?.state,def=ECONOMY_BY_ID.get(id);
  if(!state||!def)return false;
@@ -465,7 +498,8 @@ function advanceEconomy(dt){
  const e=getEconomy(state);if(!e)return;
  e.timer+=dt;if(e.timer<ECONOMY_STEP)return;
  const steps=Math.min(6,Math.floor(e.timer/ECONOMY_STEP));e.timer%=ECONOMY_STEP;
- const {staff}=economyStaff(state);
+ const workforce=economyStaff(state),{staff}=workforce;
+ const produced={},used={};let taxIncome=0,tradeIncome=0,foodRations=0;
  for(let tick=0;tick<steps;tick++)for(const def of ECONOMY_BUILDINGS){
    const entry=e.buildings[def.id],count=staff[def.id]||0;
    if(!entry||!count||!def.out)continue;
@@ -473,9 +507,11 @@ function advanceEconomy(dt){
    if(def.input){
      const stock=cash(state,def.input),cycles=Math.min(qty,Math.floor(stock/def.need));
      if(cycles<=0)continue;
-     grant(state,def.input,-cycles*def.need);amount=cycles*def.amount;
+     grant(state,def.input,-cycles*def.need);
+     used[def.input]=(used[def.input]||0)+cycles*def.need;
+     amount=cycles*def.amount;
    }
-   if(amount)grant(state,def.out,amount);
+   if(amount){grant(state,def.out,amount);produced[def.out]=(produced[def.out]||0)+amount;}
  }
  const policy=e.policy;
  const homes=e.buildings.hovel?.count||1,pop=6+homes*4;
@@ -483,11 +519,16 @@ function advanceEconomy(dt){
  for(let i=0;i<steps;i++){
    const need=pop*(rations[policy.ration]||2)/5;
    const consumed=Math.min(Number(state.inventory.food)||0,need);
-   grant(state,'food',-consumed);
+   grant(state,'food',-consumed);foodRations+=consumed;
    e.satisfaction=Math.min(100,Math.max(0,e.satisfaction+(consumed<need?-4:policy.ration==='high'?1:.1)-(tax[policy.tax]||0)*.55));
-   grant(state,'coins',Math.max(0,Math.floor(pop*(tax[policy.tax]||0)*e.satisfaction/110)));
-   if(policy.autoTrade==='wood'&&state.inventory.wood>75){grant(state,'wood',-10);grant(state,'coins',17)}
-   if(policy.autoTrade==='stone'&&state.inventory.stone>65){grant(state,'stone',-8);grant(state,'coins',22)}
+   const taxPay=Math.max(0,Math.floor(pop*(tax[policy.tax]||0)*e.satisfaction/110));
+   grant(state,'coins',taxPay);taxIncome+=taxPay;
+   if(policy.autoTrade==='wood'&&state.inventory.wood>75){
+     grant(state,'wood',-10);grant(state,'coins',17);tradeIncome+=17;
+   }
+   if(policy.autoTrade==='stone'&&state.inventory.stone>65){
+     grant(state,'stone',-8);grant(state,'coins',22);tradeIncome+=22;
+   }
  }
  const p=ensureProduction(state);
  // 이전 버전의 생산품은 지급해 중복 지급 없이 기존 보관분을 보존한다.
@@ -495,6 +536,10 @@ function advanceEconomy(dt){
    grant(state,'wood',p.bufferWood);grant(state,'stone',p.bufferStone);
    p.bufferWood=0;p.bufferStone=0;
  }
+ e.lastCycle={produced,used,foodRations,taxIncome,tradeIncome,
+   foodNet:(produced.food||0)-foodRations,
+   coinIncome:(produced.coins||0)+taxIncome+tradeIncome,
+   staffed:workforce.assigned,capacity:workforce.capacity,at:Date.now()};
  saveState(state);
 }
 
@@ -551,7 +596,8 @@ function patchPanels() {
       status.dataset.jobStatus = '1';
       body.appendChild(status);
     }
-    status.textContent = `작업 배치 · 농사 ${workerNumber(state.workers)}명 · 벌목 ${p.lumberWorker}명 · 광산 ${p.mineWorker}명 · 작업장 보관 나무 ${p.bufferWood} / 돌 ${p.bufferStone}`;
+    const summary=`작업 배치 · 농사 ${workerNumber(state.workers)}명 · 벌목 ${p.lumberWorker}명 · 광산 ${p.mineWorker}명 · 작업장 보관 나무 ${p.bufferWood} / 돌 ${p.bufferStone}`;
+    if(status.textContent!==summary)status.textContent=summary;
   }
 }
 
@@ -574,7 +620,8 @@ const originalDrawObjects = rendererProto.drawObjects;
 rendererProto.draw = function drawWithProduction(game) {
   currentGame = game;
   activeRuntime = activeRuntime || null;
-  reconcileWorkers(game.state);
+  if(!game.state.productionBuildings||!Number.isFinite(game.state.workerTotal))
+    reconcileWorkers(game.state);
   originalDraw.call(this, game);
   updateBuildButton();
   patchPanels();
