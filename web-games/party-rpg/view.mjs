@@ -413,27 +413,29 @@ buildWorld(live){
   }
   // 기존 리깅 클립을 모든 직업·동료 NPC·몬스터가 공유하는 운동 상태로 선택한다.
    const named=regex=>[...actions].find(([name])=>regex.test(name))?.[1]||null;
-   const clips={idle:named(/idle/i)||actions.values().next().value||null,walk:named(/^walk|_walk/i),run:named(/^run|_run/i),attack:named(/attack|spell|shoot|punch|bite|slash|headbutt/i),hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i)};
+   const clips={idle:named(/idle/i)||named(/^walk|_walk/i)||named(/^run|_run/i),walk:named(/^walk|_walk/i),run:named(/^run|_run/i),attack:named(/^(?!.*idle).*?(attack|spell|shoot|punch|bite|slash|headbutt)/i),hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i)};
    if(clips.attack===clips.idle)clips.attack=null;
    for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))action.reset().play().setEffectiveWeight(0);
    const result={root,model,ring,mixer,actions,clips,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
-    wasAttacking:false,attackAt:0,attackDuration:.45,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,
-    lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials};
+    wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
+    lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,hitAt:0,hitPower:0,flashMaterials};
   this.scene.add(root);return result;
  }
  // 애니메이션: GLB 실제 걷기/공격 클립을 크로스페이드, 클립 없는 적도 관성·공격 반동·피격 경직 처리.
   // 메인: 실제 이동거리/속도에 맞춰 걷기·달리기를 섞고 공격·피격은 단발로 반응한다.
   animate(entry,moving,combat,dt,now){
    const attack=!!(combat&&combat.visualUntil>now),hit=Math.max(0,1-(now-entry.hitAt)/320);
-   const attackStart=attack&&!entry.wasAttacking,hitStart=entry.hitAt>0&&entry.hitAt!==entry.lastHitAt;
+   const attackStart=attack&&(!entry.wasAttacking||combat.visualUntil>entry.lastVisualUntil+65),hitStart=entry.hitAt>0&&entry.hitAt!==entry.lastHitAt;
    if(attackStart){entry.attackAt=now;entry.attackDuration=Math.max(.25,(combat.visualUntil-now)/1000);}
-   entry.wasAttacking=attack;
-   if(hitStart)entry.lastHitAt=entry.hitAt;
+   entry.wasAttacking=attack;if(combat)entry.lastVisualUntil=combat.visualUntil;
+    if(hitStart)entry.lastHitAt=entry.hitAt;
    const speedBase=entry.kind==='enemy'?90:155,blend=1-Math.exp(-dt*11);
    entry.motion+=(Math.min(1,entry.speed/speedBase)-entry.motion)*blend;
    entry.walkPhase+=dt*(entry.role==='golem'?7:entry.role==='bunny'?14:10.5)*Math.max(.12,entry.speed/speedBase);
    const attackProgress=attack?Math.min(1,(now-entry.attackAt)/Math.max(1,entry.attackDuration*1000)):0;
-   const strike=attack?Math.sin(attackProgress*Math.PI):0;
+   // 공격 준비 → 강한 타격 → 자세 회복을 시각적으로 구분한다.
+    const windup=attack?Math.max(0,1-Math.abs(attackProgress-.16)/.16):0;
+    const strike=attack?Math.sin(Math.PI*THREE.MathUtils.clamp((attackProgress-.22)/.64,0,1)):0;
    const spirit=entry.role==='ghost'||entry.role==='winged',gel=entry.role==='slime',heavy=entry.role==='golem';
    const breath=Math.sin(now*.0023+entry.height*2)*.008+Math.sin(now*.0017+entry.height)*.004;
    // 애니메이션 없는 원화만 다리·팔·상체를 분리해서 변형한다.
@@ -444,7 +446,7 @@ buildWorld(live){
      const x=rest[i*3],y=rest[i*3+1],t=y+.5,side=x<0?-1:1;
      const leg=Math.max(0,1-t/.36),arm=t>.37&&t<.79&&Math.abs(x)>.16?1:0;
      const foot=Math.sin(phase+side*Math.PI*.5)*entry.motion;
-     let px=x+Math.sin(phase*.5)*entry.motion*t*.018+strike*t*t*(heavy?.045:.085)-hit*t*.055;
+     let px=x+Math.sin(phase*.5)*entry.motion*t*.018+strike*t*t*(heavy?.045:.085)-windup*t*t*.036-hit*t*.055;
      let py=y+breath*t;
      if(!spirit&&!gel){px+=foot*leg*.036-foot*arm*.018;py+=Math.max(0,foot)*leg*.029;}
      if(gel){px*=1+Math.sin(phase)*.04;py-=Math.sin(phase)*.018*t;}
@@ -455,7 +457,7 @@ buildWorld(live){
     positions.needsUpdate=true;
     entry.pixel.quaternion.copy(this.camera.quaternion);entry.pixel.scale.x=entry.pixelWidth*entry.facing;
     const bob=spirit?Math.sin(now*.0033)*.047:gel?0:Math.abs(Math.sin(phase))*entry.motion*(heavy?.01:.018);
-    entry.pixel.position.y+=(.035+bob+hit*.04-entry.pixel.position.y)*blend;
+    entry.pixel.position.y+=(.035+bob-windup*.018+hit*.04-entry.pixel.position.y)*blend;
     entry.pixel.material.color.setRGB(1,1-hit*.38,1-hit*.43);
     return;
    }
@@ -475,19 +477,21 @@ buildWorld(live){
    const runBlend=entry.clips.run?THREE.MathUtils.smoothstep(entry.speed,entry.kind==='enemy'?95:105,entry.kind==='enemy'?165:185):0;
    const locoWeight=1-entry.gestureBlend*.88;
    if(entry.clips.idle)entry.clips.idle.setEffectiveWeight((1-activity)*locoWeight);
-   if(entry.clips.walk)entry.clips.walk.setEffectiveWeight(activity*(1-runBlend)*locoWeight);
-   if(entry.clips.run)entry.clips.run.setEffectiveWeight(activity*runBlend*locoWeight);
+   if(entry.clips.walk)entry.clips.walk.setEffectiveWeight(activity*(entry.clips.run?1-runBlend:1)*locoWeight);
+   if(entry.clips.run)entry.clips.run.setEffectiveWeight(activity*(entry.clips.walk?runBlend:1)*locoWeight);
    if(!entry.clips.walk&&!entry.clips.run&&entry.clips.idle)entry.clips.idle.setEffectiveWeight(locoWeight);
    if(entry.clips.walk)entry.clips.walk.setEffectiveTimeScale(THREE.MathUtils.clamp(entry.speed/78,.68,1.9));
    if(entry.clips.run)entry.clips.run.setEffectiveTimeScale(THREE.MathUtils.clamp(entry.speed/160,.78,1.6));
-   entry.mixer.update(dt);
+   // 피격 직후 잠깐 멈칫하는 시각 효과. 전투 판정·타이머는 그대로 유지한다.
+   entry.mixer.update(hit>.81?dt*.23:dt);
    // 보행 클립 위에 호흡·상체 관성·타격 후 젖힘·몬스터별 부유를 미세하게 더한다.
    const sway=Math.sin(entry.walkPhase)*entry.motion*(heavy?.014:.028);
    const bob=spirit?Math.sin(now*.0035+entry.height)*.065:gel?Math.sin(entry.walkPhase)*entry.motion*.024:Math.abs(Math.sin(entry.walkPhase))*entry.motion*(heavy?.01:.016);
    const settle=1-Math.exp(-dt*13);
-   entry.model.rotation.x+=(breath*.4+strike*(heavy?.16:.11)-hit*.16-entry.model.rotation.x)*settle;
-   entry.model.rotation.z+=(sway+breath-hit*.11-entry.model.rotation.z)*settle;
-   entry.model.position.y+=(entry.modelRestY+bob+strike*.028+hit*.065-entry.model.position.y)*settle;
+   entry.model.rotation.x+=(breath*.4+windup*.11-strike*(heavy?.14:.10)-hit*.16-entry.model.rotation.x)*settle;
+   entry.model.rotation.z+=(sway+entry.turnLean+breath-hit*.11-entry.model.rotation.z)*settle;
+   entry.model.position.y+=(entry.modelRestY+bob-windup*.02+strike*.028+hit*.065-entry.model.position.y)*settle;
+   entry.model.position.z+=(entry.modelRestZ-windup*.055+strike*(heavy?.09:.12)-entry.model.position.z)*settle;
    for(const f of entry.flashMaterials){
     const glow=hit*(entry.kind==='enemy'?.7:.42);
     f.material.emissive.setRGB(f.red+glow,f.green+glow*.4,f.blue+glow*.25);
@@ -647,8 +651,9 @@ buildWorld(live){
     if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}
     const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,travel=Math.hypot(dx,dy);
     entry.lastX=obj.x;entry.lastY=obj.y;
-    const instantSpeed=Math.min(250,travel/Math.max(.016,dt));
-    entry.speed+=(instantSpeed-entry.speed)*(1-Math.exp(-dt*11));
+    // 워프·좌표 보정은 실제 보행으로 오인하지 않는다.
+    const instantSpeed=travel>260?0:Math.min(250,travel/Math.max(.016,dt));
+    entry.speed+=(instantSpeed-entry.speed)*(1-Math.exp(-dt*(instantSpeed>entry.speed?11:16)));
     const moving=entry.speed>3||travel>.12;
     if(!entry.visualInitialized){entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.visualInitialized=true;}
     else{
@@ -664,9 +669,10 @@ buildWorld(live){
     if(travel>.09)entry.turnYaw=Math.atan2(dx,dy);
     const difference=Math.atan2(Math.sin(entry.turnYaw-entry.model.rotation.y),Math.cos(entry.turnYaw-entry.model.rotation.y));
     entry.model.rotation.y+=difference*(1-Math.exp(-dt*(moving?9:6)));
+    entry.turnLean+=(THREE.MathUtils.clamp(difference,-1,1)*entry.motion*.07-entry.turnLean)*(1-Math.exp(-dt*8));
     entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);
     entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];
-    this.animate(entry,moving,live.combat?.(obj),dt,now);
+    if(!live.paused)this.animate(entry,moving,live.combat?.(obj),dt,now);
    }
   for(const [key,entry] of this.actors)if(!used.has(key))this.removeActor(key,entry);
   this.marker.visible=!!this.destination;if(this.destination)this.marker.position.set(this.destination.x*SCALE,.06,this.destination.y*SCALE);

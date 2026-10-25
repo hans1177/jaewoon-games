@@ -2169,7 +2169,31 @@ function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=
 
 function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW,worldH,combat,environment:gameEnvironment(),cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site||(nearbyLandmark()?{x:nearbyLandmark().x,y:nearbyLandmark().y}:null),recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),paused:tacticalPaused||modalOpen,council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
-function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})),gameEnvironment());}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
+function loop(now){
+ var dt=Math.min(.04,(now-last)/1000);last=now;
+ if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){
+  advanceEnvironment(dt);updatePlayer(dt);
+  if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');
+  updateCombat(dt);
+  // 자동 일시정지가 발생한 프레임부터 몬스터 행동·추종·피해 판정도 멈춘다.
+  if(!tacticalPaused){
+   updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);
+   updateEnemies(dt);simulateFreeAI(dt);updateInteractions();
+   if(!dungeon&&state.zone>0){
+    fieldSpawnTimer-=dt;
+    if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}
+   }
+   saveTick+=dt;if(saveTick>=5){saveTick=0;save();}
+  }
+ }
+ lastFootX=p.x;lastFootY=p.y;
+ if(gameStarted&&!document.hidden){
+  sound.update(state.zone,!!dungeon,!!enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;}),gameEnvironment());
+ }
+ interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}
+ hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}
+ draw();requestAnimationFrame(loop);
+}
 
 // 여정 메뉴는 기존 기능을 호출하고, 바깥 터치 시 닫는다. 게임 상태·저장은 바꾸지 않는다.
 var fieldMenu=document.getElementById('fieldMenu');
