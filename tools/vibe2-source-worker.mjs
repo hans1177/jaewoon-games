@@ -1725,7 +1725,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     if(!fs.realpathSync(file).startsWith(root+path.sep))continue;
     const source=fs.readFileSync(file,'utf8');
     if(source.length>1000000)continue;
-    if(saveWork&&/(?:^|\\/)server(?:\\/|$)|\\.server\\.luau$/i.test(relative)){
+    if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
       // 검증된 이전 데이터가 없으면 절대 기본값을 다시 저장하지 않는다.
       // 승인된 GameConfig 키는 유지하고 추가 필드는 UpdateAsync에서 병합한다.
       const playerAdded='Players.PlayerAdded:Connect(function(player)';
@@ -1740,11 +1740,11 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
         '  lastAction[player] = nil',
         'end)',
         'game:BindToClose(function() end)'
-      ].join('\\n');
+      ].join('\n');
       if(source.includes('local store = nil')&&source.includes('return store:GetAsync("player:" .. player.UserId)')
         &&source.includes('local Players = game:GetService("Players")')
         &&!source.includes('verifiedSaveLoad')
-        &&!/(?:local\\s+function\\s+savePlayer\\s*\\(|savePlayer\\s*=)/.test(source)
+        &&!/(?:local\s+function\s+savePlayer\s*\(|savePlayer\s*=)/.test(source)
         &&source.split(playerAdded).length===2&&source.split(loadCheck).length===2
         &&source.split(oldLeave).length===2){
         const newLeave=[
@@ -1769,13 +1769,13 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           'game:BindToClose(function()',
           '  for _, player in ipairs(Players:GetPlayers()) do savePlayer(player) end',
           'end)'
-        ].join('\\n');
+        ].join('\n');
         return{
           summary:'Roblox no-model safe persistence and server shutdown repair',
           expectedEffect:'Avoid overwriting saves after failed load, preserve unknown store keys, reuse original save keys and save on shutdown',
           edits:[
-            {path:relative,find:playerAdded,replace:'local verifiedSaveLoad = {}\\n'+playerAdded},
-            {path:relative,find:loadCheck,replace:'  verifiedSaveLoad[player] = ok and (saved == nil or typeof(saved) == "table")\\n'+loadCheck},
+            {path:relative,find:playerAdded,replace:'local verifiedSaveLoad = {}\n'+playerAdded},
+            {path:relative,find:loadCheck,replace:'  verifiedSaveLoad[player] = ok and (saved == nil or typeof(saved) == "table")\n'+loadCheck},
             {path:relative,find:oldLeave,replace:newLeave}
           ],newFiles:[],replaceFiles:[],tests:[],
           deterministicRobloxNativeRepair:'GUARDED_MERGED_SAVE_WITH_SHUTDOWN'
