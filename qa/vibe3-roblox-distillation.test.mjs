@@ -163,6 +163,25 @@ test('Roblox learning context consumes distilled principles without granting pas
   assert.ok(ctx.verifiedExternalLearningPrinciples.includes('Keep first playable entry distinct and bind input to immediate local feedback.'));
 });
 
+test('verified same-game Roblox lessons outrank broader cross-game matches and unverified records stay excluded',()=>{
+  const base={engine:'roblox',retrievalEligible:true,sourceKind:'internal-roblox-source-runtime',
+    authority:'VERIFIED_INTERNAL_ROBLOX_DISTILLATION',verified:true,
+    rawCodeStored:false,rawAssetStored:false,rawBinaryStored:false};
+  const same={...base,id:'same-game-verified',gameId:'same-game',
+    patterns:['combat input feedback'],principles:['server authority input feedback']};
+  const cross={...base,id:'cross-game-verified',gameId:'other-game',
+    patterns:['combat input feedback','attack cooldown input','enemy server authority','touch input feedback'],
+    principles:['save safety feedback']};
+  const unverified={...cross,id:'unverified-cross-game',verified:false};
+  const learning=createRobloxVibe3LearningContext({gameId:'same-game',profile:{genre:'Action'},
+    distillation:{records:[cross,unverified,same]}});
+  assert.deepEqual(learning.distilledSourceIds,['same-game-verified','cross-game-verified']);
+  assert.equal(learning.crossGameDistillationUsed,true);
+  assert.equal(learning.freshQaRequiredForDistilledTransfer,true);
+  assert.equal(learning.rawSourceOutputAllowed,false);
+  assert.equal(learning.rawAssetOutputAllowed,false);
+});
+
 test('Roblox learning context refuses id-only verified external playbook coverage',()=>{
   const ctx=createRobloxVibe3LearningContext({
     gameId:'id-only',profile:{genre:'Action'},playbooks:{taskTypes:{
