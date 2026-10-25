@@ -306,7 +306,31 @@ test('Roblox model-free native GUI coding is bounded to a real client GuiButton 
 
 
 test('Roblox no-model coding guards real DataStore read before writing and preserves unrelated keys',t=>{
-  const source=fs.readFileSync('roblox-games/exorcist-office/server/Game.server.luau','utf8');
+  // Stable template fixture: future game-specific fixes must not invalidate model-free recipe QA.
+  const source=[
+    "local Players = game:GetService(\"Players\")",
+    "local store = nil",
+    "local Config = {}",
+    "Players.PlayerAdded:Connect(function(player)",
+    "  local ok, saved = pcall(function()",
+    "    return store:GetAsync(\"player:\" .. player.UserId)",
+    "  end)",
+    "  if ok and typeof(saved) == \"table\" then",
+    "    initializePlayer(player)",
+    "  else",
+    "    initializePlayer(player)",
+    "  end",
+    "end)",
+    "Players.PlayerRemoving:Connect(function(player)",
+    "  local snapshot = {}",
+    "  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end",
+    "  pcall(function()",
+    "    store:UpdateAsync(\"player:\" .. player.UserId, function() return snapshot end)",
+    "  end)",
+    "  lastAction[player] = nil",
+    "end)",
+    "game:BindToClose(function() end)"
+  ].join('\n');
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-model-free-safe-datastore-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   fs.mkdirSync(path.join(root,'server'),{recursive:true});
