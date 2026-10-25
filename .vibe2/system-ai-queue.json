@@ -117533,7 +117533,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -117567,7 +117567,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 7,
-      "previousReservationId": "system-ai:40207101119:1",
+      "previousReservationId": "system-ai:40208109232:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -117575,12 +117575,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40208109232:1",
-      "reservedAt": "2026-10-25T15:47:09.038Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -117933,7 +117933,8 @@
         "actions-run:40206277120",
         "system-ai-handoff-to-reservation:system-ai:40207101119:1",
         "actions-run:40207101119",
-        "system-ai-handoff-to-reservation:system-ai:40208109232:1"
+        "system-ai-handoff-to-reservation:system-ai:40208109232:1",
+        "actions-run:40208109232"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1666,
@@ -117948,7 +117949,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-25T15:47:09.038Z"
+      "updatedAt": "2026-10-25T15:51:59.528Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -168398,7 +168399,7 @@
     },
     {
       "id": "marketing-mini-empire-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -168432,7 +168433,7 @@
       "failureSignature": null,
       "failureClass": "RUNNER_OR_INFRASTRUCTURE_FAILURE",
       "handoffCount": 0,
-      "previousReservationId": "system-ai:40207735463:1",
+      "previousReservationId": "system-ai:40208109232:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -168440,12 +168441,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:40208109232:1",
-      "reservedAt": "2026-10-25T15:47:09.038Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -168501,7 +168502,15 @@
         "learning-penalty:NO",
         "system-ai-handoff-state:REQUEUE_NEW_WORKER",
         "system-ai-exact-checkpoint-resume:YES",
-        "system-ai-handoff-to-reservation:system-ai:40208109232:1"
+        "system-ai-handoff-to-reservation:system-ai:40208109232:1",
+        "actions-run:40208109232",
+        "external-ai-raw-output-sha256:84f60e2d8a456bddbe23dfa86c490da4535d33538637f94e117fbb0e3a9d9b66",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_107b55ca6e8e05ede28f9b9f",
+        "learning-knowledge-id:EXPERIENCE:capability_ctrace_31bc6402f5611fd66c298fb4",
+        "system-ai-applied-answer-sha256:a10aa8110d38d368a9cbc7e6b631d84d486a019cf5e839d71502f3795fa2b899",
+        "repair-strategy-fingerprint:957c9af1f6f8cfea82c5cd33180ae38cf3b1f0a12da6bceee2ef5c8f682743ac",
+        "failed-strategy-fingerprint:957c9af1f6f8cfea82c5cd33180ae38cf3b1f0a12da6bceee2ef5c8f682743ac",
+        "model-output-sha256:84f60e2d8a456bddbe23dfa86c490da4535d33538637f94e117fbb0e3a9d9b66"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 176,
@@ -168516,7 +168525,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-25T15:33:15.394Z",
-      "updatedAt": "2026-10-25T15:47:09.038Z"
+      "updatedAt": "2026-10-25T15:51:59.528Z"
     },
     {
       "id": "marketing-restaurant-tycoon-pre-release-v1",
