@@ -412,6 +412,19 @@ buildWorld(live){
     bones[part]={node,rest:node.rotation.clone(),tracked};
    }
   });
+  // 지지발 미세 고정: 뼈대에 양쪽 발이 있는 경우에만 적용한다.
+  // 원래 애니메이션의 무릎/보행 리깅은 유지하고, 지지발의 수평 흔들림만 제한한다.
+  const feet=[];
+  model.traverse(node=>{
+   if(!node.isBone||!node.name)return;
+   const name=node.name.toLowerCase();
+   const left=/(left.*(?:foot|ankle)|(?:foot|ankle).*left|(?:foot|ankle)[._-]?l$|lfoot|l_foot)/.test(name);
+   const right=/(right.*(?:foot|ankle)|(?:foot|ankle).*right|(?:foot|ankle)[._-]?r$|rfoot|r_foot)/.test(name);
+   if((left||right)&&!feet.some(f=>f.side===(left?'left':'right'))){
+    const animatesPosition=original.animations.some(clip=>clip.tracks.some(t=>t.name===node.name+'.position'));
+    feet.push({node,side:left?'left':'right',rest:node.position.clone(),animatesPosition,anchor:null});
+   }
+  });
   // 전신 표현: 실제 고밀도 원화 + 경량 분절 메시. 3D 판정 모델은 그대로 둔다.
   let pixel=null,pixelRest=null,pixelWidth=0;
   const bounds=this.actorBounds[ACTOR_ART.indexOf(role)];
@@ -427,12 +440,13 @@ buildWorld(live){
    const clips={idle:named(/idle/i)||named(/^walk|_walk/i)||named(/^run|_run/i),walk:named(/^walk|_walk/i),run:named(/^run|_run/i),attack:named(/^(?!.*idle).*?(attack|spell|shoot|punch|bite|slash|headbutt)/i),hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i),death:named(/death|die|dying/i)};
    if(clips.attack===clips.idle)clips.attack=null;
    for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))action.reset().play().setEffectiveWeight(0);
-   const result={root,model,ring,mixer,actions,clips,bones,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
+   const result={root,model,ring,mixer,actions,clips,bones,feet,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
     wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,lastSpecialUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
     lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,
     motionPhase:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:3)*1.61,
     creature:kind!=='enemy'?'human':role==='slime'?'gel':role==='bunny'?'hopper':role==='golem'?'stone':role==='ghost'?'spirit':role==='winged'?'flyer':/늑대|마수|키메라/.test(obj.name||'')?'hunter':/거미|전갈/.test(obj.name||'')?'skitter':'fighter',
     specialUntil:0,specialKind:null,deadAt:0,hitAt:0,hitPower:0,hitSide:0,flashMaterials,
+    stepDistance:0,visualSpeed:0,stepStride:kind!=='enemy'?94:role==='bunny'?68:role==='slime'?63:role==='orc'?91:role==='golem'?118:87,
     idleSeed:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:11)*.713,
     idleAttention:0,lookYaw:0,stance:0,faceTarget:null,visualStyle:'strike',npcRoutine:obj.routine||null};
   this.scene.add(root);return result;
@@ -450,7 +464,9 @@ buildWorld(live){
     if(hitStart)entry.lastHitAt=entry.hitAt;
    const speedBase=entry.kind==='enemy'?90:155,blend=1-Math.exp(-dt*11);
    entry.motion+=(Math.min(1,entry.speed/speedBase)-entry.motion)*blend;
-   entry.walkPhase+=dt*(entry.role==='golem'?7:entry.role==='bunny'?14:10.5)*Math.max(.12,entry.speed/speedBase);
+   // 보행 클립과 보조 걸음 움직임을 동일한 실측 이동거리로 구동한다.
+   // 스톱/코너/프레임 제한에서도 땅 위를 미끄러지듯 계속 걷는 문제 방지.
+   if(entry.stepDistance>0)entry.walkPhase+=entry.stepDistance/entry.stepStride*Math.PI*2;
    const attackProgress=attack?Math.min(1,(now-entry.attackAt)/Math.max(1,entry.attackDuration*1000)):0;
    // 공격 준비 → 강한 타격 → 자세 회복을 시각적으로 구분한다.
     const windup=attack?Math.max(0,1-Math.abs(attackProgress-.16)/.16):0;
@@ -514,16 +530,21 @@ buildWorld(live){
    }
    if(entry.gestureAction&&now>=entry.gestureUntil){entry.gestureAction.fadeOut(.18);entry.gestureAction=null;}
    entry.gestureBlend+=((entry.gestureAction?1:0)-entry.gestureBlend)*(1-Math.exp(-dt*16));
-   const activity=THREE.MathUtils.clamp(entry.speed/16,0,1);
-   const runBlend=entry.clips.run?THREE.MathUtils.smoothstep(entry.speed,entry.kind==='enemy'?95:105,entry.kind==='enemy'?165:185):0;
+   const activity=THREE.MathUtils.clamp(entry.motion*3.8,0,1);
+   const runBlend=entry.clips.run?THREE.MathUtils.smoothstep(entry.visualSpeed,entry.kind==='enemy'?95:105,entry.kind==='enemy'?165:185):0;
    const locoWeight=1-entry.gestureBlend*.88;
    if(entry.clips.idle)entry.clips.idle.setEffectiveWeight((1-activity)*locoWeight);
    if(entry.clips.walk)entry.clips.walk.setEffectiveWeight(activity*(entry.clips.run?1-runBlend:1)*locoWeight);
    if(entry.clips.run)entry.clips.run.setEffectiveWeight(activity*(entry.clips.walk?runBlend:1)*locoWeight);
    if(!entry.clips.walk&&!entry.clips.run&&entry.clips.idle)entry.clips.idle.setEffectiveWeight(locoWeight);
-   if(entry.clips.walk)entry.clips.walk.setEffectiveTimeScale(THREE.MathUtils.clamp(entry.speed/78,.68,1.9));
-   if(entry.clips.run)entry.clips.run.setEffectiveTimeScale(THREE.MathUtils.clamp(entry.speed/160,.78,1.6));
+   // THREE.AnimationAction의 clip time은 초 단위이므로, 이동한 거리/한 주기 보폭에
+   // 클립 길이를 곱하면 걷기·달리기가 지면상의 실제 속도와 같은 박자로 진행한다.
+   const cyclesPerSecond=entry.stepDistance/Math.max(.001,dt)/entry.stepStride;
+   if(entry.clips.walk)entry.clips.walk.setEffectiveTimeScale(Math.max(0,cyclesPerSecond*entry.clips.walk.getClip().duration));
+   if(entry.clips.run)entry.clips.run.setEffectiveTimeScale(Math.max(0,cyclesPerSecond*entry.clips.run.getClip().duration));
    // 피격 직후 잠깐 멈칫하는 시각 효과. 전투 판정·타이머는 그대로 유지한다.
+   // 지지발 보정 위치는 매 프레임 원본 리깅 위치에서 다시 계산해 누적 변형을 방지.
+   for(const foot of entry.feet)if(!foot.animatesPosition)foot.node.position.copy(foot.rest);
    entry.mixer.update(hit>.81?dt*.23:dt);
    // 보행 클립 위에 호흡·상체 관성·타격 후 젖힘·몬스터별 부유를 미세하게 더한다.
    const sway=Math.sin(phase)*(creature==='skitter'?.065:creature==='hunter'?.045:heavy?.014:.028)*pace;
@@ -551,6 +572,26 @@ buildWorld(live){
     const y=part==='head'?watch*.8+Math.sin(elapsed*.31)*.05*resting:part==='neck'?watch*.2:0;
     const z=part==='head'?Math.sin(elapsed*.49)*.025*resting+entry.turnLean*.3:part==='neck'?0:entry.turnLean*.18;
     bone.node.rotation.set(base.x+x,base.y+y,base.z+z);
+   }
+   // 땅에 닿은 발은 월드 좌표에 짧게 붙이고, 반대편 발이 들리면 고정을 푼다.
+   // 두 발이 없는 몬스터(슬라임/망령/날짐승)는 이 구간을 안전하게 건너뛴다.
+   if(entry.feet.length&&hasWalk){
+    const grounded=entry.stepDistance>.04&&entry.visualSpeed>9&&!attack&&hit<.45;
+    entry.root.updateMatrixWorld(true);
+    for(const foot of entry.feet){
+     const phase=(entry.walkPhase+(foot.side==='right'?Math.PI:0))%(Math.PI*2);
+     const stance=grounded&&Math.cos(phase)>.2;
+     if(!stance){foot.anchor=null;continue;}
+     const point=foot.node.getWorldPosition(new THREE.Vector3());
+     if(!foot.anchor){foot.anchor=point.clone();continue;}
+     const local=foot.node.parent.worldToLocal(foot.anchor.clone());
+     let dx=local.x-foot.node.position.x,dz=local.z-foot.node.position.z;
+     const size=Math.hypot(dx,dz);
+     const maxCorrection=.10/Math.max(.15,Math.abs(entry.model.scale.x));
+     if(size>maxCorrection){dx*=maxCorrection/size;dz*=maxCorrection/size;}
+     foot.node.position.x+=dx*.72;foot.node.position.z+=dz*.72;
+     entry.root.updateMatrixWorld(true);
+    }
    }
    for(const f of entry.flashMaterials){
     const glow=hit*(entry.kind==='enemy'?.7:.42);
@@ -806,16 +847,22 @@ buildWorld(live){
     if(!entry){entry=this.createActor(role,kind,obj);if(!entry)continue;this.actors.set(key,entry);}
     const dx=obj.x-entry.lastX,dy=obj.y-entry.lastY,travel=Math.hypot(dx,dy);
     entry.lastX=obj.x;entry.lastY=obj.y;
-    // 워프·좌표 보정은 실제 보행으로 오인하지 않는다.
-    const instantSpeed=travel>260?0:Math.min(250,travel/Math.max(.016,dt));
-    entry.speed+=(instantSpeed-entry.speed)*(1-Math.exp(-dt*(instantSpeed>entry.speed?11:16)));
-    const moving=entry.speed>3||travel>.12;
-    if(!entry.visualInitialized){entry.root.position.set(obj.x*SCALE,.015,obj.y*SCALE);entry.visualInitialized=true;}
+    // 위치 추종의 잔여 미끄러짐을 없애 실제 게임 좌표에 발을 붙인다.
+    // 모바일 30FPS 때도 한 렌더 프레임에 실제 이동한 거리를 보폭에 적용한다.
+    const teleport=!entry.visualInitialized||travel>260;
+    const oldX=entry.root.position.x,oldZ=entry.root.position.z;
+    entry.root.position.x=obj.x*SCALE;entry.root.position.z=obj.y*SCALE;
+    if(teleport){entry.root.position.y=.015;entry.visualInitialized=true;}
+    const traveled=teleport?0:Math.hypot(entry.root.position.x-oldX,entry.root.position.z-oldZ)/SCALE;
+    entry.stepDistance=traveled<.02?0:Math.min(traveled,230*Math.max(.016,dt));
+    entry.visualSpeed=entry.stepDistance/Math.max(.001,dt);
+    if(teleport){entry.speed=0;entry.motion=0;}
     else{
-     const follow=1-Math.exp(-dt*(kind==='enemy'?18:23));
-     entry.root.position.x+=(obj.x*SCALE-entry.root.position.x)*follow;
-     entry.root.position.z+=(obj.y*SCALE-entry.root.position.z)*follow;
+     const targetSpeed=entry.visualSpeed<3?0:entry.visualSpeed;
+     entry.speed+=(targetSpeed-entry.speed)*(1-Math.exp(-dt*(targetSpeed?13:22)));
+     if(!targetSpeed&&entry.speed<1)entry.speed=0;
     }
+    const moving=entry.stepDistance>.02;
     const beat=live.cinematic?.info?.beats?.[live.cinematic.step];
     const reacting=!!(beat&&(beat.speaker===obj.name||(kind==='enemy'&&live.cinematic.info.key.startsWith('boss:')&&obj.boss)));
     const poseY=reacting?.095+Math.sin(now*.006)*.045:.015;
@@ -836,7 +883,9 @@ buildWorld(live){
     entry.stance=kind==='ai'&&obj.party&&live.enemies.some(e=>!e.dead&&Math.hypot(e.x-obj.x,e.y-obj.y)<240)?1:0;
     entry.visualStyle=currentCombat?.visualStyle||'strike';
     const difference=Math.atan2(Math.sin(entry.turnYaw-entry.model.rotation.y),Math.cos(entry.turnYaw-entry.model.rotation.y));
-    entry.model.rotation.y+=difference*(1-Math.exp(-dt*(moving?9:6)));
+    // 이동 방향에 몸통이 늦게 따라와 옆으로 미끄러져 보이던 현상을 완화.
+    const turning=Math.abs(difference),turnRate=moving?(turning>.85?25:18):8;
+    entry.model.rotation.y+=difference*(1-Math.exp(-dt*turnRate));
     entry.turnLean+=(THREE.MathUtils.clamp(difference,-1,1)*entry.motion*.07-entry.turnLean)*(1-Math.exp(-dt*8));
     entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);
     entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];

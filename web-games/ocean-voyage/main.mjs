@@ -120,27 +120,34 @@ function travelCard(p){
  return '<div class="row"><div class="desc"><strong>'+(reached?'⚓ ':'◈ ')+escapeHtml(p.name)+'</strong><small>'+escapeHtml(p.region)+' · '+(reached?'발견':'미발견')+' · '+d+'해리</small></div><button class="action sub" data-route="'+p.id+'">'+(reached?'개척 항로 자동항해':'미개척 경계까지')+'</button></div>';
 }
 function chart(){
- return '<p class="info">해도에서 발견한 항구를 누르면 자동항로가 설정돼. 개척 해역은 자동항해하고, 미개척 구간은 직접 조타해. 미개척 목적지는 밝혀진 바다의 끝에서 자동으로 멈춰. 실제 지형 해도야. 1차 유럽 항구 13곳이 연결돼. 어두운 미개척 해역은 직접 지나가면 영구적으로 밝혀져. 다른 대륙은 주인공 출신 배경이며 상세 플레이는 추후 확장돼. 자동항해는 육지를 피해 가며, 먼 항로는 2·4배속을 사용할 수 있어. 긴 항로에는 보급이 필요해.</p><canvas id="chartMap" width="640" height="400" aria-label="실제 유럽 및 세계 해안선"></canvas><div class="stack"><button class="action sub" data-map="europe">유럽·국가 지도</button><button class="action sub" data-map="world">세계 위치 보기</button></div><h3>보물 수색</h3>'+TREASURES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+(!state.treasureClues.includes(t.id)?'선술집에서 해도 단서를 구해.':t.clue)+'</p><button class="action" data-search="'+t.id+'" '+(!state.treasureClues.includes(t.id)||state.treasures.includes(t.id)?'disabled':'')+'>'+ (state.treasures.includes(t.id)?'발견 완료':'이 위치에서 수색')+'</button></div>').join('')+roamingMerchants()+'<button class="action sub" data-action="cancel">항로 취소</button>'+PORTS.map(travelCard).join('');
+ return '<p class="info">해도에서 발견한 항구를 누르면 자동항로가 설정돼. 개척 해역은 자동항해하고, 미개척 구간은 직접 조타해. 미개척 목적지는 밝혀진 바다의 끝에서 자동으로 멈춰. 실제 지형 해도야. 1차 유럽 항구 13곳이 연결돼. 어두운 미개척 해역은 직접 지나가면 영구적으로 밝혀져. 다른 대륙은 주인공 출신 배경이며 상세 플레이는 추후 확장돼. 자동항해는 육지를 피해 가며, 먼 항로는 1~16배속을 설정할 수 있어. 긴 항로에는 보급이 필요해.</p><canvas id="chartMap" width="640" height="400" aria-label="실제 유럽 및 세계 해안선"></canvas><div class="stack"><button class="action sub" data-map="europe">유럽·국가 지도</button><button class="action sub" data-map="world">세계 위치 보기</button></div><h3>보물 수색</h3>'+TREASURES.map(t=>'<div class="scene-card"><strong>'+t.name+'</strong><p>'+(!state.treasureClues.includes(t.id)?'선술집에서 해도 단서를 구해.':t.clue)+'</p><button class="action" data-search="'+t.id+'" '+(!state.treasureClues.includes(t.id)||state.treasures.includes(t.id)?'disabled':'')+'>'+ (state.treasures.includes(t.id)?'발견 완료':'이 위치에서 수색')+'</button></div>').join('')+roamingMerchants()+'<button class="action sub" data-action="cancel">항로 취소</button>'+PORTS.map(travelCard).join('');
 }
 // 해도: 발견한 항구·개척 항로·현재 선박 위치를 같이 보여준다.
 let mapWorld=false;
 function drawChart(world=false){
  mapWorld=world;const c=$('chartMap');if(!c)return;
  const ctx=c.getContext('2d'),cx=world?300:75,cz=world?-210:-550,scale=world?.22:1.1;
- drawGeography(ctx,640,400,cx,cz,scale);
- ctx.fillStyle='#cdbb8620';ctx.fillRect(0,0,640,400);
+ drawGeography(ctx,640,400,cx,cz,scale,'chart');
+ const patina=ctx.createRadialGradient(320,180,70,320,200,390);
+ patina.addColorStop(0,'#f6e9cb00');patina.addColorStop(.78,'#8e6d3b18');patina.addColorStop(1,'#60452b80');ctx.fillStyle=patina;ctx.fillRect(0,0,640,400);
  const x=v=>320+(v-cx)*scale,y=v=>200+(v-cz)*scale;
- ctx.save();ctx.strokeStyle='#e7d3a32b';ctx.lineWidth=1;
- for(let xx=0;xx<=640;xx+=40){ctx.beginPath();ctx.moveTo(xx,0);ctx.lineTo(xx,400);ctx.stroke();}
- for(let yy=0;yy<=400;yy+=40){ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(640,yy);ctx.stroke();}
- ctx.restore();
+ ctx.save();ctx.strokeStyle='#786a4a31';ctx.lineWidth=1;ctx.setLineDash([2,7]);
+ for(let xx=0;xx<=640;xx+=80){ctx.beginPath();ctx.moveTo(xx,0);ctx.lineTo(xx,400);ctx.stroke();}
+ for(let yy=0;yy<=400;yy+=80){ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(640,yy);ctx.stroke();}
+ ctx.setLineDash([]);ctx.restore();
  if(state.route.length){ctx.save();ctx.strokeStyle='#ffe09f';ctx.lineWidth=2;ctx.setLineDash([7,4]);ctx.beginPath();ctx.moveTo(x(state.ship.x),y(state.ship.z));for(const p of state.route)ctx.lineTo(x(p.x),y(p.z));ctx.stroke();ctx.restore();}
- drawFog(ctx,640,400,cx,cz,scale,state.charted);
+ drawFog(ctx,640,400,cx,cz,scale,state.charted,'chart');
  for(const p of PORTS){
   const px=x(p.x),py=y(p.z);if(px<7||px>632||py<10||py>392)continue;
   const known=state.discovered.includes(p.id);
-  ctx.fillStyle=known?'#ffe2a3':'#91a3a6';ctx.strokeStyle='#3e3930';ctx.lineWidth=2;
-  ctx.beginPath();ctx.arc(px,py,known?5:3,0,Math.PI*2);ctx.fill();ctx.stroke();
+  const buildings=PORT_SCENES[p.id]?.facilities||[],royal=buildings.includes('palace'),shipyard=buildings.includes('fleet');
+  ctx.save();ctx.translate(px,py);ctx.fillStyle=known?'#8f5634':'#736a58';ctx.strokeStyle='#eed7a2';ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.arc(0,0,known?7:4,0,Math.PI*2);ctx.fill();ctx.stroke();
+  if(known){ctx.fillStyle='#f9e4a9';ctx.strokeStyle='#412f29';ctx.lineWidth=1.2;
+   if(royal){ctx.beginPath();ctx.moveTo(-5,-2);ctx.lineTo(-4,-8);ctx.lineTo(-1,-5);ctx.lineTo(1,-10);ctx.lineTo(3,-5);ctx.lineTo(6,-8);ctx.lineTo(5,0);ctx.closePath();ctx.fill();ctx.stroke();}
+   else if(shipyard){ctx.beginPath();ctx.moveTo(-5,-5);ctx.lineTo(4,-5);ctx.lineTo(1,3);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillRect(-1,-8,1.5,13);}
+   else{ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();}}
+  ctx.restore();
   if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#fff0c8';ctx.fillText(p.name,px+7,py-6);const eventGoods=GOODS.find(g=>marketQuote(state,p.id,g.id).event);if(eventGoods){ctx.font='bold 10px system-ui';ctx.fillStyle='#f3ad86';ctx.fillText('⚑ '+marketQuote(state,p.id,eventGoods.id).event,px+7,py+8);}}
  }
  for(const m of state.merchants||[]){
@@ -152,8 +159,23 @@ function drawChart(world=false){
  }
  const px=x(state.ship.x),py=y(state.ship.z);
  ctx.save();ctx.translate(px,py);ctx.rotate(-state.ship.heading);ctx.fillStyle='#fff9d3';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(-7,8);ctx.lineTo(0,4);ctx.lineTo(7,8);ctx.closePath();ctx.fill();ctx.restore();
- ctx.fillStyle='#f2cf8e';ctx.font='bold 13px system-ui';ctx.textAlign='left';ctx.fillText('✦ 해도 · '+(world?'세계 위치':'유럽 연안')+'  |  발견한 항구 터치',12,22);
- ctx.fillText('N ↑',593,22);
+ ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#6b4e2d9c';ctx.strokeRect(6,6,628,388);
+ ctx.lineWidth=1;ctx.strokeStyle='#d7bc83bb';ctx.strokeRect(10,10,620,380);
+ for(const [xx,yy,dx,dy] of [[12,12,1,1],[628,12,-1,1],[12,388,1,-1],[628,388,-1,-1]]){
+  ctx.beginPath();ctx.moveTo(xx+dx*22,yy);ctx.lineTo(xx,yy);ctx.lineTo(xx,yy+dy*22);ctx.stroke();}
+ const roseX=582,roseY=329;ctx.translate(roseX,roseY);
+ ctx.strokeStyle='#5e492f';ctx.fillStyle='#a77c42';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
+ for(let i=0;i<16;i++){const a=i*Math.PI/8;ctx.beginPath();ctx.moveTo(Math.sin(a)*19,Math.cos(a)*19);ctx.lineTo(Math.sin(a)*26,Math.cos(a)*26);ctx.stroke();}
+ for(let i=0;i<8;i++){const a=i*Math.PI/4,r=i%2?16:24;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.sin(a-.13)*r,Math.cos(a-.13)*r);ctx.lineTo(Math.sin(a+.13)*r,Math.cos(a+.13)*r);ctx.closePath();ctx.fillStyle=i%2?'#5f775f':'#6b4930';ctx.fill();}
+ ctx.font='bold 12px Georgia,serif';ctx.fillStyle='#503723';ctx.textAlign='center';ctx.fillText('N',0,-32);ctx.restore();
+ const wind=windAt(state),windDeg=Math.round(wind.heading*180/Math.PI+360)%360;
+ ctx.fillStyle='#593f29';ctx.font='bold 13px Georgia,"Malgun Gothic",serif';ctx.textAlign='left';
+ ctx.fillText('✦ 항해 해도 · '+(world?'세계 위치':'유럽 연안')+' / 1590',17,26);
+ ctx.font='bold 10px Georgia,"Malgun Gothic",serif';ctx.fillText('풍향 '+windDeg+'°   풍력 '+Math.round(wind.strength*100)+'%',17,43);
+ ctx.fillText('왕관 왕궁 · 돛 조선소 · 원형 일반 항구',17,386);
+ ctx.fillStyle='#6b4a2a';ctx.fillRect(26,355,75,2);
+ for(let tick=0;tick<=5;tick++)ctx.fillRect(26+tick*15,352,tick%5===0?2:1,7);
+ ctx.font='10px Georgia,serif';ctx.fillText('해도 상대 거리',27,369);
  for(const t of TREASURES.filter(t=>state.treasureClues.includes(t.id)&&!state.treasures.includes(t.id)))ctx.fillText('×',x(t.x),y(t.z));
 }
 
@@ -361,7 +383,7 @@ function renderPanel(){
  if(!active)return;const savedScroll=renderedPanel===active?view.body.scrollTop:0;renderedPanel=active;
  const titles={battle:'육지 전투',jobs:'직업 길드',palace:'왕궁 · 총독부',port:'항구 · 선술집 · 조선소',crew:'선장과 항해사',inventory:'항해 가방과 화물',chart:'세계 해도',market:'항구 교역소',fleet:'함대와 조선소',quests:'계약과 탐험',journal:'항해 기록',menu:'전체 메뉴',system:'시스템'};
  view.head.textContent=titles[active];
- view.body.innerHTML=({battle:battlePanel,palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal,menu,system}[active]||chart)();if(active==='chart')drawChart(false);view.body.scrollTop=savedScroll;
+ view.body.innerHTML=({battle:battlePanel,palace,jobs,port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal,menu,system}[active]||chart)();if(active==='chart')drawChart(mapWorld);view.body.scrollTop=savedScroll;
 }
 function apply(result){
  if(result.ok){const priorFx=state.combatFx?.serial;state=result.state;save();scene.setState(state);if(state.landBattle){if(active!=='battle')enterBattle();else renderPanel();}else renderPanel();summary();renderEvent();if(state.combatFx?.serial!==priorFx)impactSound();}

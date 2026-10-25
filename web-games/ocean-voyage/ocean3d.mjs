@@ -4,16 +4,60 @@ import {PORTS,SHIP_TYPES,PORT_SCENES,MERCHANT_CAPTAINS,merchantPosition,portStat
 import {COUNTRIES} from './assets/countries.mjs';
 import {LAND} from './assets/world.mjs';
 const C={sea:'#22566c',deep:'#173e55',shore:'#dbc899',land:'#768564',dark:'#283f3c',gold:'#f0d398',wood:'#583c30',roof:'#954f42'};
-export function drawGeography(ctx,w,h,cx,cz,scale){
- ctx.fillStyle=C.sea;ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(w/2-cx*scale,h/2-cz*scale);ctx.scale(scale,scale);
- const left=cx-w/2/scale,right=cx+w/2/scale,top=cz-h/2/scale,bottom=cz+h/2/scale;
- for(const ring of LAND){if(ring.box[2]<left||ring.box[0]>right||ring.box[3]<top||ring.box[1]>bottom)continue;ctx.beginPath();ring.points.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.closePath();ctx.lineJoin='round';ctx.lineWidth=2.4/scale;ctx.strokeStyle=C.shore;ctx.stroke();ctx.fillStyle=C.land;ctx.fill();}
- ctx.strokeStyle='#c8d8a450';ctx.lineWidth=.7/scale;ctx.setLineDash([2/scale,2/scale]);
- for(const c of COUNTRIES){for(const ring of c.rings){ctx.beginPath();ring.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.stroke();}}
+export function drawGeography(ctx,w,h,cx,cz,scale,style='sea'){
+ const parchment=style==='chart';
+ const base=ctx.createLinearGradient(0,0,0,h);
+ if(parchment){base.addColorStop(0,'#e8d9b8');base.addColorStop(.56,'#d9c7a5');base.addColorStop(1,'#bda581');}
+ else{base.addColorStop(0,'#2c7181');base.addColorStop(.48,'#236077');base.addColorStop(1,'#173d58');}
+ ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
+ const left=cx-w/(2*scale),right=cx+w/(2*scale),top=cz-h/(2*scale),bottom=cz+h/(2*scale);
+ ctx.save();ctx.translate(w/2-cx*scale,h/2-cz*scale);ctx.scale(scale,scale);
+ // 실제 해도 좌표와 결합된 위·경도 격자: 지도 이동 시 흔들리지 않고 항로 눈금을 유지한다.
+ const grid=parchment?40:32;
+ ctx.beginPath();for(let x=Math.ceil(left/grid)*grid;x<=right;x+=grid){ctx.moveTo(x,top);ctx.lineTo(x,bottom);}
+ for(let z=Math.ceil(top/grid)*grid;z<=bottom;z+=grid){ctx.moveTo(left,z);ctx.lineTo(right,z);}
+ ctx.strokeStyle=parchment?'#715e4440':'#bad3c326';ctx.lineWidth=.8/scale;ctx.stroke();
+ // 수심 소용돌이·해풍 선은 지리 좌표를 기준으로 결정적 배치한다.
+ if(scale>=.5){const stride=parchment?32:26;ctx.lineWidth=(parchment?.75:1)/scale;
+  for(let ix=Math.floor(left/stride);ix<=Math.ceil(right/stride);ix++)for(let iz=Math.floor(top/stride);iz<=Math.ceil(bottom/stride);iz++){
+   const seed=(ix*173+iz*109+ix*iz*7)>>>0;if(seed%5>1)continue;
+   const px=ix*stride+((seed*17)%19),pz=iz*stride+((seed*11)%17);
+   const rr=3/scale+(seed%4)*1.8/scale;ctx.beginPath();ctx.ellipse(px,pz,rr*2,rr*.4,seed%3*.35,0,Math.PI*1.5);
+   ctx.strokeStyle=parchment?'#83694e42':'#b8ecdd44';ctx.stroke();
+  }
+ }
+ // 자연 해안 폴리곤의 원지형 보존 + 얕은 물띠 + 밝은 포말 + 육지 음영의 삼중 윤곽.
+ for(const ring of LAND){
+  if(ring.box[2]<left||ring.box[0]>right||ring.box[3]<top||ring.box[1]>bottom)continue;
+  ctx.beginPath();ring.points.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.closePath();ctx.lineJoin='round';
+  ctx.lineWidth=(parchment?11:12)/scale;ctx.strokeStyle=parchment?'#ae916744':'#79b7b465';ctx.stroke();
+  ctx.lineWidth=(parchment?5:5.2)/scale;ctx.strokeStyle=parchment?'#cfb78d':'#82b5b0';ctx.stroke();
+  ctx.fillStyle=parchment?'#ac9f77':'#748866';ctx.fill();
+  ctx.lineWidth=1.5/scale;ctx.strokeStyle=parchment?'#6f6146':'#3f645d';ctx.stroke();
+  if(scale>1.1){ctx.save();ctx.clip();ctx.strokeStyle=parchment?'#665a3752':'#c9d4a32b';ctx.lineWidth=.7/scale;
+   const span=9/scale;ctx.beginPath();
+   for(let z=Math.ceil(top/span)*span;z<bottom;z+=span){ctx.moveTo(left,z);ctx.lineTo(right,z-9/scale);}
+   ctx.stroke();ctx.restore();
+  }
+ }
+ ctx.strokeStyle=parchment?'#77624955':'#b8d7a05a';ctx.lineWidth=.8/scale;ctx.setLineDash([2/scale,3/scale]);
+ for(const country of COUNTRIES)for(const ring of country.rings){ctx.beginPath();ring.forEach(([x,z],i)=>i?ctx.lineTo(x,z):ctx.moveTo(x,z));ctx.stroke();}
  ctx.setLineDash([]);ctx.restore();
- if(scale>.5){ctx.font='bold '+(w<200?7:11)+'px system-ui';ctx.fillStyle='#f4e1ad';ctx.textAlign='center';for(const c of COUNTRIES){const x=w/2+(c.lon-cx)*scale,y=h/2+(c.z-cz)*scale;if(x>10&&x<w-10&&y>20&&y<h-20)ctx.fillText(c.name,x,y);}ctx.textAlign='left';}
+ if(scale>.5){ctx.save();ctx.font='bold '+(w<200?7:11)+'px Georgia,serif';ctx.textAlign='center';
+  for(const country of COUNTRIES){const x=w/2+(country.lon-cx)*scale,y=h/2+(country.z-cz)*scale;
+   if(x>15&&x<w-15&&y>25&&y<h-25){ctx.strokeStyle=parchment?'#dfd2b1b0':'#1c3d4666';ctx.lineWidth=2;ctx.strokeText(country.name,x,y);ctx.fillStyle=parchment?'#584a35':'#efe0b5';ctx.fillText(country.name,x,y);}
+  }ctx.restore();
+ }
 }
-export function drawFog(ctx,w,h,cx,cz,scale,charted){const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;ctx.fillStyle='#071a2deB';ctx.beginPath();for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++)if(!known.has(gx+':'+gz))ctx.rect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);ctx.fill();}
+export function drawFog(ctx,w,h,cx,cz,scale,charted,style='sea'){
+ const known=new Set(charted),left=cx-w/2/scale,top=cz-h/2/scale;
+ ctx.fillStyle=style==='chart'?'#4e4336e6':'#071a2de0';ctx.beginPath();
+ for(let gx=Math.floor(left/24);gx<Math.ceil((left+w/scale)/24);gx++)for(let gz=Math.floor(top/24);gz<Math.ceil((top+h/scale)/24);gz++){
+  if(known.has(gx+':'+gz))continue;
+  ctx.rect(Math.floor(w/2+(gx*24-cx)*scale),Math.floor(h/2+(gz*24-cz)*scale),Math.ceil(24*scale)+1,Math.ceil(24*scale)+1);
+ }
+ ctx.fill();
+}
 export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding=()=>{},onPort=()=>{},onMerchant=()=>{},onMap=()=>{}}={}){
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
@@ -33,8 +77,26 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    renderer.setPixelRatio(Math.min(.95,Math.max(.68,1/(devicePixelRatio||1)+.2)));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
    const world=new THREE.Scene();world.background=new THREE.Color('#87b9c7');world.fog=new THREE.Fog('#87b9c7',110,300);
    const camera=new THREE.PerspectiveCamera(44,1,.1,350);camera.position.set(25,28,39);
+   // 항해 시점 수평선을 채우는 대기 하늘: 바람·악천후에 따라 천정/수평선 조명 변화.
+   const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,
+    uniforms:{horizon:{value:new THREE.Color('#b4d6d2')},zenith:{value:new THREE.Color('#32789e')}},
+    vertexShader:'varying float h; void main(){h=normalize(position).y;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+    fragmentShader:'uniform vec3 horizon;uniform vec3 zenith;varying float h;void main(){float t=smoothstep(-0.10,0.85,h);gl_FragColor=vec4(mix(horizon,zenith,t),1.0);}'});
+   const sky=new THREE.Mesh(new THREE.SphereGeometry(275,28,16),skyMat);sky.renderOrder=-100;world.add(sky);
    world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:150});sun.shadow.bias=-.0004;world.add(sun);
-   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,52,52),new THREE.MeshStandardMaterial({color:'#237189',roughness:.46,metalness:.12}));water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
+   // 가까운 바다는 16px 손그림 점묘 질감, 먼 바다는 광택 잔물결로 구별한다.
+   const waterTiles=document.createElement('canvas');waterTiles.width=128;waterTiles.height=128;
+   const tile=waterTiles.getContext('2d');tile.fillStyle='#3b8997';tile.fillRect(0,0,128,128);
+   for(let y=0;y<128;y+=8)for(let x=0;x<128;x+=8){
+    const v=(x*59+y*37+x*y)%13;tile.fillStyle=['#347c8d','#408f9b','#569baa','#2c7387','#368796'][v%5];tile.fillRect(x,y,8,8);
+    if(v%3===0){tile.fillStyle='#91b9b8';tile.fillRect(x+2,y+3,Math.min(6,2+v%5),1);}
+   }
+   const waterTex=new THREE.CanvasTexture(waterTiles);waterTex.wrapS=THREE.RepeatWrapping;waterTex.wrapT=THREE.RepeatWrapping;waterTex.repeat.set(18,18);
+   waterTex.magFilter=THREE.NearestFilter;waterTex.minFilter=THREE.NearestMipmapNearestFilter;waterTex.colorSpace=THREE.SRGBColorSpace;
+   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,60,60),new THREE.MeshStandardMaterial({color:'#d6eff0',map:waterTex,roughness:.43,metalness:.08,flatShading:false}));
+   water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
+   const whitecaps=new Float32Array(64*6),capGeometry=new THREE.BufferGeometry();capGeometry.setAttribute('position',new THREE.BufferAttribute(whitecaps,3));
+   const crests=new THREE.LineSegments(capGeometry,new THREE.LineBasicMaterial({color:'#dff7ee',transparent:true,opacity:.39,depthWrite:false}));world.add(crests);
    const ring=new THREE.Mesh(new THREE.RingGeometry(58.8,59.1,128),new THREE.MeshBasicMaterial({color:'#eed49c',transparent:true,opacity:.36,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;world.add(ring);
    // 64픽셀 게임 내 자체 제작 나무·돛 질감. 최근접 텍스처로 판재와 천 올을 살린다.
    function pixelTexture(wood){
@@ -121,6 +183,59 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      for(let y=.4;y<1.2;y+=.22)for(const side of [-1,1]){const plank=new THREE.Mesh(new THREE.BoxGeometry(.04,.038,length*.64),y<.7?wood:trim);plank.position.set(side*beam*.96,y,0);root.add(plank);}
      const lampMat=new THREE.MeshStandardMaterial({color:'#ffcc88',emissive:'#935621',emissiveIntensity:.38});
      for(const side of [-1,1]){const lantern=new THREE.Mesh(new THREE.BoxGeometry(.22,.34,.22),lampMat);lantern.position.set(side*beam*.65,2.13,length*.45);root.add(lantern);}
+     // 선종 고유 실루엣: 느린 코그의 높은 선루, 카락의 이중 성곽, 플루트의 화물 선미 등.
+     const addBox=(x,y,z,sx,sy,sz,material)=>{
+      const obj=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),material);
+      obj.position.set(x,y,z);obj.castShadow=true;obj.receiveShadow=true;root.add(obj);return obj;
+     };
+     const lowerDeck=galley?1.35:large?1.85:1.55;
+     if(/cog/.test(type)){
+      addBox(0,lowerDeck,length*.36,beam*1.65,.86,2,wood);
+      addBox(0,lowerDeck+.53,length*.37,beam*1.78,.17,2.25,trim);
+      addBox(0,1.58,-length*.44,beam*1.38,.57,1.15,wood);
+     }
+     if(/carrack|iberian-galleon/.test(type)){
+      addBox(0,2.3,length*.38,beam*1.67,1.18,2.35,trim);
+      addBox(0,3.03,length*.38,beam*1.4,.14,2.45,brass);
+      addBox(0,1.75,-length*.42,beam*1.45,1.04,length*.15,wood);
+      for(let i=-2;i<=2;i++){
+       const pane=addBox(i*beam*.29,2.50,length*.38+1.23,.22,.3,.05,brass);
+       pane.castShadow=false;
+      }
+     }
+     if(/dutch-fluyt/.test(type)){
+      const barrelMaterial=new THREE.MeshStandardMaterial({color:'#98724b',roughness:1});
+      for(let i=-1;i<=1;i++)for(const side of [-1,1]){
+       const load=new THREE.Mesh(new THREE.CylinderGeometry(.32,.36,.85,8),barrelMaterial);
+       load.rotation.z=Math.PI/2;load.position.set(side*(.35+i*.48),1.65,-length*.16);root.add(load);
+      }
+      addBox(0,2.23,length*.40,beam*1.45,.53,1.65,trim);
+     }
+     if(/french-frigate|english-racer/.test(type)){
+      for(const side of [-1,1]){
+       addBox(side*beam*.88,1.63,0,.17,.2,length*.72,brass);
+       for(let i=0;i<10;i++)addBox(side*beam*.86,1.41,-length*.34+i*length*.075,.06,.31,.08,wood);
+      }
+      addBox(0,1.75,length*.40,beam*1.1,.24,2.15,trim);
+     }
+     if(galley){
+      const benches=9;
+      for(let i=0;i<benches;i++){const z=-length*.38+i*length*.086;addBox(0,1.48,z,beam*1.9,.12,.19,trim);}
+      addBox(0,1.65,-length*.42,beam*.62,.54,1,wood);
+     }
+     if(/caravel/.test(type)){
+      addBox(0,1.43,length*.42,beam*1.35,.47,1.45,trim);
+      for(const side of [-1,1])addBox(side*beam*.86,1.62,-length*.05,.1,.19,length*.5,wood);
+     }
+     // 선체 손상 시 검게 그을린 판재를 시각화하고 돛의 색조가 미묘하게 어두워진다.
+     if(id==='player'){
+      const damage=new THREE.Group(),scorch=new THREE.MeshBasicMaterial({color:'#332822',transparent:true,opacity:.78});
+      for(const side of [-1,1])for(let i=0;i<4;i++){
+       const patch=new THREE.Mesh(new THREE.BoxGeometry(.045,.14+i*.045,.24+i*.09),scorch);
+       patch.position.set(side*(beam+.04),.75+i*.13,-length*.27+i*length*.18);damage.add(patch);
+      }
+      root.add(damage);entry.damage=damage;
+     }
      // 바다 항적: 불투명한 흰 사각형 대신 속도에 따라 벌어지는 V형 물보라 조각.
      const wake=new THREE.Group();
      const foamMaterial=new THREE.MeshBasicMaterial({color:'#d5f2e8',transparent:true,opacity:.58,side:THREE.DoubleSide,depthWrite:false});
@@ -136,14 +251,14 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    }
    const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#ffe4a0'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#c8c5b5',transparent:true,opacity:.45,depthWrite:false});
    let serial=0,shotTime=0,sw=0,sh=0;
-   const targetLook=new THREE.Vector3();
+   const targetLook=new THREE.Vector3(),skyLow=new THREE.Color(),skyHigh=new THREE.Color();
    naval={surface,renderer,world,camera,vessels,render(t){
     const cw=canvas.clientWidth,ch=canvas.clientHeight;if(cw!==sw||ch!==sh){sw=cw;sh=ch;renderer.setSize(cw,ch,false);camera.aspect=cw/ch;camera.updateProjectionMatrix();}
     const origin=state.ship,hostiles=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)&&Math.hypot(e.x-origin.x,e.z-origin.z)<70);
     const merchants=mode==='sea'?(state.merchants||[]).filter(m=>!state.crewRoster.includes(m.id)).map(m=>({...m,...merchantPosition(m)})).filter(m=>Math.hypot(m.x-origin.x,m.z-origin.z)<85):[];
     const rows=[{id:'player',x:origin.x,z:origin.z,heading:origin.heading,type:state.shipType,hull:origin.hull,maxHull:origin.maxHull},...hostiles.map(e=>({...e,type:e.neutral?'cog':'galleon',enemy:!e.neutral})),...merchants.map(m=>({id:'merchant-'+m.id,x:m.x,z:m.z,heading:m.heading,type:'dutch-fluyt',enemy:false}))];
     const ids=new Set(rows.map(r=>r.id));for(const [id,e]of vessels){e.root.visible=ids.has(id);}
-    const wind=windAt(state);for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);for(const cloth of e.sails){cloth.rotation.y=Math.sin(wind.heading-r.heading)*.15;cloth.rotation.z=Math.sin(wind.heading-r.heading)*.035+Math.sin(t*1.5)*.012;}if(e.wake){e.wake.visible=r.id==='player'?Math.abs(origin.velocity)>.5:true;e.wake.scale.setScalar(.7+Math.min(1.3,Math.abs(r.id==='player'?origin.velocity:3)*.13));e.wake.position.y=.02+Math.sin(t*3)*.015;}}
+    const wind=windAt(state);for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);for(const cloth of e.sails){cloth.rotation.y=Math.sin(wind.heading-r.heading)*.15;cloth.rotation.z=Math.sin(wind.heading-r.heading)*.035+Math.sin(t*1.5)*.012;}if(e.wake){e.wake.visible=r.id==='player'?Math.abs(origin.velocity)>.5:true;e.wake.scale.setScalar(.7+Math.min(1.3,Math.abs(r.id==='player'?origin.velocity:3)*.13));e.wake.position.y=.02+Math.sin(t*3)*.015;}if(e.damage)e.damage.visible=r.id==='player'&&origin.hull/Math.max(1,origin.maxHull)<.53;}
     const enemy=hostiles.sort((a,b)=>Math.hypot(a.x-origin.x,a.z-origin.z)-Math.hypot(b.x-origin.x,b.z-origin.z))[0];
     const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(95,Math.max(27,Math.hypot(ex,ez)*.85)*Math.max(1,.7/camera.aspect));
     if(mode==='naval'){camera.position.lerp(new THREE.Vector3(ex*.5+span*.58,span*.83,ez*.5+span*.97),.065);targetLook.set(ex*.5,1.5,ez*.5);camera.lookAt(targetLook);}else{const bearing=origin.heading+cameraOrbit;camera.position.lerp(new THREE.Vector3(-Math.sin(bearing)*cameraDistance,4+cameraDistance*cameraHeight,-Math.cos(bearing)*cameraDistance),.13);targetLook.set(Math.sin(origin.heading)*3,2.5,Math.cos(origin.heading)*3);camera.lookAt(targetLook);}
@@ -154,6 +269,20 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      a.needsUpdate=true;
      if(Math.round(t*12)%2===0)water.geometry.computeVertexNormals();
      const tint=storm?'#477486':rain?'#7096a5':'#87b9c7';world.background.set(tint);world.fog.color.set(tint);sun.intensity=storm?1.7:rain?2.4:3.1;
+     sky.position.copy(camera.position);
+     skyLow.set(storm?'#6c8492':rain?'#b1bfc2':'#b7d7cf');
+     skyHigh.set(storm?'#273c53':rain?'#5c7a88':'#327ca0');
+     skyMat.uniforms.horizon.value.copy(skyLow);skyMat.uniforms.zenith.value.copy(skyHigh);
+     water.material.roughness=storm?.60:rain?.51:.43;crests.material.opacity=storm?.72:rain?.52:.35;
+     // 64개의 짧은 비균일 포말선: 물결 속도·파향에 따라 해면에서 이동한다.
+     for(let i=0;i<64;i++){
+      const gx=((i*71+(t*(1+wind.strength)*4))%230+230)%230-115,gz=((i*113+t*2)%220+220)%220-110;
+      const surge=Math.sin(gx*.11+t*1.3)*.27+Math.sin(gz*.16+t*.8)*.22;
+      const yy=Math.max(.12,surge*.8)+.12,half=.25+(i%4)*.24;
+      const dx=Math.sin(wind.heading)*half,dz=Math.cos(wind.heading)*half,j=i*6;
+      whitecaps[j]=gx-dx;whitecaps[j+1]=yy;whitecaps[j+2]=gz-dz;whitecaps[j+3]=gx+dx;whitecaps[j+4]=yy;whitecaps[j+5]=gz+dz;
+     }
+     capGeometry.attributes.position.needsUpdate=true;capGeometry.computeBoundingSphere();
     const fx=state.combatFx;if(fx?.type==='cannon'&&fx.serial!==serial){serial=fx.serial;shotTime=t;
      for(const o of shots)world.remove(o);shots.length=0;
      for(let i=0;i<5;i++){const ball=new THREE.Mesh(ballGeo,ballMat);ball.userData={from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(ball);world.add(ball);const puff=new THREE.Mesh(smokeGeo,smokeMat);puff.userData={smoke:true,from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(puff);world.add(puff);}
