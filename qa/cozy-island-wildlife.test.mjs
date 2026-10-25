@@ -4,15 +4,21 @@ import fs from 'node:fs';
 
 const read=p=>fs.readFileSync(p,'utf8');
 
-test('포근섬 시스템 버튼은 모바일 하단 명령바에 표시되고 시스템 대화상자로 연결된다',()=>{
+test('포근섬 시스템 버튼은 모바일 명령바 바로 위에 떠 있고 기존 시스템 메뉴를 연다',()=>{
  const html=read('web-games/cozy-island/index.html');
  const css=read('web-games/cozy-island/style.css');
  const script=read('web-games/cozy-island/kingdom-system.js');
  const bar=html.match(/<nav class="strategy-bar"[\s\S]*?<\/nav>/)?.[0]||'';
+ const controls=html.match(/<section class="controls"[\s\S]*?<\/section>/)?.[0]||'';
  assert.equal((html.match(/id="systemCommand"/g)||[]).length,1);
- assert.match(bar,/id="systemCommand"/);
- assert.match(bar,/<small>시스템<\/small>/);
- assert.match(css,/grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
+ assert.equal((bar.match(/class="strategy-button"/g)||[]).length,6);
+ assert.doesNotMatch(bar,/id="systemCommand"/,'시스템 버튼은 좁은 명령바 안에 끼워 넣지 않는다');
+ assert.match(controls,/<\/nav>[\s\S]*id="systemCommand"[^>]*system-shortcut/);
+ assert.match(controls,/<small>시스템<\/small>/);
+ assert.match(css,/grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/);
+ assert.match(css,/#systemCommand\.system-shortcut\s*\{[^}]*position:absolute;/);
+ assert.match(css,/#systemCommand\.system-shortcut\s*\{[^}]*bottom:calc\(100% \+ 10px\)/);
+ assert.match(css,/#systemCommand\.system-shortcut\s*\{[^}]*pointer-events:auto;/);
  assert.match(html,/id="systemDialog"/);
  assert.ok(script.includes("querySelector('#systemCommand')?.addEventListener('click'"));
 });
