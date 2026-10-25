@@ -588,11 +588,23 @@ test('Roblox F9 canonical deploy, post-publish QA, and next F0 run in this exact
  assert.match(workflow,/roblox-post-publish-qa\.json/);
  assert.match(workflow,/entry.postPublishQaPassed=result.pass|cycle.postPublishQaPassed=result.pass/);
  assert.match(workflow,/steps.verify.outputs.pass == 'true'/);
- assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml[^\n]*trigger_source=ROBLOX_POST_PUBLISH_VERIFIED_NEXT_F0/);
+ assert.match(workflow,/gh workflow run company-roblox-source-drift-sync\.yml[^\n]*restart_from_f0=true/);
  assert.match(sync,/FORCE_F0_RESTART/);
  const p=policy.roblox.deploymentControl.verifiedCyclePublication;
  assert.equal(p.postPublishQaRequiredForNextF0,true);
  assert.equal(p.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
  assert.equal(p.perpetualRepeat,true);
  assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.ownerRequestedVibeOneShotPatch.robloxExecution.postPublishQaBeforeNextF0,true);
+});
+
+test('next F0 is issued only when published Place version matches the exact current Roblox source',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+ assert.match(workflow,/const stillCurrent=item\.robloxSourceCommit===cycle\.sourceRevision&&item\.robloxBuildArtifactIdentity===cycle\.artifactIdentity/);
+ assert.match(workflow,/pass&&stillCurrent\?'true':'false'/);
+ assert.match(workflow,/steps\.verify\.outputs\.pass == 'true'/);
+ assert.match(workflow,/source-drift-sync\.yml.*restart_from_f0=true/);
+ const start=workflow.indexOf('      - name: Persist exact post-publish QA for this publication cycle');
+ const next=workflow.indexOf('      - name: Restart this game\'s F0 from exact current main after verified publication');
+ assert.ok(start>=0&&next>start);
+ assert.match(workflow,/entry|cycle/);
 });

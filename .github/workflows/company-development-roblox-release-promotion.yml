@@ -1282,6 +1282,7 @@ jobs:
           });}catch(e){error=String(e?.message||e);}
           const pass=proof.engineExecuted===true&&proof.exactPlace===true&&
             proof.exactVersion===true&&proof.serverContextExecuted===true;
+          const stillCurrent=item.robloxSourceCommit===cycle.sourceRevision&&item.robloxBuildArtifactIdentity===cycle.artifactIdentity;
           const result={gameId:item.gameId,cycleId:cycle.cycleId,sourceRevision:cycle.sourceRevision,
             artifactIdentity:cycle.artifactIdentity,universeId:String(cycle.universeId),
             placeId:String(cycle.placeId),versionNumber:Number(cycle.versionNumber),
@@ -1289,7 +1290,7 @@ jobs:
             mobileVerified:false,serverBootVerified:proof.serverBootObserved===true,
             state:proof.state||'UNVERIFIED',error:error.slice(0,400),checkedAt:new Date().toISOString()};
           fs.writeFileSync('/tmp/roblox-post-publish-qa.json',JSON.stringify(result,null,2));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass&&stillCurrent?'true':'false')+'\n');
           console.log('ROBLOX_POST_PUBLISH_QA='+(pass?'PASS':'UNVERIFIED'));
           NODE
       - name: Keep exact post-publish evidence
@@ -1338,13 +1339,13 @@ jobs:
           done
           test "$pushed" = 1
           echo 'ROBLOX_POST_PUBLISH_QA_RUNTIME_EVIDENCE=PERSISTED'
-      - name: Restart F0 using the existing source sync after verified publication
+      - name: Restart this game's F0 from exact current main after verified publication
         if: steps.verify.outputs.pass == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id }}
         run: |
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" -f trigger_source=ROBLOX_POST_PUBLISH_VERIFIED_NEXT_F0
+          gh workflow run company-roblox-source-drift-sync.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game_id=$GAME_ID" -f "restart_from_f0=true"
           echo "ROBLOX_POST_PUBLISH_NEXT_F0_DISPATCHED=$GAME_ID"
 
   thumbnail-sync:
