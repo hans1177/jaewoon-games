@@ -20,6 +20,10 @@ test("밤·안개·던전에서 날씨 갱신이 캐릭터를 안개로 지우�
    gl:{toneMappingExposure:.83},groundMaterial:()=>terrain,torchLights:[],torchFlames:[],banners:[],qualityPreset:'auto'};
   const live={state:{zone:0},dungeon:inside?{}:null,environment:{minutes,weather,quality:'auto'}};
   for(let frame=0;frame<300;frame++)update.call(view,live,1/30,frame*1000/30);
+  assert.ok(view.sun.intensity>=.69,'밤·안개에도 주광 밝기 하한 유지');
+  assert.ok(view.skyLight.intensity>=.77,'밤·안개에도 간접광 밝기 하한 유지');
+  assert.ok(view.gl.toneMappingExposure>=1.04,'밤 노출이 지형을 검게 누르지 않음');
+  assert.ok(terrain.color.r>=.78,'비 오는 밤에도 지면 색을 중복 감광하지 않음');
   assert.ok(view.scene.fog.near>distance,'카메라 중심의 캐릭터는 안개 밖에 있어야 함');
   assert.ok(view.scene.fog.far>=view.scene.fog.near+24,'날씨 전환 후에도 안개 깊이가 뒤집히지 않아야 함');
  }

@@ -72,7 +72,7 @@ export class PartyView{
   const order=[...HEROES,'tree','rock-large','wall','roof','stall','fountain-round',...MONSTERS,...PROPS.filter(k=>!['tree','rock-large','wall','roof','stall','fountain-round'].includes(k))];let completed=0,next=0;const loader=new GLTFLoader();
   const worker=async()=>{while(next<order.length){const key=order[next++];try{
    const model=await loader.loadAsync(new URL('../../assets/shared/party/'+key+'.glb',import.meta.url).href);model.scene.updateMatrixWorld(true);
-   model.scene.traverse(part=>{if(!part.isMesh)return;part.frustumCulled=true;part.castShadow=false;part.receiveShadow=false;for(const m of Array.isArray(part.material)?part.material:[part.material]){m.roughness=.96;m.metalness=/warrior|golem/.test(key)?.18:.025;if(m.color){m.color.lerp(new THREE.Color(0x666960),.52);m.color.multiplyScalar(.77);}if(m.map){m.map.anisotropy=1;m.map.generateMipmaps=true;}}});
+   model.scene.traverse(part=>{if(!part.isMesh)return;part.frustumCulled=true;part.castShadow=false;part.receiveShadow=false;for(const m of Array.isArray(part.material)?part.material:[part.material]){m.roughness=.96;m.metalness=/warrior|golem/.test(key)?.18:.025;if(m.color){m.color.lerp(new THREE.Color(0x666960),.52);m.color.multiplyScalar(.95);}if(m.map){m.map.anisotropy=1;m.map.generateMipmaps=true;}}});
    this.models.set(key,model);this.assetRevision++;
   }catch(error){console.warn('새 파티 RPG 자산 적재 실패: '+key,error);}completed++;onLoad(completed,order.length,this.models.has('warrior'));}};
   await Promise.all([worker(),worker(),worker(),artTask]);
@@ -951,17 +951,17 @@ buildWorld(live){
   const warm=new THREE.Color(0xffaf69),moon=new THREE.Color(0x91acd8);
   const sunColor=new THREE.Color(m.light).lerp(moon,darkness*.64).lerp(warm,twilight*.44);
   this.sun.color.lerp(sunColor,smoothing);
-  const sunTarget=inside?m.intensity*.75:m.intensity*(.14+.73*daylight)*(1-fogBoost*.40);
+  const sunTarget=inside?Math.max(.85,m.intensity*.75):Math.max(.70,m.intensity*(.48+.52*daylight)*(1-fogBoost*.22));
   this.sun.intensity+=(sunTarget-this.sun.intensity)*smoothing;
   this.sun.position.set(-23+Math.cos(minute/1440*Math.PI*2)*14,13+daylight*35,17+Math.sin(minute/1440*Math.PI*2)*14);
   this.skyLight.color.lerp(new THREE.Color(0x9eaeb8).lerp(moon,darkness*.65),smoothing);
-  const hemi=inside?.45:(.19+.64*daylight)*(1-fogBoost*.28);
+  const hemi=inside?.80:Math.max(.78,(.85+.25*daylight)*(1-fogBoost*.12));
   this.skyLight.intensity+=(hemi-this.skyLight.intensity)*smoothing;
-  const tone=inside?.68:(.44+.42*daylight)*(1-fogBoost*.16);
+  const tone=inside?1.05:Math.max(1.05,(1.12+.12*daylight)*(1-fogBoost*.06));
   this.gl.toneMappingExposure+=(tone-this.gl.toneMappingExposure)*smoothing;
   const terrain=this.groundMaterial(live.state.zone,inside);
-  const wet=weather==='rain'?.68:weather==='snow'?.84:1;
-  const floorTint=new THREE.Color(0xffffff).multiplyScalar((inside?1:.48+.52*daylight)*wet);
+  const wet=weather==='rain'?.92:weather==='snow'?.96:1;
+  const floorTint=new THREE.Color(0xffffff).multiplyScalar((inside?1:.90+.10*daylight)*wet);
   if(weather==='snow')floorTint.lerp(new THREE.Color(0xb5c5d0),.12);
   terrain.color.lerp(floorTint,smoothing);
   for(let i=0;i<this.torchLights.length;i++){
