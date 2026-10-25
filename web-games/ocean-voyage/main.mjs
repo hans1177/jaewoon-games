@@ -89,6 +89,7 @@ function gotoPanel(name){if(state.landBattle&&name!=='system'){enterBattle();ret
  active=active===name?'':name;
  view.details.classList.toggle('open',!!active);
  document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.panel===active));
+ if(active==='chart')centerChartOnShip();
  if(active)renderPanel();
 }
 function enterTown(){if(state.landBattle){enterBattle();return;}town=true;active='';view.details.classList.remove('open');document.body.classList.add('in-town');scene.setMode('town');switchMusicScene('harbor');$('townbar').hidden=false;$('townTitle').textContent=canDock(state)?canDock(state).name+' · '+PORT_SCENES[canDock(state).id].district:'항구';save();note('건물을 눌러 시설에 들어가. 아래 출항으로 바다에 돌아갈 수 있어.');}
@@ -141,6 +142,8 @@ function chart(){
 // 해도: 발견한 항구·개척 항로·현재 선박 위치를 같이 보여준다.
 let mapWorld=false,mapZoom=1,mapPanX=0,mapPanZ=0,mapPointer=null,mapDragged=false,mapIgnoreClick=false;
 const chartViewport=()=>({cx:(mapWorld?300:75)+mapPanX,cz:(mapWorld?-210:-550)+mapPanZ,scale:(mapWorld?.29:1.38)*mapZoom});
+// The chart should open and re-center on the actual vessel, not an old map origin.
+function centerChartOnShip(){mapPanX=state.ship.x-(mapWorld?300:75);mapPanZ=state.ship.z-(mapWorld?-210:-550);}
 function drawChart(world=mapWorld){
  mapWorld=world;const c=$('chartMap');if(!c)return;
  const ctx=c.getContext('2d'),{cx,cz,scale}=chartViewport(),cw=c.width,ch=c.height;
@@ -174,8 +177,20 @@ function drawChart(world=mapWorld){
   ctx.fillStyle='#f0ad74';ctx.strokeStyle='#382b28';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(px,py-6);ctx.lineTo(px-5,py+4);ctx.lineTo(px+5,py+4);ctx.closePath();ctx.fill();ctx.stroke();
  }
- const px=x(state.ship.x),py=y(state.ship.z);
- ctx.save();ctx.translate(px,py);ctx.rotate(-state.ship.heading);ctx.fillStyle='#fff9d3';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(-7,8);ctx.lineTo(0,4);ctx.lineTo(7,8);ctx.closePath();ctx.fill();ctx.restore();
+ const px=x(state.ship.x),py=y(state.ship.z),offscreen=px<24||px>cw-24||py<24||py>ch-24;
+ // A labelled, outlined vessel remains visible even on a zoomed-out chart.
+ // When the user pans away, keep its bearing/location discoverable at the edge.
+ const markerX=Math.max(24,Math.min(cw-24,px)),markerY=Math.max(24,Math.min(ch-24,py));
+ ctx.save();ctx.translate(markerX,markerY);
+ ctx.fillStyle='#203f4a';ctx.strokeStyle='#f7e6b2';ctx.lineWidth=2.5;
+ ctx.beginPath();ctx.arc(0,0,offscreen?15:18,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.rotate(Math.PI-state.ship.heading); // +Z navigation points down on the 2D chart.
+ ctx.beginPath();ctx.moveTo(0,-12);ctx.lineTo(-8,9);ctx.lineTo(0,5);ctx.lineTo(8,9);ctx.closePath();
+ ctx.fillStyle='#ffe49b';ctx.strokeStyle='#252e2c';ctx.lineWidth=1.6;ctx.fill();ctx.stroke();ctx.restore();
+ ctx.save();ctx.textAlign='center';ctx.font='bold 13px system-ui';ctx.lineWidth=3;
+ const tag=offscreen?'내 선박 · 화면 밖':'내 선박';
+ const tagY=markerY>36?markerY-23:markerY+30;
+ ctx.strokeStyle='#193542';ctx.fillStyle='#fff0c6';ctx.strokeText(tag,markerX,tagY);ctx.fillText(tag,markerX,tagY);ctx.restore();
  ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#6b4e2d9c';ctx.strokeRect(6,6,cw-12,ch-12);
  ctx.lineWidth=1;ctx.strokeStyle='#d7bc83bb';ctx.strokeRect(10,10,cw-20,ch-20);
  for(const [xx,yy,dx,dy] of [[12,12,1,1],[cw-12,12,-1,1],[12,ch-12,1,-1],[cw-12,ch-12,-1,-1]]){
@@ -461,8 +476,8 @@ view.body.addEventListener('click',e=>{
  if(b.dataset.site){apply(startExpedition(state,b.dataset.site));return;}
  if(b.dataset.explore!==undefined){apply(exploreChoice(state,Number(b.dataset.explore)));return;}
  if(b.dataset.office){apply(officeContract(state,b.dataset.office));return;}
- if(b.dataset.map){mapWorld=b.dataset.map==='world';mapZoom=1;mapPanX=0;mapPanZ=0;drawChart(mapWorld);return;}
-  if(b.dataset.mapView){if(b.dataset.mapView==='center'){mapPanX=0;mapPanZ=0;mapZoom=1;}
+ if(b.dataset.map){mapWorld=b.dataset.map==='world';mapZoom=1;centerChartOnShip();drawChart(mapWorld);return;}
+  if(b.dataset.mapView){if(b.dataset.mapView==='center'){mapZoom=1;centerChartOnShip();}
    else mapZoom=Math.max(.65,Math.min(3.2,mapZoom*(b.dataset.mapView==='zoom-in'?1.33:1/1.33)));
    drawChart(mapWorld);return;}
  if(b.dataset.clue){apply(takeTreasureClue(state,b.dataset.clue));return;}
@@ -637,7 +652,9 @@ function run(now){
  const right=buttons.right||keys.has('d')||keys.has('arrowright');
  const ahead=buttons.ahead||keys.has('w')||keys.has('arrowup');
  const astern=buttons.astern||keys.has('s')||keys.has('arrowdown');
- const turn=Math.max(-1,Math.min(1,Number(right)-Number(left)+stick.x));
+ // Chase camera's right vector is opposite the world yaw sign.
+ // Reverse human steering only; autopilot and saved route physics stay intact.
+ const turn=Math.max(-1,Math.min(1,Number(left)-Number(right)-stick.x));
  const userThrottle=Number(ahead)-Number(astern)+stick.y;
  const throttle=Math.max(-1,Math.min(1,Math.abs(userThrottle)>.08?userThrottle:sailCruise?.94:0));
  const manual=left||right||ahead||astern||Math.abs(stick.x)>.08||Math.abs(stick.y)>.08;
