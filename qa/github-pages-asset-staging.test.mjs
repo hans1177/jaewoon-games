@@ -272,6 +272,49 @@ test('shared-branch admission executes ancestry checks and rejects unknown or di
  }finally{fs.rmSync(directory,{recursive:true,force:true});}
 });
 
+
+test('continuous main commits admit only strictly forward Pages snapshots',()=>{
+ const start=workflow.indexOf('      - name: Reject superseded main before any large asset staging');
+ const end=workflow.indexOf('      - name: Prune superseded owner PR builds from the existing Pages queue',start);
+ assert(start>=0&&end>start);
+ const raw=workflow.slice(workflow.indexOf('          set -euo pipefail',start),end);
+ const body=raw.split('\n').map(line=>line.startsWith('          ')?line.slice(10):line).join('\n');
+ const source='b'.repeat(40),latest='c'.repeat(40),retained='a'.repeat(40);
+ const run=(newer,previous,current=latest)=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pages-source-admission-'));
+  try{
+   const resultPath=path.join(dir,'result');
+   const manifest=Buffer.from(JSON.stringify({sourceSha:retained})).toString('base64');
+   const gh=`gh(){
+     case "$*" in
+       *"/commits/main"*) printf '%s\\n' "$TEST_LATEST" ;;
+       *"/contents/web-games/publish-manifest.json?ref=gh-pages"*) printf '%s\\n' "$TEST_MANIFEST" ;;
+       *"/compare/$TEST_SOURCE...$TEST_LATEST"*) printf '%s\\n' "$TEST_NEWER" ;;
+       *"/compare/$TEST_RETAINED...$TEST_SOURCE"*) printf '%s\\n' "$TEST_PREVIOUS" ;;
+       *"/runs?head_sha="*) printf '1\\n' ;;
+       *) return 12 ;;
+     esac
+   }
+   `;
+   const proc=spawnSync('bash',['-e'],{input:gh+body,encoding:'utf8',env:{
+    ...process.env,GITHUB_SHA:source,GITHUB_REPOSITORY:'hans1177/jaewoon-games',GITHUB_OUTPUT:resultPath,
+    TEST_LATEST:current,TEST_SOURCE:source,TEST_RETAINED:retained,TEST_MANIFEST:manifest,
+    TEST_NEWER:newer,TEST_PREVIOUS:previous
+   }});
+   assert.equal(proc.status,0,proc.stderr+'\\n'+proc.stdout);
+   return fs.readFileSync(resultPath,'utf8');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+ };
+ assert.match(run('ahead','ahead'),/current=true/,'newer intermediate source can build');
+ assert.match(run('identical','ahead',source),/current=true/,'latest source can build');
+ assert.match(run('ahead','behind'),/current=false/,'never build older than gh-pages source');
+ assert.match(run('diverged','ahead'),/current=false/,'diverged source is rejected');
+ assert.match(run('ahead','identical'),/current=false/,'already staged candidate is coalesced');
+ assert.match(workflow,/PAGES_MONOTONIC_STAGED_SOURCE=PASS/);
+ assert.match(workflow,/group: magic-forest-pages-main-publish/);
+ assert.match(workflow,/uses: actions\/deploy-pages@v4/);
+});
+
 test('the complete canonical async staging program builds independent game routes and exact source assets',()=>{
  const start=workflow.indexOf("          node <<'NODE'",workflow.indexOf('      - name: Prepare all registered game routes'));
  const stop=workflow.indexOf('\n          NODE',start);assert(start>0&&stop>start);
