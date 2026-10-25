@@ -1,0 +1,102 @@
+<!doctype html>
+<!-- 파일명: web-games/restaurant-tycoon/index.html -->
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#ffe7b5"><title>식당 타이쿤 | 재운게임즈</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:#bfeee2;color:#25352e}button{font:inherit;cursor:pointer;touch-action:manipulation}#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}.hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:8px;right:8px;display:flex;align-items:start;gap:7px;z-index:3;pointer-events:none}.chip{padding:7px 10px;border-radius:13px;background:#fffcf0ee;box-shadow:0 4px 12px #475e5b33;font-size:12px;font-weight:900;pointer-events:auto;white-space:nowrap}.chip b{display:block;color:#ad632e;font-size:16px}.home{text-decoration:none;color:#395b50}.grow{flex:1}.bottom{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:3;max-width:650px;margin:auto}.status{padding:8px 12px;margin-bottom:7px;background:#243b33dc;color:#fff;border-radius:13px;text-align:center;font-weight:850;font-size:12px;min-height:35px}.orders{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:1px 0 9px}.order{min-width:136px;min-height:89px;flex:1;border:2px solid #e3d5a9;border-radius:15px;background:#fffbef;box-shadow:0 5px 15px #314b3b33;padding:8px;text-align:left;color:#324337}.order b{font-size:12px;display:block}.order small{font-size:10px;color:#597165}.order .bar{height:6px;background:#e9ddd0;border-radius:10px;margin-top:8px;overflow:hidden}.order .fill{height:100%;background:#75b88c;transition:width .2s}.order.cooking{background:#fff0d1;border-color:#eda65e}.order.ready{background:#e5ffd9;border-color:#63b87a}.order:disabled{opacity:.7}.menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:7px;background:#fdf9ecf2;border-radius:16px;box-shadow:0 6px 18px #27433744}.menu button{border:0;border-radius:11px;background:#e8f2e3;color:#355441;padding:10px 3px;min-height:45px;font-size:11px;font-weight:900}.menu button:disabled{opacity:.5}.menu button.primary{background:#ffc276;color:#5d3521}.menu button.full{background:#d4e7ef}.notice{position:fixed;z-index:5;top:72px;left:50%;transform:translateX(-50%);padding:8px 13px;border-radius:99px;background:#293e35e8;color:white;white-space:nowrap;max-width:95vw;text-overflow:ellipsis;overflow:hidden;font-size:11px;font-weight:800;pointer-events:none}#intro{position:fixed;z-index:9;inset:0;display:grid;place-items:center;background:#12382b9c;padding:20px}#intro.hidden{display:none}.card{width:min(94vw,380px);padding:26px 20px;text-align:center;background:#fff9e7;border:4px solid #fff;border-radius:24px;box-shadow:0 20px 70px #173b3755}.card h1{font-size:29px;margin:4px 0 12px}.card p{font-size:13px;line-height:1.8;color:#54635c}.card button{border:0;border-radius:14px;padding:14px 42px;color:#503418;background:#ffc76e;font-weight:1000;font-size:17px}.tiny{font-size:10px;color:#76877c;margin-top:12px}@media(max-width:380px){.chip{padding:6px;font-size:10px}.chip b{font-size:13px}.order{min-width:121px}.menu button{font-size:10px}}
+</style></head><body>
+<canvas id="scene" aria-label="식당 3차원 화면"></canvas>
+<header class="hud"><a class="chip home" href="../../">⌂ 홈</a><div class="chip">보유 금액<b id="cash">0원</b></div><div class="chip">손님 만족<b id="served">0명</b></div><div class="grow"></div><div class="chip">새 메뉴까지<b id="unlock">02:00</b></div></header>
+<div class="notice" id="notice">주문을 눌러 요리하고 완성되면 서빙해!</div>
+<div class="bottom"><div class="status" id="status">손님이 식당에 들어오고 있어!</div><div class="orders" id="orders" aria-label="손님 주문"></div><div class="menu">
+<button class="primary" id="tableBtn">🪑 테이블 추가<br><span id="tablePrice">300원</span></button><button id="cookBtn">👨‍🍳 요리사 고용<br><span id="cookPrice">500원</span></button><button class="full" id="menuBtn">📋 메뉴판<br><span id="menuCount">3종 영업 중</span></button>
+</div></div>
+<div id="intro"><div class="card"><div style="font-size:56px">🍽️</div><h1>식당 타이쿤</h1><p>손님 주문을 눌러 요리를 시작하고<br>완성되면 다시 눌러 서빙해!<br>돈을 벌어 테이블과 요리사를 늘려봐.<br><strong>플레이 2분 뒤 메뉴 2종 추가!</strong></p><button id="start">영업 시작!</button><div class="tiny">진행 상황은 이 기기에 자동 저장돼.</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script>
+(()=>{
+'use strict';
+// 메인: 메뉴와 저장
+const dishes=[{name:'볶음밥',icon:'🍚',price:100,time:3},{name:'햄버거',icon:'🍔',price:150,time:4},{name:'스테이크',icon:'🥩',price:300,time:6},{name:'피자',icon:'🍕',price:400,time:7},{name:'초밥',icon:'🍣',price:500,time:8}];
+const key='jaewoon-restaurant-tycoon-v1';
+let data={cash:100,tables:2,cooks:0,served:0,elapsed:0,started:false};
+try{let old=JSON.parse(localStorage.getItem(key)||'null');if(old&&typeof old==='object')for(const k of Object.keys(data))if(typeof old[k]===typeof data[k])data[k]=old[k]}catch(e){}
+data.tables=Math.min(8,Math.max(2,data.tables));data.cooks=Math.min(3,Math.max(0,data.cooks));data.elapsed=Math.max(0,data.elapsed);
+let guests=[],spawnClock=2,autoClock=0,saveClock=0,idCounter=0,last=performance.now(),noticeClock=0;
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}}
+function say(t){$('notice').textContent=t;noticeClock=5}
+function count(){return data.elapsed>=120?5:3}
+function priceTable(){return 300+(data.tables-2)*240}
+function priceCook(){return 500+data.cooks*450}
+function hud(){
+$('cash').textContent=data.cash.toLocaleString()+'원';$('served').textContent=data.served+'명';
+$('unlock').textContent=data.elapsed>=120?'5종 해금!':String(Math.floor((120-data.elapsed)/60)).padStart(2,'0')+':'+String(Math.ceil(120-data.elapsed)%60).padStart(2,'0');
+$('tablePrice').textContent=data.tables>=8?'최대 8개':priceTable().toLocaleString()+'원';$('cookPrice').textContent=data.cooks>=3?'최대 3명':priceCook().toLocaleString()+'원';
+$('tableBtn').disabled=data.tables>=8||data.cash<priceTable();$('cookBtn').disabled=data.cooks>=3||data.cash<priceCook();$('menuCount').textContent=count()+'종 영업 중';
+$('status').textContent='영업 '+Math.floor(data.elapsed/60)+'분 '+Math.floor(data.elapsed%60)+'초 · 좌석 '+guests.length+'/'+data.tables+' · 요리사 '+data.cooks+'명';
+}
+function updateOrders(){
+const root=$('orders');root.replaceChildren();
+for(const g of guests){
+const d=dishes[g.dish],btn=document.createElement('button');btn.className='order '+(g.phase==='cooking'?'cooking':g.phase==='ready'?'ready':'');
+const title=document.createElement('b');title.textContent=d.icon+' '+d.name+' · '+d.price+'원';
+const detail=document.createElement('small');detail.textContent=g.phase==='order'?'👆 눌러 요리 시작':g.phase==='cooking'?'🔥 조리 중 '+Math.ceil(g.timer)+'초':g.phase==='ready'?'✅ 눌러 서빙하기':'🧍 자리 이동 중';
+const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('div');fill.className='fill';fill.style.width=(g.phase==='order'?Math.max(0,g.patience/22)*100:g.phase==='cooking'?Math.max(0,1-g.timer/d.time)*100:100)+'%';bar.append(fill);
+btn.append(title,detail,bar);btn.onclick=()=>interact(g.id);root.append(btn);
+}
+if(!guests.length){const p=document.createElement('div');p.className='chip';p.textContent='🍴 손님을 기다리는 중...';root.append(p)}
+}
+function interact(id){let g=guests.find(x=>x.id===id);if(!g)return;if(g.phase==='order'){g.phase='cooking';g.timer=dishes[g.dish].time;say(dishes[g.dish].name+' 요리 시작!')}else if(g.phase==='ready')serve(g);updateOrders()}
+function serve(g){data.cash+=dishes[g.dish].price;data.served++;const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);if(g.person)scene.remove(g.person);say('+'+dishes[g.dish].price+'원! 손님이 맛있게 먹었어!');save();updateTables();hud()}
+function spawn(){if(guests.length>=data.tables)return;const seat=[...Array(data.tables).keys()].find(n=>!guests.some(g=>g.seat===n));if(seat===undefined)return;const dish=Math.floor(Math.random()*count());let g={id:++idCounter,seat,dish,phase:'order',timer:0,patience:22,person:null};guests.push(g);if(scene)g.person=createGuest(g);say(dishes[dish].icon+' '+dishes[dish].name+' 주문이 들어왔어!')}
+$('tableBtn').onclick=()=>{if(data.tables>=8||data.cash<priceTable())return;data.cash-=priceTable();data.tables++;updateTables();hud();save();say('테이블이 추가됐어!')};
+$('cookBtn').onclick=()=>{if(data.cooks>=3||data.cash<priceCook())return;data.cash-=priceCook();data.cooks++;hud();save();say('요리사 고용! 주문을 자동으로 처리해!')};
+$('menuBtn').onclick=()=>say(dishes.map((x,i)=>x.icon+x.name+' '+x.price+'원'+(i>=count()?' 🔒':'')).join(' · '));
+$('start').onclick=()=>{data.started=true;$('intro').classList.add('hidden');save();say('영업 시작! 손님의 주문 카드를 눌러봐.')};
+if(data.started)$('intro').classList.add('hidden');
+// 그래픽: 기존 웹게임처럼 Three.js 실제 3D 메시 렌더링
+let scene=null,camera=null,renderer=null,models=[],people=[],clockMesh,chefModels=[];
+const canvas=$('scene');
+if(window.THREE){
+scene=new THREE.Scene();scene.background=new THREE.Color(0xb9eada);scene.fog=new THREE.Fog(0xb9eada,25,45);
+renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;
+camera=new THREE.PerspectiveCamera(42,1,.1,90);camera.position.set(13,18,23);camera.lookAt(0,0,0);
+scene.add(new THREE.HemisphereLight(0xffffff,0xa1a98b,2));
+const sun=new THREE.DirectionalLight(0xffe6b5,2.4);sun.position.set(-8,17,8);scene.add(sun);
+function box(x,y,z,w,h,d,color,parent=scene){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color}));m.position.set(x,y,z);parent.add(m);return m}
+function ball(x,y,z,r,color,parent=scene){const m=new THREE.Mesh(new THREE.SphereGeometry(r,10,8),new THREE.MeshLambertMaterial({color}));m.position.set(x,y,z);parent.add(m);return m}
+box(0,-.18,0,19,.35,15,0xf7ddb4);box(0,-.02,0,18,.06,14,0xf6eed8);
+for(let i=-8;i<=8;i+=2)box(i,.017,0,.035,.02,14,0xe4d6bb);
+for(let j=-6;j<=6;j+=2)box(0,.018,j,18,.02,.035,0xe4d6bb);
+box(0,1.3,-7.2,19,2.6,.35,0xf4bc80);box(-9.4,1.2,0,.35,2.4,15,0xffd4a1);
+for(let i=-6;i<=6;i+=5){box(i,1.5,-6.94,2.3,1.35,.1,0x6fbba4);box(i,1.5,-6.8,1.9,1,.11,0xc2e9cb)}
+box(0,.56,-4.8,8,1.1,1.25,0x9d5b3f);box(0,1.15,-4.8,8,.2,1.35,0xf7d4a0);
+box(-3,.97,-5.52,.85,.25,.12,0xffe19d);box(0,.97,-5.52,.85,.25,.12,0xffe19d);box(3,.97,-5.52,.85,.25,.12,0xffe19d);
+for(let i=0;i<4;i++){box(-8.3,.4,-5+i*2.5,.7,.8,.7,0x7cb985);ball(-8.3,1.1,-5+i*2.5,.62,0x59a76e)}
+function tablePos(n){return {x:-5+(n%4)*3.3,z:-1+Math.floor(n/4)*4.2}}
+function addTable(n){const p=tablePos(n),group=new THREE.Group();scene.add(group);group.position.set(p.x,0,p.z);
+box(0,.8,0,2.1,.2,1.5,0xba8054,group);box(-.8,.39,-.55,.14,.78,.14,0x694d3c,group);box(.8,.39,-.55,.14,.78,.14,0x694d3c,group);box(-.8,.39,.55,.14,.78,.14,0x694d3c,group);box(.8,.39,.55,.14,.78,.14,0x694d3c,group);
+for(let side of [-1,1]){box(0,.46,side*1.1,1.15,.17,.65,0x77b4a3,group);box(0,.8,side*1.39,1.15,.75,.15,0x629c8c,group)}
+ball(0,1.03,0,.22,0xfff6e0,group);models.push(group)}
+function updateTables(){while(models.length<data.tables)addTable(models.length)}
+window.createGuest=function(g){const p=tablePos(g.seat);let a=new THREE.Group();scene.add(a);a.position.set(p.x,.1,p.z+1.1);const shirt=[0xffa7a4,0x83b9e9,0xeabd74,0xc2a5e3,0x82c5ad][g.id%5];box(0,.57,0,.55,.8,.38,shirt,a);ball(0,1.2,0,.32,0xeec3a1,a);const hair=ball(0,1.43,-.06,.32,0x5e4432,a);hair.scale.y=.42;box(-.17,.12,0,.17,.32,.16,0x535366,a);box(.17,.12,0,.17,.32,.16,0x535366,a);a.userData={t:Math.random()*6.3};people.push(a);return a};
+for(let i=0;i<3;i++){const c=new THREE.Group();c.position.set(-2.5+i*2.5,0,-5.4);scene.add(c);box(0,.8,0,.7,1,.4,0xffffff,c);ball(0,1.55,0,.34,0xf0c59e,c);box(0,1.83,0,.72,.16,.3,0xffffff,c);chefModels.push(c)}
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;const wide=w>h;camera.position.set(wide?12:16,wide?17:22,wide?22:27);camera.lookAt(0,0,wide?0:0);camera.updateProjectionMatrix()}
+window.addEventListener('resize',resize);resize();updateTables();
+}else{canvas.style.background='linear-gradient(#b8ecdd,#ffe7b7)';say('3D 화면을 불러오지 못했어. 연결을 확인해줘.')}
+function frame(now){const dt=Math.min(.06,Math.max(0,(now-last)/1000));last=now;if(data.started){
+const prev=data.elapsed;data.elapsed+=dt;if(prev<120&&data.elapsed>=120){say('🎉 피자와 초밥 2종이 해금됐어!');save()}
+spawnClock-=dt;if(spawnClock<=0){spawn();spawnClock=5.5+Math.random()*3.5}
+for(const g of [...guests]){if(g.phase==='order'){g.patience-=dt;if(g.patience<=0){const i=guests.indexOf(g);if(i>=0)guests.splice(i,1);if(scene&&g.person)scene.remove(g.person);say('손님이 오래 기다려서 나갔어!')}}else if(g.phase==='cooking'){g.timer-=dt;if(g.timer<=0)g.phase='ready'}}
+autoClock-=dt;if(autoClock<=0){autoClock=1.0;if(data.cooks){const pending=guests.filter(g=>g.phase==='order'||g.phase==='ready');for(const g of pending.slice(0,data.cooks)){if(g.phase==='order'){g.phase='cooking';g.timer=dishes[g.dish].time}else serve(g)}}}
+saveClock+=dt;if(saveClock>5){saveClock=0;save()}
+}
+if(scene){const t=now/1000;for(const a of people)if(a.parent){a.rotation.y=Math.sin(t*.8+a.userData.t)*.12;a.position.y=.1+Math.sin(t*2+a.userData.t)*.024}chefModels.forEach((c,i)=>c.rotation.y=Math.sin(t+i)*.15);renderer.render(scene,camera)}
+if(noticeClock>0)noticeClock-=dt;
+if(Math.floor(now/300)!==Math.floor((now-dt*1000)/300)){hud();updateOrders()}
+requestAnimationFrame(frame)}
+window.addEventListener('pagehide',save);
+window.addEventListener('visibilitychange',()=>{if(document.hidden)save();last=performance.now()});
+hud();updateOrders();requestAnimationFrame(frame);
+})();
+</script></body></html>
