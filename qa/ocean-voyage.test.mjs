@@ -357,6 +357,29 @@ test('portrait battle camera contains both complete ships at every battle bearin
  }
 });
 
+// 카메라 회귀: 회전 드래그가 선박을 화면 밖으로 보내지 않도록 45도 위 시점에 고정한다.
+test('ship stays centered from 45 degrees in both chase and fixed views on mobile',()=>{
+ const view=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ assert.doesNotMatch(view,/cameraOrbit|cameraHeight|cameraTouch|seaCamera='orbit'/);
+ assert.match(view,/seaCamera===\x27angle\x27/);
+ assert.match(main,/\x27chase\x27,\x27angle\x27,\x27chart\x27/);
+ const start=view.indexOf('    const ex=enemy?enemy.x-origin.x:15,ez=');
+ const body=view.slice(start,view.indexOf('    ring.visible=',start));
+ const frame=new Function('camera','enemy','origin','mode','world','targetLook','THREE','battleFraming','cameraDistance','seaCamera',body);
+ for(const aspect of [.42,.58,.75,1.8])for(const angle of [0,Math.PI/2,Math.PI,Math.PI*1.5])for(const mode of ['chase','angle']){
+  const camera=new THREE.PerspectiveCamera(44,aspect,.1,350);
+  camera.position.set(0,2.2,0);
+  const world={fog:{near:110,far:300}};
+  frame(camera,null,{heading:angle},'sea',world,new THREE.Vector3(),THREE,false,44,mode);
+  camera.updateMatrixWorld();
+  const center=new THREE.Vector3(0,2.2,0).project(camera);
+  assert.ok(Math.abs(center.x)<.001&&Math.abs(center.y)<.001,'선박 중심은 화면 중앙이어야 한다');
+  const dx=Math.hypot(camera.position.x,camera.position.z);
+  assert.ok(Math.abs(dx-(camera.position.y-2.2))<.001,'카메라는 정확히 45도 위여야 한다');
+  assert.ok(world.fog.near>camera.position.length(),'안개가 선박을 가리면 안 된다');
+ }
+});
 test('new harbor discovery has one persisted image scene and preserves its reward',()=>{
  const p=PORTS.find(p=>p.id==='coral');let s=newGame();s.ship.x=p.x;s.ship.z=p.z;
  const score=s.score;s=stepSea(s,{manual:true},.01);
