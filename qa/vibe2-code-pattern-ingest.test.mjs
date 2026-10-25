@@ -324,7 +324,8 @@ test('Roblox no-model coding guards real DataStore read before writing and prese
   assert.match(next,/local verifiedSaveLoad = \{\}/);
   assert.match(next,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
   assert.match(next,/if verifiedSaveLoad\[player\] ~= true then return end/);
-  assert.match(next,/local merged = typeof\(current\) == "table" and current or \{\}/);
+  assert.match(next,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/);
+  assert.match(next,/local merged = typeof\(current\) == "table" and table\.clone\(current\) or \{\}/);
   assert.match(next,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
   assert.match(next,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
   assert.equal((next.match(/store:UpdateAsync\(/g)||[]).length,(source.match(/store:UpdateAsync\(/g)||[]).length);
@@ -343,7 +344,8 @@ test('real survival2 uses guarded read-safe merged save across leave and shutdow
   assert.match(source,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
   assert.match(source,/if verifiedSaveLoad\[player\] ~= true then return end/);
   assert.match(source,/store:UpdateAsync\("player:" \.\. player.UserId, function\(current\)/);
-  assert.match(source,/local merged = typeof\(current\) == "table" and current or \{\}/);
+  assert.match(source,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/);
+  assert.match(source,/local merged = typeof\(current\) == "table" and table\.clone\(current\) or \{\}/);
   assert.match(source,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*savePlayer\(player\)/);
   assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
   assert.doesNotMatch(source,/game:BindToClose\(function\(\) end\)/);
@@ -359,6 +361,7 @@ test('real gem survivor also preserves verified-read DataStore semantics without
   assert.match(source,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
   assert.match(source,/if verifiedSaveLoad\[player\] ~= true then return end/);
   assert.match(source,/store:UpdateAsync\("player:" \.\. player.UserId, function\(current\)/);
+  assert.match(source,/if current ~= nil and typeof\(current\) ~= "table" then return nil end/);
   assert.match(source,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
   assert.match(source,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*verifiedSaveLoad\[player\] = nil/);
   assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
