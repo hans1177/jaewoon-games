@@ -238,7 +238,14 @@ test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게�
     !['RETIRED','REMOVED','ARCHIVED'].includes(String(game.canonical?.lifecycle?.state||game.lifecycleState||'').toUpperCase())
     &&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.canonical?.production?.class||game.productionClass||'').toUpperCase())
   );
-  const shouldList=game=>game.canonical?.homepage?.runtime?.developmentActive===true&&String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE';
+  // 메인: 철회·중단된 웹게임은 숨기고 배포된 Roblox만 웹 중단과 독립적으로 남긴다.
+  const shouldList=game=>{
+    const webState=String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase();
+    const roblox=(exposure.games.find(row=>row.gameId===game.id)?.platforms||[]).find(p=>p.platform==='ROBLOX');
+    const deployed=Boolean(roblox?.placeId&&roblox?.internalUrl==='https://www.roblox.com/games/'+roblox.placeId&&(roblox.executionAvailable||roblox.historicalInternalRelease||roblox.internalReleaseReady));
+    const stopped=['NON_GAME_SURFACE','DEVELOPMENT_STOPPED','DEVELOPMENT_PAUSED','OWNER_STOPPED','STOPPED','PAUSED','WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(webState);
+    return webState!=='NON_GAME_SURFACE'&&(deployed||game.canonical?.homepage?.runtime?.developmentActive===true&&!stopped);
+  };
   const expected=eligible.filter(shouldList);
   assert.deepEqual([...present].sort(),expected.map(row=>row.id).sort(),'정식 게임은 유지하고 출처만 있는 미검증 시제품은 제외한다');
   assert.ok(expected.length>3,'집중 개발 밖의 정상 게임도 노출한다');
@@ -246,7 +253,7 @@ test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게�
   for(const row of expected)assert.ok(present.has(row.id),'실제 게임 누락: '+row.id);
 });
 
-test('개발 확정 게임은 게시하되 철회된 테스트의 플레이 버튼은 활성화하지 않는다',()=>{
+test('철회된 웹게임은 숨기고 Roblox 배포가 확인된 게임은 남긴다',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,hasRunnableHomepageTarget,buildCard})',{document:{readyState:'loading',addEventListener(){}}});
   const row=(id,state)=>({id,canonical:{
@@ -260,10 +267,10 @@ test('개발 확정 게임은 게시하되 철회된 테스트의 플레이 버�
   const realWeb=row('real-web','UNITY_WEB_VERIFICATION_REQUIRED');
   const native=row('verified-native','WITHDRAWN_SIMPLE_PROTOTYPE');
   api.setExposure({unityWebEnabled:true,games:[{gameId:'verified-native',platforms:[{
-    platform:'ROBLOX',executionAvailable:true,internalUrl:'https://www.roblox.com/games/123456789'
+    platform:'ROBLOX',executionAvailable:true,historicalInternalRelease:true,placeId:'123456789',internalUrl:'https://www.roblox.com/games/123456789'
   }]}]});
   const visible=api.developmentRows({games:[clickOnly,invalid,realWeb,native]},{});
-  assert.deepEqual(Array.from(visible,game=>game.id),['click-only','missing-entry','real-web','verified-native']);
+  assert.deepEqual(Array.from(visible,game=>game.id),['real-web','verified-native']);
   assert.equal(api.hasRunnableHomepageTarget(native),true);
   assert.match(api.buildCard(native),/https:\/\/www\.roblox\.com\/games\/123456789/);
   assert.equal(api.hasRunnableHomepageTarget(clickOnly),false);
