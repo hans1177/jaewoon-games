@@ -20,9 +20,9 @@ on:
 permissions:
   contents: write
 
-# Main build serialization keeps one active packaging run and coalesces pending main updates.
-# An active build must finish: repeated main pushes must not starve the static publisher.
-# Publication serialization remains scoped to publish-pages; postpublish smoke runs independently.
+# 파일 준비는 두 레인에서 병렬 실행하고, 각 레인의 대기는 최신 요청으로 합친다.
+# 실행 중인 빌드는 취소하지 않으며 최종 게시만 단일 잠금을 사용한다.
+# 사후 검사는 별도 잠금에서 실행되어 파일 준비·게시를 막지 않는다.
 
 jobs:
   deploy:
@@ -32,9 +32,9 @@ jobs:
       contents: write
       actions: write
     concurrency:
-      group: ${{ github.event_name == 'pull_request' && format('pages-pr-build-{0}', github.event.pull_request.number) || 'pages-main-build-latest' }}
+      group: ${{ github.event_name == 'pull_request' && format('pages-pr-build-{0}', github.event.pull_request.number) || format('pages-main-build-latest-{0}', (endsWith(format('{0}', github.run_number), '0') || endsWith(format('{0}', github.run_number), '2') || endsWith(format('{0}', github.run_number), '4') || endsWith(format('{0}', github.run_number), '6') || endsWith(format('{0}', github.run_number), '8')) && 'even' || 'odd') }}
       # Cancel outdated PR preview builds, but never interrupt active main packaging.
-      # GitHub keeps one running plus the newest pending main build in this group.
+      # 홀수·짝수 레인마다 실행 1건 + 최신 대기 1건만 유지한다. 전체 빌드 실행 상한은 2건.
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Prune superseded owner PR builds from the existing Pages queue
@@ -209,6 +209,7 @@ jobs:
           const path=require('node:path');
           const cp=require('node:child_process');
           const crypto=require('node:crypto');
+          (async()=>{
           const assetBlobs=new Map();
           for(const row of cp.execFileSync('git',['ls-tree','-rz','HEAD','--','assets'],{encoding:'utf8'}).split('\0')){
             const match=/^100(?:644|755) blob ([a-f0-9]{40})\t(.+)$/.exec(row);
@@ -232,7 +233,7 @@ jobs:
             }
           }
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-          const site='_site',routes=[],sourceTreeShas={};
+          const site='_site',routes=[],sourceTreeShas={},gameCopies=[];
           fs.rmSync(site,{recursive:true,force:true});
           fs.mkdirSync(path.join(site,'web-games'),{recursive:true});
           const forest='web-games/fantasy-survival';
@@ -263,12 +264,19 @@ jobs:
               console.log('WEB_GAME_SOURCE_NOT_READY='+id);
               continue;
             }
-            fs.cpSync(root,path.join(site,root),{recursive:true});
+            gameCopies.push(root);
             const treeSha=gameTreeShas.get(id)||'';
             if(!/^[a-f0-9]{40}$/.test(treeSha))throw Error('WEB_PAGES_GAME_SOURCE_TREE_INVALID:'+id);
             sourceTreeShas[id]=treeSha;
             routes.push(root+'/');
           }
+          // 서로 다른 게임 디렉터리만 동시에 복사한다. 같은 출력 경로는 공유하지 않는다.
+          let gameCopyNext=0;
+          const gameCopyResults=await Promise.allSettled(Array.from({length:Math.min(4,gameCopies.length)},async()=>{
+            while(gameCopyNext<gameCopies.length){const root=gameCopies[gameCopyNext++];await fs.promises.cp(root,path.join(site,root),{recursive:true});}
+          }));
+          for(const result of gameCopyResults)if(result.status==='rejected')throw result.reason;
+          console.log('PAGES_GAME_COPY_PARALLELISM=4');
           if(!routes.includes('web-games/fantasy-survival/'))throw Error('MAGIC_FOREST_REGISTERED_ROUTE_MISSING');
           // GitHub project Pages is hosted under /jaewoon-games/, not the domain root.
           // Adapt only published copies of static game URLs; the canonical source is unchanged.
@@ -360,7 +368,6 @@ jobs:
           // 한 파일당 Git blob SHA-1을 한 번만 확인한다. 전체 파일을 Buffer로 적재하지 않아서
           // 큰 CC0 모델/아카이브에도 고정 메모리(1 MiB)를 유지한다. 캐시 오염은 복원 후 재검증.
           const selectedAssets=[...refs].sort();
-          const ioBuffer=Buffer.allocUnsafe(1024*1024);
           const checkedAssets=new Set();
           let verifiedBytes=0;
           const lfsEvidence=new Map();
@@ -381,7 +388,7 @@ jobs:
             lfsEvidence.set(expected,evidence);
             return evidence;
           };
-          const verifyGitBlob=asset=>{
+          const verifyGitBlob=async asset=>{
             const expected=assetBlobs.get(asset);
             if(!expected)throw Error('GITHUB_PAGES_UNTRACKED_ASSET:'+asset);
             if(!fs.existsSync(asset))return false;
@@ -391,11 +398,12 @@ jobs:
             const lfs=getLfsEvidence(asset,expected);
             if(lfs&&lfs.size!==stat.size)return false;
             const hash=lfs?crypto.createHash('sha256'):crypto.createHash('sha1').update(Buffer.from('blob '+stat.size+'\0'));
-            const fd=fs.openSync(asset,fs.constants.O_RDONLY|(fs.constants.O_NOFOLLOW||0));
+            const ioBuffer=Buffer.allocUnsafe(1024*1024);
+            const fd=await fs.promises.open(asset,fs.constants.O_RDONLY|(fs.constants.O_NOFOLLOW||0));
             let firstChunk=true;
             try{
               for(;;){
-                const read=fs.readSync(fd,ioBuffer,0,ioBuffer.length,null);
+                const {bytesRead:read}=await fd.read(ioBuffer,0,ioBuffer.length,null);
                 if(read===0)break;
                 if(firstChunk){
                   firstChunk=false;
@@ -404,18 +412,25 @@ jobs:
                 }
                 hash.update(ioBuffer.subarray(0,read));
               }
-            }finally{fs.closeSync(fd)}
+            }finally{await fd.close()}
             const matches=hash.digest('hex')===(lfs?lfs.sha256:expected);
             if(matches){checkedAssets.add(asset);verifiedBytes+=stat.size}
             return matches;
           };
-          const missingAssets=selectedAssets.filter(asset=>!verifyGitBlob(asset));
+          // 최대 네 파일만 열어 원본 검증을 병렬 수행한다. 메모리 상한은 작업당 1 MiB.
+          let verifyNext=0;
+          const verified=new Array(selectedAssets.length);
+          const verifyResults=await Promise.allSettled(Array.from({length:Math.min(4,selectedAssets.length)},async()=>{
+            while(verifyNext<selectedAssets.length){const index=verifyNext++;verified[index]=await verifyGitBlob(selectedAssets[index]);}
+          }));
+          for(const result of verifyResults)if(result.status==='rejected')throw result.reason;
+          const missingAssets=selectedAssets.filter((asset,index)=>!verified[index]);
           if(missingAssets.length){
             cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',...missingAssets],{
               maxBuffer:16*1024*1024
             });
             for(const asset of missingAssets)
-              if(!verifyGitBlob(asset))throw Error('GITHUB_PAGES_ASSET_SOURCE_MISMATCH:'+asset);
+              if(!await verifyGitBlob(asset))throw Error('GITHUB_PAGES_ASSET_SOURCE_MISMATCH:'+asset);
           }
           if(checkedAssets.size!==selectedAssets.length)throw Error('GITHUB_PAGES_ASSET_VERIFICATION_INCOMPLETE');
           console.log('PAGES_ASSET_REUSED='+String(selectedAssets.length-missingAssets.length));
@@ -425,11 +440,16 @@ jobs:
           // copyFileSync with COPYFILE_FICLONE uses copy-on-write when supported, and
           // automatically falls back to a normal copy. Never hardlink: Pages path
           // rewrites must not mutate verified source/cache bytes.
-          for(const asset of selectedAssets){
-            const target=path.join(site,asset);
-            fs.mkdirSync(path.dirname(target),{recursive:true});
-            fs.copyFileSync(asset,target,fs.constants.COPYFILE_FICLONE);
-          }
+          let copyNext=0;
+          const copyResults=await Promise.allSettled(Array.from({length:Math.min(4,selectedAssets.length)},async()=>{
+            while(copyNext<selectedAssets.length){
+              const asset=selectedAssets[copyNext++],target=path.join(site,asset);
+              await fs.promises.mkdir(path.dirname(target),{recursive:true});
+              await fs.promises.copyFile(asset,target,fs.constants.COPYFILE_FICLONE);
+            }
+          }));
+          for(const result of copyResults)if(result.status==='rejected')throw result.reason;
+          console.log('PAGES_ASSET_IO_PARALLELISM=4');
           // Build only the game-authored HTML. Never insert OR strip developer
           // scripts or UI: automatic game development owns its own runtime.
           // The old unconditional inspector insertion was the root cause
@@ -463,6 +483,7 @@ jobs:
           console.log('WEB_PAGES_SOURCE_SHA='+process.env.GITHUB_SHA);
           console.log('WEB_PAGES_PREPARED_GAMES='+routes.length);
           console.log('WEB_PAGES_SHARED_ASSETS='+refs.size);
+          })().catch(error=>{console.error(error);process.exitCode=1;});
           NODE
 
       - name: Cache verified source asset bytes for following development deployments
@@ -508,8 +529,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test qa/vibe-fighting-engine.test.mjs
-          node --test qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-character-integration.test.mjs qa/vibe-gameplay-controller.test.mjs qa/vibe-game-input-physics.test.mjs
+          node --test --test-concurrency=4 qa/vibe-fighting-engine.test.mjs qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-character-integration.test.mjs qa/vibe-gameplay-controller.test.mjs qa/vibe-game-input-physics.test.mjs
           test -s _site/index.html
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' _site/index.html
           grep -q '/jaewoon-games/assets/homepage-enhancements.js' _site/index.html
@@ -539,10 +559,24 @@ jobs:
           test -f "$site/tier.html"
           # gh-pages 공유 브랜치에서만 재시도. 게임 빌드와 검사 파이프라인은 병렬 유지.
           pushed=false
+          shared_write_skipped=false
           for attempt in 1 2 3 4; do
             if [ "$attempt" -gt 1 ]; then
               git -C "$site" fetch --quiet --depth=1 origin gh-pages
               git -C "$site" reset --quiet --hard FETCH_HEAD
+            fi
+            # 두 빌드가 역순으로 끝나도 gh-pages의 신규 원본을 과거 원본으로 덮지 않는다.
+            retained_source="$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).sourceSha" "$site/web-games/publish-manifest.json")"
+            [[ "$retained_source" =~ ^[a-f0-9]{40}$ ]] || { echo 'PAGES_RETAINED_SOURCE_INVALID' >&2; exit 1; }
+            shared_write_skipped=false
+            if [ "$retained_source" != "$GITHUB_SHA" ]; then
+              gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$retained_source" > "$RUNNER_TEMP/pages-build-ancestry.json"
+              relation="$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).status" "$RUNNER_TEMP/pages-build-ancestry.json")"
+              case "$relation" in
+                ahead) shared_write_skipped=true ;;
+                behind) ;;
+                *) echo 'PAGES_BUILD_ANCESTRY_UNVERIFIED' >&2; exit 1 ;;
+              esac
             fi
             # Preserve remaining games; the same canonical publisher removes owner-deleted paths only.
             rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
@@ -556,6 +590,13 @@ jobs:
             if ! git -C "$site" diff --cached --quiet; then
               git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
             fi
+            if [ "$shared_write_skipped" = true ]; then
+              # 오래된 빌드의 아티팩트는 자기 SHA로 생성하되 공유 브랜치에는 쓰지 않는다.
+              # 아래 기존 최종 게시 단계의 최신 원본 검사가 공개 여부를 그대로 결정한다.
+              echo "PAGES_OLDER_SHARED_WRITE_SKIPPED=$GITHUB_SHA RETAINED=$retained_source"
+              pushed=true
+              break
+            fi
             if git -C "$site" push origin HEAD:gh-pages; then
               pushed=true
               break
@@ -563,9 +604,15 @@ jobs:
             echo "PAGES_ATOMIC_PUSH_CONFLICT_RETRY=$attempt"
           done
           test "$pushed" = true || { echo 'PAGES_ATOMIC_PUSH_CONFLICT_EXHAUSTED' >&2; exit 1; }
-          published="$(git ls-remote --exit-code origin refs/heads/gh-pages | cut -f1)"
-          test "$published" = "$(git -C "$site" rev-parse HEAD)"
-          echo "WEB_PAGES_PUBLISHED_COMMIT=$published"
+          if [ "$shared_write_skipped" = false ]; then
+            published="$(git ls-remote --exit-code origin refs/heads/gh-pages | cut -f1)"
+            # 뒤이어 더 최신 빌드가 정상 push해도 현재 빌드의 성공을 실패로 바꾸지 않는다.
+            if [ "$published" != "$(git -C "$site" rev-parse HEAD)" ]; then
+              git -C "$site" fetch --quiet --depth=8 origin gh-pages
+              git -C "$site" merge-base --is-ancestor HEAD FETCH_HEAD
+            fi
+            echo "WEB_PAGES_PUBLISHED_COMMIT=$published"
+          fi
           echo "WEB_PAGES_SOURCE_SHA=$GITHUB_SHA"
 
       - name: Prepare retained Pages artifact without Git history
@@ -610,8 +657,8 @@ jobs:
   publish-pages:
     needs: deploy
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
     concurrency:
       group: magic-forest-pages-main-publish
       cancel-in-progress: false
@@ -675,6 +722,11 @@ jobs:
         uses: actions/deploy-pages@v4
 
   post-publication-3d-smoke:
+    # 사후 검사는 한 건씩 실행하고 오래된 대기는 최신 공개판 검사로 합친다.
+    # 이 잠금은 빌드·최종 게시 잠금과 독립적이다.
+    concurrency:
+      group: pages-post-publication-qa
+      cancel-in-progress: false
     needs: publish-pages
     if: github.event_name != 'pull_request' && needs.publish-pages.outputs.page_url != ''
     runs-on: ubuntu-latest

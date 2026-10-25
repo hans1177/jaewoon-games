@@ -13,12 +13,13 @@ const begin=workflow.indexOf('          const selectedAssets=[...refs].sort();')
 const end=workflow.indexOf('          // Build only the game-authored HTML.',begin);
 assert.ok(begin>0&&end>begin,'canonical Pages staging step must exist');
 const source=workflow.slice(begin,end);
-const stage=new Function('fs','path','crypto','cp','assetBlobs','refs','site','Buffer','console',
+const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+const stage=new AsyncFunction('fs','path','crypto','cp','assetBlobs','refs','site','Buffer','console',
   source+'\nreturn {selectedAssets,missingAssets,checkedAssets,verifiedBytes};');
 const gitHash=bytes=>crypto.createHash('sha1')
   .update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
 
-function fixture({originals,cache={},oversized=null,lfs=[]}){
+async function fixture({originals,cache={},oversized=null,lfs=[]}){
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-pages-assets-'));
  const base=process.cwd(),calls=[];
  try{
@@ -57,60 +58,60 @@ function fixture({originals,cache={},oversized=null,lfs=[]}){
    }
   }};
   process.chdir(directory);
-  const result=stage(fs,path,crypto,cp,blobs,refs,'_site',Buffer,{log(){}});
+  const result=await stage(fs,path,crypto,cp,blobs,refs,'_site',Buffer,{log(){}});
   const published=Object.fromEntries([...refs].map(file=>[file,fs.readFileSync(path.join('_site',file))]));
   const cached=Object.fromEntries([...refs].map(file=>[file,fs.readFileSync(file)]));
   return {result,published,cached,calls};
  }finally{process.chdir(base);fs.rmSync(directory,{recursive:true,force:true})}
 }
 
-test('valid cached files are verified and copied without rehydrating from Git',()=>{
+test('valid cached files are verified and copied without rehydrating from Git',async()=>{
  const b=Buffer.concat([Buffer.from('PNG binary\n'),Buffer.alloc(2*1024*1024,73)]);
- const f=fixture({originals:{'big-model.glb':b},cache:{'big-model.glb':b}});
+ const f=await fixture({originals:{'big-model.glb':b},cache:{'big-model.glb':b}});
  assert.equal(f.result.missingAssets.length,0);
  assert.equal(f.result.verifiedBytes,b.length);
  assert.equal(f.calls.length,0);
  assert.deepEqual(f.published['assets/big-model.glb'],b);
  assert.deepEqual(f.cached['assets/big-model.glb'],b);
 });
-test('corrupt and missing cached files are rehydrated and verified against exact Git SHA',()=>{
+test('corrupt and missing cached files are rehydrated and verified against exact Git SHA',async()=>{
  const good=Buffer.from('authoritative CC0 asset'),damaged=Buffer.from('corrupted cache content');
- const f=fixture({originals:{'corrupt.obj':good,'missing.fbx':good},cache:{'corrupt.obj':damaged}});
+ const f=await fixture({originals:{'corrupt.obj':good,'missing.fbx':good},cache:{'corrupt.obj':damaged}});
  assert.deepEqual(f.calls,[['assets/corrupt.obj','assets/missing.fbx']]);
  assert.deepEqual(f.result.missingAssets,['assets/corrupt.obj','assets/missing.fbx']);
  assert.equal(f.result.checkedAssets.size,2);
  assert.deepEqual(f.published['assets/corrupt.obj'],good);
  assert.deepEqual(f.published['assets/missing.fbx'],good);
 });
-test('real Git LFS binary is verified using pointer SHA-256 and size without needless re-download',()=>{
+test('real Git LFS binary is verified using pointer SHA-256 and size without needless re-download',async()=>{
  const b=Buffer.concat([Buffer.from('BLENDER original 3D source'),Buffer.alloc(1024*1024,23)]);
- const f=fixture({originals:{'bee-rigged.blend':b},cache:{'bee-rigged.blend':b},lfs:['bee-rigged.blend']});
+ const f=await fixture({originals:{'bee-rigged.blend':b},cache:{'bee-rigged.blend':b},lfs:['bee-rigged.blend']});
  assert.deepEqual(f.result.missingAssets,[]);
  assert.equal(f.calls.length,0);
  assert.deepEqual(f.published['assets/bee-rigged.blend'],b);
 });
-test('cached Git LFS pointer or corrupted binary gets restored to real bytes before publication',()=>{
+test('cached Git LFS pointer or corrupted binary gets restored to real bytes before publication',async()=>{
  const real=Buffer.from('downloaded verified actual audio');
  const ptr=Buffer.from('version https://git-lfs.github.com/spec/v1\noid sha256:'
     +crypto.createHash('sha256').update(real).digest('hex')+'\nsize '+real.length+'\n');
- const f=fixture({originals:{'impact.ogg':real},cache:{'impact.ogg':ptr},lfs:['impact.ogg']});
+ const f=await fixture({originals:{'impact.ogg':real},cache:{'impact.ogg':ptr},lfs:['impact.ogg']});
  assert.deepEqual(f.result.missingAssets,['assets/impact.ogg']);
  assert.deepEqual(f.published['assets/impact.ogg'],real);
 });
-test('Git LFS pointers and oversized files still fail closed',()=>{
+test('Git LFS pointers and oversized files still fail closed',async()=>{
  const pointer=Buffer.from('version https://git-lfs.github.com/spec/v1\noid sha256:deadbeef\n');
- assert.throws(()=>fixture({originals:{'not-real.glb':pointer},cache:{'not-real.glb':pointer}}),
+ await assert.rejects(()=>fixture({originals:{'not-real.glb':pointer},cache:{'not-real.glb':pointer}}),
   /GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
- assert.throws(()=>fixture({originals:{'big.fbx':Buffer.from('expected')} ,oversized:'big.fbx'}),
+ await assert.rejects(()=>fixture({originals:{'big.fbx':Buffer.from('expected')} ,oversized:'big.fbx'}),
   /GITHUB_PAGES_ASSET_TOO_LARGE/);
 });
 test('duplicate full-memory reads and duplicate SHA passes cannot return',()=>{
  assert.match(source,/Buffer\.allocUnsafe\(1024\*1024\)/);
- assert.match(source,/fs\.readSync\(fd,ioBuffer/);
+ assert.match(source,/await fd\.read\(ioBuffer/);
  assert.match(source,/getLfsEvidence/);
  assert.match(source,/createHash\('sha256'\)/);
  assert.match(source,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
- assert.match(source,/fs\.copyFileSync\(asset,target,fs\.constants\.COPYFILE_FICLONE\)/);
+ assert.match(source,/fs\.promises\.copyFile\(asset,target,fs\.constants\.COPYFILE_FICLONE\)/);
  assert.doesNotMatch(source,/fs\.readFileSync\(asset\)/);
  assert.doesNotMatch(source,/fs\.writeFileSync\(target,source\)/);
  assert.match(workflow,/node --test qa\/github-pages-asset-staging\.test\.mjs/);
@@ -209,4 +210,93 @@ test('publication lock ends after official deploy while existing route and brows
  assert.match(post,/id: director_live_qa/);assert.match(post,/id: forest_native_3d_live_qa/);
  assert.match(post,/POST_PUBLISH_SMOKE_EXACT_SHA=PASS/);
  assert.match(post,/needs\.publish-pages\.outputs\.page_url/);
+});
+
+// 파일 준비를 병렬화하되 게시 원본·최종 게시 잠금은 별도로 보존한다.
+test('main builds use exactly two parity lanes and preserve active work',()=>{
+ const header=workflow.split('  deploy:')[1].split('    steps:')[0];
+ assert.match(header,/pages-main-build-latest-\{0\}/);
+ assert.match(header,/github\.run_number/);
+ const suffixes=[...header.matchAll(/endsWith\(format\('\{0\}', github\.run_number\), '([0-9])'\)/g)].map(m=>m[1]);
+ assert.deepEqual(suffixes,['0','2','4','6','8']);
+ const counts={even:0,odd:0};for(let n=1;n<=20;n++)counts[suffixes.includes(String(n).slice(-1))?'even':'odd']++;
+ assert.deepEqual(counts,{even:10,odd:10});
+ assert.match(workflow,/node --test --test-concurrency=4 qa\/vibe-fighting-engine\.test\.mjs/);
+ assert.match(header,/cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+});
+test('asset verification performs real overlapping reads with a maximum of four files',async()=>{
+ const originalOpen=fs.promises.open;let active=0,peak=0;
+ fs.promises.open=async(...args)=>{
+  const fd=await originalOpen(...args);active++;peak=Math.max(peak,active);
+  return {async read(...params){await new Promise(r=>setTimeout(r,3));return fd.read(...params);},async close(){try{await fd.close()}finally{active--;}}};
+ };
+ try{
+  const originals=Object.fromEntries(Array.from({length:11},(_,i)=>['model-'+i+'.glb',Buffer.from('verified model '+i)]));
+  const f=await fixture({originals,cache:originals});
+  assert(peak>1,'file verification must actually overlap');assert(peak<=4,'bounded file descriptors and memory');
+  assert.equal(active,0);assert.equal(f.result.checkedAssets.size,11);assert.equal(f.calls.length,0);
+ }finally{fs.promises.open=originalOpen;}
+});
+test('parallel builds cannot push an older shared branch over a newer source',()=>{
+ const branch=workflow.slice(workflow.indexOf('      - name: Publish gh-pages without force'),workflow.indexOf('      - name: Prepare retained Pages artifact'));
+ assert.match(branch,/compare\/\$GITHUB_SHA\.\.\.\$retained_source/);
+ assert.match(branch,/ahead\) shared_write_skipped=true/);
+ assert.match(branch,/PAGES_OLDER_SHARED_WRITE_SKIPPED/);
+ assert.ok(branch.indexOf('if [ "$shared_write_skipped" = true ]')<branch.indexOf('push origin HEAD:gh-pages'));
+ assert.match(branch,/merge-base --is-ancestor HEAD FETCH_HEAD/);
+ assert.doesNotMatch(branch,/push[^\n]*--force/);
+ const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
+ assert.match(publish,/group: magic-forest-pages-main-publish/);
+ assert.match(publish,/runs-on: ubuntu-slim/);assert.match(publish,/timeout-minutes: 15/);
+ const post=workflow.slice(workflow.indexOf('  post-publication-3d-smoke:'));
+ assert.match(post,/group: pages-post-publication-qa/);
+ assert.match(post,/cancel-in-progress: false/);
+ assert.doesNotMatch(publish,/pages-post-publication-qa/);
+});
+
+test('shared-branch admission executes ancestry checks and rejects unknown or diverged sources',()=>{
+ const from=workflow.indexOf('            retained_source="$(node -p');
+ const to=workflow.indexOf('            # Preserve remaining games;',from);
+ assert(from>0&&to>from);const decision=workflow.slice(from,to);
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'pages-parallel-ancestry-'));
+ try{
+  fs.mkdirSync(path.join(directory,'site/web-games'),{recursive:true});
+  const sha='a'.repeat(40),retained='b'.repeat(40);
+  const check=(source,status,exit,skip)=>{
+   fs.writeFileSync(path.join(directory,'site/web-games/publish-manifest.json'),JSON.stringify({sourceSha:source}));
+   const script='gh(){ printf "%s" "$COMPARE_DATA"; }\nsite="$TEST_SITE"\n'+decision+'\nprintf "%s" "$shared_write_skipped"\n';
+   const result=spawnSync('bash',['-e'],{input:script,encoding:'utf8',env:{...process.env,GITHUB_SHA:sha,GITHUB_REPOSITORY:'hans1177/jaewoon-games',RUNNER_TEMP:directory,TEST_SITE:path.join(directory,'site'),COMPARE_DATA:JSON.stringify({status})}});
+   assert.equal(result.status,exit,result.stderr);if(exit===0)assert.equal(result.stdout,skip);
+  };
+  check(retained,'ahead',0,'true');check(retained,'behind',0,'false');check(sha,'identical',0,'false');check(retained,'diverged',1);check(retained,'unknown',1);check('invalid','ahead',1);
+ }finally{fs.rmSync(directory,{recursive:true,force:true});}
+});
+
+test('the complete canonical async staging program builds independent game routes and exact source assets',()=>{
+ const start=workflow.indexOf("          node <<'NODE'",workflow.indexOf('      - name: Prepare all registered game routes'));
+ const stop=workflow.indexOf('\n          NODE',start);assert(start>0&&stop>start);
+ const code=workflow.slice(workflow.indexOf('\n',start)+1,stop);
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'pages-parallel-staging-'));
+ const put=(file,body)=>{const full=path.join(directory,file);fs.mkdirSync(path.dirname(full),{recursive:true});fs.writeFileSync(full,body);};
+ const git=(...args)=>{const r=spawnSync('git',args,{cwd:directory,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ try{
+  const games=['fantasy-survival','second-game','third-game'];
+  for(const id of games)put('web-games/'+id+'/index.html','<html><script src="/assets/scene.mjs"></script>'+id+'</html>');
+  put('web-games/fantasy-survival/tier.html','<html>기존 순위</html>');
+  put('game-catalog.json',JSON.stringify({games:games.map(id=>({id,webPath:'/web-games/'+id+'/',ownerWebSourceState:'ACTIVE'}))}));
+  const statics=/const staticFiles=\[([\s\S]*?)\];/.exec(code)[1];
+  for(const match of statics.matchAll(/'([^']+)'/g))if(match[1]!=='game-catalog.json')put(match[1],match[1].endsWith('.json')?'{}':'existing source');
+  const runtimes=/for\(const shared of \[([^\]]+)\]/.exec(code)[1];
+  for(const match of runtimes.matchAll(/'([^']+)'/g))put('assets/'+match[1],'// canonical shared runtime');
+  put('assets/vibe-model-preview.html','<html>source preview</html>');put('assets/scene.mjs','// scene source');put('assets/texture.bin',Buffer.alloc(10000,42));
+  git('init','--quiet');git('add','--all');git('-c','user.name=QA','-c','user.email=qa@example.invalid','commit','--quiet','-m','fixture');const sha=git('rev-parse','HEAD');
+  fs.writeFileSync(path.join(directory,'assets/scene.mjs'),'cache pollution');
+  const result=spawnSync(process.execPath,['-'],{cwd:directory,input:code,encoding:'utf8',env:{...process.env,GITHUB_SHA:sha}});
+  assert.equal(result.status,0,result.stderr+'\n'+result.stdout);
+  const manifest=JSON.parse(fs.readFileSync(path.join(directory,'_site/web-games/publish-manifest.json'),'utf8'));
+  assert.equal(manifest.sourceSha,sha);assert.equal(manifest.routes.length,3);
+  for(const id of games){assert.match(fs.readFileSync(path.join(directory,'_site/web-games/'+id+'/index.html'),'utf8'),/\/jaewoon-games\/assets\/scene\.mjs/);assert.match(manifest.sourceTreeShas[id],/^[a-f0-9]{40}$/);}
+  assert.equal(fs.readFileSync(path.join(directory,'_site/assets/scene.mjs'),'utf8'),'// scene source');
+  assert.match(result.stdout,/PAGES_GAME_COPY_PARALLELISM=4/);assert.match(result.stdout,/PAGES_ASSET_IO_PARALLELISM=4/);
+ }finally{fs.rmSync(directory,{recursive:true,force:true});}
 });
