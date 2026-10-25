@@ -1278,7 +1278,7 @@ function computeVibeNativeDesign(){
   // 게임명보다 실제 원본의 장르 선언을 우선한다. 구형 CASUAL 접수값은 설계 장르 증거가 아니다.
   const nativeConfigPath=path.join('roblox-games',gameId,'shared','GameConfig.luau');
   const nativeConfig=fs.existsSync(nativeConfigPath)?fs.readFileSync(nativeConfigPath,'utf8'):'';
-  const sourceRpgGenre=/\\bGenre\\s*=\\s*["'](?:RPG|Action RPG)["']/.test(nativeConfig);
+  const sourceRpgGenre=/\bGenre\s*=\s*["'](?:RPG|Action RPG)["']/.test(nativeConfig);
   const authoredCategory=!ownerFreeTopic&&clean(seed.GAME_CATEGORY).toUpperCase()==='CASUAL'&&sourceRpgGenre
     ?'RPG':seed.GAME_CATEGORY;
   const nativeServerPath=path.join('roblox-games',gameId,'server','Game.server.luau');
