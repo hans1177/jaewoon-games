@@ -161,20 +161,41 @@ function soundPanel(){
  '<div class="ks-row"><b>📣 이벤트 음성</b>'+btn('voice',settings.voice?'음성 켜짐':'음성 꺼짐')+'</div>'+
  btn('drum','🥁 전투 북소리 확인');
 }
-// 무료 GitHub Pages에서 사용 가능한 WebRTC, 수동 초대 코드. TURN/중앙 로비는 없음.
-let peer,channel,role='',peerMode='duel',invite='',reply='',connection='연결 전';
+// 파일명: web-games/cozy-island/kingdom-system.js / 멀티
+// 메인: 기존 1대1 성채 공방 규칙 그대로, 긴 WebRTC 응답 코드 대신 서버 숫자방을 사용한다.
+let network=null,role='',peerMode='duel',invite='',connection='연결 전',roomCount=0,ownUserId='';
 const duel={mine:600,other:600,guards:0,archers:0,defending:false};
 const clean=n=>Math.max(0,Math.min(600,Math.floor(Number(n)||0)));
-function send(data){if(channel?.readyState==='open')channel.send(JSON.stringify({v:1,...data}))}
+const connected=()=>Boolean(network?.isRoomConnected());
+function send(data){if(connected())network.sendEvent({action:'cozy-'+data.type,keep:data.keep,guards:data.guards,archers:data.archers})}
 function liveUpdate(){if(dialog.open&&section==='multiplayer')render()}
-function closePeer(){
- try{channel?.close()}catch{}
- try{peer?.close()}catch{}
- channel=null;peer=null;role='';invite='';reply='';connection='연결 전';
- duel.mine=600;duel.other=600;duel.guards=0;duel.archers=0;duel.defending=false;
+async function multiplayer(){
+ if(network)return network;
+ const {JaewoonMultiplayerClient}=await import('../../multiplayer/multiplayer-client.js');
+ network=new JaewoonMultiplayerClient();
+ network.on('message_received',e=>{
+  const message=e.detail||{};
+  if(message.type==='connected'||message.type==='presence'){
+   if(message.type==='connected')ownUserId=message.userId;
+   roomCount=(message.players||[]).length;
+   connection='방 '+invite+' · '+roomCount+'/4명 접속';
+   if(message.type==='connected')send({type:'sync',keep:duel.mine});
+   liveUpdate();
+  }else if(message.type==='event'&&String(message.action||'').startsWith('cozy-')&&message.userId!==ownUserId){
+   receive({v:1,type:message.action.slice(5),keep:message.keep,guards:message.guards,archers:message.archers});
+  }
+ });
+ network.on('websocket_disconnected',()=>{connection='연결 끊김 · 자동 재연결 중';liveUpdate()});
+ return network;
 }
-function receive(raw){
- let data;try{data=JSON.parse(raw)}catch{return}
+async function closePeer(){
+ const previous=network;
+ network=null;role='';invite='';roomCount=0;ownUserId='';connection='연결 전';
+ await previous?.leaveGemRoom();
+ duel.mine=600;duel.other=600;duel.guards=0;duel.archers=0;duel.defending=false;
+ liveUpdate();
+}
+function receive(data){
  if(!data||data.v!==1||typeof data.type!=='string')return;
  if(data.type==='sync'){duel.other=clean(data.keep);liveUpdate();return}
  if(data.type==='attack'&&peerMode==='duel'){
@@ -187,61 +208,30 @@ function receive(raw){
    type:duel.mine<=0?'defeat':'attack',title:duel.mine<=0?'대전 성채 함락':'상대가 성을 공격했습니다'}}));
  }
 }
-function link(channelObject){
- channel=channelObject;
- channel.onopen=()=>{connection='실시간 연결 완료';send({type:'sync',keep:duel.mine});liveUpdate()};
- channel.onclose=()=>{connection='연결 종료';liveUpdate()};
- channel.onerror=()=>{connection='전송 오류';liveUpdate()};
- channel.onmessage=e=>receive(e.data);
-}
-function rtc(){
- if(!window.RTCPeerConnection)throw Error('브라우저가 WebRTC를 지원하지 않습니다');
- peer=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
- peer.ondatachannel=e=>link(e.channel);
- peer.onconnectionstatechange=()=>{connection=peer.connectionState;liveUpdate()};
- return peer;
-}
-async function iceDone(){
- if(peer.iceGatheringState==='complete')return;
- await new Promise(resolve=>{
-  const timeout=setTimeout(done,7500);
-  function done(){clearTimeout(timeout);peer?.removeEventListener('icegatheringstatechange',check);resolve()}
-  function check(){if(peer?.iceGatheringState==='complete')done()}
-  peer.addEventListener('icegatheringstatechange',check);
- });
-}
 async function makeInvite(){
- closePeer();role='host';connection='방 코드 생성 중';
- const p=rtc();link(p.createDataChannel('cozy-1v1'));
- await p.setLocalDescription(await p.createOffer());await iceDone();
- invite=JSON.stringify({v:1,mode:'duel',desc:p.localDescription});
- connection='초대 코드를 복사해 상대에게 전달하세요';liveUpdate();
+ const client=await multiplayer();
+ connection='숫자방 만드는 중…';liveUpdate();
+ const result=await client.createNumberRoomForGame('cozy-island');
+ if(!result.ok){connection='방 생성 실패 · '+(result.data?.error||'서버 연결 확인');liveUpdate();return}
+ role='host';invite=String(result.data.inviteCode);roomCount=1;
+ connection='방 번호 '+invite+' · 친구 접속 대기';liveUpdate();
 }
 async function answerInvite(raw){
- const code=JSON.parse(raw);
- if(code.v!==1||code.desc?.type!=='offer')throw Error('초대 코드가 올바르지 않아요');
- closePeer();role='guest';connection='응답 코드 생성 중';
- const p=rtc();await p.setRemoteDescription(code.desc);
- await p.setLocalDescription(await p.createAnswer());await iceDone();
- reply=JSON.stringify({v:1,mode:'duel',desc:p.localDescription});
- connection='응답 코드를 방장에게 전달하세요';liveUpdate();
-}
-async function takeAnswer(raw){
- const code=JSON.parse(raw);
- if(!peer||role!=='host'||code.v!==1||code.desc?.type!=='answer')throw Error('먼저 방을 만든 후 올바른 응답 코드를 입력해');
- await peer.setRemoteDescription(code.desc);
- connection='연결 확인 중';liveUpdate();
+ const code=String(raw||'').trim();
+ if(!/^[0-9]$/.test(code))throw Error('방 번호는 0~9 한 자리 숫자야');
+ const client=await multiplayer();
+ connection='방 '+code+' 참가 중…';liveUpdate();
+ const result=await client.joinNumberRoomForGame('cozy-island',code);
+ if(!result.ok){connection='참가 실패 · '+(result.data?.error||'방 번호 확인');liveUpdate();return}
+ role='guest';invite=code;roomCount=result.data.players;
+ connection='방 번호 '+code+' · 접속 중';liveUpdate();
 }
 function multiPanel(){
- const connected=channel?.readyState==='open',code=role==='host'?invite:reply;
- return '<p class="ks-note">🌐 <b>무료 WebRTC 1:1 시험 모드</b> · 별도 서버/회원가입 없이 초대 코드와 응답 코드로 연결합니다. NAT 환경에 따라 연결 불가할 수 있습니다. 현 단계는 병력 모집·성채 HP 공방을 동기화하며 전체 RTS 월드 동기화는 미구현입니다.</p>'+
+ return '<p class="ks-note">이메일·긴 초대코드 없이 방 만들기 또는 숫자 0~9로 참가해. 기존 성채 공방은 연결된 상대와 진행해. 왕국 전체 동기화는 아직 지원하지 않아.</p>'+
  '<p class="ks-note">연결 상태: '+esc(connection)+'</p>'+
- '<div class="ks-buttons">'+btn('host','① 방 만들기')+btn('join','② 초대 수락')+
- btn('accept','③ 답변 등록')+btn('disconnect','✕ 종료')+'</div>'+
- '<label class="ks-field">내 코드<textarea id="ks-own-code" readonly>'+esc(code)+'</textarea></label>'+
- btn('copy','내 코드 복사',!code)+
- '<label class="ks-field">상대 코드<textarea id="ks-peer-code" placeholder="상대가 보내 준 코드를 붙여넣으세요"></textarea></label>'+
- (connected?'<div class="ks-row"><b>🏰 내 성채 '+duel.mine+'/600</b><b>상대 '+duel.other+'/600</b></div>'+
+ '<div class="ks-buttons">'+btn('host','방 만들기')+btn('join','방 참가')+btn('disconnect','나가기')+'</div>'+
+ '<label class="ks-field">방 번호 <input id="ks-room-number" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" placeholder="0~9" value="'+esc(invite)+'"></label>'+
+ (connected()?'<div class="ks-row"><b>🏰 내 성채 '+duel.mine+'/600</b><b>상대 '+duel.other+'/600</b></div>'+
  '<div class="ks-row"><b>⚔️ 보병 '+duel.guards+' · 궁수 '+duel.archers+'</b></div>'+
  '<div class="ks-buttons">'+btn('recruit:guard','⚔️ 보병 징집 (식량 6)')+
  btn('recruit:archer','🏹 궁수 징집 (식량 9)')+btn('strike','⚔️ 출병')+
@@ -296,18 +286,16 @@ body.addEventListener('click',async e=>{
   else if(action==='voice'){settings.voice=!settings.voice;saveAudio();render()}
   else if(action==='drum'){if(audioReady()){drum(audioCtx.currentTime+.02);drum(audioCtx.currentTime+.4)}}
   else if(action==='host'){await makeInvite()}
-  else if(action==='join'){await answerInvite(get('#ks-peer-code')?.value||'')}
-  else if(action==='accept'){await takeAnswer(get('#ks-peer-code')?.value||'')}
-  else if(action==='disconnect'){closePeer();render()}
-  else if(action==='copy'){await navigator.clipboard.writeText(get('#ks-own-code')?.value||'');note('초대 코드 복사 완료')}
+  else if(action==='join'){await answerInvite(get('#ks-room-number')?.value||'')}
+  else if(action==='disconnect'){await closePeer();render()}
   else if(action==='recruit'){
-   if(channel?.readyState!=='open')return;
+   if(!connected())return;
    const cost=id==='guard'?6:9,key=id==='guard'?'guards':'archers';
    if(duel.guards+duel.archers>=22||Number(game.state.inventory.food||0)<cost)return note('모집 한도 또는 식량 부족');
    game.state.inventory.food-=cost;duel[key]++;game.save();render();
   }
   else if(action==='strike'){
-   if(channel?.readyState!=='open'||duel.mine<=0||duel.other<=0)return;
+   if(!connected()||duel.mine<=0||duel.other<=0)return;
    send({type:'attack',guards:duel.guards,archers:duel.archers});
    duel.guards=0;duel.archers=0;
    window.dispatchEvent(new CustomEvent('cozy:war-event',{detail:{type:'battle',title:'1대1 성채 공격 개시'}}));
