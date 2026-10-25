@@ -407,9 +407,9 @@ buildWorld(live){
   if(this.actorArt&&bounds){
    const geometry=new THREE.PlaneGeometry(1,1,12,20),uv=geometry.attributes.uv;
    for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(bounds.u0,bounds.u1,uv.getX(i)),THREE.MathUtils.lerp(bounds.v0,bounds.v1,uv.getY(i)));
-   uv.needsUpdate=true;pixelRest=geometry.attributes.position.array.slice();
+   uv.needsUpdate=true;pixelRest=geometry.attributes.position.array.slice();geometry.translate(0,.5,0);
    pixel=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({map:this.actorArt,transparent:true,alphaTest:.12,depthWrite:false,toneMapped:false,side:THREE.DoubleSide}));
-   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=height*.5;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);model.visible=false;
+   pixelWidth=height*bounds.aspect;pixel.scale.set(pixelWidth,height,1);pixel.position.y=.035;pixel.quaternion.copy(this.camera.quaternion);root.add(pixel);model.visible=false;
   }
   const result={root,model,ring,mixer,actions,action:null,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,wasAttacking:false,attackAt:0,lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,hitAt:0,hitPower:0,flashMaterials:[]};
   this.scene.add(root);return result;
@@ -436,13 +436,13 @@ buildWorld(live){
     if(gel){px*=1+Math.sin(phase+now*.003)*.035;py-=Math.sin(phase+now*.003)*.018*t;}
     if(spirit)px+=Math.sin(now*.004+t*4)*.014*(1-t);
     if(attack&&Math.abs(x)>.22&&t>.35&&t<.84){px+=strike*.035;py+=strike*(entry.role==='wizard'||entry.role==='cleric'?.055:.015);}
-    positions.setXY(i,px,py);
+    positions.setXY(i,px,py+.5);
    }
    positions.needsUpdate=true;
    entry.pixel.quaternion.copy(this.camera.quaternion);
    entry.pixel.scale.x=entry.pixelWidth*entry.facing;
    const bob=spirit?Math.sin(now*.0033)*.045:gel?0:Math.abs(Math.sin(phase))*entry.motion*(heavy?.009:.018);
-   entry.pixel.position.y+=(entry.height*.5+bob+hit*.035-entry.pixel.position.y)*blend;
+   entry.pixel.position.y+=(.035+bob+hit*.035-entry.pixel.position.y)*blend;
    entry.pixel.material.color.setRGB(1,1-hit*.4,1-hit*.45);
    return;
   }
@@ -625,7 +625,7 @@ buildWorld(live){
   }
   this.gl.render(this.scene,this.camera);this.frameCost=this.frameCost*.94+(performance.now()-started)*.06;
   if(now-this.qualityAt>2200){this.qualityAt=now;const q=this.frameCost>24?Math.max(.72,this.quality-.1):this.frameCost<13?Math.min(1,this.quality+.05):this.quality;if(Math.abs(q-this.quality)>.01){this.quality=q;this.resize();}}
-  if(now-this.lastLabelsAt>110){this.lastLabelsAt=now;const labels=[];for(const [kind,obj,key] of visible){const entry=this.actors.get(key);if(!entry)continue;const v=new THREE.Vector3(obj.x*SCALE,entry.height+.2,obj.y*SCALE).project(this.camera);if(Math.abs(v.x)>1.1||Math.abs(v.y)>1.1)continue;const hp=kind==='player'?live.state.player:obj;labels.push({key,text:kind==='player'?live.state.player.name||'나':obj.name,x:(v.x+1)*this.width/2,y:(1-v.y)*this.height/2,hp:Math.max(0,Math.min(1,(hp.hp||0)/(hp.maxHp||1))),kind});}
+  if(now-this.lastLabelsAt>110){this.lastLabelsAt=now;const labels=[];for(const [kind,obj,key] of visible){const entry=this.actors.get(key);if(!entry)continue;const v=(entry.pixel?entry.pixel.localToWorld(new THREE.Vector3(0,1.13,0)):new THREE.Vector3(obj.x*SCALE,entry.height+.2,obj.y*SCALE)).project(this.camera);if(Math.abs(v.x)>1.1||Math.abs(v.y)>1.1)continue;const hp=kind==='player'?live.state.player:obj;labels.push({key,text:kind==='player'?live.state.player.name||'나':obj.name,x:(v.x+1)*this.width/2,y:(1-v.y)*this.height/2,hp:Math.max(0,Math.min(1,(hp.hp||0)/(hp.maxHp||1))),kind});}
    while(this.labels.length<labels.length){const node=document.createElement('div');node.className='world-label';node.innerHTML='<span></span><i><b></b></i>';this.labelRoot.append(node);this.labels.push(node);}
    this.labels.forEach((node,i)=>{const d=labels[i];node.hidden=!d;if(!d)return;node.style.transform=`translate(${Math.round(d.x)}px,${Math.round(d.y)}px)`;node.dataset.kind=d.kind;node.firstElementChild.textContent=d.text;node.querySelector('b').style.width=(d.hp*100)+'%';});
   }
