@@ -101479,11 +101479,154 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_89b65156f171cfcdf5e3570d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10134",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "f90f8ced51878314eb10b98f202aa576767ddbee",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10134,
+        "baseBranch": "main",
+        "headBranch": "feat/ocean-item-library",
+        "baseSha": "f90f8ced51878314eb10b98f202aa576767ddbee",
+        "headSha": "3a45bcc7166aac19dbc19ed57bd7899cbc078648",
+        "mergeCommitSha": "2efab8e05a45cc5507f5a2b7353548bae2b23250",
+        "mergedAt": "2026-10-25T07:33:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "71926fdcc918f247d7130beb0c006eb0db3a9db5ee3f50d43d905af9478c2bc8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/ocean-item-library",
+        "candidateSha": "3a45bcc7166aac19dbc19ed57bd7899cbc078648"
+      },
+      "changeStats": {
+        "changedFileCount": 24,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 284,
+        "deletedLineCount": 19,
+        "changedFiles": [
+          "qa/ocean-voyage.test.mjs",
+          "web-games/ocean-voyage/assets/cc0/items/generic-0018.png",
+          "web-games/ocean-voyage/assets/cc0/items/generic-0032.png",
+          "web-games/ocean-voyage/assets/cc0/items/generic-0038.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0065.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0088.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0090.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0102.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0103.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0104.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0105.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0107.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0108.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0109.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0110.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0118.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0119.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0121.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0122.png",
+          "web-games/ocean-voyage/assets/cc0/items/pirate-0123.png",
+          "web-games/ocean-voyage/assets/cc0/manifest.json",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/ocean-voyage.test.mjs",
+          "web-games/ocean-voyage/assets/cc0/manifest.json",
+          "web-games/ocean-voyage/engine.mjs",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10134",
+        "merge-commit:2efab8e05a45cc5507f5a2b7353548bae2b23250",
+        "base-main:f90f8ced51878314eb10b98f202aa576767ddbee"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 798
+    "total": 799
   }
 }
