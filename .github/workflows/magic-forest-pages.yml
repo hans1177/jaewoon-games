@@ -631,6 +631,7 @@ jobs:
                 *) echo 'PAGES_BUILD_ANCESTRY_UNVERIFIED' >&2; exit 1 ;;
               esac
             fi
+            # Preserve remaining games; the same canonical publisher removes owner-deleted paths only.
             # A newer source has already won the shared branch: do not stage, archive,
             # or upload a superseded 1GB artifact. Never interrupt its active publisher.
             if [ "$shared_write_skipped" = true ]; then
@@ -638,7 +639,6 @@ jobs:
               echo 'artifact_ready=false' >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            # Preserve remaining games; the same canonical publisher removes owner-deleted paths only.
             rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
             PAGES_RETAINED_SITE="$site" node --input-type=module - <<'NODE'
           import {writePagesLanding} from './tools/github-pages-landing.mjs';
