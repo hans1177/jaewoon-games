@@ -92,6 +92,9 @@ test('explicit reset opt-out applies only to a trailing marker, not a squash-mer
 test('design reset runtime checkout tolerates dirty CI-only Unity LFS files without a force push',()=>{
   const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
   const copy=workflow.indexOf('cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs');
+  const noTargets=workflow.indexOf("OWNER_ALL_GAMES_DESIGN_RESET=SKIPPED_NO_ELIGIBLE_GAMES");
+  assert.ok(noTargets>=0&&noTargets<copy,'empty DESIGN_ONLY catalog exits before mutating runtime state');
+  assert.match(workflow,/owner_reset_changed=false.*?GITHUB_OUTPUT/,'no-op must not dispatch a competing designer');
   const checkout=workflow.indexOf('git checkout -f -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"');
   assert.ok(copy>=0&&checkout>copy,'canonical runtime script must be preserved before switching branches');
   assert.match(workflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);

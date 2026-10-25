@@ -62,6 +62,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # 대상이 없는 전체 초기화는 상태·검증기록을 변경하지 않는다. 설계 PASS는 주장하지 않는다.
+          DESIGN_ONLY_COUNT="$(node -e "const c=require('./game-catalog.json'); process.stdout.write(String((c.games||[]).filter(g=>String(g?.productionClass||'').trim()==='DESIGN_ONLY').length));")"
+          if [ "$DESIGN_ONLY_COUNT" -eq 0 ]; then
+            echo 'OWNER_ALL_GAMES_DESIGN_RESET=SKIPPED_NO_ELIGIBLE_GAMES'
+            echo 'owner_reset_changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs
           cp tools/company-game-seed-contract.mjs /tmp/company-game-seed-contract.mjs
           cp tools/company-game-seed-bootstrap.mjs /tmp/company-game-seed-bootstrap.mjs
