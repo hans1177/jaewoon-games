@@ -184,7 +184,7 @@ export function restoreGame(raw){
   for(const field of ['discoveries','reported','completedStories','completedOffice','treasureClues','clearedCamps'])s[field]=Array.isArray(s[field])?[...new Set(s[field].filter(v=>typeof v==='string'))].slice(0,100):[];
   s.officeQuests=Array.isArray(s.officeQuests)?s.officeQuests.filter(q=>OFFICE_QUESTS.some(o=>o.id===q)).slice(0,4):[];
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
-  s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=[1,2,4].includes(s.speed)?s.speed:1;s.autoCombat=obj.autoCombat!==false;
+  s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=Number.isFinite(Number(s.speed))?clamp(Math.round(Number(s.speed)),1,16):1;s.autoCombat=obj.autoCombat!==false;
   s.event=s.event&&(SEA_EVENTS.some(e=>e.id===s.event.id)||(s.event.id==='merchant_meeting'&&MERCHANT_CAPTAINS.some(c=>c.id===s.event.merchantId)))?s.event:null;
    s.scene=s.scene&&(s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)||s.scene.kind==='merchant'&&MERCHANT_CAPTAINS.some(c=>c.id===s.scene.merchantId))?s.scene:null;
    const ships=Array.isArray(obj.merchants)?obj.merchants:[];
@@ -460,12 +460,19 @@ export function resolveMerchantEncounter(state,choice){
  }else{msg=leader.name+'과(와) 인사를 나누고 항로로 돌아왔어.';}
  s.event=null;return success(s,msg);
 }
+// 바람: 항해 위치와 게임 시각으로 결정한다. 별도 저장값 없이 기존 세이브와 호환된다.
+export function windAt(s){
+ const heading=Math.atan2(Math.sin(s.day*.29+s.elapsed*.018)*.85+Math.cos(s.ship.x*.009)*.28,.65+Math.cos(s.day*.17+s.ship.z*.006)*.38);
+ const weather=s.climate?.kind||'clear';
+ const strength=clamp(.75+Math.sin(s.day*.91+s.elapsed*.048+s.ship.x*.011)*.20+(weather==='wind'?.26:weather==='storm'?.32:weather==='fog'?-.16:0),.25,1.4);
+ return {heading,strength,weather};
+}
 export function stepSea(state,input={},seconds=.05){
  if(state.event||state.scene||state.landBattle)return state;
  let s=copy(state);let dt=clamp(Number(seconds)||.05,0,2);
  const ship=s.ship;
  if(ship.hull<=0)return s;
- const sailGear=SAIL_EQUIPMENT.find(g=>g.id===ship.gear.sail)||SAIL_EQUIPMENT[0],figure=FIGUREHEADS.find(g=>g.id===ship.gear.figurehead)||FIGUREHEADS[0],shipDesign=SHIP_TYPES.find(t=>t.id===s.shipType)||SHIP_TYPES[0],climate=WEATHER.find(w=>w.id===s.climate.kind)||WEATHER[0],wind=Math.sin(s.day*.7+s.elapsed*.03)*.4;
+ const sailGear=SAIL_EQUIPMENT.find(g=>g.id===ship.gear.sail)||SAIL_EQUIPMENT[0],figure=FIGUREHEADS.find(g=>g.id===ship.gear.figurehead)||FIGUREHEADS[0],shipDesign=SHIP_TYPES.find(t=>t.id===s.shipType)||SHIP_TYPES[0],climate=WEATHER.find(w=>w.id===s.climate.kind)||WEATHER[0],wind=windAt(s);
  // 메인: 적을 발견하면 항로를 유지한 채 측면 포격 위치를 잡는다. 직접 조타는 우선한다.
  let turn=clamp(Number(input.turn)||0,-1,1),throttle=clamp(Number(input.throttle)||0,-1,1);
  const gun=CANNON_TYPES.find(g=>g.id===ship.cannonType)||CANNON_TYPES[0];
@@ -490,7 +497,11 @@ export function stepSea(state,input={},seconds=.05){
  }
  ship.rudder=clamp((Number(ship.rudder)||0)+(turn-(Number(ship.rudder)||0))*Math.min(1,dt*4),-1,1);ship.heading=wrap(ship.heading+ship.rudder*dt*(.8+ship.sail*.06)*(1+(ship.rudderLevel||0)*.15)*(shipDesign.turn||1)*(sailGear.turn||1)*(figure.turn||1)*(ship.regionalMods.includes('brest-rudder')?1.1:1));
  const laden=1-cargoWeight(s)/Math.max(1,ship.cargoLimit*s.fleet)*.18;
- const speed=(2.1+ship.sail*1.15)*(shipDesign.speed||1)*(sailGear.speed||1)*(figure.speed||1)*(ship.gear.figurehead!=='none'&&ship.regionalMods.includes('venice-carving')?1.02:1)*(1+assignedPower(s,'sailing','navigation')/600)*(1+wind*.24)*(ship.gear.sail==='stormcloth'?Math.max(.93,climate.speed):climate.speed)*laden*(ship.hull/ship.maxHull*.6+.4);
+ const rig=shipDesign.rig||(/caravel/.test(shipDesign.id)?'lateen':'square');
+  // 풍향에 따라 사각돛은 순풍, 라틴돛은 횡풍, 갤리의 노는 역풍에서 유리하다.
+  const tail=Math.cos(wind.heading-ship.heading),cross=Math.abs(Math.sin(wind.heading-ship.heading));
+  const windDrive=rig==='oars'?.93+tail*.025:rig==='lateen'?.90+tail*.11+cross*.14:.91+tail*.22+cross*.04;
+  const speed=(2.1+ship.sail*1.15)*(shipDesign.speed||1)*(sailGear.speed||1)*(figure.speed||1)*(ship.gear.figurehead!=='none'&&ship.regionalMods.includes('venice-carving')?1.02:1)*(1+assignedPower(s,'sailing','navigation')/600)*clamp(windDrive*(.94+wind.strength*.13),.58,1.28)*(ship.gear.sail==='stormcloth'?Math.max(.93,climate.speed):climate.speed)*laden*(ship.hull/ship.maxHull*.6+.4);
  const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget&&!input.navalBattle)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
  const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,-1020,900);
  if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}
@@ -509,7 +520,7 @@ export function stepSea(state,input={},seconds=.05){
  }
  advanceMerchantFleet(s,dt);
  ship.cooldown=Math.max(0,ship.cooldown-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
- s.elapsed+=dt;s.weather=wind;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
+ s.elapsed+=dt;s.weather=tail*wind.strength;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
  if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
   s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-(assignedPower(s,'quartermaster','trade')>=75?1:2));
