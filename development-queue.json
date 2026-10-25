@@ -49175,10 +49175,10 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T03:05:15.145Z",
-      "updatedAt": "2026-10-25T04:41:48.818Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-25T03:30:38.098Z",
+      "updatedAt": "2026-10-25T04:42:16.168Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-25T04:42:16.168Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -49236,7 +49236,7 @@
         "capturedAt": "2026-10-12T03:25:06.835Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "8e25806cf5685a517fa0dc89bd5c72a7b4feaa06",
+      "robloxSourceCommit": "eb4c349f2ecfa5afbe3c8904a8fa6bce389b4561",
       "robloxSourceBootstrapPassedAt": "2026-10-24T15:26:51.705Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -49742,12 +49742,12 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "8e25806cf5685a517fa0dc89bd5c72a7b4feaa06",
+      "robloxQualityBuildUpSourceRevision": "eb4c349f2ecfa5afbe3c8904a8fa6bce389b4561",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "star-frontier",
-        "sourceRevision": "8e25806cf5685a517fa0dc89bd5c72a7b4feaa06",
+        "sourceRevision": "eb4c349f2ecfa5afbe3c8904a8fa6bce389b4561",
         "sourceTreeSha": "951c0248a45151c23fe417af86baeb8161bf1d3e",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -49763,9 +49763,9 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "35a413ab69015e69eab6ac392dae0934a795e588b199a34d72aba7bbcfddcacb",
+          "libraryFingerprint": "1e7d0507dbb14024fdf95ee5ed752d8c2b203c0dc7d8e802d9802d171df3e40d",
           "baselineFingerprint": "bbebd361987f23bc351a2a1eec26bd9f8478ec2f0e207588637ce81acb45775a",
-          "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
+          "validatorFingerprint": "03cd772705cb1ada41818253a8fceb0e78125a63c2d84fcfbdbdb2873feda1a0"
         },
         "qualityFailureKinds": [
           "CONFIG_POLICY_SOURCE_REQUIRED",
@@ -49816,8 +49816,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40157167204,
-        "testedAt": "2026-10-25T03:30:38.098Z"
+        "workflowRunId": 40160112010,
+        "testedAt": "2026-10-25T04:42:16.168Z"
       },
       "ownerWebEditPropagation": {
         "version": 1,
@@ -59722,7 +59722,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T04:41:48.818Z",
+  "updatedAt": "2026-10-25T04:42:16.168Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -59788,5 +59788,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
