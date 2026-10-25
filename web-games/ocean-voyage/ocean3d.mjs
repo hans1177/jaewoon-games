@@ -63,7 +63,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0,miniHit=null;
- let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=2.2,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraOrbit=0,cameraHeight=.32,cameraDistance=44;
+ let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=2.2,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraDistance=44;
  const mobileGPU=!!(window.matchMedia?.('(pointer:coarse)')?.matches&&window.innerWidth<900);
  // 기존 CC0 범선 GLB를 조명·파도·포격과 함께 근접 전투 장면에 사용한다.
  let naval=null,navalLoading=false,navalError=false;
@@ -322,8 +322,18 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      camera.far=Math.max(350,distance+radius*3);camera.updateProjectionMatrix();
      if(!battleFraming)camera.position.copy(position);else camera.position.lerp(position,.14);
      camera.lookAt(targetLook);
-    }else{const bearing=origin.heading+cameraOrbit;camera.position.lerp(new THREE.Vector3(-Math.sin(bearing)*cameraDistance,4+cameraDistance*cameraHeight,-Math.cos(bearing)*cameraDistance),.13);targetLook.set(Math.sin(origin.heading)*3,2.5,Math.cos(origin.heading)*3);camera.lookAt(targetLook);}
-    battleFraming=mode==='naval';if(!battleFraming){world.fog.near=110;world.fog.far=300;}
+     }else{
+     // 메인: 추적과 45도 고정 시점 모두 선박을 화면 중앙에 둔다. 세로 화면은 거리로 시야를 보정한다.
+     const bearing=seaCamera==='angle'?-Math.PI/4:origin.heading;
+     const distance=cameraDistance/Math.max(.58,Math.min(1,camera.aspect));
+     const offset=distance/Math.sqrt(2);
+     const position=new THREE.Vector3(-Math.sin(bearing)*offset,2.2+offset,-Math.cos(bearing)*offset);
+     targetLook.set(0,2.2,0);
+     camera.position.lerp(position,.24);
+     camera.lookAt(targetLook);
+     world.fog.near=Math.max(110,distance+45);world.fog.far=world.fog.near+190;
+    }
+    battleFraming=mode==='naval';
     ring.visible=mode==='naval';ring.position.x=ex;ring.position.z=ez;
     const storm=state.climate?.kind==='storm',rain=state.climate?.kind==='rain';
      const a=water.geometry.attributes.position;
@@ -613,13 +623,9 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  if(naval){const show=(mode==='naval'||mode==='sea'&&seaCamera!=='chart')&&!navalError;naval.surface.hidden=!show;
   if(show)try{naval.render(time);}catch(err){console.warn('3D 항해 프레임 복구: 2D 렌더로 자동 전환',err);navalError=true;naval.surface.hidden=true;}}
 }
- let cameraTouch=null;
- // 왼쪽 화면은 모바일 전역 조타, 오른쪽 화면만 카메라 회전.
-  canvas.addEventListener('pointerdown',e=>{if(mode==='sea'&&seaCamera!=='chart'&&e.clientX>window.innerWidth*.54)cameraTouch={id:e.pointerId,x:e.clientX,y:e.clientY};});
- canvas.addEventListener('pointermove',e=>{if(!cameraTouch||cameraTouch.id!==e.pointerId)return;const dx=e.clientX-cameraTouch.x,dy=e.clientY-cameraTouch.y;if(Math.abs(dx)+Math.abs(dy)>1){seaCamera='orbit';cameraOrbit+=dx*.009;cameraHeight=Math.max(.12,Math.min(.95,cameraHeight+dy*.003));cameraTouch.x=e.clientX;cameraTouch.y=e.clientY;}});
- for(const event of ['pointerup','pointercancel'])canvas.addEventListener(event,()=>{cameraTouch=null;});
- canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(12,Math.min(62,cameraDistance+Math.sign(e.deltaY)*2));}},{passive:false});
+ // 메인: 오른쪽 회전 조작은 45도 고정 시점으로 대체한다. 왼쪽 조타는 그대로 유지한다.
+ canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(34,Math.min(62,cameraDistance+Math.sign(e.deltaY)*2));}},{passive:false});
  canvas.addEventListener('click',e=>{if(mode==='sea'&&seaCamera!=='chart')return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;const target=hit.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(mode==='town'&&!facility&&target?.building)onBuilding(target.building);if(mode==='sea'&&target?.port)onPort(target.port);if(mode==='sea'&&target?.merchant)onMerchant(target.merchant);if(mode==='sea'&&!target&&miniHit&&x>=miniHit.x&&x<=miniHit.x+miniHit.w&&y>=miniHit.y&&y<=miniHit.y+miniHit.h)onMap();});
  frame=requestAnimationFrame(render);queueMicrotask(onReady);
- return {setCameraMode(v){seaCamera=['chase','orbit','chart'].includes(v)?v:'chase';if(seaCamera==='chase')cameraOrbit=0;return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(12,Math.min(62,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||2.2));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
+ return {setCameraMode(v){seaCamera=['chase','angle','chart'].includes(v)?v:'chase';return seaCamera;},getCameraMode(){return seaCamera;},setCameraDistance(scale){cameraDistance=Math.max(34,Math.min(62,cameraDistance*scale));},setState(s){state=s;if(s.combatFx?.serial&&s.combatFx.serial!==lastFxSerial){lastFxSerial=s.combatFx.serial;fxStarted=performance.now();}},setMode(next,room=''){mode=next;facility=room;hit=[];},setQuality(v){quality=v;},setZoom(v){zoom=Math.max(.35,Math.min(16,Number(v)||2.2));},getZoom(){return zoom;},dispose(){destroyed=true;cancelAnimationFrame(frame);if(naval){naval.gulls.children.forEach(b=>{b.geometry.dispose();b.material.dispose();});naval.renderer.dispose();naval.surface.remove();}}};
 }
