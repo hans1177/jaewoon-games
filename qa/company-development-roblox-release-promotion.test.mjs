@@ -1,3 +1,19 @@
+test('verified Roblox final publication restarts the same Vibe2 BUILD_UP planner as Web, after exact F0 dispatch',()=>{
+  const source=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  const verify=source.indexOf('      - name: Check exact published version with Roblox Open Cloud');
+  const persist=source.indexOf('      - name: Persist exact post-publish QA for this publication cycle',verify);
+  const restart=source.indexOf("      - name: Restart this game's F0 from exact current main after verified publication",persist);
+  const end=source.indexOf('  thumbnail-sync:',restart);
+  assert.ok(verify>=0&&persist>verify&&restart>persist&&end>restart);
+  const step=source.slice(restart,end);
+  assert.match(step,/if: steps\.verify\.outputs\.pass == 'true'/);
+  assert.match(step,/restart_from_f0=true/);
+  assert.match(step,/gh workflow run vibe2-24h-runner\.yml.*--ref main/);
+  assert.ok(step.indexOf('restart_from_f0=true')<step.indexOf('gh workflow run vibe2-24h-runner.yml'));
+  const planner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.match(planner,/tools\/vibe2-auto-planner\.mjs/);
+  assert.match(planner,/uses: \.\/\.github\/workflows\/vibe2-continuous-core\.yml/);
+});
 import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
