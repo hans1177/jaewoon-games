@@ -163,7 +163,7 @@ function soundPanel(){
 }
 // 파일명: web-games/cozy-island/kingdom-system.js / 멀티
 // 메인: 기존 1대1 성채 공방 규칙 그대로, 긴 WebRTC 응답 코드 대신 서버 숫자방을 사용한다.
-let network=null,role='',peerMode='duel',invite='',connection='연결 전',roomCount=0;
+let network=null,role='',peerMode='duel',invite='',connection='연결 전',roomCount=0,ownUserId='';
 const duel={mine:600,other:600,guards:0,archers:0,defending:false};
 const clean=n=>Math.max(0,Math.min(600,Math.floor(Number(n)||0)));
 const connected=()=>Boolean(network?.isRoomConnected());
@@ -176,11 +176,12 @@ async function multiplayer(){
  network.on('message_received',e=>{
   const message=e.detail||{};
   if(message.type==='connected'||message.type==='presence'){
+   if(message.type==='connected')ownUserId=message.userId;
    roomCount=(message.players||[]).length;
    connection='방 '+invite+' · '+roomCount+'/4명 접속';
    if(message.type==='connected')send({type:'sync',keep:duel.mine});
    liveUpdate();
-  }else if(message.type==='event'&&String(message.action||'').startsWith('cozy-')&&message.userId!==network.currentUser?.id){
+  }else if(message.type==='event'&&String(message.action||'').startsWith('cozy-')&&message.userId!==ownUserId){
    receive({v:1,type:message.action.slice(5),keep:message.keep,guards:message.guards,archers:message.archers});
   }
  });
@@ -189,7 +190,7 @@ async function multiplayer(){
 }
 async function closePeer(){
  const previous=network;
- network=null;role='';invite='';roomCount=0;connection='연결 전';
+ network=null;role='';invite='';roomCount=0;ownUserId='';connection='연결 전';
  await previous?.leaveGemRoom();
  duel.mine=600;duel.other=600;duel.guards=0;duel.archers=0;duel.defending=false;
  liveUpdate();
