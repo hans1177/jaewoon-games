@@ -408,17 +408,21 @@ buildWorld(live){
   model.traverse(node=>{
    if(!node.isBone||!node.name)return;
    const name=node.name.toLowerCase().replace(/[^a-z0-9]/g,'').replace(/mixamorig/g,'');
-   const left=/left|l(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)/.test(name)||/(?:shoulder|clavicle|upperarm|lowerarm|forearm|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)l$/.test(name);
-   const right=/right|r(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)/.test(name)||/(?:shoulder|clavicle|upperarm|lowerarm|forearm|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball)r$/.test(name);
+   const left=/left|l(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball|wing|ear)/.test(name)||/(?:shoulder|clavicle|upperarm|lowerarm|forearm|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball|wing|ear)l$/.test(name);
+   const right=/right|r(?:upperarm|lowerarm|forearm|shoulder|clavicle|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball|wing|ear)/.test(name)||/(?:shoulder|clavicle|upperarm|lowerarm|forearm|hand|wrist|upperleg|lowerleg|upleg|thigh|shin|calf|foot|toe|ball|wing|ear)r$/.test(name);
    let part=null;
-   if(/head/.test(name))part='head';
+   if(/tail/.test(name))part='tail';
+   else if(/jaw|mandible/.test(name))part='jaw';
+   else if(/head/.test(name))part='head';
    else if(/neck/.test(name))part='neck';
    else if(/spine0?[2-9]|spine1$|chest|thorax/.test(name))part='chest';
    else if(/spine/.test(name))part='spine';
    else if(/hips|pelvis/.test(name))part='pelvis';
    else if(left||right){
     const side=left?'left':'right';
-    if(/toe|ball/.test(name))part=side+'Toe';
+    if(/wing/.test(name))part=side+'Wing';
+    else if(/ear/.test(name))part=side+'Ear';
+    else if(/toe|ball/.test(name))part=side+'Toe';
     else if(/foot|ankle/.test(name))part=side+'Foot';
     else if(/shin|calf|lowerleg|leglower|knee|(?:left|right)leg$/.test(name))part=side+'Shin';
     else if(/thigh|upperleg|upleg|legupper/.test(name))part=side+'Thigh';
@@ -463,11 +467,11 @@ buildWorld(live){
    for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))action.reset().play().setEffectiveWeight(0);
    const result={root,model,ring,mixer,actions,clips,bones,feet,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
     wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,lastSpecialUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
-    lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,
+    lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,modelRestScaleX:model.scale.x,modelRestScaleZ:model.scale.z,
     motionPhase:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:3)*1.61,
     creature:kind!=='enemy'?'human':role==='slime'?'gel':role==='bunny'?'hopper':role==='golem'?'stone':role==='ghost'?'spirit':role==='winged'?'flyer':/늑대|마수|키메라/.test(obj.name||'')?'hunter':/거미|전갈/.test(obj.name||'')?'skitter':'fighter',
     specialUntil:0,specialKind:null,deadAt:0,hitAt:0,hitPower:0,hitSide:0,flashMaterials,
-    stepDistance:0,visualSpeed:0,stepStride:kind!=='enemy'?94:role==='bunny'?68:role==='slime'?63:role==='orc'?91:role==='golem'?118:87,
+    stepDistance:0,visualSpeed:0,locomotionBlend:0,runBlendSmooth:0,npcGesture:0,headFollow:0,turnLag:0,poseEnergy:0,stepStride:kind!=='enemy'?94:role==='bunny'?68:role==='slime'?63:role==='orc'?91:role==='golem'?118:87,
     idleSeed:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:11)*.713,
     idleAttention:0,lookYaw:0,stance:0,faceTarget:null,visualStyle:'strike',npcRoutine:obj.routine||null};
   this.scene.add(root);return result;
@@ -491,16 +495,29 @@ buildWorld(live){
    // 스톱/코너/프레임 제한에서도 땅 위를 미끄러지듯 계속 걷는 문제 방지.
    if(entry.stepDistance>0)entry.walkPhase+=entry.stepDistance/entry.stepStride*Math.PI*2;
    const attackProgress=attack?Math.min(1,(now-entry.attackAt)/Math.max(1,entry.attackDuration*1000)):0;
+   const locomotionTarget=moving?THREE.MathUtils.clamp(entry.visualSpeed/40,0,1):0;
+   const locomotionResponse=locomotionTarget>entry.locomotionBlend?9.5:17;
+   entry.locomotionBlend+=(locomotionTarget-entry.locomotionBlend)*(1-Math.exp(-dt*locomotionResponse));
+   if(locomotionTarget===0&&entry.locomotionBlend<.003)entry.locomotionBlend=0;
+   const nextRun=entry.clips.run?THREE.MathUtils.smoothstep(entry.visualSpeed,entry.kind==='enemy'?93:105,entry.kind==='enemy'?165:185):0;
+   entry.runBlendSmooth+=(nextRun-entry.runBlendSmooth)*(1-Math.exp(-dt*(nextRun>entry.runBlendSmooth?7:11)));
    // 공격 준비 → 강한 타격 → 자세 회복을 시각적으로 구분한다.
     const windup=attack?Math.max(0,1-Math.abs(attackProgress-.16)/.16):0;
     const strike=attack?Math.sin(Math.PI*THREE.MathUtils.clamp((attackProgress-.22)/.64,0,1)):0;
    const creature=entry.creature,spirit=creature==='spirit'||creature==='flyer',gel=creature==='gel',heavy=creature==='stone';
    const humanoid=entry.kind!=='enemy'||creature==='fighter',hasWalk=!!(entry.clips.walk||entry.clips.run);
-   const elapsed=now*.001+entry.idleSeed,resting=Math.max(0,1-entry.motion*1.5);
+   const elapsed=now*.001+entry.idleSeed,resting=Math.max(0,1-entry.locomotionBlend*1.2);
+   // 소규모 동작만 불규칙한 타이밍에 나타나게 해 반복적인 로봇 움직임을 줄인다.
+   const idleCycle=elapsed*(entry.kind==='ai'?.58:.43);
+   const glance=resting*Math.pow(Math.max(0,Math.sin(idleCycle)),6);
+   const settleWeight=1-Math.exp(-dt*5.5);
+   const npcActive=entry.kind==='ai'&&!entry.npcInParty&&resting>.2;
+   const npcIntent=npcActive?(entry.npcRoutine==='shop'?glance*.95:entry.npcRoutine==='town'?glance*.56:glance*.32):0;
+   entry.npcGesture+=(npcIntent-entry.npcGesture)*settleWeight;
    // 동료/마을 NPC가 계속 가만히 반복하지 않고, 주변을 살피거나 살짝 고개를 숙인다.
    const attention=entry.kind==='ai'&&!entry.npcInParty?entry.idleAttention:0;
    const watch=resting*(Math.sin(elapsed*.61)+Math.sin(elapsed*.29+.3)*.35)*.06;
-   const greeting=resting*attention*Math.pow(Math.max(0,Math.sin(elapsed*2.1)),6)*.075;
+   const greeting=resting*attention*Math.pow(Math.max(0,Math.sin(elapsed*1.34)),10)*.060;
    const castStyle=/wizard|cleric|ward|heal|purify|nova|chain|bless|ritual/.test(entry.visualStyle||'');
    const bowStyle=/ranger|shoot|bow|volley|hunt/.test(entry.visualStyle||'');
    const heavyStrike=heavy||/boss|charger/.test(entry.visualStyle||'');
@@ -553,8 +570,8 @@ buildWorld(live){
    }
    if(entry.gestureAction&&now>=entry.gestureUntil){entry.gestureAction.fadeOut(.18);entry.gestureAction=null;}
    entry.gestureBlend+=((entry.gestureAction?1:0)-entry.gestureBlend)*(1-Math.exp(-dt*16));
-   const activity=THREE.MathUtils.clamp(entry.motion*3.8,0,1);
-   const runBlend=entry.clips.run?THREE.MathUtils.smoothstep(entry.visualSpeed,entry.kind==='enemy'?95:105,entry.kind==='enemy'?165:185):0;
+   const activity=THREE.MathUtils.clamp(entry.locomotionBlend,0,1);
+   const runBlend=entry.runBlendSmooth;
    const locoWeight=1-entry.gestureBlend*.88;
    if(entry.clips.idle)entry.clips.idle.setEffectiveWeight((1-activity)*locoWeight);
    if(entry.clips.walk)entry.clips.walk.setEffectiveWeight(activity*(entry.clips.run?1-runBlend:1)*locoWeight);
@@ -574,7 +591,7 @@ buildWorld(live){
    // 원본 Walk/Run에는 이미 착지와 상하 움직임이 있으므로 추가 바운스를 중복 적용하지 않는다.
     const bob=hasWalk?0:spirit?Math.sin(elapsed*2.5)*.066+Math.sin(elapsed*4.3)*.012+Math.abs(Math.sin(phase))*pace*.016:
      gel?Math.sin(phase)*pace*.035:landing+bounce+Math.abs(Math.sin(phase))*pace*(heavy?.006:.012);
-   const settle=1-Math.exp(-dt*11);
+   const settle=1-Math.exp(-dt*(moving?9.5:7.8));
    const posture=(creature==='hunter'?.13:creature==='skitter'?.21:creature==='stone'?.045:0)+(entry.stance||0)*.055;
    const cast=(special&&(entry.specialKind==='ritual'||entry.specialKind==='specter')||attack&&castStyle)?Math.sin(attackProgress*Math.PI)*.15:0;
    const attackLean=attack?(heavyStrike?.18:bowStyle?-.045:castStyle?-.12:.095)*strike:0;
@@ -582,7 +599,13 @@ buildWorld(live){
    entry.model.rotation.x+=(posture+breath*.4+windup*.11+attackLean-cast-recoil*.13+greeting*.44-entry.model.rotation.x)*settle;
    entry.model.rotation.z+=(sway+entry.turnLean*(hasWalk?.35:1)+breath-recoil*entry.hitSide*.15+npcSurvey*.36+(creature==='flyer'?Math.sin(elapsed*9+phase)*.07:0)-entry.model.rotation.z)*settle;
    entry.model.position.y+=(entry.modelRestY+bob-windup*.02+strike*(creature==='hopper'?.045:.028)+hit*.065-entry.model.position.y)*settle;
-   entry.model.scale.y+=(entry.modelRestScaleY*(gel?1-Math.sin(phase)*pace*.085:creature==='hopper'?1-Math.abs(Math.sin(phase))*pace*.026:1)-entry.model.scale.y)*settle;
+   const pulse=gel?Math.sin(phase)*pace*.065+Math.sin(elapsed*1.5)*.012:creature==='hopper'?Math.abs(Math.sin(phase))*pace*.021:heavy?Math.pow(Math.max(0,Math.sin(phase)),4)*pace*.018:0;
+   const desiredY=entry.modelRestScaleY*(1-pulse);
+   entry.model.scale.y+=(desiredY-entry.model.scale.y)*settle;
+   // 슬라임은 높이가 줄면 폭이 조금 넓어지며 체적을 유지. 골렘은 착지 압축만.
+   const spread=gel?1+THREE.MathUtils.clamp(pulse,-.09,.09)*.40:1;
+   entry.model.scale.x+=(entry.modelRestScaleX*spread-entry.model.scale.x)*settle;
+   entry.model.scale.z+=(entry.modelRestScaleZ*spread-entry.model.scale.z)*settle;
    entry.model.position.z+=(entry.modelRestZ-windup*.055+strike*(heavyStrike?.17:bowStyle?-.035:castStyle?.035:.12)-recoil*.11-entry.model.position.z)*settle;
    // 지지발이 없는 날짐승·망령은 전진하며 상체를 낮춰 급강하, 골렘은 착지 충격을 강조.
    if(!hasWalk&&entry.kind==='enemy'){
@@ -596,6 +619,10 @@ buildWorld(live){
    const rightSide=attack&&(entry.role==='warrior'||entry.role==='rogue'||entry.kind==='enemy');
    const upperHit=hit>.02?Math.min(.18,hit*.085*entry.hitPower):0;
    const turn=THREE.MathUtils.clamp(entry.turnLean,-.10,.10);
+   const targetLook=THREE.MathUtils.clamp(entry.lookYaw||0,-.22,.22);
+   entry.headFollow+=(targetLook-entry.headFollow)*(1-Math.exp(-dt*6.0));
+   const gesture=entry.npcGesture*resting;
+   const creatureGesture=entry.kind==='enemy'?Math.sin(elapsed*1.4+entry.motionPhase):0;
    for(const [part,bone] of Object.entries(entry.bones||{})){
     const left=part.startsWith('left'),right=part.startsWith('right');
     const side=left||right?(left?1:-1):0;
@@ -603,28 +630,32 @@ buildWorld(live){
     const lift=Math.max(0,Math.sin(angle+.1))*lead;
     const walkArm=-step*(hasWalk?.11:.28);
     const attackHand=(right||!rightSide&&left)?windup*.13-strike*(castStyle?-.18:bowStyle?-.11:.30):windup*.025;
-    const slow=part.endsWith('Hand')||part.endsWith('Toe')?8:part.endsWith('Forearm')||part.endsWith('Shin')?10:part==='head'?7:12;
+    const slow=part.endsWith('Wing')?11:part.endsWith('Ear')||part==='tail'?5.5:part.endsWith('Hand')||part.endsWith('Toe')?7:part.endsWith('Forearm')||part.endsWith('Shin')?9:part==='head'?6.5:10;
     let x=0,y=0,z=0;
-    if(part==='pelvis'){x=-Math.sin(phase*2)*lead*.018;y=turn*.32;z=Math.sin(phase)*lead*.023*authored;}
-    else if(part==='spine'){x=breath*.9+windup*.028;y=turn*.45;z=Math.sin(phase)*lead*.018*authored;}
-    else if(part==='chest'){x=breath*1.8+cast*.12-windup*.03;y=turn*.38+watch*.19;z=-Math.sin(phase)*lead*.025*authored;}
-    else if(part==='neck'){x=breath*.55+greeting*.18;y=watch*.2-turn*.14;z=-turn*.17;}
-    else if(part==='head'){x=greeting+Math.sin(elapsed*.77)*.016+upperHit*.28;y=watch*.77-turn*.24+Math.sin(elapsed*.31)*.026*resting;z=Math.sin(elapsed*.49)*.015*resting+turn*.31;}
-    else if(part.endsWith('Shoulder')){x=walkArm*.22+breath*.85+windup*.025;y=-side*turn*.19;z=side*(.014+breath*.48)-upperHit*.15;}
-    else if(part.endsWith('Arm')){x=walkArm*.68+attackHand*.72;y=side*(castStyle&&attack?.06:0);z=side*(windup*.04+breath*.28);}
-    else if(part.endsWith('Forearm')){x=-swing*(hasWalk?.055:.16)+Math.max(0,step)*(hasWalk?.04:.12)+attackHand*.66;y=side*strike*(bowStyle?.05:.018);z=side*.016*resting;}
-    else if(part.endsWith('Hand')){x=-Math.sin(angle-.55)*lead*(hasWalk?.018:.055)+attackHand*.26;y=side*Math.sin(elapsed*1.2)*.009;z=side*(castStyle&&attack?.065:.012*resting);}
+    if(part==='pelvis'){x=-Math.sin(phase*2)*lead*.018;y=turn*.32+entry.headFollow*.10;z=Math.sin(phase)*lead*.023*authored+gesture*.012;}
+    else if(part==='spine'){x=breath*.9+windup*.028+gesture*.012;y=turn*.45+entry.headFollow*.23;z=Math.sin(phase)*lead*.018*authored;}
+    else if(part==='chest'){x=breath*1.8+cast*.12-windup*.03+gesture*.025;y=turn*.38+watch*.19+entry.headFollow*.34;z=-Math.sin(phase)*lead*.025*authored;}
+    else if(part==='neck'){x=breath*.55+greeting*.18;y=watch*.2-turn*.14+entry.headFollow*.36;z=-turn*.17;}
+    else if(part==='head'){x=greeting+Math.sin(elapsed*.77)*.016+upperHit*.28-gesture*.019;y=watch*.77-turn*.24+entry.headFollow*.45+Math.sin(elapsed*.31)*.026*resting;z=Math.sin(elapsed*.49)*.015*resting+turn*.31;}
+    else if(part.endsWith('Shoulder')){x=walkArm*.22+breath*.85+windup*.025+gesture*.042*(side===1?1:.3);y=-side*turn*.19;z=side*(.014+breath*.48)-upperHit*.15;}
+    else if(part.endsWith('Arm')){x=walkArm*.68+attackHand*.72+gesture*.095*(side===1?1:.4);y=side*(castStyle&&attack?.06:0);z=side*(windup*.04+breath*.28+gesture*.018);}
+    else if(part.endsWith('Forearm')){x=-swing*(hasWalk?.055:.16)+Math.max(0,step)*(hasWalk?.04:.12)+attackHand*.66+gesture*.18*(side===1?1:.25);y=side*strike*(bowStyle?.05:.018);z=side*.016*resting;}
+    else if(part.endsWith('Hand')){x=-Math.sin(angle-.55)*lead*(hasWalk?.018:.055)+attackHand*.26+gesture*.095*(side===1?1:.22);y=side*Math.sin(elapsed*1.2)*.009;z=side*(castStyle&&attack?.065:.012*resting);}
     else if(part.endsWith('Thigh')){x=step*(hasWalk?.06:.34)+strike*.025;y=-side*turn*.07;z=side*lift*.022;}
     else if(part.endsWith('Shin')){x=Math.max(0,-swing)*(hasWalk?.045:.27)-step*(hasWalk?.018:.06);z=side*lift*.009;}
     else if(part.endsWith('Foot')){x=-step*(hasWalk?.028:.12)+lift*(hasWalk?.018:.06);z=side*turn*.06;}
     else if(part.endsWith('Toe')){x=Math.max(0,-swing)*(hasWalk?.018:.07);}
+    else if(part.endsWith('Wing')){x=creatureGesture*.07+pace*Math.sin(phase*2.2)*.13;z=side*(.07+Math.sin(elapsed*7.8)*.08*(.3+pace*.7));}
+    else if(part.endsWith('Ear')){x=Math.sin(elapsed*2.2+side)*.048+Math.sin(phase)*pace*.026;z=side*Math.sin(elapsed*1.24)*.024;}
+    else if(part==='tail'){y=creatureGesture*(.11+.04*pace);z=Math.sin(elapsed*.89)*.048;}
+    else if(part==='jaw'){x=attack?Math.sin(attackProgress*Math.PI)*.10:Math.pow(Math.max(0,Math.sin(idleCycle*.6)),8)*.025;}
     // 리깅된 뼈는 원본 애니메이션이 매 프레임 쓴 회전에서, 없는 채널은
     // 초기 바인드 포즈에서 시작한다. 자기 자신의 이전 오프셋 누적 금지.
     const base=bone.tracked?bone.node.rotation:bone.rest;
     const ox=bone.offset||{x:0,y:0,z:0};
     const follow=1-Math.exp(-dt*slow);
     const intensity=part==='head'||part==='neck'||part==='chest'||part==='spine'?1:
-     hasWalk?.76:1;
+     hasWalk?.65:1;
     ox.x+=(x*intensity-ox.x)*follow;ox.y+=(y*intensity-ox.y)*follow;ox.z+=(z*intensity-ox.z)*follow;
     bone.offset=ox;
     bone.node.rotation.set(base.x+ox.x,base.y+ox.y,base.z+ox.z);
@@ -939,8 +970,9 @@ buildWorld(live){
     entry.stance=kind==='ai'&&obj.party&&live.enemies.some(e=>!e.dead&&Math.hypot(e.x-obj.x,e.y-obj.y)<240)?1:0;
     entry.visualStyle=currentCombat?.visualStyle||'strike';
     const difference=Math.atan2(Math.sin(entry.turnYaw-entry.model.rotation.y),Math.cos(entry.turnYaw-entry.model.rotation.y));
+    entry.lookYaw+=(THREE.MathUtils.clamp(difference,-.28,.28)-entry.lookYaw)*(1-Math.exp(-dt*7));
     // 이동 방향에 몸통이 늦게 따라와 옆으로 미끄러져 보이던 현상을 완화.
-    const turning=Math.abs(difference),turnRate=moving?(turning>.85?25:18):8;
+    const turning=Math.abs(difference),turnRate=moving?(turning>.85?20:15):attacking?12:7;
     entry.model.rotation.y+=difference*(1-Math.exp(-dt*turnRate));
     entry.turnLean+=(THREE.MathUtils.clamp(difference,-1,1)*entry.motion*.07-entry.turnLean)*(1-Math.exp(-dt*8));
     entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);
