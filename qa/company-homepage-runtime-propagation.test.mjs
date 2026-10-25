@@ -778,6 +778,7 @@ test('homepage title stars save favorite game ids and mobile game emoji shows on
   const index=fs.readFileSync('index.html','utf8');
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(index,/id="mobileFavoritesButton"[^>]*aria-controls="mobileFavoritesPanel"/);
+  assert.match(index,/<b>⭐<\/b><span>즐겨찾기<\/span><\/button>/,'mobile bottom game menu must read favorites');
   assert.match(index,/id="mobileFavoritesPanel"[^>]*hidden/);
   assert.match(index,/id="mobileFavoritesList"/);
   assert.doesNotMatch(index,/<a href="#gameHub"><b>🎮<\/b>/);
