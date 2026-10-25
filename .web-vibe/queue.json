@@ -78,7 +78,7 @@
       "goal": "[오너 긴급 개발] 기존 마력숲 본편만 수정. 상세 규칙과 정확한 수치는 같은 저장소 이슈 #9801 참조. 반드시 web-games/fantasy-survival/index.html 및 world3d.mjs 기존 엔진 안에 직접 구현. 새 별도 HTML 테스트판, 설명 UI만 추가, 가짜 구현 금지. 3티어 '수정 바이터' HP666 공격55: 1초마다20% 확률로 2발 산성 유도구슬(4초 후 유도 해제), 명중 66 + 10초간 0.1초마다0.3 피해. 2초마다30% 확률 3연속 직선 돌진, 1차 2배속 3초 후 2초 간격으로 2차 3배속/3차 4배속, 시작 시 목표 위치 고정, 충돌마다 66+1초 기절+지속 피해, 3회 후 2초 탈진/공격불가. '크리스털 리자드' 3티어 HP450 공격45, 등장 40% 확률 2마리, 평소 완전 투명→근접 시 출현, 2초마다30% 확률 3초 완전 은신(피격 불가/몬스터 공격 가능). 수정 바이터 재료로 제작 가능한 3티어 돌진 액세서리, 이동 중 화면 3연속 탭하면 입력 방향으로 2초간 4배속 직진, 정지 시 사용 불가. 수정염소 crystalgoat 신규 스폰/잔여 제거, 수정사슴 crystaldeer 출현 2→14마리(7배) 및 리스폰 일관성. 원본 3D 에셋 종 매핑/투명 렌더, 화면 터치 충돌, 멀티 저장/피격/도감/제작 모두 실제 연동. 기존 저장/나머지 몬스터/게임 시스템 보존. 개발→전투 자동테스트→모바일 QA→기존 PR QA→검증된 메인 병합 및 GitHub Pages 반영. 이슈 #9801 세부 사항을 완전히 지킬 것. QA 전 완료 주장 금지.",
       "responsibleFiles": [],
       "priority": "owner-immediate",
-      "status": "queued",
+      "status": "blocked",
       "ownerDirective": true,
       "evidence": [
         "web-vibe-independent:v1",
@@ -86,10 +86,10 @@
         "qa-required-before-pr-merge",
         "web-vibe-recovery-failure:needs-source-or-provider-recheck"
       ],
-      "recoveryAttempts": 2,
-      "recoveryLastFailureAt": "2026-10-25T16:03:12.371Z",
-      "recoveryNextAt": "2026-10-25T17:03:12.371Z",
-      "blocker": null
+      "recoveryAttempts": 3,
+      "recoveryLastFailureAt": "2026-10-25T18:54:07.723Z",
+      "recoveryNextAt": null,
+      "blocker": "WEB_VIBE_RECOVERY_REQUIRES_OWNER_REVIEW"
     },
     {
       "id": "pwa-a9304f61-4e2a-4d98-91eb-8cc6c1102441",
