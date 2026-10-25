@@ -302,6 +302,50 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
  .build-status{font-size:10px;bottom:calc(env(safe-area-inset-bottom) + 91px)}}
 
 
+/* 세로모드: 6개 명령을 누를 수 있는 3×2 전술바와 스크롤 가능한 시스템 메뉴. */
+@media (orientation:portrait) and (max-width:600px){
+ .controls{bottom:max(5px,env(safe-area-inset-bottom));padding:0 max(5px,env(safe-area-inset-left)) max(2px,env(safe-area-inset-bottom))}
+ .strategy-bar{grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,400px);gap:4px;padding:5px}
+ .strategy-button{min-height:46px;gap:0;font-size:17px}
+ .strategy-button small{font-size:11px}
+ .system-dialog{width:min(97vw,470px);max-height:90dvh;display:none;flex-direction:column;overflow:hidden}
+ .system-dialog[open]{display:flex}
+ .system-dialog header{flex:0 0 auto}
+ .system-tabs{flex:0 0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px}
+ .system-tabs button{min-height:42px;font-size:12px}
+ .system-body{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ .ks-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ks-action{white-space:normal;line-height:1.4;min-height:44px}
+}
+@media (orientation:portrait) and (max-width:360px){
+ .hud-main{font-size:10px}
+ .hud-main.right .small-button{font-size:10px;padding-inline:6px}
+ .strategy-button{min-height:43px}
+ .system-tabs button{font-size:11px}
+}
+
+/* 가로모드: 기존 가로 6버튼, 시스템 버튼과 5개 탭을 좁은 높이에서도 유지. */
+@media (orientation:landscape) and (max-height:600px) and (max-width:900px){
+ .hud{left:6px;right:6px;gap:4px;flex-direction:row;align-items:flex-start}
+ .hud-main{width:auto;max-width:none;min-width:0;overflow:visible;flex:0 1 auto;gap:5px;padding:5px 7px}
+ .hud-main.right{width:auto;max-width:none;min-width:max-content;flex:0 0 auto;gap:4px}
+ .hud-main.right .small-button{white-space:nowrap;min-height:36px;padding:5px 7px}
+ #systemCommand{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-height:36px}
+ .strategy-bar{grid-template-columns:repeat(6,minmax(0,1fr));width:min(100%,680px)}
+ .strategy-button{min-height:42px}
+ .system-dialog{width:min(94vw,740px);max-height:92dvh;display:none;flex-direction:column;overflow:hidden}
+ .system-dialog[open]{display:flex}
+ .system-dialog header{flex:0 0 auto}
+ .system-tabs{flex:0 0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+ .system-tabs button{min-height:37px;font-size:11px}
+ .system-body{flex:1 1 auto;min-height:0;max-height:none;overflow:auto;overscroll-behavior:contain}
+}
+@media (orientation:landscape) and (max-width:540px){
+ .hud-main:not(.right) #weatherText{display:none}
+ .hud-main{font-size:10px}
+ .hud-main.right .small-button{font-size:10px;padding-inline:5px}
+}
+
 /* 포근섬 RTS: 건설 트리·시스템 홈·모바일 조작을 기존 패널에서 직접 정리 */
 .realm-tech-tree{margin:12px 0;padding:10px;background:#dfd4b9;border:1px solid #b9a179;border-radius:9px}
 .realm-tech-tree h3{margin:0 0 7px;font-size:15px}
@@ -313,9 +357,16 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .ks-navigation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:2px 0 12px}
 .ks-navigation .ks-action{margin:0;width:100%;min-height:46px;white-space:normal;line-height:1.25}
 @media(max-width:600px){
- .hud{left:6px;right:6px;gap:5px}
- .hud-main{min-width:0;max-width:68vw;overflow:hidden;text-overflow:ellipsis}
- .hud-main.right{max-width:30vw;flex-shrink:0}
+ /* 두 줄짜리 모바일 HUD: 자원·건설목록·시스템 버튼을 잘라내지 않는다. */
+ .hud{left:6px;right:6px;gap:5px;flex-direction:column;align-items:stretch}
+ .hud-main{width:100%;min-width:0;max-width:100%;overflow:visible;justify-content:space-between;gap:5px;padding:5px 8px}
+ .hud-main.right{width:100%;max-width:100%;flex-shrink:0;pointer-events:auto}
+ .hud-main.right .small-button{min-height:36px;white-space:nowrap}
+ #systemCommand{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-height:36px;padding:7px 9px}
+ /* 두 번째 HUD 줄 밑에서만 상태 정보·카메라 버튼이 시작한다. */
+ .raid-status,.realm-economy{top:max(112px,calc(env(safe-area-inset-top) + 102px))}
+ .hint{top:max(154px,calc(env(safe-area-inset-top) + 144px))}
+ .camera-zoom{top:max(158px,calc(env(safe-area-inset-top) + 148px))}
  .panel{width:min(98vw,480px);max-height:84dvh}
  .panel-body{max-height:calc(84dvh - 63px);padding-bottom:max(18px,env(safe-area-inset-bottom))}
  .realm-build-card button,.choice,.ks-action{min-height:44px}
