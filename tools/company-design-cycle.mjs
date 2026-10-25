@@ -1535,7 +1535,7 @@ function computeVibeNativeDesign(){
       when:`${roles[role].stateInputs.join('·')} 입력이 확정되고 ${axis.playerChoice}의 선행 조건을 만족할 때.`,
       where:`${regions[index].name}: ${regions[index].traversal}`,
       what:`${creativeGrammar[role.toLowerCase()].system}에 ${creativeGrammar[role.toLowerCase()].material} 소재를 결합한다. ${roles[role].playerChoice}`,
-      how:freeTopicMode?`입력과 판정: ${axis.playerChoice} ${axis.materialRule}`:`입력과 판정: ${axis.playerChoice}. ${axis.materialRule} ${creativeGrammar[role.toLowerCase()].stateChange}`,
+      how:freeTopicMode?`입력과 판정: ${axis.playerChoice} ${axis.materialRule}`:`입력 ${roles[role].stateInputs.join('·')} 확인 → ${axis.playerChoice}. 판정: ${axis.materialRule} 출력 ${roles[role].stateOutputs.join('·')}을 확정하면 ${roles[next].id}의 후속 선택 조건을 갱신한다.`,
       why:`${axis.purpose} ${role}의 결정을 다음 ${next}의 조건으로 전달하는 이유: ${creativeGrammar.abEvolution[role==='A'?'aChangesB':'bChangesA']}`,
       result:stateResult(role),linkedElements:[role,next],ruleIds:[roles[role].id,roles[next].id],regionIds:[regions[index].id]
     })),
