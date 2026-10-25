@@ -578,6 +578,9 @@ buildWorld(live){
   const area=/cleave|purify|nova|chain|volley|flurry|strike/.test(type);
   const arrow=family==='ranger',arcane=family==='wizard',holy=family==='cleric',shadow=family==='rogue';
   const impact=defense||healing||type==='monster_specter'||type==='monster_charger'?{x:sx,y:sy}:{x:tx,y:ty};
+  const distanceToTarget=Math.hypot(tx-sx,ty-sy)*SCALE;
+  const projectile=!(defense||healing||area||warning)&&distanceToTarget>.46&&(arrow||arcane||holy||shadow||monster&&['winged','ghost','specter'].includes(monsterStyle));
+  const buildup=projectile?.37:defense||healing||warning?0:.20;
   group.position.set(impact.x*SCALE,.10,impact.y*SCALE);
   const makeMaterial=(opacity=.85)=>new THREE.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
   const attach=(geo,mat,x=0,y=0,z=0)=>{const mesh=new THREE.Mesh(geo,mat);mesh.position.set(x,y,z);mesh.userData.fade=mat.opacity;group.add(mesh);return mesh;};
@@ -594,7 +597,7 @@ buildWorld(live){
    }
   }else{
    const diff=new THREE.Vector3((sx-impact.x)*SCALE,0,(sy-impact.y)*SCALE),distance=diff.length();
-   if(distance>.08){
+   if(distance>.08&&!projectile){
     const shaft=attach(new THREE.CylinderGeometry(arrow?.018:.036,arrow?.032:.060,Math.min(distance,7),6),makeMaterial(.9));
     shaft.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),diff.clone().normalize());
     shaft.position.copy(diff.multiplyScalar(.5)).add(new THREE.Vector3(0,.8,0));
@@ -613,6 +616,16 @@ buildWorld(live){
   if(arrow||slow){const tip=attach(new THREE.ConeGeometry(.13,.42,5),makeMaterial(.9),0,.72,0);tip.rotation.x=arrow?Math.PI/2:0;}
   if(arcane){const core=attach(new THREE.IcosahedronGeometry(.19,0),makeMaterial(.96),0,.76,0);core.rotation.y=.2;}
   if(holy){const disk=attach(new THREE.RingGeometry(.24,.29,16),makeMaterial(.9),0,1.32,0);disk.rotation.y=.5;}
+  if(projectile){
+   const flight={x:(sx-impact.x)*SCALE,z:(sy-impact.y)*SCALE};
+   const sprite=attach(arrow?new THREE.ConeGeometry(.095,.38,6):new THREE.IcosahedronGeometry(monster?.21:.16,0),makeMaterial(.98));
+   sprite.userData.flight=flight;
+   if(arrow){
+    sprite.rotation.x=Math.PI*.5;
+    const trail=attach(new THREE.CylinderGeometry(.012,.024,.38,5),makeMaterial(.65));
+    trail.userData.flight={...flight,tail:true};trail.rotation.x=Math.PI*.5;
+   }
+  }
      // 몬스터 전용 기술 동작: 같은 피해/재사용 시간이라도 종족마다 발동 형태를 다르게 표현.
    // 기존 이펙트 풀의 수량 상한을 공유하며 효과는 공격/피해 판정에 관여하지 않는다.
    if(monster){
@@ -658,7 +671,7 @@ buildWorld(live){
     const arc=attach(new THREE.TorusGeometry(.57,.06,5,18,Math.PI*1.5),makeMaterial(.83),0,.64,0);
     arc.rotation.set(1.2,0,.5);
    }
-   this.scene.add(group);this.effects.push({group,born:performance.now(),duration:monster?(warning?700:boss?800:combo?720:610):healing?920:defense?880:area?670:590,spin:monster?.7:arcane?2.7:shadow?-2.3:1.3,area});
+   this.scene.add(group);this.effects.push({group,born:performance.now(),duration:monster?(warning?700:boss?800:combo?720:610):healing?920:defense?880:area?670:590,spin:monster?.7:arcane?2.7:shadow?-2.3:1.3,area,projectile,buildup});
  }
  clearEffects(){
   for(const fx of this.effects){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}
@@ -819,8 +832,27 @@ buildWorld(live){
   for(let i=this.effects.length-1;i>=0;i--){
    const fx=this.effects[i],phase=(now-fx.born)/fx.duration;
    if(phase>=1){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});this.effects.splice(i,1);continue;}
-   fx.group.scale.setScalar(.62+phase*(fx.area?1.38:1.05));fx.group.rotation.y+=dt*fx.spin;
-   fx.group.traverse(o=>{if(!o.isMesh)return;o.material.opacity=(o.userData.fade??.74)*Math.pow(1-phase,1.2);if(o.userData.spark){const v=o.userData.spark;o.position.x+=dt*v.x*1.15;o.position.y+=dt*v.y;o.position.z+=dt*v.z*1.15;}});
+   // 예비동작 → 비행 → 충돌 파편 → 복귀. 이펙트만 지연되며 피해 판정은 건드리지 않는다.
+   const phaseAfterHit=THREE.MathUtils.clamp((phase-fx.buildup)/(1-fx.buildup),0,1);
+   const expand=phaseAfterHit*phaseAfterHit*(3-2*phaseAfterHit);
+   fx.group.scale.setScalar(.70+expand*(fx.area?1.12:.58));
+   if(!fx.projectile)fx.group.rotation.y+=dt*fx.spin;
+   fx.group.traverse(o=>{
+    if(!o.isMesh)return;
+    const base=o.userData.fade??.74;
+    if(o.userData.flight){
+     const v=o.userData.flight,t=THREE.MathUtils.clamp(phase/fx.buildup,0,1),ease=t*t*(3-2*t);
+     o.position.set(v.x*(1-ease),.86+Math.sin(t*Math.PI)*.21+(v.tail?-.12:0),v.z*(1-ease));
+     o.material.opacity=base*(1-t*.18)*(phase<fx.buildup?1:Math.max(0,1-(phase-fx.buildup)*18));
+    }else{
+     const before=fx.buildup>0&&phase<fx.buildup?(o.geometry.type==='RingGeometry'?.22:0):1;
+     o.material.opacity=base*before*Math.pow(1-phaseAfterHit,1.2);
+     if(o.userData.spark&&phase>=fx.buildup){
+      const v=o.userData.spark;
+      o.position.x+=dt*v.x*1.15;o.position.y+=dt*v.y;o.position.z+=dt*v.z*1.15;
+     }
+    }
+   });
 
   }
   this.gl.render(this.scene,this.camera);this.frameCost=this.frameCost*.94+(performance.now()-started)*.06;
