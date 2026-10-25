@@ -2,6 +2,7 @@
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
 import {itemLibrary,PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion,windAt,departureHeading} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
+import {JaewoonMultiplayerClient} from '../../multiplayer/multiplayer-client.js';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const view={head:$('panelTitle'),body:$('content'),details:$('details'),message:$('message'),loading:$('loading')};
@@ -36,6 +37,63 @@ const scene=createOceanView($('sea'),{
  onBuilding(id){openFacility(id);},onMerchant(id){apply(hailMerchant(state,id));},onMap(){gotoPanel('chart');},onPort(id){if(!active&&!town){state=setDestination(state,id);save();scene.setState(state);note(port(id).name+' 항로를 설정했어.');}},
  onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}
 });
+// 메인: 기존 항해 규칙과 저장 구조를 유지한 채 친구 배의 현재 위치만 교환한다.
+const coop={client:null,id:'',members:[],ships:new Map(),lastSent:0,number:''};
+const coopStatus=message=>{$('coopStatus').textContent=message;};
+function coopClient(){
+ if(coop.client)return coop.client;
+ const client=coop.client=new JaewoonMultiplayerClient();
+ client.on('message_received',event=>{
+  const message=event.detail||{};
+  if(message.type==='connected'||message.type==='presence'){
+   if(message.type==='connected')coop.id=message.userId;
+   coop.members=Array.isArray(message.players)?message.players.slice(0,4):[];
+   for(const [id] of coop.ships)if(!coop.members.some(p=>p.userId===id))coop.ships.delete(id);
+   scene.setCoopShips([...coop.ships.values()]);
+   coopStatus('방 '+coop.number+' · '+coop.members.length+'/4명 · 동료 선박 위치 공유');
+  }
+  if(message.type==='event'&&message.action==='ocean-ship'&&message.userId!==coop.id&&coop.members.some(p=>p.userId===message.userId)){
+   const x=Number(message.x),z=Number(message.z),heading=Number(message.heading);
+   if(![x,z,heading].every(Number.isFinite)||Math.abs(x)>100000||Math.abs(z)>100000)return;
+   const type=SHIP_TYPES[message.shipType]?message.shipType:state.shipType;
+   coop.ships.set(message.userId,{id:message.userId,x,z,heading,type});
+   scene.setCoopShips([...coop.ships.values()]);
+  }
+ });
+ client.on('websocket_disconnected',()=>{coopStatus('서버 재연결 중 · 기존 방 유지');coop.ships.clear();scene.setCoopShips([])});
+ return client;
+}
+$('coopOpen').onclick=()=>{$('coopPanel').hidden=!$('coopPanel').hidden;};
+$('coopClose').onclick=()=>{$('coopPanel').hidden=true;};
+$('coopNumber').addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9]/g,'').slice(0,1);});
+async function coopRoom(action){
+ const code=$('coopNumber').value.trim();
+ if(action==='join'&&!/^[0-9]$/.test(code)){coopStatus('방 번호는 숫자 0~9 한 자리야.');return;}
+ $('coopCreate').disabled=true;$('coopJoin').disabled=true;coopStatus('방 연결 중…');
+ try{
+  const client=coopClient();
+  const result=action==='create'?await client.createNumberRoomForGame('ocean-voyage'):await client.joinNumberRoomForGame('ocean-voyage',code);
+  if(!result.ok){
+   const messages={rooms_full:'숫자방 10개가 모두 사용 중이야.',room_not_found:'해당 번호의 방이 없어.',room_full:'4명이 모두 찼어.',network_error:'멀티 서버에 접속할 수 없어.'};
+   coopStatus(messages[result.data?.error]||'방 연결 실패 · 서버 연결을 확인해.');return;
+  }
+  coop.number=String(result.data.inviteCode);$('coopNumber').value=coop.number;coop.ships.clear();scene.setCoopShips([]);
+  coopStatus('방 번호 '+coop.number+' · 친구에게 이 숫자만 알려 줘.');
+ }finally{$('coopCreate').disabled=false;$('coopJoin').disabled=false;}
+}
+$('coopCreate').onclick=()=>coopRoom('create');
+$('coopJoin').onclick=()=>coopRoom('join');
+$('coopLeave').onclick=async()=>{
+ await coop.client?.leaveGemRoom();coop.id='';coop.number='';coop.members=[];coop.ships.clear();scene.setCoopShips([]);
+ coopStatus('방에서 나왔어. 혼자 항해할 수 있어.');
+};
+function sendCoopShip(now){
+ if(!coop.client?.isRoomConnected()||now-coop.lastSent<250)return;
+ coop.lastSent=now;
+ const ship=state.ship;
+ coop.client.sendEvent({action:'ocean-ship',x:ship.x,z:ship.z,heading:ship.heading,shipType:state.shipType});
+}
+
 $('start').addEventListener('click',continueGame);
 $('newGame').addEventListener('click',restartGame);
 $('captainBack').addEventListener('click',openHome);
@@ -733,7 +791,7 @@ function run(now){
  syncNavalBattle();
  if(state.combatFx&&state.combatFx.serial!==oldFx)impactSound();
  if(state.event){save();renderEvent();}
- scene.setState(state);
+ scene.setState(state);sendCoopShip(now);
  tick+=dt;panelTick+=dt;
  if(tick>.25){tick=0;summary();showMotion();}
  if(panelTick>13){panelTick=0;save();}
