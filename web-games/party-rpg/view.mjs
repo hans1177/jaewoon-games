@@ -401,6 +401,17 @@ buildWorld(live){
  createActor(role,kind,obj){const original=this.models.get(role);if(!original)return null;const root=new THREE.Group(),model=cloneRig(original.scene),box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?(obj.boss?2.6:obj.elite?2:1.55):1.8,scale=height/Math.max(.01,size.y);model.scale.setScalar(scale);model.position.set(-center.x*scale,-box.min.y*scale,-center.z*scale);if(kind!=='enemy'){model.scale.x*=.88;model.scale.z*=.88;model.scale.y*=1.11;}const flashMaterials=[];model.traverse(p=>{if(p.isMesh){p.material=Array.isArray(p.material)?p.material.map(m=>m.clone()):p.material.clone();for(const m of Array.isArray(p.material)?p.material:[p.material])if(m.emissive)flashMaterials.push({material:m,red:m.emissive.r,green:m.emissive.g,blue:m.emissive.b});}});root.add(model);// 픽셀 스프라이트가 직업 의복·장비 실루엣을 직접 그리므로 3D 장식은 중복 생성하지 않는다.
   const ring=new THREE.Mesh(this.ringGeometry,this.ringMaterials[kind==='enemy'?'enemy':'ally']);ring.rotation.x=-Math.PI/2;ring.position.y=.04;ring.scale.setScalar(obj.boss?1.7:1);root.add(ring);
   const mixer=new THREE.AnimationMixer(model),actions=new Map();for(const clip of original.animations){const action=mixer.clipAction(clip);actions.set(clip.name,action);}
+  // 리깅된 상체·목·머리만 보조 동작을 더한다. 클립이 없는 몬스터에도 적용 가능.
+  const bones={};
+  model.traverse(node=>{
+   if(!node.isBone||!node.name)return;
+   const name=node.name.toLowerCase();
+   let part=/head/.test(name)?'head':/neck/.test(name)?'neck':/spine2|chest|upperchest/.test(name)?'chest':null;
+   if(part&&!bones[part]){
+    const tracked=original.animations.some(clip=>clip.tracks.some(track=>track.name.includes(node.name)));
+    bones[part]={node,rest:node.rotation.clone(),tracked};
+   }
+  });
   // 전신 표현: 실제 고밀도 원화 + 경량 분절 메시. 3D 판정 모델은 그대로 둔다.
   let pixel=null,pixelRest=null,pixelWidth=0;
   const bounds=this.actorBounds[ACTOR_ART.indexOf(role)];
@@ -416,12 +427,14 @@ buildWorld(live){
    const clips={idle:named(/idle/i)||named(/^walk|_walk/i)||named(/^run|_run/i),walk:named(/^walk|_walk/i),run:named(/^run|_run/i),attack:named(/^(?!.*idle).*?(attack|spell|shoot|punch|bite|slash|headbutt)/i),hit:named(/recievehit|receivehit|hitrecieve|hitreact|hurt|damage/i),death:named(/death|die|dying/i)};
    if(clips.attack===clips.idle)clips.attack=null;
    for(const action of new Set([clips.idle,clips.walk,clips.run].filter(Boolean)))action.reset().play().setEffectiveWeight(0);
-   const result={root,model,ring,mixer,actions,clips,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
+   const result={root,model,ring,mixer,actions,clips,bones,role,kind,pixel,pixelRest,pixelWidth,facing:1,walkPhase:0,motion:0,speed:0,turnYaw:0,
     wasAttacking:false,attackAt:0,attackDuration:.45,lastVisualUntil:0,lastSpecialUntil:0,gestureAction:null,gestureUntil:0,gestureBlend:0,lastHitAt:0,turnLean:0,
     lastX:obj.x,lastY:obj.y,height,modelRestY:model.position.y,modelRestZ:model.position.z,modelRestScaleY:model.scale.y,
     motionPhase:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:3)*1.61,
     creature:kind!=='enemy'?'human':/늑대|마수|키메라/.test(obj.name||'')?'hunter':/거미|전갈/.test(obj.name||'')?'skitter':role==='slime'?'gel':role==='bunny'?'hopper':role==='golem'?'stone':role==='ghost'?'spirit':role==='winged'?'flyer':'fighter',
-    specialUntil:0,specialKind:null,deadAt:0,hitAt:0,hitPower:0,flashMaterials};
+    specialUntil:0,specialKind:null,deadAt:0,hitAt:0,hitPower:0,hitSide:0,flashMaterials,
+    idleSeed:(kind==='enemy'?Number(obj.id)||0:kind==='ai'?Number(String(obj.id).replace(/\D/g,''))||0:11)*.713,
+    idleAttention:0,lookYaw:0,stance:0,faceTarget:null,visualStyle:'strike',npcRoutine:obj.routine||null};
   this.scene.add(root);return result;
  }
  // 애니메이션: GLB 실제 걷기/공격 클립을 크로스페이드, 클립 없는 적도 관성·공격 반동·피격 경직 처리.
@@ -443,13 +456,28 @@ buildWorld(live){
     const windup=attack?Math.max(0,1-Math.abs(attackProgress-.16)/.16):0;
     const strike=attack?Math.sin(Math.PI*THREE.MathUtils.clamp((attackProgress-.22)/.64,0,1)):0;
    const creature=entry.creature,spirit=creature==='spirit'||creature==='flyer',gel=creature==='gel',heavy=creature==='stone';
+   const humanoid=entry.kind!=='enemy'||creature==='fighter',hasWalk=!!(entry.clips.walk||entry.clips.run);
+   const elapsed=now*.001+entry.idleSeed,resting=Math.max(0,1-entry.motion*1.5);
+   // 동료/마을 NPC가 계속 가만히 반복하지 않고, 주변을 살피거나 살짝 고개를 숙인다.
+   const attention=entry.kind==='ai'&&!entry.npcInParty?entry.idleAttention:0;
+   const watch=resting*(Math.sin(elapsed*.61)+Math.sin(elapsed*.29+.3)*.35)*.06;
+   const greeting=resting*attention*Math.pow(Math.max(0,Math.sin(elapsed*2.1)),6)*.075;
+   const castStyle=/wizard|cleric|ward|heal|purify|nova|chain|bless|ritual/.test(entry.visualStyle||'');
+   const bowStyle=/ranger|shoot|bow|volley|hunt/.test(entry.visualStyle||'');
+   const heavyStrike=heavy||/boss|charger/.test(entry.visualStyle||'');
    const phase=entry.walkPhase+entry.motionPhase,pace=entry.motion;
    const bounce=creature==='hopper'?Math.pow(Math.max(0,Math.sin(phase)),2)*.15*pace:
     creature==='skitter'?Math.abs(Math.sin(phase*2.3))*.024*pace:
     creature==='hunter'?Math.abs(Math.sin(phase))* .012*pace:
     creature==='stone'?Math.pow(Math.max(0,Math.sin(phase*.8)),5)*.017*pace:0;
    const power=entry.kind==='enemy'&&entry.role==='golem'?1.5:1;
-   const breath=Math.sin(now*.0023+entry.height*2)*.008+Math.sin(now*.0017+entry.height)*.004;
+   const breath=Math.sin(elapsed*1.9)*.009+Math.sin(elapsed*1.23+.6)*.004;
+   const load=entry.speed>10?entry.motion:0;
+   // 발을 끌기 쉬운 걷기 클립 없는 골렘·망령·날짐승용 보행 보정.
+   const proceduralStep=!hasWalk?Math.sin(entry.walkPhase+entry.motionPhase):0;
+   const landing=!hasWalk&&!spirit?Math.pow(Math.max(0,proceduralStep),2)*load*.10:0;
+   // 실제 데미지는 그대로; 타격 순간에는 힘을 모으고 전진했다가 복귀한다.
+   const recoil=Math.max(0,1-(now-entry.hitAt)/210)*entry.hitPower;
    // 애니메이션 없는 원화만 다리·팔·상체를 분리해서 변형한다.
    if(entry.pixel){
     const positions=entry.pixel.geometry.attributes.position,rest=entry.pixelRest;
@@ -499,16 +527,31 @@ buildWorld(live){
    entry.mixer.update(hit>.81?dt*.23:dt);
    // 보행 클립 위에 호흡·상체 관성·타격 후 젖힘·몬스터별 부유를 미세하게 더한다.
    const sway=Math.sin(phase)*(creature==='skitter'?.065:creature==='hunter'?.045:heavy?.014:.028)*pace;
-   const bob=spirit?Math.sin(now*.0035+entry.motionPhase)*.075:
-    gel?Math.sin(phase)*pace*.045:bounce+Math.abs(Math.sin(phase))*pace*(heavy?.006:.013);
-   const settle=1-Math.exp(-dt*13);
+   const bob=spirit?Math.sin(elapsed*2.5)*.066+Math.sin(elapsed*4.3)*.012+Math.abs(Math.sin(phase))*pace*.016:
+    gel?Math.sin(phase)*pace*.035:landing+bounce+Math.abs(Math.sin(phase))*pace*(heavy?.006:.012);
+   const settle=1-Math.exp(-dt*11);
    const posture=creature==='hunter'?.13:creature==='skitter'?.21:creature==='stone'?.045:0;
-   const cast=special&&(entry.specialKind==='ritual'||entry.specialKind==='specter')?Math.sin(attackProgress*Math.PI)*.17:0;
-   entry.model.rotation.x+=(posture+breath*.4+windup*.11-strike*(heavy?.16:.11)*power-cast-hit*.16-entry.model.rotation.x)*settle;
-   entry.model.rotation.z+=(sway+entry.turnLean+breath-hit*.11+(creature==='flyer'?Math.sin(now*.013+phase)*.07:0)-entry.model.rotation.z)*settle;
+   const cast=(special&&(entry.specialKind==='ritual'||entry.specialKind==='specter')||attack&&castStyle)?Math.sin(attackProgress*Math.PI)*.15:0;
+   const attackLean=attack?(heavyStrike?.18:bowStyle?-.045:castStyle?-.12:.095)*strike:0;
+   const npcSurvey=entry.kind==='ai'&&!entry.npcInParty?watch+greeting:0;
+   entry.model.rotation.x+=(posture+breath*.4+windup*.11+attackLean-cast-recoil*.13+greeting*.44-entry.model.rotation.x)*settle;
+   entry.model.rotation.z+=(sway+entry.turnLean+breath-recoil*entry.hitSide*.15+npcSurvey*.36+(creature==='flyer'?Math.sin(elapsed*9+phase)*.07:0)-entry.model.rotation.z)*settle;
    entry.model.position.y+=(entry.modelRestY+bob-windup*.02+strike*(creature==='hopper'?.045:.028)+hit*.065-entry.model.position.y)*settle;
    entry.model.scale.y+=(entry.modelRestScaleY*(gel?1-Math.sin(phase)*pace*.085:creature==='hopper'?1-Math.abs(Math.sin(phase))*pace*.026:1)-entry.model.scale.y)*settle;
-   entry.model.position.z+=(entry.modelRestZ-windup*.055+strike*(heavy?.09:.12)-entry.model.position.z)*settle;
+   entry.model.position.z+=(entry.modelRestZ-windup*.055+strike*(heavyStrike?.17:bowStyle?-.035:castStyle?.035:.12)-recoil*.11-entry.model.position.z)*settle;
+   // 지지발이 없는 날짐승·망령은 전진하며 상체를 낮춰 급강하, 골렘은 착지 충격을 강조.
+   if(!hasWalk&&entry.kind==='enemy'){
+    entry.model.rotation.x+=(spirit?-load*.15:Math.sin(phase)*load*.045)*settle;
+    if(spirit)entry.model.position.y+=(Math.sin(elapsed*4.1)*.03+strike*(creature==='flyer'?.16:.08))*settle;
+   }
+   // 팔/머리 애니메이션은 원본 클립 위에 작게 덧씌우고 매 프레임 기준 자세로 복귀한다.
+   for(const [part,bone] of Object.entries(entry.bones||{})){
+    const base=bone.tracked?bone.node.rotation:bone.rest;
+    const x=part==='head'?greeting+Math.sin(elapsed*.77)*.018:part==='neck'?breath*.6:breath*1.6+cast*.10;
+    const y=part==='head'?watch*.8+Math.sin(elapsed*.31)*.05*resting:part==='neck'?watch*.2:0;
+    const z=part==='head'?Math.sin(elapsed*.49)*.025*resting+entry.turnLean*.3:part==='neck'?0:entry.turnLean*.18;
+    bone.node.rotation.set(base.x+x,base.y+y,base.z+z);
+   }
    for(const f of entry.flashMaterials){
     const glow=hit*(entry.kind==='enemy'?.7:.42);
     f.material.emissive.setRGB(f.red+glow,f.green+glow*.4,f.blue+glow*.25);
@@ -731,14 +774,26 @@ buildWorld(live){
     const poseY=reacting?.095+Math.sin(now*.006)*.045:.015;
     entry.root.position.y+=(poseY-entry.root.position.y)*(1-Math.exp(-dt*10));
     entry.root.userData.live={kind,obj,key};
-    if(travel>.09)entry.turnYaw=Math.atan2(dx,dy);
+    const currentCombat=live.combat?.(obj);
+    const attacking=!!(currentCombat&&currentCombat.visualUntil>now);
+    const aim=attacking&&currentCombat?.target?
+      currentCombat.target==='player'?live.p:
+      currentCombat.target.startsWith('enemy')?live.enemies.find(e=>'enemy'+e.id===currentCombat.target&&!e.dead):
+      live.state.ai.find(a=>a.id===currentCombat.target):null;
+    // 공격 중에는 이동 방향이 아니라 실제 상대를 향해 돌아본다.
+    const target=aim||(kind==='ai'&&!obj.party&&travel<.1&&Math.hypot(live.p.x-obj.x,live.p.y-obj.y)<150?live.p:null);
+    if(target&&Math.hypot(target.x-obj.x,target.y-obj.y)>8)entry.turnYaw=Math.atan2(target.x-obj.x,target.y-obj.y);
+    else if(travel>.09)entry.turnYaw=Math.atan2(dx,dy);
+    entry.idleAttention=kind==='ai'&&!obj.party&&target===live.p?1:0;
+    entry.npcInParty=!!obj.party;entry.npcRoutine=obj.routine||null;
+    entry.visualStyle=currentCombat?.visualStyle||'strike';
     const difference=Math.atan2(Math.sin(entry.turnYaw-entry.model.rotation.y),Math.cos(entry.turnYaw-entry.model.rotation.y));
     entry.model.rotation.y+=difference*(1-Math.exp(-dt*(moving?9:6)));
     entry.turnLean+=(THREE.MathUtils.clamp(difference,-1,1)*entry.motion*.07-entry.turnLean)*(1-Math.exp(-dt*8));
     entry.ring.visible=kind==='player'||key===this.selection||(kind==='ai'&&obj.party);
     entry.ring.material=key===this.selection?this.ringMaterials.select:this.ringMaterials[kind==='enemy'?'enemy':'ally'];
     if(kind==='enemy'){entry.specialUntil=obj.specialVisualUntil||0;entry.specialKind=obj.trait||null;}
-    if(!live.paused)this.animate(entry,moving,live.combat?.(obj),dt,now);
+    if(!live.paused)this.animate(entry,moving,currentCombat,dt,now);
    }
   // 기존 처치 판정은 그대로 두고, 이미 렌더 중이던 몬스터만 잠깐 쓰러지는 모습으로 남긴다.
    for(const [key,entry] of this.actors)if(!used.has(key)){
