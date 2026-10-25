@@ -186,7 +186,7 @@ export function restoreGame(raw){
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
   s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=Number.isFinite(Number(s.speed))?clamp(Math.round(Number(s.speed)),1,16):1;s.autoCombat=obj.autoCombat!==false;
   s.event=s.event&&(SEA_EVENTS.some(e=>e.id===s.event.id)||(s.event.id==='merchant_meeting'&&MERCHANT_CAPTAINS.some(c=>c.id===s.event.merchantId)))?s.event:null;
-   s.scene=s.scene&&(s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)||s.scene.kind==='merchant'&&MERCHANT_CAPTAINS.some(c=>c.id===s.scene.merchantId))?s.scene:null;
+   s.scene=s.scene&&(s.scene.kind==='port-discovery'&&PORTS.some(p=>p.id===s.scene.portId)||s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)||s.scene.kind==='merchant'&&MERCHANT_CAPTAINS.some(c=>c.id===s.scene.merchantId))?s.scene:null;
    const ships=Array.isArray(obj.merchants)?obj.merchants:[];
    s.merchants=merchantRoster().map(base=>{const old=ships.find(x=>x?.id===base.id);return old?{...base,from:PORTS.some(p=>p.id===old.from)?old.from:base.from,to:PORTS.some(p=>p.id===old.to)?old.to:base.to,progress:clamp(Number(old.progress)||0,0,1),coins:clamp(Number(old.coins)||0,0,1e8),cargo:GOODS.some(g=>g.id===old.cargo)?old.cargo:base.cargo,count:clamp(Math.floor(Number(old.count)||0),0,12),voyages:clamp(Math.floor(Number(old.voyages)||0),0,1e7),met:clamp(Math.floor(Number(old.met)||0),0,100),lastMeetingDay:Number.isFinite(old.lastMeetingDay)?old.lastMeetingDay:-10,lastProfit:clamp(Math.floor(Number(old.lastProfit)||0),-1e6,1e6)}:base;});
   s.expedition=s.expedition&&SITES.some(e=>e.id===s.expedition.id)?s.expedition:null;
@@ -509,7 +509,7 @@ export function stepSea(state,input={},seconds=.05){
   turn=clamp(wrap(desired-ship.heading)*2.1,-1,1);
   throttle=distance<preferred*.72?.74:distance>preferred*1.2?1:.83;
  }else if(s.route.length&&input.manual!==true&&!input.navalBattle){
-  if(dist(ship,s.route[0])<Math.max(1.4,Math.abs(ship.velocity)*dt*1.15)){
+  if(dist(ship,s.route[0])<Math.max(.18,Math.abs(ship.velocity)*dt*.6)){
    s.route.shift();
    if(!s.route.length){s.destination=null;ship.velocity=0;note(s,s.autoMode==='frontier'?'미개척 해역의 경계야. 조타 스틱으로 새로운 항로를 열어.':'개척 항로 목적지에 도착했어.');s.autoMode=null;}
   }
@@ -525,7 +525,7 @@ export function stepSea(state,input={},seconds=.05){
   const tail=Math.cos(wind.heading-ship.heading),cross=Math.abs(Math.sin(wind.heading-ship.heading));
   const windDrive=rig==='oars'?.93+tail*.025:rig==='lateen'?.90+tail*.11+cross*.14:.91+tail*.22+cross*.04;
   const speed=(2.1+ship.sail*1.15)*(shipDesign.speed||1)*(sailGear.speed||1)*(figure.speed||1)*(ship.gear.figurehead!=='none'&&ship.regionalMods.includes('venice-carving')?1.02:1)*(1+assignedPower(s,'sailing','navigation')/600)*clamp(windDrive*(.94+wind.strength*.13),.58,1.28)*(ship.gear.sail==='stormcloth'?Math.max(.93,climate.speed):climate.speed)*laden*(ship.hull/ship.maxHull*.6+.4);
- const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget&&!input.navalBattle)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
+ const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));if(s.route.length&&input.manual!==true&&!combatTarget&&!input.navalBattle)ship.velocity=Math.min(speed,dist(ship,s.route[0])/Math.max(.001,dt));const travelHeading=s.route.length&&input.manual!==true&&!combatTarget&&!input.navalBattle?Math.atan2(s.route[0].x-ship.x,s.route[0].z-ship.z):ship.heading;const dx=Math.sin(travelHeading)*ship.velocity*dt,dz=Math.cos(travelHeading)*ship.velocity*dt;
  const nx=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT),nz=clamp(ship.z+dz,-1020,900);
  if(!isLand(nx,nz)||PORTS.some(p=>Math.hypot(p.x-nx,p.z-nz)<5)){ship.x=nx;ship.z=nz;}
  else{
@@ -544,14 +544,16 @@ export function stepSea(state,input={},seconds=.05){
  advanceMerchantFleet(s,dt);
  ship.cooldown=Math.max(0,ship.cooldown-dt);s.supplyCooldown=Math.max(0,(s.supplyCooldown||0)-dt);
  s.elapsed+=dt;s.weather=tail*wind.strength;const sector=Math.floor(ship.x/24)+':'+Math.floor(ship.z/24);if(!s.charted.includes(sector))s.charted=revealCells(s.charted,ship.x,ship.z);
- if(Math.abs(ship.velocity)>.5){s.eventClock+=dt;if(s.eventClock>=40){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
+ if(Math.abs(ship.velocity)>.5&&!hostile.length&&PORTS.every(p=>dist(ship,p)>24)){s.eventClock+=dt/Math.max(1,s.speed);if(s.eventClock>=120){s.eventClock=0;s.eventSerial++;const events=SEA_EVENTS.filter(e=>e.id!=='privateer'&&e.id!=='merchant_meeting'),e=events[(s.eventSerial+CAPTAINS.findIndex(c=>c.id===s.captainId))%events.length];s.event={id:e.id};ship.velocity=0;note(s,e.title);}}
  if(s.elapsed>=16){
   s.elapsed-=16;s.day++;advanceWorld(s);ship.provisions=Math.max(0,ship.provisions-(assignedPower(s,'quartermaster','trade')>=75?1:2));
   if(ship.provisions===0){ship.hull=Math.max(1,ship.hull-4);ship.crew=Math.max(1,ship.crew-1);note(s,'식량 부족으로 선원과 선체가 약해졌어.');}
  }
  for(const p of PORTS){
-  if(dist(ship,p)<17&&!s.discovered.includes(p.id)){
-   s.discovered.push(p.id);s.score+=100;note(s,'신항구 발견: '+p.name+' (+탐험점수)');
+  if(dist(ship,p)<17&&!s.discovered.includes(p.id)&&!s.scene){
+   s.discovered.push(p.id);s.score+=100;s.eventClock=0;ship.velocity=0;
+   s.scene={kind:'port-discovery',portId:p.id,title:'새로운 항구 발견 · '+p.name,text:p.region+'의 '+PORT_SCENES[p.id].district+'에 도착했어. '+p.faction+'의 깃발 아래 '+PORT_SCENES[p.id].marketNpc+'와 항해자들이 드나들고 있어. 해도에 위치를 기록했어. 가까이 접근해 입항하면 이 도시의 시설을 이용할 수 있어.'};
+   note(s,'신항구 발견: '+p.name+' (+탐험점수)');
   }
   if(dist(ship,p)<PORT_RADIUS&&!s.visits[p.id]){
    s.visits[p.id]=1;if(s.exploreTarget===p.id)s.exploreTarget=null;note(s,p.name+' 첫 입항');
@@ -744,7 +746,16 @@ export function importSave(text){
 // 지형: Natural Earth 공개 지리 데이터. 동일 다각형을 해도와 항로 탐색에 사용한다.
 const LAND_ROWS=new Map();
 for(const ring of LAND){const p=ring.points;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];for(let row=Math.floor(Math.min(a[1],b[1]));row<=Math.floor(Math.max(a[1],b[1]));row++){if(!LAND_ROWS.has(row))LAND_ROWS.set(row,[]);LAND_ROWS.get(row).push([a[0],a[1],b[0],b[1]]);}}}
-export function isLand(x,z){let inside=false;for(const [ax,az,bx,bz] of LAND_ROWS.get(Math.floor(z))||[])if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)inside=!inside;return inside;}
+// 유틸: 해안선을 2.6만큼 안쪽으로 물려 좁은 수로와 항구 진입 폭을 확보한다.
+// 기존 항구·세이브 좌표를 유지하며 해도에도 같은 폭의 물띠를 표시한다.
+export function isLand(x,z){
+ for(const [dx,dz] of [[0,0],[2.6,0],[-2.6,0],[0,2.6],[0,-2.6],[1.84,1.84],[-1.84,1.84],[1.84,-1.84],[-1.84,-1.84]]){
+  const px=x+dx,pz=z+dz;let inside=false;
+  for(const [ax,az,bx,bz] of LAND_ROWS.get(Math.floor(pz))||[])if((az>pz)!==(bz>pz)&&px<(bx-ax)*(pz-az)/(bz-az)+ax)inside=!inside;
+  if(!inside)return false;
+ }
+ return true;
+}
 
 // 소문 · 보물: 재구매·재수색 보상 중복 방지. 수색에는 직접 해상 위치 확인이 필요하다.
 export const TREASURES=Object.freeze([
