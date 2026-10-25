@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-vd68jw",
+      "worker": "vibe2",
+      "taskId": "zombie-survival-web-startup-spatial-repair-v1",
+      "gameId": "zombie-survival",
+      "files": [
+        "web-games/zombie-survival/index.html"
+      ],
+      "baseSha": "8e25806cf5685a517fa0dc89bd5c72a7b4feaa06",
+      "runId": "40156582843",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-25T03:13:11.759Z",
+      "expiresAt": "2026-10-25T03:58:11.759Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:zombie-survival-web-startup-spatial-repair-v1"
+      ]
+    }
+  ]
 }
