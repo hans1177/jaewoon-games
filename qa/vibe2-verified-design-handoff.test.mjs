@@ -59,7 +59,7 @@ test('no active development-confirmed seed creates no fabricated promotion or re
 
 test('Vibe2 planner detects stale Cozy native design and dispatches only the existing designer without bypassing verification',async()=>{
   const wf=(await import('node:fs')).readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
-  const start=wf.indexOf('            # Refuse stale design authority; route the exact failed owner');
+  const start=wf.indexOf('            # Preserve the exact failed design gate, then send one idempotent');
   const end=wf.indexOf('            for runtime_design_path in design game-seed-state.json;',start);
   assert.ok(start>=0&&end>start);
   const section=wf.slice(start,end);
