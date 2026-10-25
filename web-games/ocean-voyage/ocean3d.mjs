@@ -255,6 +255,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    naval={surface,renderer,world,camera,vessels,render(t){
     const cw=canvas.clientWidth,ch=canvas.clientHeight;if(cw!==sw||ch!==sh){sw=cw;sh=ch;renderer.setSize(cw,ch,false);camera.aspect=cw/ch;camera.updateProjectionMatrix();}
     const origin=state.ship,hostiles=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)&&Math.hypot(e.x-origin.x,e.z-origin.z)<70);
+    // 선박을 카메라가 따라가도 지면처럼 보이는 수면 질감은 세계 좌표로 흘러 항해 이동을 즉시 체감하게 한다.
+    waterTex.offset.set((((origin.x*.06)%1)+1)%1,((((origin.z*.06)%1)+1)%1));
     const merchants=mode==='sea'?(state.merchants||[]).filter(m=>!state.crewRoster.includes(m.id)).map(m=>({...m,...merchantPosition(m)})).filter(m=>Math.hypot(m.x-origin.x,m.z-origin.z)<85):[];
     const rows=[{id:'player',x:origin.x,z:origin.z,heading:origin.heading,type:state.shipType,hull:origin.hull,maxHull:origin.maxHull},...hostiles.map(e=>({...e,type:e.neutral?'cog':'galleon',enemy:!e.neutral})),...merchants.map(m=>({id:'merchant-'+m.id,x:m.x,z:m.z,heading:m.heading,type:'dutch-fluyt',enemy:false}))];
     const ids=new Set(rows.map(r=>r.id));for(const [id,e]of vessels){e.root.visible=ids.has(id);}
@@ -517,7 +519,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:20))return;last=now;time=now/1000;
  const width=Math.min(720,Math.max(390,Math.round(canvas.clientWidth))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w*2;canvas.height=h*2;}ctx.setTransform(2,0,0,2,0,0);ctx.imageSmoothingEnabled=true;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='naval'?navalSea():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();if((mode==='naval'||mode==='sea'&&seaCamera!=='chart')&&!navalError)prepareNaval();if(naval){const show=(mode==='naval'||mode==='sea'&&seaCamera!=='chart')&&!navalError;naval.surface.hidden=!show;if(show)naval.render(time);}}
  let cameraTouch=null;
- canvas.addEventListener('pointerdown',e=>{if(mode==='sea'&&seaCamera!=='chart')cameraTouch={id:e.pointerId,x:e.clientX,y:e.clientY};});
+ // 왼쪽 화면은 모바일 전역 조타, 오른쪽 화면만 카메라 회전.
+  canvas.addEventListener('pointerdown',e=>{if(mode==='sea'&&seaCamera!=='chart'&&e.clientX>window.innerWidth*.54)cameraTouch={id:e.pointerId,x:e.clientX,y:e.clientY};});
  canvas.addEventListener('pointermove',e=>{if(!cameraTouch||cameraTouch.id!==e.pointerId)return;const dx=e.clientX-cameraTouch.x,dy=e.clientY-cameraTouch.y;if(Math.abs(dx)+Math.abs(dy)>1){seaCamera='orbit';cameraOrbit+=dx*.009;cameraHeight=Math.max(.12,Math.min(.95,cameraHeight+dy*.003));cameraTouch.x=e.clientX;cameraTouch.y=e.clientY;}});
  for(const event of ['pointerup','pointercancel'])canvas.addEventListener(event,()=>{cameraTouch=null;});
  canvas.addEventListener('wheel',e=>{if(mode==='sea'&&seaCamera!=='chart'){e.preventDefault();cameraDistance=Math.max(12,Math.min(62,cameraDistance+Math.sign(e.deltaY)*2));}},{passive:false});
