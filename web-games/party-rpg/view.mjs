@@ -585,6 +585,12 @@ buildWorld(live){
    // 피격 직후 잠깐 멈칫하는 시각 효과. 전투 판정·타이머는 그대로 유지한다.
    // 지지발 보정 위치는 매 프레임 원본 리깅 위치에서 다시 계산해 누적 변형을 방지.
    for(const foot of entry.feet)if(!foot.animatesPosition)foot.node.position.copy(foot.rest);
+   // 클립이 해당 뼈를 갱신하지 않은 프레임에도 이전 보정 회전의 누적을 막는다.
+   for(const bone of Object.values(entry.bones||{})){
+    if(!bone.applied)continue;
+    const pose=bone.node.rotation,prior=bone.applied;
+    pose.set(pose.x-prior.x,pose.y-prior.y,pose.z-prior.z);
+   }
    entry.mixer.update(hit>.81?dt*.23:dt);
    // 보행 클립 위에 호흡·상체 관성·타격 후 젖힘·몬스터별 부유를 미세하게 더한다.
    const sway=Math.sin(phase)*(creature==='skitter'?.065:creature==='hunter'?.045:heavy?.014:.028)*pace*(hasWalk?.24:1);
@@ -659,6 +665,7 @@ buildWorld(live){
     ox.x+=(x*intensity-ox.x)*follow;ox.y+=(y*intensity-ox.y)*follow;ox.z+=(z*intensity-ox.z)*follow;
     bone.offset=ox;
     bone.node.rotation.set(base.x+ox.x,base.y+ox.y,base.z+ox.z);
+    bone.applied={x:ox.x,y:ox.y,z:ox.z};
    }
    // 땅에 닿은 발은 월드 좌표에 짧게 붙이고, 반대편 발이 들리면 고정을 푼다.
    // 두 발이 없는 몬스터(슬라임/망령/날짐승)는 이 구간을 안전하게 건너뛴다.
