@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-25T14:34:01.431Z",
+  "updatedAt": "2026-10-25T15:13:25.302Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -114,15 +114,17 @@
         "{\"sourceRevision\":\"2212dc0378d5ff7dfaf96fe4f3c57869e58b3869\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"6709402bfd1a7bf69c93e9af8c226547b82c9857\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"9c5da5bc67ff0741258b4a16859b6aadde067e9e\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"8d0b350236f5f870906d1190ed8c45b91ac4ce24\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"8d0b350236f5f870906d1190ed8c45b91ac4ce24\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:ROBLOX_VERIFIED_LEARNING_NATIVE_VARIANT_MISMATCH",
+        "{\"sourceRevision\":\"1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-10-25T13:58:57.878Z",
-      "occurrenceCount": 417,
+      "updatedAt": "2026-10-25T15:13:25.299Z",
+      "occurrenceCount": 418,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -8374,7 +8376,8 @@
         "{\"sourceRevision\":\"4da7c9c076bbc8a4dcfc7af89d50f08a74a5b9fa\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"abf0926c291ff390dbf65950e8ab346fb79b9852\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"d059d567335300e2448ad193d244e98e99c60d50\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"c530f23108e64f3efedc8fb9df213f3129780f22\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"c530f23108e64f3efedc8fb9df213f3129780f22\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"1a8ba4ff0e14e74767b6d4da1740c3639e7ca30d\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -8383,8 +8386,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T02:56:24.018Z",
-      "updatedAt": "2026-10-25T11:20:43.840Z",
-      "occurrenceCount": 331
+      "updatedAt": "2026-10-25T15:13:25.299Z",
+      "occurrenceCount": 332
     },
     {
       "id": "bug-5fb32d2c05ee6a34483f",
