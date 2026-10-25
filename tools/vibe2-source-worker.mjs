@@ -7654,6 +7654,24 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=FALLBACK:'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
     }
   }
+  // 무모델 후보도 기존 정밀 편집·Luau 컴파일·인과 검증을 거친다.
+  // 소스에서 유일하게 확인된 원본 책임 함수만 직접 교체한다.
+  const deterministicNative=target==='roblox'&&!allowFullRewrite
+    ?deterministicRobloxNativeRepairCandidate({order,sourceRoot,responsibleFiles}):null;
+  if(!generated&&deterministicNative){
+    try{
+      const candidate=normalizeCandidate(deterministicNative,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
+      applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      const candidateValidation=candidateValidator(candidate);
+      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,modelUsed:false,
+        deterministicRobloxNativeRepair:deterministicNative.deterministicRobloxNativeRepair,
+        mode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR',maxPredict:0,timeoutMs:0,contextWindow:0,
+        temperature:0,completionMode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR'}};
+      console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=VALIDATED:'+deterministicNative.deterministicRobloxNativeRepair);
+    }catch(error){
+      console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=REJECTED:'+generationFailureClass(error)+':'+clean(error?.message||error).slice(0,180));
+    }
+  }
   const deterministicRobloxMode=robloxDeterministicPresentationEligible(order)
     &&clean(process.env.DETERMINISTIC_SOURCE).toLowerCase()==='true'
     &&clean(process.env.VIBE2_ROBLOX_DETERMINISTIC_SOURCE).toLowerCase()==='true'
