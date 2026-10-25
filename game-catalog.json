@@ -13,99 +13,6 @@
   },
   "games": [
     {
-      "id": "mini-empire",
-      "name": "미니 제국 전쟁",
-      "description": "3차원 국가 건설과 자원 생산, 군대 지휘 및 실시간 거점 점령 전략 게임",
-      "genre": [
-        "전략",
-        "3D",
-        "전쟁",
-        "건설"
-      ],
-      "image": "assets/page-bg-v4.webp",
-      "webPath": "/web-games/mini-empire/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
-      "productionTarget": "WEB",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-      "homepageStage": "웹 3D 직접 구현 · 배포 후 검증 대기",
-      "homepageRecentWork": "실시간 3D 지도, 주택·농장·제철소·병영·전차 공장·포탑, 보병·전차·헬기, 거점 3곳, 저장 기능",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "OWNER_DIRECT_SOURCE",
-        "developmentActive": true,
-        "platform": "WEB",
-        "platformLabel": "웹",
-        "status": "WEB_SOURCE_CREATED_RUNTIME_UNVERIFIED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 47,
-        "authority": "OWNER_DIRECT_SOURCE",
-        "identity": {
-          "gameId": "mini-empire",
-          "name": "미니 제국 전쟁",
-          "description": "3차원 국가 건설과 자원 생산, 군대 지휘 및 실시간 거점 점령 전략 게임",
-          "genres": [
-            "전략",
-            "3D",
-            "전쟁",
-            "건설"
-          ],
-          "image": "assets/page-bg-v4.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/page-bg-v4.webp",
-          "source": "EXISTING_SHARED_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_GAME_BUILD",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "OWNER_DIRECT_GAME_BUILD",
-          "target": "WEB",
-          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-          "selectedPlatform": "WEB",
-          "stage": "웹 3D 직접 구현 · 배포 후 검증 대기"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/mini-empire/",
-            "archive": true,
-            "playable": false,
-            "state": "SOURCE_IMPLEMENTED_UNVERIFIED",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          }
-        },
-        "publication": {
-          "webPublicReleased": false,
-          "actualRuntimeVerified": false
-        },
-        "homepage": {
-          "visible": false,
-          "playable": false
-        }
-      },
-      "catalogOrder": 47,
-      "selectedPlatform": "WEB",
-      "ownerWebSourceState": "SOURCE_IMPLEMENTED_UNVERIFIED",
-      "ownerWebEntryFile": "web-games/mini-empire/index.html",
-      "targetPlatform": "WEB",
-      "targetSourcePath": "web-games/mini-empire/"
-    },
-    {
       "id": "amusement-tycoon",
       "name": "놀이공원 타이쿤",
       "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
@@ -10510,6 +10417,164 @@
       }
     },
     {
+      "id": "mini-empire",
+      "name": "미니 제국 전쟁",
+      "description": "3차원 국가 건설과 자원 생산, 군대 지휘 및 실시간 거점 점령 전략 게임",
+      "genre": [
+        "전략",
+        "3D",
+        "전쟁",
+        "건설"
+      ],
+      "image": "assets/page-bg-v4.webp",
+      "webPath": "/web-games/mini-empire/",
+      "hasWebArchive": true,
+      "featured": false,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "productionTarget": "WEB",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "웹 3D 직접 구현 · 배포 후 검증 대기",
+      "homepageRecentWork": "실시간 3D 지도, 주택·농장·제철소·병영·전차 공장·포탑, 보병·전차·헬기, 거점 3곳, 저장 기능",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "developmentActive": true,
+        "platform": "WEB",
+        "platformLabel": "웹",
+        "status": "WEB_SOURCE_CREATED_RUNTIME_UNVERIFIED",
+        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "genre": [
+          "전략",
+          "3D",
+          "전쟁",
+          "건설"
+        ],
+        "genreLabel": "전략 · 3D · 전쟁 · 건설"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 47,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "mini-empire",
+          "name": "미니 제국 전쟁",
+          "description": "3차원 국가 건설과 자원 생산, 군대 지휘 및 실시간 거점 점령 전략 게임",
+          "genres": [
+            "전략",
+            "3D",
+            "전쟁",
+            "건설"
+          ],
+          "image": "assets/page-bg-v4.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v4.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "WEB",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "WEB",
+          "stage": "웹 3D 직접 구현 · 배포 후 검증 대기"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/mini-empire/",
+            "archive": true,
+            "playable": false,
+            "state": "SOURCE_IMPLEMENTED_UNVERIFIED",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "웹 3D 직접 구현 · 배포 후 검증 대기",
+          "recentWork": "실시간 3D 지도, 주택·농장·제철소·병영·전차 공장·포탑, 보병·전차·헬기, 거점 3곳, 저장 기능",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_RUNTIME",
+            "validationSchemaVersion": null,
+            "genre": [
+              "전략",
+              "3D",
+              "전쟁",
+              "건설"
+            ],
+            "genreLabel": "전략 · 3D · 전쟁 · 건설",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "실시간 3D 지도, 주택·농장·제철소·병영·전차 공장·포탑, 보병·전차·헬기, 거점 3곳, 저장 기능",
+            "updatedAt": null,
+            "status": "WEB_SOURCE_CREATED_RUNTIME_UNVERIFIED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 47,
+      "selectedPlatform": "WEB",
+      "ownerWebSourceState": "SOURCE_IMPLEMENTED_UNVERIFIED",
+      "ownerWebEntryFile": "web-games/mini-empire/index.html",
+      "targetPlatform": "WEB",
+      "targetSourcePath": "web-games/mini-empire/"
+    },
+    {
       "id": "restaurant-tycoon",
       "name": "식당 타이쿤",
       "description": "손님 주문을 받아 요리하고 식당을 확장하는 3차원 식당 경영 게임",
@@ -10536,17 +10601,24 @@
       "homepageRecentWork": "초기 메뉴 3종, 영업 2분 후 메뉴 2종 해금, 손님 주문·조리·서빙, 테이블 확장, 요리사 고용, 저장",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
-        "authority": "OWNER_DIRECT_SOURCE",
+        "authority": "company-runtime",
         "developmentActive": true,
         "platform": "WEB",
         "platformLabel": "웹",
         "status": "WEB_SOURCE_CREATED_RUNTIME_UNVERIFIED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
+        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "genre": [
+          "타이쿤",
+          "3D",
+          "경영",
+          "요리"
+        ],
+        "genreLabel": "타이쿤 · 3D · 경영 · 요리"
       },
       "canonical": {
         "schemaVersion": 1,
         "catalogOrder": 48,
-        "authority": "OWNER_DIRECT_SOURCE",
+        "authority": "company-runtime",
         "identity": {
           "gameId": "restaurant-tycoon",
           "name": "식당 타이쿤",
@@ -10562,7 +10634,10 @@
         },
         "marketing": {
           "thumbnail": "assets/page-bg-v4.webp",
-          "source": "EXISTING_SHARED_ASSET"
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null,
+          "robloxThumbnail": null,
+          "robloxTitleArtwork": null
         },
         "lifecycle": {
           "state": "ACTIVE",
@@ -10575,7 +10650,7 @@
           "target": "WEB",
           "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
           "selectedPlatform": "WEB",
-          "stage": "웹 3D 직접 구현 · 배포 후 검증 대기"
+          "stage": "웹게임 구현 · 배포 후 검증 대기"
         },
         "sources": {
           "web": {
@@ -10584,15 +10659,70 @@
             "playable": false,
             "state": "SOURCE_IMPLEMENTED_UNVERIFIED",
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
           }
         },
         "publication": {
-          "webPublicReleased": false,
-          "actualRuntimeVerified": false
+          "web": {
+            "route": "",
+            "sourceTreeSha": ""
+          },
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
         },
         "homepage": {
-          "visible": false,
-          "playable": false
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "웹게임 구현 · 배포 후 검증 대기",
+          "recentWork": "초기 메뉴 3종, 영업 2분 후 메뉴 2종 해금, 손님 주문·조리·서빙, 테이블 확장, 요리사 고용, 저장",
+          "runtime": {
+            "authority": "company-runtime",
+            "developmentActive": true,
+            "platform": "WEB",
+            "platformLabel": "웹",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_RUNTIME",
+            "validationSchemaVersion": null,
+            "genre": [
+              "타이쿤",
+              "3D",
+              "경영",
+              "요리"
+            ],
+            "genreLabel": "타이쿤 · 3D · 경영 · 요리",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "초기 메뉴 3종, 영업 2분 후 메뉴 2종 해금, 손님 주문·조리·서빙, 테이블 확장, 요리사 고용, 저장",
+            "updatedAt": null,
+            "status": "WEB_SOURCE_CREATED_RUNTIME_UNVERIFIED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
         }
       },
       "catalogOrder": 48,
@@ -10610,9 +10740,9 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 46,
-    "homepageInfo": 46,
-    "normalizedGames": 46,
+    "canonicalGames": 48,
+    "homepageInfo": 48,
+    "normalizedGames": 48,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0
