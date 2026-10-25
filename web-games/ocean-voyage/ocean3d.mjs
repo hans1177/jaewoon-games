@@ -29,12 +29,27 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    if(destroyed)return;
    const surface=document.createElement('canvas');surface.id='naval3d';surface.setAttribute('aria-hidden','true');surface.hidden=true;canvas.after(surface);
    let renderer;try{renderer=new THREE.WebGLRenderer({canvas:surface,antialias:true,alpha:false,powerPreference:'high-performance'});}catch(e){surface.remove();throw e;}
-   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+   // 선박 3D 장면만 도트 해상도 적용. UI와 초상화는 원래 해상도 유지.
+   renderer.setPixelRatio(Math.min(.95,Math.max(.68,1/(devicePixelRatio||1)+.2)));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
    const world=new THREE.Scene();world.background=new THREE.Color('#87b9c7');world.fog=new THREE.Fog('#87b9c7',110,300);
    const camera=new THREE.PerspectiveCamera(44,1,.1,350);camera.position.set(25,28,39);
    world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:150});sun.shadow.bias=-.0004;world.add(sun);
    const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,52,52),new THREE.MeshStandardMaterial({color:'#237189',roughness:.46,metalness:.12}));water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
    const ring=new THREE.Mesh(new THREE.RingGeometry(58.8,59.1,128),new THREE.MeshBasicMaterial({color:'#eed49c',transparent:true,opacity:.36,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;world.add(ring);
+   // 64픽셀 게임 내 자체 제작 나무·돛 질감. 최근접 텍스처로 판재와 천 올을 살린다.
+   function pixelTexture(wood){
+    const paper=document.createElement('canvas');paper.width=64;paper.height=64;const ctx=paper.getContext('2d');
+    const swatches=wood?['#6e4730','#7b5336','#8d603b','#946943','#a4784c','#523927']:['#ede0bb','#e8d5ac','#dcc69b','#f5e8c8','#cdbb9c','#efe3c6'];
+    for(let y=0;y<64;y+=4)for(let x=0;x<64;x+=4){
+     const hash=((x*131+y*37+x*y*3)>>>2)%11;
+     ctx.fillStyle=swatches[hash%6];ctx.fillRect(x,y,4,4);
+     if((wood?y%16===0:x%16===0)){ctx.fillStyle=wood?'#442e24':'#af9a78';ctx.fillRect(x,y,4,1);}
+    }
+    if(wood)for(let y=0;y<64;y+=16){ctx.fillStyle='#4a3027';ctx.fillRect(0,y,64,2);for(let x=(y/16%2)*16;x<64;x+=32){ctx.fillStyle='#c5a070';ctx.fillRect(x+5,y+4,2,2);ctx.fillRect(x+24,y+11,2,2);}}
+    else{ctx.fillStyle='#b6a37e';for(let x=0;x<64;x+=12)for(let y=0;y<64;y+=8)ctx.fillRect(x+(y%16?1:0),y,1,2);}
+    const texture=new THREE.CanvasTexture(paper);texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestMipmapNearestFilter;return texture;
+   }
+   const pixelWood=pixelTexture(true),pixelLinen=pixelTexture(false);
    const loader=new GLTFLoader(),templates=new Map(),vessels=new Map();
    // GLB는 공유하고 개별 배의 자세·피격·침몰 표현만 독립적으로 움직인다.
    async function template(file){if(!templates.has(file))templates.set(file,loader.loadAsync('./assets/'+file+'.glb').then(g=>g.scene));return templates.get(file);}
@@ -48,11 +63,11 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      const copy=model.clone(true),box=new THREE.Box3().setFromObject(copy),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
      const length=large?14:galley?13:10,beam=(large?2.5:1.75)*(design.width||1),unit=length/Math.max(1,size.x,size.z);
      copy.position.set(-center.x*unit,-box.min.y*unit-.50,-center.z*unit);copy.scale.set(unit*(design.width||1),unit,unit*(design.length||1));root.add(copy);
-     copy.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material=o.material.clone();o.material.roughness=.78;o.material.metalness=.04;}});
+     copy.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material=o.material.clone();o.material.roughness=.87;o.material.metalness=.025;if(o.material.map){o.material.map.magFilter=THREE.NearestFilter;o.material.map.minFilter=THREE.NearestMipmapNearestFilter;o.material.map.needsUpdate=true;}}});
      const trim=new THREE.MeshStandardMaterial({color:enemy?'#bc7463':design.color||'#c5a06d',roughness:.68});
-     const wood=new THREE.MeshStandardMaterial({color:'#483325',roughness:.9});
+     const wood=new THREE.MeshStandardMaterial({color:'#f5e5d2',map:pixelWood,roughness:1,metalness:0});
      const brass=new THREE.MeshStandardMaterial({color:'#bd985d',roughness:.47,metalness:.55});
-     const sailMat=new THREE.MeshStandardMaterial({color:enemy?'#d2b6a5':/french/.test(type)?'#dce7ec':'#f3e4c5',side:THREE.DoubleSide,roughness:1});
+     const sailMat=new THREE.MeshStandardMaterial({color:enemy?'#e3b7a0':/french/.test(type)?'#dcecf0':'#fff4d8',map:pixelLinen,side:THREE.DoubleSide,roughness:1});
      const rig=galley||design.rig==='lateen'||/caravel/.test(type)?'lateen':'square';
      // 선종 고유 선폭과 돛배치: 코그·카락·갤리온·플루트·프리깃·갤리를 구분한다.
      const nMasts=galley?1:large?3:2,mastZ=nMasts===3?[-length*.27,0,length*.29]:nMasts===2?[-length*.23,length*.25]:[0];
@@ -75,8 +90,10 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      }
      for(const z of mastZ){
       const height=large?6.3:5.4,mast=new THREE.Mesh(new THREE.CylinderGeometry(.075,.13,height,8),wood);mast.position.set(0,1+height/2,z);root.add(mast);
+      const nest=new THREE.Mesh(new THREE.CylinderGeometry(.44,.35,.18,10),wood);nest.position.set(0,height+.69,z);root.add(nest);
+      for(const side of [-1,1]){const shroud=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,height+.75,z),new THREE.Vector3(side*beam,1.2,z-length*.29)]);root.add(new THREE.Line(shroud,new THREE.LineBasicMaterial({color:'#674632'})));}
       const geometry=new THREE.BufferGeometry(),v=rig==='lateen'?[-2.55,2.75,0,2.5,6.1,0,2.25,2.65,.35]:[-2.15,3,0,2.15,3,0,2.1,5.65,.35,-2.15,3,0,2.1,5.65,.35,-2.1,5.65,.35];
-      geometry.setAttribute('position',new THREE.Float32BufferAttribute(v,3));geometry.computeVertexNormals();
+      geometry.setAttribute('position',new THREE.Float32BufferAttribute(v,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(rig==='lateen'?[0,0,.5,1,1,0]:[0,0,1,0,1,1,0,0,1,1,0,1],2));geometry.computeVertexNormals();
       const sail=new THREE.Mesh(geometry,sailMat);sail.position.z=z;sail.castShadow=true;root.add(sail);entry.sails.push(sail);
       // 돛의 가로 누비선과 두께감: 원본 GLB를 유지하면서 천·목재 구조만 덧그린다.
       for(let seam=0;seam<4;seam++){
@@ -97,6 +114,13 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      const bowsprit=new THREE.Mesh(new THREE.CylinderGeometry(.055,.085,length*.37,7),wood);
      bowsprit.rotation.x=Math.PI*.42;bowsprit.position.set(0,1.8,-length*.49);root.add(bowsprit);
      if(id==='player'&&state.ship.gear.figurehead!=='none'){const ornament=new THREE.Mesh(new THREE.IcosahedronGeometry(.34,0),brass);ornament.position.set(0,.96,-length*.61);root.add(ornament);}
+     // 선미 타륜, 목재 판재층, 양현 등불을 가까운 카메라에서도 식별 가능하게 한다.
+     const helm=new THREE.Group(),wheel=new THREE.Mesh(new THREE.TorusGeometry(.42,.075,6,12),wood);wheel.rotation.y=Math.PI/2;helm.add(wheel);
+     for(let i=0;i<8;i++){const spoke=new THREE.Mesh(new THREE.BoxGeometry(.76,.055,.055),trim);spoke.rotation.x=i*Math.PI/4;helm.add(spoke);}
+     helm.position.set(0,2.35,length*.27);root.add(helm);
+     for(let y=.4;y<1.2;y+=.22)for(const side of [-1,1]){const plank=new THREE.Mesh(new THREE.BoxGeometry(.04,.038,length*.64),y<.7?wood:trim);plank.position.set(side*beam*.96,y,0);root.add(plank);}
+     const lampMat=new THREE.MeshStandardMaterial({color:'#ffcc88',emissive:'#935621',emissiveIntensity:.38});
+     for(const side of [-1,1]){const lantern=new THREE.Mesh(new THREE.BoxGeometry(.22,.34,.22),lampMat);lantern.position.set(side*beam*.65,2.13,length*.45);root.add(lantern);}
      // 바다 항적: 불투명한 흰 사각형 대신 속도에 따라 벌어지는 V형 물보라 조각.
      const wake=new THREE.Group();
      const foamMaterial=new THREE.MeshBasicMaterial({color:'#d5f2e8',transparent:true,opacity:.58,side:THREE.DoubleSide,depthWrite:false});
