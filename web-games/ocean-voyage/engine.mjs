@@ -141,7 +141,7 @@ const copy=s=>structuredClone(s);
 export function newGame(captainId="eleanor"){
  const hero=CAPTAINS.find(c=>c.id===captainId)||CAPTAINS[0],home=PORTS.find(p=>p.id===hero.port);
  return {
-  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,scene:null,eventClock:0,eventSerial:0,merchants:merchantRoster(),economy:newPortEconomy(),marketShocks:{},speed:1,autoCombat:true,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3},diplomacy:{},supplyCooldown:0,
+  voyageVersion:2,captainId:hero.id,heroChosen:false,job:hero.job,xp:0,fame:0,rank:0,storyChapter:0,completedStories:[],discoveries:[],reported:[],expedition:null,officeQuests:[],completedOffice:[],companionBonds:{},event:null,scene:null,eventClock:0,eventSerial:0,merchants:merchantRoster(),economy:newPortEconomy(),marketShocks:{},speed:1,autoCombat:true,shipType:"caravel",tradeLedger:{},portState:{},tavernRelations:{},reserveCrew:[],landBattle:null,clearedCamps:[],combatFx:null,fxSerial:0,assignments:{captain:hero.id,navigator:'',sailing:'',gunnery:'',quartermaster:'',doctor:''},crewJoinedAt:{[hero.id]:0},recruitScenes:{},alliance:null,allianceSupportDay:-10,worldLog:[],climate:{kind:'clear',until:4},treasureClues:[],charted:revealCells([],home.x,home.z),supplies:{repair:3,medicine:2,ammo:40,smoke:2,rations:3,water:0,repairkit:0,tonic:0,survey:0,camp:0},diplomacy:{},supplyCooldown:0,
   version:1,day:1,elapsed:0,coins:3400,discovered:[hero.port],visits:{[hero.port]:1},homePort:hero.port,captain:hero.name,crewRoster:[hero.id],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
   ship:{x:home.x,z:home.z+2,heading:0,velocity:0,rudder:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0,gear:{sail:'standard',figurehead:'none'},regionalMods:[],cannonType:'bronze',armor:0,holdLevel:0,rudderLevel:0,hullLevel:0},
   fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
@@ -776,10 +776,39 @@ export const CONSUMABLES=Object.freeze([
  {id:'medicine',name:'의약품',cost:140,description:'선원 8명 회복 · 최대 선원수 제한'},
  {id:'ammo',name:'포탄 10발',cost:120,description:'측면 포격용 포탄 10발 보급'},
  {id:'smoke',name:'연막탄',cost:110,description:'주변 적 함포 재장전 18초 지연'},
- {id:'rations',name:'비상 식량',cost:90,description:'식량 20 회복 · 최대 140'}
+ {id:'rations',name:'비상 식량',cost:90,description:'식량 20 회복 · 최대 140'},
+ {id:'water',name:'식수통',cost:150,description:'항해 보급 35 회복 · 최대 140'},
+ {id:'repairkit',name:'응급 수리함',cost:340,description:'선체 내구 55 회복 · 바다에서도 사용'},
+ {id:'tonic',name:'선원 회복제',cost:310,description:'선원 18명 회복 · 최대 선원수 제한'},
+ {id:'survey',name:'측량 기록지',cost:180,description:'현재 위치 주변 5×5 해도 구역 기록 · 항구 발견 보상 없음'},
+ {id:'camp',name:'야영 꾸러미',cost:200,description:'육지 조사 중 행동력 2 회복 · 최대 8 · 전투 중 사용 불가'}
 ]);
-export function buyConsumable(state,id){const c=CONSUMABLES.find(c=>c.id===id);if(!c||!canDock(state))return fail(state,'항구 보급소에서 구입해.');const cost=state.job==='merchant'?Math.ceil(c.cost*.9):c.cost;if(state.coins<cost)return fail(state,'보급품 구입 금화가 부족해.');const qty=id==='ammo'?10:1;if(state.supplies[id]+qty>999)return fail(state,'보급품 보유 한도야.');const s=copy(state);s.coins-=cost;s.supplies[id]+=qty;return success(s,c.name+' 보급 완료');}
-export function useConsumable(state,id){if(id==='ammo')return fail(state,'포탄은 포격할 때 사용돼.');if(!CONSUMABLES.some(c=>c.id===id)||state.supplies[id]<1)return fail(state,'사용할 소모품이 없어.');if(state.supplyCooldown>0&&!canDock(state))return fail(state,'소모품 사용 준비 중이야.');if(id==='repair'&&state.ship.hull>=state.ship.maxHull)return fail(state,'선체가 온전해.');if(id==='medicine'&&state.ship.crew>=state.ship.maxCrew)return fail(state,'선원이 최대 인원이야.');if(id==='rations'&&state.ship.provisions>=140)return fail(state,'식량이 가득해.');const s=copy(state);s.supplies[id]--;s.supplyCooldown=4;if(id==='repair')s.ship.hull=Math.min(s.ship.maxHull,s.ship.hull+25);if(id==='medicine')s.ship.crew=Math.min(s.ship.maxCrew,s.ship.crew+8+Math.floor(assignedPower(s,'doctor','medicine')/25)+(s.ship.gear.figurehead==='mermaid'?4:0));if(id==='rations')s.ship.provisions=Math.min(140,s.ship.provisions+20);if(id==='smoke')for(const e of s.pirates)if(dist(e,s.ship)<45)e.cooldown=Math.max(18,e.cooldown);return success(s,CONSUMABLES.find(c=>c.id===id).name+' 사용 완료');}
+export function buyConsumable(state,id){const c=CONSUMABLES.find(c=>c.id===id);if(!c||!canDock(state))return fail(state,'항구 보급소에서 구입해.');const cost=state.job==='merchant'?Math.ceil(c.cost*.9):c.cost;if(state.coins<cost)return fail(state,'보급품 구입 금화가 부족해.');const qty=id==='ammo'?10:1;if((Number(state.supplies[id])||0)+qty>999)return fail(state,'보급품 보유 한도야.');const s=copy(state);s.coins-=cost;s.supplies[id]=(Number(s.supplies[id])||0)+qty;return success(s,c.name+' 보급 완료');}
+export function useConsumable(state,id){
+ const item=CONSUMABLES.find(c=>c.id===id);
+ if(!item||(Number(state.supplies[id])||0)<1)return fail(state,'사용할 소모품이 없어.');
+ if(id==='ammo')return fail(state,'포탄은 포격할 때 사용돼.');
+ if(state.landBattle)return fail(state,'육지 전투에서는 전투 행동으로 의약품과 식량을 사용해.');
+ if(state.supplyCooldown>0&&!canDock(state))return fail(state,'소모품 사용 준비 중이야.');
+ if(['repair','repairkit'].includes(id)&&state.ship.hull>=state.ship.maxHull)return fail(state,'선체가 온전해.');
+ if(['medicine','tonic'].includes(id)&&state.ship.crew>=state.ship.maxCrew)return fail(state,'선원이 최대 인원이야.');
+ if(['rations','water'].includes(id)&&state.ship.provisions>=140)return fail(state,'항해 보급이 가득해.');
+ if(id==='camp'&&(!state.expedition||state.expedition.energy>=8))return fail(state,'육지 조사 중 행동력이 부족할 때 사용해.');
+ let charted;
+ if(id==='survey'){
+  charted=state.charted;
+  for(const dx of [-24,0,24])for(const dz of [-24,0,24])charted=revealCells(charted,state.ship.x+dx,state.ship.z+dz);
+  if(charted.length===state.charted.length&&charted.every(v=>state.charted.includes(v)))return fail(state,'주변 해도는 이미 기록했어.');
+ }
+ const s=copy(state);s.supplies[id]--;s.supplyCooldown=4;
+ if(id==='repair'||id==='repairkit')s.ship.hull=Math.min(s.ship.maxHull,s.ship.hull+(id==='repairkit'?55:25));
+ if(id==='medicine'||id==='tonic')s.ship.crew=Math.min(s.ship.maxCrew,s.ship.crew+(id==='tonic'?18:8)+Math.floor(assignedPower(s,'doctor','medicine')/25)+(s.ship.gear.figurehead==='mermaid'?4:0));
+ if(id==='rations'||id==='water')s.ship.provisions=Math.min(140,s.ship.provisions+(id==='water'?35:20));
+ if(id==='smoke')for(const e of s.pirates)if(dist(e,s.ship)<45)e.cooldown=Math.max(18,e.cooldown);
+ if(id==='survey')s.charted=charted;
+ if(id==='camp')s.expedition.energy=Math.min(8,s.expedition.energy+2);
+ return success(s,item.name+' 사용 완료');
+}
 export function declareHostility(state,faction){const p=canDock(state);if(!p||!portHasFacility(p.id,'palace'))return fail(state,'왕궁·총독부가 있는 항구에서 외교 방침을 정해.');if(!['이베리아 왕실','프랑스 항구동맹'].includes(faction))return fail(state,'현재 유럽의 두 순찰 세력만 외교 대상이야.');const s=copy(state);s.diplomacy[faction]=-30;if(s.alliance===faction)s.alliance=null;return success(s,faction+'에 적대 선언. 해당 국가 순찰함이 공격해.');}
 export function negotiatePeace(state,faction){if(!canDock(state)||!portHasFacility(canDock(state).id,'palace')||!(state.diplomacy[faction]<0))return fail(state,'왕궁·총독부에서 현재 적대 중인 국가를 확인해.');if(state.coins<500)return fail(state,'휴전 교섭금 500 G가 필요해.');const s=copy(state);s.coins-=500;s.diplomacy[faction]=0;return success(s,faction+'과 휴전했어.');}
 
@@ -964,3 +993,15 @@ export function giveGift(state,id,giftId){const gift=GIFTS.find(g=>g.id===giftId
 export function premiumInformation(state,id){if(!contactAvailable(state,id))return fail(state,'인물을 직접 만나 정보를 들어.');const rel=relationStatus(state,id);if(rel.trust<35)return fail(state,'고급 정보는 친밀도 35부터 알려줘.');if(rel.lastInfo===state.day)return fail(state,'오늘 새 정보는 이미 들었어.');const s=copy(state);rel.lastInfo=s.day;s.tavernRelations[id]=rel;const treasure=TREASURES.find(t=>!s.treasureClues.includes(t.id));if(treasure){s.treasureClues.push(treasure.id);return success(s,'믿을 만한 정보: '+treasure.clue);}s.xp+=12;const dock=SPECIAL_DOCKS[(s.day+TAVERN_HOSTS.findIndex(h=>h.id===id)+5)%SPECIAL_DOCKS.length];return success(s,'조선 비화: '+portById(dock.port).name+'의 '+dock.name+' · '+dock.description+' / 베네치아와 암스테르담에는 인연으로 영입할 수 있는 인물도 있어.');}
 export function expressBond(state,id){if(!contactAvailable(state,id))return fail(state,'직접 만나 마음을 전해.');const rel=relationStatus(state,id);if(rel.bond)return fail(state,'이미 서로 마음을 확인한 사이야.');if(rel.trust<80||!state.completedStories.length)return fail(state,'친밀도 80과 주인공 이야기 1장 해결이 필요해.');const s=copy(state);rel.bond=true;s.tavernRelations[id]=rel;return success(s,'서로의 마음을 확인했어. 떨어져 있어도 편지로 항해를 응원하기로 했어.');}
 export function benchCompanion(state,id){if(!canDock(state)||id===state.captainId||!state.crewRoster.includes(id)||state.landBattle)return fail(state,'항구에서 선장 외 동료를 여관 대기로 바꿀 수 있어.');const s=copy(state);s.crewRoster=s.crewRoster.filter(x=>x!==id);if(!s.reserveCrew.includes(id))s.reserveCrew.push(id);for(const r of CREW_ROLES)if(s.assignments[r.id]===id)s.assignments[r.id]='';return success(s,CREW.find(c=>c.id===id).name+' 여관 대기 · 성장과 인연 기록은 유지돼.');}
+
+// 도감은 기존 규칙 데이터에서 생성한다. 소모품·교역품·장착 장비의 별도 복제 데이터는 저장하지 않는다.
+export function itemLibrary(){
+ return [
+  ...CONSUMABLES.map(i=>({...i,category:'supplies',source:'항구 보급소 · 조선소 보급',ownedKey:i.id})),
+  ...EQUIPMENT.filter(i=>i.id!=='medicine').map(i=>({...i,category:'tools',source:'선장 기본 장비 · 발견 기록'})),
+  ...GOODS.map(i=>({...i,category:'cargo',description:'단위 중량 '+i.weight+' · 항구별 시세와 재고에 따라 교역',source:'각 항구 교역소'})),
+  ...SAIL_EQUIPMENT.map(i=>({...i,category:'sails',source:i.port?portById(i.port).name+' 조선소':'기본 장비'})),
+  ...FIGUREHEADS.filter(i=>i.id!=='none').map(i=>({...i,category:'figureheads',source:portById(i.port).name+' 조선소'})),
+  ...CANNON_TYPES.map(i=>({...i,category:'cannons',description:i.description+' · 위력 배율 '+i.power+' · 재장전 '+i.reload+'초',source:'조선소 함포 교체'}))
+ ];
+}
