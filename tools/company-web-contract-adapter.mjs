@@ -129,6 +129,18 @@ function scoreCandidate(item,candidate){
     evidence.push('nearby-family:'+family);
   }
   const itemText=lower(clean(item.path)+' '+clean(item.label)),action=lower(candidate.gameplayActionValue);
+  // 동일한 전투 후보가 여러 개인 실제 게임에서는 자동전투 전환보다
+  // 이미 이벤트가 연결된 기본 공격을 선택한다. UI 라벨만으로 인증하지 않는다.
+  if(family==='COMBAT'){
+    const mechanic=lower(candidate.existingMechanicId);
+    const directAttack=/^(?:attack|strike|hit|shoot|fire)$/.test(action);
+    const nativePrimary=/^(?:combat-primary|attack-primary|primary-attack)$/.test(mechanic);
+    if(candidate.gameplayAction&&directAttack&&nativePrimary){
+      score+=64;evidence.push('verified-primary-combat-action-and-mechanic');
+    }else if(/(?:^|[-_])auto(?:[-_]?combat|[-_]?attack)?(?:[-_]|$)/.test(action+' '+mechanic)){
+      score-=32;evidence.push('combat-mode-toggle-not-direct-attack');
+    }
+  }
   if(family==='PROGRESSION'&&/(?:choose upgrades|choose.*perks|choose.*weapons|choose.*skills|current build|장비.*선택|무기.*선택|스킬.*선택)/i.test(itemText)&&action==='inventory'){score+=140;evidence.push('semantic-build-selection-inventory');}
   else if(family==='PROGRESSION'&&/(?:combine upgrades|stronger build|next progression choice|업그레이드.*조합|강한.*빌드|다음.*성장)/i.test(itemText)&&action==='craft'){score+=140;evidence.push('semantic-build-combination-craft');}
   else if(family==='PROGRESSION'&&directFamilies.has('INVENTORY')){score+=58;evidence.push('build-selection-inventory');}
