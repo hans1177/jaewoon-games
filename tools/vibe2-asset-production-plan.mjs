@@ -1545,10 +1545,6 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       continue;
     }
     if(current&&assetSupplyCandidateAllowed(asset,target)){
-      if(spatialFamilies.has(family)&&internalAssetHardBlockReason(asset)==='ROUND_PRIMITIVE_VISUAL_FORBIDDEN'){
-        const rows=primitiveFallbackByFamily.get(family)||[];
-        rows.push(asset);primitiveFallbackByFamily.set(family,rows);
-      }
       currentAssets.push(asset);
       currentAssetIds.add(assetId);
       if(family){
