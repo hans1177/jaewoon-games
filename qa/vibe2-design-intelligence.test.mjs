@@ -5,6 +5,15 @@ import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, buildDesignEvo
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-control.mjs';
 
+test('existing design cycle binds actual game platform into designer intake',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-design-cycle.mjs',import.meta.url),'utf8');
+  const start=source.indexOf('const intelligenceTask={');
+  const end=source.indexOf('\n};',start);
+  assert.ok(start>=0&&end>start,'canonical designer task exists');
+  assert.ok(source.slice(start,end).includes('target:clean(seed.INITIAL_TARGET_PLATFORM)'),
+    'target must be passed on task, not just plan');
+});
+
 test('A benchmark reviews full genre experience and enforces design before new source systems',()=>{
   const b=buildDesignEvolutionBrief();
   assert.equal(b.representativeSystemBenchmark.role,

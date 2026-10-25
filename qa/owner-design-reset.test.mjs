@@ -75,6 +75,7 @@ test('only main pushes or explicit dispatch can run a writable design reset',()=
   assert.match(workflow,/    permissions:\n      contents: write\n      actions: write/);
   assert.match(workflow,/    if: github\.event_name == 'pull_request'/);
   assert.equal((workflow.match(/node tools\/company-shared-context\.mjs --output=\/tmp\/owner-reset-shared-context\.json/g)||[]).length,2,'PR and official reset must both enforce current central policy before writing');
+  assert.equal((workflow.match(/node tools\/company-constitution-enforcer\.mjs --phase=owner-design-reset-prewrite/g)||[]).length,2,'both reset paths must enforce canonical owner rules');
 });
 
 test('explicit reset opt-out applies only to a trailing marker, not a squash-merge history bullet',()=>{

@@ -35,6 +35,8 @@ jobs:
       - name: Verify reset regression and shared-context contracts
         run: |
           node --check tools/company-all-games-design-reset.mjs
+          node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
+          node tools/company-constitution-enforcer.mjs --phase=owner-design-reset-prewrite
           node --test qa/owner-design-reset.test.mjs
 
   reset-to-design:
@@ -52,6 +54,8 @@ jobs:
       - name: Validate reset synchronizer and canonical QA
         run: |
           node --check tools/company-all-games-design-reset.mjs
+          node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
+          node tools/company-constitution-enforcer.mjs --phase=owner-design-reset-prewrite
           node --test qa/owner-design-reset.test.mjs
       - name: Persist canonical DESIGN_ONLY seed state
         id: persist_reset

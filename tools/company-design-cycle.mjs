@@ -1973,7 +1973,7 @@ const narrativeSemanticRequired=/(story|narrative|quest|dialogue|character|npc|w
 const dialogueSemanticRequired=/(dialogue|character|npc|conversation|대화|대사|캐릭터|npc)/i.test(designSemanticText);
 const intelligenceTask={
   id:`design-cycle:${gameId}:${date}`,
-  gameId,type:'design',goal:clean(designDraft.identity),designChange:true,materialDesignChange:true,
+  gameId,target:clean(seed.INITIAL_TARGET_PLATFORM),type:'design',goal:clean(designDraft.identity),designChange:true,materialDesignChange:true,
   designRationale:clean(designDraft.selectedDesignPlan?.rationale),
   designAlternatives:Array.isArray(designDraft.designAlternatives)?designDraft.designAlternatives:[],
   selectedDesignPlan:clean(designDraft.selectedDesignPlan?.label),
