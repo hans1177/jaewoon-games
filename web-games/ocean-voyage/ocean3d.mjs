@@ -33,7 +33,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    const world=new THREE.Scene();world.background=new THREE.Color('#87b9c7');world.fog=new THREE.Fog('#87b9c7',110,300);
    const camera=new THREE.PerspectiveCamera(44,1,.1,350);camera.position.set(25,28,39);
    world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:150});sun.shadow.bias=-.0004;world.add(sun);
-   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,52,52),new THREE.MeshStandardMaterial({color:'#247181',roughness:.3,metalness:.38}));water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
+   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,52,52),new THREE.MeshStandardMaterial({color:'#237189',roughness:.46,metalness:.12}));water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
    const ring=new THREE.Mesh(new THREE.RingGeometry(58.8,59.1,128),new THREE.MeshBasicMaterial({color:'#eed49c',transparent:true,opacity:.36,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;world.add(ring);
    const loader=new GLTFLoader(),templates=new Map(),vessels=new Map();
    // GLB는 공유하고 개별 배의 자세·피격·침몰 표현만 독립적으로 움직인다.
@@ -41,8 +41,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    function vessel(id,type,enemy){
     const design=SHIP_TYPES.find(t=>t.id===type)||SHIP_TYPES[0],large=/galleon|frigate|carrack|fluyt|racer/.test(type),galley=design.rig==='oars';
     const file=enemy?'ship-pirate-medium':large?'ship-large':/sloop|caravel/.test(type)?'ship-small':'ship-medium';
-    let entry=vessels.get(id);if(entry?.type===type&&entry.enemy===enemy)return entry;if(entry)world.remove(entry.root);
-    const root=new THREE.Group();world.add(root);entry={root,file,type,enemy,loaded:false,sails:[],wake:null};vessels.set(id,entry);
+    let entry=vessels.get(id);if(entry?.type===type&&entry.enemy===enemy&&(id!=='player'||entry.gunCount===state.ship.cannons))return entry;if(entry)world.remove(entry.root);
+    const root=new THREE.Group();world.add(root);entry={root,file,type,enemy,loaded:false,sails:[],wake:null,gunCount:id==='player'?state.ship.cannons:large?12:6};vessels.set(id,entry);
     template(file).then(model=>{
      if(destroyed||vessels.get(id)!==entry)return;
      const copy=model.clone(true),box=new THREE.Box3().setFromObject(copy),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
@@ -51,28 +51,61 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      copy.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material=o.material.clone();o.material.roughness=.78;o.material.metalness=.04;}});
      const trim=new THREE.MeshStandardMaterial({color:enemy?'#bc7463':design.color||'#c5a06d',roughness:.68});
      const wood=new THREE.MeshStandardMaterial({color:'#483325',roughness:.9});
+     const brass=new THREE.MeshStandardMaterial({color:'#bd985d',roughness:.47,metalness:.55});
      const sailMat=new THREE.MeshStandardMaterial({color:enemy?'#d2b6a5':/french/.test(type)?'#dce7ec':'#f3e4c5',side:THREE.DoubleSide,roughness:1});
      const rig=galley||design.rig==='lateen'||/caravel/.test(type)?'lateen':'square';
      // 선종 고유 선폭과 돛배치: 코그·카락·갤리온·플루트·프리깃·갤리를 구분한다.
      const nMasts=galley?1:large?3:2,mastZ=nMasts===3?[-length*.27,0,length*.29]:nMasts===2?[-length*.23,length*.25]:[0];
      for(const side of [-1,1]){
       const rail=new THREE.Mesh(new THREE.BoxGeometry(.09,.12,length*.75),trim);rail.position.set(side*beam,1.2,0);root.add(rail);
+      // 옆판 금속 장식과 선측 난간: 선폭이 다른 선박에서도 포문과 선체가 분리되어 보인다.
+      for(const y of [.46,1.16]){
+       const rubbing=new THREE.Mesh(new THREE.BoxGeometry(.065,.065,length*.74),y===.46?brass:wood);
+       rubbing.position.set(side*(beam-.06),y,0);root.add(rubbing);
+      }
+      for(let j=0;j<7;j++){
+       const railPost=new THREE.Mesh(new THREE.CylinderGeometry(.045,.055,.48,6),wood);
+       railPost.position.set(side*beam,1.31,-length*.34+j*length*.115);root.add(railPost);
+      }
       const cannons=Math.min(8,Math.max(2,Math.ceil((id==='player'?state.ship.cannons:large?12:6)/2)));
-      for(let i=0;i<cannons;i++){const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.14,.17,.68,8),wood);barrel.rotation.z=Math.PI/2;barrel.position.set(side*(beam+.26),.85,-length*.35+i*length*.70/Math.max(1,cannons-1));root.add(barrel);}
+      for(let i=0;i<cannons;i++){const z=-length*.35+i*length*.70/Math.max(1,cannons-1);
+       const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.14,.17,.68,8),wood);
+       barrel.rotation.z=Math.PI/2;barrel.position.set(side*(beam+.26),.85,z);root.add(barrel);
+       const rim=new THREE.Mesh(new THREE.TorusGeometry(.17,.024,6,9),brass);rim.rotation.y=Math.PI/2;rim.position.set(side*(beam+.60),.85,z);root.add(rim);}
      }
      for(const z of mastZ){
       const height=large?6.3:5.4,mast=new THREE.Mesh(new THREE.CylinderGeometry(.075,.13,height,8),wood);mast.position.set(0,1+height/2,z);root.add(mast);
       const geometry=new THREE.BufferGeometry(),v=rig==='lateen'?[-2.55,2.75,0,2.5,6.1,0,2.25,2.65,.35]:[-2.15,3,0,2.15,3,0,2.1,5.65,.35,-2.15,3,0,2.1,5.65,.35,-2.1,5.65,.35];
       geometry.setAttribute('position',new THREE.Float32BufferAttribute(v,3));geometry.computeVertexNormals();
       const sail=new THREE.Mesh(geometry,sailMat);sail.position.z=z;sail.castShadow=true;root.add(sail);entry.sails.push(sail);
+      // 돛의 가로 누비선과 두께감: 원본 GLB를 유지하면서 천·목재 구조만 덧그린다.
+      for(let seam=0;seam<4;seam++){
+       const y=3.05+seam*.58;
+       const line=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,3.2+seam*.14,5),wood);
+       line.rotation.z=Math.PI/2;line.position.set(0,y,z+.05);root.add(line);
+      }
       const yard=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,4.9,6),wood);yard.rotation.z=Math.PI/2;yard.position.set(0,rig==='lateen'?3.9:5.7,z);root.add(yard);
       const lines=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-beam,1.2,-length*.45),new THREE.Vector3(0,height+1,z),new THREE.Vector3(beam,1.2,length*.45)]);
       root.add(new THREE.Line(lines,new THREE.LineBasicMaterial({color:'#d3bfa2'})));
       const flag=new THREE.Mesh(new THREE.ConeGeometry(.28,1.1,3),trim);flag.rotation.z=Math.PI/2;flag.position.set(.55,height+1.4,z);root.add(flag);
      }
      if(galley)for(const side of [-1,1])for(let i=0;i<8;i++){const oar=new THREE.Mesh(new THREE.BoxGeometry(3.2,.07,.14),wood);oar.position.set(side*3.15,.65,-length*.36+i*length*.105);root.add(oar);}
-     if(large){const cabin=new THREE.Mesh(new THREE.BoxGeometry(beam*1.5,1.05,2),wood);cabin.position.set(0,1.85,length*.39);root.add(cabin);for(let i=-1;i<=1;i++){const pane=new THREE.Mesh(new THREE.BoxGeometry(.36,.34,.05),trim);pane.position.set(i*.68,1.95,length*.39+1.04);root.add(pane);}}
-     const wake=new THREE.Mesh(new THREE.PlaneGeometry(3.8,7),new THREE.MeshBasicMaterial({color:'#e7ffff',transparent:true,opacity:.34,side:THREE.DoubleSide,depthWrite:false}));wake.rotation.x=-Math.PI/2;wake.position.set(0,.11,-length*.65);root.add(wake);entry.wake=wake;
+     if(large){const cabin=new THREE.Mesh(new THREE.BoxGeometry(beam*1.5,1.05,2),wood);cabin.position.set(0,1.85,length*.39);root.add(cabin);for(let i=-1;i<=1;i++){const pane=new THREE.Mesh(new THREE.BoxGeometry(.36,.34,.05),brass);pane.position.set(i*.68,1.95,length*.39+1.04);root.add(pane);}
+      const gallery=new THREE.Mesh(new THREE.BoxGeometry(beam*1.45,.1,.18),brass);gallery.position.set(0,2.45,length*.39+1.08);root.add(gallery);}
+     // 갑판 뚜껑·돛줄 고정대·선수상: 크기와 선종을 구분하는 가까운 시점 디테일.
+     for(let j=0;j<3;j++){const hatch=new THREE.Mesh(new THREE.BoxGeometry(beam*.70,.09,.50),j===1?trim:wood);hatch.position.set(0,1.27,-length*.25+j*length*.24);root.add(hatch);}
+     const bowsprit=new THREE.Mesh(new THREE.CylinderGeometry(.055,.085,length*.37,7),wood);
+     bowsprit.rotation.x=Math.PI*.42;bowsprit.position.set(0,1.8,-length*.49);root.add(bowsprit);
+     if(id==='player'&&state.ship.gear.figurehead!=='none'){const ornament=new THREE.Mesh(new THREE.IcosahedronGeometry(.34,0),brass);ornament.position.set(0,.96,-length*.61);root.add(ornament);}
+     // 바다 항적: 불투명한 흰 사각형 대신 속도에 따라 벌어지는 V형 물보라 조각.
+     const wake=new THREE.Group();
+     const foamMaterial=new THREE.MeshBasicMaterial({color:'#d5f2e8',transparent:true,opacity:.58,side:THREE.DoubleSide,depthWrite:false});
+     for(const side of [-1,1])for(let j=0;j<7;j++){
+      const z=-length*.54-j*1.24,x=side*(.6+j*.36);
+      const foam=new THREE.Mesh(new THREE.PlaneGeometry(.21+j*.075,.68+j*.17),foamMaterial);
+      foam.rotation.x=-Math.PI/2;foam.rotation.z=side*.20;foam.position.set(x,.04,z);wake.add(foam);
+     }
+     root.add(wake);entry.wake=wake;
      entry.loaded=true;
     }).catch(e=>{navalError=true;console.warn('선박 GLB 실패',file,e);});
     return entry;
@@ -86,12 +119,17 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     const merchants=mode==='sea'?(state.merchants||[]).filter(m=>!state.crewRoster.includes(m.id)).map(m=>({...m,...merchantPosition(m)})).filter(m=>Math.hypot(m.x-origin.x,m.z-origin.z)<85):[];
     const rows=[{id:'player',x:origin.x,z:origin.z,heading:origin.heading,type:state.shipType,hull:origin.hull,maxHull:origin.maxHull},...hostiles.map(e=>({...e,type:e.neutral?'cog':'galleon',enemy:!e.neutral})),...merchants.map(m=>({id:'merchant-'+m.id,x:m.x,z:m.z,heading:m.heading,type:'dutch-fluyt',enemy:false}))];
     const ids=new Set(rows.map(r=>r.id));for(const [id,e]of vessels){e.root.visible=ids.has(id);}
-    const wind=windAt(state);for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);for(const cloth of e.sails){cloth.rotation.y=Math.sin(wind.heading-r.heading)*.15;cloth.rotation.z=Math.sin(wind.heading-r.heading)*.035+Math.sin(t*1.5)*.012;}if(e.wake)e.wake.visible=r.id==='player'?Math.abs(origin.velocity)>.5:true;}
+    const wind=windAt(state);for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);for(const cloth of e.sails){cloth.rotation.y=Math.sin(wind.heading-r.heading)*.15;cloth.rotation.z=Math.sin(wind.heading-r.heading)*.035+Math.sin(t*1.5)*.012;}if(e.wake){e.wake.visible=r.id==='player'?Math.abs(origin.velocity)>.5:true;e.wake.scale.setScalar(.7+Math.min(1.3,Math.abs(r.id==='player'?origin.velocity:3)*.13));e.wake.position.y=.02+Math.sin(t*3)*.015;}}
     const enemy=hostiles.sort((a,b)=>Math.hypot(a.x-origin.x,a.z-origin.z)-Math.hypot(b.x-origin.x,b.z-origin.z))[0];
     const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(95,Math.max(27,Math.hypot(ex,ez)*.85)*Math.max(1,.7/camera.aspect));
     if(mode==='naval'){camera.position.lerp(new THREE.Vector3(ex*.5+span*.58,span*.83,ez*.5+span*.97),.065);targetLook.set(ex*.5,1.5,ez*.5);camera.lookAt(targetLook);}else{const bearing=origin.heading+cameraOrbit;camera.position.lerp(new THREE.Vector3(-Math.sin(bearing)*cameraDistance,4+cameraDistance*cameraHeight,-Math.cos(bearing)*cameraDistance),.13);targetLook.set(Math.sin(origin.heading)*3,2.5,Math.cos(origin.heading)*3);camera.lookAt(targetLook);}
     ring.visible=mode==='naval';ring.position.x=ex;ring.position.z=ez;
-    const a=water.geometry.attributes.position;for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,Math.sin(x*.12+t*1.3)*.32+Math.sin(y*.16+t*.8)*.22);}a.needsUpdate=true;
+    const storm=state.climate?.kind==='storm',rain=state.climate?.kind==='rain';
+     const a=water.geometry.attributes.position;
+     for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,(Math.sin(x*.12+t*1.3)*.27+Math.sin(y*.16+t*.8)*.22)*(storm?1.9:rain?1.25:1));}
+     a.needsUpdate=true;
+     if(Math.round(t*12)%2===0)water.geometry.computeVertexNormals();
+     const tint=storm?'#477486':rain?'#7096a5':'#87b9c7';world.background.set(tint);world.fog.color.set(tint);sun.intensity=storm?1.7:rain?2.4:3.1;
     const fx=state.combatFx;if(fx?.type==='cannon'&&fx.serial!==serial){serial=fx.serial;shotTime=t;
      for(const o of shots)world.remove(o);shots.length=0;
      for(let i=0;i<5;i++){const ball=new THREE.Mesh(ballGeo,ballMat);ball.userData={from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(ball);world.add(ball);const puff=new THREE.Mesh(smokeGeo,smokeMat);puff.userData={smoke:true,from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(puff);world.add(puff);}
