@@ -4,9 +4,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {runInNewContext} from 'node:vm';
 import * as THREE from '../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 import {LAND} from '../web-games/ocean-voyage/assets/world.mjs';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand,dismissStoryScene} from '../web-games/ocean-voyage/engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand,dismissStoryScene,PORT_SCENES} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -392,4 +393,31 @@ test('wider coastal water opens real passage without allowing deep inland sailin
  assert.ok(widened>10,'the Thames coast must gain usable water cells');
  assert.equal(isLand(100,-600),true,'deep land remains blocked');
  assert.equal(isLand(-400,-300),false,'open Atlantic remains navigable');
+});
+
+
+test('trade planner uses only discovered destinations, affordable cargo and current quotes without changing saves',()=>{
+ const source=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ const body=source.slice(source.indexOf('function market(){'),source.indexOf('function consumables('));
+ const render=state=>runInNewContext(body+';market();',{state,canDock,PORTS,PORT_SCENES,PORT_MARKETS,GOODS,marketQuote,cargoWeight,
+  escapeHtml:value=>String(value).replaceAll('<','&lt;'),fmt:value=>String(Math.round(value)),portNpc:()=>'',bestSale:()=>'',travelCard:()=>'',nearestPort:()=>({port:PORTS[0]})});
+ let s=newGame();const initial=serializeGame(s);assert.doesNotMatch(render(s),/class="trade-route"/);assert.equal(serializeGame(s),initial);
+ s.discovered=PORTS.map(p=>p.id);const before=serializeGame(s),html=render(s);
+ const routes=[...html.matchAll(/class="trade-route"[\s\S]*?data-route="([^"]+)"/g)];
+ assert.ok(routes.length>0&&routes.length<=3);
+ for(const row of routes)assert.ok(s.discovered.includes(row[1])&&row[1]!==canDock(s).id);
+ assert.equal(serializeGame(s),before,'planning must never buy, route or mutate economy');
+ s.coins=0;assert.doesNotMatch(render(s),/class="trade-route"/);
+ s.coins=10000;s.cargo.grain=s.ship.cargoLimit*s.fleet;assert.doesNotMatch(render(s),/class="trade-route"/);
+});
+
+test('port departure checklist reads actual shortage and uses existing supply actions without charging automatically',()=>{
+ const source=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ const body=source.slice(source.indexOf('function portScene(){'),source.indexOf('function relationshipPanel('));
+ const s=newGame();s.ship.provisions=0;s.ship.hull=20;s.ship.crew=2;s.supplies.ammo=0;
+ const before=serializeGame(s),html=runInNewContext(body+';portScene();',{state:s,canDock,PORTS,PORT_SCENES,PORT_MARKETS,GOODS,marketQuote,portStatus,
+  escapeHtml:value=>String(value),kennyMap:'./assets/cc0/map/','nearestPort':()=>({port:PORTS[0],d:0})});
+ assert.equal((html.match(/class="needs-care"/g)||[]).length,4);
+ for(const action of ['provisions','repair','crew'])assert.ok(html.includes('data-upgrade="'+action+'"'));
+ assert.equal(serializeGame(s),before);
 });

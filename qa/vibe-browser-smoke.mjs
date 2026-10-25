@@ -36,6 +36,7 @@ try{
      sessionStorage.setItem('ocean-smoke-next-save',e.serializeGame(s));
     });
     await ocean.reload({waitUntil:'domcontentloaded'});
+    await ocean.locator('#start').click();
     await ocean.locator('#navalEncounter').waitFor({state:'visible',timeout:20000});
     await ocean.waitForFunction(()=>document.getElementById('naval3d')?.dataset.ready==='true',null,{timeout:45000});
     const proof=await ocean.locator('#naval3d').evaluate(c=>({models:+c.dataset.models,triangles:+c.dataset.triangles,webgl:!!(c.getContext('webgl2')||c.getContext('webgl')),width:c.width,height:c.height}));
@@ -52,7 +53,7 @@ try{
     await ocean.reload({waitUntil:'networkidle'});assert.equal(await ocean.locator('#navalEncounter').isVisible(),false,'OCEAN_VICTORY_RELOAD_REENTERS_BATTLE');
     // 같은 세이브로 조타 이탈을 실제로 실행한다. 전투 중 위치를 조작하지 않는다.
     await ocean.evaluate(async()=>{const e=await import('./engine.mjs'),s=e.newGame();s.heroChosen=true;s.autoCombat=false;s.ship.x=-116;s.ship.z=-576;s.ship.heading=-Math.PI/2;s.ship.velocity=5;s.pirates=[{id:1,x:-75,z:-576,heading:0,hull:62,maxHull:62,cooldown:999}];sessionStorage.setItem('ocean-smoke-next-save',e.serializeGame(s));});
-    await ocean.reload({waitUntil:'domcontentloaded'});await ocean.locator('#navalEncounter').waitFor({state:'visible',timeout:15000});
+    await ocean.reload({waitUntil:'domcontentloaded'});await ocean.locator('#start').click();await ocean.locator('#navalEncounter').waitFor({state:'visible',timeout:15000});
     await ocean.locator('#navalRetreat').click();await ocean.keyboard.down('ArrowUp');
     await ocean.locator('#navalEncounter').waitFor({state:'hidden',timeout:25000});await ocean.keyboard.up('ArrowUp');
     assert.deepEqual(faults,[],'OCEAN_RUNTIME_ERRORS');

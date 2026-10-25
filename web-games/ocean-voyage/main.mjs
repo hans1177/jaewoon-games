@@ -79,7 +79,7 @@ function summary(){
  const canHail=nearby&&Math.hypot(state.ship.x-nearby.p.x,state.ship.z-nearby.p.z)<=20;$('hail').hidden=!canHail;if(canHail){$('hail').dataset.merchant=nearby.id;$('hail').title=MERCHANT_CAPTAINS.find(c=>c.id===nearby.id).name+' 상선 교신';}
  $('autoBattle').textContent=state.autoCombat?'자동해전 켬':'자동해전 끔';$('autoBattle').setAttribute('aria-pressed',String(state.autoCombat));
  $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:state.exploreTarget?' · 직접 탐색 → '+port(state.exploreTarget).name:'');
- $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
+ $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' (최소 '+Math.floor(state.ship.provisions/2)+'일) · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
  const wind=windAt(state),bearing=(wind.heading*180/Math.PI+360)%360,apparent=Math.cos(wind.heading-state.ship.heading),kind=apparent>.35?'순풍':apparent<-.35?'역풍':'횡풍';$('windStatus').textContent='바람 '+Math.round(bearing)+'° · '+kind+' · 항속 '+Math.abs(state.ship.velocity).toFixed(1)+(sailCruise?' · 순항':'');
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
@@ -129,7 +129,7 @@ function restartGame(){
 }
 function showCaptains(){choosing=true;view.loading.classList.add('hide');$('captains').hidden=false;$('captainCards').innerHTML=CAPTAINS.map(c=>'<article class="hero-card"><div class="hero-face '+(c.maleFace!==undefined?'male':'')+'" style="background-position:'+(c.maleFace!==undefined?c.maleFace:c.face)*25+'% center"></div><div><small>'+c.region+' · '+c.nation+' · '+(c.origin?c.origin+' 출신 → ':'')+port(c.port).name+' 본편 시작</small><h2>'+c.name+'</h2><p>'+c.goal+'</p><p class="info">'+c.intro+'</p><button class="action" data-captain="'+c.id+'">이 인물로 항해</button></div></article>').join('');}
 $('captainCards').addEventListener('click',e=>{const b=e.target.closest('[data-captain]');if(!b)return;state=newGame(b.dataset.captain);state.heroChosen=true;choosing=false;$('captains').hidden=true;save();scene.setState(state);summary();enterTown();});
-$('depart').addEventListener('click',depart);$('townJournal').addEventListener('click',()=>gotoPanel('menu'));$('townBack').addEventListener('click',leaveFacility);
+$('depart').addEventListener('click',depart);$('townJournal').addEventListener('click',()=>openFacility('port'));$('townBack').addEventListener('click',leaveFacility);
 
 function travelCard(p){
  const reached=state.discovered.includes(p.id);
@@ -237,6 +237,19 @@ function market(){
  const p=canDock(state);
  if(!p)return '<p class="info">항구에서 입항하면 지역 특산품을 사고팔 수 있어.</p>'+travelCard(nearestPort(state).port);
  const group=PORT_MARKETS[p.id],goods=[...GOODS.filter(g=>group.produces.includes(g.id)),...GOODS.filter(g=>group.imports.includes(g.id)),...GOODS.filter(g=>!group.produces.includes(g.id)&&!group.imports.includes(g.id)&&(state.cargo[g.id]||0)>0)];
+ // 교역: 발견한 항구의 현재 시세로만 후보를 비교한다. 구매·항로·저장을 자동 변경하지 않는다.
+ const freeHold=Math.max(0,state.ship.cargoLimit*state.fleet-cargoWeight(state)),opportunities=[];
+ for(const g of goods){
+  const buy=marketQuote(state,p.id,g.id);if(buy.kind==='미취급'||buy.stock<1)continue;
+  const quantity=Math.max(0,Math.min(5,buy.stock,Math.floor(state.coins/buy.buy),Math.floor(freeHold/g.weight)));
+  if(!quantity)continue;
+  for(const target of PORTS.filter(target=>target.id!==p.id&&state.discovered.includes(target.id))){
+   const sell=marketQuote(state,target.id,g.id).sell,profit=(sell-buy.buy)*quantity;
+   if(profit>0)opportunities.push({g,target,quantity,buy:buy.buy,sell,profit,distance:Math.round(Math.hypot(target.x-p.x,target.z-p.z))});
+  }
+ }
+ opportunities.sort((a,b)=>b.profit-a.profit||a.distance-b.distance);
+ const recommendations=opportunities.slice(0,3).map((r,i)=>'<article class="trade-route"><span class="route-rank">'+(i+1)+'</span><div><strong>'+escapeHtml(r.g.name)+' ×'+r.quantity+' → '+escapeHtml(r.target.name)+'</strong><small>단가 '+fmt(r.buy)+' → '+fmt(r.sell)+' G · 직선 '+r.distance+' 해도 거리</small><b>현재 시세 차익 +'+fmt(r.profit)+' G</b></div><button class="action sub" data-route="'+r.target.id+'">항로 설정</button></article>').join('');
  const show=(g)=>{
   const q=marketQuote(state,p.id,g.id),inventory=state.cargo[g.id]||0,canBuy=q.kind!=='미취급';
   const trend=q.history.length>1?q.percent-q.history.at(-2):0,change=trend>1?'▲ '+trend+'%':trend< -1?'▼ '+Math.abs(trend)+'%':'― 안정';
@@ -253,7 +266,7 @@ function market(){
  '<div class="kpi"><div>금화<b>'+fmt(state.coins)+' G</b></div><div>화물<b>'+cargoWeight(state)+' / '+state.ship.cargoLimit*state.fleet+'</b></div><div>시장 취급<b>'+goods.length+'종</b></div></div>'+
  '<div class="trade-legend"><strong>지역 명산품</strong> '+group.produces.map(id=>escapeHtml(GOODS.find(g=>g.id===id).name)).join(' · ')+'</div>'+
  '<p class="info">수입품 '+group.imports.map(id=>GOODS.find(g=>g.id===id).name).join(' · ')+' · 수요 높은 품목 '+group.demand.map(id=>GOODS.find(g=>g.id===id).name).join(' · ')+'</p>'+
- goods.map(show).join('')+
+ '<section class="trade-planner"><h3>교역 항로 수첩</h3><p class="info">발견한 도시·현 재고·금화·남은 적재량으로 최대 5개 화물의 가격 차이를 비교해. 매입은 직접 해야 하며, 시세 변동·대량거래·항해 비용에 따라 실제 이익은 달라져.</p>'+(recommendations||'<p>화물을 비우거나 다른 항구를 발견하면 교역 후보를 비교할 수 있어.</p>')+'</section>'+goods.map(show).join('')+
  '<h3>교역 항로 정보</h3><p class="info">실제 배에 실은 상품은 다른 항구에서 팔 수 있어. 예상 최고 매각가는 현재 공개된 해도 기준이야.</p>'+
  GOODS.filter(g=>state.cargo[g.id]>0).map(g=>'<div class="row"><div class="desc"><strong>'+escapeHtml(g.name)+'</strong><small>'+bestSale(g.id)+'</small></div></div>').join('');
 }
@@ -375,10 +388,11 @@ const portrait=c=>{
 function portScene(){
  const p=canDock(state),near=nearestPort(state);
  if(!p)return '<div class="scene-card"><h3>해안까지 항해하기</h3><p>가장 가까운 항구는 '+escapeHtml(near.port.name)+'이야. 해도에서 항로를 설정하고 조이스틱으로 접근해.</p><button class="action sub" data-route="'+near.port.id+'">항구로 자동항해</button></div>';
+ const readiness=[['식량',Math.floor(state.ship.provisions/2)+'일 이상',state.ship.provisions<20],['선체',Math.round(state.ship.hull/state.ship.maxHull*100)+'%',state.ship.hull/state.ship.maxHull<.65],['선원',state.ship.crew+'/'+state.ship.maxCrew,state.ship.crew<state.ship.maxCrew*.6],['포탄',state.supplies.ammo+'발',state.supplies.ammo<10]],condition=portStatus(state,p.id);
  const scene=PORT_SCENES[p.id],src=kennyMap+(p.id==='dawn'||p.id==='north'?'castle.png':p.id==='storm'?'lighthouse.png':'dock.png');
  const priceAlert=GOODS.filter(g=>PORT_MARKETS[p.id].produces.includes(g.id)||PORT_MARKETS[p.id].imports.includes(g.id)).map(g=>({g,q:marketQuote(state,p.id,g.id)})).filter(v=>v.q.event||v.q.percent>=120||v.q.percent<=75).slice(0,2);
  const buildings={market:['교역소','특산품·현지 시세·대금 결제'],fleet:['조선소','선박 시각화·장비·돛·수리'],crew:['선술집','항해사 영입·소문·친밀도'],palace:['왕궁 · 총독부','작위·외교·지역 정세'],quests:['탐험가 사무실','유적·발견 보고·의뢰'],jobs:['직업 길드','항해 직업 변경']};
- return '<div class="scene-card port-scene"><img alt="Kenney CC0 항구 아이콘" src="'+src+'"><div><h3>'+escapeHtml(p.name)+'</h3><small>'+escapeHtml(p.region)+' · '+escapeHtml(p.faction)+'</small><p>'+escapeHtml(scene.district)+' · 1590년</p><small>이 도시에 있는 시설 '+scene.facilities.length+'곳</small></div></div>'+
+ return '<section class="departure-check"><h3>출항 준비 · '+escapeHtml(p.name)+'</h3><div class="readiness-grid">'+readiness.map(([label,value,warn])=>'<div class="'+(warn?'needs-care':'prepared')+'"><small>'+label+'</small><strong>'+value+'</strong><span>'+(warn?'점검 권장':'준비됨')+'</span></div>').join('')+'</div><p class="info">식량은 하루 2개 소비 기준의 최소 유지일이야. 부족한 항목이 있어도 출항은 직접 결정할 수 있어.</p><div class="stack"><button class="action sub" data-upgrade="provisions">식량 보급 · 190 G</button><button class="action sub" data-upgrade="repair">선체 수리</button><button class="action sub" data-upgrade="crew">선원 모집 · 420 G</button></div><p>항만 정세 · 번영 '+condition.prosperity+' · 치안 '+condition.security+' · 상단 영향력 '+condition.influence+'%</p></section><div class="scene-card port-scene"><img alt="Kenney CC0 항구 아이콘" src="'+src+'"><div><h3>'+escapeHtml(p.name)+'</h3><small>'+escapeHtml(p.region)+' · '+escapeHtml(p.faction)+'</small><p>'+escapeHtml(scene.district)+' · 1590년</p><small>이 도시에 있는 시설 '+scene.facilities.length+'곳</small></div></div>'+
  '<div class="scene-card"><strong>지역 명산품 · '+PORT_MARKETS[p.id].produces.map(id=>escapeHtml(GOODS.find(g=>g.id===id).name)).join(' · ')+'</strong><p class="info">교역소 시세 '+state.day+'일 기준 · 매일 재고·가격 갱신</p>'+(priceAlert.length?priceAlert.map(v=>'<small>'+escapeHtml(v.g.name)+' '+v.q.percent+'%'+(v.q.event?' · '+v.q.event:'')+'</small>').join(' · '):'<small>시세 안정</small>')+'</div>'+
  scene.facilities.map(id=>'<div class="row"><div class="desc"><strong>'+buildings[id][0]+'</strong><small>'+buildings[id][1]+'</small></div><button class="action" data-panel-open="'+id+'">방문</button></div>').join('')+
  (!scene.facilities.includes('fleet')?'<div class="scene-card"><strong>일반 부두 · 긴급 보급</strong><p>정식 조선소는 없어. 보급과 응급 수리만 이용할 수 있어.</p><button class="action sub" data-upgrade="provisions">식량 보급</button><button class="action sub" data-upgrade="repair">선체 수리</button><button class="action sub" data-upgrade="crew">선원 모집</button></div>':'')+
