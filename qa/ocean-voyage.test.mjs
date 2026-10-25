@@ -4,7 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,boardEnemy,dailyProvisions,SEA_LANDMARKS,observeSeaLandmark,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand} from '../web-games/ocean-voyage/engine.mjs';
+import * as oceanEngine from '../web-games/ocean-voyage/engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,boardEnemy,dailyProvisions,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,SEA_LANDMARKS,observeSeaLandmark,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -13,6 +14,31 @@ test('separate save key, valid round trip, invalid save stays isolated',()=>{
  assert.deepEqual(restoreGame(serializeGame(s)),s);
  assert.equal(restoreGame('not-json').ship.hull,100);
  assert.equal(restoreGame('{"version":999}').coins,3400);
+});
+test('browser main imports all engine exports so startup cannot silently fail',()=>{
+ const main=fs.readFileSync(new URL('../web-games/ocean-voyage/main.mjs',import.meta.url),'utf8');
+ const block=main.match(/import\\s*\\{([^}]+)\\}\\s*from ['"]\\.\\/engine\\.mjs['"]/);
+ assert.ok(block,'main must import its engine through the existing entry point');
+ const missing=block[1].split(',').map(x=>x.trim()).filter(name=>!(name in oceanEngine));
+ assert.deepEqual(missing,[],'missing engine exports crash the browser before opening the game');
+});
+test('merchant hail needs real proximity and story dismissal resumes sea events',()=>{
+ let s=newGame();const merchant=s.merchants[0],captain=MERCHANT_CAPTAINS.find(c=>c.id===merchant.id);
+ assert.ok(captain);
+ assert.equal(hailMerchant(s,merchant.id).ok,false);
+ const pos=merchantPosition(merchant);s.ship.x=pos.x;s.ship.z=pos.z;
+ assert.equal(hailMerchant({...s,event:{id:'fog'}},merchant.id).ok,false);
+ assert.equal(hailMerchant({...s,navalCombat:{enemyId:1,x:pos.x,z:pos.z,radius:36}},merchant.id).ok,false);
+ const hailed=hailMerchant(s,merchant.id);
+ assert.equal(hailed.ok,true);assert.deepEqual(hailed.state.event,{id:'merchant_meeting',merchantId:merchant.id});
+ assert.equal(s.event,null);assert.equal(hailMerchant(hailed.state,merchant.id).ok,false);
+ const talked=resolveMerchantEncounter(hailed.state,1);
+ assert.equal(talked.ok,true);assert.equal(talked.state.event,null);
+ assert.equal(talked.state.scene.kind,'merchant');
+ const closed=dismissStoryScene(talked.state);assert.equal(closed.ok,true);
+ assert.equal(closed.state.scene,null);assert.equal(closed.state.event,null);
+ assert.equal(dismissStoryScene(closed.state).ok,false);
+ assert.deepEqual(restoreGame(serializeGame(closed.state)).merchants,closed.state.merchants);
 });
 test('European ports and specialty goods have finite independent prices',()=>{
  assert.equal(PORTS.length,13);assert.equal(new Set(PORTS.map(p=>p.id)).size,PORTS.length);
