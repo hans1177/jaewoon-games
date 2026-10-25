@@ -224,7 +224,7 @@ test('main builds use exactly two parity lanes and preserve active work',()=>{
  assert.match(workflow,/node --test --test-concurrency=4 qa\/vibe-fighting-engine\.test\.mjs/);
  assert.match(header,/cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
 });
-test('asset verification performs real overlapping reads with a maximum of four files',async()=>{
+test('asset verification performs overlapping reads with an eight-file safety bound',async()=>{
  const originalOpen=fs.promises.open;let active=0,peak=0;
  fs.promises.open=async(...args)=>{
   const fd=await originalOpen(...args);active++;peak=Math.max(peak,active);
@@ -233,7 +233,7 @@ test('asset verification performs real overlapping reads with a maximum of four 
  try{
   const originals=Object.fromEntries(Array.from({length:11},(_,i)=>['model-'+i+'.glb',Buffer.from('verified model '+i)]));
   const f=await fixture({originals,cache:originals});
-  assert(peak>1,'file verification must actually overlap');assert(peak<=4,'bounded file descriptors and memory');
+  assert(peak>1,'file verification must actually overlap');assert(peak<=8,'bounded file descriptors and memory (8 MiB maximum)');
   assert.equal(active,0);assert.equal(f.result.checkedAssets.size,11);assert.equal(f.calls.length,0);
  }finally{fs.promises.open=originalOpen;}
 });
@@ -297,6 +297,6 @@ test('the complete canonical async staging program builds independent game route
   assert.equal(manifest.sourceSha,sha);assert.equal(manifest.routes.length,3);
   for(const id of games){assert.match(fs.readFileSync(path.join(directory,'_site/web-games/'+id+'/index.html'),'utf8'),/\/jaewoon-games\/assets\/scene\.mjs/);assert.match(manifest.sourceTreeShas[id],/^[a-f0-9]{40}$/);}
   assert.equal(fs.readFileSync(path.join(directory,'_site/assets/scene.mjs'),'utf8'),'// scene source');
-  assert.match(result.stdout,/PAGES_GAME_COPY_PARALLELISM=4/);assert.match(result.stdout,/PAGES_ASSET_IO_PARALLELISM=4/);
+  assert.match(result.stdout,/PAGES_GAME_COPY_PARALLELISM=8/);assert.match(result.stdout,/PAGES_ASSET_IO_PARALLELISM=8/);
  }finally{fs.rmSync(directory,{recursive:true,force:true});}
 });
