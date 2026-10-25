@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-11hf8gv",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-existing-web-assessment-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "web-games/village-dungeons/index.html"
+      ],
+      "baseSha": "ca7213461b51b0dd3ec8326781cd32a5abf34f0c",
+      "runId": "40154461157",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-25T02:54:56.655Z",
+      "expiresAt": "2026-10-25T03:39:56.655Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
