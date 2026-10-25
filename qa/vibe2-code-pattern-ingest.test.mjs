@@ -305,6 +305,54 @@ test('Roblox model-free native GUI coding is bounded to a real client GuiButton 
 });
 
 
+test('Roblox no-model coding guards real DataStore read before writing and preserves unrelated keys',t=>{
+  const source=fs.readFileSync('roblox-games/exorcist-office/server/Game.server.luau','utf8');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-model-free-safe-datastore-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const relative='server/Game.server.luau';
+  fs.writeFileSync(path.join(root,relative),source);
+  const args={order:{target:'roblox',goal:'save stability shutdown repair'},sourceRoot:root,responsibleFiles:[relative]};
+  const candidate=deterministicRobloxNativeRepairCandidate(args);
+  assert.equal(candidate?.deterministicRobloxNativeRepair,'GUARDED_MERGED_SAVE_WITH_SHUTDOWN');
+  assert.equal(candidate?.edits.length,3);
+  let next=source;
+  for(const edit of candidate.edits){
+    assert.equal(next.split(edit.find).length,2,'only one real responsible-source anchor may be edited');
+    next=next.replace(edit.find,edit.replace);
+  }
+  assert.match(next,/local verifiedSaveLoad = \{\}/);
+  assert.match(next,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(next,/if verifiedSaveLoad\[player\] ~= true then return end/);
+  assert.match(next,/local merged = typeof\(current\) == "table" and current or \{\}/);
+  assert.match(next,/for key, value in pairs\(snapshot\) do merged\[key\] = value end/);
+  assert.match(next,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  assert.equal((next.match(/store:UpdateAsync\(/g)||[]).length,(source.match(/store:UpdateAsync\(/g)||[]).length);
+  assert.equal((next.match(/return store:GetAsync\(/g)||[]).length,(source.match(/return store:GetAsync\(/g)||[]).length);
+  assert.equal((next.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.equal(fs.readFileSync(path.join(root,relative),'utf8'),source,'candidate generation never writes game source');
+  fs.writeFileSync(path.join(root,relative),next);
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'safe migration never repeats');
+  fs.writeFileSync(path.join(root,relative),source.replace('return store:GetAsync("player:" .. player.UserId)','return brokenStore:GetAsync("player:" .. player.UserId)'));
+  assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'unverified DataStore read must not fall through to unsafe shutdown save');
+});
+
+test('real survival2 uses guarded read-safe merged save across leave and shutdown',()=>{
+  const source=fs.readFileSync('roblox-games/survival2/server/Game.server.luau','utf8');
+  assert.match(source,/local verifiedSaveLoad = \{\}/);
+  assert.match(source,/verifiedSaveLoad\[player\] = ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(source,/if verifiedSaveLoad\[player\] ~= true then return end/);
+  assert.match(source,/store:UpdateAsync\("player:" \.\. player.UserId, function\(current\)/);
+  assert.match(source,/local merged = typeof\(current\) == "table" and current or \{\}/);
+  assert.match(source,/Players\.PlayerRemoving:Connect\(function\(player\)[\s\S]*savePlayer\(player\)/);
+  assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  assert.doesNotMatch(source,/game:BindToClose\(function\(\) end\)/);
+  assert.equal(deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'save stability shutdown'},
+    sourceRoot:'roblox-games/survival2',responsibleFiles:['server/Game.server.luau']
+  }),null,'existing corrected game cannot receive a duplicate patch');
+});
+
 test('Roblox no-model repair extracts the existing survival world save without bypassing read verification',t=>{
   const live=fs.readFileSync('roblox-games/survival/server/Game.server.luau','utf8');
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-no-model-world-save-'));
