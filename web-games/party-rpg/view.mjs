@@ -525,17 +525,20 @@ buildWorld(live){
  playSkillEffect(kind,sx,sy,tx=sx,ty=sy){
   if(!this.ready||this.effects.length>=(this.mobile?11:24))return;
   const type=String(kind),family=type.startsWith('fighter')?'fighter':type.startsWith('rogue')?'rogue':type.startsWith('cleric')?'cleric':type.startsWith('wizard')?'wizard':type.startsWith('ranger')?'ranger':type;
+   const monster=type.startsWith('monster_'),monsterStyle=monster?type.replace(/^monster_(boss_)?(warn_)?/,''):null;
+   const warning=type.startsWith('monster_warn_'),boss=type.startsWith('monster_boss_');
   const colors={fighter:0xe0b56b,rogue:0xc48dbd,cleric:0xf4d898,wizard:0x82b4ff,ranger:0x96dba3,guard:0x91d5e6,strike:0xffd2a0};
-  const color=colors[family]||colors.strike,group=new THREE.Group();
-  const defense=/guard|wall|rally|shout|ward|veil|escape|evasion/.test(type);
-  const healing=/cleric_group|cleric_rescue/.test(type),slow=/smoke|frost|snare/.test(type);
+  const monsterColors={slime:0x80cbb7,bunny:0xeec99d,orc:0xe2a075,golem:0xb9aa87,ghost:0xa9a5ed,winged:0x95b8d5,hunter:0xcf9b7e,skitter:0xaaad79,specter:0x9d93e4,charger:0xe3a368,ritual:0xddbf83,bulwark:0xb2bdca};
+   const color=monster?monsterColors[monsterStyle]||0xc8ae8a:colors[family]||colors.strike,group=new THREE.Group();
+  const defense=/guard|wall|rally|shout|ward|veil|escape|evasion/.test(type)||warning||type==='monster_bulwark';
+  const healing=/cleric_group|cleric_rescue/.test(type)||type==='monster_ritual',slow=/smoke|frost|snare/.test(type);
   const area=/cleave|purify|nova|chain|volley|flurry|strike/.test(type);
   const arrow=family==='ranger',arcane=family==='wizard',holy=family==='cleric',shadow=family==='rogue';
-  const impact=defense||healing?{x:sx,y:sy}:{x:tx,y:ty};
+  const impact=defense||healing||type==='monster_specter'||type==='monster_charger'?{x:sx,y:sy}:{x:tx,y:ty};
   group.position.set(impact.x*SCALE,.10,impact.y*SCALE);
   const makeMaterial=(opacity=.85)=>new THREE.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
   const attach=(geo,mat,x=0,y=0,z=0)=>{const mesh=new THREE.Mesh(geo,mat);mesh.position.set(x,y,z);mesh.userData.fade=mat.opacity;group.add(mesh);return mesh;};
-  const base=defense?.67:area?.82:.46;
+  const base=monster?(boss?.96:warning?.72:monsterStyle==='golem'?.84:.56):defense?.67:area?.82:.46;
   const floor=attach(new THREE.RingGeometry(base*.7,base,24),makeMaterial(.82),0,.012,0);floor.rotation.x=-Math.PI/2;
   if(defense||healing){
    for(let i=0;i<(this.mobile?2:3);i++){
@@ -558,7 +561,7 @@ buildWorld(live){
     arc.rotation.set(shadow?1.34:arcane?.45:1.05,.22,.3);
    }
   }
-  const shards=this.mobile?(area?5:3):(area?10:6),seed=type.length*2.29;
+  const shards=this.mobile?(monster?3:area?5:3):(monster?6:area?10:6),seed=type.length*2.29;
   for(let i=0;i<shards;i++){
    const angle=(i/shards)*Math.PI*2+seed,dist=.12+(i%3)*.15;
    const spike=attach(new THREE.OctahedronGeometry((arrow?.055:.085)*(1+(i%2)*.4),0),makeMaterial(.72),Math.cos(angle)*dist,.32+(i%4)*.16,Math.sin(angle)*dist);
@@ -567,7 +570,45 @@ buildWorld(live){
   if(arrow||slow){const tip=attach(new THREE.ConeGeometry(.13,.42,5),makeMaterial(.9),0,.72,0);tip.rotation.x=arrow?Math.PI/2:0;}
   if(arcane){const core=attach(new THREE.IcosahedronGeometry(.19,0),makeMaterial(.96),0,.76,0);core.rotation.y=.2;}
   if(holy){const disk=attach(new THREE.RingGeometry(.24,.29,16),makeMaterial(.9),0,1.32,0);disk.rotation.y=.5;}
-  this.scene.add(group);this.effects.push({group,born:performance.now(),duration:healing?920:defense?880:area?670:590,spin:(arcane?2.7:shadow?-2.3:1.3),area});
+     // 몬스터 전용 기술 동작: 같은 피해/재사용 시간이라도 종족마다 발동 형태를 다르게 표현.
+   // 기존 이펙트 풀의 수량 상한을 공유하며 효과는 공격/피해 판정에 관여하지 않는다.
+   if(monster){
+    const magic=monsterStyle==='ghost'||monsterStyle==='specter'||monsterStyle==='ritual';
+    if(warning){
+     const signal=attach(new THREE.RingGeometry(base*.45,base*.55,20),makeMaterial(.78),0,.021,0);
+     signal.rotation.x=-Math.PI/2;signal.userData.spark=null;
+    }else if(monsterStyle==='slime'){
+     const splash=attach(new THREE.SphereGeometry(.27,8,5),makeMaterial(.75),0,.25,0);
+     splash.scale.set(1.55,.36,1.25);
+    }else if(monsterStyle==='golem'||monsterStyle==='bulwark'){
+     for(let k=-1;k<=1;k++){
+      const rock=attach(new THREE.BoxGeometry(.13,.12,.62),makeMaterial(.7),k*.25,.09,k*.11);
+      rock.rotation.y=k*.38;
+     }
+    }else if(monsterStyle==='bunny'||monsterStyle==='hunter'||monsterStyle==='charger'){
+     const arc=attach(new THREE.TorusGeometry(.52,.045,5,18,Math.PI*1.28),makeMaterial(.82),0,.42,0);
+     arc.rotation.set(1.22,0,Math.atan2(ty-sy,tx-sx));
+    }else if(monsterStyle==='skitter'){
+     for(let k=0;k<3;k++){
+      const strand=attach(new THREE.BoxGeometry(.035,.017,.95),makeMaterial(.73),0,.05,0);
+      strand.rotation.y=k*Math.PI/3;
+     }
+    }else if(monsterStyle==='winged'){
+     for(const side of [-1,1]){
+      const wing=attach(new THREE.ConeGeometry(.18,.75,3),makeMaterial(.74),side*.35,.60,0);
+      wing.rotation.z=side*1.15;
+     }
+    }else if(magic){
+     for(let k=0;k<2;k++){
+      const rune=attach(new THREE.TorusGeometry(.26+k*.13,.035,5,20),makeMaterial(.8),0,.68+k*.26,0);
+      rune.rotation.set(.85,k*1.1,.35);
+     }
+    }else{
+     const slash=attach(new THREE.TorusGeometry(.54,.052,5,18,Math.PI*1.45),makeMaterial(.75),0,.59,0);
+     slash.rotation.set(1.15,.38,.45);
+    }
+   }
+   this.scene.add(group);this.effects.push({group,born:performance.now(),duration:monster?(warning?700:boss?800:610):healing?920:defense?880:area?670:590,spin:monster?.7:arcane?2.7:shadow?-2.3:1.3,area});
  }
  clearEffects(){
   for(const fx of this.effects){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}
