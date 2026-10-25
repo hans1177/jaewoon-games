@@ -357,7 +357,8 @@ local function savePlayer(player)
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
   local ok, err = pcall(function()
     store:UpdateAsync("player:" .. player.UserId, function(current)
-      local merged = typeof(current) == "table" and current or {}
+      if current ~= nil and typeof(current) ~= "table" then return nil end
+      local merged = typeof(current) == "table" and table.clone(current) or {}
       for key, value in pairs(snapshot) do merged[key] = value end
       return merged
     end)
