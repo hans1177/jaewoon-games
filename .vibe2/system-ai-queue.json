@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -117530,7 +117530,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -117572,12 +117572,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40207101119:1",
+      "reservedAt": "2026-10-25T15:34:13.548Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -117927,7 +117927,8 @@
         "system-ai-handoff-to-reservation:system-ai:40205751624:1",
         "actions-run:40205751624",
         "system-ai-handoff-to-reservation:system-ai:40206277120:1",
-        "actions-run:40206277120"
+        "actions-run:40206277120",
+        "system-ai-handoff-to-reservation:system-ai:40207101119:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1638,
@@ -117942,7 +117943,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-25T15:27:49.984Z"
+      "updatedAt": "2026-10-25T15:34:13.548Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -168379,6 +168380,7 @@
       "department": "planning-growth-marketing",
       "taskType": "marketing",
       "gameId": "mini-empire",
+      "jointDecisionRequired": true,
       "goal": "Create the current non-financial growth/marketing execution package for 미니 제국 전쟁 (mini-empire). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
       "responsibleFiles": [
         "company-learning/marketing/mini-empire/latest.json"
@@ -168399,7 +168401,21 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/mini-empire/latest.json --game-id=mini-empire"
       ],
       "dependencies": [],
+      "relatedTaskIds": [],
+      "blockedTaskIds": [],
       "retries": 0,
+      "recurrenceCount": 0,
+      "failureStage": null,
+      "failureSignature": null,
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": null,
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
       "reservationId": null,
       "reservedAt": null,
@@ -168416,7 +168432,8 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-10-25T15:33:15.394Z",
       "updatedAt": "2026-10-25T15:33:15.394Z"
     },
@@ -168427,6 +168444,7 @@
       "department": "planning-growth-marketing",
       "taskType": "marketing",
       "gameId": "restaurant-tycoon",
+      "jointDecisionRequired": true,
       "goal": "Create the current non-financial growth/marketing execution package for 식당 타이쿤 (restaurant-tycoon). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
       "responsibleFiles": [
         "company-learning/marketing/restaurant-tycoon/latest.json"
@@ -168447,7 +168465,21 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/restaurant-tycoon/latest.json --game-id=restaurant-tycoon"
       ],
       "dependencies": [],
+      "relatedTaskIds": [],
+      "blockedTaskIds": [],
       "retries": 0,
+      "recurrenceCount": 0,
+      "failureStage": null,
+      "failureSignature": null,
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": null,
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
       "reservationId": null,
       "reservedAt": null,
@@ -168464,10 +168496,10 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-10-25T15:33:15.394Z",
       "updatedAt": "2026-10-25T15:33:15.394Z"
     }
-  ],
-  "updatedAt": "2026-10-25T15:33:15.394Z"
+  ]
 }
