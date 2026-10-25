@@ -2,24 +2,25 @@
   "version": 2,
   "gameId": "forgotten-continent",
   "date": "2026-10-25",
-  "engineDigest": "d48c7eab6628443b29ccdfcb2a80ef92daa1b718c42fecd5fb425e377958f401",
-  "status": "DESIGN_INTELLIGENCE_BLOCKED",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
+  "engineDigest": "2b756570adb02b543a4df13cacafedd4acf56cbb69afb40c35f4a74c1173e146",
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
     "deterministic_pre_gate_after_repair_1",
     "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "deterministic_pre_gate_after_repair_2",
+    "deterministic_department_evidence"
   ],
-  "completedPhaseCount": 6,
+  "completedPhaseCount": 7,
   "cachedTaskCount": 11,
   "lastSuccessfulModelCallAt": null,
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_INTELLIGENCE_BLOCKED DESIGNER_HANDOFF_REQUIRED",
+  "lastError": null,
   "designerSeed": {
     "file": "design/forgotten-continent/2026-10-25/design-seed.json",
     "contentDigest": "d36d6b5f43cc33c1dd15cbbe263fb6a60c05bf47b56b43b5c0ce077acc1b43cc",
@@ -28,5 +29,7 @@
   },
   "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-25T23:35:26.957Z"
+  "updatedAt": "2026-10-25T23:39:45.703Z",
+  "preGateScore": 73.6,
+  "postRevisionPreGateScore": 73.6
 }

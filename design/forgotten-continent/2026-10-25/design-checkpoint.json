@@ -3,19 +3,20 @@
   "gameId": "forgotten-continent",
   "date": "2026-10-25",
   "seedId": "AUTO-MISSING-DESIGN-FORGOTTEN-CONTINENT",
-  "fingerprint": "52b20ec03962e0c9c2b97ad73c811c19fcae5ebbd67cfb76cb19eadf48529355",
+  "fingerprint": "a781bebdd1ec63bb45803c2f236d65cdba604be70622829c2eb82fbeba82f5c9",
   "policyDigest": "a86d225d90921cb68d18dc3c5b9170353a26725507af8b27ce6801602c59fb88",
-  "engineDigest": "d48c7eab6628443b29ccdfcb2a80ef92daa1b718c42fecd5fb425e377958f401",
+  "engineDigest": "2b756570adb02b543a4df13cacafedd4acf56cbb69afb40c35f4a74c1173e146",
   "ownerDesignEventId": null,
   "designTopicMode": null,
-  "status": "DESIGN_INTELLIGENCE_BLOCKED",
+  "status": "COMPLETE",
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
     "deterministic_pre_gate_after_repair_1",
     "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "deterministic_pre_gate_after_repair_2",
+    "deterministic_department_evidence"
   ],
   "phases": {
     "designer_draft": {
@@ -4964,6 +4965,76 @@
       "grammarCarryEvidence": null,
       "pendingSeedGrammarNotAuthored": true,
       "pendingSeedStillRequiresCreativeDesign": true
+    },
+    "deterministic_department_evidence": {
+      "planning": {
+        "keep": [
+          "IDEA_AND_DISTINCTNESS evidence=80 deterministic"
+        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [
+          "IDEA_AND_DISTINCTNESS=80,CATEGORY_IDENTITY=80,CORE_LOOP_DESIGN=80,PROGRESSION_ECONOMY_BALANCE_DESIGN=80,CONTENT_EXPANSION_PLA"
+        ],
+        "questions": []
+      },
+      "graphics": {
+        "keep": [
+          "UX_AND_ACCESSIBILITY_PLAN evidence=80 deterministic"
+        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [
+          "UX_AND_ACCESSIBILITY_PLAN=80,ART_AUDIO_DIRECTION=80"
+        ],
+        "questions": []
+      },
+      "development": {
+        "keep": [
+          "SYSTEM_INTERCONNECTION_DESIGN evidence=80 deterministic"
+        ],
+        "fix": [
+          "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다."
+        ],
+        "add": [],
+        "risks": [
+          "CRITICAL_AXIS_MINIMUM_FAIL:PLATFORM_FIT_DESIGN"
+        ],
+        "evidence": [
+          "SYSTEM_INTERCONNECTION_DESIGN=80,PLATFORM_FIT_DESIGN=0,IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY=80"
+        ],
+        "questions": []
+      },
+      "qa": {
+        "keep": [
+          "CATEGORY_IDENTITY evidence=80 deterministic"
+        ],
+        "fix": [
+          "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다."
+        ],
+        "add": [],
+        "risks": [
+          "CRITICAL_AXIS_MINIMUM_FAIL:PLATFORM_FIT_DESIGN"
+        ],
+        "evidence": [
+          "CATEGORY_IDENTITY=80,CORE_LOOP_DESIGN=80,SYSTEM_INTERCONNECTION_DESIGN=80,PROGRESSION_ECONOMY_BALANCE_DESIGN=80,CONTENT_EXPAN"
+        ],
+        "questions": []
+      },
+      "audio": {
+        "keep": [
+          "ART_AUDIO_DIRECTION evidence=80 deterministic"
+        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [
+          "ART_AUDIO_DIRECTION=80"
+        ],
+        "questions": []
+      }
     }
   },
   "tasks": {
@@ -6523,9 +6594,9 @@
   },
   "modelHealth": {},
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
-  "createdAt": "2026-10-25T23:07:51.307Z",
-  "updatedAt": "2026-10-25T23:35:26.954Z",
+  "currentPhase": "COMPLETE",
+  "createdAt": "2026-10-25T23:39:44.736Z",
+  "updatedAt": "2026-10-25T23:39:45.700Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -7545,11 +7616,1450 @@
   "effectiveDesignerProvider": "VIBE_NATIVE_FUNCTION",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_INTELLIGENCE_BLOCKED DESIGNER_HANDOFF_REQUIRED",
+  "lastError": null,
   "designerSeed": {
     "file": "design/forgotten-continent/2026-10-25/design-seed.json",
     "contentDigest": "d36d6b5f43cc33c1dd15cbbe263fb6a60c05bf47b56b43b5c0ce077acc1b43cc",
     "authorModel": "vibe-native:standard-design-v1",
     "status": "AUTHORED_CANDIDATE"
-  }
+  },
+  "detailedAssetLibraryHandoff": {
+    "version": 1,
+    "stage": "DETAILED_DESIGN",
+    "source": "company-asset-library.json",
+    "registrySha256": "482c558ee118d805d029f9a042b9c47760093037278b4635d89dd330f6b08cea",
+    "authoringState": "CANDIDATE_REQUIRES_GRAPHICS_AND_NATIVE_QA",
+    "gameplayMutationAuthorized": false,
+    "platformSelection": {
+      "WEB": {
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "evaluatedAssetCount": 160,
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "BUILDING",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "BUILDING",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-fence-corner-v1",
+                "sourceModel": "assets/shared/homely-house/fence_corner.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "FENCE",
+              "sourcePath": "/assets/shared/homely-house/fence_corner.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "CHARACTER",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "CREATURE",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "ENVIRONMENT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "ENVIRONMENT",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-cobblestones-v1",
+                "sourceModel": "assets/shared/homely-house/cobblestones.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "COBBLESTONES",
+              "sourcePath": "/assets/shared/homely-house/cobblestones.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "MOTION",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "PROP",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "PROP",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-bench-a-v1",
+                "sourceModel": "assets/shared/homely-house/bench_A.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "BENCH",
+              "sourcePath": "/assets/shared/homely-house/bench_A.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "SKILL",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "UI",
+            "assetId": "tycoon-arrowBlue_left",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "USE_AS_IS",
+            "action": "USE",
+            "sourceFacts": {
+              "family": "UI",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "progress"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": true,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "role": "CONTROL_ICON",
+              "sourcePath": "assets/shared/tycoon/arrowBlue_left.png",
+              "platform": "SHARED_UI",
+              "license": "CC0-1.0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "UNVERIFIED",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "VFX",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "WEAPON",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          }
+        ]
+      },
+      "UNITY": {
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "evaluatedAssetCount": 160,
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "BUILDING",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "BUILDING",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-fence-corner-v1",
+                "sourceModel": "assets/shared/homely-house/fence_corner.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "FENCE",
+              "sourcePath": "/assets/shared/homely-house/fence_corner.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "CHARACTER",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "CREATURE",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "ENVIRONMENT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "ENVIRONMENT",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-cobblestones-v1",
+                "sourceModel": "assets/shared/homely-house/cobblestones.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "COBBLESTONES",
+              "sourcePath": "/assets/shared/homely-house/cobblestones.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "MOTION",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "PROP",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "PROP",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-bench-a-v1",
+                "sourceModel": "assets/shared/homely-house/bench_A.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "BENCH",
+              "sourcePath": "/assets/shared/homely-house/bench_A.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "SKILL",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "UI",
+            "assetId": "tycoon-arrowBlue_left",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "USE_AS_IS",
+            "action": "USE",
+            "sourceFacts": {
+              "family": "UI",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "progress"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": true,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "role": "CONTROL_ICON",
+              "sourcePath": "assets/shared/tycoon/arrowBlue_left.png",
+              "platform": "SHARED_UI",
+              "license": "CC0-1.0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "UNVERIFIED",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "VFX",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "WEAPON",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          }
+        ]
+      },
+      "ROBLOX": {
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "evaluatedAssetCount": 160,
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "BUILDING",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "BUILDING",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-fence-corner-v1",
+                "sourceModel": "assets/shared/homely-house/fence_corner.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "FENCE",
+              "sourcePath": "/assets/shared/homely-house/fence_corner.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "CHARACTER",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "CREATURE",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "ENVIRONMENT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "ENVIRONMENT",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-cobblestones-v1",
+                "sourceModel": "assets/shared/homely-house/cobblestones.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "COBBLESTONES",
+              "sourcePath": "/assets/shared/homely-house/cobblestones.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "MOTION",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "PROP",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "STYLE_ADAPT",
+            "action": "ADAPT",
+            "sourceFacts": {
+              "family": "PROP",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "survival"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": false,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "libraryReuse": {
+                "sourceAssetId": "external-tinytreats-bench-a-v1",
+                "sourceModel": "assets/shared/homely-house/bench_A.obj",
+                "sourceLicense": "cc0",
+                "sourceCredit": null,
+                "expectedSourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+                "sourceFileAndSha256InspectionRequired": true,
+                "sourceRoleEvidence": {
+                  "requestedRoles": [],
+                  "matchedRoles": [
+                    "survival"
+                  ],
+                  "currentSourceBound": false,
+                  "genericFamilyRequest": false,
+                  "verifiedRoleMatch": true,
+                  "visualSpeciesSubstitute": false,
+                  "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                  "originalMonsterIdentityAndGameplayPreserved": true
+                },
+                "derivativeCandidateReady": true,
+                "originalImmutable": true,
+                "catalogSelectionIsNotNativeArtifact": true
+              },
+              "materialRefinement": {
+                "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+                "sourceMaterialModificationPerformed": false,
+                "allowedAxes": [
+                  "PBR_BASE_COLOR_TINT",
+                  "PBR_ROUGHNESS",
+                  "PBR_METALNESS_WHEN_PHYSICAL",
+                  "NORMAL_STRENGTH",
+                  "CONTEXTUAL_LIGHT_WEAR"
+                ],
+                "availableSemanticAtoms": [],
+                "paletteMustFollowGameStyleLock": true,
+                "originalAssetImmutable": true,
+                "geometryRigAndGameplaySemanticsPreserved": true,
+                "mobileTextureMeshBudgetRequired": true
+              },
+              "assetization": {
+                "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+                "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+                "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+                "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+                "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+                "sourceInspectionRequired": true,
+                "sourceAndDerivativeSha256Required": true,
+                "originalAndTransformHistoryRequired": true,
+                "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+                "gameSourceWorkerMayEditCentralRegistry": false,
+                "candidateState": "PREPARED_SOURCE_ONLY",
+                "productionVerified": false,
+                "runtimeVerified": false,
+                "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+                "newPipelineOrQueueCreated": false
+              },
+              "role": "BENCH",
+              "sourcePath": "/assets/shared/homely-house/bench_A.obj",
+              "platform": "SHARED_3D_SOURCE",
+              "license": "CC0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "SKILL",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "UI",
+            "assetId": "tycoon-arrowBlue_left",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            },
+            "applicationMode": "USE_AS_IS",
+            "action": "USE",
+            "sourceFacts": {
+              "family": "UI",
+              "roleEvidence": {
+                "requestedRoles": [],
+                "matchedRoles": [
+                  "progress"
+                ],
+                "currentSourceBound": false,
+                "genericFamilyRequest": true,
+                "verifiedRoleMatch": true,
+                "visualSpeciesSubstitute": false,
+                "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+                "originalMonsterIdentityAndGameplayPreserved": true
+              },
+              "role": "CONTROL_ICON",
+              "sourcePath": "assets/shared/tycoon/arrowBlue_left.png",
+              "platform": "SHARED_UI",
+              "license": "CC0-1.0",
+              "referenceOnly": false,
+              "auditScore": null,
+              "auditState": "UNKNOWN",
+              "qualityGap": null,
+              "runtimeState": "UNVERIFIED",
+              "productionVerified": false
+            },
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "VFX",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          },
+          {
+            "family": "WEAPON",
+            "assetId": null,
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            },
+            "applicationMode": null,
+            "action": "HOLD",
+            "sourceFacts": null,
+            "selectionState": "REVALIDATE_AT_GRAPHICS_PRODUCTION",
+            "automaticReplacementAuthorized": false,
+            "independentNativeRuntimeQaRequired": true
+          }
+        ]
+      }
+    },
+    "canonicalHandoff": "tools/vibe2-asset-production-plan.mjs",
+    "sourceApplicationOwner": "tools/vibe2-source-worker.mjs",
+    "nativeRuntimeQaRequired": true
+  },
+  "completedAt": "2026-10-25T23:39:45.700Z"
 }
