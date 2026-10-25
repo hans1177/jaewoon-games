@@ -57,18 +57,21 @@ test('no active development-confirmed seed creates no fabricated promotion or re
   assert.deepEqual(result.verified,[]);
 });
 
-test('Vibe2 planner detects stale Cozy native design and dispatches only the existing designer without bypassing verification',async()=>{
-  const wf=(await import('node:fs')).readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
-  const start=wf.indexOf('            # Preserve the exact failed design gate, then send one idempotent');
-  const end=wf.indexOf('            for runtime_design_path in design game-seed-state.json;',start);
-  assert.ok(start>=0&&end>start);
-  const section=wf.slice(start,end);
-  assert.match(section,/vibe2-verified-design-handoff\.mjs --runtime-sha/);
-  assert.match(section,/VIBE2_VERIFIED_DESIGN_BLOCKER=cozy-island:DESIGN_CONTRACT_NOT_PASSED/);
-  assert.match(section,/seed\.ownerRequestInstanceId==='VIBE2:'/);
-  assert.match(section,/gh workflow run company-seed-design-runtime\.yml --repo/);
-  assert.match(section,/-f game_id=cozy-island -f request_id=/);
-  assert.match(section,/VIBE2_VERIFIED_DESIGN_GATE=BLOCKED_UNTIL_AUTHORED_REVALIDATION/);
-  assert.match(section,/exit 1/);
-  assert.doesNotMatch(section,/VIBE2_VERIFIED_DESIGN_INTAKE=PASS.*echo|gh workflow run vibe2-continuous-core\.yml/);
+test('basic grammar admission stays in the designer promotion flow without globally blocking repeat planning',async()=>{
+  const fs=await import('node:fs');
+  const scheduler=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const promotion=fs.readFileSync('.github/workflows/company-design-promotion-sync.yml','utf8');
+  const start=scheduler.indexOf('            git -C /tmp/vibe2-main fetch origin \'+refs/heads/company-runtime:refs/remotes/origin/company-runtime\' --depth=2 --no-tags --quiet',scheduler.indexOf('vibe3-roblox-distillation.mjs \\'));
+  const snapshot=scheduler.indexOf('            runtime_design_sha=',start);
+  const end=scheduler.indexOf("            echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=",start);
+  const overlay=scheduler.slice(snapshot,end);
+  assert.ok(start>=0&&snapshot>start&&end>snapshot);
+  assert.match(overlay,/show "\$runtime_design_sha:development-queue\.json"/);
+  assert.match(overlay,/cat-file -e "\$runtime_design_sha:\$runtime_design_path"/);
+  assert.match(overlay,/checkout "\$runtime_design_sha" -- "\$runtime_design_path"/);
+  assert.doesNotMatch(overlay,/COZY_DESIGN_REVALIDATION|cozy-island-v5|vibe2-verified-design-handoff\.mjs|exit 1/);
+  const verify=promotion.indexOf('node tools/vibe2-verified-design-handoff.mjs --runtime-sha=');
+  const dispatch=promotion.indexOf('gh workflow run company-development-confirmed-runtime.yml',verify);
+  assert.ok(verify>=0&&dispatch>verify,'exact design handoff still gates canonical promotion');
+  assert.match(promotion,/VIBE2_VERIFIED_DESIGN_INTAKE=PASS/);
 });

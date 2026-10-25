@@ -617,42 +617,12 @@ jobs:
             git -C /tmp/vibe2-main fetch origin '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' --depth=2 --no-tags --quiet
             runtime_design_sha="$(git -C /tmp/vibe2-main rev-parse origin/company-runtime)"
             git -C /tmp/vibe2-main show "$runtime_design_sha:development-queue.json" > /tmp/vibe2-company-runtime-queue.json
-            # Preserve the exact failed design gate, then send one idempotent
-            # Cozy Island revision through the existing Game Seed/Designer lane.
-            if (
-              cd /tmp/vibe2-main
-              COMPANY_VERIFIED_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
-              COMPANY_VERIFIED_DESIGN_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
-                node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha" 2>&1
-            ) | tee /tmp/vibe2-verified-design-handoff.log; then
-              grep -q '^VIBE2_VERIFIED_DESIGN_INTAKE=PASS$' /tmp/vibe2-verified-design-handoff.log
-            else
-              if grep -qx 'VIBE2_VERIFIED_DESIGN_BLOCKER=cozy-island:DESIGN_CONTRACT_NOT_PASSED' /tmp/vibe2-verified-design-handoff.log; then
-                design_request_id='cozy-island-v5-native-design-contract-repair-20261025'
-                intake_state="$(git -C /tmp/vibe2-main show "$runtime_design_sha:game-seed-state.json" | \
-                  DESIGN_REQUEST_ID="$design_request_id" node -e "
-                    let data='';process.stdin.on('data',chunk=>data+=chunk).on('end',()=>{
-                      const state=JSON.parse(data);
-                      const seed=(state.seeds||[]).find(s=>s.gameId==='cozy-island');
-                      if(!seed)throw Error('COZY_DESIGN_RECOVERY_ACTIVE_SEED_MISSING');
-                      process.stdout.write(seed.ownerRequestInstanceId==='VIBE2:'+process.env.DESIGN_REQUEST_ID?'ALREADY_ACCEPTED':'REVISION_REQUIRED');
-                    });
-                  ")"
-                if [ "$intake_state" = 'REVISION_REQUIRED' ]; then
-                  gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
-                    -f game_id=cozy-island -f request_id="$design_request_id" \
-                    -f design_request='Revise Cozy Island original design under the current native Roblox V5 grammar contract. Preserve existing RPG source, saves, economy, characters, multiplayer and balance. Correct A named reference, B source reference and all validation failures through the canonical designer review. Prioritize large connected islands, native traversal, NPC and mob animation, mobile gameplay and existing mechanics. Do not fabricate proof.'
-                  echo 'COZY_DESIGN_REVALIDATION=EXISTING_DESIGNER_DISPATCHED'
-                else
-                  echo 'COZY_DESIGN_REVALIDATION=EXISTING_CANONICAL_REQUEST_PENDING'
-                fi
-              fi
-              echo 'VIBE2_VERIFIED_DESIGN_GATE=BLOCKED_UNTIL_AUTHORED_REVALIDATION' >&2
-              exit 1
-            fi
+            # 기본문법 설계·게임별 개발 인계 검증은 기존 설계 조직과 승격 단계가 소유한다.
+            # 전체 게임의 설계를 다시 심사해 반복 빌드업·한방패치 계획기를 멈추지 않는다.
+            # 최신 설계와 게임 시드는 같은 runtime SHA에서 읽고 기존 책임 단계로 전달한다.
             for runtime_design_path in design game-seed-state.json; do
-              if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
-                git -C /tmp/vibe2-main checkout origin/company-runtime -- "$runtime_design_path"
+              if git -C /tmp/vibe2-main cat-file -e "$runtime_design_sha:$runtime_design_path" 2>/dev/null; then
+                git -C /tmp/vibe2-main checkout "$runtime_design_sha" -- "$runtime_design_path"
                 git -C /tmp/vibe2-main reset -- "$runtime_design_path" >/dev/null 2>&1 || true
               fi
             done
