@@ -416,8 +416,22 @@ test('port departure checklist reads actual shortage and uses existing supply ac
  const body=source.slice(source.indexOf('function portScene(){'),source.indexOf('function relationshipPanel('));
  const s=newGame();s.ship.provisions=0;s.ship.hull=20;s.ship.crew=2;s.supplies.ammo=0;
  const before=serializeGame(s),html=runInNewContext(body+';portScene();',{state:s,canDock,PORTS,PORT_SCENES,PORT_MARKETS,GOODS,marketQuote,portStatus,
-  escapeHtml:value=>String(value),kennyMap:'./assets/cc0/map/','nearestPort':()=>({port:PORTS[0],d:0})});
+  storyCard:()=>'<div>메인 여정</div>',escapeHtml:value=>String(value),kennyMap:'./assets/cc0/map/','nearestPort':()=>({port:PORTS[0],d:0})});
  assert.equal((html.match(/class="needs-care"/g)||[]).length,4);
  for(const action of ['provisions','repair','crew'])assert.ok(html.includes('data-upgrade="'+action+'"'));
  assert.equal(serializeGame(s),before);
+});
+
+
+test('captain prologue persists each scene and completes without spending or advancing main chapters',()=>{
+ for(const captain of CAPTAINS){
+  let s=newGame(captain.id);s.heroChosen=true;s.scene={kind:'prologue',captainId:captain.id,step:0};
+  const gold=s.coins,chapter=s.storyChapter;
+  for(let step=0;step<3;step++){
+   s=restoreGame(serializeGame(s));
+   assert.equal(s.scene.step,step);assert.equal(s.scene.captainId,captain.id);
+   const result=dismissStoryScene(s);assert.ok(result.ok);s=result.state;
+  }
+  assert.equal(s.scene,null);assert.equal(s.coins,gold);assert.equal(s.storyChapter,chapter);
+ }
 });

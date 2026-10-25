@@ -186,7 +186,8 @@ export function restoreGame(raw){
   s.exploreTarget=PORTS.some(p=>p.id===s.exploreTarget)?s.exploreTarget:null;s.destination=PORTS.some(p=>p.id===s.destination)?s.destination:null;
   s.storyChapter=clamp(Number(s.storyChapter)||0,0,3);s.speed=Number.isFinite(Number(s.speed))?clamp(Math.round(Number(s.speed)),1,16):1;s.autoCombat=obj.autoCombat!==false;
   s.event=s.event&&(SEA_EVENTS.some(e=>e.id===s.event.id)||(s.event.id==='merchant_meeting'&&MERCHANT_CAPTAINS.some(c=>c.id===s.event.merchantId)))?s.event:null;
-   s.scene=s.scene&&(s.scene.kind==='port-discovery'&&PORTS.some(p=>p.id===s.scene.portId)||s.scene.kind==='story'&&CAPTAINS.some(c=>c.id===s.scene.captainId)||s.scene.kind==='merchant'&&MERCHANT_CAPTAINS.some(c=>c.id===s.scene.merchantId))?s.scene:null;
+   s.scene=s.scene&&(s.scene.kind==='port-discovery'&&PORTS.some(p=>p.id===s.scene.portId)||['story','prologue'].includes(s.scene.kind)&&CAPTAINS.some(c=>c.id===s.scene.captainId)||s.scene.kind==='merchant'&&MERCHANT_CAPTAINS.some(c=>c.id===s.scene.merchantId))?s.scene:null;
+   if(s.scene?.kind==='prologue')s.scene.step=Math.max(0,Math.min(2,Math.floor(Number(s.scene.step)||0)));
    const ships=Array.isArray(obj.merchants)?obj.merchants:[];
    s.merchants=merchantRoster().map(base=>{const old=ships.find(x=>x?.id===base.id);return old?{...base,from:PORTS.some(p=>p.id===old.from)?old.from:base.from,to:PORTS.some(p=>p.id===old.to)?old.to:base.to,progress:clamp(Number(old.progress)||0,0,1),coins:clamp(Number(old.coins)||0,0,1e8),cargo:GOODS.some(g=>g.id===old.cargo)?old.cargo:base.cargo,count:clamp(Math.floor(Number(old.count)||0),0,12),voyages:clamp(Math.floor(Number(old.voyages)||0),0,1e7),met:clamp(Math.floor(Number(old.met)||0),0,100),lastMeetingDay:Number.isFinite(old.lastMeetingDay)?old.lastMeetingDay:-10,lastProfit:clamp(Math.floor(Number(old.lastProfit)||0),-1e6,1e6)}:base;});
   s.expedition=s.expedition&&SITES.some(e=>e.id===s.expedition.id)?s.expedition:null;
@@ -427,7 +428,9 @@ export function hailMerchant(state,id){
 }
 export function dismissStoryScene(state){
  if(!state.scene)return fail(state,'진행 중인 이야기가 없어.');
- const s=copy(state);s.scene=null;
+ const s=copy(state);
+ if(s.scene.kind==='prologue'&&(Number(s.scene.step)||0)<2){s.scene.step=(Number(s.scene.step)||0)+1;return success(s,'서막을 이어가.');}
+ s.scene=null;
  return success(s,'이야기를 마치고 항해를 이어가.');
 }
 export function resolveMerchantEncounter(state,choice){
@@ -627,16 +630,16 @@ export const JOBS=Object.freeze([
  {id:'naval',name:'해군 장교',need:160,description:'왕실 임무 수주 자격'}
 ]);
 export const SHIP_TYPES=Object.freeze([
- {id:'caravel',name:'캐러벨',cost:0,cargo:42,hull:100,sail:1,description:'삼각돛 탐험선 · 기존 시작 선박'},
- {id:'cog',name:'한자 코그',cost:4800,cargo:85,hull:115,sail:1,description:'사각돛 상선 · 넓은 화물창'},
- {id:'carrack',name:'카락',cost:9200,cargo:125,hull:160,sail:2,description:'대양 항해선 · 대형 선루와 복합 돛'},
- {id:'galleon',name:'갤리온',cost:16500,cargo:100,hull:220,sail:2,description:'왕실 군함 · 높은 내구도, 함포 12문'},
- {id:'portugal-caravel',name:'포르투갈 라틴 캐러벨',nation:'포르투갈 상단',rig:'lateen',color:'#b55e44',width:.85,length:1.05,speed:1.12,turn:1.15,cost:6200,cargo:55,hull:115,sail:2,cannons:4,maxCrew:55,description:'삼각 라틴돛 · 빠른 탐험·높은 선회, 적재와 장갑은 작음'},
- {id:'dutch-fluyt',name:'네덜란드 플루트',nation:'북해 상인연맹',rig:'square',color:'#d7a35e',width:1.35,length:1.1,speed:.92,turn:.88,cost:11800,cargo:165,hull:150,sail:2,cannons:6,maxCrew:75,description:'둥근 대형 선미·3개 사각돛 · 최고 화물 용량, 느린 선회'},
- {id:'english-racer',name:'잉글랜드 레이스 갤리온',nation:'영국 왕실',rig:'square',color:'#a55345',width:.9,length:1.3,speed:1.1,turn:1.08,cost:17800,cargo:90,hull:205,sail:3,cannons:14,maxCrew:100,description:'낮고 긴 선체·사각돛 · 빠른 측면 포격, 중장갑선보다 가벼움'},
- {id:'iberian-galleon',name:'이베리아 중갤리온',nation:'이베리아 왕실',rig:'square',color:'#c5ab57',width:1.25,length:1.25,speed:.88,turn:.82,cost:19800,cargo:100,hull:245,sail:2,cannons:16,maxCrew:110,description:'높은 선루·중후한 선체 · 최대 내구·강력한 함포, 기동은 둔함'},
- {id:'french-frigate',name:'프랑스 초기 프리깃',nation:'프랑스 항구동맹',rig:'square',color:'#6289ab',width:.78,length:1.3,speed:1.13,turn:1.18,cost:15600,cargo:78,hull:170,sail:3,cannons:12,maxCrew:90,description:'가늘고 긴 선체·파란 깃발 · 추격과 이탈에 강한 기동선'},
- {id:'med-galley',name:'지중해 무장 갤리',nation:'지중해 공화국',rig:'oars',color:'#7c9271',width:.72,length:1.45,speed:1.03,turn:1.25,cost:8200,cargo:60,hull:130,sail:2,cannons:8,maxCrew:100,description:'양현 노·삼각돛·낮은 선체 · 근해 선회에 강하고 적재는 적음'}
+ {id:'caravel',sternHeight:0.6,masts:2,hullColor:'#b18459',name:'캐러벨',cost:0,cargo:42,hull:100,sail:1,description:'삼각돛 탐험선 · 기존 시작 선박'},
+ {id:'cog',sternHeight:1.5,masts:1,hullColor:'#8d663d',name:'한자 코그',cost:4800,cargo:85,hull:115,sail:1,description:'사각돛 상선 · 넓은 화물창'},
+ {id:'carrack',sternHeight:1.9,masts:3,hullColor:'#9b704d',name:'카락',cost:9200,cargo:125,hull:160,sail:2,description:'대양 항해선 · 대형 선루와 복합 돛'},
+ {id:'galleon',sternHeight:1.5,masts:3,hullColor:'#674534',name:'갤리온',cost:16500,cargo:100,hull:220,sail:2,description:'왕실 군함 · 높은 내구도, 함포 12문'},
+ {id:'portugal-caravel',sternHeight:0.4,masts:2,hullColor:'#b55e44',name:'포르투갈 라틴 캐러벨',nation:'포르투갈 상단',rig:'lateen',color:'#b55e44',width:.85,length:1.05,speed:1.12,turn:1.15,cost:6200,cargo:55,hull:115,sail:2,cannons:4,maxCrew:55,description:'삼각 라틴돛 · 빠른 탐험·높은 선회, 적재와 장갑은 작음'},
+ {id:'dutch-fluyt',sternHeight:1.8,masts:3,hullColor:'#d7a35e',name:'네덜란드 플루트',nation:'북해 상인연맹',rig:'square',color:'#d7a35e',width:1.35,length:1.1,speed:.92,turn:.88,cost:11800,cargo:165,hull:150,sail:2,cannons:6,maxCrew:75,description:'둥근 대형 선미·3개 사각돛 · 최고 화물 용량, 느린 선회'},
+ {id:'english-racer',sternHeight:0.65,masts:3,hullColor:'#a55345',name:'잉글랜드 레이스 갤리온',nation:'영국 왕실',rig:'square',color:'#a55345',width:.9,length:1.3,speed:1.1,turn:1.08,cost:17800,cargo:90,hull:205,sail:3,cannons:14,maxCrew:100,description:'낮고 긴 선체·사각돛 · 빠른 측면 포격, 중장갑선보다 가벼움'},
+ {id:'iberian-galleon',sternHeight:2.2,masts:3,hullColor:'#c5ab57',name:'이베리아 중갤리온',nation:'이베리아 왕실',rig:'square',color:'#c5ab57',width:1.25,length:1.25,speed:.88,turn:.82,cost:19800,cargo:100,hull:245,sail:2,cannons:16,maxCrew:110,description:'높은 선루·중후한 선체 · 최대 내구·강력한 함포, 기동은 둔함'},
+ {id:'french-frigate',sternHeight:0.55,masts:2,hullColor:'#6289ab',name:'프랑스 초기 프리깃',nation:'프랑스 항구동맹',rig:'square',color:'#6289ab',width:.78,length:1.3,speed:1.13,turn:1.18,cost:15600,cargo:78,hull:170,sail:3,cannons:12,maxCrew:90,description:'가늘고 긴 선체·파란 깃발 · 추격과 이탈에 강한 기동선'},
+ {id:'med-galley',sternHeight:0.25,masts:1,hullColor:'#7c9271',name:'지중해 무장 갤리',nation:'지중해 공화국',rig:'oars',color:'#7c9271',width:.72,length:1.45,speed:1.03,turn:1.25,cost:8200,cargo:60,hull:130,sail:2,cannons:8,maxCrew:100,description:'양현 노·삼각돛·낮은 선체 · 근해 선회에 강하고 적재는 적음'}
 ]);
 export const SITES=Object.freeze([
  {id:'stone',name:'오크니의 거석 환상열석',port:'north',kind:'거석 유적',relic:'별자리 석판',reward:900,lore:'태양이 통과하는 문과 땅에 새긴 원이 같은 방향을 가리킨다.',choices:['그림자 길이를 기록한다','새겨진 선을 탁본한다','관측 방향을 대조한다'],answers:[0,1,0]},
@@ -746,10 +749,10 @@ export function importSave(text){
 // 지형: Natural Earth 공개 지리 데이터. 동일 다각형을 해도와 항로 탐색에 사용한다.
 const LAND_ROWS=new Map();
 for(const ring of LAND){const p=ring.points;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];for(let row=Math.floor(Math.min(a[1],b[1]));row<=Math.floor(Math.max(a[1],b[1]));row++){if(!LAND_ROWS.has(row))LAND_ROWS.set(row,[]);LAND_ROWS.get(row).push([a[0],a[1],b[0],b[1]]);}}}
-// 유틸: 해안선을 2.6만큼 안쪽으로 물려 좁은 수로와 항구 진입 폭을 확보한다.
+// 유틸: 해안선을 6만큼 안쪽으로 물려 좁은 수로와 항구 진입 폭을 확보한다.
 // 기존 항구·세이브 좌표를 유지하며 해도에도 같은 폭의 물띠를 표시한다.
 export function isLand(x,z){
- for(const [dx,dz] of [[0,0],[2.6,0],[-2.6,0],[0,2.6],[0,-2.6],[1.84,1.84],[-1.84,1.84],[1.84,-1.84],[-1.84,-1.84]]){
+ for(const [dx,dz] of [[0,0],[6,0],[-6,0],[0,6],[0,-6],[4.24,4.24],[-4.24,4.24],[4.24,-4.24],[-4.24,-4.24]]){
   const px=x+dx,pz=z+dz;let inside=false;
   for(const [ax,az,bx,bz] of LAND_ROWS.get(Math.floor(pz))||[])if((az>pz)!==(bz>pz)&&px<(bx-ax)*(pz-az)/(bz-az)+ax)inside=!inside;
   if(!inside)return false;
