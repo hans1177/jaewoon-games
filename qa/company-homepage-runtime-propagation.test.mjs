@@ -773,3 +773,48 @@ test('명시적인 영구 개발 제외 게임은 집중 대상이나 대기열 
   assert.equal(catalog.games.some(g=>g.id==='excluded'&&g.homepageInfo.developmentActive===true),false);
   assert.equal(catalog.games.find(g=>g.id==='normal').homepageInfo.developmentActive,true);
 });
+
+test('homepage title stars save favorite game ids and mobile game emoji shows only favorites',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(index,/id="mobileFavoritesButton"[^>]*aria-controls="mobileFavoritesPanel"/);
+  assert.match(index,/id="mobileFavoritesPanel"[^>]*hidden/);
+  assert.match(index,/id="mobileFavoritesList"/);
+  assert.doesNotMatch(index,/<a href="#gameHub"><b>🎮<\/b>/);
+  const saved=new Map();
+  const storage={
+    getItem:key=>saved.get(key)||null,
+    setItem:(key,value)=>saved.set(key,value)
+  };
+  const list={innerHTML:'',dataset:{}},buttons=[];
+  const document={
+    readyState:'loading',addEventListener(){},
+    getElementById:id=>id==='mobileFavoritesList'?list:null,
+    querySelectorAll:()=>buttons
+  };
+  const api=vm.runInNewContext(source+';({loadFavorites,renderFavoriteGames,toggleFavorite,favoriteButton,buildCard,setRows(rows){favoriteDisplayRows=rows;},setFavorites(ids){favoriteGameIds=new Set(ids);}})',{document,localStorage:storage,Date,Intl});
+  const visible={id:'sample-game',name:'실제 게임',canonical:{identity:{gameId:'sample-game',name:'실제 게임'}}};
+  api.setRows([visible]);
+  api.setFavorites(['retired-game']);
+  api.renderFavoriteGames();
+  assert.equal(list.dataset.favoriteCount,'0','discontinued games cannot reappear in the favorites list');
+  assert.doesNotMatch(list.innerHTML,/retired-game/);
+  assert.match(api.buildCard(visible),/class="foldGameTitleRow"/);
+  assert.match(api.buildCard(visible),/data-favorite-id="sample-game"/);
+  assert.match(api.buildCard(visible),/aria-pressed="false"/);
+  const title={textContent:'실제 게임'};
+  buttons.push({dataset:{favoriteId:'sample-game'},closest:s=>s==='.foldGameCard'?{querySelector:()=>title}:null,setAttribute(){},title:'',textContent:''});
+  api.toggleFavorite('sample-game');
+  assert.equal(buttons[0].textContent,'★');
+  assert.equal(list.dataset.favoriteCount,'1');
+  assert.match(list.innerHTML,/실제 게임/);
+  assert.doesNotMatch(list.innerHTML,/retired-game/);
+  assert.deepEqual(JSON.parse(saved.get('jaewoon-home-game-favorites-v1')),['retired-game','sample-game']);
+  assert.deepEqual([...api.loadFavorites()],['retired-game','sample-game']);
+  api.toggleFavorite('sample-game');
+  assert.equal(buttons[0].textContent,'☆');
+  assert.equal(list.dataset.favoriteCount,'0');
+  assert.doesNotMatch(list.innerHTML,/실제 게임/);
+  api.toggleFavorite('not-in-catalog');
+  assert.equal(list.dataset.favoriteCount,'0');
+});
