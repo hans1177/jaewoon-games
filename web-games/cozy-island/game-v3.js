@@ -266,9 +266,21 @@ canvas.addEventListener('pointerup',e=>{
   if(now-lastTap.time<360&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<38)commandWolfAt(e.clientX,e.clientY);
   lastTap={time:now,x:e.clientX,y:e.clientY};
   // 실제 건물 터치가 레거시 액션보다 먼저 처리되도록 선택 우선순위를 보장한다.
-  const pos=renderer.screenToWorld(game,e.clientX,e.clientY);
-  const radius=Math.max(78,Math.min(146,44/(renderer.camera3?.zoom||.5)));
-  const target=nearestInteraction(pos,radius);
+  const hit=renderer.pickBuilding(e.clientX,e.clientY);
+  let target=null;
+  if(hit?.startsWith('economic:')){
+    const [,id,site]=hit.split(':');target={type:'economy',id,siteIndex:Number(site)||0};
+  }else if(hit?.startsWith('custom-fort:'))target={type:'fort',index:Number(hit.split(':')[1])};
+  else if(hit==='lumber'||hit==='mine')target={type:'economy',id:hit==='mine'?'quarry':'lumber',siteIndex:0};
+  else if(hit==='market')target={type:'trade'};
+  else if(hit==='barracks')target={type:'barracks'};
+  else if(hit==='townhall')target={type:'hall'};
+  else if(hit==='defense-tower')target={type:'tower'};
+  if(!target){
+    const pos=renderer.screenToWorld(game,e.clientX,e.clientY);
+    const radius=Math.max(78,Math.min(146,44/(renderer.camera3?.zoom||.5)));
+    target=nearestInteraction(pos,radius);
+  }
   if(target){activateInteraction(target);return}
   // 레거시 이벤트는 빈 지도 터치에서만 처리해 기존 하위 게임 기능을 보호한다.
   const legacyAction=document.querySelector('#actionButton');
@@ -335,41 +347,74 @@ function activateInteraction(t){
  if(t.type==='fort'){
    window.dispatchEvent(new CustomEvent('cozy:inspect-fort',{detail:{index:t.index}}));return;
  }
- if(t.type==='economy'){openBuilding(t.id);return;}
+ if(t.type==='economy'){openBuilding(t.id,t.siteIndex||0);return;}
+ if(t.type==='trade'){window.dispatchEvent(new Event('cozy:open-trade'));return;}
  window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:'defense'}}));
 }
-function openBuilding(id){
- const def=ECONOMY_BUILDINGS.find(item=>item.id===id),entry=getEconomy(state).buildings[id];
+// 메인: 건축물 클릭 시 실제 노동·생산·보관·연계 기능으로 이동한다.
+function openBuilding(id,siteIndex=0){
+ const def=ECONOMY_BUILDINGS.find(v=>v.id===id),entry=getEconomy(state).buildings[id];
  if(!def||!entry?.count)return;
  const level=entry.level||1,wood=def.wood+level*5,stone=def.stone+level*3,gold=def.gold+level*6;
+ const labor=economyStaff(state),working=labor.staff[id]||0;
+ const names={wood:'목재',stone:'석재',iron:'철',wheat:'밀',flour:'밀가루',food:'식량',
+  grapes:'포도',wine:'포도주',hops:'홉',ale:'맥주',coins:'금화',bows:'활',swords:'검'};
+ const stock=key=>Math.floor(Number(key==='coins'?state.coins:state.inventory?.[key])||0);
+ const chains={lumber:'fletcher',quarry:'iron',iron:'smith',wheat:'mill',mill:'bakery',
+  bakery:'granary',orchard:'granary',dairy:'granary',vineyard:'winery',winery:'tavern',
+  hops:'brewery',brewery:'tavern',fletcher:'armory',smith:'armory',hovel:'market'};
+ const linked=ECONOMY_BUILDINGS.find(v=>v.id===chains[id]);
+ const n=Math.max(0,Math.min(entry.count-1,siteIndex));
+ const warning=def.jobs&&working<entry.count?'⚠️ 일꾼 부족으로 가동 감소':
+   def.input&&stock(def.input)<def.need?'⚠️ 원료 부족으로 생산 지연':'✅ 운영 중';
  ui.panelTitle.textContent=def.icon+' '+def.name+' · '+level+'단계';
- ui.panelBody.innerHTML='<p class="panel-note">'+def.desc+'</p>'+
-  '<div class="inventory-grid">'+itemCard('건물 수',entry.count)+itemCard('일꾼/채',def.jobs)+
-  itemCard('현재 단계',level)+(def.out?itemCard('주기 생산',def.amount*level):'')+'</div>'+
-  '<p class="panel-note">강화는 같은 종류 건물 전체의 생산 단계를 올립니다. 최대 3단계.</p>'+
+ ui.panelBody.innerHTML='<p class="panel-note">'+def.desc+' · '+(n+1)+'/'+entry.count+'번째 시설</p>'+
+  '<p class="panel-note"><b>'+warning+'</b><br>👷 가동 '+working+'/'+entry.count+'채 · 한 채 일꾼 '+def.jobs+'명 · 여유 인력 '+labor.available+'명</p>'+
+  '<div class="inventory-grid">'+itemCard('보유 건물',entry.count)+itemCard('건물 단계',level)+
+  itemCard('배치 일꾼',working*def.jobs)+(def.out?itemCard('현재 재고',stock(def.out)):'')+'</div>'+
+  '<p class="panel-note">📦 투입: '+(def.input?(names[def.input]||def.input)+' '+def.need+'개/주기 · 재고 '+stock(def.input):'원료 불필요')+
+  '<br>🏭 생산: '+(def.out?(names[def.out]||def.out)+' '+def.amount*level+'개/주기':'보관·지원 시설')+'</p>'+
+  '<p class="panel-note">강화는 같은 종류 건물 전체에 적용돼. 최대 3단계.</p>'+
   '<button class="choice" type="button" data-building-upgrade '+(level>=3?'disabled':'')+
-  '><span>⬆️ '+def.name+' 강화 '+(level>=3?'· 최고 단계':'→ '+(level+1)+'단계')+
-  '</span><b>나무 '+wood+' · 돌 '+stone+' · 금화 '+gold+'</b></button>'+
+  '><span>⬆️ '+def.name+' '+(level>=3?'최고 단계':'→ '+(level+1)+'단계')+
+  '</span><b>목재 '+wood+' · 석재 '+stone+' · 금화 '+gold+'</b></button>'+
+  '<button class="choice" type="button" data-building-expand '+(entry.count>=def.max?'disabled':'')+
+  '>🏗️ 같은 건물 증설 ('+entry.count+'/'+def.max+')</button>'+
+  (linked?'<button class="choice" type="button" data-building-next>🔗 연계 시설: '+linked.icon+' '+linked.name+'</button>':'')+
+  (['market','tavern'].includes(id)?'<button class="choice" type="button" data-building-trade>⚖️ 시장 거래</button>':'')+
+  (['smith','fletcher','armory'].includes(id)?'<button class="choice" type="button" data-building-army>⚔️ 병영에서 모집</button>':'')+
+  (['stockpile','granary','lumber','quarry','iron','well','hovel'].includes(id)?
+  '<button class="choice" type="button" data-building-stock>📦 영지 자원</button>':'')+
   '<button class="choice" type="button" data-building-list>🏗️ 건설 목록 보기</button>';
  ui.panel.showModal();
+ const beginPlacement=kind=>{
+  ui.panel.close();window.dispatchEvent(new CustomEvent('cozy:place-building',{detail:{id:kind}}));
+ };
  ui.panelBody.querySelector('[data-building-upgrade]')?.addEventListener('click',()=>{
-  if(upgradeEconomyBuilding(id)){updateHUD();openBuildingContentRefresh(id);}
+  if(upgradeEconomyBuilding(id)){updateHUD();openBuildingContentRefresh(id,n);}
  });
+ ui.panelBody.querySelector('[data-building-expand]')?.addEventListener('click',()=>beginPlacement(id));
+ ui.panelBody.querySelector('[data-building-next]')?.addEventListener('click',()=>beginPlacement(linked.id));
+ ui.panelBody.querySelector('[data-building-trade]')?.addEventListener('click',()=>{
+  ui.panel.close();window.dispatchEvent(new Event('cozy:open-trade'));
+ });
+ ui.panelBody.querySelector('[data-building-army]')?.addEventListener('click',()=>{ui.panel.close();openBarracks()});
+ ui.panelBody.querySelector('[data-building-stock]')?.addEventListener('click',()=>{ui.panel.close();openInventory()});
  if(id==='knightHall'){
   const button=document.createElement('button');button.className='choice';
-  button.textContent='⚜️ 기사 후보·육성·스킬';button.addEventListener('click',()=>{ui.panel.close();openKnightHall()});
-  ui.panelBody.append(button);
+  button.textContent='⚜️ 기사 후보·육성·스킬';
+  button.addEventListener('click',()=>{ui.panel.close();openKnightHall()});ui.panelBody.append(button);
  }
  if(id==='prison'){
   const button=document.createElement('button');button.className='choice';
-  button.textContent='🔒 감옥 · 포로 관리';button.addEventListener('click',()=>{ui.panel.close();openPrison()});
-  ui.panelBody.append(button);
+  button.textContent='🔒 감옥 · 포로 관리';
+  button.addEventListener('click',()=>{ui.panel.close();openPrison()});ui.panelBody.append(button);
  }
  ui.panelBody.querySelector('[data-building-list]')?.addEventListener('click',()=>{
-   ui.panel.close();window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:def.group}}));
+  ui.panel.close();window.dispatchEvent(new CustomEvent('cozy:open-construction',{detail:{group:def.group}}));
  });
 }
-function openBuildingContentRefresh(id){ui.panel.close();openBuilding(id);}
+function openBuildingContentRefresh(id,siteIndex=0){ui.panel.close();openBuilding(id,siteIndex);}
 function collectNode(n){const now=Date.now();if(n.readyAt>now){toast('조금 뒤에 다시 생겨');return}if(n.kind==='tree'){state.inventory.wood++;toast('🪵 나무 +1')}else if(n.kind==='rock'){state.inventory.stone++;toast('🪨 돌 +1')}else{state.inventory.flower++;toast('🌼 꽃 +1')}n.readyAt=now+30000;saveSoon()}
 function talkTo(n){ui.panelTitle.textContent=n.name;const extra=n.id==='sky'?`<button class="choice" data-seed><span>🌱 씨앗 3개</span><b>15골드</b></button>`:'';ui.panelBody.innerHTML=`<p class="panel-note">${n.line}</p><div class="choice-grid">${extra}</div>`;ui.panel.showModal();ui.panelBody.querySelector('[data-seed]')?.addEventListener('click',()=>{if(state.coins<15){toast('골드가 부족해');return}state.coins-=15;state.inventory.seeds+=3;saveSoon();updateHUD();toast('🌱 씨앗 +3')})}
 function openBarracks(){ui.panelTitle.textContent=state.barracksBuilt?'병영':'병영 건설';renderBarracks();ui.panel.showModal()}
