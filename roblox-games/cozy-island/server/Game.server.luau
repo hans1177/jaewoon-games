@@ -143,7 +143,8 @@ local function placeActorOnGround(rootPart,islandTopY)
  local hit=workspace:Raycast(
   Vector3.new(rootPart.Position.X,islandTopY+24,rootPart.Position.Z),
   Vector3.new(0,-80,0),params)
- local floorY=hit and hit.Position.Y or islandTopY
+ local floorY=hit and hit.Normal.Y>=.7 and hit.Position.Y or islandTopY
+ local surfaceValid=hit~=nil and hit.Normal.Y>=.7
  local lowestY=math.huge
  for _,item in ipairs({rootPart,table.unpack(rootPart:GetDescendants())})do
   if item:IsA("BasePart")then
@@ -156,8 +157,10 @@ local function placeActorOnGround(rootPart,islandTopY)
  if lowestY==math.huge then rootPart:SetAttribute("CozyGroundStatus","NO_VISUAL_GEOMETRY");return end
  rootPart.CFrame=rootPart.CFrame+Vector3.new(0,floorY-lowestY+.04,0)
  rootPart:SetAttribute("CozyGroundSurfaceY",floorY)
- rootPart:SetAttribute("CozyGroundStatus",hit and "GEOMETRY_ALIGNED"or "UNVERIFIED_FLOOR")
- if not hit then
+ rootPart:SetAttribute("CozyGroundStatus",surfaceValid and "GEOMETRY_ALIGNED"or "UNVERIFIED_FLOOR")
+ if surfaceValid then
+  workspace:SetAttribute("CozyActorGroundingGeometryAligned",(workspace:GetAttribute("CozyActorGroundingGeometryAligned")or 0)+1)
+ else
   workspace:SetAttribute("CozyActorGroundingUnverified",(workspace:GetAttribute("CozyActorGroundingUnverified")or 0)+1)
  end
 end
@@ -408,6 +411,9 @@ local function spawnMob(kind,pos,visualIndex,islandTopY)
 end
 
 local function buildWorld()
+ workspace:SetAttribute("CozyActorGroundingGeometryAligned",0)
+ workspace:SetAttribute("CozyActorGroundingUnverified",0)
+ workspace:SetAttribute("CozyActorGroundingGeometryCheck","IN_PROGRESS")
 
 task.spawn(function()
  if C.SaveEnabled~=true then return end
@@ -502,6 +508,15 @@ end)
  workspace:SetAttribute("CozyCC0AuditLibrary","CC0-1.0")
  workspace:SetAttribute("CozyCC0ExpectedNPCs",9)
  workspace:SetAttribute("CozyCC0ExpectedRaiders",5)
+ local aligned=workspace:GetAttribute("CozyActorGroundingGeometryAligned")or 0
+ local unverified=workspace:GetAttribute("CozyActorGroundingUnverified")or 0
+ local expected=9+#mobs
+ workspace:SetAttribute("CozyActorGroundingExpected",expected)
+ workspace:SetAttribute("CozyActorGroundingGeometryCheck",
+  expected==19 and aligned==expected and unverified==0 and "GEOMETRY_ALIGNED"or"BLOCKED_UNVERIFIED")
+ if expected==19 and aligned==expected and unverified==0 then
+  foundationCheckpoint("NPC_MONSTER_GROUND_GEOMETRY",nil,{actorCount=aligned,unverified=unverified})
+ end
  foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
  if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
