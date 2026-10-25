@@ -62,7 +62,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){onError('해도를 그릴 수 없어. 브라우저를 다시 열어줘.');return {setState(){},setMode(){},setQuality(){},setZoom(){}};}
  const townArt=new Image();townArt.src='./assets/harbor.webp';
  let fxStarted=0,lastFxSerial=0,miniHit=null;
- let state=null,mode='sea',facility='',frame=0,last=0,zoom=4.8,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraOrbit=0,cameraHeight=.32,cameraDistance=22;
+ let state=null,mode='sea',facility='',frame=0,last=0,last2dPaint=0,zoom=4.8,quality='pixel',destroyed=false,hit=[],time=0,w=480,h=720,seaCamera='chase',cameraOrbit=0,cameraHeight=.32,cameraDistance=22;
+ const mobileGPU=!!(window.matchMedia?.('(pointer:coarse)')?.matches&&window.innerWidth<900);
  // 기존 CC0 범선 GLB를 조명·파도·포격과 함께 근접 전투 장면에 사용한다.
  let naval=null,navalLoading=false,navalError=false;
  async function prepareNaval(){
@@ -74,7 +75,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    const surface=document.createElement('canvas');surface.id='naval3d';surface.setAttribute('aria-hidden','true');surface.hidden=true;canvas.after(surface);
    let renderer;try{renderer=new THREE.WebGLRenderer({canvas:surface,antialias:true,alpha:false,powerPreference:'high-performance'});}catch(e){surface.remove();throw e;}
    // 선박 3D 장면만 도트 해상도 적용. UI와 초상화는 원래 해상도 유지.
-   renderer.setPixelRatio(Math.min(.95,Math.max(.68,1/(devicePixelRatio||1)+.2)));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+   renderer.setPixelRatio(mobileGPU?Math.min(.72,1/(devicePixelRatio||1)+.32):Math.min(.95,Math.max(.68,1/(devicePixelRatio||1)+.2)));renderer.shadowMap.enabled=!mobileGPU;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
    const world=new THREE.Scene();world.background=new THREE.Color('#87b9c7');world.fog=new THREE.Fog('#87b9c7',110,300);
    const camera=new THREE.PerspectiveCamera(44,1,.1,350);camera.position.set(25,28,39);
    // 항해 시점 수평선을 채우는 대기 하늘: 바람·악천후에 따라 천정/수평선 조명 변화.
@@ -83,7 +84,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     vertexShader:'varying float h; void main(){h=normalize(position).y;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
     fragmentShader:'uniform vec3 horizon;uniform vec3 zenith;varying float h;void main(){float t=smoothstep(-0.10,0.85,h);gl_FragColor=vec4(mix(horizon,zenith,t),1.0);}'});
    const sky=new THREE.Mesh(new THREE.SphereGeometry(275,28,16),skyMat);sky.renderOrder=-100;world.add(sky);
-   world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:150});sun.shadow.bias=-.0004;world.add(sun);
+   world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);sun.castShadow=!mobileGPU;sun.shadow.mapSize.set(mobileGPU?512:1024,mobileGPU?512:1024);Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:150});sun.shadow.bias=-.0004;world.add(sun);
    // 가까운 바다는 16px 손그림 점묘 질감, 먼 바다는 광택 잔물결로 구별한다.
    const waterTiles=document.createElement('canvas');waterTiles.width=128;waterTiles.height=128;
    const tile=waterTiles.getContext('2d');tile.fillStyle='#3b8997';tile.fillRect(0,0,128,128);
@@ -93,7 +94,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    }
    const waterTex=new THREE.CanvasTexture(waterTiles);waterTex.wrapS=THREE.RepeatWrapping;waterTex.wrapT=THREE.RepeatWrapping;waterTex.repeat.set(18,18);
    waterTex.magFilter=THREE.NearestFilter;waterTex.minFilter=THREE.NearestMipmapNearestFilter;waterTex.colorSpace=THREE.SRGBColorSpace;
-   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,60,60),new THREE.MeshStandardMaterial({color:'#d6eff0',map:waterTex,roughness:.43,metalness:.08,flatShading:false,emissive:'#143b47',emissiveIntensity:.07}));
+   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,mobileGPU?32:60,mobileGPU?32:60),new THREE.MeshStandardMaterial({color:'#d6eff0',map:waterTex,roughness:.43,metalness:.08,flatShading:false,emissive:'#143b47',emissiveIntensity:.07}));
    water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
    const whitecaps=new Float32Array(64*6),capGeometry=new THREE.BufferGeometry();capGeometry.setAttribute('position',new THREE.BufferAttribute(whitecaps,3));
    const crests=new THREE.LineSegments(capGeometry,new THREE.LineBasicMaterial({color:'#dff7ee',transparent:true,opacity:.39,depthWrite:false}));world.add(crests);
@@ -307,7 +308,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      skyMat.uniforms.horizon.value.copy(skyLow);skyMat.uniforms.zenith.value.copy(skyHigh);
      water.material.roughness=storm?.60:rain?.51:.43;crests.material.opacity=storm?.72:rain?.52:.35;
      // 64개의 짧은 비균일 포말선: 물결 속도·파향에 따라 해면에서 이동한다.
-     for(let i=0;i<64;i++){
+     for(let i=0;i<(mobileGPU?36:64);i++){
       const gx=((i*71+(t*(1+wind.strength)*4))%230+230)%230-115,gz=((i*113+t*2)%220+220)%220-110;
       const surge=Math.sin(gx*.11+t*1.3)*.27+Math.sin(gz*.16+t*.8)*.22;
       const yy=Math.max(.12,surge*.8)+.12,half=.25+(i%4)*.24;
@@ -558,8 +559,19 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   if(state.destination){const p=PORTS.find(p=>p.id===state.destination);if(p){ctx.fillStyle='#f49367';ctx.fillRect(mw/2+(p.x-75)*miniScale-2,mh/2+(p.z+550)*miniScale-2,4,4);}}
   text('유럽 · 항로도',mw/2,mh+13,9,C.gold,'center');ctx.restore();
  }
- function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?50:20))return;last=now;time=now/1000;
- const width=Math.min(720,Math.max(390,Math.round(canvas.clientWidth))),height=Math.round(width*canvas.clientHeight/canvas.clientWidth);if(w!==width||h!==height){w=width;h=height;canvas.width=w*2;canvas.height=h*2;}ctx.setTransform(2,0,0,2,0,0);ctx.imageSmoothingEnabled=true;if(!state)return;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='naval'?navalSea():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();if((mode==='naval'||mode==='sea'&&seaCamera!=='chart')&&!navalError)prepareNaval();if(naval){const show=(mode==='naval'||mode==='sea'&&seaCamera!=='chart')&&!navalError;naval.surface.hidden=!show;if(show)naval.render(time);}}
+ function render(now){if(destroyed)return;frame=requestAnimationFrame(render);if(now-last<(quality==='low'?60:mobileGPU?33:20))return;last=now;time=now/1000;
+ const width=Math.min(mobileGPU?540:720,Math.max(mobileGPU?300:390,Math.round(canvas.clientWidth))),height=Math.round(width*canvas.clientHeight/Math.max(1,canvas.clientWidth));
+ const pixelRatio=mobileGPU?1:2;
+ if(w!==width||h!==height||canvas.width!==w*pixelRatio){w=width;h=height;canvas.width=w*pixelRatio;canvas.height=h*pixelRatio;}
+ ctx.setTransform(pixelRatio,0,0,pixelRatio,0,0);ctx.imageSmoothingEnabled=true;if(!state)return;
+ // 3D 항해가 덮고 있는 2D 지도는 저빈도 예비 화면으로만 업데이트한다.
+ const visible3d=naval&&!naval.surface.hidden&&!navalError&&(mode==='naval'||mode==='sea'&&seaCamera!=='chart');
+ const paint2d=!mobileGPU||!visible3d||now-last2dPaint>145;
+ if(paint2d){last2dPaint=now;ctx.save();const impactAge=(performance.now()-fxStarted)/1000;if(impactAge<.45&&state.combatFx&&['cannon','skill','slash'].includes(state.combatFx.type))ctx.translate(Math.round(Math.sin(impactAge*90)*(1-impactAge/.45)*4),Math.round(Math.cos(impactAge*73)*(1-impactAge/.45)*3));mode==='battle'?landScene():mode==='naval'?navalSea():mode==='sea'?sea():facility?interior():town();weatherOverlay();drawImpact();if(mode==='sea')minimap();ctx.restore();}
+ if((mode==='naval'||mode==='sea'&&seaCamera!=='chart')&&!navalError)prepareNaval();
+ if(naval){const show=(mode==='naval'||mode==='sea'&&seaCamera!=='chart')&&!navalError;naval.surface.hidden=!show;
+  if(show)try{naval.render(time);}catch(err){console.warn('3D 항해 프레임 복구: 2D 렌더로 자동 전환',err);navalError=true;naval.surface.hidden=true;}}
+}
  let cameraTouch=null;
  // 왼쪽 화면은 모바일 전역 조타, 오른쪽 화면만 카메라 회전.
   canvas.addEventListener('pointerdown',e=>{if(mode==='sea'&&seaCamera!=='chart'&&e.clientX>window.innerWidth*.54)cameraTouch={id:e.pointerId,x:e.clientX,y:e.clientY};});
