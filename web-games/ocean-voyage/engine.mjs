@@ -466,20 +466,23 @@ export function departureHeading(state){
  const ship=state.ship,port=PORTS.reduce((best,p)=>dist(ship,p)<dist(ship,best)?p:best,PORTS[0]);
  if(dist(ship,port)>8||Math.abs(ship.velocity)>.5||state.route.length)return ship.heading;
  let best=ship.heading,bestScore=-Infinity;
- const angles=Array.from({length:24},(_,i)=>ship.heading+i*Math.PI/12);
- for(const heading of angles){
-  let score=0;const facingX=Math.sin(heading),facingZ=Math.cos(heading);
-  for(const distance of [5,8,12,18,26]){
-   const x=ship.x+facingX*distance,z=ship.z+facingZ*distance;
-   if(!isLand(x,z)||PORTS.some(p=>Math.hypot(p.x-x,p.z-z)<5))score+=1+distance*.015;
-   else{score-=3;break;}
+ // 해안의 작은 만과 곶 사이에서 5·8칸 점검만 하면 육지에 부딪힐 수 있으므로
+ // 출항 지점부터 매 1칸씩 확인하고 실제 열린 물길이 긴 방향을 우선한다.
+ for(let i=0;i<32;i++){
+  const heading=ship.heading+i*Math.PI/16,fx=Math.sin(heading),fz=Math.cos(heading);
+  let clearance=0;
+  for(let d=1;d<=32;d++){
+   const x=ship.x+fx*d,z=ship.z+fz*d;
+   if(isLand(x,z)&&!PORTS.some(p=>Math.hypot(p.x-x,p.z-z)<5))break;
+   clearance=d;
   }
-  const away=(facingX*(ship.x-port.x)+facingZ*(ship.z-port.z))/Math.max(1,dist(ship,port));
-  score+=away*.5-Math.abs(wrap(heading-ship.heading))*.015;
+  const away=(fx*(ship.x-port.x)+fz*(ship.z-port.z))/Math.max(1,dist(ship,port));
+  const score=clearance+away*.25-Math.abs(wrap(heading-ship.heading))*.03;
   if(score>bestScore){best=heading;bestScore=score;}
  }
  return wrap(best);
 }
+
 // 바람: 항해 위치와 게임 시각으로 결정한다. 별도 저장값 없이 기존 세이브와 호환된다.
 export function windAt(s){
  const heading=Math.atan2(Math.sin(s.day*.29+s.elapsed*.018)*.85+Math.cos(s.ship.x*.009)*.28,.65+Math.cos(s.day*.17+s.ship.z*.006)*.38);
