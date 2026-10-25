@@ -28,10 +28,11 @@ test('paused Unity Web never generates build probes or launch links',()=>{
 // 실제 GitHub Pages 게시 검증은 기존 Web Release 파이프라인 책임이다.
 test('internal web game links use the registered source path without a score gate',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},platformLinks,buildCard,playableWebHref,sourceWebHref})',{
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},setPublishedRoutes(routes){publishedWebRoutes=new Set(routes)},platformLinks,buildCard,playableWebHref,sourceWebHref})',{
     document:{readyState:'loading',addEventListener(){}},Date,Intl
   });
   api.setExposure({games:[]});
+  api.setPublishedRoutes(['web-games/fantasy-survival/']);
   const row=(id,state,archive=true)=>({id,canonical:{
     identity:{gameId:id,name:id},
     lifecycle:{state:'ACTIVE'},
@@ -102,8 +103,9 @@ test('바이브가 원본 카탈로그에 새 게임을 추가하면 다음 원�
   syncPublishedWebRoutes({catalog,manifest:published,sourceTreeShaOf});
   assert.equal(JSON.stringify(catalog.games),snapshot,'repeated Vibe run must not create duplicate game buttons or commits');
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({playableWebHref})',{
+  const api=vm.runInNewContext(renderer+';({setPublishedRoutes(routes){publishedWebRoutes=new Set(routes)},playableWebHref})',{
     document:{readyState:'loading',addEventListener(){}},Date,Intl});
+  api.setPublishedRoutes(['web-games/new-game/']); // 배포 매니페스트가 실제 신규 실행 경로를 승인한 경우만 노출
   const withCanonical={...catalog.games[1],canonical:{
     identity:{gameId:'new-game'},lifecycle:{state:'ACTIVE'},
     sources:{web:{path:'web-games/new-game',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
@@ -701,7 +703,7 @@ test('canonical Pages publisher removes stopped and rejected routes from retaine
 });
 
 // 기존 준비 코드를 실제 임시 Git 저장소에서 실행해 캐시가 원본 검증을 우회하지 못하게 한다.
-test('Pages source cache restores only changed bytes and rejects unverified output',()=>{
+test('Pages source cache restores only changed bytes and rejects unverified output',async()=>{
  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  const cleanStart=workflow.indexOf("          const cacheDirectories=['assets'];");
  const cleanEnd=workflow.indexOf('          const catalog=',cleanStart);
@@ -719,20 +721,20 @@ test('Pages source cache restores only changed bytes and rejects unverified outp
   const assetBlobs=new Map(Object.entries(bytes).map(([file,value])=>[file,crypto.createHash('sha1').update(Buffer.from('blob '+value.length+'\0')).update(value).digest('hex')]));
   const restores=[];
   const cp={execFileSync(command,args,options){restores.push(Array.from(args).slice(args.indexOf('--')+1));return execFileSync(command,args,options);}};
-  const run=(executor=cp)=>vm.runInNewContext(code,{fs,path,crypto,Buffer,cp:executor,assetBlobs,refs:new Set(Object.keys(bytes)),site:'_site',console:{log(){}}});
+  const run=async(executor=cp)=>await vm.runInNewContext('(async()=>{'+code+'})()',{fs,path,crypto,Buffer,cp:executor,assetBlobs,refs:new Set(Object.keys(bytes)),site:'_site',console:{log(){}}});
   fs.writeFileSync('assets/old-untracked.bin','obsolete cached bytes');
-  run();assert.deepEqual(restores,[],'unchanged cache must avoid all source downloads');
+  await run();assert.deepEqual(restores,[],'unchanged cache must avoid all source downloads');
   assert.equal(fs.existsSync('assets/old-untracked.bin'),false,'deleted source must not return through old cache');
   fs.writeFileSync('assets/change.bin','poisoned cache');fs.unlinkSync('assets/missing.bin');
-  run();assert.deepEqual(restores,[['assets/change.bin','assets/missing.bin']]);
+  await run();assert.deepEqual(restores,[['assets/change.bin','assets/missing.bin']]);
   for(const [file,value] of Object.entries(bytes))assert.deepEqual(fs.readFileSync('_site/'+file),value);
   fs.writeFileSync('outside.txt','protected original');fs.unlinkSync('assets/change.bin');
   fs.symlinkSync(path.resolve('outside.txt'),'assets/change.bin');
-  run();assert.equal(fs.readFileSync('outside.txt','utf8'),'protected original');
+  await run();assert.equal(fs.readFileSync('outside.txt','utf8'),'protected original');
   assert.equal(fs.lstatSync('assets/change.bin').isSymbolicLink(),false);
   fs.writeFileSync('assets/change.bin','unrepaired poison');
-  assert.throws(()=>run({execFileSync(){}}),/GITHUB_PAGES_ASSET_SOURCE_MISMATCH/);
-  restores.length=0;fs.rmSync('assets',{recursive:true,force:true});run();
+  await assert.rejects(()=>run({execFileSync(){}}),/GITHUB_PAGES_ASSET_SOURCE_MISMATCH/);
+  restores.length=0;fs.rmSync('assets',{recursive:true,force:true});await run();
   assert.deepEqual(restores,[Object.keys(bytes).sort()],'a cache miss must use the unchanged canonical Git fallback');
  }finally{process.chdir(before);fs.rmSync(root,{recursive:true,force:true});}
 });
