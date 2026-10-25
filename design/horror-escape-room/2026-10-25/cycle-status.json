@@ -1,0 +1,332 @@
+{
+  "version": 6,
+  "date": "2026-10-25",
+  "gameId": "horror-escape-room",
+  "gameName": "심야 대탈출",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+    "category": "CASUAL",
+    "source": "design/horror-escape-room/2026-10-25/design-seed.json",
+    "inputSource": "game-seed-state.json",
+    "authorRole": "GAME_DESIGNER_AI",
+    "complete": true,
+    "gameplaySketchVersion": 5,
+    "inputGameplaySketchVersion": 1,
+    "advancedDesignDepth": false
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "vibe-native:standard-design-v1",
+    "singleAuthor": true,
+    "sameModelRevised": false
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "audio"
+    ],
+    "leadModels": {},
+    "resolvedLeadModels": {
+      "planning": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "graphics": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "development": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "qa": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "audio": "DETERMINISTIC_EVIDENCE_ENGINE"
+    },
+    "distinctLeadModels": [
+      "DETERMINISTIC_EVIDENCE_ENGINE"
+    ],
+    "distinctLeadModelCount": 1,
+    "leadModelsDistinct": false,
+    "reviewModelCount": 0,
+    "modelAudit": {
+      "planning": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "graphics": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "development": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "qa": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "audio": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      }
+    },
+    "rebuttalRounds": 0,
+    "repeatedFatalReview": false,
+    "aiReviewRequired": false,
+    "aiReviewUsed": false,
+    "reviewMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE"
+  },
+  "meeting": {
+    "required": false,
+    "crossDepartmentMeeting": false,
+    "rebuttalRounds": 0
+  },
+  "disposition": {
+    "version": 2,
+    "gameId": "horror-escape-room",
+    "date": "2026-10-25",
+    "state": "ACTIVE",
+    "sameDesignerRevisionAttempted": false,
+    "fiveDepartmentLeadReviewCompleted": false,
+    "deterministicDepartmentEvidenceCompleted": true,
+    "repeatedFiveDepartmentReview": false,
+    "meetingRequired": false,
+    "rebuttalRounds": 0,
+    "automaticDiscardAllowed": false,
+    "discardVotes": 0,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "strictGateStillAuthoritative": true,
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 368,
+      "deterministic_pre_gate": 30,
+      "deterministic_department_evidence": 4
+    },
+    "phaseBudgetMs": {
+      "designer_draft": 180000,
+      "designer_draft_base": 180000,
+      "designer_draft_gate": 180000,
+      "deterministic_pre_gate": 30000,
+      "designer_pre_gate_repair_1": 180000,
+      "designer_pre_gate_repair_2": 180000,
+      "independent_department_reviews": 240000,
+      "designer_revision": 180000,
+      "designer_revision_base": 180000,
+      "designer_revision_gate": 180000,
+      "five_lead_reviews": 180000
+    },
+    "totalModelCalls": 0,
+    "totalModelCallMs": 0,
+    "modelPhaseConcurrency": 1,
+    "phaseConcurrency": {},
+    "maxLoadedModelLanes": 1,
+    "modelKeepAlive": "NONE",
+    "modelHealth": {},
+    "preGate": {
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
+    },
+    "checkpoint": {
+      "contractVersion": 4,
+      "engineDigest": "2b756570adb02b543a4df13cacafedd4acf56cbb69afb40c35f4a74c1173e146",
+      "reused": false,
+      "completedPhases": 3,
+      "cachedTasks": 11
+    },
+    "simplifiedLeadOnlyReview": false,
+    "deterministicDepartmentEvidence": true,
+    "aiMeetingCalls": 0,
+    "rebuttalCalls": 0,
+    "representativeSynthesisCalls": 0,
+    "leadReviewCalls": 0,
+    "departmentScopedContext": true
+  },
+  "designLearning": {
+    "candidateCount": 0,
+    "usedAsDesignContext": false,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [],
+    "strictGateBypassAllowed": false
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": true,
+  "vibe2LearningContextUsed": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "company-learning/platform-release-roadmap.json",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "ACTIVE",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+        "source": "design/horror-escape-room/2026-10-25/design-seed.json",
+        "designerSeed": {
+          "source": "design/horror-escape-room/2026-10-25/design-seed.json",
+          "authorModel": "vibe-native:standard-design-v1",
+          "contentDigest": "2d12a35467bf2fd837a7cf5f3ef8bedca56b3edc9ab27e0933b5d98594991efb"
+        }
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "COMPETITIVE",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "deterministicDesignGate": {
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/horror-escape-room/2026-10-25/design-checkpoint.json",
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
+        "passMinimum": 80,
+        "hardFailures": [],
+        "criticalAxisFailures": []
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "minimumDesign": {
+        "required": false,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-10-25/design-revised.json",
+        "date": "2026-10-25"
+      },
+      "upperPlatformReadiness": {
+        "required": false,
+        "pass": false,
+        "source": "web-games/horror-escape-room/upper-platform-development-readiness.json",
+        "reason": "MISSING",
+        "state": null,
+        "unitySourceTreeSha256": null,
+        "currentUnitySourceTreeSha256": null
+      },
+      "webGameplay": {
+        "required": false,
+        "supportingOnly": true,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "ROBLOX",
+        "present": true,
+        "path": "roblox-games/horror-escape-room",
+        "projectField": "robloxProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "ROBLOX",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "roblox-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
+      "aiReviewIsGateAuthority": false,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsDirectNative": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresMinimumDualPlatformDesign": true,
+      "developmentConfirmedRequiresUpperPlatformReadinessBeforeNewNativeStart": true,
+      "existingNativeTechnicalEvidenceGrandfathered": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookRunsInParallel": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-10-25T14:11:20.037Z"
+  },
+  "artbookUi": {
+    "status": "WRITING",
+    "label": "작성중",
+    "path": "artbook-submissions/horror-escape-room/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
+  }
+}
