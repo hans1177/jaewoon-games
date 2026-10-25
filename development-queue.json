@@ -13230,10 +13230,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-25T12:03:20.695Z",
+      "updatedAt": "2026-10-25T12:04:07.876Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -13312,12 +13312,12 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-restart-build-package-pending"
       ],
-      "robloxSourceCommit": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
-      "robloxSourceBootstrapPassedAt": "2026-10-25T11:47:27.537Z",
+      "robloxSourceCommit": "6709402bfd1a7bf69c93e9af8c226547b82c9857",
+      "robloxSourceBootstrapPassedAt": "2026-10-25T12:04:07.876Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -13903,12 +13903,15 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxEvidenceInvalidatedBySourceChange": {
+      "robloxEvidenceInvalidatedBySourceChange": null,
+      "robloxRuntimeRetryCount": 0,
+      "robloxEvidenceInvalidatedByF0Restart": {
+        "sourceRevision": "6709402bfd1a7bf69c93e9af8c226547b82c9857",
         "previousSourceRevision": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
-        "newSourceRevision": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
-        "invalidatedAt": "2026-10-25T11:33:26.976Z"
-      },
-      "robloxRuntimeRetryCount": 0
+        "previousArtifactIdentity": null,
+        "restartedAt": "2026-10-25T12:04:07.876Z",
+        "authority": "canonical-main-f0-restart"
+      }
     },
     {
       "gameId": "defense",
@@ -56728,7 +56731,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T12:03:28.898Z",
+  "updatedAt": "2026-10-25T12:04:07.876Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
