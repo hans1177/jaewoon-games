@@ -131,6 +131,8 @@
 .ship-preview.ship-mini svg{max-height:130px}
 @media(max-width:740px){#windStatus{top:calc(169px + env(safe-area-inset-top));max-width:calc(100vw - 115px);font-size:10px}#tools{top:calc(166px + env(safe-area-inset-top));gap:4px}#tools #viewMode,#tools #speed{width:80px;min-height:39px;padding:3px}#compass{max-width:calc(100vw - 14px)}.ship-preview.ship-mini svg{max-height:102px}}
 @media(max-height:550px) and (max-width:740px){#windStatus{top:calc(115px + env(safe-area-inset-top))}#tools{top:calc(114px + env(safe-area-inset-top))}}
+/* 입체 해상 화면만 픽셀 확대: HUD와 동료 얼굴은 원본 선명도 유지 */
+#naval3d{image-rendering:pixelated;image-rendering:crisp-edges}
 /* 중세 항해 인물 카드: 사진풍 기존 원본 시트에 깊이감 있는 유리·질감·비네트 적용 */
 .portrait-real{position:relative;isolation:isolate;display:block;overflow:hidden;width:92px;height:122px;flex:0 0 92px;border:3px ridge #a68255;border-radius:3px;
  background-repeat:no-repeat;background-size:500% 100%;background-color:#604e3e;filter:hue-rotate(var(--portrait-hue,0deg)) contrast(1.065) saturate(.88);

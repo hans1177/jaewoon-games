@@ -190,10 +190,28 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   ctx.fillStyle=hull;ctx.beginPath();ctx.moveTo(0,-length-5);ctx.bezierCurveTo(-beam,-length*.5,-beam,length*.6,-beam*.45,length);ctx.quadraticCurveTo(0,length+6,beam*.45,length);ctx.bezierCurveTo(beam,length*.6,beam,-length*.5,0,-length-5);ctx.closePath();ctx.fill();
   rect(-beam+2,-length*.45,beam*2-4,length*1.14,enemy?'#745c4d':'#a27b4f');rect(-beam+3,-length*.3,beam*2-6,2,trim);
   ctx.strokeStyle='#593d2870';ctx.lineWidth=.55;for(let py=-length*.4;py<length*.7;py+=2){ctx.beginPath();ctx.moveTo(-beam+2,py);ctx.lineTo(beam-2,py);ctx.stroke();}
+  // 갑판 판재 이음매·못·줄 걸이·격자 화물창을 짧은 도트선으로 표현한다.
+  for(let py=-length*.40;py<length*.69;py+=4){
+   const stagger=Math.round(py/4)%2;for(let px=-beam+3+stagger*3;px<beam-2;px+=6){rect(px,py,1,1,'#4b3424');rect(px+1,py,1,1,'#d6ac74');}
+  }
+  for(const hy of [-length*.13,length*.34]){
+   rect(-beam*.45,hy,beam*.90,4,'#4f382d');
+   rect(-beam*.37,hy+1,beam*.74,2,'#75533a');
+   for(let col=-1;col<=1;col++)rect(col*beam*.22,hy+1,1,2,'#362f2b');
+  }
   ctx.strokeStyle=trim;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(-beam+1,length*.7);ctx.lineTo(-beam+1,-length*.5);ctx.lineTo(0,-length-5);ctx.lineTo(beam-1,-length*.5);ctx.lineTo(beam-1,length*.7);ctx.stroke();
-  if(large){rect(-beam+1,length*.45,beam*2-2,9,'#4f372f');rect(-beam+2,length*.50,beam*2-4,3,trim);rect(-beam*.6,-length*.74,beam*1.2,5,'#b28b57');}
+  if(large){rect(-beam+1,length*.45,beam*2-2,9,'#4f372f');rect(-beam+2,length*.50,beam*2-4,3,trim);rect(-beam*.6,-length*.74,beam*1.2,5,'#b28b57');
+   for(let j=-2;j<=2;j++)rect(j*beam*.33,length*.60,2,3,'#e6c48f');
+   rect(-beam*.55,length*.77,beam*1.1,2,'#c99f60');}
+  // 양현 난간 기둥과 선실의 타륜.
+  for(let py=-length*.55;py<length*.55;py+=5){rect(-beam,py,2,3,trim);rect(beam-2,py,2,3,trim);}
+  ctx.strokeStyle='#c8a36c';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,length*.51,3,0,Math.PI*2);ctx.stroke();
+  rect(-.5,length*.49,1,4,'#e6c58a');rect(-2,length*.51,4,1,'#e6c58a');
   const holes=Math.max(2,Math.min(10,Math.round(ports/2)));
-  for(let i=0;i<holes;i++){const py=-length*.56+i*(length*1.33)/Math.max(1,holes-1);rect(-beam-1,py,4,3,'#1b2629');rect(beam-3,py,4,3,'#1b2629');}
+  for(let i=0;i<holes;i++){const py=-length*.56+i*(length*1.33)/Math.max(1,holes-1);
+   rect(-beam-2,py,5,4,trim);rect(-beam-1,py+1,3,2,'#1b2629');rect(beam-3,py,5,4,trim);rect(beam-2,py+1,3,2,'#1b2629');
+   rect(-beam-2,py+1,1,1,'#d8bb83');rect(beam+1,py+1,1,1,'#d8bb83');
+  }
   if(galley){for(let i=0;i<7;i++){const py=-length*.55+i*6;rect(-beam-10,py,11,2,'#c7a774');rect(beam,py,11,2,'#c7a774');}}
   const masts=large?[-length*.55,length*.05,length*.59]:galley?[-length*.32]:[-length*.52,length*.4];
   for(let i=0;i<masts.length;i++){
@@ -205,6 +223,9 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
   ctx.strokeStyle='#dac49c80';ctx.lineWidth=.55;for(const sy of masts){ctx.beginPath();ctx.moveTo(-beam,length*.85);ctx.lineTo(0,sy-10);ctx.lineTo(beam,length*.85);ctx.moveTo(0,sy-10);ctx.lineTo(0,-length-6);ctx.stroke();}
   rect(-2,-length-8,4,4,enemy?'#db8167':'#ead2a0');rect(1,-length-7,6,2,enemy?'#c66d54':design.color||'#cd9867');
   if(!enemy&&state.ship.gear.figurehead!=='none'){rect(-3,-length-12,6,5,'#e2bb72');rect(-1,-length-15,2,4,'#f4de9c');}
+  // 뱃머리의 국적 깃발과 후방 도트 물결.
+  rect(-2,-length-17,1,9,'#f1d9a9');rect(-1,-length-17,7,2,enemy?'#b85c45':design.color||'#e7ce9c');rect(0,-length-15,5,2,enemy?'#85382b':'#ead1a1');
+  if(Math.abs(state.ship.velocity||0)>.4){ctx.globalAlpha=.52;for(let i=0;i<5;i++)for(const side of [-1,1])rect(side*(beam*.6+4+i*2),length+8+i*3,4+i,1,i%2?'#b9e5db':'#e5f6ed');ctx.globalAlpha=1;}
   ctx.restore();
  }
 
