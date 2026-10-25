@@ -17,7 +17,7 @@ test('separate save key, valid round trip, invalid save stays isolated',()=>{
 });
 test('browser main imports all engine exports so startup cannot silently fail',()=>{
  const main=fs.readFileSync(new URL('../web-games/ocean-voyage/main.mjs',import.meta.url),'utf8');
- const block=main.match(/import\\s*\\{([^}]+)\\}\\s*from ['"]\\.\\/engine\\.mjs['"]/);
+ const block=main.match(/import\s*\{([^}]+)\}\s*from ['"]\.\/engine\.mjs['"]/);
  assert.ok(block,'main must import its engine through the existing entry point');
  const missing=block[1].split(',').map(x=>x.trim()).filter(name=>!(name in oceanEngine));
  assert.deepEqual(missing,[],'missing engine exports crash the browser before opening the game');
