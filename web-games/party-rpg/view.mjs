@@ -864,7 +864,11 @@ buildWorld(live){
    }
   this.marker.visible=!!this.destination;if(this.destination)this.marker.position.set(this.destination.x*SCALE,.06,this.destination.y*SCALE);
   for(let i=this.effects.length-1;i>=0;i--){
-   const fx=this.effects[i],phase=(now-fx.born)/fx.duration;
+   const fx=this.effects[i];
+   // 전투/메뉴 정지 중에는 화살·마법탄·타격 잔상의 시각 타이머도 멈춘다.
+   if(live.paused){if(!fx.pausedAt)fx.pausedAt=now;continue;}
+   if(fx.pausedAt){fx.born+=now-fx.pausedAt;fx.pausedAt=0;}
+   const phase=(now-fx.born)/fx.duration;
    if(phase>=1){this.scene.remove(fx.group);fx.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});this.effects.splice(i,1);continue;}
    // 예비동작 → 비행 → 충돌 파편 → 복귀. 이펙트만 지연되며 피해 판정은 건드리지 않는다.
    const phaseAfterHit=THREE.MathUtils.clamp((phase-fx.buildup)/(1-fx.buildup),0,1);
