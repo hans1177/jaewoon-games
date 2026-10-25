@@ -725,7 +725,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
         if(actor.anchor.scale)actor.anchor.scale.y=.70;
       }else{actor.anchor.rotation.z=0;if(actor.anchor.scale)actor.anchor.scale.y=1}
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
-      syncBestiaryName(actor,e,state,Math.max(1.5,source.height*model.scale.y)+.2);
+      syncBestiaryName(actor,e,state,Math.max(1.5,(Number(e.type?.r)||20)*SCALE*2.2)+.2);
       if(actor.anchor.visible)actor.model.traverse(child=>{
         if(!child.isMesh)return;
         child.userData.worldPoint={x:e.x,y:e.y,monsterId:e.netId};
