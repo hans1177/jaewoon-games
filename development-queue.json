@@ -275,13 +275,13 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-25T15:39:20.551Z",
+      "updatedAt": "2026-10-25T15:42:31.409Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceBootstrapFailedAt": "2026-10-25T15:39:20.551Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-25T15:42:31.409Z",
       "robloxRuntimePassed": false,
       "robloxHeadlessFastMvpPassed": false,
       "robloxInternalReleaseReady": false,
@@ -290,9 +290,9 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -332,15 +332,15 @@
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxReleasePublishedAt": null,
-      "robloxSourceCommit": "a1e3666cd795ea915fdb74378e7576035841bdbf",
+      "robloxSourceCommit": "c9846db71be828e780e355310cfe0b13fd4a8146",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "a1e3666cd795ea915fdb74378e7576035841bdbf",
+      "robloxQualityBuildUpSourceRevision": "c9846db71be828e780e355310cfe0b13fd4a8146",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "cozy-island",
-        "sourceRevision": "a1e3666cd795ea915fdb74378e7576035841bdbf",
-        "sourceTreeSha": "408cf91d45764294cdc181c2bac88637676bd18d",
+        "sourceRevision": "c9846db71be828e780e355310cfe0b13fd4a8146",
+        "sourceTreeSha": "23dfc86eb1d57c8bdd858b028c4d14d29b55e32f",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -368,8 +368,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40206934965,
-        "testedAt": "2026-10-25T15:30:00.697Z"
+        "workflowRunId": 40207929512,
+        "testedAt": "2026-10-25T15:42:31.409Z"
       },
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -5385,7 +5385,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-25T15:41:23.707Z",
+  "updatedAt": "2026-10-25T15:42:31.409Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
