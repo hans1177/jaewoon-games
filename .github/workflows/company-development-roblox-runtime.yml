@@ -753,7 +753,7 @@ jobs:
           merge-multiple: true
 
       - name: Fetch current company runtime
-        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
 
       - name: Persist Roblox source-bind state to company runtime
         id: persist_state
@@ -768,7 +768,7 @@ jobs:
           attempt=0
           while true; do
             attempt=$((attempt+1))
-            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
             git checkout -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
             echo "ROBLOX_SOURCE_PERSIST_ATTEMPT=$attempt"
             node <<'NODE'
@@ -1058,7 +1058,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main main
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-queue.json
           mkdir -p /tmp/roblox-runtime-tools
           git show "origin/main:tools/company-selected-platform-router.mjs" > /tmp/roblox-runtime-tools/company-selected-platform-router.mjs
@@ -1247,7 +1247,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
           git checkout --detach origin/main
           current_main="$(git rev-parse origin/main)"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-private-runtime-dispatch-queue.json
@@ -1686,7 +1686,7 @@ jobs:
           attempt=0
           while true; do
             attempt=$((attempt+1))
-            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
             git checkout -B "roblox-f0-persist-${safe}" "origin/$COMPANY_RUNTIME_BRANCH"
             GAME_ID="$GAME_ID" RESULT_FILE="$result" node <<'NODE'
           const fs=require('fs');
@@ -1795,7 +1795,7 @@ jobs:
             sleep 1
           done
 
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-f0-per-game-dispatch.json
           ready="$(GAME_ID="$GAME_ID" SOURCE_REVISION="$SOURCE_REVISION" node - <<'NODE'
           const fs=require('fs');
@@ -1862,7 +1862,7 @@ jobs:
           path: /tmp/roblox-technical-batch
           merge-multiple: true
       - name: Fetch current company runtime
-        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
       - name: Persist exact Roblox build package evidence
         if: needs.technical-plan.outputs.count != '0'
         env:
@@ -1873,7 +1873,7 @@ jobs:
           attempt=0
           while true; do
             attempt=$((attempt+1))
-            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
             git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
             echo "ROBLOX_TECHNICAL_PERSIST_ATTEMPT=$attempt"
             node <<'NODE'
@@ -2118,7 +2118,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-f0-repair-queue.json
           repair_count="$(node - <<'NODE'
           const fs=require('fs');
@@ -2191,7 +2191,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
           git checkout --detach origin/main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
           remaining="$(node --input-type=module <<'NODE'
@@ -2281,7 +2281,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
           git checkout --detach origin/main
           current_main="$(git rev-parse origin/main)"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json

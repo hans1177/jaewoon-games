@@ -732,6 +732,7 @@ test('stale historical Roblox runtime executions cannot roll source or package s
 test('Roblox source and package workers avoid full repository history checkout',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+  assert.doesNotMatch(workflow,/git fetch --no-tags origin/);
   assert.ok((workflow.match(/fetch-depth:\s*1/g)||[]).length>=6);
   assert.ok((workflow.match(/fetch-tags:\s*false/g)||[]).length>=6);
   assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$\{\{ matrix\.sourceRevision \}\}"/);
@@ -753,7 +754,7 @@ test('Roblox runtime persist writers refetch and reapply instead of using a canc
   assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
   assert.match(workflow,/while true; do[\s\S]*?ROBLOX_SOURCE_PERSIST_ATTEMPT=/);
   assert.match(workflow,/while true; do[\s\S]*?ROBLOX_TECHNICAL_PERSIST_ATTEMPT=/);
-  assert.ok((workflow.match(/git fetch --no-tags origin "\$COMPANY_RUNTIME_BRANCH" main/g)||[]).length>=4);
+  assert.ok((workflow.match(/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" main/g)||[]).length>=4);
 });
 
 
