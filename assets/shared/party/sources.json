@@ -385,6 +385,38 @@
       "creator": "Kenney",
       "license": "CC0-1.0",
       "animations": []
+    },
+    {
+      "file": "assets/shared/party/actors.webp",
+      "sha256": "a6fc1d38b548fcf0ea71c6d35f9a621c49f0456d79c9efcfa6be7e4b71145bf0",
+      "bytes": 1002762,
+      "source": "OpenAI image generation · owner-requested original in-game actor artwork",
+      "creator": "OpenAI image generation",
+      "license": "AI_GENERATED_ORIGINAL_PROJECT_ASSET",
+      "status": "SOURCE_AVAILABLE_RUNTIME_UNVERIFIED",
+      "layout": {
+        "columns": 4,
+        "rows": 3,
+        "width": 1448,
+        "height": 1086
+      },
+      "roles": [
+        "warrior",
+        "rogue",
+        "cleric",
+        "wizard",
+        "ranger",
+        "slime",
+        "orc",
+        "bunny",
+        "golem",
+        "ghost",
+        "winged",
+        "civilian"
+      ],
+      "usage": "Actual full-body field actors; not portraits. Lossless WebP packaging, original transparent alpha preserved.",
+      "prompt": "High-detail medieval fantasy full-body pixel sprite atlas, 4 columns by 3 rows; knight, rogue, cleric, wizard, ranger, slime, orc, rabbit, golem, ghost, bat demon and civilian; detailed material shading, isolated transparent cells and full weapons.",
+      "revisionPrompt": "Preserve all 12 designs; reduce figures and add transparent padding so weapons and wings fit inside equal cells."
     }
   ],
   "adaptation": "Game-specific GLB copies; <=512px 128-color PNG textures, selected animation clips, unused binary ranges removed; original meshes and rigs retained."
