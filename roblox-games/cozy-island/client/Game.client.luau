@@ -8,6 +8,7 @@ local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
 local TweenService=game:GetService("TweenService")
+local RunService=game:GetService("RunService")
 local CollectionService=game:GetService("CollectionService")
 
 -- 참조
@@ -112,6 +113,71 @@ CollectionService:GetInstanceAddedSignal("VibeSurvivalWildlife"):Connect(functio
 CollectionService:GetInstanceRemovedSignal("VibeSurvivalWildlife"):Connect(unbindWildlife)
 
 
+-- 메인: 리깅/렌더링 최적화. 기존 원본 CC0의 Motor6D 또는 기본 관절을 재사용한다.
+-- 화면 밖 동작은 건너뛰고 가시 거리별 갱신 빈도를 제한한다.
+local combatActors=setmetatable({}, {__mode="k"})
+local function bindCombatActor(actor)
+ if not actor:IsA("BasePart")or combatActors[actor]then return end
+ local joints={}
+ for _,item in ipairs(actor:GetDescendants())do
+  if item:IsA("Motor6D")and item.Part1 then table.insert(joints,item)end
+ end
+ combatActors[actor]={joints=joints,elapsed=0,nextVisibility=0,visible=true,interval=1/30,phase=math.random()*6.28}
+end
+for _,actor in ipairs(CollectionService:GetTagged("CozyCombatActor"))do bindCombatActor(actor)end
+CollectionService:GetInstanceAddedSignal("CozyCombatActor"):Connect(bindCombatActor)
+CollectionService:GetInstanceRemovedSignal("CozyCombatActor"):Connect(function(actor)combatActors[actor]=nil end)
+RunService.PreSimulation:Connect(function(dt)
+ local camera=workspace.CurrentCamera
+ if not camera then return end
+ local now=os.clock()
+ for actor,record in pairs(combatActors)do
+  if not actor.Parent then combatActors[actor]=nil else
+   -- 비동기 원본 모델 연결 뒤 실제 관절을 다시 수집한다.
+   if not record.originalChecked and (actor:GetAttribute("CC0VisualReady") or actor:GetAttribute("SharedMonsterVisualReady")) then
+    record.joints={}
+    for _,joint in ipairs(actor:GetDescendants())do
+     if joint:IsA("Motor6D")and joint.Part1 then table.insert(record.joints,joint)end
+    end
+    record.originalChecked=true
+   end
+   record.elapsed+=dt
+   if now>=record.nextVisibility then
+    record.nextVisibility=now+.25
+    local distance=(actor.Position-camera.CFrame.Position).Magnitude
+    local screen,visible=camera:WorldToViewportPoint(actor.Position)
+    record.visible=distance<220 and visible and screen.Z>0
+    record.interval=distance<80 and 1/30 or distance<140 and 1/18 or 1/10
+   end
+   if record.visible and record.elapsed>=record.interval then
+    local step=math.min(record.elapsed,.1);record.elapsed=0
+    local state=actor:GetAttribute("CozyMotionState")or"IDLE"
+    local speed=actor:GetAttribute("CozyMotionSpeed")or 0
+    local moving=state=="WALK" and speed>0
+    local phase=now*(moving and math.clamp(speed*1.35,5,13) or 2)+record.phase
+    local stride=moving and math.sin(phase)*.68 or math.sin(phase)*.025
+    local attack=state=="ATTACK" and math.sin(now*14)*.52+.48 or 0
+    local hit=state=="HIT" and .35 or 0
+    local death=state=="DEATH" and .85 or 0
+    for _,joint in ipairs(record.joints)do
+     if joint.Parent and joint.Part1 then
+      local name=joint.Name
+      local arm=name:find("Arm",1,true)~=nil
+      local leg=name:find("Leg",1,true)~=nil
+      local side=name:find("LJoint",1,true)and 1 or name:find("RJoint",1,true)and -1 or joint.Part1.Position.X<actor.Position.X and 1 or -1
+      if arm or leg then
+       local angle=(arm and -side or side)*stride+(arm and attack or 0)+hit+death
+       joint.Transform=joint.Transform:Lerp(CFrame.Angles(angle,0,arm and side*attack*.22 or 0),math.clamp(step*16,0,1))
+      end
+     end
+    end
+   elseif not record.visible then
+    record.elapsed=math.min(record.elapsed,.1)
+   end
+  end
+ end
+end)
+
 -- 사운드
 local function sound(name,id,volume,looped)
  local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Looped=looped;s.Parent=SoundService;return s
@@ -209,7 +275,7 @@ task.spawn(function()
 end)
 
 local function roundify(target,radius)
- local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,radius or 12);corner.Parent=target
+ local corner=target:FindFirstChildOfClass("UICorner") or Instance.new("UICorner");corner.CornerRadius=UDim.new(0,0);corner.Parent=target
 end
 
 local function outline(target,transparency)
@@ -217,7 +283,7 @@ local function outline(target,transparency)
 end
 
 local function makeButton(parent,text,color)
- local b=CommonUI.CreatePrimaryButton({text=text,minWidth=44,minHeight=52,textSize=14,theme={Primary=color,PrimaryTop=color,PrimaryBottom=color,TouchHeight=52}})
+ local b=CommonUI.CreatePrimaryButton({text=text,minWidth=44,minHeight=52,textSize=14,cornerRadius=0,theme={Primary=color,PrimaryTop=color,PrimaryBottom=color,TouchHeight=52}})
  b.ZIndex=parent:IsA("GuiObject")and parent.ZIndex+1 or 1
  for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
  b.Parent=parent
@@ -235,7 +301,7 @@ startupOverlay.Active=true
 startupOverlay.ZIndex=100
 startupOverlay.Parent=gui
 
-local startupCard=Instance.new("Frame")
+local startupCard=CommonUI.CreatePanel({name="StartupCard",cornerRadius=0})
 startupCard.AnchorPoint=Vector2.new(.5,.5)
 startupCard.Position=UDim2.fromScale(.5,.5)
 startupCard.Size=touchEnabled and UDim2.new(.88,0,0,300)or UDim2.fromOffset(460,320)
@@ -570,7 +636,7 @@ local function flash(color)
 end
 
 -- 상단 HUD: 자원과 정복 진행
-local hud=Instance.new("Frame")
+local hud=CommonUI.CreatePanel({name="TopHUD",cornerRadius=0})
 hud.Name="TopHUD"
 hud.AnchorPoint=Vector2.new(0,0)
 hud.Position=UDim2.fromOffset(8,8)
@@ -632,7 +698,7 @@ roundify(gatherHint,8)
 -- 채집 안내 카운트다운은 게임 시작 버튼에서 시작한다.
 
 -- 하단 조작: 채집은 월드 상호작용, 여기에는 마을 운영/정복만 표시
-local controls=Instance.new("Frame")
+local controls=CommonUI.CreatePanel({name="ActionDock",cornerRadius=0})
 controls.Name="ActionDock"
 controls.AnchorPoint=Vector2.new(.5,1)
 controls.Position=UDim2.new(.5,0,1,-10)
@@ -642,7 +708,7 @@ controls.BackgroundTransparency=.12
 controls.Parent=gui
 roundify(controls,14);outline(controls,.5)
 
-local actionPopup=Instance.new("Frame")
+local actionPopup=CommonUI.CreatePanel({name="ActionPopup",cornerRadius=0})
 actionPopup.Name="ActionPopup"
 actionPopup.AnchorPoint=Vector2.new(.5,1)
 actionPopup.Position=UDim2.new(.5,0,1,-74)

@@ -5,6 +5,7 @@ local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local Lighting=game:GetService("Lighting")
 local RunService=game:GetService("RunService")
+local CollectionService=game:GetService("CollectionService")
 local AssetService=game:GetService("AssetService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
@@ -39,6 +40,8 @@ local world
 local foundationSpawn
 local lastRequest,battling,gatherCooldown,qaCaptureLast,movementProbeStart={},{},{},{},{}
 local mobs={}
+local npcActors={}
+local aiCarry=0
 local assetCache={}
 local dataLoaded={}
 -- Asset pack IDs without CC0 provenance and current-universe grants are not loaded.
@@ -83,7 +86,12 @@ local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  x.CFrame=rootPart.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
  if shape then x.Shape=shape end;x.Parent=rootPart
  Materials.ApplyAuthoredSurface(x,"COZY")
- local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x;return x
+ if name:match("Arm[LR]$")or name:match("Leg[LR]$")or name=="BoarLeg" then
+  local m=Instance.new("Motor6D");m.Name=name.."Joint";m.Part0=rootPart;m.Part1=x;m.C0=rootPart.CFrame:ToObjectSpace(x.CFrame);m.C1=CFrame.identity;m.Parent=rootPart
+ else
+  local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x
+ end
+ return x
 end
 local function stripAsset(root)
  for _,d in ipairs(root:GetDescendants())do
@@ -93,9 +101,9 @@ local function stripAsset(root)
  return root
 end
 local function loadAsset(id)
- if assetCache[id]then return assetCache[id]end
+ if assetCache[id]~=nil then return assetCache[id] or nil end
  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
- if not ok or not result then return nil end
+ if not ok or not result then assetCache[id]=false;return nil end
  stripAsset(result);result.Parent=nil;assetCache[id]=result;return result
 end
 local function assetProp(parent,assetId,keywords,pos,scale,seed)
@@ -193,9 +201,16 @@ local function applyCC0Appearance(rootPart,assetId,maxHeight)
   group:PivotTo(group:GetPivot()+Vector3.new(0,floorY-bottomY+.04,0))
  end
  group.Parent=rootPart
+ -- 원본 리깅 모터는 보존하고 루트만 월드 판정 파츠에 연결한다.
+ local rigChildren={}
+ for _,joint in ipairs(group:GetDescendants())do
+  if joint:IsA("Motor6D")and joint.Part1 then rigChildren[joint.Part1]=true end
+ end
  for _,piece in ipairs(pieces)do
   piece.Anchored=false;piece.CanCollide=false;piece.CanTouch=false;piece.CanQuery=false;piece.Massless=true
-  local weld=Instance.new("WeldConstraint");weld.Part0=rootPart;weld.Part1=piece;weld.Parent=piece
+  if not rigChildren[piece] then
+   local weld=Instance.new("WeldConstraint");weld.Part0=rootPart;weld.Part1=piece;weld.Parent=piece
+  end
  end
  for _,child in ipairs(rootPart:GetChildren())do
   if child~=group and child:IsA("BasePart")then child.Transparency=1 end
@@ -210,18 +225,18 @@ local function figure(parent,name,pos,color,accent,scale)
  local skin=Color3.fromRGB(235,201,168)
  local r=part(parent,name,Vector3.new(2.1,5.5,1.7)*scale,pos,color);r.CanCollide=true;r.Transparency=1
  local function add(nm,size,off,col,mat,shape,rot)return attach(r,nm,size*scale,off*scale,col,mat,shape,rot)end
- add("CozyBody",Vector3.new(2.85,2.75,1.95),Vector3.new(0,.15,0),color,Enum.Material.Fabric,Enum.PartType.Ball)
- add("CozyBelt",Vector3.new(2.35,.55,1.65),Vector3.new(0,-1.15,0),accent,Enum.Material.Fabric,Enum.PartType.Ball)
- add("CozyHead",Vector3.new(2.55,2.45,2.35),Vector3.new(0,2.5,-.05),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- add("CozyHair",Vector3.new(2.65,.78,2.4),Vector3.new(0,3.35,.1),Color3.fromRGB(79,57,44),Enum.Material.Fabric,Enum.PartType.Ball)
- add("CozyEyeL",Vector3.new(.24,.34,.16),Vector3.new(-.5,2.62,-1.17),Color3.fromRGB(37,43,40),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- add("CozyEyeR",Vector3.new(.24,.34,.16),Vector3.new(.5,2.62,-1.17),Color3.fromRGB(37,43,40),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- add("CozyCheekL",Vector3.new(.32,.18,.12),Vector3.new(-.72,2.22,-1.14),Color3.fromRGB(235,150,145),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- add("CozyCheekR",Vector3.new(.32,.18,.12),Vector3.new(.72,2.22,-1.14),Color3.fromRGB(235,150,145),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ add("CozyBody",Vector3.new(2.85,2.75,1.95),Vector3.new(0,.15,0),color,Enum.Material.Fabric,Enum.PartType.Block)
+ add("CozyBelt",Vector3.new(2.35,.55,1.65),Vector3.new(0,-1.15,0),accent,Enum.Material.Fabric,Enum.PartType.Block)
+ add("CozyHead",Vector3.new(2.55,2.45,2.35),Vector3.new(0,2.5,-.05),skin,Enum.Material.SmoothPlastic,Enum.PartType.Block)
+ add("CozyHair",Vector3.new(2.65,.78,2.4),Vector3.new(0,3.35,.1),Color3.fromRGB(79,57,44),Enum.Material.Fabric,Enum.PartType.Block)
+ add("CozyEyeL",Vector3.new(.24,.34,.16),Vector3.new(-.5,2.62,-1.17),Color3.fromRGB(37,43,40),Enum.Material.SmoothPlastic,Enum.PartType.Block)
+ add("CozyEyeR",Vector3.new(.24,.34,.16),Vector3.new(.5,2.62,-1.17),Color3.fromRGB(37,43,40),Enum.Material.SmoothPlastic,Enum.PartType.Block)
+ add("CozyCheekL",Vector3.new(.32,.18,.12),Vector3.new(-.72,2.22,-1.14),Color3.fromRGB(235,150,145),Enum.Material.SmoothPlastic,Enum.PartType.Block)
+ add("CozyCheekR",Vector3.new(.32,.18,.12),Vector3.new(.72,2.22,-1.14),Color3.fromRGB(235,150,145),Enum.Material.SmoothPlastic,Enum.PartType.Block)
  add("CozyArmL",Vector3.new(2.25,.72,.72),Vector3.new(-1.55,.05,0),color,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,80))
  add("CozyArmR",Vector3.new(2.25,.72,.72),Vector3.new(1.55,.05,0),color,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,100))
- add("CozyHandL",Vector3.new(.78,.78,.78),Vector3.new(-1.72,-.98,-.03),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- add("CozyHandR",Vector3.new(.78,.78,.78),Vector3.new(1.72,-.98,-.03),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ add("CozyHandL",Vector3.new(.78,.78,.78),Vector3.new(-1.72,-.98,-.03),skin,Enum.Material.SmoothPlastic,Enum.PartType.Block)
+ add("CozyHandR",Vector3.new(.78,.78,.78),Vector3.new(1.72,-.98,-.03),skin,Enum.Material.SmoothPlastic,Enum.PartType.Block)
  add("CozyLegL",Vector3.new(2.1,.8,.8),Vector3.new(-.6,-2.15,0),accent,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
  add("CozyLegR",Vector3.new(2.1,.8,.8),Vector3.new(.6,-2.15,0),accent,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
  add("CozyBootL",Vector3.new(1.05,.55,1.35),Vector3.new(-.6,-3.08,-.28),Color3.fromRGB(75,59,48),Enum.Material.SmoothPlastic)
@@ -229,7 +244,7 @@ local function figure(parent,name,pos,color,accent,scale)
  if name=="Chief"then
   add("ChiefHat",Vector3.new(3.25,.34,3.25),Vector3.new(0,3.72,0),Color3.fromRGB(98,66,45),Enum.Material.Fabric)
   add("ChiefSash",Vector3.new(.34,2.8,1.92),Vector3.new(.52,.1,-.96),Color3.fromRGB(225,187,94),Enum.Material.Fabric,nil,Vector3.new(0,0,-13))
-  add("ChiefBadge",Vector3.new(.55,.55,.16),Vector3.new(-.65,.65,-1),Color3.fromRGB(242,206,97),Enum.Material.Metal,Enum.PartType.Ball)
+  add("ChiefBadge",Vector3.new(.55,.55,.16),Vector3.new(-.65,.65,-1),Color3.fromRGB(242,206,97),Enum.Material.Metal,Enum.PartType.Block)
  elseif name=="LumberMaster"then
   add("LumberCap",Vector3.new(2.75,.4,2.62),Vector3.new(0,3.65,0),Color3.fromRGB(63,104,62),Enum.Material.Fabric)
   add("AxeHandle",Vector3.new(3,.22,.22),Vector3.new(1.75,-.25,0),Color3.fromRGB(112,78,48),Enum.Material.Wood,Enum.PartType.Cylinder,Vector3.new(0,0,90))
@@ -237,24 +252,27 @@ local function figure(parent,name,pos,color,accent,scale)
  elseif name=="Farmer"then
   add("StrawHat",Vector3.new(3.5,.3,3.5),Vector3.new(0,3.7,0),Color3.fromRGB(213,181,92),Enum.Material.Fabric)
   add("Apron",Vector3.new(2.18,2.2,.18),Vector3.new(0,.05,-1),Color3.fromRGB(215,199,157),Enum.Material.Fabric)
-  add("SeedBag",Vector3.new(1.15,1.4,.75),Vector3.new(1.35,-.7,.35),Color3.fromRGB(128,88,57),Enum.Material.Fabric,Enum.PartType.Ball)
+  add("SeedBag",Vector3.new(1.15,1.4,.75),Vector3.new(1.35,-.7,.35),Color3.fromRGB(128,88,57),Enum.Material.Fabric,Enum.PartType.Block)
  elseif name=="Captain"then
   add("CaptainCape",Vector3.new(2.7,2.8,.2),Vector3.new(0,.15,.95),Color3.fromRGB(116,65,56),Enum.Material.Fabric)
-  add("ShoulderL",Vector3.new(1.15,.6,1.65),Vector3.new(-1.3,1,0),Color3.fromRGB(93,95,103),Enum.Material.Metal,Enum.PartType.Ball)
-  add("ShoulderR",Vector3.new(1.15,.6,1.65),Vector3.new(1.3,1,0),Color3.fromRGB(93,95,103),Enum.Material.Metal,Enum.PartType.Ball)
+  add("ShoulderL",Vector3.new(1.15,.6,1.65),Vector3.new(-1.3,1,0),Color3.fromRGB(93,95,103),Enum.Material.Metal,Enum.PartType.Block)
+  add("ShoulderR",Vector3.new(1.15,.6,1.65),Vector3.new(1.3,1,0),Color3.fromRGB(93,95,103),Enum.Material.Metal,Enum.PartType.Block)
  elseif string.find(name,"Villager",1,true)then
-  add("VillagerPouch",Vector3.new(.9,1.05,.62),Vector3.new(1.2,-.85,.4),Color3.fromRGB(135,96,64),Enum.Material.Fabric,Enum.PartType.Ball)
+  add("VillagerPouch",Vector3.new(.9,1.05,.62),Vector3.new(1.2,-.85,.4),Color3.fromRGB(135,96,64),Enum.Material.Fabric,Enum.PartType.Block)
  end
  -- Replace stylized block actors by role-matched CC0 KayKit original models.
  placeActorOnGround(r,pos.Y-6)
  local licenseAsset=CC0.Npc[name]
+ r:SetAttribute("CozyActorType","NPC");r:SetAttribute("CozyMotionState","IDLE");r:SetAttribute("CozyMotionSpeed",0);r:SetAttribute("HP",100)
+ table.insert(npcActors,{part=r,spawn=r.Position,hp=100,lastAttack=0,actionUntil=0})
+ CollectionService:AddTag(r,"CozyCombatActor")
  if licenseAsset then task.spawn(applyCC0Appearance,r,licenseAsset,6*scale)end
  return r
 end
 local function tree(parent,pos,scale)
  scale=scale or 1
  local trunk=part(parent,"TreeTrunk",Vector3.new(2.4,8,2.4)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(106,74,48),Enum.Material.Wood)
- local crown=part(parent,"TreeCrown",Vector3.new(8,8,8)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(77,150,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
+ local crown=part(parent,"TreeCrown",Vector3.new(8,8,8)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(77,150,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Block
  return trunk
 end
 local function rock(parent,pos,scale,color)
@@ -366,23 +384,23 @@ local function spawnMob(kind,pos,visualIndex,islandTopY)
  r.CanCollide=true;r.Transparency=1
  if isRaider then
   local skin=Color3.fromRGB(211,174,141);local cloth=Color3.fromRGB(117,69,62);local dark=Color3.fromRGB(60,53,52)
-  attach(r,"RaiderTorso",Vector3.new(2.9,3.4,1.9),Vector3.new(0,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Ball)
-  attach(r,"RaiderHead",Vector3.new(2.3,2.35,2.2),Vector3.new(0,2.15,-.1),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(r,"RaiderHood",Vector3.new(2.55,1.05,2.45),Vector3.new(0,2.95,.05),dark,Enum.Material.Fabric,Enum.PartType.Ball)
+  attach(r,"RaiderTorso",Vector3.new(2.9,3.4,1.9),Vector3.new(0,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Block)
+  attach(r,"RaiderHead",Vector3.new(2.3,2.35,2.2),Vector3.new(0,2.15,-.1),skin,Enum.Material.SmoothPlastic,Enum.PartType.Block)
+  attach(r,"RaiderHood",Vector3.new(2.55,1.05,2.45),Vector3.new(0,2.95,.05),dark,Enum.Material.Fabric,Enum.PartType.Block)
   attach(r,"RaiderArmL",Vector3.new(2.8,.72,.72),Vector3.new(-1.75,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,82))
   attach(r,"RaiderArmR",Vector3.new(2.8,.72,.72),Vector3.new(1.75,-.45,0),cloth,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,98))
   attach(r,"RaiderLegL",Vector3.new(2.7,.82,.82),Vector3.new(-.72,-2.8,0),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
   attach(r,"RaiderLegR",Vector3.new(2.7,.82,.82),Vector3.new(.72,-2.8,0),dark,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,0,90))
  else
   local fur=Color3.fromRGB(105,76,58);local dark=Color3.fromRGB(69,52,45);local muzzle=Color3.fromRGB(143,98,73)
-  attach(r,"BoarBody",Vector3.new(5.5,3.25,6.5),Vector3.new(0,1.75,.25),fur,Enum.Material.Fabric,Enum.PartType.Ball)
-  attach(r,"BoarShoulder",Vector3.new(5.15,3.5,4.2),Vector3.new(0,1.95,-1.25),Color3.fromRGB(116,83,62),Enum.Material.Fabric,Enum.PartType.Ball)
-   attach(r,"BoarMane",Vector3.new(4.7,1.15,4.2),Vector3.new(0,3.25,-.8),dark,Enum.Material.Fabric,Enum.PartType.Ball)
-  attach(r,"BoarHead",Vector3.new(3.45,2.85,3.3),Vector3.new(0,2.25,-3.65),fur,Enum.Material.Fabric,Enum.PartType.Ball)
-  attach(r,"BoarSnout",Vector3.new(2.5,1.45,1.65),Vector3.new(0,2,-5.25),muzzle,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(r,"BoarNose",Vector3.new(1.45,.8,.32),Vector3.new(0,2.05,-6.05),Color3.fromRGB(78,55,51),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-   attach(r,"BoarEyeL",Vector3.new(.22,.28,.16),Vector3.new(-.72,2.75,-5),Color3.fromRGB(26,24,23),Enum.Material.Neon,Enum.PartType.Ball)
-   attach(r,"BoarEyeR",Vector3.new(.22,.28,.16),Vector3.new(.72,2.75,-5),Color3.fromRGB(26,24,23),Enum.Material.Neon,Enum.PartType.Ball)
+  attach(r,"BoarBody",Vector3.new(5.5,3.25,6.5),Vector3.new(0,1.75,.25),fur,Enum.Material.Fabric,Enum.PartType.Block)
+  attach(r,"BoarShoulder",Vector3.new(5.15,3.5,4.2),Vector3.new(0,1.95,-1.25),Color3.fromRGB(116,83,62),Enum.Material.Fabric,Enum.PartType.Block)
+   attach(r,"BoarMane",Vector3.new(4.7,1.15,4.2),Vector3.new(0,3.25,-.8),dark,Enum.Material.Fabric,Enum.PartType.Block)
+  attach(r,"BoarHead",Vector3.new(3.45,2.85,3.3),Vector3.new(0,2.25,-3.65),fur,Enum.Material.Fabric,Enum.PartType.Block)
+  attach(r,"BoarSnout",Vector3.new(2.5,1.45,1.65),Vector3.new(0,2,-5.25),muzzle,Enum.Material.SmoothPlastic,Enum.PartType.Block)
+  attach(r,"BoarNose",Vector3.new(1.45,.8,.32),Vector3.new(0,2.05,-6.05),Color3.fromRGB(78,55,51),Enum.Material.SmoothPlastic,Enum.PartType.Block)
+   attach(r,"BoarEyeL",Vector3.new(.22,.28,.16),Vector3.new(-.72,2.75,-5),Color3.fromRGB(26,24,23),Enum.Material.Neon,Enum.PartType.Block)
+   attach(r,"BoarEyeR",Vector3.new(.22,.28,.16),Vector3.new(.72,2.75,-5),Color3.fromRGB(26,24,23),Enum.Material.Neon,Enum.PartType.Block)
   attach(r,"BoarEarL",Vector3.new(.75,1.15,.6),Vector3.new(-1.15,3.42,-3.45),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,-20))
   attach(r,"BoarEarR",Vector3.new(.75,1.15,.6),Vector3.new(1.15,3.42,-3.45),dark,Enum.Material.Fabric,nil,Vector3.new(0,0,20))
   for _,x in ipairs({-1.55,1.55})do for _,z in ipairs({-1.65,1.65})do
@@ -398,14 +416,30 @@ local function spawnMob(kind,pos,visualIndex,islandTopY)
  label(r,selected and selected.name or (isRaider and"섬 약탈병"or"멧돼지"),isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
  if selected then task.spawn(applyCC0Appearance,r,selected.id,6)end
  local pr=prompt(r,isRaider and"섬 약탈병"or"멧돼지","공격")
- local e={part=r,kind=kind,hp=hp,max=hp,damage=damage,spawn=pos,lastHit=0};table.insert(mobs,e);r:SetAttribute("HP",hp)
- pr.Triggered:Connect(function(p)
-  if e.hp<=0 then return end;e.hp-=25+n(p,"BarracksLevel",1)*2;r:SetAttribute("HP",math.max(0,e.hp));feedback(p,"HIT")
-  if e.hp<=0 then
-   if kind=="RAIDER"then s(p,"Coins",n(p,"Coins",0)+8);s(p,"Wood",n(p,"Wood",0)+2);msg(p,"약탈병 처치 · 코인+8 나무+2")
-   else s(p,"Food",n(p,"Food",0)+4);msg(p,"멧돼지 처치 · 식량+4")end
-   r:Destroy();task.delay(C.HomeIslandMobs.RespawnSeconds,function()if world and world.Parent then spawnMob(kind,pos,visualIndex,islandTopY)end end)
+ r:SetAttribute("CozyActorType",kind);r:SetAttribute("CozyMotionState","IDLE");r:SetAttribute("CozyMotionSpeed",0)
+ CollectionService:AddTag(r,"CozyCombatActor")
+ local e={part=r,kind=kind,hp=hp,max=hp,damage=damage,spawn=r.Position,lastHit=0}
+ table.insert(mobs,e);r:SetAttribute("HP",hp)
+ e.takeHit=function(amount,attacker)
+  if e.hp<=0 or not r.Parent then return end
+  e.hp=math.max(0,e.hp-math.max(0,amount))
+  r:SetAttribute("HP",e.hp);r:SetAttribute("CozyMotionState",e.hp==0 and "DEATH" or "HIT")
+  r:SetAttribute("CozyMotionUntil",os.clock()+(e.hp==0 and .65 or .3))
+  if attacker then feedback(attacker,"HIT")end
+  if e.hp==0 then
+   pr.Enabled=false
+   if attacker then
+    if kind=="RAIDER"then s(attacker,"Coins",n(attacker,"Coins",0)+8);s(attacker,"Wood",n(attacker,"Wood",0)+2);msg(attacker,"약탈병 처치 · 코인+8 나무+2")
+    else s(attacker,"Food",n(attacker,"Food",0)+4);msg(attacker,"멧돼지 처치 · 식량+4")end
+   end
+   task.delay(.65,function()if r.Parent then r:Destroy()end end)
+   task.delay(C.HomeIslandMobs.RespawnSeconds,function()if world and world.Parent then spawnMob(kind,pos,visualIndex,islandTopY)end end)
   end
+ end
+ pr.Triggered:Connect(function(p)
+  local tr=root(p);local h=hum(p)
+  if not tr or not h or h.Health<=0 or (tr.Position-r.Position).Magnitude>12 then return end
+  e.takeHit(25+n(p,"BarracksLevel",1)*2,p)
  end)
  return e
 end
@@ -467,7 +501,7 @@ end)
    for i=1,10 do
     local row=math.floor((i-1)/5);local col=(i-1)%5
     local crop=part(farm,"FoodNode"..i,Vector3.new(5,2.4,5),Vector3.new(-70+col*9,topY+1.9,-48+row*14),Color3.fromRGB(127,182,72),Enum.Material.Grass)
-    crop.Shape=Enum.PartType.Ball;crop.CanCollide=false;crop.CanTouch=false;label(crop,"작물",Color3.fromRGB(231,242,163),17)
+    crop.Shape=Enum.PartType.Block;crop.CanCollide=false;crop.CanTouch=false;label(crop,"작물",Color3.fromRGB(231,242,163),17)
     prompt(crop,"작물","수확").Triggered:Connect(function(p)gather(p,"Food",C.ManualGatherAmount,"수확")end)
    end
 
@@ -483,11 +517,15 @@ end)
    workspace:SetAttribute("VillageBearCount",0)
    workspace:SetAttribute("VillageWildlifeAnimated",false)
    workspace:SetAttribute("CozyBearCC0Status","BLOCKED_UNVERIFIED_SOURCE")
-   for i=1,5 do spawnMob("BOAR",Vector3.new(-72+i*20,topY+4,78+(i%2)*8),i,topY)end
-   for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14),5+i,topY)end
-   -- 기존 여덟 몬스터는 보존하고 추가 두 종류만 외곽에서 등장한다.
-   spawnMob("RAIDER",Vector3.new(98,topY+5,88),9,topY)
-   spawnMob("RAIDER",Vector3.new(105,topY+5,72),10,topY)
+   -- 시작지점 주변에 원래의 몹 2종 10마리를 출현시키되 중앙은 비운다.
+   for i=1,5 do
+    local angle=(i-1)*math.pi*2/5
+    spawnMob("BOAR",Vector3.new(math.cos(angle)*37,topY+4,18+math.sin(angle)*37),i,topY)
+   end
+   for i=1,5 do
+    local angle=(i-.5)*math.pi*2/5
+    spawnMob("RAIDER",Vector3.new(math.cos(angle)*53,topY+5,18+math.sin(angle)*53),5+i,topY)
+   end
   elseif index==2 then
    for i=1,18 do local a=i/18*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*40,topY-r.Pos.Y,math.sin(a)*40),.7+(i%3)*.14,Color3.fromRGB(86,91,101))end
    for i=1,7 do part(world,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-35+i*10,topY+3,r.Pos.Z+27),Color3.fromRGB(145,158,171),Enum.Material.Metal)end
@@ -648,19 +686,97 @@ RunService.Heartbeat:Connect(function(dt)
    elseif (r.Position-start).Magnitude>=2 then foundationCheckpoint("MOVEMENT_CONFIRMED",p,{displacement=(r.Position-start).Magnitude});movementProbeStart[p]=nil end
   elseif h and h.MoveDirection.Magnitude<=.05 then movementProbeStart[p]=nil end
  end
+ aiCarry+=dt
+ if aiCarry<.05 then return end
+ dt=math.min(aiCarry,.15);aiCarry=0
+ -- 모든 NPC가 종류 구분 없이 가까운 몹을 추적·공격한다.
+ for _,npc in ipairs(npcActors)do
+  local r=npc.part
+  if r and r.Parent and npc.hp>0 then
+   local nearest,range=nil,34
+   for _,mob in ipairs(mobs)do
+    if mob.hp>0 and mob.part and mob.part.Parent then
+     local distance=(mob.part.Position-r.Position).Magnitude
+     if distance<range then nearest=mob;range=distance end
+    end
+   end
+   local goal=nearest and nearest.part.Position or npc.spawn
+   local delta=Vector3.new(goal.X-r.Position.X,0,goal.Z-r.Position.Z)
+   local moving=delta.Magnitude>(nearest and 5.5 or 2)
+   if moving and delta.Magnitude>.01 then
+    local speed=nearest and 7 or 5
+    local nextPos=r.Position+delta.Unit*math.min(delta.Magnitude,speed*dt)
+    r.CFrame=CFrame.lookAt(nextPos,nextPos+delta.Unit)
+   end
+   if nearest and range<=5.5 and now-npc.lastAttack>1.1 then
+    npc.lastAttack=now;npc.actionUntil=now+.45
+    nearest.takeHit(9,nil)
+   end
+   local state=now<npc.actionUntil and "ATTACK" or moving and "WALK" or "IDLE"
+   if r:GetAttribute("CozyMotionState")~=state then r:SetAttribute("CozyMotionState",state)end
+   local speed=moving and 7 or 0
+   if r:GetAttribute("CozyMotionSpeed")~=speed then r:SetAttribute("CozyMotionSpeed",speed)end
+  end
+ end
+ -- 기존 몹은 플레이어 외에도 NPC를 공격하며 피해량·공격주기는 보존한다.
  for i=#mobs,1,-1 do
   local e=mobs[i]
   if not e.part or not e.part.Parent or e.hp<=0 then table.remove(mobs,i)
   else
-   local target,bd=nil,28
-   for _,p in ipairs(Players:GetPlayers())do local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
-   if target then
-    local tr=root(target);local d=Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
-    if d.Magnitude>4 then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.kind=="RAIDER"and 8 or 6)*dt)end
-    if(tr.Position-e.part.Position).Magnitude<=5 and now-e.lastHit>1.4 then e.lastHit=now;local h=hum(target);if h then h:TakeDamage(e.damage)end end
-   else
-    local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z);if back.Magnitude>3 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,6*dt)end
+   local target,targetNpc,range=nil,nil,28
+   for _,p in ipairs(Players:GetPlayers())do
+    local tr=root(p);local h=hum(p)
+    if tr and h and h.Health>0 then
+     local d=(tr.Position-e.part.Position).Magnitude
+     if d<range then target=p;targetNpc=nil;range=d end
+    end
    end
+   for _,npc in ipairs(npcActors)do
+    if npc.hp>0 and npc.part and npc.part.Parent then
+     local d=(npc.part.Position-e.part.Position).Magnitude
+     if d<range then targetNpc=npc;target=nil;range=d end
+    end
+   end
+   local tr=target and root(target) or targetNpc and targetNpc.part
+   local goal=tr and tr.Position or e.spawn
+   local delta=Vector3.new(goal.X-e.part.Position.X,0,goal.Z-e.part.Position.Z)
+   local moving=delta.Magnitude>(tr and 4 or 3)
+   if moving and delta.Magnitude>.01 then
+    local speed=tr and (e.kind=="RAIDER"and 8 or 6) or 6
+    local nextPos=e.part.Position+delta.Unit*math.min(delta.Magnitude,speed*dt)
+    e.part.CFrame=CFrame.lookAt(nextPos,nextPos+delta.Unit)
+   end
+   if tr and range<=5 and now-e.lastHit>1.4 then
+    e.lastHit=now
+    if target then
+     local h=hum(target);if h then h:TakeDamage(e.damage)end
+    elseif targetNpc then
+     targetNpc.hp=math.max(0,targetNpc.hp-e.damage)
+     local npcPart=targetNpc.part
+     npcPart:SetAttribute("HP",targetNpc.hp)
+     npcPart:SetAttribute("CozyMotionState",targetNpc.hp==0 and "DEATH" or "HIT")
+     targetNpc.actionUntil=now+.4
+     if targetNpc.hp==0 then
+      npcPart:SetAttribute("CozyMotionSpeed",0)
+      for _,promptObj in ipairs(npcPart:GetChildren())do if promptObj:IsA("ProximityPrompt")then promptObj.Enabled=false end end
+      task.delay(C.HomeIslandMobs.RespawnSeconds,function()
+       if npcPart.Parent then
+        targetNpc.hp=100;targetNpc.lastAttack=0;targetNpc.actionUntil=0
+        npcPart.CFrame=CFrame.new(targetNpc.spawn)
+        npcPart:SetAttribute("HP",100);npcPart:SetAttribute("CozyMotionState","IDLE")
+        for _,promptObj in ipairs(npcPart:GetChildren())do if promptObj:IsA("ProximityPrompt")then promptObj.Enabled=true end end
+       end
+      end)
+     end
+    end
+    e.part:SetAttribute("CozyMotionState","ATTACK")
+    e.part:SetAttribute("CozyMotionUntil",now+.4)
+   elseif now>(e.part:GetAttribute("CozyMotionUntil")or 0)then
+    local state=moving and "WALK" or "IDLE"
+    if e.part:GetAttribute("CozyMotionState")~=state then e.part:SetAttribute("CozyMotionState",state)end
+   end
+   local speed=moving and (e.kind=="RAIDER" and 8 or 6) or 0
+   if e.part:GetAttribute("CozyMotionSpeed")~=speed then e.part:SetAttribute("CozyMotionSpeed",speed)end
    if(e.part.Position-e.spawn).Magnitude>42 then e.part.CFrame=CFrame.new(e.spawn)end
   end
  end
