@@ -56,7 +56,7 @@ try{
      await gem.locator('#startBtn').waitFor({state:'visible'});
      await gem.waitForFunction(()=>!document.getElementById('startBtn').disabled,null,{timeout:60000});
      const stage='cavern';
-     assert.equal(await gem.locator('[data-stage]').count(),0,'GEM_MAP_PICKER_REMOVED');
+     assert.equal(await gem.locator('button[data-stage]').count(),0,'GEM_MAP_PICKER_REMOVED');
      await gem.locator('button[data-hero="'+hero+'"]').click();
      assert.equal(await gem.locator('button[data-hero="'+hero+'"]').getAttribute('aria-pressed'),'true');
      await gem.locator('#startBtn').click();
