@@ -659,3 +659,16 @@ for(const item of [
   assert.ok(consumed,'new canonical source must be consumed without a code-list change');
   console.log('DESIGN_MATERIAL_HIERARCHY_FEATURE_AND_COVERAGE_TEST=PASS');
 }
+
+
+// 메인: 기존 게임 원본 참조가 자유 주제 설계를 강제하지 않는지 회귀 검사한다.
+// 생성된 행동 설명은 기존 엄격 스키마의 400자 상한 안에서 작성해야 한다.
+{
+  const generator=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  assert.ok(generator.includes('const freeTopicMode=ownerFreeTopic;'));
+  assert.ok(!generator.includes('const freeTopicMode=ownerFreeTopic||Boolean(bSystemReference);'));
+  assert.ok(generator.includes('trigger:shorten(`\${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,400)'));
+  assert.ok(generator.includes('trigger:shorten(`\${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,400)'));
+  assert.ok(generator.includes("assertSchemaValue(value,schema,label='root')"));
+  console.log('DESIGN_EXISTING_GAME_IDENTITY_AND_TRIGGER_LIMIT=PASS');
+}
