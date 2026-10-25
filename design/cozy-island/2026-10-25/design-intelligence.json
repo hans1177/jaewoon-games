@@ -1,0 +1,1795 @@
+{
+  "version": 2,
+  "gameId": "cozy-island",
+  "date": "2026-10-25",
+  "source": "tools/vibe2-design-intelligence.mjs",
+  "brief": {
+    "version": 1,
+    "loop": [
+      "STABILIZE",
+      "UNDERSTAND",
+      "OBSERVE",
+      "DIAGNOSE",
+      "PRIORITIZE",
+      "BLUEPRINT",
+      "PROPOSE",
+      "COMPARE",
+      "REVISE",
+      "VALIDATE",
+      "LEARN",
+      "REPLAN",
+      "EXPAND"
+    ],
+    "gameId": "cozy-island",
+    "ownerIntent": {
+      "literal": "오너 요청: 포근섬 반복 빌드업의 설계 검증 병목을 기존 설계 조직에서 해결한다. 최신 main 중앙정책 ownerBasicDesignMethod의 MAIN = A + B + C + D + @ 계약으로 기존 원본을 재검증하고 실패 필드를 실제 설계로 수정한다. A에는 이름 있는 참고 게임의 실제 시스템·플레이어 선택·출처를 작성한다. B는 bSystemReference.source 원본의 실제 시스템·선택을 보존하는 B_EXISTING_GAME_SYSTEMS이며 범용 모바일 루프나 B 보조 참조로 대체하지 않는다. 최신 분류 버전과 PLAN_A/PLAN_B의 abIntegration을 일치시킨다. 기존 포근섬 Roblox 게임 코드·규칙·저장 키·진행·경제·보상·밸런스·멀티 권한을 보존한다. 기존 섬 탐험·이동·NPC·몬스터·모바일 조작을 기준으로 구체적인 상태 연결과 실패·취소·복구를 작성한다. 과거 점수나 필드 표식으로 통과시키지 않으며 최신 최소 설계·엄격 검증 결과를 구분한다. 검증된 정확한 설계 리비전만 기존 승격→Vibe 빌드업→F0~F9→게시→동일 버전 게시 후 검증→다음 F0 경로로 전달한다. 새 파이프라인이나 검증 우회는 금지한다.",
+      "eventId": "OWNER-COZY-STANDARD-DESIGN-20261025-8",
+      "semanticTextDeduplicationForbidden": true,
+      "repeatedIdenticalRequestCreatesNewRevision": true
+    },
+    "identityAnchors": [
+      "오너 요청: 포근섬 반복 빌드업의 설계 검증 병목을 기존 설계 조직에서 해결한다. 최신 main 중앙정책 ownerBasicDesignMethod의 MAIN = A + B + C + D + @ 계약으로 기존 원본을 재검증하고 실패 필드를 실제 설계로 수정한다. A에는 이름 있는 참고 게임의 실제 시스템·플레이어 선택·출처를 작성한다. B는 bSystemReference.source 원본의 실제 시스템·선택을 보존하는 B_EXISTING_GAME_SYSTEMS이며 범용 모바일 루프나 B 보조 참조로 대체하지 않는다. 최신 분류 버전과 PLAN_A/PLAN_B의 abIntegration을 일치시킨다. 기존 포근섬 Roblox 게임 코드·규칙·저장 키·진행·경제·보상·밸런스·멀티 권한을 보존한다. 기존 섬 탐험·이동·NPC·몬스터·모바일 조작을 기준으로 구체적인 상태 연결과 실패·취소·복구를 작성한다. 과거 점수나 필드 표식으로 통과시키지 않으며 최신 최소 설계·엄격 검증 결과를 구분한다. 검증된 정확한 설계 리비전만 기존 승격→Vibe 빌드업→F0~F9→게시→동일 버전 게시 후 검증→다음 F0 경로로 전달한다. 새 파이프라인이나 검증 우회는 금지한다.",
+      "디자이너 AI가 사용자 요청에 맞는 핵심 루프를 설계한다.",
+      "COOP"
+    ],
+    "baseConceptIsReferenceNotPrison": true,
+    "creativeDeviationAllowed": true,
+    "genreTransitionChallengeAllowed": true,
+    "stabilityFirst": true,
+    "causalDefectOwnership": {
+      "classes": [
+        "IMPLEMENTATION_RUNTIME_DEFECT",
+        "DESIGN_DEFECT",
+        "MIXED_DEFECT",
+        "UNRESOLVED_CAUSE"
+      ],
+      "sameSymptomDualIndependentMutationForbidden": true,
+      "unresolvedCauseAction": "TRACE_BEFORE_MUTATION"
+    },
+    "blueprint": {
+      "minimumPlans": 2,
+      "labels": [
+        "PLAN_A",
+        "PLAN_B"
+      ],
+      "materialChangeRequiresPlanComparison": true,
+      "selectedPlanRequiresRationale": true,
+      "radicalChallengeReversibleUntilValidated": true
+    },
+    "antiMonotony": {
+      "colorOrStatOnlyDifferentiationInsufficient": true,
+      "mapRegionsNeedDifferentGameplayRoles": true,
+      "enemiesNeedDifferentBehaviorOrCounterplayRoles": true,
+      "repeatedTemplateCloningCreatesVarietyDebt": true
+    },
+    "narrativeDialogue": {
+      "whenApplicable": true,
+      "characterVoiceProfileRequired": true,
+      "grammarRegisterVocabularyRhythmRelationshipEmotionKnowledgeSubtextRequired": true,
+      "foreshadowingPayoffTrackingRequired": true,
+      "twistNeedsPriorEvidence": true
+    },
+    "referenceHomage": {
+      "publicDomainClassicsMayInformMotifStructureThemeAndArchetype": true,
+      "protectedModernWorksAbstractTechniqueOnly": true,
+      "directProtectedExpressionCopyForbidden": true,
+      "multiReferenceGeneralizationPreferred": true
+    },
+    "representativeSystemBenchmark": {
+      "role": "A_NAMED_SIMILAR_GAME_SYSTEM_REFERENCE_B_EXISTING_GAME_SYSTEM_PRESERVED",
+      "dimensions": [
+        "PRIMARY_ACTION_AND_INPUT",
+        "HUD_INFORMATION_HIERARCHY",
+        "MENU_NAVIGATION_AND_RETURN",
+        "CAMERA_AND_FEEDBACK",
+        "COMBAT_OR_PRIMARY_INTERACTION_LOOP",
+        "WORLD_AND_STAGE_PROGRESSION",
+        "EQUIPMENT_PROGRESS_AND_REWARDS",
+        "ONBOARDING_AND_FIRST_SESSION",
+        "FAILURE_RETRY_SAVE_RECOVERY",
+        "MID_LATE_GAME_DEPTH_AND_REPLAY"
+      ],
+      "perDimensionEvidence": [
+        "NAMED_GAME_AND_SOURCE",
+        "OBSERVED_OR_UNVERIFIED_STATUS",
+        "PLAYER_INPUT",
+        "WORLD_OR_UI_STATE_TRANSITION",
+        "VISIBLE_FEEDBACK",
+        "NEXT_CHOICE",
+        "B_BASELINE_PRESERVATION",
+        "ADAPT_OR_REJECT_REASON",
+        "EXACT_TEST_SCENARIO"
+      ],
+      "noGenreFeaturesWithoutGameFit": true,
+      "originalCharacterVisualUiTextAndWorldRequired": true,
+      "directScreenAssetCodeOrDistinctiveExpressionCopyForbidden": true,
+      "referenceOnlyNotSourceOrRuntimeProof": true
+    },
+    "designSourceBuildUp": {
+      "orderedLoop": [
+        "READ_CURRENT_APPROVED_DESIGN_AND_SOURCE",
+        "COMPARE_A_REFERENCE_TO_B_BASELINE",
+        "EVOLVE_MAIN_A_B_C_D_AT_DESIGN",
+        "REVIEW_AND_APPROVE_DESIGN_REVISION",
+        "MAP_DESIGN_RULE_TO_RESPONSIBLE_SOURCE_FUNCTION",
+        "IMPLEMENT_CHANGED_DESIGN_IN_EXISTING_GAME_SOURCE",
+        "VERIFY_EXACT_BUILD_AND_ACTUAL_PLAY",
+        "FEED_VERIFIED_GAPS_TO_NEXT_DESIGN_REVISION"
+      ],
+      "bothDesignAndSourceMustEvolveOnApprovedGameplayExpansion": true,
+      "visualAndDefectRepairMayContinueWithinExistingApprovedDesign": true,
+      "designRevisionIsNotRuntimePass": true,
+      "sourceChangeIsNotDesignPass": true,
+      "preserve": [
+        "PLAYER_IDENTITY",
+        "EXISTING_RULES",
+        "SAVE_KEYS_AND_MEANING",
+        "BALANCE",
+        "MULTIPLAYER_AUTHORITY"
+      ],
+      "evidenceRequired": [
+        "DESIGN_REVISION_FINGERPRINT",
+        "RULE_AND_SYSTEM_IDS",
+        "SOURCE_REVISION_AND_RESPONSIBLE_FILES",
+        "BEFORE_AFTER_PLAYER_CHOICES",
+        "EXACT_BUILD_QA_AND_RUNTIME_SCENARIO"
+      ]
+    },
+    "convenienceEvolution": {
+      "study": [
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS",
+        "REUSABLE_SETUP",
+        "BATCH_PREVIEW_AND_COMMIT",
+        "INTERRUPTION_AND_RETURN"
+      ],
+      "referenceRequires": [
+        "SOURCE_URL",
+        "OBSERVED_DATE",
+        "OBSERVED_FEATURE",
+        "ABSTRACT_PRINCIPLE",
+        "GENRE_AND_SYSTEM_FIT",
+        "ADAPT_OR_REJECT_REASON"
+      ],
+      "baselineAndCandidate": [
+        "TASK_COMPLETION",
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "documentedFeatureIsRuntimeProof": false,
+      "staticRouteLengthIsMeasuredPlayerEffort": false,
+      "learningAuthority": "EXISTING_VERIFIED_EXPERIENCE_AND_FRESH_EXACT_BUILD_QA"
+    },
+    "depthAndRewardEvolution": {
+      "layers": [
+        "APPROVED_MAIN_A_B_C_CORE_FUN",
+        "SHORT_SESSION_SMALL_JOYS",
+        "OPTIONAL_DEEP_LONG_TERM_PLAY"
+      ],
+      "rewardContract": [
+        "VISIBLE_CONDITIONS",
+        "SAVED_PROGRESS",
+        "EXPLICIT_GUARANTEED_MILESTONES",
+        "DUPLICATE_PURPOSE",
+        "INTERRUPTION_AND_RESUME",
+        "EXACTLY_ONCE_REWARD_CLAIM"
+      ],
+      "systemicDepth": [
+        "EASY_ENTRY",
+        "SYSTEM_INTERDEPENDENCE",
+        "CONTEXTUAL_TRADEOFFS",
+        "COMBINATORIAL_NEW_USES",
+        "MULTIPLE_VIABLE_SOLUTIONS",
+        "MASTERY_CHANGES_CHOICES",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "academicSubjectMatterRequired": false,
+      "featureCountAndGrindingAreNotDepth": true,
+      "chain": [
+        "DISCOVERABLE_CLUE",
+        "EXPERIMENT_OR_MASTERY_CHOICE",
+        "COST_AND_COUNTERPLAY",
+        "NEW_PLAY_OPTION",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "payoffAxes": [
+        "NEW_ACTION",
+        "NEW_ROUTE",
+        "BUILD_COMBINATION",
+        "WORLD_RELATIONSHIP",
+        "OPTIONAL_MASTERY"
+      ],
+      "numberOrRewardCountAloneInsufficient": true,
+      "preserveGenreSaveAndBalance": true,
+      "compareBeforeAfterPlayerChoices": true,
+      "failedHypothesesMustInformNextIteration": true
+    },
+    "priorFeedback": {
+      "source": "PRIOR_STRICT_DESIGN_REVIEW",
+      "bypassAllowed": false,
+      "verdict": "PASS",
+      "totalScore": 91.80000000000001,
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "improvementTargets": [
+        {
+          "dimension": "CORE_LOOP_DESIGN",
+          "current": 11.2,
+          "maxScore": 14,
+          "gap": 2.8000000000000007
+        },
+        {
+          "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+          "current": 9.6,
+          "maxScore": 12,
+          "gap": 2.4000000000000004
+        },
+        {
+          "dimension": "CONTENT_EXPANSION_PLAN",
+          "current": 8,
+          "maxScore": 10,
+          "gap": 2
+        }
+      ],
+      "recordedAt": "2026-09-18T07:37:26.720Z"
+    },
+    "factPackAvailable": false,
+    "authorityExpanded": false
+  },
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 145,
+    "sha256": "482c558ee118d805d029f9a042b9c47760093037278b4635d89dd330f6b08cea",
+    "inventoryCount": 160,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "VFX"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "VFX": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "VFX"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "VFX": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 160,
+        "eligibleAssetCount": 156,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "VFX"
+        ],
+        "availableRoles": {
+          "AUDIO": [
+            "MUSIC_LOOP",
+            "SOUND_EFFECT"
+          ],
+          "BUILDING": [
+            "DOOR",
+            "FENCE",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
+            "WALL"
+          ],
+          "CHARACTER": [],
+          "CREATURE": [],
+          "ENVIRONMENT": [
+            "COBBLESTONES",
+            "FOLIAGE",
+            "TREE"
+          ],
+          "MOTION": [],
+          "PROP": [
+            "APPLE",
+            "BANANA",
+            "BENCH",
+            "BOOKCASE",
+            "BOOKS",
+            "BOOTS",
+            "BREAD",
+            "BURGER",
+            "CABINET",
+            "CHAIR",
+            "CHEESEBURGER",
+            "COFFEE",
+            "COFFEE_MACHINE",
+            "COMPUTER_SCREEN",
+            "CUP",
+            "DESK",
+            "DOORMAT",
+            "DRINK_CARTON",
+            "FRIDGE",
+            "FRIES",
+            "KEYBOARD",
+            "LETTER",
+            "LIGHT",
+            "MAILBOX",
+            "MAT",
+            "MOUSE",
+            "OFFICE_CHAIR",
+            "PACKAGE",
+            "PLANT",
+            "PLATE",
+            "SANDWICH",
+            "SERVICE_COUNTER",
+            "SINK",
+            "SOUP",
+            "STOVE",
+            "TABLE",
+            "TRASHCAN"
+          ],
+          "VFX": []
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true,
+              "visualSpeciesSubstitute": false,
+              "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+              "originalMonsterIdentityAndGameplayPreserved": true
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "external-actor-barbarian": {
+        "family": "CHARACTER",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true,
+          "visualSpeciesSubstitute": false,
+          "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+          "originalMonsterIdentityAndGameplayPreserved": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-actor-barbarian",
+          "sourceModel": "assets/roblox/actors/native/barbarian.glb",
+          "sourceLicense": "cc0-1.0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [],
+            "currentSourceBound": false,
+            "genericFamilyRequest": true,
+            "verifiedRoleMatch": true,
+            "visualSpeciesSubstitute": false,
+            "visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa": false,
+            "originalMonsterIdentityAndGameplayPreserved": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": null,
+        "sourcePath": "assets/roblox/actors/native/barbarian.glb",
+        "platform": "ROBLOX",
+        "license": "CC0-1.0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
+        "productionVerified": false
+      }
+    }
+  },
+  "report": {
+    "version": 2,
+    "required": true,
+    "pipeline": [
+      "STABILITY_TRIAGE",
+      "DEFECT_OWNERSHIP",
+      "DESIGNER",
+      "DESIGN_BLUEPRINT",
+      "DESIGN_INTEGRITY",
+      "CONTENT_DIVERSITY",
+      "REFERENCE_HOMAGE",
+      "NARRATIVE_DIALOGUE",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "stages": [
+      {
+        "name": "STABILITY_TRIAGE",
+        "status": "CLEAR_FOR_DESIGN_EVALUATION",
+        "findings": [],
+        "highestSeverity": "NONE",
+        "repeatedMinorBugCluster": false,
+        "creativeExpansionMayProceed": true,
+        "priorityRule": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION"
+      },
+      {
+        "name": "DEFECT_OWNERSHIP",
+        "status": "CLASSIFIED",
+        "owner": "NONE",
+        "route": "NO_DEFECT_SIGNAL",
+        "designRevisionAllowed": true,
+        "sameSymptomDualIndependentMutationForbidden": true,
+        "preserveApprovedDesignForRuntimeDefect": false,
+        "unresolvedCauseMustNotInventDesignFailure": false
+      },
+      {
+        "name": "DESIGNER",
+        "status": "PASS",
+        "goal": "전쟁·군사·수학 시뮬레이션×모험: 조립 공정: 앞 공정의 출력이 다음 요구를 충족함의 성립. MAIN은 A(도시 시설과 자원 흐름의 운영 × 전쟁·군사)와 독립적인 B(직접 채집 × 수학)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 공포 × 보조 모험)의 판정 차이, @(조립 공정: 앞 공정의 출력이 다음 요구를 충족함의 성립)가 여는 새 WorldAccessState를 합성한 결과다.",
+        "designChange": true,
+        "rationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+        "alternatives": [
+          "전쟁·군사의 조건을 우선 학습하는 정방향 탐색 계획",
+          "수학의 반작용부터 읽는 역방향 탐색 계획"
+        ],
+        "issues": []
+      },
+      {
+        "name": "DESIGN_BLUEPRINT",
+        "status": "READY",
+        "materialDesignChange": true,
+        "alternatives": [
+          {
+            "label": "PLAN_A",
+            "concept": "전쟁·군사의 조건을 우선 학습하는 정방향 탐색 계획",
+            "playerFantasy": "행동: 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.의 결과를 축적해 다음 결정을 통제한다.",
+            "genreDirection": "중심 공포 진행 속에서 보조 모험가 숨겨진 단서를 제공한다.",
+            "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+            "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+            "landmarksTraversal": "전쟁·군사의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+            "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+            "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+            "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+            "questStoryEventFlow": "전쟁·군사의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+            "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+          },
+          {
+            "label": "PLAN_B",
+            "concept": "수학의 반작용부터 읽는 역방향 탐색 계획",
+            "playerFantasy": "정보 부족을 감수하고 행동: 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.를 먼저 실험한다.",
+            "genreDirection": "보조 모험 판단이 앞서 중심 공포 목표의 순서를 뒤집는다.",
+            "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+            "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+            "landmarksTraversal": "수학의 반작용과 발견 단서를 시각적으로 구분한다.",
+            "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+            "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+            "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+            "questStoryEventFlow": "수학의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+            "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+          },
+          {
+            "label": "PLAN_A",
+            "concept": "전쟁·군사의 조건을 우선 학습하는 정방향 탐색 계획",
+            "playerFantasy": "행동: 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.의 결과를 축적해 다음 결정을 통제한다.",
+            "genreDirection": "중심 공포 진행 속에서 보조 모험가 숨겨진 단서를 제공한다.",
+            "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+            "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+            "landmarksTraversal": "전쟁·군사의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+            "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+            "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+            "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+            "questStoryEventFlow": "전쟁·군사의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+            "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+          },
+          {
+            "label": "PLAN_B",
+            "concept": "수학의 반작용부터 읽는 역방향 탐색 계획",
+            "playerFantasy": "정보 부족을 감수하고 행동: 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.를 먼저 실험한다.",
+            "genreDirection": "보조 모험 판단이 앞서 중심 공포 목표의 순서를 뒤집는다.",
+            "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+            "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+            "landmarksTraversal": "수학의 반작용과 발견 단서를 시각적으로 구분한다.",
+            "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+            "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+            "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+            "questStoryEventFlow": "수학의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+            "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+          }
+        ],
+        "selectedPlan": "PLAN_A",
+        "selectedRationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+        "requiredAlternativeFields": [
+          "concept",
+          "playerFantasy",
+          "coreLoopShift",
+          "mapTopologyRegionRoles",
+          "landmarksTraversal",
+          "enemyEcosystemCounterplay",
+          "bossSignatureMoments",
+          "progressionEconomy",
+          "questStoryEventFlow",
+          "failureRetryRecovery",
+          "platformAdaptation",
+          "implementationScope",
+          "validationPlan"
+        ],
+        "eachAlternativeMustCoverRequiredAxes": true,
+        "genreChallengeAllowed": true,
+        "baseConceptIsReferenceNotPrison": true,
+        "identityAnchors": [
+          "오너 요청: 포근섬 반복 빌드업의 설계 검증 병목을 기존 설계 조직에서 해결한다. 최신 main 중앙정책 ownerBasicDesignMethod의 MAIN = A + B + C + D + @ 계약으로 기존 원본을 재검증하고 실패 필드를 실제 설계로 수정한다. A에는 이름 있는 참고 게임의 실제 시스템·플레이어 선택·출처를 작성한다. B는 bSystemReference.source 원본의 실제 시스템·선택을 보존하는 B_EXISTING_GAME_SYSTEMS이며 범용 모바일 루프나 B 보조 참조로 대체하지 않는다. 최신 분류 버전과 PLAN_A/PLAN_B의 abIntegration을 일치시킨다. 기존 포근섬 Roblox 게임 코드·규칙·저장 키·진행·경제·보상·밸런스·멀티 권한을 보존한다. 기존 섬 탐험·이동·NPC·몬스터·모바일 조작을 기준으로 구체적인 상태 연결과 실패·취소·복구를 작성한다. 과거 점수나 필드 표식으로 통과시키지 않으며 최신 최소 설계·엄격 검증 결과를 구분한다. 검증된 정확한 설계 리비전만 기존 승격→Vibe 빌드업→F0~F9→게시→동일 버전 게시 후 검증→다음 F0 경로로 전달한다. 새 파이프라인이나 검증 우회는 금지한다.",
+          "디자이너 AI가 사용자 요청에 맞는 핵심 루프를 설계한다.",
+          "COOP"
+        ],
+        "issues": []
+      },
+      {
+        "name": "DESIGN_INTEGRITY",
+        "status": "CHECKED",
+        "results": [
+          {
+            "key": "movementAndControlReachable",
+            "label": "PLAYER_MOVEMENT_AND_CONTROL_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "spawnToFirstActionReachable",
+            "label": "SPAWN_TO_FIRST_ACTION_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "progressionReachable",
+            "label": "PROGRESSION_GRAPH_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "questPrerequisitesSatisfiable",
+            "label": "QUEST_PREREQUISITE_SATISFIABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "sessionEndReachable",
+            "label": "WIN_FAIL_SESSION_END_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "failureRecoveryReachable",
+            "label": "FAILURE_RETRY_RECOVERY_PATH",
+            "value": "PASS"
+          },
+          {
+            "key": "mapObjectivesReachable",
+            "label": "MAP_ROUTE_AND_OBJECTIVE_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "economyFeasible",
+            "label": "RESOURCE_AND_REQUIRED_COST_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "counterplayFeasible",
+            "label": "ENEMY_COUNTERPLAY_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "bossPhaseTransitionsReachable",
+            "label": "BOSS_PHASE_TRANSITION_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "multiplayerLifecycleFeasible",
+            "label": "MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "saveCompatible",
+            "label": "SAVE_MEANING_AND_MIGRATION_COMPATIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "narrativeCausalityConsistent",
+            "label": "NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY",
+            "value": "PASS"
+          }
+        ],
+        "failed": [],
+        "designScoreCannotOverrideUnplayableState": true,
+        "issues": []
+      },
+      {
+        "name": "CONTENT_DIVERSITY",
+        "status": "CHECKED",
+        "regionCount": 2,
+        "enemyOrChallengeCount": 2,
+        "objectiveCount": 2,
+        "pairwiseMinimumDifferentiators": 2,
+        "colorOrStatOnlyDifferentiationInsufficient": true,
+        "issues": []
+      },
+      {
+        "name": "REFERENCE_HOMAGE",
+        "status": "CHECKED",
+        "inspirations": [
+          {
+            "titleOrTradition": "전쟁·군사",
+            "rightsBasis": "ABSTRACT_TECHNIQUE",
+            "borrowedTechnique": "통로와 보호 범위",
+            "transformation": "방어선: 빈틈을 메우거나 한 통로를 의도적으로 연다. 상대 접근 방향을 관찰함일 때 막을 대상과 유도할 경로가 달라진다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+          },
+          {
+            "titleOrTradition": "과학·기술",
+            "rightsBasis": "ABSTRACT_TECHNIQUE",
+            "borrowedTechnique": "변환과 유지되는 관계",
+            "transformation": "대칭: 형태를 회전하거나 뒤집어 연결을 시험한다. 변환 후에도 같은 관계가 유지됨일 때 배치와 통과 가능한 조합이 달라진다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+          }
+        ],
+        "originalityRule": "공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다.",
+        "publicDomainMotifStructureThemeArchetypeAllowed": true,
+        "protectedModernExpressionCopyForbidden": true,
+        "abstractTechniqueReferenceAllowed": true,
+        "issues": []
+      },
+      {
+        "name": "NARRATIVE_DIALOGUE",
+        "required": true,
+        "status": "READY",
+        "worldRules": [
+          "A의 RiskState·ResourceState가 B의 수학 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다."
+        ],
+        "characterGoals": [
+          "전쟁·군사의 원칙을 지키는 인물과 수학의 책임을 지려는 인물이 목표를 놓고 충돌한다."
+        ],
+        "plotBeats": [
+          "전쟁·군사의 원칙을 지키는 인물과 수학의 책임을 지려는 인물이 목표를 놓고 충돌한다. A의 RiskState·ResourceState가 B의 수학 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다.",
+          "행동: 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 또는 행동: 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다. 중 무엇을 우선할지 판단한다.",
+          "전쟁·군사의 흔적이 남은 지역은 수학의 선택에 따라 새로운 출입·보상 조건을 갖는다. 조립 공정와 존재의 동일성가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다."
+        ],
+        "questStates": [
+          "이전 선택 조건을 확인한다.",
+          "상대의 반작용이 나타나면 다음 선택을 바꾼다."
+        ],
+        "foreshadowing": [
+          "전쟁·군사의 작은 변화가 수학의 큰 반작용을 예고한다."
+        ],
+        "payoffs": [
+          "수학의 결과가 다시 전쟁·군사의 앞선 의미를 바꾼다."
+        ],
+        "intentionalUnresolvedForeshadowing": [],
+        "twists": [
+          "A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다."
+        ],
+        "dialogueRules": [
+          "현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다."
+        ],
+        "characterVoiceProfiles": [
+          {
+            "character": "전쟁·군사의 이해관계자",
+            "grammarRegister": "경험을 중심으로 짧게 이야기한다.",
+            "vocabularyRhythm": "경고와 선택 비용을 구체적으로 말한다.",
+            "relationshipShift": "플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.",
+            "emotionalRange": "불안에서 신뢰 또는 반발로 변한다.",
+            "knowledgeBoundary": "첫 시스템의 현재 변화만 안다.",
+            "subtextBehavior": "숨기고 싶은 위험을 발언 순서로 드러낸다."
+          },
+          {
+            "character": "수학의 이해관계자",
+            "grammarRegister": "규칙과 반작용을 비교해 설명한다.",
+            "vocabularyRhythm": "사건 이전과 이후를 비교하며 말한다.",
+            "relationshipShift": "선택 결과에 따라 요구와 제안이 달라진다.",
+            "emotionalRange": "의심과 설득, 체념 또는 수용을 보인다.",
+            "knowledgeBoundary": "자신이 관찰한 후속 결과만 안다.",
+            "subtextBehavior": "정보 부족을 역이용해 다른 협상을 제시한다."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "scene": "첫 진입",
+            "purpose": "세계의 조건을 알아차리게 한다.",
+            "characterGoals": "무엇을 지킬지 정한다.",
+            "conflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+            "informationAsymmetry": "두 소재가 서로 다른 원인을 알고 있다.",
+            "reversal": "첫 선택이 예기치 않은 다른 문제를 일으킨다.",
+            "stateChange": "A의 상태가 B의 조건을 바꾼다."
+          },
+          {
+            "scene": "귀환과 해결",
+            "purpose": "이전 선택의 결과를 확인한다.",
+            "characterGoals": "손실과 관계를 재조정한다.",
+            "conflict": "서로의 비용을 누가 부담할지 충돌한다.",
+            "informationAsymmetry": "후속 사건의 단서가 플레이어에게만 보인다.",
+            "reversal": "B의 결과로 A의 옛 선택을 새롭게 해석한다.",
+            "stateChange": "세계 접근과 위험 상태가 갱신된다."
+          }
+        ],
+        "issues": [],
+        "principles": [
+          "GRAMMAR_AND_LANGUAGE_QUALITY_MUST_MATCH_CHARACTER_AND_SCENE",
+          "FORMALITY_VOCABULARY_RHYTHM_RELATIONSHIP_AND_EMOTION_DEFINE_CHARACTER_VOICE",
+          "ALL_CHARACTERS_SAME_VOICE_FORBIDDEN",
+          "CHARACTER_MAY_NOT_KNOW_UNLEARNED_INFORMATION",
+          "DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_SUBTEXT_AND_SCENE_OBJECTIVE",
+          "WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT",
+          "QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE",
+          "FORESHADOWING_REQUIRES_PAYOFF_OR_INTENTIONAL_UNRESOLVED_STATE",
+          "TWIST_REQUIRES_PRIOR_EVIDENCE_AND_CHARACTER_KNOWLEDGE_SUPPORT",
+          "DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION"
+        ],
+        "authorityExpanded": false
+      },
+      {
+        "name": "CONSTRAINT_ENGINE",
+        "status": "PASS",
+        "constraints": [],
+        "blockers": [],
+        "warnings": [
+          "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED"
+        ],
+        "authorityExpanded": false
+      },
+      {
+        "name": "CRITIC",
+        "status": "PASS",
+        "issues": [],
+        "questions": [
+          "플레이어가 이 시스템을 무시하거나 악용할 수 있는가?",
+          "반복 플레이에서 지배전략 하나로 고착되는가?",
+          "보상과 위험의 변화가 실제 선택을 만드는가?",
+          "기존 세이브/규칙/아트북 의도와 충돌하지 않는가?"
+        ]
+      },
+      {
+        "name": "CAUSALITY_GRAPH",
+        "status": "UNVERIFIED",
+        "nodes": [],
+        "edges": [],
+        "issues": [
+          "CAUSALITY_INPUT_REQUIRED"
+        ],
+        "invented": false
+      },
+      {
+        "name": "PLAYER_MODEL",
+        "status": "MODEL_READY",
+        "archetypes": [
+          {
+            "id": "novice",
+            "label": "초보",
+            "focus": "이해 가능성, 생존, 첫 성공까지의 마찰"
+          },
+          {
+            "id": "optimizer",
+            "label": "최적화형",
+            "focus": "최강 선택 고착, 우회/악용 가능성, 지배전략"
+          },
+          {
+            "id": "farmer",
+            "label": "파밍형",
+            "focus": "반복 보상, 경제 폭주, 무한 루프"
+          },
+          {
+            "id": "aggressive",
+            "label": "공격형",
+            "focus": "공격 편향의 보상과 과도한 위험"
+          },
+          {
+            "id": "safe",
+            "label": "안전형",
+            "focus": "회피/회복/대기 전략의 과도한 효율"
+          }
+        ],
+        "observations": [],
+        "evidenceRequired": true,
+        "predictedFactsInvented": false
+      },
+      {
+        "name": "COMBAT_ECONOMY_SIMULATOR",
+        "status": "UNVERIFIED",
+        "combat": {
+          "verified": false,
+          "reason": "COMBAT_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "economy": {
+          "verified": false,
+          "reason": "ECONOMY_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "inventedInputs": false,
+        "issues": [
+          "UNVERIFIED_SIMULATION_INPUT"
+        ]
+      },
+      {
+        "name": "IMPLEMENTATION",
+        "status": "READY",
+        "allowed": true,
+        "blockers": [],
+        "sourceMutationAuthorized": false,
+        "protectedGameplayMutationAutomatic": false
+      },
+      {
+        "name": "AUTO_PLAYER",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 입력 기반 플레이/진행/재시작/막힘 여부 증거"
+      },
+      {
+        "name": "TELEMETRY",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 플레이 수치 또는 엔진 QA 런 증거"
+      },
+      {
+        "name": "DESIGN_REVIEW",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "decision": null,
+        "evidence": null,
+        "assumptionFailed": false
+      },
+      {
+        "name": "EXPERIENCE_MEMORY",
+        "status": "WAITING_VERIFIED_REVIEW",
+        "ready": false,
+        "qaVerified": false,
+        "authorityExpanded": false,
+        "directMemoryWrite": false,
+        "promotionTool": "tools/vibe2-experience-control.mjs"
+      }
+    ],
+    "stability": {
+      "name": "STABILITY_TRIAGE",
+      "status": "CLEAR_FOR_DESIGN_EVALUATION",
+      "findings": [],
+      "highestSeverity": "NONE",
+      "repeatedMinorBugCluster": false,
+      "creativeExpansionMayProceed": true,
+      "priorityRule": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION"
+    },
+    "defectOwnership": {
+      "name": "DEFECT_OWNERSHIP",
+      "status": "CLASSIFIED",
+      "owner": "NONE",
+      "route": "NO_DEFECT_SIGNAL",
+      "designRevisionAllowed": true,
+      "sameSymptomDualIndependentMutationForbidden": true,
+      "preserveApprovedDesignForRuntimeDefect": false,
+      "unresolvedCauseMustNotInventDesignFailure": false
+    },
+    "designerHandoff": {
+      "required": false,
+      "ready": false,
+      "status": "NOT_REQUIRED",
+      "gameId": null,
+      "requestId": null,
+      "request": null,
+      "changeFields": [],
+      "owner": "EXISTING_GAME_DESIGNER",
+      "existingModule": "tools/company-design-cycle.mjs",
+      "existingWorkflow": ".github/workflows/company-seed-design-runtime.yml",
+      "designCycleExecuted": true,
+      "requestPersisted": false,
+      "sourceMutationAuthorized": false,
+      "authorityExpanded": false,
+      "runtimeVerified": false
+    },
+    "blueprint": {
+      "name": "DESIGN_BLUEPRINT",
+      "status": "READY",
+      "materialDesignChange": true,
+      "alternatives": [
+        {
+          "label": "PLAN_A",
+          "concept": "전쟁·군사의 조건을 우선 학습하는 정방향 탐색 계획",
+          "playerFantasy": "행동: 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.의 결과를 축적해 다음 결정을 통제한다.",
+          "genreDirection": "중심 공포 진행 속에서 보조 모험가 숨겨진 단서를 제공한다.",
+          "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+          "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+          "landmarksTraversal": "전쟁·군사의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+          "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+          "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+          "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+          "questStoryEventFlow": "전쟁·군사의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+          "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "수학의 반작용부터 읽는 역방향 탐색 계획",
+          "playerFantasy": "정보 부족을 감수하고 행동: 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.를 먼저 실험한다.",
+          "genreDirection": "보조 모험 판단이 앞서 중심 공포 목표의 순서를 뒤집는다.",
+          "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+          "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+          "landmarksTraversal": "수학의 반작용과 발견 단서를 시각적으로 구분한다.",
+          "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+          "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+          "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+          "questStoryEventFlow": "수학의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+          "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+        },
+        {
+          "label": "PLAN_A",
+          "concept": "전쟁·군사의 조건을 우선 학습하는 정방향 탐색 계획",
+          "playerFantasy": "행동: 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.의 결과를 축적해 다음 결정을 통제한다.",
+          "genreDirection": "중심 공포 진행 속에서 보조 모험가 숨겨진 단서를 제공한다.",
+          "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+          "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+          "landmarksTraversal": "전쟁·군사의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+          "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+          "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+          "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+          "questStoryEventFlow": "전쟁·군사의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+          "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "수학의 반작용부터 읽는 역방향 탐색 계획",
+          "playerFantasy": "정보 부족을 감수하고 행동: 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.를 먼저 실험한다.",
+          "genreDirection": "보조 모험 판단이 앞서 중심 공포 목표의 순서를 뒤집는다.",
+          "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+          "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+          "landmarksTraversal": "수학의 반작용과 발견 단서를 시각적으로 구분한다.",
+          "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+          "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+          "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+          "questStoryEventFlow": "수학의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+          "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+        }
+      ],
+      "selectedPlan": "PLAN_A",
+      "selectedRationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+      "requiredAlternativeFields": [
+        "concept",
+        "playerFantasy",
+        "coreLoopShift",
+        "mapTopologyRegionRoles",
+        "landmarksTraversal",
+        "enemyEcosystemCounterplay",
+        "bossSignatureMoments",
+        "progressionEconomy",
+        "questStoryEventFlow",
+        "failureRetryRecovery",
+        "platformAdaptation",
+        "implementationScope",
+        "validationPlan"
+      ],
+      "eachAlternativeMustCoverRequiredAxes": true,
+      "genreChallengeAllowed": true,
+      "baseConceptIsReferenceNotPrison": true,
+      "identityAnchors": [
+        "오너 요청: 포근섬 반복 빌드업의 설계 검증 병목을 기존 설계 조직에서 해결한다. 최신 main 중앙정책 ownerBasicDesignMethod의 MAIN = A + B + C + D + @ 계약으로 기존 원본을 재검증하고 실패 필드를 실제 설계로 수정한다. A에는 이름 있는 참고 게임의 실제 시스템·플레이어 선택·출처를 작성한다. B는 bSystemReference.source 원본의 실제 시스템·선택을 보존하는 B_EXISTING_GAME_SYSTEMS이며 범용 모바일 루프나 B 보조 참조로 대체하지 않는다. 최신 분류 버전과 PLAN_A/PLAN_B의 abIntegration을 일치시킨다. 기존 포근섬 Roblox 게임 코드·규칙·저장 키·진행·경제·보상·밸런스·멀티 권한을 보존한다. 기존 섬 탐험·이동·NPC·몬스터·모바일 조작을 기준으로 구체적인 상태 연결과 실패·취소·복구를 작성한다. 과거 점수나 필드 표식으로 통과시키지 않으며 최신 최소 설계·엄격 검증 결과를 구분한다. 검증된 정확한 설계 리비전만 기존 승격→Vibe 빌드업→F0~F9→게시→동일 버전 게시 후 검증→다음 F0 경로로 전달한다. 새 파이프라인이나 검증 우회는 금지한다.",
+        "디자이너 AI가 사용자 요청에 맞는 핵심 루프를 설계한다.",
+        "COOP"
+      ],
+      "issues": []
+    },
+    "integrity": {
+      "name": "DESIGN_INTEGRITY",
+      "status": "CHECKED",
+      "results": [
+        {
+          "key": "movementAndControlReachable",
+          "label": "PLAYER_MOVEMENT_AND_CONTROL_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "spawnToFirstActionReachable",
+          "label": "SPAWN_TO_FIRST_ACTION_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "progressionReachable",
+          "label": "PROGRESSION_GRAPH_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "questPrerequisitesSatisfiable",
+          "label": "QUEST_PREREQUISITE_SATISFIABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "sessionEndReachable",
+          "label": "WIN_FAIL_SESSION_END_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "failureRecoveryReachable",
+          "label": "FAILURE_RETRY_RECOVERY_PATH",
+          "value": "PASS"
+        },
+        {
+          "key": "mapObjectivesReachable",
+          "label": "MAP_ROUTE_AND_OBJECTIVE_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "economyFeasible",
+          "label": "RESOURCE_AND_REQUIRED_COST_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "counterplayFeasible",
+          "label": "ENEMY_COUNTERPLAY_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "bossPhaseTransitionsReachable",
+          "label": "BOSS_PHASE_TRANSITION_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "multiplayerLifecycleFeasible",
+          "label": "MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "saveCompatible",
+          "label": "SAVE_MEANING_AND_MIGRATION_COMPATIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "narrativeCausalityConsistent",
+          "label": "NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY",
+          "value": "PASS"
+        }
+      ],
+      "failed": [],
+      "designScoreCannotOverrideUnplayableState": true,
+      "issues": []
+    },
+    "diversity": {
+      "name": "CONTENT_DIVERSITY",
+      "status": "CHECKED",
+      "regionCount": 2,
+      "enemyOrChallengeCount": 2,
+      "objectiveCount": 2,
+      "pairwiseMinimumDifferentiators": 2,
+      "colorOrStatOnlyDifferentiationInsufficient": true,
+      "issues": []
+    },
+    "referenceHomage": {
+      "name": "REFERENCE_HOMAGE",
+      "status": "CHECKED",
+      "inspirations": [
+        {
+          "titleOrTradition": "전쟁·군사",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "통로와 보호 범위",
+          "transformation": "방어선: 빈틈을 메우거나 한 통로를 의도적으로 연다. 상대 접근 방향을 관찰함일 때 막을 대상과 유도할 경로가 달라진다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        },
+        {
+          "titleOrTradition": "과학·기술",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "변환과 유지되는 관계",
+          "transformation": "대칭: 형태를 회전하거나 뒤집어 연결을 시험한다. 변환 후에도 같은 관계가 유지됨일 때 배치와 통과 가능한 조합이 달라진다의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        }
+      ],
+      "originalityRule": "공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다.",
+      "publicDomainMotifStructureThemeArchetypeAllowed": true,
+      "protectedModernExpressionCopyForbidden": true,
+      "abstractTechniqueReferenceAllowed": true,
+      "issues": []
+    },
+    "referenceCapabilities": {
+      "version": 1,
+      "requirements": {
+        "R01": {
+          "id": "R01",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "PERMITTED_OBSERVED_SOURCE_REQUIRED"
+          ],
+          "accepted": 0,
+          "rejected": 0,
+          "inferredNotObserved": true,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R02": {
+          "id": "R02",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "OBSERVATION_BOUND_FUN_HYPOTHESIS_REQUIRED"
+          ],
+          "hypotheses": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R03": {
+          "id": "R03",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "TWO_SOURCES_AND_DISTINCT_ORIGINAL_RULES_REQUIRED"
+          ],
+          "plans": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R04": {
+          "id": "R04",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "REAL_INPUT_ACTION_HIT_TIMINGS_REQUIRED"
+          ],
+          "measurements": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R05": {
+          "id": "R05",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "SOURCE_GAP_AND_RUNTIME_PROVEN_TARGET_REQUIRED"
+          ],
+          "recipeCandidates": [],
+          "autoPromote": false,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R06": {
+          "id": "R06",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "REPRODUCED_RUNTIME_GAPS_REQUIRED"
+          ],
+          "prioritized": [],
+          "candidateOnly": true,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R07": {
+          "id": "R07",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "MEASURED_GENRE_DOMAIN_HOLDOUT_REQUIRED"
+          ],
+          "skills": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R08": {
+          "id": "R08",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "TIME_ORDERED_SCENE_EVIDENCE_REQUIRED"
+          ],
+          "observations": [],
+          "inferredEngineInternalsVerified": false,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R09": {
+          "id": "R09",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "VERIFIED_BEFORE_AFTER_IMPROVEMENT_REQUIRED"
+          ],
+          "improvements": [],
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        },
+        "R10": {
+          "id": "R10",
+          "status": "BLOCKED",
+          "verified": false,
+          "issues": [
+            "REPEATED_HOLDOUT_EXPERIMENT_REQUIRED"
+          ],
+          "tested": 0,
+          "eligible": 0,
+          "automaticKnowledgePromotion": false,
+          "sourceMutationAuthorized": false,
+          "publicationAuthorized": false
+        }
+      },
+      "allVerified": false,
+      "nextImprovementCandidates": [],
+      "readOnlyImprovementBudget": 3,
+      "evidenceOnly": true,
+      "authorityExpanded": false,
+      "sourceMutationAuthorized": false
+    },
+    "narrative": {
+      "name": "NARRATIVE_DIALOGUE",
+      "required": true,
+      "status": "READY",
+      "worldRules": [
+        "A의 RiskState·ResourceState가 B의 수학 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다."
+      ],
+      "characterGoals": [
+        "전쟁·군사의 원칙을 지키는 인물과 수학의 책임을 지려는 인물이 목표를 놓고 충돌한다."
+      ],
+      "plotBeats": [
+        "전쟁·군사의 원칙을 지키는 인물과 수학의 책임을 지려는 인물이 목표를 놓고 충돌한다. A의 RiskState·ResourceState가 B의 수학 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다.",
+        "행동: 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다. 또는 행동: 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다. 중 무엇을 우선할지 판단한다.",
+        "전쟁·군사의 흔적이 남은 지역은 수학의 선택에 따라 새로운 출입·보상 조건을 갖는다. 조립 공정와 존재의 동일성가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다."
+      ],
+      "questStates": [
+        "이전 선택 조건을 확인한다.",
+        "상대의 반작용이 나타나면 다음 선택을 바꾼다."
+      ],
+      "foreshadowing": [
+        "전쟁·군사의 작은 변화가 수학의 큰 반작용을 예고한다."
+      ],
+      "payoffs": [
+        "수학의 결과가 다시 전쟁·군사의 앞선 의미를 바꾼다."
+      ],
+      "intentionalUnresolvedForeshadowing": [],
+      "twists": [
+        "A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다."
+      ],
+      "dialogueRules": [
+        "현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다."
+      ],
+      "characterVoiceProfiles": [
+        {
+          "character": "전쟁·군사의 이해관계자",
+          "grammarRegister": "경험을 중심으로 짧게 이야기한다.",
+          "vocabularyRhythm": "경고와 선택 비용을 구체적으로 말한다.",
+          "relationshipShift": "플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.",
+          "emotionalRange": "불안에서 신뢰 또는 반발로 변한다.",
+          "knowledgeBoundary": "첫 시스템의 현재 변화만 안다.",
+          "subtextBehavior": "숨기고 싶은 위험을 발언 순서로 드러낸다."
+        },
+        {
+          "character": "수학의 이해관계자",
+          "grammarRegister": "규칙과 반작용을 비교해 설명한다.",
+          "vocabularyRhythm": "사건 이전과 이후를 비교하며 말한다.",
+          "relationshipShift": "선택 결과에 따라 요구와 제안이 달라진다.",
+          "emotionalRange": "의심과 설득, 체념 또는 수용을 보인다.",
+          "knowledgeBoundary": "자신이 관찰한 후속 결과만 안다.",
+          "subtextBehavior": "정보 부족을 역이용해 다른 협상을 제시한다."
+        }
+      ],
+      "sceneBeats": [
+        {
+          "scene": "첫 진입",
+          "purpose": "세계의 조건을 알아차리게 한다.",
+          "characterGoals": "무엇을 지킬지 정한다.",
+          "conflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+          "informationAsymmetry": "두 소재가 서로 다른 원인을 알고 있다.",
+          "reversal": "첫 선택이 예기치 않은 다른 문제를 일으킨다.",
+          "stateChange": "A의 상태가 B의 조건을 바꾼다."
+        },
+        {
+          "scene": "귀환과 해결",
+          "purpose": "이전 선택의 결과를 확인한다.",
+          "characterGoals": "손실과 관계를 재조정한다.",
+          "conflict": "서로의 비용을 누가 부담할지 충돌한다.",
+          "informationAsymmetry": "후속 사건의 단서가 플레이어에게만 보인다.",
+          "reversal": "B의 결과로 A의 옛 선택을 새롭게 해석한다.",
+          "stateChange": "세계 접근과 위험 상태가 갱신된다."
+        }
+      ],
+      "issues": [],
+      "principles": [
+        "GRAMMAR_AND_LANGUAGE_QUALITY_MUST_MATCH_CHARACTER_AND_SCENE",
+        "FORMALITY_VOCABULARY_RHYTHM_RELATIONSHIP_AND_EMOTION_DEFINE_CHARACTER_VOICE",
+        "ALL_CHARACTERS_SAME_VOICE_FORBIDDEN",
+        "CHARACTER_MAY_NOT_KNOW_UNLEARNED_INFORMATION",
+        "DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_SUBTEXT_AND_SCENE_OBJECTIVE",
+        "WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT",
+        "QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE",
+        "FORESHADOWING_REQUIRES_PAYOFF_OR_INTENTIONAL_UNRESOLVED_STATE",
+        "TWIST_REQUIRES_PRIOR_EVIDENCE_AND_CHARACTER_KNOWLEDGE_SUPPORT",
+        "DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION"
+      ],
+      "authorityExpanded": false
+    },
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "advisory": [
+      "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED",
+      "CAUSALITY_INPUT_REQUIRED",
+      "UNVERIFIED_SIMULATION_INPUT"
+    ],
+    "guidance": "[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n안정성 우선: CLEAR_FOR_DESIGN_EVALUATION; 원인 소유권=NONE; route=NO_DEFECT_SIGNAL. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다.\n설계 밑그림: Plan A/B 이상 비교=READY; 선택안=PLAN_A. 기본 컨셉은 기준점이며 검증 가능한 창의적 장르/구조 도전은 허용한다.\n설계 도달성 검사: CHECKED; 콘텐츠 다양성: CHECKED.\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 게이트: 명시적 구조 문제 없음.\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n서사 계약: READY. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n실제 플레이 격차 검증 증거 없음. 임의 개선/수치 변경 금지.\nR01-R10 참고 자료는 사용권한/실측/독립 QA 없는 한 구현 또는 경험 승격 증거가 아니다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+    "planTarget": "ROBLOX",
+    "priorExperienceCount": 2,
+    "authorityExpanded": false
+  }
+}
