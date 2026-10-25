@@ -364,18 +364,17 @@ export class GameRoom {
 
   async fetch(request) {
     if (request.headers.get('Upgrade') !== 'websocket') return json({ error: 'websocket_required' }, 426);
-    const pair = new WebSocketPair();
-    const [client, server] = Object.values(pair);
     const userId = request.headers.get('x-user-id') || crypto.randomUUID();
     const nickname = request.headers.get('x-user-name') || 'player';
     const roomId = request.headers.get('x-room-id') || '';
-    // 게스트 방은 WebSocket 중복 접속을 정리하고 실제 동시 참가도 4명으로 제한한다.
+    // 게스트 방은 같은 손님의 재접속을 허용하면서 다른 손님은 4명까지만 수용한다.
     if (request.headers.get('x-guest-game') === GEM_GAME_ID) {
-      for (const ws of this.ctx.getWebSockets()) {
-        if (ws.deserializeAttachment()?.userId === userId) ws.close(1000, 'reconnected');
-      }
-      if (this.ctx.getWebSockets().length >= 4) return json({ error: 'room_full' }, 409);
+      const active = this.ctx.getWebSockets();
+      if (active.filter(ws => ws.deserializeAttachment()?.userId !== userId).length >= 4) return json({ error: 'room_full' }, 409);
+      for (const ws of active) if (ws.deserializeAttachment()?.userId === userId) ws.close(1000, 'reconnected');
     }
+    const pair = new WebSocketPair();
+    const [client, server] = Object.values(pair);
     server.serializeAttachment({ userId, nickname, roomId });
     this.ctx.acceptWebSocket(server);
     this.broadcast({ type: 'presence', action: 'join', userId, nickname, players: this.players() });
