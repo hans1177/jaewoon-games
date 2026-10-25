@@ -350,19 +350,19 @@ test('superseded Pages snapshot never uploads or enters the official publish job
  const early=branch.indexOf('PAGES_OLDER_SHARED_WRITE_SKIPPED=');
  const retainedCopy=branch.indexOf('rsync -a "$GITHUB_WORKSPACE/_site/"');
  assert.ok(early>0&&retainedCopy>early,'superseded source must exit before full site copy');
- assert.match(branch.slice(0,retainedCopy),/artifact_ready=false/);
- assert.match(branch.slice(0,retainedCopy),/exit 0/);
- assert.match(branch,/artifact_ready=true/);
- assert.match(branch,/id: pages_branch_publish/);
+ assert.ok(branch.slice(0,retainedCopy).includes('artifact_ready=false'));
+ assert.ok(branch.slice(0,retainedCopy).includes('exit 0'));
+ assert.ok(branch.includes('artifact_ready=true'));
+ assert.ok(branch.includes('id: pages_branch_publish'));
  const header=workflow.split('  deploy:')[1].split('    steps:')[0];
- assert.match(header,/artifact_ready: \\$\\{\\{ steps\\.pages_branch_publish\\.outputs\\.artifact_ready \\}\\}/);
+ assert.ok(header.includes('artifact_ready: ${{ steps.pages_branch_publish.outputs.artifact_ready }}'));
  for(const name of ['Prepare retained Pages artifact without Git history','Upload GitHub Pages artifact using official free Action']){
   const from=workflow.indexOf('      - name: '+name);
   assert.ok(from>0,name);
   const guard=workflow.slice(from,from+300);
-  assert.match(guard,/steps\\.pages_branch_publish\\.outputs\\.artifact_ready == 'true'/);
+  assert.ok(guard.includes("steps.pages_branch_publish.outputs.artifact_ready == 'true'"));
  }
  const publish=workflow.slice(workflow.indexOf('  publish-pages:'),workflow.indexOf('  post-publication-3d-smoke:'));
- assert.match(publish,/needs\\.deploy\\.outputs\\.artifact_ready == 'true'/);
- assert.match(publish,/uses: actions\\/deploy-pages@v4/);
+ assert.ok(publish.includes("needs.deploy.outputs.artifact_ready == 'true'"));
+ assert.ok(publish.includes('uses: actions/deploy-pages@v4'));
 });
