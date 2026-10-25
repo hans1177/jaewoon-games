@@ -13238,10 +13238,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-25T11:31:03.044Z",
+      "updatedAt": "2026-10-25T11:33:26.976Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -13325,7 +13325,7 @@
         "roblox-build-package-revalidation-pending"
       ],
       "robloxSourceCommit": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
-      "robloxSourceBootstrapPassedAt": "2026-10-25T11:29:26.609Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-25T11:33:26.976Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -13912,9 +13912,9 @@
       "robloxFastMvpPublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "c530f23108e64f3efedc8fb9df213f3129780f22",
+        "previousSourceRevision": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
         "newSourceRevision": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
-        "invalidatedAt": "2026-10-25T11:29:26.609Z"
+        "invalidatedAt": "2026-10-25T11:33:26.976Z"
       }
     },
     {
@@ -56735,7 +56735,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T11:31:03.044Z",
+  "updatedAt": "2026-10-25T11:33:26.976Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
