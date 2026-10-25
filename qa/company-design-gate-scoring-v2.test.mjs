@@ -670,5 +670,11 @@ for(const item of [
   assert.ok(generator.includes('trigger:shorten(`\${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,400)'));
   assert.ok(generator.includes('trigger:shorten(`\${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,400)'));
   assert.ok(generator.includes("assertSchemaValue(value,schema,label='root')"));
+  assert.ok(generator.includes("'parryEvent.OnServerEvent:Connect'"));
+  assert.ok(generator.includes("'dodgeEvent.OnServerEvent:Connect'"));
+  assert.ok(generator.includes("'syncInventoryEvent:FireClient'"));
+  assert.ok(generator.includes('const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE||sourceGroundedCombat;'));
+  assert.ok(generator.includes('const sourceGroundedCombat=nativeCombatVerified?{'));
+  assert.ok(generator.includes('}:null;'));
   console.log('DESIGN_EXISTING_GAME_IDENTITY_AND_TRIGGER_LIMIT=PASS');
 }
