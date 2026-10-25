@@ -65,28 +65,32 @@ const progressState=row=>String(runtimeInfo(row).status||'진행상태 미평가
 const updatedAt=row=>runtimeInfo(row).updatedAt||null;
 const selectedPlatform=row=>runtimeInfo(row).platform||productionOf(row).selectedPlatform||row?.selectedPlatform||'';
 const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).displayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT'?'ROBLOX':selectedPlatform(row);
-// 홈에 표시할 정식 게임은 실행 빌드 유무와 별개로 유지하고, 단순 버튼형 시제품만 제외한다.
 // 파일명: assets/homepage-enhancements.js / 게임 표시
-// 집중 개발 3개와 노출 범위는 별개다. 명시적으로 개발 제외된 게임만 숨긴다.
+// 메인: 중단·철회된 웹 항목은 숨기되, 확인된 Roblox 배포는 개발 상태와 분리해 보존한다.
 const activeLifecycle=row=>{
   const id=gameIdOf(row);
-  if(row?.ownerDevelopmentStopped===true||['OWNER_STOPPED','STOPPED'].includes(String(lifecycleOf(row).state||row?.lifecycleState||'').toUpperCase()))return false;
-  if(runtimeInfo(row).developmentActive!==true)return false;
-  if(!id||!['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase()))return false;
-  const sources=sourcesOf(row),web=sources.web||{};
-  const state=String(web.state||row?.ownerWebSourceState||'').toUpperCase();
+  if(!id||row?.ownerDevelopmentStopped===true||['OWNER_STOPPED','STOPPED','WITHDRAWN','ARCHIVED','DELETED'].includes(String(lifecycleOf(row).state||row?.lifecycleState||'').toUpperCase()))return false;
+  if(!['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase()))return false;
+  const web=sourcesOf(row).web||{},state=String(web.state||row?.ownerWebSourceState||'').toUpperCase();
   if(state==='NON_GAME_SURFACE')return false;
-  // 웹 개발이 영구 철회된 게임은 네이티브 배포 실행 증거가 없으면 노출하지 않는다.
-  if(state==='PERMANENTLY_REMOVED_REJECTED_TEST')return hasRunnableHomepageTarget(row)||hasInternalRelease(row);
+  // 로블록스 서버에 배포된 기록은 웹 개발 중단·중지 상태와 독립적으로 표시한다.
+  const roblox=(exposureOf(id)?.platforms||[]).find(p=>normalizePlatform(p?.platform)==='ROBLOX');
+  const placeId=String(roblox?.placeId||'').trim();
+  const robloxUrl=String(roblox?.publicRelease===true?roblox?.publicUrl:roblox?.internalUrl||'').trim();
+  const deployedRoblox=/^[1-9][0-9]*$/.test(placeId)
+    &&robloxUrl===`https://www.roblox.com/games/${placeId}`
+    &&(roblox?.executionAvailable===true||roblox?.historicalInternalRelease===true||roblox?.internalReleaseReady===true);
+  const haltedWeb=row?.ownerWebDevelopmentStopped===true||web.developmentStopped===true
+    ||['DEVELOPMENT_STOPPED','DEVELOPMENT_PAUSED','OWNER_STOPPED','STOPPED','PAUSED','WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state);
+  if(haltedWeb)return deployedRoblox;
+  const runtime=runtimeInfo(row);
+  if(runtime.developmentActive!==true)return deployedRoblox;
+  if(normalizePlatform(selectedPlatform(row))==='WEB'
+    &&['PAUSED','STOPPED','DEVELOPMENT_STOPPED','DEVELOPMENT_PAUSED'].includes(String(runtime.status||'').toUpperCase()))return deployedRoblox;
   const cls=String(productionOf(row).class||row?.productionClass||'').toUpperCase();
   if(['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(cls))return true;
   const root=String(web.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
-  const registered=root===`web-games/${id}`||root===`web-games/${id}/unity`;
-  const nativeDeployed=hasRunnableHomepageTarget(row)||hasInternalRelease(row);
-  // 파일이나 원본 프로젝트가 있다는 이유로 버튼형 시제품을 게임으로 홍보하지 않는다.
-  // 실제 실행 가능한 네이티브 배포만 웹 시제품 철회 상태와 별개로 유지한다.
-  if(state==='WITHDRAWN_SIMPLE_PROTOTYPE'||state==='ENTRY_MISSING_OR_INVALID')return nativeDeployed;
-  return registered||nativeDeployed;
+  return root===`web-games/${id}`||root===`web-games/${id}/unity`||deployedRoblox||hasRunnableHomepageTarget(row);
 };
 const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();

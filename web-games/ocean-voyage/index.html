@@ -121,7 +121,7 @@
  #navalEncounter{top:calc(155px + env(safe-area-inset-top))}
 }
 
-/* 항해 카메라·바람·가변 배속: 모바일 손가락 시점 전환 */
+/* 항해 카메라·바람·가변 배속: 모바일 45도 고정 시점 전환 */
 #windStatus{position:fixed;top:calc(150px + env(safe-area-inset-top));left:9px;z-index:3;pointer-events:none;padding:5px 8px;border:1px solid #9cbaab88;border-radius:6px;background:#102d3bdc;font-size:11px;color:#e0efd4;text-shadow:0 1px 2px #10212a}
 #tools #viewMode{width:90px;font-size:11px}
 .speed-control{display:flex;grid-column:1/-1;flex-direction:column;gap:8px;min-height:62px;padding:9px;background:#e3cba3;color:#4c3525;border:1px solid #96754f;border-radius:6px;font-weight:700}
@@ -161,7 +161,7 @@
 /* 해도: 해안선·위도선과 나침반 원판을 또렷하게 유지 */
 #chartMap{background:#d8c69f;border:5px double #977449;box-shadow:inset 0 0 34px #4b302965,0 4px 12px #48352655;image-rendering:auto}
 
-/* 조타 영역: 해상 왼쪽 절반은 어느 곳에서 눌러도 스틱이 따라오며 오른쪽은 시점 회전. */
+/* 조타 영역: 해상 왼쪽 절반은 스틱 조타, 카메라는 45도 시점에 고정한다. */
 #joystick{touch-action:none;user-select:none}
 #joystickRim,#joystickHandle{touch-action:none;user-select:none}
 #joystickLabel{display:block;max-width:145px;text-align:center;line-height:1.3}
@@ -212,6 +212,8 @@
 .departure-check,.trade-planner{padding:14px;margin:10px 0 18px;border:3px double #9a784a;background:linear-gradient(125deg,#eaddbf,#cdb185);box-shadow:0 4px 12px #3c2d1920}
 .departure-check h3,.trade-planner h3{margin:0 0 10px!important}.readiness-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.readiness-grid>div{padding:10px 5px;border:1px solid #9a8d67;background:#e7d7b8;text-align:center}.readiness-grid strong,.readiness-grid span{display:block;margin-top:4px}.readiness-grid small,.readiness-grid span{font-size:10px}.readiness-grid .needs-care{border-color:#a85035;background:#e6bea0;color:#70321f}.readiness-grid .prepared{border-color:#65795b}.trade-route{display:flex;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid #ad9060}.trade-route>div{flex:1;min-width:0}.trade-route small,.trade-route b{display:block;margin-top:5px}.trade-route small{font-size:11px}.trade-route b{color:#325e4b}.route-rank{display:grid;place-items:center;border:2px double #a38343;border-radius:50%;background:#725339;color:#ffe8ab;width:27px;height:27px;flex-shrink:0}.trade-route .action{padding:8px;font-size:11px}
 @media(max-width:420px){.readiness-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.trade-route{flex-wrap:wrap}.trade-route .action{margin-left:35px}}
+/* 도감: 항목이 많아도 휴대폰에서 탭을 가로로 넘기고 터치할 수 있다. */
+.item-tabs{display:flex;gap:5px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin}.item-tabs .action{flex:0 0 auto;min-width:75px;min-height:44px;white-space:nowrap;scroll-snap-align:start}
 .item-icon{flex:0 0 40px;object-fit:contain;image-rendering:pixelated;filter:sepia(.55) saturate(.75) brightness(1.2);padding:4px;background:#503c2530;border:1px solid #96764d66;border-radius:4px}.item-row{gap:10px;flex-wrap:wrap}.item-row .desc{flex:1;min-width:130px}.item-row .stack{flex-wrap:wrap}
 </style><script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head><body>
@@ -221,7 +223,7 @@
 <button class="nav" data-panel="port" aria-label="항구 입항 또는 항구 찾기"><span>⚓</span>항구</button>
 <button class="nav" data-panel="chart" aria-label="항해 지도 열기"><span>⌖</span>해도</button>
 <button class="nav" data-panel="menu" aria-label="전체 메뉴 열기"><span>☰</span>메뉴</button></nav>
-<div id="tools"><button id="viewMode" aria-label="추적, 회전, 해도 카메라 변경">시점: 추적</button><button id="zoomIn" aria-label="지도 확대">확대</button><button id="zoomOut" aria-label="지도 축소">축소</button><button id="speed" aria-label="항해 배속 빠르게 변경">1배</button><button id="autoBattle" aria-label="해전 자동 조타 및 자동 포격 켜고 끄기" aria-pressed="true">자동해전 켬</button><button id="hail" hidden aria-label="가까운 무역선과 교신">상선 교신</button><button id="quickRepair" aria-label="수리 목재 즉시 사용">수리</button><button id="allySupport" aria-label="동맹 함대 지원 요청">동맹</button><button id="sfx-toggle" aria-label="효과음 켜기 끄기">효과음 켬</button><button id="quickBag" aria-label="선박과 소모품 가방">가방</button></div>
+<div id="tools"><button id="viewMode" aria-label="선박 추적, 45도 위 시점, 해도 시점 변경">시점: 추적</button><button id="zoomIn" aria-label="지도 확대">확대</button><button id="zoomOut" aria-label="지도 축소">축소</button><button id="speed" aria-label="항해 배속 빠르게 변경">1배</button><button id="autoBattle" aria-label="해전 자동 조타 및 자동 포격 켜고 끄기" aria-pressed="true">자동해전 켬</button><button id="hail" hidden aria-label="가까운 무역선과 교신">상선 교신</button><button id="quickRepair" aria-label="수리 목재 즉시 사용">수리</button><button id="allySupport" aria-label="동맹 함대 지원 요청">동맹</button><button id="sfx-toggle" aria-label="효과음 켜기 끄기">효과음 켬</button><button id="quickBag" aria-label="선박과 소모품 가방">가방</button></div>
 <aside id="details" aria-label="시설과 정보"><div id="panelHead"><h2 id="panelTitle"></h2><button id="close" aria-label="시설 닫기">✕</button></div><div id="content"></div></aside>
 <div id="message" role="status" aria-live="polite">항해를 준비하고 있어.</div><div id="hint">방향키 / WASD 조타 · E 입항 · M 해도 · 스페이스 포격</div>
 <div id="controls"><div class="group"><div id="joystick" role="group" aria-label="항해 조타 스틱"><div id="joystickRim"><div id="joystickHandle"></div></div><span id="joystickLabel">왼쪽 바다 터치 · 밀어서 조타</span></div><button id="sailToggle" class="pad sail-toggle" aria-label="돛 올려 순항하거나 정지" aria-pressed="false">▶ 항해</button></div><div class="group"><button id="dock" class="pad"><b>⚓</b>입항</button><button id="fire" class="pad fire"><b>✹</b>포격</button><button id="music-toggle" class="pad" aria-label="음악 켜기 끄기"><b>♫</b>음악</button></div></div>
