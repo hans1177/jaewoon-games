@@ -333,3 +333,18 @@ test('Roblox no-model repair extracts the existing survival world save without b
   fs.writeFileSync(path.join(root,file),live.replace('if verifiedSaveRead[player] == true then','if true then'));
   assert.equal(deterministicRobloxNativeRepairCandidate(args),null,'unverified save read must remain blocked');
 });
+
+
+test('real party RPG keeps exact save keys and shares one save routine across leave and shutdown',()=>{
+  const source=fs.readFileSync('roblox-games/party-rpg/server/Game.server.luau','utf8');
+  assert.match(source,/local function savePlayer\(player\)/);
+  assert.match(source,/for key, fallback in pairs\(Config\.InitialState\) do snapshot\[key\] = readNumber\(player, key, fallback\) end/);
+  assert.equal((source.match(/store:UpdateAsync\("player:"/g)||[]).length,1);
+  assert.match(source,/Players\.PlayerRemoving:Connect\(savePlayer\)/);
+  assert.match(source,/game:BindToClose\(function\(\)\s*for _, player in ipairs\(Players:GetPlayers\(\)\) do\s*savePlayer\(player\)/);
+  assert.doesNotMatch(source,/game:BindToClose\(function\(\) end\)/);
+  assert.equal(deterministicRobloxNativeRepairCandidate({
+    order:{target:'roblox',goal:'save shutdown stability'},
+    sourceRoot:'roblox-games/party-rpg',responsibleFiles:['server/Game.server.luau']
+  }),null,'already repaired game must not be edited a second time');
+});
