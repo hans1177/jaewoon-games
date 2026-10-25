@@ -155,7 +155,8 @@ test('gem-survivor web entry uses guest rooms while existing email auth remains 
   assert.match(html,/client\.createGemRoom\(\)/);
   assert.match(html,/client\.joinGemRoom\(code\)/);
   assert.match(worker,/async gemAuthorize\(/);
-  assert.match(worker,/\['\/gem-survivor\/create', '\/gem-survivor\/join', '\/gem-survivor\/leave'\]/);
+  assert.match(worker,/\/gem-survivor\/create/);
+  assert.match(worker,/\/guest\/create/);
   const client=new mod.JaewoonMultiplayerClient();
   const requests=[];
   client.request=async(endpoint,options)=>{
@@ -179,4 +180,56 @@ test('gem-survivor web entry uses guest rooms while existing email auth remains 
   assert.equal(client.guestToken,'');
   assert.match(source,/async createFriendRoomForGame\(/);
   assert.match(worker,/if \(url\.pathname === '\/auth\/login'/);
+});
+
+test('all four games use independent numeric rooms with the original per-game player limits',async()=>{
+ const worker=fs.readFileSync('multiplayer/worker.js','utf8');
+ const client=fs.readFileSync('multiplayer/multiplayer-client.js','utf8');
+ const ocean=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ const cozy=fs.readFileSync('web-games/cozy-island/kingdom-system.js','utf8');
+ const party=fs.readFileSync('web-games/party-rpg/index.html','utf8');
+ const renderer=fs.readFileSync('web-games/party-rpg/view.mjs','utf8');
+ const oceanScene=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ const mod=await import('data:text/javascript;base64,'+Buffer.from(worker).toString('base64'));
+ const store=new Map(),ctx={storage:{get:async key=>store.get(key),put:async(key,value)=>store.set(key,structuredClone(value))}};
+ const mm=new mod.Matchmaker(ctx,{});
+ const samples=[];
+ for(const gameId of ['gem-survivor','ocean-voyage','cozy-island','party-rpg']){
+  const room=await (await mm.gemCreate(gameId)).json();
+  const maxPlayers=gameId==='cozy-island'?2:4;
+  assert.match(room.inviteCode,/^[0-9]$/);
+  assert.equal(room.gameId,gameId);
+  assert.equal(room.maxPlayers,maxPlayers);
+  assert.equal(room.players,1);
+  samples.push(room);
+  for(let i=2;i<=maxPlayers;i++){
+   const joined=await mm.gemJoin({gameId,inviteCode:room.inviteCode});
+   assert.equal(joined.status,200);
+   assert.equal((await joined.json()).players,i);
+  }
+  assert.equal((await mm.gemJoin({gameId,inviteCode:room.inviteCode})).status,409);
+  assert.equal((await mm.gemAuthorize({roomId:room.roomId,guestToken:room.guestToken})).status,200);
+ }
+ assert.equal(new Set(samples.map(row=>row.inviteCode)).size,1,'each game gets a separate one-digit room namespace');
+ assert.notEqual(samples[0].roomId,samples[1].roomId);
+ assert.equal((await mm.gemAuthorize({roomId:samples[1].roomId,guestToken:samples[2].guestToken})).status,401);
+ assert.equal((await mm.gemLeave({roomId:samples[1].roomId,guestToken:samples[1].guestToken})).status,200);
+ assert.equal((await mm.gemAuthorize({roomId:samples[1].roomId,guestToken:samples[1].guestToken})).status,401);
+ assert.match(client,/async createNumberRoomForGame\(/);
+ assert.match(client,/async joinNumberRoomForGame\(/);
+ assert.match(ocean,/createNumberRoomForGame\('ocean-voyage'\)/);
+ assert.match(ocean,/joinNumberRoomForGame\('ocean-voyage',code\)/);
+ assert.match(oceanScene,/setCoopShips\(list\)/);
+ assert.match(cozy,/createNumberRoomForGame\('cozy-island'\)/);
+ assert.match(cozy,/joinNumberRoomForGame\('cozy-island',code\)/);
+ assert.doesNotMatch(cozy,/RTCPeerConnection|ks-peer-code|ks-own-code/);
+ assert.match(party,/createNumberRoomForGame\('party-rpg'\)/);
+ assert.match(party,/joinNumberRoomForGame\('party-rpg',number\)/);
+ assert.match(renderer,/live\.coopPlayers/);
+ assert.match(party,/coopPlayers:\[\.\.\.coop\.peers\.values\(\)\]/);
+ for(const html of [fs.readFileSync('web-games/ocean-voyage/index.html','utf8'),party]){
+  assert.match(html,/maxlength="1"/);
+  assert.match(html,/방 만들기/);
+  assert.match(html,/방 참가/);
+ }
 });
