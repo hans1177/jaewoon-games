@@ -519,7 +519,7 @@ const resetStick=()=>{stick={x:0,y:0};knob.style.transform='translate(-50%,-50%)
 function updateStick(e){
  const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
  const radius=Math.max(22,(Math.min(r.width,r.height)-46)/2),dx=e.clientX-cx,dy=e.clientY-cy,length=Math.hypot(dx,dy);
- const scale=Math.min(1,length/radius)/(length||1),x=dx*scale,y=dy*scale;
+ const scale=length>radius?radius/length:1,x=dx*scale,y=dy*scale;
  stick.x=Math.max(-1,Math.min(1,x/radius));stick.y=Math.max(-1,Math.min(1,-y/radius));
  knob.style.transform='translate(calc(-50% + '+(stick.x*radius)+'px),calc(-50% - '+(stick.y*radius)+'px))';
 }
