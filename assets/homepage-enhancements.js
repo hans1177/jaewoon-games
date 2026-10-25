@@ -136,7 +136,8 @@ const activeLifecycle=row=>{
   const placeId=String(roblox?.placeId||'').trim();
   const robloxUrl=String(roblox?.publicRelease===true?roblox?.publicUrl:roblox?.internalUrl||'').trim();
   const deployedRoblox=/^[1-9][0-9]*$/.test(placeId)
-    &&robloxUrl===`https://www.roblox.com/games/${placeId}`
+    &&robloxUrl.startsWith('https://www.roblox.com/games/')
+    &&robloxUrl.slice('https://www.roblox.com/games/'.length)===placeId
     &&(roblox?.executionAvailable===true||roblox?.historicalInternalRelease===true||roblox?.internalReleaseReady===true);
   if(!['ACTIVE','REBUILD'].includes(lifecycle))return deployedRoblox;
   const haltedWeb=row?.ownerWebDevelopmentStopped===true||web.developmentStopped===true
