@@ -31,6 +31,7 @@ jobs:
     timeout-minutes: 20
     outputs:
       source_current: ${{ steps.source_admission.outputs.current }}
+      artifact_ready: ${{ steps.pages_branch_publish.outputs.artifact_ready }}
     permissions:
       contents: write
       actions: write
@@ -593,6 +594,7 @@ jobs:
           echo "PAGES_OFFICIAL_HOME_RENDER_QA=PASS"
 
       - name: Publish gh-pages without force or deleting earlier games
+        id: pages_branch_publish
         if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -629,6 +631,13 @@ jobs:
                 *) echo 'PAGES_BUILD_ANCESTRY_UNVERIFIED' >&2; exit 1 ;;
               esac
             fi
+            # A newer source has already won the shared branch: do not stage, archive,
+            # or upload a superseded 1GB artifact. Never interrupt its active publisher.
+            if [ "$shared_write_skipped" = true ]; then
+              echo "PAGES_OLDER_SHARED_WRITE_SKIPPED=$GITHUB_SHA RETAINED=$retained_source"
+              echo 'artifact_ready=false' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
             # Preserve remaining games; the same canonical publisher removes owner-deleted paths only.
             rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
             PAGES_RETAINED_SITE="$site" node --input-type=module - <<'NODE'
@@ -640,13 +649,6 @@ jobs:
             git -C "$site" add --all
             if ! git -C "$site" diff --cached --quiet; then
               git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
-            fi
-            if [ "$shared_write_skipped" = true ]; then
-              # 오래된 빌드의 아티팩트는 자기 SHA로 생성하되 공유 브랜치에는 쓰지 않는다.
-              # 아래 기존 최종 게시 단계의 최신 원본 검사가 공개 여부를 그대로 결정한다.
-              echo "PAGES_OLDER_SHARED_WRITE_SKIPPED=$GITHUB_SHA RETAINED=$retained_source"
-              pushed=true
-              break
             fi
             if git -C "$site" push origin HEAD:gh-pages; then
               pushed=true
@@ -665,9 +667,10 @@ jobs:
             echo "WEB_PAGES_PUBLISHED_COMMIT=$published"
           fi
           echo "WEB_PAGES_SOURCE_SHA=$GITHUB_SHA"
+          echo 'artifact_ready=true' >> "$GITHUB_OUTPUT"
 
       - name: Prepare retained Pages artifact without Git history
-        if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true'
+        if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true' && steps.pages_branch_publish.outputs.artifact_ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -700,14 +703,14 @@ jobs:
           NODE
 
       - name: Upload GitHub Pages artifact using official free Action
-        if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true'
+        if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true' && steps.pages_branch_publish.outputs.artifact_ready == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ runner.temp }}/jaewoon-pages-artifact
 
   publish-pages:
     needs: deploy
-    if: github.event_name != 'pull_request' && needs.deploy.outputs.source_current == 'true'
+    if: github.event_name != 'pull_request' && needs.deploy.outputs.source_current == 'true' && needs.deploy.outputs.artifact_ready == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 15
     concurrency:
