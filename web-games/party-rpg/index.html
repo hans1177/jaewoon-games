@@ -2042,11 +2042,14 @@ function updateEnemies(dt){
     e.specialVisualUntil=performance.now()+630;if(e.trait==='specter'){e.x+=(t.x-e.x)*.38;e.y+=(t.y-e.y)*.38;view.playSkillEffect('monster_specter',e.x,e.y,t.x,t.y);}else if(e.trait==='charger'){e.rushUntil=battleTime+1.6;view.playSkillEffect('monster_charger',e.x,e.y,t.x,t.y);}else if(e.trait==='ritual'){enemies.forEach(a=>{if(!a.dead&&a!==e&&Math.hypot(a.x-e.x,a.y-e.y)<230)a.hp=Math.min(a.maxHp,a.hp+Math.round(a.maxHp*.06));});view.playSkillEffect('monster_ritual',e.x,e.y);}else if(e.trait==='bulwark'){e.shieldUntil=battleTime+3;view.playSkillEffect('monster_bulwark',e.x,e.y);}}}
   if(dist>e.r+24){var vx=(t.x-e.x)/(dist||1),vy=(t.y-e.y)/(dist||1),spd=(e.boss?72:(e.elite?78:86))*(combat(e).slowUntil>battleTime?.65:1)*(e.trait==='charger'&&e.rushUntil>battleTime?1.95:1);e.x+=vx*spd*dt;e.y+=vy*spd*dt;}
   else if(e.attackCd<=0){e.attackCd=e.boss ? .8 : 1.05;var u=unitBySource(t.id),dmg=e.atk;combat(e).visualUntil=performance.now()+450;
+   e.motionAttackCount=(e.motionAttackCount||0)+1;
+   var combo=e.motionAttackCount%3===0;
+   if(combo)e.specialVisualUntil=performance.now()+540;
    // 타격 성공 여부와 무관하게 슬라임/토끼/야수/곤충/골렘/망령/비행형/전사별 고유 공격 액션을 표시한다.
    // 기존 명중 판정·공격력·공격 속도·저장은 수정하지 않는다.
    if(Math.hypot(e.x-p.x,e.y-p.y)<470){
     var style=/늑대|마수|키메라/.test(e.name)?'hunter':/거미|전갈/.test(e.name)?'skitter':view.modelRole('enemy',e);
-    view.playSkillEffect('monster_'+(e.boss?'boss_':'')+style,e.x,e.y,t.x,t.y);
+    view.playSkillEffect('monster_'+(e.boss?'boss_':'')+(combo?'combo_':'')+style,e.x,e.y,t.x,t.y);
    }
    if(u){var hit=attackRoll(3+Math.min(6,Math.floor((dungeon?dungeon.def.lv:ZONES[state.zone].lv)/4)),ac(u));if(hit.hit){var received=Math.max(1,dmg-(t.id==="player"?playerArmorDef():aiArmorDef(u)))*(hit.crit?2:1);u.hp-=received;trainEquipment(u,'armor');view.reactToHit(t.id,hit.crit?2:1);view.popDamage(t.x,t.y,received,hit.crit);if(t.id==="player")p.hitFlash=.16;}else if(t.id==="player")battleLog("회피 · 적 d20 "+hit.roll);}}
  });
