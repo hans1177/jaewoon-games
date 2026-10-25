@@ -13238,10 +13238,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-25T11:39:38.880Z",
+      "updatedAt": "2026-10-25T11:46:15.898Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -13320,12 +13320,12 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-build-package-pending"
       ],
       "robloxSourceCommit": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
-      "robloxSourceBootstrapPassedAt": "2026-10-25T11:33:26.976Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-25T11:46:15.898Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -13915,7 +13915,8 @@
         "previousSourceRevision": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
         "newSourceRevision": "2212dc0378d5ff7dfaf96fe4f3c57869e58b3869",
         "invalidatedAt": "2026-10-25T11:33:26.976Z"
-      }
+      },
+      "robloxRuntimeRetryCount": 0
     },
     {
       "gameId": "defense",
@@ -56735,7 +56736,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T11:46:06.310Z",
+  "updatedAt": "2026-10-25T11:46:15.898Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -56801,5 +56802,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
