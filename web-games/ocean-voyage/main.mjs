@@ -148,7 +148,7 @@ function drawChart(world=false){
    else if(shipyard){ctx.beginPath();ctx.moveTo(-5,-5);ctx.lineTo(4,-5);ctx.lineTo(1,3);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillRect(-1,-8,1.5,13);}
    else{ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();}}
   ctx.restore();
-  if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#fff0c8';ctx.fillText(p.name,px+7,py-6);const eventGoods=GOODS.find(g=>marketQuote(state,p.id,g.id).event);if(eventGoods){ctx.font='bold 10px system-ui';ctx.fillStyle='#f3ad86';ctx.fillText('⚑ '+marketQuote(state,p.id,eventGoods.id).event,px+7,py+8);}}
+  if(known){ctx.font='bold 12px system-ui';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#1a2934';ctx.strokeText(p.name,px+7,py-6);ctx.fillStyle='#f8e4b7';ctx.fillText(p.name,px+7,py-6);const eventGoods=GOODS.find(g=>marketQuote(state,p.id,g.id).event);if(eventGoods){ctx.font='bold 10px system-ui';ctx.fillStyle='#f3ad86';ctx.fillText('⚑ '+marketQuote(state,p.id,eventGoods.id).event,px+7,py+8);}}
  }
  for(const m of state.merchants||[]){
   if(state.crewRoster.includes(m.id))continue;
@@ -163,7 +163,7 @@ function drawChart(world=false){
  ctx.lineWidth=1;ctx.strokeStyle='#d7bc83bb';ctx.strokeRect(10,10,620,380);
  for(const [xx,yy,dx,dy] of [[12,12,1,1],[628,12,-1,1],[12,388,1,-1],[628,388,-1,-1]]){
   ctx.beginPath();ctx.moveTo(xx+dx*22,yy);ctx.lineTo(xx,yy);ctx.lineTo(xx,yy+dy*22);ctx.stroke();}
- const roseX=582,roseY=329;ctx.translate(roseX,roseY);
+ const roseX=574,roseY=85;ctx.translate(roseX,roseY);
  ctx.strokeStyle='#5e492f';ctx.fillStyle='#a77c42';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
  for(let i=0;i<16;i++){const a=i*Math.PI/8;ctx.beginPath();ctx.moveTo(Math.sin(a)*19,Math.cos(a)*19);ctx.lineTo(Math.sin(a)*26,Math.cos(a)*26);ctx.stroke();}
  for(let i=0;i<8;i++){const a=i*Math.PI/4,r=i%2?16:24;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.sin(a-.13)*r,Math.cos(a-.13)*r);ctx.lineTo(Math.sin(a+.13)*r,Math.cos(a+.13)*r);ctx.closePath();ctx.fillStyle=i%2?'#5f775f':'#6b4930';ctx.fill();}
