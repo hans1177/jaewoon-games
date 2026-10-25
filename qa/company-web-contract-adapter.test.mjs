@@ -108,6 +108,29 @@ test('preservation adapter binds fantasy survival approved scope only to existin
 });
 
 
+test('active attack remains the combat scope when auto-combat mode and skill controls coexist',()=>{
+  const source=[
+    '<main><canvas id="game" data-gameplay-surface="true"></canvas>',
+    '<button id="autoCombat" data-gameplay-action="auto-combat" data-mechanic-id="auto-combat-toggle">자동 전투 켜기</button>',
+    '<button id="attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">무기 기술</button>',
+    '<button id="petSpecial" data-gameplay-action="pet-special">동료 공격</button>',
+    '</main><script>',
+    "document.getElementById('attack').addEventListener('pointerdown',()=>performWeaponSkill());",
+    "document.getElementById('autoCombat').addEventListener('click',()=>toggleAutoCombat());",
+    '</script>'
+  ].join('\\n');
+  const scope=[{id:'scope-coreloop-combat',path:'coreLoop[0]',label:'Fight through enemy waves in real-time combat.'}];
+  const plan=buildWebContractAdapterPlan({html:source,inventory:scope});
+  assert.equal(plan.bindings[0].controlId,'attack');
+  assert.equal(plan.bindings[0].confidence,'HIGH');
+  assert.ok(plan.bindings[0].evidence.includes('verified-primary-combat-action-and-mechanic'));
+  assert.equal(plan.gateWeakening,false);
+  const applied=applyWebContractAdapterBindings({html:source,inventory:scope});
+  assert.equal(applied.appliedCount,1);
+  assert.match(applied.html,/<button[^>]*data-scope-id="scope-coreloop-combat"[^>]*id="attack"|<button[^>]*id="attack"[^>]*data-scope-id="scope-coreloop-combat"/);
+  assert.doesNotMatch(applied.html,/<button[^>]*id="autoCombat"[^>]*data-scope-id=/);
+});
+
 test('adapter ignores pseudo-controls embedded inside script strings',()=>{
   const html=[
     '<!doctype html><html><body>',
