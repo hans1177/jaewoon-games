@@ -1273,7 +1273,22 @@ function computeVibeNativeDesign(){
   const materials=(seedState.seedMaterials||[]).filter(row=>materialIds.has(row.materialId));
   // 메인: A는 대표 참고게임의 시스템, B는 기존 원본 시스템이다. 원본 출처와 선택을 보존한다.
   const existingLoop=Array.isArray(original.coreLoop)&&original.coreLoop.length?original.coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[];
-  const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE;
+  // 메인: 기존 게임 B 시스템이 접수 메타데이터에서 빠졌다면 실제 Luau 서버 입력·처리부터 확인한다.
+  // 패링·회피·인벤토리 명칭만 흉내 낸 설계를 허용하지 않는다. 원본 이벤트 처리 증거가 모두 있어야 한다.
+  const nativeServerPath=path.join('roblox-games',gameId,'server','Game.server.luau');
+  const nativeServer=fs.existsSync(nativeServerPath)?fs.readFileSync(nativeServerPath,'utf8'):'';
+  const nativeCombatVerified=[
+    'parryEvent.OnServerEvent:Connect',
+    'dodgeEvent.OnServerEvent:Connect',
+    'syncInventoryEvent:FireClient'
+  ].every(marker=>nativeServer.includes(marker))
+    &&nativeServer.includes('DataStoreService:GetDataStore');
+  const sourceGroundedCombat=nativeCombatVerified?{
+    systemFamily:'패링·회피·인벤토리 연동 전투',
+    playerChoice:'기존 서버 판정의 패링과 회피 시점을 선택하고 인벤토리 상태를 확인해 다음 전투 대응을 정한다.',
+    source:nativeServerPath
+  }:null;
+  const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE||sourceGroundedCombat;
   const existingGameDesign=Boolean(seed.originalDesignContext||existingSystem||seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION||(typeof catalogGame!=='undefined'&&catalogGame));
   const bSystemReference=typeof basicDesignMethod!=='undefined'&&basicDesignMethod&&existingGameDesign&&!(seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE')?{
     scope:Number(basicDesignMethod.version)>=2?'B_EXISTING_GAME_SYSTEMS':'B_SUPPORTING_REFERENCE_ONLY',
