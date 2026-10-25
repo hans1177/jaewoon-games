@@ -797,3 +797,51 @@ test('web source consumer recognizes loaded model file tables but rejects mere c
   assert.equal(unused.sourceConsumerBindings.length,0,'unconsumed file table is not an applied asset');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('Roblox 공용 원본 라이브러리는 실제 파일 86종과 공용 압축팩 111개를 출처 기반으로 검색한다',async()=>{
+ const crypto=await import('node:crypto');
+ const actor=JSON.parse(fs.readFileSync('assets/roblox/actors/manifest.json','utf8'));
+ const shared=JSON.parse(fs.readFileSync('assets/asset-manifest.json','utf8'));
+ const index=actor.sourceLibraryIndex,items=index.source3dAssets;
+ assert.equal(index.sourceFileCount,86);
+ assert.equal(actor.sourceModelCount,98);
+ assert.equal(index.archiveOnlyPacks.length,1);
+ assert.equal(index.archiveOnlyPacks[0].individualCharactersIndexed,false);
+ assert.equal(shared.robloxOriginalAssetLibrary.sourceOfTruth,'assets/roblox/actors/manifest.json#sourceLibraryIndex');
+ assert.equal(shared.robloxOriginalAssetLibrary.originalActor3dSources,items.length);
+ assert.equal(shared.robloxOriginalAssetLibrary.sharedDownloadedOriginalArchives,shared.sharedOriginalArchives.packs.length);
+ assert.equal(shared.sharedOriginalArchives.packs.length,111);
+ assert.deepEqual(index.byCategory,{CHARACTER:48,CREATURE:35,PROP:3});
+ assert.equal(index.runtimeVerified,false);
+ assert.equal(index.gameApplied,false);
+ const seen=new Set();
+ for(const row of items){
+  assert.equal(seen.has(row.id),false,'duplicate actor original: '+row.id);
+  seen.add(row.id);
+  assert.match(row.sourcePath,/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/.+\.(?:fbx|glb)$/i);
+  assert.equal(row.license,'CC0-1.0');
+  assert.match(row.licenseEvidenceUrl,/^https:\/\//);
+  assert.equal(row.gameRuntimeVerified,false);
+  assert.equal(row.gameApplied,false);
+  assert.ok(row.roles.length>0);
+  assert.equal(row.sourceState,'LOCAL_ORIGINAL_PRESENT');
+  assert.equal(row.robloxImportState.includes('REQUIRED')||row.robloxImportState.includes('NEEDS_NATIVE_IMPORT'),true);
+  const stat=fs.lstatSync(row.sourcePath);
+  assert.equal(stat.isFile(),true);
+  assert.equal(stat.isSymbolicLink(),false);
+  const data=fs.readFileSync(row.sourcePath);
+  assert.equal(crypto.createHash('sha256').update(data).digest('hex'),row.sourceSha256,'original SHA-256 drift: '+row.id);
+  const git=crypto.createHash('sha1').update(Buffer.from('blob '+data.length+'\0')).update(data).digest('hex');
+  assert.equal(git,row.repositoryGitBlobSha,'original Git blob drift: '+row.id);
+ }
+ const paths=new Set();
+ for(const pack of shared.sharedOriginalArchives.packs){
+  assert.equal(paths.has(pack.sourcePath),false,'duplicate archive: '+pack.sourcePath);
+  paths.add(pack.sourcePath);
+  assert.match(pack.sourcePath,/^assets\/external\/simple-rpg\//);
+  assert.equal(fs.statSync(pack.sourcePath).isFile(),true);
+ }
+ assert.equal(shared.sharedOriginalArchives.sourceOnly,true);
+ assert.equal(shared.robloxOriginalAssetLibrary.runtimeVerified,false);
+ assert.equal(shared.robloxOriginalAssetLibrary.unverifiedArchiveImportForbidden,true);
+});
