@@ -76,6 +76,23 @@ test('owner-first Roblox publisher verifies the real published Place/version and
   assert.match(workflow.slice(artifact),/cozy-island\.post-publish-qa\.json/);
 });
 
+test('Cozy owner publish is publish-first regression-after, then existing F0 and Vibe2 build-up only after exact Place QA',()=>{
+  const licensed=workflow.indexOf('      - name: Verify Cozy Island licensed assets before private publish');
+  const publish=workflow.indexOf('      - name: Publish Cozy Island to owner dedicated Roblox Experience');
+  const regression=workflow.indexOf('      - name: Run Cozy Island regression after private Roblox publish');
+  const post=workflow.indexOf('      - name: Verify exact published Cozy Island Place version after deployment');
+  const next=workflow.indexOf('      - name: Resume exact Cozy Island F0 and existing continuous build-up after published QA');
+  const artifact=workflow.indexOf('      - uses: actions/upload-artifact@v4',next);
+  assert.ok(licensed>=0&&publish>licensed&&regression>publish&&post>regression&&next>post&&artifact>next);
+  assert.match(workflow.slice(licensed,publish),/node tools\/cozy-cc0-library-audit\.mjs --grant/);
+  assert.doesNotMatch(workflow.slice(licensed,publish),/node --test qa\/cozy-rpg-release-hardening/);
+  assert.match(workflow.slice(regression,post),/node --test qa\/cozy-rpg-release-hardening\.test\.mjs/);
+  assert.match(workflow.slice(post,next),/if\(!pass\)throw new Error\('COZY_POST_PUBLISH_QA_UNVERIFIED_NO_NEXT_F0'\)/);
+  assert.match(workflow.slice(next,artifact),/gh workflow run company-roblox-source-drift-sync\.yml.*restart_from_f0=true/);
+  assert.match(workflow.slice(next,artifact),/gh workflow run vibe2-continuous-core\.yml.*execution_lane=game-primary/);
+  assert.match(workflow.slice(next,artifact),/SUPERSEDED_BY_NEWER_GAME_SOURCE/);
+  assert.match(workflow,/permissions:\s+contents: read\s+actions: write/);
+});
 test('grant validates exact prechecked universe and treats server permission errors as fatal',async()=>{
   const report={pass:true,universeId:'10767445741',acceptedCC0Models:[{assetId:70786111181272}]};
   let received;
