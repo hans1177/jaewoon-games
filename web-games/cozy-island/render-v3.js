@@ -11,6 +11,34 @@ export const ECONOMY_3D_LOOK=Object.freeze({
  well:'fort-well',market:'fort-market',fletcher:'fort-fletcher',
  smith:'fort-smith',armory:'fort-armory',knightHall:'fort-knight-hall',prison:'fort-prison'
 });
+// 그래픽: 건물별 중세 간판·지붕. 경제와 저장 구조는 원본 그대로 둔다.
+const BUILDING_SIGNS=Object.freeze({
+ 'fort-lumber':['벌목장','#52764d'],
+ 'fort-quarry':['채석장','#7a7970'],
+ 'fort-iron':['철광산','#516879'],
+ 'fort-stockpile':['자재창고','#8d754a'],
+ 'fort-wheat':['밀농장','#ae9345'],
+ 'fort-mill':['제분소','#a3885f'],
+ 'fort-bakery':['제빵소','#a86b4c'],
+ 'fort-orchard':['과수원','#568149'],
+ 'fort-dairy':['낙농장','#778e72'],
+ 'fort-granary':['식량창고','#9e854e'],
+ 'fort-vineyard':['포도밭','#81558c'],
+ 'fort-winery':['포도주양조','#81576e'],
+ 'fort-hops':['홉농장','#56815e'],
+ 'fort-brewery':['맥주양조','#a17c51'],
+ 'fort-tavern':['선술집','#95634c'],
+ 'fort-hovel':['주민집','#6d8e60'],
+ 'fort-well':['우물','#538e9e'],
+ 'fort-market':['시장','#a47a4a'],
+ 'fort-fletcher':['활제작소','#856b4f'],
+ 'fort-smith':['대장간','#647480'],
+ 'fort-armory':['무기고','#5c738b'],
+ 'fort-knight-hall':['기사단회관','#965d6b'],
+ 'fort-prison':['감옥','#59626c'],
+ 'fort-keep':['마을회관','#917f5a'],'fort-barracks':['병영','#925b4e'],
+ 'fort-watchtower':['망루','#7a7a70']
+});
 const SC=1/36;
 // 카메라: 45도 방위·30도 고도의 2:1 등각 투영. 게임 좌표는 그대로 유지한다.
 const ISO_YAW=Math.PI/4,ISO_PITCH=Math.PI/6;
@@ -257,7 +285,7 @@ export class IslandRendererV3 {
     // 기존 2D 캔버스는 확장 모듈의 좌표·입력 처리 전용으로만 유지한다.
     // 실제 월드는 WebGL 3D만 표시하며 2D로 되돌아가지 않는다.
     this.ctx = canvas.getContext('2d', { alpha: true });
-    this.models3d=new Map();this.instances3d=new Map();this.native3d=false;
+    this.models3d=new Map();this.instances3d=new Map();this.signTextures3d=new Map();this.native3d=false;
     this.viewFocus={x:925,y:630};this.viewZoom=null;this.last3dPaint=0;
     this.pixelTextures=new Map();this.pixelScale=2;
     this.init3d();this.resize();
@@ -534,6 +562,8 @@ export class IslandRendererV3 {
       fire:new THREE.MeshLambertMaterial({color:0xff9a35,emissive:0x4e1c00}),
       water:new THREE.MeshLambertMaterial({color:0x54a6aa})
     };
+    const style=BUILDING_SIGNS[kind];
+    if(style){m.roof.color.set(style[1]);m.tile.color.set(style[1]);}
     const add=(geo,mat,x,y,z)=>{const item=new THREE.Mesh(geo,m[mat]);item.position.set(x,y,z);g.add(item);return item};
     const box=(w,h,d,mat,x=0,y=0,z=0)=>add(new THREE.BoxGeometry(w,h,d),mat,x,y,z);
     const cyl=(r,h,mat,x=0,y=0,z=0)=>add(new THREE.CylinderGeometry(r,r,h,8),mat,x,y,z);
@@ -704,10 +734,14 @@ export class IslandRendererV3 {
     }
     if(kind==='fort-mill'){
       cyl(1.18,3.65,'wall',0,1.84,0);cone(1.48,1.38,'roof',0,4.3,0);
+      // 제분소: 풍차의 날개가 3D 모델 안에서 실제로 회전한다.
+      const rotor=new THREE.Group();rotor.position.set(0,2.68,1.32);g.add(rotor);
       for(let i=0;i<4;i++){const a=i*Math.PI/2;
-        const blade=box(.34,1.55,.14,'light',Math.cos(a)*.93,
-          2.68+Math.sin(a)*.93,1.29);blade.rotation.z=-a;}
-      cyl(.26,.4,'wood',0,2.68,1.3).rotation.x=Math.PI/2;
+        const blade=new THREE.Mesh(new THREE.BoxGeometry(.34,1.7,.14),m.light);
+        blade.position.set(Math.sin(a)*.88,Math.cos(a)*.88,0);
+        blade.rotation.z=-a;rotor.add(blade);}
+      const hub=new THREE.Mesh(new THREE.CylinderGeometry(.26,.26,.4,8),m.wood);
+      hub.rotation.x=Math.PI/2;rotor.add(hub);g.userData.windmillRotor=rotor;
       box(.65,1.15,.11,'dark',0,.62,1.16);return g;
     }
     if(kind==='fort-granary'){
@@ -830,7 +864,27 @@ export class IslandRendererV3 {
     return g;
   }
   make3d(kind,height){
-    if(['fort-knight-hall','fort-prison','fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind))return this.makeFort3d(kind,height);
+    if(['fort-knight-hall','fort-prison','fort-cottage','fort-barracks','fort-workshop','fort-market','fort-keep','fort-watchtower','fort-gatehouse','fort-wall','fort-wall-side','fort-road','fort-site',...Object.values(ECONOMY_3D_LOOK)].includes(kind)){
+      const group=this.makeFort3d(kind,height),sign=BUILDING_SIGNS[kind];
+      if(sign){
+        let texture=this.signTextures3d.get(kind);
+        if(!texture){
+          const canvas=document.createElement('canvas');canvas.width=256;canvas.height=64;
+          const ctx=canvas.getContext('2d');
+          ctx.fillStyle='#24271e';ctx.fillRect(0,0,256,64);
+          ctx.fillStyle=sign[1];ctx.fillRect(4,4,248,56);
+          ctx.strokeStyle='#f2dcaa';ctx.lineWidth=3;ctx.strokeRect(5,5,246,54);
+          ctx.font='bold 28px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillStyle='#fff9e2';ctx.fillText(sign[0],128,34,236);
+          texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+          texture.magFilter=THREE.LinearFilter;this.signTextures3d.set(kind,texture);
+        }
+        const label=new THREE.Sprite(new THREE.SpriteMaterial({map:texture.clone(),transparent:true,depthWrite:false}));
+        label.scale.set(3.1,.77,1);label.position.y=Math.max(height+1.1,kind==='fort-mill'?5.35:4.05);
+        group.add(label);
+      }
+      return group;
+    }
     const group=new THREE.Group(),asset=this.models3d.get(kind);
     if(!asset)return group;
     const texture=asset.texture.clone();texture.needsUpdate=true;
@@ -888,7 +942,7 @@ export class IslandRendererV3 {
         if(item&&(item.kind!==kind||item.loaded!==loaded||item.height!==height)){
           this.release3d(item);this.instances3d.delete(id);item=null;
         }
-        if(!item){const mesh=this.make3d(kind,height);
+        if(!item){const mesh=this.make3d(kind,height);mesh.userData.buildingId=id;
           this.scene3.add(mesh);item={mesh,kind,loaded,height};this.instances3d.set(id,item)}
         const asset=this.models3d.get(kind),sprite=item.mesh.children[0];
         if(asset?.frames&&sprite?.material?.map){
@@ -905,6 +959,7 @@ export class IslandRendererV3 {
         item.lastX=x;item.lastY=y;
         item.mesh.position.set(x*SC,.03,y*SC);
         item.mesh.rotation.y=kind==='fort-wall-side'?0:rotation;
+        if(item.mesh.userData.windmillRotor)item.mesh.userData.windmillRotor.rotation.z=now*.00076;
       };
       this.east3.visible=this.eastGrass3.visible=!!game.state.expanded;
       // 외곽 사막은 기본적으로 보여 주되 기존 유료 확장 지역의 해금 판정은 유지한다.
@@ -1273,6 +1328,29 @@ export class IslandRendererV3 {
   }
   centerCamera(){this.viewFocus={x:1050,y:635};this.viewZoom=null}
   camera(game) { return { x: game.player.x - this.width/2, y: game.player.y - this.height/2 }; }
+  // 입력: 3D 건물 실루엣을 직접 눌러 선택한다. 빈 땅 터치는 원래 방식대로 유지.
+  pickBuilding(sx,sy){
+    if(!this.native3d||!this.camera3)return null;
+    const b=this.canvas.getBoundingClientRect(),v=new THREE.Vector2((sx-b.left)/b.width*2-1,1-(sy-b.top)/b.height*2);
+    const objects=[];
+    for(const [id,item] of this.instances3d){
+      if(!(id.startsWith('economic:')||id.startsWith('custom-fort:')||
+        ['lumber','mine','market','barracks','townhall','defense-tower'].includes(id)))continue;
+      if(!item.mesh.visible)continue;
+      const point=item.mesh.position.clone();point.y+=Math.min(3,Math.max(1,item.height*.45));
+      point.project(this.camera3);
+      if(Math.abs((point.x+1)*b.width/2+b.left-sx)<170&&
+         Math.abs((1-point.y)*b.height/2+b.top-sy)<150)objects.push(item.mesh);
+    }
+    if(!objects.length)return null;
+    const ray=new THREE.Raycaster();ray.setFromCamera(v,this.camera3);
+    for(const hit of ray.intersectObjects(objects,true)){
+      let obj=hit.object;
+      while(obj&&!obj.userData?.buildingId)obj=obj.parent;
+      if(obj?.userData?.buildingId)return obj.userData.buildingId;
+    }
+    return null;
+  }
   screenToWorld(game, sx, sy) {
     if(!this.native3d){const c=this.camera(game);return {x:sx+c.x,y:sy+c.y}}
     // 입력: 기울어진 카메라의 화면 터치를 실제 지면 좌표로 변환한다.
