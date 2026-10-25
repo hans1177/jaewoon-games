@@ -8,7 +8,7 @@
 <title>잊힌 길의 서약 | 중세 판타지 파티 RPG</title>
 <style>
 /* 파일명: web-games/party-rpg/index.html · 가죽·청동·양피지 공통 화면 */
-:root{color-scheme:dark;--gold:#c6a570;--bright:#f2e3c5;--edge:#806442;--ink:#171410;--paper:#ded3bc;--muted:#ac9d84;--leather:#2b241d;--line:#ad89514d;--safe-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:dark;--gold:#c6a570;--bright:#f2e3c5;--edge:#806442;--ink:#171410;--paper:#ded3bc;--muted:#ac9d84;--leather:#2b241d;--line:#ad89514d;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);font-family:system-ui,-apple-system,sans-serif;touch-action:manipulation}
 button,input,select,summary{font:inherit;color:inherit}button,summary{cursor:pointer}button{transition:background .15s,border-color .15s}button:disabled{opacity:.5;cursor:default}
@@ -217,8 +217,8 @@ h1,h2,h3,blockquote{font-family:Georgia,'Batang',serif;font-weight:500}h2{font-s
 .eventControls>span{color:#aa9b87;font-size:12px;min-width:45px}
 @keyframes eventMist{to{transform:translateX(65px)}}
 @keyframes eventGlint{50%{opacity:.35;transform:scale(.92)}}
-@media(max-width:700px){#modal[data-mode="event"]{padding:8px}
-#modal[data-mode="event"] .card{width:100%;max-height:94dvh}
+@media(max-width:700px){#modal[data-mode="event"]{padding:max(8px,var(--safe-top)) 8px max(8px,var(--safe-bottom))}
+#modal[data-mode="event"] .card{width:100%;max-height:min(94dvh,calc(100dvh - var(--safe-top) - var(--safe-bottom) - 16px))}
 #modal[data-mode="event"] .body{max-height:calc(94dvh - 50px)}
 .eventVista{min-height:130px;padding:20px 16px 17px}
 .eventVista h2{font-size:23px}
@@ -304,7 +304,7 @@ body[data-time-phase=night] #timeWeather{border-left-color:#8e9db5;color:#b9c7d6
 /* 여정 메뉴: 보조 기능과 시점 조절은 기존 버튼 그대로 한곳에 모은다. */
 #fieldMenu{position:relative;pointer-events:auto;flex-shrink:0}#fieldMenu>summary{display:flex;align-items:center;justify-content:center;gap:6px;list-style:none;min-width:70px;min-height:44px;padding:6px 10px;border:1px solid #98784c;border-radius:5px;background:linear-gradient(155deg,#5c4830,#2c251c);color:#ecd8b0;font-size:12px;box-shadow:inset 0 1px #ddbf8430,0 3px 8px #0005}
 #fieldMenu>summary::-webkit-details-marker{display:none}#fieldMenu[open]>summary{border-color:#e5c17e;background:#5d4a30}
-.fieldMenuBody{position:absolute;top:calc(100% + 7px);right:0;width:min(330px,calc(100vw - 24px));max-height:calc(100dvh - 160px);overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:13px;background:linear-gradient(145deg,#342b21fa,#191813fd);border:1px solid #b4935b;border-radius:5px;box-shadow:inset 0 0 0 3px #15110c,0 14px 35px #000c}
+.fieldMenuBody{position:absolute;top:calc(100% + 7px);right:0;width:min(330px,calc(100vw - 24px));max-height:calc(100dvh - 160px - var(--safe-top));overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:13px;background:linear-gradient(145deg,#342b21fa,#191813fd);border:1px solid #b4935b;border-radius:5px;box-shadow:inset 0 0 0 3px #15110c,0 14px 35px #000c}
 .fieldMenuTitle{font:16px Georgia,'Batang',serif;color:#e5c796;display:block;margin:2px 0 9px;border-bottom:1px solid var(--line);padding-bottom:8px}
 #objective{width:auto;max-height:95px;overflow:auto;padding:8px 10px;margin-bottom:10px;border:1px solid #81704b4a;border-left:2px solid #a58b59;font-size:11px;line-height:1.6;background:#14150f88;box-shadow:none;pointer-events:auto}
 .fieldMenuGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.fieldMenuGrid button,#cameraTools button{display:flex;align-items:center;gap:8px;min-width:0;min-height:46px;padding:8px 10px;background:linear-gradient(#44392b,#29241c);border:1px solid #8f754a88;border-radius:3px;font-size:12px;color:#e8d5af;text-align:left}
@@ -331,7 +331,7 @@ body[data-time-phase=night] #timeWeather{border-left-color:#8e9db5;color:#b9c7d6
 body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background:radial-gradient(ellipse at 50% 45%,transparent 30%,#080a124f)}body[data-time-phase=night] #atmosphere{background:radial-gradient(ellipse at 50% 40%,transparent 35%,#0c18213d)}
 /* 휴대폰: 조작 영역을 세 부분으로 나누고, 가운데 전투 시야를 확보한다. */
 @media(max-width:700px){
- .overlay{padding:8px}.card{width:100%;max-height:94dvh}.body{padding:16px}.head{padding:9px 12px}.head h2{font-size:19px}
+ .overlay{padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}.card{width:100%;max-height:min(94dvh,calc(100dvh - var(--safe-top) - var(--safe-bottom) - 16px))}.body{padding:16px}.head{padding:9px 12px}.head h2{font-size:19px}
  .row{gap:8px;padding:10px 4px}.row button{padding:8px 10px;min-height:44px}.ruleStats{gap:5px;margin:14px 0}.ruleStats span{padding:8px 4px;font-size:10px}.ruleStats b{font-size:14px}
  #adventureHud{left:max(8px,env(safe-area-inset-left));width:calc(100vw - 16px);gap:5px}#hud{grid-template-columns:minmax(0,1fr) 80px;gap:5px}#stats,#zone{padding:7px 7px}#statsTop{font-size:10px;gap:2px 4px;line-height:15px}#zone b{font-size:14px}#zone span{font-size:9px}
  #travelLine{gap:6px}#timeWeather{padding:4px 7px;gap:7px;font-size:10px}#autoBtn{font-size:9px;padding-left:6px}#fieldMenu>summary{min-width:62px;min-height:44px;font-size:11px;padding:4px 7px}#nextQuest{grid-template-columns:54px minmax(0,1fr);padding:6px 9px;min-height:42px}#nextQuest b{font-size:10px}#nextQuest span{font-size:10px}
@@ -339,7 +339,7 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
  #actions{right:max(10px,env(safe-area-inset-right));bottom:calc(12px + var(--safe-bottom));grid-template-columns:62px 72px;grid-template-rows:53px 44px;gap:5px}.act{font-size:11px}#attackBtn{font-size:12px}
  #commandBar{bottom:calc(26px + var(--safe-bottom));gap:4px;padding:3px}#commandBar button{width:44px;min-height:46px}
  #partyCards{bottom:calc(127px + var(--safe-bottom));width:calc(100vw - 16px);gap:4px}.partyCard{grid-template-columns:27px minmax(0,1fr);grid-template-rows:15px 12px 4px 10px;column-gap:4px;min-height:52px;padding:4px 3px}.partyCard .portrait{width:27px;height:39px}.partyName{font-size:10px}.partyRole,.partyCooldown{font-size:8px}
- #prompt{bottom:calc(191px + var(--safe-bottom));max-width:82vw;font-size:11px;padding:8px 11px}#combatLog{display:none}.fieldMenuBody{max-height:calc(100dvh - 155px)}
+ #prompt{bottom:calc(191px + var(--safe-bottom));max-width:82vw;font-size:11px;padding:8px 11px}#combatLog{display:none}.fieldMenuBody{max-height:calc(100dvh - 155px - var(--safe-top))}
 }
 @media(max-width:360px),(max-width:700px) and (max-height:640px){
  #stats,#zone{padding:5px 6px}#statsTop{font-size:9px;line-height:13px}#hud{grid-template-columns:minmax(0,1fr) 72px}#zone b{font-size:12px}#zone span{font-size:8px}.bar{margin-top:4px;height:3px}#timeWeather{font-size:9px;gap:5px}#autoBtn{font-size:8px}#nextQuest{min-height:34px;grid-template-columns:48px minmax(0,1fr)}#nextQuest span{font-size:9px}#fieldMenu>summary{min-width:56px}
@@ -348,7 +348,7 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
 }
 @media(max-height:500px) and (orientation:landscape){
  #adventureHud{top:max(5px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));width:min(440px,calc(100vw - 16px));gap:4px}#hud{grid-template-columns:minmax(0,1fr) 84px}#stats,#zone{padding:4px 7px}#statsTop{font-size:9px;line-height:12px}.bar{height:3px;margin-top:3px}#zone b{font-size:13px}#zone span{font-size:8px}
- #travelLine{gap:6px}#timeWeather{font-size:9px;gap:8px;padding:3px 7px}#fieldMenu{position:fixed;top:max(7px,env(safe-area-inset-top));right:max(9px,env(safe-area-inset-right))}#fieldMenu>summary{min-width:66px;min-height:44px}.fieldMenuBody{max-height:calc(100dvh - 65px);width:min(320px,calc(100vw - 24px))}#nextQuest{min-height:34px;width:100%;grid-template-columns:54px 1fr;padding:3px 8px}#nextQuest span{font-size:10px}
+ #travelLine{gap:6px}#timeWeather{font-size:9px;gap:8px;padding:3px 7px}#fieldMenu{position:fixed;top:max(7px,env(safe-area-inset-top));right:max(9px,env(safe-area-inset-right))}#fieldMenu>summary{min-width:66px;min-height:44px}.fieldMenuBody{max-height:calc(100dvh - 65px - var(--safe-top));width:min(320px,calc(100vw - 24px))}#nextQuest{min-height:34px;width:100%;grid-template-columns:54px 1fr;padding:3px 8px}#nextQuest span{font-size:10px}
  #joystick{width:84px;height:84px;left:max(10px,env(safe-area-inset-left));bottom:calc(10px + var(--safe-bottom))}#knob{left:23px;top:23px;width:34px;height:34px}#actions{grid-template-columns:54px 66px;grid-template-rows:44px 44px;gap:4px;right:max(10px,env(safe-area-inset-right));bottom:calc(10px + var(--safe-bottom))}#commandBar{left:50%;bottom:calc(8px + var(--safe-bottom));padding:3px}#commandBar button{width:44px;min-height:44px}#partyCards{width:min(360px,calc(100vw - 245px));bottom:calc(68px + var(--safe-bottom));gap:4px}.partyCard{min-height:48px;grid-template-columns:24px minmax(0,1fr);column-gap:3px;padding:3px}.partyCard .portrait{width:24px;height:35px}.partyName{font-size:9px}.partyRole,.partyCooldown{font-size:7px}#prompt{bottom:calc(126px + var(--safe-bottom));font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
@@ -2145,7 +2145,7 @@ function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&
 var fieldMenu=document.getElementById('fieldMenu');
 fieldMenu.addEventListener('click',function(e){if(e.target.closest('button'))fieldMenu.open=false;});
 document.addEventListener('pointerdown',function(e){if(fieldMenu.open&&!fieldMenu.contains(e.target))fieldMenu.open=false;});
-document.addEventListener('keydown',function(e){if(e.code==='Escape'&&fieldMenu.open){fieldMenu.open=false;fieldMenu.querySelector('summary').focus();}});
+document.addEventListener('keydown',function(e){if(e.code==='Escape'&&fieldMenu.open){e.preventDefault();e.stopPropagation();fieldMenu.open=false;fieldMenu.querySelector('summary').focus();}});
 document.getElementById("attackBtn").onclick=attackPlayer;
 document.getElementById("skillBtn").onclick=useClassSkill;
 document.getElementById("interactBtn").onclick=interact;
@@ -2179,7 +2179,7 @@ joyBase.addEventListener("pointerdown",function(e){joyId=e.pointerId;joyBase.set
 joyBase.addEventListener("pointermove",function(e){if(e.pointerId===joyId)joyMove(e);});
 function joyEnd(e){if(e.pointerId!==joyId)return;joyId=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
 joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointercancel",joyEnd);
-addEventListener('keydown',function(e){if(!modalOpen)return;if(activeEventScene&&(e.code==='Enter'||e.code==='Space')){e.preventDefault();nextEventScene();return;}if(e.code==='Escape'){closeModal();return;}if(e.code==='Tab'){var nodes=[...modal.querySelectorAll('button:not(:disabled),a[href],input,select,[tabindex="0"]')].filter(function(n){return n.getClientRects().length;});var first=nodes[0],lastNode=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();lastNode.focus();}else if(!e.shiftKey&&document.activeElement===lastNode){e.preventDefault();first.focus();}}});
+addEventListener('keydown',function(e){if(!modalOpen)return;if(activeEventScene&&(e.code==='Enter'||e.code==='Space')){e.preventDefault();nextEventScene();return;}if(e.code==='Escape'){e.preventDefault();e.stopPropagation();closeModal();return;}if(e.code==='Tab'){var nodes=[...modal.querySelectorAll('button:not(:disabled),a[href],input,select,[tabindex="0"]')].filter(function(n){return n.getClientRects().length;});var first=nodes[0],lastNode=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();lastNode.focus();}else if(!e.shiftKey&&document.activeElement===lastNode){e.preventDefault();first.focus();}}});
 window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,view,combat,storyObjective,tacticalPaused,worldW,worldH,gameStarted,gameEnvironment});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
