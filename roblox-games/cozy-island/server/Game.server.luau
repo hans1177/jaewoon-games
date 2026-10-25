@@ -103,6 +103,7 @@ end
 -- 유틸: 원본 로딩은 ID마다 한 번만 실행하고 실패한 요청은 잠시 뒤 재시도한다.
 local loadingAssets={}
 local assetFailureUntil={}
+local assetWarned={}
 local function loadAsset(id)
  if assetCache[id] then return assetCache[id] end
  if assetFailureUntil[id] and os.clock()<assetFailureUntil[id] then return nil end
@@ -117,10 +118,10 @@ local function loadAsset(id)
   stripAsset(result)
   result.Parent=nil
   assetCache[id]=result
-  assetFailureUntil[id]=nil
+  assetFailureUntil[id]=nil;assetWarned[id]=nil
  else
   assetFailureUntil[id]=os.clock()+30
-  warn("[포근섬][원본자산] 로딩 실패 assetId="..tostring(id))
+  if not assetWarned[id]then warn("[포근섬][원본자산] 로딩 실패 assetId="..tostring(id));assetWarned[id]=true end
  end
  loadingAssets[id]=nil
  return assetCache[id]
@@ -146,7 +147,7 @@ local function decorateRemoteIsland(_parent,_region,_topY,_index)end
 local function label(target,text,color,maxDist)
  local g=Instance.new("BillboardGui");g.Name="WorldLabel";g.Size=UDim2.fromOffset(118,24);g.StudsOffset=Vector3.new(0,4.8,0);g.AlwaysOnTop=false;g.MaxDistance=maxDist or 34;g.LightInfluence=.35;g.Parent=target
  local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(25,35,31);t.BackgroundTransparency=.3;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextScaled=true;t.Font=Enum.Font.GothamBold;t.TextStrokeTransparency=.7;t.Parent=g
- local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,6);c.Parent=t
+ -- 원형 GUI 장식 대신 기존 직각 월드 레이블을 쓴다.
 end
 local function prompt(target,objectText,actionText)
  local pr=Instance.new("ProximityPrompt");pr.ObjectText=objectText;pr.ActionText=actionText;pr.MaxActivationDistance=10;pr.HoldDuration=.15;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
@@ -199,11 +200,21 @@ end
 -- Vibe2 Roblox native CC0 adaptation: scale only verified library model instances.
 -- Original GLB remains immutable; server controls hitboxes, prompts, damage and persistence.
 local cc0VisualCount=0
-local function applyCC0Appearance(rootPart,assetId,maxHeight)
- if not assetId or not rootPart.Parent then return end
+local function applyCC0Appearance(rootPart,assetId,maxHeight,attempt)
+ if not assetId or not rootPart.Parent or rootPart:GetAttribute("CC0VisualReady")then return end
  local original=loadAsset(assetId)
  if not original or not rootPart.Parent then
-  rootPart:SetAttribute("CC0VisualFailure","ASSET_UNAVAILABLE")
+  if rootPart.Parent then
+   rootPart:SetAttribute("CC0VisualFailure","ASSET_UNAVAILABLE")
+   -- 최초 일시적 실패는 기존 함수에서만 최대 두 번 더 재연결한다.
+   if (attempt or 1)<3 then
+    task.delay(31,function()
+     if rootPart.Parent and not rootPart:GetAttribute("CC0VisualReady")then
+      applyCC0Appearance(rootPart,assetId,maxHeight,(attempt or 1)+1)
+     end
+    end)
+   end
+  end
   return
  end
  local visual=original:Clone()
@@ -251,6 +262,7 @@ local function applyCC0Appearance(rootPart,assetId,maxHeight)
  end
  rootPart:SetAttribute("CozyOriginalVisualJoints",roots)
  rootPart:SetAttribute("CC0LicensedAssetId",assetId)
+ rootPart:SetAttribute("CC0VisualFailure",nil)
  rootPart:SetAttribute("CC0VisualReady",true)
  cc0VisualCount+=1
  workspace:SetAttribute("CozyCC0VisualsReady",cc0VisualCount)
