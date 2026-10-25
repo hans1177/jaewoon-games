@@ -6,7 +6,7 @@ const SAVE='jaewoon-cozy:manual:',STORE='jaewoon-games:cozy-island';
 const AUDIO='jaewoon-cozy:audio-settings',get=(q)=>body.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const btn=(act,label,disabled=false)=>'<button type="button" class="ks-action" data-action="'+act+'" '+(disabled?'disabled':'')+'>'+label+'</button>';
-let section='save';
+let section='game',menuMode='settings';
 let settings={volume:.34,track:0,voice:true};
 try{Object.assign(settings,JSON.parse(localStorage.getItem(AUDIO)||'{}'))}catch{}
 settings.track=Math.max(0,Math.min(3,Math.floor(Number(settings.track)||0)));
@@ -247,12 +247,26 @@ function multiPanel(){
  btn('recruit:archer','🏹 궁수 징집 (식량 9)')+btn('strike','⚔️ 출병')+
  btn('defend','🛡️ 성 방어')+'</div>':'');
 }
+// 메인: 왕국과 설정 탭을 진입 메뉴별로 구분해 중복 내비게이션을 제거한다.
 function render(){
- tabs.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('selected',b.dataset.tab===section));
+ const kingdom=menuMode==='kingdom';
+ tabs.querySelectorAll('[data-tab]').forEach(b=>{
+  b.hidden=kingdom?!['map','diplomacy'].includes(b.dataset.tab):
+   !['game','multiplayer','sound'].includes(b.dataset.tab);
+  b.classList.toggle('selected',b.dataset.tab===section);
+ });
+ dialog.querySelector('header h2').textContent=kingdom?'🗺️ 왕국·외교':'⚙️ 게임 설정';
  body.innerHTML=section==='game'?savePanel():section==='map'?mapPanel():
  section==='diplomacy'?diplomacyPanel():section==='sound'?soundPanel():multiPanel();
 }
-document.querySelector('#systemCommand')?.addEventListener('click',()=>{section='game';render();dialog.showModal()});
+function openSystemMenu(mode,tab){
+ menuMode=mode==='kingdom'?'kingdom':'settings';
+ section=menuMode==='kingdom'?(tab==='diplomacy'?'diplomacy':'map'):
+  (['game','sound','multiplayer'].includes(tab)?tab:'game');
+ render();if(!dialog.open)dialog.showModal();
+}
+document.querySelector('#systemCommand')?.addEventListener('click',()=>openSystemMenu('settings','game'));
+window.addEventListener('cozy:open-system',e=>openSystemMenu('kingdom',e.detail?.tab));
 document.querySelector('#systemClose')?.addEventListener('click',()=>dialog.close());
 tabs.addEventListener('click',e=>{const t=e.target.closest('[data-tab]');if(t){section=t.dataset.tab;render()}});
 body.addEventListener('change',e=>{
