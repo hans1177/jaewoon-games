@@ -32,25 +32,29 @@ $('captainBack').addEventListener('click',openHome);
 let navalTarget=null;
 function syncNavalBattle(){
  if(town||choosing||state.landBattle)return;
+ const distanceTo=e=>Math.hypot(e.x-state.ship.x,e.z-state.ship.z);
  const enemies=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0));
- const current=enemies.find(e=>e.id===navalTarget);
- const nearest=enemies.filter(e=>Math.hypot(e.x-state.ship.x,e.z-state.ship.z)<42).sort((a,b)=>Math.hypot(a.x-state.ship.x,a.z-state.ship.z)-Math.hypot(b.x-state.ship.x,b.z-state.ship.z))[0];
- const target=current&&Math.hypot(current.x-state.ship.x,current.z-state.ship.z)<60?current:nearest;
- if(target&&navalTarget===null){
-  navalTarget=target.id;scene.setMode('naval');document.body.classList.add('naval-battle');
-  $('navalTitle').textContent='해상 교전 · '+(target.name||'해적 함대');
-  note('해상 전투 진입 · 좌우 측면에 적을 두고 포격해. 거리를 벌리면 이탈해.');
- }else if(!target&&navalTarget!==null){
-  const sunk=state.pirates.find(e=>e.id===navalTarget)?.hull<=0;
+ const current=enemies.find(e=>e.id===navalTarget),nearest=enemies.filter(e=>distanceTo(e)<42).sort((a,b)=>distanceTo(a)-distanceTo(b))[0];
+ const target=current&&distanceTo(current)<60?current:nearest,oldTarget=navalTarget;
+ if(target){
+  navalTarget=target.id;
+  if(oldTarget!==target.id){
+   scene.setMode('naval');document.body.classList.add('naval-battle');
+   $('navalTitle').textContent='해상 교전 · '+(target.name||'해적 함대');
+   note(oldTarget===null?'해적선 발견! 해상 전투 시작 · 함포는 좌우 측면에서 발사할 수 있어.':'해상 교전 대상 변경 · '+(target.name||'해적 함대'));
+  }
+ }else if(oldTarget!==null){
+  const sunk=state.pirates.find(e=>e.id===oldTarget)?.hull<=0;
   navalTarget=null;scene.setMode('sea');document.body.classList.remove('naval-battle');
   note(sunk?'적함 격침 · 항해 화면으로 복귀했어.':'교전 해역 이탈 · 항해를 재개해.');save();
- }else if(target)navalTarget=target.id;
+ }
  $('navalEncounter').hidden=navalTarget===null;
  if(target){
-  const gun=CANNON_TYPES.find(g=>g.id===state.ship.cannonType)||CANNON_TYPES[0],distance=Math.hypot(target.x-state.ship.x,target.z-state.ship.z);
+  const gun=CANNON_TYPES.find(g=>g.id===state.ship.cannonType)||CANNON_TYPES[0],distance=distanceTo(target);
   const angle=Math.atan2(target.x-state.ship.x,target.z-state.ship.z)-state.ship.heading;
-  $('navalTargetHull').value=target.hull/target.maxHull;
-  $('navalReadout').textContent='적 내구 '+Math.ceil(target.hull)+' / '+target.maxHull+' · 거리 '+Math.round(distance)+' · '+(distance>=gun.range?'사거리 밖':Math.abs(Math.cos(angle))<.55?'측면 사격 가능':'좌우 측면을 맞춰')+' · '+(state.ship.cooldown>0?'장전 '+state.ship.cooldown.toFixed(1)+'초':'장전 완료');
+  const portSide=Math.sin(angle)>0?'우현':'좌현';
+  $('navalTargetHull').value=Math.max(0,target.hull)/Math.max(1,target.maxHull);
+  $('navalReadout').textContent='적 내구 '+Math.ceil(target.hull)+' / '+target.maxHull+' · 거리 '+Math.round(distance)+' · '+portSide+' '+(distance>=gun.range?'사거리 밖':Math.abs(Math.cos(angle))<.55?'함포 사격 가능':'측면으로 조타')+' · '+(state.ship.cooldown>0?'장전 '+state.ship.cooldown.toFixed(1)+'초':'장전 완료');
  }
 }
 $('navalRetreat').addEventListener('click',()=>{state.autoCombat=false;summary();note('자동 교전을 해제했어. 조타 스틱으로 적과 60 이상 거리를 벌려 이탈해.');});
@@ -407,7 +411,7 @@ $('systemOpen').addEventListener('click',()=>gotoPanel('system'));
 $('close').addEventListener('click',leaveFacility);
 $('dock').addEventListener('click',()=>{if(canDock(state))enterTown();});
 $('hail').addEventListener('click',()=>{const id=$('hail').dataset.merchant;if(id)apply(hailMerchant(state,id));});
-$('fire').addEventListener('click',()=>apply(fireCannons(state)));
+$('fire').addEventListener('click',()=>apply(fireCannons(state,navalTarget)));
 view.body.addEventListener('click',e=>{
  if(e.target.id==='chartMap'){
   if(mapIgnoreClick){mapIgnoreClick=false;return;}
@@ -504,7 +508,7 @@ document.addEventListener('keydown',e=>{
  if(e.repeat||e.target.matches('textarea,input,select'))return;
  const k=e.key.toLowerCase();
  if(['w','a','s','d','arrowleft','arrowright','arrowup','arrowdown',' '].includes(k)){keys.add(k);e.preventDefault();}
- if(k===' '){apply(fireCannons(state));}
+ if(k===' '){apply(fireCannons(state,navalTarget));}
  if(k==='m'){gotoPanel('chart');}
  if(k==='e'&&canDock(state))enterTown();
 });

@@ -93,7 +93,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    }
    const waterTex=new THREE.CanvasTexture(waterTiles);waterTex.wrapS=THREE.RepeatWrapping;waterTex.wrapT=THREE.RepeatWrapping;waterTex.repeat.set(18,18);
    waterTex.magFilter=THREE.NearestFilter;waterTex.minFilter=THREE.NearestMipmapNearestFilter;waterTex.colorSpace=THREE.SRGBColorSpace;
-   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,60,60),new THREE.MeshStandardMaterial({color:'#d6eff0',map:waterTex,roughness:.43,metalness:.08,flatShading:false}));
+   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,60,60),new THREE.MeshStandardMaterial({color:'#d6eff0',map:waterTex,roughness:.43,metalness:.08,flatShading:false,emissive:'#143b47',emissiveIntensity:.07}));
    water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
    const whitecaps=new Float32Array(64*6),capGeometry=new THREE.BufferGeometry();capGeometry.setAttribute('position',new THREE.BufferAttribute(whitecaps,3));
    const crests=new THREE.LineSegments(capGeometry,new THREE.LineBasicMaterial({color:'#dff7ee',transparent:true,opacity:.39,depthWrite:false}));world.add(crests);
@@ -255,17 +255,29 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      }
      // 바다 항적: 불투명한 흰 사각형 대신 속도에 따라 벌어지는 V형 물보라 조각.
      const wake=new THREE.Group();
-     const foamMaterial=new THREE.MeshBasicMaterial({color:'#d5f2e8',transparent:true,opacity:.58,side:THREE.DoubleSide,depthWrite:false});
-     for(const side of [-1,1])for(let j=0;j<7;j++){
-      const z=-length*.54-j*1.24,x=side*(.6+j*.36);
-      const foam=new THREE.Mesh(new THREE.PlaneGeometry(.21+j*.075,.68+j*.17),foamMaterial);
-      foam.rotation.x=-Math.PI/2;foam.rotation.z=side*.20;foam.position.set(x,.04,z);wake.add(foam);
+     const foamMaterial=new THREE.MeshBasicMaterial({color:'#e1f7ed',transparent:true,opacity:.71,side:THREE.DoubleSide,depthWrite:false});
+     const sprayMaterial=new THREE.MeshBasicMaterial({color:'#aedbd9',transparent:true,opacity:.49,side:THREE.DoubleSide,depthWrite:false});
+     // 선수는 -Z, 선미는 +Z: 이전에는 항적을 선수 앞으로 그리는 오류가 있었다.
+     // 선미 V자 후류, 두 겹 거품대, 선수 양옆 포말을 속도와 연동한다.
+     for(const side of [-1,1])for(let j=0;j<11;j++){
+      const z=length*.47+j*.95,x=side*(beam*.34+j*.31);
+      const foam=new THREE.Mesh(new THREE.PlaneGeometry(.24+j*.064,.48+j*.14),j%3===0?sprayMaterial:foamMaterial);
+      foam.rotation.x=-Math.PI/2;foam.rotation.z=side*(.17+j*.01);foam.position.set(x,.05,z);wake.add(foam);
+      if(j<7){const fine=new THREE.Mesh(new THREE.PlaneGeometry(.16+j*.03,.29+j*.085),sprayMaterial);
+       fine.rotation.x=-Math.PI/2;fine.position.set(x+side*.54,.075,z+.42);wake.add(fine);}
+     }
+     for(const side of [-1,1])for(let i=0;i<5;i++){
+      const bow=new THREE.Mesh(new THREE.PlaneGeometry(.27+i*.13,.54+i*.11),i%2?foamMaterial:sprayMaterial);
+      bow.rotation.x=-Math.PI/2;bow.rotation.z=side*.36;
+      bow.position.set(side*(beam*.48+i*.23),.06,-length*.48+i*.39);wake.add(bow);
      }
      root.add(wake);entry.wake=wake;
      entry.loaded=true;
     return entry;
    }
-   const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#ffe4a0'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#c8c5b5',transparent:true,opacity:.45,depthWrite:false});
+   const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#302c26'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#b7b7aa',transparent:true,opacity:.43,depthWrite:false}),
+    flashGeo=new THREE.IcosahedronGeometry(.45,0),flashMat=new THREE.MeshBasicMaterial({color:'#ffb74d',transparent:true,opacity:.92,depthWrite:false}),
+    splashGeo=new THREE.RingGeometry(.45,.84,14),splashMat=new THREE.MeshBasicMaterial({color:'#e3f7ec',transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false});
    let serial=0,shotTime=0,sw=0,sh=0;
    const targetLook=new THREE.Vector3(),skyLow=new THREE.Color(),skyHigh=new THREE.Color();
    naval={surface,renderer,world,camera,vessels,render(t){
@@ -283,7 +295,9 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     ring.visible=mode==='naval';ring.position.x=ex;ring.position.z=ez;
     const storm=state.climate?.kind==='storm',rain=state.climate?.kind==='rain';
      const a=water.geometry.attributes.position;
-     for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,(Math.sin(x*.12+t*1.3)*.27+Math.sin(y*.16+t*.8)*.22)*(storm?1.9:rain?1.25:1));}
+     for(let i=0;i<a.count;i++){const x=a.getX(i)+origin.x*.14,y=a.getY(i)+origin.z*.14;
+      const long=Math.sin(x*.105+t*1.2)*.27+Math.sin(y*.15+t*.83)*.22,short=Math.sin((x+y)*.31+t*2.4)*.075+Math.cos((x-y)*.22-t*1.7)*.06;
+      a.setZ(i,(long+short)*(storm?2.15:rain?1.3:1));}
      a.needsUpdate=true;
      if(Math.round(t*12)%2===0)water.geometry.computeVertexNormals();
      const tint=storm?'#477486':rain?'#7096a5':'#87b9c7';world.background.set(tint);world.fog.color.set(tint);sun.intensity=storm?1.7:rain?2.4:3.1;
@@ -303,9 +317,21 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
      capGeometry.attributes.position.needsUpdate=true;capGeometry.computeBoundingSphere();
     const fx=state.combatFx;if(fx?.type==='cannon'&&fx.serial!==serial){serial=fx.serial;shotTime=t;
      for(const o of shots)world.remove(o);shots.length=0;
-     for(let i=0;i<5;i++){const ball=new THREE.Mesh(ballGeo,ballMat);ball.userData={from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(ball);world.add(ball);const puff=new THREE.Mesh(smokeGeo,smokeMat);puff.userData={smoke:true,from:fx.from,to:fx.to,offset:(i-2)*.65};shots.push(puff);world.add(puff);}
+     const volleyCount=Math.min(7,Math.max(3,Math.ceil((fx.count||5)/3)));
+     for(let i=0;i<volleyCount;i++){
+      const offset=(i-(volleyCount-1)/2)*.7;
+      const ball=new THREE.Mesh(ballGeo,ballMat);ball.userData={kind:'ball',from:fx.from,to:fx.to,offset};shots.push(ball);world.add(ball);
+      const puff=new THREE.Mesh(smokeGeo,smokeMat);puff.userData={kind:'smoke',from:fx.from,to:fx.to,offset};shots.push(puff);world.add(puff);
+      const flash=new THREE.Mesh(flashGeo,flashMat);flash.userData={kind:'flash',from:fx.from,to:fx.to,offset};shots.push(flash);world.add(flash);
+     }
+     for(let i=0;i<4;i++){const splash=new THREE.Mesh(splashGeo,splashMat);splash.rotation.x=-Math.PI/2;
+      splash.userData={kind:'splash',from:fx.from,to:fx.to,offset:(i-1.5)*.72};shots.push(splash);world.add(splash);}
     }
-    const age=t-shotTime;for(const o of shots){const d=o.userData,progress=Math.min(1,age/.55);o.visible=age<1.3;if(d.smoke){o.position.set(d.from.x-origin.x+d.offset,1.8+age,d.from.z-origin.z);o.scale.setScalar(.5+age*1.5);}else{o.visible=age<.55;o.position.set(d.from.x+(d.to.x-d.from.x)*progress-origin.x+d.offset,1.5+Math.sin(progress*Math.PI)*2,d.from.z+(d.to.z-d.from.z)*progress-origin.z);}}
+    const age=t-shotTime;for(const o of shots){const d=o.userData,progress=Math.min(1,age/.55);
+     if(d.kind==='smoke'){o.visible=age<1.18;o.position.set(d.from.x-origin.x+d.offset*.65,1.9+age*1.6,d.from.z-origin.z);o.scale.setScalar(.17+age*1.12);}
+     else if(d.kind==='flash'){o.visible=age<.17;o.position.set(d.from.x-origin.x+d.offset,1.35,d.from.z-origin.z);o.scale.setScalar(.4+(1-age/.17)*.7);}
+     else if(d.kind==='splash'){o.visible=age>.36&&age<1.28;o.position.set(d.to.x-origin.x+d.offset,.09,d.to.z-origin.z+d.offset*.22);o.scale.setScalar(.4+(age-.36)*2.5);}
+     else{o.visible=age<.55;o.position.set(d.from.x+(d.to.x-d.from.x)*progress-origin.x+d.offset,1.5+Math.sin(progress*Math.PI)*2.3,d.from.z+(d.to.z-d.from.z)*progress-origin.z);}}
     renderer.render(world,camera);surface.dataset.ready=String(rows.every(r=>vessels.get(r.id)?.loaded));surface.dataset.models=String(rows.filter(r=>vessels.get(r.id)?.loaded).length);surface.dataset.triangles=String(renderer.info.render.triangles);surface.dataset.shot=String(serial);surface.dataset.playerX=String(origin.x);surface.dataset.playerZ=String(origin.z);surface.dataset.camera=mode==='naval'?'battle':seaCamera;
    }};
   }catch(e){navalError=true;console.warn('해상 3D 장면 초기화 실패',e);}finally{navalLoading=false;}
