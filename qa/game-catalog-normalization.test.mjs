@@ -334,7 +334,7 @@ console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconc
 
 assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,true);
 
-// 홈페이지: 실제 로블록스·유니티 원본 프로젝트가 있는 개발 카드 전체를 유지한다.
+// 홈페이지: 개발 중단 웹게임은 카드에서 제외하고 원본 프로젝트 자체는 보존한다.
 {
   const sourceIds=[
     'seed-roblox-roleplay-life-avat-brookhaven-rp',
@@ -362,7 +362,11 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
   });
   ui.setExposure({unityWebEnabled:true,games:[]});
   const cards=ui.developmentRows(sourceCatalog,{});
-  assert.equal(cards.length,sourceCatalog.games.filter(game=>game.canonical?.homepage?.runtime?.developmentActive===true&&String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE').length,'active approved development games must be listed');
+  assert.equal(cards.length,sourceCatalog.games.filter(game=>{
+    const state=String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase();
+    const hidden=['NON_GAME_SURFACE','DEVELOPMENT_STOPPED','DEVELOPMENT_PAUSED','OWNER_STOPPED','STOPPED','PAUSED','WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state);
+    return game.canonical?.homepage?.runtime?.developmentActive===true&&!hidden;
+  }).length,'stopped or withdrawn web entries must not appear without Roblox deployment evidence');
   assert.equal(new Set(Array.from(cards,game=>game.id)).size,cards.length);
 }
 
