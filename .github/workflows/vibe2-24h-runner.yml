@@ -624,7 +624,7 @@ jobs:
               cd /tmp/vibe2-main
               COMPANY_VERIFIED_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
               COMPANY_VERIFIED_DESIGN_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
-                node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"
+                node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha" 2>&1
             ) | tee /tmp/vibe2-verified-design-handoff.log; then
               grep -q '^VIBE2_VERIFIED_DESIGN_INTAKE=PASS
             for runtime_design_path in design game-seed-state.json; do
