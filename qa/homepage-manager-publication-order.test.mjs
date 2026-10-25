@@ -190,7 +190,11 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/internalReleaseReady===true/);
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
-  assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
+  // 노출 증거 URL을 검증하며 임의로 합성한 링크를 반환하지 않는다.
+  assert.match(homepage,/const roblox=\(exposureOf\(id\)\?\.platforms\|\|\[\]\)\.find/);
+  assert.match(homepage,/robloxUrl===\`https:\/\/www\.roblox\.com\/games\/\$\{placeId\}\`/);
+  assert.match(homepage,/roblox\?\.executionAvailable===true/);
+  assert.doesNotMatch(homepage,/return\s+\`https:\/\/www\.roblox\.com\/games\/\$\{placeId\}\`/);
   assert.match(homepage,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|links\.webSource\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
@@ -579,18 +583,20 @@ test('homepage manager binds official images to exact dedicated games and fills 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('homepage front door requests only the three runtime snapshots needed for its visible content',async()=>{
+test('homepage front door reads runtime snapshots and published-web route manifest',async()=>{
  const {runInNewContext}=await import('node:vm');
  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
  const requests=[];let renders=0;
- const data={'/game-catalog.json':{runtimeInfoAuthority:'company-runtime',games:[]},'/company-status.json':{runtimeAuthority:'company-runtime'},'/homepage-platform-exposure.json':{authority:'company-runtime',supportedPlatforms:['ROBLOX','UNITY'],games:[]}};
+ const data={'/game-catalog.json':{runtimeInfoAuthority:'company-runtime',games:[]},'/company-status.json':{runtimeAuthority:'company-runtime'},'/homepage-platform-exposure.json':{authority:'company-runtime',supportedPlatforms:['ROBLOX','UNITY'],games:[]},'/web-games/publish-manifest.json':{routes:['web-games/verified-game/','untrusted-route/']}};
  const refresh=runInNewContext(source.slice(source.indexOf('async function refresh(){'),source.indexOf('function main(){'))+'refresh;',{
   refreshInFlight:false,lastSignature:'',portfolioStatus:{},platformExposure:{},getJson:async path=>{requests.push(path);return data[path];},
   normalizePlatform:String,document:{getElementById:()=>null,querySelector:()=>null,documentElement:{dataset:{}}},
   updateLiveSummary:()=>{},buildFocus:()=>{renders++;},buildGameCenter:()=>{},buildRecentUpdates:()=>{}
  });
- await refresh();assert.deepEqual(requests,['/game-catalog.json','/company-status.json','/homepage-platform-exposure.json']);
+ await refresh();assert.deepEqual(requests,['/game-catalog.json','/company-status.json','/homepage-platform-exposure.json','/web-games/publish-manifest.json']);
  await refresh();assert.equal(renders,1);
+ assert.match(source,/publishedWebRoutes=new Set\(/);
+ assert.match(source,/publishedWebRoutes\.has\(root\+'\/'\)/);
 });
 
 test('PWA runtime metadata uses bounded server HTTP caching while scripts remain network-only',async()=>{
