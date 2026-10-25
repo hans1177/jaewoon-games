@@ -1,4 +1,4 @@
-// 파일명: ocean3d.mjs · 기존 장면 책임 파일을 픽셀 해도·항구·시설 렌더러로 교체
+// 파일명: ocean3d.mjs · 항해 해도·항구·시설과 실제 GLB 해상 전투 렌더러
 // 임포트: 실제 해안선과 게임 규칙 공유. 저장·경제 규칙은 엔진이 담당한다.
 import {PORTS,SHIP_TYPES,PORT_SCENES,MERCHANT_CAPTAINS,merchantPosition,portStatus,SITES,CREW} from './engine.mjs';
 import {COUNTRIES} from './assets/countries.mjs';
@@ -29,11 +29,11 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
    if(destroyed)return;
    const surface=document.createElement('canvas');surface.id='naval3d';surface.setAttribute('aria-hidden','true');surface.hidden=true;canvas.after(surface);
    let renderer;try{renderer=new THREE.WebGLRenderer({canvas:surface,antialias:true,alpha:false,powerPreference:'high-performance'});}catch(e){surface.remove();throw e;}
-   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
    const world=new THREE.Scene();world.background=new THREE.Color('#87b9c7');world.fog=new THREE.Fog('#87b9c7',95,245);
    const camera=new THREE.PerspectiveCamera(44,1,.1,350);camera.position.set(25,28,39);
-   world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);world.add(sun);
-   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,80,80),new THREE.MeshStandardMaterial({color:'#247181',roughness:.3,metalness:.38}));water.rotation.x=-Math.PI/2;world.add(water);
+   world.add(new THREE.HemisphereLight('#d8f2ff','#384450',2.1));const sun=new THREE.DirectionalLight('#fff0cc',3.1);sun.position.set(-35,65,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-55,right:55,top:55,bottom:-55,near:1,far:150});sun.shadow.bias=-.0004;world.add(sun);
+   const water=new THREE.Mesh(new THREE.PlaneGeometry(600,600,80,80),new THREE.MeshStandardMaterial({color:'#247181',roughness:.3,metalness:.38}));water.rotation.x=-Math.PI/2;water.receiveShadow=true;world.add(water);
    const ring=new THREE.Mesh(new THREE.RingGeometry(58.8,59.1,128),new THREE.MeshBasicMaterial({color:'#eed49c',transparent:true,opacity:.36,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;world.add(ring);
    const loader=new GLTFLoader(),templates=new Map(),vessels=new Map();
    // GLB는 공유하고 개별 배의 자세·피격·침몰 표현만 독립적으로 움직인다.
@@ -42,7 +42,7 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     const large=/galleon|frigate|carrack|fluyt/.test(type),file=enemy?'ship-pirate-medium':large?'ship-large':/sloop|caravel/.test(type)?'ship-small':'ship-medium';
     let entry=vessels.get(id);if(entry?.file===file)return entry;if(entry){world.remove(entry.root);}
     const root=new THREE.Group();world.add(root);entry={root,file,enemy,loaded:false};vessels.set(id,entry);
-    template(file).then(model=>{if(destroyed||vessels.get(id)!==entry)return;const copy=model.clone(true),box=new THREE.Box3().setFromObject(copy),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3()),scale=10/Math.max(size.x,size.z);copy.position.set(-center.x*scale,-box.min.y*scale-.55,-center.z*scale);copy.scale.setScalar(scale);root.add(copy);entry.loaded=true;copy.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.roughness=.78;o.material.metalness=.04;}});}).catch(()=>{navalError=true;});
+    template(file).then(model=>{if(destroyed||vessels.get(id)!==entry)return;const copy=model.clone(true),box=new THREE.Box3().setFromObject(copy),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3()),scale=10/Math.max(size.x,size.z);copy.position.set(-center.x*scale,-box.min.y*scale-.55,-center.z*scale);copy.scale.setScalar(scale);root.add(copy);entry.loaded=true;copy.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material=o.material.clone();o.material.roughness=.78;o.material.metalness=.04;}});}).catch(()=>{navalError=true;});
     return entry;
    }
    const shots=[],ballGeo=new THREE.SphereGeometry(.2,7,5),ballMat=new THREE.MeshBasicMaterial({color:'#ffe4a0'}),smokeGeo=new THREE.SphereGeometry(1,8,6),smokeMat=new THREE.MeshBasicMaterial({color:'#c8c5b5',transparent:true,opacity:.45,depthWrite:false});
@@ -55,8 +55,8 @@ export function createOceanView(canvas,{onReady=()=>{},onError=()=>{},onBuilding
     const ids=new Set(rows.map(r=>r.id));for(const [id,e]of vessels){e.root.visible=ids.has(id);}
     for(const r of rows){const e=vessel(r.id,r.type,!!r.enemy);e.root.position.set(r.x-origin.x,.12+Math.sin(t*1.8+Number(r.enemy))*.14,r.z-origin.z);e.root.rotation.set(Math.sin(t*1.5)*.025,r.heading,Math.sin(t*1.2+Number(r.enemy))*.035);}
     const enemy=hostiles.sort((a,b)=>Math.hypot(a.x-origin.x,a.z-origin.z)-Math.hypot(b.x-origin.x,b.z-origin.z))[0];
-    const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(66,Math.max(27,Math.hypot(ex,ez)*.85));
-    camera.position.lerp(new THREE.Vector3(ex*.32+span*.58,span*.83,ez*.32+span*.97),.065);targetLook.set(ex*.32,1.5,ez*.32);camera.lookAt(targetLook);
+    const ex=enemy?enemy.x-origin.x:15,ez=enemy?enemy.z-origin.z:0,span=Math.min(95,Math.max(27,Math.hypot(ex,ez)*.85)*Math.max(1,.7/camera.aspect));
+    camera.position.lerp(new THREE.Vector3(ex*.5+span*.58,span*.83,ez*.5+span*.97),.065);targetLook.set(ex*.5,1.5,ez*.5);camera.lookAt(targetLook);
     ring.position.x=ex;ring.position.z=ez;
     const a=water.geometry.attributes.position;for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,Math.sin(x*.12+t*1.3)*.32+Math.sin(y*.16+t*.8)*.22);}a.needsUpdate=true;
     const fx=state.combatFx;if(fx?.type==='cannon'&&fx.serial!==serial){serial=fx.serial;shotTime=t;
