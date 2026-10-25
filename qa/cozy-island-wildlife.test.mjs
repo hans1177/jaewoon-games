@@ -4,17 +4,33 @@ import fs from 'node:fs';
 
 const read=p=>fs.readFileSync(p,'utf8');
 
-test('포근섬 시스템 버튼은 모바일 하단 명령바에 표시되고 시스템 대화상자로 연결된다',()=>{
+test('포근섬 메뉴는 중복 없이 건설·영지·군사·왕국·설정 다섯 종류로 묶는다',()=>{
  const html=read('web-games/cozy-island/index.html');
  const css=read('web-games/cozy-island/style.css');
- const script=read('web-games/cozy-island/kingdom-system.js');
+ const game=read('web-games/cozy-island/game-v3.js');
+ const kingdom=read('web-games/cozy-island/kingdom-system.js');
  const bar=html.match(/<nav class="strategy-bar"[\s\S]*?<\/nav>/)?.[0]||'';
- assert.equal((html.match(/id="systemCommand"/g)||[]).length,1);
- assert.match(bar,/id="systemCommand"/);
- assert.match(bar,/<small>시스템<\/small>/);
- assert.match(css,/grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
+ assert.equal((bar.match(/class="strategy-button"/g)||[]).length,5);
+ for(const name of ['건설','영지','군사','왕국','설정'])
+   assert.match(bar,new RegExp('<small>'+name+'</small>'));
+ assert.match(css,/grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
+ for(const marker of ['openTerritoryMenu','openMilitaryMenu','cozy:open-system','cozy:open-barracks'])
+   assert.ok(game.includes(marker),'빠진 메뉴 연결: '+marker);
+ assert.match(kingdom,/menuMode==='kingdom'/);
  assert.match(html,/id="systemDialog"/);
- assert.ok(script.includes("querySelector('#systemCommand')?.addEventListener('click'"));
+});
+
+test('포근섬 중세 디테일과 작은 건물 이름·검색·즐겨찾기는 기존 렌더러/건설창에 연결된다',()=>{
+ const html=read('web-games/cozy-island/index.html');
+ const renderer=read('web-games/cozy-island/render-v3.js');
+ const construction=read('web-games/cozy-island/village-defense.js');
+ const css=read('web-games/cozy-island/style.css');
+ for(const marker of ['const masonry=','const gable=','const hut=','fort-lantern','fort-wagon','label.scale.set(1.85,.43,1)','nameLabel.visible=zoom>=.62'])
+   assert.ok(renderer.includes(marker),'건물 디테일 누락: '+marker);
+ for(const marker of ['realmBuildSearch','realmBuildFavoritesOnly','buildingFavorites','realm-shortage'])
+   assert.ok(construction.includes(marker),'건설 편의 기능 누락: '+marker);
+ assert.match(css,/\.realm-build-card\[hidden\]/);
+ assert.match(html,/id="barracksCommand"/);
 });
 
 test('cozy island expands home village and spawns five native animated bears',()=>{
