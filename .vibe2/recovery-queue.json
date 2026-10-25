@@ -202946,7 +202946,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-25T05:19:55.960Z"
+      "updatedAt": "2026-10-25T05:27:04.541Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -203167,7 +203167,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-25T05:19:55.982Z"
+      "updatedAt": "2026-10-25T05:27:04.579Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -238023,7 +238023,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T06:23:37.558Z",
-      "updatedAt": "2026-10-25T05:19:56.043Z"
+      "updatedAt": "2026-10-25T05:27:04.691Z"
     },
     {
       "id": "recovery-7d63a53682d7115fcca2",
@@ -239365,7 +239365,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:08:00.673Z",
-      "updatedAt": "2026-10-25T05:19:56.100Z"
+      "updatedAt": "2026-10-25T05:27:04.771Z"
     },
     {
       "id": "recovery-f9f51b7f66eb42e3d75b",
@@ -240533,7 +240533,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T09:17:42.330Z",
-      "updatedAt": "2026-10-25T05:19:56.022Z"
+      "updatedAt": "2026-10-25T05:27:04.647Z"
     },
     {
       "id": "recovery-51642fb27b4ee133c75b",
@@ -241535,7 +241535,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T10:41:46.057Z",
-      "updatedAt": "2026-10-25T05:19:56.003Z"
+      "updatedAt": "2026-10-25T05:27:04.606Z"
     },
     {
       "id": "recovery-88a76c5b49488f41e4c8",
@@ -243078,7 +243078,15 @@
         "actions-run:40161360247",
         "system-ai-handoff-to-reservation:system-ai:40162648345:1",
         "actions-run:40162648345",
-        "system-ai-handoff-to-reservation:system-ai:40163422982:1"
+        "system-ai-handoff-to-reservation:system-ai:40163422982:1",
+        "actions-run:40163422982",
+        "external-ai-raw-output-sha256:34e5adf5aadf4f0452d16c9aca950e82f4a93ce6ade403de58ababce572e651e",
+        "selected-strategy:strategy-safe-jq-check",
+        "system-ai-critic-decision-sha256:594b9b236ca828195dae4102be4596841d1b6071fd4f49678b41fea465837579",
+        "system-ai-applied-answer-sha256:a17b0e25a65ec27e64fbabc4745bfa1732b9e5ac71df3d9490d9ad1b3afcbf8f",
+        "repair-strategy-fingerprint:87959f8be4f3c6374a0acec7edcebcabc15f5cce9764112fb058693fd33a07e8",
+        "failed-strategy-fingerprint:87959f8be4f3c6374a0acec7edcebcabc15f5cce9764112fb058693fd33a07e8",
+        "model-output-sha256:34e5adf5aadf4f0452d16c9aca950e82f4a93ce6ade403de58ababce572e651e"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -243096,7 +243104,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-21T17:53:20.895Z",
-      "updatedAt": "2026-10-25T05:19:56.061Z"
+      "updatedAt": "2026-10-25T05:27:04.719Z"
     },
     {
       "id": "recovery-a258d5d15eee47e09daf",
@@ -244144,7 +244152,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-22T00:59:59.005Z",
-      "updatedAt": "2026-10-25T05:19:56.081Z"
+      "updatedAt": "2026-10-25T05:27:04.743Z"
     },
     {
       "id": "recovery-34fb833f2e9882081cb9",
