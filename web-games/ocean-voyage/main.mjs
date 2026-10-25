@@ -287,14 +287,20 @@ function system(){
 function journal(){return '<h3>기상·세계 정세</h3><p>'+WEATHER.find(w=>w.id===state.climate.kind).name+' · '+WEATHER.find(w=>w.id===state.climate.kind).description+'</p><p>동맹: '+(state.alliance||'없음')+' · 개척 해역 '+state.charted.length+'구역</p>'+state.worldLog.slice().reverse().map(t=>'<div class="scene-card">'+escapeHtml(t)+'</div>').join('')+storyCard()+'<h3>항해 기록</h3>'+[...state.log].reverse().map(t=>'<div class="row"><small>'+escapeHtml(t)+'</small></div>').join('')+'<h3>휴대폰 저장 관리</h3><p class="info">자동 저장돼. 저장 문자열을 복사해 다른 기기로 옮길 수 있고, 검증값으로 손상 여부를 확인해. 원문을 수정하면 복구되지 않아.</p><div class="stack"><button class="action sub" data-action="save">지금 저장</button><button class="action" data-action="export">저장 복사</button><button class="action sub" data-action="import">저장 가져오기</button><button class="action" data-action="reset">새 항해</button></div><textarea id="saveText" aria-label="저장 내보내기 및 가져오기 문자열" placeholder="저장 복사에 실패하면 여기서 길게 눌러 복사해. 가져올 때는 여기에 붙여넣어."></textarea><h3>자료와 제작</h3><p class="info">Natural Earth 공개 지형 · 기존 Kenney/Buch CC0 자산 · 독자 인물·스토리·절차 작곡 음악. 원작의 음악·인물·대사를 사용하지 않아.</p>';}
 
 const kennyMap='./assets/cc0/map/';
-const portrait=c=>{const host=TAVERN_HOSTS.find(h=>h.id===c.id);if(host)return '<span class="inn-face" role="img" aria-label="'+escapeHtml(host.name)+' 초상화" style="background-position:'+host.face*25+'% center"></span>';
-const companionIndex=['thomas','isabel','willem','freya','diego'].indexOf(c.id);if(companionIndex>=0)return '<span class="crew-face" role="img" aria-label="'+escapeHtml(c.name)+' 실사풍 초상화" style="background-position:'+companionIndex*25+'% center"></span>';
- const index=Math.max(0,Math.min(26,Number(c.portrait)||0));
- // Buch source atlas: 328x112, nine 32px faces per row with 4px gutters, enlarged 2×.
- const x=(index%9)*72+8,y=Math.floor(index/9)*72+8;
- const hero=CAPTAINS.find(h=>h.id===c.id);if(hero)return '<span class="hero-face small '+(hero.maleFace!==undefined?'male':'')+'" role="img" aria-label="'+escapeHtml(c.name)+' 초상화" style="background-position:'+(hero.maleFace!==undefined?hero.maleFace:hero.face)*25+'% center"></span>';
- return '<span class="cc0-portrait" aria-label="'+escapeHtml(c.name)+'의 CC0 초상화" role="img" style="background-size:656px 224px;background-position:-'+x+'px -'+y+'px"></span>';
+// 승선 동료·선술집 인물·이벤트 초상화: 기존의 상세 수채·반실사 원본 시트를 재사용해 픽셀 얼굴 도감을 대체한다.
+const portrait=c=>{
+ const hero=CAPTAINS.find(h=>h.id===c.id),host=TAVERN_HOSTS.find(h=>h.id===c.id);
+ const crewFaces={thomas:0,isabel:1,willem:2,freya:3,diego:4,
+  matteo:5,lucas:6,nikos:7,lorenzo:8,marten:9,etienne:10,
+  samira:11,amani:12,arjun:13,rin:14,florence:15,greta:16,eleanor:17};
+ // 5장씩 구성된 게임 자체 반실사 원본 아틀라스. 재사용은 새 에셋 다운로드·라이선스 위험이 없다.
+ const source=host?'innkeepers':hero?'captains':Number.isInteger(crewFaces[c.id])?['crew','captains','innkeepers'][Math.floor(crewFaces[c.id]/5)%3]:'crew';
+ let frame=host?host.face:hero?(hero.maleFace!==undefined?hero.maleFace:hero.face):Number.isInteger(crewFaces[c.id])?crewFaces[c.id]%5:Number(c.portrait||0)%5;
+ frame=Math.max(0,Math.min(4,Number(frame)||0));
+ const tint=host?0:hero?0:(Number.isInteger(crewFaces[c.id])?crewFaces[c.id]%3-1:0)*5;
+ return '<span class="portrait-real" role="img" aria-label="'+escapeHtml(c.name)+' 반실사 인물 초상화" style="background-image:url(./assets/'+source+'.webp);background-position:'+(frame*25)+'% center;--portrait-hue:'+tint+'deg"><span class="portrait-vignette"></span></span>';
 };
+
 function portScene(){
  const p=canDock(state),near=nearestPort(state);
  if(!p)return '<div class="scene-card"><h3>해안까지 항해하기</h3><p>가장 가까운 항구는 '+escapeHtml(near.port.name)+'이야. 해도에서 항로를 설정하고 조이스틱으로 접근해.</p><button class="action sub" data-route="'+near.port.id+'">항구로 자동항해</button></div>';
