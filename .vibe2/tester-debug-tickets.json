@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-25T16:27:24.434Z",
+  "updatedAt": "2026-10-25T16:40:43.970Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -124,8 +124,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-10-25T16:27:24.432Z",
-      "occurrenceCount": 425,
+      "updatedAt": "2026-10-25T16:40:43.967Z",
+      "occurrenceCount": 426,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -8234,7 +8234,8 @@
         "{\"sourceRevision\":\"506ce316d21bdf04333e27414f75dc96a8cf2b93\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED|SERVER_PLACEHOLDER_FORBIDDEN",
         "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"c9846db71be828e780e355310cfe0b13fd4a8146\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"c9846db71be828e780e355310cfe0b13fd4a8146\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"f73725d9497cdabf4bd677f8ae95f62f50850f5f\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -8243,8 +8244,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T23:17:12.895Z",
-      "updatedAt": "2026-10-25T16:27:24.432Z",
-      "occurrenceCount": 15
+      "updatedAt": "2026-10-25T16:40:43.967Z",
+      "occurrenceCount": 16
     },
     {
       "id": "bug-557ec92f0d8ce8e99cb0",
