@@ -665,7 +665,12 @@ for(const item of [
 // 생성된 행동 설명은 기존 엄격 스키마의 400자 상한 안에서 작성해야 한다.
 {
   const generator=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-  assert.ok(generator.includes('const freeTopicMode=ownerFreeTopic;'));
+  assert.ok(generator.includes('const freeTopicMode=ownerFreeTopic&&(!nativeGameVerified||seed.REPLACE_EXISTING_GAME_IDENTITY===true);'));
+  assert.ok(generator.includes('const nativeGameVerified=/\\bGameId\\s*=/.test(nativeConfig)'));
+  assert.ok(generator.includes("sourceKingdomGenre?'KINGDOM'"));
+  const seedComposer=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  assert.ok(seedComposer.includes("const freeTopicMode=target.designTopicMode==='VIBE_FREE_TOPIC';"));
+  assert.ok(!seedComposer.includes("||Boolean(bReference)"));
   assert.ok(generator.includes('const nativeConfigPath=`roblox-games/${gameId}/shared/GameConfig.luau`;'));
   assert.ok(generator.includes("typeof fs!=='undefined'&&fs.existsSync(nativeConfigPath)"));
   assert.ok(generator.includes('category:authoredCategory,platform:seed.INITIAL_TARGET_PLATFORM'));
