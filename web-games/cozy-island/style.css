@@ -22,7 +22,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 /* 메인: 전략게임 전용 고정 명령바. 캐릭터 이동 스틱 없이 전장을 터치한다. */
 .controls { position:absolute; left:0; right:0; bottom:max(8px,env(safe-area-inset-bottom)); display:flex; justify-content:center; padding:0 8px; pointer-events:none; }
-.strategy-bar { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:5px; width:min(100%,540px); padding:6px; border:1px solid #a99469; border-radius:14px; background:rgba(35,43,34,.94); box-shadow:0 5px 18px #12251e85; pointer-events:auto; }
+.strategy-bar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; width:min(100%,540px); padding:6px; border:1px solid #a99469; border-radius:14px; background:rgba(35,43,34,.94); box-shadow:0 5px 18px #12251e85; pointer-events:auto; }
 .strategy-button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; width:100%; min-width:0; min-height:55px; border:1px solid #aa9566; border-radius:9px; background:linear-gradient(160deg,#72684e,#3b4436); color:#fff1d0; font-size:20px; font-weight:800; touch-action:manipulation; }
 .strategy-button small { font-size:10px; white-space:nowrap; }
 .strategy-button:active { background:#94774b; }
