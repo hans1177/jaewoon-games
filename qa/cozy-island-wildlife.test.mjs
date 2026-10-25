@@ -4,6 +4,19 @@ import fs from 'node:fs';
 
 const read=p=>fs.readFileSync(p,'utf8');
 
+test('포근섬 시스템 버튼은 모바일 하단 명령바에 표시되고 시스템 대화상자로 연결된다',()=>{
+ const html=read('web-games/cozy-island/index.html');
+ const css=read('web-games/cozy-island/style.css');
+ const script=read('web-games/cozy-island/kingdom-system.js');
+ const bar=html.match(/<nav class="strategy-bar"[\s\S]*?<\/nav>/)?.[0]||'';
+ assert.equal((html.match(/id="systemCommand"/g)||[]).length,1);
+ assert.match(bar,/id="systemCommand"/);
+ assert.match(bar,/<small>시스템<\/small>/);
+ assert.match(css,/grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
+ assert.match(html,/id="systemDialog"/);
+ assert.ok(script.includes("querySelector('#systemCommand')?.addEventListener('click'"));
+});
+
 test('cozy island expands home village and spawns five native animated bears',()=>{
   const server=read('roblox-games/cozy-island/server/Game.server.luau');
   const client=read('roblox-games/cozy-island/client/Game.client.luau');
