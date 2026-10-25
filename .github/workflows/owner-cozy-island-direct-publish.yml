@@ -2,17 +2,8 @@ name: Owner Cozy Island Direct Publish
 run-name: Owner Cozy publish · ${{ github.sha }}
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'roblox-games/cozy-island/**'
-      - 'assets/roblox/**'
-      - 'assets/shared/**'
-      - 'assets/external/**'
-      - 'assets/asset-license-ledger.json'
-      - 'tools/cozy-cc0-library-audit.mjs'
-      - '.github/workflows/owner-cozy-island-direct-publish.yml'
-      - 'tools/company-roblox-dedicated-experience.mjs'
+  # Canonical automatic release belongs only to F9 exact-artifact promotion.
+  # This historical owner-only route must not publish just because main changed.
   workflow_dispatch:
 
 permissions:
@@ -49,6 +40,28 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Fail closed unless canonical policy explicitly authorizes owner direct publish
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {enforceConstitution} from './tools/company-constitution-enforcer.mjs';
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const constitution=enforceConstitution({policy,phase:'cozy-direct-publish-preflight'});
+          if(constitution.pass!==true)throw new Error('COZY_DIRECT_PUBLISH_CONSTITUTION_BLOCKED:'+constitution.errors.join('|'));
+          const owner=policy.roblox?.deploymentControl?.ownerDirectCanonicalPublishException||{};
+          const authorized=process.env.GITHUB_EVENT_NAME==='workflow_dispatch'
+            &&owner.enabled===true&&owner.trigger==='EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION'
+            &&Array.isArray(owner.gameIds)&&owner.gameIds.includes('cozy-island')
+            &&owner.route==='.github/workflows/owner-cozy-island-direct-publish.yml'
+            &&owner.canonicalPrivateTargetOnly===true&&owner.preserveCurrentPrivateVisibility===true
+            &&owner.exactMainSourceRequired===true;
+          if(!authorized)throw new Error('COZY_DIRECT_PUBLISH_NO_OWNER_EXCEPTION_USE_F9_CANONICAL_RELEASE_PROMOTION');
+          console.log('COZY_OWNER_DIRECT_PUBLISH_AUTHORIZED=YES');
+          NODE
 
       - name: Verify Cozy Island regression before Roblox Cloud publish
         working-directory: main
