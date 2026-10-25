@@ -315,6 +315,26 @@ test('continuous main commits admit only strictly forward Pages snapshots',()=>{
  assert.match(workflow,/uses: actions\/deploy-pages@v4/);
 });
 
+test('official Pages artifact is exactly the committed gh-pages snapshot with no second 854MB copy',()=>{
+ const from=workflow.indexOf('      - name: Prepare retained Pages artifact without Git history');
+ const to=workflow.indexOf('  publish-pages:',from);
+ const section=workflow.slice(from,to);
+ assert.match(section,/PAGES_SINGLE_SNAPSHOT_ZERO_COPY=PASS/);
+ assert.match(section,/rm -rf -- "\$artifact\/\.git"/);
+ assert.match(section,/WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA/);
+ assert.match(section,/path: \$\{\{ runner\.temp \}\}\/jaewoon-pages-publish/);
+ assert.doesNotMatch(section,/cp -a|jaewoon-pages-artifact/);
+});
+test('final atomic Pages switch refuses an older uploaded artifact when shared branch advanced',()=>{
+ const from=workflow.indexOf('  publish-pages:');
+ const to=workflow.indexOf('  post-publication-3d-smoke:',from);
+ const section=workflow.slice(from,to);
+ assert.match(section,/PAGES_SUPERSEDED_ATOMIC_SNAPSHOT_SKIPPED/);
+ assert.match(section,/PAGES_ATOMIC_SNAPSHOT_ANCESTRY_INVALID/);
+ assert.match(section,/if \[ "\$staged" != "\$GITHUB_SHA" \]/);
+ assert(section.indexOf('if [ "$staged" != "$GITHUB_SHA" ]')<section.indexOf('if [ "$latest" = "$GITHUB_SHA" ]'));
+ assert.match(section,/uses: actions\/deploy-pages@v4/);
+});
 test('the complete canonical async staging program builds independent game routes and exact source assets',()=>{
  const start=workflow.indexOf("          node <<'NODE'",workflow.indexOf('      - name: Prepare all registered game routes'));
  const stop=workflow.indexOf('\n          NODE',start);assert(start>0&&stop>start);

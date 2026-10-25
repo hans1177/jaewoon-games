@@ -677,19 +677,14 @@ jobs:
           # Retain earlier active games after applying the exact owner permanent-removal list.
           # The official Pages artifact includes the same exact published files, not .git.
           retained="$RUNNER_TEMP/jaewoon-pages-publish"
-          artifact="$RUNNER_TEMP/jaewoon-pages-artifact"
           test -d "$retained/.git"
-          mkdir -p "$artifact"
-          # Select top-level entries before copying so Git objects are never traversed.
-          # Preserve hidden published files and reflinks where supported.
-          shopt -s dotglob nullglob
-          published_entries=()
-          for entry in "$retained"/*; do
-            [[ "${entry##*/}" == .git ]] || published_entries+=("$entry")
-          done
-          test "${#published_entries[@]}" -gt 0
-          cp -a --reflink=auto -- "${published_entries[@]}" "$artifact/"
+          # The gh-pages commit is already complete. Reuse its exact tree for
+          # official Pages upload instead of copying another ~854MB into a
+          # second artifact directory. Only Git metadata is excluded.
+          artifact="$retained"
+          rm -rf -- "$artifact/.git"
           test ! -e "$artifact/.git"
+          echo "PAGES_SINGLE_SNAPSHOT_ZERO_COPY=PASS"
           test -s "$artifact/index.html"
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$artifact/index.html"
           test -f "$artifact/tier.html"
@@ -706,7 +701,7 @@ jobs:
         if: github.event_name != 'pull_request' && steps.source_admission.outputs.current == 'true' && steps.pages_branch_publish.outputs.artifact_ready == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ${{ runner.temp }}/jaewoon-pages-artifact
+          path: ${{ runner.temp }}/jaewoon-pages-publish
 
   publish-pages:
     needs: deploy
@@ -736,6 +731,20 @@ jobs:
         run: |
           set -euo pipefail
           latest="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)"
+          # Two parallel builds can advance gh-pages while a Pages job waits.
+          # Never publish an older artifact over the newer shared snapshot.
+          staged="$(gh api "repos/$GITHUB_REPOSITORY/contents/web-games/publish-manifest.json?ref=gh-pages" \
+            --jq .content | base64 --decode | node -e "let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>{let m=JSON.parse(s);if(!/^[a-f0-9]{40}$/.test(m.sourceSha||''))process.exit(1);process.stdout.write(m.sourceSha)})")"
+          if [ "$staged" != "$GITHUB_SHA" ]; then
+            ancestry="$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...$staged" --jq .status)"
+            if [ "$ancestry" != ahead ]; then
+              echo "PAGES_ATOMIC_SNAPSHOT_ANCESTRY_INVALID=$GITHUB_SHA STAGED=$staged" >&2
+              exit 1
+            fi
+            echo "PAGES_SUPERSEDED_ATOMIC_SNAPSHOT_SKIPPED=$GITHUB_SHA STAGED=$staged"
+            echo 'publish=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [ "$latest" = "$GITHUB_SHA" ]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
           else
@@ -745,7 +754,6 @@ jobs:
             # If newer main changes keep arriving, release the completed candidate
             # only when gh-pages staging still points to this exact candidate SHA.
             # Both the ancestry relation and shared branch monotonicity remain checked.
-            staged="$(gh api "repos/$GITHUB_REPOSITORY/contents/web-games/publish-manifest.json?ref=gh-pages"               --jq .content | base64 --decode | node -e "let s='';process.stdin.on('data',x=>s+=x);process.stdin.on('end',()=>{let m=JSON.parse(s);if(!/^[a-f0-9]{40}$/.test(m.sourceSha||''))process.exit(1);process.stdout.write(m.sourceSha)})")"
             candidate_ahead="$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).status==='ahead'" "$RUNNER_TEMP/pages-main-diff.json")"
             if [ "$staged" = "$GITHUB_SHA" ] && [ "$candidate_ahead" = true ]; then
               echo "PAGES_MONOTONIC_STAGED_SOURCE=PASS SOURCE=$GITHUB_SHA LATEST=$latest"
