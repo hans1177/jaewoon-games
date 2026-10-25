@@ -1707,6 +1707,73 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
   return null;
 }
 
+// 파일명: tools/vibe2-source-worker.mjs
+// 무모델 Roblox 코딩: 이미 구현된 네이티브 소스의 검증 가능한 책임 함수를 직접 보수한다.
+// 신규 규칙/보상/저장 키를 만들거나 확인되지 않은 UI·서버 API를 추측하지 않는다.
+export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot='',responsibleFiles=[]}={}){
+  if(clean(order?.target).toLowerCase()!=='roblox'||!sourceRoot||assetDevelopmentTask(order)||worldLobbySourceWorkRequired(order))return null;
+  const intent=[order.goal,order?.selectedTask?.goal,order?.selectedTask?.title,order?.selectedTask?.description,
+    order?.selectedTask?.studioQualityEvolution?.pillar].map(clean).join(' ');
+  const inputWork=/(?:input|mobile|touch|controller|gamepad|usability|accessibility|button|조작|입력|모바일|터치|버튼|사용성)/i.test(intent);
+  const saveWork=/(?:save|persist|datastore|shutdown|stability|regression|저장|종료|복구|안정)/i.test(intent);
+  if(!inputWork&&!saveWork)return null;
+  let root;
+  try{root=fs.realpathSync(sourceRoot);}catch{return null;}
+  for(const relative of unique(responsibleFiles)){
+    if(!/\.lua[u]?$/i.test(relative)||path.isAbsolute(relative)||relative.split(/[\/\\]/).includes('..'))continue;
+    const file=path.resolve(sourceRoot,relative);
+    if(!fs.existsSync(file)||fs.lstatSync(file).isSymbolicLink()||!fs.statSync(file).isFile())continue;
+    if(!fs.realpathSync(file).startsWith(root+path.sep))continue;
+    const source=fs.readFileSync(file,'utf8');
+    if(source.length>1000000)continue;
+    if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
+      const start='Players.PlayerRemoving:Connect(function(player)';
+      const close='game:BindToClose(function() end)';
+      const from=source.indexOf(start),to=source.indexOf('\n'+close,from+start.length);
+      if(from>=0&&to>from&&to-from<1800&&source.indexOf(start,from+1)<0
+        &&source.split(close).length===2&&source.includes('local Players = game:GetService("Players")')
+        &&!/\blocal function savePlayer\s*\(/.test(source)){
+        const original=source.slice(from,to+1+close.length),removal=source.slice(from,to);
+        const body=removal.slice(start.length,-'end)'.length);
+        if(/^\s*local snapshot\s*=\s*\{\}/.test(body)
+          &&/for key, fallback in pairs\(Config\.InitialState\)/.test(body)
+          &&/store:UpdateAsync\("player:"\s*\.\.\s*player\.UserId/.test(body)
+          &&/lastAction\[player\]\s*=\s*nil/.test(body)
+          &&body.trim().endsWith('lastAction[player] = nil')){
+          const replacement='local function savePlayer(player)'+body+'end\n'
+            +'Players.PlayerRemoving:Connect(savePlayer)\n'
+            +'game:BindToClose(function()\n'
+            +'  for _, player in ipairs(Players:GetPlayers()) do\n'
+            +'    savePlayer(player)\n'
+            +'  end\nend)';
+          if(replacement!==original)return {
+            summary:'Roblox source-bound shutdown persistence repair',
+            expectedEffect:'Reuse the existing save body for both PlayerRemoving and server shutdown without changing saved values',
+            edits:[{path:relative,find:original,replace:replacement}],newFiles:[],replaceFiles:[],tests:[],
+            deterministicRobloxNativeRepair:'PERSIST_EXISTING_SAVE_ON_SHUTDOWN'
+          };
+        }
+      }
+    }
+    if(inputWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
+      for(const match of source.matchAll(/\b([A-Za-z_][A-Za-z_0-9]*)\.MouseButton1Click:Connect\(/g)){
+        const variable=match[1],statement=match[0],line=source.slice(source.lastIndexOf('\n',match.index)+1,match.index);
+        if(/--/.test(line))continue;
+        const declare=new RegExp('\\blocal\\s+'+variable+'\\s*=\\s*Instance\\.new\\(["\\x27](?:TextButton|ImageButton)["\\x27]\\)');
+        if(!declare.test(source)||source.includes(variable+'.Activated:Connect('))continue;
+        if(source.split(statement).length!==2)continue;
+        return {
+          summary:'Roblox native multi-device GUI activation repair',
+          expectedEffect:'Use GuiButton.Activated for existing click handler on touch, controller and mouse without altering game action',
+          edits:[{path:relative,find:statement,replace:variable+'.Activated:Connect('}],
+          newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'GUI_BUTTON_NATIVE_ACTIVATED'
+        };
+      }
+    }
+  }
+  return null;
+}
+
 export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){
   if(worldLobbySourceWorkRequired(order))return null;
   const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
