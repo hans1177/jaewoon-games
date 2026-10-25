@@ -11,7 +11,7 @@ const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
 test('gem survivor uses actual 3D renderer, authored model, bounded native geometry',()=>{
  assert.ok(script,'gameplay module must exist');
  assert.match(html,/data-render-target="webgl-3d"/);
- assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs\?v=20261024-world-2'/);
+ assert.match(script,/import \{createGem3d\} from '\.\/gem3d\.mjs\?v=20261025-coop-5'/);
  assert.doesNotMatch(script,/\bgetContext\s*\(\s*['"]2d['"]/);
  assert.doesNotMatch(script,/\bctx\./);
  assert.match(native,/new THREE\.WebGLRenderer\(/);
@@ -40,8 +40,8 @@ test('gem survivor preserves 5-minute boss and 6 core gameplay abilities',()=>{
   'const INITIAL_GEM_NEED=3','const GEM_NEED_MULTIPLIER=1.65',
   'basicDamage:16,basicRate:.55','basicSpeed:550,magnet:92',
   'function spawnEnemy(typeId)','function spawnBoss()','hp:2600,maxHp:2600',
-  'function fireBasic()','function fireArrow()','function throwPoison()',
-  'function castLightning()','function orbitBlades()','function showAbilityChoice()',
+  'function fireBasic(unit=player)','function fireArrow(unit=player)','function throwPoison(unit=player)',
+  'function castLightning(unit=player)','function orbitBlades()','function showAbilityChoice()',
   'function damageEnemy(e,amount)','function killEnemy(e,index)',
   'function update(dt)','function updateUi()', 'function collectGem(g,index)',
   'function endGame(clear)','function reset()'
@@ -50,7 +50,7 @@ test('gem survivor preserves 5-minute boss and 6 core gameplay abilities',()=>{
   assert.match(script,new RegExp(' '+type+':\\{name:'));
  for(const ability of ['arrow','poison','orbit','lightning','heal','speed'])
   assert.ok(script.includes('id:\''+ability+'\''),ability);
- assert.match(script,/gem3d\.render\(\{player,enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades\(\),effects,world:WORLD/);
+ assert.match(script,/gem3d\.render\(\{player,allies:\[\.\.\.net\.peers\.values\(\)\],enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades\(\),effects,world:WORLD/);
 });
 
 function harness(){
@@ -70,16 +70,16 @@ function harness(){
  }
  const document={hidden:false,getElementById:node,createElement:tag=>node('new-'+tag+'-'+(++serial)),
   addEventListener:(type,fn)=>documentEvents.set(type,fn),
-  querySelectorAll:()=>['cavern','garden','forge'].map(id=>{const item=node('stage-'+id);item.dataset.stage=id;return item})};
+  querySelectorAll:()=>node('heroes').children};
  const sandbox={document,window:{},innerWidth:390,innerHeight:760,devicePixelRatio:1,
   performance:{now:()=>0},requestAnimationFrame(fn){callback=fn},
   addEventListener:(type,fn)=>events.set(type,fn),
   createGem3d:()=>Promise.resolve({resize(){},view(p){return {left:p.x-195,right:p.x+195,top:p.y-456,bottom:p.y+456}},render(state){renders++;snapshot={x:state.player.x,y:state.player.y,world:state.world,stage:state.stage.id,hp:state.player.hp,enemies:state.enemies,projectiles:state.projectiles,particles:state.particles.length}}})};
- const code=script.replace(/^\s*import\s*\{createGem3d\}\s*from\s*'\.\/gem3d\.mjs\?v=20261024-world-2';\s*/,'');
+ const code=script.replace(/^\s*import\s+[^;]+;\s*/gm,'');
  assert.doesNotMatch(code,/^\s*import\s/m);
  const context=vm.createContext(sandbox);
  vm.runInContext(code,context,{timeout:1000});
- return {node,events,documentEvents,document,context,get callback(){return callback},get renders(){return renders},get snapshot(){return snapshot}};
+ return {node,events,documentEvents,document,context,get callback(){return callback},get renders(){return renders},get snapshot(){return snapshot},state:()=>sandbox.window.gemSurvivorState()};
 }
 test('real controls preserve single pointer ownership and break ghost movement on interruptions',async()=>{
  const game=harness();
@@ -113,12 +113,11 @@ test('real controls preserve single pointer ownership and break ghost movement o
 });
 
 // 새 월드와 무대가 실제 기존 게임 상태에 연결되는지 검사한다.
-test('stage selection and world movement survive resize and pause without viewport clamps',async()=>{
+test('sequential campaign starts at stage one and movement survives resize and pause',async()=>{
  const game=harness();await new Promise(setImmediate);
- game.node('stage-forge').onclick();
- assert.equal(game.node('stage-forge')['aria-pressed'],'true');
+ assert.doesNotMatch(html,/data-stage=|스테이지 선택/);
  game.node('startBtn').onclick();game.callback(33);
- assert.equal(game.snapshot.stage,'forge');
+ assert.equal(game.snapshot.stage,'cavern');
  assert.equal(game.snapshot.world.width,4200);assert.equal(game.snapshot.world.height,3200);
  assert.equal(game.snapshot.x,2100);assert.equal(game.snapshot.y,1600);assert.equal(game.snapshot.hp,200);
  game.events.get('keydown')({key:'D',preventDefault(){}});game.callback(66);
@@ -131,7 +130,7 @@ test('stage selection and world movement survive resize and pause without viewpo
 });
 
 test('every authored monster and environment dependency exists with retained CC0 evidence',()=>{
- for(const id of [7,15,17,18,21,26,31,35]){
+ for(const id of [7,15,17,18,21,26,31,35,41,47,49,53,56]){
   for(const ext of ['obj','png'])assert.ok(fs.existsSync('assets/shared/forest/monster-'+id+'.'+ext));
   const obj=fs.readFileSync('assets/shared/forest/monster-'+id+'.obj','utf8');
   assert.match(obj,/^v /m);assert.match(obj,/^f /m);
@@ -144,8 +143,8 @@ test('every authored monster and environment dependency exists with retained CC0
 
 test('owner survivability change doubles starting health while keeping damage and spawn rules',()=>{
  assert.match(script,/const START_HP=200;/);assert.match(script,/const HURT_INV_SECONDS=\.85;/);
- assert.match(script,/player\.hp-=amount;player\.inv=HURT_INV_SECONDS/);
- assert.equal((script.match(/hp:START_HP,maxHp:START_HP/g)||[]).length,2);
+ assert.match(script,/unit\.hp-=amount;unit\.inv=HURT_INV_SECONDS/);
+ assert.ok((script.match(/hp:START_HP,maxHp:START_HP/g)||[]).length>=2);
  assert.match(script,/Math\.max\(0,480-particles\.length\)/);
  assert.match(native,/new THREE\.ShaderMaterial/);assert.match(native,/glows=pool\([\s\S]*?,256\)/);
  assert.match(native,/healthFill\.scale\.x/);
@@ -162,4 +161,40 @@ test('contact damage respects longer protection and particle bursts remain bound
  assert.equal(game.snapshot.hp,184,'contact resumes after the configured protection');
  for(let i=0;i<500;i++)game.snapshot.projectiles.push({kind:'basic',x:2100,y:1600,vx:0,vy:0,r:4,damage:0,life:1,color:'#ffffff'});
  game.callback(990);assert.ok(game.snapshot.particles<=480,'impact spam cannot grow particle storage without bound');
+});
+
+// 오너 요청: 5스테이지·고유 기술·동기화는 실제 게임 책임 함수를 실행해서 검사한다.
+test('five bosses advance exactly five stages while preserving earned upgrades',async()=>{
+ const game=harness();await new Promise(setImmediate);game.node('startBtn').onclick();
+ let state=game.state();state.selectAbility({apply(){state.abilityLv.orbit=2;}});const max=state.player.maxHp;
+ for(let index=0;index<5;index++){
+  state=game.state();assert.equal(state.stageIndex,index);state.spawnBoss();const boss=state.enemies.find(e=>e.boss);assert(boss);state.killEnemy(boss,state.enemies.indexOf(boss));
+  assert.equal(game.state().stageCleared,index<4);state.nextStage();assert.equal(game.state().stageIndex,Math.min(4,index+1));assert.equal(state.abilityLv.orbit,2);assert.equal(state.player.maxHp,max);
+ }
+ assert.equal(game.state().running,false);assert.match(game.node('endTitle').textContent,/5스테이지 전부/);
+});
+test('all five selectable heroes have distinct functional skills and cooldowns',async()=>{
+ const game=harness();await new Promise(setImmediate);game.node('startBtn').onclick();const state=game.state();
+ for(const hero of ['guardian','ranger','wizard','rogue','cleric']){
+  state.player.hero=hero;state.player.skillCd=0;state.player.hp=100;state.enemies.length=0;state.spawnEnemy('slime');Object.assign(state.enemies[0],{x:state.player.x+60,y:state.player.y,hp:500,maxHp:500});
+  const x=state.player.x,shots=state.projectiles.length;state.useHeroSkill();assert(state.player.skillCd>0,hero);
+  if(hero==='guardian')assert.equal(state.player.shield,3);
+  if(hero==='ranger'||hero==='rogue')assert(state.projectiles.length>shots);
+  if(hero==='rogue')assert.notEqual(state.player.x,x);
+  if(hero==='cleric')assert.equal(state.player.hp,155);
+  if(hero==='wizard')assert(state.enemies[0].hp<500);
+  const count=state.projectiles.length;state.useHeroSkill();assert.equal(state.projectiles.length,count,'cooldown prevents duplicate casts');
+ }
+});
+test('two simulated clients share stage, boss health, inputs and revival; guest cannot publish world state',async()=>{
+ const h=harness(),g=harness();await new Promise(setImmediate);const roster=[{userId:'host',nickname:'방장'},{userId:'guest',nickname:'동료'}];
+ h.state().receiveNetwork({type:'connected',userId:'host',players:roster});g.state().receiveNetwork({type:'connected',userId:'guest',players:roster});
+ h.state().net.client={sendEvent:event=>g.state().receiveNetwork({...event,type:'event',userId:'host'})};
+ g.state().net.client={sendEvent:event=>h.state().receiveNetwork({...event,type:'event',userId:'guest'})};
+ h.node('startBtn').onclick();h.state().spawnBoss();h.state().networkTick(300);assert.equal(g.state().running,true);assert.equal(g.state().enemies.find(e=>e.boss).hp,h.state().enemies.find(e=>e.boss).hp);
+ g.events.get('keydown')({key:'d',preventDefault(){}});g.state().networkTick(400);const before=h.state().net.peers.get('guest').x;h.state().update(.033);assert(h.state().net.peers.get('guest').x>before);h.state().networkTick(600);assert.equal(g.state().player.x,Math.round(h.state().net.peers.get('guest').x*100)/100);
+ const boss=h.state().enemies.find(e=>e.boss);h.state().damageEnemy(boss,100);h.state().networkTick(900);assert.equal(g.state().enemies.find(e=>e.boss).hp,Math.ceil(boss.hp));
+ const prior=g.state().player.hp;g.state().receiveNetwork({type:'event',userId:'guest',action:'gem-frame',seq:999,part:0,total:1,data:'{}'});assert.equal(g.state().player.hp,prior);
+ const ally=h.state().net.peers.get('guest');ally.hp=0;ally.x=h.state().player.x;ally.y=h.state().player.y;h.state().enemies.length=0;
+ for(let i=0;i<95;i++)h.state().update(.033);assert(ally.hp>0,'nearby living teammate revives a downed ally');
 });

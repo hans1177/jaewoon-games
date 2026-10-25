@@ -35,7 +35,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .eyebrow{font-size:11px;letter-spacing:.12em;color:#6ef0c9;font-weight:950}
 .panel h1,.panel h2{margin:4px 0 8px}
 .panel p{margin:0 0 15px;color:#b8c9dc;font-size:13px;line-height:1.5}
-.stages{display:grid;gap:8px;margin:12px 0}.stages button{min-height:48px;border:1px solid #537466;border-radius:12px;background:#102b32;color:#cbe5de;text-align:left;padding:10px}.stages button[aria-pressed="true"]{border-color:#7dffce;background:#205d50;color:#fff}.stageNote{display:block;font-size:11px;margin-top:3px;color:#b8c9dc}#worldPosition{position:fixed;right:12px;bottom:28px;z-index:4;padding:6px 9px;border-radius:9px;background:#071321cf;color:#c5e4db;font-size:10px;pointer-events:none}
+.heroes{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.heroes button{min-height:65px;border:1px solid #537466;border-radius:12px;background:#102b32;color:#cbe5de;text-align:left;padding:10px}.heroes button[aria-pressed="true"]{border-color:#7dffce;background:#205d50;color:#fff}.heroNote{display:block;font-size:11px;margin-top:3px;color:#b8c9dc}.netRow{display:flex;gap:6px;margin:8px 0}.netRow input{min-width:0;width:100%;padding:11px;background:#071321;color:#fff;border:1px solid #537466;border-radius:9px}.netRow button{padding:10px;background:#164c52;color:white;border:1px solid #6aa798;border-radius:9px;min-height:44px}#netStatus{font-size:12px;color:#a7efd9;line-height:1.5;margin:8px 0}#heroSkill{position:fixed;right:20px;bottom:calc(env(safe-area-inset-bottom) + 35px);z-index:8;width:110px;height:70px;border:2px solid #7df6db;border-radius:20px;background:#123f59e8;color:#fff;font-weight:900}#heroSkill:disabled{opacity:.55}#worldPosition{position:fixed;right:12px;bottom:28px;z-index:4;padding:6px 9px;border-radius:9px;background:#071321cf;color:#c5e4db;font-size:10px;pointer-events:none}
 .wide,.choice{width:100%;border:1px solid #8be4cd44;border-radius:16px;color:#fff;font-weight:900}
 .wide{min-height:56px;background:#187d6c;font-size:15px}
 .choices{display:grid;gap:9px}
@@ -65,12 +65,20 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 <button id="pauseBtn" class="pause" aria-label="일시정지">Ⅱ</button>
 <div id="joystick" class="joystick" aria-label="이동 조이스틱"><div id="stick" class="stick"></div></div>
 <div id="worldPosition" aria-live="off"></div>
-<div class="tip">이동만 하면 공격은 자동으로 나가</div>
+<button id="heroSkill" aria-label="캐릭터 고유 기술">고유 기술</button><div class="tip">자동 공격 · Q 고유 기술 · 동료 곁에서 3초 부활</div>
 
 <div id="startOverlay" class="overlay show"><div class="panel">
- <div class="eyebrow">5분 생존 액션</div><h1>보석 생존전</h1>
- <p>몬스터를 잡아 보석을 모으고 능력을 골라. 2분과 3분 30초에 새로운 적이 합류하고, 5분에 보스가 등장해. 보스를 잡으면 클리어야.</p>
- <div class="stages" role="group" aria-label="스테이지 선택"><button data-stage="cavern" aria-pressed="true">수정 동굴<span class="stageNote">빛나는 수정 군락과 넓은 채굴 광장</span></button><button data-stage="garden" aria-pressed="false">폐허 정원<span class="stageNote">오래된 돌길과 정원의 흔적</span></button><button data-stage="forge" aria-pressed="false">화산 채굴장<span class="stageNote">붉은 광맥과 격자형 채굴 구역</span></button></div>
+ <div class="eyebrow">5스테이지 연속 도전 · 최대 4인 협동</div><h1>보석 생존전</h1>
+ <p>수정 동굴 → 폐허 정원 → 화산 채굴장 → 서리 성채 → 심연 왕좌. 각 스테이지에서 5분을 버티고 보스를 잡아. 능력은 다음 스테이지에도 유지돼. 고유 기술은 오른쪽 버튼이나 Q키로 사용해.</p>
+ <div id="heroes" class="heroes" role="group" aria-label="캐릭터 선택"></div>
+ <details><summary>온라인 협동 · 친구와 함께</summary>
+ <p>기존 멀티 계정으로 로그인해 방을 만들거나 초대 코드를 입력해. 방장이 출발하고 보석·능력 선택을 함께 공유해. 쓰러진 동료 옆에 3초 머물면 부활해.</p>
+ <div class="netRow"><input id="netEmail" type="email" autocomplete="username" placeholder="이메일" aria-label="멀티 계정 이메일"></div>
+ <div class="netRow"><input id="netPassword" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="멀티 계정 비밀번호"><button id="netLogin">로그인</button></div>
+ <div class="netRow"><button id="netCreate">친구방 만들기</button><button id="netMatch">빠른 협동</button></div>
+ <div class="netRow"><input id="netCode" maxlength="8" placeholder="초대 코드" aria-label="초대 코드"><button id="netJoin">참가</button><button id="netLeave">나가기</button></div>
+ <div id="netStatus" role="status">혼자 플레이 가능 · 온라인 협동은 로그인 후 연결돼.</div>
+ </details>
  <button id="startBtn" class="wide">게임 시작</button>
 </div></div>
 
@@ -81,19 +89,33 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
  <div id="abilityList" class="abilityList"></div>
 </div></div>
 
-<div id="pauseOverlay" class="overlay"><div class="panel"><h2>일시정지</h2><p>현재 진행 상태는 그대로 유지돼.</p><button id="resumeBtn" class="wide">계속하기</button></div></div>
+<div id="pauseOverlay" class="overlay"><div class="panel"><h2>일시정지</h2><p id="pauseInfo">현재 진행 상태는 그대로 유지돼.</p><button id="resumeBtn" class="wide">계속하기</button></div></div>
 <div id="endOverlay" class="overlay"><div class="panel"><div id="endEyebrow" class="eyebrow"></div><h2 id="endTitle"></h2><div id="result" class="result"></div><button id="restartBtn" class="wide">다시 시작</button></div></div>
 
 <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 <script type="module">
-import {createGem3d} from './gem3d.mjs?v=20261024-world-2';
+import {createGem3d} from './gem3d.mjs?v=20261025-coop-5';
+import {JaewoonMultiplayerClient} from '../../multiplayer/multiplayer-client.js';
 (()=>{
 'use strict';
 
 // ==================== 기본 설정 ====================
 const WORLD={width:4200,height:3200};
 const STAGES={cavern:{name:'수정 동굴',sky:'#08152b',floor:'#172c48',accent:'#65d8ff'},garden:{name:'폐허 정원',sky:'#11251f',floor:'#254536',accent:'#a7efa0'},forge:{name:'화산 채굴장',sky:'#25101c',floor:'#49302e',accent:'#ffaf66'}};
-let stageId='cavern';
+Object.assign(STAGES,{frost:{name:'서리 성채',sky:'#10273a',floor:'#446578',accent:'#a6f4ff'},abyss:{name:'심연 왕좌',sky:'#1d102d',floor:'#342343',accent:'#e69aff'}});
+const STAGE_ORDER=['cavern','garden','forge','frost','abyss'];
+const HEROES={
+ guardian:{name:'수정 수호자',model:'guardian',skill:'수정 방벽',cooldown:14,desc:'3초 무적 · 주변 적을 밀어내며 70 피해',color:'#77dfff'},
+ ranger:{name:'바람 궁수',model:'ranger',skill:'관통 화살비',cooldown:9,desc:'7방향 관통 화살 · 출혈',color:'#a5f1a0'},
+ wizard:{name:'폭풍 마법사',model:'wizard',skill:'폭풍 낙뢰',cooldown:12,desc:'가까운 적 8명에게 강한 번개',color:'#b9a1ff'},
+ rogue:{name:'그림자 추적자',model:'rogue',skill:'그림자 질주',cooldown:8,desc:'바라보는 방향으로 돌진 · 단검 난사',color:'#f0a1cf'},
+ cleric:{name:'새벽 치유사',model:'cleric',skill:'새벽의 기도',cooldown:16,desc:'주변 동료 55 회복 · 적에게 성광 피해',color:'#ffe3a1'}
+};
+let stageId='cavern',stageIndex=0,selectedHero='guardian',stageCleared=false,won=false;
+const net={client:null,connected:false,id:'',host:'',roster:[],peers:new Map(),inputs:new Map(),seq:0,lastFrame:0,sendAt:0,inputAt:0,skillRequest:0,seenSkills:new Map(),chunks:new Map(),lastPacket:0};
+const isHost=()=>!net.connected||net.host===net.id;
+const actors=()=>[player,...net.peers.values()];
+
 const START_HP=200;
 const HURT_INV_SECONDS=.85;
 const SURVIVE_SECONDS=300;
@@ -135,6 +157,12 @@ const ENEMY_TYPES={
  brute:{name:'돌괴물',unlock:0,hp:120,speed:40,damage:20,r:22,gems:3,color:'#73849a',weight:14},
  hound:{name:'사냥개',unlock:PHASE_TWO_SECONDS,hp:88,speed:128,damage:16,r:14,gems:3,color:'#ff7b68',weight:19},
  shaman:{name:'독 주술사',unlock:PHASE_TWO_SECONDS,hp:150,speed:58,damage:24,r:18,gems:4,color:'#70d65d',weight:12},
+ spider:{name:'그물 거미',stage:1,unlock:25,hp:85,speed:82,damage:13,r:14,gems:3,color:'#d6b0f8',weight:16,behavior:'web'},
+ bomber:{name:'불꽃 폭탄충',stage:2,unlock:15,hp:95,speed:96,damage:30,r:15,gems:4,color:'#ff946b',weight:13,behavior:'bomb'},
+ archer:{name:'유적 사수',stage:1,unlock:65,hp:105,speed:70,damage:18,r:15,gems:4,color:'#e9d596',weight:15,behavior:'ranged'},
+ frost:{name:'서리 정령',stage:3,unlock:0,hp:165,speed:62,damage:21,r:17,gems:5,color:'#a1eeff',weight:17,behavior:'frost'},
+ wisp:{name:'심연 추적령',stage:4,unlock:0,hp:190,speed:130,damage:25,r:16,gems:5,color:'#dc9aff',weight:19,behavior:'weave'},
+ summoner:{name:'균열 소환사',stage:4,unlock:80,hp:310,speed:42,damage:24,r:23,gems:8,color:'#a1f0b6',weight:11,behavior:'summon'},
  knight:{name:'보석 기사',unlock:PHASE_THREE_SECONDS,hp:320,speed:66,damage:32,r:24,gems:6,color:'#4fa7ff',weight:10}
 };
 
@@ -143,8 +171,8 @@ const ABILITIES=[
  {id:'poison',name:'독 포션',desc:function(lv){return lv===0?'적 무리에 포션을 던져 3초 동안 독 장판 생성':'독 장판 크기와 피해 강화 · 현재 Lv.'+lv},apply:function(){abilityLv.poison++}},
  {id:'orbit',name:'회전 칼날',desc:function(lv){return lv===0?'몸 주변을 도는 칼날이 닿는 적에게 피해':'칼날 수와 피해 강화 · 현재 Lv.'+lv},apply:function(){abilityLv.orbit++}},
  {id:'lightning',name:'연쇄 번개',desc:function(lv){return lv===0?'주기적으로 가까운 적 여러 마리를 번개로 공격':'번개 대상 수와 피해 강화 · 현재 Lv.'+lv},apply:function(){abilityLv.lightning++}},
- {id:'heal',name:'생명력 강화',desc:function(lv){return lv===0?'최대 HP +20, 즉시 20 회복':'최대 HP 추가 증가 · 현재 Lv.'+lv},apply:function(){abilityLv.heal++;player.maxHp+=20;player.hp=Math.min(player.maxHp,player.hp+20)}},
- {id:'speed',name:'기동 강화',desc:function(lv){return lv===0?'이동 속도 +12%, 보석 회수 범위 +10%':'이동과 회수 범위 추가 강화 · 현재 Lv.'+lv},apply:function(){abilityLv.speed++;player.speed*=1.12;player.magnet*=1.1}}
+ {id:'heal',name:'생명력 강화',desc:function(lv){return lv===0?'최대 HP +20, 즉시 20 회복':'최대 HP 추가 증가 · 현재 Lv.'+lv},apply:function(){abilityLv.heal++;for(const a of actors()){a.maxHp+=20;if(a.hp>0)a.hp=Math.min(a.maxHp,a.hp+20)}}},
+ {id:'speed',name:'기동 강화',desc:function(lv){return lv===0?'이동 속도 +12%, 보석 회수 범위 +10%':'이동과 회수 범위 추가 강화 · 현재 Lv.'+lv},apply:function(){abilityLv.speed++;for(const a of actors()){a.speed*=1.12;a.magnet*=1.1}}}
 ];
 
 // ==================== 유틸 ====================
@@ -179,34 +207,39 @@ function burst(x,y,color,n){
 
 // ==================== 메인 ====================
 function reset(){
- releaseInputs();
+ releaseInputs();stageIndex=0;stageId=STAGE_ORDER[0];stageCleared=false;won=false;net.lastFrame=0;
  elapsed=0;spawnTimer=0;kills=0;bossSpawned=false;boss=null;screenShake=0;
  enemies.length=0;projectiles.length=0;gems.length=0;effects.length=0;poisonPools.length=0;particles.length=0;
  Object.assign(player,{x:WORLD.width/2,y:WORLD.height/2,r:15,hp:START_HP,maxHp:START_HP,speed:220,inv:0,gems:0,gemNeed:INITIAL_GEM_NEED,choices:0,basicDamage:16,basicRate:.55,basicTimer:0,basicSpeed:550,magnet:92});
  Object.keys(abilityLv).forEach(function(k){abilityLv[k]=0});
  Object.keys(abilityTimers).forEach(function(k){abilityTimers[k]=0});
  orbitAngle=0;running=true;paused=false;
+ Object.assign(player,{hero:selectedHero,skillCd:0,shield:0,slow:0,revive:0,faceX:1,faceY:0});
+ for(const a of net.peers.values())Object.assign(a,{x:player.x+40,y:player.y+40,hp:START_HP,maxHp:START_HP,speed:220,r:15,skillCd:0,shield:0,slow:0,revive:0,inv:0,basicTimer:0,basicDamage:16,basicRate:.55,basicSpeed:550,magnet:92,faceX:1,faceY:0});
+ $('resumeBtn').disabled=false;$('pauseInfo').textContent='현재 진행 상태는 그대로 유지돼.';$('restartBtn').disabled=false;$('startOverlay').classList.remove('show');$('restartBtn').textContent='첫 스테이지부터 다시';
  $('endOverlay').classList.remove('show');$('choiceOverlay').classList.remove('show');$('pauseOverlay').classList.remove('show');
  ui.bossHud.classList.remove('show');updateUi()
 }
 
 function endGame(clear){
- running=false;paused=true;
- $('endEyebrow').textContent=clear?'STAGE CLEAR':'RUN OVER';
- $('endTitle').textContent=clear?'보석 포식자 격파!':'쓰러졌다';
+ won=clear;running=false;paused=true;
+ stageCleared=clear&&stageIndex<4;
+ $('endEyebrow').textContent=clear?'스테이지 '+(stageIndex+1)+' 완료':'도전 종료';
+ $('endTitle').textContent=clear?(stageCleared?STAGES[stageId].name+' 돌파!':'5스테이지 전부 클리어!'):'모두 쓰러졌어';
+ $('restartBtn').textContent=stageCleared?'다음 스테이지로':'첫 스테이지부터 다시';
  $('result').textContent=fmtTime(elapsed)+' 생존 · '+kills+'마리 처치 · 능력 '+player.choices+'회 선택';
  $('endOverlay').classList.add('show')
 }
 
-function hurt(amount){
- if(player.inv>0||!running)return;
- player.hp-=amount;player.inv=HURT_INV_SECONDS;screenShake=Math.max(screenShake,8);
- burst(player.x,player.y,'#ffffff',18);tone(115,.11,'sawtooth',.035);
- if(player.hp<=0){player.hp=0;endGame(false)}
+function hurt(amount,unit=player){
+ if(unit.inv>0||unit.shield>0||unit.hp<=0||!running)return;
+ unit.hp-=amount;unit.inv=HURT_INV_SECONDS;screenShake=Math.max(screenShake,8);
+ burst(unit.x,unit.y,'#ffffff',18);tone(115,.11,'sawtooth',.035);
+ if(unit.hp<=0){unit.hp=0;unit.revive=0;if(actors().every(a=>a.hp<=0))endGame(false)}
 }
 
 // ==================== 몬스터/보석 ====================
-function availableTypes(){return Object.entries(ENEMY_TYPES).filter(function(pair){return elapsed>=pair[1].unlock})}
+function availableTypes(){return Object.entries(ENEMY_TYPES).filter(function(pair){return elapsed>=pair[1].unlock&&stageIndex>=(pair[1].stage||0)})}
 function weightedEnemyType(){
  const list=availableTypes();let total=0;
  list.forEach(function(pair){total+=pair[1].weight});
@@ -222,14 +255,15 @@ function edgeSpawn(m){
  return{x:view.left-m,y:rnd(view.top,view.bottom)}
 }
 function spawnEnemy(typeId){
- const t=ENEMY_TYPES[typeId],p=edgeSpawn(),late=1+Math.min(.55,elapsed/SURVIVE_SECONDS*.35);
- enemies.push({type:typeId,name:t.name,x:p.x,y:p.y,r:t.r,hp:t.hp*late,maxHp:t.hp*late,speed:t.speed,damage:t.damage,gems:t.gems,color:t.color,hit:0,dot:0,dotTick:0,dotDamage:0,orbitHit:0})
+ const t=ENEMY_TYPES[typeId],p=edgeSpawn(),late=(1+Math.min(.55,elapsed/SURVIVE_SECONDS*.35))*(1+stageIndex*.28)*(1+(actors().length-1)*.3);
+ enemies.push({type:typeId,name:t.name,x:p.x,y:p.y,r:t.r,hp:t.hp*late,maxHp:t.hp*late,speed:t.speed,damage:t.damage*(1+stageIndex*.12),gems:t.gems,color:t.color,hit:0,dot:0,dotTick:0,dotDamage:0,orbitHit:0,behavior:t.behavior||'',aiTimer:rnd(1,3),fuse:0})
 }
 function spawnBoss(){
  if(bossSpawned)return;
  bossSpawned=true;const p=edgeSpawn(80);
  boss={type:'boss',name:'보석 포식자',x:p.x,y:p.y,r:42,hp:2600,maxHp:2600,speed:48,damage:38,gems:0,color:'#ef476f',hit:0,dot:0,dotTick:0,dotDamage:0,orbitHit:0,boss:true,charge:2.5};
- enemies.push(boss);ui.bossHud.classList.add('show');ui.phase.textContent='5:00 · 보스 등장! 잡으면 클리어';tone(85,.5,'sawtooth',.05)
+ boss.name=['보석 포식자','가시 정원지기','용암 파괴자','서리 여왕','심연의 보석왕'][stageIndex];boss.hp*=1+stageIndex*.6+(actors().length-1)*.5;boss.maxHp=boss.hp;boss.damage*=1+stageIndex*.12;
+ enemies.push(boss);ui.bossHud.classList.add('show');ui.phase.textContent='스테이지 '+(stageIndex+1)+' · '+boss.name+' 등장!';tone(85,.5,'sawtooth',.05)
 }
 function dropGems(e){
  for(let i=0;i<e.gems;i++){
@@ -255,56 +289,79 @@ function nearestEnemy(from,max){
  enemies.forEach(function(e){const d=dist2(from,e);if(d<bd){bd=d;best=e}});
  return best
 }
-function fireBasic(){
- const t=nearestEnemy();if(!t)return;
- const a=Math.atan2(t.y-player.y,t.x-player.x);
- projectiles.push({kind:'basic',x:player.x,y:player.y,vx:Math.cos(a)*player.basicSpeed,vy:Math.sin(a)*player.basicSpeed,r:4,damage:player.basicDamage,life:1.5,color:'#eafcff'});
+function fireBasic(unit=player){
+ unit.attackVisual=.16;
+ const t=nearestEnemy(unit);if(!t)return;
+ const a=Math.atan2(t.y-unit.y,t.x-unit.x);
+ projectiles.push({kind:'basic',x:unit.x,y:unit.y,vx:Math.cos(a)*unit.basicSpeed,vy:Math.sin(a)*unit.basicSpeed,r:4,damage:unit.basicDamage,life:1.5,color:'#eafcff'});
  tone(470,.025,'square',.012)
 }
 
 // ==================== 능력 ====================
-function fireArrow(){
+function fireArrow(unit=player){
  const lv=abilityLv.arrow;if(!lv)return;
- const target=nearestEnemy();if(!target)return;
+ const target=nearestEnemy(unit);if(!target)return;
  const count=Math.min(4,1+Math.floor((lv-1)/2));
  for(let i=0;i<count;i++){
-  const a=Math.atan2(target.y-player.y,target.x-player.x)+(i-(count-1)/2)*.13;
-  projectiles.push({kind:'arrow',x:player.x,y:player.y,vx:Math.cos(a)*470,vy:Math.sin(a)*470,r:5,damage:18+lv*4,life:1.7,color:'#ffcc67',dotDamage:4+lv*2,dotDuration:3})
+  const a=Math.atan2(target.y-unit.y,target.x-unit.x)+(i-(count-1)/2)*.13;
+  projectiles.push({kind:'arrow',x:unit.x,y:unit.y,vx:Math.cos(a)*470,vy:Math.sin(a)*470,r:5,damage:18+lv*4,life:1.7,color:'#ffcc67',dotDamage:4+lv*2,dotDuration:3})
  }
 }
-function throwPoison(){
+function throwPoison(unit=player){
  const lv=abilityLv.poison;if(!lv)return;
- const target=nearestEnemy(player,430);if(!target)return;
- const a=Math.atan2(target.y-player.y,target.x-player.x);
- const d=Math.min(360,Math.hypot(target.x-player.x,target.y-player.y));
- projectiles.push({kind:'potion',x:player.x,y:player.y,vx:Math.cos(a)*d/.55,vy:Math.sin(a)*d/.55,r:7,damage:0,life:.55,color:'#82ef5f',poolRadius:52+lv*7,poolDamage:7+lv*3})
+ const target=nearestEnemy(unit,430);if(!target)return;
+ const a=Math.atan2(target.y-unit.y,target.x-unit.x);
+ const d=Math.min(360,Math.hypot(target.x-unit.x,target.y-unit.y));
+ projectiles.push({kind:'potion',x:unit.x,y:unit.y,vx:Math.cos(a)*d/.55,vy:Math.sin(a)*d/.55,r:7,damage:0,life:.55,color:'#82ef5f',poolRadius:52+lv*7,poolDamage:7+lv*3})
 }
-function castLightning(){
+function castLightning(unit=player){
  const lv=abilityLv.lightning;if(!lv||!enemies.length)return;
  const count=Math.min(6,1+lv);
- const ordered=enemies.slice().sort(function(a,b){return dist2(player,a)-dist2(player,b)}).slice(0,count);
+ const ordered=enemies.slice().sort(function(a,b){return dist2(unit,a)-dist2(unit,b)}).slice(0,count);
  ordered.forEach(function(e){
   const index=enemies.indexOf(e);if(index<0)return;
   damageEnemy(e,22+lv*9);
-  effects.push({kind:'lightning',x1:player.x,y1:player.y,x2:e.x,y2:e.y,life:.12,max:.12});
+  effects.push({kind:'lightning',x1:unit.x,y1:unit.y,x2:e.x,y2:e.y,life:.12,max:.12});
   if(e.hp<=0)killEnemy(e,index)
  });
  tone(720,.06,'sawtooth',.02)
 }
 function updateAbilities(dt){
- if(abilityLv.arrow){abilityTimers.arrow-=dt;if(abilityTimers.arrow<=0){abilityTimers.arrow=Math.max(.5,1.35-abilityLv.arrow*.1);fireArrow()}}
- if(abilityLv.poison){abilityTimers.poison-=dt;if(abilityTimers.poison<=0){abilityTimers.poison=Math.max(1.4,3.5-abilityLv.poison*.22);throwPoison()}}
- if(abilityLv.lightning){abilityTimers.lightning-=dt;if(abilityTimers.lightning<=0){abilityTimers.lightning=Math.max(1.1,2.8-abilityLv.lightning*.18);castLightning()}}
+ for(const unit of actors()){
+  if(unit.hp<=0)continue;const timers=unit===player?abilityTimers:(unit.timers||(unit.timers={arrow:0,poison:0,lightning:0}));
+  for(const [id,cast,base,step,min] of [['arrow',fireArrow,1.35,.1,.5],['poison',throwPoison,3.5,.22,1.4],['lightning',castLightning,2.8,.18,1.1]])if(abilityLv[id]){timers[id]-=dt;if(timers[id]<=0){timers[id]=Math.max(min,base-abilityLv[id]*step);cast(unit);}}
+ }
  if(abilityLv.orbit)orbitAngle+=dt*(2.25+abilityLv.orbit*.12)
 }
 function orbitBlades(){
  const lv=abilityLv.orbit;if(!lv)return[];
  const n=Math.min(5,1+Math.floor(lv/2)),arr=[];
- for(let i=0;i<n;i++){
-  const a=orbitAngle+i*Math.PI*2/n;
-  arr.push({x:player.x+Math.cos(a)*(52+lv*2),y:player.y+Math.sin(a)*(52+lv*2),r:9,damage:11+lv*4})
- }
+ for(const unit of actors())if(unit.hp>0)for(let i=0;i<n;i++){const a=orbitAngle+i*Math.PI*2/n;arr.push({x:unit.x+Math.cos(a)*(52+lv*2),y:unit.y+Math.sin(a)*(52+lv*2),r:9,damage:11+lv*4,cx:unit.x,cy:unit.y});}
  return arr
+}
+// 캐릭터 고유 기술: 기존 투사체·피해·회복 함수를 그대로 사용한다.
+function useHeroSkill(unit=player){
+ if(!running||paused||unit.hp<=0||unit.skillCd>0)return;
+ const hero=HEROES[unit.hero]||HEROES.guardian;unit.skillCd=hero.cooldown;unit.skillVisual=.5;
+ if(unit.hero==='ranger'||unit.hero==='rogue'){
+  const target=nearestEnemy(unit),angle=target?Math.atan2(target.y-unit.y,target.x-unit.x):Math.atan2(unit.faceY||0,unit.faceX||1);
+  if(unit.hero==='rogue'){unit.x=clamp(unit.x+(unit.faceX||Math.cos(angle))*170,15,WORLD.width-15);unit.y=clamp(unit.y+(unit.faceY||Math.sin(angle))*170,15,WORLD.height-15);unit.inv=.6;}
+  const count=unit.hero==='ranger'?7:10;
+  for(let i=0;i<count;i++){const a=angle+(i-(count-1)/2)*(unit.hero==='ranger'?.13:.20);projectiles.push({kind:'arrow',x:unit.x,y:unit.y,vx:Math.cos(a)*650,vy:Math.sin(a)*650,r:7,damage:unit.hero==='ranger'?42:32,life:1.1,color:hero.color,dotDamage:8,dotDuration:3,pierce:unit.hero==='ranger'?3:1,hits:[]});}
+ }else{
+  if(unit.hero==='guardian')unit.shield=3;
+  if(unit.hero==='cleric')for(const a of actors())if(a.hp>0&&dist2(a,unit)<320*320)a.hp=Math.min(a.maxHp,a.hp+55);
+  const targets=enemies.filter(e=>dist2(e,unit)<(unit.hero==='wizard'?650:unit.hero==='cleric'?260:190)**2).sort((a,b)=>dist2(a,unit)-dist2(b,unit)).slice(0,unit.hero==='wizard'?8:200);
+  for(const e of targets){const index=enemies.indexOf(e);if(index<0)continue;damageEnemy(e,unit.hero==='wizard'?95:unit.hero==='cleric'?60:70);if(effects.length<160)effects.push({kind:'lightning',x1:unit.x,y1:unit.y,x2:e.x,y2:e.y,life:.35,max:.35,color:hero.color});if(unit.hero==='guardian'){const a=Math.atan2(e.y-unit.y,e.x-unit.x);e.x+=Math.cos(a)*90;e.y+=Math.sin(a)*90;}if(e.hp<=0)killEnemy(e,index);}
+ }
+ burst(unit.x,unit.y,hero.color,32);tone(600,.13,'triangle',.025)
+}
+function nextStage(){
+ if(!stageCleared||stageIndex>=4)return;
+ stageIndex++;stageId=STAGE_ORDER[stageIndex];stageCleared=false;won=false;elapsed=0;spawnTimer=0;boss=null;bossSpawned=false;
+ enemies.length=0;projectiles.length=0;poisonPools.length=0;effects.length=0;gems.length=0;
+ for(const a of actors()){a.x=WORLD.width/2;a.y=WORLD.height/2;if(a.hp<=0)a.hp=Math.ceil(a.maxHp*.3);a.inv=1;a.slow=0;}
+ running=true;paused=false;$('endOverlay').classList.remove('show');ui.bossHud.classList.remove('show');updateUi();
 }
 
 function showAbilityChoice(){
@@ -321,6 +378,7 @@ function showAbilityChoice(){
  renderAbilityList();$('choiceOverlay').classList.add('show')
 }
 function selectAbility(a){
+ if(!isHost())return;
  a.apply();player.choices++;
  player.gems-=player.gemNeed;
  player.gemNeed=Math.ceil(player.gemNeed*GEM_NEED_MULTIPLIER);
@@ -340,8 +398,8 @@ function collectGem(g,index){
 
 // ==================== 업데이트 ====================
 function update(dt){
- if(paused||!running)return;
- elapsed+=dt;player.inv=Math.max(0,player.inv-dt);player.basicTimer-=dt;screenShake=Math.max(0,screenShake-dt*24);
+ if(!isHost()||paused||!running)return;
+ elapsed+=dt;screenShake=Math.max(0,screenShake-dt*24);
 
  if(elapsed>=SURVIVE_SECONDS&&!bossSpawned)spawnBoss();
 
@@ -356,14 +414,18 @@ function update(dt){
   }
  }
 
- let mx=joy.dx,my=joy.dy;
- mx+=(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0);
- my+=(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);
- const ml=Math.hypot(mx,my);if(ml>1){mx/=ml;my/=ml}
- player.x=clamp(player.x+mx*player.speed*dt,player.r,WORLD.width-player.r);
- player.y=clamp(player.y+my*player.speed*dt,player.r,WORLD.height-player.r);
-
- if(player.basicTimer<=0){player.basicTimer=player.basicRate;fireBasic()}
+ const local=inputDirection();
+ for(const unit of actors()){
+  unit.skillVisual=Math.max(0,(unit.skillVisual||0)-dt);unit.attackVisual=Math.max(0,(unit.attackVisual||0)-dt);unit.inv=Math.max(0,(unit.inv||0)-dt);unit.shield=Math.max(0,(unit.shield||0)-dt);unit.skillCd=Math.max(0,(unit.skillCd||0)-dt);unit.slow=Math.max(0,(unit.slow||0)-dt);
+  if(unit.hp<=0){const rescuer=actors().find(a=>a!==unit&&a.hp>0&&dist2(a,unit)<85*85);unit.revive=rescuer?(unit.revive||0)+dt:0;if(unit.revive>=3){unit.hp=Math.ceil(unit.maxHp*.3);unit.inv=2;unit.revive=0;}continue;}
+  const input=unit===player?local:net.inputs.get(unit.netId)||{x:0,y:0};
+  const fresh=unit===player||performance.now()-(input.at||0)<800;
+  const mx=fresh?input.x:0,my=fresh?input.y:0;
+  if(Math.hypot(mx,my)>.01){unit.faceX=mx;unit.faceY=my;}
+  unit.x=clamp(unit.x+mx*unit.speed*(unit.slow>0?.55:1)*dt,unit.r,WORLD.width-unit.r);unit.y=clamp(unit.y+my*unit.speed*(unit.slow>0?.55:1)*dt,unit.r,WORLD.height-unit.r);
+  unit.basicTimer-=dt;if(unit.basicTimer<=0){unit.basicTimer=unit.basicRate;fireBasic(unit);}
+  if(unit!==player&&input.skill>(net.seenSkills.get(unit.netId)||0)){net.seenSkills.set(unit.netId,input.skill);useHeroSkill(unit);}
+ }
  updateAbilities(dt);
 
  for(let i=projectiles.length-1;i>=0;i--){
@@ -374,13 +436,14 @@ function update(dt){
   }
 
   let hit=false;
-  if(b.kind!=='potion'){
+  if(b.hostile){for(const a of actors())if(a.hp>0&&dist2(a,b)<(a.r+b.r)**2){hurt(b.damage,a);if(b.slow)a.slow=2;hit=true;break;}}
+  else if(b.kind!=='potion'){
    for(let j=enemies.length-1;j>=0;j--){
     const e=enemies[j],rr=b.r+e.r;
-    if((b.x-e.x)*(b.x-e.x)+(b.y-e.y)*(b.y-e.y)<=rr*rr){
+    if((b.x-e.x)*(b.x-e.x)+(b.y-e.y)*(b.y-e.y)<=rr*rr&&!(b.hits||[]).includes(e)){
      damageEnemy(e,b.damage);
      if(b.kind==='arrow'){e.dot=Math.max(e.dot,b.dotDuration);e.dotTick=0;e.dotDamage=b.dotDamage}
-     hit=true;if(e.hp<=0)killEnemy(e,j);break
+     if(b.pierce>0){b.hits.push(e);b.pierce--;if(b.pierce<=0)hit=true;}else hit=true;if(e.hp<=0)killEnemy(e,j);break
     }
    }
   }
@@ -419,8 +482,21 @@ function update(dt){
    }
   }
 
-  const a=Math.atan2(player.y-e.y,player.x-e.x);
-  e.x+=Math.cos(a)*e.speed*dt;e.y+=Math.sin(a)*e.speed*dt;
+  const target=actors().filter(a=>a.hp>0).sort((a,b)=>dist2(a,e)-dist2(b,e))[0]||player;
+  let a=Math.atan2(target.y-e.y,target.x-e.x),move=1;const distance=Math.hypot(target.x-e.x,target.y-e.y);
+  if(e.behavior){
+   e.aiTimer-=dt;
+   if(['ranged','web','frost','summon'].includes(e.behavior)){
+    move=distance<160?-1:distance<330?0:1;
+    if(e.aiTimer<=0){e.aiTimer=e.behavior==='summon'?7:e.behavior==='web'?3:2.4;
+     if(e.behavior==='summon'&&enemies.length<220){for(let k=0;k<2;k++){spawnEnemy(k?'bat':'slime');const minion=enemies[enemies.length-1];minion.x=e.x+rnd(-35,35);minion.y=e.y+rnd(-35,35);}}
+     else if(projectiles.length<500)projectiles.push({kind:'enemy',hostile:true,x:e.x,y:e.y,vx:Math.cos(a)*190,vy:Math.sin(a)*190,r:8,damage:e.damage,life:3,color:e.color,slow:e.behavior==='web'||e.behavior==='frost'});
+    }
+   }
+   if(e.behavior==='weave')a+=Math.sin(elapsed*4+e.x*.003)*.65;
+   if(e.behavior==='bomb'&&(distance<95||e.fuse>0)){e.fuse+=dt;move=0;e.hit=.05;if(e.fuse>.9){for(const ally of actors())if(dist2(ally,e)<140*140)hurt(e.damage,ally);if(effects.length<160)effects.push({kind:'death',x:e.x,y:e.y,r:65,life:.5,max:.5,color:e.color});enemies.splice(i,1);continue;}}
+  }
+  e.x+=Math.cos(a)*e.speed*move*dt;e.y+=Math.sin(a)*e.speed*move*dt;
 
   for(let k=0;k<blades.length;k++){
    const blade=blades[k],rr=e.r+blade.r;
@@ -430,17 +506,15 @@ function update(dt){
   }
   if(enemies.indexOf(e)<0)continue;
 
-  const rr=e.r+player.r;
-  if((e.x-player.x)*(e.x-player.x)+(e.y-player.y)*(e.y-player.y)<=rr*rr)hurt(e.damage)
+  for(const ally of actors()){const rr=e.r+ally.r;if(dist2(e,ally)<=rr*rr)hurt(e.damage,ally);}
  }
 
  for(let i=gems.length-1;i>=0;i--){
-  const g=gems[i],dx=player.x-g.x,dy=player.y-g.y,d=Math.hypot(dx,dy);
-  if(d<player.magnet){
-   const s=210+(player.magnet-d)*4.4;
-   g.x+=dx/Math.max(1,d)*s*dt;g.y+=dy/Math.max(1,d)*s*dt
-  }
-  if(d<player.r+9){collectGem(g,i);if(paused)break}
+  const g=gems[i],collector=actors().filter(a=>a.hp>0).sort((a,b)=>dist2(a,g)-dist2(b,g))[0]||player;
+  const dx=collector.x-g.x,dy=collector.y-g.y,d=Math.hypot(dx,dy);
+  if(d<collector.magnet){const speed=210+(collector.magnet-d)*4.4;g.x+=dx/Math.max(1,d)*speed*dt;g.y+=dy/Math.max(1,d)*speed*dt;}
+  if(d<collector.r+9){collectGem(g,i);if(paused)break}
+
  }
 
  for(let i=effects.length-1;i>=0;i--){effects[i].life-=dt;if(effects[i].life<=0)effects.splice(i,1)}
@@ -453,7 +527,8 @@ function update(dt){
 
 // ==================== UI ====================
 function updateUi(){
- $('worldPosition').textContent=STAGES[stageId].name+' · '+Math.round(player.x)+', '+Math.round(player.y);
+ $('worldPosition').textContent='스테이지 '+(stageIndex+1)+'/5 · '+STAGES[stageId].name+' · '+Math.round(player.x)+', '+Math.round(player.y);
+ const skill=HEROES[player.hero||selectedHero]||HEROES.guardian;$('heroSkill').textContent=skill.skill+(player.skillCd>0?' '+Math.ceil(player.skillCd)+'초':'');$('heroSkill').disabled=!running||paused||player.hp<=0||player.skillCd>0;
  ui.gemCount.textContent=player.gems;ui.gemNeed.textContent=player.gemNeed;ui.kills.textContent=kills;
  ui.time.textContent=fmtTime(Math.min(elapsed,SURVIVE_SECONDS));
  ui.hpText.textContent=Math.ceil(Math.max(0,player.hp))+' / '+Math.ceil(player.maxHp);
@@ -462,7 +537,7 @@ function updateUi(){
  ui.gemBar.style.width=(clamp(player.gems/player.gemNeed,0,1)*100)+'%';
 
  if(!bossSpawned){
-  if(elapsed<PHASE_TWO_SECONDS)ui.phase.textContent='기본 적 4종 등장 중';
+  if(elapsed<PHASE_TWO_SECONDS)ui.phase.textContent='스테이지 '+(stageIndex+1)+'/5 · '+(stageIndex?'새로운 몬스터 등장':'기본 적 4종 등장 중');
   else if(elapsed<PHASE_THREE_SECONDS)ui.phase.textContent='2:00 · 새로운 적 2종 추가';
   else ui.phase.textContent='3:30 · 강한 적 1종 추가'
  }
@@ -475,7 +550,7 @@ function updateUi(){
 // ==================== 그리기 ====================
 function draw(){
  if(!gem3d)return;
- try{gem3d.render({player,enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades(),effects,world:WORLD,stage:{id:stageId,...STAGES[stageId]}},performance.now())}
+ try{gem3d.render({player,allies:[...net.peers.values()],enemies,projectiles,gems,particles,poisonPools,orbitBlades:orbitBlades(),effects,world:WORLD,stage:{id:stageId,...STAGES[stageId]}},performance.now())}
  catch(error){
   console.error('[Gem Survivor WebGL3D]',error);
   gem3d=null;running=false;paused=true;releaseInputs();
@@ -485,7 +560,7 @@ function draw(){
  }
 }
 function loop(now){
- const dt=Math.min(.033,(now-last)/1000||0);last=now;update(dt);draw();
+ const dt=Math.min(.033,(now-last)/1000||0);last=now;networkTick(now);update(dt);if(!isHost())updateUi();draw();
  if(gem3d)requestAnimationFrame(loop)
 }
 // ==================== 입력 ====================
@@ -501,20 +576,83 @@ function joyEnd(e){if(e.pointerId!==joy.id)return;releaseInputs()}
 function releaseInputs(){joy.id=null;joy.dx=joy.dy=0;$('stick').style.transform='translate(0,0)';keys.clear()}
 joyEl.addEventListener('pointerup',joyEnd);joyEl.addEventListener('pointercancel',joyEnd);joyEl.addEventListener('lostpointercapture',joyEnd);
 
-addEventListener('keydown',function(e){if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys.add(e.key.length===1?e.key.toLowerCase():e.key)});
+addEventListener('keydown',function(e){if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();if(e.key.toLowerCase()==='q')requestSkill();keys.add(e.key.length===1?e.key.toLowerCase():e.key)});
 addEventListener('keyup',function(e){keys.delete(e.key.length===1?e.key.toLowerCase():e.key)});
 
-function setPause(v){if(!running)return;paused=v;if(v)releaseInputs();$('pauseOverlay').classList.toggle('show',v)}
+function setPause(v){if(!running||!isHost())return;paused=v;if(v)releaseInputs();$('pauseOverlay').classList.toggle('show',v)}
 $('pauseBtn').onclick=function(){setPause(true)};
 $('resumeBtn').onclick=function(){setPause(false)};
-$('startBtn').onclick=function(){if(!gem3d)return;$('startOverlay').classList.remove('show');tone(330,.08,'triangle',.03);reset()};
-$('restartBtn').onclick=function(){reset()};
+$('startBtn').onclick=function(){if(!gem3d||!isHost())return;$('startOverlay').classList.remove('show');tone(330,.08,'triangle',.03);reset()};
+$('restartBtn').onclick=function(){if(!isHost())return;if(stageCleared)nextStage();else reset()};
 document.addEventListener('visibilitychange',function(){if(document.hidden){releaseInputs();if(running&&!paused)setPause(true)}});
 addEventListener('blur',function(){releaseInputs();if(running&&!paused)setPause(true)});
-document.querySelectorAll('button[data-stage]').forEach(button=>button.onclick=()=>{
- if(running)return;stageId=button.dataset.stage;
- document.querySelectorAll('button[data-stage]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
-});
+// ==================== 캐릭터 선택·기존 멀티 방 연결 ====================
+function inputDirection(){let x=joy.dx+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),y=joy.dy+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);const length=Math.max(1,Math.hypot(x,y));return{x:x/length,y:y/length};}
+function requestSkill(){if(!running||paused||player.hp<=0)return;if(!isHost()){net.skillRequest++;return;}useHeroSkill();}
+$('heroSkill').onclick=requestSkill;
+for(const [id,hero] of Object.entries(HEROES)){const button=document.createElement('button');button.dataset.hero=id;button.setAttribute('aria-pressed',String(id===selectedHero));button.innerHTML='<b>'+hero.name+'</b><span class="heroNote">'+hero.skill+' · '+hero.desc+'</span>';button.onclick=()=>{if(running)return;selectedHero=id;player.hero=id;document.querySelectorAll('[data-hero]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hero===id)));};$('heroes').appendChild(button);}
+function networkStatus(message){$('netStatus').textContent=message;}
+function syncRoster(list){
+ const previousHost=net.host;
+ net.roster=list.slice(0,4);net.host=net.roster[0]?.userId||'';
+ if(previousHost&&previousHost!==net.host){running=false;paused=true;stageCleared=false;won=false;net.lastFrame=0;$('startOverlay').classList.add('show');$('endOverlay').classList.remove('show');$('restartBtn').disabled=false;}
+ for(const [id] of net.peers)if(!net.roster.some(p=>p.userId===id))net.peers.delete(id);
+ for(const member of net.roster)if(member.userId!==net.id&&!net.peers.has(member.userId))net.peers.set(member.userId,{...player,hero:'guardian',netId:member.userId,nickname:member.nickname||'동료',x:player.x+35,y:player.y+35,timers:{arrow:0,poison:0,lightning:0}});
+ networkStatus('협동 '+net.roster.length+'/4명 · '+(isHost()?'네가 방장이야. 친구가 오면 게임 시작을 눌러.':'방장이 출발하면 함께 시작해.'));
+ $('startBtn').disabled=!gem3d||!isHost();
+}
+function applyFrame(frame){
+ if(!frame||!Array.isArray(frame.units)||frame.units.length>4||!Number.isInteger(frame.stage)||frame.stage<0||frame.stage>4||!Array.isArray(frame.enemies)||frame.enemies.length>1800||!Array.isArray(frame.shots)||frame.shots.length>2000||!Array.isArray(frame.gems)||frame.gems.length>5000)return;
+ const fields=['x','y','r','hp','maxHp','speed','inv','skillCd','skillVisual','attackVisual','shield','slow','revive','faceX','faceY','basicDamage','basicRate','basicSpeed','magnet'];
+ for(const row of frame.units){if(!net.roster.some(p=>p.userId===row.id))continue;const unit=row.id===net.id?player:net.peers.get(row.id);if(!unit)continue;for(const key of fields)if(Number.isFinite(row[key]))unit[key]=row[key];if(HEROES[row.hero])unit.hero=row.hero;}
+ stageIndex=frame.stage;stageId=STAGE_ORDER[stageIndex];elapsed=frame.time;kills=frame.kills;running=!!frame.running;paused=!!frame.paused;stageCleared=!!frame.clear;Object.assign(abilityLv,frame.abilities);Object.assign(player,frame.progress);
+ enemies.splice(0,enemies.length,...frame.enemies.map(e=>({...ENEMY_TYPES[e[0]],type:e[0],x:e[1],y:e[2],r:e[3],hp:e[4],maxHp:e[5],speed:e[6],hit:e[7],boss:e[0]==='boss',charge:e[8]})));
+ projectiles.splice(0,projectiles.length,...frame.shots.map(p=>({kind:p[0],x:p[1],y:p[2],vx:p[3],vy:p[4],r:p[5],color:p[6]})));
+ gems.splice(0,gems.length,...frame.gems.map(g=>({x:g[0],y:g[1],r:5,v:1})));poisonPools.splice(0,poisonPools.length,...frame.pools);effects.splice(0,effects.length,...frame.effects);
+ boss=enemies.find(e=>e.boss)||null;bossSpawned=!!frame.boss;ui.bossHud.classList.toggle('show',!!boss);
+ if(running)$('startOverlay').classList.remove('show');$('pauseOverlay').classList.toggle('show',running&&paused);$('pauseInfo').textContent='방장이 능력을 선택하거나 일시정지를 해제하면 계속돼.';$('resumeBtn').disabled=true;$('choiceOverlay').classList.remove('show');
+ $('endOverlay').classList.toggle('show',!running&&frame.ended);if(!running&&frame.ended){$('endTitle').textContent=frame.won?(frame.clear?'스테이지 '+(stageIndex+1)+' 완료':'5스테이지 전부 클리어!'):'협동 도전 종료';$('result').textContent='방장이 다음 진행을 선택하고 있어.';$('restartBtn').disabled=true;}
+}
+function receiveNetwork(message){
+ if(message.type==='connected'){net.connected=true;net.id=message.userId;player.netId=net.id;syncRoster(message.players||[]);return;}
+ if(message.type==='presence'){syncRoster(message.players||[]);return;}
+ if(message.type!=='event'||message.userId===net.id||!net.roster.some(p=>p.userId===message.userId))return;
+ if(message.action==='gem-input'&&isHost()){
+  const x=Number(message.x),y=Number(message.y);if(!Number.isFinite(x)||!Number.isFinite(y)||Math.abs(x)>1||Math.abs(y)>1)return;
+  net.inputs.set(message.userId,{x,y,at:performance.now(),skill:Math.max(0,Math.min(1e8,Number(message.skill)||0))});const ally=net.peers.get(message.userId);if(!running&&ally&&HEROES[message.hero])ally.hero=message.hero;return;
+ }
+ if(message.action==='gem-frame'&&!isHost()&&message.userId===net.host){
+  if(!Number.isInteger(message.seq)||message.seq<=net.lastFrame||!Number.isInteger(message.part)||!Number.isInteger(message.total)||message.total<1||message.total>32||message.part<0||message.part>=message.total||typeof message.data!=='string'||message.data.length>10000)return;
+  if(!net.chunks.has(message.seq)){net.chunks.clear();net.chunks.set(message.seq,{parts:new Array(message.total),at:performance.now()});}
+  const frame=net.chunks.get(message.seq);if(frame.parts.length!==message.total)return;frame.parts[message.part]=message.data;
+  if(frame.parts.filter(p=>typeof p==='string').length===message.total){net.lastFrame=message.seq;net.seq=Math.max(net.seq,message.seq);net.lastPacket=performance.now();net.chunks.clear();try{applyFrame(JSON.parse(frame.parts.join('')))}catch(error){networkStatus('협동 상태 수신 오류 · 연결을 확인해.');}}
+ }
+}
+function networkTick(now){
+ if(!net.connected)return;
+ if(!isHost()){
+  if(now-net.inputAt>100){net.inputAt=now;const input=inputDirection();net.client.sendEvent({action:'gem-input',...input,skill:net.skillRequest,hero:selectedHero});}
+  if(net.lastPacket&&now-net.lastPacket>8000)networkStatus('방장 응답을 기다리는 중이야. 연결을 확인해.');return;
+ }
+ if(now-net.sendAt<200)return;net.sendAt=now;
+ const units=actors().map(a=>{const row={id:a===player?net.id:a.netId,hero:a.hero};for(const k of ['x','y','r','hp','maxHp','speed','inv','skillCd','skillVisual','attackVisual','shield','slow','revive','faceX','faceY','basicDamage','basicRate','basicSpeed','magnet'])row[k]=Math.round((a[k]||0)*100)/100;return row;});
+ const frame=JSON.stringify({stage:stageIndex,time:elapsed,kills,running,paused,clear:stageCleared,won,ended:$('endOverlay').classList.contains('show'),boss:bossSpawned,units,abilities:abilityLv,progress:{gems:player.gems,gemNeed:player.gemNeed,choices:player.choices},enemies:enemies.map(e=>[e.type,Math.round(e.x),Math.round(e.y),e.r,Math.ceil(e.hp),Math.ceil(e.maxHp),e.speed,e.hit,e.charge||0]),shots:projectiles.map(p=>[p.kind,Math.round(p.x),Math.round(p.y),p.vx,p.vy,p.r,p.color]),gems:gems.map(g=>[Math.round(g.x),Math.round(g.y)]),pools:poisonPools.map(p=>({...p})),effects:effects.slice(-40)});
+ const total=Math.ceil(frame.length/10000);if(total>32)return;net.seq++;for(let part=0;part<total;part++)net.client.sendEvent({action:'gem-frame',seq:net.seq,part,total,data:frame.slice(part*10000,(part+1)*10000)});
+}
+function multiplayer(){
+ if(net.client)return net.client;const client=net.client=new JaewoonMultiplayerClient();client.on('message_received',event=>receiveNetwork(event.detail));client.on('websocket_disconnected',()=>{net.connected=false;running=false;paused=true;releaseInputs();$('startOverlay').classList.add('show');networkStatus('연결이 끊겼어. 재접속을 기다리거나 나가기를 눌러 혼자 시작해.');});return client;
+}
+async function roomAction(action){
+ const client=multiplayer();if(!client.accessToken){networkStatus('먼저 기존 멀티 계정으로 로그인해.');return;}
+ networkStatus('협동 방 연결 중…');const result=action==='create'?await client.createFriendRoomForGame('coop','gem-survivor'):action==='match'?await client.matchCoopForGame('gem-survivor'):await client.joinFriendRoom($('netCode').value,false);
+ if(!result.ok){networkStatus('방 연결 실패: '+(result.data?.error||'네트워크 오류'));return;}
+ if(action==='join'){if(result.data?.gameId!=='gem-survivor'){networkStatus('보석 생존전 초대 코드를 입력해.');return;}client.connectRoom(result.data.roomId);}
+ if(result.data.inviteCode){$('netCode').value=result.data.inviteCode;networkStatus('초대 코드 '+result.data.inviteCode+' · 친구에게 이 코드를 알려 줘.');}
+}
+$('netLogin').onclick=async()=>{networkStatus('로그인 중…');const result=await multiplayer().login($('netEmail').value,$('netPassword').value);$('netPassword').value='';networkStatus(result.ok?'로그인됐어. 친구방 만들기 또는 참가를 눌러.':'로그인 실패 · 계정과 서버 연결을 확인해.');};
+$('netCreate').onclick=()=>roomAction('create');$('netMatch').onclick=()=>roomAction('match');$('netJoin').onclick=()=>roomAction('join');
+$('netLeave').onclick=()=>{net.client?.disconnectRoom();net.connected=false;net.peers.clear();net.inputs.clear();net.chunks.clear();net.lastFrame=0;running=false;paused=true;$('startOverlay').classList.add('show');$('startBtn').disabled=!gem3d;$('restartBtn').disabled=false;networkStatus('방에서 나왔어. 혼자 시작할 수 있어.');};
+window.gemSurvivorState=()=>({player,enemies,projectiles,gems,abilityLv,stageIndex,stageId,stageCleared,net,running,paused,reset,nextStage,spawnBoss,spawnEnemy,useHeroSkill,damageEnemy,killEnemy,update,receiveNetwork,networkTick,selectAbility,availableTypes});
 $('startBtn').disabled=true;
 createGem3d({canvas}).then(renderer=>{
  gem3d=renderer;
