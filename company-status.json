@@ -324,14 +324,13 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 3,
+        "developmentConfirmed": 2,
         "designOnly": 11
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
         "RUNTIME-cozy-island",
-        "RUNTIME-fantasy-survival",
-        "RUNTIME-horror-escape-room"
+        "RUNTIME-fantasy-survival"
       ],
       "designOnlyGameIds": [
         "P0001",
@@ -360,8 +359,7 @@
           "P0102",
           "P0103",
           "RUNTIME-cozy-island",
-          "RUNTIME-fantasy-survival",
-          "RUNTIME-horror-escape-room"
+          "RUNTIME-fantasy-survival"
         ],
         "paused": [],
         "rebuild": [],
@@ -370,11 +368,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 14,
+        "count": 13,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 46
+        "deficit": 47
       },
       "ranking": [
         {
@@ -490,21 +488,6 @@
           "lifecycleState": "ACTIVE",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "RPG",
-          "evidenceScore": 6,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 0,
-          "targetPlatform": "ROBLOX",
-          "targetPlatformReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 9,
-          "rawEvidenceRank": 9,
-          "gameId": "RUNTIME-horror-escape-room",
-          "slug": "horror-escape-room",
-          "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "UNCLASSIFIED",
           "evidenceScore": 6,
           "developmentFocus": 0,
           "artbookBaselineRank": 0,
