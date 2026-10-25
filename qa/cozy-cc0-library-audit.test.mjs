@@ -89,7 +89,8 @@ test('Cozy owner publish is publish-first regression-after, then existing F0 and
   assert.match(workflow.slice(regression,post),/node --test qa\/cozy-rpg-release-hardening\.test\.mjs/);
   assert.match(workflow.slice(post,next),/if\(!pass\)throw new Error\('COZY_POST_PUBLISH_QA_UNVERIFIED_NO_NEXT_F0'\)/);
   assert.match(workflow.slice(next,artifact),/gh workflow run company-roblox-source-drift-sync\.yml.*restart_from_f0=true/);
-  assert.match(workflow.slice(next,artifact),/gh workflow run vibe2-continuous-core\.yml.*execution_lane=game-primary/);
+  assert.match(workflow.slice(next,artifact),/gh workflow run vibe2-24h-runner\.yml.*--ref main/);
+  assert.doesNotMatch(workflow.slice(next,artifact),/gh workflow run vibe2-continuous-core\.yml/);
   assert.match(workflow.slice(next,artifact),/SUPERSEDED_BY_NEWER_GAME_SOURCE/);
   assert.match(workflow,/permissions:\s+contents: read\s+actions: write/);
 });
