@@ -348,3 +348,14 @@ test('real party RPG keeps exact save keys and shares one save routine across le
     sourceRoot:'roblox-games/party-rpg',responsibleFiles:['server/Game.server.luau']
   }),null,'already repaired game must not be edited a second time');
 });
+
+test('party RPG save cannot overwrite existing DataStore progress when its initial read failed',()=>{
+  const source=fs.readFileSync('roblox-games/party-rpg/server/Game.server.luau','utf8');
+  assert.match(source,/local verifiedSaveRead = \{\}/);
+  assert.match(source,/verifiedSaveRead\[player\] = ok and store ~= nil/);
+  assert.match(source,/local function savePlayer\(player\)\s*--[^\n]*\n\s*if verifiedSaveRead\[player\] ~= true then/);
+  assert.match(source,/if verifiedSaveRead\[player\] ~= true then\s*lastAction\[player\] = nil\s*return\s*end\s*local snapshot = \{\}/);
+  assert.match(source,/store:UpdateAsync\("player:" \.\. player.UserId/);
+  assert.match(source,/verifiedSaveRead\[player\] = nil\s*end\s*Players.PlayerRemoving:Connect\(savePlayer\)/);
+  assert.match(source,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+});
