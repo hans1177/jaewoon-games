@@ -56,6 +56,26 @@ test('GitHub publishing refuses ungranted/outdated CC0 originals and reuses exac
   assert.doesNotMatch(workflow,/(tinyfish|browserless|browserbase)/i);
 });
 
+test('owner-first Roblox publisher verifies the real published Place/version and never claims gameplay QA from headless probe',()=>{
+  const publish=workflow.indexOf('      - name: Publish Cozy Island to owner dedicated Roblox Experience');
+  const verify=workflow.indexOf('      - name: Verify Cozy Island publication',publish);
+  const post=workflow.indexOf('      - name: Verify exact published Cozy Island Place version after deployment',verify);
+  const artifact=workflow.indexOf('      - uses: actions/upload-artifact@v4',post);
+  assert.ok(publish>=0&&verify>publish&&post>verify&&artifact>post,'deploy before exact post-deploy verification and evidence retention');
+  const postStep=workflow.slice(post,artifact);
+  assert.match(postStep,/probeRobloxOpenCloudEngine/);
+  assert.match(postStep,/publication\.sourceRevision===revision/);
+  assert.match(postStep,/universeId==='10767445741'&&placeId==='116850096561713'/);
+  assert.match(postStep,/proof\.engineExecuted===true&&proof\.exactPlace===true/);
+  assert.match(postStep,/proof\.exactVersion===true&&proof\.serverContextExecuted===true/);
+  assert.match(postStep,/publication\.private===true/);
+  assert.match(postStep,/if\(!pass\)throw new Error\('COZY_POST_PUBLISH_QA_UNVERIFIED_NO_NEXT_F0'\)/);
+  assert.match(postStep,/realPlayerGameplayVerified:false,mobileInputVerified:false/);
+  assert.match(postStep,/multiplayerVerified:false,saveRejoinVerified:false/);
+  assert.match(workflow.slice(artifact),/if: always\(\)/);
+  assert.match(workflow.slice(artifact),/cozy-island\.post-publish-qa\.json/);
+});
+
 test('grant validates exact prechecked universe and treats server permission errors as fatal',async()=>{
   const report={pass:true,universeId:'10767445741',acceptedCC0Models:[{assetId:70786111181272}]};
   let received;
