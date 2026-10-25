@@ -45693,9 +45693,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:37:22.817Z",
-      "updatedAt": "2026-10-25T06:19:52.144Z",
+      "updatedAt": "2026-10-25T06:20:52.336Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -45705,7 +45705,7 @@
         "capturedAt": "2026-10-12T02:39:01.675Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-24T21:16:33.257Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-25T06:20:52.336Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -45754,7 +45754,7 @@
       "routingBlockers": [
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "2596e3dff91dc3aebb077c8ec6fe60a5b5b87158",
+      "robloxSourceCommit": "c7df83d345518a9fdda9425f8ed7fca2379a52e4",
       "robloxSourceBootstrapPassedAt": "2026-10-24T15:26:51.705Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -46260,13 +46260,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "2596e3dff91dc3aebb077c8ec6fe60a5b5b87158",
+      "robloxQualityBuildUpSourceRevision": "c7df83d345518a9fdda9425f8ed7fca2379a52e4",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-        "sourceRevision": "2596e3dff91dc3aebb077c8ec6fe60a5b5b87158",
-        "sourceTreeSha": "ee1ad0f6759f54dcdab9dcd758eb3c752d722e9b",
+        "sourceRevision": "c7df83d345518a9fdda9425f8ed7fca2379a52e4",
+        "sourceTreeSha": "959b7fd3bde0b2b4e0725858c66cd78d1c661c8e",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -46282,9 +46282,9 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "35a413ab69015e69eab6ac392dae0934a795e588b199a34d72aba7bbcfddcacb",
-          "baselineFingerprint": "407f4df5c84e42592f0061e5cdf3e6a3c90a37ef084b4e11bff1bc095a41809c",
-          "validatorFingerprint": "153e1f45ffe6ef7e4079d508125438f68e81a744ee0407153dbd59eda100cb99"
+          "libraryFingerprint": "1e7d0507dbb14024fdf95ee5ed752d8c2b203c0dc7d8e802d9802d171df3e40d",
+          "baselineFingerprint": "960dc15e840d89534815cbb02be23eeb05bdaa5d8e10bd78341990c82bba4a3f",
+          "validatorFingerprint": "8b98824e561ce92b352632913a1e535d62f6f8c29f686a4dbb1f4cdd587575ca"
         },
         "qualityFailureKinds": [
           "CONFIG_POLICY_SOURCE_REQUIRED",
@@ -46342,8 +46342,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40129653124,
-        "testedAt": "2026-10-24T21:16:33.257Z"
+        "workflowRunId": 40166549340,
+        "testedAt": "2026-10-25T06:20:52.336Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -59760,7 +59760,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-25T06:19:52.144Z",
+  "updatedAt": "2026-10-25T06:20:52.336Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -59826,5 +59826,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxSourceParallelism": null
 }
