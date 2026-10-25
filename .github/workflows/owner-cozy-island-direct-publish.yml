@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: owner-cozy-island-direct-publish
@@ -50,12 +51,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify Cozy Island regression before Roblox Cloud publish
+      - name: Verify Cozy Island licensed assets before private publish
         working-directory: main
         shell: bash
         run: |
           set -euo pipefail
-          node --test qa/cozy-rpg-release-hardening.test.mjs qa/cozy-cc0-library-audit.test.mjs
           node tools/cozy-cc0-library-audit.mjs
 
       - name: Install pinned Rojo
@@ -167,6 +167,12 @@ jobs:
           console.log('COZY_OWNER_SOURCE_REVISION='+String(r.sourceRevision||''));
           NODE
 
+      - name: Run Cozy Island regression after private Roblox publish
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test qa/cozy-rpg-release-hardening.test.mjs qa/cozy-cc0-library-audit.test.mjs
       - name: Verify exact published Cozy Island Place version after deployment
         working-directory: main
         shell: bash
@@ -214,6 +220,30 @@ jobs:
           if(!pass)throw new Error('COZY_POST_PUBLISH_QA_UNVERIFIED_NO_NEXT_F0');
           NODE
 
+      - name: Resume exact Cozy Island F0 and existing continuous build-up after published QA
+        working-directory: main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # A newer Cozy Island source has its own main-push publication cycle.
+          git fetch --no-tags --depth=1 origin main
+          if ! git diff --quiet "$GITHUB_SHA" origin/main -- \
+            roblox-games/cozy-island/default.project.json \
+            roblox-games/cozy-island/shared \
+            roblox-games/cozy-island/server \
+            roblox-games/cozy-island/client \
+            assets/roblox assets/shared assets/external assets/asset-license-ledger.json; then
+            echo 'COZY_POST_PUBLISH_NEXT_F0=SUPERSEDED_BY_NEWER_GAME_SOURCE'
+            exit 0
+          fi
+          # Only a successful real Place/version post-publish probe reaches this step.
+          gh workflow run company-roblox-source-drift-sync.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id=cozy-island -f restart_from_f0=true
+          echo 'COZY_POST_PUBLISH_NEXT_F0=DISPATCHED'
+          # Refill the existing Vibe2 game-primary work queue; do not create a second pipeline.
+          gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary
+          echo 'COZY_POST_PUBLISH_NEXT_BUILD_UP=EXISTING_VIBE2_WAKE_DISPATCHED'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
