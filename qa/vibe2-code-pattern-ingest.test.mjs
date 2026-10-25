@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
-import {deterministicWebInputCandidate} from '../tools/vibe2-source-worker.mjs';
+import {deterministicWebInputCandidate,deterministicRobloxNativeRepairCandidate} from '../tools/vibe2-source-worker.mjs';
 
 test('verified sample yields abstract code patterns without raw patch',()=>{
   const rows=deriveVerifiedCodePatterns({
@@ -243,4 +243,63 @@ test('model-free action authoring handles many distinct controls with one indexe
   const unsafe='<button id="attack;malicious" data-gameplay-action="attack">attack</button><script>function attack(){return 1;}</script>';
   fs.writeFileSync(path.join(root,'index.html'),unsafe,'utf8');
   assert.equal(deterministicWebInputCandidate(args),null);
+});
+
+
+test('Roblox model-free coding reuses exact existing save logic for shutdown with no save-schema changes',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-model-free-save-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  const relative='server/Game.server.luau';
+  const original=[
+    'local Players = game:GetService("Players")',
+    'Players.PlayerRemoving:Connect(function(player)',
+    '  local snapshot = {}',
+    '  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end',
+    '  pcall(function()',
+    '    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)',
+    '  end)',
+    '  lastAction[player] = nil',
+    'end)',
+    'game:BindToClose(function() end)'
+  ].join('\n');
+  fs.writeFileSync(path.join(root,relative),original);
+  const order={target:'roblox',goal:'repair persistent saving on shutdown'};
+  const candidate=deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[relative]});
+  assert.equal(candidate?.deterministicRobloxNativeRepair,'PERSIST_EXISTING_SAVE_ON_SHUTDOWN');
+  const next=original.replace(candidate.edits[0].find,candidate.edits[0].replace);
+  assert.equal((next.match(/store:UpdateAsync/g)||[]).length,1,'existing datastore write remains single responsibility');
+  assert.match(next,/Players\.PlayerRemoving:Connect\(savePlayer\)/);
+  assert.match(next,/game:BindToClose\(function\(\)[\s\S]*savePlayer\(player\)/);
+  assert.match(next,/Config\.InitialState/);
+  assert.equal(deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'change combat damage'},sourceRoot:root,responsibleFiles:[relative]}),null);
+  fs.writeFileSync(path.join(root,relative),next);
+  assert.equal(deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[relative]}),null,'no repeated wrapper or duplicate saves');
+});
+
+test('Roblox model-free native GUI coding is bounded to a real client GuiButton and existing action',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-model-free-input-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
+  const file='client/Game.client.luau';
+  const original=[
+    'local attack = Instance.new("TextButton")',
+    'attack.MouseButton1Click:Connect(function()',
+    '  remote:FireServer("ATTACK")',
+    'end)',
+    'local auto = Instance.new("Frame")',
+    'auto.MouseButton1Click:Connect(function() end)'
+  ].join('\n');
+  fs.writeFileSync(path.join(root,file),original);
+  const order={target:'roblox',goal:'mobile native input touch control usability'};
+  const result=deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file]});
+  assert.equal(result?.deterministicRobloxNativeRepair,'GUI_BUTTON_NATIVE_ACTIVATED');
+  const next=original.replace(result.edits[0].find,result.edits[0].replace);
+  assert.match(next,/attack\.Activated:Connect\(function\(\)[\s\S]*remote:FireServer\("ATTACK"\)/);
+  assert.match(next,/auto\.MouseButton1Click:Connect/,'unrelated nonbutton is unchanged');
+  assert.equal(result.edits[0].path,file);
+  assert.equal(deterministicRobloxNativeRepairCandidate({order:{target:'unity',goal:'mobile input'},sourceRoot:root,responsibleFiles:[file]}),null);
+  assert.equal(deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:['../other.luau']}),null);
+  fs.writeFileSync(path.join(root,file),next);
+  assert.equal(deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file]}),null,'no duplicate bindings or infinite styling cycles');
 });
