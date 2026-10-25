@@ -1,11 +1,31 @@
 // 파일명: qa/ocean-voyage.test.mjs
 // 메인: 독립 항해게임의 거래, 항로, 전투, 저장, 외부 3D 에셋 회귀검사
 import test from 'node:test';
+import * as engineExports from '../web-games/ocean-voyage/engine.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,marketQuote,marketBaseStock,marketEvent,advancePortEconomy,PORT_MARKETS,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,SITES,JOBS,talkCompanion,assignCrew,crewStats,resolveSeaEvent,reportDiscoveries,startExpedition,exploreChoice,investPort,portStatus,collectDividend,exportSave,importSave,SHIP_TYPES,refitShip,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,PERSONAL_SKILLS,LAND_EVENTS,resolveLandEvent,revealCells,buyShipEquipment,refineShip,talkContact,giveGift,premiumInformation,relationStatus,expressBond,benchCompanion,isLand} from '../web-games/ocean-voyage/engine.mjs';
 
+test('hotfix engine exports match main browser entry and merchant interaction is usable',()=>{
+ const entry=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ const list=entry.match(/import\s*\{([^}]+)\}\s*from ['"]\.\/engine\.mjs['"]/);
+ assert.ok(list,'browser entry must import engine from existing path');
+ const names=list[1].split(',').map(x=>x.trim());
+ assert.deepEqual(names.filter(name=>!(name in engineExports)),[]);
+ const s=engineExports.newGame(),merchant=s.merchants[0];
+ assert.equal(engineExports.hailMerchant(s,merchant.id).ok,false,'cannot hail a distant vessel');
+ const pos=engineExports.merchantPosition(merchant);
+ s.ship.x=pos.x;s.ship.z=pos.z;
+ const hail=engineExports.hailMerchant(s,merchant.id);
+ assert.equal(hail.ok,true);assert.equal(hail.state.event.id,'merchant_meeting');
+ const talked=engineExports.resolveMerchantEncounter(hail.state,1);
+ assert.equal(talked.ok,true);assert.equal(talked.state.scene.kind,'merchant');
+ const closed=engineExports.dismissStoryScene(talked.state);
+ assert.equal(closed.ok,true);assert.equal(closed.state.scene,null);
+ assert.equal(engineExports.dismissStoryScene(closed.state).ok,false);
+ assert.equal(engineExports.restoreGame(engineExports.serializeGame(closed.state)).merchants[0].met,1);
+});
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
  assert.equal(SAVE_KEY,'jg-ocean-voyage-v1');
