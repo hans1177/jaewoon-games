@@ -1,6 +1,6 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion} from './engine.mjs';
+import {PORTS,PORT_SCENES,portHasFacility,PORT_MARKETS,marketQuote,marketEvent,MERCHANT_CAPTAINS,merchantPosition,hailMerchant,resolveMerchantEncounter,dismissStoryScene,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion,CAPTAINS,JOBS,SHIP_TYPES,SITES,OFFICE_QUESTS,SEA_EVENTS,companionObjective,changeJob,refitShip,startExpedition,exploreChoice,reportDiscoveries,officeProgress,officeContract,storyStatus,advanceStory,royalAudience,resolveSeaEvent,exportSave,importSave,TREASURES,takeTreasureClue,searchTreasure,rumorsAt,CONSUMABLES,buyConsumable,useConsumable,declareHostility,negotiatePeace,WEATHER,portStatus,investPort,collectDividend,supportPort,formAlliance,callAlliance,CREW_ROLES,crewStats,assignCrew,RECRUIT_STORIES,talkCompanion,landSkill,landAction,landEnemyTurn,finishLandBattle,CANNON_TYPES,buyCannon,LAND_EVENTS,resolveLandEvent,SAIL_EQUIPMENT,FIGUREHEADS,SPECIAL_DOCKS,buyShipEquipment,refineShip,TAVERN_HOSTS,GIFTS,relationStatus,talkContact,giveGift,premiumInformation,expressBond,benchCompanion,windAt} from './engine.mjs';
 import {createOceanView,drawGeography,drawFog} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
@@ -64,6 +64,7 @@ function summary(){
  $('autoBattle').textContent=state.autoCombat?'자동해전 켬':'자동해전 끔';$('autoBattle').setAttribute('aria-pressed',String(state.autoCombat));
  $('compass').textContent=(WEATHER.find(w=>w.id===state.climate.kind)?.name||'맑음')+' · ◈ '+(location?location.name+' · 정박 가능':closest.port.region+' · '+Math.round(closest.d)+'해도 거리')+(state.destination?' → '+port(state.destination).name:state.exploreTarget?' · 직접 탐색 → '+port(state.exploreTarget).name:'');
  $('dock').disabled=!location;const enemy=state.pirates.filter(e=>e.hull>0&&(!e.neutral||state.diplomacy[e.faction]<0)).map(e=>({...e,d:Math.hypot(e.x-state.ship.x,e.z-state.ship.z)})).filter(e=>e.d<45).sort((a,b)=>a.d-b.d)[0];$('battleStatus').hidden=!enemy;document.body.classList.toggle('naval-engaged',!!enemy&&!town);if(enemy)$('battleStatus').textContent='⚔ '+(enemy.name||'해적선')+' · 내구 '+Math.round(enemy.hull)+'/'+enemy.maxHull+' · 거리 '+Math.round(enemy.d)+' · '+(state.autoCombat?'자동 측면전':'수동 포격')+' · 장전 '+Math.max(0,state.ship.cooldown).toFixed(1)+'초';$('foodStatus').textContent='식량 '+state.ship.provisions+' · 선원 '+state.ship.crew+' · 포탄 '+state.supplies.ammo;
+ const wind=windAt(state),bearing=(wind.heading*180/Math.PI+360)%360,apparent=Math.cos(wind.heading-state.ship.heading),kind=apparent>.35?'순풍':apparent<-.35?'역풍':'횡풍';$('windStatus').textContent='바람 '+Math.round(bearing)+'° · '+kind+' · 풍력 '+Math.round(wind.strength*6)+'단계';
  $('fire').disabled=state.ship.hull<=0||state.ship.cooldown>0;
 }
 function gotoPanel(name){if(state.landBattle&&name!=='system'){enterBattle();return;}
@@ -264,8 +265,8 @@ function system(){
  '<div class="system-actions"><button class="action sub wide" data-action="home">⌂ 홈으로 · 이어하기 화면</button>'+
  '<button class="action sub" data-action="save">지금 저장</button><button class="action sub" data-menu-to="journal">저장·불러오기</button>'+
  '<button class="action" data-action="music">음악 켜기·끄기</button><button class="action" data-action="sound">효과음 '+(soundEnabled?'끄기':'켜기')+'</button>'+
- '<button class="action sub" data-action="speed">항해 속도 '+state.speed+'배</button><button class="action sub" data-action="auto">자동 해전 '+(state.autoCombat?'켬':'끔')+'</button>'+
- '<button class="action sub" data-action="zoom-in">지도 확대 ＋</button><button class="action sub" data-action="zoom-out">지도 축소 －</button>'+
+ '<label class="speed-control">항해 배속 '+state.speed+'배 <input id="speedSlider" type="range" min="1" max="16" step="1" value="'+state.speed+'" aria-label="항해 배속 조절"></label><button class="action sub" data-action="auto">자동 해전 '+(state.autoCombat?'켬':'끔')+'</button>'+
+ '<button class="action sub" data-action="camera">카메라 시점 변경</button><button class="action sub" data-action="zoom-in">지도 확대 ＋</button><button class="action sub" data-action="zoom-out">지도 축소 －</button>'+
  '<button class="action sub" data-action="repair">긴급 수리</button><button class="action sub" data-menu-to="inventory">소모품 가방</button>'+
  '<button class="action wide" data-action="reset">처음부터 · 새 선장 선택</button></div>'+
  '<p class="info">처음부터는 확인 후 선장을 다시 선택해. 선택 전에는 기존 저장을 지우지 않아.</p>';
@@ -408,13 +409,14 @@ view.body.addEventListener('click',e=>{
    case 'music':$('music-toggle').click();renderPanel();break;
    case 'sound':$('sfx-toggle').click();renderPanel();break;
    case 'speed':$('speed').click();renderPanel();break;
+   case 'camera':$('viewMode').click();renderPanel();break;
    case 'auto':$('autoBattle').click();renderPanel();break;
    case 'zoom-in':$('zoomIn').click();break;
    case 'zoom-out':$('zoomOut').click();break;
    case 'repair':$('quickRepair').click();break;
  }
 });
-view.body.addEventListener('change',e=>{if(e.target.matches('select[data-role]'))apply(assignCrew(state,e.target.dataset.role,e.target.value));});
+view.body.addEventListener('change',e=>{if(e.target.matches('select[data-role]'))apply(assignCrew(state,e.target.dataset.role,e.target.value));if(e.target.id==='speedSlider'){state.speed=Math.max(1,Math.min(16,Number(e.target.value)||1));$('speed').textContent=state.speed+'배';save();renderPanel();}});
 view.body.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.closest('[data-route]'))e.target.closest('[data-route]').click();});
 for(const b of document.querySelectorAll('[data-hold]')){
  const k=b.dataset.hold;
@@ -459,7 +461,8 @@ $('allySupport').addEventListener('click',()=>apply(callAlliance(state)));
 $('quickRepair').addEventListener('click',()=>apply(useConsumable(state,'repair')));$('quickBag').addEventListener('click',()=>gotoPanel('inventory'));
 function impactSound(){if(!soundEnabled)return;try{if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();audio.resume().catch(()=>{});if(['heal','guard'].includes(state.combatFx?.type)){tone(523,audio.currentTime,.20,.05,'sine');tone(784,audio.currentTime+.09,.24,.04,'sine');return;}const heavy=state.combatFx?.gun==='bombard',length=heavy?.38:.18,n=audio.createBuffer(1,Math.round(audio.sampleRate*length),audio.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=n;gain.gain.value=state.combatFx?.type==='cannon'?.15:.07;source.connect(gain).connect(audio.destination);source.start();tone(heavy?45:state.combatFx?.type==='cannon'?85:180,audio.currentTime,heavy?.4:.18,.08,'sine');}catch{}}
 $('sfx-toggle').addEventListener('click',()=>{soundEnabled=!soundEnabled;$('sfx-toggle').textContent=soundEnabled?'효과음 켬':'효과음 끔';});
-$('speed').addEventListener('click',()=>{state.speed=state.speed===1?2:state.speed===2?4:1;$('speed').textContent=state.speed+'배속';save();});
+$('speed').addEventListener('click',()=>{state.speed=state.speed===1?2:state.speed===2?4:state.speed===4?8:state.speed===8?12:state.speed===12?16:1;$('speed').textContent=state.speed+'배';save();if(active==='system')renderPanel();});
+$('viewMode').addEventListener('click',()=>{const options=['chase','orbit','chart'],next=options[(options.indexOf(scene.getCameraMode())+1)%options.length];scene.setCameraMode(next);$('viewMode').textContent=next==='chase'?'시점: 추적':next==='orbit'?'시점: 회전':'시점: 해도';note(next==='chart'?'해도 시점으로 전환했어. 지도 위 항구를 눌러 항로를 설정해.':'화면을 드래그하면 카메라를 회전할 수 있어.');});
 $('autoBattle').addEventListener('click',()=>{state.autoCombat=!state.autoCombat;save();summary();note(state.autoCombat?'자동 해전 켬 · 적을 만나면 측면을 잡고 자동 사격해.':'자동 해전 끔 · 수동 조타와 포격을 사용해.');});
 $('zoomIn').addEventListener('click',()=>scene.setZoom(scene.getZoom()*1.35));$('zoomOut').addEventListener('click',()=>scene.setZoom(scene.getZoom()/1.35));
 $('eventChoices').addEventListener('click',e=>{
@@ -519,7 +522,9 @@ function run(now){
  if(manual&&state.destination){state=cancelDestination(state);}
  const oldFx=state.combatFx?.serial;
  syncNavalBattle();
- state=stepSea(state,{turn,throttle,manual,navalBattle:navalTarget!==null},dt*(navalTarget!==null?1:state.speed));
+ // 높은 배속도 작은 물리 간격으로 나누어 해안 충돌과 항로·사건을 보존한다.
+ let remaining=dt*(navalTarget!==null?1:state.speed);
+ while(remaining>0){const step=Math.min(.08,remaining);state=stepSea(state,{turn,throttle,manual,navalBattle:navalTarget!==null},step);remaining-=step;if(state.event||state.scene||state.landBattle)break;}
  syncNavalBattle();
  if(state.combatFx&&state.combatFx.serial!==oldFx)impactSound();
  if(state.event){save();renderEvent();}
@@ -532,4 +537,4 @@ function run(now){
   state.ship.hull=1;const safe=port(state.homePort)||PORTS[0];state.ship.x=safe.x;state.ship.z=safe.z+2;state.destination=null;state.route=[];state.coins=Math.max(200,state.coins-500);save();
  }
 }
-$('speed').textContent=state.speed+'배속';summary();renderEvent();requestAnimationFrame(run);
+$('speed').textContent=state.speed+'배';summary();renderEvent();requestAnimationFrame(run);
