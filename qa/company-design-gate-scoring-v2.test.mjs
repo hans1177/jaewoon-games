@@ -529,7 +529,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       design,seed,fields:Object.keys(design),
       multiplayerRequired:true,requirePlayableContract:true,sourceText
     });
-    assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
+    assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure '+JSON.stringify(feedback.map(item=>({code:item.code,fields:item.fields,evidence:item.evidence}))));
     const details=design.creativeGrammar.fiveWOneH;
     assert.equal(details.length,4+design.creativeGrammar.dCreations.length+design.creativeGrammar.delveDiscoveries.length);
     assert.equal(design.creativeGrammar.standardVersion,basicDesignMethod.version);
