@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "party-rpg-build-up-g7-8c46ffe4de47",
-  "directiveFingerprint": "8c46ffe4de4719fdd0cdec9da1ff57f042448481403b0c99b8e94a4f144abe62",
-  "previousDirectiveFingerprint": "2b29c518aaab060a7e3319d8a7bae5e20a35c2f13d49e7b99efc0c67fc40a308",
-  "forbiddenRepeatFingerprint": "2b29c518aaab060a7e3319d8a7bae5e20a35c2f13d49e7b99efc0c67fc40a308",
+  "directiveId": "party-rpg-build-up-g8-48c0d0372c84",
+  "directiveFingerprint": "48c0d0372c849942b2c9cc3dfe8f57781f59a6312925abb0a4b193740f930326",
+  "previousDirectiveFingerprint": "8c46ffe4de4719fdd0cdec9da1ff57f042448481403b0c99b8e94a4f144abe62",
+  "forbiddenRepeatFingerprint": "8c46ffe4de4719fdd0cdec9da1ff57f042448481403b0c99b8e94a4f144abe62",
   "gameId": "party-rpg",
   "gameName": "파티 RPG",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/party-rpg",
-  "sourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+  "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
   "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
   "designSourceBuildUp": {
     "version": 1,
@@ -337,7 +337,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+        "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -358,7 +358,7 @@
     "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": null,
     "designFingerprint": "0d66f2b03a83cd6c63e7db5a46ec259605d3f6c7b9ef67fa2fcbba85451c4651",
-    "sourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -752,7 +752,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4324,48 +4324,47 @@
   "currentImplementationFindings": {
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=3",
-      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 446,
-      "progression": 441,
-      "ai": 116,
+      "combat": 451,
+      "progression": 440,
+      "ai": 117,
       "save": 101,
       "multiplayer": 1,
       "animation": 37,
-      "motionStates": 637,
+      "motionStates": 643,
       "gameFeel": 13,
       "vfx": 102,
-      "camera": 48,
+      "camera": 40,
       "audio": 56,
       "audioDynamics": 4,
-      "ui": 491,
-      "uiFlow": 346,
+      "ui": 484,
+      "uiFlow": 372,
       "entryFlow": 0,
       "loadingFlow": 0,
-      "input": 116,
-      "map": 992,
+      "input": 117,
+      "map": 989,
       "landmark": 102,
-      "interaction": 137,
+      "interaction": 146,
       "inventory": 80,
       "equipment": 119,
       "settings": 7,
-      "feedback": 143,
+      "feedback": 142,
       "session": 24,
-      "content": 732,
-      "choice": 295,
+      "content": 754,
+      "choice": 297,
       "connection": 1,
       "performance": 21,
-      "lighting": 102,
-      "primitive": 14,
+      "lighting": 94,
+      "primitive": 7,
       "todo": 0,
       "errorRecovery": 20
     },
     "topFiles": [
       {
         "file": "web-games/party-rpg/index.html",
-        "score": 1261
+        "score": 1315
       },
       {
         "file": "web-games/party-rpg/view.mjs",
@@ -4379,7 +4378,7 @@
     "sourceAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2044,
+        "line": 2140,
         "kind": "FUNCTION",
         "symbol": "draw",
         "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
@@ -4387,7 +4386,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1220,
+        "line": 1310,
         "kind": "FUNCTION",
         "symbol": "partyHud",
         "context": "function partyHud(){",
@@ -4395,7 +4394,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1909,
+        "line": 2005,
         "kind": "FUNCTION",
         "symbol": "updateEnemies",
         "context": "function updateEnemies(dt){",
@@ -4403,7 +4402,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2041,
+        "line": 2137,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "context": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -4411,7 +4410,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2042,
+        "line": 2138,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "context": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -4419,15 +4418,15 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2046,
+        "line": 2142,
         "kind": "FUNCTION",
         "symbol": "loop",
         "context": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
-        "score": 290
+        "score": 282
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1305,
+        "line": 1395,
         "kind": "FUNCTION",
         "symbol": "portraitIndex",
         "context": "function portraitIndex(u){return u===state.player?state.player.portraitId:Math.max(0,Math.min(9,Number(String(u.id).slice(2))||0));}",
@@ -4435,7 +4434,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 649,
+        "line": 739,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
         "context": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
@@ -4443,7 +4442,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 646,
+        "line": 736,
         "kind": "FUNCTION",
         "symbol": "accessoryBonus",
         "context": "function accessoryBonus(u,stat){return ACCESSORIES.filter(it=>it.id===u.ring||it.id===u.necklace).reduce((total,it)=>total+(it[stat]||0),0);}",
@@ -4451,7 +4450,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 647,
+        "line": 737,
         "kind": "FUNCTION",
         "symbol": "playerWeaponPower",
         "context": "function playerWeaponPower(){if(state.player.specialWeapon&&DROPS[state.player.specialWeapon])return DROPS[state.player.specialWeapon].power||0;var w=WEAPONS.find(function(x){retur",
@@ -4459,7 +4458,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 648,
+        "line": 738,
         "kind": "FUNCTION",
         "symbol": "playerArmorDef",
         "context": "function playerArmorDef(){if(state.player.specialArmor&&DROPS[state.player.specialArmor])return (DROPS[state.player.specialArmor].def||0)+accessoryBonus(state.player,'def');var a=A",
@@ -4467,7 +4466,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1219,
+        "line": 1309,
         "kind": "FUNCTION",
         "symbol": "updateCombat",
         "context": "function updateCombat(dt){battleTime+=dt;var threat=enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<260;});if(!threat)contactTriggered=false;else if(!contactTr",
@@ -4475,7 +4474,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1304,
+        "line": 1394,
         "kind": "FUNCTION",
         "symbol": "escapeText",
         "context": "function escapeText(value){return String(value).replace(/[&<>\"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c];});}",
@@ -4483,7 +4482,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 650,
+        "line": 740,
         "kind": "FUNCTION",
         "symbol": "aiWeaponPower",
         "context": "function aiWeaponPower(a){if(a.specialWeapon&&DROPS[a.specialWeapon])return DROPS[a.specialWeapon].power||0;var w=WEAPONS.find(function(x){return x.id===a.weapon;});return w?w.powe",
@@ -4491,7 +4490,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1908,
+        "line": 2004,
         "kind": "FUNCTION",
         "symbol": "nearestEnemy",
         "context": "function nearestEnemy(x,y,range){var best=null,bd=range*range;enemies.forEach(function(e){if(e.dead)return;var dx=e.x-x,dy=e.y-y,dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=e;}});return be",
@@ -4499,7 +4498,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1309,
+        "line": 1399,
         "kind": "FUNCTION",
         "symbol": "renderCreator",
         "context": "function renderCreator(){",
@@ -4507,7 +4506,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1314,
+        "line": 1404,
         "kind": "FUNCTION",
         "symbol": "confirmCharacter",
         "context": "function confirmCharacter(){var name=document.getElementById('heroName').value.trim().slice(0,16)||'여행자';state.player.name=name;state.player.classId=uiDraft.classId;state.player.po",
@@ -4515,7 +4514,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1907,
+        "line": 2003,
         "kind": "FUNCTION",
         "symbol": "attackPlayer",
         "context": "function attackPlayer(automatic){if(p.attackCd>0||modalOpen||tacticalPaused||!gameStarted)return;var r=role(state.player),target=orderedEnemy(p.x,p.y,r.range);if(!target){if(automa",
@@ -4531,7 +4530,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1878,
+        "line": 1974,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "context": "function damageEnemy(e,amount,source,options){if(!e||e.dead)return false;options=options||{};var u=unitBySource(source);if(!u)return false;var c=combat(u);c.visualUntil=performance",
@@ -4539,7 +4538,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1307,
+        "line": 1397,
         "kind": "FUNCTION",
         "symbol": "portraitMarkup",
         "context": "function portraitMarkup(index,extra){return '<span class=\"portrait '+(extra||'')+'\" style=\"'+portraitStyle(index)+'\" aria-hidden=\"true\"></span>';}",
@@ -4547,7 +4546,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1308,
+        "line": 1398,
         "kind": "FUNCTION",
         "symbol": "showCreator",
         "context": "function showCreator(){uiDraft.classId=state.player.classId;uiDraft.portraitId=state.player.portraitId;document.getElementById('introMenu').hidden=true;document.getElementById('cre",
@@ -4555,7 +4554,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1315,
+        "line": 1405,
         "kind": "FUNCTION",
         "symbol": "beginAdventure",
         "context": "function beginAdventure(){sound.start();if(!state.player.identityCreated){showCreator();return;}gameStarted=true;document.getElementById('start').hidden=true;keys={};joy.x=joy.y=0;",
@@ -4563,7 +4562,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1316,
+        "line": 1406,
         "kind": "FUNCTION",
         "symbol": "showIntro",
         "context": "function showIntro(step){",
@@ -4571,7 +4570,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1841,
+        "line": 1937,
         "kind": "FUNCTION",
         "symbol": "spawnFieldBatch",
         "context": "function spawnFieldBatch(){",
@@ -4766,9 +4765,9 @@
   "previousVersionDelta": {
     "previousGoal": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
     "previousFocus": "CORE_FUN",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "c5d9651434abc445aa92b708a5512e67f8443aa58e93e91d5d5e4a1054394551",
-    "currentSourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+    "currentSourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5065,13 +5064,13 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
@@ -5085,18 +5084,18 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PALETTE",
@@ -5653,8 +5652,8 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5662,8 +5661,8 @@
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5689,8 +5688,8 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5698,8 +5697,8 @@
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5707,8 +5706,8 @@
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5847,31 +5846,6 @@
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
     }
   ],
   "primaryFocus": "CORE_FUN",
@@ -5933,8 +5907,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 353089,
-        "largestFileBytes": 275540,
+        "sourceBytes": 358301,
+        "largestFileBytes": 280752,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5966,20 +5940,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 7,
-    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
+    "themeDepth": 8,
+    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=CORE_FUN; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -6021,19 +5996,9 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 94,
+        "score": 76,
         "gapDomains": [
           "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
         ]
       },
       {
@@ -6042,13 +6007,6 @@
         "gapDomains": [
           "MULTIPLAYER_AND_SYNC",
           "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 34,
-        "gapDomains": [
-          "ENEMY_VISUALS"
         ]
       },
       {
@@ -6064,6 +6022,16 @@
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 24,
+        "gapDomains": []
+      },
+      {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 22,
+        "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 20,
         "gapDomains": []
       }
     ],
@@ -6140,11 +6108,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 7,
-    "previousGeneration": 6,
+    "generation": 8,
+    "previousGeneration": 7,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
-    "priorSourceFingerprint": "c5d9651434abc445aa92b708a5512e67f8443aa58e93e91d5d5e4a1054394551",
+    "sourceFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
+    "priorSourceFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6163,7 +6131,7 @@
     "version": 1,
     "gameId": "party-rpg",
     "platform": "WEB",
-    "sourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6798,7 +6766,7 @@
       "identity": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.",
       "visualPurpose": "파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 플레이 판단과 파티 RPG가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
       "distinctnessRule": "퀘스트와 인물 관계 × 서사시의 추방과 귀환와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
-      "placeholderDebt": "HIGH",
+      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE",
       "libraryRenewal": "기존 게임의 자산 적용 여부를 품질 합격으로 간주하지 않는다. 현재 화면의 캐릭터·몬스터·건물·가구·식생·음원·UI와 로비를 게임 설계 기준으로 다시 검토하고 낮은 품질 축은 교체한다. 품질 좋은 내부 범용 원본을 우선 선택해 원본을 보존하고 별도 플랫폼 파생본을 만든다. 공간 모델은 실제 메시·리그·재질·모션과 업로드 ID를 연결하고, 음원은 기존 오디오 처리 경로를 사용한다. 단순 부품 재조합만으로 최종 품질을 주장하지 않는다.",
       "lobbyRenewal": "로비가 있는 게임은 기존 진입·파티·상점·포탈 기능과 저장·서버 권한을 보존하면서 현재 게임 컨셉에 맞게 시야·동선·상호작용 구역·배경을 재구성한다. 로비가 없는 게임에 새 로비를 강제하지 않는다. 실제 전후 화면·모바일 조작·접지·실행 확인 후에만 품질 통과로 기록한다."
     },
@@ -6848,7 +6816,7 @@
     "gameId": "party-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+    "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7190,7 +7158,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2044,
+        "line": 2140,
         "kind": "FUNCTION",
         "symbol": "draw",
         "currentBehavior": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
@@ -7199,7 +7167,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1220,
+        "line": 1310,
         "kind": "FUNCTION",
         "symbol": "partyHud",
         "currentBehavior": "function partyHud(){",
@@ -7208,7 +7176,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1909,
+        "line": 2005,
         "kind": "FUNCTION",
         "symbol": "updateEnemies",
         "currentBehavior": "function updateEnemies(dt){",
@@ -7217,7 +7185,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2041,
+        "line": 2137,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "currentBehavior": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -7226,7 +7194,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2042,
+        "line": 2138,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "currentBehavior": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -7235,7 +7203,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2046,
+        "line": 2142,
         "kind": "FUNCTION",
         "symbol": "loop",
         "currentBehavior": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
@@ -7244,7 +7212,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1305,
+        "line": 1395,
         "kind": "FUNCTION",
         "symbol": "portraitIndex",
         "currentBehavior": "function portraitIndex(u){return u===state.player?state.player.portraitId:Math.max(0,Math.min(9,Number(String(u.id).slice(2))||0));}",
@@ -7253,7 +7221,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 649,
+        "line": 739,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
         "currentBehavior": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
@@ -7389,7 +7357,7 @@
     "sourceAnchors": [
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2044,
+        "line": 2140,
         "kind": "FUNCTION",
         "symbol": "draw",
         "context": "function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW",
@@ -7401,7 +7369,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1220,
+        "line": 1310,
         "kind": "FUNCTION",
         "symbol": "partyHud",
         "context": "function partyHud(){",
@@ -7413,7 +7381,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1909,
+        "line": 2005,
         "kind": "FUNCTION",
         "symbol": "updateEnemies",
         "context": "function updateEnemies(dt){",
@@ -7425,7 +7393,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2041,
+        "line": 2137,
         "kind": "FUNCTION",
         "symbol": "toggleParty",
         "context": "function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,\"town\");toast(ai.name+\" 파티 해체\");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast(\"파티는 플레이어 포함 최대 \"+",
@@ -7437,7 +7405,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2042,
+        "line": 2138,
         "kind": "FUNCTION",
         "symbol": "onCanvasTap",
         "context": "function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))r",
@@ -7449,11 +7417,11 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 2046,
+        "line": 2142,
         "kind": "FUNCTION",
         "symbol": "loop",
         "context": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
-        "score": 290,
+        "score": 282,
         "currentBehavior": "function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypo",
         "intendedBehavior": "CORE_FUN primary goal \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 파티 RPG를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.\"에 맞춰 loop의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"파티 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 파티 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 파티 RPG의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.\"가 되게 한다.",
         "whyThisAnchor": "web-games/party-rpg/index.html::loop이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
@@ -7461,7 +7429,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 1305,
+        "line": 1395,
         "kind": "FUNCTION",
         "symbol": "portraitIndex",
         "context": "function portraitIndex(u){return u===state.player?state.player.portraitId:Math.max(0,Math.min(9,Number(String(u.id).slice(2))||0));}",
@@ -7473,7 +7441,7 @@
       },
       {
         "file": "web-games/party-rpg/index.html",
-        "line": 649,
+        "line": 739,
         "kind": "FUNCTION",
         "symbol": "playerAtk",
         "context": "function playerAtk(){return state.player.baseAtk+playerWeaponPower()+accessoryBonus(state.player,'attack');}",
@@ -7492,18 +7460,14 @@
     "version": 1,
     "platform": "WEB",
     "categories": [
-      "GRAPHICS",
-      "MAP",
       "UI",
       "MULTIPLAYER_SERVER"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA"
+      "SECURITY_AUTHORITY_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
@@ -7526,18 +7490,14 @@
       "version": 1,
       "platform": "WEB",
       "categories": [
-        "GRAPHICS",
-        "MAP",
         "UI",
         "MULTIPLAYER_SERVER"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
-        "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "REMOTE_AUTHORITY_AND_SYNC_QA",
-        "SECURITY_AUTHORITY_QA",
-        "VISUAL_BINDING_QA"
+        "SECURITY_AUTHORITY_QA"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
@@ -7556,11 +7516,9 @@
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA"
+      "SECURITY_AUTHORITY_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
@@ -7579,7 +7537,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "9ffc5c77aa790210cec80c0f3a5f2dc04cfdf80b11ba233c0abedc7d444a382f",
+      "sourceTreeFingerprint": "f0b7c8daff4271fd0925ed33b5fa79da0c17ab036217ef4b3076d2cf35b985fc",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -7638,7 +7596,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7701,5 +7659,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-25T01:36:25.462Z"
+  "generatedAt": "2026-10-25T03:17:36.642Z"
 }
