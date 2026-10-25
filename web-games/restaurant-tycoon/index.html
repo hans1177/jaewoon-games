@@ -3,20 +3,41 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#ffe7b5"><title>식당 타이쿤 | 재운게임즈</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:#bfeee2;color:#25352e}button{font:inherit;cursor:pointer;touch-action:manipulation}#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}.hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:8px;right:8px;display:flex;align-items:start;gap:7px;z-index:3;pointer-events:none}.chip{padding:7px 10px;border-radius:13px;background:#fffcf0ee;box-shadow:0 4px 12px #475e5b33;font-size:12px;font-weight:900;pointer-events:auto;white-space:nowrap}.chip b{display:block;color:#ad632e;font-size:16px}.home{text-decoration:none;color:#395b50}.grow{flex:1}.bottom{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:3;max-width:650px;margin:auto}.status{padding:8px 12px;margin-bottom:7px;background:#243b33dc;color:#fff;border-radius:13px;text-align:center;font-weight:850;font-size:12px;min-height:35px}.orders{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:1px 0 9px}.order{min-width:136px;min-height:89px;flex:1;border:2px solid #e3d5a9;border-radius:15px;background:#fffbef;box-shadow:0 5px 15px #314b3b33;padding:8px;text-align:left;color:#324337}.order b{font-size:12px;display:block}.order small{font-size:10px;color:#597165}.order .bar{height:6px;background:#e9ddd0;border-radius:10px;margin-top:8px;overflow:hidden}.order .fill{height:100%;background:#75b88c;transition:width .2s}.order.cooking{background:#fff0d1;border-color:#eda65e}.order.ready{background:#e5ffd9;border-color:#63b87a}.order:disabled{opacity:.7}.menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:7px;background:#fdf9ecf2;border-radius:16px;box-shadow:0 6px 18px #27433744}.menu button{border:0;border-radius:11px;background:#e8f2e3;color:#355441;padding:10px 3px;min-height:45px;font-size:11px;font-weight:900}.menu button:disabled{opacity:.5}.menu button.primary{background:#ffc276;color:#5d3521}.menu button.full{background:#d4e7ef}.notice{position:fixed;z-index:5;top:72px;left:50%;transform:translateX(-50%);padding:8px 13px;border-radius:99px;background:#293e35e8;color:white;white-space:nowrap;max-width:95vw;text-overflow:ellipsis;overflow:hidden;font-size:11px;font-weight:800;pointer-events:none}#intro{position:fixed;z-index:9;inset:0;display:grid;place-items:center;background:#12382b9c;padding:20px}#intro.hidden{display:none}.card{width:min(94vw,380px);padding:26px 20px;text-align:center;background:#fff9e7;border:4px solid #fff;border-radius:24px;box-shadow:0 20px 70px #173b3755}.card h1{font-size:29px;margin:4px 0 12px}.card p{font-size:13px;line-height:1.8;color:#54635c}.card button{border:0;border-radius:14px;padding:14px 42px;color:#503418;background:#ffc76e;font-weight:1000;font-size:17px}.tiny{font-size:10px;color:#76877c;margin-top:12px}@media(max-width:380px){.chip{padding:6px;font-size:10px}.chip b{font-size:13px}.order{min-width:121px}.menu button{font-size:10px}}
+
+/* 주방: 손님 선택 후 진행되는 실제 요리 */
+#kitchen{display:none;margin-bottom:7px;padding:9px;background:#fff9e9f5;border:2px solid #f5c881;border-radius:15px;box-shadow:0 4px 15px #27433730}
+#kitchen.open{display:block}
+#kitchen strong{font-size:13px;display:block}
+#recipeText{font-size:11px;color:#647263;line-height:1.4;margin:5px 0}
+#stepText{font-size:12px;font-weight:900;color:#965c2e;margin:5px 0}
+#actions{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+#actions button{flex-shrink:0;border:0;background:#247b5d;color:#fff;font-size:12px;font-weight:850;border-radius:10px;padding:10px;min-height:42px}
+#actions button.hot{background:#d9783a}
+#actions button:disabled{background:#aab2a5;color:#edf1e8}
+@media(max-height:650px){#kitchen{padding:5px}#recipeText{margin:2px 0}#stepText{margin:2px 0}#actions button{padding:6px;min-height:34px}}
 </style></head><body>
 <canvas id="scene" aria-label="식당 3차원 화면"></canvas>
 <header class="hud"><a class="chip home" href="../../">⌂ 홈</a><div class="chip">보유 금액<b id="cash">0원</b></div><div class="chip">손님 만족<b id="served">0명</b></div><div class="grow"></div><div class="chip">새 메뉴까지<b id="unlock">02:00</b></div></header>
-<div class="notice" id="notice">주문을 눌러 요리하고 완성되면 서빙해!</div>
-<div class="bottom"><div class="status" id="status">손님이 식당에 들어오고 있어!</div><div class="orders" id="orders" aria-label="손님 주문"></div><div class="menu">
+<div class="notice" id="notice">주문 선택 → 창고 → 해동 → 칼질 → 불판 → 접시 → 서빙</div>
+<div class="bottom"><div class="status" id="status">손님이 식당에 들어오고 있어!</div><div id="kitchen"><strong id="workName">🍳 요리하기</strong><div id="recipeText"></div><div id="stepText"></div><div id="actions" aria-label="재료와 주방 조작"></div></div><div class="orders" id="orders" aria-label="손님 주문"></div><div class="menu">
 <button class="primary" id="tableBtn">🪑 테이블 추가<br><span id="tablePrice">300원</span></button><button id="cookBtn">👨‍🍳 요리사 고용<br><span id="cookPrice">500원</span></button><button class="full" id="menuBtn">📋 메뉴판<br><span id="menuCount">3종 영업 중</span></button>
 </div></div>
-<div id="intro"><div class="card"><div style="font-size:56px">🍽️</div><h1>식당 타이쿤</h1><p>손님 주문을 눌러 요리를 시작하고<br>완성되면 다시 눌러 서빙해!<br>돈을 벌어 테이블과 요리사를 늘려봐.<br><strong>플레이 2분 뒤 메뉴 2종 추가!</strong></p><button id="start">영업 시작!</button><div class="tiny">진행 상황은 이 기기에 자동 저장돼.</div></div></div>
+<div id="intro"><div class="card"><div style="font-size:56px">🍽️</div><h1>식당 타이쿤</h1><p>창고에서 재료를 가져와<br>해동하고 썰고 불판에서 구워!<br>접시에 담고 주문을 눌러 서빙해!<br>돈을 벌어 테이블과 요리사를 늘려봐.<br><strong>플레이 2분 뒤 메뉴 2종 추가!</strong></p><button id="start">영업 시작!</button><div class="tiny">진행 상황은 이 기기에 자동 저장돼.</div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 <script>
 (()=>{
 'use strict';
 // 메인: 메뉴와 저장
 const dishes=[{name:'볶음밥',icon:'🍚',price:100,time:3},{name:'햄버거',icon:'🍔',price:150,time:4},{name:'스테이크',icon:'🥩',price:300,time:6},{name:'피자',icon:'🍕',price:400,time:7},{name:'초밥',icon:'🍣',price:500,time:8}];
+
+// 요리: 원래 가격과 조리시간 보존, 재료·손질 단계는 직접 조작
+const recipes=[
+ {items:[['밥','🍚',0,0],['냉동고기','🥩',1,1],['냉동채소','🥬',1,1]],heat:'밥과 함께 볶기',motion:'젓기',moves:3,finish:'볶음밥 접시에 담기'},
+ {items:[['빵','🍞',0,0],['냉동 패티','🥩',1,0],['채소','🥬',0,1]],heat:'패티 굽기',motion:'뒤집기',moves:2,finish:'햄버거 조립하기'},
+ {items:[['냉동 스테이크','🥩',1,0],['허브','🌿',0,1]],heat:'스테이크 굽기',motion:'뒤집기',moves:2,finish:'스테이크 접시에 담기'},
+ {items:[['도우','🫓',0,0],['치즈','🧀',0,0],['냉동 토마토','🍅',1,1]],heat:'피자 오븐에 굽기',motion:'',moves:0,finish:'피자 접시에 담기'},
+ {items:[['밥','🍚',0,0],['냉동 생선','🐟',1,1],['김','🌱',0,0]],heat:'',motion:'',moves:0,finish:'밥과 생선으로 초밥 빚기'}
+];
 const key='jaewoon-restaurant-tycoon-v1';
 let data={cash:100,tables:2,cooks:0,served:0,elapsed:0,started:false};
 try{let old=JSON.parse(localStorage.getItem(key)||'null');if(old&&typeof old==='object')for(const k of Object.keys(data))if(typeof old[k]===typeof data[k])data[k]=old[k]}catch(e){}
