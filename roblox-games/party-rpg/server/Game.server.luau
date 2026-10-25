@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 local store = nil
+local verifiedSaveRead = {}
 local storeOk, storeResult = pcall(function()
   return DataStoreService:GetDataStore("party-rpg-development-v1")
 end)
@@ -312,6 +313,7 @@ Players.PlayerAdded:Connect(function(player)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
   end)
+  verifiedSaveRead[player] = ok and store ~= nil
   if ok and typeof(saved) == "table" then
     for key, fallback in pairs(Config.InitialState) do
       local value = saved[key]
@@ -338,12 +340,18 @@ remote.OnServerEvent:Connect(function(player, actionId)
   handler(player)
 end)
 local function savePlayer(player)
+  -- Never overwrite an existing save when DataStore load failed or did not complete.
+  if verifiedSaveRead[player] ~= true then
+    lastAction[player] = nil
+    return
+  end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
   pcall(function()
     store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
   end)
   lastAction[player] = nil
+  verifiedSaveRead[player] = nil
 end
 Players.PlayerRemoving:Connect(savePlayer)
 game:BindToClose(function()
