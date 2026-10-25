@@ -68,12 +68,12 @@ test('same owner revision restores the verified B source without resetting devel
       topicMode:'VIBE_FREE_TOPIC',originalPlatform:'ROBLOX',multiplayerMode:'COOP',instruction:'기존 저장과 전투 규칙을 보존하며 설계를 다시 검증한다.',
       bSystemReference:{scope:'B_SUPPORTING_REFERENCE_ONLY',source}
     }}]}));
-    const existing={gameId:'cozy-island',seedId:'OWNER-DESIGN-COZY-ISLAND',ownerResetRevision:'COZY-R1',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',saveSchemaVersion:7,checkpoint:{wave:5},promotion:{source:'existing'}};
+    const existing={gameId:'cozy-island',seedId:'OWNER-DESIGN-COZY-ISLAND',ownerResetRevision:'COZY-R1',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',saveSchemaVersion:7,checkpoint:{wave:5},promotion:{source:'existing'},B_SYSTEM_REFERENCE:{scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:'직접 채집',playerChoice:'플레이어가 나무와 식량 노드에 직접 상호작용하여 자원을 획득한다.',source}};
     const state={seeds:[structuredClone(existing)]};
     const first=ensureOwnerDesignResetSeed(state,'cozy-island',{file:queue});
     assert.equal(first.changed,true);
-    assert.deepEqual(state.seeds[0].B_SYSTEM_REFERENCE,{scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:'직접 채집',playerChoice:'플레이어가 나무와 식량 노드에 직접 상호작용하여 자원을 획득한다.',source});
-    for(const [key,value] of Object.entries(existing))assert.deepEqual(state.seeds[0][key],value,'existing state preserved: '+key);
+    assert.deepEqual(state.seeds[0].B_SYSTEM_REFERENCE,{scope:'B_EXISTING_GAME_SYSTEMS',systemFamily:'직접 채집',playerChoice:'플레이어가 나무와 식량 노드에 직접 상호작용하여 자원을 획득한다.',source});
+    for(const [key,value] of Object.entries(existing))if(key!=='B_SYSTEM_REFERENCE')assert.deepEqual(state.seeds[0][key],value,'existing state preserved: '+key);
     assert.equal(ensureOwnerDesignResetSeed(state,'cozy-island',{file:queue}).changed,false,'idempotent after source hydration');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

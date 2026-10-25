@@ -57,7 +57,7 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
       const systemFamily=clean(firstSystem.name),playerChoice=clean(firstSystem.purpose);
       if(systemFamily.length<2||systemFamily.length>160||playerChoice.length<10||playerChoice.length>280)
         throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_SOURCE_INVALID: '+source);
-      resolvedAOnly={scope:bSupporting?'B_SUPPORTING_REFERENCE_ONLY':'A_SYSTEM_ONLY',systemFamily,playerChoice,source};
+      resolvedAOnly={scope:bSupporting?'B_EXISTING_GAME_SYSTEMS':'A_SYSTEM_ONLY',systemFamily,playerChoice,source};
     }
     if(freeTopicMode&&baselineSource)throw new Error('OWNER_FREE_TOPIC_BASELINE_FORBIDDEN: '+game);
     if(baselineSource&&(!baselineSource.startsWith('design/'+game+'/')||!/^design\/[a-z0-9-]+\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.test(baselineSource)))throw new Error('OWNER_DESIGN_BASELINE_PATH_INVALID: '+game);
@@ -121,8 +121,9 @@ export function ensureOwnerDesignResetSeed(state,gameId,{file=OWNER_DESIGN_RESET
   if(index<0){state.seeds.push(reset);return {seed:reset,changed:true};}
   const current=state.seeds[index];
   if(clean(current?.ownerResetRevision)===clean(reset.ownerResetRevision)){
-    // 동일 개정의 기존 개발 상태는 보존하되 실제 원본에서 검증해 읽은 B 참조 누락만 복구한다.
-    if(reset.B_SYSTEM_REFERENCE&&!current.B_SYSTEM_REFERENCE){
+    // 동일 개정에서 원본으로 검증된 B 참조만 최신 계약에 정렬한다. 저장·진행·게임 상태는 변경하지 않는다.
+    if(reset.B_SYSTEM_REFERENCE&&(!current.B_SYSTEM_REFERENCE
+      ||['scope','systemFamily','playerChoice','source'].some(key=>clean(current.B_SYSTEM_REFERENCE[key])!==clean(reset.B_SYSTEM_REFERENCE[key])))){
       current.B_SYSTEM_REFERENCE=clone(reset.B_SYSTEM_REFERENCE);
       return {seed:current,changed:true};
     }
