@@ -215,6 +215,15 @@
 /* 도감: 항목이 많아도 휴대폰에서 탭을 가로로 넘기고 터치할 수 있다. */
 .item-tabs{display:flex;gap:5px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin}.item-tabs .action{flex:0 0 auto;min-width:75px;min-height:44px;white-space:nowrap;scroll-snap-align:start}
 .item-icon{flex:0 0 40px;object-fit:contain;image-rendering:pixelated;filter:sepia(.55) saturate(.75) brightness(1.2);padding:4px;background:#503c2530;border:1px solid #96764d66;border-radius:4px}.item-row{gap:10px;flex-wrap:wrap}.item-row .desc{flex:1;min-width:130px}.item-row .stack{flex-wrap:wrap}
+/* 멀티: 기존 게임 화면과 저장을 가리지 않는 간단 숫자방 패널 */
+#coopPanel{position:fixed;z-index:12;right:8px;top:calc(212px + env(safe-area-inset-top));width:min(300px,calc(100vw - 16px));padding:12px;background:#112d3aee;border:2px solid #a9c4a1;border-radius:12px;color:#f7e6c2;box-shadow:0 12px 30px #0008}
+#coopPanel[hidden]{display:none}
+#coopPanel .coop-row{display:flex;gap:6px;align-items:center;margin:7px 0}
+#coopPanel button,#coopPanel input{min-height:44px;border-radius:7px;border:1px solid #b6c4a4;background:#254e53;color:#fff;font-size:13px}
+#coopPanel button{padding:8px 10px;flex:1}
+#coopPanel input{width:74px;text-align:center;font-size:21px}
+#coopStatus{font-size:12px;line-height:1.5}
+@media(max-width:740px){#coopPanel{top:calc(215px + env(safe-area-inset-top));right:4px}}
 </style><script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head><body>
 <canvas id="sea" aria-label="실제 해안선을 사용하는 픽셀 항해 지도와 항구 마을"></canvas><div id="veil"></div>
@@ -223,7 +232,13 @@
 <button class="nav" data-panel="port" aria-label="항구 입항 또는 항구 찾기"><span>⚓</span>항구</button>
 <button class="nav" data-panel="chart" aria-label="항해 지도 열기"><span>⌖</span>해도</button>
 <button class="nav" data-panel="menu" aria-label="전체 메뉴 열기"><span>☰</span>메뉴</button></nav>
-<div id="tools"><button id="viewMode" aria-label="선박 추적, 45도 위 시점, 해도 시점 변경">시점: 추적</button><button id="zoomIn" aria-label="지도 확대">확대</button><button id="zoomOut" aria-label="지도 축소">축소</button><button id="speed" aria-label="항해 배속 빠르게 변경">1배</button><button id="autoBattle" aria-label="해전 자동 조타 및 자동 포격 켜고 끄기" aria-pressed="true">자동해전 켬</button><button id="hail" hidden aria-label="가까운 무역선과 교신">상선 교신</button><button id="quickRepair" aria-label="수리 목재 즉시 사용">수리</button><button id="allySupport" aria-label="동맹 함대 지원 요청">동맹</button><button id="sfx-toggle" aria-label="효과음 켜기 끄기">효과음 켬</button><button id="quickBag" aria-label="선박과 소모품 가방">가방</button></div>
+<div id="tools"><button id="coopOpen" aria-label="숫자방 멀티 열기">멀티</button><button id="viewMode" aria-label="선박 추적, 45도 위 시점, 해도 시점 변경">시점: 추적</button><button id="zoomIn" aria-label="지도 확대">확대</button><button id="zoomOut" aria-label="지도 축소">축소</button><button id="speed" aria-label="항해 배속 빠르게 변경">1배</button><button id="autoBattle" aria-label="해전 자동 조타 및 자동 포격 켜고 끄기" aria-pressed="true">자동해전 켬</button><button id="hail" hidden aria-label="가까운 무역선과 교신">상선 교신</button><button id="quickRepair" aria-label="수리 목재 즉시 사용">수리</button><button id="allySupport" aria-label="동맹 함대 지원 요청">동맹</button><button id="sfx-toggle" aria-label="효과음 켜기 끄기">효과음 켬</button><button id="quickBag" aria-label="선박과 소모품 가방">가방</button></div>
+<section id="coopPanel" hidden aria-label="푸른 항로 협동 방">
+ <div class="coop-row"><strong>함께 항해하기 · 최대 4명</strong><button id="coopClose" type="button">닫기</button></div>
+ <div class="coop-row"><button id="coopCreate" type="button">방 만들기</button></div>
+ <div class="coop-row"><input id="coopNumber" inputmode="numeric" maxlength="1" pattern="[0-9]" placeholder="0~9" aria-label="한 자리 숫자 방 번호"><button id="coopJoin" type="button">방 참가</button><button id="coopLeave" type="button">나가기</button></div>
+ <p id="coopStatus" role="status">숫자 한 자리로 친구와 같은 바다를 항해해.</p>
+ </section>
 <aside id="details" aria-label="시설과 정보"><div id="panelHead"><h2 id="panelTitle"></h2><button id="close" aria-label="시설 닫기">✕</button></div><div id="content"></div></aside>
 <div id="message" role="status" aria-live="polite">항해를 준비하고 있어.</div><div id="hint">방향키 / WASD 조타 · E 입항 · M 해도 · 스페이스 포격</div>
 <div id="controls"><div class="group"><div id="joystick" role="group" aria-label="항해 조타 스틱"><div id="joystickRim"><div id="joystickHandle"></div></div><span id="joystickLabel">왼쪽 바다 터치 · 밀어서 조타</span></div><button id="sailToggle" class="pad sail-toggle" aria-label="돛 올려 순항하거나 정지" aria-pressed="false">▶ 항해</button></div><div class="group"><button id="dock" class="pad"><b>⚓</b>입항</button><button id="fire" class="pad fire"><b>✹</b>포격</button><button id="music-toggle" class="pad" aria-label="음악 켜기 끄기"><b>♫</b>음악</button></div></div>
