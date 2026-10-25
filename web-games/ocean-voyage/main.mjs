@@ -215,7 +215,8 @@ function fleet(){
    '<path d="M'+(x-w)+' '+(y+20)+' Q'+x+' '+(y+35)+' '+(x+w)+' '+(y+20)+' L'+(x+w-5)+' 182 Q'+x+' 195 '+(x-w+5)+' 182 Z" fill="#eee2c6" stroke="#ac9670" stroke-width="3"/>')+
    '<path d="M'+(x-w-4)+' '+(y+18)+' H'+(x+w+4)+'" stroke="#704830" stroke-width="4"/>'+
    '<path d="M'+l+' 201 L'+x+' 35 L'+r+' 201" fill="none" stroke="#d3bc90" stroke-width="1.5"/>';}).join('');
-  const ports=Array.from({length:Math.max(2,Math.min(10,Math.ceil(guns/2)))},(_,i,a)=>'<rect x="'+(l+32+i*(r-l-64)/Math.max(1,a.length-1))+'" y="219" width="13" height="9" rx="2" fill="#172c34" stroke="#c49d69" stroke-width="2"/>').join('');
+  const gunSlots=Math.max(2,Math.min(10,Math.ceil(guns/2)));
+  const ports=Array.from({length:gunSlots},(_,i)=>'<rect x="'+(l+32+i*(r-l-64)/Math.max(1,gunSlots-1))+'" y="219" width="13" height="9" rx="2" fill="#172c34" stroke="#c49d69" stroke-width="2"/>').join('');
   const oars=galley?Array.from({length:8},(_,i)=>'<path d="M'+(l+26+i*(r-l-52)/8)+' 205 l-22 44" stroke="#d9b780" stroke-width="4"/>').join(''):'';
   const gallery=large?'<path d="M'+(r-75)+' 198 L'+(r-65)+' 151 L'+(r-10)+' 151 L'+r+' 198 Z" fill="#65402d" stroke="#bd9769" stroke-width="3"/><rect x="'+(r-50)+'" y="163" width="14" height="15" fill="#e9d3a1"/>':'';
   return '<div class="ship-preview'+(mini?' ship-mini':'')+'"><svg viewBox="0 0 640 275" role="img" aria-label="'+escapeHtml(t.name)+' 선체와 돛·포문 미리보기">'+

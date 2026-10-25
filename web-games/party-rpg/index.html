@@ -319,6 +319,14 @@ body[data-time-phase=night] #timeWeather{border-left-color:#8e9db5;color:#b9c7d6
 #commandBar{position:fixed;z-index:30;bottom:calc(26px + var(--safe-bottom));left:calc(50% - 22px);transform:translateX(-50%);display:flex;gap:5px;padding:4px;background:#1a1711e8;border:1px solid #8d744746;border-radius:5px}
 #commandBar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:46px;min-height:48px;padding:4px 1px;border:1px solid #8b754d;background:linear-gradient(#4b3c29,#29251c);border-radius:3px;font-size:10px;color:#e3cc9f}
 #pauseBtn[aria-pressed=true],#tacticsBtn[aria-pressed=true]{border-color:#c7b37c;background:linear-gradient(#62704a,#343a29)}
+/* 전투 직전 자동 정지 상태를 수동 정지와 구별해서 표시한다. */
+#pauseBtn[aria-pressed=true]{color:#ffe9b2;border-color:#edc47a;box-shadow:inset 0 0 0 1px #d6ac63,0 0 13px #d0a0575a}
+#pauseNotice{position:fixed;z-index:29;left:50%;top:47%;transform:translate(-50%,-50%);width:min(370px,calc(100vw - 32px));padding:17px 20px 16px;border:1px solid #c9a36a;border-left:4px solid #e2b778;background:linear-gradient(135deg,#302720f5,#151718f5);box-shadow:0 10px 35px #000b,inset 0 1px #fae4b132;color:#f0ddba;text-align:center;pointer-events:none}
+#pauseNotice strong{display:block;font:600 clamp(17px,4.5vw,23px) Georgia,'Batang',serif;color:#f9deb0}
+#pauseNotice span{display:block;margin-top:8px;font-size:12px;line-height:1.65;color:#ddd1b7}
+#pauseNotice[data-cause=manual]{border-color:#9caa90}#pauseNotice[data-cause=manual] strong{color:#dce6c8}
+@media(max-width:700px){#pauseNotice{padding:13px 12px;top:46%;width:calc(100vw - 44px)}#pauseNotice span{font-size:11px}}
+@media(max-height:500px) and (orientation:landscape){#pauseNotice{left:auto;right:10px;top:34%;transform:translateY(-50%);width:min(220px,35vw);padding:10px 8px}#pauseNotice strong{font-size:15px}#pauseNotice span{font-size:10px;margin-top:4px}}
 #partyCards{position:fixed;z-index:25;bottom:calc(150px + var(--safe-bottom));left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:min(520px,calc(100vw - 24px));pointer-events:none}
 .partyCard{position:relative;display:grid;grid-template-columns:38px minmax(0,1fr);grid-template-rows:18px 14px 5px 12px;column-gap:6px;min-width:0;min-height:60px;padding:5px;border:1px solid #9a7c4d;border-left:3px solid #b9a07a;border-radius:5px 2px;background:linear-gradient(145deg,#3b3024f2,#211e17f2);color:#e6d6b7;text-align:left;box-shadow:inset 0 1px #e2bd7220,0 4px 9px #0007;pointer-events:auto}
 .partyCard .portrait{grid-column:1;grid-row:1/5;width:38px;height:46px;aspect-ratio:auto;border:1px solid #826c46}.partyName{grid-column:2;grid-row:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.partyRole{grid-column:2;grid-row:2;font-size:9px;color:#b5a68c}.partyHealth{grid-column:2;grid-row:3;display:block;width:100%;height:4px;background:#492d24}.partyHealth i{display:block;height:100%;background:#a4b481}.partyCooldown{grid-column:2;grid-row:4;font-size:9px;color:#c7b075;white-space:nowrap;overflow:hidden}
@@ -383,6 +391,7 @@ body[data-scene=dungeon] #atmosphere,body[data-scene='6'] #atmosphere{background
  <button id="nextQuest" type="button" aria-live="off"><b>다음 여정</b><span id="nextQuestText">이야기 확인 중</span></button>
 </header>
 <div id="partyCards" aria-label="파티 상태"></div>
+<div id="pauseNotice" role="status" aria-live="polite" data-cause="auto" hidden><strong id="pauseTitle">전투 직전 · 자동 일시정지</strong><span id="pauseHint">전술을 정하고 아래 전투 재개 버튼을 눌러.</span></div>
 <div id="commandBar" aria-label="전투 지휘"><button id="pauseBtn" aria-pressed="false" aria-label="일시정지">정지</button><button id="tacticsBtn" type="button" aria-label="파티 대형과 전투 지시">전술</button></div>
 <div id="prompt"></div><div id="joystick" aria-label="이동 조이스틱"><div id="knob"></div></div>
 <div id="actions"><button class="act primary" id="attackBtn">공격</button><button class="act" id="skillBtn" type="button" aria-label="현재 직업 기술 사용">직업 기술</button><button class="act gold" id="interactBtn">상호작용</button></div>
@@ -930,7 +939,7 @@ function beginImperialCombat(c){
  const tag='imperial:'+c.id,z=ZONES[c.zone],mobs=z.mons,idx=IMPERIAL_CASES.indexOf(c);
  imperialBattle={id:c.id,zone:c.zone,tag};record.status='fighting';
  const mob=mobs[idx%3],count=idx%2===0?3:2;
- contactTriggered=false;tacticalPaused=false;
+ contactTriggered=false;tacticalPaused=false;preCombatPaused=false;
  document.getElementById('pauseBtn').textContent='일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed','false');
  for(let i=0;i<count;i++){
   const enemy=i===0?[c.foe,mob[1]+z.lv*8,mob[2]+z.lv*2,mob[3]+z.lv*3,mob[4]+z.lv*2]:mobs[(i+idx)%mobs.length];
@@ -988,7 +997,7 @@ function beginStoryBattle(phase,zone){
  var tag=phase+':'+zone,mobs=ZONES[zone].mons,amount=phase==='act2'?3:2;
  storyBattle={phase,zone,tag};
  if(phase==='act1')state.story.battles[zone]='active';
- tacticalTargetId=null;contactTriggered=false;tacticalPaused=false;
+ tacticalTargetId=null;contactTriggered=false;tacticalPaused=false;preCombatPaused=false;
  document.getElementById('pauseBtn').textContent='일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed','false');
  for(var i=0;i<amount;i++){
   var mob=mobs[(i+(phase==='act2'?1:0))%mobs.length],angle=2*Math.PI*(i+1)/(amount+1),dist=155+(i%2)*42;
@@ -1180,7 +1189,7 @@ if(!state.tactics||typeof state.tactics!=='object'||Array.isArray(state.tactics)
 if(!TACTIC_FORMATIONS[state.tactics.formation])state.tactics.formation='line';
 if(!TACTIC_MODES[state.tactics.mode])state.tactics.mode='balanced';
 state.tactics.autoPause=state.tactics.autoPause!==false;
-var tacticalTargetId=null,contactTriggered=false;
+var tacticalTargetId=null,contactTriggered=false,preCombatPaused=false;
 function orderedEnemy(x,y,range){
  var marked=enemies.find(function(e){return !e.dead&&e.id===tacticalTargetId;});
  return marked&&Math.hypot(marked.x-x,marked.y-y)<=range?marked:nearestEnemy(x,y,range);
@@ -1306,7 +1315,18 @@ function useClassSkill(){
  if(combat(state.player).skillAt<=before)toast('직업 기술 조건이 아직 충족되지 않았어.');
  updateHud();
 }
-function updateCombat(dt){battleTime+=dt;var threat=enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<260;});if(!threat)contactTriggered=false;else if(!contactTriggered&&state.tactics.autoPause){contactTriggered=true;tacticalPaused=true;document.getElementById('pauseBtn').textContent='전투 재개';document.getElementById('pauseBtn').setAttribute('aria-pressed','true');battleLog('적 접촉 · 일시정지 · 전술 지시 가능');}if(tacticalPaused)return;attackPlayer(true);autoSkill(state.player,p,'player');partyMembers().forEach(function(a){autoSkill(a,a,a.id);});}
+function updateCombat(dt){
+  battleTime+=dt;var threat=enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<260;});
+  if(!threat)contactTriggered=false;
+  else if(!contactTriggered&&state.tactics.autoPause){
+   contactTriggered=true;tacticalPaused=true;preCombatPaused=true;
+   var button=document.getElementById('pauseBtn');
+   button.textContent='전투 재개';button.setAttribute('aria-pressed','true');button.setAttribute('aria-label','자동 일시정지 중 · 전투 재개');
+   battleLog('적 발견 · 전투 직전 자동 일시정지 · 전술 지시 가능');updateHud();
+  }
+  if(tacticalPaused)return;
+  attackPlayer(true);autoSkill(state.player,p,'player');partyMembers().forEach(function(a){autoSkill(a,a,a.id);});
+}
 function partyHud(){
  var root=document.getElementById('partyCards'),used=new Set(),items=[{u:state.player,id:'player',name:state.player.name}].concat(partyMembers().map(function(a){return{u:a,id:a.id,name:a.name};}));
  items.forEach(function(item){used.add(item.id);var entry=uiPartyNodes.get(item.id);if(!entry){var b=document.createElement('button');b.className='partyCard';b.innerHTML=portraitMarkup(portraitIndex(item.u))+'<span class="partyName"></span><span class="partyRole"></span><span class="partyHealth"><i></i></span><span class="partyCooldown"></span>';b.onclick=function(){if(view.selection===item.id&&matchMedia('(max-width:700px)').matches){if(item.id==='player')characterSheet();else companionMenu(item.id);return;}view.selection=item.id;view.center(item.id);partyHud();};root.append(b);entry={button:b,name:b.querySelector('.partyName'),role:b.querySelector('.partyRole'),health:b.querySelector('.partyHealth i'),cooldown:b.querySelector('.partyCooldown'),portrait:b.querySelector('.portrait')};uiPartyNodes.set(item.id,entry);}
@@ -1602,7 +1622,17 @@ function resize(){W=innerWidth;H=innerHeight;view.resize();}
 addEventListener("resize",resize);resize();
 function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("on");clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("on");},1900);}
 function updateHud(){
- var climate=gameEnvironment(),h=climate.hour,minutes=String(climate.minute).padStart(2,'0');
+  // 전투 직전 자동 정지와 직접 정지를 서로 다른 안내 문구로 표시한다.
+  var notice=document.getElementById('pauseNotice'),paused=gameStarted&&tacticalPaused;
+  notice.hidden=!paused;
+  if(paused){
+   var title=preCombatPaused?'전투 직전 · 자동 일시정지':'일시정지 중';
+   var hint=preCombatPaused?'적을 발견했어. 전술을 정하고 아래 전투 재개 버튼을 눌러.':'파티 대형과 공격 대상을 정하고 아래 전투 재개 버튼을 눌러.';
+   if(document.getElementById('pauseTitle').textContent!==title)document.getElementById('pauseTitle').textContent=title;
+   if(document.getElementById('pauseHint').textContent!==hint)document.getElementById('pauseHint').textContent=hint;
+   notice.dataset.cause=preCombatPaused?'auto':'manual';
+  }
+  var climate=gameEnvironment(),h=climate.hour,minutes=String(climate.minute).padStart(2,'0');
  var parts={night:'밤',dawn:'새벽',day:'낮',dusk:'저녁'};
  var descriptions={clear:'맑음',rain:'비',snow:'눈',fog:'안개',dust:'모래바람',ash:'잿가루',interior:'실내'};
  document.getElementById('timeOfDay').textContent='제국력 '+climate.day+'일 · '+parts[climate.phase]+' '+h+':'+minutes;
@@ -1652,7 +1682,7 @@ function systemMenu(){
  document.getElementById('systemWeatherFx').onclick=function(){environment.effects=!environment.effects;save();view.worldSignature='';systemMenu();};
  document.getElementById('systemQuality').onclick=function(){const all=['auto','low','high'];environment.quality=all[(all.indexOf(environment.quality)+1)%all.length];save();view.worldSignature='';view.resize();systemMenu();};
  document.getElementById('systemHome').onclick=function(){
-  save();activeEventScene=null;introStep=-1;modal.hidden=true;modalOpen=false;gameStarted=false;tacticalPaused=false;contactTriggered=false;keys={};joy.x=joy.y=0;moveTarget=null;
+  save();activeEventScene=null;introStep=-1;modal.hidden=true;modalOpen=false;gameStarted=false;tacticalPaused=false;contactTriggered=false;preCombatPaused=false;keys={};joy.x=joy.y=0;moveTarget=null;
   document.getElementById('pauseBtn').textContent='일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed','false');
   document.getElementById('creator').hidden=true;document.getElementById('introMenu').hidden=false;
   document.getElementById('start').hidden=false;document.getElementById('startBtn').textContent='이어서 모험하기';
@@ -2137,7 +2167,7 @@ function interact(){
 function toggleParty(ai){if(!ai)return;if(ai.party){ai.party=false;setAIRoutine(ai,"town");toast(ai.name+" 파티 해체");}else{if(partyCount()>=MAX_PARTY_SIZE-1){toast("파티는 플레이어 포함 최대 "+MAX_PARTY_SIZE+"명이야.");return;}ai.party=true;ai.zone=state.zone;ai.x=p.x-55;ai.y=p.y+55;ai.hp=ai.maxHp;toast(ai.name+" 파티 합류");storyRecruit(ai);}save();}
 function onCanvasTap(clientX,clientY){if(modalOpen||!gameStarted)return;var hit=view.pick(clientX,clientY);if(hit&&hit.kind==='ai'){var best=hit.obj;if(!companionDiscovered(best))return;view.selection=best.id;if(Math.hypot(best.x-p.x,best.y-p.y)>140){moveTarget={x:best.x,y:best.y};toast(best.name+' 가까이 가면 말을 걸 수 있어.');}else companionMenu(best.id);return;}if(hit&&hit.kind==='enemy'){tacticalTargetId=hit.obj.id;view.selection=hit.key;if(!tacticalPaused)moveTarget={x:hit.obj.x,y:hit.obj.y};battleLog('집중 대상 · '+hit.obj.name);toast('파티 집중 공격 · '+hit.obj.name);return;}var point=view.screenToWorld(clientX,clientY);if(point){var landmark=nearbyLandmark();if(landmark&&Math.hypot(point.x-landmark.x,point.y-landmark.y)<72){if(Math.hypot(p.x-landmark.x,p.y-landmark.y)<125){recordLandmark(landmark);return;}moveTarget={x:landmark.x,y:landmark.y};toast('수상한 기록을 향해 이동해.');return;}var crime=imperialCaseAtLocation();if(crime&&Math.hypot(point.x-crime.x,point.y-crime.y)<86){if(Math.hypot(p.x-crime.x,p.y-crime.y)<125){imperialCaseInvestigate();return;}moveTarget={x:crime.x,y:crime.y};toast('사건 현장으로 이동해.');return;}var side=pendingRecruitQuest(),sideSite=side?RECRUIT_ARCS[portraitIndex(side)].site:null;if(sideSite&&Math.hypot(point.x-sideSite.x,point.y-sideSite.y)<80){if(Math.hypot(p.x-sideSite.x,p.y-sideSite.y)<115){completeRecruitQuest();return;}moveTarget={x:sideSite.x,y:sideSite.y};toast('영입 단서로 이동해.');return;}var storySite=pendingStoryEncounter();if(storySite&&Math.hypot(point.x-storySite.site.x,point.y-storySite.site.y)<75){if(Math.hypot(p.x-storySite.site.x,p.y-storySite.site.y)<120){inspectAct2();return;}moveTarget={x:storySite.site.x,y:storySite.site.y};toast('사건 현장으로 이동');return;}var evidence=pendingEvidence();if(evidence&&Math.hypot(point.x-evidence.x,point.y-evidence.y)<72){if(Math.hypot(p.x-evidence.x,p.y-evidence.y)<105){inspectEvidence();return;}moveTarget={x:evidence.x,y:evidence.y};toast('조사 지점으로 이동');return;}moveTarget={x:Math.max(38,Math.min(worldW-38,point.x)),y:Math.max(70,Math.min(worldH-38,point.y))};view.selection='player';}}
 
-function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW,worldH,combat,environment:gameEnvironment(),cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site||(nearbyLandmark()?{x:nearbyLandmark().x,y:nearbyLandmark().y}:null),recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
+function draw(){view.destination=moveTarget;const side=pendingRecruitQuest(),main=pendingStoryEncounter(),crime=imperialCaseAtLocation();view.render({p,state,enemies,dungeon,worldW,worldH,combat,environment:gameEnvironment(),cinematic:activeEventScene,evidence:crime?{x:crime.x,y:crime.y}:side?RECRUIT_ARCS[portraitIndex(side)].site:pendingEvidence()||main?.site||(nearbyLandmark()?{x:nearbyLandmark().x,y:nearbyLandmark().y}:null),recruit:!!side,imperial:!!crime,visibleCompanions:state.ai.filter(companionDiscovered).map(a=>a.id),paused:tacticalPaused||modalOpen,council:!dungeon&&state.zone===0?COUNCIL_LOCATION:null});}
 var lastFootX=p.x,lastFootY=p.y,interfaceTick=0;
 function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen&&!tacticalPaused&&!document.hidden){advanceEnvironment(dt);updatePlayer(dt);if(Math.hypot(p.x-lastFootX,p.y-lastFootY)>1.4)sound.step(dungeon?'dungeon':state.zone===0?'stone':state.zone===4?'sand':state.zone===5?'snow':'earth');updateCombat(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}lastFootX=p.x;lastFootY=p.y;if(gameStarted&&!document.hidden){sound.update(state.zone,!!dungeon,!!(enemies.some(function(e){return !e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<270;})),gameEnvironment());}interfaceTick+=dt;if(interfaceTick>.12){interfaceTick=0;updateHud();}hudTick+=dt;if(hudTick>.33){hudTick=0;partyHud();}draw();requestAnimationFrame(loop);}
 
@@ -2170,7 +2200,12 @@ canvas.addEventListener('pointermove',function(e){var q=pointers.get(e.pointerId
 function endPointer(e){var q=pointers.get(e.pointerId);pointers.delete(e.pointerId);if(q&&e.type==='pointerup'&&!gesture)onCanvasTap(e.clientX,e.clientY);if(!pointers.size){gesture=false;pinchDistance=0;}}
 canvas.addEventListener('pointerup',endPointer);canvas.addEventListener('pointercancel',endPointer);canvas.addEventListener('wheel',function(e){e.preventDefault();view.changeZoom(Math.exp(-e.deltaY*.001));},{passive:false});
 document.getElementById('zoomIn').onclick=()=>view.changeZoom(1.15);document.getElementById('zoomOut').onclick=()=>view.changeZoom(1/1.15);document.getElementById('rotateView').onclick=()=>view.rotate();document.getElementById('centerView').onclick=()=>view.center();
-function togglePause(){tacticalPaused=!tacticalPaused;document.getElementById('pauseBtn').textContent=tacticalPaused?'전투 재개':'일시정지';document.getElementById('pauseBtn').setAttribute('aria-pressed',String(tacticalPaused));}
+function togglePause(){
+  tacticalPaused=!tacticalPaused;preCombatPaused=false;
+  var button=document.getElementById('pauseBtn');
+  button.textContent=tacticalPaused?'전투 재개':'일시정지';button.setAttribute('aria-pressed',String(tacticalPaused));
+  button.setAttribute('aria-label',tacticalPaused?'일시정지 중 · 전투 재개':'일시정지');updateHud();
+}
 document.getElementById('pauseBtn').onclick=togglePause;document.getElementById('tacticsBtn').onclick=tacticsMenu;document.getElementById('journalBtn').onclick=storyJournal;document.getElementById('classSelect').value=state.player.classId;
 addEventListener('keydown',function(e){if(e.code==='KeyT'&&!modalOpen&&gameStarted){e.preventDefault();tacticsMenu();}if(e.code==='Space'&&e.target===document.body&&!modalOpen&&gameStarted){e.preventDefault();togglePause();}});addEventListener('blur',function(){keys={};joy.x=joy.y=0;pointers.clear();gesture=false;});document.addEventListener('visibilitychange',function(){sound.visibility(document.hidden);});
 var joyBase=document.getElementById("joystick"),knob=document.getElementById("knob"),joyId=null;
