@@ -153217,7 +153217,7 @@
     },
     {
       "id": "recovery-recovery-f84bbc96c4af1596274e",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -153275,12 +153275,12 @@
       "sourceMutationBaseline": "2026-10-21T17:45:04.849Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40172665568:1",
+      "reservedAt": "2026-10-25T07:27:50.773Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:39067647976:1",
         "deployment-workflow:.github/workflows/vibe2-candidate-release.yml",
@@ -153690,14 +153690,17 @@
         "system-ai-handoff-to-reservation:system-ai:40170176721:1",
         "actions-run:40170176721",
         "system-ai-handoff-to-reservation:system-ai:40171728962:1",
-        "actions-run:40171728962"
+        "actions-run:40171728962",
+        "system-ai-impact-score:1506",
+        "system-ai-blocked-task-count:19",
+        "system-ai-handoff-to-reservation:system-ai:40172665568:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 1478,
+      "impactScore": 1506,
       "impactComponents": {
         "severity": 4,
-        "blockedTaskCount": 18,
-        "recurrenceCount": 112,
+        "blockedTaskCount": 19,
+        "recurrenceCount": 113,
         "dependencyCentrality": 2,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -153705,7 +153708,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-17T21:02:09.727Z",
-      "updatedAt": "2026-10-25T07:25:01.606Z"
+      "updatedAt": "2026-10-25T07:27:50.773Z"
     },
     {
       "id": "recovery-recovery-0b623e521c00a2fbed55",
@@ -162947,23 +162950,24 @@
       ],
       "dependencies": [],
       "relatedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:97783c0dbb2e2a09e3dbd89df71713bdb1ed6eda:fantasy-survival"
+        "deployment:.github/workflows/magic-forest-pages.yml:97783c0dbb2e2a09e3dbd89df71713bdb1ed6eda:fantasy-survival",
+        "recovery-recovery-838533f5918330373a0e"
       ],
       "blockedTaskIds": [
         "deployment:.github/workflows/magic-forest-pages.yml:97783c0dbb2e2a09e3dbd89df71713bdb1ed6eda:fantasy-survival"
       ],
-      "retries": 3,
+      "retries": 0,
       "recurrenceCount": 1,
       "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
-      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureSignature": "FAIL",
       "failureClass": "SECURITY_OR_AUTHORITY_BOUNDARY",
       "handoffCount": 0,
       "previousReservationId": null,
-      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "blastRadius": "single-task",
       "knownGoodRevision": null,
       "repairRisk": 1,
       "sourceMutationRequired": true,
-      "sourceMutationBaseline": "97783c0dbb2e2a09e3dbd89df71713bdb1ed6eda",
+      "sourceMutationBaseline": "2026-10-25T07:19:04.395Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -162971,7 +162975,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "deployment-failure-run:40066763594:1",
         "deployment-workflow:.github/workflows/magic-forest-pages.yml",
@@ -163017,7 +163021,10 @@
         "primary-ai-collaboration-reason:SECURITY_OR_AUTHORITY_BOUNDARY",
         "system-ai-retry:UNLIMITED_CAUSAL_REPAIR",
         "actions-run:40171632909",
-        "actions-run:40172196480"
+        "actions-run:40172196480",
+        "recovery-queue:recovery-30f254fc7925526638bb",
+        "recovery-strategy:ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
+        "failure-cause:FAIL"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1467,
@@ -163032,7 +163039,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-10-24T05:41:52.597Z",
-      "updatedAt": "2026-10-25T07:24:33.090Z"
+      "updatedAt": "2026-10-25T07:27:39.242Z"
     },
     {
       "id": "recovery-recovery-d125e3cbc61b39ee3f05",
