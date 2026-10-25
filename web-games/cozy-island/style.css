@@ -302,6 +302,28 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
  .build-status{font-size:10px;bottom:calc(env(safe-area-inset-bottom) + 91px)}}
 
 
+/* 세로모드: 6개 명령을 누를 수 있는 3×2 전술바와 스크롤 가능한 시스템 메뉴. */
+@media (orientation:portrait) and (max-width:600px){
+ .controls{bottom:max(5px,env(safe-area-inset-bottom));padding:0 max(5px,env(safe-area-inset-left)) max(2px,env(safe-area-inset-bottom))}
+ .strategy-bar{grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,400px);gap:4px;padding:5px}
+ .strategy-button{min-height:46px;gap:0;font-size:17px}
+ .strategy-button small{font-size:11px}
+ .system-dialog{width:min(97vw,470px);max-height:90dvh;display:none;flex-direction:column;overflow:hidden}
+ .system-dialog[open]{display:flex}
+ .system-dialog header{flex:0 0 auto}
+ .system-tabs{flex:0 0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px}
+ .system-tabs button{min-height:42px;font-size:12px}
+ .system-body{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ .ks-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ks-action{white-space:normal;line-height:1.4;min-height:44px}
+}
+@media (orientation:portrait) and (max-width:360px){
+ .hud-main{font-size:10px}
+ .hud-main.right .small-button{font-size:10px;padding-inline:6px}
+ .strategy-button{min-height:43px}
+ .system-tabs button{font-size:11px}
+}
+
 /* 포근섬 RTS: 건설 트리·시스템 홈·모바일 조작을 기존 패널에서 직접 정리 */
 .realm-tech-tree{margin:12px 0;padding:10px;background:#dfd4b9;border:1px solid #b9a179;border-radius:9px}
 .realm-tech-tree h3{margin:0 0 7px;font-size:15px}
