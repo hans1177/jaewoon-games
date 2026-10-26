@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Owner-approved original GLB meshes, not Part-made runtime visuals. Never reuses other games' Universe.
+// 파일명: tools/baeksu-war-upload-meshes.mjs
+// 변환한 원본 CC0 3D 에셋의 해시·라이선스·게임별 권한을 확인하고 기존 Place용으로 등록.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -42,15 +43,19 @@ async function req(url,opts={}){
  return data;
 }
 const names=['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
+const provenance=JSON.parse(await fs.readFile(path.join(dir,'provenance.json'),'utf8'));
+if(provenance.version!==4||!provenance.roles||Object.keys(provenance.roles).sort().join(',')!==[...names].sort().join(','))throw Error('CC0_PROVENANCE_ROLES_MISMATCH');
 const ids={};const records={};
 for(const name of names){
  const file=path.join(dir,name+'.glb');
  const bytes=await fs.readFile(file);
  if(bytes.length<1000||bytes.length>18*1024*1024||bytes.subarray(0,4).toString()!=='glTF')throw Error('BAD_NATIVE_GLB:'+name);
  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
+ const origin=provenance.roles[name];
+ if(!origin||origin.glbSha256!==digest||origin.license!=='CC0-1.0'||!/^https:\/\//.test(origin.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(origin.sourceSha256||'')||!Number.isInteger(origin.modelPolygons)||origin.modelPolygons<4){throw Error('CC0_SOURCE_LICENSE_OR_HASH_UNVERIFIED:'+name);}
  const form=new FormData();
  form.set('request',JSON.stringify({assetType:'Model',displayName:'백수대전쟁 3D '+name,
-  description:'Original CC0-compatible first-party 3D mesh authoring output, no copied game assets. Source tools/baeksu-war-author-meshes.py, hash '+digest.slice(0,16),
+  description:'Licensed CC0 original 3D asset adapted for baeksu-war. Source '+origin.sourceFile+' sha256 '+origin.sourceSha256.slice(0,16)+'. Model sha256 '+digest.slice(0,16),
   creationContext:{creator:{userId:Number(creator)}}}));
  form.set('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),name+'.glb');
  const op=await req('https://apis.roblox.com/assets/v1/assets',{method:'POST',body:form});
@@ -69,12 +74,12 @@ for(const name of names){
     requests:[{assetId:id,grantToDependencies:true}]})
  });
  if(Array.isArray(grant.errors)&&grant.errors.length)throw Error('UNIVERSE_GRANT_FAILED:'+name+':'+JSON.stringify(grant.errors).slice(0,300));
- ids[name]=id;records[name]={assetId:id,sha256:digest,source:'FIRST_PARTY_GENERATED_GLTF',universeId:UNIVERSE};
- console.log('BAEKSU_WAR_AUTHORED_MESH_GRANTED='+name+':'+id);
- await fs.writeFile(receipt,JSON.stringify({version:1,universeId:UNIVERSE,placeId:PLACE,models:records},null,2)+'\n');
+ ids[name]=id;records[name]={assetId:id,sha256:digest,source:'VERIFIED_CC0_ORIGINAL',sourceFile:origin.sourceFile,sourceSha256:origin.sourceSha256,sourceModel:origin.sourceModel,license:origin.license,licenseEvidence:origin.licenseEvidence,universeId:UNIVERSE};
+ console.log('BAEKSU_WAR_CC0_MESH_GRANTED='+name+':'+id);
+ await fs.writeFile(receipt,JSON.stringify({version:4,universeId:UNIVERSE,placeId:PLACE,models:records},null,2)+'\n');
 }
 const lua=[
- '-- V3: exact-cloud Model IDs uploaded by owner workflow, granted to baeksu-war Universe only.',
+ '-- V4: source-verified CC0 real-model IDs, with baeksu-war Universe permissions.',
  '-- DO NOT substitute procedural Part geometry if an asset is missing.',
  'return {',
  ...names.map(name=>' '+name+'='+ids[name]+','),
@@ -82,4 +87,4 @@ const lua=[
  ''
 ].join('\n');
 await fs.writeFile('roblox-games/baeksu-war/shared/VisualAssetIds.luau',lua);
-console.log('BAEKSU_WAR_AUTHORED_NATIVE_MESHES='+names.length);
+console.log('BAEKSU_WAR_VERIFIED_CC0_MODELS='+names.length);
