@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-vmkf4w",
+      "worker": "vibe2",
+      "taskId": "exorcist-office-studio-evolution-roblox-stability-v3",
+      "gameId": "exorcist-office",
+      "files": [
+        "roblox-games/exorcist-office/client/Game.client.luau",
+        "roblox-games/exorcist-office/shared/GameConfig.luau",
+        "roblox-games/exorcist-office/server/Game.server.luau"
+      ],
+      "baseSha": "5970f5c249d7055a1d1bbd2eaee98fe46964d89e",
+      "runId": "40333627032",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-26T14:04:30.518Z",
+      "expiresAt": "2026-10-26T14:49:30.518Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:exorcist-office-studio-evolution-roblox-stability-v3"
+      ]
+    }
+  ]
 }
