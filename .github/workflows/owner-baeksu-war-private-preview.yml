@@ -21,7 +21,7 @@ concurrency:
 jobs:
   private-preview:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     env:
       ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
       ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
@@ -57,7 +57,9 @@ jobs:
           const receipt=JSON.parse(fs.readFileSync('/tmp/baeksu-art-upload.json','utf8'));
           const roles=['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
           if(receipt.version!==4||String(receipt.universeId)!=='10773115989'||roles.some(r=>!Number.isSafeInteger(receipt.models?.[r]?.assetId)||receipt.models[r].assetId<1||receipt.models[r].license!=='CC0-1.0'||String(receipt.models[r].universeId)!=='10773115989'))throw Error('CC0_ASSET_GRANTS_NOT_VERIFIED');
-          if(roles.some(r=>!new RegExp('\\\\b'+r+'=[1-9]\\\\d*').test(fs.readFileSync('roblox-games/baeksu-war/shared/VisualAssetIds.luau','utf8'))))throw Error('CC0_MODEL_ID_BINDING_INCOMPLETE');
+          const lua=fs.readFileSync('roblox-games/baeksu-war/shared/VisualAssetIds.luau','utf8');
+          const bindings=Object.fromEntries([...lua.matchAll(/([a-z]+)=([0-9]+)/g)].map(m=>[m[1],Number(m[2])]));
+          if(roles.some(r=>!(bindings[r]>0)))throw Error('CC0_MODEL_ID_BINDING_INCOMPLETE');
           console.log('BAEKSU_WAR_REAL_CC0_12=VERIFIED_FOR_PREVIEW_BUILD');
           NODE
       - name: Build only baeksu-war Roblox place
