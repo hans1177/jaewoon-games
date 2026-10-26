@@ -32,6 +32,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Author 12 original 3D GLB models and grant only this Roblox universe
+        shell: bash
+        env:
+          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --user --break-system-packages 'trimesh==4.7.1' 'numpy==2.2.6'
+          python3 tools/baeksu-war-author-meshes.py /tmp/baeksu-art
+          node tools/baeksu-war-upload-meshes.mjs /tmp/baeksu-art /tmp/baeksu-art-upload.json
+          grep -q 'sparrow=[1-9]' roblox-games/baeksu-war/shared/VisualAssetIds.luau
+          grep -q 'gate=[1-9]' roblox-games/baeksu-war/shared/VisualAssetIds.luau
+          echo 'BAEKSU_WAR_BANNED_PART_VISUALS=0'
       - name: Build only baeksu-war Roblox place
         shell: bash
         run: |

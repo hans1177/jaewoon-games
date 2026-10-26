@@ -7,6 +7,8 @@ local DSS=game:GetService("DataStoreService")
 local Run=game:GetService("RunService")
 local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
 local VisualKit=require(RS:WaitForChild("Shared"):WaitForChild("VisualKit"))
+VisualKit.Preload()
+local terrain=workspace.Terrain
 local remote=RS:FindFirstChild(C.Remote) or Instance.new("RemoteEvent")
 remote.Name=C.Remote;remote.Parent=RS
 local store
@@ -14,21 +16,10 @@ pcall(function()store=DSS:GetDataStore(C.SaveKey)end)
 local arenas,lastRequest={},{}
 local nextArena=0
 local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspace
--- 유틸: 서버가 모든 전투·골드·슬롯을 소유한다.
-local function block(parent,name,size,cf,color,material,shape)
- local x=Instance.new("Part")
- x.Name=name;x.Size=size;x.CFrame=cf;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
- x.Anchored=true;x.CanCollide=(name=="집중 전장" or name=="진격로" or name=="고정 건설 칸");x.CanTouch=false
- if shape then x.Shape=shape end;x.Parent=parent
- return x
-end
-local function tag(p,value)
- local g=Instance.new("BillboardGui")
- g.Size=UDim2.fromOffset(153,32);g.StudsOffset=Vector3.new(0,4,0);g.MaxDistance=160;g.Parent=p
- local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.Text=value
- t.TextScaled=true;t.Font=Enum.Font.GothamBold;t.TextColor3=Color3.fromRGB(255,239,189)
- t.TextStrokeTransparency=.5;t.BackgroundColor3=Color3.fromRGB(30,40,44)
- t.BackgroundTransparency=.2;t.Parent=g
+-- 월드는 Terrain으로 구성하고 모든 캐릭터·건물은 실제 GLB 메시를 사용한다.
+-- Part 블록과 파츠 기반 대체 외형을 절대 생성하지 않는다.
+local function terrainBlock(cf,size,material)
+ terrain:FillBlock(cf,size,material)
 end
 local function slotPosition(a,i)
  return Vector3.new(a.X+((i-1)%3-1)*14,1,-60-math.floor((i-1)/3)*13)
@@ -39,8 +30,8 @@ local function resizeBuildYard(a)
  local furthestZ=-60-lastRow*13
  local nearZ=-46
  local backZ=furthestZ-8
- a.BuildYard.Size=Vector3.new(50,1,nearZ-backZ)
- a.BuildYard.CFrame=CFrame.new(a.X,-.5,(nearZ+backZ)/2)
+ terrainBlock(CFrame.new(a.X,-2.5,(nearZ+backZ)/2),
+  Vector3.new(50,5,nearZ-backZ),Enum.Material.Grass)
 end
 local function send(a,msg)
  if not a.Player.Parent then return end
@@ -72,27 +63,16 @@ local function save(a)
 end
 local function createGate(a,enemy)
  local z=enemy and 45 or -40
- local parent=a.Folder
- local tone=enemy and Color3.fromRGB(155,80,71) or Color3.fromRGB(91,127,164)
- local stone=Color3.fromRGB(134,130,127)
- for _,side in ipairs({-1,1}) do
-  block(parent,"성벽",Vector3.new(13,18,7),CFrame.new(a.X+side*17,9,z),stone,Enum.Material.Slate)
- end
- block(parent,"정문 상단",Vector3.new(46,5,8),CFrame.new(a.X,19,z),stone,Enum.Material.Slate)
- local door=block(parent,enemy and "적 정문" or "아군 정문",Vector3.new(21,14,4),CFrame.new(a.X,7,z),tone,Enum.Material.WoodPlanks)
- tag(door,enemy and "적 성문" or "우리 성문")
- VisualKit.DecorateGate(parent,a.X,z,enemy)
+ VisualKit.DecorateGate(a.Folder,a.X,z,enemy)
 end
 local function drawBuilding(a,index)
  if a.Visuals[index] then a.Visuals[index]:Destroy() end
  local m=Instance.new("Model");m.Name="슬롯 "..index;m.Parent=a.Folder;a.Visuals[index]=m
  local pos=slotPosition(a,index)
- local pad=block(m,"고정 건설 칸",Vector3.new(11,1,10),CFrame.new(pos),Color3.fromRGB(89,110,105),Enum.Material.Cobblestone)
  local b=a.Buildings[index]
- if not b then tag(pad,"슬롯 "..index.." · 비어있음");return end
+ if not b then return end
  local u=C.ById[b.Kind]
  VisualKit.BuildHome(m,pos,u,b.Level)
- tag(pad,u.Home.." Lv."..b.Level)
 end
 local function spawn(a,kind,team,level)
  local u=C.ById[kind];if not u then return end
@@ -146,10 +126,9 @@ local function makeArena(player,data,loaded)
    end
   end
  end
- block(a.Folder,"집중 전장",Vector3.new(50,1,140),CFrame.new(x,-.5,-3),Color3.fromRGB(112,154,107),Enum.Material.Grass)
- block(a.Folder,"진격로",Vector3.new(24,.2,100),CFrame.new(x,.08,0),Color3.fromRGB(171,151,119),Enum.Material.Ground)
+ terrainBlock(CFrame.new(x,-2.5,-3),Vector3.new(52,5,140),Enum.Material.Grass)
+ terrainBlock(CFrame.new(x,-.95,0),Vector3.new(24,2.3,100),Enum.Material.Ground)
  VisualKit.BuildWorld(a.Folder,x)
- a.BuildYard=block(a.Folder,"집중 전장",Vector3.new(50,1,25),CFrame.new(x,-.5,-60),Color3.fromRGB(131,169,116),Enum.Material.Grass)
  resizeBuildYard(a)
  createGate(a,false);createGate(a,true)
  for i=1,a.Unlocked do drawBuilding(a,i) end
