@@ -984,7 +984,14 @@ export function computeVibeSeedProposal(target){
   const compositionKey=freeTopicMode?[target.requestId,target.topicRevision||'',variance]:target.basicDesignMethod?[target.requestId,category,ownerBrief,variance]:[target.requestId,category,requestedName,ownerBrief,variance];
   // 메인: 새 기본설계는 중앙 분류표를 직접 읽는다. 고정 DNA 후보는 이전 접수 호환에만 사용한다.
   const standard=target.basicDesignMethod;
-  const standardSources=standard?.materialClassification.flatMap(row=>(row.specificMaterials||[]).map(material=>({
+  // 기존 게임을 보존하는 경우 A/B/C 소재가 실제 구현과 무관한 세계관으로 바뀌지 않도록
+  // 소유자가 승인한 재료 분류만 후보로 삼는다. 일반 신규 게임 설계는 원래 선택 알고리즘 유지.
+  const preserveFamilies=Array.isArray(target.preservationMaterialFamilies)?new Set(target.preservationMaterialFamilies):null;
+  const materialFamilies=preserveFamilies
+    ?(standard?.materialClassification||[]).filter(row=>preserveFamilies.has(row.broad))
+    :(standard?.materialClassification||[]);
+  if(preserveFamilies&&materialFamilies.length<2)throw new Error('OWNER_PRESERVATION_MATERIAL_DOMAIN_EVIDENCE_MISSING');
+  const standardSources=standard?materialFamilies.flatMap(row=>(row.specificMaterials||[]).map(material=>({
     id:`STANDARD:${row.broad}:${material.middle}:${material.name}`,label:material.name,
     source:row.broad,middle:material.middle,material,
     principle:material.feature,
@@ -1006,9 +1013,9 @@ export function computeVibeSeedProposal(target){
   const independentlyRanked=(axis)=>[...creativeSourcePool].sort((a,b)=>
     hash([...compositionKey,axis,a.id].join('|'))-hash([...compositionKey,axis,b.id].join('|')));
   // 대분류를 먼저 독립 선택해 소분류 항목이 많은 분야가 더 자주 뽑히는 구조를 피한다.
-  const familyOrder=axis=>standard?[...standard.materialClassification].sort((a,b)=>hash([...compositionKey,axis,a.broad].join('|'))-hash([...compositionKey,axis,b.broad].join('|'))):[];
+  const familyOrder=axis=>standard?[...materialFamilies].sort((a,b)=>hash([...compositionKey,axis,a.broad].join('|'))-hash([...compositionKey,axis,b.broad].join('|'))):[];
   const bFamily=familyOrder('B_MATERIAL_BROAD')[0]?.broad;
-  const aFamily=familyOrder('A_MATERIAL_BROAD')[0]?.broad;
+  const aFamily=familyOrder('A_MATERIAL_BROAD').find(row=>!preserveFamilies||row.broad!==bFamily)?.broad;
   const bIndependent=standard?independentlyRanked('B_INDEPENDENT_DETAIL').find(row=>row.source===bFamily):freeTopicMode?independentlyRanked('B_INDEPENDENT_DETAIL')[0]:null;
   const aIndependent=standard?independentlyRanked('A_BROAD_WORLD').find(row=>row.source===aFamily&&row.id!==bIndependent?.id):freeTopicMode?independentlyRanked('A_BROAD_WORLD').find(row=>row.source!==bIndependent?.source):null;
   const cSupporting=standard?independentlyRanked('D_SPECIFIC_SOURCE').filter(row=>row.id!==aIndependent?.id&&row.id!==bIndependent?.id):freeTopicMode?distinctSources.filter(row=>row.source!==aIndependent?.source&&row.source!==bIndependent?.source):[];
