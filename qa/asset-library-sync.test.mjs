@@ -937,3 +937,25 @@ test('Roblox common simulator-grade graphics bind real UI surfaces without exter
  assert.equal(catalog.atoms.length,204,'EXISTING_COMMON_UI_CATALOG_CHANGED');
  assert.equal(catalog.productionVerified,false,'VISUAL_CHANGE_CANNOT_CLAIM_RUNTIME_VERIFICATION');
 });
+
+
+test('Survival game actually opens new illustrated common inventory and reads authoritative resources',()=>{
+ const game=fs.readFileSync('roblox-games/survival/client/Game.client.luau','utf8');
+ const shared=fs.readFileSync('roblox-games/survival/shared/RobloxCommonUI.luau','utf8');
+ const canonical=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const preview=game.slice(game.indexOf('-- 생존 인벤토리 · 기존 서버 자원 Attribute'));
+ assert.ok(preview.length>2000,'ACTUAL_SURVIVAL_INVENTORY_NOT_BOUND');
+ assert.equal(shared,canonical,'GAME_COMMON_UI_COPY_STALE');
+ for(const name of ['SurvivalInventoryOverlay','OpenSurvivalInventory','CloseSurvivalInventory',
+   'CommonUI.CreateInventoryFullScreen({','bagView.Sync(actualItems)','GetAttribute("ResourceWood")',
+   'GetAttribute("ResourceStone")','GetAttributeChangedSignal("ResourceWood")',
+   'GetAttributeChangedSignal("ResourceStone")','InventoryBoundToServerAttributes',
+   'ScreenInsets.CoreUISafeInsets','setSurvivalInventoryOpen(false)','bagButton.Activated','bagClose.Activated'])
+   assert.ok(preview.includes(name),'GAME_VISIBLE_INVENTORY_BINDING_MISSING:'+name);
+ assert.ok(preview.includes('if typeof(wood)=="number" and wood>0 then'));
+ assert.ok(preview.includes('if typeof(stone)=="number" and stone>0 then'));
+ assert.ok(preview.includes('if open and gui:GetAttribute("GameMenuOpen")==true then return end'));
+ assert.doesNotMatch(preview,/DataStoreService|FireServer\(|FireClient\(|UpdateAsync\(|SetAsync\(/);
+ assert.ok(!preview.includes('game:GetService("DataStoreService")'));
+ assert.equal((shared.match(/^function RobloxCommonUI\./gm)||[]).length,212);
+});
