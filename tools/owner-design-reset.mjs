@@ -121,13 +121,23 @@ export function ensureOwnerDesignResetSeed(state,gameId,{file=OWNER_DESIGN_RESET
   if(index<0){state.seeds.push(reset);return {seed:reset,changed:true};}
   const current=state.seeds[index];
   if(clean(current?.ownerResetRevision)===clean(reset.ownerResetRevision)){
-    // 동일 개정에서 원본으로 검증된 B 참조만 최신 계약에 정렬한다. 저장·진행·게임 상태는 변경하지 않는다.
+    // 동일 오너 개정의 참조 A/B 보강만 정렬한다. 원본 게임/저장/진행 및 검증 PASS는 건드리지 않는다.
+    let changed=false;
     if(reset.B_SYSTEM_REFERENCE&&(!current.B_SYSTEM_REFERENCE
       ||['scope','systemFamily','playerChoice','source'].some(key=>clean(current.B_SYSTEM_REFERENCE[key])!==clean(reset.B_SYSTEM_REFERENCE[key])))){
       current.B_SYSTEM_REFERENCE=clone(reset.B_SYSTEM_REFERENCE);
-      return {seed:current,changed:true};
+      changed=true;
     }
-    return {seed:current,changed:false};
+    if(reset.A_REPRESENTATIVE_GAME_REFERENCE){
+      const ref=reset.A_REPRESENTATIVE_GAME_REFERENCE;
+      if(!['name','gameGenre','systemFamily','playerChoice','source'].every(key=>clean(ref[key])))
+        throw new Error('OWNER_A_REPRESENTATIVE_REFERENCE_INCOMPLETE:'+gameId);
+      if(JSON.stringify(current.A_REPRESENTATIVE_GAME_REFERENCE||null)!==JSON.stringify(ref)){
+        current.A_REPRESENTATIVE_GAME_REFERENCE=clone(ref);
+        changed=true;
+      }
+    }
+    return {seed:current,changed};
   }
   state.seeds[index]=reset;
   return {seed:reset,changed:true};
