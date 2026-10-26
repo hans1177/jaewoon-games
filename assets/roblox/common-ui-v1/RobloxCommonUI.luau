@@ -6,7 +6,7 @@
 local TweenService = game:GetService("TweenService")
 local RobloxCommonUI = {}
 -- 자산: 오너가 제작 승인한 이미지 시트. 등록 성공 전에는 ID를 추측하지 않는다.
-local ICON_ATLAS_IMAGE = "" -- NATIVE_UI_ATLAS_IMAGE
+local ICON_ATLAS_IMAGE = "rbxassetid://106187959971931" -- NATIVE_UI_ATLAS_IMAGE
 local ICON_ATLAS_SIZE = 1254
 local ICON_ATLAS_KEYS = table.freeze({
   INVENTORY = 0,
