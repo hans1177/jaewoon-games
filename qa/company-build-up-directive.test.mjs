@@ -2106,3 +2106,32 @@ test('keeps every explicitly assigned responsibility beyond the discovery contex
   const d=buildGameSpecificBuildUpDirective({gameId:'simple-rpg',platform:'ROBLOX',designRecord:design(),responsibleFiles});
   assert.deepEqual(d.responsibleSystemsAndFiles.files,responsibleFiles);
 });
+
+// 원형 교체: F0와 후속 빌드업에 실제 책임 파일을 전달하고 다른 플랫폼에는 강제하지 않는다.
+test('Roblox F0 inventories primitive owners and accepts similar CC0 without exact visual matching',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-cc0-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const relative='roblox-games/demo/server/Game.server.luau';
+  fs.mkdirSync(path.dirname(path.join(root,relative)),{recursive:true});
+  fs.writeFileSync(path.join(root,relative),`-- Instance.new("Part")
+local body = Instance.new ( "Part" )
+local root = Instance.new("Part")
+root.Transparency = 1
+`);
+  const observation=inspectGameSources({repoRoot:root,sourceRoots:['roblox-games/demo']});
+  assert.equal(observation.primitiveSourceFiles.length,1);
+  assert.deepEqual(observation.primitiveSourceFiles[0].sites.map(row=>row.line),[2,3]);
+  const make=platform=>buildGameSpecificBuildUpDirective({gameId:'demo',platform,repoRoot:root,
+    sourceObservation:observation,responsibleFiles:[relative],
+    designRecord:{content:{identity:'동료와 탐험',genre:'RPG',coreLoop:['탐험','전투']}}});
+  const directive=make('ROBLOX'),replacement=directive.visualBuildUpDirective.primitiveReplacement;
+  assert.equal(replacement.trigger,'F0_AND_EVERY_BUILD_UP');
+  assert.equal(replacement.sourceFiles[0].file,relative);
+  assert.equal(replacement.exactVisualMatchRequired,false);
+  assert.equal(replacement.visiblePrimitiveFallbackAllowed,false);
+  assert.ok(replacement.protectedSupports.includes('HITBOX'));
+  assert.equal(replacement.runtimeVerified,false);
+  assert.match(directivePrompt(directive),/ROBLOX_CC0_PRIMITIVE_REPLACEMENT/);
+  assert.match(directivePrompt(directive),/비슷한 CC0 자산이면 우선 사용/);
+  assert.equal(make('WEB').visualBuildUpDirective.primitiveReplacement,null);
+});

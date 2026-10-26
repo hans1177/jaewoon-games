@@ -423,6 +423,17 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     const relative=posix(path.relative(repoRoot,file));
     return{file:relative,text,buffer,bytes:buffer.length,sourceAnchors:TEXT_SOURCE_EXTENSIONS.has(extension)?sourceAnchorCandidates(text,relative):[]};
   });
+  // 원형 교체 조사: 정적 발견은 삭제 명령이나 실제 렌더링 증거가 아니다.
+  // 부품 생성 책임 파일을 F0부터 전달하고 숨은 충돌체·리그 루트는 작업자가 구분한다.
+  const primitiveSourceFiles=rows.filter(row=>/\.luau?$/i.test(row.file)).flatMap(row=>{
+    const lines=row.text.split(/\r?\n/);
+    const sites=lines.flatMap((line,index)=>{
+      const code=line.replace(/--.*$/,'');
+      return /Instance\.new\s*\(\s*["'](?:Part|WedgePart|CornerWedgePart|TrussPart)["']/.test(code)
+        ?[{line:index+1,source:clean(code)}]:[];
+    });
+    return sites.length?[{file:row.file,sites,classification:'REVIEW_VISIBLE_PRIMITIVE_OR_GAMEPLAY_SUPPORT'}]:[];
+  });
   const joined=rows.map(row=>row.text).join('\n');
   const fingerprint=crypto.createHash('sha256');
   for(const row of rows){fingerprint.update(row.file);fingerprint.update('\0');fingerprint.update(row.buffer);fingerprint.update('\0');}
@@ -476,6 +487,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     largestFileBytes:capacityMeasure.largestFileBytes,
     topFiles,
     sourceAnchors:Object.freeze(sourceAnchors),
+    primitiveSourceFiles:Object.freeze(primitiveSourceFiles),
     signals,
     observations:uniq([
       files.length===0?'CURRENT_SOURCE_MISSING_OR_UNREADABLE':'CURRENT_SOURCE_FILES='+files.length,
@@ -520,6 +532,7 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
     largestFileBytes:parts.reduce((n,part)=>Math.max(n,Number(part.largestFileBytes||0)),0),
     topFiles:Object.freeze(topFiles),
     sourceAnchors:Object.freeze(sourceAnchors),
+    primitiveSourceFiles:Object.freeze(parts.flatMap(part=>part.primitiveSourceFiles||[])),
     signals:Object.freeze(signals),
     observations:Object.freeze(uniq(parts.flatMap(part=>part.observations||[]))),
     platformSourceFingerprints:Object.freeze(Object.fromEntries(parts.map(part=>[part.sourceRoot,part.sourceTreeFingerprint])))
@@ -1823,12 +1836,25 @@ export function playerFacingInspectionPromptLines(contract={}, {focus='',generat
   ];
 }
 
-function buildVisualDirective({gameId,design,source,focus}){
+function buildVisualDirective({gameId,design,source,focus,platform}){
   const identity=design.identity||gameId;
   const anchor=primaryDesignAnchor(design);
   const second=secondaryDesignAnchor(design);
   const placeholderHeavy=Number(source?.signals?.primitive||0)>8;
   return{
+    primitiveReplacement:clean(platform).toUpperCase()==='ROBLOX'?{
+      enabled:true,trigger:'F0_AND_EVERY_BUILD_UP',
+      action:'REPLACE_VISIBLE_PRIMITIVES_WITH_VERIFIED_CC0_DERIVATIVES',
+      preservePrimitiveAppearance:false,visiblePrimitiveFallbackAllowed:false,
+      selectionMode:'NEAREST_SIMILAR_COMPATIBLE_CC0',exactVisualMatchRequired:false,
+      waitForExactAssetForbidden:true,adaptation:['SCALE','COLOR','MATERIAL','RIG_COMPATIBLE_MOTION'],
+      sourceTreeFingerprint:source?.sourceTreeFingerprint||null,
+      sourceFiles:source?.primitiveSourceFiles||[],
+      missingAssetAction:'EXISTING_ASSET_DEVELOPMENT_GAP',
+      protectedSupports:['INVISIBLE_COLLISION','HITBOX','RIG_ROOT','SPAWN','GAMEPLAY_TRIGGER'],
+      preserve:['SAVE','BALANCE','SERVER_AUTHORITY','ANIMATION_EVENT_TIMING'],
+      runtimeVerified:false
+    }:null,
     artDirection:{
       identity,
       visualPurpose:`${identity}의 플레이 판단과 ${anchor}가 화면만 보고도 구별되도록 시각 언어를 통일한다.`,
@@ -2423,6 +2449,9 @@ export function directivePrompt(d={}){
     domainPriority,
     'VISUAL:',
     visual,
+    d.visualBuildUpDirective?.primitiveReplacement?.enabled
+      ?'ROBLOX_CC0_PRIMITIVE_REPLACEMENT: '+JSON.stringify(d.visualBuildUpDirective.primitiveReplacement)+
+       ' F0부터 발견한 책임 파일의 실제 보이는 원형 파츠를 CC0 파생 자산으로 교체한다. 기존 외형 보존은 불필요하다. 비슷한 CC0 자산이면 우선 사용하고 정확히 같은 모델·종류·스타일을 기다리지 않는다. 크기·색·재질을 맞추고 움직임을 호환 연결한다. 기존 생성 함수를 직접 수정하고 원형 표시·재생성 fallback을 제거한다. 숨은 충돌체·판정·리그 루트·스폰·트리거는 보이는 원형과 구분해 기능을 유지한다. 대체 자산이 없으면 기존 자산 공급 GAP로 연결하며 원형 유지나 새 파츠 조립을 교체 완료로 처리하지 않는다. 책임 범위 밖 파일은 기존 후속 BUILD_UP에 남기고 모든 대상이 같은 빌드 실행 검증을 통과하기 전에는 전체 완료를 주장하지 않는다.':'' ,
     'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(autoSummary),
     'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action and source-grounded NPC AI/quest/dialogue/crafting/economy/progression/farming/weather/physics/camera/audio/skill effects/network only when game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive existing actions and approved hit events; NPC decisions must not grant economy/save/combat authority; crafting and shopping use actual items/currency/state. Use applicable moduleConnections as source-only QA work units, never completed features. Mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with authoritative state; source signatures never pass QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
@@ -3001,7 +3030,7 @@ export function buildGameSpecificBuildUpDirective({
       shadowPipelineForbidden:true
     },
     gameInternalAutoComposition:buildGameInternalAutoCompositionPlan({gameId:id,platform,repoRoot,sourceRoot,sourceObservation:source,design}),
-    visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
+    visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus,platform}),
     playerFacingInspectionContract:buildPlayerFacingInspectionContract({gameId:id,source,states,responsibleFiles:topFiles}),
     experienceBuildUpContract:buildExperienceBuildupContract({platform,design,source,focus}),
     uxInputDirectives:ux,

@@ -5393,3 +5393,26 @@ test('active game missing individual creature roles reuses matching CC0 and sour
  });
  assert.equal(generic.missingRoleCount,0);
 });
+
+// 기존 자동 바인딩 작업이 원형 교체 대상과 현재 CC0 후보를 함께 전달하는지 검증한다.
+test('Roblox primitive replacement reaches the existing binding worker with similar verified-source candidates',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-primitive-binding-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.copyFileSync('company-learning/platform-release-roadmap.json',path.join(root,'company-learning/platform-release-roadmap.json'));
+  const cc0={id:'similar-ui',family:'UI',platform:'SHARED',license:'CC0-1.0',path:'assets/ui.svg',
+    sourceHash:'a'.repeat(64),sourceUrl:'https://example.org/source',licenseEvidenceUrl:'https://example.org/license'};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:778,assets:[cc0,{...cc0,id:'no-rights',license:'CC-BY-NC'},{...cc0,id:'unpinned',sourceHash:''}]}));
+  const plan=buildVibeAssetProductionPlan({target:'roblox',repoRoot:root,manifest:{assets:[]},task:{gameId:'demo',
+    buildUpDirective:{visualBuildUpDirective:{primitiveReplacement:{enabled:true,trigger:'F0_AND_EVERY_BUILD_UP',
+      sourceFiles:[{file:'roblox-games/demo/server/Game.server.luau',sites:[{line:2}]}]}}}}});
+  const work=plan.automaticAssetBindingWork.primitiveReplacement;
+  assert.ok(work);
+  assert.deepEqual(work.familyCandidates.UI.map(row=>row.assetId),['similar-ui']);
+  assert.equal(work.sourceFiles[0].sites[0].line,2);
+  assert.equal(work.exactRoleOrStyleMatchRequired,false);
+  assert.equal(work.rigAndPlatformCompatibilityRequired,true);
+  assert.equal(work.libraryVersion,778);
+  assert.equal(work.runtimeVerified,false);
+  assert.match(assetProductionGuidance(plan),/비슷한 자산이면 우선 적용/);
+});

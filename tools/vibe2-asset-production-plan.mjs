@@ -5508,6 +5508,22 @@ export function buildVibeAssetProductionPlan({
   const allGameDynamicLibraryBinding=buildAllGameDynamicLibraryBindingPlan({
     companyRegistry:selectionRegistry,target:resolvedTarget,gameId:task.gameId,baseMaterialLoadout
   });
+  // 원형 교체는 기존 자동 바인딩 작업과 같은 라이브러리 스냅샷을 사용한다.
+  // 후보 선택은 역할 적합성 검토용이며 다운로드·게시·실행 완료를 뜻하지 않는다.
+  const primitiveReplacement=task.buildUpDirective?.visualBuildUpDirective?.primitiveReplacement;
+  const primitiveReplacementWork=resolvedTarget==='roblox'&&primitiveReplacement?.enabled===true?freeze({
+    ...primitiveReplacement,
+    libraryVersion:allGameDynamicLibraryBinding.libraryVersion,
+    libraryFingerprint:allGameDynamicLibraryBinding.fingerprint,
+    familyCandidates:freeze(Object.fromEntries(Object.entries(allGameDynamicLibraryBinding.familyCandidates)
+      .map(([family,rows])=>[family,freezeList(rows.filter(row=>row.cc0LightAdaptation?.sourceState==='DERIVATIVE_INPUT_CANDIDATE')
+        .map(row=>freeze({assetId:row.assetId,path:row.path,sourceHash:row.sourceHash,applicationMode:row.applicationMode,role:row.role})))]))),
+    nearestSimilarAssetAllowed:true,exactRoleOrStyleMatchRequired:false,
+    rigAndPlatformCompatibilityRequired:true,
+    repairOwner:'EXISTING_GAME_SOURCE_WORKER',
+    missingAssetOwner:'EXISTING_ASSET_DEVELOPMENT',
+    completion:'EXACT_BUILD_RUNTIME_QA_REQUIRED',runtimeVerified:false
+  }):null;
   const motionStyle=deriveMotionStyleVariant({
     style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
     styles:requestedConcept.styles,modifiers:task.motionStyleModifiers||{}
@@ -6087,7 +6103,7 @@ export function buildVibeAssetProductionPlan({
     flowAssetRequirements,
     assetSupplySummary,
     detailedAssetCandidateReview,
-    automaticAssetBindingWork,
+    automaticAssetBindingWork:freeze({...automaticAssetBindingWork,primitiveReplacement:primitiveReplacementWork}),
     externalCustomization,
     genreMenuRecommendations,
     registrySync:freeze({
@@ -6772,7 +6788,7 @@ export function assetProductionGuidance(plan={}){
     '이 계획은 독립 그래픽 작업이 아니다. 모든 에셋 결정은 단일 GRAPHICS_PRODUCTION 루트에 입력되고 같은 루트에서 캐릭터·환경·애니메이션·VFX·조명·UI와 함께 fan-in 된다.',
     'Vibe2/Vibe3가 게임 소스 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 선택한다.',
     '에셋 선택 전에 승인 설계·최신 아트북에서 게임별 Art Bible, Style Lock, Material/Environment/Animation/VFX/Lighting/UI 언어와 Visual Target Frame을 먼저 확정한다.',
-    '기본값은 플레이어·적·NPC·무기·아이템·건축물·지형·배경·식생·소품·UI·VFX·오디오까지 목적 있는 에셋을 적용하는 것이다. primitive/샘플 모형은 prototype fallback만 허용하고 Visual Debt로 남긴다.',
+    plan.target==='roblox'?'로블록스는 F0부터 보이는 원형 파츠를 검증된 CC0 파생 자산으로 교체한다. 비슷한 자산이면 우선 적용하며 정확히 같은 외형·종류·스타일을 기다리지 않는다. 크기·색·재질을 조정하고 리그 호환은 확인한다. 원형 외형 보존은 불필요하며 표시·재생성 fallback은 제거한다. 숨은 충돌·판정·리그 루트·스폰·트리거와 게임 기능은 보존한다. 후보가 없으면 기존 공급 GAP로 남기며 원형 유지나 자산 미연결 상태를 완료로 처리하지 않는다.':'기본값은 플레이어·적·NPC·무기·아이템·건축물·지형·배경·식생·소품·UI·VFX·오디오까지 목적 있는 에셋을 적용하는 것이다. primitive/샘플 모형은 prototype fallback만 허용하고 Visual Debt로 남긴다.',
     'Hero 품질 대상(플레이어, 주 보스/적, 시그니처 무기, 핵심 랜드마크/시작지역)은 전체 게임의 스타일 기준점으로 먼저 완성한다.',
     '배경과 환경은 후순위 장식이 아니다. 전경/중경/배경, 지역 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 실제 플레이 화면에서 확보한다.',
     '권리가 검증된 기존 에셋은 원본을 덮어쓰지 않고 파츠 재조합·실루엣/비율·재질·지역/정예/보스 파생·LOD 최적화 등 derived 변형으로 게임 고유 에셋화할 수 있다.',
