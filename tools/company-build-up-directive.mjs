@@ -1849,7 +1849,11 @@ export function playerFacingInspectionPromptLines(contract={}, {focus='',generat
   const start=(Math.max(1,Number(generation)||1)-1)%Math.max(1,pool.length);
   const selected=pool.length?[pool[start],...(pool.length>1?[pool[(start+1)%pool.length]]:[])]:[];
   const lines=[];
-  for(let i=0;i<cases.length;i+=5)lines.push('inspectionIndex='+cases.slice(i,i+5).map(row=>row.id+':'+row.applicability).join('|'));
+  for(let i=0;i<cases.length;i+=5){
+    const batch=cases.slice(i,i+5);
+    lines.push('inspectionIndex='+batch.map(row=>row.id+':'+row.applicability).join('|'));
+    lines.push('inspectionRemoteMatrix='+batch.map(row=>row.id+':'+(row.remoteAssertions||[]).join('/')).join('|'));
+  }
   return[
     'inspectionContract=EVERY_CYCLE; REMOTE_AUTOMATED_F0_F9_AND_INDEPENDENT_QA_ONLY; LOCAL_MANUAL_INSPECTION_NOT_REQUIRED; CHECKLIST_NOT_EXECUTED; QUALITY_UNVERIFIED; inspect all applicable surfaces, expand current details from playerFacingInspectionContract; not-applicable needs design/source reason.',
     ...lines,
