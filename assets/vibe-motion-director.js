@@ -1805,6 +1805,154 @@ export function createCommonMonsterActionLoadout({
       });
     }))
     :Object.freeze([]);
+  // 메인: 무척추·곤충·비행·마법·수중·뱀형·촉수형을 실제 해부학 의미에 맞춰 60개씩 준비한다.
+  // 기존 네발 60개는 재사용하고, 사람형 캐릭터의 모션·새 게임플레이 명령으로 오인하지 않는다.
+  const nonHumanoidKind=/^QUADRUPED_/.test(species.bodyPlan)?'QUADRUPED'
+    :/ARACHNID|HEXAPOD/.test(species.bodyPlan)?'ARTHROPOD'
+    :species.bodyPlan==='FLYING'?'FLIGHT'
+    :species.bodyPlan==='FLOATING_GHOST'?'ETHEREAL_MAGIC'
+    :species.bodyPlan==='AMORPHOUS'?'AMORPHOUS_MAGIC'
+    :species.bodyPlan==='HEAVY_GOLEM_OR_BOSS'?'CONSTRUCT_MAGIC'
+    :species.bodyPlan==='AQUATIC'?'AQUATIC'
+    :species.bodyPlan==='REPTILE_OR_SERPENT'?'SERPENT'
+    :species.bodyPlan==='CENTAUR'?'HYBRID_QUADRUPED'
+    :species.bodyPlan==='TENTACLED'?'TENTACLE'
+    :species.bodyPlan==='SWARM'?'SWARM'
+    :null;
+  const motion60=nonHumanoidKind==='QUADRUPED'?quadruped60
+    :!nonHumanoidKind?Object.freeze([])
+    :Object.freeze(Object.entries(quadrupedQuota).flatMap(([group,count])=>{
+      const roles=profile.groups[group];
+      if(!roles?.length)throw Error('NON_HUMANOID_ACTION_GROUP_MISSING:'+id+':'+group);
+      const isDeath=group==='deaths',isLocomotion=group==='locomotion';
+      const aerial=nonHumanoidKind==='FLIGHT'||nonHumanoidKind==='ETHEREAL_MAGIC';
+      const floating=aerial||nonHumanoidKind==='AQUATIC'||nonHumanoidKind==='SWARM';
+      const originParts=species.specialParts;
+      // 관절·변형 체인은 등록된 실제 종족 부위만 사용. 다른 체형의 팔다리는 생성하지 않는다.
+      const leadPart=kinematic.supportPart,followingPart=kinematic.counterPart;
+      const expressivePart=originParts.find(part=>/WINGS|ANTENNAE|ELYTRA|TAIL|NECK|HEAD|CORE|SPINNERETS|ABDOMEN|VEIL|LOBES|FINS|TENTACLES|FORMATION/.test(part))
+        ||originParts.find(part=>part!==leadPart&&part!==followingPart)||leadPart;
+      return Array.from({length:count},(_,index)=>{
+        const sourceMotionId=roles[index%roles.length],variation=Math.floor(index/roles.length);
+        const side=index%2===0?1:-1,amplitude=1+variation*.08;
+        const timing=isDeath?[0,.11,.32,.56,.78,1]
+          :isLocomotion?[0,.16,.34,.56,.81,1]:[0,.13,.32,.57,.83,1];
+        const phaseSign=nonHumanoidKind==='SERPENT'||nonHumanoidKind==='TENTACLE'?-1:1;
+        const coil=kinematic.coil.map((value,axis)=>(value+side*(axis===0?.07:.025))*amplitude);
+        const release=kinematic.hit.map((value,axis)=>(value+phaseSign*side*(axis===1?.075:.03))*amplitude*(isDeath?1.2:1));
+        const tracks=Object.freeze([
+          monsterPoseFrames(leadPart,timing[2],timing[3],coil,release,{holdEnd:isDeath}),
+          monsterPoseFrames(followingPart,timing[2],timing[3],
+            coil.map(v=>-v*kinematic.counterWeight*.68),
+            release.map(v=>-v*kinematic.counterWeight*.54),{holdEnd:isDeath}),
+          monsterPoseFrames(expressivePart,timing[2],timing[3],
+            coil.map(v=>v*.36),release.map(v=>v*(isDeath?.78:.43)),{holdEnd:isDeath})
+        ]);
+        const isArthropod=nonHumanoidKind==='ARTHROPOD';
+        const isMagic=nonHumanoidKind.includes('MAGIC');
+        return Object.freeze({
+          id:id+'_M60_'+upper(group)+'_'+String(index+1).padStart(2,'0'),
+          sourceMotionId,group,variation,bodyPlan:species.bodyPlan,
+          bodyPlanFamily:nonHumanoidKind,poseKeyTimes:freezeList(timing),
+          jointTracks:tracks,articulationParts:freezeList([leadPart,followingPart,expressivePart]),
+          phaseRelationship:detail.presentationVariation.limbPhase,
+          supportLimbCount:nonHumanoidKind==='HYBRID_QUADRUPED'?4
+            :isArthropod?(species.bodyPlan==='HEXAPOD_INSECT'?6:8):0,
+          gaitPhaseOffsets:isArthropod
+            ?freezeList(species.bodyPlan==='HEXAPOD_INSECT'?[0,.5,0,.5,0,.5]:[0,.5,.25,.75,.5,0,.75,.25])
+            :freezeList([]),
+          locomotionStyle:nonHumanoidKind==='FLIGHT'?'WING_BEAT_BANK_HOVER'
+            :nonHumanoidKind==='AQUATIC'?'FINS_AND_TAIL_PROPULSION'
+            :nonHumanoidKind==='SERPENT'?'DELAYED_SPINAL_BODY_WAVE'
+            :nonHumanoidKind==='TENTACLE'?'ANCHOR_AND_DELAYED_TENTACLE_WAVE'
+            :nonHumanoidKind==='SWARM'?'MEMBER_FORMATION_FLOW'
+            :isArthropod?'STAGGERED_SUPPORT_AND_BODY_COUNTERWEIGHT'
+            :nonHumanoidKind==='AMORPHOUS_MAGIC'?'SQUASH_STRETCH_VOLUME_PRESERVATION'
+            :nonHumanoidKind==='ETHEREAL_MAGIC'?'VEIL_AND_HOVER_DRIFT'
+            :nonHumanoidKind==='CONSTRUCT_MAGIC'?'WEIGHTED_CORE_AND_PLATE_RECOIL'
+            :'ANATOMY_DEPENDENT',
+          groundContactRequired:!floating&&nonHumanoidKind!=='SERPENT'&&nonHumanoidKind!=='AMORPHOUS_MAGIC',
+          flightRootAndAltitudeOwnedByGameplay:aerial,
+          magicCuesOnlyForExistingApprovedSkill:isMagic,
+          facialOrSensoryFollowThroughOnlyWhenRigHasChannel:true,
+          deathStage:isDeath?freezeList([
+            'IMPACT_STAGGER','SUPPORT_LOSS','SIDE_COLLAPSE',
+            'FULL_BODY_SETTLE','SPECIES_SIGNATURE_FALL','FINAL_REST'
+          ])[index]:null,
+          deathEndPoseHeld:isDeath,
+          blend:Object.freeze({method:'POSE_AND_VELOCITY_MATCH',curve:'CUBIC_EASE',
+            contactAware:!floating,secondaryFollowThrough:true}),
+          existingEventRequired:true,newAttackOrSkillGranted:false,
+          nativeRigOrDeformerBindingRequired:true,
+          rootAndHitboxUnchanged:true,
+          sourceType:'SHARED_SEMANTIC_JOINT_CURVES_REQUIRES_NATIVE_RIG_ADAPTATION',
+          runtimeVerified:false,productionVerified:false,gameplayAuthority:false
+        });
+      });
+    }));
+  // 정예·보스: 기존 행동 이벤트에서만 선택 가능한 10개 안무×5개 표현 변주=50개.
+  // 새 AI 패턴·쿨타임·페이즈 조건을 만들지 않고 기존 실제 행동을 접합한다.
+  const tierMotifs=Object.freeze([
+    ['acting','attacks','defense'],['locomotion','attacks','attacks'],
+    ['defense','attacks','reactions'],['skill','attacks','signature'],
+    ['signature','attacks','defense'],['attacks','defense','attacks'],
+    ['acting','skill','reactions'],['locomotion','defense','attacks'],
+    ['attacks','skill','signature'],['defense','acting','attacks']
+  ]);
+  const tierActionPatterns=motionTier==='NORMAL'?Object.freeze([])
+    :Object.freeze(tierMotifs.flatMap((groups,motifIndex)=>
+      Array.from({length:5},(_,styleIndex)=>{
+        const steps=Object.freeze(groups.map((group,stepIndex)=>{
+          const options=profile.groups[group];
+          if(!options?.length)throw Error('TIER_PATTERN_GROUP_MISSING:'+id+':'+group);
+          const motionId=options[(motifIndex+styleIndex+stepIndex)%options.length];
+          return Object.freeze({group,motionId,requiresExistingAuthorizedEvent:true,
+            mustNotAdvanceCombatOrPhaseState:true});
+        }));
+        const lead=species.contactLimbs[(motifIndex+styleIndex)%species.contactLimbs.length];
+        // 접촉 부위명(턱/발끝/뿔/무기 등)은 실제 관절명이 아닐 수 있으므로
+        // 종족이 선언한 관절·변형 부위에만 리타게팅한다.
+        const compatiblePart=species.specialParts.find(part=>part===lead||part.includes(lead)||lead.includes(part));
+        const anatomyHint=/JAWS|FANG|BITE/.test(lead)?/JAWS|NECK|HEAD|FANG/
+          :/FOREPAWS|FRONT_LEG/.test(lead)?/FORELEGS|FRONT_LEGS|SIX_LEGS|EIGHT_LEGS/
+          :/HANDS|FIST|SPEAR/.test(lead)?/ARMS|FISTS|SCYTHE_ARMS|ETHEREAL_ARMS/
+          :/HOOVES/.test(lead)?/HOOF_CONTACT|FOUR_LEGS/
+          :/TENTACLE/.test(lead)?/TENTACLES/
+          :/STINGER/.test(lead)?/TAIL_STINGER|TAIL/
+          :/SURFACE/.test(lead)?/SURFACE|LOBES/
+          :/SWARM/.test(lead)?/FRONT|MEMBERS/
+          :null;
+        const leadPart=compatiblePart||(anatomyHint&&species.specialParts.find(part=>anatomyHint.test(part)))
+          ||kinematic.supportPart;
+        const other=kinematic.counterPart===leadPart?kinematic.supportPart:kinematic.counterPart;
+        const wind=motionTier==='BOSS'?.37:.34,contact=motionTier==='BOSS'?.62:.57;
+        const bias=(styleIndex-2)*.045,tierIntensity=motionTier==='BOSS'?1.15:1.06;
+        const prep=kinematic.coil.map((value,axis)=>(value+(axis===0?bias:-bias*.45))*tierIntensity);
+        const strike=kinematic.hit.map((value,axis)=>(value+(axis===1?bias:-bias*.35))*tierIntensity);
+        return Object.freeze({
+          id:id+'_'+motionTier+'_PATTERN_'+String(motifIndex*5+styleIndex+1).padStart(2,'0'),
+          tier:motionTier,motifIndex,styleIndex,steps,
+          contactLimb:lead,contactRigPart:leadPart,counterPart:other,
+          poseKeyTimes:freezeList([0,.12,wind,contact,.83,1]),
+          jointTracks:Object.freeze([
+            monsterPoseFrames(leadPart,wind,contact,prep,strike),
+            monsterPoseFrames(other,wind,contact,
+              prep.map(v=>-v*kinematic.counterWeight),
+              strike.map(v=>-v*kinematic.counterWeight*.72))
+          ]),
+          telegraphFromExistingActingOrSignature:true,
+          variantPurpose:freezeList(['COUNTERBALANCE','GUARD_SHIFT','DISTANCE_READ',
+            'RECOVERY_OVERLAP','SIGNATURE_ACCENT'])[styleIndex],
+          entryRequiresGameApprovedActionSequence:true,
+          aiLogicAndBossPhaseUnchanged:true,
+          comboContactAndCancelWindowsUnchanged:true,
+          continuity:Object.freeze({poseMatch:true,velocityMatch:true,gripOrContactLock:true,
+            phaseMarkersImmutable:true,rootMotionGameplayOwned:true}),
+          actualClipAndRigBindingRequired:true,
+          runtimeVerified:false,productionVerified:false,gameplayAuthority:false
+        });
+      })
+    ));
   const bipedSync=['HUMANOID_UNDEAD','BOSS_BIPED'].includes(species.bodyPlan)
     ?createDuelCombatMotionLoadout({
       weaponFamily:'UNARMED',platform:platformId,actorClass:'HUMANOID_NPC',
@@ -1845,7 +1993,7 @@ export function createCommonMonsterActionLoadout({
     presentationTier:motionTier,tierPoseIdentity:tierProfile.poseIdentity,
     speciesHierarchy:freezeList(['BODY_PLAN:'+species.bodyPlan,'SPECIES:'+id,'PRESENTATION_TIER:'+motionTier]),
     genreGroups:requestedGroups,roleRequests,
-    choreography,expressiveChoreography,quadruped60,bipedSync,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
+    choreography,expressiveChoreography,quadruped60,motion60,nonHumanoidKind,tierActionPatterns,bipedSync,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
     platformNativeAdaptationRequired:true,runtimeVerified:false,productionVerified:false,
