@@ -105444,11 +105444,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_346203a6512f6fff605c6114",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10332",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "86d102849144940db39bbcd5d3c3782ead263e26",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10332,
+        "baseBranch": "main",
+        "headBranch": "cozy-island-landscape-oct26",
+        "baseSha": "86d102849144940db39bbcd5d3c3782ead263e26",
+        "headSha": "9e1af8455c150401b0e83a10026dc535c75f3cdf",
+        "mergeCommitSha": "a2897c560609ed8583f67d04423e6ba6dbb04092",
+        "mergedAt": "2026-10-26T10:16:50Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8ccb9ef328dff2de3a3e82ee3fffd5513b5492f439db1a44e29b48ceaa9d0a18",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "cozy-island-landscape-oct26",
+        "candidateSha": "9e1af8455c150401b0e83a10026dc535c75f3cdf"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 122,
+        "deletedLineCount": 22,
+        "changedFiles": [
+          "qa/cozy-island-wildlife.test.mjs",
+          "qa/cozy-rpg-release-hardening.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/VisualStyle.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/cozy-island-wildlife.test.mjs",
+          "qa/cozy-rpg-release-hardening.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/VisualStyle.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10332",
+        "merge-commit:a2897c560609ed8583f67d04423e6ba6dbb04092",
+        "base-main:86d102849144940db39bbcd5d3c3782ead263e26"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 830
+    "total": 831
   }
 }
