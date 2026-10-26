@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ysnf4y",
+      "worker": "vibe2",
+      "taskId": "kingshot-ad-existing-web-assessment-v1",
+      "gameId": "kingshot-ad",
+      "files": [
+        "web-games/kingshot-ad/index.html"
+      ],
+      "baseSha": "fd57e9c6d5a07ad4526a0c417247b2e1a8ec05c7",
+      "runId": "40364525776",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-26T17:35:38.528Z",
+      "expiresAt": "2026-10-26T18:20:38.528Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:kingshot-ad-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
