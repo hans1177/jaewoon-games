@@ -648,6 +648,7 @@ test('no-model Roblox native runtime refuses non-idempotent startup and gameplay
   const sources=[
     NATIVE_RUNTIME_CASES[0].source.replace('  if bound[item] then return end\n',''),
     NATIVE_RUNTIME_CASES[0].source.replace('  bound[item] = true\n',''),
+    NATIVE_RUNTIME_CASES[0].source+'\nplayer = anotherPlayer',
     NATIVE_RUNTIME_CASES[0].source.replace('  visits += 1','  visits += 1\n  bound[item] = nil'),
     '--[[\n'+NATIVE_RUNTIME_CASES[0].source+'\n]]',
     NATIVE_RUNTIME_CASES[7].source.replace('  status.Text =','  remote:FireServer("attack")\n  status.Text ='),

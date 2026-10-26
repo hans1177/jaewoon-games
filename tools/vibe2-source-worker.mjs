@@ -1783,6 +1783,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       for(const binding of bindings){
         const {row,receiver,event,callback,tag}=binding,contract=contracts.get(callback);
         if(!contract?.idempotent||contract.fn.end>row.index||!topLevel.has(row.index)||code.slice(row.index,row.index+receiver.length)!==receiver
+          ||[...code.matchAll(new RegExp('\\b'+receiver+'\\s*=(?!=)','g'))].length!==1
           ||source.split(row[0]).length!==2)continue;
         let bootstrap='',kind='';
         const playerDeclaration=new RegExp('^local\\s+'+receiver+'\\s*=\\s*([A-Za-z_][A-Za-z_0-9]*)\\.LocalPlayer\\b','m').exec(code);
