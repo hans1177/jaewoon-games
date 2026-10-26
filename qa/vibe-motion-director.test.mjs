@@ -16,6 +16,7 @@ import {
   DUEL_COMBAT_AUTHORING_PHASES,
   DUEL_COMBAT_WEAPON_MECHANICS,
   WEAPON_COMBAT_MOTION_PACKS,
+  SHARED_BIPED_COMBAT_30,
   UNARMED_MARTIAL_ARTS_STYLES,
   UNARMED_MARTIAL_MECHANICS,
   HERO_STANDARD_RIG_TARGET,
@@ -357,6 +358,74 @@ test('duel loadout binds katana and unarmed martial arts without taking gameplay
   assert.ok(muayThai.groups.heavy.includes('MUAY_THAI_KNEE'));
   assert.ok(muayThai.groups.grapple.includes('MUAY_THAI_CLINCH_ENTRY'));
   assert.equal(muayThai.nativeRuntimeVerificationRequired,true);
+});
+
+test('thirty weapon families compose thirty shared biped roles plus thirty distinct weapon chain plans',()=>{
+  assert.equal(Object.keys(WEAPON_COMBAT_MOTION_PACKS).length,30);
+  assert.equal(SHARED_BIPED_COMBAT_30.length,30);
+  assert.equal(new Set(SHARED_BIPED_COMBAT_30).size,30);
+  for(const family of Object.keys(WEAPON_COMBAT_MOTION_PACKS)){
+    assert.ok(DUEL_COMBAT_WEAPON_MECHANICS[family],family);
+    const player=createDuelCombatMotionLoadout({weaponFamily:family,actorClass:'PLAYER',bodyPlan:'R15'});
+    const npc=createDuelCombatMotionLoadout({weaponFamily:family,actorClass:'HUMANOID_NPC',bodyPlan:'HUMANOID_UNDEAD'});
+    assert.equal(player.composableMotionSlotCount,60,family);
+    assert.equal(player.weaponChains.length,30,family);
+    assert.equal(new Set(player.weaponChains.map(row=>row.id)).size,30,family);
+    assert.deepEqual(player.sharedBaseMotions,npc.sharedBaseMotions,family);
+    assert.deepEqual(player.weaponChains,npc.weaponChains,family);
+    assert.equal(player.bipedNpcSharesCharacterActionRoles,true);
+    assert.ok(player.weaponChains.every(row=>row.productionVerified===false&&row.gameplayAuthority===false));
+    for(const chain of player.weaponChains){
+      assert.equal(chain.steps.length,3);
+      assert.equal(chain.blend.poseVelocityMatching,true);
+      assert.equal(chain.blend.gripContinuity,true);
+      assert.equal(chain.contactMarkerUnchanged,true);
+      for(const step of chain.steps)assert.ok(player.groups[step.group].includes(step.motionId),step.motionId);
+    }
+  }
+  assert.equal(createDuelCombatMotionLoadout({weaponFamily:'unknown'}).weaponChains[0].weaponFamily,'UNARMED');
+  assert.throws(()=>createDuelCombatMotionLoadout({bodyPlan:'QUADRUPED_CANINE'}),/BIPED_COMBAT_RIG_REQUIRED/);
+});
+
+test('humanoid monsters reuse biped combat semantics, quadrupeds keep sixty independent detailed motion plans',()=>{
+  const humanoid=createCommonMonsterActionLoadout({speciesId:'DEMON_LORD'});
+  assert.equal(humanoid.bipedSync.composableMotionSlotCount,60);
+  assert.equal(humanoid.bipedSync.actorClass,'HUMANOID_NPC');
+  assert.equal(humanoid.quadruped60.length,0);
+  const humanChar=createRobloxCharacterMotionPlan({actorClass:'HUMANOID_NPC',bodyPlan:'HUMANOID_UNDEAD',rigProfile:'R15'});
+  assert.equal(humanChar.bipedActionSync.composableMotionSlotCount,60);
+  assert.equal(humanChar.fourLegMotionRetargetRequired,false);
+  for(const speciesId of ['WOLF','FOX','BEAR','BOAR']){
+    const quad=createCommonMonsterActionLoadout({speciesId,platform:'ROBLOX'});
+    const actions=quad.quadruped60;
+    assert.equal(actions.length,60,speciesId);
+    assert.equal(new Set(actions.map(row=>row.id)).size,60,speciesId);
+    assert.equal(quad.bipedSync,null);
+    assert.equal(actions.filter(row=>row.group==='locomotion').length,12);
+    assert.equal(actions.filter(row=>row.group==='attacks').length,15);
+    assert.equal(actions.filter(row=>row.group==='reactions').length,7);
+    assert.equal(actions.filter(row=>row.group==='acting').length,7);
+    const deaths=actions.filter(row=>row.group==='deaths');
+    assert.equal(deaths.length,6);
+    assert.equal(new Set(deaths.map(row=>row.deathStage)).size,6);
+    for(const row of actions){
+      assert.equal(row.jointTracks.length,3);
+      assert.deepEqual(row.semanticLegChannels,['FRONT_LEFT','FRONT_RIGHT','HIND_LEFT','HIND_RIGHT']);
+      assert.ok(row.jointTracks.every(track=>track.frames.length===5&&track.frames.every(frame=>frame.rotation.every(Number.isFinite))));
+      assert.equal(row.rootAndHitboxUnchanged,true);
+      assert.equal(row.productionVerified,false);
+      assert.equal(row.runtimeVerified,false);
+    }
+    for(const row of deaths){
+      assert.equal(row.deathEndPoseHeld,true);
+      assert.ok(row.jointTracks.every(track=>track.holdsFinalPose&&track.frames.at(-1).rotation.some(v=>Math.abs(v)>.01)));
+    }
+  }
+  const fourLegChar=createRobloxCharacterMotionPlan({actorClass:'CREATURE',bodyPlan:'QUADRUPED_CANINE',rigProfile:'R15'});
+  assert.equal(fourLegChar.bipedActionSync,null);
+  assert.equal(fourLegChar.fourLegMotionRetargetRequired,true);
+  assert.equal(fourLegChar.procedural.limbCount,4);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'SPIDER'}).quadruped60.length,0);
 });
 
 test('duel authoring recipe gives concrete joint phases and weapon mechanics',()=>{
