@@ -5125,6 +5125,9 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
             sourceModelId:row.externalAcquisition?.sourceModelId||null,
             sourceFormat:row.externalAcquisition?.sourceFormat||null,
             repositoryGitBlobSha:row.externalAcquisition?.repositoryGitBlobSha||null,
+            // The pinned upload ID may be used only after this Universe receives a real grant.
+            registeredRobloxAssetId:row.externalAcquisition?.registeredRobloxAssetId||null,
+            universeUseGrantRequired:row.externalAcquisition?.universeUseGrantRequired===true,
             similarCc0VisualProxy:row.similarCC0VisualProxy===true,
             automaticSourceSelectionAuthorized:row.automaticSourceSelectionAuthorized===true,
             nativeImportAndRigQaRequired:row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D',
@@ -5149,7 +5152,9 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
             nativeBuildBlockedByUnadaptedArchive:row.action==='ACQUIRE_ADAPT'
               &&row.externalAcquisition?.downloaded===true
               &&Boolean(row.externalAcquisition?.localSourcePath)
-              &&!row.registeredSourceModel,
+              &&!row.registeredSourceModel
+              &&!(order.target==='roblox'&&row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D'
+                &&/^[1-9][0-9]*$/.test(String(row.externalAcquisition?.registeredRobloxAssetId||''))),
             runtimeVerified:false,productionVerified:false,
             nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'
               &&!row.externalAcquisition?.downloadUrl
@@ -5171,7 +5176,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
           })))
       })
     }),
-    'Only inspect, verify and apply existing company/common or downloaded license-cleared assets. Do not invent or generate new meshes, characters, artwork, props, audio, algorithms, or asset files. Inspect the sourceArchive bytes, SHA256, contained file types, licensing and model rig/animation before extraction and platform conversion. Reuse the existing conversion responsibility and bind the verified asset into the game consumer, preserving gameplay, save and networking. If the archive has no matching safe file, leave that role pending, never substitute an invented asset. Runtime, mobile and import QA remain mandatory before marking applied.',
+    'Only inspect, verify and apply existing company/common or downloaded license-cleared assets. Do not invent or generate new meshes, characters, artwork, props, audio, algorithms, or asset files. Inspect the sourceArchive bytes, SHA256, contained file types, licensing and model rig/animation before extraction and platform conversion. Reuse the existing conversion responsibility and bind the verified asset into the game consumer, preserving gameplay, save and networking. For a ROBLOX_ACTOR_3D source, a non-null registeredRobloxAssetId with the exact verified original Git blob authorizes choosing that already-uploaded Model in the existing responsible game visual binding; the current Universe must still receive its own cloud Use grant before any place publish. An unregistered original has no usable Roblox asset ID; never invent one or claim it is applied. Preserve the actor identity, physics, motions, hitbox, health, economy and save. If the archive has no matching safe file, leave that role pending, never substitute an invented asset. Runtime, mobile and import QA remain mandatory before marking applied.',
     'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'
   ].join('\n'):'';
