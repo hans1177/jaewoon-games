@@ -65,23 +65,23 @@ local function drawCaptureMarker(a,point,index)
  local marker=Instance.new("Attachment")
  marker.Name="전초 거점 "..index
  marker.Parent=terrain
- marker.WorldPosition=Vector3.new(a.X,4,point.Z)
+ marker.WorldPosition=Vector3.new(a.X+(index==1 and -15 or 15),2.5,point.Z)
  local board=Instance.new("BillboardGui")
  board.Name="전선 점령 현황";board.AlwaysOnTop=true
- board.Size=UDim2.fromOffset(195,66);board.MaxDistance=135
- board.StudsOffsetWorldSpace=Vector3.new(0,3,0);board.Adornee=marker;board.Parent=marker
+ board.Size=UDim2.fromOffset(103,30);board.MaxDistance=80
+ board.StudsOffsetWorldSpace=Vector3.new(0,1.1,0);board.Adornee=marker;board.Parent=marker
  local text=Instance.new("TextLabel")
  text.Name="상태";text.Size=UDim2.fromScale(1,1)
  text.BackgroundColor3=Color3.fromRGB(27,36,42)
- text.BackgroundTransparency=.22;text.TextColor3=Color3.fromRGB(255,230,174)
- text.TextScaled=false;text.TextSize=17;text.TextWrapped=true
+ text.BackgroundTransparency=.36;text.TextColor3=Color3.fromRGB(255,230,174)
+ text.TextScaled=false;text.TextSize=12;text.TextWrapped=false
  text.Font=Enum.Font.GothamBold;text.Parent=board
  local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,9);corner.Parent=text
  point.Marker=marker;point.Label=text;point.Index=index
 end
 local function captureState(point)
  local state=point.Owner=="ALLY" and "우리 군단" or point.Owner=="ENEMY" and "적 군단" or "중립"
- return "전초 거점 "..point.Index.." · "..state.."\n"..math.floor(math.abs(point.Progress)).."% 점령도"
+ return "거점 "..point.Index.." "..state.." "..math.floor(math.abs(point.Progress)).."%"
 end
 local function tickCapture(a,dt)
  local changed=false
