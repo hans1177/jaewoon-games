@@ -5647,17 +5647,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
       const hits=keywords.split('|').map(key=>key.toLowerCase().trim()).filter(key=>{
         if(!key)return false;
         if(!/^[a-z0-9]/.test(key))return makerRequest.includes(key);
-        const escaped=key.replace(/[.*+?^${}()|[\]\\]/g,'\\  const makerRequest=craftGoal.toLowerCase();
-  const makerProductionSelected=clean(order.target).toLowerCase()==='roblox'
-    ?makerCapabilityRecipes.filter(([,keywords])=>keywords.split('|').some(phrase=>makerRequest.includes(phrase.toLowerCase()))).slice(0,8)
-    :[];
-  const makerProductionBlock=makerProductionSelected.length?[
-    '[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES]',
-    ...makerProductionSelected.map(([id,,how])=>id+': '+how),
-    'Each selected module is a concrete authoring target, NOT pre-existing runtime code or a PASS result. Implement real Luau/Instance changes inside existing responsible source/functions for only the requested scope. Reuse approved game assets and RobloxCommonMaterials when present; do not fabricate texture IDs, licenses, models, server authority or save data.',
-    'For every changed module show its actual source edit and relevant source-bound verification. Existing gameplay, collisions, damage, rewards, cooldowns and save schema unchanged; preserve mobile input. Runtime publication and F0-F9 remain UNVERIFIED without actual evidence.',
-    '[END ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES]'
-  ].join('\n'):'';');
+        const escaped=key.replace(/[^a-z0-9 ]/g,'').replace(/ +/g,'[\\s-]+');
         return new RegExp('(^|[^a-z0-9])'+escaped+'(?=$|[^a-z0-9])','i').test(makerRequest);
       });
       const score=hits.length?Math.max(...hits.map(key=>key.length)) + hits.length*2 : 0;
