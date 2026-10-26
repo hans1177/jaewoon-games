@@ -94,18 +94,29 @@ local function button(parent,txt,size,order,fn)
  b.Activated:Connect(fn)
  return b
 end
-local top=panel(gui,UDim2.fromOffset(364,62),UDim2.fromOffset(7,6))
-local title=label(top,"백수대전쟁 · 군단전선 타이쿤",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
+local top=panel(gui,UDim2.fromOffset(350,105),UDim2.fromOffset(7,6))
+local title=label(top,"백수대전쟁  /  동물 군단 본부",UDim2.new(1,-16,0,26),UDim2.fromOffset(10,4))
 title.TextSize=15
-local status=label(top,"불러오는 중",UDim2.new(1,-12,0,34),UDim2.fromOffset(8,25))
-status.TextSize=12
+local status=label(top,"전장 동기화 중",UDim2.new(1,-16,0,25),UDim2.fromOffset(10,30))
+status.TextSize=13
+local allyBar,allyBarView=CommonUI.CreateHealthBar({name="아군 성문 체력",theme=theme,size=UDim2.new(.46,-8,0,23),ratio=1,text="아군 500"})
+allyBar.Parent=top;allyBar.Position=UDim2.fromOffset(10,67)
+local enemyBar,enemyBarView=CommonUI.CreateHealthBar({name="적군 성문 체력",theme=theme,size=UDim2.new(.46,-8,0,23),ratio=1,text="적군 380"})
+enemyBar.Parent=top;enemyBar.Position=UDim2.new(.52,0,0,67)
+for _,rootBar in ipairs({allyBar,enemyBar}) do
+ rootBar.ZIndex=top.ZIndex+4
+ for _,node in ipairs(rootBar:GetDescendants()) do
+  if node:IsA("GuiObject") then node.ZIndex+=top.ZIndex+4 end
+ end
+end
+
 local dock=panel(modalLayer,UDim2.fromOffset(174,226),UDim2.new(1,-182,0,60))
 dock.Visible=false
 label(dock,"건물 슬롯",UDim2.new(1,-8,0,28),UDim2.fromOffset(8,4))
 local list=Instance.new("ScrollingFrame");list.Size=UDim2.new(1,-14,1,-90)
 list.Position=UDim2.fromOffset(7,32);list.BackgroundTransparency=1;list.BorderSizePixel=0
 list.ScrollBarThickness=3;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new()
-list.Parent=dock
+list.ZIndex=dock.ZIndex+4;list.Parent=dock
 local ll=Instance.new("UIListLayout");ll.SortOrder=Enum.SortOrder.LayoutOrder;ll.Padding=UDim.new(0,5);ll.Parent=list
 local buy=Instance.new("TextButton");buy.Size=UDim2.new(1,-14,0,43);buy.Position=UDim2.new(0,7,1,-49)
 buy.TextSize=13;buy.TextColor3=Color3.new(1,1,1);buy.BackgroundColor3=Color3.fromRGB(111,89,51)
@@ -118,7 +129,7 @@ close.Position=UDim2.new(1,-76,0,7)
 local choices=Instance.new("ScrollingFrame");choices.Size=UDim2.new(1,-12,1,-48)
 choices.Position=UDim2.fromOffset(6,41);choices.BackgroundTransparency=1;choices.BorderSizePixel=0
 choices.ScrollBarThickness=3;choices.AutomaticCanvasSize=Enum.AutomaticSize.Y;choices.CanvasSize=UDim2.new()
-choices.Parent=menu
+choices.ZIndex=menu.ZIndex+4;choices.Parent=menu
 local cl=Instance.new("UIListLayout");cl.SortOrder=Enum.SortOrder.LayoutOrder;cl.Padding=UDim.new(0,5);cl.Parent=choices
 local notice=label(gui,"섬 전체 1000×1280 · 기지에서 전선까지 직접 탐험! 건물 슬롯을 눌러 건설해.",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
 notice.TextColor3=Color3.fromRGB(252,226,137)
@@ -157,12 +168,12 @@ local mapSurface=Instance.new("Frame")
 mapSurface.Name="섬 전체 지도"
 mapSurface.Size=UDim2.new(1,-16,0,125);mapSurface.Position=UDim2.fromOffset(8,30)
 mapSurface.BackgroundColor3=Color3.fromRGB(43,82,90)
-mapSurface.BorderSizePixel=0;mapSurface.Parent=mapPanel
+mapSurface.BorderSizePixel=0;mapSurface.ZIndex=mapPanel.ZIndex+4;mapSurface.Parent=mapPanel
 local oceanEdge=Instance.new("UICorner");oceanEdge.CornerRadius=UDim.new(0,8);oceanEdge.Parent=mapSurface
 local road=Instance.new("Frame")
 road.Name="군단 진격로";road.AnchorPoint=Vector2.new(.5,.5)
 road.Position=UDim2.fromScale(.5,.5);road.Size=UDim2.fromScale(.045,.76)
-road.BorderSizePixel=0;road.BackgroundColor3=Color3.fromRGB(207,184,139);road.Parent=mapSurface
+road.BorderSizePixel=0;road.BackgroundColor3=Color3.fromRGB(207,184,139);road.ZIndex=mapSurface.ZIndex+1;road.Parent=mapSurface
 local function mapPin(txt,x,z,color)
  local pin=Instance.new("TextLabel")
  pin.Name="지도 "..txt
@@ -171,7 +182,7 @@ local function mapPin(txt,x,z,color)
  pin.Text=txt;pin.TextSize=11;pin.TextColor3=Color3.fromRGB(255,255,255)
  pin.Font=Enum.Font.GothamBold;pin.BorderSizePixel=0
  pin.Position=UDim2.fromScale(.5+x/C.World.IslandWidth,1-(z+C.World.IslandLength*.5)/C.World.IslandLength)
- pin.Parent=mapSurface
+ pin.ZIndex=mapSurface.ZIndex+2;pin.Parent=mapSurface
  local radius=Instance.new("UICorner");radius.CornerRadius=UDim.new(0,7);radius.Parent=pin
  return pin
 end
@@ -180,7 +191,7 @@ local pointOne=mapPin("거점1",0,C.World.CaptureZ[1],Color3.fromRGB(117,115,96)
 local pointTwo=mapPin("거점2",0,C.World.CaptureZ[2],Color3.fromRGB(117,115,96))
 mapPin("적진",0,C.World.EnemyGateZ,Color3.fromRGB(183,83,72))
 local playerPin=mapPin("나",0,C.World.PlayerSpawnZ+42,Color3.fromRGB(69,139,221))
-playerPin.ZIndex=3
+playerPin.ZIndex=mapSurface.ZIndex+3
 local mapTravelHome=button(mapPanel,"내 기지 이동",UDim2.new(1,-16,0,30),4,function()
  remote:FireServer("TRAVEL","BASE");setWindow(nil)
 end)
@@ -202,7 +213,7 @@ commandScroll.Size=UDim2.new(1,-12,1,-109)
 commandScroll.Position=UDim2.fromOffset(6,103)
 commandScroll.BackgroundTransparency=1;commandScroll.BorderSizePixel=0
 commandScroll.ScrollBarThickness=3;commandScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
-commandScroll.CanvasSize=UDim2.new();commandScroll.Parent=controlPanel
+commandScroll.CanvasSize=UDim2.new();commandScroll.ZIndex=controlPanel.ZIndex+4;commandScroll.Parent=controlPanel
 local commandLayout=Instance.new("UIListLayout")
 commandLayout.SortOrder=Enum.SortOrder.LayoutOrder;commandLayout.Padding=UDim.new(0,5)
 commandLayout.Parent=commandScroll
@@ -253,8 +264,13 @@ task.spawn(function()
  end
 end)
 local function updateStatus()
- status.Text=string.format("스테이지 %d · 골드 %d\n우리 성문 %d  |  적 성문 %d",
-  current.Stage or 1,current.Gold or 0,math.ceil(current.HomeHP or 500),math.ceil(current.EnemyHP or 380))
+ local stage=current.Stage or 1
+ local hp=math.ceil(current.HomeHP or C.GateHP)
+ local enemyMax=C.EnemyHP+(stage-1)*100
+ local enemy=math.ceil(current.EnemyHP or enemyMax)
+ status.Text=string.format("전선 %d    ·    보유 골드  %d G",stage,math.floor(current.Gold or 0))
+ allyBarView.SetRatio(hp/C.GateHP,"아군 성문 "..hp)
+ enemyBarView.SetRatio(enemy/enemyMax,"적 성문 "..enemy)
 end
 local function updateSaveNotice()
  if p:GetAttribute("SaveStatus")=="SESSION_ONLY" then
@@ -264,7 +280,7 @@ end
 p:GetAttributeChangedSignal("SaveStatus"):Connect(updateSaveNotice)
 local chosen=1
 local function redrawMenu(index)
- chosen=index;setWindow("SLOT")
+ chosen=index;if not menu.Visible then setWindow("SLOT") end
  for _,x in ipairs(choices:GetChildren()) do if x:IsA("GuiObject") then x:Destroy() end end
  local b=current.Buildings[index]
  if b and b.Kind~="" and C.ById[b.Kind] then
@@ -371,42 +387,61 @@ end)
 -- ===== 카메라·모바일 HUD =====
 -- Roblox 기본 카메라가 PC 마우스/휠과 모바일 드래그/핀치를 처리한다.
 -- 조작 UI는 화면 크기에 맞추되 시점 회전·이동을 가로막지 않는다.
-local lastWidth=0
+local lastWidth,lastHeight=0,0
 local function resizeHud()
  local camera=workspace.CurrentCamera
  if not camera then return end
- local width=camera.ViewportSize.X
- if math.abs(width-lastWidth)<2 then return end
- lastWidth=width
- local narrow=width<690 or (Input.TouchEnabled and width<1000)
- local compact=width<490
- -- 오버레이가 전투장 대부분을 가리지 않도록 크기를 제한한다.
- local topWidth=compact and math.min(width-14,300) or (narrow and 314 or 364)
- top.Size=UDim2.fromOffset(topWidth,compact and 60 or 62)
- title.TextSize=compact and 13 or 15
- status.TextSize=compact and 11 or 12
- controlPanel.Size=compact and UDim2.fromOffset(176,292) or UDim2.fromOffset(205,318)
- controlPanel.Position=UDim2.fromOffset(8,compact and 115 or 79)
- controlToggle.Size=compact and UDim2.fromOffset(98,34) or UDim2.fromOffset(114,36)
- buildToggle.Size=compact and UDim2.fromOffset(98,34) or UDim2.fromOffset(112,36)
- mapToggle.Size=compact and UDim2.fromOffset(96,32) or UDim2.fromOffset(112,35)
- mapPanel.Size=compact and UDim2.fromOffset(174,273) or UDim2.fromOffset(190,273)
- if compact then
-  controlToggle.Position=UDim2.fromOffset(8,74)
-  buildToggle.Position=UDim2.fromOffset(113,74)
-  mapToggle.Position=UDim2.fromOffset(218,74)
-  mapPanel.Position=UDim2.new(1,-181,0,114)
- else
-  controlToggle.Position=UDim2.new(1,-251,0,10)
-  buildToggle.Position=UDim2.new(1,-127,0,10)
-  mapToggle.Position=UDim2.new(1,-120,0,55)
-  mapPanel.Position=UDim2.new(1,-198,0,98)
+ local width,height=camera.ViewportSize.X,camera.ViewportSize.Y
+ if math.abs(width-lastWidth)<2 and math.abs(height-lastHeight)<2 then return end
+ lastWidth,lastHeight=width,height
+ local compact=width<550
+ local narrow=width<820 or (Input.TouchEnabled and width<1050)
+ top.Size=UDim2.fromOffset(math.min(compact and width-14 or 350,width-14),105)
+ title.TextSize=compact and 15 or 17
+ status.TextSize=compact and 12 or 13
+ -- 화면 상단의 탭 3개는 플레이 조이스틱과 겹치지 않게 배치한다.
+ local tabs={controlToggle,buildToggle,mapToggle}
+ local tabWidth=compact and math.max(90,math.floor((width-28)/3)) or 113
+ for i,b in ipairs(tabs) do
+  b.Size=UDim2.fromOffset(tabWidth,46)
+  if compact then
+   b.Position=UDim2.fromOffset(7+(i-1)*(tabWidth+5),115)
+  else
+   b.Position=UDim2.new(1,-(4-i)*(tabWidth+5)-8,0,12)
+  end
  end
- dock.Size=compact and UDim2.fromOffset(157,214) or (narrow and UDim2.fromOffset(165,223) or UDim2.fromOffset(181,239))
- dock.Position=compact and UDim2.new(1,-164,0,115) or UDim2.new(1,narrow and -172 or -189,0,54)
- menu.Size=compact and UDim2.fromOffset(186,238) or (narrow and UDim2.fromOffset(192,262) or UDim2.fromOffset(221,286))
- menu.Position=compact and UDim2.fromOffset(5,115) or UDim2.fromOffset(8,74)
- notice.TextSize=compact and 11 or 12
+ local w=math.max(260,math.min(width-24,compact and 480 or 620))
+ local h=math.max(235,math.min(height-36,550))
+ local windows={dock,menu,controlPanel,mapPanel}
+ for _,window in ipairs(windows) do
+  window.AnchorPoint=Vector2.new(.5,.5)
+  window.Position=UDim2.fromScale(.5,.5)
+  window.Size=UDim2.fromOffset(w,h)
+ end
+ modalExit.Position=UDim2.new(.5,w*.5-110,.5,-h*.5+9)
+ modalExit.Size=UDim2.fromOffset(101,44)
+
+ list.Position=UDim2.fromOffset(14,51)
+ list.Size=UDim2.new(1,-28,1,-132)
+ buy.Position=UDim2.new(0,14,1,-66)
+ buy.Size=UDim2.new(1,-28,0,52)
+ choices.Position=UDim2.fromOffset(14,63)
+ choices.Size=UDim2.new(1,-28,1,-79)
+ caption.Size=UDim2.new(1,-144,0,39)
+ close.Position=UDim2.new(1,-189,0,8)
+ commandScroll.Position=UDim2.fromOffset(14,120)
+ commandScroll.Size=UDim2.new(1,-28,1,-137)
+ economyInfo.Position=UDim2.fromOffset(14,42)
+ economyInfo.Size=UDim2.new(1,-28,0,73)
+ mapSurface.Position=UDim2.fromOffset(14,46)
+ mapSurface.Size=UDim2.new(1,-28,1,-257)
+ for i,b in ipairs({mapTravelHome,mapTravelFront,mapTravelFar}) do
+  b.Size=UDim2.new(1,-28,0,49)
+  b.Position=UDim2.new(0,14,1,-169+(i-1)*54)
+ end
+ notice.Size=UDim2.new(1,-24,0,32)
+ notice.Position=UDim2.new(0,12,1,-42)
+ notice.TextSize=compact and 12 or 13
 end
 Run:BindToRenderStep("BaeksuWarResponsiveHUD",Enum.RenderPriority.Last.Value,resizeHud)
 
