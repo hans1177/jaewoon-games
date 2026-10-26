@@ -313,10 +313,10 @@ function RobloxCommonUI.CreateInventorySlot(options)
   glyph.TextSize = 26
   glyph.Font = Enum.Font.GothamBold
   glyph.TextScaled = false
-  glyph.Visible = icon.Image == ""
+  glyph.Visible = icon.Image == "" and options.glyph ~= nil
   glyph.Parent = button
   icon:GetPropertyChangedSignal("Image"):Connect(function()
-    glyph.Visible = icon.Image == ""
+    glyph.Visible = icon.Image == "" and (options.glyph ~= nil or button:GetAttribute("BoundItemId") ~= nil)
     icon.Visible = icon.Image ~= ""
   end)
 
