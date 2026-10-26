@@ -91,9 +91,19 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
     assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
       'other owner permanent removals must remain protected');
-  assert.ok(realProjects.some(project=>project.gameId==='insect-survival'&&project.engine==='web'
-    &&focusedCaretakerProject(project,repoRoot)),
-    'the existing insect-survival Web source must be admitted to the focused lane');
+  // 집중 대상 지정은 설계 승격 권한이 아니다. 현재 카탈로그의 설계 재검토 상태를
+  // 강제로 개발 상태로 취급하면 안 되며, 실제 개발 배정은 아래 승인 상태 fixture로 검증한다.
+  const insect=liveCatalog.games.find(game=>game.id==='insect-survival');
+  assert.ok(insect,'the focused game must remain registered');
+  assert.equal(focusedCaretakerProject({gameId:insect.id,engine:'web'},repoRoot),true);
+  if(insect.productionClass==='DESIGN_ONLY'&&!latestVerifiedDesign(repoRoot,insect.id)){
+    assert.equal(realProjects.some(project=>project.gameId===insect.id&&project.engine==='web'),false,
+      'owner design reset must not be bypassed merely because the game remains focused');
+  }else{
+    assert.ok(realProjects.some(project=>project.gameId===insect.id&&project.engine==='web'
+      &&focusedCaretakerProject(project,repoRoot)),
+      'an admitted focused Web source must retain the focused lane');
+  }
   assert.ok(realProjects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='web'
     &&!focusedCaretakerProject(project,repoRoot)),
     'fantasy-survival must remain developable but leave the focused lane');
