@@ -801,8 +801,13 @@ jobs:
               signal:AbortSignal.timeout(30000)
             });
             const response=await grant.json().catch(()=>({}));
-            if(!grant.ok||(Array.isArray(response.errors)&&response.errors.length>0))
-              throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_FAILED_HTTP_'+grant.status);
+            // HTTP 200 may still contain per-asset failures or omit a requested grant.
+            // Roblox's grant response reports each success in successAssetIds.
+            const grantedIds=new Set(Array.isArray(response.successAssetIds)
+              ?response.successAssetIds.map(String):[]);
+            if(!grant.ok||(Array.isArray(response.errors)&&response.errors.length>0)
+              ||assetIds.some(assetId=>!grantedIds.has(String(assetId))))
+              throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_'+grant.status);
             console.log('ROBLOX_CC0_UNIVERSE_GRANT_ACCEPTED='+assetIds.length);
           }else console.log('ROBLOX_CC0_UNIVERSE_GRANT=NO_REGISTERED_ACTOR_USE');
           const result=await publishRobloxPlace({plan,retryDelaysMs:[]});
