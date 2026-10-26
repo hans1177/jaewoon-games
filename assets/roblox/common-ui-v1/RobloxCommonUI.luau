@@ -181,7 +181,7 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   button.TextStrokeTransparency = 0.64
   button.TextSize = tonumber(options.textSize) or 16
   button.TextWrapped = true
-  button.Font = options.font or Enum.Font.GothamBold
+  button.Font = options.font or Enum.Font.FredokaOne
   button.Selectable = true
   tag(button, "BUTTON_PRIMARY")
 
@@ -352,7 +352,7 @@ function RobloxCommonUI.CreateInventorySlot(options)
   glyph.TextStrokeColor3 = theme.PanelRaised
   glyph.TextStrokeTransparency = 0.3
   glyph.TextSize = 27
-  glyph.Font = Enum.Font.GothamBold
+  glyph.Font = Enum.Font.FredokaOne
   glyph.TextScaled = false
   glyph.Visible = icon.Image == "" and options.glyph ~= nil
   glyph.Parent = button
@@ -866,7 +866,7 @@ local function commonText(parent, name, textValue, position, size, color, textSi
   label.TextWrapped = true
   label.TextXAlignment = Enum.TextXAlignment.Left
   label.TextYAlignment = Enum.TextYAlignment.Center
-  label.Font = bold and Enum.Font.GothamBold or Enum.Font.Gotham
+  label.Font = bold and Enum.Font.FredokaOne or Enum.Font.Gotham
   label.Parent = parent
   return label
 end
@@ -913,7 +913,7 @@ function RobloxCommonUI.CreateIconButton(options)
   fallback.Text = tostring(options.shortLabel or options.label or "?")
   fallback.TextColor3 = theme.Text
   fallback.TextScaled = true
-  fallback.Font = Enum.Font.GothamBold
+  fallback.Font = Enum.Font.FredokaOne
   fallback.Visible = missingImage
   fallback.Parent = button
   local fallbackSize = Instance.new("UITextSizeConstraint")
@@ -938,6 +938,29 @@ function RobloxCommonUI.CreateIconButton(options)
   badge.TextColor3 = Color3.fromRGB(255, 255, 255)
   badge.BackgroundTransparency = badge.Text == "" and 1 or 0
   corner(badge, 9)
+  local iconPlate = Instance.new("Frame")
+  iconPlate.Name = "IconIllustrationPlate"
+  iconPlate.Position = UDim2.fromOffset(6, 6)
+  iconPlate.Size = UDim2.new(1, -12, 1, -12)
+  iconPlate.BackgroundColor3 = theme.PrimaryTop
+  iconPlate.BackgroundTransparency = 0.58
+  iconPlate.BorderSizePixel = 0
+  iconPlate.Visible = missingImage
+  iconPlate.Parent = button
+  corner(iconPlate, tonumber(options.cornerRadius) or 12)
+  iconPlate.ZIndex = button.ZIndex
+  local gloss = Instance.new("Frame")
+  gloss.Name = "IconIllustrationGlint"
+  gloss.Position = UDim2.new(0, 7, 0, 7)
+  gloss.Size = UDim2.new(0.42, 0, 0, 4)
+  gloss.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+  gloss.BackgroundTransparency = 0.12
+  gloss.BorderSizePixel = 0
+  gloss.Visible = missingImage
+  gloss.Parent = button
+  corner(gloss, 3)
+  fallback.TextStrokeColor3 = theme.Border
+  fallback.TextStrokeTransparency = 0.35
 
   button.MouseButton1Down:Connect(function() outline.Transparency = 0 end)
   button.MouseButton1Up:Connect(function() outline.Transparency = 0.10 end)
@@ -946,6 +969,8 @@ function RobloxCommonUI.CreateIconButton(options)
     local absent = button.Image == ""
     fallback.Visible = absent
     iconGradient.Enabled = absent
+    iconPlate.Visible = absent
+    gloss.Visible = absent
     button:SetAttribute("IconFallbackActive", absent)
   end)
   button:SetAttribute("PresentationRole", "ICON_ACTION")
@@ -1811,7 +1836,7 @@ local function surfaceShell(options, atomId, role)
   emblem.Text = "✦"
   emblem.TextColor3 = Color3.fromRGB(255, 255, 255)
   emblem.TextSize = 22
-  emblem.Font = Enum.Font.GothamBold
+  emblem.Font = Enum.Font.FredokaOne
   emblem.Parent = header
   corner(emblem, 11)
   stroke(emblem, theme.Border, 1.5, 0)
@@ -2123,7 +2148,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   detailTitle.Text = "아이템을 선택하세요"
   detailTitle.TextColor3 = theme.Text
   detailTitle.TextSize = 15
-  detailTitle.Font = Enum.Font.GothamBold
+  detailTitle.Font = Enum.Font.FredokaOne
   detailTitle.TextXAlignment = Enum.TextXAlignment.Left
   detailTitle.TextTruncate = Enum.TextTruncate.AtEnd
   detailTitle.Parent = detail
@@ -2150,6 +2175,21 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   detailDescription.TextXAlignment = Enum.TextXAlignment.Left
   detailDescription.TextYAlignment = Enum.TextYAlignment.Top
   detailDescription.Parent = detail
+  -- 실제 게임이 제공한 승인 이미지 또는 3D 모델만 그린다. 외부 저작물은 포함하지 않는다.
+  local previewImage = Instance.new("ImageLabel")
+  previewImage.Name = "SelectedItemArt"
+  previewImage.Position = UDim2.fromOffset(12, 67)
+  previewImage.Size = UDim2.fromOffset(112, 112)
+  previewImage.BackgroundColor3 = theme.PanelRaised
+  previewImage.BackgroundTransparency = 0.04
+  previewImage.BorderSizePixel = 0
+  previewImage.ScaleType = Enum.ScaleType.Fit
+  previewImage.Visible = false
+  previewImage.Parent = detail
+  corner(previewImage, 14)
+  stroke(previewImage, theme.BorderBright, 2, 0.12)
+  local currentPreviewSource = nil
+  local activePreview = nil
   local grid,cellLayout,slots=RobloxCommonUI.CreateInventoryGrid({
     name="FullInventoryGrid",columns=options.columns or 6,
     slotCount=options.slotCount or (options.items and #options.items or 1),
@@ -2204,6 +2244,10 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(0.69,-8,1,-116)
       detail.Position=UDim2.new(0.69,0,0,116);detail.Size=UDim2.new(0.31,0,1,-116)
     end
+    previewImage.Visible = not compact and previewImage.Image ~= ""
+    if activePreview then activePreview.Visible = not compact end
+    detailDescription.Position = compact and UDim2.fromOffset(10, 60) or UDim2.fromOffset(133, 68)
+    detailDescription.Size = compact and UDim2.new(1, -20, 1, -68) or UDim2.new(1, -142, 1, -80)
     root:SetAttribute("MobileStackedLayout",compact)
     resizeGrid()
   end
@@ -2338,6 +2382,23 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       and (typeof(selectedRow.rarityColor)=="Color3"and selectedRow.rarityColor
         or INVENTORY_TIER_COLORS[selectedRarity]or theme.Accent) or theme.Accent
     detailStripe.BackgroundColor3=detailMeta.TextColor3
+    local art=selectedRow and tostring(selectedRow.image or selectedRow.icon or "") or ""
+    previewImage.Image=art
+    previewImage.Visible=body.AbsoluteSize.X>=560 and art~=""
+    local source=selectedRow and (selectedRow.previewModel or selectedRow.model) or nil
+    if source ~= currentPreviewSource then
+      if activePreview then activePreview:Destroy();activePreview=nil end
+      currentPreviewSource=source
+      if typeof(source)=="Instance" and (source:IsA("Model") or source:IsA("BasePart")) and options.showModelPreview~=false then
+        activePreview=RobloxCommonUI.CreateItemModelPreview({
+          name="SelectedItem3DArt",model=source,theme=theme,size=UDim2.fromOffset(112,112)
+        })
+        activePreview.Position=UDim2.fromOffset(12,67)
+        activePreview.Parent=detail
+      end
+    end
+    if activePreview then activePreview.Visible=body.AbsoluteSize.X>=560 end
+    detail:SetAttribute("SelectedItemHasNativeArt",activePreview~=nil or art~="")
     detail:SetAttribute("BoundSelectedItemId",selectedId~=nil and tostring(selectedId) or "")
     root:SetAttribute("BoundItemCount",#rows)
     root:SetAttribute("BoundVisibleItemCount",#shown)
