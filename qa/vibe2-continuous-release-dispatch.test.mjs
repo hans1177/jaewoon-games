@@ -498,7 +498,11 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.ok(publisher.includes('sourceTreeShas[id]=treeSha'), 'per-game source SHA is retained in the publication manifest');
   assert.ok(publisher.includes('m.sourceTreeShas?.[id]'), 'missing per-game tree hashes must fail live verification');
 
-  assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
+  // Current Pages publisher copies all game roots in bounded async workers.
+  // Verify full paths and propagation of actual copy failures (not a no-op shortcut).
+  assert.match(publisher,/await fs\.promises\.cp\(root,path\.join\(site,root\),\{recursive:true\}\)/);
+  assert.match(publisher,/for\(const result of gameCopyResults\)if\(result\.status==='rejected'\)throw result\.reason/);
+  assert.match(publisher,/PAGES_GAME_COPY_PARALLELISM=8/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
   // 새 공식 홈 리다이렉트는 존재 여부뿐 아니라 내용이 비어 있지 않아야 한다.
   assert.match(publisher,/test -s "\$site\/index\.html"/);
@@ -507,9 +511,18 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   // The GITHUB_TOKEN push saves history but cannot initiate a Pages build.
   // Official deployment uploads the retained gh-pages tree without Git metadata.
-  assert.ok(publisher.includes('shopt -s dotglob nullglob'),'include hidden published entries in the official Pages artifact');
-  assert.ok(publisher.includes('[[ "${entry##*/}" == .git ]] || published_entries+=("$entry")'),'exclude only Git metadata from retained tree');
-  assert.ok(publisher.includes('cp -a --reflink=auto -- "${published_entries[@]}" "$artifact/"'),'copy exact published entries into the Pages artifact');
+  // The current Pages job publishes the gh-pages commit first, then uploads
+  // that exact retained directory without a second 854MB copy. Dotfiles are
+  // preserved because only .git is explicitly removed after the remote push.
+  assert.ok(publisher.includes('artifact="$retained"'),'artifact must reuse exactly the published snapshot');
+  assert.ok(publisher.includes('rm -rf -- "$artifact/.git"'),'only Git metadata may be removed');
+  assert.ok(publisher.includes('PAGES_SINGLE_SNAPSHOT_ZERO_COPY=PASS'),'single snapshot must be verified');
+  assert.ok(publisher.indexOf('git -C "$site" push origin HEAD:gh-pages')<
+    publisher.indexOf('rm -rf -- "$artifact/.git"'),
+    'published commit must exist before local Git metadata removal');
+  assert.ok(publisher.includes('test -s "$artifact/index.html"'),'published homepage cannot be empty');
+  assert.ok(publisher.includes('test -f "$artifact/web-games/publish-manifest.json"'),
+    'retained artifact must contain exact source manifest');
   assert.ok(publisher.includes('test ! -e "$artifact/.git"'),'Git metadata must be excluded from official Pages artifact');
   assert.ok(publisher.includes('test -d "$retained/.git"'),'retained history must remain intact before staging');
   assert.ok(publisher.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='));
@@ -888,7 +901,11 @@ test('exact F9 publication excludes release classification and catalog scoring f
   assert.equal(steps.includes('RELEASE_CLASSIFICATION'),false);
   assert.equal(owner.publicationScoreGate,false);
   assert.equal(owner.publicationClassificationGate,false);
-  assert.match(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION/);
+  const exactF9Sequence=policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|');
+  // The canonical locked dispatch step is exact artifact publication, with no
+  // release grade/classification conditions. Keep the owner-locked order intact.
+  assert.match(exactF9Sequence,/(?:^|\|)DISPATCH_EXACT_F9_ARTIFACT(?:\||$)/);
+  assert.doesNotMatch(exactF9Sequence,/RELEASE_CLASSIFICATION|ONLY_IF_RELEASED|PUBLISH_IF_SCORED/);
   assert.doesNotMatch(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/ONLY_IF_RELEASED/);
   const inspect=releaseWorkflow.slice(releaseWorkflow.indexOf('  inspect:'),releaseWorkflow.indexOf('  web-release:'));
   assert.match(inspect,/game-not-in-canonical-catalog/);

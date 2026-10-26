@@ -38,10 +38,20 @@ export function chooseGameQa({games=[],changedFiles=[],gameId='',all=false,repoR
     return false;
   }).map(g=>{
     const nativeRoot=clean(g.sources?.ROBLOX||'');
+    // Edits to a Roblox source often include its own regression tests. Do not
+    // allow those QA companions to accidentally re-enable unrelated Web/Unity
+    // tests, but run every changed companion even if not discovered by prefix.
+    const changedNativeQa=[...changes].filter(p=>{
+      if(!p.startsWith('qa/')||!p.endsWith('.test.mjs'))return false;
+      const absolute=path.resolve(repoRoot,p);
+      if(!absolute.startsWith(path.resolve(repoRoot,'qa')+path.sep)||!fs.existsSync(absolute))return false;
+      return fs.readFileSync(absolute,'utf8').includes(nativeRoot+'/');
+    });
     const nativeOnly=!gameId&&!all&&nativeRoot&&changes.size>0
-      &&[...changes].every(p=>p.startsWith(nativeRoot+'/'));
+      &&[...changes].some(p=>p.startsWith(nativeRoot+'/'))
+      &&[...changes].every(p=>p.startsWith(nativeRoot+'/')||changedNativeQa.includes(p));
     const tests=nativeOnly
-      ?g.qa.filter(testPath=>testRelevantToRobloxChange({gameId:g.gameId,testPath,repoRoot}))
+      ?[...new Set([...g.qa.filter(testPath=>testRelevantToRobloxChange({gameId:g.gameId,testPath,repoRoot})),...changedNativeQa])]
       :g.qa;
     return {
     gameId:g.gameId,
