@@ -123,7 +123,7 @@ local function applyLeg(targets, prefix, phase, strideDeg, kneeDeg, lift, stance
 
 	set(targets, prefix .. "Hip", pose(0, yLift * 0.12, 0, swing, 0, 0))
 	set(targets, prefix .. "Knee", pitch(-knee))
-	set(targets, prefix .. "Ankle", pose(0, yLift * 0.14, -forwardPlant * 0.04, ankleComp, 0, 0))
+	set(targets, prefix .. "Ankle", pose(0, yLift * 0.14, strideDeg~=0 and -forwardPlant*0.04 or 0, ankleComp, 0, 0))
 end
 
 local function locomotionTargets(controller, targets, dt, speed)
@@ -143,7 +143,7 @@ local function locomotionTargets(controller, targets, dt, speed)
 	local phase = controller.phase
 	local amplitude = moving and math.clamp(normalized, 0.18, 1.0) or 0
 	local legStride = strideDeg * amplitude * speedFactor
-	local legKnee = kneeDeg * math.clamp(amplitude + 0.08, 0, 1)
+	local legKnee = moving and kneeDeg * math.clamp(amplitude + 0.08, 0, 1) or 0
 	local footLift = cfg.footLift * amplitude
 
 	if gait == "HOPPER" and moving then
@@ -303,11 +303,18 @@ local function step(controller, dt)
 	local root = model.PrimaryPart
 	local velocity = root and root.AssemblyLinearVelocity or Vector3.zero
 	local planarSpeed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude
+	if root then
+		local delta=root.Position-(controller.lastRootPosition or root.Position)
+		controller.lastRootPosition=root.Position
+		local displaced=Vector3.new(delta.X,0,delta.Z).Magnitude/math.max(dt,1/240)
+		if displaced<=controller.nominalRunSpeed*4 then planarSpeed=math.max(planarSpeed,displaced)end
+	end
 	if controller.manualSpeed then
 		planarSpeed = controller.manualSpeed
 	end
 
-	local targets = zeroTargets(controller.joints)
+	local targets = controller.targets
+	for name in pairs(targets)do targets[name]=CFrame.identity end
 	locomotionTargets(controller, targets, dt, planarSpeed)
 
 	local state = controller.state
@@ -398,6 +405,8 @@ function Animator.bind(model, options)
 		nominalRunSpeed = tonumber(options.nominalRunSpeed) or 15,
 		connection = nil,
 	}, Controller)
+	controller.targets=zeroTargets(controller.joints)
+	controller.lastRootPosition=model.PrimaryPart.Position
 
 	model:SetAttribute("WildlifeMotionDriver", "MOTOR6D_SMOOTH_CURVE_V2")
 	model:SetAttribute("WildlifeMotionDimensionality", "FULL_3D")
@@ -406,7 +415,7 @@ function Animator.bind(model, options)
 
 	local signal = RunService:IsClient() and RunService.RenderStepped or RunService.Heartbeat
 	controller.connection = signal:Connect(function(dt)
-		step(controller, dt)
+		step(controller, math.min(dt,.15))
 	end)
 
 	return controller
