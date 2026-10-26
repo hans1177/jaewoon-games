@@ -5515,4 +5515,38 @@ test('registered 86 CC0 actor originals enter the existing all-game asset build-
  assert.equal(plan.assetSupplySummary.productionVerificationGranted,false);
  assert.equal(plan.assetSupplySummary.runtimeVerificationGranted,false);
  assert.match(assetProductionGuidance(plan),/CC0 ACTOR F0-F9 AUTOMATIC VISUAL SOURCING/);
+ // An indexed CC0 original is immediately eligible for native import work after
+ // byte/hash verification, but not for production/runtime verification.
+ const verifiedSource={...found,externalAcquisition:{...found.externalAcquisition,
+  downloaded:true,acquisitionState:'NATIVE_IMPORT_AND_STYLE_ADAPT_REQUIRED'}};
+ const nativeOrder={target:'roblox',gameId:'cc0-actor-auto-qa',goal:'NPC chef visual replacement',
+  assetProduction:{assetSupplySummary:{nextActions:[verifiedSource]},nativeAuthoringExecution:{enabled:false}}};
+ const nativePrompt=buildPrompt(nativeOrder,{files:[{path:'server/Game.server.luau',
+  content:'-- existing game source',editable:true}]},['server/Game.server.luau']);
+ const contractMatch=/\\[ASSET IMPLEMENTATION CONTRACT BEGIN\\]\\n([^\\n]+)/.exec(nativePrompt);
+ assert.ok(contractMatch,'the existing worker must receive its native asset implementation contract');
+ const supply=JSON.parse(contractMatch[1]).onDemandLibrarySupply;
+ const native=supply.selectedActions.find(row=>row.sourceModelId===found.externalAcquisition.sourceModelId);
+ assert.ok(native,'selected 86-index actor must reach the existing source worker');
+ assert.equal(native.sourceType,'ROBLOX_ACTOR_3D');
+ assert.ok(['FBX','GLB'].includes(native.sourceFormat));
+ assert.match(native.repositoryGitBlobSha,/^[0-9a-f]{40}$/);
+ assert.equal(native.sourceArchiveSha256,found.externalAcquisition.sourceHash);
+ assert.equal(native.sourceArchiveAcquired,true);
+ assert.equal(native.automaticSourceSelectionAuthorized,true);
+ assert.equal(native.nativeImportAndRigQaRequired,true);
+ assert.equal(native.nativeBuildBlockedByUnacquiredSource,false);
+ assert.equal(native.nativeBuildBlockedByUnadaptedArchive,true);
+ assert.equal(native.runtimeVerified,false);
+ assert.equal(native.productionVerified,false);
+ const missingSource={...verifiedSource,externalAcquisition:{...verifiedSource.externalAcquisition,
+  downloaded:false,acquisitionState:'SOURCE_BYTES_REQUIRED'}};
+ const missingOrder={...nativeOrder,assetProduction:{...nativeOrder.assetProduction,
+  assetSupplySummary:{nextActions:[missingSource]}}};
+ const missingPrompt=buildPrompt(missingOrder,{files:[{path:'server/Game.server.luau',
+  content:'-- existing game source',editable:true}]},['server/Game.server.luau']);
+ const missingMatch=/\\[ASSET IMPLEMENTATION CONTRACT BEGIN\\]\\n([^\\n]+)/.exec(missingPrompt);
+ assert.ok(missingMatch);
+ assert.equal(JSON.parse(missingMatch[1]).onDemandLibrarySupply.selectedActions[0]
+  .nativeBuildBlockedByUnacquiredSource,true,'unacquired bytes must remain blocked');
 });
