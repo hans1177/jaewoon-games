@@ -5627,5 +5627,22 @@ test('Roblox native CC0 selector uses only an exact registered GLB blob and stil
    downloaded:false,acquisitionState:'SOURCE_BYTES_REQUIRED'}};
   assert.equal(promptFor(unavailable).nativeBuildBlockedByUnacquiredSource,true,
    'registered ID alone must not replace missing original source bytes');
+  // The original was replaced in the checkout by an exact Git LFS pointer.
+  // It must stay an eligible hydration job, never be recorded as downloaded.
+  const lfsPointer='version https://git-lfs.github.com/spec/v1\n'
+   +'oid sha256:'+sourceHash+'\nsize '+raw.length+'\n';
+  fs.writeFileSync(full,lfsPointer);
+  writeRegistry([registered]);
+  const hydrated=select();
+  assert.equal(hydrated.externalAcquisition.downloaded,false);
+  assert.equal(hydrated.externalAcquisition.acquisitionState,'SOURCE_BYTES_REQUIRED');
+  assert.equal(promptFor(hydrated).nativeBuildBlockedByUnacquiredSource,true);
+  fs.writeFileSync(full,lfsPointer.replace(sourceHash,'0'.repeat(64)));
+  const invalid=buildAssetSupplyDecisionSummary({repoRoot:root,gameId:'chef-qa',
+   target:'roblox',request:'replace chef NPC visual',
+   requirements:[{family:'CHARACTER',role:'chef'}],
+   registry:{assets:[],externalSources:[]},actorOriginalSources:[original]});
+  assert.equal(invalid.directActorOriginalCandidateCount,0,
+   'a mismatching Git LFS original must not be auto-hydrated');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
