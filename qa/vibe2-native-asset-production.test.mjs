@@ -5497,6 +5497,51 @@ test('F0-F9 automatically chooses the closest CC0 actor original while refusing 
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('each existing Roblox F0 build-up sources real visible actors even without explicit asset roles',()=>{
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ const cozy=buildVibeAssetProductionPlan({
+  repoRoot:root,target:'roblox',
+  task:{gameId:'cozy-island',goal:'normal recurring F0-F9 source build-up'}
+ });
+ const detected=new Set(cozy.sourceActorRequirements.map(row=>row.family+':'+row.role));
+ assert.ok(detected.has('CREATURE:boar'));
+ assert.ok(detected.has('CREATURE:raider'));
+ assert.ok(cozy.flowAssetRequirements.some(row=>row.family==='CREATURE'&&row.role==='boar'));
+ assert.equal(cozy.sourceActorRequirements.every(row=>row.runtimeVerified===false),true);
+ assert.equal(cozy.assetSupplySummary.runtimeVerificationGranted,false);
+ const daechung=buildVibeAssetProductionPlan({
+  repoRoot:root,target:'roblox',
+  task:{gameId:'daechung-rpg',sourceRoot:'roblox-games/daechung-rpg',
+   goal:'normal recurring F0-F9 source build-up'}
+ });
+ assert.ok(daechung.sourceActorRequirements.some(row=>row.family==='CHARACTER'&&row.role==='village_chief'));
+ assert.ok(daechung.sourceActorRequirements.length<=8,'bound the per-cycle original source selection cost');
+ const explicit=buildVibeAssetProductionPlan({
+  repoRoot:root,target:'roblox',
+  task:{gameId:'cozy-island',goal:'normal build-up',
+   assetRequirements:[{family:'CREATURE',role:'boar'}]}
+ });
+ assert.equal(explicit.flowAssetRequirements.filter(row=>row.family==='CREATURE'&&row.role==='boar').length,1,
+  'an explicit task must not duplicate a source-discovered role');
+ const wrongRoot=buildVibeAssetProductionPlan({
+  repoRoot:root,target:'roblox',
+  task:{gameId:'cozy-island',sourceRoot:'roblox-games/daechung-rpg',
+   goal:'normal build-up'}
+ });
+ assert.deepEqual(wrongRoot.sourceActorRequirements,[],'never scan another game');
+ const web=buildVibeAssetProductionPlan({
+  repoRoot:root,target:'web',task:{gameId:'cozy-island',goal:'normal web build-up'}
+ });
+ assert.deepEqual(web.sourceActorRequirements,[],'leave web organization unchanged');
+ const sourceWorker=fs.readFileSync(path.join(root,'tools/vibe2-source-worker.mjs'),'utf8');
+ assert.match(sourceWorker,/pendingSourceActorBindings=target==='roblox'/);
+ assert.match(sourceWorker,/&&\s*!pendingSourceActorBindings/);
+ assert.match(sourceWorker,/ROBLOX_CC0_NATIVE_CONSUMER_REPLACEMENT=PRIORITY_EXISTING_SOURCE_WORKER_RUNTIME_QA_REQUIRED/);
+ const releaseWorkflow=fs.readFileSync(path.join(root,'.github/workflows/company-development-roblox-release-promotion.yml'),'utf8');
+ assert.match(releaseWorkflow,/restart_from_f0=true/);
+ assert.match(releaseWorkflow,/POST_PUBLISH/);
+});
+
 test('registered 86 CC0 actor originals enter the existing all-game asset build-up selector automatically',()=>{
  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
  const actors=JSON.parse(fs.readFileSync(path.join(root,'assets/roblox/actors/manifest.json'),'utf8'));
