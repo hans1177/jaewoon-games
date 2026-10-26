@@ -778,6 +778,8 @@ export function createVibeGraphicsProduction({
     stages:GRAPHICS_PRODUCTION_STAGES,
     assetProductionPlanBound:assetPlanBound,
     assetProductionPlan:assetPlanBound?assetProductionPlan:null,
+    // 자산 12계열 최적화는 기존 자산 작업자+F0~F9가 수행하고 같은 그래픽 작업 루트에서만 추적한다.
+    familyAssetOptimization:assetPlanBound?assetProductionPlan?.familyAssetOptimization||null:null,
     studioQuality120:assetPlanBound?assetProductionPlan?.studioQuality120||null:null,
     artSpec,
     visualDirection,
