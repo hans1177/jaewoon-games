@@ -500,6 +500,111 @@ test('no-model Roblox gameplay generated server action follows opaque IDs and or
   assert.match(execFileSync(runtime,[script],{encoding:'utf8',timeout:15000}),/OPAQUE_ACTION_CAUSAL_REPLAY=PASS/);
 });
 
+// [게임 코딩 엔진 10종] 각 형태는 독립 생성·거부 경계·Luau 인과 실행으로 확인한다.
+const TEN_ENGINE_CASES=[
+  {id:'typed-functions',source:OPAQUE_ACTION_SOURCE.replace('scopeHandler7(player)','scopeHandler7(player: Player): ()')
+    .replace('writeValue(player, key, value)','writeValue(player: Player, key: string, value: number): ()'),config:OPAQUE_ACTION_CONFIG},
+  {id:'actor-parameter',source:OPAQUE_ACTION_SOURCE.replace(/local function scopeHandler7\(player\)[\s\S]*?\nend/,
+    block=>block.replace(/\bplayer\b/g,'actor')),config:OPAQUE_ACTION_CONFIG},
+  {id:'action-constants',source:OPAQUE_ACTION_SOURCE.replace('local lastAction = {}','local lastAction = {}\nlocal SCOUT_ID = "opaque-scout-3"\nlocal ATTACK_ID: string = "opaque-attack-7"')
+    .replace('"LastApprovedScope", "opaque-attack-7"','"LastApprovedScope", ATTACK_ID').replace('["opaque-scout-3"]','[SCOUT_ID]'),config:OPAQUE_ACTION_CONFIG},
+  {id:'multiline-records',source:OPAQUE_ACTION_SOURCE,config:OPAQUE_ACTION_CONFIG.replace(
+    '    { Id = "opaque-attack-7", Label = "공격, 비용을 보존", Kind = "COMBAT", Order = 2 },',
+    '    {\n      Id = "opaque-attack-7",\n      Label = "공격, {상태}와 비용을 보존",\n      Kind = "COMBAT",\n      Order = 2\n    },')},
+  {id:'frozen-actions',source:OPAQUE_ACTION_SOURCE,config:OPAQUE_ACTION_CONFIG.replace('Actions = {','Actions = table.freeze({').replace('  },','  }),')},
+  {id:'dispatch-table-name',source:OPAQUE_ACTION_SOURCE.replace(/\bhandlers\b/g,'actionHandlers'),config:OPAQUE_ACTION_CONFIG},
+  {id:'remote-event-name',source:OPAQUE_ACTION_SOURCE.replace(/\bremote\b/g,'actionRemote'),config:OPAQUE_ACTION_CONFIG},
+  {id:'transitive-writer',source:OPAQUE_ACTION_SOURCE.replace('local function writeValue(player, key, value)\n  player:SetAttribute(key, math.floor(value))\nend',
+    'local function commitValue(actor, attribute, amount)\n  actor:SetAttribute(attribute, math.floor(amount))\nend\nlocal function writeValue(player, key, value)\n  commitValue(player, key, value)\nend'),config:OPAQUE_ACTION_CONFIG},
+  {id:'partial-recovery',source:OPAQUE_ACTION_SOURCE.replace('  ["opaque-scout-3"] = scopeHandler3,\n',''),config:OPAQUE_ACTION_CONFIG,partial:true},
+  {id:'empty-dispatch',source:OPAQUE_ACTION_SOURCE.replace('  ["opaque-scout-3"] = scopeHandler3,\n',''),config:OPAQUE_ACTION_CONFIG}
+];
+for(const entry of TEN_ENGINE_CASES)test('no-model Roblox gameplay engine capability '+entry.id,t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-ten-'+entry.id+'-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau';
+  fs.writeFileSync(path.join(root,file),entry.source);fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),entry.config);
+  const result=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'전투 행동 누락 복구'},sourceRoot:root,responsibleFiles:[file],
+    candidateValidator:candidate=>{
+      if(entry.partial&&candidate.edits[0].replace.includes('scopeHandler3')&&candidate.edits[0].replace.includes('scopeHandler7'))throw new Error('INDEPENDENT_FULL_PATCH_REJECTED');
+      return {pass:true,runtimeVerified:false};
+    }});
+  assert.ok(result,entry.id+' must generate an independently checked candidate');
+  assert.equal(result.deterministicSelection.runtimeVerified,false);
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),entry.source);
+  assert.equal(fs.readFileSync(path.join(root,'shared/GameConfig.luau'),'utf8'),entry.config);
+  if(entry.id==='action-constants')assert.equal(result.semanticGrounding.bindings.find(row=>row.function==='scopeHandler7').identitySymbol,'ATTACK_ID');
+  if(entry.id==='transitive-writer')assert.deepEqual(result.semanticGrounding.bindings[0].stateWrites.find(row=>row.attribute==='Gold').writerPath,['writeValue','commitValue']);
+  if(entry.partial){
+    assert.equal(result.deterministicSelection.attempts[0].status,'REJECTED');
+    assert.equal(result.semanticGrounding.bindingCoverage.selected,1);assert.equal(result.semanticGrounding.bindingCoverage.total,2);
+  }
+  if(entry.id==='empty-dispatch')assert.equal(result.semanticGrounding.bindings.length,2);
+});
+
+test('no-model Roblox gameplay engine refuses reassigned constants and proofless writer cycles after ten upgrades',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-ten-negative-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),OPAQUE_ACTION_CONFIG);
+  const constant=TEN_ENGINE_CASES.find(row=>row.id==='action-constants').source;
+  const cycle=OPAQUE_ACTION_SOURCE.replace('  player:SetAttribute("Damage", player:GetAttribute("Damage") + 7)\n','')
+    .replace('  player:SetAttribute(key, math.floor(value))','  writeValue(player, key, value)');
+  const changedKey=OPAQUE_ACTION_SOURCE.replace('  player:SetAttribute("Damage", player:GetAttribute("Damage") + 7)\n','')
+    .replace('  player:SetAttribute(key, math.floor(value))','  key = "LastApprovedScope"\n  player:SetAttribute(key, math.floor(value))');
+  for(const source of [constant+'\nATTACK_ID = "other"',cycle,changedKey,
+    OPAQUE_ACTION_SOURCE.replace('local function scopeHandler7(player)','local function scopeHandler7(player)\n  player = otherPlayer'),
+    OPAQUE_ACTION_SOURCE.replace('local function scopeHandler7(player)','local function scopeHandler7(actor, extra)')]){
+    fs.writeFileSync(path.join(root,'server/Game.server.luau'),source);
+    assert.equal(deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'전투 행동 누락 복구'},sourceRoot:root,responsibleFiles:['server/Game.server.luau']}),null);
+  }
+});
+
+test('no-model Roblox gameplay generated server action executes all ten engine capabilities in isolated Luau',t=>{
+  const compiler=process.env.VIBE2_TEST_LUAU_COMPILER;
+  if(!compiler){t.skip('isolated Luau executor is provided by existing practice CI');return;}
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-ten-luau-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau',runtime=path.join(path.dirname(compiler),process.platform==='win32'?'luau.exe':'luau');
+  for(const entry of TEN_ENGINE_CASES){
+    fs.writeFileSync(path.join(root,file),entry.source);fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),entry.config);
+    const raw=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'전투 행동 누락 복구'},sourceRoot:root,responsibleFiles:[file],
+      candidateValidator:candidate=>{
+        const syntax=validateCandidateSyntax({candidate,sourceRoot:root,target:'roblox',luauCompiler:compiler});
+        if(entry.partial&&candidate.edits[0].replace.includes('scopeHandler3')&&candidate.edits[0].replace.includes('scopeHandler7'))throw new Error('INDEPENDENT_FULL_PATCH_REJECTED');
+        return syntax;
+      }});
+    const patched=entry.source.replace(raw.edits[0].find,raw.edits[0].replace);
+    const hasAttack=raw.semanticGrounding.bindings.some(row=>row.actionId==='opaque-attack-7');
+    const hasScout=raw.semanticGrounding.bindings.some(row=>row.actionId==='opaque-scout-3')||entry.source.includes(' = scopeHandler3,');
+    const harness=[
+      'local now = 1; local os = {clock = function() return now end}',
+      'local callback = nil',
+      'local channel = {OnServerEvent = {Connect = function(_, fn) callback = fn end}}',
+      'local module = {}',
+      'local shared = {WaitForChild = function(_, name) assert(name == "GameConfig"); return module end}',
+      'local storage = {WaitForChild = function(_, name) if name == "Shared" then return shared end; assert(name == "GameAction"); return channel end}',
+      'local game = {GetService = function(_, name) assert(name == "ReplicatedStorage"); return storage end}',
+      'local require = function(value) assert(value == module); return (function()',entry.config,'end)() end',
+      patched,
+      'local data = {Gold = 10, Damage = 0, Scouts = 0}',
+      'local player = {GetAttribute = function(_, key) return data[key] end, SetAttribute = function(_, key, value) data[key] = value end}',
+      hasAttack
+        ?'callback(player, "opaque-attack-7"); assert(data.Gold == 7 and data.Damage == 7); callback(player, "opaque-attack-7"); assert(data.Gold == 7 and data.Damage == 7)'
+        :'callback(player, "opaque-attack-7"); assert(data.Gold == 10 and data.Damage == 0)',
+      'now += 1; callback(player, "unknown"); assert(data.Scouts == 0)',
+      'callback(player, "opaque-scout-3"); assert(data.Scouts == '+(hasScout?1:0)+')',
+      hasAttack?'now += 1; data.Gold = 2; callback(player, "opaque-attack-7"); assert(data.Gold == 2 and data.Damage == 7)':'',
+      'print("TEN_ENGINE_CAUSAL_REPLAY=PASS")'
+    ].join('\n');
+    const script=path.join(root,entry.id+'.luau');fs.writeFileSync(script,harness);
+    execFileSync(compiler,['--null',script],{encoding:'utf8',timeout:15000});
+    assert.match(execFileSync(runtime,[script],{encoding:'utf8',timeout:15000}),/TEN_ENGINE_CAUSAL_REPLAY=PASS/,entry.id);
+  }
+});
+
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
