@@ -2166,3 +2166,27 @@ root.Transparency = 1
   assert.match(directivePrompt(directive),/비슷한 CC0 자산이면 우선 사용/);
   assert.equal(make('WEB').visualBuildUpDirective.primitiveReplacement,null);
 });
+
+
+test('Roblox BUILD_UP automatically links source-owned UI icons inventory and world without changing other targets',()=>{
+  const original=buildGameSpecificBuildUpDirective({gameId:'auto-visual',platform:'ROBLOX',
+    designRecord:design(),responsibleFiles:['roblox-games/auto-visual/client/Game.client.luau','roblox-games/auto-visual/server/Game.server.luau']});
+  const visual={...original,allDomainImplementationDirectives:[
+    {domain:'UI_HUD',priority:'BUILD_UP_NOW',directive:'Improve existing HUD'},
+    {domain:'INVENTORY_USABILITY',priority:'FIX_NOW',directive:'Repair inventory'},
+    {domain:'WORLD_DENSITY',priority:'BUILD_UP_NOW',directive:'Improve existing landmarks'}
+  ]};
+  const prompt=directivePrompt(visual);
+  assert.match(prompt,/ROBLOX_BUILD_UP_AUTO_VISUAL_CRAFT: cycle=/);
+  assert.match(prompt,/selected=UI\|ICONS\|INVENTORY\|WORLD/);
+  assert.match(prompt,/ScreenGui\/UIScale\/UIPadding\/UIStroke/);
+  assert.match(prompt,/ImageLabel\/ImageButton/);
+  assert.match(prompt,/ScrollingFrame\+UIGridLayout/);
+  assert.match(prompt,/original procedural seed/);
+  assert.match(prompt,/existing F0–F9 publish gates remain/);
+  const onlyMap=directivePrompt({...visual,allDomainImplementationDirectives:[{domain:'TERRAIN',priority:'FIX_NOW'}]});
+  assert.match(onlyMap,/selected=WORLD/);
+  assert.doesNotMatch(onlyMap,/selected=UI/);
+  assert.doesNotMatch(directivePrompt({...visual,platform:'WEB'}),/ROBLOX_BUILD_UP_AUTO_VISUAL_CRAFT/);
+  assert.doesNotMatch(directivePrompt({...visual,allDomainImplementationDirectives:[]}),/ROBLOX_BUILD_UP_AUTO_VISUAL_CRAFT/);
+});
