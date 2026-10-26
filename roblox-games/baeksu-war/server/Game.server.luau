@@ -305,7 +305,8 @@ local function makeArena(player,data,loaded)
  buildArenaTerrain(x)
  for i,point in ipairs(a.Points) do drawCaptureMarker(a,point,i) end
  resizeBuildYard(a)
- populateVisuals(a)
+ local visualOk,visualError=pcall(populateVisuals,a)
+ if not visualOk then warn("백수대전쟁 월드 외형 배치 실패: "..tostring(visualError)) end
  player:SetAttribute("ArenaX",x)
  player:SetAttribute("SaveStatus",loaded and "READY" or "SESSION_ONLY")
  player.CharacterAdded:Connect(function(character)
@@ -495,7 +496,11 @@ task.spawn(function()
  for attempt=1,6 do
   if VisualKit.Preload() then
    for p,a in pairs(arenas) do
-    if p.Parent then populateVisuals(a);send(a,"3D 전장 준비 완료 · 군단 출격!") end
+    if p.Parent then
+    local ok,err=pcall(populateVisuals,a)
+    if not ok then warn("백수대전쟁 외형 배치 실패: "..tostring(err)) end
+    send(a,ok and "3D 전장 준비 완료 · 군단 출격!" or "3D 모델 배치 오류 · 지형과 UI는 실행 중")
+   end
    end
    return
   end
@@ -509,7 +514,17 @@ task.spawn(function()
   if p.Parent then send(a,"3D 모델 적재 실패 · 외형 확인 불가") end
  end
 end)
-Players.PlayerAdded:Connect(function(p)local d,ok=load(p);if p.Parent then makeArena(p,d,ok) end end)
+Players.PlayerAdded:Connect(function(p)
+ local d,loaded=load(p)
+ if not p.Parent then return end
+ local ok,err=pcall(makeArena,p,d,loaded)
+ if not ok then
+  warn("백수대전쟁 전장 시작 실패: "..tostring(err))
+  local a=arenas[p]
+  if a then send(a,"전장 시작 오류 · 서버 재접속 필요")
+  else remote:FireClient(p,"LOAD_ERROR",{Message="전장을 시작하지 못했어 · 재접속해 줘"}) end
+ end
+end)
 Players.PlayerRemoving:Connect(function(p)
  local a=arenas[p];if a then save(a);a.Folder:Destroy();arenas[p]=nil end
  lastRequest[p]=nil
