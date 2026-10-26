@@ -918,7 +918,10 @@ test('Roblox common simulator-grade graphics bind real UI surfaces without exter
  for(const visual of ['outline.Color = rarityColor or theme.Border','spotlight.BackgroundColor3 = rarityColor or theme.PrimaryTop','quantity.Visible = quantity.Text ~= ""','item.equipped == true','slot.Active = item.id ~= nil and item.locked ~= true'])
    assert.ok(update.includes(visual),'GAME_ITEM_BINDING_MISSING:'+visual);
  assert.ok(icon.includes('gradient(button, theme.PanelRaised, theme.PanelInset, 90)'));
- for(const visual of ['IconIllustrationPlate','IconIllustrationGlint','iconPlate.Visible = absent','gloss.Visible = absent','fallback.Font = Enum.Font.FredokaOne'])
+ for(const visual of ['IconIllustrationPlate','IconIllustrationGlint','iconPlate.Visible = absent','gloss.Visible = absent','fallback.Font = Enum.Font.FredokaOne',
+   'NativeIllustratedIcon','vector.Visible = absent and hasVectorIcon','fallback.Visible = absent and not hasVectorIcon',
+   'BackpackBody','ShopAwning','SwordBlade','PawPad','GearHub','MenuGlyphBar',
+   'iconPlate.ZIndex = button.ZIndex + 1','fallback.ZIndex = button.ZIndex + 3'])
    assert.ok(icon.includes(visual),'ICON_ILLUSTRATION_MISSING:'+visual);
  assert.ok(button.includes('button.Font = options.font or Enum.Font.FredokaOne'));
  assert.ok(slot.includes('glyph.Font = Enum.Font.FredokaOne'));
