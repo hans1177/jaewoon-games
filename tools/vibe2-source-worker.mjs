@@ -7434,6 +7434,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     // sprites, VFX, motion and materials; never pretend a source is game-ready.
     const directActorSource=e=>target==='roblox'&&e?.sourceType==='ROBLOX_ACTOR_3D'
       &&/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.(?:fbx|glb)$/i.test(clean(e?.localSourcePath))
+      &&!clean(e?.localSourcePath).split('/').includes('..')
       &&/^[a-f0-9]{40}$/i.test(clean(e?.repositoryGitBlobSha));
     const sharedArchiveSource=e=>
       /^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(clean(e?.localSourcePath))
