@@ -1275,7 +1275,7 @@ function computeVibeNativeDesign(){
   const existingLoop=Array.isArray(original.coreLoop)&&original.coreLoop.length?original.coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[];
   const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE;
   const existingGameDesign=Boolean(seed.originalDesignContext||existingSystem||seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION||(typeof catalogGame!=='undefined'&&catalogGame));
-  const bSystemReference=typeof basicDesignMethod!=='undefined'&&basicDesignMethod&&existingGameDesign&&!(seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE')?{
+  const bSystemReference=typeof basicDesignMethod!=='undefined'&&basicDesignMethod&&existingGameDesign&&(!ownerPreservationDesign||Boolean(seed.B_SYSTEM_REFERENCE&&clean(seed.B_SYSTEM_REFERENCE.systemFamily)&&clean(seed.B_SYSTEM_REFERENCE.playerChoice)&&clean(seed.B_SYSTEM_REFERENCE.source)))?{
     scope:Number(basicDesignMethod.version)>=2?'B_EXISTING_GAME_SYSTEMS':'B_SUPPORTING_REFERENCE_ONLY',
     systemFamily:clean(existingSystem?.systemFamily||original.creativeGrammar?.a?.system||existingLoop[0]),
     playerChoice:clean(existingSystem?.playerChoice||original.creativeGrammar?.a?.stateChange||existingLoop.join(' → ')),
