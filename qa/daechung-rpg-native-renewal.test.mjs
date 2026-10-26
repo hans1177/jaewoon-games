@@ -11,9 +11,9 @@ const server=fs.readFileSync(root+'server/Game.server.luau','utf8');
 const style=fs.readFileSync(root+'shared/VisualStyle.luau','utf8');
 const client=fs.readFileSync(root+'client/Game.client.luau','utf8');
 
-test('NPC native IDs resolve to preserved licensed repository masters, not invented assets',()=>{
+test('all shared character, NPC and monster IDs resolve to licensed repository CC0 masters',()=>{
  const registry=JSON.parse(fs.readFileSync('company-asset-library.json'));
- const block=style.slice(style.indexOf('NpcModels='),style.indexOf('Biomes='));
+ const block=style.slice(style.indexOf('SharedPlayerModels='),style.indexOf('Biomes='));
  const ids=[...new Set([...block.matchAll(/\b\d{6,}\b/g)].map(row=>row[0]))];
  assert.ok(ids.length>=10);
  for(const id of ids){
@@ -33,8 +33,10 @@ test('native NPC presentation keeps failed imports visible and retains original 
  assert.match(body,/NativeActorFailureStage/);
  assert.match(body,/NativeActorFailureSignature/);
  assert.match(body,/NativeActorBindingState","BOUND_UNVERIFIED/);
- assert.match(body,/part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true/);
- assert.match(body,/joint.Part0=rootPart;joint.Part1=part/);
+ assert.match(body,/pivot.CanCollide=false;pivot.CanTouch=false;pivot.CanQuery=false;pivot.Massless=true/);
+ assert.match(body,/part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true/);
+ assert.match(body,/pose.Part0=rootPart;pose.Part1=pivot/,'native actor retains an animated Motor6D from the gameplay root');
+ assert.match(body,/joint.Part0=pivot;joint.Part1=part/,'source parts follow the visual motion pivot');
  assert.match(body,/MotionRetargetReview","PENDING/);
  assert.doesNotMatch(body,/Health|Damage|Reward|SetAsync|UpdateAsync|FireServer/);
  const config=fs.readFileSync(root+'shared/GameConfig.luau','utf8');
