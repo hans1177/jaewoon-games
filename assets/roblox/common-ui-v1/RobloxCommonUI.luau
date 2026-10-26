@@ -2061,6 +2061,10 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   local selectedId=nil
   local currentFilter="전체"
   local sortByName=false
+  local sortByRarity=false
+  -- 희귀도는 실제 게임 아이템 메타데이터를 읽기만 한다. 게임 소유 데이터는 변경하지 않는다.
+  local rarityRank={COMMON=1,UNCOMMON=2,RARE=3,EPIC=4,LEGENDARY=5,MYTHIC=6,
+    ["일반"]=1,["고급"]=2,["희귀"]=3,["영웅"]=4,["전설"]=5,["신화"]=6}
   local refresh
   local function resizeGrid()
     local available=scroll.AbsoluteSize.X-8
@@ -2103,6 +2107,14 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
         if category~=""and not found[category]then
           filterNames[#filterNames+1]=category;found[category]=true
         end
+        local rarity=tostring(row.rarity or "")
+        local rarityFilter="희귀도: "..rarity
+        if rarity~=""and not found[rarityFilter]then
+          filterNames[#filterNames+1]=rarityFilter;found[rarityFilter]=true
+        end
+        if row.equipped==true and not found["장착 중"]then
+          filterNames[#filterNames+1]="장착 중";found["장착 중"]=true
+        end
       end
     end
     if not table.find(filterNames,currentFilter)then currentFilter=filterNames[1]or"전체"end
@@ -2110,7 +2122,8 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       if not filterButtons[i]then
         local index=i
         local button=RobloxCommonUI.CreateTabButton({
-          name="Filter"..i,text=name,size=UDim2.fromOffset(96,48),theme=theme
+          name="Filter"..i,text=name,
+          size=UDim2.fromOffset(math.max(96,(utf8.len(name)or #name)*12+30),48),theme=theme
         })
         button.LayoutOrder=i;button.Parent=filters
         filterButtons[i]=button
@@ -2148,13 +2161,26 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     local query=string.lower(tostring(search.Text or ""))
     for _,row in ipairs(rows)do
       local category=tostring(row.category or "")
-      local name=string.lower(tostring(row.name or row.title or row.id or ""))
-      if (currentFilter=="전체"or currentFilter==category)
-        and (query==""or string.find(name,query,1,true))then
+      local rarity=tostring(row.rarity or "")
+      local filterMatch=currentFilter=="전체"or currentFilter==category
+        or (rarity~=""and currentFilter=="희귀도: "..rarity)
+        or (currentFilter=="장착 중"and row.equipped==true)
+      local searchable=string.lower(table.concat({
+        tostring(row.name or row.title or ""),tostring(row.id or ""),
+        tostring(row.description or ""),category,rarity
+      }," "))
+      if filterMatch and (query==""or string.find(searchable,query,1,true))then
         shown[#shown+1]=row
       end
     end
-    if sortByName then
+    if sortByRarity then
+      table.sort(shown,function(left,right)
+        local a=rarityRank[string.upper(tostring(left.rarity or ""))]or 0
+        local b=rarityRank[string.upper(tostring(right.rarity or ""))]or 0
+        if a~=b then return a>b end
+        return tostring(left.id or "")<tostring(right.id or "")
+      end)
+    elseif sortByName then
       table.sort(shown,function(left,right)
         local a=string.lower(tostring(left.name or left.title or left.id or ""))
         local b=string.lower(tostring(right.name or right.title or right.id or ""))
@@ -2195,11 +2221,16 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       (tostring(selectedRow.category or "아이템").." · "..tostring(selectedRow.rarity or "일반").." · "..tostring(selectedRow.quantity or selectedRow.count or 1)
         ..(selectedRow.equipped==true and " · 장착 중" or "")..(selectedRow.locked==true and " · 잠김" or "")) or ""
     detailDescription.Text=selectedRow and tostring(selectedRow.description or "") or ""
+    local selectedRarity=selectedRow and string.upper(tostring(selectedRow.rarity or "")) or ""
+    detailMeta.TextColor3=selectedRow
+      and (typeof(selectedRow.rarityColor)=="Color3"and selectedRow.rarityColor
+        or INVENTORY_TIER_COLORS[selectedRarity]or theme.Accent) or theme.Accent
     detail:SetAttribute("BoundSelectedItemId",selectedId~=nil and tostring(selectedId) or "")
     root:SetAttribute("BoundItemCount",#rows)
     root:SetAttribute("BoundVisibleItemCount",#shown)
     root:SetAttribute("CurrentInventoryFilter",currentFilter)
     root:SetAttribute("InventorySortByName",sortByName)
+    root:SetAttribute("InventorySortByRarity",sortByRarity)
     resizeGrid()
   end
   local function sync(items)
@@ -2208,8 +2239,14 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   end
   search:GetPropertyChangedSignal("Text"):Connect(refresh)
   sort.Activated:Connect(function()
-    sortByName=not sortByName
-    sort.Text=sortByName and "정렬: 이름순"or"정렬: 기본순"
+    if sortByName then
+      sortByName=false;sortByRarity=true
+    elseif sortByRarity then
+      sortByRarity=false
+    else
+      sortByName=true
+    end
+    sort.Text=sortByName and "정렬: 이름순"or sortByRarity and "정렬: 희귀도순"or"정렬: 기본순"
     refresh()
   end)
   body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
