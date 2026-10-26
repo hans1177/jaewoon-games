@@ -543,6 +543,29 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
  assert.match(client,/if role=="MONSTER"then\s+objectiveLine\.Text="인간을 찾아 감염"/);
 });
 
+test('생존 추격 네이티브 연출이 실제 서버 에너지/위험 상태와 연결된다',()=>{
+ assert.match(config,/Genre\s*=\s*"Survival"/);
+ assert.match(config,/CoreKind\s*=\s*"SURVIVAL"/);
+ assert.match(config,/SemanticVariant\s*=\s*"SURVIVAL_RISK"/);
+ assert.doesNotMatch(config,/CoreKind\s*=\s*"OBJECTIVE"/);
+ assert.doesNotMatch(config,/Variant\s*=\s*"OBJECTIVE_GOAL"/);
+ assert.match(client,/local verifiedLearningSemanticVariant = "SURVIVAL_RISK"/);
+ assert.match(client,/if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then/);
+ assert.match(client,/verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT"/);
+ assert.match(server,/function Runtime\.energyOf\(p\)/);
+ assert.match(server,/function Runtime\.setEnergy\(p,value\)/);
+ assert.match(client,/local energyRatio=math\.clamp\(energy\/maxEnergy,0,1\)/);
+ assert.match(client,/local lowEnergy=p:GetAttribute\("RoundState"\)=="RUNNING" and energyRatio<\.3/);
+ assert.match(client,/energyFill\.BackgroundColor3=lowEnergy/);
+ assert.match(client,/energyLabel\.TextColor3=lowEnergy/);
+ assert.match(client,/local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 7/);
+ assert.match(config,/NativeBindingVersion = 6/);
+ // 소비자 데이터 / 판정 / 저장 구조는 직접 바꾸지 않는다.
+ assert.match(config,/TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4/);
+ assert.match(config,/RoundSeconds=240/);
+ assert.match(config,/SaveEnabled=true/);
+});
+
 test('verified learning 바인딩은 임시 LoadingScreen 대신 지속 ScreenGui를 사용한다',()=>{
  assert.match(robloxBootstrapTool,/Instance\.new\(\s*["']ScreenGui["']\s*\)/);
  assert.ok(robloxBootstrapTool.includes('ScreenGui')&&robloxBootstrapTool.includes('||output.match'));
@@ -938,10 +961,20 @@ test('첫 화면은 현재 캐릭터 접지와 저택 장면 수신을 확인하
 });
 
 
+test('owner package source integrity verifies actual Rojo inputs and ignores unrelated tracked audio',()=>{
+ assert.match(ownerWorkflow,/git diff --exit-code -- "\$project" roblox-games\/horror-escape-room assets\/roblox\/world-ghosts/);
+ assert.doesNotMatch(ownerWorkflow,/^\s+git diff --exit-code\s*$/m);
+ assert.match(ownerWorkflow,/cp "\$backup" "\$project"\n\s+trap - EXIT\n[\s\S]*?git diff --exit-code --/);
+ assert.match(ownerWorkflow,/OWNER_DIRECT_ACTUAL_ROJO_SOURCE_UNCHANGED=PASS/);
+ assert.match(ownerWorkflow,/sha256sum \/tmp\/horror-owner-direct\/horror-escape-room\.rbxlx/);
+ assert.match(ownerWorkflow,/ROBLOX_OPEN_CLOUD_API_KEY/);
+ assert.match(ownerWorkflow,/Ensure canonical owner universe remains private/);
+});
+
 test('verified owner-only publication saves queue and policy before resuming F0-F9',()=>{
  const source=ownerWorkflow;
  assert.match(source,/  owner-verified-resume:\n    needs: owner-direct-publish/);
- assert.match(source,/  owner-verified-resume:[\s\S]*?permissions:\n      contents: write\n      actions: write/);
+ assert.match(source,/  owner-verified-resume:[\s\S]*?permissions:\n      contents: write\n      pull-requests: write\n      actions: write/);
  assert.match(source,/OWNER_DIRECT_HANDOFF=NO_ACTIVE_OWNER_SCOPE/);
  assert.match(source,/test "\$\(git rev-parse origin\/main\)" = "\$GITHUB_SHA"/);
  assert.match(source,/company-security-steward\.mjs[\s\S]*?verdict!=="PASS"/);
@@ -954,10 +987,13 @@ test('verified owner-only publication saves queue and policy before resuming F0-
  assert.match(source,/UNRELATED_OWNER_HOLD_LOST/);
  assert.match(source,/storage-unpack[\s\S]*?packVibeQueueStorage\(queuePath\)/);
  const queuePush=source.indexOf('push origin HEAD:vibe2-unreal-core');
- const policyPush=source.indexOf('push origin HEAD:main');
- const runnerWake=source.indexOf('gh workflow run vibe2-24h-runner.yml');
- assert.ok(queuePush>0&&policyPush>queuePush&&runnerWake>policyPush,
-   'Persist lossless queue, then central policy, then wake existing F0-F9');
+ const policyBranch=source.indexOf('git push origin "HEAD:refs/heads/$policy_branch"');
+ const policyPr=source.indexOf('gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$policy_branch"');
+ assert.ok(queuePush>0&&policyBranch>queuePush&&policyPr>policyBranch,
+   'Persist lossless queue, then propose a gated central policy PR');
+ assert.equal(source.includes(['git','push','origin','HEAD:main'].join(' ')),false);
+ assert.match(source,/OWNER_DIRECT_HANDOFF_POLICY=PR_PENDING_VERIFIED_MERGE/);
+ assert.match(source,/OWNER_DIRECT_HANDOFF_F0_F9_WAKE=AFTER_VALIDATED_POLICY_PR_MAIN_MERGE/);
  const ownerJobs=source.slice(0,source.indexOf('  owner-verified-resume:'));
  assert.doesNotMatch(ownerJobs,/contents: write/,'publisher must remain read-only');
  assert.ok(!source.slice(0,source.indexOf('\npermissions:')).includes(

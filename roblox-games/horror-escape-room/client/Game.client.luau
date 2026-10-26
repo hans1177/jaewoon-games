@@ -574,7 +574,7 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 7
 local verifiedLearningRoot = gui
-local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
+local verifiedLearningSemanticVariant = "SURVIVAL_RISK"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(255, 112, 112)
 local verifiedLearningSemanticMood = "TENSE_WILDERNESS"
@@ -938,7 +938,7 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   if serverConfirmed~=true then return end
   local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
   if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
-  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
+  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
     local baseFov = camera.FieldOfView
@@ -2746,7 +2746,13 @@ RunService.RenderStepped:Connect(function(dt)
  cooldownClock=0
  local energy=math.max(0,tonumber(p:GetAttribute("Energy"))or 0)
  local maxEnergy=math.max(1,tonumber(p:GetAttribute("EnergyMax"))or tonumber(C.Energy and C.Energy.Max)or 100)
- energyFill.Size=UDim2.fromScale(math.clamp(energy/maxEnergy,0,1),1)
+ local energyRatio=math.clamp(energy/maxEnergy,0,1)
+ energyFill.Size=UDim2.fromScale(energyRatio,1)
+ -- 생존 추격 중에는 서버가 복제한 에너지 값만으로 위험도를 표시한다.
+ -- 새 보상/피격/상태 판정을 추가하지 않고 기존 HUD를 갱신한다.
+ local lowEnergy=p:GetAttribute("RoundState")=="RUNNING" and energyRatio<.3
+ energyFill.BackgroundColor3=lowEnergy and Color3.fromRGB(215,71,77) or Color3.fromRGB(188,146,77)
+ energyLabel.TextColor3=lowEnergy and Color3.fromRGB(255,145,145) or Color3.fromRGB(204,190,163)
  energyLabel.Text=string.format("에너지 %d/%d",math.floor(energy+.5),math.floor(maxEnergy+.5))
  local pressure=tostring(p:GetAttribute("PressurePassive")or"")
  pressureLabel.Text=pressure~=""and("열세 패시브 · "..pressure)or""
