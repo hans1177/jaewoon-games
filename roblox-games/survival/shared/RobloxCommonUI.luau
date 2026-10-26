@@ -5,28 +5,29 @@
 local RobloxCommonUI = {}
 
 local DEFAULT_THEME = table.freeze({
-  Panel = Color3.fromRGB(31, 36, 43),
-  PanelRaised = Color3.fromRGB(44, 51, 61),
-  PanelInset = Color3.fromRGB(21, 25, 30),
-  Border = Color3.fromRGB(95, 109, 127),
-  BorderBright = Color3.fromRGB(145, 158, 176),
-  Text = Color3.fromRGB(240, 243, 247),
-  MutedText = Color3.fromRGB(173, 181, 192),
-  Primary = Color3.fromRGB(76, 120, 183),
-  PrimaryTop = Color3.fromRGB(102, 146, 207),
-  PrimaryBottom = Color3.fromRGB(52, 91, 151),
-  Accent = Color3.fromRGB(108, 174, 225),
-  Positive = Color3.fromRGB(91, 181, 120),
-  Warning = Color3.fromRGB(224, 170, 69),
-  Danger = Color3.fromRGB(214, 82, 76),
-  Map = Color3.fromRGB(20, 29, 35),
-  MapGrid = Color3.fromRGB(72, 89, 98),
-  HealthGood = Color3.fromRGB(91, 181, 91),
-  HealthWarn = Color3.fromRGB(220, 159, 54),
-  HealthCritical = Color3.fromRGB(210, 76, 69),
-  HealthTrack = Color3.fromRGB(55, 62, 69),
-  Shadow = Color3.fromRGB(8, 10, 13),
-  Corner = 14,
+  -- 밝은 로블록스 시뮬레이터풍: 자체 팔레트만 사용하고 외부 게임 아트는 복제하지 않는다.
+  Panel = Color3.fromRGB(248, 251, 255),
+  PanelRaised = Color3.fromRGB(255, 255, 255),
+  PanelInset = Color3.fromRGB(228, 241, 255),
+  Border = Color3.fromRGB(45, 64, 111),
+  BorderBright = Color3.fromRGB(96, 130, 196),
+  Text = Color3.fromRGB(35, 50, 91),
+  MutedText = Color3.fromRGB(99, 115, 157),
+  Primary = Color3.fromRGB(50, 133, 247),
+  PrimaryTop = Color3.fromRGB(100, 203, 255),
+  PrimaryBottom = Color3.fromRGB(34, 104, 222),
+  Accent = Color3.fromRGB(255, 188, 62),
+  Positive = Color3.fromRGB(48, 196, 126),
+  Warning = Color3.fromRGB(255, 174, 45),
+  Danger = Color3.fromRGB(242, 82, 120),
+  Map = Color3.fromRGB(32, 54, 83),
+  MapGrid = Color3.fromRGB(112, 148, 190),
+  HealthGood = Color3.fromRGB(54, 209, 113),
+  HealthWarn = Color3.fromRGB(255, 178, 56),
+  HealthCritical = Color3.fromRGB(247, 87, 112),
+  HealthTrack = Color3.fromRGB(100, 127, 167),
+  Shadow = Color3.fromRGB(24, 46, 104),
+  Corner = 17,
   TouchHeight = 48,
 })
 
@@ -106,8 +107,23 @@ function RobloxCommonUI.CreatePanel(options)
   tag(frame, "FRAME_PANEL")
 
   corner(frame, tonumber(options.cornerRadius) or theme.Corner)
-  stroke(frame, theme.Border, 1.5, 0.08)
-  gradient(frame, theme.PanelRaised, theme.Panel, 90)
+  stroke(frame, theme.Border, 2.3, 0)
+  gradient(frame, theme.PanelRaised, theme.PanelInset, 90)
+
+  -- Optional licensed, already-bound texture. Never invent a Roblox asset ID.
+  if typeof(options.surfaceTexture) == "string" and options.surfaceTexture ~= "" then
+    local surface = Instance.new("ImageLabel")
+    surface.Name = "VerifiedSurfaceSkin"
+    surface.BackgroundTransparency = 1
+    surface.Size = UDim2.fromScale(1, 1)
+    surface.Image = options.surfaceTexture
+    surface.ScaleType = typeof(options.sliceCenter) == "Rect" and Enum.ScaleType.Slice or Enum.ScaleType.Stretch
+    if typeof(options.sliceCenter) == "Rect" then surface.SliceCenter = options.sliceCenter end
+    surface.ImageTransparency = math.clamp(tonumber(options.surfaceOpacity) or 0, 0, 1)
+    surface.ZIndex = frame.ZIndex
+    surface.Parent = frame
+    surface:SetAttribute("PresentationOnlySkin", true)
+  end
 
   local shadow = Instance.new("Frame")
   shadow.Name = "DepthShadow"
@@ -115,7 +131,7 @@ function RobloxCommonUI.CreatePanel(options)
   shadow.Position = UDim2.new(0.5, 0, 0.5, 5)
   shadow.Size = UDim2.new(1, 4, 1, 4)
   shadow.BackgroundColor3 = theme.Shadow
-  shadow.BackgroundTransparency = 0.46
+  shadow.BackgroundTransparency = 0.60
   shadow.BorderSizePixel = 0
   shadow.ZIndex = math.max(0, frame.ZIndex - 1)
   shadow.Parent = frame
@@ -126,12 +142,23 @@ function RobloxCommonUI.CreatePanel(options)
   inner.Position = UDim2.fromOffset(7, 7)
   inner.Size = UDim2.new(1, -14, 1, -14)
   inner.BackgroundColor3 = theme.PanelInset
-  inner.BackgroundTransparency = 0.54
+  inner.BackgroundTransparency = options.surfaceTexture and 0.90 or 0.54
   inner.BorderSizePixel = 0
   inner.ZIndex = frame.ZIndex + 1
   inner.Parent = frame
   corner(inner, math.max(6, (tonumber(options.cornerRadius) or theme.Corner) - 4))
-  stroke(inner, theme.BorderBright, 1, 0.72)
+  stroke(inner, theme.BorderBright, 1, 0.65)
+
+  local topAccent = Instance.new("Frame")
+  topAccent.Name = "CandyTopAccent"
+  topAccent.Position = UDim2.fromOffset(14, 3)
+  topAccent.Size = UDim2.new(1, -28, 0, 4)
+  topAccent.BackgroundColor3 = theme.PrimaryTop
+  topAccent.BorderSizePixel = 0
+  topAccent.ZIndex = inner.ZIndex + 1
+  topAccent.Parent = frame
+  corner(topAccent, 4)
+  gradient(topAccent, theme.PrimaryTop, theme.Accent, 0)
 
   frame:SetAttribute("PresentationRole", "COMMON_READABLE_PANEL")
   frame:SetAttribute("TouchSafe", true)
@@ -149,15 +176,17 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   button.BorderSizePixel = 0
   button.AutoButtonColor = false
   button.Text = tostring(options.text or "확인")
-  button.TextColor3 = theme.Text
+  button.TextColor3 = Color3.fromRGB(255, 255, 255)
+  button.TextStrokeColor3 = theme.PrimaryBottom
+  button.TextStrokeTransparency = 0.64
   button.TextSize = tonumber(options.textSize) or 16
   button.TextWrapped = true
-  button.Font = options.font or Enum.Font.GothamBold
+  button.Font = options.font or Enum.Font.FredokaOne
   button.Selectable = true
   tag(button, "BUTTON_PRIMARY")
 
   corner(button, tonumber(options.cornerRadius) or 12)
-  local outline = stroke(button, theme.BorderBright, 1.4, 0.06)
+  local outline = stroke(button, theme.Border, 2.5, 0)
   gradient(button, theme.PrimaryTop, theme.PrimaryBottom, 90)
   sizeConstraint(button, tonumber(options.minWidth) or 112, tonumber(options.minHeight) or theme.TouchHeight)
 
@@ -171,6 +200,17 @@ function RobloxCommonUI.CreatePrimaryButton(options)
   sheen.ZIndex = button.ZIndex + 1
   sheen.Parent = button
   corner(sheen, 2)
+  local depthEdge = Instance.new("Frame")
+  depthEdge.Name = "ButtonDepthEdge"
+  depthEdge.AnchorPoint = Vector2.new(0, 1)
+  depthEdge.Position = UDim2.new(0, 8, 1, -3)
+  depthEdge.Size = UDim2.new(1, -16, 0, 4)
+  depthEdge.BackgroundColor3 = theme.PrimaryBottom
+  depthEdge.BackgroundTransparency = 0.18
+  depthEdge.BorderSizePixel = 0
+  depthEdge.ZIndex = button.ZIndex + 1
+  depthEdge.Parent = button
+  corner(depthEdge, 4)
 
   local scale = Instance.new("UIScale")
   scale.Scale = 1
@@ -274,8 +314,22 @@ function RobloxCommonUI.CreateInventorySlot(options)
   tag(button, "INVENTORY_SLOT")
 
   corner(button, tonumber(options.cornerRadius) or 10)
-  local outline = stroke(button, theme.Border, 1.3, 0.08)
+  local outline = stroke(button, theme.Border, 2.2, 0.04)
+  outline.Name = "RarityOutline"
+  gradient(button, theme.PanelRaised, theme.PanelInset, 90)
   sizeConstraint(button, 52, 52)
+
+  local spotlight = Instance.new("Frame")
+  spotlight.Name = "ItemSpotlight"
+  spotlight.AnchorPoint = Vector2.new(0.5, 0.5)
+  spotlight.Position = UDim2.fromScale(0.5, 0.5)
+  spotlight.Size = UDim2.new(1, -20, 1, -20)
+  spotlight.BackgroundColor3 = theme.PrimaryTop
+  spotlight.BackgroundTransparency = 0.78
+  spotlight.BorderSizePixel = 0
+  spotlight.Visible = options.image ~= nil or options.glyph ~= nil
+  spotlight.Parent = button
+  corner(spotlight, 100)
 
   local icon = Instance.new("ImageLabel")
   icon.Name = "Icon"
@@ -284,20 +338,82 @@ function RobloxCommonUI.CreateInventorySlot(options)
   icon.BackgroundTransparency = 1
   icon.Image = tostring(options.image or "")
   icon.ScaleType = Enum.ScaleType.Fit
+  icon.Visible = icon.Image ~= ""
   icon.Parent = button
+  -- 승인된 이미지가 없으면 플레이어가 읽을 수 있는 원형 글리프를 보여준다.
+  -- 게임 자산 ID를 추측하거나 공백 아이콘을 최종 이미지로 남기지 않는다.
+  local glyph = Instance.new("TextLabel")
+  glyph.Name = "FallbackGlyph"
+  glyph.Size = UDim2.new(1, -16, 1, -16)
+  glyph.Position = UDim2.fromOffset(8, 8)
+  glyph.BackgroundTransparency = 1
+  glyph.Text = tostring(options.glyph or "?")
+  glyph.TextColor3 = theme.Text
+  glyph.TextStrokeColor3 = theme.PanelRaised
+  glyph.TextStrokeTransparency = 0.3
+  glyph.TextSize = 27
+  glyph.Font = Enum.Font.FredokaOne
+  glyph.TextScaled = false
+  glyph.Visible = icon.Image == "" and options.glyph ~= nil
+  glyph.Parent = button
+  icon:GetPropertyChangedSignal("Image"):Connect(function()
+    glyph.Visible = icon.Image == "" and (options.glyph ~= nil or button:GetAttribute("BoundItemId") ~= nil)
+    icon.Visible = icon.Image ~= ""
+  end)
 
   local quantity = Instance.new("TextLabel")
   quantity.Name = "Quantity"
   quantity.AnchorPoint = Vector2.new(1, 1)
   quantity.Position = UDim2.new(1, -5, 1, -4)
   quantity.Size = UDim2.fromOffset(34, 18)
-  quantity.BackgroundTransparency = 1
+  quantity.BackgroundColor3 = theme.Border
+  quantity.BackgroundTransparency = 0.06
   quantity.Text = tostring(options.quantityText or "")
-  quantity.TextColor3 = theme.Text
+  quantity.TextColor3 = Color3.fromRGB(255, 255, 255)
   quantity.TextSize = tonumber(options.textSize) or 12
   quantity.Font = options.font or Enum.Font.GothamBold
   quantity.TextXAlignment = Enum.TextXAlignment.Right
   quantity.Parent = button
+  corner(quantity, 7)
+  quantity.Visible = quantity.Text ~= ""
+
+  local stateBadge = Instance.new("TextLabel")
+  stateBadge.Name = "StateBadge"
+  stateBadge.Size = UDim2.new(1, -8, 0, 17)
+  stateBadge.Position = UDim2.fromOffset(4, 4)
+  stateBadge.BackgroundColor3 = theme.Positive
+  stateBadge.BackgroundTransparency = 0.08
+  stateBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
+  stateBadge.TextSize = 10
+  stateBadge.Font = Enum.Font.GothamBold
+  stateBadge.Text = options.locked == true and "잠김" or options.equipped == true and "장착" or ""
+  stateBadge.Visible = stateBadge.Text ~= ""
+  stateBadge.Parent = button
+  corner(stateBadge, 4)
+
+  local rarityRail = Instance.new("Frame")
+  rarityRail.Name = "RarityRail"
+  rarityRail.Size = UDim2.new(1, -14, 0, 5)
+  rarityRail.Position = UDim2.new(0, 7, 1, -7)
+  rarityRail.BackgroundColor3 = typeof(options.rarityColor) == "Color3" and options.rarityColor or theme.Accent
+  rarityRail.BorderSizePixel = 0
+  rarityRail.Visible = options.rarityColor ~= nil
+  rarityRail.Parent = button
+  corner(rarityRail, 3)
+
+  local sparkle = Instance.new("TextLabel")
+  sparkle.Name = "RaritySparkle"
+  sparkle.Position = UDim2.new(1, -26, 0, 1)
+  sparkle.Size = UDim2.fromOffset(23, 24)
+  sparkle.BackgroundTransparency = 1
+  sparkle.Text = "✦"
+  sparkle.TextColor3 = theme.Accent
+  sparkle.TextStrokeColor3 = theme.Border
+  sparkle.TextStrokeTransparency = 0.55
+  sparkle.TextSize = 20
+  sparkle.Font = Enum.Font.GothamBold
+  sparkle.Visible = false
+  sparkle.Parent = button
 
   local selected = Instance.new("Frame")
   selected.Name = "SelectedRing"
@@ -319,6 +435,88 @@ function RobloxCommonUI.CreateInventorySlot(options)
   button:SetAttribute("OwnsInventoryAuthority", false)
   button:SetAttribute("OwnsEquipAuthority", false)
   return button, icon, quantity, selected
+end
+
+-- Shared presentation-only binding for real game-owned inventory records.
+-- Called when searching, filtering, sorting, selecting, or receiving fresh snapshots.
+local INVENTORY_TIER_COLORS = table.freeze({
+  COMMON = Color3.fromRGB(129, 145, 159),
+  UNCOMMON = Color3.fromRGB(86, 194, 125),
+  RARE = Color3.fromRGB(83, 152, 241),
+  EPIC = Color3.fromRGB(167, 113, 234),
+  LEGENDARY = Color3.fromRGB(246, 187, 64),
+  MYTHIC = Color3.fromRGB(239, 98, 133),
+  ["일반"] = Color3.fromRGB(129, 145, 159),
+  ["고급"] = Color3.fromRGB(86, 194, 125),
+  ["희귀"] = Color3.fromRGB(83, 152, 241),
+  ["영웅"] = Color3.fromRGB(167, 113, 234),
+  ["전설"] = Color3.fromRGB(246, 187, 64),
+  ["신화"] = Color3.fromRGB(239, 98, 133),
+})
+
+function RobloxCommonUI.UpdateInventorySlot(slot, item, options)
+  assert(slot and slot:IsA("GuiButton"), "COMMON_INVENTORY_SLOT_REQUIRED")
+  item = type(item) == "table" and item or {}
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local image = tostring(item.image or item.icon or "")
+  slot:SetAttribute("BoundItemId", tostring(item.id or ""))
+  slot:SetAttribute("BoundFromGameState", true)
+  slot:SetAttribute("ItemLocked", item.locked == true)
+  slot:SetAttribute("ItemEquipped", item.equipped == true)
+  local icon = slot:FindFirstChild("Icon")
+  if icon then
+    icon.Image = image
+    icon.Visible = image ~= ""
+  end
+  local glyph = slot:FindFirstChild("FallbackGlyph")
+  if glyph then
+    local label = tostring(item.glyph or item.name or item.title or item.id or "?")
+    local ok, offset = pcall(utf8.offset, label, 2)
+    glyph.Text = ok and string.sub(label, 1, offset and offset - 1 or #label) or "?"
+    glyph.Visible = image == ""
+  end
+  local badge = slot:FindFirstChild("StateBadge")
+  if badge then
+    badge.Text = item.locked == true and "잠김" or item.equipped == true and "장착" or ""
+    badge.Visible = badge.Text ~= ""
+    badge.BackgroundColor3 = item.locked == true and theme.Danger or theme.Positive
+  end
+  local rail = slot:FindFirstChild("RarityRail")
+  local rarity = string.upper(tostring(item.rarity or ""))
+  local rarityColor = typeof(item.rarityColor) == "Color3" and item.rarityColor or INVENTORY_TIER_COLORS[rarity]
+  if rail then
+    rail.Visible = rarityColor ~= nil
+    rail.BackgroundColor3 = rarityColor or theme.Border
+  end
+  local outline = slot:FindFirstChild("RarityOutline")
+  if outline and outline:IsA("UIStroke") then
+    outline.Color = rarityColor or theme.Border
+    outline.Thickness = options.selected == true and 3 or 2.2
+  end
+  local spotlight = slot:FindFirstChild("ItemSpotlight")
+  if spotlight then
+    spotlight.BackgroundColor3 = rarityColor or theme.PrimaryTop
+    spotlight.Visible = item.id ~= nil
+  end
+  local sparkle = slot:FindFirstChild("RaritySparkle")
+  if sparkle then
+    sparkle.Visible = rarity == "EPIC" or rarity == "LEGENDARY" or rarity == "MYTHIC"
+      or rarity == "영웅" or rarity == "전설" or rarity == "신화"
+    sparkle.TextColor3 = rarityColor or theme.Accent
+  end
+  local quantity = slot:FindFirstChild("Quantity")
+  if quantity then
+    local amount = item.quantity or item.count
+    quantity.Text = amount == nil and "" or tostring(amount)
+    quantity.Visible = quantity.Text ~= ""
+  end
+  local highlight = slot:FindFirstChild("SelectedRing")
+  if highlight then highlight.Visible = options.selected == true or item.selected == true end
+  slot.Active = item.id ~= nil and item.locked ~= true
+  slot:SetAttribute("RarityVisual", rarity)
+  slot:SetAttribute("OwnsEquipAuthority", false)
+  return slot
 end
 
 function RobloxCommonUI.CreateTooltip(options)
@@ -668,7 +866,7 @@ local function commonText(parent, name, textValue, position, size, color, textSi
   label.TextWrapped = true
   label.TextXAlignment = Enum.TextXAlignment.Left
   label.TextYAlignment = Enum.TextYAlignment.Center
-  label.Font = bold and Enum.Font.GothamBold or Enum.Font.Gotham
+  label.Font = bold and Enum.Font.FredokaOne or Enum.Font.Gotham
   label.Parent = parent
   return label
 end
@@ -705,20 +903,184 @@ function RobloxCommonUI.CreateIconButton(options)
   button.BorderSizePixel = 0
   button.Image = tostring(options.image or "")
   button.ScaleType = Enum.ScaleType.Fit
+  local missingImage = button.Image == ""
+  -- 외부 ID 없이도 확실히 보이는 상태 아이콘. 실제 이미지가 연결되면 자동으로 숨긴다.
+  local fallback = Instance.new("TextLabel")
+  fallback.Name = "FallbackGlyph"
+  fallback.Size = UDim2.new(1, -14, 1, -14)
+  fallback.Position = UDim2.fromOffset(7, 7)
+  fallback.BackgroundTransparency = 1
+  fallback.Text = tostring(options.shortLabel or options.label or "?")
+  fallback.TextColor3 = theme.Text
+  fallback.TextScaled = true
+  fallback.Font = Enum.Font.FredokaOne
+  fallback.Visible = missingImage
+  fallback.Parent = button
+  local fallbackSize = Instance.new("UITextSizeConstraint")
+  fallbackSize.MaxTextSize = 22
+  fallbackSize.MinTextSize = 11
+  fallbackSize.Parent = fallback
   button.Selectable = true
   tag(button, "ICON_BUTTON")
   corner(button, tonumber(options.cornerRadius) or 12)
-  local outline = stroke(button, theme.Border, 1.2, 0.10)
+  local outline = stroke(button, options.selected == true and theme.Accent or theme.Border, options.selected == true and 3 or 2.2, 0)
+  local iconGradient = gradient(button, theme.PanelRaised, theme.PanelInset, 90)
+  iconGradient.Enabled = missingImage -- 실제 이미지가 있을 때는 원본 그림의 색을 변형하지 않는다.
   sizeConstraint(button, 48, 48)
+  button.Active = options.locked ~= true
+  button.AutoButtonColor = options.locked ~= true
+  button:SetAttribute("IconSelected", options.selected == true)
+  button:SetAttribute("IconLocked", options.locked == true)
 
   local badge = commonText(button, "Badge", options.badgeText or "", UDim2.new(1, -23, 0, 3), UDim2.fromOffset(20, 18), theme.Text, 10, true)
   badge.TextXAlignment = Enum.TextXAlignment.Center
   badge.BackgroundColor3 = theme.Danger
+  badge.TextColor3 = Color3.fromRGB(255, 255, 255)
   badge.BackgroundTransparency = badge.Text == "" and 1 or 0
   corner(badge, 9)
+  local iconPlate = Instance.new("Frame")
+  iconPlate.Name = "IconIllustrationPlate"
+  iconPlate.Position = UDim2.fromOffset(6, 6)
+  iconPlate.Size = UDim2.new(1, -12, 1, -12)
+  iconPlate.BackgroundColor3 = theme.PrimaryTop
+  iconPlate.BackgroundTransparency = 0.58
+  iconPlate.BorderSizePixel = 0
+  iconPlate.Visible = missingImage
+  iconPlate.Parent = button
+  corner(iconPlate, tonumber(options.cornerRadius) or 12)
+  iconPlate.ZIndex = button.ZIndex
+  local gloss = Instance.new("Frame")
+  gloss.Name = "IconIllustrationGlint"
+  gloss.Position = UDim2.new(0, 7, 0, 7)
+  gloss.Size = UDim2.new(0.42, 0, 0, 4)
+  gloss.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+  gloss.BackgroundTransparency = 0.12
+  gloss.BorderSizePixel = 0
+  gloss.Visible = missingImage
+  gloss.Parent = button
+  corner(gloss, 3)
+  iconPlate.ZIndex = button.ZIndex + 1
+  gloss.ZIndex = button.ZIndex + 2
+  fallback.ZIndex = button.ZIndex + 3
+  badge.ZIndex = button.ZIndex + 4
+  fallback.TextStrokeColor3 = theme.Border
+  fallback.TextStrokeTransparency = 0.35
+  -- 실제 아이콘 원본이 없더라도 기능이 읽히도록 장난감풍 벡터 픽토그램을 직접 구성한다.
+  local label=tostring(options.shortLabel or options.label or "")
+  local vectorRole=string.upper(tostring(options.iconKind or ""))
+  if vectorRole=="" then
+    if label=="메뉴" then vectorRole="MENU"
+    elseif label=="가방" or label=="인벤토리" then vectorRole="BAG"
+    elseif label=="상점" then vectorRole="SHOP"
+    elseif label=="설정" then vectorRole="GEAR"
+    elseif label=="펫" or label=="동료" then vectorRole="PET"
+    elseif label=="무기" or label=="장비" then vectorRole="SWORD" end
+  end
+  local hasVectorIcon=vectorRole=="MENU" or vectorRole=="BAG" or vectorRole=="SHOP"
+    or vectorRole=="GEAR" or vectorRole=="PET" or vectorRole=="SWORD"
+  local vector=Instance.new("Frame")
+  vector.Name="NativeIllustratedIcon"
+  vector.AnchorPoint=Vector2.new(0.5,0.5)
+  vector.Position=UDim2.fromScale(0.5,0.5)
+  vector.Size=UDim2.fromOffset(42,42)
+  vector.BackgroundTransparency=1
+  vector.Visible=missingImage and hasVectorIcon
+  vector.ZIndex=button.ZIndex+3
+  vector.Parent=button
+  if vectorRole=="BAG" then
+    local handle=Instance.new("Frame")
+    handle.Name="BackpackHandle";handle.Position=UDim2.fromOffset(13,3);handle.Size=UDim2.fromOffset(16,14)
+    handle.BackgroundTransparency=1;handle.Parent=vector
+    corner(handle,6);stroke(handle,theme.Border,3,0)
+    local bag=Instance.new("Frame")
+    bag.Name="BackpackBody";bag.Position=UDim2.fromOffset(6,10);bag.Size=UDim2.fromOffset(30,29)
+    bag.BackgroundColor3=Color3.fromRGB(252,161,70);bag.BorderSizePixel=0;bag.Parent=vector
+    corner(bag,7);stroke(bag,theme.Border,2.4,0)
+    gradient(bag,Color3.fromRGB(255,219,100),Color3.fromRGB(237,122,56),90)
+    local pocket=Instance.new("Frame")
+    pocket.Name="BackpackPocket";pocket.Position=UDim2.fromOffset(7,14);pocket.Size=UDim2.fromOffset(16,10)
+    pocket.BackgroundColor3=Color3.fromRGB(252,231,151);pocket.BorderSizePixel=0;pocket.Parent=bag
+    corner(pocket,3);stroke(pocket,theme.Border,1.4,0.1)
+  elseif vectorRole=="SHOP" then
+    local stall=Instance.new("Frame")
+    stall.Name="ShopStall";stall.Position=UDim2.fromOffset(7,13);stall.Size=UDim2.fromOffset(28,25)
+    stall.BackgroundColor3=Color3.fromRGB(90,195,243);stall.BorderSizePixel=0;stall.Parent=vector
+    corner(stall,4);stroke(stall,theme.Border,2.2,0)
+    local roof=Instance.new("Frame")
+    roof.Name="ShopAwning";roof.Position=UDim2.fromOffset(3,5);roof.Size=UDim2.fromOffset(36,13)
+    roof.BackgroundColor3=Color3.fromRGB(248,92,116);roof.BorderSizePixel=0;roof.Parent=vector
+    corner(roof,4);stroke(roof,theme.Border,2,0)
+    for i=1,3 do
+      local stripe=Instance.new("Frame")
+      stripe.Name="AwningStripe"..i;stripe.Position=UDim2.fromOffset(i*9-4,2);stripe.Size=UDim2.fromOffset(4,9)
+      stripe.BackgroundColor3=Color3.fromRGB(255,241,216);stripe.BorderSizePixel=0;stripe.Parent=roof
+    end
+    local door=Instance.new("Frame")
+    door.Name="ShopDoor";door.Position=UDim2.fromOffset(10,12);door.Size=UDim2.fromOffset(8,13)
+    door.BackgroundColor3=Color3.fromRGB(255,248,203);door.BorderSizePixel=0;door.Parent=stall
+    corner(door,2)
+  elseif vectorRole=="SWORD" then
+    local blade=Instance.new("Frame")
+    blade.Name="SwordBlade";blade.Position=UDim2.fromOffset(17,1);blade.Size=UDim2.fromOffset(9,30)
+    blade.Rotation=42;blade.BackgroundColor3=Color3.fromRGB(240,251,255);blade.BorderSizePixel=0;blade.Parent=vector
+    corner(blade,3);stroke(blade,theme.Border,2.1,0)
+    gradient(blade,Color3.fromRGB(255,255,255),Color3.fromRGB(114,187,235),90)
+    local guard=Instance.new("Frame")
+    guard.Name="SwordGuard";guard.Position=UDim2.fromOffset(13,27);guard.Size=UDim2.fromOffset(19,7)
+    guard.Rotation=42;guard.BackgroundColor3=theme.Accent;guard.BorderSizePixel=0;guard.Parent=vector
+    corner(guard,3);stroke(guard,theme.Border,2,0)
+  elseif vectorRole=="PET" then
+    local paw=Instance.new("Frame")
+    paw.Name="PawPad";paw.Position=UDim2.fromOffset(12,19);paw.Size=UDim2.fromOffset(19,17)
+    paw.Rotation=-12;paw.BackgroundColor3=Color3.fromRGB(255,150,182);paw.BorderSizePixel=0;paw.Parent=vector
+    corner(paw,10);stroke(paw,theme.Border,2,0)
+    for i=1,4 do
+      local toe=Instance.new("Frame")
+      toe.Name="PawToe"..i;toe.Position=UDim2.fromOffset(6+i*7-5,math.abs(2.5-i)*2+6)
+      toe.Size=UDim2.fromOffset(8,9);toe.BackgroundColor3=Color3.fromRGB(255,179,196)
+      toe.BorderSizePixel=0;toe.Parent=vector
+      corner(toe,8);stroke(toe,theme.Border,1.4,0)
+    end
+  elseif vectorRole=="GEAR" then
+    local hub=Instance.new("Frame")
+    hub.Name="GearHub";hub.AnchorPoint=Vector2.new(.5,.5);hub.Position=UDim2.fromScale(.5,.5)
+    hub.Size=UDim2.fromOffset(29,29);hub.BackgroundColor3=Color3.fromRGB(155,208,250)
+    hub.BorderSizePixel=0;hub.Parent=vector
+    corner(hub,15);stroke(hub,theme.Border,3,0)
+    for i=1,8 do
+      local tooth=Instance.new("Frame")
+      tooth.Name="GearTooth"..i;tooth.AnchorPoint=Vector2.new(.5,.5)
+      local ang=i*math.pi/4
+      tooth.Position=UDim2.fromOffset(21+math.sin(ang)*16,21+math.cos(ang)*16)
+      tooth.Size=UDim2.fromOffset(8,9);tooth.Rotation=-i*45;tooth.BackgroundColor3=theme.Border
+      tooth.BorderSizePixel=0;tooth.Parent=vector;corner(tooth,2)
+    end
+    local hole=Instance.new("Frame")
+    hole.Name="GearCore";hole.AnchorPoint=Vector2.new(.5,.5);hole.Position=UDim2.fromScale(.5,.5)
+    hole.Size=UDim2.fromOffset(10,10);hole.BackgroundColor3=theme.PanelRaised;hole.BorderSizePixel=0
+    hole.Parent=vector;corner(hole,6)
+  elseif vectorRole=="MENU" then
+    for i=1,3 do
+      local bar=Instance.new("Frame")
+      bar.Name="MenuGlyphBar"..i;bar.Position=UDim2.fromOffset(6,7+i*9);bar.Size=UDim2.fromOffset(30,6)
+      bar.BackgroundColor3=i==2 and theme.Accent or Color3.fromRGB(255,255,255)
+      bar.BorderSizePixel=0;bar.Parent=vector;corner(bar,3);stroke(bar,theme.Border,1.6,0)
+    end
+  end
+  fallback.Visible=missingImage and not hasVectorIcon
 
   button.MouseButton1Down:Connect(function() outline.Transparency = 0 end)
   button.MouseButton1Up:Connect(function() outline.Transparency = 0.10 end)
+  button:SetAttribute("IconFallbackActive", missingImage)
+  button:GetPropertyChangedSignal("Image"):Connect(function()
+    local absent = button.Image == ""
+    fallback.Visible = absent and not hasVectorIcon
+    vector.Visible = absent and hasVectorIcon
+    iconGradient.Enabled = absent
+    iconPlate.Visible = absent
+    gloss.Visible = absent
+    button:SetAttribute("IconFallbackActive", absent)
+  end)
   button:SetAttribute("PresentationRole", "ICON_ACTION")
   button:SetAttribute("OwnsGameplayAction", false)
   button:SetAttribute("OwnsRemoteAuthority", false)
@@ -1554,8 +1916,17 @@ local function surfaceShell(options, atomId, role)
   chrome.BorderSizePixel = 0
   chrome.Parent = root
   corner(chrome, theme.Corner)
-  stroke(chrome, theme.Border, 1.5, 0.08)
-  gradient(chrome, theme.PanelRaised, theme.Panel, 90)
+  stroke(chrome, theme.Border, 3, 0)
+  gradient(chrome, theme.PanelRaised, theme.PanelInset, 90)
+  local headerStripe = Instance.new("Frame")
+  headerStripe.Name = "HeaderColorStripe"
+  headerStripe.Position = UDim2.fromOffset(15, 3)
+  headerStripe.Size = UDim2.new(1, -30, 0, 6)
+  headerStripe.BackgroundColor3 = theme.Accent
+  headerStripe.BorderSizePixel = 0
+  headerStripe.Parent = chrome
+  corner(headerStripe, 6)
+  gradient(headerStripe, theme.PrimaryTop, theme.Accent, 0)
 
   local header = Instance.new("Frame")
   header.Name = "Header"
@@ -1564,8 +1935,23 @@ local function surfaceShell(options, atomId, role)
   header.BackgroundTransparency = 1
   header.Parent = chrome
 
-  local title = commonText(header, "Title", options.title or role, UDim2.fromOffset(0,0), UDim2.new(1,-8,0,34), theme.Text, tonumber(options.titleSize) or 24, true)
-  local subtitle = commonText(header, "Subtitle", options.subtitle or "", UDim2.fromOffset(0,32), UDim2.new(1,-8,0,24), theme.MutedText, 13, false)
+  local emblem = Instance.new("TextLabel")
+  emblem.Name = "HeaderEmblem"
+  emblem.Position = UDim2.fromOffset(0, 1)
+  emblem.Size = UDim2.fromOffset(37, 37)
+  emblem.BackgroundColor3 = theme.Primary
+  emblem.BorderSizePixel = 0
+  emblem.Text = "✦"
+  emblem.TextColor3 = Color3.fromRGB(255, 255, 255)
+  emblem.TextSize = 22
+  emblem.Font = Enum.Font.FredokaOne
+  emblem.Parent = header
+  corner(emblem, 11)
+  stroke(emblem, theme.Border, 1.5, 0)
+  gradient(emblem, theme.PrimaryTop, theme.PrimaryBottom, 90)
+  local title = commonText(header, "Title", options.title or role, UDim2.fromOffset(46,0), UDim2.new(1,-54,0,34), theme.Text, tonumber(options.titleSize) or 24, true)
+  title.TextTruncate = Enum.TextTruncate.AtEnd
+  local subtitle = commonText(header, "Subtitle", options.subtitle or "", UDim2.fromOffset(46,32), UDim2.new(1,-54,0,24), theme.MutedText, 13, false)
 
   local body = Instance.new("Frame")
   body.Name = "Body"
@@ -1845,17 +2231,100 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   scroll.ScrollingDirection=Enum.ScrollingDirection.Y
   scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
   scroll.Active=true;scroll.Parent=body
+  -- A live read-only inspector; server owns actual item, equip and trade state.
+  local detail = Instance.new("Frame")
+  detail.Name = "SelectedItemDetail"
+  detail.BackgroundColor3 = theme.PanelInset
+  detail.BorderSizePixel = 0
+  detail.Parent = body
+  corner(detail, 10)
+  stroke(detail, theme.Border, 2, 0.03)
+  gradient(detail, theme.PanelRaised, theme.PanelInset, 90)
+  local detailStripe = Instance.new("Frame")
+  detailStripe.Name = "SelectedItemRarityStripe"
+  detailStripe.Position = UDim2.fromOffset(7, 7)
+  detailStripe.Size = UDim2.fromOffset(4, 40)
+  detailStripe.BackgroundColor3 = theme.Accent
+  detailStripe.BorderSizePixel = 0
+  detailStripe.Parent = detail
+  corner(detailStripe, 3)
+  local detailTitle = Instance.new("TextLabel")
+  detailTitle.Name = "SelectedItemName"
+  detailTitle.BackgroundTransparency = 1
+  detailTitle.Position = UDim2.fromOffset(10, 7)
+  detailTitle.Size = UDim2.new(1, -20, 0, 25)
+  detailTitle.Text = "아이템을 선택하세요"
+  detailTitle.TextColor3 = theme.Text
+  detailTitle.TextSize = 15
+  detailTitle.Font = Enum.Font.FredokaOne
+  detailTitle.TextXAlignment = Enum.TextXAlignment.Left
+  detailTitle.TextTruncate = Enum.TextTruncate.AtEnd
+  detailTitle.Parent = detail
+  local detailMeta = Instance.new("TextLabel")
+  detailMeta.Name = "SelectedItemMeta"
+  detailMeta.BackgroundTransparency = 1
+  detailMeta.Position = UDim2.fromOffset(10, 34)
+  detailMeta.Size = UDim2.new(1, -20, 0, 23)
+  detailMeta.Text = ""
+  detailMeta.TextColor3 = theme.Accent
+  detailMeta.TextSize = 12
+  detailMeta.TextXAlignment = Enum.TextXAlignment.Left
+  detailMeta.TextTruncate = Enum.TextTruncate.AtEnd
+  detailMeta.Parent = detail
+  local detailDescription = Instance.new("TextLabel")
+  detailDescription.Name = "SelectedItemDescription"
+  detailDescription.BackgroundTransparency = 1
+  detailDescription.Position = UDim2.fromOffset(10, 60)
+  detailDescription.Size = UDim2.new(1, -20, 1, -68)
+  detailDescription.Text = ""
+  detailDescription.TextColor3 = theme.MutedText
+  detailDescription.TextSize = 12
+  detailDescription.TextWrapped = true
+  detailDescription.TextXAlignment = Enum.TextXAlignment.Left
+  detailDescription.TextYAlignment = Enum.TextYAlignment.Top
+  detailDescription.Parent = detail
+  -- 실제 게임이 제공한 승인 이미지 또는 3D 모델만 그린다. 외부 저작물은 포함하지 않는다.
+  local previewImage = Instance.new("ImageLabel")
+  previewImage.Name = "SelectedItemArt"
+  previewImage.Position = UDim2.fromOffset(12, 67)
+  previewImage.Size = UDim2.fromOffset(112, 112)
+  previewImage.BackgroundColor3 = theme.PanelRaised
+  previewImage.BackgroundTransparency = 0.04
+  previewImage.BorderSizePixel = 0
+  previewImage.ScaleType = Enum.ScaleType.Fit
+  previewImage.Visible = false
+  previewImage.Parent = detail
+  corner(previewImage, 14)
+  stroke(previewImage, theme.BorderBright, 2, 0.12)
+  local currentPreviewSource = nil
+  local activePreview = nil
   local grid,cellLayout,slots=RobloxCommonUI.CreateInventoryGrid({
     name="FullInventoryGrid",columns=options.columns or 6,
     slotCount=options.slotCount or (options.items and #options.items or 1),
     size=UDim2.new(1,-8,0,160),theme=theme
   })
   grid.Parent=scroll
+  local emptyMessage = Instance.new("TextLabel")
+  emptyMessage.Name = "InventoryEmptyMessage"
+  emptyMessage.Size = UDim2.new(1, -24, 0, 74)
+  emptyMessage.Position = UDim2.fromOffset(12, 18)
+  emptyMessage.BackgroundTransparency = 1
+  emptyMessage.TextColor3 = theme.MutedText
+  emptyMessage.Font = Enum.Font.GothamMedium
+  emptyMessage.TextSize = 14
+  emptyMessage.TextWrapped = true
+  emptyMessage.Text = "보유 아이템이 없어"
+  emptyMessage.Visible = false
+  emptyMessage.Parent = scroll
   -- 기존 실제 게임 소유 목록은 그대로 유지하고, 화면에서 보이는 결과만 분류한다.
   local rows,shown,filterNames={},{},{}
   local selectedId=nil
   local currentFilter="전체"
   local sortByName=false
+  local sortByRarity=false
+  -- 희귀도는 실제 게임 아이템 메타데이터를 읽기만 한다. 게임 소유 데이터는 변경하지 않는다.
+  local rarityRank={COMMON=1,UNCOMMON=2,RARE=3,EPIC=4,LEGENDARY=5,MYTHIC=6,
+    ["일반"]=1,["고급"]=2,["희귀"]=3,["영웅"]=4,["전설"]=5,["신화"]=6}
   local refresh
   local function resizeGrid()
     local available=scroll.AbsoluteSize.X-8
@@ -1873,14 +2342,20 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       sort.AnchorPoint=Vector2.new(0,0)
       sort.Position=UDim2.fromOffset(0,56);sort.Size=UDim2.new(1,0,0,48)
       filters.Position=UDim2.fromOffset(0,112)
-      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-172)
+      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-280)
+      detail.Position=UDim2.new(0,0,1,-100);detail.Size=UDim2.new(1,0,0,100)
     else
       search.Size=UDim2.new(0.42,0,0,48)
       sort.AnchorPoint=Vector2.new(1,0)
       sort.Position=UDim2.new(1,0,0,0);sort.Size=UDim2.fromOffset(170,48)
       filters.Position=UDim2.fromOffset(0,58)
-      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(1,0,1,-116)
+      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(0.69,-8,1,-116)
+      detail.Position=UDim2.new(0.69,0,0,116);detail.Size=UDim2.new(0.31,0,1,-116)
     end
+    previewImage.Visible = not compact and previewImage.Image ~= ""
+    if activePreview then activePreview.Visible = not compact end
+    detailDescription.Position = compact and UDim2.fromOffset(10, 60) or UDim2.fromOffset(133, 68)
+    detailDescription.Size = compact and UDim2.new(1, -20, 1, -68) or UDim2.new(1, -142, 1, -80)
     root:SetAttribute("MobileStackedLayout",compact)
     resizeGrid()
   end
@@ -1896,6 +2371,14 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
         if category~=""and not found[category]then
           filterNames[#filterNames+1]=category;found[category]=true
         end
+        local rarity=tostring(row.rarity or "")
+        local rarityFilter="희귀도: "..rarity
+        if rarity~=""and not found[rarityFilter]then
+          filterNames[#filterNames+1]=rarityFilter;found[rarityFilter]=true
+        end
+        if row.equipped==true and not found["장착 중"]then
+          filterNames[#filterNames+1]="장착 중";found["장착 중"]=true
+        end
       end
     end
     if not table.find(filterNames,currentFilter)then currentFilter=filterNames[1]or"전체"end
@@ -1903,7 +2386,8 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       if not filterButtons[i]then
         local index=i
         local button=RobloxCommonUI.CreateTabButton({
-          name="Filter"..i,text=name,size=UDim2.fromOffset(96,48),theme=theme
+          name="Filter"..i,text=name,
+          size=UDim2.fromOffset(math.max(96,(utf8.len(name)or #name)*12+30),48),theme=theme
         })
         button.LayoutOrder=i;button.Parent=filters
         filterButtons[i]=button
@@ -1929,18 +2413,38 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
     end)
   end
   refresh=function()
+    if selectedId ~= nil then
+      local exists = false
+      for _,item in ipairs(rows) do
+        if item.id == selectedId then exists = true; break end
+      end
+      if not exists then selectedId = nil end
+    end
     updateFilters()
     shown={}
     local query=string.lower(tostring(search.Text or ""))
     for _,row in ipairs(rows)do
       local category=tostring(row.category or "")
-      local name=string.lower(tostring(row.name or row.title or row.id or ""))
-      if (currentFilter=="전체"or currentFilter==category)
-        and (query==""or string.find(name,query,1,true))then
+      local rarity=tostring(row.rarity or "")
+      local filterMatch=currentFilter=="전체"or currentFilter==category
+        or (rarity~=""and currentFilter=="희귀도: "..rarity)
+        or (currentFilter=="장착 중"and row.equipped==true)
+      local searchable=string.lower(table.concat({
+        tostring(row.name or row.title or ""),tostring(row.id or ""),
+        tostring(row.description or ""),category,rarity
+      }," "))
+      if filterMatch and (query==""or string.find(searchable,query,1,true))then
         shown[#shown+1]=row
       end
     end
-    if sortByName then
+    if sortByRarity then
+      table.sort(shown,function(left,right)
+        local a=rarityRank[string.upper(tostring(left.rarity or ""))]or 0
+        local b=rarityRank[string.upper(tostring(right.rarity or ""))]or 0
+        if a~=b then return a>b end
+        return tostring(left.id or "")<tostring(right.id or "")
+      end)
+    elseif sortByName then
       table.sort(shown,function(left,right)
         local a=string.lower(tostring(left.name or left.title or left.id or ""))
         local b=string.lower(tostring(right.name or right.title or right.id or ""))
@@ -1966,21 +2470,52 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       end
       slot.Visible=true
       slot.Name="Slot"..i;slot.LayoutOrder=i
-      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
-      slot:SetAttribute("BoundFromGameState",true)
-      local icon=slot:FindFirstChild("Icon")
-      local quantity=slot:FindFirstChild("Quantity")
-      local highlight=slot:FindFirstChild("SelectedRing")
-      if icon then icon.Image=tostring(row.image or "")end
-      if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
-      if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
-      slot.Active=row.id~=nil and row.locked~=true
+      RobloxCommonUI.UpdateInventorySlot(slot,row,{theme=theme,selected=selectedId~=nil and selectedId==row.id})
     end
     for i=#shown+1,#slots do slots[i].Visible=false end
+    emptyMessage.Visible=#shown==0
+    emptyMessage.Text=#rows==0 and "보유 아이템이 없어" or "조건에 맞는 아이템이 없어"
+    local selectedRow=nil
+    for _,row in ipairs(rows)do
+      if selectedId~=nil and row.id==selectedId then selectedRow=row;break end
+    end
+    if not selectedRow then selectedId=nil end
+    detailTitle.Text=selectedRow and tostring(selectedRow.name or selectedRow.title or selectedRow.id or "아이템") or "아이템을 선택하세요"
+    detailMeta.Text=selectedRow and
+      (tostring(selectedRow.category or "아이템").." · "..tostring(selectedRow.rarity or "일반").." · "..tostring(selectedRow.quantity or selectedRow.count or 1)
+        ..(selectedRow.equipped==true and " · 장착 중" or "")..(selectedRow.locked==true and " · 잠김" or "")) or ""
+    detailDescription.Text=selectedRow and tostring(selectedRow.description or "") or ""
+    local selectedRarity=selectedRow and string.upper(tostring(selectedRow.rarity or "")) or ""
+    detailMeta.TextColor3=selectedRow
+      and (typeof(selectedRow.rarityColor)=="Color3"and selectedRow.rarityColor
+        or INVENTORY_TIER_COLORS[selectedRarity]or theme.Accent) or theme.Accent
+    detailStripe.BackgroundColor3=detailMeta.TextColor3
+    local art=selectedRow and tostring(selectedRow.image or selectedRow.icon or "") or ""
+    previewImage.Image=art
+    previewImage.Visible=body.AbsoluteSize.X>=560 and art~=""
+    local source=selectedRow and (selectedRow.previewModel or selectedRow.model) or nil
+    if source ~= currentPreviewSource then
+      if activePreview then activePreview:Destroy();activePreview=nil end
+      currentPreviewSource=source
+      if typeof(source)=="Instance" and (source:IsA("Model") or source:IsA("BasePart")) and options.showModelPreview~=false then
+        local ok, preview=pcall(RobloxCommonUI.CreateItemModelPreview,{
+          name="SelectedItem3DArt",model=source,theme=theme,size=UDim2.fromOffset(112,112)
+        })
+        if ok and preview then
+          activePreview=preview
+          activePreview.Position=UDim2.fromOffset(12,67)
+          activePreview.Parent=detail
+        end
+      end
+    end
+    if activePreview then activePreview.Visible=body.AbsoluteSize.X>=560 end
+    detail:SetAttribute("SelectedItemHasNativeArt",activePreview~=nil or art~="")
+    detail:SetAttribute("BoundSelectedItemId",selectedId~=nil and tostring(selectedId) or "")
     root:SetAttribute("BoundItemCount",#rows)
     root:SetAttribute("BoundVisibleItemCount",#shown)
     root:SetAttribute("CurrentInventoryFilter",currentFilter)
     root:SetAttribute("InventorySortByName",sortByName)
+    root:SetAttribute("InventorySortByRarity",sortByRarity)
     resizeGrid()
   end
   local function sync(items)
@@ -1989,8 +2524,14 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   end
   search:GetPropertyChangedSignal("Text"):Connect(refresh)
   sort.Activated:Connect(function()
-    sortByName=not sortByName
-    sort.Text=sortByName and "정렬: 이름순"or"정렬: 기본순"
+    if sortByName then
+      sortByName=false;sortByRarity=true
+    elseif sortByRarity then
+      sortByRarity=false
+    else
+      sortByName=true
+    end
+    sort.Text=sortByName and "정렬: 이름순"or sortByRarity and "정렬: 희귀도순"or"정렬: 기본순"
     refresh()
   end)
   body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
@@ -2005,7 +2546,7 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   root:SetAttribute("OwnsSaveAuthority",false)
   root:SetAttribute("OwnsRemoteAuthority",false)
   return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,
-    slots=slots,Sync=sync}
+    detail=detail,slots=slots,emptyMessage=emptyMessage,Sync=sync}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
@@ -4365,15 +4906,63 @@ function RobloxCommonUI.CreateRouteRiskPreview(options)
 end
 
 function RobloxCommonUI.CreateThreatEdgeIndicator(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"THREAT_EDGE_INDICATOR","THREAT_EDGE_INDICATOR","위협 방향",{"좌/우/후방","위협 등급","거리","시야 밖 상태"})
+  local theme = cloneTheme(options.theme)
+  local direction = commonText(parts.inner,"ThreatDirection","",UDim2.new(0,14,1,-64),UDim2.new(1,-28,0,50),theme.Danger,28,true)
+  direction.TextXAlignment = Enum.TextXAlignment.Center
+  local symbol = {LEFT="←",RIGHT="→",FRONT="↑",BACK="↓",NORTH="↑",SOUTH="↓",WEST="←",EAST="→"}
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local facing = string.upper(tostring(state.direction or "UNKNOWN"))
+    direction.Text = (symbol[facing] or "•") .. "  " .. tostring(state.label or facing)
+    parts.labels[1].Text = "위협 · " .. tostring(state.label or facing)
+    parts.labels[2].Text = "단계 · " .. tostring(state.severity or "미확인")
+    parts.labels[3].Text = "거리 · " .. tostring(state.distance or "미확인")
+    parts.labels[4].Text = state.offscreen == true and "시야 밖" or "화면 안"
+  end
+  sync(options.threat)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,Direction=direction}
 end
 
 function RobloxCommonUI.CreateBossPhaseStrip(options)
-  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP","보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  options = options or {}
+  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP",options.title or "보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "ConfirmedBossHealth"
+  track.Size = UDim2.new(1,-28,0,22)
+  track.Position = UDim2.new(0,14,1,-64)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,7)
+  local fill = Instance.new("Frame")
+  fill.Name = "VisualHealthFill"
+  fill.Size = UDim2.fromScale(1,1)
+  fill.BackgroundColor3 = theme.Danger
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,7)
+  local value = commonText(parts.inner,"ConfirmedValue","",UDim2.new(0,14,1,-37),UDim2.new(1,-28,0,24),theme.Text,12,true)
+  value.TextXAlignment = Enum.TextXAlignment.Right
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local hp = math.max(0,tonumber(state.hp) or 0)
+    local maxHp = math.max(0,tonumber(state.maxHp) or 0)
+    local ratio = maxHp > 0 and math.clamp(hp/maxHp,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 페이즈 · " .. tostring(state.phase or "미확인")
+    parts.labels[2].Text = "다음 변화 · " .. tostring(state.nextPhase or "미확인")
+    parts.labels[3].Text = "위험 패턴 · " .. tostring(state.warning or "미확인")
+    parts.labels[4].Text = "진행도 · " .. tostring(math.floor(ratio*100)) .. "%"
+    value.Text = tostring(math.floor(hp)) .. " / " .. tostring(math.floor(maxHp))
+  end
+  sync(options.bossState)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsDamageAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,HealthFill=fill}
 end
 
 -- 디펜스: 웨이브/정예/준비시간은 실제 전투 디렉터가 준 현재 상태만 표시한다.
@@ -4412,9 +5001,38 @@ function RobloxCommonUI.CreateWaveForecastRibbon(options)
 end
 
 function RobloxCommonUI.CreateStatusEffectTimeline(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"STATUS_EFFECT_TIMELINE","STATUS_EFFECT_TIMELINE","상태효과 타임라인",{"현재 효과","남은 시간","중첩","해제 가능"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "RemainingStatusDuration"
+  track.Position = UDim2.new(0,14,1,-55)
+  track.Size = UDim2.new(1,-28,0,12)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,5)
+  local fill = Instance.new("Frame")
+  fill.Name = "DurationFill"
+  fill.Size = UDim2.fromScale(0,1)
+  fill.BackgroundColor3 = theme.Accent
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,5)
+  local function sync(status)
+    status = type(status) == "table" and status or {}
+    local remaining = math.max(0,tonumber(status.remaining) or 0)
+    local total = math.max(0,tonumber(status.total) or 0)
+    local ratio = total > 0 and math.clamp(remaining/total,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 효과 · " .. tostring(status.name or "없음")
+    parts.labels[2].Text = "남은 시간 · " .. tostring(math.floor(remaining*10)/10)
+    parts.labels[3].Text = "중첩 · " .. tostring(math.max(0,math.floor(tonumber(status.stacks) or 0)))
+    parts.labels[4].Text = status.dispellable == true and "해제 가능" or "해제 여부 미확인"
+  end
+  sync(options.status)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,DurationFill=fill}
 end
 
 function RobloxCommonUI.CreateHousingStructuralSupportOverlay(options)
@@ -4457,6 +5075,264 @@ function RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
   local root,parts=deepSystemPanel(options,"FAILURE_RECOVERY_CHECKPOINT","FAILURE_RECOVERY_CHECKPOINT","복구 지점",{"마지막 정상 상태","복구 가능 항목","유실 없음 표시","다시 시작"})
   root:SetAttribute("OwnsSystemAuthority",false)
   return root,parts
+end
+
+
+-- Presentation-only native controller, shared by Roblox games via the existing common UI.
+-- Confirmed combat/status events are supplied by each game's authoritative source.
+
+-- Native 3D item viewer for a real game-bound model; never constructs placeholder geometry.
+function RobloxCommonUI.CreateItemModelPreview(options)
+  options = options or {}
+  local source = options.model
+  assert(source and (source:IsA("Model") or source:IsA("BasePart")), "verified game item model required")
+  local theme = cloneTheme(options.theme)
+  local viewer = Instance.new("ViewportFrame")
+  viewer.Name = options.name or "BoundItemPreview"
+  viewer.Size = options.size or UDim2.fromOffset(240, 240)
+  viewer.BackgroundColor3 = theme.PanelInset
+  viewer.BorderSizePixel = 0
+  viewer.Ambient = Color3.fromRGB(135, 140, 150)
+  viewer.LightColor = Color3.fromRGB(250, 246, 234)
+  viewer.LightDirection = Vector3.new(-1, -1, -0.5)
+  tag(viewer, "VERIFIED_ITEM_MODEL_PREVIEW")
+  viewer:SetAttribute("OwnsGameplayAction", false)
+  corner(viewer, 10)
+  stroke(viewer, theme.Border, 1, 0.08)
+  local world = Instance.new("WorldModel")
+  world.Parent = viewer
+  local clone = source:Clone()
+  -- An imported model may include scripts. A visual-only copy never executes gameplay.
+  for _, descendant in ipairs(clone:GetDescendants()) do
+    if descendant:IsA("BaseScript") or descendant:IsA("ModuleScript") then
+      descendant:Destroy()
+    end
+  end
+  clone.Parent = world
+  local model = clone
+  if clone:IsA("BasePart") then
+    model = Instance.new("Model")
+    model.Name = "VisualPreviewRoot"
+    clone.Parent = model
+    model.Parent = world
+  end
+  for _, part in ipairs(model:GetDescendants()) do
+    if part:IsA("BasePart") then
+      part.Anchored = true
+      part.CanCollide = false
+      part.CanTouch = false
+      part.CanQuery = false
+    end
+  end
+  local origin, bounds = model:GetBoundingBox()
+  local diameter = math.max(bounds.X, bounds.Y, bounds.Z, 0.5)
+  local camera = Instance.new("Camera")
+  camera.FieldOfView = 35
+  camera.CFrame = CFrame.lookAt(origin.Position + Vector3.new(diameter,diameter*0.7,diameter*2.6),origin.Position)
+  camera.Parent = viewer
+  viewer.CurrentCamera = camera
+  return viewer,{model=model,camera=camera,bounds=bounds,ownsGameplayAuthority=false}
+end
+
+function RobloxCommonUI.CreateVisualFeedbackController(options)
+  options = options or {}
+  local parent = options.parent
+  assert(parent and (parent:IsA("GuiObject") or parent:IsA("LayerCollector")), "visual feedback requires an existing GUI container")
+  local TweenService = game:GetService("TweenService")
+  local theme = cloneTheme(options.theme)
+  local reducedMotion = options.reducedMotion == true
+  local maxDamage = math.clamp(math.floor(tonumber(options.maxDamage) or 28), 1, 60)
+  local maxNotices = math.clamp(math.floor(tonumber(options.maxNotices) or 3), 1, 5)
+  local overlay = Instance.new("Frame")
+  overlay.Name = "CommonVisualFeedback"
+  overlay.BackgroundTransparency = 1
+  overlay.Size = UDim2.fromScale(1, 1)
+  overlay.ClipsDescendants = true
+  overlay.ZIndex = 80
+  overlay.Parent = parent
+  tag(overlay, "PRESENTATION_FEEDBACK")
+  overlay:SetAttribute("GameplayAuthority", false)
+
+  local pool, active, seen, notices = {}, {}, {}, {}
+  local destroyed = false
+  local iconTweens = setmetatable({}, {__mode = "k"})
+  local function newPopup()
+    local label = Instance.new("TextLabel")
+    label.Name = "ConfirmedDamageNumber"
+    label.BackgroundTransparency = 1
+    label.AnchorPoint = Vector2.new(0.5, 0.5)
+    label.Size = UDim2.fromOffset(122, 44)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 21
+    label.TextStrokeColor3 = Color3.fromRGB(15, 16, 24)
+    label.TextStrokeTransparency = 0.2
+    label.TextXAlignment = Enum.TextXAlignment.Center
+    label.Visible = false
+    label.ZIndex = 82
+    label.Parent = overlay
+    tag(label, "DAMAGE_POPUP")
+    return label
+  end
+  for i = 1, maxDamage do pool[i] = {label = newPopup(), busy = false, generation = 0} end
+  local function popupColor(kind)
+    if kind == "CRITICAL" then return Color3.fromRGB(255, 224, 137) end
+    if kind == "HEAL" then return Color3.fromRGB(132, 249, 180) end
+    if kind == "SHIELD" then return Color3.fromRGB(136, 209, 255) end
+    if kind == "DOT" then return Color3.fromRGB(212, 170, 244) end
+    return theme.Text
+  end
+  local controller = {}
+  function controller.ShowDamage(event)
+    if destroyed or type(event) ~= "table" or event.confirmed ~= true then return false end
+    local id = tostring(event.eventId or "")
+    local amount = tonumber(event.amount)
+    if id == "" or not amount or amount ~= amount or seen[id] then return false end
+    local xy = event.viewportPosition
+    if typeof(xy) ~= "Vector2" and typeof(event.worldPosition) == "Vector3" then
+      local camera = options.camera or workspace.CurrentCamera
+      if camera then
+        local screen, visible = camera:WorldToViewportPoint(event.worldPosition)
+        if not visible then return false end
+        xy = Vector2.new(screen.X, screen.Y)
+        local origin = overlay.AbsolutePosition
+        xy = xy - origin
+      end
+    end
+    if typeof(xy) ~= "Vector2" or xy.X < 0 or xy.Y < 0
+      or xy.X > overlay.AbsoluteSize.X or xy.Y > overlay.AbsoluteSize.Y then return false end
+    local entry
+    for _, candidate in ipairs(pool) do
+      if not candidate.busy then entry = candidate break end
+    end
+    if not entry then return false end
+    seen[id] = true
+    task.delay(5, function() seen[id] = nil end)
+    entry.busy = true
+    entry.generation += 1
+    local generation = entry.generation
+    local index = 0
+    for _, item in ipairs(pool) do if item.busy then index += 1 end end
+    local jitter = ((index % 5) - 2) * 14
+    local safeX = math.clamp(xy.X + jitter, math.min(61,overlay.AbsoluteSize.X*0.5), math.max(overlay.AbsoluteSize.X*0.5,overlay.AbsoluteSize.X-61))
+    local safeY = math.clamp(xy.Y, math.min(26,overlay.AbsoluteSize.Y*0.5), math.max(overlay.AbsoluteSize.Y*0.5,overlay.AbsoluteSize.Y-26))
+    local kind = string.upper(tostring(event.kind or "DAMAGE"))
+    local label = entry.label
+    label.Text = (kind == "MISS" and "MISS" or (kind == "HEAL" and "+" or "") .. tostring(math.floor(amount + 0.5)))
+    label.TextColor3 = popupColor(kind)
+    label.TextSize = kind == "CRITICAL" and 28 or 21
+    label.TextTransparency = 0
+    label.TextStrokeTransparency = 0.2
+    label.Position = UDim2.fromOffset(safeX, safeY)
+    label.Visible = true
+    local duration = reducedMotion and 0.18 or (kind == "CRITICAL" and 0.92 or 0.72)
+    local target = {Position = UDim2.fromOffset(math.min(overlay.AbsoluteSize.X - 61,safeX + 8), math.max(24,safeY - (reducedMotion and 10 or 64))), TextTransparency = 1, TextStrokeTransparency = 1}
+    local tween = TweenService:Create(label, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), target)
+    active[entry] = tween
+    tween:Play()
+    task.delay(duration + 0.08, function()
+      if entry.generation ~= generation then return end
+      entry.busy = false
+      active[entry] = nil
+      if label.Parent then label.Visible = false end
+    end)
+    return true
+  end
+  function controller.PositionTooltip(tooltip, anchor)
+    if destroyed or not tooltip or not tooltip:IsA("GuiObject") or typeof(anchor) ~= "Vector2" then return false end
+    local size = overlay.AbsoluteSize
+    local width = math.min(tooltip.AbsoluteSize.X, math.max(1, size.X - 16))
+    local height = math.min(tooltip.AbsoluteSize.Y, math.max(1, size.Y - 16))
+    local x = math.clamp(anchor.X - width * 0.5, 8, math.max(8, size.X - width - 8))
+    local y = anchor.Y + 14
+    if y + height > size.Y - 8 then y = anchor.Y - height - 14 end
+    tooltip.AnchorPoint = Vector2.new(0, 0)
+    tooltip.Position = UDim2.fromOffset(x, math.clamp(y, 8, math.max(8, size.Y - height - 8)))
+    return true
+  end
+  function controller.AnimateIcon(icon, state)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    local old = iconTweens[icon]
+    if old then old:Cancel() end
+    local scale = icon:FindFirstChild("VibeVisualScale")
+    if not scale then
+      scale = Instance.new("UIScale")
+      scale.Name = "VibeVisualScale"
+      scale.Parent = icon
+    end
+    local mode = string.upper(tostring(state or "READY"))
+    local target = mode == "ACTIVATE" and 1.14 or mode == "COOLDOWN" and 0.94 or 1
+    local duration = reducedMotion and 0.01 or 0.18
+    local tween = TweenService:Create(scale, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = target})
+    iconTweens[icon] = tween
+    tween:Play()
+    if mode == "ACTIVATE" then
+      task.delay(duration, function()
+        if destroyed or not icon.Parent or iconTweens[icon] ~= tween then return end
+        local settle = TweenService:Create(scale, TweenInfo.new(reducedMotion and 0.01 or 0.16), {Scale = 1})
+        iconTweens[icon] = settle
+        settle:Play()
+      end)
+    end
+    return true
+  end
+  function controller.UpdateStatusIcon(icon, status)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    status = status or {}
+    local meter = icon:FindFirstChild("VisualDurationMeter")
+    if not meter then
+      meter = Instance.new("Frame")
+      meter.Name = "VisualDurationMeter"
+      meter.AnchorPoint = Vector2.new(0, 1)
+      meter.Position = UDim2.fromScale(0, 1)
+      meter.Size = UDim2.new(1, 0, 0, 3)
+      meter.BackgroundColor3 = theme.Accent
+      meter.BorderSizePixel = 0
+      meter.ZIndex = icon.ZIndex + 1
+      meter.Parent = icon
+    end
+    local total = math.max(0, tonumber(status.total) or 0)
+    local remaining = math.max(0, tonumber(status.remaining) or 0)
+    local ratio = total > 0 and math.clamp(remaining / total, 0, 1) or 0
+    meter.Size = UDim2.new(ratio, 0, 0, 3)
+    icon:SetAttribute("PresentationEffectStacks", math.max(0, math.floor(tonumber(status.stacks) or 0)))
+    return true
+  end
+  function controller.Notify(event)
+    if destroyed or type(event) ~= "table" then return false end
+    local id = tostring(event.id or "")
+    if id == "" then return false end
+    for _, notice in ipairs(notices) do if notice.id == id then return false end end
+    local toast = RobloxCommonUI.CreateNotificationToast({title = event.title, text = event.text, kind = event.kind, theme = theme})
+    toast.AnchorPoint = Vector2.new(1, 0)
+    toast.Parent = overlay
+    table.insert(notices, {id = id, frame = toast})
+    while #notices > maxNotices do
+      local oldest = table.remove(notices, 1)
+      oldest.frame:Destroy()
+    end
+    for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    task.delay(math.clamp(tonumber(event.duration) or 2.4, 0.3, 8), function()
+      for index, item in ipairs(notices) do
+        if item.id == id then
+          table.remove(notices, index)
+          if item.frame.Parent then item.frame:Destroy() end
+          break
+        end
+      end
+      for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    end)
+    return true
+  end
+  function controller.Destroy()
+    if destroyed then return end
+    destroyed = true
+    for _, tween in pairs(active) do tween:Cancel() end
+    for _, tween in pairs(iconTweens) do tween:Cancel() end
+    table.clear(seen)
+    overlay:Destroy()
+  end
+  controller.Root = overlay
+  return controller
 end
 
 function RobloxCommonUI.Create(atomId, options)
@@ -4888,7 +5764,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
  local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
  title.Parent=hud;status.Parent=hud;if healthTrack then healthTrack.Parent=hud end
  if multiplayerStatus then multiplayerStatus.Parent=hud end
- local menu=RobloxCommonUI.CreatePrimaryButton({name="GameActionsMenu",text="메뉴",minWidth=52,minHeight=52})
+ local menu=RobloxCommonUI.CreateIconButton({name="GameActionsMenu",shortLabel="메뉴",size=UDim2.fromOffset(72,52)})
  menu.Parent=gui
  local close=RobloxCommonUI.CreatePrimaryButton({name="CloseActionsMenu",text="닫기",minWidth=52,minHeight=52})
  close.Parent=root
@@ -4908,7 +5784,7 @@ function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,m
   status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
   if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8)end
   if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
-  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
+  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(72,52)
   if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
   root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
   close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
