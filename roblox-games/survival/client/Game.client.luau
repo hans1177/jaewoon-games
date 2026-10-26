@@ -710,3 +710,94 @@ end
 task.defer(reportNativeFoundationReady)
 
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,nil,Config.Actions[1]and{label=CommonUI.ActionLabel(Config.Actions[1],1),activate=function()remote:FireServer(Config.Actions[1].Id)end}or nil)
+
+
+-- 생존 인벤토리 · 기존 서버 자원 Attribute를 읽는 게임 전용 표시 화면
+-- 모듈은 204종 회사 공용 UI를 그대로 사용하며 저장·보상·제작 로직에 관여하지 않는다.
+local bagOverlay=Instance.new("ScreenGui")
+bagOverlay.Name="SurvivalInventoryOverlay"
+bagOverlay.ResetOnSpawn=false
+bagOverlay.IgnoreGuiInset=false
+bagOverlay.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+bagOverlay.DisplayOrder=15
+bagOverlay.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+bagOverlay.Parent=player:WaitForChild("PlayerGui")
+
+local bagButton=CommonUI.CreateIconButton({
+  name="OpenSurvivalInventory",shortLabel="가방",iconKind="BAG",size=UDim2.fromOffset(72,52)
+})
+bagButton.AnchorPoint=Vector2.new(1,1)
+bagButton.Position=UDim2.new(1,-88,1,-104)
+bagButton.Parent=bagOverlay
+
+local bagShade=Instance.new("Frame")
+bagShade.Name="InventoryShade"
+bagShade.Size=UDim2.fromScale(1,1)
+bagShade.BackgroundColor3=Color3.fromRGB(12,20,42)
+bagShade.BackgroundTransparency=0.32
+bagShade.BorderSizePixel=0
+bagShade.Active=true
+bagShade.Visible=false
+bagShade.Parent=bagOverlay
+
+local bagScreen,bagView=CommonUI.CreateInventoryFullScreen({
+  name="SurvivalInventory",
+  title="생존 가방",
+  subtitle="현재 획득한 자원 · 서버 보유량",
+  slotCount=2,
+  columns=4,
+  items={}
+})
+bagScreen.AnchorPoint=Vector2.new(0.5,0.5)
+bagScreen.Position=UDim2.fromScale(0.5,0.5)
+bagScreen.Size=UDim2.new(1,-20,1,-26)
+bagScreen.Visible=false
+bagScreen.Parent=bagOverlay
+
+local bagClose=CommonUI.CreatePrimaryButton({
+  name="CloseSurvivalInventory",text="닫기",size=UDim2.fromOffset(72,48),
+  minWidth=68,minHeight=48
+})
+bagClose.AnchorPoint=Vector2.new(1,0)
+bagClose.Position=UDim2.new(1,-34,0,29)
+bagClose.ZIndex=20
+bagClose.Visible=false
+bagClose.Parent=bagOverlay
+
+local function refreshSurvivalInventory()
+  local actualItems={}
+  local wood=player:GetAttribute("ResourceWood")
+  local stone=player:GetAttribute("ResourceStone")
+  -- 실제 서버에 수량이 있는 아이템만 표시하고 존재하지 않는 인벤토리를 만들어내지 않는다.
+  if typeof(wood)=="number" and wood>0 then
+    actualItems[#actualItems+1]={
+      id="resource:wood",name="목재",category="자원",
+      description="현재 채집해서 보유한 목재",quantity=math.max(0,math.floor(wood))
+    }
+  end
+  if typeof(stone)=="number" and stone>0 then
+    actualItems[#actualItems+1]={
+      id="resource:stone",name="돌",category="자원",
+      description="현재 채집해서 보유한 돌",quantity=math.max(0,math.floor(stone))
+    }
+  end
+  bagView.Sync(actualItems)
+  bagScreen:SetAttribute("InventoryBoundToServerAttributes",true)
+end
+
+local function setSurvivalInventoryOpen(open)
+  if open and gui:GetAttribute("GameMenuOpen")==true then return end
+  bagScreen.Visible=open
+  bagShade.Visible=open
+  bagClose.Visible=open
+  bagButton.Visible=not open
+  bagOverlay:SetAttribute("InventoryOpen",open)
+  if open then refreshSurvivalInventory() end
+end
+
+bagButton.Activated:Connect(function()setSurvivalInventoryOpen(true)end)
+bagClose.Activated:Connect(function()setSurvivalInventoryOpen(false)end)
+player:GetAttributeChangedSignal("ResourceWood"):Connect(refreshSurvivalInventory)
+player:GetAttributeChangedSignal("ResourceStone"):Connect(refreshSurvivalInventory)
+refreshSurvivalInventory()
+setSurvivalInventoryOpen(false)
