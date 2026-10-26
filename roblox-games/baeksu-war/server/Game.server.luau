@@ -10,7 +10,7 @@ local remote=RS:FindFirstChild(C.Remote) or Instance.new("RemoteEvent")
 remote.Name=C.Remote;remote.Parent=RS
 local store
 pcall(function()store=DSS:GetDataStore(C.SaveKey)end)
-local arenas,last={},{}
+local arenas,lastRequest={},{}
 local nextArena=0
 local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspace
 -- 유틸: 서버가 모든 전투·골드·슬롯을 소유한다.
@@ -175,8 +175,8 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
  local a=arenas[p];if not a then return end
  if action=="SYNC" then send(a);return end
  local now=os.clock()
- if now-(last[p] or 0)<.15 then return end
- last[p]=now
+ if now-(lastRequest[p] or 0)<.15 then return end
+ lastRequest[p]=now
  if not a.Loaded then send(a,"저장 확인 실패: 진행 보호를 위해 건설 잠금");return end
  if action=="BUY_SLOT" then
   local i=a.Unlocked+1
@@ -292,6 +292,6 @@ task.spawn(function()while true do task.wait(60) for _,a in pairs(arenas) do sav
 Players.PlayerAdded:Connect(function(p)local d,ok=load(p);makeArena(p,d,ok) end)
 Players.PlayerRemoving:Connect(function(p)
  local a=arenas[p];if a then save(a);a.Folder:Destroy();arenas[p]=nil end
- last[p]=nil
+ lastRequest[p]=nil
 end)
 game:BindToClose(function()for _,a in pairs(arenas) do save(a) end end)
