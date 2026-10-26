@@ -924,7 +924,8 @@ function RobloxCommonUI.CreateIconButton(options)
   tag(button, "ICON_BUTTON")
   corner(button, tonumber(options.cornerRadius) or 12)
   local outline = stroke(button, options.selected == true and theme.Accent or theme.Border, options.selected == true and 3 or 2.2, 0)
-  gradient(button, theme.PanelRaised, theme.PanelInset, 90)
+  local iconGradient = gradient(button, theme.PanelRaised, theme.PanelInset, 90)
+  iconGradient.Enabled = missingImage -- 실제 이미지가 있을 때는 원본 그림의 색을 변형하지 않는다.
   sizeConstraint(button, 48, 48)
   button.Active = options.locked ~= true
   button.AutoButtonColor = options.locked ~= true
@@ -934,6 +935,7 @@ function RobloxCommonUI.CreateIconButton(options)
   local badge = commonText(button, "Badge", options.badgeText or "", UDim2.new(1, -23, 0, 3), UDim2.fromOffset(20, 18), theme.Text, 10, true)
   badge.TextXAlignment = Enum.TextXAlignment.Center
   badge.BackgroundColor3 = theme.Danger
+  badge.TextColor3 = Color3.fromRGB(255, 255, 255)
   badge.BackgroundTransparency = badge.Text == "" and 1 or 0
   corner(badge, 9)
 
@@ -943,6 +945,7 @@ function RobloxCommonUI.CreateIconButton(options)
   button:GetPropertyChangedSignal("Image"):Connect(function()
     local absent = button.Image == ""
     fallback.Visible = absent
+    iconGradient.Enabled = absent
     button:SetAttribute("IconFallbackActive", absent)
   end)
   button:SetAttribute("PresentationRole", "ICON_ACTION")
