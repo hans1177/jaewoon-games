@@ -175,8 +175,10 @@ jobs:
             # 타임스탬프만 바뀐 동기화는 24H 계획기와 네이티브 개발을 중복 깨우지 않는다.
             # 실제 개발 대기열 내용 또는 검증 설계가 바뀌면 기존 즉시 재진입 경로를 유지한다.
             refill_required=false
-            queue_semantic_diff="$(git diff --cached --unified=0 -- development-queue.json | grep -E '^[+-][^+-]' | grep -Ev '^[+-][[:space:]]*"updatedAt":' || true)"
-            if [ -n "$queue_semantic_diff" ] || [ -n "$(git diff --cached --name-only -- design)" ]; then
+            queue_diff="$(git diff --cached --unified=0 -- development-queue.json)"
+            queue_semantic_diff="$(printf '%s\n' "$queue_diff" | grep -E '^[+-][^+-]' | grep -Ev '^[+-][[:space:]]*"updatedAt":' || true)"
+            design_changes="$(git diff --cached --name-only -- design)"
+            if [ -n "$queue_semantic_diff" ] || [ -n "$design_changes" ]; then
               refill_required=true
             fi
             if git diff --cached --quiet; then
