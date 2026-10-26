@@ -4814,7 +4814,7 @@ export function buildVibeAssetProductionPlan({
     }
   }
   const explicitRequirements=Array.isArray(task.assetRequirements)?task.assetRequirements:[];
-  const explicitKeys=new Set(explicitRequirements.map(row=>clean(row?.family).toUpperCase()+':'+clean(row?.role).toLowerCase().replace(/[\\s-]+/g,'_')));
+  const explicitKeys=new Set(explicitRequirements.map(row=>clean(row?.family).toUpperCase()+':'+clean(row?.role).toLowerCase().replace(/[\s-]+/g,'_')));
   const flowAssetRequirements=normalizeFlowAssetRequirements([
     ...explicitRequirements,
     ...sourceActorRequirements.filter(row=>!explicitKeys.has(row.family+':'+row.role))
