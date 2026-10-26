@@ -5421,9 +5421,9 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
   // [제작 엔진 100종] 커뮤니티 제작 기법을 기존 Lua 소스 생성기에 직접 선택 연결한다.
   // 목표가 명시된 100가지 작업만 선택; 게임별 승인 스타일, 원본 파일, 저장·서버 규칙은 그대로 지킨다.
   const makerCapabilityRecipes=[
-    ["TOY_STUDDED_WORLD_SURFACE","스터드 바닥|stud floor|stud surface","Existing world BasePart only: preserve CFrame, Size, CollisionGroup and physics; use native Studs surface where supported, otherwise verified licensed tile texture; visually inspect repeated scale."],
-    ["TOY_TOY_PLASTIC_FAMILY","장난감 플라스틱|toy plastic|브릭 재질","Reuse owned RobloxCommonMaterials or approved plastic preset; preserve physical properties and original style lock; do not invent a nonexistent atom ID."],
-    ["TOY_STUDDED_UI_FRAME","스터드 UI|stud ui|블록 UI","Build stud-embossed UI using verified reusable texture or small pooled decorative elements; frame remains ScreenGui with readable text and original callbacks."],
+    ["TOY_STUDDED_WORLD_SURFACE","스터드 바닥|스터드 재질|스터드 패턴|stud floor|stud surface","Existing world BasePart only: preserve CFrame, Size, CollisionGroup and physics; use native Studs surface where supported, otherwise verified licensed tile texture; visually inspect repeated scale."],
+    ["TOY_TOY_PLASTIC_FAMILY","장난감 플라스틱|블록 재질|플라스틱 재질|toy plastic|브릭 재질","Reuse owned RobloxCommonMaterials or approved plastic preset; preserve physical properties and original style lock; do not invent a nonexistent atom ID."],
+    ["TOY_STUDDED_UI_FRAME","스터드 UI|스터드 창|스터드 패널|stud ui|블록 UI","Build stud-embossed UI using verified reusable texture or small pooled decorative elements; frame remains ScreenGui with readable text and original callbacks."],
     ["TOY_CHUNKY_BEVEL_BUTTON","입체 버튼|chunky button|두꺼운 버튼","Upgrade existing GuiButton with thicker frame, bounded stroke and pressed offset; retain Activated binding, safe touch hitbox, and state."],
     ["TOY_TOY_COLOR_PALETTE","원색 팔레트|primary palette|원색 재질","Derive coherent saturated toy palette from existing style lock; keep readable contrast and avoid recoloring gameplay faction/rarity meaning."],
     ["TOY_GLOSSY_BUTTON_LIGHT","광택 버튼|glossy button|버튼 하이라이트","Layer UIGradient and low-cost highlight within original button with disabled-state contrast; avoid fabricated texture asset IDs."],
