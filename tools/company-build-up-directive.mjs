@@ -2518,7 +2518,19 @@ export function directivePrompt(d={}){
     'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action and source-grounded NPC AI/quest/dialogue/crafting/economy/progression/farming/weather/physics/camera/audio/skill effects/network only when game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive existing actions and approved hit events; NPC decisions must not grant economy/save/combat authority; crafting and shopping use actual items/currency/state. Use applicable moduleConnections as source-only QA work units, never completed features. Mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with authoritative state; source signatures never pass QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
-    `EXPERIENCE_BUILD_UP: ${JSON.stringify(d.experienceBuildUpContract||{})}`,
+    // [빌드업 프롬프트] 전체 검증 계약은 directive에 보존하고, 반복 프롬프트에는
+    // 실행 우선순위와 원격 증거 조건만 전달해 15개 장면 검사 확장으로 인한 폭증을 방지한다.
+    `EXPERIENCE_BUILD_UP: ${JSON.stringify({
+      version:d.experienceBuildUpContract?.version,
+      platform:d.experienceBuildUpContract?.platform,
+      attention:d.experienceBuildUpContract?.attention,
+      weakestTracks:d.experienceBuildUpContract?.weakestTracks,
+      loop:d.experienceBuildUpContract?.loop,
+      rules:['EXACT_REMOTE_CANDIDATE_EVIDENCE','INPUT_TO_STATE_TO_PLAYER_FEEDBACK','NO_SOURCE_OR_THUMBNAIL_PASS',
+        'SAME_SCENE_BEFORE_AFTER','PRESERVE_SAVE_BALANCE_ECONOMY_AND_AUTHORITY'],
+      robloxRemoteProof:d.experienceBuildUpContract?.robloxExtra?.runtimeEvidence||null,
+      details:'Full source-grounded experienceBuildUpContract and playerFacingInspectionContract remain canonical for each existing BUILD_UP task'
+    })}`,
     `UX_INPUT: ${d.uxInputDirectives.join(' | ')}`,
     d.robloxNativeExecution?`ROBLOX_NATIVE_RESPONSIBLE_FILES: ${(d.robloxNativeExecution.responsibleFiles||[]).join(' | ')||'CURRENT_ALLOWED_ROBLOX_FILES'}`:'',
     d.robloxNativeExecution?`ROBLOX_NATIVE_SERVER_CLIENT: ${(d.robloxNativeExecution.serverClientResponsibility||[]).map(row=>row.file+':'+row.symbol+':'+row.role).join(' | ')}`:'',
