@@ -125,34 +125,60 @@ local function terrainBlock(cf,size,material)
  terrain:FillBlock(cf,size,material)
 end
 local function buildArenaTerrain(x)
- -- 각 사용자 전장은 좌우 180 스터드 간격으로 격리한다.
- -- 병력 AI, 성문 좌표, 건물 슬롯, 저장 데이터에는 영향을 주지 않는 시각 지형이다.
- terrainBlock(CFrame.new(x,-8,-7),Vector3.new(156,15,274),Enum.Material.Rock)
- terrainBlock(CFrame.new(x,-2,-7),Vector3.new(154,5,272),Enum.Material.Grass)
- -- 기지와 공성전 연결 도로: 자연 흙길 + 거친 석재 입구. 밟을 수 있는 Terrain이다.
- terrainBlock(CFrame.new(x,-.6,-1),Vector3.new(30,2,112),Enum.Material.Ground)
- terrainBlock(CFrame.new(x,-.48,-1),Vector3.new(19,1.7,112),Enum.Material.Sand)
- for _,z in ipairs({-45,40}) do
-  terrainBlock(CFrame.new(x,-.42,z),Vector3.new(30,1.8,9),Enum.Material.Cobblestone)
- end
- -- 양옆 강줄기는 이동로 밖에만 놓아 기존 전투/건설을 방해하지 않는다.
+ -- 대형 섬형 군단 타이쿤: 바다 1000x1280, 주 섬 760x1100 스터드.
+ -- 재료는 Roblox Terrain만 사용. 건물/전투 캐릭터를 파츠로 제작하지 않는다.
+ local world=C.World
+ terrainBlock(CFrame.new(x,-15,-18),Vector3.new(world.WaterWidth,20,world.WaterLength),Enum.Material.Water)
+ terrainBlock(CFrame.new(x,-11,-22),Vector3.new(world.IslandWidth,20,world.IslandLength),Enum.Material.Rock)
+ terrainBlock(CFrame.new(x,-.9,-22),Vector3.new(world.IslandWidth-10,5,world.IslandLength-12),Enum.Material.Grass)
+
+ -- 후방 기지와 적 본진은 전선에서 멀리 떨어진 별도 확장 구역이다.
+ terrainBlock(CFrame.new(x,1,-388),Vector3.new(265,2,180),Enum.Material.Ground)
+ terrainBlock(CFrame.new(x,1,375),Vector3.new(240,2,170),Enum.Material.Sand)
+ terrainBlock(CFrame.new(x,1.1,-340),Vector3.new(230,1.7,100),Enum.Material.Grass)
+ terrainBlock(CFrame.new(x,1.1,347),Vector3.new(195,1.7,95),Enum.Material.Ground)
+
+ -- 기지에서 적 성채까지 이어지는 긴 간선로(폭 42), 측면 보급 도로.
+ terrainBlock(CFrame.new(x,1.4,12),Vector3.new(42,2,693),Enum.Material.Ground)
+ terrainBlock(CFrame.new(x,1.5,12),Vector3.new(26,2,693),Enum.Material.Cobblestone)
  for _,side in ipairs({-1,1}) do
-  local riverX=x+side*80
-  terrainBlock(CFrame.new(riverX,-2.6,-8),Vector3.new(11,5,215),Enum.Material.Air)
-  terrainBlock(CFrame.new(riverX,-3.15,-8),Vector3.new(10,3,215),Enum.Material.Water)
-  for i=0,7 do
-   local z=-112+i*31
-   local ridgeX=x+side*(59+math.sin(i*1.9+side)*4)
-   local radius=10+(i%3)*2
-   terrain:FillBall(Vector3.new(ridgeX,-4,z),radius,Enum.Material.Rock)
-   terrain:FillBall(Vector3.new(ridgeX-side*3,-4,z),radius*.79,Enum.Material.Grass)
+  terrainBlock(CFrame.new(x+side*212,1.4,-30),Vector3.new(24,2,620),Enum.Material.Ground)
+ end
+ for _,z in ipairs({-300,-225,-55,130,274,326}) do
+  terrainBlock(CFrame.new(x,1.4,z),Vector3.new(462,2,24),Enum.Material.Ground)
+ end
+ -- 모래·바위 노출지대: 직선 도로 옆의 광활한 전장 지형을 구획한다.
+ terrainBlock(CFrame.new(x-103,1.05,49),Vector3.new(135,1.8,133),Enum.Material.Sand)
+ terrainBlock(CFrame.new(x+127,1.05,158),Vector3.new(138,1.8,151),Enum.Material.Ground)
+ terrainBlock(CFrame.new(x+105,1.05,-81),Vector3.new(145,1.8,137),Enum.Material.LeafyGrass)
+
+ -- 물길 두 곳으로 기지·전선·적 본토가 분리되며, 실제 이동 가능한 다리로 연결.
+ -- 먼저 Terrain을 파내고 물을 깐 다음 가운데와 측면 보급로를 지형 다리로 잇는다.
+ for _,channelZ in ipairs({-174,208}) do
+  terrainBlock(CFrame.new(x,-1,channelZ),Vector3.new(725,13,32),Enum.Material.Air)
+  terrainBlock(CFrame.new(x,-7,channelZ),Vector3.new(725,10,32),Enum.Material.Water)
+  for _,roadX in ipairs({0,-212,212}) do
+   local width=roadX==0 and 51 or 34
+   terrainBlock(CFrame.new(x+roadX,-1,channelZ),Vector3.new(width+8,8,55),Enum.Material.Rock)
+   terrainBlock(CFrame.new(x+roadX,2.1,channelZ),Vector3.new(width,2,55),Enum.Material.Cobblestone)
   end
  end
- -- 앞뒤 골짜기 경계. 실제 GLB 소품은 기존 VisualKit만 담당한다.
- for i=0,7 do
-  local xx=x-64+i*18
-  terrain:FillBall(Vector3.new(xx,-9,117),10+(i%3)*2,Enum.Material.Grass)
-  terrain:FillBall(Vector3.new(xx,-9,-131),11+(i%2)*2,Enum.Material.Grass)
+
+ -- 먼 해안 암벽·언덕. 전투 경로 바깥에만 배치하고 중앙 도로는 방해하지 않는다.
+ for i=0,15 do
+  local z=-465+i*61
+  for _,side in ipairs({-1,1}) do
+   local ridgeX=x+side*(298+math.sin(i*2.14+side)*26)
+   local radius=22+(i%4)*7
+   terrain:FillBall(Vector3.new(ridgeX,-5+((i%3)*2),z),radius,Enum.Material.Rock)
+   terrain:FillBall(Vector3.new(ridgeX-side*16,-6,z+11),radius*.72,Enum.Material.Grass)
+  end
+ end
+ -- 육지 끝단에 굴곡을 줘 매끄러운 직사각형 바닥처럼 보이지 않게 한다.
+ for i=0,8 do
+  local dx=-318+i*79
+  terrain:FillBall(Vector3.new(x+dx,-8,-532+math.sin(i*2.1)*16),27,Enum.Material.Rock)
+  terrain:FillBall(Vector3.new(x+dx,-8,494+math.sin(i*2.37)*19),27,Enum.Material.Rock)
  end
 end
 -- 장소의 환경 설정은 별도 파츠/자산을 생성하지 않는다.
@@ -175,16 +201,16 @@ clouds.Density=.35
 clouds.Color=Color3.fromRGB(251,250,246)
 clouds.Parent=terrain
 local function slotPosition(a,i)
- return Vector3.new(a.X+((i-1)%3-1)*14,1,-60-math.floor((i-1)/3)*13)
+ return Vector3.new(a.X+((i-1)%3-1)*18,1,C.World.BuildZ-math.floor((i-1)/3)*19)
 end
 -- 확장 슬롯 뒤쪽에도 충돌 가능한 마당을 넓힌다. 기존 3열 배치는 그대로 유지.
 local function resizeBuildYard(a)
  local lastRow=math.floor((a.Unlocked-1)/3)
- local furthestZ=-60-lastRow*13
- local nearZ=-46
- local backZ=furthestZ-8
- terrainBlock(CFrame.new(a.X,-2.5,(nearZ+backZ)/2),
-  Vector3.new(50,5,nearZ-backZ),Enum.Material.Grass)
+ local furthestZ=C.World.BuildZ-lastRow*19
+ local nearZ=C.World.BuildZ+17
+ local backZ=furthestZ-12
+ terrainBlock(CFrame.new(a.X,-.9,(nearZ+backZ)/2),
+  Vector3.new(75,5,nearZ-backZ),Enum.Material.Grass)
 end
 local function send(a,msg)
  if not a.Player.Parent then return end
@@ -215,7 +241,7 @@ local function save(a)
  return saved
 end
 local function createGate(a,enemy)
- local z=enemy and 45 or -40
+ local z=enemy and C.World.EnemyGateZ or C.World.FriendlyGateZ
  VisualKit.DecorateGate(a.Folder,a.X,z,enemy)
 end
 local function drawBuilding(a,index)
@@ -234,7 +260,7 @@ local function spawn(a,kind,team,level)
  if alive>=C.Cap then return end
  a.Serial+=1
  local x=((a.Serial*7)%19)-9
- local z=team=="ALLY" and -31 or 36
+ local z=team=="ALLY" and C.World.FriendlySpawnZ or C.World.EnemySpawnZ
  local stat=C.Stats(u,level)
  if team=="ALLY" and a.Tech>0 then
   stat.HP=math.floor(stat.HP*(1+a.Tech*.06))
@@ -274,10 +300,10 @@ local function populateVisuals(a)
 end
 local function makeArena(player,data,loaded)
  nextArena+=1
- local x=(nextArena-1)*180
+ local x=(nextArena-1)*C.World.ArenaGap
  local a={Player=player,X=x,Folder=Instance.new("Folder"),Buildings={},Visuals={},Units={},Gold=C.StartGold,Stage=1,Unlocked=C.StartSlots,Serial=0,Loaded=true,SessionOnly=not loaded,
   Workers=0,Lab=0,Research=0,Tech=0,Mission=1,Kills=0,CapturedEver=0,Command="PUSH",
-  Points={{Z=-6,Progress=0,Owner="NEUTRAL"},{Z=16,Progress=0,Owner="NEUTRAL"}}}
+  Points={{Z=C.World.CaptureZ[1],Progress=0,Owner="NEUTRAL"},{Z=C.World.CaptureZ[2],Progress=0,Owner="NEUTRAL"}}}
  a.Folder.Name="Arena_"..player.UserId;a.Folder.Parent=root;arenas[player]=a
  if type(data)=="table" then
   a.Gold=math.max(0,math.floor(tonumber(data.Gold) or a.Gold))
@@ -311,11 +337,11 @@ local function makeArena(player,data,loaded)
  player:SetAttribute("SaveStatus",loaded and "READY" or "SESSION_ONLY")
  player.CharacterAdded:Connect(function(character)
   local h=character:WaitForChild("HumanoidRootPart",10)
-  if h then character:PivotTo(CFrame.new(x,5,-56)) end
+  if h then character:PivotTo(CFrame.new(x,7,C.World.PlayerSpawnZ)) end
  end)
  if player.Character then task.defer(function()
   local h=player.Character:WaitForChild("HumanoidRootPart",10)
-  if h then player.Character:PivotTo(CFrame.new(x,5,-56)) end
+  if h then player.Character:PivotTo(CFrame.new(x,7,C.World.PlayerSpawnZ)) end
  end) end
  restart(a)
 end
@@ -438,10 +464,10 @@ local function tickArena(a,dt,now)
    else
     local direction=u.Team=="ALLY" and 1 or -1
     -- ATTACK=공성, RALLY=중앙 전선, DEFEND=본진. 기존 적 AI는 유지한다.
-    local goal=direction==1 and 42 or -37
+    local goal=direction==1 and C.World.EnemyGateZ+5 or C.World.FriendlyGateZ-5
     if u.Team=="ALLY" then
-     if a.Command=="RALLY" then goal=15
-     elseif a.Command=="DEFEND" then goal=-24 end
+     if a.Command=="RALLY" then goal=C.World.RallyZ
+     elseif a.Command=="DEFEND" then goal=C.World.DefendZ end
     end
     local advance=direction==-1 or u.Z<goal
     -- 진형을 유지하면서도 근처 적은 추적해 방어한다.
@@ -455,8 +481,8 @@ local function tickArena(a,dt,now)
     end
     if target and distance<13 then u.X+=math.clamp(target.X-u.X,-u.Speed*dt*.3,u.Speed*dt*.3) end
     VisualKit.PoseCreature(u.Visual,a.X+u.X,u.Z,direction==1 and 0 or math.pi)
-    if direction==1 and u.Z>40 then a.EnemyHP-=u.Damage;kill(a,u,false)
-    elseif direction==-1 and u.Z< -35 then a.HomeHP-=u.Damage;kill(a,u,false) end
+    if direction==1 and u.Z>C.World.EnemyGateZ+2 then a.EnemyHP-=u.Damage;kill(a,u,false)
+    elseif direction==-1 and u.Z<C.World.FriendlyGateZ-2 then a.HomeHP-=u.Damage;kill(a,u,false) end
    end
   end
  end
