@@ -28,7 +28,20 @@ for(const x of items){
   console.log('ROBLOX_FLOOR='+x.gameId+'|'+stage+'|'+passed+'|'+kst(timestamp)+'|'+failure);
 }
 if(!items.some(x=>x.gameId==='baeksu-war')){
-  rows.push('| baeksu-war | **정식 큐 편입 대기: 디자인 검증 단계** | '+date+' | 최소설계 검증 전 F0 PASS 주장 금지 |');
+  // 정식 큐 밖의 오너 등록 게임은 오늘 날짜를 최종 검증일로 꾸며 쓰지 않는다.
+  const designPath='design/baeksu-war/'+new Date(now.getTime()+9*3600*1000).toISOString().slice(0,10)+'/design-progress.json';
+  let design=null;
+  try {
+    const response=JSON.parse(execFileSync('gh',['api','repos/'+process.env.GITHUB_REPOSITORY+'/contents/'+designPath+'?ref=company-runtime'],{encoding:'utf8',maxBuffer:1024*1024}));
+    design=JSON.parse(Buffer.from(response.content,'base64').toString('utf8'));
+    if(design.gameId!=='baeksu-war')design=null;
+  } catch(error) {
+    console.warn('BAEKSU_DESIGN_PROGRESS_UNAVAILABLE',String(error.message).slice(0,130));
+  }
+  const stage=String(design?.currentStage||'디자인 검증 대기').replace(/[|\\n\\r]/g,' ').slice(0,80);
+  const blocker=String(design?.lastError||'검증 기록 없음 / F0 승인 금지').replace(/[|\\n\\r]/g,' ').slice(0,150);
+  rows.push('| baeksu-war | 정식 큐 편입 대기 · '+stage+' ('+Number(design?.percent||0)+'%, F0 미통과) | '+kst(design?.updatedAt)+' | '+blocker+' |');
+  console.log('ROBLOX_FLOOR=baeksu-war|DESIGN_'+stage+'|F0 미통과|'+kst(design?.updatedAt)+'|'+blocker);
 }
 rows.push('','- 실패/병목 자동 복구: 기존 Vibe2 Recovery Fast(5분 주기) 및 Seed Design Runtime(설계 재시도) 사용. 상태 기록은 복구 성공 증거가 아님.');
 fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,rows.join('\n')+'\n');
