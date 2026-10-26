@@ -5523,7 +5523,7 @@ test('registered 86 CC0 actor originals enter the existing all-game asset build-
   assetProduction:{assetSupplySummary:{nextActions:[verifiedSource]},nativeAuthoringExecution:{enabled:false}}};
  const nativePrompt=buildPrompt(nativeOrder,{files:[{path:'server/Game.server.luau',
   content:'-- existing game source',editable:true}]},['server/Game.server.luau']);
- const contractMatch=/\\[ASSET IMPLEMENTATION CONTRACT BEGIN\\]\\n([^\\n]+)/.exec(nativePrompt);
+ const contractMatch=/\[ASSET IMPLEMENTATION CONTRACT BEGIN\]\n([^\n]+)/.exec(nativePrompt);
  assert.ok(contractMatch,'the existing worker must receive its native asset implementation contract');
  const supply=JSON.parse(contractMatch[1]).onDemandLibrarySupply;
  const native=supply.selectedActions.find(row=>row.sourceModelId===found.externalAcquisition.sourceModelId);
@@ -5545,7 +5545,7 @@ test('registered 86 CC0 actor originals enter the existing all-game asset build-
   assetSupplySummary:{nextActions:[missingSource]}}};
  const missingPrompt=buildPrompt(missingOrder,{files:[{path:'server/Game.server.luau',
   content:'-- existing game source',editable:true}]},['server/Game.server.luau']);
- const missingMatch=/\\[ASSET IMPLEMENTATION CONTRACT BEGIN\\]\\n([^\\n]+)/.exec(missingPrompt);
+ const missingMatch=/\[ASSET IMPLEMENTATION CONTRACT BEGIN\]\n([^\n]+)/.exec(missingPrompt);
  assert.ok(missingMatch);
  assert.equal(JSON.parse(missingMatch[1]).onDemandLibrarySupply.selectedActions[0]
   .nativeBuildBlockedByUnacquiredSource,true,'unacquired bytes must remain blocked');
