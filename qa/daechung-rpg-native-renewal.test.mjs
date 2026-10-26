@@ -33,8 +33,10 @@ test('native NPC presentation keeps failed imports visible and retains original 
  assert.match(body,/NativeActorFailureStage/);
  assert.match(body,/NativeActorFailureSignature/);
  assert.match(body,/NativeActorBindingState","BOUND_UNVERIFIED/);
- assert.match(body,/part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true/);
- assert.match(body,/joint.Part0=rootPart;joint.Part1=part/);
+ assert.match(body,/pivot.CanCollide=false;pivot.CanTouch=false;pivot.CanQuery=false;pivot.Massless=true/);
+ assert.match(body,/part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true/);
+ assert.match(body,/pose.Part0=rootPart;pose.Part1=pivot/,'native actor retains an animated Motor6D from the gameplay root');
+ assert.match(body,/joint.Part0=pivot;joint.Part1=part/,'source parts follow the visual motion pivot');
  assert.match(body,/MotionRetargetReview","PENDING/);
  assert.doesNotMatch(body,/Health|Damage|Reward|SetAsync|UpdateAsync|FireServer/);
  const config=fs.readFileSync(root+'shared/GameConfig.luau','utf8');
