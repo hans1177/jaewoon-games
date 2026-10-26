@@ -5439,3 +5439,80 @@ test('Roblox buildup optimizes all native axes and recognizes brick requests wit
   assert.match(assetProductionGuidance(plan),/ROBLOX AUTOMATIC BUILD UP OPTIMIZATION/);
  }
 });
+
+
+test('F0-F9 automatically chooses the closest CC0 actor original while refusing fake game-binding PASS',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'cc0-nearest-actor-'));
+ try{
+  const input=['Wolf','Pug'].map((name,index)=>{
+   const relative='assets/roblox/actors/sources/test/FBX/'+name+'.fbx';
+   const full=path.join(root,relative);
+   fs.mkdirSync(path.dirname(full),{recursive:true});
+   const raw=Buffer.alloc(640,index+1);
+   fs.writeFileSync(full,raw);
+   const sourceSha256=createHash('sha256').update(raw).digest('hex');
+   const repositoryGitBlobSha=createHash('sha1').update(Buffer.from('blob '+raw.length+'\0')).update(raw).digest('hex');
+   return{
+    sourceType:'ROBLOX_ACTOR_3D',sourceModelId:'fixture:'+name,
+    displayName:name,file:name+'.fbx',sourcePath:relative,sourceFormat:'FBX',
+    family:'CREATURE',roles:['ANIMAL'],sourceOnly:true,gameApplied:false,
+    sha256:sourceSha256,repositoryGitBlobSha,licenseDeclared:'CC0-1.0',
+    sourceUrl:'https://kenney.nl/assets/animal-pack-redux',
+    licenseEvidenceUrl:'https://kenney.nl/assets/animal-pack-redux'
+   };
+  });
+  const choose=(role,actorOriginalSources=input)=>buildAssetSupplyDecisionSummary({
+   repoRoot:root,gameId:'demo',target:'roblox',request:'creature visual replacement',
+   requirements:[{family:'CREATURE',role}],registry:{assets:[],externalSources:[]},
+   actorOriginalSources,sharedOriginalArchives:[]
+  });
+  const exact=choose('wolf');
+  const exactAction=exact.nextActions.find(row=>row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D');
+  assert.equal(exactAction?.externalAcquisition?.sourceModelId,'fixture:Wolf');
+  assert.equal(exactAction?.similarCC0VisualProxy,false);
+  assert.equal(exactAction?.action,'ACQUIRE_ADAPT');
+  assert.equal(exactAction?.automaticSourceSelectionAuthorized,true);
+  assert.equal(exactAction?.automaticReplacementAuthorized,false);
+  assert.equal(exactAction?.externalAcquisition?.sourceHash,input[0].sha256);
+  assert.equal(exactAction?.assetization?.productionVerified,false);
+  assert.equal(exact.productionVerificationGranted,false);
+  assert.equal(exact.runtimeVerificationGranted,false);
+  const similar=choose('arctic_wolf');
+  const visual=similar.nextActions.find(row=>row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D');
+  assert.equal(visual?.externalAcquisition?.sourceModelId,'fixture:Wolf',
+    'partial role similarity must outrank unrelated same-family animals');
+  assert.equal(visual?.similarCC0VisualProxy,true);
+  assert.equal(visual?.roleEvidence?.verifiedRoleMatch,false);
+  assert.equal(visual?.replacementRequiresMeasuredSourceRoleIdentityQualityAndRuntimePass,true);
+  assert.equal(similar.similarCc0VisualProxyCandidateCount,1);
+  assert.equal(similar.runtimeVerificationGranted,false);
+  const wrongFamily=buildAssetSupplyDecisionSummary({
+   repoRoot:root,gameId:'demo',target:'roblox',request:'weapon replacement',
+   requirements:[{family:'WEAPON',role:'sword'}],registry:{assets:[],externalSources:[]},
+   actorOriginalSources:input
+  });
+  assert.equal(wrongFamily.nextActions.some(row=>row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D'),false);
+  const bad=choose('wolf',[{...input[0],sha256:'0'.repeat(64)}]);
+  assert.equal(bad.directActorOriginalCandidateCount,0,'corrupt original bytes cannot be silently accepted');
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('registered 86 CC0 actor originals enter the existing all-game asset build-up selector automatically',()=>{
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ const actors=JSON.parse(fs.readFileSync(path.join(root,'assets/roblox/actors/manifest.json'),'utf8'));
+ assert.equal(actors.sourceLibraryIndex.source3dAssets.length,86);
+ const plan=buildVibeAssetProductionPlan({
+  repoRoot:root,target:'roblox',
+  task:{gameId:'cc0-actor-auto-qa',goal:'NPC chef visual replacement',
+   assetRequirements:[{family:'CHARACTER',role:'chef'}]}
+ });
+ const found=plan.assetSupplySummary.nextActions.find(row=>row.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D'
+   &&row.externalAcquisition.sourceModelId?.toLowerCase().includes('chef'));
+ assert.ok(found,'the 86-source actor index must feed the existing build-up pipeline');
+ assert.equal(found.action,'ACQUIRE_ADAPT');
+ assert.equal(found.automaticSourceSelectionAuthorized,true);
+ assert.equal(found.automaticReplacementAuthorized,false);
+ assert.equal(plan.assetSupplySummary.productionVerificationGranted,false);
+ assert.equal(plan.assetSupplySummary.runtimeVerificationGranted,false);
+ assert.match(assetProductionGuidance(plan),/CC0 ACTOR F0-F9 AUTOMATIC VISUAL SOURCING/);
+});
