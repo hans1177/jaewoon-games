@@ -10,7 +10,7 @@ local remote=RS:FindFirstChild(C.Remote) or Instance.new("RemoteEvent")
 remote.Name=C.Remote;remote.Parent=RS
 local store
 pcall(function()store=DSS:GetDataStore(C.SaveKey)end)
-local arenas,last={},{}
+local arenas,lastRequest={},{}
 local nextArena=0
 local root=Instance.new("Folder");root.Name="BaeksuWarWorld";root.Parent=workspace
 -- 유틸: 서버가 모든 전투·골드·슬롯을 소유한다.
@@ -50,14 +50,15 @@ local function save(a)
  if not a.Loaded or not store then return false end
  local data={Version=1,Gold=math.floor(a.Gold),Stage=a.Stage,Unlocked=a.Unlocked,Buildings={}}
  for i,b in pairs(a.Buildings) do data.Buildings[tostring(i)]={Kind=b.Kind,Level=b.Level} end
- local ok=pcall(function()
-  store:UpdateAsync("p:"..a.Player.UserId,function(previous)
+ local ok,result=pcall(function()
+  return store:UpdateAsync("p:"..a.Player.UserId,function(previous)
    if type(previous)=="table" and (tonumber(previous.Version) or 1)>1 then return nil end
    return data
   end)
  end)
- a.Player:SetAttribute("SaveStatus",ok and "SAVED" or "SAVE_FAILED")
- return ok
+ local saved=ok and result~=nil
+ a.Player:SetAttribute("SaveStatus",saved and "SAVED" or "SAVE_FAILED")
+ return saved
 end
 local function createGate(a,enemy)
  local z=enemy and 45 or -40
@@ -174,8 +175,8 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
  local a=arenas[p];if not a then return end
  if action=="SYNC" then send(a);return end
  local now=os.clock()
- if now-(last[p] or 0)<.15 then return end
- last[p]=now
+ if now-(lastRequest[p] or 0)<.15 then return end
+ lastRequest[p]=now
  if not a.Loaded then send(a,"저장 확인 실패: 진행 보호를 위해 건설 잠금");return end
  if action=="BUY_SLOT" then
   local i=a.Unlocked+1
@@ -189,7 +190,7 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
   if type(kind)~="string" or not C.ById[kind] or a.Buildings[index] then return end
   local u=C.ById[kind]
   if a.Gold<u.Cost then send(a,"건설 골드 부족");return end
-  a.Gold-=u.Cost;a.Buildings[index]={Kind=kind,Level=1,Timer=0}
+  a.Gold-=u.Cost;a.Buildings[index]={Kind=kind,Level=1,Timer=C.Stats(u,1).Interval}
   drawBuilding(a,index);spawn(a,kind,"ALLY",1)
   send(a,u.Home.." 즉시 완성 · 자동 출격")
  elseif action=="UPGRADE" then
@@ -198,15 +199,15 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
   if not b or b.Level>=C.MaxLevel then return end
   local cost=C.UpgradeCost(C.ById[b.Kind],b.Level)
   if a.Gold<cost then send(a,"업그레이드 골드 부족");return end
-  a.Gold-=cost;b.Level+=1;b.Timer=0
+  a.Gold-=cost;b.Level+=1;b.Timer=C.Stats(C.ById[b.Kind],b.Level).Interval
   drawBuilding(a,index)
   for i=1,C.Stats(C.ById[b.Kind],b.Level).Count do spawn(a,b.Kind,"ALLY",b.Level) end
   send(a,C.ById[b.Kind].Name.." Lv."..b.Level.." 진화!")
  end
 end)
 local function kill(a,u,ally)
- if u.HP<=0 then return end
- u.HP=0;u.Model:Destroy()
+ if u.Dead then return end
+ u.Dead=true;u.HP=0;u.Model:Destroy()
  if u.Team=="ENEMY" and ally then a.Gold+=9+math.floor(a.Stage*.8) end
 end
 local function finish(a,win)
@@ -233,11 +234,16 @@ local function tickArena(a,dt,now)
   local kinds={"ant","sparrow","beetle","wolf","turtle"}
   spawn(a,kinds[1+(math.floor(a.Serial/3)+a.Stage-1)%#kinds],"ENEMY",math.min(10,1+math.floor((a.Stage-1)/2)))
  end
+ local byTeam={ALLY={},ENEMY={}}
+ for _,u in ipairs(a.Units) do
+  if u.HP>0 and byTeam[u.Team] then table.insert(byTeam[u.Team],u) end
+ end
  for _,u in ipairs(a.Units) do
   if u.HP>0 then
    local target,best=nil,math.huge
-   for _,v in ipairs(a.Units) do
-    if v.HP>0 and v.Team~=u.Team then
+   local opponents=byTeam[u.Team=="ALLY" and "ENEMY" or "ALLY"]
+   for _,v in ipairs(opponents) do
+    if v.HP>0 then
      local d=(u.X-v.X)^2+(u.Z-v.Z)^2
      if d<best then target=v;best=d end
     end
@@ -246,13 +252,13 @@ local function tickArena(a,dt,now)
    if target and distance<u.Range+2 then
     if now-u.Last>=.85 then
      u.Last=now;target.HP-=u.Damage
-     if target.HP<=0 then target.HP=1;kill(a,target,u.Team=="ALLY") end
+     if target.HP<=0 then kill(a,target,u.Team=="ALLY") end
     end
    else
     local direction=u.Team=="ALLY" and 1 or -1
     u.Z+=direction*u.Speed*dt
     if target and distance<13 then u.X+=math.clamp(target.X-u.X,-u.Speed*dt*.3,u.Speed*dt*.3) end
-    u.Model:PivotTo(CFrame.new(a.X+u.X,2.5,u.Z)*CFrame.Angles(0,direction==1 and 0 or math.pi,0))
+    u.Model:PivotTo(CFrame.new(a.X+u.X,2.5+math.sin(now*5+u.X)*.08,u.Z)*CFrame.Angles(0,direction==1 and 0 or math.pi,0))
     if direction==1 and u.Z>40 then a.EnemyHP-=u.Damage;kill(a,u,false)
     elseif direction==-1 and u.Z< -35 then a.HomeHP-=u.Damage;kill(a,u,false) end
    end
@@ -286,6 +292,6 @@ task.spawn(function()while true do task.wait(60) for _,a in pairs(arenas) do sav
 Players.PlayerAdded:Connect(function(p)local d,ok=load(p);makeArena(p,d,ok) end)
 Players.PlayerRemoving:Connect(function(p)
  local a=arenas[p];if a then save(a);a.Folder:Destroy();arenas[p]=nil end
- last[p]=nil
+ lastRequest[p]=nil
 end)
 game:BindToClose(function()for _,a in pairs(arenas) do save(a) end end)
