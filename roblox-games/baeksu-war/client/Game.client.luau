@@ -61,7 +61,7 @@ choices.Position=UDim2.fromOffset(6,41);choices.BackgroundTransparency=1;choices
 choices.ScrollBarThickness=3;choices.AutomaticCanvasSize=Enum.AutomaticSize.Y;choices.CanvasSize=UDim2.new()
 choices.Parent=menu
 local cl=Instance.new("UIListLayout");cl.SortOrder=Enum.SortOrder.LayoutOrder;cl.Padding=UDim.new(0,5);cl.Parent=choices
-local notice=label(gui,"회전·줌으로 전장을 둘러보고 땅의 슬롯을 눌러 건설해!",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
+local notice=label(gui,"섬 전체 1000×1280 · 기지에서 전선까지 직접 탐험! 건물 슬롯을 눌러 건설해.",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
 notice.TextColor3=Color3.fromRGB(252,226,137)
 -- 군단 지휘와 경제 패널: 모바일에서는 버튼으로 펼쳐 화면을 확보한다.
 local controlPanel=panel(gui,UDim2.fromOffset(218,346),UDim2.fromOffset(8,133))
@@ -211,7 +211,7 @@ end)
 -- 캐릭터 이동을 Roblox 기본 CameraModule이 처리하도록 한다.
 p.CameraMode=Enum.CameraMode.Classic
 p.CameraMinZoomDistance=11
-p.CameraMaxZoomDistance=80
+p.CameraMaxZoomDistance=245
 local function followCharacter(character)
  local humanoid=character:WaitForChild("Humanoid",10)
  if not humanoid then return end
@@ -281,14 +281,14 @@ local function openWorldSlot(screenPosition)
  local hit=workspace:Raycast(ray.Origin,ray.Direction*500,filter)
  if not hit then return end
  local at=hit.Position
- local row=math.floor((-60-at.Z)/13+.5)
- local col=math.floor((at.X-arenaX+14)/14+.5)
+ local row=math.floor((C.World.BuildZ-at.Z)/19+.5)
+ local col=math.floor((at.X-arenaX+18)/18+.5)
  if row<0 or col<0 or col>2 then return end
  local index=row*3+col+1
  if index>(current.Unlocked or 0) then return end
- local expectedX=arenaX+(col-1)*14
- local expectedZ=-60-row*13
- if math.abs(at.X-expectedX)>5 or math.abs(at.Z-expectedZ)>5 then return end
+ local expectedX=arenaX+(col-1)*18
+ local expectedZ=C.World.BuildZ-row*19
+ if math.abs(at.X-expectedX)>7.5 or math.abs(at.Z-expectedZ)>7.5 then return end
  redrawMenu(index)
 end
 local touchStart={}
