@@ -21,7 +21,7 @@ concurrency:
 jobs:
   private-preview:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
     env:
       ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
       ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
@@ -35,32 +35,34 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      # 4차 오너 지시: 라이브러리 자산을 우선 재사용하고 없는 종류는 검증된 CC0 원본 다운로드를 허용.
-      # 자체 임의 생성물/Part/GLB 도형 합성은 계속 차단한다.
-      - name: Verify and convert 12 real CC0 models
+      # 4차 비공개 게시(40343077784 / Place v5)에서 실제 업로드 및 전용 Universe 허가가
+      # 입증된 모델 12개를 재사용한다. 매 push마다 재업로드하면 시작 지연과 잘못된 ID를 유발한다.
+      - name: Verify pinned CC0 original meshes and approved universe permission receipts
         shell: bash
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq --no-install-recommends blender python3-numpy
-          blender --background --disable-autoexec --python tools/baeksu-war-author-meshes.py -- /tmp/baeksu-art
-          test "$(find /tmp/baeksu-art -maxdepth 1 -name '*.glb' -type f | wc -l)" -eq 12
-          test -s /tmp/baeksu-art/provenance.json
-      - name: Upload proven CC0 meshes and grant the existing universe
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/baeksu-war-upload-meshes.mjs /tmp/baeksu-art /tmp/baeksu-art-upload.json
-          test -s /tmp/baeksu-art-upload.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const receipt=JSON.parse(fs.readFileSync('/tmp/baeksu-art-upload.json','utf8'));
-          const roles=['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
-          if(receipt.version!==4||String(receipt.universeId)!=='10773115989'||roles.some(r=>!Number.isSafeInteger(receipt.models?.[r]?.assetId)||receipt.models[r].assetId<1||receipt.models[r].license!=='CC0-1.0'||String(receipt.models[r].universeId)!=='10773115989'))throw Error('CC0_ASSET_GRANTS_NOT_VERIFIED');
+          const read=(p)=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const record=read('roblox-games/baeksu-war/CC0-ASSET-REGISTRY.json');
+          const actors=read('assets/roblox/actors/manifest.json').sources.flatMap(s=>s.sourceFiles||[]);
+          const wildlife=read('assets/external/simple-rpg/wildlife/manifest.json').packs;
+          const priority=read('assets/external/simple-rpg/priority-v1/manifest.json').packs;
           const lua=fs.readFileSync('roblox-games/baeksu-war/shared/VisualAssetIds.luau','utf8');
-          const bindings=Object.fromEntries([...lua.matchAll(/([a-z]+)=([0-9]+)/g)].map(m=>[m[1],Number(m[2])]));
-          if(roles.some(r=>!(bindings[r]>0)))throw Error('CC0_MODEL_ID_BINDING_INCOMPLETE');
-          console.log('BAEKSU_WAR_REAL_CC0_12=VERIFIED_FOR_PREVIEW_BUILD');
+          const entries=Object.fromEntries([...lua.matchAll(/([a-z]+)\s*=\s*([0-9]+)/g)].map(m=>[m[1],Number(m[2])]));
+          const roles=['sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'];
+          if(record.gameId!=='baeksu-war'||String(record.universeId)!=='10773115989'||String(record.placeId)!=='120481433333785'||record.verifiedPublishRunId!==40343077784||record.verifiedPlaceVersion!==5||Object.keys(record.models||{}).length!==12)throw Error('PUBLISHED_CC0_ASSET_PROVENANCE_MISSING');
+          for(const role of roles){
+            const asset=record.models[role];
+            if(!asset||!Number.isSafeInteger(asset.assetId)||asset.assetId<1||entries[role]!==asset.assetId||asset.license!=='CC0-1.0'||!/^https:\/\//.test(asset.licenseEvidence||'')||!(/^[a-f0-9]{64}$/).test(asset.glbSha256||''))throw Error('PINNED_CC0_MODEL_UNVERIFIED:'+role);
+            let original;
+            if(asset.sourcePath.startsWith('assets/roblox/actors/'))original=actors.find(x=>x.path===asset.sourcePath);
+            else if(asset.sourcePath.startsWith('assets/external/simple-rpg/wildlife/'))original=wildlife.find(x=>asset.sourcePath.endsWith('/'+x.file));
+            else if(asset.sourcePath.startsWith('assets/external/simple-rpg/priority-v1/'))original=priority.find(x=>asset.sourcePath.endsWith('/'+x.file));
+            if(!original||String(original.sha256)!==asset.sourceSha256||!fs.existsSync(asset.sourcePath))throw Error('ORIGINAL_CC0_DIGEST_NOT_PINNED:'+role);
+          }
+          console.log('BAEKSU_WAR_VERIFIED_REUSED_CC0_MODELS=12');
+          console.log('BAEKSU_WAR_PROVENANCE_RUN_ID='+record.verifiedPublishRunId);
           NODE
       - name: Build only baeksu-war Roblox place
         shell: bash
