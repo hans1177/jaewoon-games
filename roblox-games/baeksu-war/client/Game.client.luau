@@ -35,7 +35,7 @@ local function button(parent,txt,size,order,fn)
  return b
 end
 local top=panel(gui,UDim2.new(1,-14,0,74),UDim2.fromOffset(7,6))
-local title=label(top,"백수대전쟁 Ⅱ · 생물 군단 공성전",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
+local title=label(top,"백수대전쟁 Ⅲ · 자유 시점 군단 타이쿤",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
 title.TextSize=17
 local status=label(top,"불러오는 중",UDim2.new(1,-12,0,40),UDim2.fromOffset(8,27))
 local dock=panel(gui,UDim2.fromOffset(208,295),UDim2.new(1,-216,.52,-125))
@@ -59,7 +59,7 @@ choices.Position=UDim2.fromOffset(6,41);choices.BackgroundTransparency=1;choices
 choices.ScrollBarThickness=3;choices.AutomaticCanvasSize=Enum.AutomaticSize.Y;choices.CanvasSize=UDim2.new()
 choices.Parent=menu
 local cl=Instance.new("UIListLayout");cl.SortOrder=Enum.SortOrder.LayoutOrder;cl.Padding=UDim.new(0,5);cl.Parent=choices
-local notice=label(gui,"건물을 지어 병력을 모으고, 성문을 돌파해!",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
+local notice=label(gui,"마우스나 손가락으로 시점을 돌려 기지를 탐험해! 슬롯 근처에서 건설 가능",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
 notice.TextColor3=Color3.fromRGB(252,226,137)
 local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={}}
 local function updateSaveNotice()
@@ -105,6 +105,13 @@ local function refresh()
 end
 buy.Activated:Connect(function()remote:FireServer("BUY_SLOT")end)
 remote.OnClientEvent:Connect(function(action,data)
+ if action=="OPEN_SLOT" and type(data)=="table" then
+  local index=tonumber(data.Index)
+  if index and index%1==0 and index>=1 and index<=(current.Unlocked or 3) then
+   redrawMenu(index)
+  end
+  return
+ end
  if action~="STATE" or type(data)~="table" then return end
  current=data
  if data.Message and data.Message~="" then notice.Text=data.Message end
@@ -117,20 +124,39 @@ for _,k in ipairs({"Gold","HomeHP","EnemyHP","Stage"}) do
  end)
 end
 remote:FireServer("SYNC")
--- 카메라: 횡스크롤이 아닌 고정 3D 사선 시점
-local lastNarrow=nil
-Run:BindToRenderStep("BaeksuWarCamera",Enum.RenderPriority.Camera.Value+1,function()
- local cam=workspace.CurrentCamera
- local x=p:GetAttribute("ArenaX")
- if not cam or type(x)~="number" then return end
- cam.CameraType=Enum.CameraType.Scriptable;cam.FieldOfView=63
- cam.CFrame=CFrame.lookAt(Vector3.new(x+57,78,-21),Vector3.new(x,2,-22))
- local narrow=cam.ViewportSize.X<700 or (Input.TouchEnabled and cam.ViewportSize.X<950)
- if narrow~=lastNarrow then
-  lastNarrow=narrow
-  dock.Size=narrow and UDim2.fromOffset(160,254) or UDim2.fromOffset(208,295)
-  dock.Position=narrow and UDim2.new(1,-165,.52,-108) or UDim2.new(1,-216,.52,-125)
-  menu.Size=narrow and UDim2.fromOffset(181,255) or UDim2.fromOffset(228,306)
-  menu.Position=narrow and UDim2.new(0,5,.52,-110) or UDim2.new(0,8,.52,-135)
+-- Noob Army Tycoon형 Roblox 기본 3인칭 카메라 사용.
+-- Scriptable/매 프레임 CFrame 덮어쓰기를 제거해 PC 우클릭, 휠, 모바일 드래그/핀치 및
+-- 캐릭터 이동을 Roblox 기본 CameraModule이 처리하도록 한다.
+p.CameraMode=Enum.CameraMode.Classic
+p.CameraMinZoomDistance=5
+p.CameraMaxZoomDistance=70
+local function followCharacter(character)
+ local humanoid=character:WaitForChild("Humanoid",10)
+ if not humanoid then return end
+ local camera=workspace.CurrentCamera
+ if camera then
+  camera.CameraType=Enum.CameraType.Custom
+  camera.CameraSubject=humanoid
+  camera.FieldOfView=70
  end
+end
+p.CharacterAdded:Connect(followCharacter)
+if p.Character then task.defer(followCharacter,p.Character) end
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+ if p.Character then task.defer(followCharacter,p.Character) end
 end)
+
+-- 자유 카메라와 별개로 UI 폭만 화면 크기에 맞춘다. 시점에는 개입하지 않는다.
+local lastNarrow=nil
+local function resizeHud()
+ local camera=workspace.CurrentCamera
+ if not camera then return end
+ local narrow=camera.ViewportSize.X<700 or (Input.TouchEnabled and camera.ViewportSize.X<950)
+ if narrow==lastNarrow then return end
+ lastNarrow=narrow
+ dock.Size=narrow and UDim2.fromOffset(160,254) or UDim2.fromOffset(208,295)
+ dock.Position=narrow and UDim2.new(1,-165,.52,-108) or UDim2.new(1,-216,.52,-125)
+ menu.Size=narrow and UDim2.fromOffset(181,255) or UDim2.fromOffset(228,306)
+ menu.Position=narrow and UDim2.new(0,5,.52,-110) or UDim2.new(0,8,.52,-135)
+end
+Run:BindToRenderStep("BaeksuWarResponsiveHUD",Enum.RenderPriority.Last.Value,resizeHud)
