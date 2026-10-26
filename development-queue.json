@@ -205,8 +205,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-26T00:33:38.922Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -225,14 +225,14 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxSharedTargetCurrent": false,
+      "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-26T00:33:38.922Z"
       },
-      "updatedAt": "2026-10-26T07:32:20.832Z",
+      "updatedAt": "2026-10-26T07:33:11.998Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -876,7 +876,27 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "platform": "ROBLOX",
+        "sourceRevision": "b349e981b895d499797b1b76dbe888ecbe2a0eba",
+        "artifactIdentity": "sha256:25ecc4e011e91f0e9483b4501b30ed6d38e5af88b7980bcc511342c25f39a07b",
+        "artifactRunId": 40285742345,
+        "universeId": "10773076775",
+        "placeId": "115056847915626",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "canonicalGameTarget": false,
+        "validationOnly": true,
+        "exposure": "PRIVATE_PRE_F9_VALIDATION_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 2,
+        "workflowRunId": 40286315590,
+        "publishedAt": "2026-10-26T07:33:11.998Z",
+        "authority": "roblox-open-cloud-pre-f9-validation-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxRuntimePassed": false,
@@ -948,10 +968,10 @@
         "workflowRunId": 40250013982,
         "testedAt": "2026-10-26T00:36:00.324Z"
       },
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -970,7 +990,7 @@
       "robloxPublicRelease": false,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "0340a484546eede7a6c54e9c60440f750150620b",
         "newSourceRevision": "3fe78e5af11b74595511f6da523f8357bb9af9d3",
@@ -980,13 +1000,13 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimeRetryCount": 0,
       "robloxValidationTarget": {
-        "version": 1,
+        "version": 3,
         "gameId": "horror-escape-room",
         "universeId": "10773076775",
         "placeId": "115056847915626",
-        "verified": false,
-        "verifiedAt": null,
-        "lastVerifiedAt": null,
+        "verified": true,
+        "verifiedAt": "2026-10-26T07:33:11.998Z",
+        "lastVerifiedAt": "2026-10-26T07:33:11.998Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-pre-f9-validation-target",
         "dedicated": true,
@@ -994,9 +1014,17 @@
         "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
         "internalOnly": true,
         "publicDiscoveryAllowed": false,
-        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
-        "reservedAt": "2026-10-26T07:32:20.832Z"
-      }
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxCanonicalPublishPending": false,
+      "robloxReleaseVersionNumber": 2,
+      "robloxInternalVibePlayEvidence": null,
+      "robloxGameCompletionEvidence": null,
+      "robloxPlatformAdaptationEvidence": null,
+      "robloxSecurityReleaseEvidence": null,
+      "robloxPresentationCompletionEvidence": null,
+      "robloxReleaseStabilityEvidence": null,
+      "robloxPublicReleaseFinalEvidence": null
     },
     {
       "gameId": "cozy-island",
@@ -6190,7 +6218,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-26T07:32:20.832Z",
+  "updatedAt": "2026-10-26T07:33:11.998Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
