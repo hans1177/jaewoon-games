@@ -5522,7 +5522,132 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     ["VERIFY_QA_SAVE_REGRESSION","저장 호환 검사|save regression qa|저장 회귀","Validate preexisting saved profiles across update/respawn; do not change keys or claim data migration without executed tests."],
     ["VERIFY_QA_F0_F9_NATIVE","F0~F9 검증|native f0-f9|정식 출시 검증","Respect current canonical source sync, private runtime, F0-F9, exact publish and post-publish checks; never mark published from static QA."],
   ];
-  const makerRequest=craftGoal.toLowerCase();
+  // [유명 게임 장르 참고 100종] 공개 인기 작품의 제작 구성 요소만 추상화. 원본 코드·에셋·브랜드 디자인은 복제하지 않는다.
+  const famousRobloxMakerRecipes=[
+    ["SOCIAL_ROLE_EMOTE_WHEEL","역할놀이 이모트|roleplay emote wheel|감정표현 원형메뉴","Use an existing emote and animation catalog in a thumb-accessible radial menu; never grant new privileges or bypass chat moderation."],
+    ["SOCIAL_HOME_ROOM_STORY","집 실내 꾸미기 연출|roleplay room staging|집 내부 소품","Stage already-owned room assets and occupancy signs while preserving housing permissions, persistence and character safety."],
+    ["SOCIAL_FRIEND_MEETUP_MARKER","친구 합류 표시|friend meetup marker|모임 위치 표시","Display opt-in party marker only for authorized group members; avoid precise location leaks to unrelated players."],
+    ["SOCIAL_PET_COMPANION_FOLLOW","동행 펫 연출|companion follow presentation|펫 따라오기","Visually follow the approved pet state with local smoothing; do not create pet ownership, rewards or extra server entities."],
+    ["SOCIAL_VEHICLE_CONTROL_HELP","차량 조작 안내|vehicle control hints|차 탑승 버튼","Show contextual controls for existing VehicleSeat input, respecting mobile and gamepad navigation without overriding vehicle physics."],
+    ["SOCIAL_AVATAR_ROLE_BADGE","역할 표시 배지|role badge presentation|역할 명찰","Render existing role/occupation metadata next to a player without inventing authority or displaying hidden staff roles."],
+    ["SOCIAL_SOCIAL_PHOTO_ZONE","포토존 카메라 연출|photo zone framing|사진 촬영 연출","Create optional client camera framing around approved backdrop and restore camera on exit; no forced screenshots or personal-data upload."],
+    ["SOCIAL_PARTY_PING_MARK","파티 핑 아이콘|party ping indicator|동료 핑","Animate server-authorized party pings with cooldown and a capped visible queue; prevent spam and unwanted map disclosure."],
+    ["SOCIAL_WELCOME_NEIGHBORHOOD","역할놀이 첫 동선|roleplay newcomer route|마을 초보 안내","Guide new players through preexisting locations using clear landmarks and skippable UI; do not invent missions or rewards."],
+    ["SOCIAL_INTERACTIVE_PROP_STATUS","생활 소품 상태 연출|roleplay prop state|상호작용 물건 상태","Show server-owned door, seat or furniture states through existing interactive object visual bindings, without client-state ownership."],
+    ["GROWTH_GROW_STAGE_PREVIEW","작물 성장 시각화|crop growth stage visuals|성장 단계 모델","Bind successive authored growth meshes to actual existing server growth stage; never change elapsed time or harvest yield."],
+    ["GROWTH_HARVEST_READY_SIGNAL","수확 가능 표시|harvest ready pulse|수확 강조","Display subtle readiness pulse only after existing harvestable state is true; preserve actual item grant and cooldown."],
+    ["GROWTH_COLLECTION_ATLAS_UI","수집 도감 격자|collection atlas ui|수집 도감","Render collected/discovered IDs from the original inventory/codex in an adaptive grid; do not auto-unlock entries."],
+    ["GROWTH_PET_POWER_READOUT","펫 능력 미리보기|pet stat preview|펫 스탯 표시","Show the existing verified pet modifiers and level source, without multiplying damage or currency on the client."],
+    ["GROWTH_HATCH_REVEAL_STAGING","알 부화 연출|pet hatch reveal|부화 애니","Animate confirmed server-selected reward with authored asset and skip option; do not sample loot locally or fake rarity."],
+    ["GROWTH_MUTATION_COLOR_VARIANT","작물 변이 연출|mutation visual variant|변이 재질","Map approved mutation ID to palette and mesh variation while preserving its real odds, price and inventory identity."],
+    ["GROWTH_COLLECT_PROGRESS_METER","수집 진행률 표시|collection completion meter|도감 퍼센트","Calculate display progress from authoritative unlocked IDs and finite catalog; never grant progress as a side effect."],
+    ["GROWTH_UPGRADE_EFFECT_PREVIEW","강화 전후 비교|upgrade preview readout|강화 비교 UI","Preview approved upgrade stat delta from server-owned cost table without granting a buff before purchase."],
+    ["GROWTH_RARE_DROP_SPOTLIGHT","희귀 수집품 초점|rare collection spotlight|희귀 아이템 강조","Display short rarity spotlight only on acknowledged inventory addition, capped to one large popup at a time."],
+    ["GROWTH_COMPANION_SLOT_LAYOUT","동행 슬롯 정렬|companion slot layout|펫 슬롯 UI","Lay out existing equip slots responsively and show empty capacity; do not expand storage or bypass slot caps."],
+    ["CONTEST_CARRY_PROP_VISUAL","들고 옮기는 아이템 연출|carry prop visuals|약탈 운반 외형","Attach an approved display prop to original carried-item state; keep server theft, pickup and handoff rules untouched."],
+    ["CONTEST_BASE_OWNERSHIP_TAG","기지 소유 표지|base ownership signage|내 기지 표시","Present verified owner team and public access conditions on existing bases; never trust a client ownership label."],
+    ["CONTEST_STEAL_RISK_DIRECTION","약탈 위험 방향 표시|contested hazard direction|침입 경고 UI","Use existing authorized intruder alarm and zone state for directional warning; do not reveal hidden player positions."],
+    ["CONTEST_DEPOSIT_SUCCESS_BEAT","보관 완료 연출|deposit success feedback|창고 입고 연출","Play concise confirmation after authoritative deposit result, not just touch prompt; do not duplicate the inventory write."],
+    ["CONTEST_GUARD_ZONE_OUTLINE","보호 구역 테두리|safe zone outline|보호 구역 표시","Mark existing safe/protected volume visually while preserving exact server protection boundaries and timers."],
+    ["CONTEST_PICKUP_HOLD_PROMPT","획득 유지 버튼|pickup hold prompt|줍기 홀드 UI","Expose existing hold-to-pickup progress with immediate cancel on exit; do not shorten server interaction threshold."],
+    ["CONTEST_CHASE_TRAIL_CUE","추격 경로 피드백|chase trail cue|도주 경로 연출","Show non-authoritative path/footstep cues only when sighted/authorized; do not grant movement speed or wallhack."],
+    ["CONTEST_BASE_STATUS_METER","기지 방어 상태 UI|base defense state meter|기지 경보 상태","Bind defenses and alarm status to current server replication, never render client-predicted security as authoritative."],
+    ["CONTEST_STOLEN_ITEM_RECOVERY_HINT","물품 회수 안내|retrieval guidance panel|분실품 복구 안내","Display existing recovery rules and route from approved state; do not invent refunds or modify item ownership."],
+    ["CONTEST_ESCAPE_EXIT_MARKER","탈출 위치 표시|escape marker ui|도주 출구 표시","Point to currently known authorized exit or deposit station without leaking undiscovered map data."],
+    ["SURVIVAL_PHASE_DAYNIGHT_CARD","낮밤 단계 표시|survival phase card|밤 낮 UI","Read existing day/night phase and show progress/time without changing actual survival clock."],
+    ["SURVIVAL_CAMPFIRE_STATE_VIS","모닥불 밝기|campfire level visual|캠프 화로","Bind campfire light intensity and particle tiers to existing authoritative fuel state, never consume fuel client-side."],
+    ["SURVIVAL_SHELTER_SAFETY_READ","쉼터 방어 상태|shelter safety readout|야영지 안전 상태","Explain actual shelter protection flags and risk in HUD without changing protected region or enemy targeting."],
+    ["SURVIVAL_TEAM_SUPPLY_LIST","협동 물자 목록|shared supply checklist|공유 보급품","Display opt-in team supply checklist referencing existing inventory permissions; do not move or clone any resource."],
+    ["SURVIVAL_NIGHT_THREAT_TELEGRAPH","야간 위협 예고|night threat telegraph|밤 적 경보","Signal upcoming existing hostile phase in readable sight/audio cues; do not alter enemy spawn timers or behavior."],
+    ["SURVIVAL_SURVIVAL_HEAT_DISPLAY","체온 상태 UI|temperature HUD|생존 온도","Render temperature or warmth only if current authoritative stat exists; never create a new damage mechanic."],
+    ["SURVIVAL_SAFE_RETURN_BEACON","귀환 길잡이|survival return beacon|기지 귀환 표시","Present discovered camp route using available map waypoints, avoid revealing secret locations or changing safe-zone rules."],
+    ["SURVIVAL_GATHERING_VISUAL_FEEDBACK","채집 시각 피드백|survival gather feedback|나무 캐기 표시","Animate verified chop/mining results and tool hit sparks, no extra drops or faster harvesting."],
+    ["SURVIVAL_REVIVE_STATUS_PRESENTATION","동료 구조 표시|revive progress ui|부활 지원 UI","Reflect approved downed/revive workflow and interrupt progress on authority denial; no local revival or timer override."],
+    ["SURVIVAL_LAST_NIGHT_SUMMARY","생존일 결과 UI|nightly survival recap|밤 생존 요약","Summarize actual session events and resource changes using observed counters; don't invent rewards or continue state."],
+    ["ARENA_ABILITY_COOLDOWN_WHEEL","스킬 재사용 UI|ability cooldown wheel|스킬 쿨타임 표시","Drive radial cooldown from authoritative ability timing; never accelerate, shorten or reset cooldown in gameplay."],
+    ["ARENA_COMBO_CHAIN_INDICATOR","콤보 연계 표시|combo chain cue|연속 공격 안내","Display only currently valid existing combo state and move names, without adding extra attacks."],
+    ["ARENA_ARENA_HIT_CONFIRM","전투 명중 확인|hit confirm ui|히트마커","Render hitmarker from accepted server damage event, not client raycast speculation or duplicate hurt calls."],
+    ["ARENA_BLOCK_PARRY_FEEDBACK","막기 패링 피드백|parry window feedback|방어 성공 표시","Show original block/parry success and recovery cues while preserving hit windows and counter timing."],
+    ["ARENA_TARGET_DISTANCE_BAR","대상 거리 표시|combat target distance|타겟 거리","Draw distance readout only for legitimately visible/targetable opponent with permitted position data."],
+    ["ARENA_ABILITY_SLOT_LAYOUT","능력 버튼 배치|ability slot mobile|스킬 슬롯","Arrange existing bound abilities for thumb reach and gamepad; do not add unlocked skills or client authority."],
+    ["ARENA_SPECTATOR_CAMERA_OWNER","관전 시점 관리|spectator camera mode|관전자 시점","Show eligible spectators a controlled camera with revocation on round/respawn and no hidden enemy camera exploit."],
+    ["ARENA_ARENA_TEAM_TINT","팀별 전투 색|team silhouette|적 아군 구분","Apply accessible faction accents to existing team metadata, preserving distinct actor models and false-friend safeguards."],
+    ["ARENA_WEAPON_SWITCH_FEEDBACK","무기 교체 안내|weapon swap indicator|무기 변경 HUD","Bind read-only UI and animation to approved equipped Tool state, without bypassing equip cooldown or ownership."],
+    ["ARENA_DAMAGE_DIRECTION_PING","피해 방향 표시|damage direction ping|피격 방향 화살표","Point toward the source of an accepted hit if available and permitted; never expose out-of-range hidden targets."],
+    ["HORROR_CORRIDOR_LIGHT_MOOD","공포 복도 조명|horror corridor mood|어두운 복도 연출","Tune existing room lighting while retaining readable exits, hazards and mobile frame budget; no blackout gameplay trap."],
+    ["HORROR_ENEMY_WARNING_SILHOUETTE","공포 적 접근 암시|horror silhouette warning|위험 실루엣","Show authorized approach cues based on existing threat event; don't spawn or teleport enemies."],
+    ["HORROR_SAFE_FLICKER_PATTERN","전등 깜박임 연출|safe horror flicker|공포 조명 깜박임","Bound flicker frequency and amplitude for photosensitivity; offer reduced-motion and brightness alternatives."],
+    ["HORROR_HIDE_SPOT_FEEDBACK","숨기 상호작용 UI|hide spot status|숨기 상태","Display existing hide spot eligibility/occupancy and exit control; do not alter hiding invulnerability."],
+    ["HORROR_PUZZLE_VISUAL_STATE","공포 퍼즐 상태 UI|puzzle state feedback|퍼즐 진행 화면","Reflect server-validated puzzle switches with sound/light confirmation; don't solve locks client-side."],
+    ["HORROR_CHASE_EXIT_COMPOSITION","추격 도주 시야|chase escape framing|추격 카메라","Aim camera legibility at real exits while preserving existing controls and active danger tell readability."],
+    ["HORROR_SCARE_INTENSITY_LIMIT","점프스케어 조절|jumpscare accessibility|놀람 강도","Cap strobe/shake/audio peak, honor accessibility settings and never block core UI long after a scare."],
+    ["HORROR_TEAM_SIGNAL_ICON","공포 협동 신호|horror team signal|팀원 위치 알림","Display authorized teammate need-help/role indicators without revealing sensitive hidden gameplay positions."],
+    ["HORROR_DOOR_SEQUENCE_VISUAL","문 열림 시퀀스|horror doorway sequence|공포 문 연출","Reuse original door state/animation, sync appearance to existing lock result and preserve collision/locked status."],
+    ["HORROR_FAILURE_CAUSE_CARD","공포 사망 원인 표시|horror failure recap|탈락 이유","Explain observed legitimate failure reason and available retry path without implying unrecorded cause or changing lives."],
+    ["OBBY_CHECKPOINT_BEACON_VIS","체크포인트 빛기둥|checkpoint beacon|통과 지점 표시","Illuminate already unlocked checkpoint when validated by server; no local checkpoint unlock."],
+    ["OBBY_PLATFORM_MOVEMENT_GHOST","움직이는 발판 궤적|moving platform preview|플랫폼 예측","Draw cosmetic future position hint using known interpolation only; server/physics trajectory stays unchanged."],
+    ["OBBY_RETRY_FAST_UI","즉시 재도전 버튼|obby quick retry|다시하기","Bind obvious replay option to current reset method, preserving life/progression penalties and checkpoint flags."],
+    ["OBBY_STAGE_SPLIT_CLOCK","구간 기록 UI|stage split timer|구간 타이머","Display existing run clock segments and compare prior records only when source provides them; no fabricated leaderboard entries."],
+    ["OBBY_VERTICAL_STAGE_COMPASS","수직 층 안내|vertical stage indicator|타워 층수 표시","Show current authored tower zone/floor and objective direction without revealing hidden stages or changing camera root."],
+    ["OBBY_HAZARD_EDGE_CONTRAST","장애물 위험 표시|obby hazard contrast|함정 색 대비","Emphasize existing hazardous surfaces with distinct outlines and accessible colors while preserving actual collision/damage."],
+    ["OBBY_FALL_PATH_READABILITY","낙하 위치 안내|fall recovery visual|추락 표시","Present valid landing surface cues without changing jump physics or using invisible safety platforms."],
+    ["OBBY_PARKOUR_INPUT_HINTS","파쿠르 조작 가이드|obby input hints|파쿠르 튜토리얼","Show device-specific jump and movement prompts tied to existing actions, never auto-complete jumps."],
+    ["OBBY_TIMED_GATE_WARNING","시간 제한 문 표시|timed gate warning|타임 제한 표지","Expose authoritative remaining gate time with warning thresholds for UI only, preserve timeout and movement paths."],
+    ["OBBY_FINISH_LINE_STAGING","도착 연출|obby finish celebration|골인 효과","Celebrate verified stage completion with particles and camera/audio, never issue duplicate reward or teleport."],
+    ["TYCOON_PLOT_LAYOUT_PREVIEW","영지 부지 미리보기|tycoon plot layout|부지 설계","Show plot boundaries and slot footprints from existing build definitions; preserve plot allocation and access policy."],
+    ["TYCOON_CONVEYOR_VISUAL_FLOW","컨베이어 움직임|conveyor visual flow|생산 벨트","Animate existing conveyor texture/gears in sync with authoritative machine state without advancing item production."],
+    ["TYCOON_MACHINE_OUTPUT_READOUT","생산기 상태 화면|tycoon machine display|생산량 UI","Read existing machine output and stock from server state, no client simulation of output or profit."],
+    ["TYCOON_BUILD_COST_COMPARE","건축 비용 비교|tycoon upgrade comparison|타이쿤 투자 비교","Show current/next authorized upgrade requirements and estimated display benefit, never modify purchase cost."],
+    ["TYCOON_WORKSTATION_LOOP_ANIM","작업대 동작 반복|workstation visual loop|생산 연출","Play short authored operating animation only while the server machine reports active, bounded when offscreen."],
+    ["TYCOON_CARGO_LOADING_PREVIEW","화물 싣기 연출|cargo loading visual|화물 운송 표시","Use existing cargo manifests as client-only visuals, with real physics cargo and shipment state unchanged."],
+    ["TYCOON_BOAT_ASSEMBLY_GUIDE","보트 조립 안내|boat build guide|선박 건설 도움말","Visualize valid attachment points and shape placement for original builder; no new flotation physics or extra parts costs."],
+    ["TYCOON_TYCOON_PROGRESS_MAP","시설 발전 지도|tycoon progress map|공장 확장 화면","Render already-built rooms/machines and next locked area from approved graph without auto-purchasing them."],
+    ["TYCOON_PLACEMENT_GRID_HEAT","배치 격자 시각화|tycoon placement heatmap|건축 오류 영역","Overlay collision/placement acceptance from current validator with mobile-safe hints; server remains final authority."],
+    ["TYCOON_PASSIVE_PRODUCTION_HUD","자동생산 요약|tycoon passive production HUD|누적 자원 UI","Update presentation from real stored stock/sync revisions, never invent offline revenue or save writes."],
+    ["TRADE_TRADE_DOUBLE_CONFIRM","거래 2단계 확인|two phase trade confirmation|안전 거래","Show both-side server-verified offer hashes with independent accept/reconfirm steps; no client approval as transaction authority."],
+    ["TRADE_OFFER_DIFF_HIGHLIGHT","거래 변경 경고|trade offer diff|교환품 변경","Highlight any actual offer revision and invalidate prior read-only acceptance indicators, not transactional state itself."],
+    ["TRADE_ITEM_INSPECT_VIEW","거래 아이템 보기|trade item inspect|교환물품 검사","Use authorized item model/metadata for an inspect pane; never expose private fields or alter inventory."],
+    ["TRADE_FISH_BITE_TELEGRAPH","낚시 입질 연출|fishing bite prompt|입질 알림","Trigger UI/audio only from approved bite event and active line state; do not create catch, difficulty or timing."],
+    ["TRADE_FISH_LINE_TENSION_UI","낚시 줄 장력|fishing line tension ui|낚시 긴장도","Render existing line/tension values, include colorblind indicators and preserve server catch logic."],
+    ["TRADE_CATCH_REVEAL_CARD","물고기 획득 카드|fish catch reveal|낚시 결과","Reveal confirmed fish species, size and rarity from authoritative catch payload only, no random local reroll."],
+    ["TRADE_INVENTORY_QUICK_FILTER","가방 빠른 검색|inventory quick filter|소지품 검색","Index existing visible inventory locally for sorting/search without rewriting or deleting stored item records."],
+    ["TRADE_VALUE_REFERENCE_WARNING","교환 가치 안내|trade value reference|거래 가치 경고","Only show server-approved or explicit descriptive values and uncertainty; do not fabricate market prices or guarantee fairness."],
+    ["TRADE_TRADE_CANCEL_FEEDBACK","거래 취소 복구 UI|trade cancel notice|교환 취소","Explain confirmed cancel/timeout result and restore panels while inventory state remains server-authored."],
+    ["TRADE_LOOT_SESSION_JOURNAL","획득 기록 화면|loot session journal|드랍 로그","Build bounded session log from actual acknowledged grants; separate unverified loot previews from real rewards."],
+    ["DISCOVERY_FASHION_CATEGORY_RAIL","의상 카테고리 UI|fashion outfit category|옷장 분류","Group authorized avatar cosmetic catalog into thumb-friendly categories without granting ownership or copying outfits."],
+    ["DISCOVERY_OUTFIT_BEFORE_AFTER","의상 비교 뷰|outfit comparison preview|착장 비교","Preview original and proposed approved appearance in ViewportFrame, preserve actual avatar on cancel."],
+    ["DISCOVERY_STYLE_SCORE_EXPLAINER","꾸미기 점수 설명|fashion score explain|코디 점수 UI","Display existing judged results and factors only when available; never invent votes or modify ranking."],
+    ["DISCOVERY_MYSTERY_ROUND_ROLE_UI","역할 추리 라운드 HUD|social deduction round ui|추리 상태","Render assigned server-visible roles and current round state without leaking secret opponent identities."],
+    ["DISCOVERY_CLUE_DISCOVERY_FEEDBACK","단서 찾기 연출|mystery clue feedback|단서 발견","Animate clue acquisition only after legitimate server-owned interaction and within known discovery scope."],
+    ["DISCOVERY_SECRET_REVEAL_TIMING","비밀 공개 시퀀스|mystery reveal sequencing|정체 공개 연출","Time reveal UI to approved round-end outcome and conceal hidden identity before reveal."],
+    ["DISCOVERY_FIRST_MINUTE_OBJECTIVE","첫 1분 목표|first minute onboarding|초반 목표 안내","Surface a single existing action that demonstrates core play within first minute and remains skippable."],
+    ["DISCOVERY_NEXT_GOAL_TRAIL","다음 목표 위치|goal trail visualization|진행 목표 표시","Visualize the next real unlocked objective based on canonical progression graph, not invented unlocks or free gifts."],
+    ["DISCOVERY_MILESTONE_REWARD_TEASE","달성 보상 미리보기|milestone reward preview|미리보기 보상","Show approved future reward names and exact unlock thresholds if supplied; never grant or promise unapproved items."],
+    ["DISCOVERY_RETURN_ACTIVITY_SUMMARY","재접속 요약|return session summary|복귀 플레이 안내","Summarize actual persisted progression and available current activities, avoid coercive daily pressure or fabricated offline gains."],
+  ];
+  const makerGenreSources=Object.freeze({
+    "SOCIAL":"Brookhaven RP / Adopt Me!",
+    "GROWTH":"Grow a Garden / Pet Simulator 99",
+    "CONTEST":"Steal a Brainrot / Steal An Egg",
+    "SURVIVAL":"99 Nights in the Forest / Dead Rails",
+    "ARENA":"Blox Fruits / RIVALS / The Strongest Battlegrounds",
+    "HORROR":"DOORS / Dandy's World / Forsaken",
+    "OBBY":"Tower of Hell / Barry's Prison Run",
+    "TYCOON":"Welcome to Bloxburg / Build A Boat For Treasure / Restaurant Tycoon",
+    "TRADE":"Adopt Me! / Fisch / Pet Simulator 99",
+    "DISCOVERY":"Dress to Impress / Murder Mystery 2 / Bee Swarm Simulator",
+  });
+  // [제작 모듈 고도화] 전체 200개를 동일한 목적 판별·우선순위·다분야 균형 규칙으로 선택한다.
+  // 중요 단어가 일반 문장 안에 우연히 등장해도 영문 부분 일치를 하지 않으며, 무관한 기능은 생성하지 않는다.
+  const makerRequest=[order.goal,order.selectedTask?.goal,order.selectedTask?.title,order.selectedTask?.description,order.selectedTask?.focus]
+    .map(clean).filter(Boolean).join(' ').toLowerCase();
+  const makerProductionSelected=(()=>{
+    if(clean(order.target).toLowerCase()!=='roblox'||!makerRequest)return [];
+    const weighted=[...makerCapabilityRecipes,...famousRobloxMakerRecipes].map(([id,keywords,guide])=>{
+      const hits=keywords.split('|').map(key=>key.toLowerCase().trim()).filter(key=>{
+        if(!key)return false;
+        if(!/^[a-z0-9]/.test(key))return makerRequest.includes(key);
+        const escaped=key.replace(/[.*+?^${}()|[\]\\]/g,'\\  const makerRequest=craftGoal.toLowerCase();
   const makerProductionSelected=clean(order.target).toLowerCase()==='roblox'
     ?makerCapabilityRecipes.filter(([,keywords])=>keywords.split('|').some(phrase=>makerRequest.includes(phrase.toLowerCase()))).slice(0,8)
     :[];
@@ -5531,6 +5656,34 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     ...makerProductionSelected.map(([id,,how])=>id+': '+how),
     'Each selected module is a concrete authoring target, NOT pre-existing runtime code or a PASS result. Implement real Luau/Instance changes inside existing responsible source/functions for only the requested scope. Reuse approved game assets and RobloxCommonMaterials when present; do not fabricate texture IDs, licenses, models, server authority or save data.',
     'For every changed module show its actual source edit and relevant source-bound verification. Existing gameplay, collisions, damage, rewards, cooldowns and save schema unchanged; preserve mobile input. Runtime publication and F0-F9 remain UNVERIFIED without actual evidence.',
+    '[END ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES]'
+  ].join('\n'):'';');
+        return new RegExp('(^|[^a-z0-9])'+escaped+'(?=$|[^a-z0-9])','i').test(makerRequest);
+      });
+      const score=hits.length?Math.max(...hits.map(key=>key.length)) + hits.length*2 : 0;
+      return{id,guide,score,group:id.split('_')[0]};
+    }).filter(row=>row.score>0)
+      .sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id));
+    const selected=[],groupCounts=new Map();
+    for(const row of weighted){
+      if(selected.length>=8)break;
+      const count=groupCounts.get(row.group)||0;
+      if(count>=3)continue;
+      selected.push(row);groupCounts.set(row.group,count+1);
+    }
+    for(const row of weighted){
+      if(selected.length>=8)break;
+      if(!selected.some(current=>current.id===row.id))selected.push(row);
+    }
+    return selected;
+  })();
+  const makerProductionBlock=makerProductionSelected.length?[
+    '[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES]',
+    'Requested genre inspirations (design references only, no copying): '+[...new Set(makerProductionSelected.map(row=>makerGenreSources[row.group]).filter(Boolean))].join('; '),
+    ...makerProductionSelected.map(({id,guide})=>id+': '+guide),
+    'Use existing responsible source files: '+(responsibleFiles.length?responsibleFiles.slice(0,8).join(', '):'NO_OWNED_FILES_PROVIDED; DO NOT INVENT PATHS'),
+    'Selected modules are executable authoring goals, NOT installed runtime code. Implement real Luau/Instance changes inside existing responsible source/functions for only the requested scope. Reuse approved game assets and RobloxCommonMaterials when present; do not fabricate texture IDs, licenses, models, server authority or save data.',
+    'For every changed module show its actual source edit and relevant source-bound verification. Existing gameplay, collisions, damage, rewards, cooldowns and save schema unchanged; preserve mobile input. Never duplicate approved gameplay loops or assume genre inspirations grant new rules. Runtime publication and F0-F9 remain UNVERIFIED without actual evidence.',
     '[END ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES]'
   ].join('\n'):'';
   // 검증된 시각 코딩 패턴: 기존 canonical ingest 결과만 사용한다.
