@@ -7,7 +7,7 @@ local DSS=game:GetService("DataStoreService")
 local Run=game:GetService("RunService")
 local C=require(RS:WaitForChild("Shared"):WaitForChild("Config"))
 local VisualKit=require(RS:WaitForChild("Shared"):WaitForChild("VisualKit"))
-VisualKit.Preload()
+-- 모델 적재는 서버 시작 단계에서 기다리지 않는다. UI/지형을 먼저 만든다.
 local terrain=workspace.Terrain
 local Lighting=game:GetService("Lighting")
 local remote=RS:FindFirstChild(C.Remote) or Instance.new("RemoteEvent")
@@ -256,7 +256,7 @@ local function restart(a)
  clearUnits(a);a.HomeHP=C.GateHP;a.EnemyHP=C.EnemyHP+(a.Stage-1)*100;a.EnemyTimer=1.2
  a.Result="";a.Transition=false
  for _,b in pairs(a.Buildings) do b.Timer=.15 end
- send(a,a.SessionOnly and "임시 플레이: 저장 서버 연결 안 됨 · 이번 접속 기록은 저장되지 않아" or "전투 시작! 건물을 지으면 자동 출격해.")
+ send(a,a.SessionOnly and "임시 플레이: 저장 서버 연결 안 됨 · 이번 접속 기록은 저장되지 않아" or (VisualKit.Ready() and "전투 시작! 건물을 지으면 자동 출격해." or "전장 표시 준비 중 · 지형과 UI부터 불러왔어."))
 end
 local function load(player)
  if not store then return nil,false end
@@ -264,6 +264,13 @@ local function load(player)
  if not ok or (value~=nil and type(value)~="table") then return nil,false end
  if value and (tonumber(value.Version) or 1)>1 then return nil,false end
  return value,true
+end
+local function populateVisuals(a)
+ if a.VisualsInitialized or not VisualKit.Ready() then return end
+ a.VisualsInitialized=true
+ VisualKit.BuildWorld(a.Folder,a.X)
+ createGate(a,false);createGate(a,true)
+ for i=1,a.Unlocked do drawBuilding(a,i) end
 end
 local function makeArena(player,data,loaded)
  nextArena+=1
@@ -297,10 +304,8 @@ local function makeArena(player,data,loaded)
  end
  buildArenaTerrain(x)
  for i,point in ipairs(a.Points) do drawCaptureMarker(a,point,i) end
- VisualKit.BuildWorld(a.Folder,x)
  resizeBuildYard(a)
- createGate(a,false);createGate(a,true)
- for i=1,a.Unlocked do drawBuilding(a,i) end
+ populateVisuals(a)
  player:SetAttribute("ArenaX",x)
  player:SetAttribute("SaveStatus",loaded and "READY" or "SESSION_ONLY")
  player.CharacterAdded:Connect(function(character)
@@ -485,7 +490,26 @@ task.spawn(function()
  end
 end)
 task.spawn(function()while true do task.wait(60) for _,a in pairs(arenas) do save(a) end end end)
-Players.PlayerAdded:Connect(function(p)local d,ok=load(p);makeArena(p,d,ok) end)
+-- CC0 메시는 승인된 모델만 별도 로드하며 실패 시 파츠로 우회하지 않는다.
+task.spawn(function()
+ for attempt=1,6 do
+  if VisualKit.Preload() then
+   for p,a in pairs(arenas) do
+    if p.Parent then populateVisuals(a);send(a,"3D 전장 준비 완료 · 군단 출격!") end
+   end
+   return
+  end
+  for p,a in pairs(arenas) do
+   if p.Parent then send(a,"3D 모델 연결 재시도 "..attempt.."/6 · 지형/UI 먼저 표시") end
+  end
+  task.wait(math.min(attempt*5,20))
+ end
+ warn("백수대전쟁: 승인된 3D 모델 적재 실패; 임의 Part 대체 금지")
+ for p,a in pairs(arenas) do
+  if p.Parent then send(a,"3D 모델 적재 실패 · 외형 확인 불가") end
+ end
+end)
+Players.PlayerAdded:Connect(function(p)local d,ok=load(p);if p.Parent then makeArena(p,d,ok) end end)
 Players.PlayerRemoving:Connect(function(p)
  local a=arenas[p];if a then save(a);a.Folder:Destroy();arenas[p]=nil end
  lastRequest[p]=nil
