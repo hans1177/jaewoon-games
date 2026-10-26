@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "horror-escape-room-build-up-g10-3fef6f798972",
-  "directiveFingerprint": "3fef6f7989727cac5c56a5ac603b58a37cbb1550988034a7eaee0ae7535b2930",
-  "previousDirectiveFingerprint": "14e576e06fe0a263b6508cef2a7d2f5093afaa14b60b14d741c69370709c5488",
-  "forbiddenRepeatFingerprint": "14e576e06fe0a263b6508cef2a7d2f5093afaa14b60b14d741c69370709c5488",
+  "directiveId": "horror-escape-room-build-up-g11-deb39bfb8bb0",
+  "directiveFingerprint": "deb39bfb8bb01fe465c10000242e2ccce3de95a63c840c1f6ef8259d53f846d3",
+  "previousDirectiveFingerprint": "3fef6f7989727cac5c56a5ac603b58a37cbb1550988034a7eaee0ae7535b2930",
+  "forbiddenRepeatFingerprint": "3fef6f7989727cac5c56a5ac603b58a37cbb1550988034a7eaee0ae7535b2930",
   "gameId": "horror-escape-room",
   "gameName": "심야 대탈출",
-  "generation": 10,
+  "generation": 11,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/horror-escape-room",
-  "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+  "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
   "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
   "designSourceBuildUp": {
     "version": 1,
@@ -371,7 +371,7 @@
           "정화와 팀 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+        "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -419,7 +419,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
-    "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
     "multiplayerMode": "COMPETITIVE",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -1051,7 +1051,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 74,
     "authoredCounts": {
@@ -7128,44 +7128,44 @@
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 403,
-      "progression": 726,
-      "ai": 315,
+      "combat": 427,
+      "progression": 739,
+      "ai": 322,
       "save": 335,
       "multiplayer": 33,
-      "animation": 168,
-      "motionStates": 1470,
+      "animation": 205,
+      "motionStates": 1501,
       "gameFeel": 46,
-      "vfx": 288,
-      "camera": 183,
+      "vfx": 289,
+      "camera": 198,
       "audio": 102,
-      "audioDynamics": 113,
-      "ui": 1445,
-      "uiFlow": 1571,
+      "audioDynamics": 114,
+      "ui": 1543,
+      "uiFlow": 1606,
       "entryFlow": 308,
       "loadingFlow": 3,
-      "input": 177,
-      "map": 2026,
-      "landmark": 442,
-      "interaction": 597,
-      "inventory": 358,
-      "equipment": 118,
-      "settings": 33,
-      "feedback": 422,
+      "input": 184,
+      "map": 2070,
+      "landmark": 443,
+      "interaction": 600,
+      "inventory": 394,
+      "equipment": 128,
+      "settings": 36,
+      "feedback": 458,
       "session": 283,
-      "content": 1662,
-      "choice": 1811,
+      "content": 1760,
+      "choice": 1930,
       "connection": 10,
-      "performance": 121,
-      "lighting": 348,
+      "performance": 130,
+      "lighting": 350,
       "primitive": 60,
       "todo": 0,
-      "errorRecovery": 131
+      "errorRecovery": 154
     },
     "topFiles": [
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "score": 1517
+        "score": 1668
       },
       {
         "file": "roblox-games/horror-escape-room/server/Game.server.luau",
@@ -7223,7 +7223,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3921,
+        "line": 4335,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7231,7 +7231,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3960,
+        "line": 4374,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7239,7 +7239,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3976,
+        "line": 4390,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7263,7 +7263,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3937,
+        "line": 4351,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7271,7 +7271,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3993,
+        "line": 4407,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7287,7 +7287,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 4011,
+        "line": 4425,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7311,7 +7311,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 2761,
+        "line": 3175,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7319,7 +7319,23 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 2872,
+        "line": 4958,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateItemModelPreview",
+        "context": "function RobloxCommonUI.CreateItemModelPreview(options)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 488,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.UpdateInventorySlot",
+        "context": "function RobloxCommonUI.UpdateInventorySlot(slot, item, options)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "line": 3286,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7351,7 +7367,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3466,
+        "line": 3880,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
         "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
@@ -7359,7 +7375,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3952,
+        "line": 4366,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
         "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
@@ -7367,7 +7383,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3957,
+        "line": 4371,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
         "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
@@ -7375,7 +7391,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3973,
+        "line": 4387,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
         "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
@@ -7383,7 +7399,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3990,
+        "line": 4404,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
         "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
@@ -7391,7 +7407,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 4027,
+        "line": 4441,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7399,7 +7415,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 4101,
+        "line": 4515,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7495,7 +7511,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 1050,
+        "line": 1315,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7503,7 +7519,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 2581,
+        "line": 2995,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateItemStateBadges",
         "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
@@ -7511,7 +7527,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3914,
+        "line": 4328,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateInteractionProgress",
         "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
@@ -7519,7 +7535,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 3933,
+        "line": 4347,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateInteractionStateCard",
         "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
@@ -7527,7 +7543,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 4164,
+        "line": 4578,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
         "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
@@ -7535,7 +7551,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 4319,
+        "line": 4733,
         "kind": "FUNCTION",
         "symbol": "sync",
         "context": "local function sync(state)",
@@ -7543,18 +7559,10 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 4373,
+        "line": 4802,
         "kind": "FUNCTION",
         "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
         "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
-        "line": 4885,
-        "kind": "FUNCTION",
-        "symbol": "RobloxCommonUI.AdaptActionMenu",
-        "context": "function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)",
         "score": 82
       },
       {
@@ -7588,33 +7596,25 @@
         "symbol": "ghostProgressAttribute",
         "context": "local function ghostProgressAttribute(progress)",
         "score": 74
-      },
-      {
-        "file": "roblox-games/horror-escape-room/server/Game.server.luau",
-        "line": 775,
-        "kind": "FUNCTION",
-        "symbol": "ghostProgressSave",
-        "context": "local function ghostProgressSave(progress)",
-        "score": 74
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 심야 대탈출와 진영 전환과 추격 경로 × 증언과 합의된 현실가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 9,
-    "previousSourceTreeFingerprint": "e8784dd6b0550cd8a22c124e381c0b867369587b0d872c1daaebf7243eebe871",
-    "currentSourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+    "previousGeneration": 10,
+    "previousSourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+    "currentSourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+    "failureStage": "VIBE_INTERNAL_PLAY",
+    "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
     "blockers": [
-      "roblox-runtime-foundation-awaiting-observation"
+      "roblox-internal-vibe-play-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -8756,8 +8756,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 972574,
-        "largestFileBytes": 234988,
+        "sourceBytes": 1008699,
+        "largestFileBytes": 269769,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -8789,8 +8789,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -8800,9 +8800,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -8846,7 +8847,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 92,
+        "score": 74,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -8960,11 +8961,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 10,
-    "previousGeneration": 9,
+    "generation": 11,
+    "previousGeneration": 10,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
-    "priorSourceFingerprint": "e8784dd6b0550cd8a22c124e381c0b867369587b0d872c1daaebf7243eebe871",
+    "sourceFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+    "priorSourceFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -8983,7 +8984,7 @@
     "version": 1,
     "gameId": "horror-escape-room",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -9127,6 +9128,7 @@
         "id": "MOTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
@@ -9474,6 +9476,7 @@
         "roblox-games/horror-escape-room/server/ManorLobby.luau"
       ],
       "MOTION": [
+        "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
         "roblox-games/horror-escape-room/server/Game.server.luau",
         "roblox-games/horror-escape-room/client/Game.client.luau",
         "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
@@ -10034,7 +10037,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+      "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -10058,7 +10061,7 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+      "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
       "sourceFiles": [
         {
           "file": "roblox-games/horror-escape-room/server/Game.server.luau",
@@ -10198,11 +10201,17 @@
     "gameId": "horror-escape-room",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
     "thumbnailTransportIsNotRenderedQuality": true,
+    "validationMode": "REMOTE_AUTOMATED_EXISTING_F0_F9_AND_INDEPENDENT_QA",
+    "localManualInspectionRequired": false,
+    "neverTreatSourceOrThumbnailAsRuntimePass": true,
+    "exactCandidateBindingRequired": true,
+    "postPublishVersionMatchRequired": true,
+    "negativeAndRecoveryScenariosRequired": true,
     "applicabilityRule": "CHECK_EXISTING_OR_APPROVED_SURFACE; NOT_APPLICABLE_REQUIRES_DESIGN_AND_SOURCE_REASON; NEVER_ADD_UNAPPROVED_GAMEPLAY",
     "cases": [
       {
@@ -10215,7 +10224,16 @@
         "failureCriteria": "글자 잘림·겹침·safe area 침범·체력/목표 가림·초점 소실·색만으로 상태 구분",
         "responsibility": "레이아웃·텍스트·아이콘·정보 우선순위",
         "retest": "같은 해상도/상태 전후 화면과 핵심 정보 식별",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "MOBILE_VIEWPORT_SAFE_AREA",
+          "TEXT_OVERFLOW_AND_HUD_OCCLUSION",
+          "RESIZE_AND_ORIENTATION"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "UI_INTERACTION",
@@ -10227,7 +10245,16 @@
         "failureCriteria": "장식 버튼·중복 실행·닫기 터치의 뒤쪽 공격 전달·선택 초기화·표시와 실제 장착 불일치",
         "responsibility": "입력 소비·모달·선택 상태·서버 응답 연결",
         "retest": "터치/마우스별 한 번의 입력에 한 번의 결과와 상태 유지",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "TOUCH_EVENT_TO_ONE_SERVER_OR_UI_ACTION",
+          "SCROLL_MODAL_FOCUS",
+          "CLOSE_REOPEN_SELECTION"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "CHARACTER_RENDER",
@@ -10239,7 +10266,16 @@
         "failureCriteria": "누락 메시/텍스처·기본 부품 대체·장비 관통/부유·리그 찢어짐·발 미끄러짐·지면 관통",
         "responsibility": "기존 모델 바인딩·리그·장착 접점·접지",
         "retest": "같은 캐릭터/장비/카메라의 실제 렌더와 원본 해시/업로드 ID 연결",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "REGISTERED_ASSET_AND_ORIGINAL_HASH",
+          "MESH_RIG_ATTACHMENT",
+          "MOVEMENT_GROUND_CONTACT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MONSTER_READABILITY",
@@ -10251,7 +10287,16 @@
         "failureCriteria": "색만 다른 복제·역할 식별 불가·공격 전조 안 보임·배경에 묻힘·죽은 적이 움직이거나 남음",
         "responsibility": "적 모델·상태 표현·전조·사망 정리",
         "retest": "기존 종류별 역할과 위험 전조가 구별되는 화면/행동 기록",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "DISTINCT_ENEMY_ROLE_AND_TELEGRAPH",
+          "ATTACK_HIT_DEATH_STATE_SEQUENCE",
+          "DESPAWN_CLEANUP"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MOTION_TRANSITIONS",
@@ -10263,7 +10308,16 @@
         "failureCriteria": "T포즈·정지 모델·전환 튐·루프 끊김·중복 트랙·사망 뒤 idle·전체 CFrame 이동만으로 모션 주장",
         "responsibility": "Animator·관절·블렌딩·상태 전환·트랙 수명",
         "retest": "같은 입력 순서의 연속 프레임/동작 기록과 실제 상태 일치",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "TIME_ORDERED_IDLE_MOVE_TURN_JUMP",
+          "JOINT_ANIMATION_AND_BLEND",
+          "ATTACK_HIT_DEATH_NO_STALE_TRACK"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "ACTION_IMPACT",
@@ -10275,7 +10329,16 @@
         "failureCriteria": "판정보다 먼저 데미지 표현·허공 타격 피드백·VFX/음향 지연·쿨다운 표시 불일치·연속 입력 고착",
         "responsibility": "기존 서버 판정과 클라이언트 모션/VFX/음향 사건 연결",
         "retest": "authoritative impact 시점과 시각/음향 타임라인 비교; 데미지·쿨다운·히트 의미 보존",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "AUTHORITATIVE_HIT_EVENT_ORDER",
+          "MISS_CANCEL_COOLDOWN_REPLAY",
+          "VFX_AUDIO_DAMAGE_ALIGNMENT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "CAMERA_COMPOSITION",
@@ -10287,7 +10350,16 @@
         "failureCriteria": "카메라 벽 관통·캐릭터/적/목표 가림·과도한 흔들림·줌 튐·모바일 화면 이탈",
         "responsibility": "카메라 충돌·추적·FOV·오클루전·화면 구성",
         "retest": "같은 동선에서 플레이어·위험·다음 목표를 지속적으로 식별",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "WALL_AND_CORNER_OCCLUSION",
+          "TARGET_AND_PLAYER_READABILITY",
+          "MOBILE_CAMERA_INPUT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "WORLD_BACKGROUND",
@@ -10299,7 +10371,16 @@
         "failureCriteria": "빈 평면·무의미한 반복 소품·전경/중경/배경 혼동·랜드마크 부재·동선과 장식 충돌",
         "responsibility": "기존 맵 배치·지형·랜드마크·조명·배경 밀도",
         "retest": "같은 경로의 전후 장면에서 지역 역할과 목적지 식별; 새 지역은 승인 설계에만 연결",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "SPAWN_TO_OBJECTIVE_WORLD_ROUTE",
+          "LANDMARK_AND_TERRAIN_BINDING",
+          "LIGHTING_AND_REGION_STATE"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "GRAPHICS_INTEGRITY",
@@ -10311,7 +10392,16 @@
         "failureCriteria": "미로드 자산·검은/투명 모델·핑크/누락 재질·UV 깨짐·z-fighting·깜빡임·LOD 갑작스런 소실",
         "responsibility": "메시/텍스처/재질 ID·로드 실패 복구·LOD",
         "retest": "실제 화면과 로드/바인딩 오류를 함께 확인; 썸네일 파일 정상은 렌더 합격 아님",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "EXACT_MODEL_TEXTURE_LOAD",
+          "VISIBLE_RENDERED_DELTA",
+          "LOD_AND_RELOAD_RECOVERY"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "NAVIGATION_BLOCKERS",
@@ -10323,7 +10413,16 @@
         "failureCriteria": "끼임·보이지 않는 벽·낙사·부유 스폰·막힌 문·도달 불가능한 목표·안전 복귀 실패",
         "responsibility": "충돌·접지·경로 연결·문/포탈·복귀",
         "retest": "동일 경로의 실제 입력→도착→목표 상태, 모든 실패 지점 재통과",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "SPAWN_GROUND_CONTACT",
+          "PORTAL_DOOR_ROUTE_REACHABILITY",
+          "RESPAWN_SAFE_RECOVERY"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "PROGRESSION_BLOCKERS",
@@ -10335,7 +10434,16 @@
         "failureCriteria": "다음 행동 없음·퀘스트 완료 불가·보상 중복/누락·상태 불일치·다음 지역으로 진행 불가",
         "responsibility": "기존 목표·퀘스트·보상·진행 상태 책임 시스템",
         "retest": "성공/실패/재시도 분기의 상태 전후 및 다음 행동 연결; 승인 없는 경제/밸런스 변경 금지",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "CORE_LOOP_ACTION_TO_REWARD",
+          "UNLOCK_NEXT_OBJECTIVE",
+          "RETRY_IDEMPOTENT_REWARDS"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "RECOVERY_SAVE",
@@ -10347,7 +10455,16 @@
         "failureCriteria": "세이브 초기화·아이템 소실/복제·옛 UI 상태·영구 로딩·오류 숨김·복구 버튼 무효",
         "responsibility": "기존 저장 키·세션 수명·오류 처리·재접속",
         "retest": "같은 저장 의미와 권한으로 복구; 기존 데이터/보상 보존",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "SAVE_EXIT_REJOIN_RESTORE",
+          "OLD_SAVE_COMPATIBILITY",
+          "NO_DUPLICATION_OR_LOSS"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MULTIPLAYER_CONSISTENCY",
@@ -10359,7 +10476,16 @@
         "failureCriteria": "클라이언트마다 외형/목표/피격 불일치·중복 보상·방장 이탈 무한대기·권한 이동",
         "responsibility": "서버 권한·동기화·참가/이탈·장비/모션 복제",
         "retest": "두 참가자의 실제 상태/장면과 서버 결과 비교; 로컬 모의 결과를 멀티 PASS로 쓰지 않음",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "EXACT_SOURCE_F7_SERVER_AUTHORITY_CONTRACT",
+          "REPLICATION_AND_RECONNECT_SOURCE_QA",
+          "NO_UNVERIFIED_MULTI_CLIENT_PASS"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "MOBILE_PERFORMANCE",
@@ -10371,7 +10497,16 @@
         "failureCriteria": "입력 지연·프레임 급락·메모리/객체 누수·HUD 가림·발열 비용·무제한 효과",
         "responsibility": "실제 병목 update·객체/효과 수명·로드·네트워크",
         "retest": "같은 기기/장면의 전후 측정과 회귀; 예산 없으면 임의 수치 PASS 대신 미검증",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "INPUT_LATENCY_AND_FRAME_BUDGET",
+          "PARTICLE_OBJECT_LIFETIME",
+          "MEMORY_AND_MOBILE_VIEWPORT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       },
       {
         "id": "LOBBY_SPACES",
@@ -10383,7 +10518,16 @@
         "failureCriteria": "기능 없는 장식·구역 겹침·목적 불명·접지 불량·포탈 가림·연습이 저장/재화/판정 변경",
         "responsibility": "기존 허브 배치·상호작용·메뉴·안전 연습",
         "retest": "있는 기능은 연결/보존하고 없는 기능은 승인 설계 또는 오너 요청 범위 확인; 로비 없는 게임에 강제 추가 금지",
-        "evidenceState": "UNVERIFIED"
+        "evidenceState": "UNVERIFIED",
+        "remoteAssertions": [
+          "EXISTING_LOBBY_ENTRY_AND_EXIT",
+          "SPAWN_INTERACTION_ROUTE",
+          "NO_GAMEPLAY_OR_SAVE_SIDE_EFFECT"
+        ],
+        "remoteProofState": "UNVERIFIED",
+        "proofOrigin": "EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9",
+        "localManualInspectionRequired": false,
+        "missingEvidenceAction": "KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA"
       }
     ],
     "responsibleSourceCandidates": [
@@ -10403,6 +10547,7 @@
     "requiredEvidenceFields": [
       "gameId",
       "sourceRevision",
+      "sourceTreeFingerprint",
       "artifactIdentity",
       "placeOrSceneId",
       "candidateVersion",
@@ -10412,12 +10557,18 @@
       "inputSequence",
       "observedStateBeforeAfter",
       "captureReferenceAndSha256",
-      "finding",
+      "remoteRunId",
+      "runtimeOrQaStage",
+      "failureSignature",
       "responsibleSource",
+      "negativeCaseResult",
+      "finding",
       "retestResult"
     ],
     "evidenceRules": [
       "현재 정확한 후보의 실제 플레이 장면만 사용한다. 대표 장면은 시작/로비, 핵심 행동, 위험/다중 적, 인벤/팝업, 지역 경계와 모바일이다. 해당 없는 장면은 설계/소스 이유를 기록한다.",
+      "로컬 수동 검수는 요구하지 않는다. 기존 원격 CI/F0~F9/독립 QA/Open Cloud에서 같은 sourceRevision·artifactIdentity·candidateVersion에 결속된 증거만 사용한다. 로컬 결과나 다른 버전의 증거를 합격으로 대체하지 않는다.",
+      "각 장면의 remoteAssertions를 기존 검사에서 실제 실행·측정한 뒤 실패/재시도/복구 분기까지 확인한다. F7 멀티는 중앙정책대로 정확한 소스 계약을 검사하며 실측한 다중 접속으로 허위 표시하지 않는다.",
       "같은 카메라·입력·해상도·게임 상태의 전후 이미지와 상태 결과를 비교한다. 모션은 정지 이미지 한 장 대신 연속 프레임/시간 정보가 필요하다.",
       "파일 존재·크기·PNG 서명·썸네일·자산 업로드·소스 마커·테스트 개수·반복 횟수는 시각 품질 합격을 증명하지 않는다.",
       "중앙 정책에서 허용한 관찰 도구만 사용한다. 정확한 화면 관찰 수단이 없으면 시각 품질은 UNVERIFIED로 남기고 증거 수집 책임으로 반환한다. 증거 부재를 관찰된 그래픽 오류로 꾸미지 않는다.",
@@ -10502,7 +10653,7 @@
     ],
     "platformProfile": {
       "attention": "EXTRA",
-      "runtimeSurface": "OFFICIAL_ROBLOX_STUDIO_MCP",
+      "runtimeSurface": "EXACT_REMOTE_ROBLOX_CANDIDATE_F0_F9",
       "requirements": [
         "ARTICULATED_ACTOR_MOTION_WITH_ANIMATOR_MOTOR6D_OR_BONES",
         "ROOT_ONLY_MOTION_CANNOT_PASS",
@@ -10513,7 +10664,7 @@
         "SOUNDSERVICE_SOUNDGROUP_MIXING_AND_SPATIAL_ROLLOFF_WHEN_AUDIO_APPLICABLE",
         "REGION_OR_STATE_BGM_TRANSITION_WHEN_MULTIPLE_CONTEXTS_EXIST",
         "VFX_CAMERA_AUDIO_SHARE_AUTHORITATIVE_IMPACT_EVENT",
-        "OFFICIAL_STUDIO_MCP_BEFORE_AFTER_RUNTIME_CAPTURE"
+        "EXACT_SOURCE_ARTIFACT_CLOUD_RUNTIME_BEFORE_AFTER_AND_POST_PUBLISH_VERSION_QA"
       ],
       "ownerDisabledAudioCategoriesMustRemainDisabled": true,
       "nativeRuntimeEvidenceRequired": true,
@@ -10570,7 +10721,13 @@
         "singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp": true
       },
       "runtimeEvidence": {
-        "officialStudioMcpRequired": true,
+        "officialStudioMcpRequired": false,
+        "localManualInspectionRequired": false,
+        "existingF0F9AndIndependentQaRequired": true,
+        "exactPrivateCandidateRemoteEvidenceRequired": true,
+        "exactPublishedPlaceVersionQaRequired": true,
+        "cloudThumbnailMetadataCannotProveRenderedScene": true,
+        "optionalStudioCaptureCannotReplaceCanonicalEvidence": true,
         "actualInputRequired": true,
         "beforeAfterCaptureRequired": true,
         "mobileViewportRequired": true,
@@ -10947,7 +11104,7 @@
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED"
     ],
     "securityRelevant": false,
     "openCloudWorldChecks": [
@@ -10997,7 +11154,7 @@
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
-        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+        "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED"
       ],
       "securityRelevant": false,
       "openCloudWorldChecks": [
@@ -11028,7 +11185,7 @@
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      "EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED"
     ],
     "openCloudWorldChecks": [
       "SERVER_BOOT",
@@ -11052,11 +11209,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+      "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
+      "failureStage": "VIBE_INTERNAL_PLAY",
+      "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -11085,7 +11242,7 @@
     "MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_WORLD_MOBILE_PERFORMANCE_TRACKS_REVIEWED",
     "PRESENCE_ONLY_OR_MARKER_ONLY_CANNOT_CLOSE_PLAYER_FACING_QUALITY",
     "SAME_SCENE_BEFORE_AFTER_RUNTIME_REOBSERVATION_REQUIRED_FOR_EXPERIENCE_BUILD_UP",
-    "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
+    "ROBLOX_EXPERIENCE_BUILD_UP_REQUIRES_EXACT_REMOTE_EVIDENCE_NO_LOCAL_MANUAL_INSPECTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
     "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
@@ -11111,7 +11268,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 11,
+    "nextGeneration": 12,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -11171,5 +11328,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-26T07:58:59.458Z"
+  "generatedAt": "2026-10-26T14:38:36.282Z"
 }
