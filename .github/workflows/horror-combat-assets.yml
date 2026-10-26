@@ -7,6 +7,7 @@ on:
       - 'tools/horror-combat-assets.mjs'
       - 'assets/roblox/common-ui-v1/icons.png'
       - 'assets/roblox/common-ui-v1/panel.png'
+      - 'assets/roblox/common-vfx-v1/sources/**'
       - 'company-asset-library.json'
       - 'assets/roblox/actors/native/**'
       - 'assets/shared/*.glb'
@@ -17,6 +18,10 @@ on:
     inputs:
       ui_only:
         description: 오너 승인 UI 이미지만 등록
+        type: boolean
+        default: false
+      vfx_only:
+        description: 공용 CC0 이펙트 이미지만 등록
         type: boolean
         default: false
 
@@ -43,11 +48,14 @@ jobs:
       - name: Import combat model and verified shared PBR sources
         env:
           UI_ONLY: ${{ inputs.ui_only || false }}
+          VFX_ONLY: ${{ inputs.vfx_only || false }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         run: |
-          if [ "$UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-ui-v1/icons.png assets/roblox/common-ui-v1/panel.png roblox-games/daechung-rpg/shared/RPGMenu.luau | grep -q .; then
+          if [ "$VFX_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-vfx-v1/sources | grep -q .; then
+            node tools/horror-combat-assets.mjs --shared-vfx-only
+          elif [ "$UI_ONLY" = "true" ] || git diff --name-only HEAD^ HEAD -- assets/roblox/common-ui-v1/icons.png assets/roblox/common-ui-v1/panel.png roblox-games/daechung-rpg/shared/RPGMenu.luau | grep -q .; then
             node tools/horror-combat-assets.mjs --shared-ui-only
           else
             node tools/horror-combat-assets.mjs --include-shared-materials --include-shared-models
@@ -62,6 +70,7 @@ jobs:
             assets/roblox/world-ghosts/native/combat-roblox-assets.json
             company-asset-library.json
             assets/roblox/common-ui-v1/catalog.json
+            assets/roblox/common-vfx-v1/catalog.json
           if-no-files-found: ignore
       - name: Open exact combat asset binding PR
         if: always()
@@ -72,7 +81,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-horror-combat-assets'
           git config user.email 'actions@users.noreply.github.com'
-          for binding_path in roblox-games/daechung-rpg/shared/RPGMenu.luau assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/horror-escape-room/shared/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
+          for binding_path in assets/roblox/common-vfx-v1/catalog.json roblox-games/daechung-rpg/shared/RPGMenu.luau assets/roblox/common-ui-v1/catalog.json assets/roblox/common-ui-v1/RobloxCommonUI.luau roblox-games/horror-escape-room/shared/RobloxCommonUI.luau roblox-games/cozy-island/shared/RobloxCommonUI.luau roblox-games/daechung-rpg/shared/RobloxCommonUI.luau company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
             if test -f "$binding_path"; then git add -- "$binding_path"; fi
           done
           if git diff --cached --quiet; then
