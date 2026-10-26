@@ -4879,7 +4879,7 @@ function visualCraftWorkerGuidance(order={},context={}){
     .filter(Boolean).map(clean).join(' ');
   const hasVisualWork=order?.presentationQuality?.required===true
     ||order?.assetProduction?.required===true
-    ||/(?:그래픽|시각|픽셀|타일|배경|모션|애니|액션|타격|렌더|카메라|이펙트|꾸미|ui|hud|인벤|아이콘|대미지|데미지|tooltip|damage.?popup|visual|presentation|layout|pixel|tile|render|animation|motion|vfx|camera)/i.test(intent);
+    ||/(?:그래픽|시각|픽셀|타일|배경|월드|맵|지형|랜드마크|모션|애니|액션|타격|렌더|카메라|이펙트|꾸미|ui|hud|인벤|아이콘|대미지|데미지|tooltip|damage.?popup|visual|presentation|layout|pixel|tile|render|animation|motion|vfx|camera|inventory|icon|world|terrain|hud)/i.test(intent);
   if(!hasVisualWork)return'';
   const game=order?.gameDesign||order?.design||order?.selectedTask?.design||{};
   const world=game?.world||order?.worldDesign||order?.selectedTask?.world||{};
@@ -4891,8 +4891,44 @@ function visualCraftWorkerGuidance(order={},context={}){
     files:(Array.isArray(context?.files)?context.files:[]).map(row=>({path:row.path,source:row.content})),
     request:intent,game,world,uiSurfaces
   });
+  // [실제 제작 고도화] 인기작 UI·월드의 범용 원리만 현재 소유 소스에 결합한다.
+  // 이 힌트는 실제 Luau 소스 변경을 요구한다. 타 게임 이미지/에셋/ID와 새로운 게임 규칙은 가져오지 않는다.
+  const nativeVisualSections=[];
+  if(target==='roblox'){
+    const visualGoal=[intent,...(Array.isArray(uiSurfaces)?uiSurfaces.map(row=>row.surface):[])].join(' ');
+    const inventory=/(?:인벤|가방|inventory|backpack|item.?grid|아이템.?창)/i.test(visualGoal);
+    const icon=/(?:아이콘|icon|image.?button|이미지.?버튼|단축.?메뉴)/i.test(visualGoal);
+    const worldCraft=/(?:월드|맵|지형|랜드마크|배경|world|map|terrain|environment|lobby|로비|지역)/i.test(visualGoal);
+    const hud=/(?:\bui\b|gui|hud|화면|메뉴|버튼|팝업|interface|인벤)/i.test(visualGoal);
+    const editable=(Array.isArray(context?.files)?context.files:[])
+      .filter(row=>row?.editable!==false&&/\.lua[u]?$/i.test(clean(row?.path)))
+      .slice(0,12);
+    const sourceOwners={
+      ui:editable.filter(row=>/(?:client|gui|ui|hud|inventory|interface)/i.test(clean(row.path))
+        ||/(?:ScreenGui|GuiButton|UIGridLayout|ScrollingFrame|ViewportFrame)/.test(clean(row.content))).map(row=>row.path).slice(0,4),
+      world:editable.filter(row=>/(?:server|world|map|terrain|bootstrap)/i.test(clean(row.path))
+        ||/(?:workspace|Terrain|PivotTo|CFrame)/.test(clean(row.content))).map(row=>row.path).slice(0,4)
+    };
+    const identity=clean(game?.visualIdentity||game?.identity||world?.theme||game?.genre||'EXISTING_GAME_STYLE');
+    if(hud)nativeVisualSections.push(
+      'UI_LAYOUT_CRAFT: Implement a native ScreenGui hierarchy with one existing client owner, readable HUD counters near screen edges, a single high-priority action, contextual menus and modal focus restoration. Use UICorner, UIStroke, UIPadding, UIListLayout/UIGridLayout, UIScale or proportional UDim2 and UITextSizeConstraint only when the existing source supports them. Maintain 44px+ touch targets and reserved movement/jump/safe inset regions, layout long Korean text, and restore input on close. Simulator-style HUD counters may be icon-forward without boxing every value; stealth/horror UIs should remain minimal. Preserve existing callback and visibility state.');
+    if(inventory)nativeVisualSections.push(
+      'INVENTORY_WINDOW_CRAFT: In the existing inventory GUI renderer (or its authorized empty slot), construct a single open/close panel with category tabs from ACTUAL item types, a search TextBox with GetPropertyChangedSignal("Text"), a scrolling item grid using UIGridLayout and AutomaticCanvasSize=Enum.AutomaticSize.Y only when no manual canvas sizing exists; use item cards with rarity badges and equipped labels from real inventory data. Add a selected-item detail pane (ViewportFrame only for an authorized model), empty state, back/close actions and consistent search/filter/sort without changing stored IDs. Selection is read-only; equip/delete/trade calls must use the EXISTING server-validated request and never duplicate RemoteEvents or inventory tables.');
+    if(icon)nativeVisualSections.push(
+      'ICON_ART_CRAFT: Draw one coherent family of pictograms with consistent silhouette, stroke thickness, inset padding, category shape and colorblind-readable labels; use ImageLabel/ImageButton only with existing licensed asset evidence (asset id in current source, verified approved catalog, or authorized new asset workflow). When absent, compose SIMPLE native frame/shape glyphs or a ViewportFrame with an existing approved model, not a blank ImageLabel, pasted emoji as final icon, invented rbxassetid or copied famous-game artwork. Distinguish selected/disabled/equipped/locked visually, cancel old Tweens, and bind GuiButton.Activated once.');
+    if(worldCraft)nativeVisualSections.push(
+      'WORLD_SCENE_CRAFT: Within the existing authorized map/terrain constructor, generate a legible spawn-to-first-objective path, distinctive near/mid/far silhouettes, 2–4 authored landmarks per permitted region, readable gateways and separated biome material families, using current map size, biome IDs, spawn/CFrame and source-owned geometry as ground truth. Reuse catalogued MeshPart/Model/RobloxCommonMaterials/approved CC assets with verified license and SourceId; do not scatter generic Parts as filler or invent texture IDs. Set native Plastic/Wood/Grass/Rock/Neon only where compatible with the game style; for toy stud accents use native Part surface studs on approved BaseParts (not arbitrary MeshPart faces) or a verified tile texture. Preserve original terrain seed, navigation corridors, colliders, authored structures, build anchors, ownership and procedural repeatability; decorative objects must be batched/capped for mobile.');
+    if(nativeVisualSections.length)nativeVisualSections.unshift(
+      '[ROBLOX SOURCE-GROUNDED UI ICON INVENTORY WORLD CRAFT]',
+      'styleIdentity='+identity+'; uiOwners='+(sourceOwners.ui.join(',')||'UNRESOLVED')+'; worldOwners='+(sourceOwners.world.join(',')||'UNRESOLVED'),
+      'Use the available authorized source excerpt to select exact existing function/Instance anchors; UNRESOLVED is not permission to invent paths. Implement actual native Instances/links in existing owned methods, not only plan text. Genre observations (Pet Simulator 99/Blox Fruits/Brookhaven/Grow a Garden/DOORS) are design comparisons, NEVER instructions to reuse their art or game data.');
+    if(nativeVisualSections.length)nativeVisualSections.push(
+      'Proof required: show actual edited GuiObject/Part/Model source anchors and pre-existing item/world state binding, verify visual hierarchy, image assets, mobile touch/landscape/portrait, existing remotes, collision/navigation, clean teardown. Rendering and native Studio screenshots remain UNVERIFIED until observed.',
+      '[END ROBLOX SOURCE-GROUNDED UI ICON INVENTORY WORLD CRAFT]');
+  }
   return [
     '[VIBE GAME VISUAL CRAFT BEGIN]',
+    ...nativeVisualSections,
     'target='+target.toUpperCase()+'; gameId='+clean(order.gameId||order.selectedTask?.gameId),
     'Actual renderable composition recipes, not visual approval:',
     target==='unity'
