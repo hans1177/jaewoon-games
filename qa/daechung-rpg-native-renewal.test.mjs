@@ -11,9 +11,9 @@ const server=fs.readFileSync(root+'server/Game.server.luau','utf8');
 const style=fs.readFileSync(root+'shared/VisualStyle.luau','utf8');
 const client=fs.readFileSync(root+'client/Game.client.luau','utf8');
 
-test('NPC native IDs resolve to preserved licensed repository masters, not invented assets',()=>{
+test('all shared character, NPC and monster IDs resolve to licensed repository CC0 masters',()=>{
  const registry=JSON.parse(fs.readFileSync('company-asset-library.json'));
- const block=style.slice(style.indexOf('NpcModels='),style.indexOf('Biomes='));
+ const block=style.slice(style.indexOf('SharedPlayerModels='),style.indexOf('Biomes='));
  const ids=[...new Set([...block.matchAll(/\b\d{6,}\b/g)].map(row=>row[0]))];
  assert.ok(ids.length>=10);
  for(const id of ids){
