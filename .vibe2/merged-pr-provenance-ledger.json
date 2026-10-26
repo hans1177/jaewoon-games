@@ -104712,11 +104712,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_aac3ff9e5231dc77c8369027",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10307",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "0e54282607b18da5658eae1761240ef12e8d555f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10307,
+        "baseBranch": "main",
+        "headBranch": "owner/cozy-grand-island-20261026",
+        "baseSha": "0e54282607b18da5658eae1761240ef12e8d555f",
+        "headSha": "97294fa166d0ad13101746b6bbdad9d1fbcac762",
+        "mergeCommitSha": "dc72b6fe5194862c4bdb783ada06c0405db79558",
+        "mergedAt": "2026-10-26T09:02:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a8839bcea1e8429dc444663fb8df39ead087bbdcc238302cd3210cc66e8395dd",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/cozy-grand-island-20261026",
+        "candidateSha": "97294fa166d0ad13101746b6bbdad9d1fbcac762"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 458,
+        "deletedLineCount": 13,
+        "changedFiles": [
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/VisualStyle.luau",
+          "tools/company-vibe2-expert-development.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/cozy-island/client/Game.client.luau",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "roblox-games/cozy-island/shared/VisualStyle.luau",
+          "tools/company-vibe2-expert-development.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10307",
+        "merge-commit:dc72b6fe5194862c4bdb783ada06c0405db79558",
+        "base-main:0e54282607b18da5658eae1761240ef12e8d555f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 824
+    "total": 825
   }
 }
