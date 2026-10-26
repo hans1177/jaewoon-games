@@ -918,10 +918,17 @@ test('Roblox common simulator-grade graphics bind real UI surfaces without exter
  for(const visual of ['outline.Color = rarityColor or theme.Border','spotlight.BackgroundColor3 = rarityColor or theme.PrimaryTop','quantity.Visible = quantity.Text ~= ""','item.equipped == true','slot.Active = item.id ~= nil and item.locked ~= true'])
    assert.ok(update.includes(visual),'GAME_ITEM_BINDING_MISSING:'+visual);
  assert.ok(icon.includes('gradient(button, theme.PanelRaised, theme.PanelInset, 90)'));
+ for(const visual of ['IconIllustrationPlate','IconIllustrationGlint','iconPlate.Visible = absent','gloss.Visible = absent','fallback.Font = Enum.Font.FredokaOne'])
+   assert.ok(icon.includes(visual),'ICON_ILLUSTRATION_MISSING:'+visual);
+ assert.ok(button.includes('button.Font = options.font or Enum.Font.FredokaOne'));
+ assert.ok(slot.includes('glyph.Font = Enum.Font.FredokaOne'));
+ assert.ok(shell.includes('emblem.Font = Enum.Font.FredokaOne'));
  for(const visual of ['HeaderEmblem','HeaderColorStripe','title.TextTruncate = Enum.TextTruncate.AtEnd'])
    assert.ok(shell.includes(visual),'FULLSCREEN_HEADER_MISSING:'+visual);
  for(const visual of ['SelectedItemRarityStripe','detailStripe.BackgroundColor3=detailMeta.TextColor3','MobileStackedLayout','OwnsSaveAuthority",false'])
    assert.ok(inventory.includes(visual),'INVENTORY_DETAIL_OR_MOBILE_MISSING:'+visual);
+ for(const visual of ['SelectedItemArt','CreateItemModelPreview({','SelectedItemHasNativeArt','previewImage.Visible=body.AbsoluteSize.X>=560','if activePreview then activePreview:Destroy()'])
+   assert.ok(inventory.includes(visual),'ITEM_ART_BINDING_MISSING:'+visual);
  assert.doesNotMatch(ui,/require\(\d+\)|DataStoreService|FireServer\(|UpdateAsync\(|SetAsync\(/);
  const catalog=JSON.parse(fs.readFileSync('assets/roblox/common-ui-v1/catalog.json','utf8'));
  assert.equal(catalog.atoms.length,204,'EXISTING_COMMON_UI_CATALOG_CHANGED');
