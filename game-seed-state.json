@@ -98166,6 +98166,111 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       }
+    },
+    {
+      "version": 2,
+      "seedId": "OWNER-PRESERVE-BAEKSU-WAR-20261026",
+      "gameId": "baeksu-war",
+      "gameName": "백수대전쟁",
+      "status": "ACTIVE",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-BAEKSU-EXISTING-SOURCE-20261026",
+      "GAME_CATEGORY": "STRATEGY_TYCOON",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "ORIGINAL_MATERIAL",
+          "value": "roblox-games/baeksu-war/PLAN.md에 확정된 기존 백수대전쟁의 스트롱홀드 건설, 냥코식 자동 진격, 10단계 진화, 8종 생물"
+        },
+        {
+          "type": "SYSTEM_DESIGN_REFERENCE",
+          "value": "Noob Army Tycoon과 Clone Tycoon 2의 자동 생산-진격-시설 성장 개념만 참고, 표현/코드/에셋 복사 금지"
+        }
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "정해진 전장 칸에 생물집을 즉시 건설하고 자동 진격하는 병력을 관전하며 성장 선택을 한다.",
+        "적을 처치하여 골드를 얻고 슬롯 해금이나 최대 10단계 진화 중 선택한다.",
+        "적 성문 파괴로 다음 스테이지, 아군 성문 함락 시 같은 스테이지 재도전과 저장된 진행을 유지한다."
+      ],
+      "CORE_LOOP": [
+        "독립 3D 전장에서 3개 무료 슬롯과 보유 골드를 확인하고 생물집을 건설한다.",
+        "건물에서 자동 소환된 생물이 전선을 밀고 전투 보상을 획득하면 슬롯 구매 또는 진화를 선택한다.",
+        "성문 파괴 또는 함락을 판정해 스테이지 전환·재도전하고 저장한 건물·골드·슬롯을 계승한다."
+      ],
+      "DISTINCT_IDENTITY": "기존 백수대전쟁의 45도 3D 사선 전장, 고정 3열 건설 칸, 여덟 생물 집, 건물 최대 10단계 진화, 5·10단계 출격 수 증가를 보존한 자동 공성전.",
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "OWNER_EXISTING_ROBLOX_GAME_PRESERVATION",
+        "worldModel": "플레이어별로 독립된 3D 전장과 아군/적 성문, 3열 건설 슬롯이 있으며 서버가 골드, 유닛 전투, 스테이지, 저장 상태를 판정한다.",
+        "actors": [
+          "플레이어: 건설 슬롯 구매, 8종 생물집 건설, 최대 10단계 업그레이드 선택",
+          "아군 및 적 생물: 자동 소환, 자동 이동, 자동 공격",
+          "아군·적 성문: 체력 0 시 재도전 또는 다음 스테이지 전환"
+        ],
+        "interactionChains": [
+          "건물 터치 → 서버 골드 검사 및 비용 지불 → 생물집 건설 → 즉시 출격 → 자동 공성전 → 골드 보상 및 업그레이드",
+          "성문 파괴 → 서버 보상 및 스테이지 갱신 → DataStore 저장 → 다음 전투/재도전"
+        ],
+        "stateMachine": [
+          "LOAD_OR_NEW_SAVE",
+          "SHOW_BATTLEFIELD",
+          "BUY_SLOT_OR_BUILD",
+          "AUTO_SPAWN_AND_COMBAT",
+          "REWARD_AND_UPGRADE",
+          "WIN_ADVANCE_OR_LOSS_RETRY",
+          "PERSIST_AND_REJOIN"
+        ],
+        "firstPlayableCycle": [
+          "모바일 UI와 3D 전장을 표시한다",
+          "무료 3개 슬롯 중 하나에 생물집을 건설한다",
+          "한 마리가 즉시 출격하는 것을 확인한다",
+          "아군과 적이 자동 진격하고 서버 판정으로 싸운다",
+          "적 처치 골드를 획득하여 슬롯을 구매하거나 진화한다",
+          "적 성문 파괴 또는 아군 성문 함락을 겪는다",
+          "다음 스테이지 또는 동일 스테이지 재도전을 진행한다",
+          "재접속 시 슬롯과 생물집 및 스테이지를 불러온다"
+        ],
+        "expansionPlan": [
+          "기존 게임 에셋과 CC0 자산을 사용해 8종 생물 실루엣·애니메이션을 강화한다",
+          "기존 모바일 슬롯·UI·월드 렌더링을 보강한다",
+          "자동 공성전의 안정성·성능·저장 복구를 F0~F9와 실제 클라우드 검증으로 개선한다"
+        ],
+        "longGoalScenario": [
+          "건물 8종을 획득하고 슬롯을 늘린다",
+          "건물을 5단계와 10단계로 진화해 자동 출격 수를 늘린다",
+          "적 성문을 돌파하며 높은 스테이지를 공략한다"
+        ],
+        "validationRisks": [
+          "SaveKey baeksu-war-v1, 3 무료 슬롯, 8종 수치, 진화 비용, Stage·Gold·Unlocked·Buildings 기존 저장 구조를 임의로 변경하지 않는다",
+          "포근섬 소스와 전용 Roblox 서버 대상은 절대 수정하거나 재사용하지 않는다",
+          "정식 성문 배포는 F9 exact artifact 검증 후에만 가능하며 선배포는 별도 비공개 후보 장소에서 수행한다",
+          "모바일 UI, 서버 RemoteEvent 권한, DataStore 재접속, 자동 전투·성문 판정, 헤드리스 클라우드 QA를 증거 없이 PASS 처리하지 않는다"
+        ]
+      },
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "DESIGN_IDEA_REFERENCE_ONLY",
+        "available": false,
+        "hardPassFailGate": false,
+        "note": "원본 게임 구현과 사용자 확정 규칙 보존. 시장 성과 수치 주장 없음."
+      },
+      "TARGET_AUDIENCE": "짧은 전장 자동 전투와 건물 성장 선택을 선호하는 모바일 로블록스 플레이어",
+      "TARGET_SESSION_DIRECTION": "반복 공성전과 영구적인 슬롯·건물 성장으로 장기 재도전",
+      "TARGET_SESSION_MINUTES": 30,
+      "INITIAL_TARGET_PLATFORM": "ROBLOX",
+      "INITIAL_PLAY_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "CROSS_PLATFORM_EXPANSION_VALUE": "ROBLOX_FOCUSED_EXISTING_GAME",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_IMPLEMENTATION_AND_MODIFY_RESPONSIBLE_SYSTEMS_DIRECTLY",
+      "OWNER_REBUILD_MODE": "PRESERVATION_PRESENTATION_UPGRADE",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": true,
+      "CANONICAL_IMPLEMENTATION_SOURCE": "roblox-games/baeksu-war",
+      "SAVE_POLICY": "PRESERVE_EXISTING_SAVE_KEY_baeksu-war-v1_AND_FIELDS",
+      "MOBILE_FIRST": true,
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY"
     }
   ],
   "seedMaterials": [
