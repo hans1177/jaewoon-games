@@ -859,6 +859,11 @@ test('native inventory and toy world detail primitives stay source-bound',()=>{
   const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
   const materials=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
   const generated=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.ok(worker.includes('RobloxCommonUI.CreateInventoryFullScreen and the returned Sync(items)'));
+  assert.ok(worker.includes('RobloxCommonUI.CreateIconButton and CreateInventorySlot'));
+  assert.ok(worker.includes('SurfaceStudsEnabled=true is only valid for Part.TopSurface'));
+
   const between=(start,end)=>{const a=ui.indexOf('function RobloxCommonUI.'+start+'(options)');const b=ui.indexOf('function RobloxCommonUI.'+end+'(options)',a+1);assert.ok(a>=0&&b>a);return ui.slice(a,b);};
   const slot=between('CreateInventorySlot','CreateTooltip');
   const icon=between('CreateIconButton','CreateDialogueAssistantButton');
