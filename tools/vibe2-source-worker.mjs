@@ -2008,7 +2008,13 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       -b.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0));
   const selection={version:1,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
     attempts:[],selectedFingerprint:null,runtimeVerified:false};
+  const deadline=Date.now()+DEFAULT_TIMEOUT_MS;
   for(const raw of ranked){
+    if(typeof candidateValidator==='function'&&Date.now()>=deadline){
+      const error=new Error('ROBLOX_NO_MODEL_VALIDATION_BUDGET_EXHAUSTED');
+      error.vibe2DeterministicSelection={...selection,status:'VALIDATION_BUDGET_EXHAUSTED'};
+      throw error;
+    }
     const fingerprint=rejectedSourcePatchFingerprint(raw);
     const paths=unique(raw.edits.map(row=>row.path));
     const decision={recipe:raw.deterministicRobloxNativeRepair,fingerprint,

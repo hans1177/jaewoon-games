@@ -98,6 +98,16 @@ test('no-model Roblox engine rejects one candidate then validates a different ex
       assert.equal(error.vibe2DeterministicSelection.attempts.length,2);
       return true;
     });
+  let clock=0;t.mock.method(Date,'now',()=>clock);
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'mobile button'},sourceRoot:root,
+    responsibleFiles:files,candidateValidator:()=>{
+      clock+=1000000;throw new Error('REJECT_WITHIN_EXISTING_TIME_BUDGET');
+    }}),error=>{
+      assert.equal(error.vibe2DeterministicSelection.status,'VALIDATION_BUDGET_EXHAUSTED');
+      assert.equal(error.vibe2DeterministicSelection.attempts.length,1);
+      assert.equal(error.vibe2DeterministicSelection.selectedFingerprint,null);
+      return true;
+    });
 });
 
 test('no-model Roblox engine refuses ambiguous function bindings and duplicate handler generation',t=>{
