@@ -113,9 +113,13 @@ export function classifyDevelopmentImpact({platform='COMMON',responsibleFiles=[]
   if(categories.includes('GRAPHICS'))requiredQa.push('VISUAL_BINDING_QA');
   if(target==='ROBLOX'&&categories.includes('MAP'))requiredQa.push('ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE');
 
+  // [기존 책임 영역] 로컬 Studio 수동 검수 대신 원격 F0~F9의 정확한
+  // 소스·아티팩트·관찰 증거를 요구한다. 관찰이 불가능하면 PASS가 아니라 UNVERIFIED다.
   const conditionalQa=[];
-  if(categories.some(name=>['GRAPHICS','UI'].includes(name)))conditionalQa.push('STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE');
-  if(categories.includes('MULTIPLAYER_SERVER'))conditionalQa.push('STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED');
+  if(categories.some(name=>['GRAPHICS','UI'].includes(name)))
+    conditionalQa.push('EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED');
+  if(categories.includes('MULTIPLAYER_SERVER'))
+    conditionalQa.push('EXACT_SOURCE_SERVER_AUTHORITY_F7_QA_NO_FAKE_MULTI_CLIENT_PASS');
 
   return Object.freeze({
     version:1,
@@ -186,7 +190,7 @@ export const PLATFORM_EXPERIENCE_PROFILES=Object.freeze({
   }),
   ROBLOX:Object.freeze({
     attention:'EXTRA',
-    runtimeSurface:'OFFICIAL_ROBLOX_STUDIO_MCP',
+    runtimeSurface:'EXACT_REMOTE_ROBLOX_CANDIDATE_F0_F9',
     requirements:Object.freeze([
       'ARTICULATED_ACTOR_MOTION_WITH_ANIMATOR_MOTOR6D_OR_BONES',
       'ROOT_ONLY_MOTION_CANNOT_PASS',
@@ -197,7 +201,7 @@ export const PLATFORM_EXPERIENCE_PROFILES=Object.freeze({
       'SOUNDSERVICE_SOUNDGROUP_MIXING_AND_SPATIAL_ROLLOFF_WHEN_AUDIO_APPLICABLE',
       'REGION_OR_STATE_BGM_TRANSITION_WHEN_MULTIPLE_CONTEXTS_EXIST',
       'VFX_CAMERA_AUDIO_SHARE_AUTHORITATIVE_IMPACT_EVENT',
-      'OFFICIAL_STUDIO_MCP_BEFORE_AFTER_RUNTIME_CAPTURE'
+      'EXACT_SOURCE_ARTIFACT_CLOUD_RUNTIME_BEFORE_AFTER_AND_POST_PUBLISH_VERSION_QA'
     ]),
     ownerDisabledAudioCategoriesMustRemainDisabled:true,
     nativeRuntimeEvidenceRequired:true,
@@ -1550,7 +1554,7 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
 }
 
 // Existing BUILD_UP workers consume this through directivePrompt; this is not a new QA runner.
-function buildPlayerFacingInspectionContract({gameId,source,states,responsibleFiles=[]}){
+function buildPlayerFacingInspectionContract({gameId,platform='COMMON',source,states,responsibleFiles=[]}){
   const definitions=[
     ['UI_LAYOUT','UI_HUD','UI', 'HUD·메뉴·팝업·인벤을 작은/큰 화면과 가로/세로에서 열고 긴 한글·최대 보유량·위험 경고를 표시', '글자 잘림·겹침·safe area 침범·체력/목표 가림·초점 소실·색만으로 상태 구분', '레이아웃·텍스트·아이콘·정보 우선순위', '같은 해상도/상태 전후 화면과 핵심 정보 식별'],
     ['UI_INTERACTION','MENU_FLOW','UI', '열기→스크롤→선택→장착→닫기→다시 열기, 팝업 위 터치와 빠른 연속 입력', '장식 버튼·중복 실행·닫기 터치의 뒤쪽 공격 전달·선택 초기화·표시와 실제 장착 불일치', '입력 소비·모달·선택 상태·서버 응답 연결', '터치/마우스별 한 번의 입력에 한 번의 결과와 상태 유지'],
@@ -1568,19 +1572,47 @@ function buildPlayerFacingInspectionContract({gameId,source,states,responsibleFi
     ['MOBILE_PERFORMANCE','PERFORMANCE_BUDGET','GRAPHICS', '최대 기존 전투/파티클/인벤·지역 이동·반복 세션을 승인된 모바일 예산과 대조', '입력 지연·프레임 급락·메모리/객체 누수·HUD 가림·발열 비용·무제한 효과', '실제 병목 update·객체/효과 수명·로드·네트워크', '같은 기기/장면의 전후 측정과 회귀; 예산 없으면 임의 수치 PASS 대신 미검증'],
     ['LOBBY_SPACES','MENU_FLOW','UI', '기존 로비에서 진입·파티 공간·퀘스트/이벤트 게시판·장비 전시·외형 설정·안전 연습 동선을 점검', '기능 없는 장식·구역 겹침·목적 불명·접지 불량·포탈 가림·연습이 저장/재화/판정 변경', '기존 허브 배치·상호작용·메뉴·안전 연습', '있는 기능은 연결/보존하고 없는 기능은 승인 설계 또는 오너 요청 범위 확인; 로비 없는 게임에 강제 추가 금지']
   ];
+  // [원격 자동 검증] 기존 15개 장면 각각을 관찰 가능한 실패·상태·재현 증거에 연결한다.
+  // 이 계약은 테스트 계획이며 원격 실행 결과가 없으면 어떤 항목도 PASS로 승격하지 않는다.
+  const remoteAssertions=Object.freeze({
+    UI_LAYOUT:['MOBILE_VIEWPORT_SAFE_AREA','TEXT_OVERFLOW_AND_HUD_OCCLUSION','RESIZE_AND_ORIENTATION'],
+    UI_INTERACTION:['TOUCH_EVENT_TO_ONE_SERVER_OR_UI_ACTION','SCROLL_MODAL_FOCUS','CLOSE_REOPEN_SELECTION'],
+    CHARACTER_RENDER:['REGISTERED_ASSET_AND_ORIGINAL_HASH','MESH_RIG_ATTACHMENT','MOVEMENT_GROUND_CONTACT'],
+    MONSTER_READABILITY:['DISTINCT_ENEMY_ROLE_AND_TELEGRAPH','ATTACK_HIT_DEATH_STATE_SEQUENCE','DESPAWN_CLEANUP'],
+    MOTION_TRANSITIONS:['TIME_ORDERED_IDLE_MOVE_TURN_JUMP','JOINT_ANIMATION_AND_BLEND','ATTACK_HIT_DEATH_NO_STALE_TRACK'],
+    ACTION_IMPACT:['AUTHORITATIVE_HIT_EVENT_ORDER','MISS_CANCEL_COOLDOWN_REPLAY','VFX_AUDIO_DAMAGE_ALIGNMENT'],
+    CAMERA_COMPOSITION:['WALL_AND_CORNER_OCCLUSION','TARGET_AND_PLAYER_READABILITY','MOBILE_CAMERA_INPUT'],
+    WORLD_BACKGROUND:['SPAWN_TO_OBJECTIVE_WORLD_ROUTE','LANDMARK_AND_TERRAIN_BINDING','LIGHTING_AND_REGION_STATE'],
+    GRAPHICS_INTEGRITY:['EXACT_MODEL_TEXTURE_LOAD','VISIBLE_RENDERED_DELTA','LOD_AND_RELOAD_RECOVERY'],
+    NAVIGATION_BLOCKERS:['SPAWN_GROUND_CONTACT','PORTAL_DOOR_ROUTE_REACHABILITY','RESPAWN_SAFE_RECOVERY'],
+    PROGRESSION_BLOCKERS:['CORE_LOOP_ACTION_TO_REWARD','UNLOCK_NEXT_OBJECTIVE','RETRY_IDEMPOTENT_REWARDS'],
+    RECOVERY_SAVE:['SAVE_EXIT_REJOIN_RESTORE','OLD_SAVE_COMPATIBILITY','NO_DUPLICATION_OR_LOSS'],
+    MULTIPLAYER_CONSISTENCY:['EXACT_SOURCE_F7_SERVER_AUTHORITY_CONTRACT','REPLICATION_AND_RECONNECT_SOURCE_QA','NO_UNVERIFIED_MULTI_CLIENT_PASS'],
+    MOBILE_PERFORMANCE:['INPUT_LATENCY_AND_FRAME_BUDGET','PARTICLE_OBJECT_LIFETIME','MEMORY_AND_MOBILE_VIEWPORT'],
+    LOBBY_SPACES:['EXISTING_LOBBY_ENTRY_AND_EXIT','SPAWN_INTERACTION_ROUTE','NO_GAMEPLAY_OR_SAVE_SIDE_EFFECT']
+  });
   return{
     version:1,gameId,requiredEveryBuildUpCycle:true,executionBoundary:'EXISTING_BUILD_UP_AND_F0_F9_ONLY',
     sourceTreeFingerprint:source.sourceTreeFingerprint,checklistIsNotExecutedEvidence:true,
     evidenceState:'UNVERIFIED',technicalPassIsNotVisualQualityPass:true,thumbnailTransportIsNotRenderedQuality:true,
+    validationMode:'REMOTE_AUTOMATED_EXISTING_F0_F9_AND_INDEPENDENT_QA',
+    localManualInspectionRequired:false,neverTreatSourceOrThumbnailAsRuntimePass:true,
+    exactCandidateBindingRequired:true,postPublishVersionMatchRequired:clean(platform).toUpperCase()==='ROBLOX',
+    negativeAndRecoveryScenariosRequired:true,
     applicabilityRule:'CHECK_EXISTING_OR_APPROVED_SURFACE; NOT_APPLICABLE_REQUIRES_DESIGN_AND_SOURCE_REASON; NEVER_ADD_UNAPPROVED_GAMEPLAY',
     cases:definitions.map(([id,domain,impact,scene,failure,owner,replay])=>{
       const domainState=states.find(row=>row.domain===domain);
-      return{id,domain,impact,applicability:domainState?.state==='NOT_APPLICABLE'?'REVIEW_NOT_APPLICABLE_REASON':'INSPECT_EXISTING_OR_APPROVED_SURFACE',applicabilityReason:domainState?.state==='NOT_APPLICABLE'?domainState.reason:null,scene,failureCriteria:failure,responsibility:owner,retest:replay,evidenceState:'UNVERIFIED'};
+      return{id,domain,impact,applicability:domainState?.state==='NOT_APPLICABLE'?'REVIEW_NOT_APPLICABLE_REASON':'INSPECT_EXISTING_OR_APPROVED_SURFACE',applicabilityReason:domainState?.state==='NOT_APPLICABLE'?domainState.reason:null,scene,failureCriteria:failure,responsibility:owner,retest:replay,evidenceState:'UNVERIFIED',
+        remoteAssertions:Object.freeze(remoteAssertions[id]),remoteProofState:'UNVERIFIED',
+        proofOrigin:'EXACT_REMOTE_CANDIDATE_OR_EXISTING_F0_F9',localManualInspectionRequired:false,
+        missingEvidenceAction:'KEEP_UNVERIFIED_AND_ROUTE_TO_EXISTING_QA'};
     }),
     responsibleSourceCandidates:uniq(responsibleFiles),
-    requiredEvidenceFields:['gameId','sourceRevision','artifactIdentity','placeOrSceneId','candidateVersion','platform','viewportOrDevice','scenarioId','inputSequence','observedStateBeforeAfter','captureReferenceAndSha256','finding','responsibleSource','retestResult'],
+    requiredEvidenceFields:['gameId','sourceRevision','sourceTreeFingerprint','artifactIdentity','placeOrSceneId','candidateVersion','platform','viewportOrDevice','scenarioId','inputSequence','observedStateBeforeAfter','captureReferenceAndSha256','remoteRunId','runtimeOrQaStage','failureSignature','responsibleSource','negativeCaseResult','finding','retestResult'],
     evidenceRules:[
       '현재 정확한 후보의 실제 플레이 장면만 사용한다. 대표 장면은 시작/로비, 핵심 행동, 위험/다중 적, 인벤/팝업, 지역 경계와 모바일이다. 해당 없는 장면은 설계/소스 이유를 기록한다.',
+      '로컬 수동 검수는 요구하지 않는다. 기존 원격 CI/F0~F9/독립 QA/Open Cloud에서 같은 sourceRevision·artifactIdentity·candidateVersion에 결속된 증거만 사용한다. 로컬 결과나 다른 버전의 증거를 합격으로 대체하지 않는다.',
+      '각 장면의 remoteAssertions를 기존 검사에서 실제 실행·측정한 뒤 실패/재시도/복구 분기까지 확인한다. F7 멀티는 중앙정책대로 정확한 소스 계약을 검사하며 실측한 다중 접속으로 허위 표시하지 않는다.',
       '같은 카메라·입력·해상도·게임 상태의 전후 이미지와 상태 결과를 비교한다. 모션은 정지 이미지 한 장 대신 연속 프레임/시간 정보가 필요하다.',
       '파일 존재·크기·PNG 서명·썸네일·자산 업로드·소스 마커·테스트 개수·반복 횟수는 시각 품질 합격을 증명하지 않는다.',
       '중앙 정책에서 허용한 관찰 도구만 사용한다. 정확한 화면 관찰 수단이 없으면 시각 품질은 UNVERIFIED로 남기고 증거 수집 책임으로 반환한다. 증거 부재를 관찰된 그래픽 오류로 꾸미지 않는다.',
@@ -1821,17 +1853,22 @@ export function playerFacingInspectionPromptLines(contract={}, {focus='',generat
   const start=(Math.max(1,Number(generation)||1)-1)%Math.max(1,pool.length);
   const selected=pool.length?[pool[start],...(pool.length>1?[pool[(start+1)%pool.length]]:[])]:[];
   const lines=[];
-  for(let i=0;i<cases.length;i+=5)lines.push('inspectionIndex='+cases.slice(i,i+5).map(row=>row.id+':'+row.applicability).join('|'));
+  for(let i=0;i<cases.length;i+=5){
+    const batch=cases.slice(i,i+5);
+    lines.push('inspectionIndex='+batch.map(row=>row.id+':'+row.applicability).join('|'));
+    lines.push('inspectionRemoteMatrix='+batch.map(row=>row.id+':'+(row.remoteAssertions||[]).join('/')).join('|'));
+  }
   return[
-    'inspectionContract=EVERY_CYCLE; EXISTING_BUILD_UP_AND_F0_F9_ONLY; CHECKLIST_NOT_EXECUTED; QUALITY_UNVERIFIED; inspect all applicable surfaces, expand current details from playerFacingInspectionContract; not-applicable needs design/source reason.',
+    'inspectionContract=EVERY_CYCLE; REMOTE_AUTOMATED_F0_F9_AND_INDEPENDENT_QA_ONLY; LOCAL_MANUAL_INSPECTION_NOT_REQUIRED; CHECKLIST_NOT_EXECUTED; QUALITY_UNVERIFIED; inspect all applicable surfaces, expand current details from playerFacingInspectionContract; not-applicable needs design/source reason.',
     ...lines,
-    'inspectionEvidence=EXACT_GAME_SOURCE_ARTIFACT_VERSION_SCENE_VIEWPORT_INPUT_STATE_CAPTURE_SHA256_FINDING_OWNER_RETEST; compare same scene before/after; motion needs timed frames. Thumbnail/transport/static QA/counts never prove visual quality.',
+    'inspectionEvidence=EXACT_GAME_SOURCE_TREE_ARTIFACT_VERSION_SCENE_VIEWPORT_INPUT_STATE_CAPTURE_SHA256_REMOTE_RUN_STAGE_NEGATIVE_CASE_FINDING_OWNER_RETEST; compare same scene before/after; motion needs timed frames. Thumbnail/transport/static QA/counts never prove visual quality.',
     'inspectionRule=Use centrally allowed observation only. Missing exact render stays UNVERIFIED, not an invented defect/PASS. Reproduce real failure, repair existing owner, run impact QA, rebuild/replay same scene; preserve save/balance/server authority.',
     ...selected.flatMap(row=>[
       'inspectionScene='+row.id+':'+row.scene,
       'inspectionFailure='+row.id+':'+row.failureCriteria,
       'inspectionOwner='+row.id+':'+row.responsibility,
-      'inspectionRetest='+row.id+':'+row.retest
+      'inspectionRetest='+row.id+':'+row.retest,
+      'inspectionRemoteChecks='+row.id+':'+(row.remoteAssertions||[]).join(',')+'; result=UNVERIFIED_UNTIL_EXACT_REMOTE_PROOF'
     ])
   ];
 }
@@ -1987,7 +2024,13 @@ function buildExperienceBuildupContract({platform='COMMON',design={},source={},f
       singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp:true
     }),
     runtimeEvidence:Object.freeze({
-      officialStudioMcpRequired:true,
+      officialStudioMcpRequired:false,
+      localManualInspectionRequired:false,
+      existingF0F9AndIndependentQaRequired:true,
+      exactPrivateCandidateRemoteEvidenceRequired:true,
+      exactPublishedPlaceVersionQaRequired:true,
+      cloudThumbnailMetadataCannotProveRenderedScene:true,
+      optionalStudioCaptureCannotReplaceCanonicalEvidence:true,
       actualInputRequired:true,
       beforeAfterCaptureRequired:true,
       mobileViewportRequired:true,
@@ -2475,7 +2518,20 @@ export function directivePrompt(d={}){
     'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action and source-grounded NPC AI/quest/dialogue/crafting/economy/progression/farming/weather/physics/camera/audio/skill effects/network only when game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive existing actions and approved hit events; NPC decisions must not grant economy/save/combat authority; crafting and shopping use actual items/currency/state. Use applicable moduleConnections as source-only QA work units, never completed features. Mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with authoritative state; source signatures never pass QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
-    `EXPERIENCE_BUILD_UP: ${JSON.stringify(d.experienceBuildUpContract||{})}`,
+    // [빌드업 프롬프트] 전체 검증 계약은 directive에 보존하고, 반복 프롬프트에는
+    // 실행 우선순위와 원격 증거 조건만 전달해 15개 장면 검사 확장으로 인한 폭증을 방지한다.
+    `EXPERIENCE_BUILD_UP: ${JSON.stringify({
+      version:d.experienceBuildUpContract?.version,
+      platform:d.experienceBuildUpContract?.platform,
+      attention:d.experienceBuildUpContract?.attention,
+      runtimeSurface:d.experienceBuildUpContract?.platformProfile?.runtimeSurface,
+      weakestTracks:d.experienceBuildUpContract?.weakestTracks,
+      loop:d.experienceBuildUpContract?.loop,
+      rules:['EXACT_REMOTE_CANDIDATE_EVIDENCE','INPUT_TO_STATE_TO_PLAYER_FEEDBACK','NO_SOURCE_OR_THUMBNAIL_PASS',
+        'SAME_SCENE_BEFORE_AFTER','PRESERVE_SAVE_BALANCE_ECONOMY_AND_AUTHORITY'],
+      robloxRemoteProof:d.experienceBuildUpContract?.robloxExtra?.runtimeEvidence||null,
+      details:'Full source-grounded experienceBuildUpContract and playerFacingInspectionContract remain canonical for each existing BUILD_UP task'
+    })}`,
     `UX_INPUT: ${d.uxInputDirectives.join(' | ')}`,
     d.robloxNativeExecution?`ROBLOX_NATIVE_RESPONSIBLE_FILES: ${(d.robloxNativeExecution.responsibleFiles||[]).join(' | ')||'CURRENT_ALLOWED_ROBLOX_FILES'}`:'',
     d.robloxNativeExecution?`ROBLOX_NATIVE_SERVER_CLIENT: ${(d.robloxNativeExecution.serverClientResponsibility||[]).map(row=>row.file+':'+row.symbol+':'+row.role).join(' | ')}`:'',
@@ -2862,7 +2918,7 @@ export function buildGameSpecificBuildUpDirective({
     'MOTION_UI_INVENTORY_AUDIO_VFX_CAMERA_WORLD_MOBILE_PERFORMANCE_TRACKS_REVIEWED',
     'PRESENCE_ONLY_OR_MARKER_ONLY_CANNOT_CLOSE_PLAYER_FACING_QUALITY',
     'SAME_SCENE_BEFORE_AFTER_RUNTIME_REOBSERVATION_REQUIRED_FOR_EXPERIENCE_BUILD_UP',
-    'ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION',
+    'ROBLOX_EXPERIENCE_BUILD_UP_REQUIRES_EXACT_REMOTE_EVIDENCE_NO_LOCAL_MANUAL_INSPECTION',
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
     'GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED',
@@ -3050,7 +3106,7 @@ export function buildGameSpecificBuildUpDirective({
     },
     gameInternalAutoComposition:buildGameInternalAutoCompositionPlan({gameId:id,platform,repoRoot,sourceRoot,sourceObservation:source,design}),
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus,platform}),
-    playerFacingInspectionContract:buildPlayerFacingInspectionContract({gameId:id,source,states,responsibleFiles:topFiles}),
+    playerFacingInspectionContract:buildPlayerFacingInspectionContract({gameId:id,platform,source,states,responsibleFiles:topFiles}),
     experienceBuildUpContract:buildExperienceBuildupContract({platform,design,source,focus}),
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),

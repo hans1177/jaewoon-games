@@ -1114,6 +1114,29 @@ test('development dry-run classifies only relevant impact and adds no new execut
   ]);
 });
 
+test('detailed BUILD_UP impact routes remote UI and multiplayer validation without local Studio review',()=>{
+  const impact=classifyDevelopmentImpact({
+    platform:'ROBLOX',
+    responsibleFiles:['roblox-games/demo/client/Camera.client.luau','roblox-games/demo/server/Network.server.luau'],
+    qualityGapMap:[{domain:'UI_HUD',state:'GAP'},{domain:'MULTIPLAYER_AND_SYNC',state:'GAP'}]
+  });
+  assert.ok(impact.categories.includes('UI'));
+  assert.ok(impact.categories.includes('MULTIPLAYER_SERVER'));
+  assert.ok(impact.requiredQa.includes('MOBILE_TOUCH_UI_QA'));
+  assert.ok(impact.requiredQa.includes('ROBLOX_LUAU_COMPILE'));
+  assert.ok(impact.requiredQa.includes('REMOTE_AUTHORITY_AND_SYNC_QA'));
+  assert.ok(impact.requiredQa.includes('SECURITY_AUTHORITY_QA'));
+  assert.ok(impact.conditionalQa.includes('EXACT_REMOTE_RENDER_TOUCH_CAMERA_EVIDENCE_OR_UNVERIFIED'));
+  assert.ok(impact.conditionalQa.includes('EXACT_SOURCE_SERVER_AUTHORITY_F7_QA_NO_FAKE_MULTI_CLIENT_PASS'));
+  assert.ok(impact.conditionalQa.every(row=>!row.includes('STUDIO_MCP')));
+  const dry=buildDevelopmentDryRun({gameId:'demo',platform:'ROBLOX',
+    responsibleFiles:['roblox-games/demo/client/Camera.client.luau','roblox-games/demo/server/Network.server.luau'],
+    developmentImpact:impact});
+  assert.deepEqual(dry.conditionalQa,impact.conditionalQa);
+  assert.equal(dry.sourceMutationPerformed,false);
+  assert.equal(dry.newWorkflowOrQueueRequired,false);
+});
+
 test('generated BUILD_UP directive carries dry-run and impact classification before mutation',()=>{
   const directive=buildGameSpecificBuildUpDirective({
     gameId:'map-demo',platform:'ROBLOX',designRecord:design(),
