@@ -40,11 +40,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          latest="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
-          if [ -z "$latest" ] || [ "$latest" != "$GITHUB_SHA" ]; then
-            echo "BAEKSU_STALE_PREVIEW_REJECTED: source=$GITHUB_SHA latest=$latest"
+          # 다른 게임/홈페이지 커밋 때문에 UI 배포를 막지 않는다.
+          # 백수대전쟁 코드·해당 UI 라이브러리·배포 절차가 달라진 경우에만 거부한다.
+          git fetch --no-tags --depth=1 origin main
+          if ! git diff --quiet "$GITHUB_SHA" FETCH_HEAD -- \
+            'roblox-games/baeksu-war' \
+            'tools/baeksu-war-author-meshes.py' \
+            'tools/baeksu-war-upload-meshes.mjs' \
+            '.github/workflows/owner-baeksu-war-private-preview.yml' \
+            'assets/roblox/common-ui-v1'; then
+            echo 'BAEKSU_STALE_RELEVANT_SOURCE_REJECTED'
             exit 1
           fi
+          echo 'BAEKSU_RELEVANT_PREVIEW_REVISION_VERIFIED'
       # 4차 비공개 게시(40343077784 / Place v5)에서 실제 업로드 및 전용 Universe 허가가
       # 입증된 모델 12개를 재사용한다. 매 push마다 재업로드하면 시작 지연과 잘못된 ID를 유발한다.
       - name: Verify pinned CC0 original meshes and approved universe permission receipts
@@ -90,11 +98,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          latest="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
-          if [ -z "$latest" ] || [ "$latest" != "$GITHUB_SHA" ]; then
-            echo "BAEKSU_PRE_PUBLISH_STALE_REVISION: source=$GITHUB_SHA latest=$latest"
+          # 다른 게임/홈페이지 커밋 때문에 UI 배포를 막지 않는다.
+          # 백수대전쟁 코드·해당 UI 라이브러리·배포 절차가 달라진 경우에만 거부한다.
+          git fetch --no-tags --depth=1 origin main
+          if ! git diff --quiet "$GITHUB_SHA" FETCH_HEAD -- \
+            'roblox-games/baeksu-war' \
+            'tools/baeksu-war-author-meshes.py' \
+            'tools/baeksu-war-upload-meshes.mjs' \
+            '.github/workflows/owner-baeksu-war-private-preview.yml' \
+            'assets/roblox/common-ui-v1'; then
+            echo 'BAEKSU_STALE_RELEVANT_SOURCE_REJECTED'
             exit 1
           fi
+          echo 'BAEKSU_RELEVANT_PREVIEW_REVISION_VERIFIED'
           node tools/company-roblox-dedicated-experience.mjs \
             --game-id=baeksu-war \
             --game-name='백수대전쟁 [비공개 선배포]' \
