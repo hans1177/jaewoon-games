@@ -117816,7 +117816,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -117858,12 +117858,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:40293202137:1",
+      "reservedAt": "2026-10-26T08:39:51.138Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -118502,7 +118502,8 @@
         "system-ai-handoff-to-reservation:system-ai:40290373807:1",
         "actions-run:40290373807",
         "system-ai-handoff-to-reservation:system-ai:40291098516:1",
-        "actions-run:40291098516"
+        "actions-run:40291098516",
+        "system-ai-handoff-to-reservation:system-ai:40293202137:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1694,
@@ -118517,7 +118518,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-10-26T08:24:26.873Z"
+      "updatedAt": "2026-10-26T08:39:51.138Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
@@ -172024,6 +172025,7 @@
       "department": "recovery",
       "taskType": "bottleneck-repair",
       "gameId": "fantasy-survival",
+      "jointDecisionRequired": false,
       "goal": "Analyze the exact failed WEB deployment stage VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
       "responsibleFiles": [
         ".github/workflows/magic-forest-pages.yml"
@@ -172032,36 +172034,7 @@
         ".github/workflows/magic-forest-pages.yml",
         "web-games/fantasy-survival"
       ],
-      "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
-      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
-      "relatedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:a443ed727791055289e1954fd0e3dd329db23d64:fantasy-survival"
-      ],
-      "blockedTaskIds": [
-        "deployment:.github/workflows/magic-forest-pages.yml:a443ed727791055289e1954fd0e3dd329db23d64:fantasy-survival"
-      ],
-      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
-      "recurrenceCount": 1,
-      "repairMode": "FOCUSED_REPAIR",
-      "userAssistanceRequired": false,
-      "sourceMutationRequired": true,
-      "sourceMutationBaseline": "a443ed727791055289e1954fd0e3dd329db23d64",
-      "gameRepairContract": {
-        "version": 1,
-        "mode": "FOCUSED_REPAIR",
-        "prePatchReproductionRequired": true,
-        "causalResponsibleSystemRequired": true,
-        "compareLastKnownGoodFirstBrokenCurrentRequired": false,
-        "originalScenarioReplayRequired": true,
-        "invariantValidationRequired": true,
-        "saveMigrationValidationRequired": false,
-        "multiplayerLifecycleValidationRequired": false,
-        "multiplayerUserAssistanceRequired": false,
-        "multiplayerMinimumAutomatedClients": 0,
-        "impactRegressionRequired": true,
-        "fullRegressionFanInRequired": true,
-        "repeatedSameApproachWithoutNewCausalEvidenceForbidden": false
-      },
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "repair only assigned responsible files",
         "reproduce the exact failure before patch or preserve existing verified reproduction evidence",
@@ -172085,7 +172058,24 @@
         "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
       ],
       "dependencies": [],
+      "relatedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:a443ed727791055289e1954fd0e3dd329db23d64:fantasy-survival"
+      ],
+      "blockedTaskIds": [
+        "deployment:.github/workflows/magic-forest-pages.yml:a443ed727791055289e1954fd0e3dd329db23d64:fantasy-survival"
+      ],
       "retries": 0,
+      "recurrenceCount": 1,
+      "failureStage": "DEPLOYMENT_WEB_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureSignature": "WORKFLOW_FAILED_VALIDATE_LIVE_PUBLISHED_3D_MODEL_AND_GAME_CONTROLS",
+      "failureClass": null,
+      "handoffCount": 0,
+      "previousReservationId": null,
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "knownGoodRevision": null,
+      "repairRisk": 1,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "a443ed727791055289e1954fd0e3dd329db23d64",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "reservationId": null,
@@ -172120,8 +172110,8 @@
         "primary-ai-collaboration-task:recovery-recovery-97379d4629c6537773cf"
       ],
       "supervisorReviewRequired": true,
-      "workerSelfAcceptance": false,
-      "learningCandidate": true,
+      "impactScore": 0,
+      "impactComponents": null,
       "createdAt": "2026-10-26T08:38:32.355Z",
       "updatedAt": "2026-10-26T08:38:32.355Z"
     }
