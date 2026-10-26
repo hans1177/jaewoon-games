@@ -278,6 +278,24 @@
       ]
     },
     {
+      "atomId": "TOY_PLASTIC",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "SATIN",
+        "GLOSSY",
+        "MATTE",
+        "DARK"
+      ],
+      "visualStyle": "TOY_BRICK",
+      "sourceType": "NATIVE_COLOR_ONLY",
+      "originalAssetsUnchanged": true,
+      "gameSpecificOptIn": true,
+      "requiresNativeMeshForStuds": true,
+      "renderingVerification": "PENDING",
+      "gameplayAuthority": false
+    },
+    {
       "atomId": "STYLE_VARIANT",
       "source": "RobloxCommonMaterials.luau",
       "factory": "Apply",
@@ -285,7 +303,8 @@
         "FANTASY",
         "INDUSTRIAL",
         "COZY",
-        "HORROR"
+        "HORROR",
+        "TOY_BRICK"
       ]
     }
   ],
@@ -343,9 +362,10 @@
       "WET_DRY",
       "DAMAGE",
       "WEATHERING",
+      "TOY_PLASTIC",
       "STYLE_VARIANT"
     ],
-    "currentAssetCount": 25,
+    "currentAssetCount": 26,
     "missingComponentCandidates": [],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
@@ -360,7 +380,8 @@
       "CORROSION",
       "DAMAGE",
       "WEATHERING",
-      "STYLE_VARIANT"
+      "STYLE_VARIANT",
+      "TOY_PLASTIC"
     ]
   },
   "internalAssetStandard": {
@@ -376,7 +397,7 @@
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
   },
-  "title": "Roblox 회사 공용 재질 25종 v5",
+  "title": "Roblox 회사 공용 재질 26종 v5",
   "seedCompositionContract": {
     "version": 1,
     "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
@@ -403,5 +424,82 @@
   },
   "pbrSourceManifest": "manifest.json",
   "pbrSourceCount": 21,
-  "nativePbrBindingRequired": true
+  "nativePbrBindingRequired": true,
+  "toyBrickStyle": {
+    "styleId": "TOY_BRICK",
+    "baseAtom": "TOY_PLASTIC",
+    "optInByGame": false,
+    "styleConfigField": "VisualStyle.MaterialStyle",
+    "nativeMaterial": "SmoothPlastic",
+    "extraPartCreationForbidden": true,
+    "noSyntheticStudGeometry": true,
+    "usesVerifiedCC0MeshesWithoutGeometryRewrite": true,
+    "preserveOriginalModelTextures": true,
+    "preserveCollidersAndPhysics": true,
+    "sourceReviewOnly": true,
+    "productionVerified": false,
+    "runtimeVerified": false,
+    "appliedGameSources": [
+      "roblox-games/amusement-tycoon/shared/RobloxCommonMaterials.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/card-grid-duel/shared/RobloxCommonMaterials.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+      "roblox-games/chess-battle/shared/RobloxCommonMaterials.luau",
+      "roblox-games/core-clash-4v4/shared/RobloxCommonMaterials.luau",
+      "roblox-games/cozy-island/shared/RobloxCommonMaterials.luau",
+      "roblox-games/daechung-rpg/shared/RobloxCommonMaterials.luau",
+      "roblox-games/defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
+      "roblox-games/egg-heist/shared/RobloxCommonMaterials.luau",
+      "roblox-games/exorcist-office/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fantasy-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/fifty-days/shared/RobloxCommonMaterials.luau",
+      "roblox-games/gem-survivor/shared/RobloxCommonMaterials.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go-temp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/human-go/shared/RobloxCommonMaterials.luau",
+      "roblox-games/insect-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/island-village/shared/RobloxCommonMaterials.luau",
+      "roblox-games/kingshot-ad/shared/RobloxCommonMaterials.luau",
+      "roblox-games/line-defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+      "roblox-games/moon-ruins/shared/RobloxCommonMaterials.luau",
+      "roblox-games/party-rpg/shared/RobloxCommonMaterials.luau",
+      "roblox-games/realistic-builder/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-casual-realm-weaver/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-survival-horror-es-doors/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/RobloxCommonMaterials.luau",
+      "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
+      "roblox-games/star-frontier/shared/RobloxCommonMaterials.luau",
+      "roblox-games/survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/survival2/shared/RobloxCommonMaterials.luau",
+      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
+      "roblox-games/territory-war/shared/RobloxCommonMaterials.luau",
+      "roblox-games/tower-choice-rpg/shared/RobloxCommonMaterials.luau",
+      "roblox-games/village-dungeons/shared/RobloxCommonMaterials.luau",
+      "roblox-games/wild-survival/shared/RobloxCommonMaterials.luau",
+      "roblox-games/zombie-survival/shared/RobloxCommonMaterials.luau"
+    ],
+    "allGamesUseExistingBootstrapCopyOnRegeneration": true,
+    "mandatoryForExistingRenderedParts": true,
+    "existingAssetTargets": [
+      "CHARACTER",
+      "CREATURE",
+      "BUILDING",
+      "ENVIRONMENT",
+      "WEAPON",
+      "PROP",
+      "WORLD_OBJECT",
+      "TERRAIN"
+    ],
+    "importedTexturedMeshes": "PLASTIC_MATERIAL_AND_TINT_APPLIED_TEXTURES_PRESERVED_FURTHER_DERIVATIVE_QA_REQUIRED",
+    "roundPrimitives": "NOT_VERIFIED_REPLACEMENT_REQUIRED"
+  }
 }

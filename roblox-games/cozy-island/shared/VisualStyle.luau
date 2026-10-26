@@ -1,4 +1,6 @@
+-- 파일명: roblox-games/cozy-island/shared/VisualStyle.luau
 local Style={
+  MaterialStyle="TOY_BRICK", -- 게임별 선택. 공용 모델의 리그·충돌·원본 텍스처는 변경하지 않는다.
   Lighting={Brightness=2.6,ClockTime=14.2,Ambient=Color3.fromRGB(165,180,185),OutdoorAmbient=Color3.fromRGB(182,197,202)},
   Water=Color3.fromRGB(70,157,188),
   SeaLevel=2,

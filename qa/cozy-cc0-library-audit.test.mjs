@@ -44,7 +44,7 @@ test('Only verified CC0 actors replace Cozy village/raider visuals, originals an
   assert.match(source,/local selected=isRaider and \{id=CC0\.Raider\[/);
   assert.match(source,/task\.spawn\(applyCC0Appearance,r,licenseAsset/);
   assert.match(source,/task\.spawn\(applyCC0Appearance,r,selected\.id/);
-  assert.match(source,/Materials\.ApplyAuthoredSurface\(x,"COZY"\)/);
+  assert.match(source,/Materials\.ApplyAuthoredSurface\(x,Style\.MaterialStyle or "COZY"\)/);
   assert.match(source,/if child:IsA\("BasePart"\)then child:Destroy\(\)end/);
   assert.match(source,/joint\.Name="CozyVisualJoint"\.\.roots/);
   assert.match(source,/while loadingAssets\[id\] do/);
@@ -126,4 +126,58 @@ test('grant validates exact prechecked universe and treats server permission err
   assert.deepEqual(received.body.requests,[{assetId:70786111181272,grantToDependencies:true}]);
   await assert.rejects(()=>grantCozyCC0({report:{...report,universeId:'wrong'},apiKey:'mock-test-key',cookie:'',fetchImpl}),/CC0_AUDIT_REQUIRED/);
   await assert.rejects(()=>grantCozyCC0({report,apiKey:'mock-test-key',cookie:'',fetchImpl:async()=>({ok:false,status:403,json:async()=>({})})}),/GRANT_FAILED/);
+});
+
+test('기존 자산에도 브릭 재질을 강제 적용하고 물리·CC0 원본을 보존한다',()=>{
+  const common=read('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau');
+  const cozy=read('roblox-games/cozy-island/shared/RobloxCommonMaterials.luau');
+  const catalog=JSON.parse(read('assets/roblox/common-materials-v1/catalog.json'));
+  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
+  const client=read('roblox-games/cozy-island/client/MaterialPresentation.client.luau');
+  const bootstrap=read('tools/company-development-roblox-bootstrap.mjs');
+  const vibePlan=read('tools/vibe2-asset-production-plan.mjs');
+  assert.match(vibePlan,/TOY_BRICK.*레고/,'기존 바이브 스타일 추론에서 게임별 브릭 스타일 선택 지원');
+  assert.equal(common,cozy,'게임별 재질 복사본은 공용 원본과 일치해야 한다');
+  assert.equal(catalog.atoms.length,26);
+  assert.equal(catalog.systemDepthContract.currentAssetCount,26);
+  assert.deepEqual(catalog.atoms.find(row=>row.atomId==='TOY_PLASTIC').variants,['SATIN','GLOSSY','MATTE','DARK']);
+  assert.ok(catalog.atoms.find(row=>row.atomId==='STYLE_VARIANT').variants.includes('TOY_BRICK'));
+  assert.equal(catalog.toyBrickStyle.productionVerified,false,'재질 카탈로그만으로 런타임 검증 불가');
+  assert.equal(catalog.toyBrickStyle.runtimeVerified,false);
+  assert.match(common,/TOY_PLASTIC = table\.freeze/);
+  assert.match(common,/ToyBrickExistingAssetConversion/);
+  assert.match(common,/ToyBrickPresentationMaterialId/);
+  assert.doesNotMatch(common,/part:SetAttribute\\(\"MaterialSourceId\",\"NATIVE_TOY_PLASTIC\"\\)/);
+  assert.match(common,/importedTexture=mesh and/);
+  assert.match(common,/RobloxCommonMaterials\.Apply\(part,"TOY_PLASTIC"/);
+  assert.match(common,/ROUND_PRIMITIVE_CC0_REPLACEMENT_REQUIRED/);
+  assert.match(common,/if preservePhysics and physicalBefore then[\s\S]*?part\.CustomPhysicalProperties = physicalBefore/);
+  assert.match(common,/IMPORTED_ATLAS_REQUIRES_VISUAL_DERIVATIVE_QA/);
+  assert.doesNotMatch(common,/Instance\.new\(["'](?:Part|WedgePart|MeshPart)["']\)/,'신규 외형 파츠를 발명하지 않는다');
+  assert.match(style,/MaterialStyle="TOY_BRICK"/);
+  assert.match(source,/Materials\.ApplyAuthoredSurface\(x,Style\.MaterialStyle or "COZY"\)/);
+  assert.match(client,/local style=Style\.MaterialStyle or "COZY"/);
+  assert.match(bootstrap,/common-materials-v1\/RobloxCommonMaterials\.luau/);
+  assert.equal(catalog.toyBrickStyle.mandatoryForExistingRenderedParts,true);
+  assert.equal(catalog.toyBrickStyle.optInByGame,false);
+});
+
+// [전체 Roblox 공용 재질] 기존 게임별 재질 복사본은 회사 원본과 일치해야 한다.
+// 기본 스타일은 유지하며 선택형 TOY_BRICK 추가만 허용한다.
+test('모든 기존 Roblox 게임의 공유 재질 46개는 브릭 전환된 단일 원본과 완전히 일치한다',()=>{
+  const base=read('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau');
+  const dirs=fs.readdirSync('roblox-games',{withFileTypes:true}).filter(row=>row.isDirectory());
+  const copies=dirs.map(row=>'roblox-games/'+row.name+'/shared/RobloxCommonMaterials.luau')
+    .filter(path=>fs.existsSync(path));
+  assert.equal(copies.length,46);
+  for(const file of copies){
+    assert.equal(read(file),base,file+' must match the exact current shared material module');
+    const client=file.replace('/shared/RobloxCommonMaterials.luau','/client/MaterialPresentation.client.luau');
+    assert.equal(fs.existsSync(client),true,client);
+    assert.match(read(client),/Materials\.ApplyAuthoredSurface\(part,style\)/);
+  }
+  assert.match(base,/ToyBrickExistingAssetConversion/);
+  assert.match(base,/ROUND_PRIMITIVE_CC0_REPLACEMENT_REQUIRED/);
+  assert.match(base,/IMPORTED_ATLAS_REQUIRES_VISUAL_DERIVATIVE_QA/);
+  assert.equal(JSON.parse(read('assets/roblox/common-materials-v1/catalog.json')).toyBrickStyle.runtimeVerified,false);
 });
