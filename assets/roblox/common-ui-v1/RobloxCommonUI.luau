@@ -959,6 +959,10 @@ function RobloxCommonUI.CreateIconButton(options)
   gloss.Visible = missingImage
   gloss.Parent = button
   corner(gloss, 3)
+  iconPlate.ZIndex = button.ZIndex + 1
+  gloss.ZIndex = button.ZIndex + 2
+  fallback.ZIndex = button.ZIndex + 3
+  badge.ZIndex = button.ZIndex + 4
   fallback.TextStrokeColor3 = theme.Border
   fallback.TextStrokeTransparency = 0.35
 
@@ -2390,11 +2394,14 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
       if activePreview then activePreview:Destroy();activePreview=nil end
       currentPreviewSource=source
       if typeof(source)=="Instance" and (source:IsA("Model") or source:IsA("BasePart")) and options.showModelPreview~=false then
-        activePreview=RobloxCommonUI.CreateItemModelPreview({
+        local ok, preview=pcall(RobloxCommonUI.CreateItemModelPreview,{
           name="SelectedItem3DArt",model=source,theme=theme,size=UDim2.fromOffset(112,112)
         })
-        activePreview.Position=UDim2.fromOffset(12,67)
-        activePreview.Parent=detail
+        if ok and preview then
+          activePreview=preview
+          activePreview.Position=UDim2.fromOffset(12,67)
+          activePreview.Parent=detail
+        end
       end
     end
     if activePreview then activePreview.Visible=body.AbsoluteSize.X>=560 end
