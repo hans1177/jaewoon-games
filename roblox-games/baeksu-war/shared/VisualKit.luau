@@ -1,4 +1,4 @@
--- 백수대전쟁 V3: 진짜 3D 메시/CC0 호환 오리지널 GLB 기반 외형. Part 생성 0.
+-- 백수대전쟁 V4: 실물 CC0 3D 모델, Terrain 바닥 밀착. Part 생성 0.
 -- 각 메시의 Cloud Model 사용 권한은 owner workflow에서 이 Universe에 부여한다.
 local AssetService=game:GetService("AssetService")
 local Debris=game:GetService("Debris")
@@ -6,6 +6,31 @@ local IDs=require(script.Parent:WaitForChild("VisualAssetIds"))
 local Kit={}
 local templates={}
 local expected={'sparrow','ant','beetle','wolf','turtle','slime','golem','dragon','home','gate','tree','rock'}
+-- 수입 메시마다 기준점이 다르므로 지형과 실제 발끝 높이를 기준으로 배치한다.
+local groundRay=RaycastParams.new()
+groundRay.FilterType=Enum.RaycastFilterType.Include
+groundRay.FilterDescendantsInstances={workspace.Terrain}
+local function terrainHeight(x,z)
+ local hit=workspace:Raycast(Vector3.new(x,96,z),Vector3.new(0,-160,0),groundRay)
+ return hit and hit.Position.Y or .5
+end
+local function baseY(model)
+ local bounds,extents=model:GetBoundingBox()
+ return bounds.Position.Y-extents.Y*.5
+end
+local function seatOnGround(model,x,z)
+ -- Pivot이 머리/중앙/발에 있어도 실제 메시 최하단을 지면과 맞춘다.
+ local shift=terrainHeight(x,z)+.04-baseY(model)
+ model:PivotTo(model:GetPivot()+Vector3.new(0,shift,0))
+end
+function Kit.PoseCreature(actor,x,z,yaw)
+ local offset=actor:GetAttribute("PivotAboveFeet")
+ if type(offset)~="number" then
+  offset=actor:GetPivot().Position.Y-baseY(actor)
+  actor:SetAttribute("PivotAboveFeet",offset)
+ end
+ actor:PivotTo(CFrame.new(x,terrainHeight(x,z)+offset+.04,z)*CFrame.Angles(0,yaw or 0,0))
+end
 for _,key in ipairs(expected) do
  local id=IDs[key]
  assert(type(id)=="number" and id>0,"백수대전쟁 3D 모델 ID 누락: "..key)
@@ -41,7 +66,7 @@ local function meshClone(key,parent,cf,size,team)
    if team=="ENEMY" then inst.Color=inst.Color:Lerp(Color3.fromRGB(198,95,92),.18) end
   end
  end
- -- FBX/GLB 임포터의 1:1 모델 Pivot과 스케일을 유지한다.
+ -- 임포터에서 가져온 실물 메시의 Pivot을 보존하고 실제 크기만 조절한다.
  local largest=root:GetExtentsSize().Magnitude
  if largest>0 and size then
   local target=math.max(size.X,size.Y,size.Z)
@@ -56,7 +81,7 @@ function Kit.BuildCreature(folder,cf,unit,level,team)
  if not actor or not root then return nil end
  local scale=1+math.min(level-1,9)*.055
  actor:ScaleTo(actor:GetScale()*scale)
- actor:PivotTo(cf)
+ Kit.PoseCreature(actor,cf.Position.X,cf.Position.Z,team=="ENEMY" and math.pi or 0)
  if level>=5 then
   local highlight=Instance.new("Highlight")
   highlight.Name="진화 효과";highlight.FillTransparency=.86
@@ -69,7 +94,7 @@ function Kit.BuildCreature(folder,cf,unit,level,team)
   highlight.OutlineColor=Color3.fromRGB(255,176,38)
   highlight.Parent=actor
  end
- return root
+ return root,actor
 end
 function Kit.BuildHome(folder,pos,unit,level)
  local home=meshClone("home",folder,CFrame.new(pos.X,.3,pos.Z),
@@ -78,7 +103,7 @@ function Kit.BuildHome(folder,pos,unit,level)
  -- 건물 성장: 메시 모델 자체 확대, 레벨/유닛 색만 시각적으로 적응.
  local scale=1+math.min(level-1,9)*.035
  home:ScaleTo(home:GetScale()*scale)
- home:PivotTo(CFrame.new(pos.X,.3,pos.Z))
+ seatOnGround(home,pos.X,pos.Z)
  for _,inst in ipairs(home:GetDescendants()) do
   if inst:IsA("MeshPart") and inst.Name:lower():find("roof") then
    inst.Color=unit.Color:Lerp(inst.Color,.5)
@@ -88,6 +113,7 @@ function Kit.BuildHome(folder,pos,unit,level)
 end
 function Kit.DecorateGate(folder,x,z,enemy)
  local model=meshClone("gate",folder,CFrame.new(x,0,z),Vector3.new(50,25,12),enemy and "ENEMY" or "ALLY")
+ if model then seatOnGround(model,x,z) end
  return model
 end
 function Kit.BuildWorld(folder,x)
@@ -96,13 +122,16 @@ function Kit.BuildWorld(folder,x)
    for _,side in ipairs({-1,1}) do
     local xx=x+side*29
     local z=i*9
-    meshClone("tree",folder,CFrame.new(xx,.3,z),Vector3.new(9,14,9))
+    local tree=meshClone("tree",folder,CFrame.new(xx,.3,z),Vector3.new(9,14,9))
+    if tree then seatOnGround(tree,xx,z) end
    end
   end
  end
  for _,side in ipairs({-1,1}) do
   for _,z in ipairs({-23,-6,13,30}) do
-   meshClone("rock",folder,CFrame.new(x+side*23,.4,z),Vector3.new(5,4,5))
+   local xx=x+side*23
+   local rock=meshClone("rock",folder,CFrame.new(xx,.4,z),Vector3.new(5,4,5))
+   if rock then seatOnGround(rock,xx,z) end
   end
  end
 end
