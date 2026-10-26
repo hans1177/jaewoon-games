@@ -1386,7 +1386,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           // this canonical manifest exactly. Never repair a different binary.
           const pointer=fs.readFileSync(localFile,'utf8');
           const match=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(pointer);
-          needsHydration=Boolean(match&&match[1]===declaredHash&&Number(match[2])===declaredBytes);
+          // An actor index pins SHA256 + Git blob, not its original byte count.
+          // An exact LFS pointer is a recoverable source, not an imported model.
+          needsHydration=Boolean(match&&match[1]===declaredHash
+            &&(directActor
+              ?Number(match[2])>256&&Number(match[2])<=104857600
+              :Number(match[2])===declaredBytes));
           corrupt=!needsHydration;
         }else{corrupt=true;}
       }catch(error){
