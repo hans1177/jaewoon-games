@@ -965,13 +965,117 @@ function RobloxCommonUI.CreateIconButton(options)
   badge.ZIndex = button.ZIndex + 4
   fallback.TextStrokeColor3 = theme.Border
   fallback.TextStrokeTransparency = 0.35
+  -- 실제 아이콘 원본이 없더라도 기능이 읽히도록 장난감풍 벡터 픽토그램을 직접 구성한다.
+  local label=tostring(options.shortLabel or options.label or "")
+  local vectorRole=string.upper(tostring(options.iconKind or ""))
+  if vectorRole=="" then
+    if label=="메뉴" then vectorRole="MENU"
+    elseif label=="가방" or label=="인벤토리" then vectorRole="BAG"
+    elseif label=="상점" then vectorRole="SHOP"
+    elseif label=="설정" then vectorRole="GEAR"
+    elseif label=="펫" or label=="동료" then vectorRole="PET"
+    elseif label=="무기" or label=="장비" then vectorRole="SWORD" end
+  end
+  local hasVectorIcon=vectorRole=="MENU" or vectorRole=="BAG" or vectorRole=="SHOP"
+    or vectorRole=="GEAR" or vectorRole=="PET" or vectorRole=="SWORD"
+  local vector=Instance.new("Frame")
+  vector.Name="NativeIllustratedIcon"
+  vector.AnchorPoint=Vector2.new(0.5,0.5)
+  vector.Position=UDim2.fromScale(0.5,0.5)
+  vector.Size=UDim2.fromOffset(42,42)
+  vector.BackgroundTransparency=1
+  vector.Visible=missingImage and hasVectorIcon
+  vector.ZIndex=button.ZIndex+3
+  vector.Parent=button
+  if vectorRole=="BAG" then
+    local handle=Instance.new("Frame")
+    handle.Name="BackpackHandle";handle.Position=UDim2.fromOffset(13,3);handle.Size=UDim2.fromOffset(16,14)
+    handle.BackgroundTransparency=1;handle.Parent=vector
+    corner(handle,6);stroke(handle,theme.Border,3,0)
+    local bag=Instance.new("Frame")
+    bag.Name="BackpackBody";bag.Position=UDim2.fromOffset(6,10);bag.Size=UDim2.fromOffset(30,29)
+    bag.BackgroundColor3=Color3.fromRGB(252,161,70);bag.BorderSizePixel=0;bag.Parent=vector
+    corner(bag,7);stroke(bag,theme.Border,2.4,0)
+    gradient(bag,Color3.fromRGB(255,219,100),Color3.fromRGB(237,122,56),90)
+    local pocket=Instance.new("Frame")
+    pocket.Name="BackpackPocket";pocket.Position=UDim2.fromOffset(7,14);pocket.Size=UDim2.fromOffset(16,10)
+    pocket.BackgroundColor3=Color3.fromRGB(252,231,151);pocket.BorderSizePixel=0;pocket.Parent=bag
+    corner(pocket,3);stroke(pocket,theme.Border,1.4,0.1)
+  elseif vectorRole=="SHOP" then
+    local stall=Instance.new("Frame")
+    stall.Name="ShopStall";stall.Position=UDim2.fromOffset(7,13);stall.Size=UDim2.fromOffset(28,25)
+    stall.BackgroundColor3=Color3.fromRGB(90,195,243);stall.BorderSizePixel=0;stall.Parent=vector
+    corner(stall,4);stroke(stall,theme.Border,2.2,0)
+    local roof=Instance.new("Frame")
+    roof.Name="ShopAwning";roof.Position=UDim2.fromOffset(3,5);roof.Size=UDim2.fromOffset(36,13)
+    roof.BackgroundColor3=Color3.fromRGB(248,92,116);roof.BorderSizePixel=0;roof.Parent=vector
+    corner(roof,4);stroke(roof,theme.Border,2,0)
+    for i=1,3 do
+      local stripe=Instance.new("Frame")
+      stripe.Name="AwningStripe"..i;stripe.Position=UDim2.fromOffset(i*9-4,2);stripe.Size=UDim2.fromOffset(4,9)
+      stripe.BackgroundColor3=Color3.fromRGB(255,241,216);stripe.BorderSizePixel=0;stripe.Parent=roof
+    end
+    local door=Instance.new("Frame")
+    door.Name="ShopDoor";door.Position=UDim2.fromOffset(10,12);door.Size=UDim2.fromOffset(8,13)
+    door.BackgroundColor3=Color3.fromRGB(255,248,203);door.BorderSizePixel=0;door.Parent=stall
+    corner(door,2)
+  elseif vectorRole=="SWORD" then
+    local blade=Instance.new("Frame")
+    blade.Name="SwordBlade";blade.Position=UDim2.fromOffset(17,1);blade.Size=UDim2.fromOffset(9,30)
+    blade.Rotation=42;blade.BackgroundColor3=Color3.fromRGB(240,251,255);blade.BorderSizePixel=0;blade.Parent=vector
+    corner(blade,3);stroke(blade,theme.Border,2.1,0)
+    gradient(blade,Color3.fromRGB(255,255,255),Color3.fromRGB(114,187,235),90)
+    local guard=Instance.new("Frame")
+    guard.Name="SwordGuard";guard.Position=UDim2.fromOffset(13,27);guard.Size=UDim2.fromOffset(19,7)
+    guard.Rotation=42;guard.BackgroundColor3=theme.Accent;guard.BorderSizePixel=0;guard.Parent=vector
+    corner(guard,3);stroke(guard,theme.Border,2,0)
+  elseif vectorRole=="PET" then
+    local paw=Instance.new("Frame")
+    paw.Name="PawPad";paw.Position=UDim2.fromOffset(12,19);paw.Size=UDim2.fromOffset(19,17)
+    paw.Rotation=-12;paw.BackgroundColor3=Color3.fromRGB(255,150,182);paw.BorderSizePixel=0;paw.Parent=vector
+    corner(paw,10);stroke(paw,theme.Border,2,0)
+    for i=1,4 do
+      local toe=Instance.new("Frame")
+      toe.Name="PawToe"..i;toe.Position=UDim2.fromOffset(6+i*7-5,math.abs(2.5-i)*2+6)
+      toe.Size=UDim2.fromOffset(8,9);toe.BackgroundColor3=Color3.fromRGB(255,179,196)
+      toe.BorderSizePixel=0;toe.Parent=vector
+      corner(toe,8);stroke(toe,theme.Border,1.4,0)
+    end
+  elseif vectorRole=="GEAR" then
+    local hub=Instance.new("Frame")
+    hub.Name="GearHub";hub.AnchorPoint=Vector2.new(.5,.5);hub.Position=UDim2.fromScale(.5,.5)
+    hub.Size=UDim2.fromOffset(29,29);hub.BackgroundColor3=Color3.fromRGB(155,208,250)
+    hub.BorderSizePixel=0;hub.Parent=vector
+    corner(hub,15);stroke(hub,theme.Border,3,0)
+    for i=1,8 do
+      local tooth=Instance.new("Frame")
+      tooth.Name="GearTooth"..i;tooth.AnchorPoint=Vector2.new(.5,.5)
+      local ang=i*math.pi/4
+      tooth.Position=UDim2.fromOffset(21+math.sin(ang)*16,21+math.cos(ang)*16)
+      tooth.Size=UDim2.fromOffset(8,9);tooth.Rotation=-i*45;tooth.BackgroundColor3=theme.Border
+      tooth.BorderSizePixel=0;tooth.Parent=vector;corner(tooth,2)
+    end
+    local hole=Instance.new("Frame")
+    hole.Name="GearCore";hole.AnchorPoint=Vector2.new(.5,.5);hole.Position=UDim2.fromScale(.5,.5)
+    hole.Size=UDim2.fromOffset(10,10);hole.BackgroundColor3=theme.PanelRaised;hole.BorderSizePixel=0
+    hole.Parent=vector;corner(hole,6)
+  elseif vectorRole=="MENU" then
+    for i=1,3 do
+      local bar=Instance.new("Frame")
+      bar.Name="MenuGlyphBar"..i;bar.Position=UDim2.fromOffset(6,7+i*9);bar.Size=UDim2.fromOffset(30,6)
+      bar.BackgroundColor3=i==2 and theme.Accent or Color3.fromRGB(255,255,255)
+      bar.BorderSizePixel=0;bar.Parent=vector;corner(bar,3);stroke(bar,theme.Border,1.6,0)
+    end
+  end
+  fallback.Visible=missingImage and not hasVectorIcon
 
   button.MouseButton1Down:Connect(function() outline.Transparency = 0 end)
   button.MouseButton1Up:Connect(function() outline.Transparency = 0.10 end)
   button:SetAttribute("IconFallbackActive", missingImage)
   button:GetPropertyChangedSignal("Image"):Connect(function()
     local absent = button.Image == ""
-    fallback.Visible = absent
+    fallback.Visible = absent and not hasVectorIcon
+    vector.Visible = absent and hasVectorIcon
     iconGradient.Enabled = absent
     iconPlate.Visible = absent
     gloss.Visible = absent
