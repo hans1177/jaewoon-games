@@ -25,7 +25,7 @@ test('포근섬은 곰 없이 마을·멧돼지·야생동물 애니메이션 �
   const animator=read('roblox-games/cozy-island/shared/WildlifeAnimator.luau');
 
   assert.match(style,/Size=Vector3\.new\(220,10,220\)/);
-  assert.match(style,/HomeIsland=\{Radius=560,Length=1280/);
+  assert.match(style,/HomeIsland=\{Radius=675,Length=1800/);
   assert.match(server,/VillagePlaza",Vector3\.new\(104,1,92\)/);
   assert.match(server,/VillageGreen/);
   assert.match(server,/VillageBearCount",0/);

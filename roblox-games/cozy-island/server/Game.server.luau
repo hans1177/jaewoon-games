@@ -521,7 +521,7 @@ end)
  -- 대형 바다는 크기가 제한된 영역으로 나눠 생성해 초기 로딩 부담을 낮춘다.
  terrain:FillBlock(CFrame.new(0,seaLevel-10,0),Vector3.new(940,20,940),Enum.Material.Water)
  terrain:FillBlock(CFrame.new(0,seaLevel-23,0),Vector3.new(940,8,940),Enum.Material.Sand)
- for z=650,1250,600 do
+ for z=650,1850,600 do
   for x=-700,700,700 do
    terrain:FillBlock(CFrame.new(x,seaLevel-10,z),Vector3.new(700,20,600),Enum.Material.Water)
    terrain:FillBlock(CFrame.new(x,seaLevel-23,z),Vector3.new(700,8,600),Enum.Material.Sand)
@@ -532,16 +532,21 @@ end)
  local homeTop=Style.Regions[1].Pos.Y+Style.Regions[1].Size.Y/2
  workspace:SetAttribute("HomeIslandArtPass",home.ArtPass)
  workspace:SetAttribute("HomeIslandLengthStuds",home.Length)
- -- 지형: 고정 노이즈 해안선. 원정 기지와 충돌하지 않도록 남쪽 118스터드부터 확장한다.
- for iz=3,29 do
+ workspace:SetAttribute("HomeIslandRadiusStuds",home.Radius)
+ -- 메인: 기존 마을/원정 거점은 보존하고 남쪽 해안선만 확장한다.
+ -- 지형·장식은 같은 해안선 공식을 써서 길과 나무가 바다에 뜨지 않게 한다.
+ local function islandHalfWidth(z)
+  local progress=math.clamp((z-118)/(home.Length-118),0,1)
+  return 36+home.Radius*math.sin(progress*math.pi)^.83
+ end
+ for iz=3,math.floor(home.Length/45) do
   local z=iz*45
-  local progress=math.clamp((z-118)/1187,0,1)
-  local halfWidth=36+520*math.sin(progress*math.pi)^.83
-  for ix=-13,13 do
+  local halfWidth=islandHalfWidth(z)
+  for ix=-math.ceil(home.Radius/45)-1,math.ceil(home.Radius/45)+1 do
    local x=ix*45
    local edge=halfWidth+math.noise(ix*.37,iz*.24)*23+math.sin(ix*.8+iz*.39)*9-math.abs(x)
    if edge>0 then
-    local beach=edge<71 or z>1260
+    local beach=edge<71 or z>home.Length-45
     local top=homeTop+(beach and -1 or math.noise(ix*.17,iz*.2)*1.1)
     terrain:FillBlock(CFrame.new(x,(top-29)/2,z),Vector3.new(47,top+29,47),
      beach and Enum.Material.Sand or Enum.Material.Grass)
@@ -613,7 +618,7 @@ end)
    sceneryPart("VillageToGrandIslandBridge",Vector3.new(20,1.2,62),
     Vector3.new(0,topY+.55,115),wood,Enum.Material.WoodPlanks,true)
    -- 부두에서 노을 등대까지 도보 연결
-   for z=145,1235,37 do
+   for z=145,home.Length-65,37 do
     sceneryPart("IslandTrail",Vector3.new(16,.65,39),Vector3.new(0,topY+.56,z),
      Color3.fromRGB(186,165,130),Enum.Material.Ground,true)
    end
@@ -627,9 +632,8 @@ end)
    -- 숲, 암석, 꽃 군락: 고정된 원형 배치로 로드할 때 위치를 유지한다.
    for i=1,home.ForestCount do
     local a=i*2.3999632297
-    local z=345+math.sqrt(i/home.ForestCount)*790+math.sin(i*1.27)*62
-    local p=math.clamp((z-118)/1187,0,1)
-    local width=36+520*math.sin(p*math.pi)^.83
+    local z=345+math.sqrt(i/home.ForestCount)*(home.Length-520)+math.sin(i*1.27)*62
+    local width=islandHalfWidth(z)
     local x=math.sin(a)*width*.83
     if math.abs(x)>28 and (x-225)^2+(z-780)^2>23000 and
       (x+345)^2+(z-610)^2>12000 and (x-335)^2+(z-750)^2>9500 then
@@ -637,19 +641,17 @@ end)
      trunk.Name=(i%11==0 and "AncientTree_" or "IslandTree_")..i
     end
    end
-   for i=1,54 do
-    local z=270+(i*59)%905
-    local p=math.clamp((z-118)/1187,0,1)
-    local w=36+520*math.sin(p*math.pi)^.83
+   for i=1,84 do
+    local z=270+(i*59)%(home.Length-360)
+    local w=islandHalfWidth(z)
     local x=math.sin(i*2.41)*w*.75
     if math.abs(x)>45 and (x-225)^2+(z-780)^2>22000 then
      rock(scenery,Vector3.new(x,topY,z),.6+(i%4)*.26,Color3.fromRGB(116,119,113))
     end
    end
-   for i=1,98 do
-    local z=285+(i*73)%890
-    local p=math.clamp((z-118)/1187,0,1)
-    local w=36+520*math.sin(p*math.pi)^.83
+   for i=1,154 do
+    local z=285+(i*73)%(home.Length-375)
+    local w=islandHalfWidth(z)
     local x=math.sin(i*1.711)*w*.78
     if math.abs(x)>22 and (x-225)^2+(z-780)^2>18000 then
      local color=i%3==0 and Color3.fromRGB(255,215,118)
@@ -712,6 +714,82 @@ end)
    local beam=Instance.new("PointLight");beam.Range=75;beam.Brightness=2.5
    beam.Color=Color3.fromRGB(255,228,166);beam.Parent=beacon
    label(beacon,"노을 등대",Color3.fromRGB(255,230,174),165)
+   -- 메인: 공용 지형·재질 생성기를 재사용해 새 해안 지구를 한 번에 완성한다.
+   -- 마을 채집 노드·NPC·원정·전투·저장과 분리된 순수 경관 오브젝트다.
+   local roofColors={Color3.fromRGB(164,95,78),Color3.fromRGB(111,135,111),
+    Color3.fromRGB(177,128,83),Color3.fromRGB(120,119,155)}
+   for index,lot in ipairs({{-185,1350},{175,1450},{-145,1560},{165,1600}})do
+    local x,z=lot[1],lot[2]
+    sceneryPart("CoastalCottage_"..index,Vector3.new(24,12,19),
+     Vector3.new(x,topY+7,z),Color3.fromRGB(222,201,163),Enum.Material.Limestone,true)
+    for _,side in ipairs({-1,1})do
+     local roof=sceneryPart("CottageRoof",Vector3.new(16,2,23),
+      Vector3.new(x+side*6.7,topY+15,z),roofColors[index],Enum.Material.Slate,true)
+     roof.Orientation=Vector3.new(0,0,side*24)
+    end
+    sceneryPart("CottageDoor",Vector3.new(5,8,.55),
+     Vector3.new(x,topY+4.5,z-9.9),Color3.fromRGB(105,73,49),Enum.Material.WoodPlanks,false)
+    for _,side in ipairs({-1,1})do
+     local window=sceneryPart("CottageWindow",Vector3.new(4,3,.65),
+      Vector3.new(x+side*8,topY+8,z-9.95),Color3.fromRGB(159,217,223),Enum.Material.Glass,false)
+     window.Transparency=.24
+    end
+    local chimney=sceneryPart("CottageChimney",Vector3.new(3.8,8,3.8),
+     Vector3.new(x+7,topY+18,z+4),Color3.fromRGB(150,121,102),Enum.Material.Brick,true)
+    chimney.CastShadow=false
+    for fence=1,5 do
+     sceneryPart("CottageFencePost",Vector3.new(1.1,5,1.1),
+      Vector3.new(x+(fence-3)*8,topY+2.6,z+23),
+      Color3.fromRGB(149,112,79),Enum.Material.Wood,false)
+    end
+    sceneryPart("CottageFenceRail",Vector3.new(38,1.1,1),
+     Vector3.new(x,topY+3.4,z+23),Color3.fromRGB(169,133,92),Enum.Material.WoodPlanks,false)
+   end
+   -- 과수원과 초원: 기존 나무·배경 소재로 새 생태 경관을 만든다.
+   for i=1,12 do
+    local x=-330+(i%4)*28
+    local z=1365+math.floor((i-1)/4)*35
+    tree(scenery,Vector3.new(x,topY,z),.85+(i%3)*.08)
+    for fruit=1,3 do
+     local angle=(i*3+fruit)*2.4
+     local orb=sceneryPart("OrchardFruit",Vector3.new(2,2,2),
+      Vector3.new(x+math.cos(angle)*3,topY+10+fruit,z+math.sin(angle)*3),
+      fruit%2==0 and Color3.fromRGB(240,194,91)or Color3.fromRGB(218,97,78),
+      Enum.Material.SmoothPlastic,false)
+     orb.Shape=Enum.PartType.Ball
+    end
+   end
+   for i=1,14 do
+    local x=265+(i%4)*17
+    local z=1365+math.floor((i-1)/4)*24
+    local hay=sceneryPart("MeadowHayBale",Vector3.new(6,6,6),
+     Vector3.new(x,topY+3,z),Color3.fromRGB(210,176,94),Enum.Material.Fabric,false)
+    hay.Shape=Enum.PartType.Cylinder;hay.Orientation=Vector3.new(0,0,90)
+   end
+   -- 산책로 조명은 소수로 제한하고 남쪽 갑판까지 길을 연결한다.
+   for _,z in ipairs({1330,1440,1550,1660})do
+    for _,side in ipairs({-1,1})do
+     local x=side*20
+     sceneryPart("SouthTrailLampPost",Vector3.new(1.4,10,1.4),
+      Vector3.new(x,topY+5,z),wood,Enum.Material.Wood,false)
+     local lamp=sceneryPart("SouthTrailLamp",Vector3.new(3.5,3.5,3.5),
+      Vector3.new(x,topY+11,z),Color3.fromRGB(252,212,147),Enum.Material.Neon,false)
+     local glow=Instance.new("PointLight");glow.Range=17;glow.Brightness=.65;glow.Parent=lamp
+    end
+   end
+   local capeZ=home.Length-105
+   sceneryPart("SouthCapeDeck",Vector3.new(30,2,45),
+    Vector3.new(0,topY+.8,capeZ),Color3.fromRGB(142,104,67),Enum.Material.WoodPlanks,true)
+   for _,side in ipairs({-1,1})do
+    for _,z in ipairs({capeZ-17,capeZ+17})do
+     sceneryPart("SouthCapePost",Vector3.new(2,9,2),Vector3.new(side*13,topY+5,z),
+      Color3.fromRGB(112,79,53),Enum.Material.Wood,true)
+    end
+   end
+   local southBeacon=sceneryPart("SouthCapeBeacon",Vector3.new(8,9,8),
+    Vector3.new(0,topY+6,capeZ+23),Color3.fromRGB(215,199,166),Enum.Material.Limestone,true)
+   label(southBeacon,"남쪽 해안 전망대",Color3.fromRGB(240,232,196),115)
+   workspace:SetAttribute("GrandIslandDistrictCount",4)
    workspace:SetAttribute("GrandIslandSceneryCount",#scenery:GetDescendants())
    decorateHomeAssets(world,topY)
    local npcs=Instance.new("Folder");npcs.Name="HomeNPCs";npcs.Parent=world
