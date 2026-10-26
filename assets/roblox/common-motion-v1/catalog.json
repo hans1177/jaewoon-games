@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "packId": "roblox-common-motion-v1",
   "family": "MOTION",
   "platform": "ROBLOX",
@@ -845,5 +845,172 @@
       "sampleDensity": "MINIMAL",
       "secondaryMotion": "OFF"
     }
-  ]
+  ],
+  "nativeJointUnarmedPresentation": {
+    "source": "RobloxCommonMotion.luau",
+    "samplerApi": "SampleUnarmedAction",
+    "chainApi": "SampleUnarmedChain",
+    "actionCount": 30,
+    "chainCount": 11,
+    "jointOwner": "CALLER_EXISTING_UPDATE_LOOP",
+    "rootMotionOwned": false,
+    "gameplayMovementAuthority": false,
+    "pairedThrowTargetRequired": true,
+    "unpairedThrowFallback": "ELBOW",
+    "animationAssetUploadRequired": false,
+    "productionVerified": false,
+    "runtimeVerificationState": "PENDING_DEPLOYED_RUNTIME",
+    "actions": [
+      {
+        "id": "JAB_LEFT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "CROSS_RIGHT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "HOOK_LEFT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "HOOK_RIGHT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "UPPERCUT_LEFT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "UPPERCUT_RIGHT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "BACKFIST_LEFT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "BACKFIST_RIGHT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "HAMMER_LEFT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "HAMMER_RIGHT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "ELBOW_LEFT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "ELBOW_RIGHT",
+        "kind": "HAND",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "KNEE_LEFT",
+        "kind": "KNEE",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "KNEE_RIGHT",
+        "kind": "KNEE",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "DIAGONAL_KNEE_LEFT",
+        "kind": "KNEE",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "DIAGONAL_KNEE_RIGHT",
+        "kind": "KNEE",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "FRONT_KICK_L",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "SIDE_KICK_L",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "ROUND_KICK_L",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "LOW_KICK_L",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "FRONT_KICK_R",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "SIDE_KICK_R",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "ROUND_KICK_R",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "LOW_KICK_R",
+        "kind": "KICK",
+        "pairedTargetRequired": false
+      },
+      {
+        "id": "SHOULDER_THROW_LEFT",
+        "kind": "THROW",
+        "pairedTargetRequired": true
+      },
+      {
+        "id": "SHOULDER_THROW_RIGHT",
+        "kind": "THROW",
+        "pairedTargetRequired": true
+      },
+      {
+        "id": "HIP_THROW_LEFT",
+        "kind": "THROW",
+        "pairedTargetRequired": true
+      },
+      {
+        "id": "HIP_THROW_RIGHT",
+        "kind": "THROW",
+        "pairedTargetRequired": true
+      },
+      {
+        "id": "LEG_REAP_LEFT",
+        "kind": "THROW",
+        "pairedTargetRequired": true
+      },
+      {
+        "id": "LEG_REAP_RIGHT",
+        "kind": "THROW",
+        "pairedTargetRequired": true
+      }
+    ]
+  }
 }
