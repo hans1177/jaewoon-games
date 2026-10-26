@@ -395,8 +395,8 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  local transparency=part.Transparency
  RobloxCommonMaterials.Apply(part,atom,{tint=part.Color,tintStrength=1,preservePhysics=true,
    preserveBaseMaterial=atom~="TOY_PLASTIC" and atom~="TOY_STUDDED",
-   materialVariant=atom=="TOY_PLASTIC" or atom=="TOY_STUDDED" and nil
-     or source and("Vibe_"..materialName.."_"..source)or nil})
+   materialVariant=(atom~="TOY_PLASTIC" and atom~="TOY_STUDDED" and source)
+     and ("Vibe_"..materialName.."_"..source) or nil})
  if studRequested then
   part.TopSurface=Enum.SurfaceType.Studs
   part:SetAttribute("NativeStudsApplied",true)
