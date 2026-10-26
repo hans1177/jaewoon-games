@@ -7904,7 +7904,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
     throw error;
   }
-  if(!generated&&target==='roblox'&&clean(process.env.VIBE2_ROBLOX_NO_MODEL_ONLY).toLowerCase()==='true'
+  // [무모델] 인증된 외부 모델이 없더라도 위의 기존 결정론적 Web·진단·Roblox 수정은
+  // 우선 검증한다. 실행 가능한 원본 변경이 없으면 AI 응답을 꾸며내지 않고 큐에 원인을 넘긴다.
+  const noExternalModelAvailable=!clean(process.env.GEMINI_API_KEY);
+  if(!generated&&target==='roblox'
+    &&(clean(process.env.VIBE2_ROBLOX_NO_MODEL_ONLY).toLowerCase()==='true'||noExternalModelAvailable)
     &&!responseFile&&!(Array.isArray(responseFiles)&&responseFiles.some(Boolean))){
     const error=new Error('ROBLOX_NO_MODEL_SOURCE_REPAIR_UNAVAILABLE: verified responsible-source edit required; never fabricate or publish a model-free candidate');
     error.vibe2GenerationFailureClass='NO_MODEL_SOURCE_REPAIR_UNAVAILABLE';
