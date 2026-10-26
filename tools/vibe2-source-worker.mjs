@@ -1709,7 +1709,7 @@ export function deterministicWebInputCandidate({order={},sourceRoot='',responsib
 
 // 무모델 Roblox 코딩: 이미 구현된 네이티브 소스의 검증 가능한 책임 함수를 직접 보수한다.
 // 신규 규칙/보상/저장 키를 만들거나 확인되지 않은 UI·서버 API를 추측하지 않는다.
-export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot='',responsibleFiles=[]}={}){
+export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot='',responsibleFiles=[],sourceRootRelative='',candidateValidator=null}={}){
   if(clean(order?.target).toLowerCase()!=='roblox'||!sourceRoot||assetDevelopmentTask(order)||worldLobbySourceWorkRequired(order))return null;
   const intent=[order.goal,order?.selectedTask?.goal,order?.selectedTask?.title,order?.selectedTask?.description,
     order?.selectedTask?.studioQualityEvolution?.pillar].map(clean).join(' ');
@@ -1718,6 +1718,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
   if(!inputWork&&!saveWork)return null;
   let root;
   try{root=fs.realpathSync(sourceRoot);}catch{return null;}
+  const candidates=[],sourceHashes=new Map();
   for(const relative of unique(responsibleFiles)){
     if(!/\.lua[u]?$/i.test(relative)||path.isAbsolute(relative)||relative.split(/[\/\\]/).includes('..'))continue;
     const file=path.resolve(sourceRoot,relative);
@@ -1725,6 +1726,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     if(!fs.realpathSync(file).startsWith(root+path.sep))continue;
     const source=fs.readFileSync(file,'utf8');
     if(source.length>1000000)continue;
+    sourceHashes.set(relative,crypto.createHash('sha256').update(source).digest('hex'));
     if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
       // 검증된 이전 데이터가 없으면 절대 기본값을 다시 저장하지 않는다.
       // 승인된 GameConfig 키는 유지하고 추가 필드는 UpdateAsync에서 병합한다.
@@ -1772,7 +1774,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           '  for _, player in ipairs(Players:GetPlayers()) do savePlayer(player) end',
           'end)'
         ].join('\n');
-        return{
+        candidates.push({
           summary:'Roblox no-model safe persistence and server shutdown repair',
           expectedEffect:'Avoid overwriting saves after failed load, preserve unknown store keys, reuse original save keys and save on shutdown',
           edits:[
@@ -1781,7 +1783,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             {path:relative,find:oldLeave,replace:newLeave}
           ],newFiles:[],replaceFiles:[],tests:[],
           deterministicRobloxNativeRepair:'GUARDED_MERGED_SAVE_WITH_SHUTDOWN'
-        };
+        });
       }
     }
     if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
@@ -1831,7 +1833,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           '  lastAction[player] = nil',
           'end)'
         ].join('\n');
-        return{
+        candidates.push({
           summary:'Roblox no-model separated native shutdown safe save repair',
           expectedEffect:'Protect the original GameConfig save keys and preserve distinct native world code between leave and shutdown',
           edits:[
@@ -1841,7 +1843,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             {path:relative,find:shutdown,replace:'game:BindToClose(function()\n  for _, player in ipairs(Players:GetPlayers()) do savePlayer(player) end\nend)'}
           ],newFiles:[],replaceFiles:[],tests:[],
           deterministicRobloxNativeRepair:'GUARDED_MERGED_SAVE_WITH_SEPARATE_SHUTDOWN'
-        };
+        });
       }
     }
     if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
@@ -1866,12 +1868,12 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             +'  for _, player in ipairs(Players:GetPlayers()) do\n'
             +'    savePlayer(player)\n'
             +'  end\nend)';
-          if(replacement!==original)return {
+          if(replacement!==original)candidates.push({
             summary:'Roblox source-bound shutdown persistence repair',
             expectedEffect:'Reuse the existing save body for both PlayerRemoving and server shutdown without changing saved values',
             edits:[{path:relative,find:original,replace:replacement}],newFiles:[],replaceFiles:[],tests:[],
             deterministicRobloxNativeRepair:'PERSIST_EXISTING_SAVE_ON_SHUTDOWN'
-          };
+          });
         }
       }
     }
@@ -1899,20 +1901,20 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
             +'  for _, player in ipairs(Players:GetPlayers()) do\n'
             +'    savePlayer(player)\n'
             +'  end\nend)';
-          return {
+          candidates.push({
             summary:'Roblox native verified-read-safe world save on server shutdown',
             expectedEffect:'Reuse the existing guarded DataStore merge and world-object save without introducing new save keys',
             edits:[{path:relative,find:original,replace:shared},{path:relative,find:shutdown,replace:onShutdown}],
             newFiles:[],replaceFiles:[],tests:[],
             deterministicRobloxNativeRepair:'GUARDED_WORLD_SAVE_ON_SHUTDOWN'
-          };
+          });
         }
       }
     }
     if(inputWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
       // [무모델 조작 생성] 이미 등록된 네이티브 액션의 터치 버튼만 엔진이 생성한다.
       // 콜백·키·서버 요청은 그대로 재사용하며 문자열/주석 속 예시는 실행 근거가 아니다.
-      const executable=source.replace(/--\[(=*)\[[\s\S]*?\]\1\]|\[(=*)\[[\s\S]*?\]\2\]|--[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,
+      const executable=source.replace(/--\[(=*)\[[\s\S]*?(?:\]\1\]|$)|\[(=*)\[[\s\S]*?(?:\]\2\]|$)|--[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`/g,
         value=>value.replace(/[^\n]/g,' '));
       const touchWork=/(?:mobile|touch|모바일|터치)/i.test(intent);
       if(touchWork){
@@ -1936,26 +1938,115 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
           // 기존 엔진 기본 버튼 배치를 넘겨 화면을 가리지 않는다.
           if(edits.length===3)break;
         }
-        if(edits.length)return {
+        if(edits.length)candidates.push({
           summary:'Roblox source-grounded native touch action generation',
           expectedEffect:'Generate native mobile controls from existing named action callbacks without changing keyboard, controller, server authority or saves',
           edits,newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'EXISTING_ACTION_NATIVE_TOUCH_BUTTONS'
-        };
+        });
+      }
+      // [무모델 코드 생성] 이름이 일치하는 기존 무인자 함수와 미연결 버튼을 직접 연결한다.
+      // 새 게임 규칙이나 원격 호출을 만들지 않고 기존 책임 함수를 이벤트에 그대로 넘긴다.
+      const functions=inspectSourceFunctions(source,{language:'luau'});
+      const outer=executable.split('');
+      for(const fn of functions)for(let at=fn.start;at<fn.end;at++)if(outer[at]!=='\n')outer[at]=' ';
+      const outerCode=outer.join('');
+      for(const match of source.matchAll(/^local\s+([A-Za-z_][A-Za-z_0-9]*)\s*=\s*Instance\.new\(\s*(["'])(?:TextButton|ImageButton)\2\s*\)/gm)){
+        const button=match[1];
+        if(executable.slice(match.index,match.index+5)!=='local')continue;
+        const action=button.replace(/^(?:button|btn)_?/i,'').replace(/_?(?:button|btn)$/i,'');
+        if(!action||action===button)continue;
+        const matchingFunctions=functions.filter(fn=>fn.name.toLowerCase()===action.toLowerCase());
+        if(matchingFunctions.length!==1)continue;
+        const fn=matchingFunctions[0],callback=fn.name;
+        if(functions.some(scope=>scope!==fn&&scope.start<fn.start&&scope.end>fn.start)
+          ||functions.some(scope=>scope.start<match.index&&scope.end>match.index))continue;
+        const signature=new RegExp('^local\\s+function\\s+'+callback+'\\s*\\(\\s*\\)');
+        if(!signature.test(source.slice(fn.start,fn.end))||fn.end>match.index)continue;
+        // 조건부/반복/중첩 범위는 이름만으로 연결을 추정하지 않는다.
+        if(/\b(?:if|elseif|for|while|do|repeat|until|function|return|end)\b/.test(outerCode.slice(0,match.index)))continue;
+        if([...executable.matchAll(new RegExp('\\bfunction\\s+'+callback+'\\s*\\(','g'))].length!==1
+          ||new RegExp('\\b'+callback+'\\s*=(?!=)').test(executable))continue;
+        if([...executable.matchAll(new RegExp('\\blocal\\s+'+button+'\\s*=','g'))].length!==1
+          ||[...executable.matchAll(new RegExp('\\b'+button+'\\s*=(?!=)','g'))].length!==1)continue;
+        if(new RegExp('\\b'+button+'\\s*\\.\\s*(?:Activated|MouseButton1Click|MouseButton1Down|InputBegan)\\b').test(executable))continue;
+        // 별칭이나 공통 입력 바인더에 이미 전달된 버튼은 중복 연결하지 않는다.
+        const uses=[...executable.matchAll(new RegExp('\\b'+button+'\\b','g'))];
+        if(uses.some(row=>row.index!==match.index+match[0].indexOf(button)
+          &&!/^\s*[.:]/.test(executable.slice(row.index+button.length))))continue;
+        const parents=[...source.matchAll(new RegExp('^'+button+'\\.Parent\\s*=\\s*[A-Za-z_][A-Za-z_0-9]*[ \\t]*(?=\\r?$)','gm'))]
+          .filter(row=>executable.slice(row.index,row.index+button.length)===button);
+        if(parents.length!==1||parents[0].index<match.index||source.split(parents[0][0]).length!==2)continue;
+        if(/\b(?:if|elseif|for|while|do|repeat|until|function|return|end)\b/.test(outerCode.slice(match.index,parents[0].index)))continue;
+        const anchor=parents[0][0];
+        candidates.push({
+          summary:'Roblox source-grounded missing gameplay button implementation',
+          expectedEffect:'Connect the existing unbound GUI button directly to its unique same-name zero-argument gameplay function on mouse, touch and controller',
+          edits:[{path:relative,find:anchor,replace:anchor+'\n'+button+'.Activated:Connect('+callback+')'}],
+          newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'EXISTING_FUNCTION_GUI_BINDING'
+        });
       }
       // 실행 라인에 시작하는 실제 연결만 교체하고 문자열·주석·리터럴은 건드리지 않는다.
       for(const match of source.matchAll(/^[ \t]*([A-Za-z_][A-Za-z_0-9]*)\.MouseButton1Click:Connect\(/gm)){
         const variable=match[1],statement=match[0];
+        if(executable.slice(match.index+statement.indexOf(variable),match.index+statement.indexOf(variable)+variable.length)!==variable)continue;
         const declare=new RegExp('\\blocal\\s+'+variable+'\\s*=\\s*Instance\\.new\\(["\\x27](?:TextButton|ImageButton)["\\x27]\\)');
         if(!declare.test(source)||source.includes(variable+'.Activated:Connect('))continue;
         if(source.split(statement).length!==2)continue;
-        return {
+        candidates.push({
           summary:'Roblox native multi-device GUI activation repair',
           expectedEffect:'Use GuiButton.Activated for existing click handler on touch, controller and mouse without altering game action',
           edits:[{path:relative,find:statement,replace:statement.slice(0,statement.indexOf(variable))+variable+'.Activated:Connect('}],
           newFiles:[],replaceFiles:[],tests:[],deterministicRobloxNativeRepair:'GUI_BUTTON_NATIVE_ACTIVATED'
-        };
+        });
       }
     }
+  }
+  // [코딩 엔진] 실제 소스 후보를 전부 비교하고 작은 수정부터 독립 검증한다.
+  // 첫 후보 실패가 다른 책임 함수/파일의 실행 가능한 후보까지 막지 않는다.
+  const ranked=[...new Map(candidates.map(candidate=>[rejectedSourcePatchFingerprint(candidate),candidate])).values()]
+    .sort((a,b)=>a.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0)
+      -b.edits.reduce((n,row)=>n+Buffer.byteLength(row.find)+Buffer.byteLength(row.replace),0));
+  const selection={version:1,mode:'SOURCE_GROUNDED_VERIFIED_SELECTION',candidateCount:ranked.length,
+    attempts:[],selectedFingerprint:null,runtimeVerified:false};
+  for(const raw of ranked){
+    const fingerprint=rejectedSourcePatchFingerprint(raw);
+    const paths=unique(raw.edits.map(row=>row.path));
+    const decision={recipe:raw.deterministicRobloxNativeRepair,fingerprint,
+      sources:paths.map(file=>({path:file,sha256:sourceHashes.get(file)}))};
+    try{
+      if(typeof candidateValidator!=='function')return {...raw,deterministicSelection:{...selection,status:'SOURCE_GROUNDED_UNVALIDATED'}};
+      for(const file of paths){
+        const current=path.resolve(sourceRoot,file);
+        if(fs.lstatSync(current).isSymbolicLink()||!fs.realpathSync(current).startsWith(root+path.sep)
+          ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sourceHashes.get(file)){
+          throw new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
+        }
+      }
+      const candidate=normalizeCandidate(raw,{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
+      applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      const candidateValidation=candidateValidator(candidate);
+      if(candidateValidation?.pass!==true)throw new Error('DETERMINISTIC_CANDIDATE_VALIDATION_NOT_PASSED');
+      for(const file of paths){
+        const current=path.resolve(sourceRoot,file);
+        if(fs.lstatSync(current).isSymbolicLink()||!fs.realpathSync(current).startsWith(root+path.sep)
+          ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sourceHashes.get(file)){
+          throw new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
+        }
+      }
+      selection.attempts.push({...decision,status:'VALIDATED'});
+      selection.selectedFingerprint=fingerprint;
+      return {...raw,normalizedCandidate:candidate,candidateValidation,
+        deterministicSelection:{...selection,status:'CANDIDATE_VALIDATED'}};
+    }catch(error){
+      const code=clean(error?.message).split(':')[0];
+      selection.attempts.push({...decision,status:'REJECTED',failureClass:generationFailureClass(error),
+        reasonCode:/^[A-Z][A-Z0-9_]{0,79}$/.test(code)?code:'CANDIDATE_VALIDATION_REJECTED'});
+    }
+  }
+  if(ranked.length&&typeof candidateValidator==='function'){
+    const error=new Error('ROBLOX_NO_MODEL_CANDIDATES_REJECTED: independently validated source candidate required');
+    error.vibe2DeterministicSelection={...selection,status:'ALL_CANDIDATES_REJECTED'};
+    throw error;
   }
   return null;
 }
@@ -7925,22 +8016,25 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   // 무모델 후보도 기존 정밀 편집·Luau 컴파일·인과 검증을 거친다.
   // 소스에서 유일하게 확인된 원본 책임 함수만 직접 교체한다.
   // 학습 원칙이 게임 소스에 실제로 적용돼야 하는 주문은 단순 교정으로 충족했다고 주장하지 않는다.
-  const deterministicNative=target==='roblox'&&!allowFullRewrite
-    &&verifiedExternalLearningContract.required!==true
-    ?deterministicRobloxNativeRepairCandidate({order,sourceRoot,responsibleFiles}):null;
-  if(!generated&&deterministicNative){
+  let deterministicNativeSelection=null;
+  if(!generated&&target==='roblox'&&!allowFullRewrite&&verifiedExternalLearningContract.required!==true){
     try{
-      const candidate=normalizeCandidate(deterministicNative,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false});
-      applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
-      const candidateValidation=candidateValidator(candidate);
-      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,modelUsed:false,
-        deterministicRobloxNativeRepair:deterministicNative.deterministicRobloxNativeRepair,
-        mode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR',maxPredict:0,timeoutMs:0,contextWindow:0,
-        temperature:0,completionMode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR'}};
-      console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=VALIDATED:'+deterministicNative.deterministicRobloxNativeRepair);
+      const native=deterministicRobloxNativeRepairCandidate({order,sourceRoot,responsibleFiles,sourceRootRelative,candidateValidator});
+      if(native){
+        deterministicNativeSelection=native.deterministicSelection;
+        generated={candidate:native.normalizedCandidate,candidateValidation:native.candidateValidation,
+          generation:{attempts:deterministicNativeSelection.attempts.length,
+            recoveryUsed:deterministicNativeSelection.attempts.some(row=>row.status==='REJECTED'),modelUsed:false,
+            deterministicRobloxNativeRepair:native.deterministicRobloxNativeRepair,
+            mode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR',maxPredict:0,timeoutMs:0,contextWindow:0,
+            temperature:0,completionMode:'DETERMINISTIC_ROBLOX_NATIVE_REPAIR'}};
+        console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=VALIDATED:'+native.deterministicRobloxNativeRepair);
+      }
     }catch(error){
-      console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=REJECTED:'+generationFailureClass(error)+':'+clean(error?.message||error).slice(0,180));
+      deterministicNativeSelection=error?.vibe2DeterministicSelection||null;
+      console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=REJECTED:'+generationFailureClass(error));
     }
+    if(deterministicNativeSelection)console.log('VIBE2_ROBLOX_NO_MODEL_SELECTION='+JSON.stringify(deterministicNativeSelection));
   }
   // [기존 네이티브 빌드업] 현재 게임 소스에 등장하는 CC0 원본 역할이
   // 확보되어 있으면 장식용 HUD 단계보다 기존 게임 소비처의 실교체를 먼저 시도한다.
@@ -8196,6 +8290,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     deterministicRobloxBuildStage:Number(generation.deterministicRobloxBuildStage||0),
     deterministicWebInput:generation.deterministicWebInput===true,
     deterministicRobloxNativeRepair:clean(generation.deterministicRobloxNativeRepair)||null,
+    deterministicNativeSelection,
     sourceModelCallRequired:!generation.deterministicRobloxNativeRepair&&![generation.deterministicRobloxBuildUp,generation.deterministicDiagnosticRepair,generation.deterministicWebInput].includes(true),
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
