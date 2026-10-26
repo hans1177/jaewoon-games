@@ -1,0 +1,27 @@
+{
+  "version": 6,
+  "gameId": "forgotten-continent",
+  "date": "2026-10-26",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": null,
+  "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+  "reviewMode": "DETERMINISTIC_EVIDENCE",
+  "aiReviewUsed": false,
+  "review": {
+    "keep": [
+      "SYSTEM_INTERCONNECTION_DESIGN evidence=80 deterministic"
+    ],
+    "fix": [
+      "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다."
+    ],
+    "add": [],
+    "risks": [
+      "CRITICAL_AXIS_MINIMUM_FAIL:PLATFORM_FIT_DESIGN"
+    ],
+    "evidence": [
+      "SYSTEM_INTERCONNECTION_DESIGN=80,PLATFORM_FIT_DESIGN=0,IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY=80"
+    ],
+    "questions": []
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "version": 3,
+  "gameId": "forgotten-continent",
+  "date": "2026-10-26",
+  "attempt": 2,
+  "pass": false,
+  "repairPacket": {
+    "source": "DETERMINISTIC_PRE_GATE_V2",
+    "bypassAllowed": false,
+    "totalScore": 73.6,
+    "passMinimum": 80,
+    "hardFailures": [
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "failedAxes": [
+      "PLATFORM_FIT_DESIGN"
+    ],
+    "reasons": [
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "PLATFORM_FIT_DESIGN",
+        "evidenceLevel": 0,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 0,
+          "axisWeight": 8
+        },
+        "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+        "fields": [],
+        "bypassAllowed": false
+      }
+    ]
+  },
+  "score": {
+    "scoreSystem": "STAGE_GATE_SCORING_V2",
+    "version": 2,
+    "passMinimum": 80,
+    "criticalAxisMinimumPercent": 75,
+    "directScoreLevels": [
+      0,
+      20,
+      40,
+      60,
+      80,
+      100
+    ],
+    "weights": {
+      "IDEA_AND_DISTINCTNESS": 12,
+      "CATEGORY_IDENTITY": 10,
+      "CORE_LOOP_DESIGN": 14,
+      "SYSTEM_INTERCONNECTION_DESIGN": 12,
+      "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+      "CONTENT_EXPANSION_PLAN": 10,
+      "FAILURE_RETRY_RISK_DESIGN": 8,
+      "PLATFORM_FIT_DESIGN": 8,
+      "UX_AND_ACCESSIBILITY_PLAN": 6,
+      "ART_AUDIO_DIRECTION": 5,
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+    },
+    "evidenceLevels": {
+      "IDEA_AND_DISTINCTNESS": 80,
+      "CATEGORY_IDENTITY": 80,
+      "CORE_LOOP_DESIGN": 80,
+      "SYSTEM_INTERCONNECTION_DESIGN": 80,
+      "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+      "CONTENT_EXPANSION_PLAN": 80,
+      "FAILURE_RETRY_RISK_DESIGN": 80,
+      "PLATFORM_FIT_DESIGN": 0,
+      "UX_AND_ACCESSIBILITY_PLAN": 80,
+      "ART_AUDIO_DIRECTION": 80,
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+    },
+    "scores": {
+      "IDEA_AND_DISTINCTNESS": 9.6,
+      "CATEGORY_IDENTITY": 8,
+      "CORE_LOOP_DESIGN": 11.2,
+      "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+      "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+      "CONTENT_EXPANSION_PLAN": 8,
+      "FAILURE_RETRY_RISK_DESIGN": 6.4,
+      "PLATFORM_FIT_DESIGN": 0,
+      "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+      "ART_AUDIO_DIRECTION": 4,
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+    },
+    "totalScore": 73.6,
+    "criticalAxisFailures": [
+      "PLATFORM_FIT_DESIGN"
+    ],
+    "hardFailures": [
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "rejectionReasons": [
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "kind": "HARD_GATE",
+        "axis": "PLATFORM_FIT_DESIGN",
+        "evidenceLevel": 0,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 0,
+          "axisWeight": 8
+        },
+        "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2"
+      }
+    ],
+    "revalidated": false,
+    "thirtyMinuteHardGateApplied": false,
+    "materialContractOk": true,
+    "grammarCarryEvidence": null,
+    "pendingSeedGrammarNotAuthored": true,
+    "pendingSeedStillRequiresCreativeDesign": true
+  },
+  "history": [
+    {
+      "totalScore": 73.6,
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "criticalAxisFailures": [
+        "PLATFORM_FIT_DESIGN"
+      ]
+    },
+    {
+      "totalScore": 73.6,
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "criticalAxisFailures": [
+        "PLATFORM_FIT_DESIGN"
+      ]
+    },
+    {
+      "totalScore": 73.6,
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "criticalAxisFailures": [
+        "PLATFORM_FIT_DESIGN"
+      ]
+    }
+  ]
+}
