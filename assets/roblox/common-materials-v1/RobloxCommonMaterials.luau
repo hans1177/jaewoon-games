@@ -393,10 +393,14 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
  local name=string.lower(part.Name)
  if atom=="FABRIC" and (name:find("boot",1,true) or name:find("pouch",1,true) or name:find("belt",1,true))then atom="LEATHER_LIKE";source=style=="HORROR"and"Leather026"or"Leather008"end
  local transparency=part.Transparency
- RobloxCommonMaterials.Apply(part,atom,{tint=part.Color,tintStrength=1,preservePhysics=true,
-   preserveBaseMaterial=atom~="TOY_PLASTIC" and atom~="TOY_STUDDED",
-   materialVariant=(atom~="TOY_PLASTIC" and atom~="TOY_STUDDED" and source)
-     and ("Vibe_"..materialName.."_"..source) or nil})
+ local toy=atom=="TOY_PLASTIC" or atom=="TOY_STUDDED"
+ if toy then source=nil end
+ local preserveTint=not toy or part:GetAttribute("PreserveAuthoredTint")==true
+ RobloxCommonMaterials.Apply(part,atom,{
+   variant=toy and part:GetAttribute("SurfacePaletteVariant") or nil,
+   tint=preserveTint and part.Color or nil,tintStrength=1,preservePhysics=true,
+   preserveBaseMaterial=not toy,
+   materialVariant=source and ("Vibe_"..materialName.."_"..source) or nil})
  if studRequested then
   part.TopSurface=Enum.SurfaceType.Studs
   part:SetAttribute("NativeStudsApplied",true)
