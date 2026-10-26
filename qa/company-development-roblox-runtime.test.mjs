@@ -1630,3 +1630,41 @@ test('shared Roblox UI renders live inventory icon fallback, equipped badges, se
   assert.match(generator,/clientSource\(\{profile,learning,studioAssets,studioAssetFamilyStatus\}\)/);
   assert.match(generator,/CommonUI\.CreatePrimaryButton/);
 });
+
+
+test('native item painter in common Roblox inventory remains source-bound and mobile-safe',()=>{
+  const ui=fs.readFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),'utf8');
+  const mat=fs.readFileSync(new URL('../assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',import.meta.url),'utf8');
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const begin=ui.indexOf('function RobloxCommonUI.UpdateInventorySlot(');
+  const end=ui.indexOf('function RobloxCommonUI.CreateTooltip(',begin);
+  assert.ok(begin>=0&&end>begin);
+  const paint=ui.slice(begin,end);
+  for(const needle of ['BoundFromGameState','ItemLocked','ItemEquipped','FallbackGlyph','StateBadge','RarityRail',
+    'INVENTORY_TIER_COLORS','item.quantity or item.count','item.locked == true','item.equipped == true',
+    'pcall(utf8.offset','item.rarityColor','OwnsEquipAuthority", false'])
+    assert.ok(paint.includes(needle),'item painter must consume game-owned state: '+needle);
+  for(const value of ['["희귀"]','["영웅"]','["전설"]','["신화"]'])
+    assert.ok(ui.includes(value),'Korean rarity must have native color: '+value);
+  const inventory=ui.slice(ui.indexOf('function RobloxCommonUI.CreateInventoryFullScreen('),
+    ui.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen('));
+  assert.match(inventory,/UpdateInventorySlot\(slot,row,\{theme=theme,selected=/);
+  assert.match(inventory,/GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+  assert.match(inventory,/selectedRow/);
+  assert.match(inventory,/onSelect/);
+  assert.match(inventory,/OwnsInventoryAuthority",false/);
+  assert.match(inventory,/OwnsRemoteAuthority",false/);
+  assert.doesNotMatch(inventory,/FireServer\(/);
+  const authored=mat.slice(mat.indexOf('function RobloxCommonMaterials.ApplyAuthoredSurface('));
+  assert.match(mat,/TOY_STUDDED = table\.freeze/);
+  assert.match(authored,/SurfaceStudsEnabled/);
+  assert.match(authored,/part\.Shape==Enum\.PartType\.Block and part\.Anchored/);
+  assert.match(authored,/if atom=="TOY_STUDDED" and not studRequested then return false end/);
+  assert.match(authored,/Enum\.SurfaceType\.Studs/);
+  assert.match(authored,/PreviousTopSurfaceName/);
+  assert.match(authored,/ToyStudRuntimeVerified",false/);
+  assert.match(worker,/RobloxCommonUI\.UpdateInventorySlot/);
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
+  assert.match(bootstrap,/assets\/roblox\/common-materials-v1\/RobloxCommonMaterials\.luau/);
+});
