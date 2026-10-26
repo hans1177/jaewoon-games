@@ -111,32 +111,69 @@ test('existing Web module and CC0 party RPG native binding preserve source integ
   assert.equal(typeof JSON.parse(partyImportMap).imports,'object');
   assert.throws(()=>JSON.parse('{"imports":'),SyntaxError,'invalid importmap must fail');
 
-  // [CC0 원본 검사] 등록된 늑대 FBX를 게임 전용 재질로 사용한다.
+  // [현재 웹조직 소스 검증] 게임은 index.html -> PartyView -> native CC0 GLB 34종.
+  // 오래된 wolf.fbx 직접 참조를 강제하지 않고, 실제 로드하는 모든 원본을 검증한다.
+  const view=fs.readFileSync('web-games/party-rpg/view.mjs','utf8');
+  const native=JSON.parse(fs.readFileSync('assets/shared/party/sources.json','utf8'));
   const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const wolf=registry.assets.find(asset=>asset.id==='forest-cc0-wolf');
-  assert.ok(wolf,'registered CC0 wolf required');
-  assert.match(wolf.license,/^CC0(?:-1\.0)?$/);
-  assert.ok(wolf.licenseEvidenceUrl?.startsWith('https://'),'CC0 rights evidence required');
-  assert.equal(wolf.path,'assets/shared/forest/wolf.fbx');
-  assert.ok(fs.existsSync(wolf.path),'native CC0 wolf source file must exist');
-  assert.equal(createHash('sha256').update(fs.readFileSync(wolf.path)).digest('hex'),
-    wolf.sourceHash,'wolf registry hash must match actual bytes');
-  const nativeSources=[...party.matchAll(/['"]((?:\.\.\/){2}assets\/shared\/forest\/[^'"]+\.fbx)['"]/g)].map(row=>row[1]);
-  assert.deepEqual(nativeSources,['../../assets/shared/forest/wolf.fbx']);
-  const removed=policy.ownerCanonicalRules.rule5.permanentlyRemovedSharedAssetIds;
-  for(const id of removed)assert.ok(!party.includes('assets/shared/'+id.slice('shared-'.length)+'.glb'),
-    'deleted self-authored GLB must not be requested: '+id);
-  assert.ok(party.includes('const originalRoles='),'all 12 roles must remain accounted for');
-  assert.ok(party.includes('window.vibe3dDiagnostics={loaded,missing:[...unavailableRoles'),
-    'unverified 3D roles must not claim native binding');
-  assert.ok(party.includes('variant.color.multiply(new THREE.Color(0xbacaa8))'),
-    'wolf requires game-specific non-destructive material adaptation');
-  assert.ok(party.includes('if(!models[id])continue'),'native 3D must not fake missing assets');
-  for(const kind of ['enemy','player','ai']){
-    assert.ok(party.includes("window.vibe3dCanRender('"+kind+"',"),
-      'existing 2D fallback must remain active for '+kind);
+  assert.ok(party.includes('import {PartyView} from "./view.mjs"'),
+    'real 3D renderer must remain wired to current game source');
+  assert.ok(view.includes('new THREE.WebGLRenderer('),'WebGL scene is required');
+  assert.ok(view.includes('new GLTFLoader()'),'native GLB loader is required');
+  assert.ok(view.includes("this.models.set(key,model)"),'loaded native GLB must be registered');
+  assert.ok(view.includes('this.models.get(role)'),'character models must use GLB lookup');
+  assert.ok(view.includes('this.models.get(key)||this.fallbackProp(key)'),
+    'missing static model must remain an explicitly separate fallback');
+  assert.ok(view.includes('onLoad(completed,order.length,this.models.has('),
+    'actual GLB loading state must be measured, not fabricated');
+
+  const getRoles=name=>{
+    const match=view.match(new RegExp('const '+name+'=\\[([^\\]]+)\\]'));
+    assert.ok(match,'actual '+name+' roles must remain declared');
+    return [...match[1].matchAll(/'([^']+)'/g)].map(row=>row[1]);
+  };
+  const heroes=getRoles('HEROES'),monsters=getRoles('MONSTERS'),props=getRoles('PROPS');
+  assert.deepEqual(heroes,['warrior','rogue','cleric','wizard','ranger']);
+  assert.deepEqual(monsters,['slime','orc','bunny','golem','ghost','winged']);
+  const nativeRoles=new Set([...heroes,...monsters,...props]);
+  assert.equal(nativeRoles.size,34,'the actual 34 GLB roles must remain distinct');
+  const glb=Object.fromEntries(native.records.filter(row=>row.file.endsWith('.glb'))
+    .map(row=>[path.basename(row.file,'.glb'),row]));
+  assert.equal(Object.keys(glb).length,34,'native source registry must cover every loaded role');
+  assert.equal(native.status,'SOURCE_AVAILABLE_RUNTIME_UNVERIFIED',
+    'source catalog and statically tested GLBs cannot claim runtime PASS');
+  for(const role of nativeRoles){
+    const row=glb[role];
+    assert.ok(row,'source record missing for '+role);
+    assert.equal(row.license,'CC0-1.0','native 3D games may only load CC0 records');
+    assert.match(row.source,/^https:\/\//,'CC0 source evidence is required');
+    assert.match(row.sha256,/^[0-9a-f]{64}$/);
+    const stat=fs.lstatSync(row.file);
+    assert.ok(stat.isFile()&&!stat.isSymbolicLink()&&stat.size>512,'native GLB unavailable: '+role);
+    assert.equal(stat.size,row.bytes,'manifest bytes drift for '+role);
+    const raw=fs.readFileSync(row.file);
+    assert.equal(raw.toString('ascii',0,4),'glTF','GLB header missing for '+role);
+    assert.equal(raw.readUInt32LE(8),raw.length,'GLB payload truncated for '+role);
+    assert.equal(createHash('sha256').update(raw).digest('hex'),row.sha256,
+      'native CC0 derivative hash drift for '+role);
   }
+  // Original forest wolf stays preserved in the shared registry, but it is not
+  // an index.html direct binding in the newer 34-role GLB renderer.
+  const wolf=registry.assets.find(asset=>asset.id==='forest-cc0-wolf');
+  assert.ok(wolf,'original shared CC0 wolf must stay registered');
+  assert.match(wolf.license,/^CC0(?:-1\.0)?$/);
+  assert.ok(wolf.licenseEvidenceUrl?.startsWith('https://'));
+  assert.ok(fs.existsSync(wolf.path),'shared wolf must remain available');
+  assert.equal(createHash('sha256').update(fs.readFileSync(wolf.path)).digest('hex'),
+    wolf.sourceHash,'shared wolf hash must match real bytes');
+  const removed=policy.ownerCanonicalRules.rule5.permanentlyRemovedSharedAssetIds;
+  for(const id of removed){
+    const oldModel='assets/shared/'+id.slice('shared-'.length)+'.glb';
+    assert.ok(!party.includes(oldModel)&&!view.includes(oldModel),
+      'retired Vibe model cannot return to the actual renderer: '+id);
+  }
+
 });
 
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
