@@ -289,6 +289,12 @@ local ITEM_RARITY_COLOR = table.freeze({
   EPIC = Color3.fromRGB(174, 115, 247),
   LEGENDARY = Color3.fromRGB(249, 185, 76),
   MYTHIC = Color3.fromRGB(247, 98, 136),
+  ["일반"] = Color3.fromRGB(128, 143, 156),
+  ["고급"] = Color3.fromRGB(85, 192, 126),
+  ["희귀"] = Color3.fromRGB(81, 154, 249),
+  ["영웅"] = Color3.fromRGB(174, 115, 247),
+  ["전설"] = Color3.fromRGB(249, 185, 76),
+  ["신화"] = Color3.fromRGB(247, 98, 136),
 })
 
 function RobloxCommonUI.CreateInventorySlot(options)
@@ -467,7 +473,7 @@ function RobloxCommonUI.UpdateInventorySlot(slot, item, options)
   local badge = slot:FindFirstChild("ItemStateBadge")
   if icon then icon.Image = image; icon.Visible = image ~= "" end
   if fallback then
-    fallback.Text = iconFirstGlyph(item.name or item.title or item.id)
+    fallback.Text = iconFirstGlyph(item.glyph or item.name or item.title or item.id)
     fallback.Visible = image == ""
   end
   if quantity then
