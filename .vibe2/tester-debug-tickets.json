@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-26T14:03:28.106Z",
+  "updatedAt": "2026-10-26T14:43:32.066Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -586,8 +586,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-10-26T14:03:28.104Z",
-      "occurrenceCount": 299,
+      "updatedAt": "2026-10-26T14:43:32.064Z",
+      "occurrenceCount": 300,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -11832,6 +11832,30 @@
       "createdAt": "2026-10-25T06:08:46.492Z",
       "updatedAt": "2026-10-25T06:15:04.348Z",
       "occurrenceCount": 2
+    },
+    {
+      "id": "bug-57cc9a19f5ba0893ffe4",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-26T14:43:32.064Z",
+      "updatedAt": "2026-10-26T14:43:32.064Z",
+      "occurrenceCount": 1
     }
   ]
 }
