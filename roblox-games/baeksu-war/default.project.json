@@ -4,7 +4,13 @@
     "$className": "DataModel",
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "shared"
+        "$path": "shared",
+        "RobloxCommonUI": {
+          "$path": "../../assets/roblox/common-ui-v1/RobloxCommonUI.luau"
+        },
+        "RobloxCommonIcons": {
+          "$path": "../../assets/roblox/common-ui-v1/RobloxCommonIcons.luau"
+        }
       }
     },
     "ServerScriptService": {
