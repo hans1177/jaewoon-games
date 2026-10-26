@@ -23,7 +23,7 @@ export function testRelevantToRobloxChange({gameId='',testPath='',repoRoot=ROOT}
   // Tests with no explicit platform-specific source stay mandatory.
   return !other;
 }
-export function chooseGameQa({games=[],changedFiles=[],gameId='',all=false}={}){
+export function chooseGameQa({games=[],changedFiles=[],gameId='',all=false,repoRoot=ROOT}={}){
   const changes=new Set(changedFiles.map(clean).filter(Boolean));
   if(gameId&&!games.some(x=>x.gameId===gameId))throw new Error('GAME_NOT_FOUND:'+gameId);
   return games.filter(g=>{
@@ -41,7 +41,7 @@ export function chooseGameQa({games=[],changedFiles=[],gameId='',all=false}={}){
     const nativeOnly=!gameId&&!all&&nativeRoot&&changes.size>0
       &&[...changes].every(p=>p.startsWith(nativeRoot+'/'));
     const tests=nativeOnly
-      ?g.qa.filter(testPath=>testRelevantToRobloxChange({gameId:g.gameId,testPath}))
+      ?g.qa.filter(testPath=>testRelevantToRobloxChange({gameId:g.gameId,testPath,repoRoot}))
       :g.qa;
     return {
     gameId:g.gameId,
