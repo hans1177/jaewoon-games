@@ -627,3 +627,32 @@ test('next F0 is issued only when published Place version matches the exact curr
  assert.ok(start>=0&&next>start);
  assert.match(workflow,/entry|cycle/);
 });
+
+
+test('CC0 registered models receive per-target Universe grants only after exact F9 candidate gate',()=>{
+ const publish=workflow.slice(workflow.indexOf('      - name: Publish exact package'),
+  workflow.indexOf('      - name: Persist publication retry requirement'));
+ assert.ok(publish.includes('assertRobloxLatestPublishCandidate({'));
+ const identity=publish.indexOf('assertRobloxLatestPublishCandidate({');
+ const registry=publish.indexOf("revision+':assets/roblox/common-registered-external-assets-v1.json'");
+ const blob=publish.indexOf("git('rev-parse',revision+':'+row.originalPath)");
+ const patch=publish.indexOf("'https://apis.roblox.com/asset-permissions-api/v1/assets/permissions'");
+ const actualPublish=publish.indexOf('const result=await publishRobloxPlace(');
+ assert.ok(identity>=0&&registry>identity&&blob>registry&&patch>blob&&actualPublish>patch,
+  'register, hash verification, Universe permission and exact publish must be ordered');
+ assert.match(publish,/sourceRoot=String\(process\.env\.SOURCE_ROOT\|\|''\)/);
+ assert.match(publish,/revision=String\(process\.env\.SOURCE_REVISION\|\|''\)/);
+ assert.match(publish,/git\('show',revision\+':assets\/roblox\/common-registered-external-assets-v1\.json'\)/);
+ assert.match(publish,/sourceVerification!=='git-blob-sha'/);
+ assert.match(publish,/row\.gitBlobSha\.toLowerCase\(\)/);
+ assert.match(publish,/sourceRoot\+'\/'/);
+ assert.match(publish,/subjectType:'Universe',subjectId:String\(process\.env\.ROBLOX_UNIVERSE_ID\)/);
+ assert.match(publish,/action:'Use',requests:assetIds\.map/);
+ assert.match(publish,/if\(!grant\.ok\|\|\(Array\.isArray\(response\.errors\)&&response\.errors\.length>0\)\)/);
+ assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_FAILED_HTTP_/);
+ assert.match(publish,/ROBLOX_CC0_GRANT_API_KEY_REQUIRED/);
+ assert.doesNotMatch(publish,/\bautoActivate\b|\bactivateUniverse\b/,
+  'automatically regranting an actor must not increase public exposure');
+ const restart=workflow.indexOf("      - name: Restart this game's F0 from exact current main");
+ assert.ok(restart>actualPublish,'subsequent F0 must remain behind exact post-publish QA');
+});
