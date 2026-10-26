@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: owner-baeksu-war-private-preview
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   private-preview:
@@ -32,18 +32,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Author 12 original 3D GLB models and grant only this Roblox universe
+      # Owner explicitly prohibited assistant-invented meshes as well as primitive Part visuals.
+      # Publishing must fail closed until an owner-approved existing real model manifest is bound.
+      - name: Enforce owner-approved real-model provenance before publish
         shell: bash
-        env:
-          ROBLOX_CREATOR_USER_ID: ${{ secrets.ROBLOX_CREATOR_USER_ID }}
         run: |
           set -euo pipefail
-          python3 -m pip install --quiet --user --break-system-packages 'trimesh==4.7.1' 'numpy==2.2.6'
-          python3 tools/baeksu-war-author-meshes.py /tmp/baeksu-art
-          node tools/baeksu-war-upload-meshes.mjs /tmp/baeksu-art /tmp/baeksu-art-upload.json
-          grep -q 'sparrow=[1-9]' roblox-games/baeksu-war/shared/VisualAssetIds.luau
-          grep -q 'gate=[1-9]' roblox-games/baeksu-war/shared/VisualAssetIds.luau
-          echo 'BAEKSU_WAR_BANNED_PART_VISUALS=0'
+          echo 'OWNER_ASSET_POLICY_BLOCKED: assistant-generated GLB meshes and primitive Parts are forbidden.'
+          echo 'Use licensed owner-approved existing real models with exact SHA256 and per-Universe grants.'
+          echo 'Previous Roblox published version is preserved; no unapproved V3 overwrite.'
+          exit 1
       - name: Build only baeksu-war Roblox place
         shell: bash
         run: |
