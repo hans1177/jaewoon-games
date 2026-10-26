@@ -10043,3 +10043,53 @@ test('famous Roblox 100 maker modules extend the engine to 200 and stay source s
   assert.ok(new Set(picked.map(line=>line.split('_')[0])).size>=3,'prioritize across unrelated production families');
   assert.doesNotMatch(broad,/https:\/\/raw\.githubusercontent\.com/);
 });
+
+
+// 기존 UI/월드 제작 담당 함수에 소스 결합형 제작 힌트를 넣고 다른 게임·플랫폼을 보호한다.
+test('Roblox source-grounded UI icon inventory world craft improves native output without gameplay mutation',()=>{
+  const options={verifiedExternalLearningContract:{block:''}};
+  const context={files:[
+    {path:'client/Inventory.client.luau',content:'local inventoryGui=Instance.new("ScreenGui")\nlocal grid=Instance.new("ScrollingFrame")\nlocal row=Instance.new("ImageButton")',editable:true},
+    {path:'server/World.server.luau',content:'local world=workspace\nlocal base=CFrame.new(0,0,0)',editable:true},
+    {path:'server/Private.server.luau',content:'local SECRET_TABLE={}',editable:false}
+  ]};
+  const create=(goal,target='roblox',ctx=context)=>buildPrompt(
+    {target,gameId:'visual-craft-fixture',goal,selectedTask:{},gameDesign:{visualIdentity:'AUTHORED_TOY_TOWN',world:{theme:'cozy streets'}}},
+    ctx,['client/Inventory.client.luau','server/World.server.luau'],options);
+  const all=create('UI 인벤창 아이콘 월드 생성 강화');
+  assert.match(all,/\[ROBLOX SOURCE-GROUNDED UI ICON INVENTORY WORLD CRAFT\]/);
+  assert.match(all,/styleIdentity=AUTHORED_TOY_TOWN/);
+  assert.match(all,/uiOwners=client\/Inventory\.client\.luau/);
+  assert.match(all,/worldOwners=server\/World\.server\.luau/);
+  assert.match(all,/UI_LAYOUT_CRAFT:/);
+  assert.match(all,/INVENTORY_WINDOW_CRAFT:/);
+  assert.match(all,/ICON_ART_CRAFT:/);
+  assert.match(all,/WORLD_SCENE_CRAFT:/);
+  assert.match(all,/GuiButton\.Activated once/);
+  assert.match(all,/GetPropertyChangedSignal\("Text"\)/);
+  assert.match(all,/UIGridLayout/);
+  assert.match(all,/AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+  assert.match(all,/SourceId/);
+  assert.match(all,/Preserve original terrain seed/);
+  assert.match(all,/Do not scatter generic Parts|do not scatter generic Parts/i);
+  assert.match(all,/never duplicate RemoteEvents or inventory tables/);
+  assert.match(all,/Rendering and native Studio screenshots remain UNVERIFIED/);
+  const inventoryOnly=create('인벤창 개선');
+  assert.match(inventoryOnly,/INVENTORY_WINDOW_CRAFT:/);
+  assert.match(inventoryOnly,/UI_LAYOUT_CRAFT:/);
+  assert.doesNotMatch(inventoryOnly,/WORLD_SCENE_CRAFT:/);
+  assert.doesNotMatch(inventoryOnly,/ICON_ART_CRAFT:/);
+  const worldOnly=create('월드 지형 배경 개선');
+  assert.match(worldOnly,/WORLD_SCENE_CRAFT:/);
+  assert.doesNotMatch(worldOnly,/INVENTORY_WINDOW_CRAFT:/);
+  const iconOnly=create('아이콘 디자인 강화');
+  assert.match(iconOnly,/ICON_ART_CRAFT:/);
+  assert.doesNotMatch(iconOnly,/INVENTORY_WINDOW_CRAFT:/);
+  assert.doesNotMatch(iconOnly,/WORLD_SCENE_CRAFT:/);
+  assert.doesNotMatch(create('UI 인벤창 아이콘 월드','web'),/\[ROBLOX SOURCE-GROUNDED UI ICON INVENTORY WORLD CRAFT\]/);
+  assert.doesNotMatch(create('UI 인벤창 아이콘 월드','unity'),/\[ROBLOX SOURCE-GROUNDED UI ICON INVENTORY WORLD CRAFT\]/);
+  assert.doesNotMatch(create('서버 저장 안정화'),/\[ROBLOX SOURCE-GROUNDED UI ICON INVENTORY WORLD CRAFT\]/);
+  const readOnly=create('인벤창 월드 제작','roblox',{files:[{path:'server/Private.server.luau',content:'local world=workspace',editable:false}]});
+  assert.match(readOnly,/uiOwners=UNRESOLVED; worldOwners=UNRESOLVED/);
+  assert.doesNotMatch(readOnly,/worldOwners=server\/Private/);
+});
