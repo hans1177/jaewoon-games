@@ -927,7 +927,7 @@ test('Roblox common simulator-grade graphics bind real UI surfaces without exter
    assert.ok(shell.includes(visual),'FULLSCREEN_HEADER_MISSING:'+visual);
  for(const visual of ['SelectedItemRarityStripe','detailStripe.BackgroundColor3=detailMeta.TextColor3','MobileStackedLayout','OwnsSaveAuthority",false'])
    assert.ok(inventory.includes(visual),'INVENTORY_DETAIL_OR_MOBILE_MISSING:'+visual);
- for(const visual of ['SelectedItemArt','CreateItemModelPreview({','SelectedItemHasNativeArt','previewImage.Visible=body.AbsoluteSize.X>=560','if activePreview then activePreview:Destroy()'])
+ for(const visual of ['SelectedItemArt','pcall(RobloxCommonUI.CreateItemModelPreview,{','SelectedItemHasNativeArt','previewImage.Visible=body.AbsoluteSize.X>=560','if activePreview then activePreview:Destroy()'])
    assert.ok(inventory.includes(visual),'ITEM_ART_BINDING_MISSING:'+visual);
  assert.doesNotMatch(ui,/require\(\d+\)|DataStoreService|FireServer\(|UpdateAsync\(|SetAsync\(/);
  const catalog=JSON.parse(fs.readFileSync('assets/roblox/common-ui-v1/catalog.json','utf8'));
