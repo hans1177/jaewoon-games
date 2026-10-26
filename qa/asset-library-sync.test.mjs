@@ -894,3 +894,36 @@ test('Roblox inventory rarity filtering and native stud reapplication remain pre
  assert.ok(authored.includes('and part:IsA("Part") and part.Shape==Enum.PartType.Block and part.Anchored'));
  assert.ok(authored.includes('preservePhysics=true'));
 });
+
+
+test('Roblox common simulator-grade graphics bind real UI surfaces without external assets or game authority',()=>{
+ const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const segment=(first,next)=>ui.slice(ui.indexOf(first),ui.indexOf(next,ui.indexOf(first)));
+ const theme=segment('local DEFAULT_THEME = table.freeze({','local function cloneTheme');
+ const panel=segment('function RobloxCommonUI.CreatePanel(options)','function RobloxCommonUI.CreatePrimaryButton(options)');
+ const button=segment('function RobloxCommonUI.CreatePrimaryButton(options)','function RobloxCommonUI.CreateHealthBar(options)');
+ const slot=segment('function RobloxCommonUI.CreateInventorySlot(options)','local INVENTORY_TIER_COLORS');
+ const update=segment('function RobloxCommonUI.UpdateInventorySlot(slot, item, options)','function RobloxCommonUI.CreateTooltip(options)');
+ const icon=segment('function RobloxCommonUI.CreateIconButton(options)','function RobloxCommonUI.CreateDialogueAssistantButton(options)');
+ const shell=segment('local function surfaceShell(options, atomId, role)','local function stateCard(options, atomId, role, defaultTitle, defaultBody, accentKey)');
+ const inventory=segment('function RobloxCommonUI.CreateInventoryFullScreen(options)','function RobloxCommonUI.CreateEquipmentFullScreen(options)');
+ for(const visual of ['PanelRaised = Color3.fromRGB(255, 255, 255)','PanelInset = Color3.fromRGB(228, 241, 255)','PrimaryTop = Color3.fromRGB(100, 203, 255)'])
+   assert.ok(theme.includes(visual),'BRIGHT_THEME_MISSING:'+visual);
+ for(const visual of ['CandyTopAccent','gradient(topAccent, theme.PrimaryTop, theme.Accent, 0)','stroke(frame, theme.Border, 2.3, 0)'])
+   assert.ok(panel.includes(visual),'PANEL_GRAPHICS_MISSING:'+visual);
+ for(const visual of ['ButtonDepthEdge','TextStrokeTransparency = 0.64','MinimumTouchHeight','MouseButton1Down','MouseButton1Up'])
+   assert.ok(button.includes(visual),'BUTTON_GRAPHICS_OR_TOUCH_MISSING:'+visual);
+ for(const visual of ['ItemSpotlight','RarityOutline','RaritySparkle','SelectedRing','FallbackGlyph','Quantity','StateBadge','RarityRail'])
+   assert.ok(slot.includes(visual),'SLOT_GRAPHICS_MISSING:'+visual);
+ for(const visual of ['outline.Color = rarityColor or theme.Border','spotlight.BackgroundColor3 = rarityColor or theme.PrimaryTop','quantity.Visible = quantity.Text ~= ""','item.equipped == true','slot.Active = item.id ~= nil and item.locked ~= true'])
+   assert.ok(update.includes(visual),'GAME_ITEM_BINDING_MISSING:'+visual);
+ assert.ok(icon.includes('gradient(button, theme.PanelRaised, theme.PanelInset, 90)'));
+ for(const visual of ['HeaderEmblem','HeaderColorStripe','title.TextTruncate = Enum.TextTruncate.AtEnd'])
+   assert.ok(shell.includes(visual),'FULLSCREEN_HEADER_MISSING:'+visual);
+ for(const visual of ['SelectedItemRarityStripe','detailStripe.BackgroundColor3=detailMeta.TextColor3','MobileStackedLayout','OwnsSaveAuthority",false'])
+   assert.ok(inventory.includes(visual),'INVENTORY_DETAIL_OR_MOBILE_MISSING:'+visual);
+ assert.doesNotMatch(ui,/require\\(\\d+\\)|DataStoreService|FireServer\\(|UpdateAsync\\(|SetAsync\\(/);
+ const catalog=JSON.parse(fs.readFileSync('assets/roblox/common-ui-v1/catalog.json','utf8'));
+ assert.equal(catalog.atoms.length,204,'EXISTING_COMMON_UI_CATALOG_CHANGED');
+ assert.equal(catalog.productionVerified,false,'VISUAL_CHANGE_CANNOT_CLAIM_RUNTIME_VERIFICATION');
+});
