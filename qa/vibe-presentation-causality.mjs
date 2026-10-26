@@ -2,7 +2,7 @@
 // 역할: Presentation Event의 결정성, 인과관계, 권한 격리, motion/VFX/audio/UI 실행 계약을 회귀 검사
 import assert from 'node:assert/strict';
 import {createVibePresentationEvent,compileVibePresentationEvents,routeVibePresentationEvent,createVibeAudioUIExecution,executeVibeAudioUIEvent} from '../assets/vibe-presentation-director.js';
-import {createVibeMotionEffectExecution,createVibeMotionProfile,planVibeMotionEffectsAutopilot,executeVibeMotionEngineEvent,createVibeCreatureRigPlayback} from '../assets/vibe-motion-effects-director.js';
+import {createVibeMotionEffectExecution,createVibeMotionProfile,planVibeMotionEffectsAutopilot,executeVibeMotionEngineEvent,createVibeCreatureRigPlayback,executeVibeMotionEffectEvent} from '../assets/vibe-motion-effects-director.js';
 import {createCommonCareerMotionLoadout,resolveCommonMotionGenre} from '../assets/vibe-motion-director.js';
 
 const base={sourceId:'player',targetId:'enemy-1',causeId:'cause_attack_1',timestamp:120,sequence:2,importance:'normal',payload:{animation:'attack',vfx:'slash',audio:'swing',camera:'shake',ui:'hit',damage:999,hp:0,reward:999}};
@@ -304,5 +304,37 @@ assert.ok(output.slice(-3).some(row=>row.angles.some(angle=>Math.abs(angle)>.01)
 assert.equal(playback.tick(.01).holdsDeathPose,true);
 playback.stop();
 assert.equal(playback.tick(.1).applied,false);
+
+// 실행 연결: 승인된 실제 종족 관절이 있고 서버가 확정한 해당 actor 이벤트에만 자동 적용한다.
+const autoApplied=[];
+const autoRig=createVibeCreatureRigPlayback({
+  speciesId:'WOLF',tier:'ELITE',actorId:'wolf',rig:{...verifiedRig,actorId:'wolf'},
+  applyJointPose:(joint,rotation,metadata)=>autoApplied.push({joint,rotation,metadata})
+});
+assert.equal(autoRig.ready,true);
+assert.equal(autoRig.actorId,'wolf');
+assert.equal(autoRig.runtimeVerified,false);
+const autoEvent=createVibePresentationEvent('attack',{sourceId:'wolf',causeId:'auto-confirmed-swing'});
+const firstAuto=executeVibeMotionEffectEvent(autoEvent,{}, {creatureRigPlayback:autoRig});
+assert.equal(firstAuto.handled,true);
+assert.equal(firstAuto.results.length,1);
+assert.equal(firstAuto.results[0].kind,'approved-creature-rig-auto-play');
+assert.equal(firstAuto.results[0].result.accepted,true);
+const autoMotionId=firstAuto.results[0].result.motionId;
+const replay=executeVibeMotionEffectEvent(autoEvent,{}, {creatureRigPlayback:autoRig});
+assert.equal(replay.results[0].result.motionId,autoMotionId,'automatic selection must be deterministic per game cause');
+assert.equal(autoRig.tick(.25).applied,true);
+assert.equal(autoApplied.length,3);
+assert.equal(autoApplied[0].metadata.authority,'presentation-only');
+const intruder=createVibePresentationEvent('attack',{sourceId:'other-wolf',causeId:'other-attack'});
+assert.equal(executeVibeMotionEffectEvent(intruder,{}, {creatureRigPlayback:autoRig}).handled,false);
+assert.equal(autoRig.playEvent(intruder).reason,'creature-event-actor-mismatch');
+const autoDeath=createVibePresentationEvent('death',{sourceId:'wolf',causeId:'auto-confirmed-defeat'});
+const deathApplied=executeVibeMotionEffectEvent(autoDeath,{}, {
+  creatureRigPlayback:autoRig,creatureMotionDurationSeconds:.25
+});
+assert.equal(deathApplied.results[0].result.accepted,true);
+assert.equal(autoRig.tick(.25).holdsDeathPose,true);
+assert.equal(autoRig.runtimeVerified,false);
 
 console.log('vibe-presentation-causality: ok');
