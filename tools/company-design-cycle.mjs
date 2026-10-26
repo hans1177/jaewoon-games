@@ -1307,8 +1307,8 @@ function computeVibeNativeDesign(){
   const a=fusion.majorAxes.find(row=>row.key==='A'),b=fusion.majorAxes.find(row=>row.key==='B');
   const c=fusion.themeFusion,main=fusion.main,delve=grammar.delveLayer.elements;
   const shorten=(value,max=650)=>clean(value).slice(0,max);
-  const name=freeTopicMode?clean(computed.gameName):clean(seed.gameName||game.name||original.identity||seed.DISTINCT_IDENTITY)||main.name;
-  const mainName=clean(main.name||name);
+  const name=ownerPreservationDesign?clean(seed.gameName||game.name):freeTopicMode?clean(computed.gameName):clean(seed.gameName||game.name||original.identity||seed.DISTINCT_IDENTITY)||main.name;
+  const mainName=ownerPreservationDesign?name:clean(main.name||name);
   const mode=allGamesMultiplayerRequired
     ?(['COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'COOP')
     :(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'SINGLE');
