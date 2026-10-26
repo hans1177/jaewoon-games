@@ -192,6 +192,21 @@ test('design control and per-game jobs use the available full runner pool',()=>{
   assert.match(finish,/gh workflow run company-seed-design-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
 });
 
+test('semantic promotion changes wake the existing scheduler but timestamp-only writes do not',()=>{
+  const persist=promotion.slice(promotion.indexOf('- name: Persist promoted state to company runtime branch'),promotion.indexOf('- name: Verify exact promoted runtime design handoff for Vibe'));
+  const dispatch=promotion.slice(promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill'));
+  assert.match(persist,/id: persist/);
+  assert.ok(persist.includes('git diff --cached --unified=0 -- development-queue.json'));
+  assert.ok(persist.includes('grep -Ev'));
+  assert.ok(persist.includes('git diff --cached --name-only -- design'));
+  assert.ok(persist.includes('refill_required=$refill_required'));
+  assert.ok(dispatch.includes('steps.persist.outputs.refill_required'));
+  assert.ok(dispatch.indexOf('SKIPPED_NO_SEMANTIC_DESIGN_OR_QUEUE_CHANGE')<dispatch.indexOf('gh workflow run company-development-confirmed-runtime.yml'));
+  assert.match(dispatch,/gh workflow run vibe2-24h-runner\.yml/);
+  const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.ok(runner.includes("cron: '*/5 * * * *'"));
+});
+
 test('canonical promotion safely discards ephemeral LFS art modifications before runtime checkout',()=>{
   const persist=promotion.slice(promotion.indexOf('- name: Persist promoted state to company runtime branch'),promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill'));
   assert.ok(persist.length>1000);
