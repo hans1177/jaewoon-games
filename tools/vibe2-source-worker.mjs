@@ -7527,6 +7527,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         const entry=row.externalAcquisition,rel=posix(entry.localSourcePath);
         if(!verify(row)&&(lfsEligible.has(rel)||plainGitMissing.has(rel))
           &&!directActorSource(entry)){
+
           // Only an exact, registry-pinned public OpenGameArt attachment can
           // replace an unavailable LFS original. Landing pages are forbidden.
           let uri=null;
@@ -7909,7 +7910,23 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_ROBLOX_NO_MODEL_NATIVE_SOURCE=REJECTED:'+generationFailureClass(error)+':'+clean(error?.message||error).slice(0,180));
     }
   }
+  // [기존 네이티브 빌드업] 현재 게임 소스에 등장하는 CC0 원본 역할이
+  // 확보되어 있으면 장식용 HUD 단계보다 기존 게임 소비처의 실교체를 먼저 시도한다.
+  // 모델이나 Roblox 업로드/권한 증거가 없으면 실패 단계로 남긴다.
+  const pendingSourceActorBindings=target==='roblox'
+    &&(order?.assetProduction?.sourceActorRequirements||[]).length>0
+    &&(order?.assetProduction?.assetSupplySummary?.nextActions||[]).some(row=>
+      row?.action==='ACQUIRE_ADAPT'
+      &&row?.externalAcquisition?.sourceType==='ROBLOX_ACTOR_3D'
+      &&row?.externalAcquisition?.downloaded===true
+      &&/^[0-9a-f]{64}$/i.test(clean(row.externalAcquisition.sourceHash))
+      &&/^[0-9a-f]{40}$/i.test(clean(row.externalAcquisition.repositoryGitBlobSha))
+      &&row?.automaticSourceSelectionAuthorized===true);
+  if(pendingSourceActorBindings){
+    console.log('ROBLOX_CC0_NATIVE_CONSUMER_REPLACEMENT=PRIORITY_EXISTING_SOURCE_WORKER_RUNTIME_QA_REQUIRED');
+  }
   const deterministicRobloxMode=robloxDeterministicPresentationEligible(order)
+    &&!pendingSourceActorBindings
     &&clean(process.env.DETERMINISTIC_SOURCE).toLowerCase()==='true'
     &&clean(process.env.VIBE2_ROBLOX_DETERMINISTIC_SOURCE).toLowerCase()==='true'
     &&clean(order?.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
