@@ -736,6 +736,7 @@ jobs:
           import fs from 'node:fs';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           import {createRobloxRuntimeCandidatePublishPlan,publishRobloxPlace,assertRobloxLatestPublishCandidate} from './tools/vibe3-roblox-platform.mjs';
+          import {execFileSync} from 'node:child_process';
           const latestQueue=JSON.parse(fs.readFileSync('/tmp/roblox-latest-publish-queue.json','utf8'));
           const item=(latestQueue.items||[]).find(row=>row.gameId===process.env.GAME_ID);
           assertRobloxLatestPublishCandidate({
@@ -763,6 +764,47 @@ jobs:
             f0Evidence:f0,
           });
           if(plan.executionReady!==true)throw new Error(`Roblox publish blocked: ${(plan.blockedReasons||[]).join(',')}`);
+          // [CC0 원본·Universe 권한] 정확한 승인 소스 리비전에 실제로 쓰인 Cloud 모델만 사용 허가.
+          // 기존 F9 Place artifact는 절대로 수정하지 않는다. 403/권한 누락은 게시 실패로 복구한다.
+          const sourceRoot=String(process.env.SOURCE_ROOT||'');
+          const revision=String(process.env.SOURCE_REVISION||'');
+          if(!/^roblox-games\/[a-z0-9-]+$/.test(sourceRoot)||!/^[0-9a-f]{40}$/.test(revision))
+            throw new Error('ROBLOX_CC0_PUBLISH_SOURCE_INVALID');
+          const git=(...args)=>execFileSync('git',args,{encoding:'utf8',timeout:30000,maxBuffer:16*1024*1024}).trim();
+          const registry=JSON.parse(git('show',revision+':assets/roblox/common-registered-external-assets-v1.json'));
+          if(registry.license!=='CC0-1.0'||registry.rules?.requireUniverseGrantForEachGame!==true)
+            throw new Error('ROBLOX_CC0_REGISTRY_AUTHORITY_INVALID');
+          const gamePaths=git('ls-tree','-r','--name-only',revision,'--',sourceRoot)
+            .split('\n').filter(file=>file.startsWith(sourceRoot+'/')&&/\.(?:luau)$/.test(file));
+          const gameCode=gamePaths.map(file=>git('show',revision+':'+file)).join('\n');
+          const selected=[];
+          for(const row of registry.registeredAssets||[]){
+            if(row.family!=='actor'||row.license!=='CC0-1.0'||row.sourceVerification!=='git-blob-sha'
+              ||!/^assets\/roblox\/actors\/sources\/[a-z0-9-]+\/[a-zA-Z0-9_.\/-]+\.glb$/i.test(String(row.originalPath||''))
+              ||!/^[0-9a-f]{40}$/i.test(String(row.gitBlobSha||''))
+              ||!/^[1-9][0-9]*$/.test(String(row.assetId||'')))continue;
+            const assetId=String(row.assetId);
+            if(!new RegExp('(^|[^0-9])'+assetId+'([^0-9]|$)').test(gameCode))continue;
+            if(git('rev-parse',revision+':'+row.originalPath).toLowerCase()!==row.gitBlobSha.toLowerCase())
+              throw new Error('ROBLOX_CC0_REGISTERED_SOURCE_BLOB_MISMATCH:'+row.key);
+            selected.push(Number(assetId));
+          }
+          const assetIds=[...new Set(selected)];
+          if(assetIds.length){
+            if(!process.env.ROBLOX_OPEN_CLOUD_API_KEY)
+              throw new Error('ROBLOX_CC0_GRANT_API_KEY_REQUIRED');
+            const grant=await fetch('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+              method:'PATCH',
+              headers:{'x-api-key':process.env.ROBLOX_OPEN_CLOUD_API_KEY,'content-type':'application/json'},
+              body:JSON.stringify({subjectType:'Universe',subjectId:String(process.env.ROBLOX_UNIVERSE_ID),
+                action:'Use',requests:assetIds.map(assetId=>({assetId,grantToDependencies:true}))}),
+              signal:AbortSignal.timeout(30000)
+            });
+            const response=await grant.json().catch(()=>({}));
+            if(!grant.ok||(Array.isArray(response.errors)&&response.errors.length>0))
+              throw new Error('ROBLOX_CC0_UNIVERSE_GRANT_FAILED_HTTP_'+grant.status);
+            console.log('ROBLOX_CC0_UNIVERSE_GRANT_ACCEPTED='+assetIds.length);
+          }else console.log('ROBLOX_CC0_UNIVERSE_GRANT=NO_REGISTERED_ACTOR_USE');
           const result=await publishRobloxPlace({plan,retryDelaysMs:[]});
           console.log(`ROBLOX_V3_STATE=${result.state}`);
           console.log(`ROBLOX_PUBLISHED_VERSION_NUMBER=${result.versionNumber}`);
