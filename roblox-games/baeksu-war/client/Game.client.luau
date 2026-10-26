@@ -35,7 +35,7 @@ local function button(parent,txt,size,order,fn)
  return b
 end
 local top=panel(gui,UDim2.new(1,-14,0,74),UDim2.fromOffset(7,6))
-local title=label(top,"백수대전쟁 IV · 자유 시점 군단 타이쿤",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
+local title=label(top,"백수대전쟁 · 군단전선 타이쿤",UDim2.new(1,-12,0,23),UDim2.fromOffset(8,3))
 title.TextSize=17
 local status=label(top,"불러오는 중",UDim2.new(1,-12,0,40),UDim2.fromOffset(8,27))
 local dock=panel(gui,UDim2.fromOffset(208,295),UDim2.new(1,-216,.52,-125))
@@ -61,7 +61,55 @@ choices.Parent=menu
 local cl=Instance.new("UIListLayout");cl.SortOrder=Enum.SortOrder.LayoutOrder;cl.Padding=UDim.new(0,5);cl.Parent=choices
 local notice=label(gui,"회전·줌으로 전장을 둘러보고 땅의 슬롯을 눌러 건설해!",UDim2.new(1,-20,0,38),UDim2.new(0,9,1,-45))
 notice.TextColor3=Color3.fromRGB(252,226,137)
-local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={}}
+-- 군단 지휘와 경제 패널: 모바일에서는 버튼으로 펼쳐 화면을 확보한다.
+local controlPanel=panel(gui,UDim2.fromOffset(218,346),UDim2.fromOffset(8,133))
+controlPanel.Visible=false
+local controlToggle=button(gui,"군단 · 경제",UDim2.fromOffset(137,38),0,function()
+ controlPanel.Visible=not controlPanel.Visible
+ if controlPanel.Visible then menu.Visible=false end
+ dock.Visible=not controlPanel.Visible
+end)
+controlToggle.Position=UDim2.fromOffset(8,87)
+label(controlPanel,"전선 사령부 · 군단 성장",UDim2.new(1,-12,0,28),UDim2.fromOffset(8,5))
+local economyInfo=label(controlPanel,"자원 정보 불러오는 중",UDim2.new(1,-12,0,65),UDim2.fromOffset(8,35))
+economyInfo.TextSize=12
+local commandScroll=Instance.new("ScrollingFrame")
+commandScroll.Size=UDim2.new(1,-12,1,-109)
+commandScroll.Position=UDim2.fromOffset(6,103)
+commandScroll.BackgroundTransparency=1;commandScroll.BorderSizePixel=0
+commandScroll.ScrollBarThickness=3;commandScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+commandScroll.CanvasSize=UDim2.new();commandScroll.Parent=controlPanel
+local commandLayout=Instance.new("UIListLayout")
+commandLayout.SortOrder=Enum.SortOrder.LayoutOrder;commandLayout.Padding=UDim.new(0,5)
+commandLayout.Parent=commandScroll
+local push=button(commandScroll,"전면 진격",UDim2.new(1,-10,0,36),1,function()remote:FireServer("SET_COMMAND","PUSH")end)
+local rally=button(commandScroll,"거점 집결",UDim2.new(1,-10,0,36),2,function()remote:FireServer("SET_COMMAND","RALLY")end)
+local defend=button(commandScroll,"본진 방어",UDim2.new(1,-10,0,36),3,function()remote:FireServer("SET_COMMAND","DEFEND")end)
+local workerBtn=button(commandScroll,"일꾼 고용",UDim2.new(1,-10,0,39),4,function()remote:FireServer("HIRE_WORKER")end)
+local labBtn=button(commandScroll,"연구소 확장",UDim2.new(1,-10,0,39),5,function()remote:FireServer("UPGRADE_LAB")end)
+local techBtn=button(commandScroll,"전투 연구",UDim2.new(1,-10,0,39),6,function()remote:FireServer("RESEARCH")end)
+local missionBtn=button(commandScroll,"임무",UDim2.new(1,-10,0,65),7,function()remote:FireServer("CLAIM_MISSION")end)
+local function renderEconomy(e)
+ if type(e)~="table" then return end
+ local labels={PUSH="전면 진격",RALLY="거점 집결",DEFEND="본진 방어"}
+ economyInfo.Text=string.format("일꾼 %d/8 · 연구소 %d/5 · 훈련 %d/5\n연구 %dRP · 거점 %d/2 · +%dG/2초\n현재 명령: %s",
+  e.Workers or 0,e.Lab or 0,e.Tech or 0,e.Research or 0,e.Points or 0,e.PassiveGold or 0,labels[e.Command] or "전면 진격")
+ for _,b in ipairs({push,rally,defend}) do
+  b.BackgroundColor3=(b==push and e.Command=="PUSH" or b==rally and e.Command=="RALLY" or b==defend and e.Command=="DEFEND")
+   and Color3.fromRGB(69,137,97) or Color3.fromRGB(67,111,109)
+ end
+ workerBtn.Text=(e.Workers or 0)>=8 and "일꾼 최대 고용" or ("일꾼 고용 · "..tostring(e.WorkerCost or 0).."G")
+ labBtn.Text=(e.Lab or 0)>=5 and "연구소 최대 단계" or ("연구소 확장 · "..tostring(e.LabCost or 0).."G")
+ techBtn.Text=(e.Tech or 0)>=5 and "군단 훈련 연구 완료" or ("군단 훈련 연구 · "..tostring(e.TechCost or 0).."RP")
+ missionBtn.Text=string.format("임무: %s\n%s",e.MissionTitle or "준비 중",
+  (e.Mission or 1)>5 and "모두 완료" or (e.CanClaim and ("보상 받기 +"..tostring(e.MissionReward or 0).."G") or "조건 달성 시 보상"))
+ missionBtn.BackgroundColor3=e.CanClaim and Color3.fromRGB(134,106,52) or Color3.fromRGB(67,111,109)
+end
+local current={Gold=0,Stage=1,HomeHP=500,EnemyHP=380,Unlocked=3,Buildings={},Economy={}}
+local function updateStatus()
+ status.Text=string.format("스테이지 %d · 골드 %d\n우리 성문 %d  |  적 성문 %d",
+  current.Stage or 1,current.Gold or 0,math.ceil(current.HomeHP or 500),math.ceil(current.EnemyHP or 380))
+end
 local function updateSaveNotice()
  if p:GetAttribute("SaveStatus")=="SESSION_ONLY" then
   notice.Text="비공개 테스트 · 임시 세션 (저장 연결 확인 필요)"
@@ -70,7 +118,7 @@ end
 p:GetAttributeChangedSignal("SaveStatus"):Connect(updateSaveNotice)
 local chosen=1
 local function redrawMenu(index)
- chosen=index;menu.Visible=true;dock.Visible=false
+ chosen=index;menu.Visible=true;dock.Visible=false;controlPanel.Visible=false
  for _,x in ipairs(choices:GetChildren()) do if x:IsA("GuiObject") then x:Destroy() end end
  local b=current.Buildings[index]
  if b and b.Kind~="" and C.ById[b.Kind] then
@@ -90,7 +138,8 @@ local function redrawMenu(index)
  end
 end
 local function refresh()
- status.Text=string.format("스테이지 %d · 골드 %d\n우리 성문 %d  |  적 성문 %d",current.Stage or 1,current.Gold or 0,math.ceil(current.HomeHP or 500),math.ceil(current.EnemyHP or 380))
+ updateStatus()
+ renderEconomy(current.Economy)
  local scroll=list.CanvasPosition
  for _,x in ipairs(list:GetChildren()) do if x:IsA("TextButton") then x:Destroy() end end
  for i=1,(current.Unlocked or 3) do
@@ -105,6 +154,13 @@ local function refresh()
 end
 buy.Activated:Connect(function()remote:FireServer("BUY_SLOT")end)
 remote.OnClientEvent:Connect(function(action,data)
+ if action=="ECONOMY" and type(data)=="table" then
+  current.Gold=data.Gold or current.Gold
+  current.Economy=data
+  updateStatus()
+  renderEconomy(data)
+  return
+ end
  if action=="OPEN_SLOT" and type(data)=="table" then
   local index=tonumber(data.Index)
   if index and index%1==0 and index>=1 and index<=(current.Unlocked or 3) then
@@ -120,7 +176,7 @@ remote.OnClientEvent:Connect(function(action,data)
 end)
 for _,k in ipairs({"Gold","HomeHP","EnemyHP","Stage"}) do
  p:GetAttributeChangedSignal(k):Connect(function()
-  local v=p:GetAttribute(k);if type(v)=="number" then current[k]=v;status.Text=string.format("스테이지 %d · 골드 %d\n우리 성문 %d  |  적 성문 %d",current.Stage or 1,current.Gold or 0,math.ceil(current.HomeHP or 500),math.ceil(current.EnemyHP or 380)) end
+  if type(v)=="number" then current[k]=v;updateStatus() end
  end)
 end
 remote:FireServer("SYNC")
@@ -162,6 +218,8 @@ local function resizeHud()
  local narrow=width<680 or (Input.TouchEnabled and width<950)
  local compact=width<440
  title.TextSize=compact and 14 or 17
+ controlPanel.Size=compact and UDim2.fromOffset(185,320) or UDim2.fromOffset(218,346)
+ controlToggle.Size=compact and UDim2.fromOffset(118,36) or UDim2.fromOffset(137,38)
  dock.Size=compact and UDim2.fromOffset(143,231) or (narrow and UDim2.fromOffset(161,254) or UDim2.fromOffset(208,295))
  dock.Position=compact and UDim2.new(1,-148,.37,-50) or (narrow and UDim2.new(1,-166,.52,-108) or UDim2.new(1,-216,.52,-125))
  menu.Size=compact and UDim2.fromOffset(187,246) or (narrow and UDim2.fromOffset(192,270) or UDim2.fromOffset(228,306))
