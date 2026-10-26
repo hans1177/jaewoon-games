@@ -204,19 +204,13 @@ bgm.Volume = table.find(studioAssetFamily("AUDIO"), "ENV_FOREST") and .18 or bgm
 task.defer(function()
   local cozyWorld = workspace:WaitForChild("CozyConquestWorld")
 
-  -- 실제 렌더링되는 곰 몸통과 멧돼지 부품에만 선택된 재질을 적용한다.
+  -- 곰은 포근섬 출현 대상에서 제외한다. 기존 멧돼지 재질은 유지한다.
   -- 투명한 동물 루트와 약탈병 충돌 부품은 건드리지 않는다.
-  local furParts = {Body=true, Chest=true, Rump=true, ChestRuff=true, BoarBody=true, BoarShoulder=true, BoarMane=true}
+  local furParts = {BoarBody=true, BoarShoulder=true, BoarMane=true}
   local function bindCreatureModel(instance)
     if not table.find(studioAssetFamily("CREATURE"), "FUR_PATCH") then return end
-    if instance:IsA("Model") and instance:GetAttribute("WildlifeSpecies") == "BEAR" then
-      for _, part in ipairs(instance:GetChildren()) do
-        if part:IsA("BasePart") and furParts[part.Name] then part.Material = Enum.Material.Fabric end
-      end
-    elseif instance:IsA("BasePart") and furParts[instance.Name] then
-      local isBoarPart = instance.Name:find("Boar", 1, true) ~= nil
-      local isBearPart = instance.Parent and instance.Parent:IsA("Model") and instance.Parent:GetAttribute("WildlifeSpecies") == "BEAR"
-      if isBoarPart or isBearPart then instance.Material = Enum.Material.Fabric end
+    if instance:IsA("BasePart") and furParts[instance.Name] then
+      instance.Material = Enum.Material.Fabric
     end
   end
   for _, descendant in ipairs(cozyWorld:GetDescendants()) do bindCreatureModel(descendant) end
