@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
-import {buildVibeAssetProductionPlan,assetProductionGuidance} from '../tools/vibe2-asset-production-plan.mjs';
+import {buildVibeAssetProductionPlan,assetProductionGuidance,buildVibeFamilyAssetOptimizationHandoff} from '../tools/vibe2-asset-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
 import {extractDesignContext} from '../tools/company-build-up-directive.mjs';
 import {planVibeExternalCustomization} from '../assets/asset-selector.js';
@@ -634,4 +634,59 @@ test('external native customization rejects non-CC0 game assets despite company 
   assert.ok(candidates.every(row=>row.assetId==='cc0'));
   assert.equal(plan.existingVerifiedSourceCount,1);
  }
+});
+
+test('existing F0 family optimization tracks all twelve families but only acts on declared assets',()=>{
+  const rows=[
+    {family:'CREATURE',assetId:'approved-wolf',requirementId:'enemy',status:'NATIVE_SOURCE_BINDING_REQUIRED',
+     sourceHash:'hash',repairOwner:'EXISTING_GAME_SOURCE_WORKER'},
+    {family:'MOTION',assetId:'wolf-motion',requirementId:'anim',status:'SOURCE_BOUND_RUNTIME_QA_REQUIRED',
+     repairOwner:'EXISTING_GAME_SOURCE_WORKER'},
+    {family:'BUILDING',assetId:null,requirementId:'hut',status:'SOURCE_ASSET_REQUIRED',
+     repairOwner:'EXISTING_ASSET_DEVELOPMENT'}
+  ];
+  const assetWork={enabled:true,targets:rows};
+  const library={fingerprint:'latest-library-snapshot',familyCandidates:{
+    CREATURE:[{assetId:'approved-wolf'}],MOTION:[{assetId:'wolf-motion'}]
+  }};
+  const result=buildVibeFamilyAssetOptimizationHandoff({
+    gameId:'approved-game',target:'roblox',automaticBindingWork:assetWork,dynamicLibrary:library
+  });
+  assert.equal(result.enabled,true);
+  assert.equal(result.trigger,'F0_AND_EVERY_EXISTING_BUILD_UP');
+  assert.equal(result.familyCount,12);
+  assert.equal(result.familyTasks.length,12);
+  assert.equal(result.requestedFamilyCount,3);
+  assert.equal(result.blockedFamilyCount,1);
+  assert.equal(result.selectionFingerprint,'latest-library-snapshot');
+  const creature=result.familyTasks.find(row=>row.family==='CREATURE');
+  assert.deepEqual(creature.selectedAssetIds,['approved-wolf']);
+  assert.equal(creature.status,'QUEUED_EXISTING_GAME_ASSET_WORKER_UNVERIFIED');
+  assert.equal(creature.appliedToRuntime,false);
+  assert.equal(creature.runtimeVerified,false);
+  assert.ok(creature.executionOrder.includes('MEASURE_ACTUAL_SAME_REVISION_MOBILE_FRAME_MEMORY_LOAD_AND_FAMILY_REGRESSION'));
+  assert.ok(creature.executionOrder.includes('RESTORE_LAST_VERIFIED_CHECKPOINT_AND_REPAIR_SAME_SOURCE_ON_FAILURE'));
+  assert.ok(creature.evidenceRequired.includes('LICENSE_SOURCE_HASH_AND_TARGET_PLATFORM_RIGHTS'));
+  const building=result.familyTasks.find(row=>row.family==='BUILDING');
+  assert.equal(building.status,'BLOCKED_SOURCE_LICENSE_OR_RIG_REQUIRES_REPAIR');
+  assert.equal(building.missingSourceOrBinding[0].repairOwner,'EXISTING_ASSET_DEVELOPMENT');
+  assert.equal(result.familyTasks.find(row=>row.family==='UI').status,'NO_DECLARED_GAME_ASSET_REQUIREMENT');
+  assert.equal(result.noShadowPipeline,true);
+  assert.equal(result.alreadyRuntimeVerifiedCount,0);
+  const disabled=buildVibeFamilyAssetOptimizationHandoff({target:'roblox',automaticBindingWork:assetWork});
+  assert.equal(disabled.enabled,false);
+  assert.equal(disabled.familyTasks.every(row=>row.sourceWritePerformed===false),true);
+});
+
+test('existing game asset worker automatically receives family optimize-apply-measure-repair handoff',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',repoRoot:'/nonexistent-family-optimization-fixture',
+    manifest:{assets:[]},task:{gameId:'demo',goal:'최신 라이브러리 게임 자산 최적화'}
+  });
+  assert.equal(plan.automaticAssetBindingWork.existingGraphicsProductionAndBuildUp,true);
+  assert.equal(plan.familyAssetOptimization.familyCount,12);
+  assert.equal(plan.familyAssetOptimization.noNewWorkerQueue,true);
+  assert.equal(plan.familyAssetOptimization.runtimeVerified,false);
+  assert.match(assetProductionGuidance(plan),/F0-F9 EXISTING ASSET FAMILY OPTIMIZATION EXECUTION/);
+  assert.match(assetProductionGuidance(plan),/기기별 FPS\/메모리\/로딩 실측/);
 });

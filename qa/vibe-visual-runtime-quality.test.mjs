@@ -498,3 +498,22 @@ test('graphics production wires existing CC0 duel and creature choreography for 
   assert.equal(unknown.motionEffects?.combatActions.length,0);
   assert.equal(unknown.motionEffects?.creatureActions.length,0);
 });
+
+test('graphics root consumes the existing family optimization work without a second pipeline',()=>{
+  const handoff={version:1,enabled:true,familyCount:12,requestedFamilyCount:2,
+    familyTasks:[{family:'CREATURE',status:'QUEUED_EXISTING_GAME_ASSET_WORKER_UNVERIFIED',runtimeVerified:false}],
+    runtimeVerified:false,noNewWorkerQueue:true};
+  const production=createVibeGraphicsProduction({
+    gameId:'family-asset-hand-off',request:'모든 자산 최적화 연결',target:'roblox',quality:1,
+    game:{genre:'ACTION_RPG'},assetProductionPlan:{kind:'vibe2-asset-production-plan',familyAssetOptimization:handoff}
+  });
+  assert.equal(production.assetProductionPlanBound,true);
+  assert.equal(production.familyAssetOptimization,handoff);
+  assert.equal(production.familyAssetOptimization.runtimeVerified,false);
+  assert.equal(production.queue.siblingTopLevelGraphicsTasksForbidden,true);
+  const absent=createVibeGraphicsProduction({
+    gameId:'no-asset-production',request:'기존 그래픽 유지',target:'web',
+    game:{genre:'ACTION_RPG'}
+  });
+  assert.equal(absent.familyAssetOptimization,null);
+});
