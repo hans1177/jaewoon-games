@@ -1155,8 +1155,8 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -1182,7 +1182,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-26T12:37:47.833Z",
+      "updatedAt": "2026-10-26T12:43:56.772Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1190,33 +1190,33 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
       "robloxSourceBootstrapFailedAt": null,
       "robloxRuntimePassed": false,
-      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpPassed": true,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleasePublished": false,
       "robloxPublicReleaseReady": false,
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-f0-restart-build-package-pending"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "9fe32496286b488c0259141df10f8646abfb31eb",
+      "robloxBuildArtifactIdentity": "sha256:9443920bfe033a5730fc52d3fb96e475d20f28bb1b5486164c6a34fb22c36a1f",
+      "robloxBuildPassedAt": "2026-10-26T12:43:56.772Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-26T12:43:56.772Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "cozy-island",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-26T10:23:50.200Z",
-        "sourceRevision": "a2897c560609ed8583f67d04423e6ba6dbb04092",
+        "checkedAt": "2026-10-26T12:43:53.882Z",
+        "sourceRevision": "9fe32496286b488c0259141df10f8646abfb31eb",
         "artifactIdentity": "sha256:9443920bfe033a5730fc52d3fb96e475d20f28bb1b5486164c6a34fb22c36a1f",
         "secondaryOwnerFocus": false,
         "facts": {
@@ -1236,7 +1236,7 @@
           "directRoblox": true,
           "concurrentRoblox": false,
           "build": {
-            "sourceRevision": "a2897c560609ed8583f67d04423e6ba6dbb04092",
+            "sourceRevision": "9fe32496286b488c0259141df10f8646abfb31eb",
             "artifactIdentity": "sha256:9443920bfe033a5730fc52d3fb96e475d20f28bb1b5486164c6a34fb22c36a1f",
             "webValidationPassed": false,
             "musicValidationPassed": false,
@@ -1253,27 +1253,296 @@
             "model": "gemini-3.5-flash-lite",
             "decision": "PASS",
             "blockers": [],
-            "note": "All required build evidence parameters indicate success, including source validation and package build passing."
+            "note": "All required build evidence and exact deterministic package identity checks have passed successfully. The package is cleared to start runtime testing."
           }
         ],
         "blockers": [],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-26T12:43:56.772Z",
+      "robloxFoundationF0Evidence": {
+        "version": 5,
+        "gameId": "cozy-island",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-26T12:43:54.521Z",
+        "sourcePath": "roblox-games/cozy-island",
+        "sourceRevision": "9fe32496286b488c0259141df10f8646abfb31eb",
+        "artifactIdentity": "sha256:9443920bfe033a5730fc52d3fb96e475d20f28bb1b5486164c6a34fb22c36a1f",
+        "rebuiltArtifactIdentity": "sha256:9443920bfe033a5730fc52d3fb96e475d20f28bb1b5486164c6a34fb22c36a1f",
+        "artifactRunId": 40324016822,
+        "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
+        "assetSelectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
+        "observedAssetSelectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
+        "assetLibraryVersion": 145,
+        "observedAssetLibraryVersion": 145,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "COOP",
+        "saveExists": true,
+        "multiplayerApplicable": true,
+        "sourcePreflightPassed": true,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": true,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "cozy-island",
+          "pass": true,
+          "blockers": [],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "GATHERING",
+            "PROGRESSION",
+            "TYCOON",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": true,
+            "WORLD": true,
+            "CONTENT_ENTITY": true,
+            "GATHERING": true,
+            "PROGRESSION": true,
+            "TYCOON": true,
+            "SAVE": true,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": true,
+            "SESSION_FLOW": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "A 시작: RouteState·RiskState를 확인한 뒤 시설의 수요와 공급을 비교해 배치와 확장 순서를 선택한다한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "TYCOON"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "step": "B 대응: A의 ResourceState·RiskState를 확인한 뒤 나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "step": "A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 도시 시설과 자원 흐름의 운영의 새 선택을 실행하거나 @ 발견 조건을 시험한다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "TYCOON"
+              ],
+              "pass": true
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "전쟁·군사·수학 시뮬레이션×모험: 조립 공정: 앞 공정의 출력이 다음 요구를 충족함의 성립",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "GATHERING",
+                "TYCOON"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "name": "도시 시설과 자원 흐름의 운영 × 전쟁·군사",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "TYCOON"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "name": "직접 채집 × 수학",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "GATHERING"
+              ],
+              "pass": true
+            },
+            {
+              "index": 3,
+              "name": "조립 공정: 앞 공정의 출력이 다음 요구를 충족함의 성립",
+              "capabilities": [
+                "WORLD",
+                "TYCOON"
+              ],
+              "pass": true
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 2,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 0,
+            "meaningfulGameplayFunctionCount": 8
+          },
+          "studioQualitySheet": {
+            "Core": "PLAYABLE",
+            "Content": "PLAYABLE",
+            "World": "POLISHED",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "PLAYABLE",
+            "UI": "POLISHED",
+            "Graphics": "POLISHED",
+            "Motion": "POLISHED",
+            "Audio": "PLAYABLE",
+            "Mobile": "POLISHED",
+            "Performance": "PLAYABLE",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": false,
+              "signalCount": 2,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": false,
+              "signalCount": 4,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 5,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": true
+                }
+              ],
+              "pass": true
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 2,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 0,
+              "meaningfulGameplayFunctionCount": 8
+            },
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": true,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "b85ce1658dbfbce9cede2bc2f44c4f1542a6ca4879eec49b58d2850b6fb5f3be",
+          "antiSkeletonPassed": true,
+          "designGenre": "Simulation",
+          "sourceGenre": "Simulation",
+          "designPlayMode": "COOP",
+          "sourcePlayMode": "COOP"
+        },
+        "studioQualitySheet": {
+          "Core": "PLAYABLE",
+          "Content": "PLAYABLE",
+          "World": "POLISHED",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "PLAYABLE",
+          "UI": "POLISHED",
+          "Graphics": "POLISHED",
+          "Motion": "POLISHED",
+          "Audio": "PLAYABLE",
+          "Mobile": "POLISHED",
+          "Performance": "PLAYABLE",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "buildUpAssetSourceUsageFingerprint": true,
+          "assetSelectionFingerprint": true,
+          "assetLibraryVersion": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "groundContactNotSynthetic": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": true,
+          "f0SourceIntegrity": true
+        },
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "cozy-island",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-26T10:23:51.014Z",
+        "checkedAt": "2026-10-26T12:43:54.521Z",
         "sourcePath": "roblox-games/cozy-island",
-        "sourceRevision": "a2897c560609ed8583f67d04423e6ba6dbb04092",
+        "sourceRevision": "9fe32496286b488c0259141df10f8646abfb31eb",
         "artifactIdentity": "sha256:9443920bfe033a5730fc52d3fb96e475d20f28bb1b5486164c6a34fb22c36a1f",
         "rebuiltArtifactIdentity": "sha256:9443920bfe033a5730fc52d3fb96e475d20f28bb1b5486164c6a34fb22c36a1f",
-        "artifactRunId": 40306574907,
+        "artifactRunId": 40324016822,
         "buildUpAssetSourceUsageFingerprint": "9722091214e04ccc626998b459116a027105dbb39806e58bbb3a3967b9aab29f",
         "assetSelectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
         "observedAssetSelectionFingerprint": "84851c243b9da025336945407286f18c1ad6fe8a917777029ce112abf93ac5e5",
@@ -2099,11 +2368,11 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxBuildFailedAt": null,
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "robloxHeadlessPassedAt": null,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
       "robloxEvidenceInvalidatedBySourceChange": null,
       "robloxRuntimeRetryCount": 0,
       "robloxEvidenceInvalidatedByF0Restart": {
@@ -7142,7 +7411,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-26T12:41:56.917Z",
+  "updatedAt": "2026-10-26T12:43:56.772Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
