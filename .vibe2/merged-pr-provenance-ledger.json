@@ -103728,11 +103728,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_bd1782f7887a7873936e7c91",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10283",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d1e0acd615c63a1d01e4faeb48c5cdbe2c52922e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10283,
+        "baseBranch": "main",
+        "headBranch": "fix/horror-native-survival-source-20261026",
+        "baseSha": "d1e0acd615c63a1d01e4faeb48c5cdbe2c52922e",
+        "headSha": "438adc9fc57c4e7fe2faca852fbcb22669b57cd0",
+        "mergeCommitSha": "3fe78e5af11b74595511f6da523f8357bb9af9d3",
+        "mergedAt": "2026-10-26T07:12:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5778ce814ac9c397e330c3103818eb1954db5bdf6970a911c4981f5bcbaf2e68",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/horror-native-survival-source-20261026",
+        "candidateSha": "438adc9fc57c4e7fe2faca852fbcb22669b57cd0"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 43,
+        "deletedLineCount": 14,
+        "changedFiles": [
+          "qa/horror-escape-room-release.test.mjs",
+          "roblox-games/horror-escape-room/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/horror-escape-room-release.test.mjs",
+          "roblox-games/horror-escape-room/client/Game.client.luau",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10283",
+        "merge-commit:3fe78e5af11b74595511f6da523f8357bb9af9d3",
+        "base-main:d1e0acd615c63a1d01e4faeb48c5cdbe2c52922e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 816
+    "total": 817
   }
 }
