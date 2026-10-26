@@ -117,7 +117,11 @@ local list=Instance.new("ScrollingFrame");list.Size=UDim2.new(1,-14,1,-90)
 list.Position=UDim2.fromOffset(7,32);list.BackgroundTransparency=1;list.BorderSizePixel=0
 list.ScrollBarThickness=3;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new()
 list.ZIndex=dock.ZIndex+4;list.Parent=dock
-local ll=Instance.new("UIListLayout");ll.SortOrder=Enum.SortOrder.LayoutOrder;ll.Padding=UDim.new(0,5);ll.Parent=list
+local slotGrid=Instance.new("UIGridLayout")
+slotGrid.SortOrder=Enum.SortOrder.LayoutOrder
+slotGrid.CellPadding=UDim2.fromOffset(9,9)
+slotGrid.CellSize=UDim2.new(.5,-7,0,81)
+slotGrid.Parent=list
 local buy=Instance.new("TextButton");buy.Size=UDim2.new(1,-14,0,43);buy.Position=UDim2.new(0,7,1,-49)
 buy.TextSize=13;buy.TextColor3=Color3.new(1,1,1);buy.BackgroundColor3=Color3.fromRGB(111,89,51)
 buy.Font=Enum.Font.GothamBold;buy.Text="전장 준비 중";buy.Parent=dock
@@ -295,7 +299,15 @@ local function redrawMenu(index)
   caption.Text="슬롯 "..index.." · 집 선택"
   for i,u in ipairs(C.Units) do
    local kind=u.Id
-   button(choices,u.Home.." · "..u.Cost.."G",UDim2.new(1,-8,0,38),i,function()remote:FireServer("BUILD",chosen,kind)end)
+   local card=button(choices,string.format("%s  ·  %d G\n체력 %d  /  공격 %d",u.Home,u.Cost,u.HP,u.Damage),
+   UDim2.new(1,-12,0,72),i,function()remote:FireServer("BUILD",chosen,kind)end)
+  if u.Cost>(current.Gold or 0) then
+   card.TextColor3=Color3.fromRGB(183,180,171)
+  end
+  local tag=Instance.new("Frame")
+  tag.Name="생물 역할 강조";tag.Position=UDim2.fromOffset(4,10)
+  tag.Size=UDim2.new(0,4,1,-20);tag.BackgroundColor3=u.Color
+  tag.BorderSizePixel=0;tag.ZIndex=card.ZIndex+2;tag.Parent=card
   end
  end
 end
@@ -308,7 +320,15 @@ local function refresh()
   local index=i
   local b=current.Buildings[i];local u=b and C.ById[b.Kind]
   local name=u and (i..". "..u.Home.." Lv."..b.Level) or (i..". 빈 슬롯 · 건설")
-  button(list,name,UDim2.new(1,-7,0,41),i,function()redrawMenu(index)end)
+  local card=button(list,name,UDim2.fromOffset(172,81),i,function()redrawMenu(index)end)
+  card.BackgroundColor3=u and Color3.fromRGB(48,104,82) or Color3.fromRGB(74,88,90)
+  card.TextSize=14
+  if u then
+   local tint=Instance.new("Frame")
+   tint.Name="서식지 테마";tint.Size=UDim2.new(1,-12,0,4)
+   tint.Position=UDim2.fromOffset(6,5);tint.BackgroundColor3=u.Color
+   tint.BorderSizePixel=0;tint.ZIndex=card.ZIndex+2;tint.Parent=card
+  end
  end
  list.CanvasPosition=scroll
  buy.Text="슬롯 "..(current.Unlocked+1).." 구매 · "..C.SlotCost(current.Unlocked+1).."G"
@@ -412,6 +432,7 @@ local function resizeHud()
  end
  local w=math.max(260,math.min(width-24,compact and 480 or 620))
  local h=math.max(235,math.min(height-36,550))
+ slotGrid.CellSize=UDim2.new(width<470 and .5 or .333,-10,0,81)
  local windows={dock,menu,controlPanel,mapPanel}
  for _,window in ipairs(windows) do
   window.AnchorPoint=Vector2.new(.5,.5)
@@ -434,10 +455,13 @@ local function resizeHud()
  economyInfo.Position=UDim2.fromOffset(14,42)
  economyInfo.Size=UDim2.new(1,-28,0,73)
  mapSurface.Position=UDim2.fromOffset(14,46)
- mapSurface.Size=UDim2.new(1,-28,1,-257)
+ local showMapArt=h>=373
+ mapSurface.Visible=showMapArt
+ mapSurface.Size=UDim2.new(1,-28,0,math.max(92,h-256))
  for i,b in ipairs({mapTravelHome,mapTravelFront,mapTravelFar}) do
   b.Size=UDim2.new(1,-28,0,49)
-  b.Position=UDim2.new(0,14,1,-169+(i-1)*54)
+  b.Position=showMapArt and UDim2.new(0,14,1,-169+(i-1)*54)
+   or UDim2.fromOffset(14,51+(i-1)*58)
  end
  notice.Size=UDim2.new(1,-24,0,32)
  notice.Position=UDim2.new(0,12,1,-42)
