@@ -411,7 +411,7 @@ test('humanoid monsters reuse biped combat semantics, quadrupeds keep sixty inde
     for(const row of actions){
       assert.equal(row.jointTracks.length,3);
       assert.deepEqual(row.semanticLegChannels,['FRONT_LEFT','FRONT_RIGHT','HIND_LEFT','HIND_RIGHT']);
-      assert.ok(row.jointTracks.every(track=>track.frames.length===5&&track.frames.every(frame=>frame.rotation.every(Number.isFinite))));
+      assert.ok(row.jointTracks.every(track=>track.frames.length===7&&track.frames.every(frame=>frame.rotation.every(Number.isFinite))));
       assert.equal(row.rootAndHitboxUnchanged,true);
       assert.equal(row.productionVerified,false);
       assert.equal(row.runtimeVerified,false);
@@ -482,6 +482,59 @@ test('non-humanoid creature families keep sixty anatomy-bound motions without in
   assert.equal(createCommonMonsterActionLoadout({speciesId:'TENTACLE_BEAST'}).motion60[0].locomotionStyle,'ANCHOR_AND_DELAYED_TENTACLE_WAVE');
 });
 
+test('sixty nonhuman motions contain distinct detailed joint curves and preserved contact timing',()=>{
+  for(const speciesId of Object.keys(COMMON_MONSTER_ACTION_SPECIES)){
+    const result=createCommonMonsterActionLoadout({speciesId,platform:'ROBLOX'});
+    if(!result.nonHumanoidKind)continue;
+    const motions=result.motion60;
+    assert.equal(motions.length,60,speciesId);
+    const signatures=motions.map(row=>JSON.stringify(row.jointTracks.map(track=>
+      [track.part,...track.frames.map(frame=>[frame.phase,...frame.rotation])])));
+    assert.equal(new Set(signatures).size,60,speciesId+': no copy-paste motion curves');
+    for(const motion of motions){
+      assert.equal(motion.jointTracks.length,3,speciesId+':'+motion.id);
+      assert.equal(new Set(motion.jointTracks.map(row=>row.part)).size,3,
+        speciesId+':'+motion.id+': secondary motion must use a distinct anatomical part');
+      for(const [trackIndex,track] of motion.jointTracks.entries()){
+        assert.equal(track.frames.length,7,speciesId+':'+motion.id);
+        assert.equal(track.interpolation,'CUBIC_EASE_WITH_ZERO_ENDPOINT_VELOCITY');
+        assert.equal(track.poseAndVelocityContinuityRequired,true);
+        assert.equal(track.contactAtFixedPhase,motion.poseKeyTimes[3]);
+        assert.equal(track.frames[3].phase,motion.poseKeyTimes[3]);
+        assert.equal(track.frames[0].phase,0);
+        assert.equal(track.frames[6].phase,1);
+        assert.ok(track.frames.every((frame,index,array)=>
+          frame.rotation.length===3&&frame.rotation.every(value=>Number.isFinite(value)&&Math.abs(value)<4)
+          &&(index===0||frame.phase>array[index-1].phase)),speciesId+':'+motion.id);
+        if(trackIndex>0)assert.ok(track.frames[2].phase>motion.jointTracks[0].frames[2].phase,
+          speciesId+': delayed counterweight and expression must trail the lead');
+        if(motion.group==='deaths')assert.ok(track.holdsFinalPose&&
+          track.frames[6].rotation.some(value=>Math.abs(value)>.01));
+        else assert.deepEqual(track.frames[6].rotation,[0,0,0]);
+      }
+    }
+  }
+});
+
+test('elite/boss action presentation keeps three distinct body parts and does not alter gameplay windows',()=>{
+  for(const speciesId of Object.keys(COMMON_MONSTER_ACTION_SPECIES)){
+    for(const tier of ['ELITE','BOSS']){
+      const result=createCommonMonsterActionLoadout({speciesId,tier});
+      assert.equal(result.tierActionPatterns.length,50);
+      for(const row of result.tierActionPatterns){
+        assert.equal(row.jointTracks.length,3);
+        assert.equal(new Set(row.jointTracks.map(track=>track.part)).size,3);
+        assert.ok(row.jointTracks.every(track=>track.frames.length===7
+          &&track.frames[3].phase===row.poseKeyTimes[3]));
+        assert.ok(row.jointTracks.every(track=>result.species.specialParts.includes(track.part)));
+        assert.equal(row.comboContactAndCancelWindowsUnchanged,true);
+        assert.equal(row.aiLogicAndBossPhaseUnchanged,true);
+        assert.equal(row.productionVerified,false);
+      }
+    }
+  }
+});
+
 test('elite and boss preserve approved attacks while preparing fifty choreography patterns each',()=>{
   for(const speciesId of Object.keys(COMMON_MONSTER_ACTION_SPECIES)){
     const normal=createCommonMonsterActionLoadout({speciesId,tier:'NORMAL'});
@@ -495,7 +548,7 @@ test('elite and boss preserve approved attacks while preparing fifty choreograph
       for(const pattern of result.tierActionPatterns){
         assert.equal(pattern.tier,tier);
         assert.equal(pattern.steps.length,3);
-        assert.equal(pattern.jointTracks.length,2);
+        assert.equal(pattern.jointTracks.length,3);
         assert.equal(pattern.aiLogicAndBossPhaseUnchanged,true);
         assert.equal(pattern.comboContactAndCancelWindowsUnchanged,true);
         assert.equal(pattern.entryRequiresGameApprovedActionSequence,true);
