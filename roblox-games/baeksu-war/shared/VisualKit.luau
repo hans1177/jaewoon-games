@@ -155,21 +155,31 @@ function Kit.DecorateGate(folder,x,z,enemy)
  return model
 end
 function Kit.BuildWorld(folder,x)
- for i=-5,5 do
-  if math.abs(i)>1 then
+ -- 여러 섬 구역에 원본 CC0 나무/암석을 분산시킨다. 파츠 소품 추가 금지.
+ -- 기지와 도로 시야를 열어 두고 바깥 숲·해안·언덕을 중심으로 장식한다.
+ for i=0,9 do
+  local z=-438+i*95
+  if math.abs(z+174)>38 and math.abs(z-208)>38 then
    for _,side in ipairs({-1,1}) do
-    local xx=x+side*29
-    local z=i*9
-    local tree=meshClone("tree",folder,CFrame.new(xx,.3,z),Vector3.new(6,9,6))
-    if tree then seatOnGround(tree,xx,z) end
+    for j=1,2 do
+     local xx=x+side*(j==1 and (135+math.sin(i*2.7+side)*21) or (293+math.cos(i*1.91+side)*24))
+     local zz=z+math.sin(i*3.1+j*2.2+side)*16
+     local scale=j==1 and Vector3.new(8,11,8) or Vector3.new(10,14,10)
+     local tree=meshClone("tree",folder,CFrame.new(xx,.3,zz),scale)
+     if tree then seatOnGround(tree,xx,zz) end
+    end
    end
   end
  end
- for _,side in ipairs({-1,1}) do
-  for _,z in ipairs({-23,-6,13,30}) do
-   local xx=x+side*23
-   local rock=meshClone("rock",folder,CFrame.new(xx,.4,z),Vector3.new(3.8,3.2,3.8))
-   if rock then seatOnGround(rock,xx,z) end
+ for i=0,11 do
+  local z=-428+i*73
+  if math.abs(z+174)>35 and math.abs(z-208)>35 then
+   for _,side in ipairs({-1,1}) do
+    local xx=x+side*(250+math.sin(i*2.4+side)*23)
+    local zz=z+math.cos(i*1.7+side)*12
+    local rock=meshClone("rock",folder,CFrame.new(xx,.4,zz),Vector3.new(7,6,7))
+    if rock then seatOnGround(rock,xx,zz) end
+   end
   end
  end
 end
