@@ -207,6 +207,178 @@ test('no-model Roblox generated button executes its original callback in isolate
   assert.match(execFileSync(runtime,[script],{encoding:'utf8',timeout:15000}),/SOURCE_CALLBACK_CAUSAL_REPLAY=PASS/);
 });
 
+// [게임 로직 합성] 설정의 행동 계약과 기존 서버 함수의 교차 증거.
+const NATIVE_ACTION_CONFIG=[
+  'local Config = {',
+  '  Actions = {',
+  '    SCOUT = "SCOUT",',
+  '    ATTACK = "ATTACK",',
+  '  },',
+  '  RemoteName = "GameAction",',
+  '  RateLimitSeconds = 0.18,',
+  '}',
+  'return table.freeze(Config)',''
+].join('\n');
+const NATIVE_ACTION_SOURCE=[
+  'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
+  'local Shared = ReplicatedStorage:WaitForChild("Shared")',
+  'local Config = require(Shared:WaitForChild("GameConfig"))',
+  'local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)',
+  'local lastAction = {}',
+  'local function scout(player)',
+  '  player.scouts += 1',
+  'end',
+  'local function attack(player)',
+  '  if player.gold < 3 then return end',
+  '  player.gold -= 3',
+  '  player.damage += 7',
+  'end',
+  'local handlers = {',
+  '  [Config.Actions.SCOUT] = scout,',
+  '}',
+  'remote.OnServerEvent:Connect(function(player, action)',
+  '  if typeof(action) ~= "string" then return end',
+  '  local handler = handlers[action]',
+  '  if typeof(handler) ~= "function" then return end',
+  '  local now = os.clock()',
+  '  local previous = lastAction[player] or 0',
+  '  if now - previous < Config.RateLimitSeconds then return end',
+  '  lastAction[player] = now',
+  '  handler(player)',
+  'end)',''
+].join('\n');
+
+test('no-model Roblox gameplay engine completes approved server action contracts without changing game rules',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-gameplay-contract-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau',config='shared/GameConfig.luau';
+  fs.writeFileSync(path.join(root,file),NATIVE_ACTION_SOURCE);fs.writeFileSync(path.join(root,config),NATIVE_ACTION_CONFIG);
+  const order={target:'roblox',goal:'기존 전투 행동 누락 복구'};
+  const candidate=deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>({pass:true})});
+  assert.equal(candidate.deterministicRobloxNativeRepair,'APPROVED_SERVER_ACTION_COMPLETION');
+  assert.deepEqual(candidate.semanticGrounding.bindings,[{actionKey:'ATTACK',actionId:'ATTACK',function:'attack'}]);
+  assert.deepEqual(candidate.readDependencies,[config]);
+  assert.deepEqual(candidate.deterministicSelection.attempts[0].sources.map(row=>row.path),[file,config]);
+  const edit=candidate.edits[0],patched=NATIVE_ACTION_SOURCE.replace(edit.find,edit.replace);
+  assert.equal(patched,NATIVE_ACTION_SOURCE.replace('  [Config.Actions.SCOUT] = scout,','  [Config.Actions.SCOUT] = scout,\n  [Config.Actions.ATTACK] = attack,'));
+  assert.equal(fs.readFileSync(path.join(root,file),'utf8'),NATIVE_ACTION_SOURCE);
+  assert.equal(fs.readFileSync(path.join(root,config),'utf8'),NATIVE_ACTION_CONFIG);
+  fs.writeFileSync(path.join(root,file),patched);
+  assert.equal(deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file]}),null,'replay must not duplicate actions');
+  fs.writeFileSync(path.join(root,file),NATIVE_ACTION_SOURCE);
+  assert.throws(()=>deterministicRobloxNativeRepairCandidate({order,sourceRoot:root,responsibleFiles:[file],candidateValidator:()=>{
+    fs.appendFileSync(path.join(root,config),'-- changed by another worker\n');return {pass:true};
+  }}),error=>{
+    assert.equal(error.vibe2DeterministicSelection.attempts[0].reasonCode,'DETERMINISTIC_SOURCE_REVISION_CHANGED');
+    return true;
+  });
+});
+
+test('no-model Roblox gameplay engine binds each candidate to the configuration version it actually analyzed',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-gameplay-snapshot-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const files=['server/A.server.luau','server/B.server.luau'];
+  const configFile=path.join(root,'shared/GameConfig.luau');
+  for(const file of files)fs.writeFileSync(path.join(root,file),NATIVE_ACTION_SOURCE);
+  fs.writeFileSync(configFile,NATIVE_ACTION_CONFIG);
+  const read=fs.readFileSync;let reads=0;
+  t.mock.method(fs,'readFileSync',function(file,...options){
+    if(String(file)===configFile&&options[0]==='utf8'&&++reads===2){
+      fs.writeFileSync(configFile,NATIVE_ACTION_CONFIG.replace('ATTACK = "ATTACK"','ATTACK = "ATTACK_CHANGED"'));
+    }
+    return read.call(this,file,...options);
+  });
+  const result=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'전투 행동 누락 복구'},sourceRoot:root,
+    responsibleFiles:files,candidateValidator:()=>({pass:true})});
+  assert.deepEqual(result.deterministicSelection.attempts.map(row=>row.status),['REJECTED','VALIDATED']);
+  assert.equal(result.deterministicSelection.attempts[0].reasonCode,'DETERMINISTIC_SOURCE_REVISION_CHANGED');
+  assert.equal(result.semanticGrounding.bindings[0].actionId,'ATTACK_CHANGED');
+  assert.notEqual(result.deterministicSelection.attempts[0].sources[1].sha256,result.deterministicSelection.attempts[1].sources[1].sha256);
+});
+
+test('no-model Roblox gameplay engine refuses guessed actions unsafe dispatchers and ambiguous server scope',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-gameplay-refuse-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau',config='shared/GameConfig.luau';
+  const generate=(source,cfg=NATIVE_ACTION_CONFIG,target='roblox')=>{
+    fs.writeFileSync(path.join(root,file),source);fs.writeFileSync(path.join(root,config),cfg);
+    return deterministicRobloxNativeRepairCandidate({order:{target,goal:'전투 행동 연결 구현'},sourceRoot:root,responsibleFiles:[file]});
+  };
+  assert.ok(generate(NATIVE_ACTION_SOURCE));
+  assert.ok(generate(NATIVE_ACTION_SOURCE.replace('local lastAction = {}','local lastAction = {}\nif not remote then remote = {} end')),'closed native initialization blocks remain usable');
+  for(const source of [
+    NATIVE_ACTION_SOURCE.replace('local function attack(player)','local function attack(player, target)'),
+    NATIVE_ACTION_SOURCE.replace('local function attack(player)','local function different(player)'),
+    NATIVE_ACTION_SOURCE.replace('  handler(player)','  handler(player, payload)'),
+    NATIVE_ACTION_SOURCE.replace('  if typeof(action) ~= "string" then return end\n',''),
+    NATIVE_ACTION_SOURCE.replace('  if now - previous < Config.RateLimitSeconds then return end\n',''),
+    NATIVE_ACTION_SOURCE+'\nlocal alias = handlers',
+    NATIVE_ACTION_SOURCE+'\nattack = other',
+    NATIVE_ACTION_SOURCE+'\nShared = other',
+    NATIVE_ACTION_SOURCE.replace('local function attack(player)','if allowed then\nlocal function attack(player)').replace('local handlers = {','end\nlocal handlers = {'),
+    '--[[\n'+NATIVE_ACTION_SOURCE+'\n]]',
+    NATIVE_ACTION_SOURCE.replace('local handlers = {','if allowed then\nlocal handlers = {').replace('remote.OnServerEvent','end\nremote.OnServerEvent'),
+    NATIVE_ACTION_SOURCE.replace('[Config.Actions.SCOUT] = scout,','[Config.Actions.UNKNOWN] = scout,'),
+    NATIVE_ACTION_SOURCE.replace('[Config.Actions.SCOUT] = scout,','[Config.Actions.SCOUT] = scout,\n  [Config.Actions.SCOUT] = scout,')
+  ])assert.equal(generate(source),null,'only the known existing authority path may be completed');
+  for(const cfg of [
+    NATIVE_ACTION_CONFIG.replace('    ATTACK = "ATTACK",\n',''),
+    NATIVE_ACTION_CONFIG.replace('ATTACK = "ATTACK"','ATTACK = "SCOUT"'),
+    NATIVE_ACTION_CONFIG.replace('ATTACK = "ATTACK",','ATTACK = "ATTACK",\n    ATTACK = "SECOND",'),
+    NATIVE_ACTION_CONFIG.replace('ATTACK = "ATTACK"','ATTACK = computed()'),
+    NATIVE_ACTION_CONFIG.replace('return table.freeze(Config)','Config.Actions.ATTACK = "CHANGED"\nreturn table.freeze(Config)'),
+    NATIVE_ACTION_CONFIG.replace('return table.freeze(Config)','return anotherConfig'),
+    NATIVE_ACTION_CONFIG.replace('local Config = {','local Config = {\n Nested = {').replace('return table.freeze(Config)','}\nreturn table.freeze(Config)'),
+    NATIVE_ACTION_CONFIG.replace('local Config = {','local Config = other\nlocal ActionsHolder = {'),
+    NATIVE_ACTION_CONFIG.replace('local Config = {','local Config = {}\nlocal Other = {'),
+    NATIVE_ACTION_CONFIG.replace('return table.freeze(Config)','local alias = Config\nreturn table.freeze(Config)')
+  ])assert.equal(generate(NATIVE_ACTION_SOURCE,cfg),null,'unverified configuration cannot authorize a gameplay action');
+  assert.equal(generate(NATIVE_ACTION_SOURCE,NATIVE_ACTION_CONFIG,'web'),null);
+});
+
+test('no-model Roblox gameplay generated server action preserves costs cooldown unknown-action rejection in isolated Luau',t=>{
+  const compiler=process.env.VIBE2_TEST_LUAU_COMPILER;
+  if(!compiler){t.skip('isolated Luau executor is provided by existing practice CI');return;}
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-gameplay-luau-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'server'));fs.mkdirSync(path.join(root,'shared'));
+  const file='server/Game.server.luau';
+  fs.writeFileSync(path.join(root,file),NATIVE_ACTION_SOURCE);fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),NATIVE_ACTION_CONFIG);
+  const raw=deterministicRobloxNativeRepairCandidate({order:{target:'roblox',goal:'전투 행동 누락 복구'},sourceRoot:root,responsibleFiles:[file],
+    candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot:root,target:'roblox',luauCompiler:compiler})});
+  const patched=NATIVE_ACTION_SOURCE.replace(raw.edits[0].find,raw.edits[0].replace);
+  const harness=[
+    'local now = 1',
+    'local os = {clock = function() return now end}',
+    'local callback = nil',
+    'local channel = {OnServerEvent = {Connect = function(_, fn) callback = fn end}}',
+    'local module = {}',
+    'local shared = {WaitForChild = function(_, name) assert(name == "GameConfig"); return module end}',
+    'local storage = {WaitForChild = function(_, name) if name == "Shared" then return shared end; assert(name == "GameAction"); return channel end}',
+    'local game = {GetService = function(_, name) assert(name == "ReplicatedStorage"); return storage end}',
+    'local require = function(value) assert(value == module); return (function()',
+    NATIVE_ACTION_CONFIG,
+    'end)() end',
+    patched,
+    'local player = {gold = 10, damage = 0, scouts = 0}',
+    'callback(player, "ATTACK"); assert(player.gold == 7 and player.damage == 7)',
+    'callback(player, "ATTACK"); assert(player.gold == 7 and player.damage == 7)',
+    'now += 1; callback(player, "UNKNOWN"); assert(player.gold == 7 and player.damage == 7)',
+    'callback(player, {}); assert(player.gold == 7 and player.damage == 7)',
+    'callback(player, "SCOUT"); assert(player.scouts == 1)',
+    'now += 1; player.gold = 2; callback(player, "ATTACK"); assert(player.gold == 2 and player.damage == 7)',
+    'now += 1; player.gold = 8; callback(player, "ATTACK"); assert(player.gold == 5 and player.damage == 14)',
+    'print("GAMEPLAY_CONTRACT_CAUSAL_REPLAY=PASS")'
+  ].join('\n');
+  const script=path.join(root,'gameplay.luau');fs.writeFileSync(script,harness);
+  execFileSync(compiler,['--null',script],{encoding:'utf8',timeout:15000});
+  const runtime=path.join(path.dirname(compiler),process.platform==='win32'?'luau.exe':'luau');
+  assert.match(execFileSync(runtime,[script],{encoding:'utf8',timeout:15000}),/GAMEPLAY_CONTRACT_CAUSAL_REPLAY=PASS/);
+});
+
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]

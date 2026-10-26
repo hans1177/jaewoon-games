@@ -19,7 +19,7 @@ import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
-import { CODING_ANALYSIS_VERSION, inspectSourceFunctions } from './company-vibe2-expert-development.mjs';
+import { CODING_ANALYSIS_VERSION, inspectSourceFunctions, executableText } from './company-vibe2-expert-development.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
 import { assertVibeAgentHandoffScope } from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
@@ -1715,7 +1715,9 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     order?.selectedTask?.studioQualityEvolution?.pillar].map(clean).join(' ');
   const inputWork=/(?:input|mobile|touch|controller|gamepad|usability|accessibility|button|조작|입력|모바일|터치|버튼|사용성)/i.test(intent);
   const saveWork=/(?:save|persist|datastore|shutdown|stability|regression|저장|종료|복구|안정)/i.test(intent);
-  if(!inputWork&&!saveWork)return null;
+  const actionWork=/(?:gameplay|combat|craft|quest|action|dispatch|implementation|게임|전투|공격|제작|퀘스트|행동|구현)/i.test(intent)
+    &&/(?:missing|unbound|restore|dispatch|connect|implement|누락|연결|복구|구현|미동작)/i.test(intent);
+  if(!inputWork&&!saveWork&&!actionWork)return null;
   let root;
   try{root=fs.realpathSync(sourceRoot);}catch{return null;}
   const candidates=[],sourceHashes=new Map();
@@ -1727,6 +1729,115 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     const source=fs.readFileSync(file,'utf8');
     if(source.length>1000000)continue;
     sourceHashes.set(relative,crypto.createHash('sha256').update(source).digest('hex'));
+    if(actionWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
+      // [게임 코딩 엔진] 승인된 행동 사전 + 실제 서버 함수 + 기존 권한 경로를 교차 분석한다.
+      // 함수 본문이나 규칙을 추측하지 않고 누락된 디스패치 항목만 원래 테이블에 생성한다.
+      const code=executableText(source,'luau');
+      const configRelative='shared/GameConfig.luau',configFile=path.resolve(sourceRoot,configRelative);
+      const tables=[...code.matchAll(/^local\s+handlers\s*=\s*\{([^{}]*)\}/gm)];
+      const configBinding='local Config = require(Shared:WaitForChild("GameConfig"))';
+      const sharedBinding='local Shared = ReplicatedStorage:WaitForChild("Shared")';
+      const storageBinding='local ReplicatedStorage = game:GetService("ReplicatedStorage")';
+      const safeImports=[configBinding,sharedBinding,storageBinding].every(line=>{
+        const at=source.indexOf(line);
+        return at>=0&&source.split(line).length===2&&code.slice(at,at+5)==='local';
+      });
+      if(tables.length===1&&safeImports&&fs.existsSync(configFile)&&!fs.lstatSync(configFile).isSymbolicLink()
+        &&fs.realpathSync(configFile).startsWith(root+path.sep)
+        &&[...code.matchAll(/\bhandlers\s*=(?!=)/g)].length===1
+        &&[...code.matchAll(/\bhandlers\b/g)].length===2
+        &&[...code.matchAll(/\bConfig\s*=(?!=)/g)].length===1
+        &&[...code.matchAll(/\bShared\s*=(?!=)/g)].length===1
+        &&[...code.matchAll(/\bReplicatedStorage\s*=(?!=)/g)].length===1
+        &&!/\bConfig\s*\.\s*Actions\s*(?:=|(?:\.[A-Za-z_]\w*|\[[^\]\n]*\])\s*=)/.test(code)){
+        const configSource=fs.readFileSync(configFile,'utf8');
+        const configCode=executableText(configSource,'luau');
+        const actionTables=[...configCode.matchAll(/\bActions\s*=\s*\{([^{}]*)\}/g)];
+        const configTables=[...configCode.matchAll(/^local\s+Config\s*=\s*\{/gm)];
+        const table=tables[0],tableBodyStart=table.index+table[0].indexOf('{')+1;
+        const dispatcher=/remote\.OnServerEvent:Connect\(function\(player, (actionId|action)\)\n  if typeof\(\1\) ~= "string" then return end\n  local handler = handlers\[\1\]\n  if typeof\(handler\) ~= "function" then return end\n  local now = os\.clock\(\)\n  local previous = lastAction\[player\] or 0\n  if now - previous < Config\.RateLimitSeconds then return end\n  lastAction\[player\] = now\n  handler\(player\)\n(?:  broadcastMultiplayerSync\(player\)\n)?end\)/g;
+        const dispatchers=[...source.matchAll(dispatcher)].filter(row=>code.slice(row.index,row.index+6)==='remote');
+        if(configSource.length<=1000000&&actionTables.length===1&&configTables.length===1&&dispatchers.length===1
+          &&dispatchers[0].index>table.index+table[0].length
+          &&source.indexOf(storageBinding)<source.indexOf(sharedBinding)&&source.indexOf(sharedBinding)<source.indexOf(configBinding)
+          &&source.indexOf(configBinding)<table.index
+          &&/return\s+table\.freeze\(Config\)\s*$/.test(configCode)
+          &&[...configCode.matchAll(/\bConfig\b/g)].length===2
+          &&[...configCode.matchAll(/\bActions\s*=/g)].length===1
+          &&!/\bConfig\s*\.\s*Actions\b/.test(configCode)){
+          const actionTable=actionTables[0],start=actionTable.index+actionTable[0].indexOf('{')+1;
+          const configStart=configTables[0].index+configTables[0][0].lastIndexOf('{')+1;
+          let configEnd=-1,depth=1;
+          for(let at=configStart;at<configCode.length;at++){
+            if(configCode[at]==='{')depth++;
+            else if(configCode[at]==='}'&&--depth===0){configEnd=at;break;}
+          }
+          const actionBody=configSource.slice(start,start+actionTable[1].length);
+          const approved=new Map(),existing=new Map();
+          const prefix=configCode.slice(configStart,actionTable.index);
+          let valid=actionTable.index>configStart&&actionTable.index<configEnd
+            &&[...prefix.matchAll(/\{/g)].length===[...prefix.matchAll(/\}/g)].length;
+          const actionLines=actionBody.split('\n'),actionCodeLines=executableText(actionBody,'luau').split('\n');
+          for(let index=0;index<actionLines.length;index++){
+            const line=actionLines[index];
+            if(!line.trim()||/^\s*--[^[]/.test(line))continue;
+            const row=/^\s*([A-Za-z_][A-Za-z_0-9]*)\s*=\s*(["'])([A-Za-z_][A-Za-z_0-9-]*)\2\s*,\s*(?:--[^\n]*)?$/.exec(line);
+            if(!row||!actionCodeLines[index].trim()||approved.has(row[1])||[...approved.values()].includes(row[3])){valid=false;break;}
+            approved.set(row[1],row[3]);
+          }
+          const body=source.slice(tableBodyStart,tableBodyStart+table[1].length);
+          const bodyLines=body.split('\n'),bodyCodeLines=executableText(body,'luau').split('\n');
+          for(let index=0;index<bodyLines.length;index++){
+            const line=bodyLines[index];
+            if(!line.trim()||/^\s*--[^[]/.test(line))continue;
+            const row=/^\s*\[Config\.Actions\.([A-Za-z_][A-Za-z_0-9]*)\]\s*=\s*([A-Za-z_][A-Za-z_0-9]*)\s*,\s*(?:--[^\n]*)?$/.exec(line);
+            if(!row||!bodyCodeLines[index].trim()||!approved.has(row[1])||existing.has(row[1])){valid=false;break;}
+            existing.set(row[1],row[2]);
+          }
+          const functions=inspectSourceFunctions(source,{language:'luau'}),additions=[],bindings=[];
+          const outer=code.split('');
+          for(const fn of functions)for(let at=fn.start;at<fn.end;at++)if(outer[at]!=='\n')outer[at]=' ';
+          const positions=[...new Set([...functions.map(fn=>fn.start),table.index])].sort((a,b)=>a-b);
+          const tokens=[...outer.join('').matchAll(/\b(?:function|if|elseif|for|while|do|repeat|until|end)\b/g)];
+          const topLevel=new Set(),stack=[];let tokenIndex=0,pendingDo=0;
+          for(const position of positions){
+            while(tokenIndex<tokens.length&&tokens[tokenIndex].index<position){
+              const word=tokens[tokenIndex++][0];
+              if(word==='elseif')continue;
+              if(word==='for'||word==='while'){stack.push(word);pendingDo++;}
+              else if(word==='do'){if(pendingDo)pendingDo--;else stack.push(word);}
+              else if(word==='function'||word==='if'||word==='repeat')stack.push(word);
+              else if(word==='end'||word==='until')stack.pop();
+            }
+            if(stack.length===0)topLevel.add(position);
+          }
+          for(const [key,id] of approved){
+            if(existing.has(key))continue;
+            const matches=functions.filter(fn=>fn.name.toLowerCase()===key.toLowerCase());
+            if(matches.length!==1)continue;
+            const fn=matches[0],name=fn.name;
+            if(!new RegExp('^local\\s+function\\s+'+name+'\\(player\\)').test(source.slice(fn.start,fn.end))
+              ||fn.end>table.index||!topLevel.has(fn.start)||functions.some(parent=>parent!==fn&&parent.start<fn.start&&parent.end>fn.start)
+              ||[...code.matchAll(new RegExp('\\bfunction\\s+'+name+'\\s*\\(','g'))].length!==1
+              ||new RegExp('\\b'+name+'\\s*=(?!=)').test(code)
+              ||/(?:save|load|admin|delete|shutdown|initialize|reset)/i.test(name))continue;
+            additions.push('  [Config.Actions.'+key+'] = '+name+',');bindings.push({actionKey:key,actionId:id,function:name});
+          }
+          if(valid&&approved.size&&existing.size&&additions.length){
+            if(topLevel.has(table.index)){
+              const dependencyHash=crypto.createHash('sha256').update(configSource).digest('hex');
+              const anchor=source.slice(table.index,table.index+table[0].length);
+              candidates.push({summary:'Roblox game-action contract completion from existing server functions',
+                expectedEffect:'Restore missing approved gameplay dispatch entries while retaining existing function bodies, validation and rate limits',
+                edits:[{path:relative,find:anchor,replace:anchor.slice(0,-1).trimEnd()+'\n'+additions.join('\n')+'\n}'}],
+                newFiles:[],replaceFiles:[],tests:[],readDependencies:[configRelative],dependencyHashes:{[configRelative]:dependencyHash},
+                semanticGrounding:{type:'APPROVED_ACTION_TO_EXISTING_SERVER_FUNCTION',bindings,authorityPathPreserved:true,runtimeVerified:false},
+                deterministicRobloxNativeRepair:'APPROVED_SERVER_ACTION_COMPLETION'});
+            }
+          }
+        }
+      }
+    }
     if(saveWork&&/(?:^|\/)server(?:\/|$)|\.server\.luau$/i.test(relative)){
       // 검증된 이전 데이터가 없으면 절대 기본값을 다시 저장하지 않는다.
       // 승인된 GameConfig 키는 유지하고 추가 필드는 UpdateAsync에서 병합한다.
@@ -1914,8 +2025,7 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
     if(inputWork&&/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(relative)){
       // [무모델 조작 생성] 이미 등록된 네이티브 액션의 터치 버튼만 엔진이 생성한다.
       // 콜백·키·서버 요청은 그대로 재사용하며 문자열/주석 속 예시는 실행 근거가 아니다.
-      const executable=source.replace(/--\[(=*)\[[\s\S]*?(?:\]\1\]|$)|\[(=*)\[[\s\S]*?(?:\]\2\]|$)|--[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`/g,
-        value=>value.replace(/[^\n]/g,' '));
+      const executable=executableText(source,'luau');
       const touchWork=/(?:mobile|touch|모바일|터치)/i.test(intent);
       if(touchWork){
         const edits=[];
@@ -2016,15 +2126,15 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       throw error;
     }
     const fingerprint=rejectedSourcePatchFingerprint(raw);
-    const paths=unique(raw.edits.map(row=>row.path));
+    const paths=unique([...raw.edits.map(row=>row.path),...(raw.readDependencies||[])]);
     const decision={recipe:raw.deterministicRobloxNativeRepair,fingerprint,
-      sources:paths.map(file=>({path:file,sha256:sourceHashes.get(file)}))};
+      sources:paths.map(file=>({path:file,sha256:raw.dependencyHashes?.[file]||sourceHashes.get(file)})),semanticGrounding:raw.semanticGrounding||null};
     try{
       if(typeof candidateValidator!=='function')return {...raw,deterministicSelection:{...selection,status:'SOURCE_GROUNDED_UNVALIDATED'}};
-      for(const file of paths){
+      for(const {path:file,sha256} of decision.sources){
         const current=path.resolve(sourceRoot,file);
         if(fs.lstatSync(current).isSymbolicLink()||!fs.realpathSync(current).startsWith(root+path.sep)
-          ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sourceHashes.get(file)){
+          ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sha256){
           throw new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
         }
       }
@@ -2032,10 +2142,10 @@ export function deterministicRobloxNativeRepairCandidate({order={},sourceRoot=''
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       const candidateValidation=candidateValidator(candidate);
       if(candidateValidation?.pass!==true)throw new Error('DETERMINISTIC_CANDIDATE_VALIDATION_NOT_PASSED');
-      for(const file of paths){
+      for(const {path:file,sha256} of decision.sources){
         const current=path.resolve(sourceRoot,file);
         if(fs.lstatSync(current).isSymbolicLink()||!fs.realpathSync(current).startsWith(root+path.sep)
-          ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sourceHashes.get(file)){
+          ||crypto.createHash('sha256').update(fs.readFileSync(current)).digest('hex')!==sha256){
           throw new Error('DETERMINISTIC_SOURCE_REVISION_CHANGED');
         }
       }
@@ -8414,5 +8524,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
+
 
 

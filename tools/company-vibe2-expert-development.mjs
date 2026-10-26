@@ -1,3 +1,5 @@
+// 파일명: tools/company-vibe2-expert-development.mjs
+// 역할: 기존 게임의 실행 코드·함수·책임 관계를 분석한다. 정적 분석은 런타임 증거가 아니다.
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const upper=v=>clean(v).toUpperCase();
@@ -38,7 +40,7 @@ function sourceLanguage(source='',language=''){
   return'javascript';
 }
 // Preserve offsets while excluding comments and literals from static call/state evidence.
-function executableText(source='',language='javascript'){
+export function executableText(source='',language='javascript'){
   const raw=String(source),chars=raw.split('');
   const hide=(start,end)=>{for(let i=start;i<end;i++)if(chars[i]!=='\n'&&chars[i]!=='\r')chars[i]=' ';};
   for(let i=0;i<raw.length;){
@@ -296,3 +298,4 @@ export function buildExpertDevelopmentAnalysis({source='',sourceAnalysis={},game
   const responsibilityGraph=buildResponsibilityGraph({source,sourceAnalysis,language}),causalDebug=buildCausalDebugPlan({failures,responsibilityGraph}),seniorCodeReview=reviewSeniorSourceQuality(source,{responsibilityGraph}),behaviorChains=buildBehaviorChainContracts({gameplaySketch});
   return{version:CODING_ANALYSIS_VERSION,responsibilityGraph,causalDebug,seniorCodeReview,behaviorChains,authority:'EXPERT_DEVELOPMENT_ANALYSIS_INSIDE_EXISTING_CANONICAL_PIPELINE'};
 }
+
