@@ -413,7 +413,7 @@ end
 
 function RobloxCommonMaterials.Audit()
   return table.freeze({
-    version = 4,
+    version = 5,
     packId = "roblox-common-materials-v1",
     atoms = table.freeze({
       "WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL", "BRICK", "TOY_PLASTIC", "TOY_STUDDED", "ICE", "ASPHALT",
