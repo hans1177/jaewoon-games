@@ -57,7 +57,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-25T14:04:58.247Z",
       "robloxPublicationTarget": {
         "version": 3,
@@ -83,13 +83,13 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-25T14:04:58.247Z"
       },
-      "updatedAt": "2026-10-25T23:44:13.268Z",
+      "updatedAt": "2026-10-26T00:07:07.131Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceBootstrapFailedAt": "2026-10-25T16:30:20.300Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-26T00:07:07.131Z",
       "robloxRuntimePassed": false,
       "robloxHeadlessFastMvpPassed": false,
       "robloxInternalReleaseReady": false,
@@ -98,9 +98,9 @@
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -140,15 +140,15 @@
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
       "robloxReleasePublishedAt": null,
-      "robloxSourceCommit": "f73725d9497cdabf4bd677f8ae95f62f50850f5f",
+      "robloxSourceCommit": "0340a484546eede7a6c54e9c60440f750150620b",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "f73725d9497cdabf4bd677f8ae95f62f50850f5f",
+      "robloxQualityBuildUpSourceRevision": "0340a484546eede7a6c54e9c60440f750150620b",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "cozy-island",
-        "sourceRevision": "f73725d9497cdabf4bd677f8ae95f62f50850f5f",
-        "sourceTreeSha": "d7ca1b1b40201c59dbe58459dc3c21cdd3685fe3",
+        "sourceRevision": "0340a484546eede7a6c54e9c60440f750150620b",
+        "sourceTreeSha": "005c3212e2ece777d9895f59691ca98c9ddc35d6",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -159,7 +159,7 @@
         },
         "assetRepairContext": {
           "libraryFingerprint": "76d1db6abb7b922fcebf760109bf1de2d65de4442d384f88213c7693e45e0177",
-          "baselineFingerprint": "fd3d08e512debded2b76a95eb869591c83b726b3d977be08c84a0efeeed4db8a",
+          "baselineFingerprint": "eabbb66a578e191b0c7901fdcddbb80b71a7af42e275e3de15118d788aa91a75",
           "validatorFingerprint": "b9335a6e0b17a108964d77b1f655d5ad440d9fe9739067f8de22c6afd3bdde61"
         },
         "qualityFailureKinds": [
@@ -176,8 +176,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 40211513776,
-        "testedAt": "2026-10-25T16:27:19.987Z"
+        "workflowRunId": 40247611383,
+        "testedAt": "2026-10-26T00:07:07.131Z"
       },
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -5193,7 +5193,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-26T00:04:53.335Z",
+  "updatedAt": "2026-10-26T00:07:07.131Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
