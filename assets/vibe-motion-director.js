@@ -1789,11 +1789,12 @@ export function createCommonMonsterActionLoadout({
     ?Object.freeze(Object.entries(quadrupedQuota).flatMap(([group,count])=>{
       const roles=profile.groups[group];
       if(!roles?.length)throw Error('QUADRUPED_ACTION_GROUP_MISSING:'+id+':'+group);
+      const groupStart=Object.keys(quadrupedQuota).slice(0,Object.keys(quadrupedQuota).indexOf(group))
+        .reduce((sum,key)=>sum+quadrupedQuota[key],0);
       return Array.from({length:count},(_,index)=>{
         const role=roles[index%roles.length],variant=Math.floor(index/roles.length);
         const side=index%2===0?1:-1,dying=group==='deaths',moving=group==='locomotion';
-        const slot=Object.entries(quadrupedQuota).filter(([key])=>Object.keys(quadrupedQuota).indexOf(key)<Object.keys(quadrupedQuota).indexOf(group))
-          .reduce((sum,[,amount])=>sum+amount,0)+index+1;
+        const slot=groupStart+index+1;
         const weight={locomotion:.72,attacks:1.12,defense:.76,reactions:.95,acting:.48,deaths:1.16,skill:1.04,signature:1.17}[group];
         const level=weight*(1+variant*.065+slot*.0017),lean=side*(.03+slot*.0013);
         const phaseTimes=dying?[0,.12,.30,.52,.76,1]
@@ -1846,6 +1847,8 @@ export function createCommonMonsterActionLoadout({
     :Object.freeze(Object.entries(quadrupedQuota).flatMap(([group,count])=>{
       const roles=profile.groups[group];
       if(!roles?.length)throw Error('NON_HUMANOID_ACTION_GROUP_MISSING:'+id+':'+group);
+      const groupStart=Object.keys(quadrupedQuota).slice(0,Object.keys(quadrupedQuota).indexOf(group))
+        .reduce((sum,key)=>sum+quadrupedQuota[key],0);
       const isDeath=group==='deaths',isLocomotion=group==='locomotion';
       const aerial=nonHumanoidKind==='FLIGHT'||nonHumanoidKind==='ETHEREAL_MAGIC';
       const floating=aerial||nonHumanoidKind==='AQUATIC'||nonHumanoidKind==='SWARM';
@@ -1858,8 +1861,7 @@ export function createCommonMonsterActionLoadout({
       return Array.from({length:count},(_,index)=>{
         const sourceMotionId=roles[index%roles.length],variation=Math.floor(index/roles.length);
         const side=index%2===0?1:-1;
-        const slot=Object.entries(quadrupedQuota).filter(([key])=>Object.keys(quadrupedQuota).indexOf(key)<Object.keys(quadrupedQuota).indexOf(group))
-          .reduce((sum,[,amount])=>sum+amount,0)+index+1;
+        const slot=groupStart+index+1;
         const emphasis={locomotion:.7,attacks:1.08,defense:.75,reactions:.92,acting:.42,deaths:1.19,skill:1.06,signature:1.13}[group];
         const amplitude=emphasis*(1+variation*.062+slot*.0019);
         const timing=isDeath?[0,.11,.32,.56,.78,1]
