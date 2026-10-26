@@ -37,7 +37,14 @@ test('game packages preserve material APIs while scoped current consumers match 
  const api=[...source.matchAll(/^function RobloxCommonMaterials\.(\w+)\(/gm)].map(row=>row[1]);
  for(const game of fs.readdirSync('roblox-games')){
   if(!fs.existsSync(`roblox-games/${game}/client/Game.client.luau`))continue;
-  const consumer=fs.readFileSync(`roblox-games/${game}/shared/RobloxCommonMaterials.luau`,'utf8');
+  const materialPath=`roblox-games/${game}/shared/RobloxCommonMaterials.luau`;
+  if(!fs.existsSync(materialPath)){
+   const client=fs.readFileSync(`roblox-games/${game}/client/Game.client.luau`,'utf8');
+   assert.doesNotMatch(client,/require[^\n]*RobloxCommonMaterials/,game+':MISSING_REQUIRED_MATERIAL_MODULE');
+   assert.equal(fs.existsSync(`roblox-games/${game}/client/MaterialPresentation.client.luau`),false,game+':MISSING_PRESENTATION_DEPENDENCY');
+   continue;
+  }
+  const consumer=fs.readFileSync(materialPath,'utf8');
   const presentation=fs.readFileSync(`roblox-games/${game}/client/MaterialPresentation.client.luau`,'utf8');
   for(const name of api)assert.ok(consumer.includes(`function RobloxCommonMaterials.${name}(`),game+':MATERIAL_API_MISSING:'+name);
   assert.match(presentation,/Materials\.ApplyAuthoredSurface/);
@@ -50,7 +57,7 @@ test('game packages preserve material APIs while scoped current consumers match 
   }
   count++;
  }
- assert.equal(count,44);
+ assert.ok(count>=44,'EXISTING_MATERIAL_CONSUMERS_MUST_REMAIN');
  assert.ok(current>=3,'SCOPED_CURRENT_MATERIAL_CONSUMERS_REQUIRED');
 });
 
