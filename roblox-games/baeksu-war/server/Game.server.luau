@@ -32,6 +32,15 @@ end
 local function slotPosition(a,i)
  return Vector3.new(a.X+((i-1)%3-1)*14,1,-60-math.floor((i-1)/3)*13)
 end
+-- 확장 슬롯 뒤쪽에도 충돌 가능한 마당을 넓힌다. 기존 3열 배치는 그대로 유지.
+local function resizeBuildYard(a)
+ local lastRow=math.floor((a.Unlocked-1)/3)
+ local furthestZ=-60-lastRow*13
+ local nearZ=-46
+ local backZ=furthestZ-8
+ a.BuildYard.Size=Vector3.new(50,1,nearZ-backZ)
+ a.BuildYard.CFrame=CFrame.new(a.X,-.5,(nearZ+backZ)/2)
+end
 local function send(a,msg)
  if not a.Player.Parent then return end
  local p=a.Player
@@ -47,7 +56,7 @@ local function send(a,msg)
  remote:FireClient(p,"STATE",{Gold=a.Gold,Stage=a.Stage,HomeHP=a.HomeHP,EnemyHP=a.EnemyHP,Unlocked=a.Unlocked,Buildings=slots,Message=msg or ""})
 end
 local function save(a)
- if not a.Loaded or not store then return false end
+ if not a.Loaded or a.SessionOnly or not store then return false end
  local data={Version=1,Gold=math.floor(a.Gold),Stage=a.Stage,Unlocked=a.Unlocked,Buildings={}}
  for i,b in pairs(a.Buildings) do data.Buildings[tostring(i)]={Kind=b.Kind,Level=b.Level} end
  local ok,result=pcall(function()
@@ -126,7 +135,7 @@ local function restart(a)
  clearUnits(a);a.HomeHP=C.GateHP;a.EnemyHP=C.EnemyHP+(a.Stage-1)*100;a.EnemyTimer=1.2
  a.Result="";a.Transition=false
  for _,b in pairs(a.Buildings) do b.Timer=.15 end
- send(a,"전투 시작! 건물을 지으면 자동 출격해.")
+ send(a,a.SessionOnly and "임시 플레이: 저장 서버 연결 안 됨 · 이번 접속 기록은 저장되지 않아" or "전투 시작! 건물을 지으면 자동 출격해.")
 end
 local function load(player)
  if not store then return nil,false end
@@ -138,7 +147,7 @@ end
 local function makeArena(player,data,loaded)
  nextArena+=1
  local x=(nextArena-1)*180
- local a={Player=player,X=x,Folder=Instance.new("Folder"),Buildings={},Visuals={},Units={},Gold=C.StartGold,Stage=1,Unlocked=C.StartSlots,Serial=0,Loaded=loaded}
+ local a={Player=player,X=x,Folder=Instance.new("Folder"),Buildings={},Visuals={},Units={},Gold=C.StartGold,Stage=1,Unlocked=C.StartSlots,Serial=0,Loaded=true,SessionOnly=not loaded}
  a.Folder.Name="Arena_"..player.UserId;a.Folder.Parent=root;arenas[player]=a
  if type(data)=="table" then
   a.Gold=math.max(0,math.floor(tonumber(data.Gold) or a.Gold))
@@ -156,10 +165,12 @@ local function makeArena(player,data,loaded)
  end
  block(a.Folder,"집중 전장",Vector3.new(50,1,140),CFrame.new(x,-.5,-3),Color3.fromRGB(112,154,107),Enum.Material.Grass)
  block(a.Folder,"진격로",Vector3.new(24,.2,100),CFrame.new(x,.08,0),Color3.fromRGB(171,151,119),Enum.Material.Ground)
+ a.BuildYard=block(a.Folder,"집중 전장",Vector3.new(50,1,25),CFrame.new(x,-.5,-60),Color3.fromRGB(131,169,116),Enum.Material.Grass)
+ resizeBuildYard(a)
  createGate(a,false);createGate(a,true)
  for i=1,a.Unlocked do drawBuilding(a,i) end
  player:SetAttribute("ArenaX",x)
- player:SetAttribute("SaveStatus",loaded and "READY" or "LOAD_FAILED")
+ player:SetAttribute("SaveStatus",loaded and "READY" or "SESSION_ONLY")
  player.CharacterAdded:Connect(function(character)
   local h=character:WaitForChild("HumanoidRootPart",10)
   if h then character:PivotTo(CFrame.new(x,5,-56)) end
@@ -177,12 +188,13 @@ remote.OnServerEvent:Connect(function(p,action,index,kind)
  local now=os.clock()
  if now-(lastRequest[p] or 0)<.15 then return end
  lastRequest[p]=now
- if not a.Loaded then send(a,"저장 확인 실패: 진행 보호를 위해 건설 잠금");return end
+ -- DataStore가 끊기면 이 서버 세션에서만 플레이하도록 허용한다. 미확인 기존 저장본은 덮어쓰지 않는다.
  if action=="BUY_SLOT" then
   local i=a.Unlocked+1
   local cost=C.SlotCost(i)
   if cost~=cost or cost==math.huge or a.Gold<cost then send(a,"슬롯 구매 골드 부족");return end
   a.Gold-=cost;a.Unlocked=i
+  resizeBuildYard(a)
   drawBuilding(a,i)
   send(a,"슬롯 "..i.." 해금!")
  elseif action=="BUILD" then
