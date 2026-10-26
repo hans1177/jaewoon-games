@@ -2269,7 +2269,22 @@ test('company-common R15 motion pack covers sixty-one reusable motion atoms',()=
   const core=['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'];
   const living=['SIT_DOWN','STAND_UP','LEAN_WALL_IDLE','OPEN_DOOR','OPEN_CONTAINER','PICKUP_GROUND','PLACE_GROUND','PUSH_OBJECT','PULL_OBJECT','TALK_GESTURE','NPC_WORK_LOOP','COOK_LOOP','FARM_TEND','FISH_CAST','BED_LIE_DOWN','LADDER_ENTER','LADDER_EXIT','SLOPE_ASCEND','SLOPE_DESCEND','FATIGUED_IDLE','INJURED_WALK'];
 
-  assert.equal(catalog.version,6);
+  assert.ok(catalog.version>=8);
+  const combat=catalog.composableCombatPresentation;
+  assert.equal(combat.totalCombatActionCount,60);
+  assert.equal(combat.actions.length,30);
+  assert.equal(combat.profiles.length,30);
+  assert.equal(new Set(combat.actions.map(row=>row.id)).size,30);
+  assert.equal(new Set(combat.profiles.map(row=>row.id)).size,30);
+  assert.equal(combat.maximumActionsPerCustomCombo,60);
+  assert.equal(combat.productionVerified,false);
+  assert.equal(combat.gameplayMovementAuthority,false);
+  assert.equal(catalog.nativeJointUnarmedPresentation.actions.length,30);
+  const actionById=new Map(combat.actions.map(row=>[row.id,row]));
+  for(const profile of combat.profiles){
+    assert.equal(profile.route.length,3,profile.id);
+    for(const id of profile.route)assert.equal(actionById.get(id)?.family,profile.family,profile.id+':'+id);
+  }
   assert.equal(catalog.atoms.length,61);
   assert.equal(quality.sourceAssetCount,61);
   assert.equal(catalog.compatibleRig,'R15');

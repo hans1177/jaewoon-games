@@ -1357,6 +1357,224 @@ function RobloxCommonMotion.SampleUnarmedChain(elapsed,chain,targets,stage,allow
  return targets,total,route[#route],#route
 end
 
+-- Thirty weapon action curves + the existing thirty unarmed curves are one
+-- composable presentation vocabulary. Equipment profiles do not create models,
+-- shoot projectiles, change cooldowns, grant damage or move character roots.
+local weaponActions={
+ {id="BLADE_SLASH_R",family="BLADE",event="CONTACT",duration=0.4,pose={Spine=actionFrame(-2.4,-15.3,3.6),Chest=actionFrame(8,-34,9),Head=actionFrame(2,18.7,-2.7),UpperArmL=actionFrame(-26,-8,-17),UpperArmR=actionFrame(-65,12,46),ForearmL=actionFrame(-60,0,0),ForearmR=actionFrame(-35,0,0)}},
+ {id="BLADE_SLASH_L",family="BLADE",event="CONTACT",duration=0.4,pose={Spine=actionFrame(-1.5,14.4,-3.2),Chest=actionFrame(5,32,-8),Head=actionFrame(2,-17.6,2.4),UpperArmL=actionFrame(-26,-8,-17),UpperArmR=actionFrame(-76,-36,-38),ForearmL=actionFrame(-62,0,0),ForearmR=actionFrame(-28,0,0)}},
+ {id="BLADE_THRUST",family="BLADE",event="CONTACT",duration=0.34,pose={Spine=actionFrame(2.1,-7.2,1.2),Chest=actionFrame(-7,-16,3),Head=actionFrame(2,8.8,-0.9),UpperArmL=actionFrame(-26,-8,-17),UpperArmR=actionFrame(-91,2,4),ForearmL=actionFrame(-68,0,0),ForearmR=actionFrame(-8,0,0)}},
+ {id="BLADE_RISING",family="BLADE",event="CONTACT",duration=0.44,pose={Spine=actionFrame(3.6,-11.25,3.2),Chest=actionFrame(-12,-25,8),Head=actionFrame(2,13.75,-2.4),UpperArmL=actionFrame(-26,-8,-17),UpperArmR=actionFrame(-118,6,18),ForearmL=actionFrame(-65,0,0),ForearmR=actionFrame(-38,0,0)}},
+ {id="BLADE_OVERHEAD",family="BLADE",event="CONTACT",duration=0.54,pose={Spine=actionFrame(-6.9,-5.4,1.6),Chest=actionFrame(23,-12,4),Head=actionFrame(2,6.6,-1.2),UpperArmL=actionFrame(-83,-8,-9),UpperArmR=actionFrame(-104,5,10),ForearmL=actionFrame(-64,0,0),ForearmR=actionFrame(-45,0,0)}},
+ {id="BLADE_RIPOSTE",family="BLADE",event="CONTACT",duration=0.36,pose={Spine=actionFrame(1.2,-10.35,0.8),Chest=actionFrame(-4,-23,2),Head=actionFrame(2,12.65,-0.6),UpperArmL=actionFrame(-49,-8,-25),UpperArmR=actionFrame(-86,-4,2),ForearmL=actionFrame(-85,0,0),ForearmR=actionFrame(-12,0,0)}},
+ {id="AXE_CHOP",family="AXE",event="CONTACT",duration=0.56,pose={Spine=actionFrame(-8.4,-11.7,4.8),Chest=actionFrame(28,-26,12),Head=actionFrame(2,14.3,-3.6),UpperArmL=actionFrame(-74,5,-10),UpperArmR=actionFrame(-92,7,18),ForearmL=actionFrame(-82,0,0),ForearmR=actionFrame(-48,0,0)}},
+ {id="AXE_DIAGONAL",family="AXE",event="CONTACT",duration=0.52,pose={Spine=actionFrame(-5.1,-19.8,7.2),Chest=actionFrame(17,-44,18),Head=actionFrame(2,24.2,-5.4),UpperArmL=actionFrame(-68,12,-22),UpperArmR=actionFrame(-77,22,38),ForearmL=actionFrame(-75,0,0),ForearmR=actionFrame(-36,0,0)}},
+ {id="AXE_SWEEP",family="AXE",event="CONTACT",duration=0.58,pose={Spine=actionFrame(-3,20.7,-5.2),Chest=actionFrame(10,46,-13),Head=actionFrame(2,-25.3,3.9),UpperArmL=actionFrame(-60,-12,-25),UpperArmR=actionFrame(-59,-32,-48),ForearmL=actionFrame(-68,0,0),ForearmR=actionFrame(-30,0,0)}},
+ {id="AXE_CLEAVE",family="AXE",event="CONTACT",duration=0.66,pose={Spine=actionFrame(-10.5,-3.6,1.6),Chest=actionFrame(35,-8,4),Head=actionFrame(2,4.4,-1.2),UpperArmL=actionFrame(-105,3,-10),UpperArmR=actionFrame(-114,-4,12),ForearmL=actionFrame(-66,0,0),ForearmR=actionFrame(-57,0,0)}},
+ {id="SPEAR_JAB",family="SPEAR",event="CONTACT",duration=0.35,pose={Spine=actionFrame(2.4,-9,1.2),Chest=actionFrame(-8,-20,3),Head=actionFrame(2,11,-0.9),UpperArmL=actionFrame(-76,-4,-7),UpperArmR=actionFrame(-87,2,6),ForearmL=actionFrame(-18,0,0),ForearmR=actionFrame(-20,0,0)}},
+ {id="SPEAR_LONG_THRUST",family="SPEAR",event="CONTACT",duration=0.47,pose={Spine=actionFrame(4.5,-13.95,2.4),Chest=actionFrame(-15,-31,6),Head=actionFrame(2,17.05,-1.8),UpperArmL=actionFrame(-89,-7,-4),UpperArmR=actionFrame(-102,3,5),ForearmL=actionFrame(-9,0,0),ForearmR=actionFrame(-12,0,0)}},
+ {id="SPEAR_SWEEP",family="SPEAR",event="CONTACT",duration=0.49,pose={Spine=actionFrame(-1.5,18.9,-3.6),Chest=actionFrame(5,42,-9),Head=actionFrame(2,-23.1,2.7),UpperArmL=actionFrame(-61,-26,-35),UpperArmR=actionFrame(-56,-32,-42),ForearmL=actionFrame(-42,0,0),ForearmR=actionFrame(-38,0,0)}},
+ {id="SPEAR_BUTT_STRIKE",family="SPEAR",event="CONTACT",duration=0.38,pose={Spine=actionFrame(-2.7,13.05,-1.6),Chest=actionFrame(9,29,-4),Head=actionFrame(2,-15.95,1.2),UpperArmL=actionFrame(-62,18,-15),UpperArmR=actionFrame(-48,-23,25),ForearmL=actionFrame(-95,0,0),ForearmR=actionFrame(-102,0,0)}},
+ {id="BLUNT_OVERHEAD",family="BLUNT",event="CONTACT",duration=0.64,pose={Spine=actionFrame(-9.6,-6.3,2.8),Chest=actionFrame(32,-14,7),Head=actionFrame(2,7.7,-2.1),UpperArmL=actionFrame(-91,4,-8),UpperArmR=actionFrame(-99,-4,12),ForearmL=actionFrame(-77,0,0),ForearmR=actionFrame(-58,0,0)}},
+ {id="BLUNT_SIDE_SMASH",family="BLUNT",event="CONTACT",duration=0.58,pose={Spine=actionFrame(-3.6,-21.6,7.2),Chest=actionFrame(12,-48,18),Head=actionFrame(2,26.4,-5.4),UpperArmL=actionFrame(-67,10,-18),UpperArmR=actionFrame(-67,24,44),ForearmL=actionFrame(-80,0,0),ForearmR=actionFrame(-48,0,0)}},
+ {id="BLUNT_RISING",family="BLUNT",event="CONTACT",duration=0.52,pose={Spine=actionFrame(5.4,13.05,-3.2),Chest=actionFrame(-18,29,-8),Head=actionFrame(2,-15.95,2.4),UpperArmL=actionFrame(-77,-8,-15),UpperArmR=actionFrame(-122,6,14),ForearmL=actionFrame(-80,0,0),ForearmR=actionFrame(-76,0,0)}},
+ {id="BLUNT_GROUND_SLAM",family="BLUNT",event="CONTACT",duration=0.72,pose={Spine=actionFrame(-13.8,-1.35,0.8),Chest=actionFrame(46,-3,2),Head=actionFrame(2,1.65,-0.6),UpperArmL=actionFrame(-114,2,-12),UpperArmR=actionFrame(-120,-2,12),ForearmL=actionFrame(-75,0,0),ForearmR=actionFrame(-69,0,0)}},
+ {id="DUAL_ALTERNATING",family="DUAL",event="CONTACT",duration=0.32,pose={Spine=actionFrame(-2.4,12.6,-3.6),Chest=actionFrame(8,28,-9),Head=actionFrame(2,-15.4,2.7),UpperArmL=actionFrame(-88,-8,-30),UpperArmR=actionFrame(-45,18,36),ForearmL=actionFrame(-26,0,0),ForearmR=actionFrame(-68,0,0)}},
+ {id="DUAL_CROSS",family="DUAL",event="CONTACT",duration=0.37,pose={Spine=actionFrame(-4.2,-1.35,0.4),Chest=actionFrame(14,-3,1),Head=actionFrame(2,1.65,-0.3),UpperArmL=actionFrame(-87,36,-18),UpperArmR=actionFrame(-87,-36,18),ForearmL=actionFrame(-25,0,0),ForearmR=actionFrame(-25,0,0)}},
+ {id="DUAL_REVERSE",family="DUAL",event="CONTACT",duration=0.33,pose={Spine=actionFrame(-0.9,-17.55,4.8),Chest=actionFrame(3,-39,12),Head=actionFrame(2,21.45,-3.6),UpperArmL=actionFrame(-48,-18,-38),UpperArmR=actionFrame(-91,14,28),ForearmL=actionFrame(-74,0,0),ForearmR=actionFrame(-22,0,0)}},
+ {id="DUAL_OPENING",family="DUAL",event="CONTACT",duration=0.42,pose={Spine=actionFrame(1.8,0.9,0),Chest=actionFrame(-6,2,0),Head=actionFrame(2,-1.1,0),UpperArmL=actionFrame(-73,-24,-65),UpperArmR=actionFrame(-73,24,65),ForearmL=actionFrame(-35,0,0),ForearmR=actionFrame(-35,0,0)}},
+ {id="BOW_DRAW",family="BOW",event="DRAW",duration=0.62,pose={Spine=actionFrame(0.9,-12.15,0.4),Chest=actionFrame(-3,-27,1),Head=actionFrame(2,14.85,-0.3),UpperArmL=actionFrame(-84,-8,-5),UpperArmR=actionFrame(-67,32,44),ForearmL=actionFrame(-10,0,0),ForearmR=actionFrame(-118,0,0)}},
+ {id="BOW_RELEASE",family="BOW",event="RELEASE",duration=0.3,pose={Spine=actionFrame(0.6,-11.25,0.4),Chest=actionFrame(-2,-25,1),Head=actionFrame(2,13.75,-0.3),UpperArmL=actionFrame(-86,-8,-4),UpperArmR=actionFrame(-62,35,48),ForearmL=actionFrame(-9,0,0),ForearmR=actionFrame(-100,0,0),HandR=actionFrame(0,12,14)}},
+ {id="BOW_RENOCK",family="BOW",event="RELOAD",duration=0.58,pose={Spine=actionFrame(-1.8,-5.4,1.2),Chest=actionFrame(6,-12,3),Head=actionFrame(2,6.6,-0.9),UpperArmL=actionFrame(-51,-8,-14),UpperArmR=actionFrame(-26,12,32),ForearmL=actionFrame(-45,0,0),ForearmR=actionFrame(-105,0,0)}},
+ {id="FIREARM_AIM",family="FIREARM",event="AIM",duration=0.26,pose={Spine=actionFrame(2.1,-4.5,0.4),Chest=actionFrame(-7,-10,1),Head=actionFrame(2,5.5,-0.3),UpperArmL=actionFrame(-72,-10,-11),UpperArmR=actionFrame(-82,1,9),ForearmL=actionFrame(-56,0,0),ForearmR=actionFrame(-25,0,0)}},
+ {id="FIREARM_RECOIL",family="FIREARM",event="RELEASE",duration=0.24,pose={Spine=actionFrame(3.6,-5.4,0.8),Chest=actionFrame(-12,-12,2),Head=actionFrame(2,6.6,-0.6),UpperArmL=actionFrame(-77,-10,-11),UpperArmR=actionFrame(-91,1,9),ForearmL=actionFrame(-65,0,0),ForearmR=actionFrame(-37,0,0)}},
+ {id="FIREARM_RELOAD",family="FIREARM",event="RELOAD",duration=0.78,pose={Spine=actionFrame(-2.4,6.75,-1.6),Chest=actionFrame(8,15,-4),Head=actionFrame(2,-8.25,1.2),UpperArmL=actionFrame(-54,22,-25),UpperArmR=actionFrame(-53,-5,14),ForearmL=actionFrame(-114,0,0),ForearmR=actionFrame(-80,0,0)}},
+ {id="FIREARM_BURST",family="FIREARM",event="RELEASE",duration=0.36,pose={Spine=actionFrame(3,-6.3,1.2),Chest=actionFrame(-10,-14,3),Head=actionFrame(2,7.7,-0.9),UpperArmL=actionFrame(-76,-10,-10),UpperArmR=actionFrame(-88,2,8),ForearmL=actionFrame(-60,0,0),ForearmR=actionFrame(-32,0,0)}},
+ {id="FIREARM_CYCLE",family="FIREARM",event="CYCLE",duration=0.43,pose={Spine=actionFrame(-0.9,-3.6,0.4),Chest=actionFrame(3,-8,1),Head=actionFrame(2,4.4,-0.3),UpperArmL=actionFrame(-55,-4,-17),UpperArmR=actionFrame(-76,2,10),ForearmL=actionFrame(-103,0,0),ForearmR=actionFrame(-45,0,0)}},
+}
+local weaponProfiles={
+ SWORD={id="SWORD",family="BLADE",speed=1.15,hands="ONE",route={1,2,3}},
+ LONGSWORD={id="LONGSWORD",family="BLADE",speed=1,hands="TWO",route={2,3,5}},
+ GREATSWORD={id="GREATSWORD",family="BLADE",speed=0.8,hands="TWO",route={5,2,4}},
+ KATANA={id="KATANA",family="BLADE",speed=1.2,hands="TWO",route={4,1,3}},
+ RAPIER={id="RAPIER",family="BLADE",speed=1.3,hands="ONE",route={3,6,3}},
+ SCIMITAR={id="SCIMITAR",family="BLADE",speed=1.22,hands="ONE",route={2,1,4}},
+ SABRE={id="SABRE",family="BLADE",speed=1.18,hands="ONE",route={1,6,2}},
+ DAGGER={id="DAGGER",family="BLADE",speed=1.4,hands="ONE",route={3,2,6}},
+ DUAL_DAGGERS={id="DUAL_DAGGERS",family="DUAL",speed=1.4,hands="DUAL",route={19,21,20}},
+ DUAL_SWORDS={id="DUAL_SWORDS",family="DUAL",speed=1.12,hands="DUAL",route={20,19,22}},
+ WAR_AXE={id="WAR_AXE",family="AXE",speed=1,hands="ONE",route={7,8,9}},
+ BATTLEAXE={id="BATTLEAXE",family="AXE",speed=0.92,hands="TWO",route={8,9,10}},
+ GREATAXE={id="GREATAXE",family="AXE",speed=0.78,hands="TWO",route={10,7,9}},
+ HATCHET={id="HATCHET",family="AXE",speed=1.25,hands="ONE",route={9,8,7}},
+ SPEAR={id="SPEAR",family="SPEAR",speed=1.12,hands="TWO",route={11,12,14}},
+ PIKE={id="PIKE",family="SPEAR",speed=0.9,hands="TWO",route={12,11,12}},
+ HALBERD={id="HALBERD",family="SPEAR",speed=0.94,hands="TWO",route={13,14,12}},
+ TRIDENT={id="TRIDENT",family="SPEAR",speed=1.02,hands="TWO",route={11,13,12}},
+ GLAIVE={id="GLAIVE",family="SPEAR",speed=1.08,hands="TWO",route={13,11,14}},
+ STAFF={id="STAFF",family="SPEAR",speed=1.22,hands="TWO",route={14,13,11}},
+ HAMMER={id="HAMMER",family="BLUNT",speed=1,hands="ONE",route={15,16,17}},
+ WARHAMMER={id="WARHAMMER",family="BLUNT",speed=0.8,hands="TWO",route={18,16,15}},
+ MACE={id="MACE",family="BLUNT",speed=1.05,hands="ONE",route={16,17,15}},
+ CLUB={id="CLUB",family="BLUNT",speed=1.15,hands="ONE",route={17,15,16}},
+ BOW={id="BOW",family="BOW",speed=1,hands="TWO",route={23,24,25}},
+ LONGBOW={id="LONGBOW",family="BOW",speed=0.85,hands="TWO",route={25,23,24}},
+ CROSSBOW={id="CROSSBOW",family="FIREARM",speed=1.1,hands="TWO",route={28,26,27}},
+ PISTOL={id="PISTOL",family="FIREARM",speed=1.25,hands="ONE",route={26,27,28}},
+ RIFLE={id="RIFLE",family="FIREARM",speed=1,hands="TWO",route={26,29,28}},
+ SHOTGUN={id="SHOTGUN",family="FIREARM",speed=0.95,hands="TWO",route={26,27,30}},
+}
+for _,action in ipairs(weaponActions)do table.freeze(action.pose);table.freeze(action)end
+for _,action in ipairs(unarmedActions)do table.freeze(action.pose);table.freeze(action)end
+for _,profile in pairs(weaponProfiles)do table.freeze(profile.route);table.freeze(profile)end
+local weaponAliases={IronSword="SWORD",WarAxe="WAR_AXE",HuntingSpear="SPEAR",StoneHammer="HAMMER",Greatsword="GREATSWORD"}
+local combatActionLookup={}
+for index,action in ipairs(unarmedActions)do combatActionLookup["U:"..action.id]={source=action,index=index,unarmed=true}end
+for index,action in ipairs(weaponActions)do combatActionLookup["W:"..action.id]={source=action,index=index,unarmed=false}end
+local function weaponGuard(profile)
+ if not profile then local copy={};for name,pose in pairs(unarmedGuard)do copy[name]=pose end;return copy end
+ local two=profile.hands~="ONE"
+ local guard={Spine=actionFrame(-2,-8,0),Chest=actionFrame(0,-10,0),Head=actionFrame(2,10,0),
+  UpperArmL=actionFrame(two and -54 or -26,-8,two and -10 or -22),
+  UpperArmR=actionFrame(-47,6,16),ForearmL=actionFrame(two and -68 or -75,0,0),
+  ForearmR=actionFrame(-62,0,0),HandL=CFrame.identity,HandR=CFrame.identity}
+ if profile.family=="BOW"then
+  guard.UpperArmL=actionFrame(-52,-8,-7);guard.UpperArmR=actionFrame(-36,18,28)
+ elseif profile.family=="FIREARM"then
+  guard.UpperArmL=actionFrame(two and -63 or -26,-8,-12)
+  guard.UpperArmR=actionFrame(-72,0,9);guard.ForearmR=actionFrame(-36,0,0)
+ end
+ return guard
+end
+function RobloxCommonMotion.ResolveWeaponProfile(equipmentId)
+ local id=weaponAliases[tostring(equipmentId)]or string.upper(tostring(equipmentId or ""))
+ return weaponProfiles[id]and id or nil
+end
+function RobloxCommonMotion.DescribeWeaponActions()
+ local out={}
+ for i,action in ipairs(weaponActions)do out[i]=table.freeze({id="W:"..action.id,family=action.family,
+  event=action.event,duration=action.duration,gameplayMovementAuthority=false})end
+ return table.freeze(out)
+end
+function RobloxCommonMotion.DescribeWeaponProfiles()
+ local out={}
+ for id,profile in pairs(weaponProfiles)do
+  local route={};for i,index in ipairs(profile.route)do route[i]="W:"..weaponActions[index].id end
+  out[id]=table.freeze({id=id,family=profile.family,speed=profile.speed,hands=profile.hands,route=table.freeze(route)})
+ end
+ return table.freeze(out)
+end
+local function smoothUnit(u)return u*u*(3-2*u)end
+-- Compile once on attack/equipment change; sample repeatedly into a reused table.
+-- Reject incompatible equipment instead of silently giving every weapon a slash.
+function RobloxCommonMotion.CreateCombatCombo(equipmentId,ids,options)
+ options=options or {}
+ local profileId=RobloxCommonMotion.ResolveWeaponProfile(equipmentId)
+ assert(profileId or equipmentId==nil or equipmentId=="UNARMED","UNKNOWN_COMBAT_EQUIPMENT")
+ local profile=profileId and weaponProfiles[profileId]
+ if ids==nil then
+  ids={}
+  if profile then for _,index in ipairs(profile.route)do ids[#ids+1]="W:"..weaponActions[index].id end
+  else ids={"U:JAB_LEFT","U:CROSS_RIGHT","U:FRONT_KICK_L"}end
+ end
+ assert(type(ids)=="table"and #ids>=1 and #ids<=60,"COMBAT_COMBO_REQUIRES_1_TO_60_ACTIONS")
+ local guard=weaponGuard(profile)
+ local steps={}
+ local cursor=0
+ for actionIndex=1,#ids do
+  local id=ids[actionIndex]
+  local entry=combatActionLookup[id]
+  assert(entry,"UNKNOWN_COMBAT_ACTION: "..tostring(id))
+  local source=entry.source
+  if not entry.unarmed then
+   assert(profile and source.family==profile.family,"WEAPON_ACTION_INCOMPATIBLE: "..id)
+  elseif source.kind=="THROW"then
+   assert(options.pairedTarget==true and not profile,"THROW_REQUIRES_PAIRED_TARGET_AND_FREE_HANDS")
+  elseif profile and source.kind=="HAND"then
+   -- Equipped one-handed weapons leave only the left hand free. Stowed weapons
+   -- require a separate UNARMED combo; stow/re-equip remains the caller's job.
+   assert(profile.hands=="ONE"and entry.index%2==1,"UNARMED_ACTION_REQUIRES_FREE_HAND: "..id)
+  end
+  local ready,contact,recoil,duration
+  if entry.unarmed then ready,contact,recoil,duration=actionTiming(source)
+  else
+   duration=source.duration
+   ready=duration*.27;contact=duration*.44;recoil=duration*.65
+  end
+  local speed=math.clamp(tonumber(options.speed)or(profile and profile.speed)or 1,.5,1.75)
+  duration/=speed;ready/=speed;contact/=speed;recoil/=speed
+  local strike={}
+  for name,pose in pairs(source.pose)do strike[name]=pose end
+  if profile and profile.hands=="TWO"and not entry.unarmed
+   and(profile.family=="BLADE"or profile.family=="AXE"or profile.family=="BLUNT")then
+   strike.UpperArmL=strike.UpperArmR*actionFrame(0,-10,-12)
+   strike.ForearmL=strike.ForearmR*actionFrame(-12,0,0)
+  end
+  local windup,follow={},{}
+  for _,name in ipairs(unarmedKeys)do
+   local base=guard[name]
+   local contactPose=strike[name]or base
+   -- Preparation and follow-through are authored as separate rotations around
+   -- a shared grip: hips lead chest, then shoulders, then the forearms.
+   local side=entry.index%2==0 and -1 or 1
+   local ranged=source.family=="BOW"or source.family=="FIREARM"
+   local yaw=ranged and 0 or 9*side
+   windup[name]=base*actionFrame(name=="Chest"and -6 or 0,name=="Chest"and -yaw or 0,0)
+   follow[name]=base:Lerp(contactPose,.68)
+  end
+  local step={id=id,source=source,start=cursor,duration=duration,ready=ready,contact=contact,recoil=recoil,
+   pose=table.freeze(strike),windup=table.freeze(windup),follow=table.freeze(follow),event=entry.unarmed and "CONTACT"or source.event,pairedTargetRequired=source.kind=="THROW"}
+  steps[#steps+1]=table.freeze(step);cursor+=duration
+ end
+ return table.freeze({profileId=profileId or "UNARMED",steps=table.freeze(steps),duration=cursor,
+  guard=table.freeze(guard),fadeDuration=.14,gameplayMovementAuthority=false})
+end
+function RobloxCommonMotion.SampleCombatCombo(combo,elapsed,targets)
+ targets=targets or {}
+ local t=math.max(0,tonumber(elapsed)or 0)
+ local step=combo.steps[#combo.steps]
+ local index=#combo.steps
+ for i,candidate in ipairs(combo.steps)do if t<candidate.start+candidate.duration then step=candidate;index=i;break end end
+ if t>=combo.duration then
+  local weight=1-smoothUnit(math.clamp((t-combo.duration)/combo.fadeDuration,0,1))
+  for _,name in ipairs(unarmedKeys)do targets[name]=CFrame.identity:Lerp(combo.guard[name],weight)end
+  return targets,index,t>=combo.duration+combo.fadeDuration
+ end
+ local u=t-step.start
+ local function curve(name,base)
+  local strike=step.pose[name]or base
+  local windup=step.windup[name]or base
+  local follow=step.follow[name]or base:Lerp(strike,.68)
+  local lag=name=="Spine"and -.035 or name=="Chest"and -.02
+   or name:match("^Forearm")and .015 or name:match("^Hand")and .025 or 0
+  local ready=step.ready+step.duration*lag
+  local contact=step.contact+step.duration*lag
+  local recoil=step.recoil+step.duration*lag
+  if u<ready then return base:Lerp(windup,smoothUnit(u/ready))
+  elseif u<contact then return windup:Lerp(strike,smoothUnit((u-ready)/(contact-ready)))
+  elseif u<recoil then return strike:Lerp(follow,smoothUnit((u-contact)/(recoil-contact)))
+  else return follow:Lerp(base,smoothUnit((u-recoil)/(step.duration-recoil)))end
+ end
+ for _,name in ipairs(unarmedKeys)do targets[name]=curve(name,combo.guard[name])end
+ for name in pairs(step.pose)do
+  if not combo.guard[name]then targets[name]=curve(name,targets[name]or CFrame.identity)end
+ end
+ return targets,index,false
+end
+
+local r15CombatNames={Head="Neck",UpperArmL="LeftShoulder",UpperArmR="RightShoulder",
+ ForearmL="LeftElbow",ForearmR="RightElbow",HandL="LeftWrist",HandR="RightWrist",
+ ThighL="LeftHip",ThighR="RightHip",ShinL="LeftKnee",ShinR="RightKnee",FootL="LeftAnkle",FootR="RightAnkle"}
+function RobloxCommonMotion.MapCombatPoseToR15(targets,out)
+ out=out or {};table.clear(out)
+ out.Waist=(targets.Spine or CFrame.identity)*(targets.Chest or CFrame.identity)
+ for name,motorName in pairs(r15CombatNames)do
+  local pose=targets[name]
+  if pose then out[motorName]=(name:match("^Forearm")or name:match("^Shin"))and pose:Inverse()or pose end
+ end
+ return out
+end
+
 function RobloxCommonMotion.CreateSequence(atomId)
 	local id, row = resolve(atomId)
 	local builder = BUILDERS[row.mode]
@@ -1426,7 +1644,7 @@ function RobloxCommonMotion.Audit()
 	end
 	table.sort(ids)
 	return table.freeze({
-		version = 7,
+		version = 8,
 		packId = "roblox-common-motion-v1",
 		atoms = table.freeze(ids),
 		atomCount = #ids,
@@ -1442,6 +1660,9 @@ function RobloxCommonMotion.Audit()
 		unarmedActionSampler = true,
 		unarmedComboCount = 30,
 		unarmedChainCount = 11,
+		weaponActionCount = 30,
+		weaponProfileCount = 30,
+		composableCombatActionCount = 60,
 		poseControllerJointTypes = table.freeze({"Bone","Motor6D"}),
 		productionVerified = false,
 		runtimeVerificationRequired = true,

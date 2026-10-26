@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "packId": "roblox-common-motion-v1",
   "family": "MOTION",
   "platform": "ROBLOX",
@@ -1012,5 +1012,542 @@
         "pairedTargetRequired": true
       }
     ]
+  },
+  "composableCombatPresentation": {
+    "source": "RobloxCommonMotion.luau",
+    "buildApi": "CreateCombatCombo",
+    "sampleApi": "SampleCombatCombo",
+    "weaponActionCount": 30,
+    "weaponProfileCount": 30,
+    "totalCombatActionCount": 60,
+    "maximumActionsPerCustomCombo": 60,
+    "productionVerified": false,
+    "runtimeVerificationState": "PENDING_DEPLOYED_RUNTIME",
+    "rootMotionOwned": false,
+    "gameplayMovementAuthority": false,
+    "weaponModelCreation": false,
+    "rangedEvents": "PRESENTATION_ONLY_SERVER_REMAINS_PROJECTILE_AND_AMMO_AUTHORITY",
+    "actions": [
+      {
+        "id": "W:BLADE_SLASH_R",
+        "family": "BLADE",
+        "event": "CONTACT",
+        "duration": 0.4
+      },
+      {
+        "id": "W:BLADE_SLASH_L",
+        "family": "BLADE",
+        "event": "CONTACT",
+        "duration": 0.4
+      },
+      {
+        "id": "W:BLADE_THRUST",
+        "family": "BLADE",
+        "event": "CONTACT",
+        "duration": 0.34
+      },
+      {
+        "id": "W:BLADE_RISING",
+        "family": "BLADE",
+        "event": "CONTACT",
+        "duration": 0.44
+      },
+      {
+        "id": "W:BLADE_OVERHEAD",
+        "family": "BLADE",
+        "event": "CONTACT",
+        "duration": 0.54
+      },
+      {
+        "id": "W:BLADE_RIPOSTE",
+        "family": "BLADE",
+        "event": "CONTACT",
+        "duration": 0.36
+      },
+      {
+        "id": "W:AXE_CHOP",
+        "family": "AXE",
+        "event": "CONTACT",
+        "duration": 0.56
+      },
+      {
+        "id": "W:AXE_DIAGONAL",
+        "family": "AXE",
+        "event": "CONTACT",
+        "duration": 0.52
+      },
+      {
+        "id": "W:AXE_SWEEP",
+        "family": "AXE",
+        "event": "CONTACT",
+        "duration": 0.58
+      },
+      {
+        "id": "W:AXE_CLEAVE",
+        "family": "AXE",
+        "event": "CONTACT",
+        "duration": 0.66
+      },
+      {
+        "id": "W:SPEAR_JAB",
+        "family": "SPEAR",
+        "event": "CONTACT",
+        "duration": 0.35
+      },
+      {
+        "id": "W:SPEAR_LONG_THRUST",
+        "family": "SPEAR",
+        "event": "CONTACT",
+        "duration": 0.47
+      },
+      {
+        "id": "W:SPEAR_SWEEP",
+        "family": "SPEAR",
+        "event": "CONTACT",
+        "duration": 0.49
+      },
+      {
+        "id": "W:SPEAR_BUTT_STRIKE",
+        "family": "SPEAR",
+        "event": "CONTACT",
+        "duration": 0.38
+      },
+      {
+        "id": "W:BLUNT_OVERHEAD",
+        "family": "BLUNT",
+        "event": "CONTACT",
+        "duration": 0.64
+      },
+      {
+        "id": "W:BLUNT_SIDE_SMASH",
+        "family": "BLUNT",
+        "event": "CONTACT",
+        "duration": 0.58
+      },
+      {
+        "id": "W:BLUNT_RISING",
+        "family": "BLUNT",
+        "event": "CONTACT",
+        "duration": 0.52
+      },
+      {
+        "id": "W:BLUNT_GROUND_SLAM",
+        "family": "BLUNT",
+        "event": "CONTACT",
+        "duration": 0.72
+      },
+      {
+        "id": "W:DUAL_ALTERNATING",
+        "family": "DUAL",
+        "event": "CONTACT",
+        "duration": 0.32
+      },
+      {
+        "id": "W:DUAL_CROSS",
+        "family": "DUAL",
+        "event": "CONTACT",
+        "duration": 0.37
+      },
+      {
+        "id": "W:DUAL_REVERSE",
+        "family": "DUAL",
+        "event": "CONTACT",
+        "duration": 0.33
+      },
+      {
+        "id": "W:DUAL_OPENING",
+        "family": "DUAL",
+        "event": "CONTACT",
+        "duration": 0.42
+      },
+      {
+        "id": "W:BOW_DRAW",
+        "family": "BOW",
+        "event": "DRAW",
+        "duration": 0.62
+      },
+      {
+        "id": "W:BOW_RELEASE",
+        "family": "BOW",
+        "event": "RELEASE",
+        "duration": 0.3
+      },
+      {
+        "id": "W:BOW_RENOCK",
+        "family": "BOW",
+        "event": "RELOAD",
+        "duration": 0.58
+      },
+      {
+        "id": "W:FIREARM_AIM",
+        "family": "FIREARM",
+        "event": "AIM",
+        "duration": 0.26
+      },
+      {
+        "id": "W:FIREARM_RECOIL",
+        "family": "FIREARM",
+        "event": "RELEASE",
+        "duration": 0.24
+      },
+      {
+        "id": "W:FIREARM_RELOAD",
+        "family": "FIREARM",
+        "event": "RELOAD",
+        "duration": 0.78
+      },
+      {
+        "id": "W:FIREARM_BURST",
+        "family": "FIREARM",
+        "event": "RELEASE",
+        "duration": 0.36
+      },
+      {
+        "id": "W:FIREARM_CYCLE",
+        "family": "FIREARM",
+        "event": "CYCLE",
+        "duration": 0.43
+      }
+    ],
+    "profiles": [
+      {
+        "id": "SWORD",
+        "family": "BLADE",
+        "speed": 1.15,
+        "hands": "ONE",
+        "route": [
+          "W:BLADE_SLASH_R",
+          "W:BLADE_SLASH_L",
+          "W:BLADE_THRUST"
+        ]
+      },
+      {
+        "id": "LONGSWORD",
+        "family": "BLADE",
+        "speed": 1,
+        "hands": "TWO",
+        "route": [
+          "W:BLADE_SLASH_L",
+          "W:BLADE_THRUST",
+          "W:BLADE_OVERHEAD"
+        ]
+      },
+      {
+        "id": "GREATSWORD",
+        "family": "BLADE",
+        "speed": 0.8,
+        "hands": "TWO",
+        "route": [
+          "W:BLADE_OVERHEAD",
+          "W:BLADE_SLASH_L",
+          "W:BLADE_RISING"
+        ]
+      },
+      {
+        "id": "KATANA",
+        "family": "BLADE",
+        "speed": 1.2,
+        "hands": "TWO",
+        "route": [
+          "W:BLADE_RISING",
+          "W:BLADE_SLASH_R",
+          "W:BLADE_THRUST"
+        ]
+      },
+      {
+        "id": "RAPIER",
+        "family": "BLADE",
+        "speed": 1.3,
+        "hands": "ONE",
+        "route": [
+          "W:BLADE_THRUST",
+          "W:BLADE_RIPOSTE",
+          "W:BLADE_THRUST"
+        ]
+      },
+      {
+        "id": "SCIMITAR",
+        "family": "BLADE",
+        "speed": 1.22,
+        "hands": "ONE",
+        "route": [
+          "W:BLADE_SLASH_L",
+          "W:BLADE_SLASH_R",
+          "W:BLADE_RISING"
+        ]
+      },
+      {
+        "id": "SABRE",
+        "family": "BLADE",
+        "speed": 1.18,
+        "hands": "ONE",
+        "route": [
+          "W:BLADE_SLASH_R",
+          "W:BLADE_RIPOSTE",
+          "W:BLADE_SLASH_L"
+        ]
+      },
+      {
+        "id": "DAGGER",
+        "family": "BLADE",
+        "speed": 1.4,
+        "hands": "ONE",
+        "route": [
+          "W:BLADE_THRUST",
+          "W:BLADE_SLASH_L",
+          "W:BLADE_RIPOSTE"
+        ]
+      },
+      {
+        "id": "DUAL_DAGGERS",
+        "family": "DUAL",
+        "speed": 1.4,
+        "hands": "DUAL",
+        "route": [
+          "W:DUAL_ALTERNATING",
+          "W:DUAL_REVERSE",
+          "W:DUAL_CROSS"
+        ]
+      },
+      {
+        "id": "DUAL_SWORDS",
+        "family": "DUAL",
+        "speed": 1.12,
+        "hands": "DUAL",
+        "route": [
+          "W:DUAL_CROSS",
+          "W:DUAL_ALTERNATING",
+          "W:DUAL_OPENING"
+        ]
+      },
+      {
+        "id": "WAR_AXE",
+        "family": "AXE",
+        "speed": 1,
+        "hands": "ONE",
+        "route": [
+          "W:AXE_CHOP",
+          "W:AXE_DIAGONAL",
+          "W:AXE_SWEEP"
+        ]
+      },
+      {
+        "id": "BATTLEAXE",
+        "family": "AXE",
+        "speed": 0.92,
+        "hands": "TWO",
+        "route": [
+          "W:AXE_DIAGONAL",
+          "W:AXE_SWEEP",
+          "W:AXE_CLEAVE"
+        ]
+      },
+      {
+        "id": "GREATAXE",
+        "family": "AXE",
+        "speed": 0.78,
+        "hands": "TWO",
+        "route": [
+          "W:AXE_CLEAVE",
+          "W:AXE_CHOP",
+          "W:AXE_SWEEP"
+        ]
+      },
+      {
+        "id": "HATCHET",
+        "family": "AXE",
+        "speed": 1.25,
+        "hands": "ONE",
+        "route": [
+          "W:AXE_SWEEP",
+          "W:AXE_DIAGONAL",
+          "W:AXE_CHOP"
+        ]
+      },
+      {
+        "id": "SPEAR",
+        "family": "SPEAR",
+        "speed": 1.12,
+        "hands": "TWO",
+        "route": [
+          "W:SPEAR_JAB",
+          "W:SPEAR_LONG_THRUST",
+          "W:SPEAR_BUTT_STRIKE"
+        ]
+      },
+      {
+        "id": "PIKE",
+        "family": "SPEAR",
+        "speed": 0.9,
+        "hands": "TWO",
+        "route": [
+          "W:SPEAR_LONG_THRUST",
+          "W:SPEAR_JAB",
+          "W:SPEAR_LONG_THRUST"
+        ]
+      },
+      {
+        "id": "HALBERD",
+        "family": "SPEAR",
+        "speed": 0.94,
+        "hands": "TWO",
+        "route": [
+          "W:SPEAR_SWEEP",
+          "W:SPEAR_BUTT_STRIKE",
+          "W:SPEAR_LONG_THRUST"
+        ]
+      },
+      {
+        "id": "TRIDENT",
+        "family": "SPEAR",
+        "speed": 1.02,
+        "hands": "TWO",
+        "route": [
+          "W:SPEAR_JAB",
+          "W:SPEAR_SWEEP",
+          "W:SPEAR_LONG_THRUST"
+        ]
+      },
+      {
+        "id": "GLAIVE",
+        "family": "SPEAR",
+        "speed": 1.08,
+        "hands": "TWO",
+        "route": [
+          "W:SPEAR_SWEEP",
+          "W:SPEAR_JAB",
+          "W:SPEAR_BUTT_STRIKE"
+        ]
+      },
+      {
+        "id": "STAFF",
+        "family": "SPEAR",
+        "speed": 1.22,
+        "hands": "TWO",
+        "route": [
+          "W:SPEAR_BUTT_STRIKE",
+          "W:SPEAR_SWEEP",
+          "W:SPEAR_JAB"
+        ]
+      },
+      {
+        "id": "HAMMER",
+        "family": "BLUNT",
+        "speed": 1,
+        "hands": "ONE",
+        "route": [
+          "W:BLUNT_OVERHEAD",
+          "W:BLUNT_SIDE_SMASH",
+          "W:BLUNT_RISING"
+        ]
+      },
+      {
+        "id": "WARHAMMER",
+        "family": "BLUNT",
+        "speed": 0.8,
+        "hands": "TWO",
+        "route": [
+          "W:BLUNT_GROUND_SLAM",
+          "W:BLUNT_SIDE_SMASH",
+          "W:BLUNT_OVERHEAD"
+        ]
+      },
+      {
+        "id": "MACE",
+        "family": "BLUNT",
+        "speed": 1.05,
+        "hands": "ONE",
+        "route": [
+          "W:BLUNT_SIDE_SMASH",
+          "W:BLUNT_RISING",
+          "W:BLUNT_OVERHEAD"
+        ]
+      },
+      {
+        "id": "CLUB",
+        "family": "BLUNT",
+        "speed": 1.15,
+        "hands": "ONE",
+        "route": [
+          "W:BLUNT_RISING",
+          "W:BLUNT_OVERHEAD",
+          "W:BLUNT_SIDE_SMASH"
+        ]
+      },
+      {
+        "id": "BOW",
+        "family": "BOW",
+        "speed": 1,
+        "hands": "TWO",
+        "route": [
+          "W:BOW_DRAW",
+          "W:BOW_RELEASE",
+          "W:BOW_RENOCK"
+        ]
+      },
+      {
+        "id": "LONGBOW",
+        "family": "BOW",
+        "speed": 0.85,
+        "hands": "TWO",
+        "route": [
+          "W:BOW_RENOCK",
+          "W:BOW_DRAW",
+          "W:BOW_RELEASE"
+        ]
+      },
+      {
+        "id": "CROSSBOW",
+        "family": "FIREARM",
+        "speed": 1.1,
+        "hands": "TWO",
+        "route": [
+          "W:FIREARM_RELOAD",
+          "W:FIREARM_AIM",
+          "W:FIREARM_RECOIL"
+        ]
+      },
+      {
+        "id": "PISTOL",
+        "family": "FIREARM",
+        "speed": 1.25,
+        "hands": "ONE",
+        "route": [
+          "W:FIREARM_AIM",
+          "W:FIREARM_RECOIL",
+          "W:FIREARM_RELOAD"
+        ]
+      },
+      {
+        "id": "RIFLE",
+        "family": "FIREARM",
+        "speed": 1,
+        "hands": "TWO",
+        "route": [
+          "W:FIREARM_AIM",
+          "W:FIREARM_BURST",
+          "W:FIREARM_RELOAD"
+        ]
+      },
+      {
+        "id": "SHOTGUN",
+        "family": "FIREARM",
+        "speed": 0.95,
+        "hands": "TWO",
+        "route": [
+          "W:FIREARM_AIM",
+          "W:FIREARM_RECOIL",
+          "W:FIREARM_CYCLE"
+        ]
+      }
+    ],
+    "mixedComboExample": {
+      "profile": "SWORD",
+      "actions": [
+        "W:BLADE_SLASH_R",
+        "U:KNEE_LEFT",
+        "W:BLADE_THRUST"
+      ]
+    }
   }
 }
