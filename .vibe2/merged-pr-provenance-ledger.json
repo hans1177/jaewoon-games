@@ -108153,11 +108153,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0d88f7cf1c0be50c18319194",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-10409",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 10409,
+        "baseBranch": "main",
+        "headBranch": "automation/horror-combat-asset-40340748939",
+        "baseSha": "6a52627e7544b8fdc4d45f4bdc53b498607d6967",
+        "headSha": "04207200c9eeb5437dfff20cf36fb18ea9b85007",
+        "mergeCommitSha": "3369583d75c7485a97c7216b4dd055b010816f3d",
+        "mergedAt": "2026-10-26T14:39:44Z",
+        "authorLogin": "github-actions[bot]",
+        "titleHash": "0194c88401e7548c4807d96abd7b85eb7fb56570cf9a642e77e102613dd1eda2",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "automation/horror-combat-asset-40340748939",
+        "candidateSha": "04207200c9eeb5437dfff20cf36fb18ea9b85007"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 26,
+        "deletedLineCount": 12,
+        "changedFiles": [
+          "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+          "assets/roblox/common-ui-v1/catalog.json",
+          "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        ],
+        "codingRelevantFiles": [
+          "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+          "assets/roblox/common-ui-v1/catalog.json",
+          "roblox-games/cozy-island/shared/RobloxCommonUI.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/RobloxCommonUI.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:10409",
+        "merge-commit:3369583d75c7485a97c7216b4dd055b010816f3d",
+        "base-main:6a52627e7544b8fdc4d45f4bdc53b498607d6967"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 852
+    "total": 853
   }
 }
