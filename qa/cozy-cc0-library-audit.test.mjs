@@ -146,6 +146,8 @@ test('기존 자산에도 브릭 재질을 강제 적용하고 물리·CC0 원�
   assert.equal(catalog.toyBrickStyle.runtimeVerified,false);
   assert.match(common,/TOY_PLASTIC = table\.freeze/);
   assert.match(common,/ToyBrickExistingAssetConversion/);
+  assert.match(common,/ToyBrickPresentationMaterialId/);
+  assert.doesNotMatch(common,/part:SetAttribute\\(\"MaterialSourceId\",\"NATIVE_TOY_PLASTIC\"\\)/);
   assert.match(common,/importedTexture=mesh and/);
   assert.match(common,/RobloxCommonMaterials\.Apply\(part,"TOY_PLASTIC"/);
   assert.match(common,/ROUND_PRIMITIVE_CC0_REPLACEMENT_REQUIRED/);

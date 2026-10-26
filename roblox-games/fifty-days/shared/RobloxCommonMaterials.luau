@@ -366,7 +366,7 @@ function RobloxCommonMaterials.ApplyMany(parts, atomId, options)
   return table.freeze(applied)
 end
 
--- Imported mesh PBR and atlas UVs remain authoritative for those objects.
+-- [기존 자산 브릭 표면] 외부 메시·텍스처 파일은 그대로 유지하고 현재 인스턴스의 재질만 전환한다.
 local ROLE_MATERIALS={Wood="WOOD",WoodPlanks="WOOD",Slate="STONE",Rock="STONE",Limestone="STONE",Cobblestone="STONE",Concrete="STONE",Marble="STONE",Brick="BRICK",Metal="METAL",CorrodedMetal="CORROSION",DiamondPlate="METAL",Fabric="FABRIC",Ground="GROUND",Grass="MOSS",LeafyGrass="MOSS",Mud="MUD",Sand="SAND",Sandstone="SAND",Snow="SNOW",Ice="ICE",Glacier="ICE",Asphalt="ASPHALT",Pavement="ASPHALT"}
 local PBR_SOURCES={Wood="Wood062",WoodPlanks="WoodFloor051",Slate="Rock035",Rock="Rock030",Limestone="Rock030",Cobblestone="Rock035",Concrete="Concrete034",Marble="Marble012",Brick="Bricks059",Metal="Metal046A",CorrodedMetal="Metal032",DiamondPlate="MetalPlates006",Fabric="Fabric026",Ground="Ground037",Grass="Grass001",LeafyGrass="Grass001",Mud="Ground054"}
 function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
@@ -390,7 +390,7 @@ function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
    variant=variant,tint=color,tintStrength=0.80,preservePhysics=true
  })
  part:SetAttribute("MaterialStyle","TOY_BRICK")
- part:SetAttribute("MaterialSourceId","NATIVE_TOY_PLASTIC")
+ part:SetAttribute("ToyBrickPresentationMaterialId","TOY_PLASTIC")
  part:SetAttribute("ToyBrickExistingAssetConversion",true)
  part:SetAttribute("ToyBrickGeometryState",
    part:IsA("Part") and (part.Shape==Enum.PartType.Ball or part.Shape==Enum.PartType.Cylinder)
