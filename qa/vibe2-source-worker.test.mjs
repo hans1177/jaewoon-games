@@ -9957,3 +9957,89 @@ test('community 50 scoped coding recipes are individually reachable without copy
   assert.equal((broad.match(/^[A-Z]+_[A-Z_]+: /gm)||[]).length,6,'do not increase ordinary code generation context excessively');
   assert.ok(!broad.includes('https://raw.githubusercontent.com/'),'external libraries must not be copied into game prompts');
 });
+
+
+// [바이브 제작 100종] 기존 프롬프트 생성 경로에서만 선택되는 실제 제작 지시 검증.
+test('Roblox maker 100 production recipe selection stays distinct, scoped and source-bound',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const start=worker.indexOf('  const makerCapabilityRecipes=[');
+  const end=worker.indexOf('  const famousRobloxMakerRecipes=[',start);
+  assert.ok(start>=0&&end>start,'must live inside existing source worker');
+  const block=worker.slice(start,end);
+  const entries=[...block.matchAll(/^\s{4}(\["[A-Z0-9_]+","[^"]+","[^"]+"\]),?$/gm)].map(row=>JSON.parse(row[1]));
+  assert.equal(entries.length,100,'exactly 100 authoring modules');
+  assert.equal(new Set(entries.map(row=>row[0])).size,100,'no duplicate recipes');
+  const groupCounts={};
+  for(const [id] of entries){const group=id.split('_')[0];groupCounts[group]=(groupCounts[group]||0)+1;}
+  assert.deepEqual(Object.keys(groupCounts).sort(),['AUDIO','BUILD','CHARACTER','MOBILE','MOTION','TOY','UI','VERIFY','VFX','WORLD']);
+  assert.ok(Object.values(groupCounts).every(n=>n===10));
+  const context={files:[{path:'client/Game.client.luau',content:'-- existing owned source\nlocal hud = Instance.new("ScreenGui")',editable:true}]};
+  const options={verifiedExternalLearningContract:{block:''}};
+  const build=(goal,target='roblox')=>buildPrompt({target,gameId:'maker-qa',goal,selectedTask:{}},context,['client/Game.client.luau'],options);
+  for(const [id,keywords,guide] of entries){
+    const prompt=build(keywords.split('|')[0]);
+    assert.ok(prompt.includes(id+': '+guide),'unreachable generator module '+id);
+    assert.match(prompt,/Implement real Luau\/Instance changes inside existing responsible source\/functions/);
+    assert.match(prompt,/do not fabricate texture IDs, licenses, models, server authority or save data/);
+    assert.match(prompt,/Runtime publication and F0-F9 remain UNVERIFIED without actual evidence/);
+  }
+  const stud=build('스터드 바닥과 블록 재질, 입체 버튼으로 제작');
+  assert.match(stud,/TOY_STUDDED_WORLD_SURFACE:/);
+  assert.match(stud,/TOY_TOY_PLASTIC_FAMILY:/);
+  assert.match(stud,/TOY_CHUNKY_BEVEL_BUTTON:/);
+  assert.match(stud,/Reuse approved game assets and RobloxCommonMaterials when present/);
+  assert.doesNotMatch(build('게임 자료 요약'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  assert.doesNotMatch(build('스터드 바닥','web'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  assert.doesNotMatch(build('스터드 바닥','unity'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  const broad=build(entries.map(row=>row[1].split('|')[0]).join(' '));
+  assert.equal((broad.match(/^(?:TOY|WORLD|CHARACTER|MOTION|UI|VFX|BUILD|AUDIO|MOBILE|VERIFY|SOCIAL|GROWTH|CONTEST|SURVIVAL|ARENA|HORROR|OBBY|TYCOON|TRADE|DISCOVERY)_[A-Z_]+: /gm)||[]).length,8,
+    'shared production selection must remain bounded to eight per task');
+  assert.ok(!broad.includes('https://raw.githubusercontent.com/'));
+});
+
+
+// [유명 게임 제작 패턴 100종] 기존 100종과 통합한 선택 우선순위·장르 참조·소스 보호 검증.
+test('famous Roblox 100 maker modules extend the engine to 200 and stay source scoped',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const oldStart=worker.indexOf('  const makerCapabilityRecipes=[');
+  const oldEnd=worker.indexOf('  // [유명 게임 장르 참고 100종]',oldStart);
+  const start=worker.indexOf('  const famousRobloxMakerRecipes=[');
+  const end=worker.indexOf('  const makerGenreSources=',start);
+  assert.ok(oldStart>=0&&oldEnd>oldStart&&start>=0&&end>start);
+  const readRows=code=>[...code.matchAll(/^\s{4}(\["[A-Z0-9_]+","[^"]+","[^"]+"\]),?$/gm)].map(row=>JSON.parse(row[1]));
+  const originals=readRows(worker.slice(oldStart,oldEnd));
+  const additional=readRows(worker.slice(start,end));
+  assert.equal(originals.length,100);
+  assert.equal(additional.length,100);
+  assert.equal(new Set([...originals,...additional].map(row=>row[0])).size,200);
+  const groups={};
+  for(const [id] of additional)groups[id.split('_')[0]]=(groups[id.split('_')[0]]||0)+1;
+  assert.deepEqual(Object.keys(groups).sort(),['ARENA','CONTEST','DISCOVERY','GROWTH','HORROR','OBBY','SOCIAL','SURVIVAL','TRADE','TYCOON']);
+  assert.ok(Object.values(groups).every(value=>value===10));
+  const context={files:[{path:'client/Interface.client.luau',content:'-- existing GUI owner\nlocal panel = Instance.new("Frame")',editable:true}]};
+  const opts={verifiedExternalLearningContract:{block:''}};
+  const generate=(goal,target='roblox',selectedTask={})=>buildPrompt(
+    {target,goal,gameId:'popular-game-patterns',selectedTask},context,['client/Interface.client.luau'],opts);
+  for(const [id,keywords,guide] of additional){
+    const prompt=generate(keywords.split('|')[0]);
+    assert.ok(prompt.includes(id+': '+guide),'missing authoring module '+id);
+    assert.match(prompt,/Use existing responsible source files: client\/Interface\.client\.luau/);
+    assert.match(prompt,/do not fabricate texture IDs, licenses, models, server authority or save data/);
+  }
+  for(const [goal,id] of [
+    ['낮밤 단계 표시','SURVIVAL_PHASE_DAYNIGHT_CARD'],
+    ['작물 성장 시각화','GROWTH_GROW_STAGE_PREVIEW'],
+    ['거래 2단계 확인','TRADE_TRADE_DOUBLE_CONFIRM'],
+    ['체크포인트 빛기둥','OBBY_CHECKPOINT_BEACON_VIS'],
+    ['공포 복도 조명','HORROR_CORRIDOR_LIGHT_MOOD']
+  ])assert.match(generate(goal),new RegExp(id+':'));
+  assert.match(generate('범용 UI 정리','roblox',{goal:'역할놀이 이모트'}),/SOCIAL_ROLE_EMOTE_WHEEL:/);
+  assert.doesNotMatch(generate('roleplay emote wheeling unrelated nonsense'),/SOCIAL_ROLE_EMOTE_WHEEL:/);
+  assert.doesNotMatch(generate('낮밤 단계 표시','web'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  assert.doesNotMatch(generate('낮밤 단계 표시','unity'),/\[ROBLOX VIBE MAKER NATIVE PRODUCTION MODULES\]/);
+  const broad=generate(additional.map(row=>row[1].split('|')[0]).join(' '));
+  const picked=(broad.match(/^(?:SOCIAL|GROWTH|CONTEST|SURVIVAL|ARENA|HORROR|OBBY|TYCOON|TRADE|DISCOVERY|TOY|WORLD|CHARACTER|MOTION|UI|VFX|BUILD|AUDIO|MOBILE|VERIFY)_[A-Z_]+: /gm)||[]);
+  assert.equal(picked.length,8,'only eight source-bound modules per generation');
+  assert.ok(new Set(picked.map(line=>line.split('_')[0])).size>=3,'prioritize across unrelated production families');
+  assert.doesNotMatch(broad,/https:\/\/raw\.githubusercontent\.com/);
+});
