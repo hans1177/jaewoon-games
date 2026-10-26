@@ -4809,7 +4809,8 @@ export function buildVibeAssetProductionPlan({
       }else{
         // Spawn calls in the actual game source are stronger role evidence than
         // dialogue text or design plans. Never infer HP, species or game rules.
-        for(const match of text.matchAll(/\b(?:spawnMob|spawnEnemy|spawnCreature|Wildlife\.Spawn)\s*\(\s*["']([A-Za-z][A-Za-z0-9_]*)["']/g))add('CREATURE',match[1]);
+        const executable=text.split(/\r?\n/).filter(line=>!/^\s*--/.test(line)).join('\n');
+        for(const match of executable.matchAll(/\b(?:spawnMob|spawnEnemy|spawnCreature|Wildlife\.Spawn)\s*\(\s*["']([A-Za-z][A-Za-z0-9_]*)["']/g))add('CREATURE',match[1]);
       }
     }
   }
