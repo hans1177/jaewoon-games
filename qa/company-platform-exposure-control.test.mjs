@@ -3,7 +3,7 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {controlPlatformExposure,homepageExposureSnapshot,evaluateInternalRelease} from '../tools/company-platform-exposure-control.mjs';
-import {reuseUnchangedHomepageExposure} from '../tools/company-homepage-platform-exposure-sync.mjs';
+import {reuseUnchangedHomepageExposure,robloxFloorProgress} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
 const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const lobbyScenarios=policy.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate.runtimeScenarios.map(id=>({id,pass:true}));
@@ -220,4 +220,50 @@ test('homepage exposure dedup ignores generation time but preserves every materi
   const updatedGame={...next,games:[{...next.games[0],updatedAt:'2026-10-17T00:09:00Z'}]};
   assert.strictEqual(reuseUnchangedHomepageExposure(previous,updatedGame),updatedGame);
   assert.strictEqual(reuseUnchangedHomepageExposure({...previous,authority:'UNVERIFIED'},next),next);
+});
+
+test('Roblox floor timestamps are evidence-only, preserve failed and pending states',()=>{
+  const catalogOnly=robloxFloorProgress({gameId:'unstarted',updatedAt:'2026-10-26T16:40:00Z'});
+  assert.equal(catalogOnly.tracked,false);
+  assert.equal(catalogOnly.verifiedAt,null);
+  assert.equal(catalogOnly.currentFloor,null);
+  const base={gameId:'g',targetPlatform:'ROBLOX',status:'ACTIVE',robloxProjectPath:'roblox-games/g',
+    updatedAt:'2026-10-26T16:39:00Z'};
+  const pending=robloxFloorProgress({...base,currentStep:'TARGET_PLATFORM_SOURCE_BIND'});
+  assert.equal(pending.tracked,true);
+  assert.equal(pending.f0PassedAt,null);
+  assert.equal(pending.verifiedAt,null);
+  assert.equal(pending.result,'PRE_F0_OR_PENDING');
+  const failed=robloxFloorProgress({...base,currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',
+    robloxFailureStage:'F0_GAMEPLAY_PRODUCT_READINESS',robloxFailureSignature:'ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED',
+    robloxQualityBuildUpEvidence:{testedAt:'2026-10-25T14:44:04Z'}});
+  assert.equal(failed.currentFloor,'F0');
+  assert.equal(failed.result,'REPAIR_REQUIRED');
+  assert.equal(failed.lastFailureAt,'2026-10-25T14:44:04.000Z');
+  const f0=robloxFloorProgress({...base,currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+    robloxFoundationF0Passed:true,robloxFoundationF0PassedAt:'2026-10-26T16:24:41Z',
+    robloxBuildOrPackagePassed:true,robloxBuildPassedAt:'2026-10-26T16:24:41Z'});
+  assert.equal(f0.f0PassedAt,'2026-10-26T16:24:41.000Z');
+  assert.equal(f0.currentFloor,'F0_TO_F1_PRIVATE_CANDIDATE');
+  assert.equal(f0.result,'F0_PASSED_AWAITING_NEXT_EVIDENCE');
+  assert.equal(f0.completedCycles,0,'F0 success cannot pretend F9 completion');
+  const pub=robloxFloorProgress({...base,currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+    robloxFoundationF0Passed:true,robloxFoundationF0PassedAt:'2026-10-26T16:24:41Z',
+    robloxRuntimeCandidateEvidence:{published:true,publishedAt:'2026-10-26T16:37:57Z'}});
+  assert.equal(pub.currentFloor,'F1_TO_F4_RUNTIME_EVIDENCE');
+  assert.equal(pub.verifiedAt,'2026-10-26T16:37:57.000Z');
+  assert.equal(pub.completedCycles,0,'private candidate is not F9 canonical publication');
+  const sourceFailure=robloxFloorProgress({...base,currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+    robloxFailureSignature:'existing-source-studio-asset-binding-required',
+    robloxSourceBootstrapFailedAt:'2026-10-26T16:32:18Z'});
+  assert.equal(sourceFailure.result,'REPAIR_REQUIRED');
+  assert.equal(sourceFailure.verifiedAt,'2026-10-26T16:32:18.000Z');
+});
+test('company dashboard shows Seoul time and distinct Roblox floor evidence',()=>{
+  const html=fs.readFileSync('company.html','utf8');
+  assert.match(html,/Roblox F0~F9 반복개발 현황/);
+  assert.match(html,/timeZone:'Asia\\/Seoul'/);
+  assert.match(html,/robloxFloorList/);
+  assert.match(html,/완료 회차/);
+  assert.match(html,/\/homepage-platform-exposure\\.json/);
 });
