@@ -853,3 +853,49 @@ test('로블록스 CC0 캐릭터 86종과 공용 원본 111개는 실제 바이�
   assert.match(pack.licenseEvidenceUrl,/^https:\/\//);
  }
 });
+
+
+test('native inventory and toy world detail primitives stay source-bound',()=>{
+  const ui=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+  const materials=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
+  const generated=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+  const between=(start,end)=>{const a=ui.indexOf('function RobloxCommonUI.'+start+'(options)');const b=ui.indexOf('function RobloxCommonUI.'+end+'(options)',a+1);assert.ok(a>=0&&b>a);return ui.slice(a,b);};
+  const slot=between('CreateInventorySlot','CreateTooltip');
+  const icon=between('CreateIconButton','CreateDialogueAssistantButton');
+  const inventory=between('CreateInventoryFullScreen','CreateEquipmentFullScreen');
+  for(const [block,name] of [[slot,'slot'],[icon,'icon']]){
+    assert.match(block,/IconFallback/,'native asset-free glyph: '+name);
+    assert.match(block,/Icon.*Image/,'existing image binding: '+name);
+  }
+  for(const key of ['RarityBadge','EquippedBadge','LockedBadge','SelectedRing','OwnsInventoryAuthority']){
+    assert.ok(slot.includes(key),'missing read-only item state '+key);
+  }
+  for(const text of ['SelectedItemDetail','SelectedItemName','SelectedItemMeta','SelectedItemDescription',
+    'InventoryEmptyState','BoundVisibleItemCount','GetPropertyChangedSignal("Text")','Activated:Connect',
+    'BoundSelectedItemId','row.equipped==true','row.locked==true','row.rarity','detail=detail,empty=empty']){
+    assert.ok(inventory.includes(text),'missing inventory feature: '+text);
+  }
+  assert.match(inventory,/if not slot:GetAttribute\("InventoryInputBound"\)then/);
+  assert.match(inventory,/if type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
+  assert.match(inventory,/slot\.Active=row\.id~=nil and row\.locked~=true/);
+  assert.match(inventory,/root:SetAttribute\("OwnsRemoteAuthority",false\)/);
+  assert.match(inventory,/root:SetAttribute\("OwnsSaveAuthority",false\)/);
+  assert.match(icon,/IconHasVerifiedImage/);
+  assert.match(icon,/button\.Active = options\.locked ~= true/);
+  for(const family of ['TOY_PLASTIC','TOY_STUDDED']){
+    assert.match(materials,new RegExp('  '+family+' = table\\.freeze\\('));
+    assert.ok(materials.includes('"'+family+'"'));
+  }
+  assert.match(materials,/SurfaceStudsEnabled/);
+  assert.match(materials,/part:IsA\("Part"\)/);
+  assert.match(materials,/part\.TopSurface=Enum\.SurfaceType\.Studs/);
+  assert.match(materials,/part:GetAttribute\("SurfacePaletteVariant"\)/);
+  assert.match(materials,/part:GetAttribute\("PreserveAuthoredTint"\)/);
+  assert.match(materials,/if toy then source=nil end/,'toy variants must not claim licensed PBR');
+  assert.match(materials,/preservePhysics=true/);
+  assert.doesNotMatch(materials,/CanCollide\s*=/);
+  assert.doesNotMatch(materials,/CanTouch\s*=/);
+  assert.match(materials,/atomCount = 27/);
+  assert.match(generated,/copyFileSync\(new URL\('\.\.\/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau'/);
+  assert.match(generated,/copyFileSync\(new URL\('\.\.\/assets\/roblox\/common-materials-v1\/RobloxCommonMaterials\.luau'/);
+});
