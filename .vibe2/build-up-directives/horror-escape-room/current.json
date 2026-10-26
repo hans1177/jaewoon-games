@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "horror-escape-room-build-up-g11-deb39bfb8bb0",
-  "directiveFingerprint": "deb39bfb8bb01fe465c10000242e2ccce3de95a63c840c1f6ef8259d53f846d3",
-  "previousDirectiveFingerprint": "3fef6f7989727cac5c56a5ac603b58a37cbb1550988034a7eaee0ae7535b2930",
-  "forbiddenRepeatFingerprint": "3fef6f7989727cac5c56a5ac603b58a37cbb1550988034a7eaee0ae7535b2930",
+  "directiveId": "horror-escape-room-build-up-g12-34036a916f26",
+  "directiveFingerprint": "34036a916f261f9da24fc01cc9744aea687ec6a05bcc8999f857cfd4d4dd6fe2",
+  "previousDirectiveFingerprint": "deb39bfb8bb01fe465c10000242e2ccce3de95a63c840c1f6ef8259d53f846d3",
+  "forbiddenRepeatFingerprint": "deb39bfb8bb01fe465c10000242e2ccce3de95a63c840c1f6ef8259d53f846d3",
   "gameId": "horror-escape-room",
   "gameName": "심야 대탈출",
-  "generation": 11,
+  "generation": 12,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/horror-escape-room",
-  "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+  "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
   "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
   "designSourceBuildUp": {
     "version": 1,
@@ -371,7 +371,7 @@
           "정화와 팀 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+        "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -419,7 +419,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "402596e3b876984c90fddb9971cd15a6f9d3879edece7a62d95e9855cc8d2d90",
-    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+    "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
     "multiplayerMode": "COMPETITIVE",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -1015,10 +1015,10 @@
       "roblox-games/horror-escape-room/client/Game.client.luau",
       "roblox-games/horror-escape-room/shared/GameConfig.luau",
       "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
       "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
-      "roblox-games/horror-escape-room/shared/Translations.luau",
       "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "executableCodeCandidateFiles": [
@@ -1026,6 +1026,7 @@
       "roblox-games/horror-escape-room/server/Game.server.luau",
       "roblox-games/horror-escape-room/client/Game.client.luau",
       "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
       "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
@@ -1051,7 +1052,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+    "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 74,
     "authoredCounts": {
@@ -7124,41 +7125,41 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=16",
+      "CURRENT_SOURCE_FILES=17",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 427,
-      "progression": 739,
+      "combat": 459,
+      "progression": 811,
       "ai": 322,
       "save": 335,
       "multiplayer": 33,
-      "animation": 205,
-      "motionStates": 1501,
-      "gameFeel": 46,
-      "vfx": 289,
-      "camera": 198,
+      "animation": 196,
+      "motionStates": 1603,
+      "gameFeel": 59,
+      "vfx": 443,
+      "camera": 210,
       "audio": 102,
       "audioDynamics": 114,
       "ui": 1543,
-      "uiFlow": 1606,
+      "uiFlow": 1630,
       "entryFlow": 308,
       "loadingFlow": 3,
-      "input": 184,
-      "map": 2070,
-      "landmark": 443,
-      "interaction": 600,
+      "input": 186,
+      "map": 2082,
+      "landmark": 444,
+      "interaction": 606,
       "inventory": 394,
       "equipment": 128,
       "settings": 36,
-      "feedback": 458,
+      "feedback": 459,
       "session": 283,
-      "content": 1760,
-      "choice": 1930,
+      "content": 1767,
+      "choice": 2062,
       "connection": 10,
-      "performance": 130,
-      "lighting": 350,
-      "primitive": 60,
+      "performance": 144,
+      "lighting": 339,
+      "primitive": 61,
       "todo": 0,
       "errorRecovery": 154
     },
@@ -7173,7 +7174,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "score": 1016
+        "score": 1011
       },
       {
         "file": "roblox-games/horror-escape-room/shared/GameConfig.luau",
@@ -7182,6 +7183,10 @@
       {
         "file": "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
         "score": 231
+      },
+      {
+        "file": "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+        "score": 143
       },
       {
         "file": "roblox-games/horror-escape-room/launch-mvp.json",
@@ -7201,15 +7206,11 @@
       },
       {
         "file": "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
-        "score": 6
-      },
-      {
-        "file": "roblox-games/horror-escape-room/shared/Translations.luau",
-        "score": 2
+        "score": 15
       },
       {
         "file": "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau",
-        "score": 1
+        "score": 3
       }
     ],
     "sourceAnchors": [
@@ -7343,7 +7344,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 782,
+        "line": 783,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
@@ -7351,7 +7352,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1422,
+        "line": 1423,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "context": "local function combatSkinIdForPlayer(player)",
@@ -7423,7 +7424,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 647,
+        "line": 648,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -7431,7 +7432,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1615,
+        "line": 1616,
         "kind": "FUNCTION",
         "symbol": "markCombatSkinAttack",
         "context": "local function markCombatSkinAttack(userId,origin,duration)",
@@ -7439,7 +7440,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1869,
+        "line": 1870,
         "kind": "FUNCTION",
         "symbol": "drawMiniMap",
         "context": "local function drawMiniMap(id)",
@@ -7447,7 +7448,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 2579,
+        "line": 2580,
         "kind": "FUNCTION",
         "symbol": "updateCosmeticUI",
         "context": "local function updateCosmeticUI()",
@@ -7567,7 +7568,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1417,
+        "line": 1418,
         "kind": "FUNCTION",
         "symbol": "combatFormIdForPlayer",
         "context": "local function combatFormIdForPlayer(player)",
@@ -7602,19 +7603,19 @@
   "previousVersionDelta": {
     "previousGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 심야 대탈출와 진영 전환과 추격 경로 × 증언과 합의된 현실가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
-    "currentSourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+    "previousGeneration": 11,
+    "previousSourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+    "currentSourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "VIBE_INTERNAL_PLAY",
-    "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
     "blockers": [
-      "roblox-internal-vibe-play-pending"
+      "roblox-build-package-revalidation-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -8756,8 +8757,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 1008699,
-        "largestFileBytes": 269769,
+        "sourceBytes": 1036911,
+        "largestFileBytes": 269797,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -8789,8 +8790,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
+    "themeDepth": 11,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -8800,9 +8801,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 10
+        "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -8847,7 +8849,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 74,
+        "score": 56,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -8961,11 +8963,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 11,
-    "previousGeneration": 10,
+    "generation": 12,
+    "previousGeneration": 11,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
-    "priorSourceFingerprint": "118f82974d27684c144b451fb6acedfd9f4f8b0047524adda22ac85b632f7d72",
+    "sourceFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
+    "priorSourceFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -8984,7 +8986,7 @@
     "version": 1,
     "gameId": "horror-escape-room",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+    "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -9149,8 +9151,8 @@
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
           "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-          "roblox-games/horror-escape-room/launch-mvp.json",
-          "roblox-games/horror-escape-room/server/ManorLobby.luau"
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+          "roblox-games/horror-escape-room/launch-mvp.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -9166,8 +9168,8 @@
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/launch-mvp.json",
-          "roblox-games/horror-escape-room/server/ManorLobby.luau"
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+          "roblox-games/horror-escape-room/launch-mvp.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -9215,6 +9217,7 @@
           "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
           "roblox-games/horror-escape-room/launch-mvp.json",
           "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau"
         ],
@@ -9232,8 +9235,8 @@
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/launch-mvp.json",
-          "roblox-games/horror-escape-room/server/ManorLobby.luau"
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+          "roblox-games/horror-escape-room/launch-mvp.json"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -9331,7 +9334,8 @@
         "id": "WEATHER",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
-          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+          "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -9365,7 +9369,7 @@
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
           "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-          "roblox-games/horror-escape-room/launch-mvp.json"
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
         ],
         "requiredByDesign": true,
         "useExistingGameStateOnly": true,
@@ -9394,7 +9398,8 @@
         "responsibleFiles": [
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/client/Game.client.luau",
-          "roblox-games/horror-escape-room/shared/GameConfig.luau"
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -9488,8 +9493,8 @@
         "roblox-games/horror-escape-room/client/Game.client.luau",
         "roblox-games/horror-escape-room/shared/GameConfig.luau",
         "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-        "roblox-games/horror-escape-room/launch-mvp.json",
-        "roblox-games/horror-escape-room/server/ManorLobby.luau"
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+        "roblox-games/horror-escape-room/launch-mvp.json"
       ],
       "NPC_AI": [
         "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
@@ -9524,7 +9529,8 @@
         "roblox-games/horror-escape-room/launch-mvp.json"
       ],
       "WEATHER": [
-        "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau"
+        "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
       ],
       "PHYSICS": [
         "roblox-games/horror-escape-room/server/Game.server.luau",
@@ -9540,7 +9546,7 @@
         "roblox-games/horror-escape-room/client/Game.client.luau",
         "roblox-games/horror-escape-room/shared/GameConfig.luau",
         "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-        "roblox-games/horror-escape-room/launch-mvp.json"
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
       ],
       "AUDIO": [
         "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
@@ -9551,7 +9557,8 @@
       "SKILL_VFX": [
         "roblox-games/horror-escape-room/server/Game.server.luau",
         "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau"
+        "roblox-games/horror-escape-room/shared/GameConfig.luau",
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
       ],
       "NETWORK": [
         "roblox-games/horror-escape-room/server/Game.server.luau",
@@ -9565,16 +9572,16 @@
         "roblox-games/horror-escape-room/server/Game.server.luau",
         "roblox-games/horror-escape-room/client/Game.client.luau",
         "roblox-games/horror-escape-room/shared/GameConfig.luau",
-        "roblox-games/horror-escape-room/launch-mvp.json",
-        "roblox-games/horror-escape-room/server/ManorLobby.luau"
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+        "roblox-games/horror-escape-room/launch-mvp.json"
       ],
       "REWARD": [
         "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
         "roblox-games/horror-escape-room/server/Game.server.luau",
         "roblox-games/horror-escape-room/client/Game.client.luau",
         "roblox-games/horror-escape-room/shared/GameConfig.luau",
-        "roblox-games/horror-escape-room/launch-mvp.json",
-        "roblox-games/horror-escape-room/server/ManorLobby.luau"
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+        "roblox-games/horror-escape-room/launch-mvp.json"
       ],
       "SAVE": [
         "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
@@ -9587,6 +9594,7 @@
         "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
         "roblox-games/horror-escape-room/client/Game.client.luau",
         "roblox-games/horror-escape-room/shared/GameConfig.luau",
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
         "roblox-games/horror-escape-room/launch-mvp.json",
         "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau"
       ],
@@ -9655,8 +9663,8 @@
         "roblox-games/horror-escape-room/server/Game.server.luau",
         "roblox-games/horror-escape-room/client/Game.client.luau",
         "roblox-games/horror-escape-room/shared/GameConfig.luau",
-        "roblox-games/horror-escape-room/launch-mvp.json",
-        "roblox-games/horror-escape-room/server/ManorLobby.luau"
+        "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+        "roblox-games/horror-escape-room/launch-mvp.json"
       ],
       "edges": [
         {
@@ -9690,7 +9698,7 @@
             "roblox-games/horror-escape-room/server/Game.server.luau",
             "roblox-games/horror-escape-room/client/Game.client.luau",
             "roblox-games/horror-escape-room/shared/GameConfig.luau",
-            "roblox-games/horror-escape-room/launch-mvp.json"
+            "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
           ],
           "passed": false
         },
@@ -9776,7 +9784,8 @@
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
           "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-          "roblox-games/horror-escape-room/launch-mvp.json"
+          "roblox-games/horror-escape-room/launch-mvp.json",
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
         ],
         "checks": [
           "NATIVE_TERRAIN_AND_REGION_GRAPH",
@@ -9877,10 +9886,10 @@
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
           "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
           "roblox-games/horror-escape-room/launch-mvp.json",
-          "roblox-games/horror-escape-room/server/ManorLobby.luau",
           "roblox-games/horror-escape-room/server/Game.server.luau",
-          "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau"
+          "roblox-games/horror-escape-room/server/ManorLobby.luau"
         ],
         "checks": [
           "INPUT_TO_AUTHORITATIVE_HIT",
@@ -9932,7 +9941,8 @@
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
-          "roblox-games/horror-escape-room/client/ManorLobby.client.luau"
+          "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau"
         ],
         "checks": [
           "APPROVED_CROP_REGION_AND_SEASON",
@@ -9955,10 +9965,10 @@
           "roblox-games/horror-escape-room/server/Game.server.luau",
           "roblox-games/horror-escape-room/client/Game.client.luau",
           "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
           "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
           "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
-          "roblox-games/horror-escape-room/launch-mvp.json",
-          "roblox-games/horror-escape-room/server/ManorLobby.luau"
+          "roblox-games/horror-escape-room/launch-mvp.json"
         ],
         "checks": [
           "SKILL_ACTUAL_EVENT_TO_EFFECT",
@@ -10037,7 +10047,7 @@
         "NO_PER_FRAME_DESCENDANT_SCANS",
         "BOUNDED_EFFECTS_AND_CONNECTIONS"
       ],
-      "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+      "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
       "evidence": [
         "EXACT_BUILD_MOTION",
         "GROUND_CONTACT",
@@ -10061,8 +10071,18 @@
         "MATERIAL",
         "RIG_COMPATIBLE_MOTION"
       ],
-      "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+      "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
       "sourceFiles": [
+        {
+          "file": "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
+          "sites": [
+            {
+              "line": 74,
+              "source": "local anchor = Instance.new(\"Part\")"
+            }
+          ],
+          "classification": "REVIEW_VISIBLE_PRIMITIVE_OR_GAMEPLAY_SUPPORT"
+        },
         {
           "file": "roblox-games/horror-escape-room/server/Game.server.luau",
           "sites": [
@@ -10119,12 +10139,8 @@
           "file": "roblox-games/horror-escape-room/client/Game.client.luau",
           "sites": [
             {
-              "line": 1268,
+              "line": 1269,
               "source": "local x=Instance.new(\"Part\")"
-            },
-            {
-              "line": 3456,
-              "source": "local part=Instance.new(\"Part\")"
             }
           ],
           "classification": "REVIEW_VISIBLE_PRIMITIVE_OR_GAMEPLAY_SUPPORT"
@@ -10201,7 +10217,7 @@
     "gameId": "horror-escape-room",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+    "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -10536,12 +10552,12 @@
       "roblox-games/horror-escape-room/shared/GameConfig.luau",
       "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
       "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
       "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
       "roblox-games/horror-escape-room/default.project.json",
       "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
-      "roblox-games/horror-escape-room/shared/Translations.luau",
       "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "requiredEvidenceFields": [
@@ -10769,12 +10785,12 @@
       "roblox-games/horror-escape-room/shared/GameConfig.luau",
       "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
       "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
       "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
       "roblox-games/horror-escape-room/default.project.json",
       "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
-      "roblox-games/horror-escape-room/shared/Translations.luau",
       "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -10816,7 +10832,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 782,
+        "line": 783,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "currentBehavior": "local function verifiedLearningMotionFailureReason(state)",
@@ -10825,7 +10841,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1422,
+        "line": 1423,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "currentBehavior": "local function combatSkinIdForPlayer(player)",
@@ -10843,7 +10859,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 647,
+        "line": 648,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "currentBehavior": "local function verifiedLearningBindTrack(state, track)",
@@ -10977,12 +10993,12 @@
       "roblox-games/horror-escape-room/shared/GameConfig.luau",
       "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
       "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
       "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
       "roblox-games/horror-escape-room/default.project.json",
       "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
-      "roblox-games/horror-escape-room/shared/Translations.luau",
       "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "sourceAnchors": [
@@ -11036,7 +11052,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 782,
+        "line": 783,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
@@ -11048,7 +11064,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 1422,
+        "line": 1423,
         "kind": "FUNCTION",
         "symbol": "combatSkinIdForPlayer",
         "context": "local function combatSkinIdForPlayer(player)",
@@ -11072,7 +11088,7 @@
       },
       {
         "file": "roblox-games/horror-escape-room/client/Game.client.luau",
-        "line": 647,
+        "line": 648,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -11129,12 +11145,12 @@
       "roblox-games/horror-escape-room/shared/GameConfig.luau",
       "roblox-games/horror-escape-room/shared/RobloxCommonUI.luau",
       "roblox-games/horror-escape-room/client/ManorLobby.client.luau",
+      "roblox-games/horror-escape-room/shared/RobloxCommonVFX.luau",
       "roblox-games/horror-escape-room/launch-mvp.json",
       "roblox-games/horror-escape-room/server/ManorLobby.luau",
       "roblox-games/horror-escape-room/shared/QACamera.luau",
       "roblox-games/horror-escape-room/default.project.json",
       "roblox-games/horror-escape-room/shared/RobloxCommonMaterials.luau",
-      "roblox-games/horror-escape-room/shared/Translations.luau",
       "roblox-games/horror-escape-room/client/MaterialPresentation.client.luau"
     ],
     "impact": {
@@ -11209,11 +11225,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "96e2de3ab3281b4ca0a36ad340d3fa39a5f212bbe8b85adeef4865d019ce9bac",
+      "sourceTreeFingerprint": "92437aa8089b3d9e79b8c8dbe55d0fd0ff236e9110df1c8fe44c56d4a38bba5b",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "VIBE_INTERNAL_PLAY",
-      "failureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING"
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -11268,7 +11284,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 13,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -11328,5 +11344,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-26T14:38:36.282Z"
+  "generatedAt": "2026-10-26T15:23:03.240Z"
 }
