@@ -428,6 +428,96 @@ test('humanoid monsters reuse biped combat semantics, quadrupeds keep sixty inde
   assert.equal(createCommonMonsterActionLoadout({speciesId:'SPIDER'}).quadruped60.length,0);
 });
 
+test('non-humanoid creature families keep sixty anatomy-bound motions without inventing gameplay',()=>{
+  const familyExamples=Object.freeze({
+    SPIDER:'ARTHROPOD',ANT:'ARTHROPOD',BEETLE:'ARTHROPOD',MANTIS:'ARTHROPOD',
+    SCORPION:'ARTHROPOD',WYVERN:'FLIGHT',BAT:'FLIGHT',
+    GHOST:'ETHEREAL_MAGIC',SLIME:'AMORPHOUS_MAGIC',GOLEM:'CONSTRUCT_MAGIC',
+    SHARK:'AQUATIC',SERPENT:'SERPENT',TENTACLE_BEAST:'TENTACLE',SWARM:'SWARM',
+    CENTAUR:'HYBRID_QUADRUPED',WOLF:'QUADRUPED'
+  });
+  for(const [speciesId,kind] of Object.entries(familyExamples)){
+    const result=createCommonMonsterActionLoadout({speciesId,platform:'ROBLOX'});
+    assert.equal(result.nonHumanoidKind,kind,speciesId);
+    assert.equal(result.motion60.length,60,speciesId);
+    assert.equal(new Set(result.motion60.map(motion=>motion.id)).size,60,speciesId);
+    const groups=Object.groupBy?Object.groupBy(result.motion60,row=>row.group)
+      :result.motion60.reduce((map,row)=>((map[row.group]??=[]).push(row),map),{});
+    assert.deepEqual(Object.fromEntries(Object.entries(groups).map(([key,value])=>[key,value.length])),
+      {locomotion:12,attacks:15,defense:6,reactions:7,acting:7,deaths:6,skill:4,signature:3},
+      speciesId);
+    assert.equal(result.productionVerified,false);
+    assert.equal(result.runtimeVerified,false);
+    assert.ok(result.motion60.every(row=>row.productionVerified===false&&row.gameplayAuthority===false));
+    for(const motion of result.motion60){
+      assert.ok(result.profile.groups[motion.group].includes(motion.sourceMotionId));
+      assert.equal(motion.rootAndHitboxUnchanged,true);
+      assert.equal(motion.existingEventRequired??motion.handoffToExistingHitDeathAndMoveEvents,true);
+      assert.equal(motion.jointTracks.length,3);
+      for(const track of motion.jointTracks){
+        assert.ok(result.species.specialParts.includes(track.part),speciesId+':'+track.part);
+        assert.deepEqual(track.frames.map(frame=>frame.phase).slice(0,1),[0]);
+        assert.equal(track.frames.at(-1).phase,1);
+        assert.ok(track.frames.every(frame=>frame.rotation.every(Number.isFinite)));
+      }
+    }
+    assert.equal(result.motion60.filter(row=>row.group==='deaths'&&row.deathEndPoseHeld).length,6);
+    assert.ok(result.motion60.filter(row=>row.group==='deaths').every(row=>
+      row.jointTracks.every(track=>track.holdsFinalPose)));
+  }
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'WOLF'}).motion60.length,60);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'WOLF'}).quadruped60.length,60);
+  const normalHuman=createCommonMonsterActionLoadout({speciesId:'DEMON_LORD'});
+  assert.equal(normalHuman.motion60.length,0);
+  assert.equal(normalHuman.nonHumanoidKind,null);
+  assert.equal(normalHuman.bipedSync.composableMotionSlotCount,60);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'ANT'}).motion60[0].supportLimbCount,6);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'SPIDER'}).motion60[0].supportLimbCount,8);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'SCORPION'}).motion60[0].supportLimbCount,8);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'WYVERN'}).motion60[0].groundContactRequired,false);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'GHOST'}).motion60[0].flightRootAndAltitudeOwnedByGameplay,true);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'SLIME'}).motion60[0].magicCuesOnlyForExistingApprovedSkill,true);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'SERPENT'}).motion60[0].groundContactRequired,false);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'SHARK'}).motion60[0].groundContactRequired,false);
+  assert.equal(createCommonMonsterActionLoadout({speciesId:'TENTACLE_BEAST'}).motion60[0].locomotionStyle,'ANCHOR_AND_DELAYED_TENTACLE_WAVE');
+});
+
+test('elite and boss preserve approved attacks while preparing fifty choreography patterns each',()=>{
+  for(const speciesId of Object.keys(COMMON_MONSTER_ACTION_SPECIES)){
+    const normal=createCommonMonsterActionLoadout({speciesId,tier:'NORMAL'});
+    assert.equal(normal.tierActionPatterns.length,0,speciesId);
+    for(const tier of ['ELITE','BOSS']){
+      const result=createCommonMonsterActionLoadout({speciesId,tier,platform:'ROBLOX'});
+      assert.equal(result.tierActionPatterns.length,50,speciesId+':'+tier);
+      assert.equal(new Set(result.tierActionPatterns.map(row=>row.id)).size,50,speciesId+':'+tier);
+      assert.equal(result.motion60.length,normal.motion60.length,speciesId+':'+tier);
+      assert.equal(result.sourceStatus,'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED');
+      for(const pattern of result.tierActionPatterns){
+        assert.equal(pattern.tier,tier);
+        assert.equal(pattern.steps.length,3);
+        assert.equal(pattern.jointTracks.length,2);
+        assert.equal(pattern.aiLogicAndBossPhaseUnchanged,true);
+        assert.equal(pattern.comboContactAndCancelWindowsUnchanged,true);
+        assert.equal(pattern.entryRequiresGameApprovedActionSequence,true);
+        assert.equal(pattern.runtimeVerified,false);
+        assert.equal(pattern.productionVerified,false);
+        assert.equal(pattern.gameplayAuthority,false);
+        assert.ok(result.species.contactLimbs.includes(pattern.contactLimb));
+        for(const step of pattern.steps){
+          assert.ok(result.profile.groups[step.group].includes(step.motionId));
+          assert.equal(step.requiresExistingAuthorizedEvent,true);
+          assert.equal(step.mustNotAdvanceCombatOrPhaseState,true);
+        }
+        for(const track of pattern.jointTracks){
+          assert.ok(result.species.specialParts.includes(track.part));
+          assert.ok(track.frames.every(frame=>frame.rotation.every(Number.isFinite)));
+        }
+      }
+    }
+  }
+  assert.throws(()=>createCommonMonsterActionLoadout({speciesId:'WOLF',tier:'UNKNOWN'}),/UNKNOWN_COMMON_MONSTER_MOTION_TIER/);
+});
+
 test('duel authoring recipe gives concrete joint phases and weapon mechanics',()=>{
   const katana=createDuelCombatAuthoringRecipe({
     weaponFamily:'KATANA',
