@@ -1910,7 +1910,21 @@ export function createCommonMonsterActionLoadout({
             mustNotAdvanceCombatOrPhaseState:true});
         }));
         const lead=species.contactLimbs[(motifIndex+styleIndex)%species.contactLimbs.length];
-        const other=kinematic.counterPart===lead?kinematic.supportPart:kinematic.counterPart;
+        // 접촉 부위명(턱/발끝/뿔/무기 등)은 실제 관절명이 아닐 수 있으므로
+        // 종족이 선언한 관절·변형 부위에만 리타게팅한다.
+        const compatiblePart=species.specialParts.find(part=>part===lead||part.includes(lead)||lead.includes(part));
+        const anatomyHint=/JAWS|FANG|BITE/.test(lead)?/JAWS|NECK|HEAD|FANG/
+          :/FOREPAWS|FRONT_LEG/.test(lead)?/FORELEGS|FRONT_LEGS|SIX_LEGS|EIGHT_LEGS/
+          :/HANDS|FIST|SPEAR/.test(lead)?/ARMS|FISTS|SCYTHE_ARMS|ETHEREAL_ARMS/
+          :/HOOVES/.test(lead)?/HOOF_CONTACT|FOUR_LEGS/
+          :/TENTACLE/.test(lead)?/TENTACLES/
+          :/STINGER/.test(lead)?/TAIL_STINGER|TAIL/
+          :/SURFACE/.test(lead)?/SURFACE|LOBES/
+          :/SWARM/.test(lead)?/FRONT|MEMBERS/
+          :null;
+        const leadPart=compatiblePart||(anatomyHint&&species.specialParts.find(part=>anatomyHint.test(part)))
+          ||kinematic.supportPart;
+        const other=kinematic.counterPart===leadPart?kinematic.supportPart:kinematic.counterPart;
         const wind=motionTier==='BOSS'?.37:.34,contact=motionTier==='BOSS'?.62:.57;
         const bias=(styleIndex-2)*.045,tierIntensity=motionTier==='BOSS'?1.15:1.06;
         const prep=kinematic.coil.map((value,axis)=>(value+(axis===0?bias:-bias*.45))*tierIntensity);
@@ -1918,10 +1932,10 @@ export function createCommonMonsterActionLoadout({
         return Object.freeze({
           id:id+'_'+motionTier+'_PATTERN_'+String(motifIndex*5+styleIndex+1).padStart(2,'0'),
           tier:motionTier,motifIndex,styleIndex,steps,
-          contactLimb:lead,counterPart:other,
+          contactLimb:lead,contactRigPart:leadPart,counterPart:other,
           poseKeyTimes:freezeList([0,.12,wind,contact,.83,1]),
           jointTracks:Object.freeze([
-            monsterPoseFrames(lead,wind,contact,prep,strike),
+            monsterPoseFrames(leadPart,wind,contact,prep,strike),
             monsterPoseFrames(other,wind,contact,
               prep.map(v=>-v*kinematic.counterWeight),
               strike.map(v=>-v*kinematic.counterWeight*.72))
