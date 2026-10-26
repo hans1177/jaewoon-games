@@ -647,8 +647,10 @@ test('CC0 registered models receive per-target Universe grants only after exact 
  assert.match(publish,/sourceRoot\+'\/'/);
  assert.match(publish,/subjectType:'Universe',subjectId:String\(process\.env\.ROBLOX_UNIVERSE_ID\)/);
  assert.match(publish,/action:'Use',requests:assetIds\.map/);
- assert.match(publish,/if\(!grant\.ok\|\|\(Array\.isArray\(response\.errors\)&&response\.errors\.length>0\)\)/);
- assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_FAILED_HTTP_/);
+ assert.match(publish,/if\(!grant\.ok\|\|\(Array\.isArray\(response\.errors\)&&response\.errors\.length>0\)/);
+ assert.match(publish,/response\.successAssetIds\.map\(String\)/);
+ assert.match(publish,/assetIds\.some\(assetId=>!grantedIds\.has\(String\(assetId\)\)\)/);
+ assert.match(publish,/ROBLOX_CC0_UNIVERSE_GRANT_INCOMPLETE_HTTP_/);
  assert.match(publish,/ROBLOX_CC0_GRANT_API_KEY_REQUIRED/);
  assert.doesNotMatch(publish,/\bautoActivate\b|\bactivateUniverse\b/,
   'automatically regranting an actor must not increase public exposure');
