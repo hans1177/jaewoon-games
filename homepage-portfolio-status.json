@@ -4,11 +4,11 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-10-26T00:51:38.003Z",
+  "generatedAt": "2026-10-26T04:16:58.541Z",
   "counts": {
     "ACCELERATE": 0,
-    "CONTINUE": 1,
-    "FOCUSED_REPAIR": 37,
+    "CONTINUE": 0,
+    "FOCUSED_REPAIR": 38,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
@@ -196,6 +196,15 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
+      "gameId": "restaurant-tycoon",
+      "decision": "FOCUSED_REPAIR",
+      "label": "집중수리",
+      "priorityRank": 1,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
@@ -344,15 +353,6 @@
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "restaurant-tycoon",
-      "decision": "CONTINUE",
-      "label": "정상개발",
-      "priorityRank": 2,
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
