@@ -2397,6 +2397,34 @@ function platformDirectives({identity,goal}){
   };
 }
 export function directivePrompt(d={}){
+  // UI·아이콘·인벤·월드 공통 제작 능력을 기존 F0–F9 BUILD_UP 요청에 연결한다.
+  // 현재 게임에 없는 인벤/새 지역을 자동 발명하지 않고 승인된 소스·설계·시각 결함만 직접 구현한다.
+  const nativeVisualBuildUp=clean(d.platform).toUpperCase()==='ROBLOX'?(()=>{
+    const priority=(d.allDomainImplementationDirectives||[])
+      .filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority))
+      .map(row=>clean(row.domain).toUpperCase());
+    const active=new Set(priority);
+    const files=(d.robloxNativeExecution?.responsibleFiles||d.responsibleSystemsAndFiles?.files||[]).slice(0,8);
+    const families=[
+      ['UI','UI_HUD','UI_DESIGN_SYSTEM','MENU_FLOW','MOBILE_UX','UI_INFORMATION_PRIORITY'],
+      ['ICONS','UI_HUD','UI_DESIGN_SYSTEM','INVENTORY_USABILITY','FEEDBACK_CLARITY'],
+      ['INVENTORY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT'],
+      ['WORLD','WORLD_MAP_TOPOLOGY','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','ENVIRONMENT','TERRAIN','MATERIALS','REGIONS']
+    ];
+    const selected=families.filter(([, ...domains])=>domains.some(domain=>active.has(domain))).map(row=>row[0]);
+    if(!selected.length)return'';
+    const contracts={
+      UI:'UI native owner: ScreenGui/UIScale/UIPadding/UIStroke/GuiButton.Activated, visible HUD information hierarchy, safe insets/44px+ mobile controls, modal focus, valid close/back; preserve existing button handlers.',
+      ICONS:'Icon native owner: reuse licensed verified ImageLabel/ImageButton assets; otherwise use readable source-owned shape/vector/approved model, no blank icons, fabricated asset IDs or game-specific copied artwork.',
+      INVENTORY:'Inventory native owner only when game actually has inventory: real item IDs/categories/equip flags, search TextBox, ScrollingFrame+UIGridLayout, selection details and empty state; no client-created items, new save keys or duplicated purchase/equip RemoteEvents.',
+      WORLD:'World native owner: approved spawn→goal paths, regional silhouettes and landmarks, proper biome/material layering, source-owned models and original procedural seed; preserve collisions, physics, navigation, construction anchors and mobile part budget.'
+    };
+    return [
+      'ROBLOX_BUILD_UP_AUTO_VISUAL_CRAFT: cycle='+Math.max(1,Number(d.generation)||1)+'; selected='+selected.join('|')+'; responsibleFiles='+(files.join('|')||'RESOLVE_EXISTING_GAME_OWNER'),
+      ...selected.map(family=>family+': '+contracts[family]),
+      'Apply real native Luau/Instance edits in existing responsible UI/world code using the currently authorized design/style and verified library; never treat these directives as implemented or runtime QA PASS. No new pipeline, rules, save schema or authority change; existing F0–F9 publish gates remain.'
+    ].join('\n');
+  })():'';
   if(!d?.directiveId)return'';
   const visual=Object.entries(d.visualBuildUpDirective?.domains||{}).map(([k,v])=>`- ${k}: ${v}`).join('\n');
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,28).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
@@ -2508,6 +2536,7 @@ export function directivePrompt(d={}){
     domainPriority,
     'VISUAL:',
     visual,
+    nativeVisualBuildUp,
     d.visualBuildUpDirective?.nativeOptimization?.enabled
       ?'ROBLOX_BUILD_UP_OPTIMIZATION: '+JSON.stringify(d.visualBuildUpDirective.nativeOptimization)+
        ' F0와 매 빌드업에서 리깅·재질·물리·충돌을 함께 최적화한다. 기존 모델·리그·충돌 형상을 보존할 의무는 없으며 기존 책임 함수를 직접 재구성하거나 CC0 모델로 교체할 수 있다. 사용 중인 관절·애니메이션 바인딩을 확인한 뒤 불필요한 연결을 제거하고, 리그가 바뀌면 기존 행동을 호환 리타기팅한다. 정적 월드 고정, 시각 메시의 질량·충돌 제외, 간단한 판정체와 역할별 충돌 그룹, 불필요한 터치·쿼리 제거를 함께 적용한다. 채집·공격·이동·상호작용에 필요한 쿼리와 지면 접촉은 실제로 재검증한다. 브릭 재질은 기존 메시의 표면으로 표현하며 모바일 장식 파츠나 돌기 파츠를 늘리지 않는다. 서버 판정과 저장 이관을 생략하거나 소스 마커로 실행 통과를 주장하지 않는다.':'' ,
