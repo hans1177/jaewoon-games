@@ -20,16 +20,16 @@ const rpgLaunch=json('roblox-games/daechung-rpg/launch-mvp.json');
 
 test('포근섬 시작섬 확장과 배경 일괄 배치는 기존 진행·원정·저장을 보존한다',()=>{
  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
- const home=style.match(/HomeIsland=\\{Radius=(\\d+),Length=(\\d+),GridStep=(\\d+),ForestCount=(\\d+),ArtPass="([^"]+)"\\}/);
+ const home=style.match(/HomeIsland=\{Radius=(\d+),Length=(\d+),GridStep=(\d+),ForestCount=(\d+),ArtPass="([^"]+)"\}/);
  assert.ok(home,'시작섬 설정');
  assert.ok(Number(home[1])>=675,'시작섬 너비');
  assert.ok(Number(home[2])>=1800,'시작섬 길이');
  assert.ok(Number(home[4])>=198,'배경 숲');
  assert.equal(home[5],'COZY_GRAND_START_ISLAND_V12');
- assert.match(cozyServer,/local function islandHalfWidth\\(z\\)/);
- assert.match(cozyServer,/for iz=3,math\\.floor\\(home\\.Length\\/45\\) do/);
+ assert.match(cozyServer,/local function islandHalfWidth\(z\)/);
+ assert.match(cozyServer,/for iz=3,math\.floor\(home\.Length\/45\) do/);
  assert.match(cozyServer,/for z=650,1850,600 do/);
- assert.match(cozyServer,/for z=145,home\\.Length-65,37 do/);
+ assert.match(cozyServer,/for z=145,home\.Length-65,37 do/);
  for(const detail of ['GrandIslandScenery','CoastalCottage_','OrchardFruit',
   'MeadowHayBale','SouthTrailLamp','SouthCapeDeck','SouthCapeBeacon','CrystalWaterfall',
   'ForestShrine','SunsetLighthouse'])assert.ok(cozyServer.includes(detail),detail);
@@ -37,7 +37,7 @@ test('포근섬 시작섬 확장과 배경 일괄 배치는 기존 진행·원�
  for(const preserved of ['ManualGatherForest','ManualGatherFarm','HomeNPCs','HomeMobs',
   'FoundationSpawn','C.Bases','BattleVisual.start','GetDataStore("cozy-island-conquest-v3")'])
   assert.ok(cozyServer.includes(preserved),preserved);
- assert.match(cozyServer,/workspace:SetAttribute\\("GrandIslandSceneryCount",#scenery:GetDescendants\\(\\)\\)/);
+ assert.match(cozyServer,/workspace:SetAttribute\("GrandIslandSceneryCount",#scenery:GetDescendants\(\)\)/);
 });
 
 test('포근섬은 자동채집이 아니라 월드 자원 노드를 직접 채집한다',()=>{
