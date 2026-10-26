@@ -44,6 +44,64 @@ export function verifiedCompletionHistory(item={},platform='ROBLOX'){
   return{count:records.length,lastCompletedAt:records[0]?.completedAt||null,evidenceUrl:records[0]?.evidenceUrl||null,scope:'RETAINED_VERIFIED_PUBLICATION_RECORDS',records:records.slice(0,10)};
 }
 
+// F0~F9 진행 상태: 실행 중이라는 추정 대신 검증된 시각/실패 단계/대기열 상태를 기록한다.
+// catalog-only 게임은 기록이 없으므로 날짜를 만들어내지 않는다.
+export function robloxFloorProgress(item={}){
+  const tracked=clean(item.targetPlatform).toUpperCase()==='ROBLOX'
+    &&clean(item.status).toUpperCase()==='ACTIVE'
+    &&Boolean(clean(item.robloxProjectPath||item.targetSourcePaths?.ROBLOX));
+  const iso=value=>{
+    const str=clean(value);
+    return str&&Number.isFinite(Date.parse(str))?new Date(str).toISOString():null;
+  };
+  if(!tracked)return{
+    tracked:false,queueState:'NOT_IN_ACTIVE_ROBLOX_RUNTIME_QUEUE',
+    currentFloor:null,stage:null,result:'UNCONFIRMED',verifiedAt:null,
+    checkedAt:null,lastFailureAt:null,f0PassedAt:null,candidatePublishedAt:null,
+    failureCode:null,completedCycles:verifiedCompletionHistory(item,'ROBLOX').count
+  };
+  const step=clean(item.currentStep)||'UNKNOWN';
+  const f0=bool(item.robloxFoundationF0Passed)&&iso(item.robloxFoundationF0PassedAt);
+  const candidate=bool(item.robloxRuntimeCandidateEvidence?.published)
+    &&iso(item.robloxRuntimeCandidateEvidence?.publishedAt);
+  const stage=step==='TARGET_PLATFORM_SOURCE_BIND'?'F0_BEFORE_SOURCE_BIND'
+    :step==='ROBLOX_F0_SOURCE_PREFLIGHT'?'F0'
+    :step==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'?'F0_TO_F1_PRIVATE_CANDIDATE'
+    :step==='TARGET_PLATFORM_RUNTIME_FOUNDATION'?'F1_TO_F4_RUNTIME_EVIDENCE'
+    :/F9|FINAL_REVIEW|RELEASE_REGRESSION/.test(step)?'F9'
+    :/F[1-8]/.test(step)?step.match(/F[1-8]/)[0]
+    :step;
+  const failedAt=iso(item.robloxSourceBootstrapFailedAt)
+    ||iso(item.robloxBuildPreflightFailedAt)||iso(item.robloxBuildFailedAt)
+    ||iso(item.robloxRuntimeFailedAt)||iso(item.robloxQualityBuildUpEvidence?.testedAt);
+  const reportedFailure=clean(item.robloxFailureSignature||item.robloxFailureStage);
+  const failureBlocked=Boolean(reportedFailure)
+    &&(/FAILED|REPAIR_REQUIRED|SOURCE_BIND/.test(reportedFailure)
+      ||step==='ROBLOX_F0_SOURCE_PREFLIGHT'&&!f0);
+  const observations=[
+    f0,candidate,
+    bool(item.robloxBuildOrPackagePassed)?iso(item.robloxBuildPassedAt):null,
+    bool(item.robloxIndependentQaPassed)?iso(item.robloxIndependentQaPassedAt):null,
+    bool(item.robloxF9ReleaseRegressionPassed)?iso(item.robloxFinalReviewPassedAt):null,
+    failureBlocked?failedAt:null
+  ].filter(Boolean).sort((a,b)=>Date.parse(b)-Date.parse(a));
+  return{
+    tracked:true,
+    queueState:'ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF',
+    currentFloor:stage,
+    stage:step,
+    result:failureBlocked?'REPAIR_REQUIRED':candidate?'PRIVATE_CANDIDATE_PUBLISHED_AWAITING_RUNTIME_EVIDENCE'
+      :f0?'F0_PASSED_AWAITING_NEXT_EVIDENCE':'PRE_F0_OR_PENDING',
+    verifiedAt:observations[0]||null,
+    checkedAt:iso(item.updatedAt),
+    lastFailureAt:failureBlocked?failedAt:null,
+    f0PassedAt:f0||null,
+    candidatePublishedAt:candidate||null,
+    failureCode:failureBlocked?reportedFailure||clean(item.robloxFailureStage)||null:null,
+    completedCycles:verifiedCompletionHistory(item,'ROBLOX').count
+  };
+}
+
 function robloxState(item={},policy={}){
   const pub=item.robloxPublicationTarget||{};
   const rel=item.robloxReleaseEvidence||{};
@@ -78,6 +136,7 @@ function robloxState(item={},policy={}){
   return{
     platform:'ROBLOX',
     completion:verifiedCompletionHistory(item,'ROBLOX'),
+    floorProgress:robloxFloorProgress(item),
     developmentState:sourceReady?'NATIVE_DEVELOPMENT':'WAITING_SOURCE',
     runtimePassed:runtime,
     independentQaPassed:qa,
